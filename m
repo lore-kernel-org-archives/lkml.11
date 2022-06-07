@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B26BEC2BBE7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 855E6C2BBE5
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354473AbiFGS4K (ORCPT
+        id S1354312AbiFGS4B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40052 "EHLO
+        Tue, 7 Jun 2022 14:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351276AbiFGSSs (ORCPT
+        with ESMTP id S1352634AbiFGSRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:18:48 -0400
+        Tue, 7 Jun 2022 14:17:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E88C4E91;
-        Tue,  7 Jun 2022 10:53:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5F913AF2C;
+        Tue,  7 Jun 2022 10:52:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A84F1617A5;
-        Tue,  7 Jun 2022 17:53:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B220C3411F;
-        Tue,  7 Jun 2022 17:53:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 132BE617C3;
+        Tue,  7 Jun 2022 17:52:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60BBFC385A5;
+        Tue,  7 Jun 2022 17:52:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624411;
-        bh=ux7IuVmMI8o15RzsRZcZNkGPWCqiFNkdIdCURxZuwdY=;
+        s=k20201202; t=1654624346;
+        bh=j3uNHWslQx2TMq4plPlTP9lh0uFCqJRr0z3ou4Fl1Z8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QNM/Vvgy+zaeZP0/7NxLJBnkiBrvwnyfBb9lc/bMw3lScP2qoHNAk1WHV/BkVeEio
-         Zx5GIe3nFZaHLbA7+42TIe9dD0ShlS69kNAUbgd6na/o66o5MXaEeINZkuln+fVHY/
-         sagsv6OtnDrUhkxpJ4ViXdLTNvou4oLQDLNmF6zSMm2q2eYux3HxxJqSJ7EAg1qRUw
-         PyI2oVBenehAbqy2R6TM+JQCReFQlhedgeylW8vnt+9dQfLNJ64o3Mkul/D16xI7HQ
-         zw9sT1lakKRUohuQ4lE0fJKa47xnw0ARbbMOdGeZq4PWVpT92r5q9N0suHwE2mLyXX
-         6ExnJ6tZMkRsQ==
+        b=I+Nn2ut0W7CqlXeze/AoCN1AiZ7Tfh3dKZfFw2wEVUF6RdN2miM/1pTzpFed8YKnL
+         mBIRywyQBmVMDMkaG2ZlwlG17zqYChYfHBEvXoh5r+RTEp+3S5/ESYDrrKW/KUkKL8
+         qgKQVIqQrt3hpd7DHg55NqwomFvSC8avfpeG79RiUTSq+F+Rn+NwWEhReuKy61gxVU
+         SSzQ4NG5dFZ1HecvpGjLBreaE3YJ2+CpZ7IbBtL/UiBzyRmkeoHBmwAZkuEV/nryGm
+         LCDY1KUmkXO0G4D9wcm76vOu0MpTE1toZgEQ9jC+b/s8TxaN5wu1cCtBmu8LAFHysM
+         NRHup8QzaYdxQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, baihaowen@meizu.com,
-        dave@stgolabs.net, wangborong@cdjrlc.com, len.baker@gmx.com,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.17 10/60] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
-Date:   Tue,  7 Jun 2022 13:52:07 -0400
-Message-Id: <20220607175259.478835-10-sashal@kernel.org>
+Cc:     Yu Kuai <yukuai3@huawei.com>, Hou Tao <houtao1@huawei.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
+        linux-block@vger.kernel.org, nbd@other.debian.org
+Subject: [PATCH AUTOSEL 5.18 56/68] nbd: call genl_unregister_family() first in nbd_cleanup()
+Date:   Tue,  7 Jun 2022 13:48:22 -0400
+Message-Id: <20220607174846.477972-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,52 +53,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Yu Kuai <yukuai3@huawei.com>
 
-[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
+[ Upstream commit 06c4da89c24e7023ea448cadf8e9daf06a0aae6e ]
 
-There is a deadlock in ieee80211_beacons_stop(), which is shown below:
+Otherwise there may be race between module removal and the handling of
+netlink command, which can lead to the oops as shown below:
 
-   (Thread 1)              |      (Thread 2)
-                           | ieee80211_send_beacon()
-ieee80211_beacons_stop()   |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | ieee80211_send_beacon_cb()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+  BUG: kernel NULL pointer dereference, address: 0000000000000098
+  Oops: 0002 [#1] SMP PTI
+  CPU: 1 PID: 31299 Comm: nbd-client Tainted: G            E     5.14.0-rc4
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+  RIP: 0010:down_write+0x1a/0x50
+  Call Trace:
+   start_creating+0x89/0x130
+   debugfs_create_dir+0x1b/0x130
+   nbd_start_device+0x13d/0x390 [nbd]
+   nbd_genl_connect+0x42f/0x748 [nbd]
+   genl_family_rcv_msg_doit.isra.0+0xec/0x150
+   genl_rcv_msg+0xe5/0x1e0
+   netlink_rcv_skb+0x55/0x100
+   genl_rcv+0x29/0x40
+   netlink_unicast+0x1a8/0x250
+   netlink_sendmsg+0x21b/0x430
+   ____sys_sendmsg+0x2a4/0x2d0
+   ___sys_sendmsg+0x81/0xc0
+   __sys_sendmsg+0x62/0xb0
+   __x64_sys_sendmsg+0x1f/0x30
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+  Modules linked in: nbd(E-)
 
-We hold ieee->beacon_lock in position (1) of thread 1 and use
-del_timer_sync() to wait timer to stop, but timer handler
-also need ieee->beacon_lock in position (2) of thread 2.
-As a result, ieee80211_beacons_stop() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Link: https://lore.kernel.org/r/20220521073749.3146892-2-yukuai3@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/block/nbd.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-index 1a43979939a8..79f3fbe25556 100644
---- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-+++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-@@ -528,9 +528,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
- 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 5a1f98494ddd..9dc27f9e9ddc 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -2529,6 +2529,12 @@ static void __exit nbd_cleanup(void)
+ 	struct nbd_device *nbd;
+ 	LIST_HEAD(del_list);
  
- 	ieee->beacon_txing = 0;
--	del_timer_sync(&ieee->beacon_timer);
++	/*
++	 * Unregister netlink interface prior to waiting
++	 * for the completion of netlink commands.
++	 */
++	genl_unregister_family(&nbd_genl_family);
++
+ 	nbd_dbg_close();
  
- 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
-+	del_timer_sync(&ieee->beacon_timer);
+ 	mutex_lock(&nbd_index_mutex);
+@@ -2547,7 +2553,6 @@ static void __exit nbd_cleanup(void)
+ 	destroy_workqueue(nbd_del_wq);
+ 
+ 	idr_destroy(&nbd_index_idr);
+-	genl_unregister_family(&nbd_genl_family);
+ 	unregister_blkdev(NBD_MAJOR, "nbd");
  }
  
- void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
 -- 
 2.35.1
 
