@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D36C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CFF8CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381826AbiFGWWv (ORCPT
+        id S1380586AbiFGWVo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:22:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
+        Tue, 7 Jun 2022 18:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380728AbiFGVQy (ORCPT
+        with ESMTP id S1380649AbiFGVQj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:16:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC3E21F9E1;
-        Tue,  7 Jun 2022 11:56:46 -0700 (PDT)
+        Tue, 7 Jun 2022 17:16:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1879121E33A;
+        Tue,  7 Jun 2022 11:55:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDE7A61794;
-        Tue,  7 Jun 2022 18:56:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD1FAC385A2;
-        Tue,  7 Jun 2022 18:56:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83E54612F2;
+        Tue,  7 Jun 2022 18:55:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EF97C385A2;
+        Tue,  7 Jun 2022 18:55:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628205;
-        bh=iNHK4FsWAeAmGLGVXN+d7gkN/OJ8GAY1t4eehMHASVA=;
+        s=korg; t=1654628149;
+        bh=y268Ia38mDcy8oVClEGS/uTeQtbK8P1DKzIAcwjQsRk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DsMkhhbx1YaGIOiuB8rTCaIEodtZSB/sMvClPuSJq+mz0eWRNRh0RGitVv9d6GyTu
-         kJWPhHNzvll44DgjFLyqUNMlfW/qrQtc7OTX2iVW9EXbxxuZv05u6PRt5wEMi5dbBI
-         XtCZy+C3aB1MGs023KIin9edWxVA3KrZFVnsDNsc=
+        b=rzivVUY6q9beKvbYIXZUZ/W73yaojkfvLU0UeooZX0DpJ/d0Sp1pMrPt2a80693XZ
+         Si6/hun00ZaFjr4jjq/48yIg3SqWOYZfMu0ZAfzEQazSqS2x+XiCBZFdb8ujG5QkpZ
+         WeqxduSyVdKM+4tcDmAVkyBJSM5G6eWY6xuBEtv4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Schmitz <schmitzmic@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 203/879] char: tpm: cr50_i2c: Suppress duplicated error message in .remove()
-Date:   Tue,  7 Jun 2022 18:55:21 +0200
-Message-Id: <20220607165008.738250110@linuxfoundation.org>
+Subject: [PATCH 5.18 197/879] m68k: atari: Make Atari ROM port I/O write macros return void
+Date:   Tue,  7 Jun 2022 18:55:15 +0200
+Message-Id: <20220607165008.563891016@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,51 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-[ Upstream commit e0687fe958f763f1790f22ed5483025b7624e744 ]
+[ Upstream commit 30b5e6ef4a32ea4985b99200e06d6660a69f9246 ]
 
-Returning an error value in an i2c remove callback results in an error
-message being emitted by the i2c core, but otherwise it doesn't make a
-difference. The device goes away anyhow and the devm cleanups are
-called.
+The macros implementing Atari ROM port I/O writes do not cast away their
+output, unlike similar implementations for other I/O buses.
+When they are combined using conditional expressions in the definitions of
+outb() and friends, this triggers sparse warnings like:
 
-As tpm_cr50_i2c_remove() emits an error message already and the
-additional error message by the i2c core doesn't add any useful
-information, change the return value to zero to suppress this error
-message.
+    drivers/net/appletalk/cops.c:382:17: error: incompatible types in conditional expression (different base types):
+    drivers/net/appletalk/cops.c:382:17:    unsigned char
+    drivers/net/appletalk/cops.c:382:17:    void
 
-Note that if i2c_clientdata is NULL, there is something really fishy.
-Assuming no memory corruption happened (then all bets are lost anyhow),
-tpm_cr50_i2c_remove() is only called after tpm_cr50_i2c_probe() returned
-successfully. So there was a tpm chip registered before and after
-tpm_cr50_i2c_remove() its privdata is freed but the associated character
-device isn't removed. If after that happened userspace accesses the
-character device it's likely that the freed memory is accessed. For that
-reason the warning message is made a bit more frightening.
+Fix this by adding casts to "void".
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Michael Schmitz <schmitzmic@gmail.com>
+Link: https://lore.kernel.org/r/c15bedc83d90a14fffcd5b1b6bfb32b8a80282c5.1653057096.git.geert@linux-m68k.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/tpm/tpm_tis_i2c_cr50.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/m68k/include/asm/raw_io.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/char/tpm/tpm_tis_i2c_cr50.c b/drivers/char/tpm/tpm_tis_i2c_cr50.c
-index f6c0affbb456..bf608b6af339 100644
---- a/drivers/char/tpm/tpm_tis_i2c_cr50.c
-+++ b/drivers/char/tpm/tpm_tis_i2c_cr50.c
-@@ -768,8 +768,8 @@ static int tpm_cr50_i2c_remove(struct i2c_client *client)
- 	struct device *dev = &client->dev;
+diff --git a/arch/m68k/include/asm/raw_io.h b/arch/m68k/include/asm/raw_io.h
+index 80eb2396d01e..3ba40bc1dfaa 100644
+--- a/arch/m68k/include/asm/raw_io.h
++++ b/arch/m68k/include/asm/raw_io.h
+@@ -80,14 +80,14 @@
+ 	({ u16 __v = le16_to_cpu(*(__force volatile u16 *) (addr)); __v; })
  
- 	if (!chip) {
--		dev_err(dev, "Could not get client data at remove\n");
--		return -ENODEV;
-+		dev_crit(dev, "Could not get client data at remove, memory corruption ahead\n");
-+		return 0;
- 	}
+ #define rom_out_8(addr, b)	\
+-	({u8 __maybe_unused __w, __v = (b);  u32 _addr = ((u32) (addr)); \
++	(void)({u8 __maybe_unused __w, __v = (b);  u32 _addr = ((u32) (addr)); \
+ 	__w = ((*(__force volatile u8 *)  ((_addr | 0x10000) + (__v<<1)))); })
+ #define rom_out_be16(addr, w)	\
+-	({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
++	(void)({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
+ 	__w = ((*(__force volatile u16 *) ((_addr & 0xFFFF0000UL) + ((__v & 0xFF)<<1)))); \
+ 	__w = ((*(__force volatile u16 *) ((_addr | 0x10000) + ((__v >> 8)<<1)))); })
+ #define rom_out_le16(addr, w)	\
+-	({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
++	(void)({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
+ 	__w = ((*(__force volatile u16 *) ((_addr & 0xFFFF0000UL) + ((__v >> 8)<<1)))); \
+ 	__w = ((*(__force volatile u16 *) ((_addr | 0x10000) + ((__v & 0xFF)<<1)))); })
  
- 	tpm_chip_unregister(chip);
 -- 
 2.35.1
 
