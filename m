@@ -2,91 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F02DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:14:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A406C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:14:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384487AbiFGWOp (ORCPT
+        id S1384117AbiFGWOv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:14:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33798 "EHLO
+        Tue, 7 Jun 2022 18:14:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380083AbiFGVL2 (ORCPT
+        with ESMTP id S1380094AbiFGVL3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408F621761E;
-        Tue,  7 Jun 2022 11:53:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FFBE6156D;
-        Tue,  7 Jun 2022 18:53:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 622B5C385A2;
-        Tue,  7 Jun 2022 18:53:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627983;
-        bh=iKlBYoUEHHSKLj/FQ6yF2o4GA7+S+LJ6Nw0AmRb3NAI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ERuyAXOkq3tLSqDl7WOzpH515lSIcCOJ4aA3U7ijzCGT9WkndADUpkPkdB8r3bLBz
-         7L2zOlflLPU/Xt7A3BbY+RdRThD5oUaE+6Jn6i75HQTwBW9yNCMrfjEUPirSirBVFA
-         F2nDo+/j/VienaKkixB8+KRSaPvrTFPEU5uRRPf4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 165/879] media: ccs-core.c: fix failure to call clk_disable_unprepare
-Date:   Tue,  7 Jun 2022 18:54:43 +0200
-Message-Id: <20220607165007.498129095@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 7 Jun 2022 17:11:29 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC2A217639;
+        Tue,  7 Jun 2022 11:53:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654627989; x=1686163989;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=DJX1fTXVl6qyeFmIlJ6koAYNPAMtDi8XGkKfp/5Rjkk=;
+  b=OCHIyRs9DtIpE3t6KEdc/Sn6Pj4wgi7d8G0+H6n7SRoJZGft383hbNly
+   IbUtL7MU99R8ipjARhLUzWttPDQHhgcp2Ajzkf6j1+HfY/AMdSn86wL19
+   ubHqOKvF8IMThdDk4PuNAy4tAC3iFaRF54DBB7df+BDWHJKxCmon5U4LS
+   g=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 11:53:07 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 07 Jun 2022 11:53:06 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 08 Jun 2022 00:22:52 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id 898523F76; Wed,  8 Jun 2022 00:22:51 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [PATCH 1/2] serial: core: Introduce callback for start_rx and do stop_rx in suspend only if this callback implementation is present.
+Date:   Wed,  8 Jun 2022 00:22:44 +0530
+Message-Id: <1654627965-1461-2-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1654627965-1461-1-git-send-email-quic_vnivarth@quicinc.com>
+References: <1654627965-1461-1-git-send-email-quic_vnivarth@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+In suspend sequence there is a need to perform stop_rx during suspend
+sequence to prevent any asynchronous data over rx line. However this
+can cause problem to drivers which dont do re-start_rx during set_termios.
 
-[ Upstream commit eca89cf60b040ee2cae693ea72a0364284f3084c ]
+Add new callback start_rx and perform stop_rx only when implementation of
+start_rx is present. Also add call to start_rx in resume sequence so that
+drivers who come across this problem can make use of this framework.
 
-Fixes smatch warning:
-
-drivers/media/i2c/ccs/ccs-core.c:1676 ccs_power_on() warn: 'sensor->ext_clk' from clk_prepare_enable() not released on lines: 1606.
-
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: c9d2325cdb92 ("serial: core: Do stop_rx in suspend path for console if console_suspend is disabled")
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 ---
- drivers/media/i2c/ccs/ccs-core.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/serial/serial_core.c | 9 ++++++---
+ include/linux/serial_core.h      | 1 +
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/media/i2c/ccs/ccs-core.c b/drivers/media/i2c/ccs/ccs-core.c
-index 03e841b8443f..7ae469caf990 100644
---- a/drivers/media/i2c/ccs/ccs-core.c
-+++ b/drivers/media/i2c/ccs/ccs-core.c
-@@ -1602,8 +1602,11 @@ static int ccs_power_on(struct device *dev)
- 			usleep_range(1000, 2000);
- 		} while (--retry);
- 
--		if (!reset)
--			return -EIO;
-+		if (!reset) {
-+			dev_err(dev, "software reset failed\n");
-+			rval = -EIO;
-+			goto out_cci_addr_fail;
-+		}
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 9a85b41..338ebad 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2214,11 +2214,12 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 	/*
+ 	 * Nothing to do if the console is not suspending
+ 	 * except stop_rx to prevent any asynchronous data
+-	 * over RX line. Re-start_rx, when required, is
+-	 * done by set_termios in resume sequence
++	 * over RX line. However ensure that we will be
++	 * able to Re-start_rx later.
+ 	 */
+ 	if (!console_suspend_enabled && uart_console(uport)) {
+-		uport->ops->stop_rx(uport);
++		if (uport->ops->start_rx)
++			uport->ops->stop_rx(uport);
+ 		goto unlock;
  	}
  
- 	if (sensor->hwcfg.i2c_addr_alt) {
+@@ -2310,6 +2311,8 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+ 		if (console_suspend_enabled)
+ 			uart_change_pm(state, UART_PM_STATE_ON);
+ 		uport->ops->set_termios(uport, &termios, NULL);
++		if (!console_suspend_enabled && uport->ops->start_rx)
++			uport->ops->start_rx(uport);
+ 		if (console_suspend_enabled)
+ 			console_start(uport->cons);
+ 	}
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index cbd5070..657a0fc 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -45,6 +45,7 @@ struct uart_ops {
+ 	void		(*unthrottle)(struct uart_port *);
+ 	void		(*send_xchar)(struct uart_port *, char ch);
+ 	void		(*stop_rx)(struct uart_port *);
++	void		(*start_rx)(struct uart_port *);
+ 	void		(*enable_ms)(struct uart_port *);
+ 	void		(*break_ctl)(struct uart_port *, int ctl);
+ 	int		(*startup)(struct uart_port *);
 -- 
-2.35.1
-
-
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
 
