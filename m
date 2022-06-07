@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9360FC2BBEB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03936C2BBEF
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354760AbiFGS4m (ORCPT
+        id S1354824AbiFGS46 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:56:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58806 "EHLO
+        Tue, 7 Jun 2022 14:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352421AbiFGSRJ (ORCPT
+        with ESMTP id S1352392AbiFGSRF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A1E2C104;
-        Tue,  7 Jun 2022 10:52:04 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A803193E8;
+        Tue,  7 Jun 2022 10:51:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1B0D2CE21CD;
-        Tue,  7 Jun 2022 17:52:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 089BDC34115;
-        Tue,  7 Jun 2022 17:52:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAE61616A3;
+        Tue,  7 Jun 2022 17:51:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3A9AC34115;
+        Tue,  7 Jun 2022 17:51:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624321;
-        bh=xJEmcH7BdIMe2MshrxICDjoyR5Wr/24nzN4gOgNNMsA=;
+        s=korg; t=1654624294;
+        bh=QTqEj261x6htSNu8XBT8A/STkvQUoVY2oB/tVFDKhq4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LNiX1X+yZvm7nBZhP03S29uo2DRYNCbm4qpgSvySMpJsVYhsE9OhxBsyylYWVudPa
-         KK0oW60pntKjoz9DG0NUPZc+HgCsQ67KV+b9JWBFWztmatmyv+7oSx9Imy08DJPHZN
-         acoqr5X04Gaw4ZMlAa7R0cYSYrk/yUd/Sc95GL4U=
+        b=vLjfIgVCd0UwGYZtP+Caqefliaoh9VfN8MMGqLBq0NvdBmJq0Av4HQDF2qJ93PHSc
+         wqX4nld6sBl/bKoKGKlDyzFjj3cun5NdqicuxzboschdoCuo6sJFEl4ng4lKPVnfFV
+         3BS/gl8Q3WGdkRYFNRQ/1Rz+1RNzWLRfuCqo366o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 285/667] x86/mm: Cleanup the control_va_addr_alignment() __setup handler
-Date:   Tue,  7 Jun 2022 18:59:10 +0200
-Message-Id: <20220607164943.328825135@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 276/667] drm/rockchip: vop: fix possible null-ptr-deref in vop_bind()
+Date:   Tue,  7 Jun 2022 18:59:01 +0200
+Message-Id: <20220607164943.063837310@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,57 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 1ef64b1e89e6d4018da46e08ffc32779a31160c7 ]
+[ Upstream commit f8c242908ad15bbd604d3bcb54961b7d454c43f8 ]
 
-Clean up control_va_addr_alignment():
+It will cause null-ptr-deref in resource_size(), if platform_get_resource()
+returns NULL, move calling resource_size() after devm_ioremap_resource() that
+will check 'res' to avoid null-ptr-deref.
 
-a. Make '=' required instead of optional (as documented).
-b. Print a warning if an invalid option value is used.
-c. Return 1 from the __setup handler when an invalid option value is
-   used. This prevents the kernel from polluting init's (limited)
-   environment space with the entire string.
-
-Fixes: dfb09f9b7ab0 ("x86, amd: Avoid cache aliasing penalties on AMD family 15h")
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Link: https://lore.kernel.org/r/20220315001045.7680-1-rdunlap@infradead.org
+Fixes: 2048e3286f34 ("drm: rockchip: Add basic drm driver")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220422032854.2995175-1-yangyingliang@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/sys_x86_64.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/sys_x86_64.c b/arch/x86/kernel/sys_x86_64.c
-index 660b78827638..8cc653ffdccd 100644
---- a/arch/x86/kernel/sys_x86_64.c
-+++ b/arch/x86/kernel/sys_x86_64.c
-@@ -68,9 +68,6 @@ static int __init control_va_addr_alignment(char *str)
- 	if (*str == 0)
- 		return 1;
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+index a25b98b7f5bd..8b4287d40379 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+@@ -2116,10 +2116,10 @@ static int vop_bind(struct device *dev, struct device *master, void *data)
+ 	vop_win_init(vop);
  
--	if (*str == '=')
--		str++;
--
- 	if (!strcmp(str, "32"))
- 		va_align.flags = ALIGN_VA_32;
- 	else if (!strcmp(str, "64"))
-@@ -80,11 +77,11 @@ static int __init control_va_addr_alignment(char *str)
- 	else if (!strcmp(str, "on"))
- 		va_align.flags = ALIGN_VA_32 | ALIGN_VA_64;
- 	else
--		return 0;
-+		pr_warn("invalid option value: 'align_va_addr=%s'\n", str);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	vop->len = resource_size(res);
+ 	vop->regs = devm_ioremap_resource(dev, res);
+ 	if (IS_ERR(vop->regs))
+ 		return PTR_ERR(vop->regs);
++	vop->len = resource_size(res);
  
- 	return 1;
- }
--__setup("align_va_addr", control_va_addr_alignment);
-+__setup("align_va_addr=", control_va_addr_alignment);
- 
- SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
- 		unsigned long, prot, unsigned long, flags,
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+ 	if (res) {
 -- 
 2.35.1
 
