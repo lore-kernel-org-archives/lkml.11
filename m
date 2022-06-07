@@ -2,100 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EDB3CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51E95CCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355141AbiFGTLM (ORCPT
+        id S1355105AbiFGTLC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:11:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
+        Tue, 7 Jun 2022 15:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351460AbiFGSXe (ORCPT
+        with ESMTP id S235219AbiFGSXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:23:34 -0400
+        Tue, 7 Jun 2022 14:23:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F5AC9ED5;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D98C9EC0;
         Tue,  7 Jun 2022 10:54:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D95461846;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39E3961840;
         Tue,  7 Jun 2022 17:54:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B820C385A5;
-        Tue,  7 Jun 2022 17:54:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624459;
-        bh=y1kr5Heb/C7va/aR2tlmANm0HN4/JLfZxF885GOasXQ=;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 759CCC36AFE;
+        Tue,  7 Jun 2022 17:54:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624459;
+        bh=b0y7kcZVJHUzbw5GlGaRG2weKRKicsuh66ywd8v6S5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gSD1qpS7jJBvXE4e0fFl7mIGYSX5iXXLT3wJgHfZz75N3VmLJkzKsNP9oMTCgmsw/
-         M3Db/tmZ7Z/5MaTpv53IJP5cmm/cQVMv6Rb9AbD+JIu+VuG64B3Y7P8Hy5V5Xmmo64
-         8jgLiUME68ko0cB+eifvmxlzi3dFDbzBeK/ebTUE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 334/667] sctp: read sk->sk_bound_dev_if once in sctp_rcv()
-Date:   Tue,  7 Jun 2022 18:59:59 +0200
-Message-Id: <20220607164944.784390057@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=CBz0cknnyKL68jO+jmyHwTwSUl+UVUtmjCivpY2zHW4l5wMMj2lZePTFgiS5bb2Ya
+         TSwYYqsNs9Wyc45UBs7NiBCTrkQer1C1uM48AsVMwLi+6z3+qPW71pOcD7axIpjmH9
+         HDdzgGBNkshWByqQStErHtSpjwS7vc/1BVOIKzinx7fn9McvPfiYJP+wuZ5IQxdY/R
+         c4prgWdL6WBP003+stsxrp4GFH6oFhhS5QdoLVxf7+2+l72dfqk2WoojumefvEHQtI
+         e1NgT/5ZlPRYknDpBvQz1e/mhjaLZkVZ5u79R/XE3BiHjatYiQQqk22AFERvGLFRjC
+         s2gDTLz9A0l7g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zheng Bin <zhengbin13@huawei.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, w.d.hubbs@gmail.com,
+        chris@the-brannons.com, kirk@reisers.ca,
+        samuel.thibault@ens-lyon.org, salah.triki@gmail.com,
+        trix@redhat.com, speakup@linux-speakup.org
+Subject: [PATCH AUTOSEL 5.17 29/60] accessiblity: speakup: Add missing misc_deregister in softsynth_probe
+Date:   Tue,  7 Jun 2022 13:52:26 -0400
+Message-Id: <20220607175259.478835-29-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Zheng Bin <zhengbin13@huawei.com>
 
-[ Upstream commit a20ea298071f46effa3aaf965bf9bb34c901db3f ]
+[ Upstream commit 106101303eda8f93c65158e5d72b2cc6088ed034 ]
 
-sctp_rcv() reads sk->sk_bound_dev_if twice while the socket
-is not locked. Another cpu could change this field under us.
+softsynth_probe misses a call misc_deregister() in an error path, this
+patch fixes that.
 
-Fixes: 0fd9a65a76e8 ("[SCTP] Support SO_BINDTODEVICE socket option on incoming packets.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Neil Horman <nhorman@tuxdriver.com>
-Cc: Vlad Yasevich <vyasevich@gmail.com>
-Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+Link: https://lore.kernel.org/r/20220511032937.2736738-1-zhengbin13@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/input.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/accessibility/speakup/speakup_soft.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/sctp/input.c b/net/sctp/input.c
-index 1f1786021d9c..d16b3885dccc 100644
---- a/net/sctp/input.c
-+++ b/net/sctp/input.c
-@@ -92,6 +92,7 @@ int sctp_rcv(struct sk_buff *skb)
- 	struct sctp_chunk *chunk;
- 	union sctp_addr src;
- 	union sctp_addr dest;
-+	int bound_dev_if;
- 	int family;
- 	struct sctp_af *af;
- 	struct net *net = dev_net(skb->dev);
-@@ -169,7 +170,8 @@ int sctp_rcv(struct sk_buff *skb)
- 	 * If a frame arrives on an interface and the receiving socket is
- 	 * bound to another interface, via SO_BINDTODEVICE, treat it as OOTB
- 	 */
--	if (sk->sk_bound_dev_if && (sk->sk_bound_dev_if != af->skb_iif(skb))) {
-+	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
-+	if (bound_dev_if && (bound_dev_if != af->skb_iif(skb))) {
- 		if (transport) {
- 			sctp_transport_put(transport);
- 			asoc = NULL;
+diff --git a/drivers/accessibility/speakup/speakup_soft.c b/drivers/accessibility/speakup/speakup_soft.c
+index 19824e7006fe..786dc5d080f3 100644
+--- a/drivers/accessibility/speakup/speakup_soft.c
++++ b/drivers/accessibility/speakup/speakup_soft.c
+@@ -397,6 +397,7 @@ static int softsynth_probe(struct spk_synth *synth)
+ 	synthu_device.name = "softsynthu";
+ 	synthu_device.fops = &softsynthu_fops;
+ 	if (misc_register(&synthu_device)) {
++		misc_deregister(&synth_device);
+ 		pr_warn("Couldn't initialize miscdevice /dev/softsynthu.\n");
+ 		return -ENODEV;
+ 	}
 -- 
 2.35.1
-
-
 
