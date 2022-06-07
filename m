@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA722C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9886CCA47E
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349600AbiFGSKE (ORCPT
+        id S1349951AbiFGSKK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:10:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40396 "EHLO
+        Tue, 7 Jun 2022 14:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349130AbiFGRud (ORCPT
+        with ESMTP id S1349131AbiFGRud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:50:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C070D13A2F6;
-        Tue,  7 Jun 2022 10:37:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4FA13AF13;
+        Tue,  7 Jun 2022 10:37:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5404D6159B;
-        Tue,  7 Jun 2022 17:37:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 627D2C36B00;
-        Tue,  7 Jun 2022 17:37:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C15BEB820C3;
+        Tue,  7 Jun 2022 17:37:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 290CBC34119;
+        Tue,  7 Jun 2022 17:37:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623466;
-        bh=RzwuoeeLLhPbeubOjuzNqbd0UIAKCDYDhE8fC1t4Wzg=;
+        s=korg; t=1654623469;
+        bh=OqZ1fM3XT7xiCBk1pwig0hnNmi/cqv4tqNiVLsVyCeY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eUvOWf+l41d4WfkBEbW6yXPnbvNudqAHNTNWa/5RCeeBepetH1JazrB/lb31z7Em0
-         vF0qtdS8QC88/NQ06OCCM6CUpkz2yn9Yo3NhETQ3RE+Vns/1KBeekkEPcqZqllvrmT
-         E5sMg38GQmUgUV9sa6xjynKh34WLi7zkwrMwfbcc=
+        b=imLsQ7q6b/R+FiHpbDkJpe3RObs7lMMBOcLXmWRc1egr3d4QXfky/ZNsJQb4GInR3
+         ZdFC3o154oWIgwmMUGycHCQnPdePPOYxsQfxBUiFZYQkYiqkaZ0DnfLM7I5U3q+qYp
+         x673Og6/80RYJbc77UOPJ1EOizN6huHkZYlMgQFQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 429/452] net: ipa: fix page free in ipa_endpoint_replenish_one()
-Date:   Tue,  7 Jun 2022 19:04:46 +0200
-Message-Id: <20220607164921.337907978@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jeffrey Mitchell <jeffrey.mitchell@starlab.io>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Brian Foster <bfoster@redhat.com>,
+        Amir Goldstein <amir73il@gmail.com>
+Subject: [PATCH 5.10 430/452] xfs: set inode size after creating symlink
+Date:   Tue,  7 Jun 2022 19:04:47 +0200
+Message-Id: <20220607164921.367417409@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,38 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Jeffrey Mitchell <jeffrey.mitchell@starlab.io>
 
-commit 70132763d5d2e94cd185e3aa92ac6a3ba89068fa upstream.
+commit 8aa921a95335d0a8c8e2be35a44467e7c91ec3e4 upstream.
 
-Currently the (possibly compound) pages used for receive buffers are
-freed using __free_pages().  But according to this comment above the
-definition of that function, that's wrong:
-    If you want to use the page's reference count to decide
-    when to free the allocation, you should allocate a compound
-    page, and use put_page() instead of __free_pages().
+When XFS creates a new symlink, it writes its size to disk but not to the
+VFS inode. This causes i_size_read() to return 0 for that symlink until
+it is re-read from disk, for example when the system is rebooted.
 
-Convert the call to __free_pages() in ipa_endpoint_replenish_one()
-to use put_page() instead.
+I found this inconsistency while protecting directories with eCryptFS.
+The command "stat path/to/symlink/in/ecryptfs" will report "Size: 0" if
+the symlink was created after the last reboot on an XFS root.
 
-Fixes: 6a606b90153b8 ("net: ipa: allocate transaction in replenish loop")
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Call i_size_write() in xfs_symlink()
+
+Signed-off-by: Jeffrey Mitchell <jeffrey.mitchell@starlab.io>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Brian Foster <bfoster@redhat.com>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipa/ipa_endpoint.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/xfs/xfs_symlink.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -884,7 +884,7 @@ static int ipa_endpoint_replenish_one(st
- err_trans_free:
- 	gsi_trans_free(trans);
- err_free_pages:
--	__free_pages(page, get_order(IPA_RX_BUFFER_SIZE));
-+	put_page(page);
+--- a/fs/xfs/xfs_symlink.c
++++ b/fs/xfs/xfs_symlink.c
+@@ -300,6 +300,7 @@ xfs_symlink(
+ 		}
+ 		ASSERT(pathlen == 0);
+ 	}
++	i_size_write(VFS_I(ip), ip->i_d.di_size);
  
- 	return -ENOMEM;
- }
+ 	/*
+ 	 * Create the directory entry for the symlink.
 
 
