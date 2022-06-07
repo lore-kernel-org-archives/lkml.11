@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 759C0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:49:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8E04C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346384AbiFGSt3 (ORCPT
+        id S1353685AbiFGStn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41774 "EHLO
+        Tue, 7 Jun 2022 14:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352595AbiFGSRV (ORCPT
+        with ESMTP id S1352644AbiFGSRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7906E13A2CA;
-        Tue,  7 Jun 2022 10:52:25 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9214E13C088;
+        Tue,  7 Jun 2022 10:52:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 307AC617AA;
-        Tue,  7 Jun 2022 17:52:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35748C34115;
-        Tue,  7 Jun 2022 17:52:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C228617AA;
+        Tue,  7 Jun 2022 17:52:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 149E1C385A5;
+        Tue,  7 Jun 2022 17:52:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624343;
-        bh=QNxyg8a/EeMSToOh3j6ZgqqKkIM/59Fix+XBI1emb1w=;
+        s=k20201202; t=1654624351;
+        bh=h9I8z9yfCsj9WKik3+U8sz5LvflAmBBSL/fxUrdruoU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IvzUvjr46HVsVFEtOIPpBDPMenYncLCA8TQHAMojzxyr2LXj53OJZzIHyUWT6UtQj
-         3+e1hDO4HT8ddkgQNd6kRWp3SVA8TurAOGW3gx6eSsbWXpflUG6fdAXA359Ci/GlFO
-         9b/FU6FT6nYA7SWrXNzd9h3CvgLBKz2KyF2XtrZyY4tDoiEw2cedaPE7oPqPXjkHNg
-         72v2Rv8fPjqXYcL6qp+1bpZqfqtM/XSLF4HT303bt1RA+OuZNFC8XLap413olh3rde
-         P03E8OUzVHkCed31uU10QGtI/ZmjGl3H/rzQvIRQZtjwLYGj2w1P0FUt9VlPGGjxoH
-         A2M0kvGDMd92A==
+        b=YjiKO2q2e2G+ErzK/uIwUNkOjTaL/bWPJ9CY0J7fiZ1UN+3xlll1ip0Owdy075rCx
+         ZXpZth8k+AQEWLrrUbCo6uxMxtt2Zu/S6uITqwmYumZSKkSOH3TugdGXjjQplX1ab0
+         ULyM+b1KFIjJykAqAA9E38KCXk5wT5IbX5N7ScUFBmAHXIo+Hr6ghEHyicTJ8gxL2r
+         ZHEf94FIMxHy66dEYXUnTpJEA5iXSeZg6AzQEoodJypCsrJRUH32tSFA1GTwB0Rc+r
+         Mlt0h5/euyEYBJW726xj6fB4Np9B/bGFP+op5T6Z+BPVlQoueUOQp1MU4wnbKjY/CD
+         4JSE8lp+60GUw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, keescook@chromium.org
-Subject: [PATCH AUTOSEL 5.18 54/68] x86/cpu: Elide KCSAN for cpu_has() and friends
-Date:   Tue,  7 Jun 2022 13:48:20 -0400
-Message-Id: <20220607174846.477972-54-sashal@kernel.org>
+Cc:     Namjae Jeon <linkinjeon@kernel.org>,
+        Gerald Lee <sundaywind2004@gmail.com>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
+        Sasha Levin <sashal@kernel.org>, ntfs3@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.18 59/68] fs/ntfs3: Fix invalid free in log_replay
+Date:   Tue,  7 Jun 2022 13:48:25 -0400
+Message-Id: <20220607174846.477972-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
 References: <20220607174846.477972-1-sashal@kernel.org>
@@ -54,48 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit a6a5eb269f6f3a2fe392f725a8d9052190c731e2 ]
+[ Upstream commit f26967b9f7a830e228bb13fb41bd516ddd9d789d ]
 
-As x86 uses the <asm-generic/bitops/instrumented-*.h> headers, the
-regular forms of all bitops are instrumented with explicit calls to
-KASAN and KCSAN checks. As these are explicit calls, these are not
-suppressed by the noinstr function attribute.
+log_read_rst() returns ENOMEM error when there is not enough memory.
+In this case, if info is returned without initialization,
+it attempts to kfree the uninitialized info->r_page pointer. This patch
+moves the memset initialization code to before log_read_rst() is called.
 
-This can result in calls to those check functions in noinstr code, which
-objtool warns about:
-
-vmlinux.o: warning: objtool: enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
-vmlinux.o: warning: objtool: syscall_enter_from_user_mode+0x28: call to __kcsan_check_access() leaves .noinstr.text section
-vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare+0x24: call to __kcsan_check_access() leaves .noinstr.text section
-vmlinux.o: warning: objtool: irqentry_enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
-
-Prevent this by using the arch_*() bitops, which are the underlying
-bitops without explciit instrumentation.
-
-[null: Changelog]
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220502111216.290518605@infradead.org
+Reported-by: Gerald Lee <sundaywind2004@gmail.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/cpufeature.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ntfs3/fslog.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
-index 1261842d006c..49a3b122279e 100644
---- a/arch/x86/include/asm/cpufeature.h
-+++ b/arch/x86/include/asm/cpufeature.h
-@@ -51,7 +51,7 @@ extern const char * const x86_power_flags[32];
- extern const char * const x86_bug_flags[NBUGINTS*32];
+diff --git a/fs/ntfs3/fslog.c b/fs/ntfs3/fslog.c
+index 06492f088d60..fc36c53b865a 100644
+--- a/fs/ntfs3/fslog.c
++++ b/fs/ntfs3/fslog.c
+@@ -1185,8 +1185,6 @@ static int log_read_rst(struct ntfs_log *log, u32 l_size, bool first,
+ 	if (!r_page)
+ 		return -ENOMEM;
  
- #define test_cpu_cap(c, bit)						\
--	 test_bit(bit, (unsigned long *)((c)->x86_capability))
-+	 arch_test_bit(bit, (unsigned long *)((c)->x86_capability))
+-	memset(info, 0, sizeof(struct restart_info));
+-
+ 	/* Determine which restart area we are looking for. */
+ 	if (first) {
+ 		vbo = 0;
+@@ -3791,10 +3789,11 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
+ 	if (!log)
+ 		return -ENOMEM;
  
- /*
-  * There are 32 bits/features in each mask word.  The high bits
++	memset(&rst_info, 0, sizeof(struct restart_info));
++
+ 	log->ni = ni;
+ 	log->l_size = l_size;
+ 	log->one_page_buf = kmalloc(page_size, GFP_NOFS);
+-
+ 	if (!log->one_page_buf) {
+ 		err = -ENOMEM;
+ 		goto out;
+@@ -3842,6 +3841,7 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
+ 	if (rst_info.vbo)
+ 		goto check_restart_area;
+ 
++	memset(&rst_info2, 0, sizeof(struct restart_info));
+ 	err = log_read_rst(log, l_size, false, &rst_info2);
+ 
+ 	/* Determine which restart area to use. */
 -- 
 2.35.1
 
