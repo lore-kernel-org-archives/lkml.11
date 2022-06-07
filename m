@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E61C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDBEAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359164AbiFGWhw (ORCPT
+        id S1356769AbiFGWiB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:37:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45238 "EHLO
+        Tue, 7 Jun 2022 18:38:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378370AbiFGVYq (ORCPT
+        with ESMTP id S1378396AbiFGVY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:24:46 -0400
+        Tue, 7 Jun 2022 17:24:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3DE2227CE9;
-        Tue,  7 Jun 2022 12:01:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 355DE14FC9E;
+        Tue,  7 Jun 2022 12:01:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED95EB8220B;
-        Tue,  7 Jun 2022 19:01:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39228C385A2;
-        Tue,  7 Jun 2022 19:01:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A58BBB82391;
+        Tue,  7 Jun 2022 19:01:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0687C385A2;
+        Tue,  7 Jun 2022 19:01:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628467;
-        bh=pqlXVgHVFB/vABy1/FrC+MYipiwnNyoyE63ieWU5eKQ=;
+        s=korg; t=1654628470;
+        bh=d8rn+GMSsyVcqcclXF/X1Gus3C71I/FtkotnJluWPxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s6/2JP8GbIkRZ2atXI+8lo5zELUqJFmUveuZZ7nDPZKo0e0MDGlPkU8WQJ/VIJgPv
-         qVLHZ6e8SGU9KM90PJZpRCltRqOY9jufbi0wm3lPvboQxy4r7Qta/xISk666svTr+f
-         ApeeNRQSopWgyKMflXg0SdhZNhFsQd+UAQE+CGwE=
+        b=b+akAB8sdI3UtKyeT0TVwfVIwdROm666F3ULYcg3yqQVVfu+cMn5Du4cXO1ErOYrg
+         P+BwIu89PRbjN3aBlzGlPPyCzlzu9O3I2vqm3MvaiZL2wzA2iLK76ypklAoKom2/AA
+         5DXbG0Zxs3XcHMYiSx1ZHnCDcKEfR6qpiMz01Fbs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,9 +38,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 341/879] media: hantro: Implement support for encoder commands
-Date:   Tue,  7 Jun 2022 18:57:39 +0200
-Message-Id: <20220607165012.757373995@linuxfoundation.org>
+Subject: [PATCH 5.18 342/879] media: hantro: Empty encoder capture buffers by default
+Date:   Tue,  7 Jun 2022 18:57:40 +0200
+Message-Id: <20220607165012.787189357@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -54,170 +54,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit daf3999c12dcef14151710052fca9adfbc3967bc ]
+[ Upstream commit 309373a3571ef7175bd9da0c9b13476a718e8478 ]
 
-The V4L2 stateful encoder uAPI specification requires that drivers
-support the ENCODER_CMD ioctl to allow draining of buffers. This
-however was not implemented, and causes issues for some userspace
-applications.
+The payload size for encoder capture buffers is set by the driver upon
+finishing encoding each frame, based on the encoded length returned from
+hardware, and whatever header and padding length used. Setting a
+non-zero default serves no real purpose, and also causes issues if the
+capture buffer is returned to userspace unused, confusing the
+application.
 
-Implement support for the ENCODER_CMD ioctl using v4l2-mem2mem helpers.
-This is entirely based on existing code found in the vicodec test
-driver.
+Instead, always set the payload size to 0 for encoder capture buffers
+when preparing them.
 
 Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
+Fixes: 082aaecff35f ("media: hantro: Fix .buf_prepare")
 Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
 Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_drv.c  | 17 ++++++-
- drivers/staging/media/hantro/hantro_v4l2.c | 59 ++++++++++++++++++++++
- 2 files changed, 74 insertions(+), 2 deletions(-)
+ drivers/staging/media/hantro/hantro_v4l2.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
-index dc768884cb79..bd7d11032c94 100644
---- a/drivers/staging/media/hantro/hantro_drv.c
-+++ b/drivers/staging/media/hantro/hantro_drv.c
-@@ -56,6 +56,10 @@ dma_addr_t hantro_get_ref(struct hantro_ctx *ctx, u64 ts)
- 	return hantro_get_dec_buf_addr(ctx, buf);
- }
- 
-+static const struct v4l2_event hantro_eos_event = {
-+	.type = V4L2_EVENT_EOS
-+};
-+
- static void hantro_job_finish_no_pm(struct hantro_dev *vpu,
- 				    struct hantro_ctx *ctx,
- 				    enum vb2_buffer_state result)
-@@ -73,6 +77,12 @@ static void hantro_job_finish_no_pm(struct hantro_dev *vpu,
- 	src->sequence = ctx->sequence_out++;
- 	dst->sequence = ctx->sequence_cap++;
- 
-+	if (v4l2_m2m_is_last_draining_src_buf(ctx->fh.m2m_ctx, src)) {
-+		dst->flags |= V4L2_BUF_FLAG_LAST;
-+		v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
-+		v4l2_m2m_mark_stopped(ctx->fh.m2m_ctx);
-+	}
-+
- 	v4l2_m2m_buf_done_and_job_finish(ctx->dev->m2m_dev, ctx->fh.m2m_ctx,
- 					 result);
- }
-@@ -809,10 +819,13 @@ static int hantro_add_func(struct hantro_dev *vpu, unsigned int funcid)
- 	snprintf(vfd->name, sizeof(vfd->name), "%s-%s", match->compatible,
- 		 funcid == MEDIA_ENT_F_PROC_VIDEO_ENCODER ? "enc" : "dec");
- 
--	if (funcid == MEDIA_ENT_F_PROC_VIDEO_ENCODER)
-+	if (funcid == MEDIA_ENT_F_PROC_VIDEO_ENCODER) {
- 		vpu->encoder = func;
--	else
-+	} else {
- 		vpu->decoder = func;
-+		v4l2_disable_ioctl(vfd, VIDIOC_TRY_ENCODER_CMD);
-+		v4l2_disable_ioctl(vfd, VIDIOC_ENCODER_CMD);
-+	}
- 
- 	video_set_drvdata(vfd, vpu);
- 
 diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
-index 67148ba346f5..8b8276ff7b28 100644
+index 8b8276ff7b28..71a6279750bf 100644
 --- a/drivers/staging/media/hantro/hantro_v4l2.c
 +++ b/drivers/staging/media/hantro/hantro_v4l2.c
-@@ -628,6 +628,38 @@ static int vidioc_s_selection(struct file *file, void *priv,
+@@ -768,8 +768,12 @@ static int hantro_buf_prepare(struct vb2_buffer *vb)
+ 	 * (for OUTPUT buffers, if userspace passes 0 bytesused, v4l2-core sets
+ 	 * it to buffer length).
+ 	 */
+-	if (V4L2_TYPE_IS_CAPTURE(vq->type))
+-		vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
++	if (V4L2_TYPE_IS_CAPTURE(vq->type)) {
++		if (ctx->is_encoder)
++			vb2_set_plane_payload(vb, 0, 0);
++		else
++			vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
++	}
+ 
  	return 0;
  }
- 
-+static const struct v4l2_event hantro_eos_event = {
-+	.type = V4L2_EVENT_EOS
-+};
-+
-+static int vidioc_encoder_cmd(struct file *file, void *priv,
-+			      struct v4l2_encoder_cmd *ec)
-+{
-+	struct hantro_ctx *ctx = fh_to_ctx(priv);
-+	int ret;
-+
-+	ret = v4l2_m2m_ioctl_try_encoder_cmd(file, priv, ec);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (!vb2_is_streaming(v4l2_m2m_get_src_vq(ctx->fh.m2m_ctx)) ||
-+	    !vb2_is_streaming(v4l2_m2m_get_dst_vq(ctx->fh.m2m_ctx)))
-+		return 0;
-+
-+	ret = v4l2_m2m_ioctl_encoder_cmd(file, priv, ec);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ec->cmd == V4L2_ENC_CMD_STOP &&
-+	    v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
-+		v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
-+
-+	if (ec->cmd == V4L2_ENC_CMD_START)
-+		vb2_clear_last_buffer_dequeued(&ctx->fh.m2m_ctx->cap_q_ctx.q);
-+
-+	return 0;
-+}
-+
- const struct v4l2_ioctl_ops hantro_ioctl_ops = {
- 	.vidioc_querycap = vidioc_querycap,
- 	.vidioc_enum_framesizes = vidioc_enum_framesizes,
-@@ -657,6 +689,9 @@ const struct v4l2_ioctl_ops hantro_ioctl_ops = {
- 
- 	.vidioc_g_selection = vidioc_g_selection,
- 	.vidioc_s_selection = vidioc_s_selection,
-+
-+	.vidioc_try_encoder_cmd = v4l2_m2m_ioctl_try_encoder_cmd,
-+	.vidioc_encoder_cmd = vidioc_encoder_cmd,
- };
- 
- static int
-@@ -744,6 +779,22 @@ static void hantro_buf_queue(struct vb2_buffer *vb)
- 	struct hantro_ctx *ctx = vb2_get_drv_priv(vb->vb2_queue);
- 	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
- 
-+	if (V4L2_TYPE_IS_CAPTURE(vb->vb2_queue->type) &&
-+	    vb2_is_streaming(vb->vb2_queue) &&
-+	    v4l2_m2m_dst_buf_is_last(ctx->fh.m2m_ctx)) {
-+		unsigned int i;
-+
-+		for (i = 0; i < vb->num_planes; i++)
-+			vb2_set_plane_payload(vb, i, 0);
-+
-+		vbuf->field = V4L2_FIELD_NONE;
-+		vbuf->sequence = ctx->sequence_cap++;
-+
-+		v4l2_m2m_last_buffer_done(ctx->fh.m2m_ctx, vbuf);
-+		v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
-+		return;
-+	}
-+
- 	v4l2_m2m_buf_queue(ctx->fh.m2m_ctx, vbuf);
- }
- 
-@@ -759,6 +810,8 @@ static int hantro_start_streaming(struct vb2_queue *q, unsigned int count)
- 	struct hantro_ctx *ctx = vb2_get_drv_priv(q);
- 	int ret = 0;
- 
-+	v4l2_m2m_update_start_streaming_state(ctx->fh.m2m_ctx, q);
-+
- 	if (V4L2_TYPE_IS_OUTPUT(q->type))
- 		ctx->sequence_out = 0;
- 	else
-@@ -831,6 +884,12 @@ static void hantro_stop_streaming(struct vb2_queue *q)
- 		hantro_return_bufs(q, v4l2_m2m_src_buf_remove);
- 	else
- 		hantro_return_bufs(q, v4l2_m2m_dst_buf_remove);
-+
-+	v4l2_m2m_update_stop_streaming_state(ctx->fh.m2m_ctx, q);
-+
-+	if (V4L2_TYPE_IS_OUTPUT(q->type) &&
-+	    v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
-+		v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
- }
- 
- static void hantro_buf_request_complete(struct vb2_buffer *vb)
 -- 
 2.35.1
 
