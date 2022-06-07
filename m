@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0951CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:31:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E408FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351373AbiFGSaE (ORCPT
+        id S1351580AbiFGSaK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32902 "EHLO
+        Tue, 7 Jun 2022 14:30:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351954AbiFGSC1 (ORCPT
+        with ESMTP id S1350446AbiFGSBN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15F9131F30;
-        Tue,  7 Jun 2022 10:46:28 -0700 (PDT)
+        Tue, 7 Jun 2022 14:01:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F04612C949;
+        Tue,  7 Jun 2022 10:43:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DBA1615B8;
-        Tue,  7 Jun 2022 17:46:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DA05C385A5;
-        Tue,  7 Jun 2022 17:46:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6C7BB822A6;
+        Tue,  7 Jun 2022 17:42:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46A55C36AFF;
+        Tue,  7 Jun 2022 17:42:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623987;
-        bh=FTiI156Bl/R9a/IH+dywYgcf8JKm5MuzE4oQ6KL5C9g=;
+        s=korg; t=1654623769;
+        bh=cmZKyuLkuhoQx8U8SjA9Ah7lmHkMh8mv8BlTxKgphtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nnEZvzA1UOS7O1Xz5UcODoKaS6m1w8V1cIAC/VBC4YUVEgitv8viTlYOPGBQEEqae
-         o5hDP/OoKZsv6SElynLUc6/QTfsYgmAPh+e/TupTs1kFKiE3DrGQIFYyMTVwBLnFtd
-         w32C7uSrax6EFNpwx3FK/qxKDdk/ZQ6tfCWpVvJ8=
+        b=tl3556mxccu7HNFjeAY4Rexgne7ToFUSOxqbPZbVGuaiYS4M5b4IO2L9ydyreCC6H
+         JP5Ye2mg8rgMbNWvD4zMs/cL9y/49HPaJQ3prEzd5WJGQbccieNBO18BAm27Ud+m5x
+         cct/MfYcs1gF/7uXe+H079ZRohZkCvfI5pQk10NA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-        qianfan <qianfanguijin@163.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 163/667] fat: add ratelimit to fat*_ent_bread()
-Date:   Tue,  7 Jun 2022 18:57:08 +0200
-Message-Id: <20220607164939.702842803@linuxfoundation.org>
+Subject: [PATCH 5.15 083/667] scsi: lpfc: Fix resource leak in lpfc_sli4_send_seq_to_ulp()
+Date:   Tue,  7 Jun 2022 18:55:48 +0200
+Message-Id: <20220607164937.311411782@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,48 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 183c3237c928109d2008c0456dff508baf692b20 ]
+[ Upstream commit 646db1a560f44236b7278b822ca99a1d3b6ea72c ]
 
-fat*_ent_bread() can be the cause of too many report on I/O error path.
-So use fat_msg_ratelimit() instead.
+If no handler is found in lpfc_complete_unsol_iocb() to match the rctl of a
+received frame, the frame is dropped and resources are leaked.
 
-Link: https://lkml.kernel.org/r/87bkxogfeq.fsf@mail.parknet.co.jp
-Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
-Reported-by: qianfan <qianfanguijin@163.com>
-Tested-by: qianfan <qianfanguijin@163.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fix by returning resources when discarding an unhandled frame type.  Update
+lpfc_fc_frame_check() handling of NOP basic link service.
+
+Link: https://lore.kernel.org/r/20220426181419.9154-1-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fat/fatent.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/scsi/lpfc/lpfc_sli.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/fs/fat/fatent.c b/fs/fat/fatent.c
-index 978ac6751aeb..1db348f8f887 100644
---- a/fs/fat/fatent.c
-+++ b/fs/fat/fatent.c
-@@ -94,7 +94,8 @@ static int fat12_ent_bread(struct super_block *sb, struct fat_entry *fatent,
- err_brelse:
- 	brelse(bhs[0]);
- err:
--	fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)", (llu)blocknr);
-+	fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
-+			  (llu)blocknr);
- 	return -EIO;
- }
- 
-@@ -107,8 +108,8 @@ static int fat_ent_bread(struct super_block *sb, struct fat_entry *fatent,
- 	fatent->fat_inode = MSDOS_SB(sb)->fat_inode;
- 	fatent->bhs[0] = sb_bread(sb, blocknr);
- 	if (!fatent->bhs[0]) {
--		fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
--		       (llu)blocknr);
-+		fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
-+				  (llu)blocknr);
- 		return -EIO;
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index 68d8e55c1205..d8d26cde70b6 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -18455,7 +18455,6 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
+ 	case FC_RCTL_ELS_REP:	/* extended link services reply */
+ 	case FC_RCTL_ELS4_REQ:	/* FC-4 ELS request */
+ 	case FC_RCTL_ELS4_REP:	/* FC-4 ELS reply */
+-	case FC_RCTL_BA_NOP:  	/* basic link service NOP */
+ 	case FC_RCTL_BA_ABTS: 	/* basic link service abort */
+ 	case FC_RCTL_BA_RMC: 	/* remove connection */
+ 	case FC_RCTL_BA_ACC:	/* basic accept */
+@@ -18476,6 +18475,7 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
+ 		fc_vft_hdr = (struct fc_vft_header *)fc_hdr;
+ 		fc_hdr = &((struct fc_frame_header *)fc_vft_hdr)[1];
+ 		return lpfc_fc_frame_check(phba, fc_hdr);
++	case FC_RCTL_BA_NOP:	/* basic link service NOP */
+ 	default:
+ 		goto drop;
  	}
- 	fatent->nr_bhs = 1;
+@@ -19288,12 +19288,14 @@ lpfc_sli4_send_seq_to_ulp(struct lpfc_vport *vport,
+ 	if (!lpfc_complete_unsol_iocb(phba,
+ 				      phba->sli4_hba.els_wq->pring,
+ 				      iocbq, fc_hdr->fh_r_ctl,
+-				      fc_hdr->fh_type))
++				      fc_hdr->fh_type)) {
+ 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+ 				"2540 Ring %d handler: unexpected Rctl "
+ 				"x%x Type x%x received\n",
+ 				LPFC_ELS_RING,
+ 				fc_hdr->fh_r_ctl, fc_hdr->fh_type);
++		lpfc_in_buf_free(phba, &seq_dmabuf->dbuf);
++	}
+ 
+ 	/* Free iocb created in lpfc_prep_seq */
+ 	list_for_each_entry_safe(curr_iocb, next_iocb,
 -- 
 2.35.1
 
