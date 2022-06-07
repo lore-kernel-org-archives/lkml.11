@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BED0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:12:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 556A8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:12:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239810AbiFGSME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48040 "EHLO
+        id S1349724AbiFGSMR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:12:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350098AbiFGRvw (ORCPT
+        with ESMTP id S1349846AbiFGRvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F8A1406D6;
-        Tue,  7 Jun 2022 10:39:29 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6693325C60;
+        Tue,  7 Jun 2022 10:39:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E20160BC6;
-        Tue,  7 Jun 2022 17:39:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33216C385A5;
-        Tue,  7 Jun 2022 17:39:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A034BB82285;
+        Tue,  7 Jun 2022 17:33:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F167C385A5;
+        Tue,  7 Jun 2022 17:33:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623568;
-        bh=diPTJAlAYIKdCCWA3zqqCctkFNXEeBxcidPHNv1YQRA=;
+        s=korg; t=1654623211;
+        bh=q2WfSuGehAysC4oWHH5FcLye7l4l9jfwd2iIF05nmrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BeCICZ4ED7hMZ3wGSlrq7uMMQ4uvR8mSjXn5h8sFYXZLZL+gRvqyyU53n0YZFmpfh
-         c4DbLNexJwytxGCMnfWjQMGueS2Yw5w4guww746Ir4LVSC+rK6RLlU4/PQovpEOkt2
-         9T2URmUlU2FltrASVMbtxx9XKr1O+EqL8a67cozI=
+        b=U9pEyBJZjM6OhAi9GrlApsOHEARr0ne+wA1JnVHEhuFDlIgnx4EnERg+ePZ4q3Er6
+         cpoyzRqsIrRl05i/HM6xmfsp16Z1//pdbg/pJzA7RHVNLBMX4JrOEwO08plJQ4c2nC
+         X+SF9ZP7VpUhza5y35WAdRVkn5bHUDlJLh1iXkP0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+6912c9592caca7ca0e7d@syzkaller.appspotmail.com,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 013/667] ALSA: usb-audio: Cancel pending work at closing a MIDI substream
-Date:   Tue,  7 Jun 2022 18:54:38 +0200
-Message-Id: <20220607164935.187446946@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 294/452] powerpc/8xx: export cpm_setbrg for modules
+Date:   Tue,  7 Jun 2022 19:02:31 +0200
+Message-Id: <20220607164917.315546257@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
+In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
+References: <20220607164908.521895282@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 0125de38122f0f66bf61336158d12a1aabfe6425 upstream.
+[ Upstream commit 22f8e625ebabd7ed3185b82b44b4f12fc0402113 ]
 
-At closing a USB MIDI output substream, there might be still a pending
-work, which would eventually access the rawmidi runtime object that is
-being released.  For fixing the race, make sure to cancel the pending
-work at closing.
+Fix missing export for a loadable module build:
 
-Reported-by: syzbot+6912c9592caca7ca0e7d@syzkaller.appspotmail.com
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/000000000000e7e75005dfd07cf6@google.com
-Link: https://lore.kernel.org/r/20220525131203.11299-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ERROR: modpost: "cpm_setbrg" [drivers/tty/serial/cpm_uart/cpm_uart.ko] undefined!
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+[chleroy: Changed Fixes: tag]
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20210122010819.30986-1-rdunlap@infradead.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/midi.c |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/powerpc/platforms/8xx/cpm1.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/usb/midi.c
-+++ b/sound/usb/midi.c
-@@ -1145,6 +1145,9 @@ static int snd_usbmidi_output_open(struc
- 
- static int snd_usbmidi_output_close(struct snd_rawmidi_substream *substream)
- {
-+	struct usbmidi_out_port *port = substream->runtime->private_data;
-+
-+	cancel_work_sync(&port->ep->work);
- 	return substream_open(substream, 0, 0);
+diff --git a/arch/powerpc/platforms/8xx/cpm1.c b/arch/powerpc/platforms/8xx/cpm1.c
+index c58b6f1c40e3..3ef5e9fd3a9b 100644
+--- a/arch/powerpc/platforms/8xx/cpm1.c
++++ b/arch/powerpc/platforms/8xx/cpm1.c
+@@ -280,6 +280,7 @@ cpm_setbrg(uint brg, uint rate)
+ 		out_be32(bp, (((BRG_UART_CLK_DIV16 / rate) - 1) << 1) |
+ 			      CPM_BRG_EN | CPM_BRG_DIV16);
  }
++EXPORT_SYMBOL(cpm_setbrg);
  
+ struct cpm_ioport16 {
+ 	__be16 dir, par, odr_sor, dat, intr;
+-- 
+2.35.1
+
 
 
