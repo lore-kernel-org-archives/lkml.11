@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A00FCCA497
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99642CCA493
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354532AbiFGSrG (ORCPT
+        id S1354248AbiFGSqu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:47:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
+        Tue, 7 Jun 2022 14:46:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352187AbiFGSQ5 (ORCPT
+        with ESMTP id S1352134AbiFGSQz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:57 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B996915717;
-        Tue,  7 Jun 2022 10:51:01 -0700 (PDT)
+        Tue, 7 Jun 2022 14:16:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADC1DFE9;
+        Tue,  7 Jun 2022 10:50:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0A9CACE21CD;
-        Tue,  7 Jun 2022 17:51:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D51E3C3411C;
-        Tue,  7 Jun 2022 17:50:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F950B8233D;
+        Tue,  7 Jun 2022 17:50:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEB08C385A5;
+        Tue,  7 Jun 2022 17:50:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624258;
-        bh=JsZE5AxHTbW00VZnJgu/U+JfgGO6KlUPjLQsTZoemWU=;
+        s=korg; t=1654624236;
+        bh=DxFszKx2N6Ngf9HkA5IBe/+I+X4ZtA6pvkdCGaK8szY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VuSN/1xJjhlAPa93KlsXQ6EofATEjsF33qYioj9KDGBOTl49A/43SQsj9SatSqKP2
-         L6dESRvQIczqbX7C1SOTrGS2+WndPYRxxYvMst29oOjGy8FQJGAq3p8SzsFTnlClZg
-         R2dcifOlQJvsRPCvqy9ylv+4GqW60Fa6+e8z3xnQ=
+        b=fWbptNXVz2QJPvppVqoavcKQ3RlxFR9GJuPr25mHyffm8odKCZSF87KkSm6jPrETl
+         G782tVeKGLsDbmy1spIypX1HDdRq2Wi1Qz8RKPuVDC/J4H+6LQD3j/HGnhxDBLsQtp
+         v5F35xfE8i9Z0Toy2iOxu6X+2XoSUeRD+yQUdEXs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Teh <jonathan.teh@outlook.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 221/667] HID: hid-led: fix maximum brightness for Dream Cheeky
-Date:   Tue,  7 Jun 2022 18:58:06 +0200
-Message-Id: <20220607164941.418776483@linuxfoundation.org>
+        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 253/667] scsi: ufs: qcom: Fix ufs_qcom_resume()
+Date:   Tue,  7 Jun 2022 18:58:38 +0200
+Message-Id: <20220607164942.371416807@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,36 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Teh <jonathan.teh@outlook.com>
+From: Bart Van Assche <bvanassche@acm.org>
 
-[ Upstream commit 116c3f4a78ebe478d5ad5a038baf931e93e7d748 ]
+[ Upstream commit bee40dc167da159ea5b939c074e1da258610a3d6 ]
 
-Increase maximum brightness for Dream Cheeky to 63. Emperically
-determined based on testing in kernel 4.4 on this device:
+Clearing hba->is_sys_suspended if ufs_qcom_resume() succeeds is wrong. That
+variable must only be cleared if all actions involved in a resume succeed.
+Hence remove the statement that clears hba->is_sys_suspended from
+ufs_qcom_resume().
 
-Bus 003 Device 002: ID 1d34:0004 Dream Cheeky Webmail Notifier
-
-Fixes: 6c7ad07e9e05 ("HID: migrate USB LED driver from usb misc to hid")
-Signed-off-by: Jonathan Teh <jonathan.teh@outlook.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Link: https://lore.kernel.org/r/20220419225811.4127248-23-bvanassche@acm.org
+Fixes: 81c0fc51b7a7 ("ufs-qcom: add support for Qualcomm Technologies Inc platforms")
+Tested-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-led.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/ufs/ufs-qcom.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/hid/hid-led.c b/drivers/hid/hid-led.c
-index c2c66ceca132..7d82f8d426bb 100644
---- a/drivers/hid/hid-led.c
-+++ b/drivers/hid/hid-led.c
-@@ -366,7 +366,7 @@ static const struct hidled_config hidled_configs[] = {
- 		.type = DREAM_CHEEKY,
- 		.name = "Dream Cheeky Webmail Notifier",
- 		.short_name = "dream_cheeky",
--		.max_brightness = 31,
-+		.max_brightness = 63,
- 		.num_leds = 1,
- 		.report_size = 9,
- 		.report_type = RAW_REQUEST,
+diff --git a/drivers/scsi/ufs/ufs-qcom.c b/drivers/scsi/ufs/ufs-qcom.c
+index 9d9770f1db4f..c781c132d48f 100644
+--- a/drivers/scsi/ufs/ufs-qcom.c
++++ b/drivers/scsi/ufs/ufs-qcom.c
+@@ -637,12 +637,7 @@ static int ufs_qcom_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
+ 			return err;
+ 	}
+ 
+-	err = ufs_qcom_ice_resume(host);
+-	if (err)
+-		return err;
+-
+-	hba->is_sys_suspended = false;
+-	return 0;
++	return ufs_qcom_ice_resume(host);
+ }
+ 
+ static void ufs_qcom_dev_ref_clk_ctrl(struct ufs_qcom_host *host, bool enable)
 -- 
 2.35.1
 
