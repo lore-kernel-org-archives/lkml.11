@@ -2,112 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B31A4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:08:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92742C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:09:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242420AbiFGLIj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43966 "EHLO
+        id S242507AbiFGLI7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242615AbiFGLII (ORCPT
+        with ESMTP id S242531AbiFGLI1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 07:08:08 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F52E10A607
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 04:04:18 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id u3so23649589wrg.3
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 04:04:17 -0700 (PDT)
+        Tue, 7 Jun 2022 07:08:27 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1B7C10EA4C;
+        Tue,  7 Jun 2022 04:04:32 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id v1so23748007ejg.13;
+        Tue, 07 Jun 2022 04:04:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=raspberrypi.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=/01LXbrU5z5LnyLvjVjhRw5gO2250QwVl7s1xHwA700=;
-        b=objHCNZ2KHO9DKsSjO8txuN/+/mQ3Au1SYtWJQNggjJdRxrnuZ4+W3rWrIr83s8ODW
-         Bws0deMMR63NQvh0cC8AhlykhECHpnxi0fW7eXM3/rdK+SgeAsemMcHlovWQRAZD7uGR
-         nvQN5mPCsGcImLn/TSRpxfTXSuEjqf/5RqrSUX4xbZ3G2JgVReRkWAwRmmrnhQAEj9NA
-         aGsOmRKCnmYBCMjFFhqDQSrdmORT/Mb3YT+ugzwfcGPSR9Iocyeh7BLPPhUES3qyOGHs
-         5w1KY/5llywB51iAhww7Ss9NFnlLTThZsO/hzYT+wiax+4ghDg4D2dGFLEzL8uY9RScd
-         qSOQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dE3IfDBto2P1Lw1uX63OsonLCvmTMY25nDr0mUDzn+Q=;
+        b=L3il+xydJWAarPyPUgZutiMe46kqGVZ4BfF4kMo68FgtCnXbiHU6vikypBkE5LvRhl
+         FL7QnepGJil4FpKHDOZE9wbRTJpBHgrCcV5XkK2U459iNIu219cAZNVOCNB9xlpS0jCE
+         5w6HqD8YN1XwLSbkiW+0wMMJ+F/gqx169QTy0GSd1Lu/gwYydPSo/A2BjLxsqrOUKk1X
+         At2BGene276+74Ezm8McnBoDjrruqc1afTRGD5O+02dM2D1v2zibsCnGHAvDYsytUS2s
+         5pLWqOt0nTUClno+zB8d1ealys8sy64/CKp9itA7l/5Okoiuapjq3ExRoxSje1zVvmW/
+         07fQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/01LXbrU5z5LnyLvjVjhRw5gO2250QwVl7s1xHwA700=;
-        b=uVZ1v3hUDoS7kNsohbfoi/0Lzjvm4lfOv2KJ4T97ENwS17PGpN1Igf1n9iHCkXlVxJ
-         oCTHMNTwkccwLRKAMtIEdokLp3qdbP8RjrsFpCtcdZ3zTZfgmxmcYKnsZhf8bFJ7Ts8t
-         Lob97ghGaEIqW3GtTQEnN9E2WcqEkurXSNATsQl/KbyGnHGENM3lkcz4lDoE23BUbq4J
-         cI4KoVkH8q35ZZ8YTS1ajxnUJj7J3j1irsGV34gSRQg/dasX+DTqW2rUYM156YkYyUqL
-         JVjrroLU5rrvqUKKUSJn2XlOAScdj4AEeED77VVrB8GdwfDNz1u9JDK8zvOZ6e5rgkNe
-         becw==
-X-Gm-Message-State: AOAM533mM47+ewSU2AkVu9sbOBLRwF1wvjqmuS5byMmm71UYxtmd+NDs
-        R8ltxL94gMM4Nhdv/r8jWyndfg==
-X-Google-Smtp-Source: ABdhPJzus08UZgzKpQfSWRZXh0KYJWzP4L6nwpadyQuwOPoYoBOiGTsbLG7c7WdWfMKvsvli7OXsVA==
-X-Received: by 2002:a5d:6e07:0:b0:210:3472:c4c7 with SMTP id h7-20020a5d6e07000000b002103472c4c7mr27128795wrz.15.1654599854368;
-        Tue, 07 Jun 2022 04:04:14 -0700 (PDT)
-Received: from ?IPV6:2a00:1098:3142:14:901f:dbcb:c1e4:e4b8? ([2a00:1098:3142:14:901f:dbcb:c1e4:e4b8])
-        by smtp.gmail.com with ESMTPSA id s12-20020a05600c384c00b0039c587342d8sm2102181wmr.3.2022.06.07.04.04.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 04:04:13 -0700 (PDT)
-Message-ID: <c47c42e3-1d56-5859-a6ad-976a1a3381c6@raspberrypi.com>
-Date:   Tue, 7 Jun 2022 12:04:13 +0100
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dE3IfDBto2P1Lw1uX63OsonLCvmTMY25nDr0mUDzn+Q=;
+        b=EVzSCR4Gk+KCZAOb+ViN35LAGkOoxN/mQrG9zbjaRgeGBsywAyWFSpGnYl8Kj5e8Od
+         sH9ZrCl5noV7c3GflqmlzYuLr5SE0iOjjuZo7D/P694eo07QcLydjjTEHTKk2fuavZQt
+         uH3H/Zfjk6sdV5Skk2nUjGTwKVB9Rj6DjEEcefI2wcoetnSvwpo7XDVoq5+oVruSmysX
+         xQW9iVJQxljcVB3bk6MlJnMHa2xberkn+nFStsbKFdZJCSIgxbnMDnGzNGrY19q84Yw6
+         XOWRv/WPOxsrJP2qTvVjgZ0qxzibRjT80MFKejIIGO3l/da4E01zJzuPhxbZksmRS1od
+         78fQ==
+X-Gm-Message-State: AOAM531wLPspeL6ouim0O0m1t13T2TDhzWzL4+lnOHiXu8bjfZXt3W+G
+        OfgNu+fLhrkyp65Pbf/k5bYwaD1YHXE=
+X-Google-Smtp-Source: ABdhPJz32oazMNe3wlp0q6FpQDwb2PX5Xb5qk9yNIcHcCeuIKNwpHmlSOP9joOOtUDAgBRo1uET8/g==
+X-Received: by 2002:a17:907:3fa4:b0:6fe:b83b:d667 with SMTP id hr36-20020a1709073fa400b006feb83bd667mr25618262ejc.481.1654599871163;
+        Tue, 07 Jun 2022 04:04:31 -0700 (PDT)
+Received: from localhost (92.40.203.141.threembb.co.uk. [92.40.203.141])
+        by smtp.gmail.com with ESMTPSA id ft29-20020a170907801d00b0071145c2f494sm3726424ejc.27.2022.06.07.04.04.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 04:04:30 -0700 (PDT)
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     paul@crapouillou.net, linus.walleij@linaro.org
+Cc:     linux-mips@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] pinctrl: ingenic: Convert to immutable irq chip
+Date:   Tue,  7 Jun 2022 12:05:25 +0100
+Message-Id: <20220607110525.36922-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] ARM: initialize jump labels before setup_machine_fdt()
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        stable <stable@vger.kernel.org>
-References: <8cc7ebe4-442b-a24b-9bb0-fce6e0425ee6@raspberrypi.com>
- <CAHmME9pL=g7Gz9-QOHnTosLHAL9YSPsW+CnE=9=u3iTQaFzomg@mail.gmail.com>
- <0f6458d7-037a-fa4d-8387-7de833288fb9@raspberrypi.com>
- <Yp8WBaqr+sLInNnc@kroah.com>
-From:   Phil Elwell <phil@raspberrypi.com>
-In-Reply-To: <Yp8WBaqr+sLInNnc@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+Update the driver to use an immutable IRQ chip to fix this warning:
 
-On 07/06/2022 10:10, Greg KH wrote:
-> On Tue, Jun 07, 2022 at 09:47:30AM +0100, Phil Elwell wrote:
->> Hi Jason,
->>
->> On 07/06/2022 09:30, Jason A. Donenfeld wrote:
->>> Hi Phil,
->>>
->>> Thanks for testing this. Can you let me know if v1 of this works?
->>>
->>> https://lore.kernel.org/lkml/20220602212234.344394-1-Jason@zx2c4.com/
->>>
->>> (I'll also fashion a revert for this part of stable.)
->>>
->>> Jason
->>
->> Thanks for the quick response, but that doesn't work for me either. Let me
->> say again that I'm on a downstream kernel (rpi-5.15.y) so this may not be a
->> universal problem, but merging either of these fixing patches would be fatal
->> for us.
-> 
-> I have reports of a "clean" 5.15.45 working just fine on a rpi.
-> Anything special in your tree that isn't upstream yet that might be
-> conflicting with this?  Any chance you can try a kernel.org release
-> instead?
+    "not an immutable chip, please consider fixing it!"
 
-A clean 5.15.45 boots cleanly, whereas a downstream kernel shows the static key 
-warning (but it does go on to boot). The significant difference is that our 
-defconfigs set CONFIG_RANDOM_TRUST_BOOTLOADER=y - defining that on top of 
-multi_v7_defconfig demonstrates the issue on a clean 5.15.45. Conversely, not 
-setting that option in a downstream kernel build avoids the warning, presumably 
-because it takes much longer to accumulate the required entropy.
+Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+---
+ drivers/pinctrl/pinctrl-ingenic.c | 33 ++++++++++++++++++-------------
+ 1 file changed, 19 insertions(+), 14 deletions(-)
 
-Phil
+diff --git a/drivers/pinctrl/pinctrl-ingenic.c b/drivers/pinctrl/pinctrl-ingenic.c
+index 1ca11616db74..37258fb05be3 100644
+--- a/drivers/pinctrl/pinctrl-ingenic.c
++++ b/drivers/pinctrl/pinctrl-ingenic.c
+@@ -135,7 +135,6 @@ struct ingenic_pinctrl {
+ struct ingenic_gpio_chip {
+ 	struct ingenic_pinctrl *jzpc;
+ 	struct gpio_chip gc;
+-	struct irq_chip irq_chip;
+ 	unsigned int irq, reg_base;
+ };
+ 
+@@ -3419,6 +3418,8 @@ static void ingenic_gpio_irq_enable(struct irq_data *irqd)
+ 	struct ingenic_gpio_chip *jzgc = gpiochip_get_data(gc);
+ 	int irq = irqd->hwirq;
+ 
++	gpiochip_enable_irq(gc, irq);
++
+ 	if (is_soc_or_above(jzgc->jzpc, ID_JZ4770))
+ 		ingenic_gpio_set_bit(jzgc, JZ4770_GPIO_INT, irq, true);
+ 	else if (is_soc_or_above(jzgc->jzpc, ID_JZ4740))
+@@ -3443,6 +3444,8 @@ static void ingenic_gpio_irq_disable(struct irq_data *irqd)
+ 		ingenic_gpio_set_bit(jzgc, JZ4740_GPIO_SELECT, irq, false);
+ 	else
+ 		ingenic_gpio_set_bit(jzgc, JZ4730_GPIO_GPIER, irq, false);
++
++	gpiochip_disable_irq(gc, irq);
+ }
+ 
+ static void ingenic_gpio_irq_ack(struct irq_data *irqd)
+@@ -3684,6 +3687,20 @@ static void ingenic_gpio_irq_release(struct irq_data *data)
+ 	return gpiochip_relres_irq(gpio_chip, data->hwirq);
+ }
+ 
++static const struct irq_chip ingenic_gpio_irqchip = {
++	.name			= "gpio",
++	.irq_enable		= ingenic_gpio_irq_enable,
++	.irq_disable		= ingenic_gpio_irq_disable,
++	.irq_unmask		= ingenic_gpio_irq_unmask,
++	.irq_mask		= ingenic_gpio_irq_mask,
++	.irq_ack		= ingenic_gpio_irq_ack,
++	.irq_set_type		= ingenic_gpio_irq_set_type,
++	.irq_set_wake		= ingenic_gpio_irq_set_wake,
++	.irq_request_resources	= ingenic_gpio_irq_request,
++	.irq_release_resources	= ingenic_gpio_irq_release,
++	.flags			= IRQCHIP_MASK_ON_SUSPEND | IRQCHIP_IMMUTABLE,
++};
++
+ static int ingenic_pinmux_set_pin_fn(struct ingenic_pinctrl *jzpc,
+ 		int pin, int func)
+ {
+@@ -4172,20 +4189,8 @@ static int __init ingenic_gpio_probe(struct ingenic_pinctrl *jzpc,
+ 	if (!jzgc->irq)
+ 		return -EINVAL;
+ 
+-	jzgc->irq_chip.name = jzgc->gc.label;
+-	jzgc->irq_chip.irq_enable = ingenic_gpio_irq_enable;
+-	jzgc->irq_chip.irq_disable = ingenic_gpio_irq_disable;
+-	jzgc->irq_chip.irq_unmask = ingenic_gpio_irq_unmask;
+-	jzgc->irq_chip.irq_mask = ingenic_gpio_irq_mask;
+-	jzgc->irq_chip.irq_ack = ingenic_gpio_irq_ack;
+-	jzgc->irq_chip.irq_set_type = ingenic_gpio_irq_set_type;
+-	jzgc->irq_chip.irq_set_wake = ingenic_gpio_irq_set_wake;
+-	jzgc->irq_chip.irq_request_resources = ingenic_gpio_irq_request;
+-	jzgc->irq_chip.irq_release_resources = ingenic_gpio_irq_release;
+-	jzgc->irq_chip.flags = IRQCHIP_MASK_ON_SUSPEND;
+-
+ 	girq = &jzgc->gc.irq;
+-	girq->chip = &jzgc->irq_chip;
++	gpio_irq_chip_set_chip(girq, &ingenic_gpio_irqchip);
+ 	girq->parent_handler = ingenic_gpio_irq_handler;
+ 	girq->num_parents = 1;
+ 	girq->parents = devm_kcalloc(dev, 1, sizeof(*girq->parents),
+-- 
+2.35.1
+
