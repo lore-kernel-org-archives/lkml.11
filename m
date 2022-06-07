@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 816A6CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A78AFCCA47C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387299AbiFHA0D (ORCPT
+        id S1387491AbiFHA02 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
+        Tue, 7 Jun 2022 20:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383712AbiFGVxb (ORCPT
+        with ESMTP id S1384774AbiFGWQN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFCE6245FB7;
-        Tue,  7 Jun 2022 12:12:17 -0700 (PDT)
+        Tue, 7 Jun 2022 18:16:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71B0261443;
+        Tue,  7 Jun 2022 12:20:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9354E618DE;
-        Tue,  7 Jun 2022 19:12:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98784C385A2;
-        Tue,  7 Jun 2022 19:12:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFDC2B82182;
+        Tue,  7 Jun 2022 19:19:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CC12C385A2;
+        Tue,  7 Jun 2022 19:19:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629125;
-        bh=WQHpy/iU/siyqieeM4pNHtO/G4v3Nt8Y8hxGLslrmgA=;
+        s=korg; t=1654629565;
+        bh=Wze3HKbHNuksjw/5hi2S1t1HcnnFKexwrr/Pq0LX75k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p26KRl1fZtmXLqdBzYPECyJ3H35EOQT+uPptzLOhTc5IAiLiNlcgd2SPQPEsswUww
-         aaHna/X89OSP/QrnuJvNqK0OAchxN5cYPmfzPbJMlZfNvDiVUOf/y3GSjUIYkZnBOk
-         ilqIS62NrDHfYTsuN/dtP8GcBGDfPm8AsOwhAr+Q=
+        b=eTWupkKmUcscS01ObrGf85grTtJdnL8hJCBTjlqaclsmtO++p6RF+hKMIM7BkqVMg
+         DLIwRgIOjolQpydjqmqpXDl1DkvUczEiOYNoR8k5qtWRFvs4lpYTHMOjujzAiEdmg4
+         s+DMH7ALSJDTt6o2X5o0V7ITKgYow7m7vytKX2No=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chia-I Wu <olvaffe@gmail.com>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 577/879] drm/msm: return the average load over the polling period
-Date:   Tue,  7 Jun 2022 19:01:35 +0200
-Message-Id: <20220607165019.603252514@linuxfoundation.org>
+        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 5.18 737/879] ext4: fix use-after-free in ext4_rename_dir_prepare
+Date:   Tue,  7 Jun 2022 19:04:15 +0200
+Message-Id: <20220607165024.248776526@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,135 +50,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chia-I Wu <olvaffe@gmail.com>
+From: Ye Bin <yebin10@huawei.com>
 
-[ Upstream commit 78f815c1cf8fc5f05dc5cec29eb1895cb53470e9 ]
+commit 0be698ecbe4471fcad80e81ec6a05001421041b3 upstream.
 
-simple_ondemand interacts poorly with clamp_to_idle.  It only looks at
-the load since the last get_dev_status call, while it should really look
-at the load over polling_ms.  When clamp_to_idle true, it almost always
-picks the lowest frequency on active because the gpu is idle between
-msm_devfreq_idle/msm_devfreq_active.
+We got issue as follows:
+EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
+ext4_get_first_dir_block: bh->b_data=0xffff88810bee6000 len=34478
+ext4_get_first_dir_block: *parent_de=0xffff88810beee6ae bh->b_data=0xffff88810bee6000
+ext4_rename_dir_prepare: [1] parent_de=0xffff88810beee6ae
+==================================================================
+BUG: KASAN: use-after-free in ext4_rename_dir_prepare+0x152/0x220
+Read of size 4 at addr ffff88810beee6ae by task rep/1895
 
-This logic could potentially be moved into devfreq core.
+CPU: 13 PID: 1895 Comm: rep Not tainted 5.10.0+ #241
+Call Trace:
+ dump_stack+0xbe/0xf9
+ print_address_description.constprop.0+0x1e/0x220
+ kasan_report.cold+0x37/0x7f
+ ext4_rename_dir_prepare+0x152/0x220
+ ext4_rename+0xf44/0x1ad0
+ ext4_rename2+0x11c/0x170
+ vfs_rename+0xa84/0x1440
+ do_renameat2+0x683/0x8f0
+ __x64_sys_renameat+0x53/0x60
+ do_syscall_64+0x33/0x40
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x7f45a6fc41c9
+RSP: 002b:00007ffc5a470218 EFLAGS: 00000246 ORIG_RAX: 0000000000000108
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f45a6fc41c9
+RDX: 0000000000000005 RSI: 0000000020000180 RDI: 0000000000000005
+RBP: 00007ffc5a470240 R08: 00007ffc5a470160 R09: 0000000020000080
+R10: 00000000200001c0 R11: 0000000000000246 R12: 0000000000400bb0
+R13: 00007ffc5a470320 R14: 0000000000000000 R15: 0000000000000000
 
-Fixes: 7c0ffcd40b16 ("drm/msm/gpu: Respect PM QoS constraints")
-Signed-off-by: Chia-I Wu <olvaffe@gmail.com>
-Cc: Rob Clark <robdclark@chromium.org>
-Link: https://lore.kernel.org/r/20220416003314.59211-3-olvaffe@gmail.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The buggy address belongs to the page:
+page:00000000440015ce refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x10beee
+flags: 0x200000000000000()
+raw: 0200000000000000 ffffea00043ff4c8 ffffea0004325608 0000000000000000
+raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88810beee580: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88810beee600: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>ffff88810beee680: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                                  ^
+ ffff88810beee700: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88810beee780: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+Disabling lock debugging due to kernel taint
+ext4_rename_dir_prepare: [2] parent_de->inode=3537895424
+ext4_rename_dir_prepare: [3] dir=0xffff888124170140
+ext4_rename_dir_prepare: [4] ino=2
+ext4_rename_dir_prepare: ent->dir->i_ino=2 parent=-757071872
+
+Reason is first directory entry which 'rec_len' is 34478, then will get illegal
+parent entry. Now, we do not check directory entry after read directory block
+in 'ext4_get_first_dir_block'.
+To solve this issue, check directory entry in 'ext4_get_first_dir_block'.
+
+[ Trigger an ext4_error() instead of just warning if the directory is
+  missing a '.' or '..' entry.   Also make sure we return an error code
+  if the file system is corrupted.  -TYT ]
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220414025223.4113128-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/msm_gpu.h         |  3 ++
- drivers/gpu/drm/msm/msm_gpu_devfreq.c | 60 ++++++++++++++++++++++++++-
- 2 files changed, 62 insertions(+), 1 deletion(-)
+ fs/ext4/namei.c |   30 +++++++++++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-index 389c6dab751b..143c56f5185b 100644
---- a/drivers/gpu/drm/msm/msm_gpu.h
-+++ b/drivers/gpu/drm/msm/msm_gpu.h
-@@ -9,6 +9,7 @@
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -3455,6 +3455,9 @@ static struct buffer_head *ext4_get_firs
+ 	struct buffer_head *bh;
  
- #include <linux/adreno-smmu-priv.h>
- #include <linux/clk.h>
-+#include <linux/devfreq.h>
- #include <linux/interconnect.h>
- #include <linux/pm_opp.h>
- #include <linux/regulator/consumer.h>
-@@ -117,6 +118,8 @@ struct msm_gpu_devfreq {
- 	/** idle_time: Time of last transition to idle: */
- 	ktime_t idle_time;
+ 	if (!ext4_has_inline_data(inode)) {
++		struct ext4_dir_entry_2 *de;
++		unsigned int offset;
++
+ 		/* The first directory block must not be a hole, so
+ 		 * treat it as DIRENT_HTREE
+ 		 */
+@@ -3463,9 +3466,30 @@ static struct buffer_head *ext4_get_firs
+ 			*retval = PTR_ERR(bh);
+ 			return NULL;
+ 		}
+-		*parent_de = ext4_next_entry(
+-					(struct ext4_dir_entry_2 *)bh->b_data,
+-					inode->i_sb->s_blocksize);
++
++		de = (struct ext4_dir_entry_2 *) bh->b_data;
++		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
++					 bh->b_size, 0) ||
++		    le32_to_cpu(de->inode) != inode->i_ino ||
++		    strcmp(".", de->name)) {
++			EXT4_ERROR_INODE(inode, "directory missing '.'");
++			brelse(bh);
++			*retval = -EFSCORRUPTED;
++			return NULL;
++		}
++		offset = ext4_rec_len_from_disk(de->rec_len,
++						inode->i_sb->s_blocksize);
++		de = ext4_next_entry(de, inode->i_sb->s_blocksize);
++		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
++					 bh->b_size, offset) ||
++		    le32_to_cpu(de->inode) == 0 || strcmp("..", de->name)) {
++			EXT4_ERROR_INODE(inode, "directory missing '..'");
++			brelse(bh);
++			*retval = -EFSCORRUPTED;
++			return NULL;
++		}
++		*parent_de = de;
++
+ 		return bh;
+ 	}
  
-+	struct devfreq_dev_status average_status;
-+
- 	/**
- 	 * idle_work:
- 	 *
-diff --git a/drivers/gpu/drm/msm/msm_gpu_devfreq.c b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-index d2b4c646a0ae..c7dbaa4b1926 100644
---- a/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-+++ b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-@@ -9,6 +9,7 @@
- 
- #include <linux/devfreq.h>
- #include <linux/devfreq_cooling.h>
-+#include <linux/math64.h>
- #include <linux/units.h>
- 
- /*
-@@ -75,12 +76,69 @@ static void get_raw_dev_status(struct msm_gpu *gpu,
- 	status->busy_time = busy_time;
- }
- 
-+static void update_average_dev_status(struct msm_gpu *gpu,
-+		const struct devfreq_dev_status *raw)
-+{
-+	struct msm_gpu_devfreq *df = &gpu->devfreq;
-+	const u32 polling_ms = df->devfreq->profile->polling_ms;
-+	const u32 max_history_ms = polling_ms * 11 / 10;
-+	struct devfreq_dev_status *avg = &df->average_status;
-+	u64 avg_freq;
-+
-+	/* simple_ondemand governor interacts poorly with gpu->clamp_to_idle.
-+	 * When we enforce the constraint on idle, it calls get_dev_status
-+	 * which would normally reset the stats.  When we remove the
-+	 * constraint on active, it calls get_dev_status again where busy_time
-+	 * would be 0.
-+	 *
-+	 * To remedy this, we always return the average load over the past
-+	 * polling_ms.
-+	 */
-+
-+	/* raw is longer than polling_ms or avg has no history */
-+	if (div_u64(raw->total_time, USEC_PER_MSEC) >= polling_ms ||
-+	    !avg->total_time) {
-+		*avg = *raw;
-+		return;
-+	}
-+
-+	/* Truncate the oldest history first.
-+	 *
-+	 * Because we keep the history with a single devfreq_dev_status,
-+	 * rather than a list of devfreq_dev_status, we have to assume freq
-+	 * and load are the same over avg->total_time.  We can scale down
-+	 * avg->busy_time and avg->total_time by the same factor to drop
-+	 * history.
-+	 */
-+	if (div_u64(avg->total_time + raw->total_time, USEC_PER_MSEC) >=
-+			max_history_ms) {
-+		const u32 new_total_time = polling_ms * USEC_PER_MSEC -
-+			raw->total_time;
-+		avg->busy_time = div_u64(
-+				mul_u32_u32(avg->busy_time, new_total_time),
-+				avg->total_time);
-+		avg->total_time = new_total_time;
-+	}
-+
-+	/* compute the average freq over avg->total_time + raw->total_time */
-+	avg_freq = mul_u32_u32(avg->current_frequency, avg->total_time);
-+	avg_freq += mul_u32_u32(raw->current_frequency, raw->total_time);
-+	do_div(avg_freq, avg->total_time + raw->total_time);
-+
-+	avg->current_frequency = avg_freq;
-+	avg->busy_time += raw->busy_time;
-+	avg->total_time += raw->total_time;
-+}
-+
- static int msm_devfreq_get_dev_status(struct device *dev,
- 		struct devfreq_dev_status *status)
- {
- 	struct msm_gpu *gpu = dev_to_gpu(dev);
-+	struct devfreq_dev_status raw;
- 
--	get_raw_dev_status(gpu, status);
-+	get_raw_dev_status(gpu, &raw);
-+	update_average_dev_status(gpu, &raw);
-+	*status = gpu->devfreq.average_status;
- 
- 	return 0;
- }
--- 
-2.35.1
-
 
 
