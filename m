@@ -2,118 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0D97C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F57C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237033AbiFHC4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44202 "EHLO
+        id S236103AbiFHC5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443669AbiFHCxL (ORCPT
+        with ESMTP id S1448544AbiFHCy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:53:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F05F1AB610
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 17:25:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654647807;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=heXsD028htaJL34qTH2KR7HknWXjuOe5IQ5XBb4j4Eo=;
-        b=Wc0SG9jAjdmAeSSAa1con/Gwvc6ZtrXMtkDaRcLQvQehG0xEwilTJqeVKMq/eAXCu/5Wa8
-        Re/yaIlsi8Vll1KEsMUVP7ZHsHht/z9VlVGeSQVW2E/liYFN8qmWAeOLIZoLTA69L11PY1
-        eyuWuGkZaASmM41kpKJKIodueSWF/As=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-193-dLSc1W27PMiT0ESy38G00A-1; Tue, 07 Jun 2022 20:23:26 -0400
-X-MC-Unique: dLSc1W27PMiT0ESy38G00A-1
-Received: by mail-qv1-f70.google.com with SMTP id dg8-20020a056214084800b004645cecc145so11967917qvb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 17:23:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=heXsD028htaJL34qTH2KR7HknWXjuOe5IQ5XBb4j4Eo=;
-        b=4BF+bPAN4kW2R8TrDziZVNuH+qiRTkje0M92CEfY17vBAGKIYZe7uXqEbnUCX3Ukda
-         0C4fnVZT+xPJppatnMkAS9ANZ8yh2mFmegyGZA7LvZ3Oii8eKyJHgarZLxBCXcBzsJ2Q
-         sVoZfMofgv7B52EiVCp7sXhImg/BJhE0EP5PXnHlP4OuSfPzlVoMP32sZNlpTpG0+MR3
-         +jU5GStJEzF1/5Fqj+wsGPPDrKWBTdRfC3lp8odxDSU46Z5bEdpCHrTocP1SEWNpQPIN
-         jIhC0WI/weJxn1jEzgeTSMnCVJMQwpAO6Oi8tzVhuV1siesHbaPBN2qKQh0ETBPLTmLo
-         VGxw==
-X-Gm-Message-State: AOAM531fUWgZkxOueCIJUXVeooMWnbwDmeXzuDRvtKB4ebUtoNXWVhxy
-        nRVOyXAbbJuHbq9BFYIHA9Xy5UHcQi11nsvE6HrMMxgejB4Ricay7kt417gh7J6ozQtaU2pQurh
-        4vLWobmPtdrYGjkqqs+PnH0uS
-X-Received: by 2002:ac8:5bcb:0:b0:304:ff2f:459f with SMTP id b11-20020ac85bcb000000b00304ff2f459fmr2348848qtb.545.1654647805520;
-        Tue, 07 Jun 2022 17:23:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxIHuSZClxr2yO8JHNfpgL49r9yYKKOsVIAjccwnE/IxiAhcJzAOFAxsOfHcFFuyKjCzc1zlg==
-X-Received: by 2002:ac8:5bcb:0:b0:304:ff2f:459f with SMTP id b11-20020ac85bcb000000b00304ff2f459fmr2348836qtb.545.1654647805327;
-        Tue, 07 Jun 2022 17:23:25 -0700 (PDT)
-Received: from [192.168.98.18] ([107.12.98.143])
-        by smtp.gmail.com with ESMTPSA id i8-20020a05620a404800b006a69aba9f19sm12042819qko.80.2022.06.07.17.23.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 17:23:24 -0700 (PDT)
-Message-ID: <8b94a750-dc64-d689-0553-eba55a51a484@redhat.com>
-Date:   Tue, 7 Jun 2022 20:23:22 -0400
+        Tue, 7 Jun 2022 22:54:27 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E9A22CEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:32:29 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 257Dp7RS005196;
+        Tue, 7 Jun 2022 23:32:12 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=tteCDJduDnLaPT3UrtfGVEXpLQ6Eom01HkHJbWAJnmg=;
+ b=nBziXhMM5mjUyc2h0og/zFDpSK/T1pukaGpVucB2fxJkUJ3fQTQs7OiaeXoZxUEER9f5
+ HEn1cGjZDOr7Gpc9we8iHq/5waKDvpAGQQd5hN7BJJL+bgFrkDRQlzwKTLI+ig2+fxB+
+ zUfqpTHX4LLZ6rEYRjIZq1QqbOBv/qfMoQ1DWv7E/wjbEtaWdTKBeAJ5rdV/eHq1Y0Rs
+ Z9vlbdT0m3kRrXJpXktOZBfK01Ot/xYWw58UzK5QKdvdPek6Nbhb3fj2KKkSv5awP7dK
+ v7+MQQg7O5r/ahdI0+Huv0UQFnUqdj0whM5Gu6nikIXKllQSfpW0sRz41AAiElHy0AUW Lg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gj3d3mbd1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Jun 2022 23:32:12 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3920510002A;
+        Tue,  7 Jun 2022 23:32:09 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 2310C20AA91;
+        Tue,  7 Jun 2022 23:32:09 +0200 (CEST)
+Received: from localhost (10.75.127.44) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 7 Jun
+ 2022 23:32:08 +0200
+From:   Antonio Borneo <antonio.borneo@foss.st.com>
+To:     Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        <dri-devel@lists.freedesktop.org>
+CC:     Antonio Borneo <antonio.borneo@foss.st.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+Subject: [PATCH RESEND] drm: adv7511: override i2c address of cec before accessing it
+Date:   Tue, 7 Jun 2022 23:31:44 +0200
+Message-ID: <20220607213144.427177-1-antonio.borneo@foss.st.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20211218182804.208906-1-antonio.borneo@foss.st.com>
+References: <20211218182804.208906-1-antonio.borneo@foss.st.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [net-next 1/2] bonding: netlink error message support for options
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-References: <cover.1654528729.git.jtoppins@redhat.com>
- <ac422216e35732c59ef8ca543fb4b381655da2bf.1654528729.git.jtoppins@redhat.com>
- <20220607171949.764e3286@kernel.org>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <20220607171949.764e3286@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-07_10,2022-06-07_02,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/7/22 20:19, Jakub Kicinski wrote:
-> On Mon,  6 Jun 2022 11:26:52 -0400 Jonathan Toppins wrote:
->> Add support for reporting errors via extack in both bond_newlink
->> and bond_changelink.
->>
->> Instead of having to look in the kernel log for why an option was not
->> correct just report the error to the user via the extack variable.
->>
->> What is currently reported today:
->>    ip link add bond0 type bond
->>    ip link set bond0 up
->>    ip link set bond0 type bond mode 4
->>   RTNETLINK answers: Device or resource busy
->>
->> After this change:
->>    ip link add bond0 type bond
->>    ip link set bond0 up
->>    ip link set bond0 type bond mode 4
->>   Error: unable to set option because the bond is up.
->>
->> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
->> ---
->>
->> Notes:
->>      Removed the printf support and just added static messages for various
->>      error events.
-> 
-> Thanks! nit, missing kdoc:
-> 
-> drivers/net/bonding/bond_options.c:729: warning: Function parameter or member 'bad_attr' not described in '__bond_opt_set'
-> drivers/net/bonding/bond_options.c:729: warning: Function parameter or member 'extack' not described in '__bond_opt_set'
-> 
+Commit 680532c50bca ("drm: adv7511: Add support for
+i2c_new_secondary_device") allows a device tree node to override
+the default addresses of the secondary i2c devices. This is useful
+for solving address conflicts on the i2c bus.
 
-Thanks, will post a v2 tomorrow. What tool was used to generate the 
-errors? sparse? checkpatch reported zero errors.
+In adv7511_init_cec_regmap() the new i2c address of cec device is
+read from device tree and immediately accessed, well before it is
+written in the proper register to override the default address.
+This can cause an i2c error during probe and a consequent probe
+failure.
+
+Once the new i2c address is read from the device tree, override
+the default address before any attempt to access the cec.
+
+Tested with adv7533 and stm32mp157f.
+
+Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
+Fixes: 680532c50bca ("drm: adv7511: Add support for i2c_new_secondary_device")
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+
+---
+
+This patch got somehow lost, I'm resending it.
+Added reviewed by Kieran Bingham.
+Rebased on drm-misc-next.
+
+---
+ drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+index 5bb9300040dd..074c2e650cae 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+@@ -1065,6 +1065,10 @@ static int adv7511_init_cec_regmap(struct adv7511 *adv)
+ 						ADV7511_CEC_I2C_ADDR_DEFAULT);
+ 	if (IS_ERR(adv->i2c_cec))
+ 		return PTR_ERR(adv->i2c_cec);
++
++	regmap_write(adv->regmap, ADV7511_REG_CEC_I2C_ADDR,
++		     adv->i2c_cec->addr << 1);
++
+ 	i2c_set_clientdata(adv->i2c_cec, adv);
+ 
+ 	adv->regmap_cec = devm_regmap_init_i2c(adv->i2c_cec,
+@@ -1271,9 +1275,6 @@ static int adv7511_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
+ 	if (ret)
+ 		goto err_i2c_unregister_packet;
+ 
+-	regmap_write(adv7511->regmap, ADV7511_REG_CEC_I2C_ADDR,
+-		     adv7511->i2c_cec->addr << 1);
+-
+ 	INIT_WORK(&adv7511->hpd_work, adv7511_hpd_work);
+ 
+ 	if (i2c->irq) {
+
+base-commit: dfa687bffc8a4a21ed929c7dececf01b8f1f52ee
+-- 
+2.36.1
 
