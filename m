@@ -2,107 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFDAFCCA48E
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C73CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353882AbiFHAeE convert rfc822-to-8bit (ORCPT
+        id S1389574AbiFHAf4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:34:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37558 "EHLO
+        Tue, 7 Jun 2022 20:35:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445942AbiFGXEa (ORCPT
+        with ESMTP id S1383202AbiFGVwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:04:30 -0400
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDF135D46C
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:23:56 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 7957D61B8B69;
-        Tue,  7 Jun 2022 22:23:13 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 9QQEM-g-k7R7; Tue,  7 Jun 2022 22:23:12 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id D08F7608110A;
-        Tue,  7 Jun 2022 22:23:12 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 7tquQMvYHDkA; Tue,  7 Jun 2022 22:23:12 +0200 (CEST)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 9CD0D61B8B5A;
-        Tue,  7 Jun 2022 22:23:12 +0200 (CEST)
-Date:   Tue, 7 Jun 2022 22:23:12 +0200 (CEST)
-From:   Richard Weinberger <richard@nod.at>
-To:     =?utf-8?B?TWljaGHFgiBLxJlwaWXFhA==?= <kernel@kempniu.pl>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-mtd <linux-mtd@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Message-ID: <1710081060.147491.1654633392520.JavaMail.zimbra@nod.at>
-In-Reply-To: <20220516070601.11428-2-kernel@kempniu.pl>
-References: <20220516070601.11428-1-kernel@kempniu.pl> <20220516070601.11428-2-kernel@kempniu.pl>
-Subject: Re: [PATCH 1/2] mtdchar: prevent integer overflow in a safety check
+        Tue, 7 Jun 2022 17:52:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE6024318D;
+        Tue,  7 Jun 2022 12:10:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50276B82182;
+        Tue,  7 Jun 2022 19:10:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8F62C385A2;
+        Tue,  7 Jun 2022 19:10:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629039;
+        bh=udCQBwS9gtjEG8cgsc7WCtVTsKthbKRZlMyAHfd56Cc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JW4C1M48Un7G1chQHf7CoVXixZz6JmPMqd1ik2aym+ofJCmGKL+6pENjUpWLB9HBT
+         3+OtdfWXVrUCgTCzUrQIQOPsn6QrGgyCP23jOnEOtPXNne0MovMtG4Ohafje6px7An
+         fkp2QBaOGaf4xMY19vko5UooD8FbrvT26Rdn4Gfk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 506/879] NFC: hci: fix sleep in atomic context bugs in nfc_hci_hcp_message_tx
+Date:   Tue,  7 Jun 2022 19:00:24 +0200
+Message-Id: <20220607165017.563404226@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
-Thread-Topic: mtdchar: prevent integer overflow in a safety check
-Thread-Index: JX134mBLLXSr5mg7slOI+t/fmFEWJA==
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------ Ursprüngliche Mail -----
-> Von: "Michał Kępień" <kernel@kempniu.pl>
-> An: "Miquel Raynal" <miquel.raynal@bootlin.com>, "richard" <richard@nod.at>, "Vignesh Raghavendra" <vigneshr@ti.com>
-> CC: "linux-mtd" <linux-mtd@lists.infradead.org>, "linux-kernel" <linux-kernel@vger.kernel.org>
-> Gesendet: Montag, 16. Mai 2022 09:06:00
-> Betreff: [PATCH 1/2] mtdchar: prevent integer overflow in a safety check
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-> Commit 6420ac0af95d ("mtdchar: prevent unbounded allocation in MEMWRITE
-> ioctl") added a safety check to mtdchar_write_ioctl() which attempts to
-> ensure that the write request sent by user space does not extend beyond
-> the MTD device's size.  However, that check contains an addition of two
-> struct mtd_write_req fields, 'start' and 'len', both of which are u64
-> variables.  The result of that addition can overflow, allowing the
-> safety check to be bypassed.
-> 
-> The arguably simplest fix - changing the data types of the relevant
-> struct mtd_write_req fields - is not feasible as it would break user
-> space.
-> 
-> Fix by making mtdchar_write_ioctl() truncate the value provided by user
-> space in the 'len' field of struct mtd_write_req, so that only the lower
-> 32 bits of that field are used, preventing the overflow.
-> 
-> While the 'ooblen' field of struct mtd_write_req is not currently used
-> in any similarly flawed safety check, also truncate it to 32 bits, for
-> consistency with the 'len' field and with other MTD routines handling
-> OOB data.
-> 
-> Update include/uapi/mtd/mtd-abi.h accordingly.
-> 
-> Suggested-by: Richard Weinberger <richard@nod.at>
-> Signed-off-by: Michał Kępień <kernel@kempniu.pl>
-> ---
-> drivers/mtd/mtdchar.c      | 3 +++
-> include/uapi/mtd/mtd-abi.h | 4 ++--
-> 2 files changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/mtd/mtdchar.c b/drivers/mtd/mtdchar.c
-> index d0f9c4b0285c..b2700f8467ff 100644
-> --- a/drivers/mtd/mtdchar.c
-> +++ b/drivers/mtd/mtdchar.c
-> @@ -615,6 +615,9 @@ static int mtdchar_write_ioctl(struct mtd_info *mtd,
-> 	if (!usr_oob)
-> 		req.ooblen = 0;
-> 
-> +	req.len &= 0xffffffff;
-> +	req.ooblen &= 0xffffffff;
-> +
+[ Upstream commit b413b0cb008646e9f24ce5253cb3cf7ee217aff6 ]
 
-Yeah, I think it is reasonable to limit write requests to 4GiB.
+There are sleep in atomic context bugs when the request to secure
+element of st21nfca is timeout. The root cause is that kzalloc and
+alloc_skb with GFP_KERNEL parameter and mutex_lock are called in
+st21nfca_se_wt_timeout which is a timer handler. The call tree shows
+the execution paths that could lead to bugs:
 
-Thanks,
-//richard
+   (Interrupt context)
+st21nfca_se_wt_timeout
+  nfc_hci_send_event
+    nfc_hci_hcp_message_tx
+      kzalloc(..., GFP_KERNEL) //may sleep
+      alloc_skb(..., GFP_KERNEL) //may sleep
+      mutex_lock() //may sleep
+
+This patch moves the operations that may sleep into a work item.
+The work item will run in another kernel thread which is in
+process context to execute the bottom half of the interrupt.
+So it could prevent atomic context from sleeping.
+
+Fixes: 2130fb97fecf ("NFC: st21nfca: Adding support for secure element")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220518115733.62111-1-duoming@zju.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/nfc/st21nfca/se.c       | 17 ++++++++++++++---
+ drivers/nfc/st21nfca/st21nfca.h |  1 +
+ 2 files changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/nfc/st21nfca/se.c b/drivers/nfc/st21nfca/se.c
+index c922f10d0d7b..7e213f8ddc98 100644
+--- a/drivers/nfc/st21nfca/se.c
++++ b/drivers/nfc/st21nfca/se.c
+@@ -241,7 +241,7 @@ int st21nfca_hci_se_io(struct nfc_hci_dev *hdev, u32 se_idx,
+ }
+ EXPORT_SYMBOL(st21nfca_hci_se_io);
+ 
+-static void st21nfca_se_wt_timeout(struct timer_list *t)
++static void st21nfca_se_wt_work(struct work_struct *work)
+ {
+ 	/*
+ 	 * No answer from the secure element
+@@ -254,8 +254,9 @@ static void st21nfca_se_wt_timeout(struct timer_list *t)
+ 	 */
+ 	/* hardware reset managed through VCC_UICC_OUT power supply */
+ 	u8 param = 0x01;
+-	struct st21nfca_hci_info *info = from_timer(info, t,
+-						    se_info.bwi_timer);
++	struct st21nfca_hci_info *info = container_of(work,
++						struct st21nfca_hci_info,
++						se_info.timeout_work);
+ 
+ 	info->se_info.bwi_active = false;
+ 
+@@ -271,6 +272,13 @@ static void st21nfca_se_wt_timeout(struct timer_list *t)
+ 	info->se_info.cb(info->se_info.cb_context, NULL, 0, -ETIME);
+ }
+ 
++static void st21nfca_se_wt_timeout(struct timer_list *t)
++{
++	struct st21nfca_hci_info *info = from_timer(info, t, se_info.bwi_timer);
++
++	schedule_work(&info->se_info.timeout_work);
++}
++
+ static void st21nfca_se_activation_timeout(struct timer_list *t)
+ {
+ 	struct st21nfca_hci_info *info = from_timer(info, t,
+@@ -360,6 +368,7 @@ int st21nfca_apdu_reader_event_received(struct nfc_hci_dev *hdev,
+ 	switch (event) {
+ 	case ST21NFCA_EVT_TRANSMIT_DATA:
+ 		del_timer_sync(&info->se_info.bwi_timer);
++		cancel_work_sync(&info->se_info.timeout_work);
+ 		info->se_info.bwi_active = false;
+ 		r = nfc_hci_send_event(hdev, ST21NFCA_DEVICE_MGNT_GATE,
+ 				ST21NFCA_EVT_SE_END_OF_APDU_TRANSFER, NULL, 0);
+@@ -389,6 +398,7 @@ void st21nfca_se_init(struct nfc_hci_dev *hdev)
+ 	struct st21nfca_hci_info *info = nfc_hci_get_clientdata(hdev);
+ 
+ 	init_completion(&info->se_info.req_completion);
++	INIT_WORK(&info->se_info.timeout_work, st21nfca_se_wt_work);
+ 	/* initialize timers */
+ 	timer_setup(&info->se_info.bwi_timer, st21nfca_se_wt_timeout, 0);
+ 	info->se_info.bwi_active = false;
+@@ -416,6 +426,7 @@ void st21nfca_se_deinit(struct nfc_hci_dev *hdev)
+ 	if (info->se_info.se_active)
+ 		del_timer_sync(&info->se_info.se_active_timer);
+ 
++	cancel_work_sync(&info->se_info.timeout_work);
+ 	info->se_info.bwi_active = false;
+ 	info->se_info.se_active = false;
+ }
+diff --git a/drivers/nfc/st21nfca/st21nfca.h b/drivers/nfc/st21nfca/st21nfca.h
+index cb6ad916be91..ae6771cc9894 100644
+--- a/drivers/nfc/st21nfca/st21nfca.h
++++ b/drivers/nfc/st21nfca/st21nfca.h
+@@ -141,6 +141,7 @@ struct st21nfca_se_info {
+ 
+ 	se_io_cb_t cb;
+ 	void *cb_context;
++	struct work_struct timeout_work;
+ };
+ 
+ struct st21nfca_hci_info {
+-- 
+2.35.1
+
+
+
