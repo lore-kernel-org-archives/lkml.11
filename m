@@ -2,129 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC8C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:19:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B093AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:21:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345560AbiFGSTr (ORCPT
+        id S1344760AbiFGSTx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43364 "EHLO
+        Tue, 7 Jun 2022 14:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349151AbiFGR6V (ORCPT
+        with ESMTP id S1349019AbiFGR6V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:58:21 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3059262131
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:41:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654623680; x=1686159680;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=S/o/Tf/adtj61B1f4VPyjcLmTygV0lPEUGJMpY2idHQ=;
-  b=VgrkORMHZrtgZMgDZOjw1KtITyv7D5GZCTkKiSI98WfrKUx9qK2DBUfT
-   zMDXoZJ4TfPB8kTy/A6FefCgT9VOAH6zuj9neh4bhF0cGfoRMg6v3y5K1
-   3UskbvG5JfwmSIQ4ccE9T49ebReR7PHj/GvF5SqBRrKrAWDFYxB1XBlg0
-   smirDMFnkqrB0ZncovetDA3qU3LapzdA96nNO6rxdMSwbJFGqheVE3Jbl
-   jPzBE65pKs7zTe79lkR/0M0yrKLIuDb3//RAKh3H+hMk2K1XHfV21OnkH
-   eNEQw7kEwy06ftj9sWw2fRHFYwxZqZyJSnHXGAxqGdfdbNamwo/+EZXs0
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="363073969"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="363073969"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 10:41:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="826460235"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 07 Jun 2022 10:41:18 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 6242D109; Tue,  7 Jun 2022 20:41:21 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Shuo Liu <shuo.a.liu@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Fei Li <fei1.li@intel.com>
-Subject: [PATCH v1 1/1] virt: acrn: Mark the uuid field as unused
-Date:   Tue,  7 Jun 2022 20:41:20 +0300
-Message-Id: <20220607174120.34981-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2C466AFA;
+        Tue,  7 Jun 2022 10:41:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C8D461499;
+        Tue,  7 Jun 2022 17:41:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 886A1C341C0;
+        Tue,  7 Jun 2022 17:41:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654623681;
+        bh=FQ0KiZojiiCMdSntTJQX+VlNmgl4iS0gWsxYxk6CTm8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wJJYmtDduXnyl8LGyrwEu58IWzZE8SlHUkfXKcrcTrR0JRHAD86xznxjsChmrCQmn
+         4jVC739tE0Mg52lpxl8Vk4XCwfjQg0F87RliNZLnFCcLlV/M2Mph2Y6TWWvFL3mYc3
+         MayTQRvKh5Gqxe/Ut8JaXb0yzlLbkiClsj2jmneA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mike Travis <mike.travis@hpe.com>,
+        Steve Wahl <steve.wahl@hpe.com>, Borislav Petkov <bp@suse.de>,
+        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 054/667] x86/platform/uv: Update TSC sync state for UV5
+Date:   Tue,  7 Jun 2022 18:55:19 +0200
+Message-Id: <20220607164936.431769189@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After the commits for userspace [1][2] the uuid field is not being
-used in the ACRN code. Update kernel to reflect these changes.
-I.e. we do the following:
-- adding a comment explaining that it's not used anymore
-- replacing the specific type by a raw buffer
-- updating the example code accordingly
+From: Mike Travis <mike.travis@hpe.com>
 
-[1]: https://github.com/projectacrn/acrn-hypervisor/commit/da0d24326ed6
-[2]: https://github.com/projectacrn/acrn-hypervisor/commit/bb0327e70097
+[ Upstream commit bb3ab81bdbd53f88f26ffabc9fb15bd8466486ec ]
 
-Fixes: 5b06931d7f8b ("sample/acrn: Introduce a sample of HSM ioctl interface usage")
-Fixes: 9c5137aedd11 ("virt: acrn: Introduce VM management interfaces")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+The UV5 platform synchronizes the TSCs among all chassis, and will not
+proceed to OS boot without achieving synchronization.  Previous UV
+platforms provided a register indicating successful synchronization.
+This is no longer available on UV5.  On this platform TSC_ADJUST
+should not be reset by the kernel.
+
+Signed-off-by: Mike Travis <mike.travis@hpe.com>
+Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
+Acked-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20220406195149.228164-3-steve.wahl@hpe.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/acrn.h | 5 ++---
- samples/acrn/vm-sample.c  | 3 ---
- 2 files changed, 2 insertions(+), 6 deletions(-)
+ arch/x86/kernel/apic/x2apic_uv_x.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/acrn.h b/include/uapi/linux/acrn.h
-index ccf47ed92500..04fa83647ae5 100644
---- a/include/uapi/linux/acrn.h
-+++ b/include/uapi/linux/acrn.h
-@@ -12,7 +12,6 @@
- #define _UAPI_ACRN_H
+diff --git a/arch/x86/kernel/apic/x2apic_uv_x.c b/arch/x86/kernel/apic/x2apic_uv_x.c
+index f5a48e66e4f5..a6e9c2794ef5 100644
+--- a/arch/x86/kernel/apic/x2apic_uv_x.c
++++ b/arch/x86/kernel/apic/x2apic_uv_x.c
+@@ -199,7 +199,13 @@ static void __init uv_tsc_check_sync(void)
+ 	int mmr_shift;
+ 	char *state;
  
- #include <linux/types.h>
--#include <linux/uuid.h>
- 
- #define ACRN_IO_REQUEST_MAX		16
- 
-@@ -186,7 +185,7 @@ struct acrn_ioreq_notify {
-  * @reserved0:		Reserved and must be 0
-  * @vcpu_num:		Number of vCPU in the VM. Return from hypervisor.
-  * @reserved1:		Reserved and must be 0
-- * @uuid:		UUID of the VM. Pass to hypervisor directly.
-+ * @uuid:		Reserved (used to be UUID of the VM)
-  * @vm_flag:		Flag of the VM creating. Pass to hypervisor directly.
-  * @ioreq_buf:		Service VM GPA of I/O request buffer. Pass to
-  *			hypervisor directly.
-@@ -198,7 +197,7 @@ struct acrn_vm_creation {
- 	__u16	reserved0;
- 	__u16	vcpu_num;
- 	__u16	reserved1;
--	guid_t	uuid;
-+	__u8	uuid[16];
- 	__u64	vm_flag;
- 	__u64	ioreq_buf;
- 	__u64	cpu_affinity;
-diff --git a/samples/acrn/vm-sample.c b/samples/acrn/vm-sample.c
-index b2dad47a77a0..7abd68b20153 100644
---- a/samples/acrn/vm-sample.c
-+++ b/samples/acrn/vm-sample.c
-@@ -29,8 +29,6 @@ static struct acrn_io_request *io_req_buf = (struct acrn_io_request *)io_request
- 
- __u16 vcpu_num;
- __u16 vmid;
--/* POST_STANDARD_VM_UUID1, refer to https://github.com/projectacrn/acrn-hypervisor/blob/master/hypervisor/include/common/vm_uuids.h */
--guid_t vm_uuid = GUID_INIT(0x385479d2, 0xd625, 0xe811, 0x86, 0x4e, 0xcb, 0x7a, 0x18, 0xb3, 0x46, 0x43);
- 
- int hsm_fd;
- int is_running = 1;
-@@ -63,7 +61,6 @@ int main(int argc, char **argv)
- 	}
- 	hsm_fd = open("/dev/acrn_hsm", O_RDWR|O_CLOEXEC);
- 
--	memcpy(&create_vm.uuid, &vm_uuid, 16);
- 	create_vm.ioreq_buf = (__u64)io_req_buf;
- 	ret = ioctl(hsm_fd, ACRN_IOCTL_CREATE_VM, &create_vm);
- 	printf("Created VM! [%d]\n", ret);
+-	/* Different returns from different UV BIOS versions */
++	/* UV5 guarantees synced TSCs; do not zero TSC_ADJUST */
++	if (!is_uv(UV2|UV3|UV4)) {
++		mark_tsc_async_resets("UV5+");
++		return;
++	}
++
++	/* UV2,3,4, UV BIOS TSC sync state available */
+ 	mmr = uv_early_read_mmr(UVH_TSC_SYNC_MMR);
+ 	mmr_shift =
+ 		is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
 -- 
 2.35.1
+
+
 
