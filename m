@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 766ADCCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93BE4CCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380947AbiFGVgO (ORCPT
+        id S1381027AbiFGVgY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
+        Tue, 7 Jun 2022 17:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376372AbiFGU03 (ORCPT
+        with ESMTP id S1377340AbiFGUdJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:26:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE4F1D7878;
-        Tue,  7 Jun 2022 11:32:38 -0700 (PDT)
+        Tue, 7 Jun 2022 16:33:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00BA1E3B3B;
+        Tue,  7 Jun 2022 11:34:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 099AD611B9;
-        Tue,  7 Jun 2022 18:32:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15D44C385A2;
-        Tue,  7 Jun 2022 18:32:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7776B8237F;
+        Tue,  7 Jun 2022 18:34:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D186C385A2;
+        Tue,  7 Jun 2022 18:34:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626757;
-        bh=8x8o8T4Mzids+cK+jsJa0aKz+pwiyZUUfGh3jcLvHU0=;
+        s=korg; t=1654626895;
+        bh=rErfl5eEDB3p0z9t/ZqOeXDL0w1kyG5P6kY7CDdLFXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WfQThdyE/0myvCzEULieQDbaU/4QX6CdXHVJcgFWMYRgki3CGmKo9BD60UZNXScil
-         cZRiVVtDlqGWK2RMHkKLbK02fvXxVkM9O+P/UWOMipM/Nd4lfSBmRFlhTN+Iy8a68+
-         AsrNUijyOAZr/wjSeLgaa8VlFHXC3lo9dD6L0twI=
+        b=szlEcjpq28qvBDOcirmqelvTIFvpFX00O2ozZQYoMfV64hLb7JAgA0q4vTqoKohsd
+         AbcV1C1RZeQZR1gaVUTpTgI2avqhCN+NaM9f50O6Bwyw3Ulb/LnSSoMYgNJtuGStvT
+         y/tWFs7jUoKlW6SMTwYoKoAssFe9Mm9uXfWFpwnU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hari Bathini <hbathini@linux.ibm.com>,
+        stable@vger.kernel.org, Igor Zhbanov <izh1979@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 493/772] powerpc/fadump: fix PT_LOAD segment for boot memory area
-Date:   Tue,  7 Jun 2022 19:01:25 +0200
-Message-Id: <20220607165003.511876313@linuxfoundation.org>
+Subject: [PATCH 5.17 516/772] powerpc/idle: Fix return value of __setup() handler
+Date:   Tue,  7 Jun 2022 19:01:48 +0200
+Message-Id: <20220607165004.185799673@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,60 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hari Bathini <hbathini@linux.ibm.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 15eb77f873255cf9f4d703b63cfbd23c46579654 ]
+[ Upstream commit b793a01000122d2bd133ba451a76cc135b5e162c ]
 
-Boot memory area is setup as separate PT_LOAD segment in the vmcore
-as it is moved by f/w, on crash, to a destination address provided by
-the kernel. Having separate PT_LOAD segment helps in handling the
-different physical address and offset for boot memory area in the
-vmcore.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
 
-Commit ced1bf52f477 ("powerpc/fadump: merge adjacent memory ranges to
-reduce PT_LOAD segements") inadvertly broke this pre-condition for
-cases where some of the first kernel memory is available adjacent to
-boot memory area. This scenario is rare but possible when memory for
-fadump could not be reserved adjacent to boot memory area owing to
-memory hole or such. Reading memory from a vmcore exported in such
-scenario provides incorrect data.  Fix it by ensuring no other region
-is folded into boot memory area.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) argument or environment
+strings.
 
-Fixes: ced1bf52f477 ("powerpc/fadump: merge adjacent memory ranges to reduce PT_LOAD segements")
-Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
+Also, error return codes don't mean anything to obsolete_checksetup() --
+only non-zero (usually 1) or zero. So return 1 from powersave_off().
+
+Fixes: 302eca184fb8 ("[POWERPC] cell: use ppc_md->power_save instead of cbe_idle_loop")
+Reported-by: Igor Zhbanov <izh1979@gmail.com>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220406093839.206608-2-hbathini@linux.ibm.com
+Link: https://lore.kernel.org/r/20220502192925.19954-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/fadump.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/powerpc/kernel/idle.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/fadump.c b/arch/powerpc/kernel/fadump.c
-index d03e488cfe9c..a32d6871de75 100644
---- a/arch/powerpc/kernel/fadump.c
-+++ b/arch/powerpc/kernel/fadump.c
-@@ -861,7 +861,6 @@ static int fadump_alloc_mem_ranges(struct fadump_mrange_info *mrange_info)
- 				       sizeof(struct fadump_memory_range));
- 	return 0;
- }
--
- static inline int fadump_add_mem_range(struct fadump_mrange_info *mrange_info,
- 				       u64 base, u64 end)
+diff --git a/arch/powerpc/kernel/idle.c b/arch/powerpc/kernel/idle.c
+index 4ad79eb638c6..77cd4c5a2d63 100644
+--- a/arch/powerpc/kernel/idle.c
++++ b/arch/powerpc/kernel/idle.c
+@@ -37,7 +37,7 @@ static int __init powersave_off(char *arg)
  {
-@@ -880,7 +879,12 @@ static inline int fadump_add_mem_range(struct fadump_mrange_info *mrange_info,
- 		start = mem_ranges[mrange_info->mem_range_cnt - 1].base;
- 		size  = mem_ranges[mrange_info->mem_range_cnt - 1].size;
+ 	ppc_md.power_save = NULL;
+ 	cpuidle_disable = IDLE_POWERSAVE_OFF;
+-	return 0;
++	return 1;
+ }
+ __setup("powersave=off", powersave_off);
  
--		if ((start + size) == base)
-+		/*
-+		 * Boot memory area needs separate PT_LOAD segment(s) as it
-+		 * is moved to a different location at the time of crash.
-+		 * So, fold only if the region is not boot memory area.
-+		 */
-+		if ((start + size) == base && start >= fw_dump.boot_mem_top)
- 			is_adjacent = true;
- 	}
- 	if (!is_adjacent) {
 -- 
 2.35.1
 
