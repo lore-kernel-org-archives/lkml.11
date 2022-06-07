@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E195FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B784C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349445AbiFGSLw (ORCPT
+        id S1349686AbiFGSLz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:11:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
+        Tue, 7 Jun 2022 14:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350085AbiFGRvw (ORCPT
+        with ESMTP id S1349920AbiFGRvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D4C140436;
-        Tue,  7 Jun 2022 10:39:26 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB84E13F412;
+        Tue,  7 Jun 2022 10:39:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89631B822B3;
-        Tue,  7 Jun 2022 17:38:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2C71C34115;
-        Tue,  7 Jun 2022 17:38:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1BA92B822B0;
+        Tue,  7 Jun 2022 17:38:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1291C34119;
+        Tue,  7 Jun 2022 17:38:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623511;
-        bh=hvcS1gHigAT6ZNxj5Al53l8T890zTiFuMM8Med6xssg=;
+        s=korg; t=1654623521;
+        bh=E2zvwCkWVBblQ2kmRzhy56yOvgIT3MHqCxsl21Oxql8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h27WAvCorK0Q7Jl0WIC8uFOhu9Xev41ZAPzOVGLTlOCii1bHX+ogmfBnpHsX6YyHm
-         gL4IMZ/5HuXALTKOVHW2Q41GPkqwDkoKMlYhoEaiGwuwUEJWow4SRi3fscala2kLS2
-         uJIBq6i0pvFW8rXKBEJUqqgM1Yx5hFRDQEmSNM6s=
+        b=J/oR/uQgDD9ndWBcKZAVq7BFzLA3s7seSaFQ6pyrF7ZMa3sSVJSEmPR3Uc0R0FaQ/
+         7DdjC3cIL7iNUieHwKhKSQWP32QDIGaKFBLd/m18xA7atqI3z+Blut5USFndP4Ruuo
+         7PM/bXMhXP9Sq+4c3ZCoet6Dd1qZLAShZEEJ0KpM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "yukuai (C)" <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 444/452] bfq: Get rid of __bio_blkcg() usage
-Date:   Tue,  7 Jun 2022 19:05:01 +0200
-Message-Id: <20220607164921.798843434@linuxfoundation.org>
+        stable@vger.kernel.org, Ondrej Hubsch <ohubsch@purestorage.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.10 421/452] SMB3: EBADF/EIO errors in rename/open caused by race condition in smb2_compound_op
+Date:   Tue,  7 Jun 2022 19:04:38 +0200
+Message-Id: <20220607164921.102846323@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,196 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Steve French <stfrench@microsoft.com>
 
-commit 4e54a2493e582361adc3bfbf06c7d50d19d18837 upstream.
+commit 0a55cf74ffb5d004b93647e4389096880ce37d6b upstream.
 
-BFQ usage of __bio_blkcg() is a relict from the past. Furthermore if bio
-would not be associated with any blkcg, the usage of __bio_blkcg() in
-BFQ is prone to races with the task being migrated between cgroups as
-__bio_blkcg() calls at different places could return different blkcgs.
+There is  a race condition in smb2_compound_op:
 
-Convert BFQ to the new situation where bio->bi_blkg is initialized in
-bio_set_dev() and thus practically always valid. This allows us to save
-blkcg_gq lookup and noticeably simplify the code.
+after_close:
+	num_rqst++;
 
-CC: stable@vger.kernel.org
-Fixes: 0fe061b9f03c ("blkcg: fix ref count issue with bio_blkcg() using task_css")
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-8-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+	if (cfile) {
+		cifsFileInfo_put(cfile); // sends SMB2_CLOSE to the server
+		cfile = NULL;
+
+This is triggered by smb2_query_path_info operation that happens during
+revalidate_dentry. In smb2_query_path_info, get_readable_path is called to
+load the cfile, increasing the reference counter. If in the meantime, this
+reference becomes the very last, this call to cifsFileInfo_put(cfile) will
+trigger a SMB2_CLOSE request sent to the server just before sending this compound
+request – and so then the compound request fails either with EBADF/EIO depending
+on the timing at the server, because the handle is already closed.
+
+In the first scenario, the race seems to be happening between smb2_query_path_info
+triggered by the rename operation, and between “cleanup” of asynchronous writes – while
+fsync(fd) likely waits for the asynchronous writes to complete, releasing the writeback
+structures can happen after the close(fd) call. So the EBADF/EIO errors will pop up if
+the timing is such that:
+1) There are still outstanding references after close(fd) in the writeback structures
+2) smb2_query_path_info successfully fetches the cfile, increasing the refcounter by 1
+3) All writeback structures release the same cfile, reducing refcounter to 1
+4) smb2_compound_op is called with that cfile
+
+In the second scenario, the race seems to be similar – here open triggers the
+smb2_query_path_info operation, and if all other threads in the meantime decrease the
+refcounter to 1 similarly to the first scenario, again SMB2_CLOSE will be sent to the
+server just before issuing the compound request. This case is harder to reproduce.
+
+See https://bugzilla.samba.org/show_bug.cgi?id=15051
+
+Cc: stable@vger.kernel.org
+Fixes: 8de9e86c67ba ("cifs: create a helper to find a writeable handle by path name")
+Signed-off-by: Ondrej Hubsch <ohubsch@purestorage.com>
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/bfq-cgroup.c  |   63 ++++++++++++++++++----------------------------------
- block/bfq-iosched.c |   10 --------
- block/bfq-iosched.h |    3 --
- 3 files changed, 25 insertions(+), 51 deletions(-)
+ fs/cifs/smb2inode.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/block/bfq-cgroup.c
-+++ b/block/bfq-cgroup.c
-@@ -582,27 +582,11 @@ static void bfq_group_set_parent(struct
- 	entity->sched_data = &parent->sched_data;
- }
+--- a/fs/cifs/smb2inode.c
++++ b/fs/cifs/smb2inode.c
+@@ -371,8 +371,6 @@ smb2_compound_op(const unsigned int xid,
+ 	num_rqst++;
  
--static struct bfq_group *bfq_lookup_bfqg(struct bfq_data *bfqd,
--					 struct blkcg *blkcg)
-+static void bfq_link_bfqg(struct bfq_data *bfqd, struct bfq_group *bfqg)
- {
--	struct blkcg_gq *blkg;
--
--	blkg = blkg_lookup(blkcg, bfqd->queue);
--	if (likely(blkg))
--		return blkg_to_bfqg(blkg);
--	return NULL;
--}
--
--struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
--				     struct blkcg *blkcg)
--{
--	struct bfq_group *bfqg, *parent;
-+	struct bfq_group *parent;
- 	struct bfq_entity *entity;
- 
--	bfqg = bfq_lookup_bfqg(bfqd, blkcg);
--	if (unlikely(!bfqg))
--		return NULL;
--
- 	/*
- 	 * Update chain of bfq_groups as we might be handling a leaf group
- 	 * which, along with some of its relatives, has not been hooked yet
-@@ -619,8 +603,15 @@ struct bfq_group *bfq_find_set_group(str
- 			bfq_group_set_parent(curr_bfqg, parent);
- 		}
- 	}
-+}
- 
--	return bfqg;
-+struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
-+{
-+	struct blkcg_gq *blkg = bio->bi_blkg;
-+
-+	if (!blkg)
-+		return bfqd->root_group;
-+	return blkg_to_bfqg(blkg);
- }
- 
- /**
-@@ -696,25 +687,15 @@ void bfq_bfqq_move(struct bfq_data *bfqd
-  * Move bic to blkcg, assuming that bfqd->lock is held; which makes
-  * sure that the reference to cgroup is valid across the call (see
-  * comments in bfq_bic_update_cgroup on this issue)
-- *
-- * NOTE: an alternative approach might have been to store the current
-- * cgroup in bfqq and getting a reference to it, reducing the lookup
-- * time here, at the price of slightly more complex code.
-  */
--static struct bfq_group *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
--						struct bfq_io_cq *bic,
--						struct blkcg *blkcg)
-+static void *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
-+				     struct bfq_io_cq *bic,
-+				     struct bfq_group *bfqg)
- {
- 	struct bfq_queue *async_bfqq = bic_to_bfqq(bic, 0);
- 	struct bfq_queue *sync_bfqq = bic_to_bfqq(bic, 1);
--	struct bfq_group *bfqg;
- 	struct bfq_entity *entity;
- 
--	bfqg = bfq_find_set_group(bfqd, blkcg);
--
--	if (unlikely(!bfqg))
--		bfqg = bfqd->root_group;
--
- 	if (async_bfqq) {
- 		entity = &async_bfqq->entity;
- 
-@@ -766,20 +747,24 @@ static struct bfq_group *__bfq_bic_chang
- void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio)
- {
- 	struct bfq_data *bfqd = bic_to_bfqd(bic);
--	struct bfq_group *bfqg = NULL;
-+	struct bfq_group *bfqg = bfq_bio_bfqg(bfqd, bio);
- 	uint64_t serial_nr;
- 
--	rcu_read_lock();
--	serial_nr = __bio_blkcg(bio)->css.serial_nr;
-+	serial_nr = bfqg_to_blkg(bfqg)->blkcg->css.serial_nr;
- 
- 	/*
- 	 * Check whether blkcg has changed.  The condition may trigger
- 	 * spuriously on a newly created cic but there's no harm.
- 	 */
- 	if (unlikely(!bfqd) || likely(bic->blkcg_serial_nr == serial_nr))
--		goto out;
-+		return;
- 
--	bfqg = __bfq_bic_change_cgroup(bfqd, bic, __bio_blkcg(bio));
-+	/*
-+	 * New cgroup for this process. Make sure it is linked to bfq internal
-+	 * cgroup hierarchy.
-+	 */
-+	bfq_link_bfqg(bfqd, bfqg);
-+	__bfq_bic_change_cgroup(bfqd, bic, bfqg);
- 	/*
- 	 * Update blkg_path for bfq_log_* functions. We cache this
- 	 * path, and update it here, for the following
-@@ -832,8 +817,6 @@ void bfq_bic_update_cgroup(struct bfq_io
- 	 */
- 	blkg_path(bfqg_to_blkg(bfqg), bfqg->blkg_path, sizeof(bfqg->blkg_path));
- 	bic->blkcg_serial_nr = serial_nr;
--out:
--	rcu_read_unlock();
- }
- 
- /**
-@@ -1451,7 +1434,7 @@ void bfq_end_wr_async(struct bfq_data *b
- 	bfq_end_wr_async_queues(bfqd, bfqd->root_group);
- }
- 
--struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd, struct blkcg *blkcg)
-+struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
- {
- 	return bfqd->root_group;
- }
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -5162,14 +5162,7 @@ static struct bfq_queue *bfq_get_queue(s
- 	struct bfq_queue *bfqq;
- 	struct bfq_group *bfqg;
- 
--	rcu_read_lock();
--
--	bfqg = bfq_find_set_group(bfqd, __bio_blkcg(bio));
--	if (!bfqg) {
--		bfqq = &bfqd->oom_bfqq;
--		goto out;
--	}
--
-+	bfqg = bfq_bio_bfqg(bfqd, bio);
- 	if (!is_sync) {
- 		async_bfqq = bfq_async_queue_prio(bfqd, bfqg, ioprio_class,
- 						  ioprio);
-@@ -5213,7 +5206,6 @@ static struct bfq_queue *bfq_get_queue(s
- out:
- 	bfqq->ref++; /* get a process reference to this queue */
- 	bfq_log_bfqq(bfqd, bfqq, "get_queue, at end: %p, %d", bfqq, bfqq->ref);
--	rcu_read_unlock();
- 	return bfqq;
- }
- 
---- a/block/bfq-iosched.h
-+++ b/block/bfq-iosched.h
-@@ -984,8 +984,7 @@ void bfq_bfqq_move(struct bfq_data *bfqd
- void bfq_init_entity(struct bfq_entity *entity, struct bfq_group *bfqg);
- void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio);
- void bfq_end_wr_async(struct bfq_data *bfqd);
--struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
--				     struct blkcg *blkcg);
-+struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio);
- struct blkcg_gq *bfqg_to_blkg(struct bfq_group *bfqg);
- struct bfq_group *bfqq_group(struct bfq_queue *bfqq);
- struct bfq_group *bfq_create_group_hierarchy(struct bfq_data *bfqd, int node);
+ 	if (cfile) {
+-		cifsFileInfo_put(cfile);
+-		cfile = NULL;
+ 		rc = compound_send_recv(xid, ses, server,
+ 					flags, num_rqst - 2,
+ 					&rqst[1], &resp_buftype[1],
 
 
