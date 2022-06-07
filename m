@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C039FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:03:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97006C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382653AbiFGWDt (ORCPT
+        id S1382516AbiFGWDz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
+        Tue, 7 Jun 2022 18:03:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378839AbiFGVBw (ORCPT
+        with ESMTP id S1378736AbiFGVDg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:01:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B30BE20ED78;
-        Tue,  7 Jun 2022 11:45:48 -0700 (PDT)
+        Tue, 7 Jun 2022 17:03:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0159E1451E5;
+        Tue,  7 Jun 2022 11:48:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4BE87B82018;
-        Tue,  7 Jun 2022 18:45:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F68C385A2;
-        Tue,  7 Jun 2022 18:45:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45E8C612F2;
+        Tue,  7 Jun 2022 18:48:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 525C1C385A2;
+        Tue,  7 Jun 2022 18:48:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627546;
-        bh=VWcjbaWEKU8jM7eBzPIHpVL4HsBF647GA3mic0FDKcI=;
+        s=korg; t=1654627718;
+        bh=YONjxaeXJNfdjI6X1ZBJqFnOHU4P3dRFG2L57MY6MtM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a8qFUc3k+CtLLG57l2/SDFnzJqQO/jR4Hl9DLAZaEYb8MyeZwU6F8btogQAr8R5lx
-         Ocr/EwpsujUiwEfHrCa+FhJ4yF8lt5YF2X+xgDNPmnD8/s6SGUujxFYFh7sWkemeQs
-         uDy3GS0hEeS8ec1IPsmO3O+8Jzj3hTsnciKhAMJA=
+        b=E05YtYol4r6U58w/TarxCg7ynnAHFDppkzKiUqgpmjyIDbh4zMxalKpoBEeFtusFq
+         eYrZR1pP1cPqujD8LmVqUymPM7ByPSNAHOQCMtH/6VOTecdg0aZLJ9Zo31I7DDJzYw
+         jE6M3OZ74s8xX8a1wJ21aO1+QG60S3nVGpu1MJdQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>,
-        Thierry Reding <treding@nvidia.com>
-Subject: [PATCH 5.17 741/772] arm64: tegra: Add missing DFLL reset on Tegra210
-Date:   Tue,  7 Jun 2022 19:05:33 +0200
-Message-Id: <20220607165010.869515890@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.18 027/879] fs/ntfs3: Fix some memory leaks in an error handling path of log_replay()
+Date:   Tue,  7 Jun 2022 18:52:25 +0200
+Message-Id: <20220607165003.463322950@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,40 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 0017f2c856e21bb900be88469e15dac4f41f4065 upstream.
+commit e589f9b7078e1c0191613cd736f598e81d2390de upstream.
 
-Commit 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling
-clocks") removed deassertion of reset lines when enabling peripheral
-clocks. This breaks the initialization of the DFLL driver which relied
-on this behaviour.
+All error handling paths lead to 'out' where many resources are freed.
 
-In order to be able to fix this, add the corresponding reset to the DT.
-Tested on Google Pixel C.
+Do it as well here instead of a direct return, otherwise 'log', 'ra' and
+'log->one_page_buf' (at least) will leak.
 
-Cc: stable@vger.kernel.org
-Fixes: 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling clocks")
-Signed-off-by: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+Fixes: b46acd6a6a62 ("fs/ntfs3: Add NTFS journal")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/nvidia/tegra210.dtsi |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ fs/ntfs3/fslog.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/arch/arm64/boot/dts/nvidia/tegra210.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra210.dtsi
-@@ -1366,8 +1366,9 @@
- 			 <&tegra_car TEGRA210_CLK_DFLL_REF>,
- 			 <&tegra_car TEGRA210_CLK_I2C5>;
- 		clock-names = "soc", "ref", "i2c";
--		resets = <&tegra_car TEGRA210_RST_DFLL_DVCO>;
--		reset-names = "dvco";
-+		resets = <&tegra_car TEGRA210_RST_DFLL_DVCO>,
-+			 <&tegra_car 155>;
-+		reset-names = "dvco", "dfll";
- 		#clock-cells = <0>;
- 		clock-output-names = "dfllCPU_out";
- 		status = "disabled";
+--- a/fs/ntfs3/fslog.c
++++ b/fs/ntfs3/fslog.c
+@@ -4085,8 +4085,10 @@ process_log:
+ 		if (client == LFS_NO_CLIENT_LE) {
+ 			/* Insert "NTFS" client LogFile. */
+ 			client = ra->client_idx[0];
+-			if (client == LFS_NO_CLIENT_LE)
+-				return -EINVAL;
++			if (client == LFS_NO_CLIENT_LE) {
++				err = -EINVAL;
++				goto out;
++			}
+ 
+ 			t16 = le16_to_cpu(client);
+ 			cr = ca + t16;
 
 
