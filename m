@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A1F2CCA48E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EED1ECCA48C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380365AbiFGVQJ (ORCPT
+        id S1380261AbiFGVP7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
+        Tue, 7 Jun 2022 17:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358384AbiFGUTD (ORCPT
+        with ESMTP id S1355434AbiFGURZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:19:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 257861D08A3;
-        Tue,  7 Jun 2022 11:30:11 -0700 (PDT)
+        Tue, 7 Jun 2022 16:17:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E0CF1D0582;
+        Tue,  7 Jun 2022 11:30:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91D4760906;
-        Tue,  7 Jun 2022 18:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1613C385A2;
-        Tue,  7 Jun 2022 18:30:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C36AB82381;
+        Tue,  7 Jun 2022 18:29:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 967C0C36B0D;
+        Tue,  7 Jun 2022 18:29:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626610;
-        bh=0VYyAQ2udBMl6TW3hWYknv3XLOr7ZmsuQTyd3In4K4c=;
+        s=korg; t=1654626588;
+        bh=Yv6FI+pLlmEH4JkZSVVxyZBCsQLSSOJb/rHYwVeFxq4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z3B3x3X4VeWfENYHr4B+iq1KwSWxTWSH7ETu+S3KgpDQc71SLYJdVdaRUgXNDb/Bc
-         4XNJDvN5oW7ZdOzZWW2632JxKMOuNaUHfcmw7L9kJijo2uLTVxLeXxPAuXjIhayrmn
-         iYeUy83FIWk5vppopSnhJRLti4B+SqbvXdkLW6JU=
+        b=0ZOLsZVd5xdCTFbkMh29ITJjlZSlgcl/+Ih0Agu9fHeXqaa/IrTVXasxHRGNYMAqr
+         pZ5pJZObhkAZPuLBHOKuStozG5Q5bbhl4lW3pH7GaohtzHewdxC1uvJxm2qtNbKTEY
+         Wnfmo9HcNyZQaZkP1iGWQ7LpdJ61RWVHBRfKDEHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 441/772] rxrpc: Dont let ack.previousPacket regress
-Date:   Tue,  7 Jun 2022 19:00:33 +0200
-Message-Id: <20220607165001.994175066@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+09ad4050dd3a120bfccd@syzkaller.appspotmail.com,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 391/772] io_uring: fix assuming triggered poll waitqueue is the single poll
+Date:   Tue,  7 Jun 2022 18:59:43 +0200
+Message-Id: <20220607165000.534325410@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,83 +50,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit 81524b6312535897707f2942695da1d359a5e56b ]
+[ Upstream commit d89a4fac0fbc6fe5fc24d1c9a889440dcf410368 ]
 
-The previousPacket field in the rx ACK packet should never go backwards -
-it's now the highest DATA sequence number received, not the last on
-received (it used to be used for out of sequence detection).
+syzbot reports a recent regression:
 
-Fixes: 248f219cb8bc ("rxrpc: Rewrite the data and ack handling code")
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
+BUG: KASAN: use-after-free in __wake_up_common+0x637/0x650 kernel/sched/wait.c:101
+Read of size 8 at addr ffff888011e8a130 by task syz-executor413/3618
+
+CPU: 0 PID: 3618 Comm: syz-executor413 Tainted: G        W         5.17.0-syzkaller-01402-g8565d64430f8 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ __wake_up_common+0x637/0x650 kernel/sched/wait.c:101
+ __wake_up_common_lock+0xd0/0x130 kernel/sched/wait.c:138
+ tty_release+0x657/0x1200 drivers/tty/tty_io.c:1781
+ __fput+0x286/0x9f0 fs/file_table.c:317
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ exit_task_work include/linux/task_work.h:32 [inline]
+ do_exit+0xaff/0x29d0 kernel/exit.c:806
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:936
+ __do_sys_exit_group kernel/exit.c:947 [inline]
+ __se_sys_exit_group kernel/exit.c:945 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:945
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f439a1fac69
+
+which is due to leaving the request on the waitqueue mistakenly. The
+reproducer is using a tty device, which means we end up arming the same
+poll queue twice (it uses the same poll waitqueue for both), but in
+io_poll_wake() we always just clear REQ_F_SINGLE_POLL regardless of which
+entry triggered. This leaves one waitqueue potentially armed after we're
+done, which then blows up in tty when the waitqueue is attempted removed.
+
+We have no room to store this information, so simply encode it in the
+wait_queue_entry->private where we store the io_kiocb request pointer.
+
+Fixes: 91eac1c69c20 ("io_uring: cache poll/double-poll state with a request flag")
+Reported-by: syzbot+09ad4050dd3a120bfccd@syzkaller.appspotmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/ar-internal.h | 4 ++--
- net/rxrpc/input.c       | 4 +++-
- net/rxrpc/output.c      | 2 +-
- 3 files changed, 6 insertions(+), 4 deletions(-)
+ fs/io_uring.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index cc1fe6d00eca..4ba51e6d3d85 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -679,7 +679,7 @@ struct rxrpc_call {
- 	/* Receive-phase ACK management (ACKs we send). */
- 	u8			ackr_reason;	/* reason to ACK */
- 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
--	rxrpc_seq_t		ackr_prev_seq;	/* previous sequence number received */
-+	rxrpc_seq_t		ackr_highest_seq; /* Higest sequence number received */
- 	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
- 	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 8711d92f4d71..25b0832e0fc3 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -5632,10 +5632,13 @@ static void io_poll_cancel_req(struct io_kiocb *req)
+ 	io_poll_execute(req, 0);
+ }
  
-@@ -694,7 +694,7 @@ struct rxrpc_call {
- 	/* Transmission-phase ACK management (ACKs we've received). */
- 	ktime_t			acks_latest_ts;	/* Timestamp of latest ACK received */
- 	rxrpc_seq_t		acks_first_seq;	/* first sequence number received */
--	rxrpc_seq_t		acks_prev_seq;	/* previous sequence number received */
-+	rxrpc_seq_t		acks_prev_seq;	/* Highest previousPacket received */
- 	rxrpc_seq_t		acks_lowest_nak; /* Lowest NACK in the buffer (or ==tx_hard_ack) */
- 	rxrpc_seq_t		acks_lost_top;	/* tx_top at the time lost-ack ping sent */
- 	rxrpc_serial_t		acks_lost_ping;	/* Serial number of probe ACK */
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 3da33b5c13b2..680b984ef87f 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -453,7 +453,6 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
- 	    !rxrpc_receiving_reply(call))
- 		goto unlock;
- 
--	call->ackr_prev_seq = seq0;
- 	hard_ack = READ_ONCE(call->rx_hard_ack);
- 
- 	nr_subpackets = sp->nr_subpackets;
-@@ -534,6 +533,9 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
- 			ack_serial = serial;
- 		}
- 
-+		if (after(seq0, call->ackr_highest_seq))
-+			call->ackr_highest_seq = seq0;
++#define wqe_to_req(wait)	((void *)((unsigned long) (wait)->private & ~1))
++#define wqe_is_double(wait)	((unsigned long) (wait)->private & 1)
 +
- 		/* Queue the packet.  We use a couple of memory barriers here as need
- 		 * to make sure that rx_top is perceived to be set after the buffer
- 		 * pointer and that the buffer pointer is set after the annotation and
-diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
-index a45c83f22236..46aae9b7006f 100644
---- a/net/rxrpc/output.c
-+++ b/net/rxrpc/output.c
-@@ -89,7 +89,7 @@ static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
- 	pkt->ack.bufferSpace	= htons(8);
- 	pkt->ack.maxSkew	= htons(0);
- 	pkt->ack.firstPacket	= htonl(hard_ack + 1);
--	pkt->ack.previousPacket	= htonl(call->ackr_prev_seq);
-+	pkt->ack.previousPacket	= htonl(call->ackr_highest_seq);
- 	pkt->ack.serial		= htonl(serial);
- 	pkt->ack.reason		= reason;
- 	pkt->ack.nAcks		= top - hard_ack;
+ static int io_poll_wake(struct wait_queue_entry *wait, unsigned mode, int sync,
+ 			void *key)
+ {
+-	struct io_kiocb *req = wait->private;
++	struct io_kiocb *req = wqe_to_req(wait);
+ 	struct io_poll_iocb *poll = container_of(wait, struct io_poll_iocb,
+ 						 wait);
+ 	__poll_t mask = key_to_poll(key);
+@@ -5673,7 +5676,10 @@ static int io_poll_wake(struct wait_queue_entry *wait, unsigned mode, int sync,
+ 		if (mask && poll->events & EPOLLONESHOT) {
+ 			list_del_init(&poll->wait.entry);
+ 			poll->head = NULL;
+-			req->flags &= ~REQ_F_SINGLE_POLL;
++			if (wqe_is_double(wait))
++				req->flags &= ~REQ_F_DOUBLE_POLL;
++			else
++				req->flags &= ~REQ_F_SINGLE_POLL;
+ 		}
+ 		__io_poll_execute(req, mask);
+ 	}
+@@ -5685,6 +5691,7 @@ static void __io_queue_proc(struct io_poll_iocb *poll, struct io_poll_table *pt,
+ 			    struct io_poll_iocb **poll_ptr)
+ {
+ 	struct io_kiocb *req = pt->req;
++	unsigned long wqe_private = (unsigned long) req;
+ 
+ 	/*
+ 	 * The file being polled uses multiple waitqueues for poll handling
+@@ -5710,6 +5717,8 @@ static void __io_queue_proc(struct io_poll_iocb *poll, struct io_poll_table *pt,
+ 			pt->error = -ENOMEM;
+ 			return;
+ 		}
++		/* mark as double wq entry */
++		wqe_private |= 1;
+ 		req->flags |= REQ_F_DOUBLE_POLL;
+ 		io_init_poll_iocb(poll, first->events, first->wait.func);
+ 		*poll_ptr = poll;
+@@ -5720,7 +5729,7 @@ static void __io_queue_proc(struct io_poll_iocb *poll, struct io_poll_table *pt,
+ 	req->flags |= REQ_F_SINGLE_POLL;
+ 	pt->nr_entries++;
+ 	poll->head = head;
+-	poll->wait.private = req;
++	poll->wait.private = (void *) wqe_private;
+ 
+ 	if (poll->events & EPOLLEXCLUSIVE)
+ 		add_wait_queue_exclusive(head, &poll->wait);
+@@ -5747,7 +5756,6 @@ static int __io_arm_poll_handler(struct io_kiocb *req,
+ 	INIT_HLIST_NODE(&req->hash_node);
+ 	io_init_poll_iocb(poll, mask, io_poll_wake);
+ 	poll->file = req->file;
+-	poll->wait.private = req;
+ 
+ 	ipt->pt._key = mask;
+ 	ipt->req = req;
 -- 
 2.35.1
 
