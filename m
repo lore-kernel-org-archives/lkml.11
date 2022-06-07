@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C8D6CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D20ACCA48E
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383765AbiFGWGS (ORCPT
+        id S1383788AbiFGWG3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:06:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60288 "EHLO
+        Tue, 7 Jun 2022 18:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379546AbiFGVGE (ORCPT
+        with ESMTP id S1379655AbiFGVGL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:06:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E8B1CA5EA;
-        Tue,  7 Jun 2022 11:49:43 -0700 (PDT)
+        Tue, 7 Jun 2022 17:06:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6B4720EEB2;
+        Tue,  7 Jun 2022 11:49:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23C58616B6;
-        Tue,  7 Jun 2022 18:49:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31D30C385A5;
-        Tue,  7 Jun 2022 18:49:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29ED2B8237F;
+        Tue,  7 Jun 2022 18:49:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DF75C385A2;
+        Tue,  7 Jun 2022 18:49:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627782;
-        bh=GfWpQ2f0XwiJpFMuX9ehdEugJEOsWkQR8NGeRHa91uU=;
+        s=korg; t=1654627793;
+        bh=PBnEfVX85LaiNjq5AuHLvIpM2RMwLs/8cNoj0GuK3cU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A2JOD7Wkxp7ce+bT/xFdzMJFgj4XFKMoQyQGhoz2geWa0bxofXjrSY3Ow/TbHfFkk
-         0QIsh1EudL+SNrZ+sLGlj9vjkjE8kgmN7rWLMIfP3Ubj+990yj9L0awWiRWUtjDDVI
-         TGM9LShDvtnOTTD23d9JaKTKq8CwVO5xv0qxCnlA=
+        b=ghr5FZA3LrUc2JJi/KGDJRXShBxSECcVogG0sX2bxHlo9QEOiogLZh8PqkI3jMekk
+         Yb7U4s+NPkyguyQBHC0MoYvC2Pn/5CnhLPZrL6LvDG324/lv9BJr6+RHqsdiTuSaeE
+         MiRGMTfHZTurmnEbPGjvabMutILndtkv1QcmSAd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Huang Rui <ray.huang@amd.com>,
+        Aaron Liu <aaron.liu@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 091/879] scsi: lpfc: Protect memory leak for NPIV ports sending PLOGI_RJT
-Date:   Tue,  7 Jun 2022 18:53:29 +0200
-Message-Id: <20220607165005.334825025@linuxfoundation.org>
+Subject: [PATCH 5.18 094/879] drm/amdgpu/pm: fix the null pointer while the smu is disabled
+Date:   Tue,  7 Jun 2022 18:53:32 +0200
+Message-Id: <20220607165005.420757847@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,89 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Huang Rui <ray.huang@amd.com>
 
-[ Upstream commit 672d1cb40551ea9c95efad43ab6d45e4ab4e015f ]
+[ Upstream commit eea5c7b3390c6e006ba4cbd906447dd8cea8cfbf ]
 
-There is a potential memory leak in lpfc_ignore_els_cmpl() and
-lpfc_els_rsp_reject() that was allocated from NPIV PLOGI_RJT
-(lpfc_rcv_plogi()'s login_mbox).
+It needs to check if the pp_funcs is initialized while release the
+context, otherwise it will trigger null pointer panic while the software
+smu is not enabled.
 
-Check if cmdiocb->context_un.mbox was allocated in lpfc_ignore_els_cmpl(),
-and then free it back to phba->mbox_mem_pool along with mbox->ctx_buf for
-service parameters.
+[ 1109.404555] BUG: kernel NULL pointer dereference, address: 0000000000000078
+[ 1109.404609] #PF: supervisor read access in kernel mode
+[ 1109.404638] #PF: error_code(0x0000) - not-present page
+[ 1109.404657] PGD 0 P4D 0
+[ 1109.404672] Oops: 0000 [#1] PREEMPT SMP NOPTI
+[ 1109.404701] CPU: 7 PID: 9150 Comm: amdgpu_test Tainted: G           OEL    5.16.0-custom #1
+[ 1109.404732] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[ 1109.404765] RIP: 0010:amdgpu_dpm_force_performance_level+0x1d/0x170 [amdgpu]
+[ 1109.405109] Code: 5d c3 44 8b a3 f0 80 00 00 eb e5 66 90 0f 1f 44 00 00 55 48 89 e5 41 57 41 56 41 55 41 54 53 48 83 ec 08 4c 8b b7 f0 7d 00 00 <49> 83 7e 78 00 0f 84 f2 00 00 00 80 bf 87 80 00 00 00 48 89 fb 0f
+[ 1109.405176] RSP: 0018:ffffaf3083ad7c20 EFLAGS: 00010282
+[ 1109.405203] RAX: 0000000000000000 RBX: ffff9796b1c14600 RCX: 0000000002862007
+[ 1109.405229] RDX: ffff97968591c8c0 RSI: 0000000000000001 RDI: ffff9796a3700000
+[ 1109.405260] RBP: ffffaf3083ad7c50 R08: ffffffff9897de00 R09: ffff979688d9db60
+[ 1109.405286] R10: 0000000000000000 R11: ffff979688d9db90 R12: 0000000000000001
+[ 1109.405316] R13: ffff9796a3700000 R14: 0000000000000000 R15: ffff9796a3708fc0
+[ 1109.405345] FS:  00007ff055cff180(0000) GS:ffff9796bfdc0000(0000) knlGS:0000000000000000
+[ 1109.405378] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1109.405400] CR2: 0000000000000078 CR3: 000000000a394000 CR4: 00000000000506e0
+[ 1109.405434] Call Trace:
+[ 1109.405445]  <TASK>
+[ 1109.405456]  ? delete_object_full+0x1d/0x20
+[ 1109.405480]  amdgpu_ctx_set_stable_pstate+0x7c/0xa0 [amdgpu]
+[ 1109.405698]  amdgpu_ctx_fini.part.0+0xcb/0x100 [amdgpu]
+[ 1109.405911]  amdgpu_ctx_do_release+0x71/0x80 [amdgpu]
+[ 1109.406121]  amdgpu_ctx_ioctl+0x52d/0x550 [amdgpu]
+[ 1109.406327]  ? _raw_spin_unlock+0x1a/0x30
+[ 1109.406354]  ? drm_gem_handle_delete+0x81/0xb0 [drm]
+[ 1109.406400]  ? amdgpu_ctx_get_entity+0x2c0/0x2c0 [amdgpu]
+[ 1109.406609]  drm_ioctl_kernel+0xb6/0x140 [drm]
 
-For lpfc_els_rsp_reject() failure, free both the ctx_buf for service
-parameters and the login_mbox.
-
-Link: https://lore.kernel.org/r/20220412222008.126521-10-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Huang Rui <ray.huang@amd.com>
+Reviewed-by: Aaron Liu <aaron.liu@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_nportdisc.c | 10 ++++++++--
- drivers/scsi/lpfc/lpfc_sli.c       | 17 +++++++++++++++++
- 2 files changed, 25 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/pm/amdgpu_dpm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
-index c4e1a07066a2..4b065c51ee1b 100644
---- a/drivers/scsi/lpfc/lpfc_nportdisc.c
-+++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
-@@ -614,9 +614,15 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
- 		stat.un.b.lsRjtRsnCode = LSRJT_INVALID_CMD;
- 		stat.un.b.lsRjtRsnCodeExp = LSEXP_NOTHING_MORE;
- 		rc = lpfc_els_rsp_reject(vport, stat.un.lsRjtError, cmdiocb,
--			ndlp, login_mbox);
--		if (rc)
-+					 ndlp, login_mbox);
-+		if (rc) {
-+			mp = (struct lpfc_dmabuf *)login_mbox->ctx_buf;
-+			if (mp) {
-+				lpfc_mbuf_free(phba, mp->virt, mp->phys);
-+				kfree(mp);
-+			}
- 			mempool_free(login_mbox, phba->mbox_mem_pool);
-+		}
- 		return 1;
- 	}
+diff --git a/drivers/gpu/drm/amd/pm/amdgpu_dpm.c b/drivers/gpu/drm/amd/pm/amdgpu_dpm.c
+index 72e7b5d40af6..5472f9936feb 100644
+--- a/drivers/gpu/drm/amd/pm/amdgpu_dpm.c
++++ b/drivers/gpu/drm/amd/pm/amdgpu_dpm.c
+@@ -790,7 +790,7 @@ int amdgpu_dpm_force_performance_level(struct amdgpu_device *adev,
+ 					AMD_DPM_FORCED_LEVEL_PROFILE_MIN_MCLK |
+ 					AMD_DPM_FORCED_LEVEL_PROFILE_PEAK;
  
-diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
-index 6adaf79e67cc..09a45f8ecf3f 100644
---- a/drivers/scsi/lpfc/lpfc_sli.c
-+++ b/drivers/scsi/lpfc/lpfc_sli.c
-@@ -12066,6 +12066,8 @@ lpfc_ignore_els_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
- {
- 	struct lpfc_nodelist *ndlp = NULL;
- 	IOCB_t *irsp;
-+	LPFC_MBOXQ_t *mbox;
-+	struct lpfc_dmabuf *mp;
- 	u32 ulp_command, ulp_status, ulp_word4, iotag;
+-	if (!pp_funcs->force_performance_level)
++	if (!pp_funcs || !pp_funcs->force_performance_level)
+ 		return 0;
  
- 	ulp_command = get_job_cmnd(phba, cmdiocb);
-@@ -12077,6 +12079,21 @@ lpfc_ignore_els_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
- 	} else {
- 		irsp = &rspiocb->iocb;
- 		iotag = irsp->ulpIoTag;
-+
-+		/* It is possible a PLOGI_RJT for NPIV ports to get aborted.
-+		 * The MBX_REG_LOGIN64 mbox command is freed back to the
-+		 * mbox_mem_pool here.
-+		 */
-+		if (cmdiocb->context_un.mbox) {
-+			mbox = cmdiocb->context_un.mbox;
-+			mp = (struct lpfc_dmabuf *)mbox->ctx_buf;
-+			if (mp) {
-+				lpfc_mbuf_free(phba, mp->virt, mp->phys);
-+				kfree(mp);
-+			}
-+			mempool_free(mbox, phba->mbox_mem_pool);
-+			cmdiocb->context_un.mbox = NULL;
-+		}
- 	}
- 
- 	/* ELS cmd tag <ulpIoTag> completes */
+ 	if (adev->pm.dpm.thermal_active)
 -- 
 2.35.1
 
