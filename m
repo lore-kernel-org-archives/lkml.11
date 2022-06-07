@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35928C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B742CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234427AbiFHBc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:32:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40164 "EHLO
+        id S233150AbiFHBcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:32:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383880AbiFGWGo (ORCPT
+        with ESMTP id S1385208AbiFGW0j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:06:44 -0400
+        Tue, 7 Jun 2022 18:26:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA6D195976;
-        Tue,  7 Jun 2022 12:17:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 709AA270F2B;
+        Tue,  7 Jun 2022 12:23:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D3EB6192F;
-        Tue,  7 Jun 2022 19:17:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9D84C385A2;
-        Tue,  7 Jun 2022 19:17:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB8DF60BAA;
+        Tue,  7 Jun 2022 19:23:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02BEEC34115;
+        Tue,  7 Jun 2022 19:23:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629450;
-        bh=+7xftkGjyf+e5zg4DgvqH+lSjN974cPn3Aj+rSWqdhw=;
+        s=korg; t=1654629794;
+        bh=Gh2aEhAmI0pJgz2rAYq1FcDxdPMJDbcw7x4laZqox+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h2koyuUbLehMc2Vhtb15rsQ/cp9RuRj91HP6wLbK5f0kT3q7ND3raPaAtGur13NEp
-         JUx4N1ESdCUTFvS7htmWWikgvRFee05IeNCx3ioa242eoKclYbQKcjhFXCp1dzvg+m
-         +nHmGFYvjk5Ckhm6BoHvgsD+orSzymY+xtko0wuE=
+        b=IU0d4aAsMra/PjR+PCkj+1aCvYCrPhRcQFeM/F4RJESxSrIaJZlEbpNPz+ZBbj8p7
+         DyxYR1B/5YzuzPe37rk4I6sRoN37BFqbD44q1WIJFF/2BB9pQPBjToXZZXCcTQ0UZY
+         1tlrstDGAfZ1Fw80YmesIP2+gn7PD3RqdMZNcuAQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 695/879] MIPS: RALINK: Define pci_remap_iospace under CONFIG_PCI_DRIVERS_GENERIC
-Date:   Tue,  7 Jun 2022 19:03:33 +0200
-Message-Id: <20220607165023.019728967@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Stephen Zhang <starzhangzsd@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 5.18 820/879] MIPS: IP27: Remove incorrect `cpu_has_fpu override
+Date:   Tue,  7 Jun 2022 19:05:38 +0200
+Message-Id: <20220607165026.653464294@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,100 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tiezhu Yang <yangtiezhu@loongson.cn>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-[ Upstream commit 7e4fd16b38923028b01d3dbadf4ca973d885c53e ]
+commit 424c3781dd1cb401857585331eaaa425a13f2429 upstream.
 
-kernel test robot reports a build error used with clang compiler and
-mips-randconfig [1]:
+Remove unsupported forcing of `cpu_has_fpu' to 1, which makes the `nofpu'
+kernel parameter non-functional, and also causes a link error:
 
-    ld.lld: error: undefined symbol: pci_remap_iospace
+ld: arch/mips/kernel/traps.o: in function `trap_init':
+./arch/mips/include/asm/msa.h:(.init.text+0x348): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x354): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x360): undefined reference to `handle_fpe'
 
-we can see the following configs in the mips-randconfig file:
+where the CONFIG_MIPS_FP_SUPPORT configuration option has been disabled.
 
-    CONFIG_RALINK=y
-    CONFIG_SOC_MT7620=y
-    CONFIG_PCI_DRIVERS_LEGACY=y
-    CONFIG_PCI=y
-
-CONFIG_RALINK is set, so pci_remap_iospace is defined in the related
-arch/mips/include/asm/mach-ralink/spaces.h header file:
-
-    #define pci_remap_iospace pci_remap_iospace
-
-CONFIG_PCI is set, so pci_remap_iospace() in drivers/pci/pci.c is not
-built due to pci_remap_iospace is defined under CONFIG_RALINK.
-
-    #ifndef pci_remap_iospace
-    int pci_remap_iospace(const struct resource *res, ...)
-
-    $ objdump -d drivers/pci/pci.o | grep pci_remap_iospace
-    00004cc8 <devm_pci_remap_iospace>:
-        4d18:	10400008 	beqz	v0,4d3c <devm_pci_remap_iospace+0x74>
-        4d2c:	1040000c 	beqz	v0,4d60 <devm_pci_remap_iospace+0x98>
-        4d70:	1000fff3 	b	4d40 <devm_pci_remap_iospace+0x78>
-
-In addition, CONFIG_PCI_DRIVERS_GENERIC is not set, so pci_remap_iospace()
-in arch/mips/pci/pci-generic.c is not built too.
-
-    #ifdef pci_remap_iospace
-    int pci_remap_iospace(const struct resource *res, ...)
-
-For the above reasons, undefined reference pci_remap_iospace() looks like
-reasonable.
-
-Here are simple steps to reproduce used with gcc and defconfig:
-
-    cd mips.git
-    make vocore2_defconfig # set RALINK, SOC_MT7620, PCI_DRIVERS_LEGACY
-    make menuconfig        # set PCI
-    make
-
-there exists the following build error:
-
-      LD      vmlinux.o
-      MODPOST vmlinux.symvers
-      MODINFO modules.builtin.modinfo
-      GEN     modules.builtin
-      LD      .tmp_vmlinux.kallsyms1
-    drivers/pci/pci.o: In function `devm_pci_remap_iospace':
-    pci.c:(.text+0x4d24): undefined reference to `pci_remap_iospace'
-    Makefile:1158: recipe for target 'vmlinux' failed
-    make: *** [vmlinux] Error 1
-
-Define pci_remap_iospace under CONFIG_PCI_DRIVERS_GENERIC can fix the build
-error, with this patch, no build error remains. This patch is similar with
-commit e538e8649892 ("MIPS: asm: pci: define arch-specific
-'pci_remap_iospace()' dependent on 'CONFIG_PCI_DRIVERS_GENERIC'").
-
-[1] https://lore.kernel.org/lkml/202205251247.nQ5cxSV6-lkp@intel.com/
-
-Fixes: 09d97da660ff ("MIPS: Only define pci_remap_iospace() for Ralink")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-Acked-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Reported-by: Stephen Zhang <starzhangzsd@gmail.com>
+Fixes: 0ebb2f4159af ("MIPS: IP27: Update/restructure CPU overrides")
+Cc: stable@vger.kernel.org # v4.2+
 Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/include/asm/mach-ralink/spaces.h | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/mips/include/asm/mach-ralink/spaces.h b/arch/mips/include/asm/mach-ralink/spaces.h
-index f7af11ea2d61..a9f0570d0f04 100644
---- a/arch/mips/include/asm/mach-ralink/spaces.h
-+++ b/arch/mips/include/asm/mach-ralink/spaces.h
-@@ -6,7 +6,9 @@
- #define PCI_IOSIZE	SZ_64K
- #define IO_SPACE_LIMIT	(PCI_IOSIZE - 1)
- 
-+#ifdef CONFIG_PCI_DRIVERS_GENERIC
- #define pci_remap_iospace pci_remap_iospace
-+#endif
- 
- #include <asm/mach-generic/spaces.h>
- #endif
--- 
-2.35.1
-
+--- a/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
++++ b/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
+@@ -25,7 +25,6 @@
+ #define cpu_has_4kex			1
+ #define cpu_has_3k_cache		0
+ #define cpu_has_4k_cache		1
+-#define cpu_has_fpu			1
+ #define cpu_has_nofpuex			0
+ #define cpu_has_32fpr			1
+ #define cpu_has_counter			1
 
 
