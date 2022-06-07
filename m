@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71AAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26C10C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:26:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346471AbiFGR0h (ORCPT
+        id S1346542AbiFGR0o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45430 "EHLO
+        Tue, 7 Jun 2022 13:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346018AbiFGRWs (ORCPT
+        with ESMTP id S1346156AbiFGRWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:22:48 -0400
+        Tue, 7 Jun 2022 13:22:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8229C106374;
-        Tue,  7 Jun 2022 10:21:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A0E106365;
+        Tue,  7 Jun 2022 10:21:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F099460907;
-        Tue,  7 Jun 2022 17:21:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01B15C34115;
-        Tue,  7 Jun 2022 17:21:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 26FD46009B;
+        Tue,  7 Jun 2022 17:21:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37128C385A5;
+        Tue,  7 Jun 2022 17:21:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622486;
-        bh=im+cepvljc7lf1qmxeA/Pg3Q0vGcfHUx4GIwSUU/uJk=;
+        s=korg; t=1654622483;
+        bh=fsc6IIIk1awweZ+LPL499ZV/HHQ210t5VuqTymzmdZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KFT7lT8qvepOYm7ElWU9qgxEqzMt7tJfyUoKyUPARkyG1yD+sBbtY/B5YM4ZGhQEP
-         K2aKvOVLU2eM5SoYLKefNMWUcJg+/p1BS/x5LGaIYarnmDM0ao8+7fqSDNFh010hGs
-         xwcsxqpPrDptvCplUqd3giGaFczruqBGdCs4xtvI=
+        b=PsSbGpKHv9J9w+A7851IbebZsJwpVL9IwlsZmOJAYrx0kvCdu+Lq8Ce9De5ALRHqK
+         Rqo/QfB2PTldUneLD9ZrGe0oz04yBsIQQ2OkGE+MJWE1plqFVZAhfLlTo5rkNSNIHh
+         Mbi4FLHjtv88A5hNJFKVevM3CHMD2Kb6MZoFMIPs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Richter <tmricht@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
+        stable@vger.kernel.org,
+        Raviteja Goud Talla <ravitejax.goud.talla@intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 069/452] s390/preempt: disable __preempt_count_add() optimization for PROFILE_ALL_BRANCHES
-Date:   Tue,  7 Jun 2022 18:58:46 +0200
-Message-Id: <20220607164910.606423975@linuxfoundation.org>
+Subject: [PATCH 5.10 024/452] iommu/vt-d: Add RPLS to quirk list to skip TE disabling
+Date:   Tue,  7 Jun 2022 18:58:01 +0200
+Message-Id: <20220607164909.265970499@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,59 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiko Carstens <hca@linux.ibm.com>
+From: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
 
-[ Upstream commit 63678eecec57fc51b778be3da35a397931287170 ]
+[ Upstream commit 0a967f5bfd9134b89681cae58deb222e20840e76 ]
 
-gcc 12 does not (always) optimize away code that should only be generated
-if parameters are constant and within in a certain range. This depends on
-various obscure kernel config options, however in particular
-PROFILE_ALL_BRANCHES can trigger this compile error:
+The VT-d spec requires (10.4.4 Global Command Register, TE
+field) that:
 
-In function ‘__atomic_add_const’,
-    inlined from ‘__preempt_count_add.part.0’ at ./arch/s390/include/asm/preempt.h:50:3:
-./arch/s390/include/asm/atomic_ops.h:80:9: error: impossible constraint in ‘asm’
-   80 |         asm volatile(                                                   \
-      |         ^~~
+Hardware implementations supporting DMA draining must drain
+any in-flight DMA read/write requests queued within the
+Root-Complex before completing the translation enable
+command and reflecting the status of the command through
+the TES field in the Global Status register.
 
-Workaround this by simply disabling the optimization for
-PROFILE_ALL_BRANCHES, since the kernel will be so slow, that this
-optimization won't matter at all.
+Unfortunately, some integrated graphic devices fail to do
+so after some kind of power state transition. As the
+result, the system might stuck in iommu_disable_translati
+on(), waiting for the completion of TE transition.
 
-Reported-by: Thomas Richter <tmricht@linux.ibm.com>
-Reviewed-by: Sven Schnelle <svens@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+This adds RPLS to a quirk list for those devices and skips
+TE disabling if the qurik hits.
+
+Link: https://gitlab.freedesktop.org/drm/intel/-/issues/4898
+Tested-by: Raviteja Goud Talla <ravitejax.goud.talla@intel.com>
+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
+Reviewed-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220302043256.191529-1-tejaskumarx.surendrakumar.upadhyay@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/include/asm/preempt.h | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/iommu/intel/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/s390/include/asm/preempt.h b/arch/s390/include/asm/preempt.h
-index b5f545db461a..60e101b8460c 100644
---- a/arch/s390/include/asm/preempt.h
-+++ b/arch/s390/include/asm/preempt.h
-@@ -46,10 +46,17 @@ static inline bool test_preempt_need_resched(void)
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 21749859ad45..477dde39823c 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -6296,7 +6296,7 @@ static void quirk_igfx_skip_te_disable(struct pci_dev *dev)
+ 	ver = (dev->device >> 8) & 0xff;
+ 	if (ver != 0x45 && ver != 0x46 && ver != 0x4c &&
+ 	    ver != 0x4e && ver != 0x8a && ver != 0x98 &&
+-	    ver != 0x9a)
++	    ver != 0x9a && ver != 0xa7)
+ 		return;
  
- static inline void __preempt_count_add(int val)
- {
--	if (__builtin_constant_p(val) && (val >= -128) && (val <= 127))
--		__atomic_add_const(val, &S390_lowcore.preempt_count);
--	else
--		__atomic_add(val, &S390_lowcore.preempt_count);
-+	/*
-+	 * With some obscure config options and CONFIG_PROFILE_ALL_BRANCHES
-+	 * enabled, gcc 12 fails to handle __builtin_constant_p().
-+	 */
-+	if (!IS_ENABLED(CONFIG_PROFILE_ALL_BRANCHES)) {
-+		if (__builtin_constant_p(val) && (val >= -128) && (val <= 127)) {
-+			__atomic_add_const(val, &S390_lowcore.preempt_count);
-+			return;
-+		}
-+	}
-+	__atomic_add(val, &S390_lowcore.preempt_count);
- }
- 
- static inline void __preempt_count_sub(int val)
+ 	if (risky_device(dev))
 -- 
 2.35.1
 
