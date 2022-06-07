@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7017BCCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B7FECCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352691AbiFGS0l (ORCPT
+        id S1352710AbiFGS0o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60996 "EHLO
+        Tue, 7 Jun 2022 14:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351469AbiFGSCE (ORCPT
+        with ESMTP id S1351445AbiFGSCD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B741059FB;
-        Tue,  7 Jun 2022 10:44:41 -0700 (PDT)
+        Tue, 7 Jun 2022 14:02:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F95152B97;
+        Tue,  7 Jun 2022 10:44:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B3A6B82239;
-        Tue,  7 Jun 2022 17:44:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6E73C385A5;
-        Tue,  7 Jun 2022 17:44:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE61CB8232B;
+        Tue,  7 Jun 2022 17:44:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 274EFC34115;
+        Tue,  7 Jun 2022 17:44:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623879;
-        bh=qGGdL1YoiHe0RVOyT8zumSlWU3J2LNiqdlPl8Ov1wKM=;
+        s=korg; t=1654623876;
+        bh=HfOrDTLhdUzR7V2uVaro7XE7vKpON/b5Tcu5bw6pI6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hJXD7QTesod54A21B8vepES7Taeur7z8h8dZSMF4HsN531gOSVpdA0PanMyb4ilAN
-         otcgtMyeFWWVsoJowKoO16p4rIZKe70caFL98K2TXZkG+gawiscla9fTlOO50jxURD
-         JFOxlWHJk+QW8ncHkNk6fEwsfGwF7wijhV11l9fw=
+        b=WklYBRk9b0p6Gkh57AklJLOJhoIJJePNjpG6OVkQegBykH2vU4HAfKz2LeFDsyRH/
+         wtGZHbUWEjuVi8LNa34IXkXC6f1gmSeX/2uum/s9pCCuQd58O/Giwmw4JxrTQVn3o1
+         jyWLHLAhCcERx1y0Tn4qFNDhxDttHn5aY1HxtLcY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
-        Abhishek Kumar <kuabhs@chromium.org>,
-        Brian Norris <briannorris@chromium.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Stafford Horne <shorne@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 088/667] ath10k: skip ath10k_halt during suspend for driver state RESTARTING
-Date:   Tue,  7 Jun 2022 18:55:53 +0200
-Message-Id: <20220607164937.458777269@linuxfoundation.org>
+Subject: [PATCH 5.15 123/667] openrisc: start CPU timer early in boot
+Date:   Tue,  7 Jun 2022 18:56:28 +0200
+Message-Id: <20220607164938.514152622@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,112 +54,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abhishek Kumar <kuabhs@chromium.org>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit b72a4aff947ba807177bdabb43debaf2c66bee05 ]
+[ Upstream commit 516dd4aacd67a0f27da94f3fe63fe0f4dbab6e2b ]
 
-Double free crash is observed when FW recovery(caused by wmi
-timeout/crash) is followed by immediate suspend event. The FW recovery
-is triggered by ath10k_core_restart() which calls driver clean up via
-ath10k_halt(). When the suspend event occurs between the FW recovery,
-the restart worker thread is put into frozen state until suspend completes.
-The suspend event triggers ath10k_stop() which again triggers ath10k_halt()
-The double invocation of ath10k_halt() causes ath10k_htt_rx_free() to be
-called twice(Note: ath10k_htt_rx_alloc was not called by restart worker
-thread because of its frozen state), causing the crash.
+In order to measure the boot process, the timer should be switched on as
+early in boot as possible. As well, the commit defines the get_cycles
+macro, like the previous patches in this series, so that generic code is
+aware that it's implemented by the platform, as is done on other archs.
 
-To fix this, during the suspend flow, skip call to ath10k_halt() in
-ath10k_stop() when the current driver state is ATH10K_STATE_RESTARTING.
-Also, for driver state ATH10K_STATE_RESTARTING, call
-ath10k_wait_for_suspend() in ath10k_stop(). This is because call to
-ath10k_wait_for_suspend() is skipped later in
-[ath10k_halt() > ath10k_core_stop()] for the driver state
-ATH10K_STATE_RESTARTING.
-
-The frozen restart worker thread will be cancelled during resume when the
-device comes out of suspend.
-
-Below is the crash stack for reference:
-
-[  428.469167] ------------[ cut here ]------------
-[  428.469180] kernel BUG at mm/slub.c:4150!
-[  428.469193] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
-[  428.469219] Workqueue: events_unbound async_run_entry_fn
-[  428.469230] RIP: 0010:kfree+0x319/0x31b
-[  428.469241] RSP: 0018:ffffa1fac015fc30 EFLAGS: 00010246
-[  428.469247] RAX: ffffedb10419d108 RBX: ffff8c05262b0000
-[  428.469252] RDX: ffff8c04a8c07000 RSI: 0000000000000000
-[  428.469256] RBP: ffffa1fac015fc78 R08: 0000000000000000
-[  428.469276] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  428.469285] Call Trace:
-[  428.469295]  ? dma_free_attrs+0x5f/0x7d
-[  428.469320]  ath10k_core_stop+0x5b/0x6f
-[  428.469336]  ath10k_halt+0x126/0x177
-[  428.469352]  ath10k_stop+0x41/0x7e
-[  428.469387]  drv_stop+0x88/0x10e
-[  428.469410]  __ieee80211_suspend+0x297/0x411
-[  428.469441]  rdev_suspend+0x6e/0xd0
-[  428.469462]  wiphy_suspend+0xb1/0x105
-[  428.469483]  ? name_show+0x2d/0x2d
-[  428.469490]  dpm_run_callback+0x8c/0x126
-[  428.469511]  ? name_show+0x2d/0x2d
-[  428.469517]  __device_suspend+0x2e7/0x41b
-[  428.469523]  async_suspend+0x1f/0x93
-[  428.469529]  async_run_entry_fn+0x3d/0xd1
-[  428.469535]  process_one_work+0x1b1/0x329
-[  428.469541]  worker_thread+0x213/0x372
-[  428.469547]  kthread+0x150/0x15f
-[  428.469552]  ? pr_cont_work+0x58/0x58
-[  428.469558]  ? kthread_blkcg+0x31/0x31
-
-Tested-on: QCA6174 hw3.2 PCI WLAN.RM.4.4.1-00288-QCARMSWPZ-1
-Co-developed-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220426221859.v2.1.I650b809482e1af8d0156ed88b5dc2677a0711d46@changeid
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Jonas Bonn <jonas@southpole.se>
+Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
+Acked-by: Stafford Horne <shorne@gmail.com>
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/mac.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ arch/openrisc/include/asm/timex.h | 1 +
+ arch/openrisc/kernel/head.S       | 9 +++++++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index 1f73fbfee0c0..8a80919b627f 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -5339,13 +5339,29 @@ static int ath10k_start(struct ieee80211_hw *hw)
- static void ath10k_stop(struct ieee80211_hw *hw)
+diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
+index d52b4e536e3f..5487fa93dd9b 100644
+--- a/arch/openrisc/include/asm/timex.h
++++ b/arch/openrisc/include/asm/timex.h
+@@ -23,6 +23,7 @@ static inline cycles_t get_cycles(void)
  {
- 	struct ath10k *ar = hw->priv;
-+	u32 opt;
+ 	return mfspr(SPR_TTCR);
+ }
++#define get_cycles get_cycles
  
- 	ath10k_drain_tx(ar);
+ /* This isn't really used any more */
+ #define CLOCK_TICK_RATE 1000
+diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
+index 15f1b38dfe03..871f4c858859 100644
+--- a/arch/openrisc/kernel/head.S
++++ b/arch/openrisc/kernel/head.S
+@@ -521,6 +521,15 @@ _start:
+ 	l.ori	r3,r0,0x1
+ 	l.mtspr	r0,r3,SPR_SR
  
- 	mutex_lock(&ar->conf_mutex);
- 	if (ar->state != ATH10K_STATE_OFF) {
--		if (!ar->hw_rfkill_on)
--			ath10k_halt(ar);
-+		if (!ar->hw_rfkill_on) {
-+			/* If the current driver state is RESTARTING but not yet
-+			 * fully RESTARTED because of incoming suspend event,
-+			 * then ath10k_halt() is already called via
-+			 * ath10k_core_restart() and should not be called here.
-+			 */
-+			if (ar->state != ATH10K_STATE_RESTARTING) {
-+				ath10k_halt(ar);
-+			} else {
-+				/* Suspending here, because when in RESTARTING
-+				 * state, ath10k_core_stop() skips
-+				 * ath10k_wait_for_suspend().
-+				 */
-+				opt = WMI_PDEV_SUSPEND_AND_DISABLE_INTR;
-+				ath10k_wait_for_suspend(ar, opt);
-+			}
-+		}
- 		ar->state = ATH10K_STATE_OFF;
- 	}
- 	mutex_unlock(&ar->conf_mutex);
++	/*
++	 * Start the TTCR as early as possible, so that the RNG can make use of
++	 * measurements of boot time from the earliest opportunity. Especially
++	 * important is that the TTCR does not return zero by the time we reach
++	 * rand_initialize().
++	 */
++	l.movhi r3,hi(SPR_TTMR_CR)
++	l.mtspr r0,r3,SPR_TTMR
++
+ 	CLEAR_GPR(r1)
+ 	CLEAR_GPR(r2)
+ 	CLEAR_GPR(r3)
 -- 
 2.35.1
 
