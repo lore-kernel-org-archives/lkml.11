@@ -2,51 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D8ACCA495
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18112CCA494
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387035AbiFHB1I (ORCPT
+        id S1387161AbiFHB1N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45698 "EHLO
+        Tue, 7 Jun 2022 21:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382473AbiFGVva (ORCPT
+        with ESMTP id S1380910AbiFGW2A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:51:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF9023BC34;
-        Tue,  7 Jun 2022 12:08:53 -0700 (PDT)
+        Tue, 7 Jun 2022 18:28:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373522717B2;
+        Tue,  7 Jun 2022 12:23:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 627C7618C9;
-        Tue,  7 Jun 2022 19:08:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 482F1C385A2;
-        Tue,  7 Jun 2022 19:08:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48A74B823D5;
+        Tue,  7 Jun 2022 19:23:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A620FC385A2;
+        Tue,  7 Jun 2022 19:23:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628931;
-        bh=L6/7d3an9St0b/NgFIVefwNBWNQVxznP7DEJrhafcWc=;
+        s=korg; t=1654629797;
+        bh=0f7FHCUBIcpJRP8sBna+2OFuHoRs45yztzmQqDGxi/Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CC1KVpWSPJlnPLj7zH8ldI8mjQ/Q7XH3NIZlkfQ7h+jjE6iaN/vXlJKC7pJ76g6g+
-         OCkPbOygxFxzSURfW8J41yrdLNRy4r0TdxKW6DeNujn/n/xZAylqo/nhjwoj4wbDqU
-         132pAifNo2JM3x1TLihIbI0A29RzpC7uvoB/bMMs=
+        b=YmMod0GYuEQRowXWLWxKoq4zl57f5ypWLJR3Zz91QGdCh9X8fY08wlgoFFJVhhMKh
+         GfYkNEmIrNWPAkptWLcCQq3+34Cz1y0naI6YQUkpi6SiVn0uT0PqDzjI8SpjNk1GOi
+         Z/sAk18/N+cNXslS1Ls0yJFAU5TkMCncUo1Q0GyY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ian Rogers <irogers@google.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephane Eranian <eranian@google.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 509/879] perf parse-events: Support different format of the topdown event name
-Date:   Tue,  7 Jun 2022 19:00:27 +0200
-Message-Id: <20220607165017.648968928@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Stephen Zhang <starzhangzsd@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 5.18 821/879] MIPS: IP30: Remove incorrect `cpu_has_fpu override
+Date:   Tue,  7 Jun 2022 19:05:39 +0200
+Message-Id: <20220607165026.682413301@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -58,81 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-[ Upstream commit e7d1374ed5cb346efd9b3df03814dbc0767adb4e ]
+commit f44b3e74c33fe04defeff24ebcae98c3bcc5b285 upstream.
 
-The evsel->name may have a different format for a topdown event, a pure
-topdown name (e.g., topdown-fe-bound), or a PMU name + a topdown name
-(e.g., cpu/topdown-fe-bound/). The cpu/topdown-fe-bound/ kind format
-isn't supported by the arch_evlist__leader(). This format is a very
-common format for a hybrid platform, which requires specifying the PMU
-name for each event.
+Remove unsupported forcing of `cpu_has_fpu' to 1, which makes the `nofpu'
+kernel parameter non-functional, and also causes a link error:
 
-Without the patch,
+ld: arch/mips/kernel/traps.o: in function `trap_init':
+./arch/mips/include/asm/msa.h:(.init.text+0x348): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x354): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x360): undefined reference to `handle_fpe'
 
-  $ perf stat -e '{instructions,slots,cpu/topdown-fe-bound/}' -a sleep 1
+where the CONFIG_MIPS_FP_SUPPORT configuration option has been disabled.
 
-   Performance counter stats for 'system wide':
-
-       <not counted>      instructions
-       <not counted>      slots
-     <not supported>      cpu/topdown-fe-bound/
-
-         1.003482041 seconds time elapsed
-
-  Some events weren't counted. Try disabling the NMI watchdog:
-          echo 0 > /proc/sys/kernel/nmi_watchdog
-          perf stat ...
-          echo 1 > /proc/sys/kernel/nmi_watchdog
-  The events in group usually have to be from the same PMU. Try reorganizing the group.
-
-With the patch,
-
-  $ perf stat -e '{instructions,slots,cpu/topdown-fe-bound/}' -a sleep 1
-
-  Performance counter stats for 'system wide':
-
-         157,383,996      slots
-          25,011,711      instructions
-          27,441,686      cpu/topdown-fe-bound/
-
-         1.003530890 seconds time elapsed
-
-Fixes: bc355822f0d9623b ("perf parse-events: Move slots only with topdown")
-Reviewed-by: Ian Rogers <irogers@google.com>
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: Xing Zhengjun <zhengjun.xing@linux.intel.com>
-Link: https://lore.kernel.org/r/20220518143900.1493980-4-kan.liang@linux.intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Reported-by: Stephen Zhang <starzhangzsd@gmail.com>
+Fixes: 7505576d1c1a ("MIPS: add support for SGI Octane (IP30)")
+Cc: stable@vger.kernel.org # v5.5+
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/arch/x86/util/evlist.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/mips/include/asm/mach-ip30/cpu-feature-overrides.h |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/tools/perf/arch/x86/util/evlist.c b/tools/perf/arch/x86/util/evlist.c
-index cfc208d71f00..75564a7df15b 100644
---- a/tools/perf/arch/x86/util/evlist.c
-+++ b/tools/perf/arch/x86/util/evlist.c
-@@ -36,7 +36,7 @@ struct evsel *arch_evlist__leader(struct list_head *list)
- 				if (slots == first)
- 					return first;
- 			}
--			if (!strncasecmp(evsel->name, "topdown", 7))
-+			if (strcasestr(evsel->name, "topdown"))
- 				has_topdown = true;
- 			if (slots && has_topdown)
- 				return slots;
--- 
-2.35.1
-
+--- a/arch/mips/include/asm/mach-ip30/cpu-feature-overrides.h
++++ b/arch/mips/include/asm/mach-ip30/cpu-feature-overrides.h
+@@ -28,7 +28,6 @@
+ #define cpu_has_4kex			1
+ #define cpu_has_3k_cache		0
+ #define cpu_has_4k_cache		1
+-#define cpu_has_fpu			1
+ #define cpu_has_nofpuex			0
+ #define cpu_has_32fpr			1
+ #define cpu_has_counter			1
 
 
