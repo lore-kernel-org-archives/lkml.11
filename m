@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3FECCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A97F7CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359768AbiFGUkA (ORCPT
+        id S1348367AbiFGUnD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55146 "EHLO
+        Tue, 7 Jun 2022 16:43:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357872AbiFGTm3 (ORCPT
+        with ESMTP id S1357912AbiFGTmc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:29 -0400
+        Tue, 7 Jun 2022 15:42:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28ECC15BAFA;
-        Tue,  7 Jun 2022 11:16:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CAA9FE6;
+        Tue,  7 Jun 2022 11:17:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B92CF60C14;
-        Tue,  7 Jun 2022 18:16:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4162C385A2;
-        Tue,  7 Jun 2022 18:16:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81FE460C7F;
+        Tue,  7 Jun 2022 18:17:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CB45C385A2;
+        Tue,  7 Jun 2022 18:17:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625805;
-        bh=N03/B74u7sn+A4NVcosFTHskafhEW/CGOihApCtGW9Y=;
+        s=korg; t=1654625832;
+        bh=CTn9HCUjXYHSwA99rQmy+i5tCftAg7PvxJaOxRnYJjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XRqIgn+rjOM4keXR4vbQkD9ob2IWmjroi82X3PwwWSGHQ7eG9FAGvaaTeVWkCSMZQ
-         WnpnCd7mB4dv2uvHsdjE0XSCSndio2wmqCBZ9iSIeDXilGNFg63+FbWF7NVRytlzj4
-         Zejpw/J6rftH5Eda69cJRf7o+3TyO6PwgIig9/fs=
+        b=uTRZXDr0HsYGuXqXMrCJLuAJGZik059rMbCjE41vy+GxR5hf33cKztxGppU1B+sEe
+         lf2zIQLGk4f3qTXkeJe6zJsScfgpSVjZq/kUBuZWXOgsw4SRuhWX86ujRbUF8tHGmB
+         6K7h+OwDL9PryR0jwoXjK5YHF9z4ffSRPXMd1OaI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yihang Li <liyihang6@hisilicon.com>,
-        Xiang Chen <chenxiang66@hisilicon.com>,
-        John Garry <john.garry@huawei.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Kwanghoon Son <k.son@samsung.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 123/772] scsi: hisi_sas: Undo RPM resume for failed notify phy event for v3 HW
-Date:   Tue,  7 Jun 2022 18:55:15 +0200
-Message-Id: <20220607164952.670970245@linuxfoundation.org>
+Subject: [PATCH 5.17 159/772] media: exynos4-is: Fix compile warning
+Date:   Tue,  7 Jun 2022 18:55:51 +0200
+Message-Id: <20220607164953.727790731@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,46 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiang Chen <chenxiang66@hisilicon.com>
+From: Kwanghoon Son <k.son@samsung.com>
 
-[ Upstream commit 9b5387fe5af38116b452259d87cd66594b6277c1 ]
+[ Upstream commit e080f5c1f2b6d02c02ee5d674e0e392ccf63bbaf ]
 
-If we fail to notify the phy up event then undo the RPM resume, as the phy
-up notify event handling pairs with that RPM resume.
+Declare static on function 'fimc_isp_video_device_unregister'.
 
-Link: https://lore.kernel.org/r/1651839939-101188-1-git-send-email-john.garry@huawei.com
-Reported-by: Yihang Li <liyihang6@hisilicon.com>
-Tested-by: Yihang Li <liyihang6@hisilicon.com>
-Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+When VIDEO_EXYNOS4_ISP_DMA_CAPTURE=n, compiler warns about
+warning: no previous prototype for function [-Wmissing-prototypes]
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Kwanghoon Son <k.son@samsung.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/media/platform/exynos4-is/fimc-isp-video.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index 52089538e9de..b309a9d0f5b7 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -1561,9 +1561,15 @@ static irqreturn_t phy_up_v3_hw(int phy_no, struct hisi_hba *hisi_hba)
+diff --git a/drivers/media/platform/exynos4-is/fimc-isp-video.h b/drivers/media/platform/exynos4-is/fimc-isp-video.h
+index edcb3a5e3cb9..2dd4ddbc748a 100644
+--- a/drivers/media/platform/exynos4-is/fimc-isp-video.h
++++ b/drivers/media/platform/exynos4-is/fimc-isp-video.h
+@@ -32,7 +32,7 @@ static inline int fimc_isp_video_device_register(struct fimc_isp *isp,
+ 	return 0;
+ }
  
- 	phy->port_id = port_id;
- 
--	/* Call pm_runtime_put_sync() with pairs in hisi_sas_phyup_pm_work() */
-+	/*
-+	 * Call pm_runtime_get_noresume() which pairs with
-+	 * hisi_sas_phyup_pm_work() -> pm_runtime_put_sync().
-+	 * For failure call pm_runtime_put() as we are in a hardirq context.
-+	 */
- 	pm_runtime_get_noresume(dev);
--	hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
-+	res = hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
-+	if (!res)
-+		pm_runtime_put(dev);
- 
- 	res = IRQ_HANDLED;
- 
+-void fimc_isp_video_device_unregister(struct fimc_isp *isp,
++static inline void fimc_isp_video_device_unregister(struct fimc_isp *isp,
+ 				enum v4l2_buf_type type)
+ {
+ }
 -- 
 2.35.1
 
