@@ -2,375 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C550CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 224C9CCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390108AbiFHAlb (ORCPT
+        id S1391660AbiFHAmR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:41:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45900 "EHLO
+        Tue, 7 Jun 2022 20:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382373AbiFGVvT (ORCPT
+        with ESMTP id S1387316AbiFGWuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:51:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACB123B712;
-        Tue,  7 Jun 2022 12:08:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 7 Jun 2022 18:50:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B4B82ACB70
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:39:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654630744;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=J6UCoAjTBIhFULpI3th29L45PAQqa/yX0JAym4+DcxE=;
+        b=B8wcz0m7DmpFiP6DYDwYvmccLlkfZdaB4QQQ7yAbIf3Hh7p7H1xvZoT4o+JKusmjDpo8Ya
+        HY5bFqn9ojA9kFhTX+xO/hYFtX+doyRiYyVdyXgRv0Cqe8+Them+nwykVjYzil+QigbCBi
+        +ay0R0uRzEXl5qEHHdFNaRqUBN+qCKI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-299-en72QhIkMI6WKokoHAimKg-1; Tue, 07 Jun 2022 15:38:59 -0400
+X-MC-Unique: en72QhIkMI6WKokoHAimKg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B24196186B;
-        Tue,  7 Jun 2022 19:08:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD5EEC385A5;
-        Tue,  7 Jun 2022 19:08:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628921;
-        bh=XQYVwm4e8ij17t4mEkXW5o6LGzoLHWCNSMtNDQeVgRE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rB9zSHwC9+Q9DA+4sukWY2tgsew3dS9N2pJ1PMt+uz8hL28L//YaRcEkz+4CLGgpU
-         RDsL+dZQy0/p4DDDWewS9e9CeKL141EirG3BOuAnudHEs2VlqQX6x/r1j/JK68iAzX
-         nC71VzZPZulYg0EJIsvX5mJfN3/G0zi8sBVsCboQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 464/879] irqchip/gic-v3: Fix priority mask handling
-Date:   Tue,  7 Jun 2022 18:59:42 +0200
-Message-Id: <20220607165016.345330773@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D5269800D91;
+        Tue,  7 Jun 2022 19:37:32 +0000 (UTC)
+Received: from emerald.redhat.com (unknown [10.22.9.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C3AC82C0D502;
+        Tue,  7 Jun 2022 19:37:03 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org
+Cc:     Wayne Lin <Wayne.Lin@amd.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RESEND RFC 16/18] drm/display/dp_mst: Maintain time slot allocations when deleting payloads
+Date:   Tue,  7 Jun 2022 15:29:31 -0400
+Message-Id: <20220607192933.1333228-17-lyude@redhat.com>
+In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
+References: <20220607192933.1333228-1-lyude@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+Currently, we set drm_dp_atomic_payload->time_slots to 0 in order to
+indicate that we're about to delete a payload in the current atomic state.
+Since we're going to be dropping all of the legacy code for handling the
+payload table however, we need to be able to ensure that we still keep
+track of the current time slot allocations for each payload so we can reuse
+this info when asking the root MST hub to delete payloads. We'll also be
+using it to recalculate the start slots of each VC.
 
-[ Upstream commit 614ab80c96474682157cabb14f8c8602b3422e90 ]
+So, let's keep track of the intent of a payload in drm_dp_atomic_payload by
+adding ->delete, which we set whenever we're planning on deleting a payload
+during the current atomic commit.
 
-When a kernel is built with CONFIG_ARM64_PSEUDO_NMI=y and pseudo-NMIs
-are enabled at runtime, GICv3's gic_handle_irq() can leave DAIF and
-ICC_PMR_EL1 in an unexpected state in some cases, breaking subsequent
-usage of local_irq_enable() and resulting in softirqs being run with
-IRQs erroneously masked (possibly resulting in deadlocks).
-
-This can happen when an IRQ exception is taken from a context where
-regular IRQs were unmasked, and either:
-
-(1) ICC_IAR1_EL1 indicates a special INTID (e.g. as a result of an IRQ
-    being withdrawn since the IRQ exception was taken).
-
-(2) ICC_IAR1_EL1 and ICC_RPR_EL1 indicate an NMI was acknowledged.
-
-When an NMI is taken from a context where regular IRQs were masked,
-there is no problem.
-
-When CONFIG_ARM64_DEBUG_PRIORITY_MASKING=y, this can be detected with
-perf, e.g.
-
-| # ./perf record -a -g -e cycles:k ls -alR / > /dev/null 2>&1
-| ------------[ cut here ]------------
-| WARNING: CPU: 0 PID: 14 at arch/arm64/include/asm/irqflags.h:32 arch_local_irq_enable+0x4c/0x6c
-| Modules linked in:
-| CPU: 0 PID: 14 Comm: ksoftirqd/0 Not tainted 5.18.0-rc5-00004-g876c38e3d20b #12
-| Hardware name: linux,dummy-virt (DT)
-| pstate: 204000c5 (nzCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-| pc : arch_local_irq_enable+0x4c/0x6c
-| lr : __do_softirq+0x110/0x5d8
-| sp : ffff8000080bbbc0
-| pmr_save: 000000f0
-| x29: ffff8000080bbbc0 x28: ffff316ac3a6ca40 x27: 0000000000000000
-| x26: 0000000000000000 x25: ffffa04611c06008 x24: ffffa04611c06008
-| x23: 0000000040400005 x22: 0000000000000200 x21: ffff8000080bbe20
-| x20: ffffa0460fe10320 x19: 0000000000000009 x18: 0000000000000000
-| x17: ffff91252dfa9000 x16: ffff800008004000 x15: 0000000000004000
-| x14: 0000000000000028 x13: ffffa0460fe17578 x12: ffffa0460fed4294
-| x11: ffffa0460fedc168 x10: ffffffffffffff80 x9 : ffffa0460fe10a70
-| x8 : ffffa0460fedc168 x7 : 000000000000b762 x6 : 00000000057c3bdf
-| x5 : ffff8000080bbb18 x4 : 0000000000000000 x3 : 0000000000000001
-| x2 : ffff91252dfa9000 x1 : 0000000000000060 x0 : 00000000000000f0
-| Call trace:
-|  arch_local_irq_enable+0x4c/0x6c
-|  __irq_exit_rcu+0x180/0x1ac
-|  irq_exit_rcu+0x1c/0x44
-|  el1_interrupt+0x4c/0xe4
-|  el1h_64_irq_handler+0x18/0x24
-|  el1h_64_irq+0x74/0x78
-|  smpboot_thread_fn+0x68/0x2c0
-|  kthread+0x124/0x130
-|  ret_from_fork+0x10/0x20
-| irq event stamp: 193241
-| hardirqs last  enabled at (193240): [<ffffa0460fe10a9c>] __do_softirq+0x10c/0x5d8
-| hardirqs last disabled at (193241): [<ffffa0461102ffe4>] el1_dbg+0x24/0x90
-| softirqs last  enabled at (193234): [<ffffa0460fe10e00>] __do_softirq+0x470/0x5d8
-| softirqs last disabled at (193239): [<ffffa0460fea9944>] __irq_exit_rcu+0x180/0x1ac
-| ---[ end trace 0000000000000000 ]---
-
-The necessary manipulation of DAIF and ICC_PMR_EL1 depends on the
-interrupted context, but the structure of gic_handle_irq() makes this
-also depend on whether the GIC reports an IRQ, NMI, or special INTID:
-
-*  When the interrupted context had regular IRQs masked (and hence the
-   interrupt must be an NMI), the entry code performs the NMI
-   entry/exit and gic_handle_irq() should return with DAIF and
-   ICC_PMR_EL1 unchanged.
-
-   This is handled correctly today.
-
-* When the interrupted context had regular IRQs unmasked, the entry code
-  performs IRQ entry/exit, but expects gic_handle_irq() to always update
-  ICC_PMR_EL1 and DAIF.IF to unmask NMIs (but not regular IRQs) prior to
-  returning (which it must do prior to invoking any regular IRQ
-  handler).
-
-  This unbalanced calling convention is necessary because we don't know
-  whether an NMI has been taken until acknowledged by a read from
-  ICC_IAR1_EL1, and so we need to perform the read with NMI masked in
-  case an NMI has been taken (and needs to be handled with NMIs masked).
-
-  Unfortunately, this is not handled consistently:
-
-  - When ICC_IAR1_EL1 reports a special INTID, gic_handle_irq() returns
-    immediately without manipulating ICC_PMR_EL1 and DAIF.
-
-  - When RPR_EL1 indicates an NMI, gic_handle_irq() calls
-    gic_handle_nmi() to invoke the NMI handler, then returns without
-    manipulating ICC_PMR_EL1 and DAIF.
-
-  - For regular IRQs, gic_handle_irq() manipulates ICC_PMR_EL1 and DAIF
-    prior to invoking the IRQ handler.
-
-There were related problems with special INTID handling in the past,
-where if an exception was taken from a context with regular IRQs masked
-and ICC_IAR_EL1 reported a special INTID, gic_handle_irq() would
-erroneously unmask NMIs in NMI context permitted an unexpected nested
-NMI. That case specifically was fixed by commit:
-
-  a97709f563a078e2 ("irqchip/gic-v3: Do not enable irqs when handling spurious interrups")
-
-... but unfortunately that commit added an inverse problem, where if an
-exception was taken from a context with regular IRQs *unmasked* and
-ICC_IAR_EL1 reported a special INTID, gic_handle_irq() would erroneously
-fail to  unmask NMIs (and consequently regular IRQs could not be
-unmasked during softirq processing). Before and after that commit, if an
-NMI was taken from a context with regular IRQs unmasked gic_handle_irq()
-would not unmask NMIs prior to returning, leading to the same problem
-with softirq handling.
-
-This patch fixes this by restructuring gic_handle_irq(), splitting it
-into separate irqson/irqsoff helper functions which consistently perform
-the DAIF + ICC_PMR1_EL1 manipulation based upon the interrupted context,
-regardless of the event indicated by ICC_IAR1_EL1.
-
-The special INTID handling is moved into the low-level IRQ/NMI handler
-invocation helper functions, so that early returns don't prevent the
-required manipulation of DAIF + ICC_PMR_EL1.
-
-Fixes: f32c926651dcd168 ("irqchip/gic-v3: Handle pseudo-NMIs")
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220513133038.226182-4-mark.rutland@arm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Imre Deak <imre.deak@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sean Paul <sean@poorly.run>
 ---
- drivers/irqchip/irq-gic-v3.c | 147 +++++++++++++++++++++--------------
- 1 file changed, 89 insertions(+), 58 deletions(-)
+ drivers/gpu/drm/display/drm_dp_mst_topology.c | 14 +++++++-------
+ include/drm/display/drm_dp_mst_helper.h       |  5 ++++-
+ 2 files changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 0cbc4e25c48d..1af2b50f36f3 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -673,78 +673,69 @@ static inline void gic_complete_ack(u32 irqnr)
- 	isb();
- }
- 
--static inline void gic_handle_nmi(u32 irqnr, struct pt_regs *regs)
-+static bool gic_rpr_is_nmi_prio(void)
- {
--	bool irqs_enabled = interrupts_enabled(regs);
--	int err;
-+	if (!gic_supports_nmi())
-+		return false;
- 
--	if (irqs_enabled)
--		nmi_enter();
-+	return unlikely(gic_read_rpr() == GICD_INT_RPR_PRI(GICD_INT_NMI_PRI));
-+}
-+
-+static bool gic_irqnr_is_special(u32 irqnr)
-+{
-+	return irqnr >= 1020 && irqnr <= 1023;
-+}
-+
-+static void __gic_handle_irq(u32 irqnr, struct pt_regs *regs)
-+{
-+	if (gic_irqnr_is_special(irqnr))
-+		return;
- 
- 	gic_complete_ack(irqnr);
- 
--	/*
--	 * Leave the PSR.I bit set to prevent other NMIs to be
--	 * received while handling this one.
--	 * PSR.I will be restored when we ERET to the
--	 * interrupted context.
--	 */
--	err = generic_handle_domain_nmi(gic_data.domain, irqnr);
--	if (err)
-+	if (generic_handle_domain_irq(gic_data.domain, irqnr)) {
-+		WARN_ONCE(true, "Unexpected interrupt (irqnr %u)\n", irqnr);
- 		gic_deactivate_unhandled(irqnr);
--
--	if (irqs_enabled)
--		nmi_exit();
-+	}
- }
- 
--static u32 do_read_iar(struct pt_regs *regs)
-+static void __gic_handle_nmi(u32 irqnr, struct pt_regs *regs)
- {
--	u32 iar;
--
--	if (gic_supports_nmi() && unlikely(!interrupts_enabled(regs))) {
--		u64 pmr;
--
--		/*
--		 * We were in a context with IRQs disabled. However, the
--		 * entry code has set PMR to a value that allows any
--		 * interrupt to be acknowledged, and not just NMIs. This can
--		 * lead to surprising effects if the NMI has been retired in
--		 * the meantime, and that there is an IRQ pending. The IRQ
--		 * would then be taken in NMI context, something that nobody
--		 * wants to debug twice.
--		 *
--		 * Until we sort this, drop PMR again to a level that will
--		 * actually only allow NMIs before reading IAR, and then
--		 * restore it to what it was.
--		 */
--		pmr = gic_read_pmr();
--		gic_pmr_mask_irqs();
--		isb();
-+	if (gic_irqnr_is_special(irqnr))
-+		return;
- 
--		iar = gic_read_iar();
-+	gic_complete_ack(irqnr);
- 
--		gic_write_pmr(pmr);
--	} else {
--		iar = gic_read_iar();
-+	if (generic_handle_domain_nmi(gic_data.domain, irqnr)) {
-+		WARN_ONCE(true, "Unexpected pseudo-NMI (irqnr %u)\n", irqnr);
-+		gic_deactivate_unhandled(irqnr);
- 	}
--
--	return iar;
- }
- 
--static asmlinkage void __exception_irq_entry gic_handle_irq(struct pt_regs *regs)
-+/*
-+ * An exception has been taken from a context with IRQs enabled, and this could
-+ * be an IRQ or an NMI.
-+ *
-+ * The entry code called us with DAIF.IF set to keep NMIs masked. We must clear
-+ * DAIF.IF (and update ICC_PMR_EL1 to mask regular IRQs) prior to returning,
-+ * after handling any NMI but before handling any IRQ.
-+ *
-+ * The entry code has performed IRQ entry, and if an NMI is detected we must
-+ * perform NMI entry/exit around invoking the handler.
-+ */
-+static void __gic_handle_irq_from_irqson(struct pt_regs *regs)
- {
-+	bool is_nmi;
- 	u32 irqnr;
- 
--	irqnr = do_read_iar(regs);
-+	irqnr = gic_read_iar();
- 
--	/* Check for special IDs first */
--	if ((irqnr >= 1020 && irqnr <= 1023))
--		return;
-+	is_nmi = gic_rpr_is_nmi_prio();
- 
--	if (gic_supports_nmi() &&
--	    unlikely(gic_read_rpr() == GICD_INT_RPR_PRI(GICD_INT_NMI_PRI))) {
--		gic_handle_nmi(irqnr, regs);
--		return;
-+	if (is_nmi) {
-+		nmi_enter();
-+		__gic_handle_nmi(irqnr, regs);
-+		nmi_exit();
+diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+index 70adb8db4335..10d26a7e028c 100644
+--- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
++++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+@@ -4410,7 +4410,7 @@ int drm_dp_atomic_find_time_slots(struct drm_atomic_state *state,
+ 		 * releasing and allocating the same timeslot allocation,
+ 		 * which is an error
+ 		 */
+-		if (WARN_ON(!prev_slots)) {
++		if (drm_WARN_ON(mgr->dev, payload->delete)) {
+ 			drm_err(mgr->dev,
+ 				"cannot allocate and release time slots on [MST PORT:%p] in the same state\n",
+ 				port);
+@@ -4515,10 +4515,10 @@ int drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
  	}
  
- 	if (gic_prio_masking_enabled()) {
-@@ -752,12 +743,52 @@ static asmlinkage void __exception_irq_entry gic_handle_irq(struct pt_regs *regs
- 		gic_arch_enable_irqs();
+ 	drm_dbg_atomic(mgr->dev, "[MST PORT:%p] TU %d -> 0\n", port, payload->time_slots);
+-	if (payload->time_slots) {
++	if (!payload->delete) {
+ 		drm_dp_mst_put_port_malloc(port);
+-		payload->time_slots = 0;
+ 		payload->pbn = 0;
++		payload->delete = true;
  	}
  
--	gic_complete_ack(irqnr);
-+	if (!is_nmi)
-+		__gic_handle_irq(irqnr, regs);
-+}
+ 	return 0;
+@@ -5234,7 +5234,7 @@ drm_dp_mst_duplicate_state(struct drm_private_obj *obj)
  
--	if (generic_handle_domain_irq(gic_data.domain, irqnr)) {
--		WARN_ONCE(true, "Unexpected interrupt received!\n");
--		gic_deactivate_unhandled(irqnr);
--	}
-+/*
-+ * An exception has been taken from a context with IRQs disabled, which can only
-+ * be an NMI.
-+ *
-+ * The entry code called us with DAIF.IF set to keep NMIs masked. We must leave
-+ * DAIF.IF (and ICC_PMR_EL1) unchanged.
-+ *
-+ * The entry code has performed NMI entry.
-+ */
-+static void __gic_handle_irq_from_irqsoff(struct pt_regs *regs)
-+{
-+	u64 pmr;
-+	u32 irqnr;
-+
-+	/*
-+	 * We were in a context with IRQs disabled. However, the
-+	 * entry code has set PMR to a value that allows any
-+	 * interrupt to be acknowledged, and not just NMIs. This can
-+	 * lead to surprising effects if the NMI has been retired in
-+	 * the meantime, and that there is an IRQ pending. The IRQ
-+	 * would then be taken in NMI context, something that nobody
-+	 * wants to debug twice.
-+	 *
-+	 * Until we sort this, drop PMR again to a level that will
-+	 * actually only allow NMIs before reading IAR, and then
-+	 * restore it to what it was.
-+	 */
-+	pmr = gic_read_pmr();
-+	gic_pmr_mask_irqs();
-+	isb();
-+	irqnr = gic_read_iar();
-+	gic_write_pmr(pmr);
-+
-+	__gic_handle_nmi(irqnr, regs);
-+}
-+
-+static asmlinkage void __exception_irq_entry gic_handle_irq(struct pt_regs *regs)
-+{
-+	if (unlikely(gic_supports_nmi() && !interrupts_enabled(regs)))
-+		__gic_handle_irq_from_irqsoff(regs);
-+	else
-+		__gic_handle_irq_from_irqson(regs);
- }
+ 	list_for_each_entry(pos, &old_state->payloads, next) {
+ 		/* Prune leftover freed timeslot allocations */
+-		if (!pos->time_slots)
++		if (pos->delete)
+ 			continue;
  
- static u32 gic_get_pribits(void)
+ 		payload = kmemdup(pos, sizeof(*payload), GFP_KERNEL);
+@@ -5266,8 +5266,8 @@ static void drm_dp_mst_destroy_state(struct drm_private_obj *obj,
+ 	int i;
+ 
+ 	list_for_each_entry_safe(pos, tmp, &mst_state->payloads, next) {
+-		/* We only keep references to ports with non-zero VCPIs */
+-		if (pos->time_slots)
++		/* We only keep references to ports with active payloads */
++		if (!pos->delete)
+ 			drm_dp_mst_put_port_malloc(pos->port);
+ 		kfree(pos);
+ 	}
+@@ -5395,7 +5395,7 @@ drm_dp_mst_atomic_check_payload_alloc_limits(struct drm_dp_mst_topology_mgr *mgr
+ 
+ 	list_for_each_entry(payload, &mst_state->payloads, next) {
+ 		/* Releasing payloads is always OK-even if the port is gone */
+-		if (!payload->time_slots) {
++		if (payload->delete) {
+ 			drm_dbg_atomic(mgr->dev, "[MST PORT:%p] releases all time slots\n",
+ 				       payload->port);
+ 			continue;
+diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
+index 690ebcabb51f..ecd130028337 100644
+--- a/include/drm/display/drm_dp_mst_helper.h
++++ b/include/drm/display/drm_dp_mst_helper.h
+@@ -555,8 +555,11 @@ struct drm_dp_mst_atomic_payload {
+ 	int time_slots;
+ 	/** @pbn: The payload bandwidth for this payload */
+ 	int pbn;
++
++	/** @delete: Whether or not we intend to delete this payload during this atomic commit */
++	bool delete : 1;
+ 	/** @dsc_enabled: Whether or not this payload has DSC enabled */
+-	bool dsc_enabled;
++	bool dsc_enabled : 1;
+ 
+ 	/** @next: The list node for this payload */
+ 	struct list_head next;
 -- 
-2.35.1
-
-
+2.35.3
 
