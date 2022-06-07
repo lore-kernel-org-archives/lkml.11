@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74227CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:46:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC571C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376639AbiFGUqp (ORCPT
+        id S1376668AbiFGUqu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
+        Tue, 7 Jun 2022 16:46:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356449AbiFGTnE (ORCPT
+        with ESMTP id S1356439AbiFGTnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:43:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F8A52B0A;
-        Tue,  7 Jun 2022 11:18:11 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19AB8517D1;
+        Tue,  7 Jun 2022 11:18:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06B7460A21;
-        Tue,  7 Jun 2022 18:18:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14562C385A2;
-        Tue,  7 Jun 2022 18:18:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C70BAB8237B;
+        Tue,  7 Jun 2022 18:18:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D575C385A2;
+        Tue,  7 Jun 2022 18:18:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625890;
-        bh=Io4HhJb+Cz16sRUnVJbOtBv6IWiQnhJuRY59WG07j+s=;
+        s=korg; t=1654625887;
+        bh=tO43DjKucU72pP0RHq0rgcL4dGdhO7HahM+k57aUjI0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jFEVpAeqpIBW439GeZ57gq3WmWUKHE0jViaff0T6sTKH1dx0d89ZglZ3bxfkLr2lN
-         jZnypNlIn7om6ao3lXf09Ucbv7queB7wlncuzfaPJU2wL9aMFlJnK8EqQLB2DJhiJ9
-         7BrXFi+D/OCVk53ZODm9PvTBNxacczymaWlMHt78=
+        b=KSsoxN8fEcbd58MHTIrLO3dl3LSbbvByRqIlPlXJR1lxeMVrNjXcDfKcIjfeVapI/
+         TZTD1pv6VyyhM/U6XVEimLDKgQv9S987102tgfS71/j+iXmqW+D+Mg9CBtRWXAPg9U
+         ABAt4EhaJdwCW5z2612cDyenpCtO2AVFLfoDATSk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Daniel Latypov <dlatypov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 182/772] IB/rdmavt: add missing locks in rvt_ruc_loopback
-Date:   Tue,  7 Jun 2022 18:56:14 +0200
-Message-Id: <20220607164954.401847183@linuxfoundation.org>
+Subject: [PATCH 5.17 181/772] kunit: fix executor OOM error handling logic on non-UML
+Date:   Tue,  7 Jun 2022 18:56:13 +0200
+Message-Id: <20220607164954.372828805@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,62 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Daniel Latypov <dlatypov@google.com>
 
-[ Upstream commit 22cbc6c2681a0a4fe76150270426e763d52353a4 ]
+[ Upstream commit 1b11063d32d7e11366e48be64215ff517ce32217 ]
 
-The documentation of the function rvt_error_qp says both r_lock and
-s_lock need to be held when calling that function.
-It also asserts using lockdep that both of those locks are held.
-rvt_error_qp is called form rvt_send_cq, which is called from
-rvt_qp_complete_swqe, which is called from rvt_send_complete, which is
-called from rvt_ruc_loopback in two places. Both of these places do not
-hold r_lock. Fix this by acquiring a spin_lock of r_lock in both of
-these places.
-The r_lock acquiring cannot be added in rvt_qp_complete_swqe because
-some of its other callers already have r_lock acquired.
+The existing logic happens to work fine on UML, but is not correct when
+running on other arches.
 
-Link: https://lore.kernel.org/r/20220228195144.71946-1-dossche.niels@gmail.com
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+1. We didn't initialize `int err`, and kunit_filter_suites() doesn't
+   explicitly set it to 0 on success. So we had false "failures".
+   Note: it doesn't happen on UML, causing this to get overlooked.
+2. If we error out, we do not call kunit_handle_shutdown().
+   This makes kunit.py timeout when using a non-UML arch, since the QEMU
+   process doesn't ever exit.
+
+Fixes: a02353f49162 ("kunit: bail out of test filtering logic quicker if OOM")
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rdmavt/qp.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ lib/kunit/executor.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rdmavt/qp.c b/drivers/infiniband/sw/rdmavt/qp.c
-index 8ef112f883a7..3acab569fbb9 100644
---- a/drivers/infiniband/sw/rdmavt/qp.c
-+++ b/drivers/infiniband/sw/rdmavt/qp.c
-@@ -2775,7 +2775,7 @@ void rvt_qp_iter(struct rvt_dev_info *rdi,
- EXPORT_SYMBOL(rvt_qp_iter);
+diff --git a/lib/kunit/executor.c b/lib/kunit/executor.c
+index 2f73a6a35a7e..96f96e42ce06 100644
+--- a/lib/kunit/executor.c
++++ b/lib/kunit/executor.c
+@@ -247,13 +247,13 @@ int kunit_run_all_tests(void)
+ 		.start = __kunit_suites_start,
+ 		.end = __kunit_suites_end,
+ 	};
+-	int err;
++	int err = 0;
  
- /*
-- * This should be called with s_lock held.
-+ * This should be called with s_lock and r_lock held.
-  */
- void rvt_send_complete(struct rvt_qp *qp, struct rvt_swqe *wqe,
- 		       enum ib_wc_status status)
-@@ -3134,7 +3134,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
- 	rvp->n_loop_pkts++;
- flush_send:
- 	sqp->s_rnr_retry = sqp->s_rnr_retry_cnt;
-+	spin_lock(&sqp->r_lock);
- 	rvt_send_complete(sqp, wqe, send_status);
-+	spin_unlock(&sqp->r_lock);
- 	if (local_ops) {
- 		atomic_dec(&sqp->local_ops_pending);
- 		local_ops = 0;
-@@ -3188,7 +3190,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
- 	spin_unlock_irqrestore(&qp->r_lock, flags);
- serr_no_r_lock:
- 	spin_lock_irqsave(&sqp->s_lock, flags);
-+	spin_lock(&sqp->r_lock);
- 	rvt_send_complete(sqp, wqe, send_status);
-+	spin_unlock(&sqp->r_lock);
- 	if (sqp->ibqp.qp_type == IB_QPT_RC) {
- 		int lastwqe;
+ 	if (filter_glob_param) {
+ 		suite_set = kunit_filter_suites(&suite_set, filter_glob_param, &err);
+ 		if (err) {
+ 			pr_err("kunit executor: error filtering suites: %d\n", err);
+-			return err;
++			goto out;
+ 		}
+ 	}
  
+@@ -268,9 +268,10 @@ int kunit_run_all_tests(void)
+ 		kunit_free_suite_set(suite_set);
+ 	}
+ 
+-	kunit_handle_shutdown();
+ 
+-	return 0;
++out:
++	kunit_handle_shutdown();
++	return err;
+ }
+ 
+ #if IS_BUILTIN(CONFIG_KUNIT_TEST)
 -- 
 2.35.1
 
