@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F84CCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE8EDCCA491
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376345AbiFGUQl (ORCPT
+        id S1376466AbiFGUQs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51388 "EHLO
+        Tue, 7 Jun 2022 16:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355971AbiFGT0O (ORCPT
+        with ESMTP id S1356167AbiFGT0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:26:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F30F19F078;
-        Tue,  7 Jun 2022 11:09:33 -0700 (PDT)
+        Tue, 7 Jun 2022 15:26:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0764A19FF4B;
+        Tue,  7 Jun 2022 11:09:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6745617AE;
-        Tue,  7 Jun 2022 18:09:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3560C385A2;
-        Tue,  7 Jun 2022 18:09:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 274DB6191F;
+        Tue,  7 Jun 2022 18:09:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34180C385A2;
+        Tue,  7 Jun 2022 18:09:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625372;
-        bh=i2aBAC+nkmqctlRSusmxse0DlTK5H314CzgX7Q94to0=;
+        s=korg; t=1654625383;
+        bh=qewUsOd+zR9pD4CwTK2yUgE2uCsGhLzD/qKdKnBcm90=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dse9uIwAIMsFEv2A2nb/SjNN9WkX1aiRLiGYPM15/RaYhC//NZC38/SB3+DZ1CC54
-         RTu8QtwFtwLoccjeJmTAsb3QK0Pa+7fysGuvtLwX1UQJv26v07LYvZt3aQCsIXhUqO
-         vrx0yvSFgiJOn68tSPd+BWZVrzGrdW0L9aKwbPtA=
+        b=hQaJ2Bh3vKyXHpF1g+7pBFKz9lbk9euuie3rI4Y5SYKuLqjSjTD2pWEQOjSQFEOW5
+         nfsq86CxDE+pMPfjRi+dSmGkOv0XFpBWhTKz4f3wuhUJYpZkbm55GXEqNi1VRKbXJi
+         eNtVqJc91QUGmisBSmOnL0wFbR85GiOZ7eEclUpk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gerald Lee <sundaywind2004@gmail.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.15 664/667] fs/ntfs3: Fix invalid free in log_replay
-Date:   Tue,  7 Jun 2022 19:05:29 +0200
-Message-Id: <20220607164954.556798520@linuxfoundation.org>
+        stable@vger.kernel.org, Xiao Yang <yangx.jy@fujitsu.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.15 656/667] RDMA/rxe: Generate a completion for unsupported/invalid opcode
+Date:   Tue,  7 Jun 2022 19:05:21 +0200
+Message-Id: <20220607164954.321795938@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,54 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Xiao Yang <yangx.jy@fujitsu.com>
 
-commit f26967b9f7a830e228bb13fb41bd516ddd9d789d upstream.
+commit 2f917af777011c88e977b9b9a5d00b280d3a59ce upstream.
 
-log_read_rst() returns ENOMEM error when there is not enough memory.
-In this case, if info is returned without initialization,
-it attempts to kfree the uninitialized info->r_page pointer. This patch
-moves the memset initialization code to before log_read_rst() is called.
+Current rxe_requester() doesn't generate a completion when processing an
+unsupported/invalid opcode. If rxe driver doesn't support a new opcode
+(e.g. RDMA Atomic Write) and RDMA library supports it, an application
+using the new opcode can reproduce this issue. Fix the issue by calling
+"goto err;".
 
-Reported-by: Gerald Lee <sundaywind2004@gmail.com>
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Link: https://lore.kernel.org/r/20220410113513.27537-1-yangx.jy@fujitsu.com
+Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/fslog.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/infiniband/sw/rxe/rxe_req.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ntfs3/fslog.c
-+++ b/fs/ntfs3/fslog.c
-@@ -1185,8 +1185,6 @@ static int log_read_rst(struct ntfs_log
- 	if (!r_page)
- 		return -ENOMEM;
+--- a/drivers/infiniband/sw/rxe/rxe_req.c
++++ b/drivers/infiniband/sw/rxe/rxe_req.c
+@@ -683,7 +683,7 @@ next_wqe:
+ 	opcode = next_opcode(qp, wqe, wqe->wr.opcode);
+ 	if (unlikely(opcode < 0)) {
+ 		wqe->status = IB_WC_LOC_QP_OP_ERR;
+-		goto exit;
++		goto err;
+ 	}
  
--	memset(info, 0, sizeof(struct restart_info));
--
- 	/* Determine which restart area we are looking for. */
- 	if (first) {
- 		vbo = 0;
-@@ -3791,10 +3789,11 @@ int log_replay(struct ntfs_inode *ni, bo
- 	if (!log)
- 		return -ENOMEM;
- 
-+	memset(&rst_info, 0, sizeof(struct restart_info));
-+
- 	log->ni = ni;
- 	log->l_size = l_size;
- 	log->one_page_buf = kmalloc(page_size, GFP_NOFS);
--
- 	if (!log->one_page_buf) {
- 		err = -ENOMEM;
- 		goto out;
-@@ -3842,6 +3841,7 @@ int log_replay(struct ntfs_inode *ni, bo
- 	if (rst_info.vbo)
- 		goto check_restart_area;
- 
-+	memset(&rst_info2, 0, sizeof(struct restart_info));
- 	err = log_read_rst(log, l_size, false, &rst_info2);
- 
- 	/* Determine which restart area to use. */
+ 	mask = rxe_opcode[opcode].mask;
 
 
