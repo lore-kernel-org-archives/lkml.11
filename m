@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3173BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:18:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E98C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:18:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358158AbiFGUSr (ORCPT
+        id S1358890AbiFGUSv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51944 "EHLO
+        Tue, 7 Jun 2022 16:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356827AbiFGT2O (ORCPT
+        with ESMTP id S1356868AbiFGT2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:28:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9036FD21;
-        Tue,  7 Jun 2022 11:11:01 -0700 (PDT)
+        Tue, 7 Jun 2022 15:28:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6F51A196C;
+        Tue,  7 Jun 2022 11:11:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BD8461903;
-        Tue,  7 Jun 2022 18:11:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BC64C34115;
-        Tue,  7 Jun 2022 18:11:00 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 46537CE2442;
+        Tue,  7 Jun 2022 18:11:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53CC2C385A2;
+        Tue,  7 Jun 2022 18:11:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625460;
-        bh=dbFetGycNFqXLnLqpJOm7aVXcJy1sch1epqabjZaOMM=;
+        s=korg; t=1654625474;
+        bh=InTEJxokk0gSldDDmnuCDCLtUbImqooZSkroi+Xe/fA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=slKLKfdC88Vf6P1flOhBRWHtlY2VmmBcwTHZXeqWO/GZYnbAPzz/v/uWDA3KF5bvI
-         wMBYvtMbV4lAleu5kueImbZhS8vYJY9/JlaYqEDwDInNg5IYA51wNzurokqrpPWTxA
-         CuWq6OqW0Kh2UF3TCgFNnjKpA2/78O8edFILok8E=
+        b=HrmqVVRe+eUcDv5JwXhL8jLC+NS9nEEZtQNkYk4xbE94k8G8T9ciD/qRKLhNcjdIv
+         Gb/GQ9UMKqZO0eR6TrhcEgy8J4eaf/puwsUcWgWc3gFHYZZikwe2bU8ALEditKLzcZ
+         pSA8l1Pf/ke10LHc1kMhWoeWj1/58e0DHPf8Pf7E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kari Argillander <kari.argillander@gmail.com>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.17 027/772] fs/ntfs3: Restore ntfs_xattr_get_acl and ntfs_xattr_set_acl functions
-Date:   Tue,  7 Jun 2022 18:53:39 +0200
-Message-Id: <20220607164949.817437605@linuxfoundation.org>
+        stable@vger.kernel.org, Roberto Bergantinos <rbergant@redhat.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.17 030/772] cifs: fix potential double free during failed mount
+Date:   Tue,  7 Jun 2022 18:53:42 +0200
+Message-Id: <20220607164949.907204065@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,147 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+From: Ronnie Sahlberg <lsahlber@redhat.com>
 
-commit 87e21c99bad763524c953ff4d1a61ee19038ddc2 upstream.
+commit 8378a51e3f8140f60901fb27208cc7a6e47047b5 upstream.
 
-Apparently we need to maintain these functions with
-ntfs_get_acl_ex and ntfs_set_acl_ex.
-This commit fixes xfstest generic/099
-Fixes: 95dd8b2c1ed0 ("fs/ntfs3: Remove unnecessary functions")
+RHBZ: https://bugzilla.redhat.com/show_bug.cgi?id=2088799
 
-Reviewed-by: Kari Argillander <kari.argillander@gmail.com>
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Roberto Bergantinos <rbergant@redhat.com>
+Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/xattr.c |   96 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 95 insertions(+), 1 deletion(-)
+ fs/cifs/cifsfs.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/fs/ntfs3/xattr.c
-+++ b/fs/ntfs3/xattr.c
-@@ -112,7 +112,7 @@ static int ntfs_read_ea(struct ntfs_inod
- 		return -ENOMEM;
- 
- 	if (!size) {
--		;
-+		/* EA info persists, but xattr is empty. Looks like EA problem. */
- 	} else if (attr_ea->non_res) {
- 		struct runs_tree run;
- 
-@@ -620,6 +620,67 @@ int ntfs_set_acl(struct user_namespace *
- 	return ntfs_set_acl_ex(mnt_userns, inode, acl, type, false);
- }
- 
-+static int ntfs_xattr_get_acl(struct user_namespace *mnt_userns,
-+			      struct inode *inode, int type, void *buffer,
-+			      size_t size)
-+{
-+	struct posix_acl *acl;
-+	int err;
-+
-+	if (!(inode->i_sb->s_flags & SB_POSIXACL)) {
-+		ntfs_inode_warn(inode, "add mount option \"acl\" to use acl");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	acl = ntfs_get_acl(inode, type, false);
-+	if (IS_ERR(acl))
-+		return PTR_ERR(acl);
-+
-+	if (!acl)
-+		return -ENODATA;
-+
-+	err = posix_acl_to_xattr(mnt_userns, acl, buffer, size);
-+	posix_acl_release(acl);
-+
-+	return err;
-+}
-+
-+static int ntfs_xattr_set_acl(struct user_namespace *mnt_userns,
-+			      struct inode *inode, int type, const void *value,
-+			      size_t size)
-+{
-+	struct posix_acl *acl;
-+	int err;
-+
-+	if (!(inode->i_sb->s_flags & SB_POSIXACL)) {
-+		ntfs_inode_warn(inode, "add mount option \"acl\" to use acl");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (!inode_owner_or_capable(mnt_userns, inode))
-+		return -EPERM;
-+
-+	if (!value) {
-+		acl = NULL;
-+	} else {
-+		acl = posix_acl_from_xattr(mnt_userns, value, size);
-+		if (IS_ERR(acl))
-+			return PTR_ERR(acl);
-+
-+		if (acl) {
-+			err = posix_acl_valid(mnt_userns, acl);
-+			if (err)
-+				goto release_and_out;
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -836,7 +836,7 @@ cifs_smb3_do_mount(struct file_system_ty
+ 	      int flags, struct smb3_fs_context *old_ctx)
+ {
+ 	int rc;
+-	struct super_block *sb;
++	struct super_block *sb = NULL;
+ 	struct cifs_sb_info *cifs_sb = NULL;
+ 	struct cifs_mnt_data mnt_data;
+ 	struct dentry *root;
+@@ -932,9 +932,11 @@ out_super:
+ 	return root;
+ out:
+ 	if (cifs_sb) {
+-		kfree(cifs_sb->prepath);
+-		smb3_cleanup_fs_context(cifs_sb->ctx);
+-		kfree(cifs_sb);
++		if (!sb || IS_ERR(sb)) {  /* otherwise kill_sb will handle */
++			kfree(cifs_sb->prepath);
++			smb3_cleanup_fs_context(cifs_sb->ctx);
++			kfree(cifs_sb);
 +		}
-+	}
-+
-+	err = ntfs_set_acl(mnt_userns, inode, acl, type);
-+
-+release_and_out:
-+	posix_acl_release(acl);
-+	return err;
-+}
-+
- /*
-  * ntfs_init_acl - Initialize the ACLs of a new inode.
-  *
-@@ -786,6 +847,23 @@ static int ntfs_getxattr(const struct xa
- 		goto out;
  	}
- 
-+#ifdef CONFIG_NTFS3_FS_POSIX_ACL
-+	if ((name_len == sizeof(XATTR_NAME_POSIX_ACL_ACCESS) - 1 &&
-+	     !memcmp(name, XATTR_NAME_POSIX_ACL_ACCESS,
-+		     sizeof(XATTR_NAME_POSIX_ACL_ACCESS))) ||
-+	    (name_len == sizeof(XATTR_NAME_POSIX_ACL_DEFAULT) - 1 &&
-+	     !memcmp(name, XATTR_NAME_POSIX_ACL_DEFAULT,
-+		     sizeof(XATTR_NAME_POSIX_ACL_DEFAULT)))) {
-+		/* TODO: init_user_ns? */
-+		err = ntfs_xattr_get_acl(
-+			&init_user_ns, inode,
-+			name_len == sizeof(XATTR_NAME_POSIX_ACL_ACCESS) - 1
-+				? ACL_TYPE_ACCESS
-+				: ACL_TYPE_DEFAULT,
-+			buffer, size);
-+		goto out;
-+	}
-+#endif
- 	/* Deal with NTFS extended attribute. */
- 	err = ntfs_get_ea(inode, name, name_len, buffer, size, NULL);
- 
-@@ -898,6 +976,22 @@ set_new_fa:
- 		goto out;
- 	}
- 
-+#ifdef CONFIG_NTFS3_FS_POSIX_ACL
-+	if ((name_len == sizeof(XATTR_NAME_POSIX_ACL_ACCESS) - 1 &&
-+	     !memcmp(name, XATTR_NAME_POSIX_ACL_ACCESS,
-+		     sizeof(XATTR_NAME_POSIX_ACL_ACCESS))) ||
-+	    (name_len == sizeof(XATTR_NAME_POSIX_ACL_DEFAULT) - 1 &&
-+	     !memcmp(name, XATTR_NAME_POSIX_ACL_DEFAULT,
-+		     sizeof(XATTR_NAME_POSIX_ACL_DEFAULT)))) {
-+		err = ntfs_xattr_set_acl(
-+			mnt_userns, inode,
-+			name_len == sizeof(XATTR_NAME_POSIX_ACL_ACCESS) - 1
-+				? ACL_TYPE_ACCESS
-+				: ACL_TYPE_DEFAULT,
-+			value, size);
-+		goto out;
-+	}
-+#endif
- 	/* Deal with NTFS extended attribute. */
- 	err = ntfs_set_ea(inode, name, name_len, value, size, flags);
- 
+ 	return root;
+ }
 
 
