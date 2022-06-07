@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B39CCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21957C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231438AbiFHCVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:21:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37522 "EHLO
+        id S231863AbiFHCWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444718AbiFHCLR (ORCPT
+        with ESMTP id S1444768AbiFHCLS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:11:17 -0400
+        Tue, 7 Jun 2022 22:11:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5433136E;
-        Tue,  7 Jun 2022 12:17:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23DB254EC4;
+        Tue,  7 Jun 2022 12:18:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DEFB617DA;
-        Tue,  7 Jun 2022 19:17:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78FA2C385A2;
-        Tue,  7 Jun 2022 19:17:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 040536192F;
+        Tue,  7 Jun 2022 19:18:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12A17C341C0;
+        Tue,  7 Jun 2022 19:18:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629474;
-        bh=uArzcxqUV8GLzK+qoWCXmfnm+uEKmlPLgDMglSchw54=;
+        s=korg; t=1654629510;
+        bh=FjpVwRVNYYlAGn7k/OHLaxc52wPen+gS9TwWMFYhhXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wxR92QsKvApEk4bW945iGY0whnTtizCRju4fOGnWaPUUzKzHLHMqJ+v7cpsO1JpNR
-         V474AmY2wtwZVXayF1QddBXiA25dg041OVmph8JhvgZ+LXa5YvXpJ3ARKPwtGS/l4D
-         msUkcXDokG2BrX63OxViJ1Tfc107SgVoel9zxzHE=
+        b=tCyVpjk1fjuXHH9A6PXLj8ci8B/JapyI6SHik/kMIH9uxTn5hJ7EJ4f6j1GPBZ84U
+         9ieQuiZuN7HuAILSblgBVMbd9CcdQR/IvO2RENcUtp1yHc1cYFH/S//3WNXb8Yxzlv
+         Kj/7KxSTlcuzOd3ot4/Ye5wP2FlvY933PyFz/SJ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juri Lelli <juri.lelli@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 703/879] tracing/timerlat: Notify IRQ new max latency only if stop tracing is set
-Date:   Tue,  7 Jun 2022 19:03:41 +0200
-Message-Id: <20220607165023.252366174@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.18 715/879] f2fs: fix fallocate to use file_modified to update permissions consistently
+Date:   Tue,  7 Jun 2022 19:03:53 +0200
+Message-Id: <20220607165023.608176335@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,64 +48,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit aa748949b4e665f473bc5abdc5f66029cb5f5522 ]
+commit 958ed92922028ec67f504dcdc72bfdfd0f43936a upstream.
 
-Currently, the notification of a new max latency is sent from
-timerlat's IRQ handler anytime a new max latency is found.
+This patch tries to fix permission consistency issue as all other
+mainline filesystems.
 
-While this behavior is not wrong, the send IPI overhead itself
-will increase the thread latency and that is not the desired
-effect (tracing overhead).
+Since the initial introduction of (posix) fallocate back at the turn of
+the century, it has been possible to use this syscall to change the
+user-visible contents of files.  This can happen by extending the file
+size during a preallocation, or through any of the newer modes (punch,
+zero, collapse, insert range).  Because the call can be used to change
+file contents, we should treat it like we do any other modification to a
+file -- update the mtime, and drop set[ug]id privileges/capabilities.
 
-Moreover, the thread will notify a new max latency again because
-the thread latency as it is always higher than the IRQ latency
-that woke it up.
+The VFS function file_modified() does all this for us if pass it a
+locked inode, so let's make fallocate drop permissions correctly.
 
-The only case in which it is helpful to notify a new max latency
-from IRQ is when stop tracing (for the IRQ) is set, as in this
-case, the thread will not be dispatched.
-
-Notify a new max latency from the IRQ handler only if stop tracing is
-set for the IRQ handler.
-
-Link: https://lkml.kernel.org/r/2c2d9a56c0886c8402ba320de32856cbbb10c2bb.1652175637.git.bristot@kernel.org
-
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Reported-by: Clark Williams <williams@redhat.com>
-Fixes: a955d7eac177 ("trace: Add timerlat tracer")
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@kernel.org
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_osnoise.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ fs/f2fs/file.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
-index afb92e2f0aea..d8e8167a079f 100644
---- a/kernel/trace/trace_osnoise.c
-+++ b/kernel/trace/trace_osnoise.c
-@@ -1578,11 +1578,12 @@ static enum hrtimer_restart timerlat_irq(struct hrtimer *timer)
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -1774,6 +1774,10 @@ static long f2fs_fallocate(struct file *
  
- 	trace_timerlat_sample(&s);
+ 	inode_lock(inode);
  
--	notify_new_max_latency(diff);
--
--	if (osnoise_data.stop_tracing)
--		if (time_to_us(diff) >= osnoise_data.stop_tracing)
-+	if (osnoise_data.stop_tracing) {
-+		if (time_to_us(diff) >= osnoise_data.stop_tracing) {
- 			osnoise_stop_tracing();
-+			notify_new_max_latency(diff);
-+		}
-+	}
- 
- 	wake_up_process(tlat->kthread);
- 
--- 
-2.35.1
-
++	ret = file_modified(file);
++	if (ret)
++		goto out;
++
+ 	if (mode & FALLOC_FL_PUNCH_HOLE) {
+ 		if (offset >= inode->i_size)
+ 			goto out;
 
 
