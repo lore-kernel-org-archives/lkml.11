@@ -2,202 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10B0ACCA494
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C150CCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391421AbiFHBwq (ORCPT
+        id S1391770AbiFHBw4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35126 "EHLO
+        Tue, 7 Jun 2022 21:52:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383847AbiFGWbA (ORCPT
+        with ESMTP id S1579396AbiFGXkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:31:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4AF4DF06;
-        Tue,  7 Jun 2022 12:24:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 300F0B823CA;
-        Tue,  7 Jun 2022 19:24:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A2C2C385A2;
-        Tue,  7 Jun 2022 19:24:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629852;
-        bh=MNGbb0y6lx7BzfYUSDabvaF+OEPYHabK0nbEfAzr7mo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FCiiG9nYlyF9+IsMSeAJ/rePXDTwn9TW35ST2NzQKV5xfvtD6GZVOKKEER6efKPe1
-         HxUWlJ8ZXX236Ow5rPpppJbOwDQmf++2XN3iHmhflaMXnahaIEQ/RjXIzyvFPwlC8R
-         znqhaetkCl2qdQwzZx2uLXa+opWu3EKJcjk+hCn8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.18 839/879] bcache: improve multithreaded bch_btree_check()
-Date:   Tue,  7 Jun 2022 19:05:57 +0200
-Message-Id: <20220607165027.207360448@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 19:40:00 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9025823282D
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:41:49 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id d7so10392102iof.10
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:41:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Zei+rMtXofDNspSEQfHDdxvw6FwTTwwAkNk8PaYH+Vk=;
+        b=gM1q3haoZ8xcG2m/1cV4QlglIObFRuaOTqfk3ZWzwKu4lYch/pviT5/sn6YWsi2Ful
+         MUyuJNgKwzjHOT4WiD66Cg7h8YfDvPP7TQ5z4caqZ0/iE2nrwwvmyzkjl1ra6qYZwVji
+         +jHM75UnnwV5WsODAILvthjF49P4Hna02u2ZM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Zei+rMtXofDNspSEQfHDdxvw6FwTTwwAkNk8PaYH+Vk=;
+        b=alIglxgqrGi5V7Xxqi8g0FcY+lCJaPYnLIpOkZ0f1SgeM+MNaKL/5U4Suvwu6dI2bJ
+         0JTNTrm7VJSLIblpt+8iGhtJGp70ZxGdhSkaTEJmCO0nvVqFzkT4jVEG7SV5/zqIhwPa
+         S136ZcH/OjSqpyAMgsh4wNwAvT3apLHWG3awguYuhXEk7ijN/tqDNZZw5pihW1XTtnpq
+         jqQO6DpzSfpCj0Aaq+ZW10p87XT+GDf7x7hJuNBIGW0QFOTdhI0PdRuN9a9+Jw7LmfTB
+         rnItgKYhaCv1m4A9I2jCWOF/O02DDvI3OVNTOOuSzCKP5AmMOK0Kn2U46iRYWBjo7O0r
+         sq0g==
+X-Gm-Message-State: AOAM530eztgRAOO0zxRRJx/WRguxwqeKwSS+PzlvaR2FXwVRED5WYPJS
+        zMyAVSvzpybs0iQcMN+I0q38sDVWRCDvEA==
+X-Google-Smtp-Source: ABdhPJx71niVTJbfk9wp/5WJhlD+JuQVs7tZ8hmuK9HPnLiZYXzVppCBWspGOgJX6/6yZCG6NS2ztA==
+X-Received: by 2002:a05:6638:2105:b0:331:9c7:4e8b with SMTP id n5-20020a056638210500b0033109c74e8bmr17555779jaj.129.1654638108936;
+        Tue, 07 Jun 2022 14:41:48 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id g11-20020a02b70b000000b0033136906e1esm7153212jam.18.2022.06.07.14.41.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 14:41:48 -0700 (PDT)
+Subject: Re: [PATCH v2] docs/kselftest: add more guidelines for adding new
+ tests
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>
+Cc:     kernel@collabora.com, bagasdotme@gmail.com,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220521073651.4191910-1-usama.anjum@collabora.com>
+ <e01f90a0-a3c7-c5fd-ae1f-197c6fec525e@collabora.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <63fc263d-c06a-2974-298c-5da80322411a@linuxfoundation.org>
+Date:   Tue, 7 Jun 2022 15:41:48 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <e01f90a0-a3c7-c5fd-ae1f-197c6fec525e@collabora.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Coly Li <colyli@suse.de>
+On 6/7/22 6:59 AM, Muhammad Usama Anjum wrote:
+> Reminder!
+> 
 
-commit 622536443b6731ec82c563aae7807165adbe9178 upstream.
+Remember to avoid top posting.
 
-Commit 8e7102273f59 ("bcache: make bch_btree_check() to be
-multithreaded") makes bch_btree_check() to be much faster when checking
-all btree nodes during cache device registration. But it isn't in ideal
-shap yet, still can be improved.
+> On 5/21/22 12:36 PM, Muhammad Usama Anjum wrote:
+>> Improve and add instructions to add new tests. Add build commands to
+>> test before sending the new test patch.
+>>
+>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+>> ---
+>> Changes in v2:
+>> - Updated commit message
+>> - Removed dependence of this patch from other patch
+>> - Updated instructions
+>> ---
+>>   Documentation/dev-tools/kselftest.rst | 27 ++++++++++++++++++++++++++-
+>>   1 file changed, 26 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/dev-tools/kselftest.rst b/Documentation/dev-tools/kselftest.rst
+>> index a833ecf12fbc1..ee6467ca8293f 100644
+>> --- a/Documentation/dev-tools/kselftest.rst
+>> +++ b/Documentation/dev-tools/kselftest.rst
+>> @@ -208,6 +208,14 @@ In general, the rules for selftests are
+>>   Contributing new tests (details)
+>>   ================================
+>>   
+>> + * In your Makefile, use facilities from lib.mk by including it instead of
+>> +   reinventing the wheel. Specify flags and binaries generation flags on
+>> +   need basis before including lib.mk. ::
+>> +
+>> +    CFLAGS = $(KHDR_INCLUDES)
+>> +    TEST_GEN_PROGS := close_range_test
+>> +    include ../lib.mk
+>> +
+>>    * Use TEST_GEN_XXX if such binaries or files are generated during
+>>      compiling.
+>>   
+>> @@ -230,13 +238,30 @@ Contributing new tests (details)
+>>    * First use the headers inside the kernel source and/or git repo, and then the
+>>      system headers.  Headers for the kernel release as opposed to headers
+>>      installed by the distro on the system should be the primary focus to be able
+>> -   to find regressions.
+>> +   to find regressions. Use KHDR_INCLUDES in Makefile to include headers from
+>> +   the kernel source.
+>>   
+>>    * If a test needs specific kernel config options enabled, add a config file in
+>>      the test directory to enable them.
+>>   
+>>      e.g: tools/testing/selftests/android/config
+>>   
+>> + * Create a .gitignore file inside test directory and add all generated objects
+>> +   in it.
+>> +
+>> + * Add new test name in TARGETS in selftests/Makefile::
+>> +
+>> +    TARGETS += android
+>> +
+>> + * All changes should pass::
+>> +
+>> +    kselftest-{all,install,clean,gen_tar}
+>> +    kselftest-{all,install,clean,gen_tar} O=abo_path
+>> +    kselftest-{all,install,clean,gen_tar} O=rel_path
+>> +    make -C tools/testing/selftests {all,install,clean,gen_tar}
+>> +    make -C tools/testing/selftests {all,install,clean,gen_tar} O=abs_path
+>> +    make -C tools/testing/selftests {all,install,clean,gen_tar} O=rel_path
+>> +
+>>   Test Module
+>>   ===========
+>>   
+> 
 
-This patch does the following thing to improve current parallel btree
-nodes check by multiple threads in bch_btree_check(),
-- Add read lock to root node while checking all the btree nodes with
-  multiple threads. Although currently it is not mandatory but it is
-  good to have a read lock in code logic.
-- Remove local variable 'char name[32]', and generate kernel thread name
-  string directly when calling kthread_run().
-- Allocate local variable "struct btree_check_state check_state" on the
-  stack and avoid unnecessary dynamic memory allocation for it.
-- Reduce BCH_BTR_CHKTHREAD_MAX from 64 to 12 which is enough indeed.
-- Increase check_state->started to count created kernel thread after it
-  succeeds to create.
-- When wait for all checking kernel threads to finish, use wait_event()
-  to replace wait_event_interruptible().
+The change looks good to me. I am catching up on patch backlog after the
+merge window and vacation. I can take this through kselftest or if it
+goes through doc tree - here is my
 
-With this change, the code is more clear, and some potential error
-conditions are avoided.
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 
-Fixes: 8e7102273f59 ("bcache: make bch_btree_check() to be multithreaded")
-Signed-off-by: Coly Li <colyli@suse.de>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220524102336.10684-2-colyli@suse.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/md/bcache/btree.c |   58 ++++++++++++++++++++--------------------------
- drivers/md/bcache/btree.h |    2 -
- 2 files changed, 27 insertions(+), 33 deletions(-)
-
---- a/drivers/md/bcache/btree.c
-+++ b/drivers/md/bcache/btree.c
-@@ -2006,8 +2006,7 @@ int bch_btree_check(struct cache_set *c)
- 	int i;
- 	struct bkey *k = NULL;
- 	struct btree_iter iter;
--	struct btree_check_state *check_state;
--	char name[32];
-+	struct btree_check_state check_state;
- 
- 	/* check and mark root node keys */
- 	for_each_key_filter(&c->root->keys, k, &iter, bch_ptr_invalid)
-@@ -2018,63 +2017,58 @@ int bch_btree_check(struct cache_set *c)
- 	if (c->root->level == 0)
- 		return 0;
- 
--	check_state = kzalloc(sizeof(struct btree_check_state), GFP_KERNEL);
--	if (!check_state)
--		return -ENOMEM;
--
--	check_state->c = c;
--	check_state->total_threads = bch_btree_chkthread_nr();
--	check_state->key_idx = 0;
--	spin_lock_init(&check_state->idx_lock);
--	atomic_set(&check_state->started, 0);
--	atomic_set(&check_state->enough, 0);
--	init_waitqueue_head(&check_state->wait);
-+	check_state.c = c;
-+	check_state.total_threads = bch_btree_chkthread_nr();
-+	check_state.key_idx = 0;
-+	spin_lock_init(&check_state.idx_lock);
-+	atomic_set(&check_state.started, 0);
-+	atomic_set(&check_state.enough, 0);
-+	init_waitqueue_head(&check_state.wait);
- 
-+	rw_lock(0, c->root, c->root->level);
- 	/*
- 	 * Run multiple threads to check btree nodes in parallel,
--	 * if check_state->enough is non-zero, it means current
-+	 * if check_state.enough is non-zero, it means current
- 	 * running check threads are enough, unncessary to create
- 	 * more.
- 	 */
--	for (i = 0; i < check_state->total_threads; i++) {
--		/* fetch latest check_state->enough earlier */
-+	for (i = 0; i < check_state.total_threads; i++) {
-+		/* fetch latest check_state.enough earlier */
- 		smp_mb__before_atomic();
--		if (atomic_read(&check_state->enough))
-+		if (atomic_read(&check_state.enough))
- 			break;
- 
--		check_state->infos[i].result = 0;
--		check_state->infos[i].state = check_state;
--		snprintf(name, sizeof(name), "bch_btrchk[%u]", i);
--		atomic_inc(&check_state->started);
-+		check_state.infos[i].result = 0;
-+		check_state.infos[i].state = &check_state;
- 
--		check_state->infos[i].thread =
-+		check_state.infos[i].thread =
- 			kthread_run(bch_btree_check_thread,
--				    &check_state->infos[i],
--				    name);
--		if (IS_ERR(check_state->infos[i].thread)) {
-+				    &check_state.infos[i],
-+				    "bch_btrchk[%d]", i);
-+		if (IS_ERR(check_state.infos[i].thread)) {
- 			pr_err("fails to run thread bch_btrchk[%d]\n", i);
- 			for (--i; i >= 0; i--)
--				kthread_stop(check_state->infos[i].thread);
-+				kthread_stop(check_state.infos[i].thread);
- 			ret = -ENOMEM;
- 			goto out;
- 		}
-+		atomic_inc(&check_state.started);
- 	}
- 
- 	/*
- 	 * Must wait for all threads to stop.
- 	 */
--	wait_event_interruptible(check_state->wait,
--				 atomic_read(&check_state->started) == 0);
-+	wait_event(check_state.wait, atomic_read(&check_state.started) == 0);
- 
--	for (i = 0; i < check_state->total_threads; i++) {
--		if (check_state->infos[i].result) {
--			ret = check_state->infos[i].result;
-+	for (i = 0; i < check_state.total_threads; i++) {
-+		if (check_state.infos[i].result) {
-+			ret = check_state.infos[i].result;
- 			goto out;
- 		}
- 	}
- 
- out:
--	kfree(check_state);
-+	rw_unlock(0, c->root);
- 	return ret;
- }
- 
---- a/drivers/md/bcache/btree.h
-+++ b/drivers/md/bcache/btree.h
-@@ -226,7 +226,7 @@ struct btree_check_info {
- 	int				result;
- };
- 
--#define BCH_BTR_CHKTHREAD_MAX	64
-+#define BCH_BTR_CHKTHREAD_MAX	12
- struct btree_check_state {
- 	struct cache_set		*c;
- 	int				total_threads;
-
-
+thanks,
+-- Shuah
