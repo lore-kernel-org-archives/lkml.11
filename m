@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4B5CCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 601A0CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353261AbiFGSgn (ORCPT
+        id S1353186AbiFGSgc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55838 "EHLO
+        Tue, 7 Jun 2022 14:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350160AbiFGSAq (ORCPT
+        with ESMTP id S1351374AbiFGSB7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:00:46 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E791286E4;
-        Tue,  7 Jun 2022 10:42:46 -0700 (PDT)
+        Tue, 7 Jun 2022 14:01:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C9A4151FF3;
+        Tue,  7 Jun 2022 10:44:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A9B18CE1D50;
-        Tue,  7 Jun 2022 17:42:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98A6DC385A5;
-        Tue,  7 Jun 2022 17:42:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82F7F6165B;
+        Tue,  7 Jun 2022 17:44:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92BFFC385A5;
+        Tue,  7 Jun 2022 17:44:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623745;
-        bh=dnVq8A+QaRcFBuWkdXsDnNqK0ZQ2F6cv/bJXs+evh2Y=;
+        s=korg; t=1654623859;
+        bh=ov0LuNiuyG+BT8nA3Az8CHNv6yO/nXoJT8tXa6GRz7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BCDmO08iLdPljy6o4zAgHtERR7/zrUlzw4Xo3NHCO5dFZlPiEWNyAKrm5UoOKzm6W
-         UbnTM4fhMyVXRk21hdlbd3n/7VYK/rQxRiQNwG0FJJlFlBU7qXiO7DleqzNGXU+vQ3
-         etT7OKD8TvMVNf6UxWUPjRWJakL/ej3m733smgu8=
+        b=zeSrAx6ZiKv7pS9JVo5NHCJbieLHahVl26M4XW/TgBm9lxg8MIRLEk8JiRivnyc/n
+         1C34dWbm+1qtxq1yaqz20a+muog4jMnp6K058dTFut+Auk0qpMqkrRyzZdX/GB+vfB
+         blLTdR6wxqr9uy0jqNbBRbvn83qCUPVeW0uyrimI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 075/667] media: pci: cx23885: Fix the error handling in cx23885_initdev()
-Date:   Tue,  7 Jun 2022 18:55:40 +0200
-Message-Id: <20220607164937.068084562@linuxfoundation.org>
+Subject: [PATCH 5.15 117/667] media: coda: limit frame interval enumeration to supported encoder frame sizes
+Date:   Tue,  7 Jun 2022 18:56:22 +0200
+Message-Id: <20220607164938.332738298@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,64 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Philipp Zabel <p.zabel@pengutronix.de>
 
-[ Upstream commit e8123311cf06d7dae71e8c5fe78e0510d20cd30b ]
+[ Upstream commit 67e33dd957880879e785cfea83a3aa24bd5c5577 ]
 
-When the driver fails to call the dma_set_mask(), the driver will get
-the following splat:
+Let VIDIOC_ENUM_FRAMEINTERVALS return -EINVAL if userspace queries
+frame intervals for frame sizes unsupported by the encoder. Fixes the
+following v4l2-compliance failure:
 
-[   55.853884] BUG: KASAN: use-after-free in __process_removed_driver+0x3c/0x240
-[   55.854486] Read of size 8 at addr ffff88810de60408 by task modprobe/590
-[   55.856822] Call Trace:
-[   55.860327]  __process_removed_driver+0x3c/0x240
-[   55.861347]  bus_for_each_dev+0x102/0x160
-[   55.861681]  i2c_del_driver+0x2f/0x50
+		fail: v4l2-test-formats.cpp(123): found frame intervals for invalid size 47x16
+		fail: v4l2-test-formats.cpp(282): node->codec_mask & STATEFUL_ENCODER
+	test VIDIOC_ENUM_FMT/FRAMESIZES/FRAMEINTERVALS: FAIL
 
-This is because the driver has initialized the i2c related resources
-in cx23885_dev_setup() but not released them in error handling, fix this
-bug by modifying the error path that jumps after failing to call the
-dma_set_mask().
+[hverkuil: drop incorrect 'For decoder devices, return -ENOTTY.' in the commit log]
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/cx23885/cx23885-core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/media/platform/coda/coda-common.c | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/media/pci/cx23885/cx23885-core.c b/drivers/media/pci/cx23885/cx23885-core.c
-index f8f2ff3b00c3..a07b18f2034e 100644
---- a/drivers/media/pci/cx23885/cx23885-core.c
-+++ b/drivers/media/pci/cx23885/cx23885-core.c
-@@ -2165,7 +2165,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 	err = dma_set_mask(&pci_dev->dev, 0xffffffff);
- 	if (err) {
- 		pr_err("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
--		goto fail_ctrl;
-+		goto fail_dma_set_mask;
+diff --git a/drivers/media/platform/coda/coda-common.c b/drivers/media/platform/coda/coda-common.c
+index 4a553f42ff0a..befc9db16c86 100644
+--- a/drivers/media/platform/coda/coda-common.c
++++ b/drivers/media/platform/coda/coda-common.c
+@@ -1318,7 +1318,8 @@ static int coda_enum_frameintervals(struct file *file, void *fh,
+ 				    struct v4l2_frmivalenum *f)
+ {
+ 	struct coda_ctx *ctx = fh_to_ctx(fh);
+-	int i;
++	struct coda_q_data *q_data;
++	const struct coda_codec *codec;
+ 
+ 	if (f->index)
+ 		return -EINVAL;
+@@ -1327,12 +1328,19 @@ static int coda_enum_frameintervals(struct file *file, void *fh,
+ 	if (!ctx->vdoa && f->pixel_format == V4L2_PIX_FMT_YUYV)
+ 		return -EINVAL;
+ 
+-	for (i = 0; i < CODA_MAX_FORMATS; i++) {
+-		if (f->pixel_format == ctx->cvd->src_formats[i] ||
+-		    f->pixel_format == ctx->cvd->dst_formats[i])
+-			break;
++	if (coda_format_normalize_yuv(f->pixel_format) == V4L2_PIX_FMT_YUV420) {
++		q_data = get_q_data(ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE);
++		codec = coda_find_codec(ctx->dev, f->pixel_format,
++					q_data->fourcc);
++	} else {
++		codec = coda_find_codec(ctx->dev, V4L2_PIX_FMT_YUV420,
++					f->pixel_format);
  	}
+-	if (i == CODA_MAX_FORMATS)
++	if (!codec)
++		return -EINVAL;
++
++	if (f->width < MIN_W || f->width > codec->max_w ||
++	    f->height < MIN_H || f->height > codec->max_h)
+ 		return -EINVAL;
  
- 	err = request_irq(pci_dev->irq, cx23885_irq,
-@@ -2173,7 +2173,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 	if (err < 0) {
- 		pr_err("%s: can't get IRQ %d\n",
- 		       dev->name, pci_dev->irq);
--		goto fail_irq;
-+		goto fail_dma_set_mask;
- 	}
- 
- 	switch (dev->board) {
-@@ -2195,7 +2195,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 
- 	return 0;
- 
--fail_irq:
-+fail_dma_set_mask:
- 	cx23885_dev_unregister(dev);
- fail_ctrl:
- 	v4l2_ctrl_handler_free(hdl);
+ 	f->type = V4L2_FRMIVAL_TYPE_CONTINUOUS;
 -- 
 2.35.1
 
