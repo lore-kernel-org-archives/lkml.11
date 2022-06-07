@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FED2CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F0F4CCA48C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380792AbiFGVgC (ORCPT
+        id S1380915AbiFGVgK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52144 "EHLO
+        Tue, 7 Jun 2022 17:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376412AbiFGU0k (ORCPT
+        with ESMTP id S1376390AbiFGU0i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:26:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB0287640;
-        Tue,  7 Jun 2022 11:32:44 -0700 (PDT)
+        Tue, 7 Jun 2022 16:26:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF6D41D8089;
+        Tue,  7 Jun 2022 11:32:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC0326144D;
-        Tue,  7 Jun 2022 18:32:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B92E1C34115;
-        Tue,  7 Jun 2022 18:32:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0134AB82340;
+        Tue,  7 Jun 2022 18:32:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46522C385A5;
+        Tue,  7 Jun 2022 18:32:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626763;
-        bh=uGOW+8+MHh3rmVPSMEwKqXlHKgl6LqpDJPKFDcluQmg=;
+        s=korg; t=1654626754;
+        bh=eQUZ+ey7/BLiW6pckJTv8Wved40zL6Bggxfybl1hKZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YOW+2uz3MgOV2FZR7AbZ9PqBMNrbbKwqbnpJsamHjcFTaeRB/YNzLTAa9v8Ezv9p/
-         K5WWTaNn/fQexwTJD0T0A+BVxodJjXKwXTHO5K+3vfsng2/q+FsrKZnqcNG3W12ulj
-         wnICQJkjenpNVLnaOYbYdk7Nvwlt6JeI+d7GKSiA=
+        b=im0KpbnXxCo6NqRU9qSe3rXrwjNYXWvUE8tyedoEjVnEJs+BEIFbCzri7VWVs9++W
+         xCmspGyLG/UDR+TfsopIhmdtKCzjixsYBjPPX9tceJ8pKvhOCI/XSbzxpCjv7O8l2H
+         esRLjqwjLbPuGNnfSeTAl7CEXWVUyl/Le/PD8zRw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 495/772] scsi: fcoe: Fix Wstringop-overflow warnings in fcoe_wwn_from_mac()
-Date:   Tue,  7 Jun 2022 19:01:27 +0200
-Message-Id: <20220607165003.570468124@linuxfoundation.org>
+        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 492/772] Drivers: hv: vmbus: Fix handling of messages with transaction ID of zero
+Date:   Tue,  7 Jun 2022 19:01:24 +0200
+Message-Id: <20220607165003.481988539@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,125 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gustavo A. R. Silva <gustavoars@kernel.org>
+From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
 
-[ Upstream commit 54db804d5d7d36709d1ce70bde3b9a6c61b290b6 ]
+[ Upstream commit 82cd4bacff88a11e36f143e2cb950174b09c86c3 ]
 
-Fix the following Wstringop-overflow warnings when building with GCC-11:
+vmbus_request_addr() returns 0 (zero) if the transaction ID passed
+to as argument is 0.  This is unfortunate for two reasons: first,
+netvsc_send_completion() does not check for a NULL cmd_rqst (before
+dereferencing the corresponding NVSP message); second, 0 is a *valid*
+value of cmd_rqst in netvsc_send_tx_complete(), cf. the call of
+vmbus_sendpacket() in netvsc_send_pkt().
 
-drivers/scsi/fcoe/fcoe.c: In function ‘fcoe_netdev_config’:
-drivers/scsi/fcoe/fcoe.c:744:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
-  744 |                         wwnn = fcoe_wwn_from_mac(ctlr->ctl_src_addr, 1, 0);
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/scsi/fcoe/fcoe.c:744:32: note: referencing argument 1 of type ‘unsigned char *’
-In file included from drivers/scsi/fcoe/fcoe.c:36:
-./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
-  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-      |     ^~~~~~~~~~~~~~~~~
-drivers/scsi/fcoe/fcoe.c:747:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
-  747 |                         wwpn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  748 |                                                  2, 0);
-      |                                                  ~~~~~
-drivers/scsi/fcoe/fcoe.c:747:32: note: referencing argument 1 of type ‘unsigned char *’
-In file included from drivers/scsi/fcoe/fcoe.c:36:
-./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
-  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-      |     ^~~~~~~~~~~~~~~~~
-  CC      drivers/scsi/bnx2fc/bnx2fc_io.o
-In function ‘bnx2fc_net_config’,
-    inlined from ‘bnx2fc_if_create’ at drivers/scsi/bnx2fc/bnx2fc_fcoe.c:1543:7:
-drivers/scsi/bnx2fc/bnx2fc_fcoe.c:833:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
-  833 |                         wwnn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  834 |                                                  1, 0);
-      |                                                  ~~~~~
-drivers/scsi/bnx2fc/bnx2fc_fcoe.c: In function ‘bnx2fc_if_create’:
-drivers/scsi/bnx2fc/bnx2fc_fcoe.c:833:32: note: referencing argument 1 of type ‘unsigned char *’
-In file included from drivers/scsi/bnx2fc/bnx2fc.h:53,
-                 from drivers/scsi/bnx2fc/bnx2fc_fcoe.c:17:
-./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
-  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-      |     ^~~~~~~~~~~~~~~~~
-In function ‘bnx2fc_net_config’,
-    inlined from ‘bnx2fc_if_create’ at drivers/scsi/bnx2fc/bnx2fc_fcoe.c:1543:7:
-drivers/scsi/bnx2fc/bnx2fc_fcoe.c:839:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
-  839 |                         wwpn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  840 |                                                  2, 0);
-      |                                                  ~~~~~
-drivers/scsi/bnx2fc/bnx2fc_fcoe.c: In function ‘bnx2fc_if_create’:
-drivers/scsi/bnx2fc/bnx2fc_fcoe.c:839:32: note: referencing argument 1 of type ‘unsigned char *’
-In file included from drivers/scsi/bnx2fc/bnx2fc.h:53,
-                 from drivers/scsi/bnx2fc/bnx2fc_fcoe.c:17:
-./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
-  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-      |     ^~~~~~~~~~~~~~~~~
-drivers/scsi/qedf/qedf_main.c: In function ‘__qedf_probe’:
-drivers/scsi/qedf/qedf_main.c:3520:30: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
- 3520 |                 qedf->wwnn = fcoe_wwn_from_mac(qedf->mac, 1, 0);
-      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/scsi/qedf/qedf_main.c:3520:30: note: referencing argument 1 of type ‘unsigned char *’
-In file included from drivers/scsi/qedf/qedf.h:9,
-                 from drivers/scsi/qedf/qedf_main.c:23:
-./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
-  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-      |     ^~~~~~~~~~~~~~~~~
-drivers/scsi/qedf/qedf_main.c:3521:30: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
- 3521 |                 qedf->wwpn = fcoe_wwn_from_mac(qedf->mac, 2, 0);
-      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/scsi/qedf/qedf_main.c:3521:30: note: referencing argument 1 of type ‘unsigned char *’
-In file included from drivers/scsi/qedf/qedf.h:9,
-                 from drivers/scsi/qedf/qedf_main.c:23:
-./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
-  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-      |     ^~~~~~~~~~~~~~~~~
+vmbus_request_addr() has included the code in question since its
+introduction with commit e8b7db38449ac ("Drivers: hv: vmbus: Add
+vmbus_requestor data structure for VMBus hardening"); such code was
+motivated by the early use of vmbus_requestor by hv_storvsc.  Since
+hv_storvsc moved to a tag-based mechanism to generate and retrieve
+transaction IDs with commit bf5fd8cae3c8f ("scsi: storvsc: Use
+blk_mq_unique_tag() to generate requestIDs"), vmbus_request_addr()
+can be modified to return VMBUS_RQST_ERROR if the ID is 0.  This
+change solves the issues in hv_netvsc (and makes the handling of
+messages with transaction ID of 0 consistent with the semantics
+"the ID is not contained in the requestor/invalid ID").
 
-by changing the array size to the correct value of ETH_ALEN in the
-argument declaration.
+vmbus_next_request_id(), vmbus_request_addr() should still reserve
+the ID of 0 for Hyper-V, because Hyper-V will "ignore" (not respond
+to) VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED packets/requests with
+transaction ID of 0 from the guest.
 
-Also, fix a couple of checkpatch warnings:
-WARNING: function definition argument 'unsigned int' should also have an identifier name
-
-This helps with the ongoing efforts to globally enable
--Wstringop-overflow.
-
-Link: https://github.com/KSPP/linux/issues/181
-Fixes: 85b4aa4926a5 ("[SCSI] fcoe: Fibre Channel over Ethernet")
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Fixes: bf5fd8cae3c8f ("scsi: storvsc: Use blk_mq_unique_tag() to generate requestIDs")
+Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/20220419122325.10078-2-parri.andrea@gmail.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/fcoe/fcoe_ctlr.c | 2 +-
- include/scsi/libfcoe.h        | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/hv/channel.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/fcoe/fcoe_ctlr.c b/drivers/scsi/fcoe/fcoe_ctlr.c
-index 1756a0ac6f08..558f3f4e1859 100644
---- a/drivers/scsi/fcoe/fcoe_ctlr.c
-+++ b/drivers/scsi/fcoe/fcoe_ctlr.c
-@@ -1969,7 +1969,7 @@ EXPORT_SYMBOL(fcoe_ctlr_recv_flogi);
-  *
-  * Returns: u64 fc world wide name
-  */
--u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN],
-+u64 fcoe_wwn_from_mac(unsigned char mac[ETH_ALEN],
- 		      unsigned int scheme, unsigned int port)
- {
- 	u64 wwn;
-diff --git a/include/scsi/libfcoe.h b/include/scsi/libfcoe.h
-index fac8e89aed81..310e0dbffda9 100644
---- a/include/scsi/libfcoe.h
-+++ b/include/scsi/libfcoe.h
-@@ -249,7 +249,8 @@ int fcoe_ctlr_recv_flogi(struct fcoe_ctlr *, struct fc_lport *,
- 			 struct fc_frame *);
+diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
+index dc5c35210c16..20fc8d50a039 100644
+--- a/drivers/hv/channel.c
++++ b/drivers/hv/channel.c
+@@ -1245,7 +1245,9 @@ u64 vmbus_next_request_id(struct vmbus_channel *channel, u64 rqst_addr)
  
- /* libfcoe funcs */
--u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-+u64 fcoe_wwn_from_mac(unsigned char mac[ETH_ALEN], unsigned int scheme,
-+		      unsigned int port);
- int fcoe_libfc_config(struct fc_lport *, struct fcoe_ctlr *,
- 		      const struct libfc_function_template *, int init_fcp);
- u32 fcoe_fc_crc(struct fc_frame *fp);
+ 	/*
+ 	 * Cannot return an ID of 0, which is reserved for an unsolicited
+-	 * message from Hyper-V.
++	 * message from Hyper-V; Hyper-V does not acknowledge (respond to)
++	 * VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED requests with ID of
++	 * 0 sent by the guest.
+ 	 */
+ 	return current_id + 1;
+ }
+@@ -1270,7 +1272,7 @@ u64 vmbus_request_addr(struct vmbus_channel *channel, u64 trans_id)
+ 
+ 	/* Hyper-V can send an unsolicited message with ID of 0 */
+ 	if (!trans_id)
+-		return trans_id;
++		return VMBUS_RQST_ERROR;
+ 
+ 	spin_lock_irqsave(&rqstor->req_lock, flags);
+ 
 -- 
 2.35.1
 
