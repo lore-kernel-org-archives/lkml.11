@@ -2,101 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 482DAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 887BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354723AbiFGTYv (ORCPT
+        id S1355399AbiFGTZJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
+        Tue, 7 Jun 2022 15:25:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353100AbiFGSbm (ORCPT
+        with ESMTP id S1353113AbiFGSbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:31:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF35617D39D;
-        Tue,  7 Jun 2022 10:56:49 -0700 (PDT)
+        Tue, 7 Jun 2022 14:31:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBAD517D3A7;
+        Tue,  7 Jun 2022 10:56:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 822C0B82239;
-        Tue,  7 Jun 2022 17:56:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7A17C34115;
-        Tue,  7 Jun 2022 17:56:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624607;
-        bh=liNhd+rQWFOn1syJrUOicb3uykE30jaLc4TMIIZdHug=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41D8C611FE;
+        Tue,  7 Jun 2022 17:56:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA862C36AFF;
+        Tue,  7 Jun 2022 17:56:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624610;
+        bh=H/ojBjv8RedJ1tRhj7i5pR0yqtBqO8nR4KB/LsnXy2I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QPvhItYyA76Vp8tQ5AkDAEWo3DffTrTsRlxPKHYYKquprWaYtzafonPSg0Z/o66Fj
-         xeQ6aLBEimjjAFF77j4K8lNE9tx1vLppqDkCBRZtidt4EjAz7vTr1wYRoErv329HC2
-         MOttVN+BBv5EXRwUPHD8Rxpqvi6amidW/0nDzX3I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        b=XlUlHJEtG1KKfJzold6SoQ2872pBnMVeP3HPdBdh8fPzheUyflg1mjD1/FTIJL5c/
+         /xIdLeHtx19oTtWBvteKEhVV4Tw3MxCGrx/EiaurPG4O9OhuXO39mJMW9wi7Pb5nPn
+         z9E3rNpEPUVyvSkHlykXNZ/FFNMicPK3NrCZj5j4XUc5j11pQPxqgi8ZXgASQ3Kc+K
+         IPVCoX52ORZxbeOmcb3I/u42m+4aMWAg3kptV9wzVFljqgPXZY7+uUsGaaU+Xa2eUv
+         +R15QXfsMzThyOwpxx1YiGcUn5jUmIAhXYKnZeQpjNQdosOlB1uIKbLmgIdceZUXZ2
+         mfeA/1AWbFxgA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Hangyu Hua <hbh25y@gmail.com>,
+        Eli Billauer <eli.billauer@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 387/667] ARM: dts: suniv: F1C100: fix watchdog compatible
-Date:   Tue,  7 Jun 2022 19:00:52 +0200
-Message-Id: <20220607164946.354739860@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+Subject: [PATCH AUTOSEL 5.15 16/51] char: xillybus: fix a refcount leak in cleanup_dev()
+Date:   Tue,  7 Jun 2022 13:55:15 -0400
+Message-Id: <20220607175552.479948-16-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
+References: <20220607175552.479948-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 01a850ee61cbf0ab77dcbf26bb133fec2dd640d6 ]
+[ Upstream commit b67d19662fdee275c479d21853bc1239600a798f ]
 
-The F1C100 series of SoCs actually have their watchdog IP being
-compatible with the newer Allwinner generation, not the older one.
+usb_get_dev is called in xillyusb_probe. So it is better to call
+usb_put_dev before xdev is released.
 
-The currently described sun4i-a10-wdt actually does not work, neither
-the watchdog functionality (just never fires), nor the reset part
-(reboot hangs).
-
-Replace the compatible string with the one used by the newer generation.
-Verified to work with both the watchdog and reboot functionality on a
-LicheePi Nano.
-
-Also add the missing interrupt line and clock source, to make it binding
-compliant.
-
-Fixes: 4ba16d17efdd ("ARM: dts: suniv: add initial DTSI file for F1C100s")
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Acked-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/20220317162349.739636-4-andre.przywara@arm.com
+Acked-by: Eli Billauer <eli.billauer@gmail.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220406075703.23464-1-hbh25y@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/suniv-f1c100s.dtsi | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/char/xillybus/xillyusb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/suniv-f1c100s.dtsi b/arch/arm/boot/dts/suniv-f1c100s.dtsi
-index 6100d3b75f61..def830101448 100644
---- a/arch/arm/boot/dts/suniv-f1c100s.dtsi
-+++ b/arch/arm/boot/dts/suniv-f1c100s.dtsi
-@@ -104,8 +104,10 @@
+diff --git a/drivers/char/xillybus/xillyusb.c b/drivers/char/xillybus/xillyusb.c
+index dc3551796e5e..39bcbfd908b4 100644
+--- a/drivers/char/xillybus/xillyusb.c
++++ b/drivers/char/xillybus/xillyusb.c
+@@ -549,6 +549,7 @@ static void cleanup_dev(struct kref *kref)
+ 	if (xdev->workq)
+ 		destroy_workqueue(xdev->workq);
  
- 		wdt: watchdog@1c20ca0 {
- 			compatible = "allwinner,suniv-f1c100s-wdt",
--				     "allwinner,sun4i-a10-wdt";
-+				     "allwinner,sun6i-a31-wdt";
- 			reg = <0x01c20ca0 0x20>;
-+			interrupts = <16>;
-+			clocks = <&osc32k>;
- 		};
- 
- 		uart0: serial@1c25000 {
++	usb_put_dev(xdev->udev);
+ 	kfree(xdev->channels); /* Argument may be NULL, and that's fine */
+ 	kfree(xdev);
+ }
 -- 
 2.35.1
-
-
 
