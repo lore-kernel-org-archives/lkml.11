@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF9FDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377039AbiFGUtt (ORCPT
+        id S1377053AbiFGUtw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:49:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38534 "EHLO
+        Tue, 7 Jun 2022 16:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357382AbiFGTuK (ORCPT
+        with ESMTP id S1357383AbiFGTuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:50:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C537CB74;
-        Tue,  7 Jun 2022 11:19:31 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF137CB0A;
+        Tue,  7 Jun 2022 11:19:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E4A560C7E;
-        Tue,  7 Jun 2022 18:19:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F8EAC385A2;
-        Tue,  7 Jun 2022 18:19:29 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BC5CACE2439;
+        Tue,  7 Jun 2022 18:19:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B20BFC385A2;
+        Tue,  7 Jun 2022 18:19:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625969;
-        bh=yshcQHCPfHZtHbEvkMQsCzGrimfL7sMR4F4SAhXpLKo=;
+        s=korg; t=1654625964;
+        bh=r3DLkc6jEcY3i0/3z56pH0qiShiXBiSeWD+DV9othKc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WradzlYeITYOdMWeq2PP/NtYBQgKMb6BHg9S13Y1llvO+NeLllOdgT/saHN4PAni+
-         JIccjLUc/m1FWuwrlHFHt/HQkH+DOSuoPrhhyP4XO4Cmt04ExEOgtNrDWLk18DwiT7
-         4xcX7mjyVEufwvA9ChQnihDQ9iRDlB6JHd9vw73A=
+        b=FRNyUVjrQtzplj4Xk7QsZBIMZwHYgN0PsT1ZyrY45tm3Lt3n5ifhC6mhKgxRo5Hh0
+         swb957JCiETIk6fuGZHC6aKVHYKC6xG03EiqMYGpZbXbIAWYRcpCzPBxGsmmfFCACR
+         Eza6kWnub55GzY3IzpdTUPJupdUHz3lLyFg6Rh1o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 169/772] x86/microcode: Add explicit CPU vendor dependency
-Date:   Tue,  7 Jun 2022 18:56:01 +0200
-Message-Id: <20220607164954.021277169@linuxfoundation.org>
+        stable@vger.kernel.org, Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Jia-wei Chang <jia-wei.chang@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 206/772] cpufreq: Avoid unnecessary frequency updates due to mismatch
+Date:   Tue,  7 Jun 2022 18:56:38 +0200
+Message-Id: <20220607164955.103958181@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,44 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Viresh Kumar <viresh.kumar@linaro.org>
 
-[ Upstream commit 9c55d99e099bd7aa6b91fce8718505c35d5dfc65 ]
+[ Upstream commit f55ae08c89873e140c7cac2a7fa161d31a0d60cf ]
 
-Add an explicit dependency to the respective CPU vendor so that the
-respective microcode support for it gets built only when that support is
-enabled.
+For some platforms, the frequency returned by hardware may be slightly
+different from what is provided in the frequency table. For example,
+hardware may return 499 MHz instead of 500 MHz. In such cases it is
+better to avoid getting into unnecessary frequency updates, as we may
+end up switching policy->cur between the two and sending unnecessary
+pre/post update notifications, etc.
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/8ead0da9-9545-b10d-e3db-7df1a1f219e4@infradead.org
+This patch has chosen allows the hardware frequency and table frequency
+to deviate by 1 MHz for now, we may want to increase it a bit later on
+if someone still complains.
+
+Reported-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Tested-by: Jia-wei Chang <jia-wei.chang@mediatek.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/cpufreq/cpufreq.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index d0ecc4005df3..380c16ff5078 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1332,7 +1332,7 @@ config MICROCODE
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index 80f535cc8a75..fbaa8e6c7d23 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -28,6 +28,7 @@
+ #include <linux/suspend.h>
+ #include <linux/syscore_ops.h>
+ #include <linux/tick.h>
++#include <linux/units.h>
+ #include <trace/events/power.h>
  
- config MICROCODE_INTEL
- 	bool "Intel microcode loading support"
--	depends on MICROCODE
-+	depends on CPU_SUP_INTEL && MICROCODE
- 	default MICROCODE
- 	help
- 	  This options enables microcode patch loading support for Intel
-@@ -1344,7 +1344,7 @@ config MICROCODE_INTEL
+ static LIST_HEAD(cpufreq_policy_list);
+@@ -1707,6 +1708,16 @@ static unsigned int cpufreq_verify_current_freq(struct cpufreq_policy *policy, b
+ 		return new_freq;
  
- config MICROCODE_AMD
- 	bool "AMD microcode loading support"
--	depends on MICROCODE
-+	depends on CPU_SUP_AMD && MICROCODE
- 	help
- 	  If you select this option, microcode patch loading support for AMD
- 	  processors will be enabled.
+ 	if (policy->cur != new_freq) {
++		/*
++		 * For some platforms, the frequency returned by hardware may be
++		 * slightly different from what is provided in the frequency
++		 * table, for example hardware may return 499 MHz instead of 500
++		 * MHz. In such cases it is better to avoid getting into
++		 * unnecessary frequency updates.
++		 */
++		if (abs(policy->cur - new_freq) < HZ_PER_MHZ)
++			return policy->cur;
++
+ 		cpufreq_out_of_sync(policy, new_freq);
+ 		if (update)
+ 			schedule_work(&policy->update);
 -- 
 2.35.1
 
