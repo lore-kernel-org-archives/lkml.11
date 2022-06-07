@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4551CCCA485
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6AC6CCA49E
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442818AbiFHA5G (ORCPT
+        id S1384972AbiFHAzE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38150 "EHLO
+        Tue, 7 Jun 2022 20:55:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383122AbiFGVwT (ORCPT
+        with ESMTP id S1382692AbiFGVvo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF3C2428CA;
-        Tue,  7 Jun 2022 12:10:33 -0700 (PDT)
+        Tue, 7 Jun 2022 17:51:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C740C517FB;
+        Tue,  7 Jun 2022 12:09:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4611CB82182;
-        Tue,  7 Jun 2022 19:10:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3AD1C385A5;
-        Tue,  7 Jun 2022 19:10:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2391261846;
+        Tue,  7 Jun 2022 19:09:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37710C385A5;
+        Tue,  7 Jun 2022 19:09:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629031;
-        bh=qXt8HYzvC389/LYL+hw9trysoaLCoG40Dj9ZAx+tflY=;
+        s=korg; t=1654628953;
+        bh=1uQfHZyEVzAhNvhs2p8gXdX2bJGCq69ZMlYZfgFCGHs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gMWtfw5BfygyZCU6xY/yA/trrls5N8ENxd2jkX8y0C3NatWW67gyCujUg3QS2yvJH
-         Mzh041MAZip4r101TbTO1DfW3nyY/vYb85v6onysbs7yEROJBocSBAz+hNz1zlIueO
-         Ly8FJvWyqWCC3/idUA1knZyTs6buRC6sMhx21P4s=
+        b=KkFBaArbMB23+ybXznT4Jf39LyjCOkXiO3/9NtRiPfsLS/kKdT92OScqv8yG9EX9T
+         MFXFlPIfJdllyStg9pQ6Y/p1DAi6yiAS3k8Eh2yOySzQ08O9dobfXWY76uHJZWQ+Kh
+         2Smh2aTcYuJ7D9C8GC+7PmAZhhwHI7RLpwKgSghE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 542/879] PCI: cadence: Fix find_first_zero_bit() limit
-Date:   Tue,  7 Jun 2022 19:01:00 +0200
-Message-Id: <20220607165018.603099483@linuxfoundation.org>
+Subject: [PATCH 5.18 517/879] rxrpc: Fix listen() setting the bar too high for the prealloc rings
+Date:   Tue,  7 Jun 2022 19:00:35 +0200
+Message-Id: <20220607165017.882093825@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,35 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 0aa3a0937feeb91a0e4e438c3c063b749b194192 ]
+[ Upstream commit 88e22159750b0d55793302eeed8ee603f5c1a95c ]
 
-The ep->ob_region_map bitmap is a long and it has BITS_PER_LONG bits.
+AF_RXRPC's listen() handler lets you set the backlog up to 32 (if you bump
+up the sysctl), but whilst the preallocation circular buffers have 32 slots
+in them, one of them has to be a dead slot because we're using CIRC_CNT().
 
-Link: https://lore.kernel.org/r/20220315065829.GA13572@kili
-Fixes: 37dddf14f1ae ("PCI: cadence: Add EndPoint Controller driver for Cadence PCIe controller")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+This means that listen(rxrpc_sock, 32) will cause an oops when the socket
+is closed because rxrpc_service_prealloc_one() allocated one too many calls
+and rxrpc_discard_prealloc() won't then be able to get rid of them because
+it'll think the ring is empty.  rxrpc_release_calls_on_socket() then tries
+to abort them, but oopses because call->peer isn't yet set.
+
+Fix this by setting the maximum backlog to RXRPC_BACKLOG_MAX - 1 to match
+the ring capacity.
+
+ BUG: kernel NULL pointer dereference, address: 0000000000000086
+ ...
+ RIP: 0010:rxrpc_send_abort_packet+0x73/0x240 [rxrpc]
+ Call Trace:
+  <TASK>
+  ? __wake_up_common_lock+0x7a/0x90
+  ? rxrpc_notify_socket+0x8e/0x140 [rxrpc]
+  ? rxrpc_abort_call+0x4c/0x60 [rxrpc]
+  rxrpc_release_calls_on_socket+0x107/0x1a0 [rxrpc]
+  rxrpc_release+0xc9/0x1c0 [rxrpc]
+  __sock_release+0x37/0xa0
+  sock_close+0x11/0x20
+  __fput+0x89/0x240
+  task_work_run+0x59/0x90
+  do_exit+0x319/0xaa0
+
+Fixes: 00e907127e6f ("rxrpc: Preallocate peers, conns and calls for incoming service requests")
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Link: https://lists.infradead.org/pipermail/linux-afs/2022-March/005079.html
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/cadence/pcie-cadence-ep.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/rxrpc/sysctl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/controller/cadence/pcie-cadence-ep.c b/drivers/pci/controller/cadence/pcie-cadence-ep.c
-index 4b1c4bc4e003..b8b655d4047e 100644
---- a/drivers/pci/controller/cadence/pcie-cadence-ep.c
-+++ b/drivers/pci/controller/cadence/pcie-cadence-ep.c
-@@ -187,8 +187,7 @@ static int cdns_pcie_ep_map_addr(struct pci_epc *epc, u8 fn, u8 vfn,
- 	struct cdns_pcie *pcie = &ep->pcie;
- 	u32 r;
+diff --git a/net/rxrpc/sysctl.c b/net/rxrpc/sysctl.c
+index 540351d6a5f4..555e0910786b 100644
+--- a/net/rxrpc/sysctl.c
++++ b/net/rxrpc/sysctl.c
+@@ -12,7 +12,7 @@
  
--	r = find_first_zero_bit(&ep->ob_region_map,
--				sizeof(ep->ob_region_map) * BITS_PER_LONG);
-+	r = find_first_zero_bit(&ep->ob_region_map, BITS_PER_LONG);
- 	if (r >= ep->max_regions - 1) {
- 		dev_err(&epc->dev, "no free outbound region\n");
- 		return -EINVAL;
+ static struct ctl_table_header *rxrpc_sysctl_reg_table;
+ static const unsigned int four = 4;
+-static const unsigned int thirtytwo = 32;
++static const unsigned int max_backlog = RXRPC_BACKLOG_MAX - 1;
+ static const unsigned int n_65535 = 65535;
+ static const unsigned int n_max_acks = RXRPC_RXTX_BUFF_SIZE - 1;
+ static const unsigned long one_jiffy = 1;
+@@ -89,7 +89,7 @@ static struct ctl_table rxrpc_sysctl_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= (void *)&four,
+-		.extra2		= (void *)&thirtytwo,
++		.extra2		= (void *)&max_backlog,
+ 	},
+ 	{
+ 		.procname	= "rx_window_size",
 -- 
 2.35.1
 
