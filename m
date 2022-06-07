@@ -2,79 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E060C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:50:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:50:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244211AbiFGMuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:50:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43054 "EHLO
+        id S244219AbiFGMuy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:50:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236004AbiFGMud (ORCPT
+        with ESMTP id S240944AbiFGMux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:50:33 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2D513EA2;
-        Tue,  7 Jun 2022 05:50:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=WJbMbosL31OwjK9ECJ5nWup9yekWoTUXGDqJQUOMW34=; b=vs2TcQavJOTNBzVxUMzQFO4mXa
-        fS/fLhqdsiRCmNYKP2aIi41QYRWywjvTOT81c6OvnQ5E1p6LDC2MU8Iu1I231tEFtmXFFBHc8/0lD
-        RoFF7NK7qfJD/SYowO/goKPovAtrNT482sdZgZ6x7eJnzl/02/REmg0CJQNLKrJH0LkY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nyYf5-005x30-3o; Tue, 07 Jun 2022 14:50:19 +0200
-Date:   Tue, 7 Jun 2022 14:50:19 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/3] net: phy: dp83td510: add SQI support
-Message-ID: <Yp9Ji2/FrbRxPayP@lunn.ch>
-References: <20220607101710.2833332-1-o.rempel@pengutronix.de>
+        Tue, 7 Jun 2022 08:50:53 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37C420F7B
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:50:51 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LHVYQ6QQ1zjXMJ;
+        Tue,  7 Jun 2022 20:49:30 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 7 Jun 2022 20:50:49 +0800
+Subject: Re: [PATCH v1 2/5] mm,hwpoison: set PG_hwpoison for busy hugetlb
+ pages
+To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Liu Shixin <liushixin2@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        <linux-kernel@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+References: <20220602050631.771414-1-naoya.horiguchi@linux.dev>
+ <20220602050631.771414-3-naoya.horiguchi@linux.dev>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <86cdcaa8-a079-f443-2166-723af6c4c9ac@huawei.com>
+Date:   Tue, 7 Jun 2022 20:50:49 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607101710.2833332-1-o.rempel@pengutronix.de>
+In-Reply-To: <20220602050631.771414-3-naoya.horiguchi@linux.dev>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +struct dp83td510_mse_sqi_range {
-> +	u16 end;
-> +	u16 start;
-> +};
-> +
-> +/* Register values are converted to SNR(dB) as suggested by
-> + * "Application Report - DP83TD510E Cable Diagnostics Toolkit":
-> + * SNR(dB) = -10 * log10 (VAL/2^17) - 1.76 dB.
-> + * SQI ranges are implemented according to "OPEN ALLIANCE - Advanced diagnostic
-> + * features for 100BASE-T1 automotive Ethernet PHYs"
-> + */
-> +static const struct dp83td510_mse_sqi_range dp83td510_mse_sqi_map[] = {
-> +	{ 0xffff, 0x0569 }, /* < 18dB */
-> +	{ 0x0569, 0x044c }, /* 18dB =< SNR < 19dB */
-> +	{ 0x044c, 0x0369 }, /* 19dB =< SNR < 20dB */
-> +	{ 0x0369, 0x02b6 }, /* 20dB =< SNR < 21dB */
-> +	{ 0x02b6, 0x0227 }, /* 21dB =< SNR < 22dB */
-> +	{ 0x0227, 0x01b6 }, /* 22dB =< SNR < 23dB */
-> +	{ 0x01b6, 0x015b }, /* 23dB =< SNR < 24dB */
-> +	{ 0x015b, 0x0000 }, /* 24dB =< SNR */
-> +};
+On 2022/6/2 13:06, Naoya Horiguchi wrote:
+> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+> 
+> If memory_failure() fails to grab page refcount on a hugetlb page
+> because it's busy, it returns without setting PG_hwpoison on it.
+> This not only loses a chance of error containment, but breaks the rule
+> that action_result() should be called only when memory_failure() do
+> any of handling work (even if that's just setting PG_hwpoison).
+> This inconsistency could harm code maintainability.
 
-You only really need start here, since the values always decrease.
+Yes, this patch will make the code more maintainable. But as discussed previously,
+this page might be under the migration, this patch can't save more.
 
-> +	for (sqi = 0; sqi < ARRAY_SIZE(dp83td510_mse_sqi_map); sqi++) {
-> +		if (mse_val >= dp83td510_mse_sqi_map[sqi].start &&
-> +		    mse_val <= dp83td510_mse_sqi_map[sqi].end)
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
 
-and then don't compare with end. Saves 8 words and a little bit of
-code.
+Thanks!
 
-	Andrew
+> 
+> So set PG_hwpoison and call hugetlb_set_page_hwpoison() for such a case.
+> 
+> Fixes: 405ce051236c ("mm/hwpoison: fix race between hugetlb free/demotion and memory_failure_hugetlb()")
+> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+> ---
+>  include/linux/mm.h  | 1 +
+>  mm/memory-failure.c | 8 ++++----
+>  2 files changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index d446e834a3e5..04de0c3e4f9f 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -3187,6 +3187,7 @@ enum mf_flags {
+>  	MF_MUST_KILL = 1 << 2,
+>  	MF_SOFT_OFFLINE = 1 << 3,
+>  	MF_UNPOISON = 1 << 4,
+> +	MF_NO_RETRY = 1 << 5,
+>  };
+>  extern int memory_failure(unsigned long pfn, int flags);
+>  extern void memory_failure_queue(unsigned long pfn, int flags);
+> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+> index 056dbb2050f8..fe6a7961dc66 100644
+> --- a/mm/memory-failure.c
+> +++ b/mm/memory-failure.c
+> @@ -1526,7 +1526,8 @@ int __get_huge_page_for_hwpoison(unsigned long pfn, int flags)
+>  			count_increased = true;
+>  	} else {
+>  		ret = -EBUSY;
+> -		goto out;
+> +		if (!(flags & MF_NO_RETRY))
+> +			goto out;
+>  	}
+>  
+>  	if (TestSetPageHWPoison(head)) {
+> @@ -1556,7 +1557,6 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
+>  	struct page *p = pfn_to_page(pfn);
+>  	struct page *head;
+>  	unsigned long page_flags;
+> -	bool retry = true;
+>  
+>  	*hugetlb = 1;
+>  retry:
+> @@ -1572,8 +1572,8 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
+>  		}
+>  		return res;
+>  	} else if (res == -EBUSY) {
+> -		if (retry) {
+> -			retry = false;
+> +		if (!(flags & MF_NO_RETRY)) {
+> +			flags |= MF_NO_RETRY;
+>  			goto retry;
+>  		}
+>  		action_result(pfn, MF_MSG_UNKNOWN, MF_IGNORED);
+> 
+
