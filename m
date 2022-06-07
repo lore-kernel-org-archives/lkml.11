@@ -2,160 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 225E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:33:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86C8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:33:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355539AbiFGTdE (ORCPT
+        id S1355621AbiFGTdN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:33:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38388 "EHLO
+        Tue, 7 Jun 2022 15:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353465AbiFGSlY (ORCPT
+        with ESMTP id S1353473AbiFGSlZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:41:24 -0400
+        Tue, 7 Jun 2022 14:41:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21651862BB;
-        Tue,  7 Jun 2022 10:58:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43AD55484;
+        Tue,  7 Jun 2022 10:58:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53E00617A7;
-        Tue,  7 Jun 2022 17:58:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EACDC385A5;
-        Tue,  7 Jun 2022 17:58:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624722;
-        bh=x0W6N9VmPJ+8e2PWz/8GEgmYtClvv+lyTohLYHBGjKc=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47633617B0;
+        Tue,  7 Jun 2022 17:58:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 469F3C34115;
+        Tue,  7 Jun 2022 17:58:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624726;
+        bh=rPBvgnCvPO1NeOvOJ7gzKr0pzqOpITX4+dk7Nn1SKeQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pPfLk3/r/hYt7SEERLNTFFQghOkiOawAzSibKNKbeVRwvKjOuAcrq+DkOJ3gaTUj5
-         QDYzBML60zfNRVoxg+/HEcpweG9cuhuDNQ2y0F8GVJgb60rdsuz7e9JOFqlrVlnVOX
-         RtS81C/eXY6WScuYn93z9JYdAgiBGVh06v6o/1cQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 429/667] nvdimm: Fix firmware activation deadlock scenarios
-Date:   Tue,  7 Jun 2022 19:01:34 +0200
-Message-Id: <20220607164947.593329154@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=NFvDTBGHxGMQUiwSqTiHfAd7JhUWsMVij4Cn8BIewnx5k+D9RFAFiTMDeCftor6Mm
+         Xk78EiHS6enVDUCXIMHQqJOwtyTE04yaQl0iyoaTtnZY+3N6v0P7N5x1Yf0VSXT7It
+         aBABIb2fkfcJGVUn6Fr7uFL78hxYumUX0r//DMKS8SzcBmk3wiYNcuIXoLviwYKVh6
+         c6TFIeG4y80WKg9XCy0PriMAFkZaTcSXZ4kmVKl5DENRbW7YcIO3/k2uPA3j7rjCW/
+         ro0yAteqlgN4L8KBD/P1fngokrro2/OL8mOWgDEUSIN6RxkZnA67fRISkO8+eUfHcl
+         RBhljy+dh/FeQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, Larry.Finger@lwfinger.net,
+        florian.c.schilhabel@googlemail.com, kuba@kernel.org,
+        len.baker@gmx.com, paskripkin@gmail.com, wanngchenng@gmail.com,
+        skumark1902@gmail.com, linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.10 02/38] staging: rtl8712: fix a potential memory leak in r871xu_drv_init()
+Date:   Tue,  7 Jun 2022 13:57:57 -0400
+Message-Id: <20220607175835.480735-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
+References: <20220607175835.480735-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit e6829d1bd3c4b58296ee9e412f7ed4d6cb390192 ]
+[ Upstream commit 7288ff561de650d4139fab80e9cb0da9b5b32434 ]
 
-Lockdep reports the following deadlock scenarios for CXL root device
-power-management, device_prepare(), operations, and device_shutdown()
-operations for 'nd_region' devices:
+In r871xu_drv_init(), if r8712_init_drv_sw() fails, then the memory
+allocated by r8712_alloc_io_queue() in r8712_usb_dvobj_init() is not
+properly released as there is no action will be performed by
+r8712_usb_dvobj_deinit().
+To properly release it, we should call r8712_free_io_queue() in
+r8712_usb_dvobj_deinit().
 
- Chain exists of:
-   &nvdimm_region_key --> &nvdimm_bus->reconfig_mutex --> system_transition_mutex
+Besides, in r871xu_dev_remove(), r8712_usb_dvobj_deinit() will be called
+by r871x_dev_unload() under condition `padapter->bup` and
+r8712_free_io_queue() is called by r8712_free_drv_sw().
+However, r8712_usb_dvobj_deinit() does not rely on `padapter->bup` and
+calling r8712_free_io_queue() in r8712_free_drv_sw() is negative for
+better understading the code.
+So I move r8712_usb_dvobj_deinit() into r871xu_dev_remove(), and remove
+r8712_free_io_queue() from r8712_free_drv_sw().
 
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(system_transition_mutex);
-                                lock(&nvdimm_bus->reconfig_mutex);
-                                lock(system_transition_mutex);
-   lock(&nvdimm_region_key);
-
- Chain exists of:
-   &cxl_nvdimm_bridge_key --> acpi_scan_lock --> &cxl_root_key
-
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(&cxl_root_key);
-                                lock(acpi_scan_lock);
-                                lock(&cxl_root_key);
-   lock(&cxl_nvdimm_bridge_key);
-
-These stem from holding nvdimm_bus_lock() over hibernate_quiet_exec()
-which walks the entire system device topology taking device_lock() along
-the way. The nvdimm_bus_lock() is protecting against unregistration,
-multiple simultaneous ops callers, and preventing activate_show() from
-racing activate_store(). For the first 2, the lock is redundant.
-Unregistration already flushes all ops users, and sysfs already prevents
-multiple threads to be active in an ops handler at the same time. For
-the last userspace should already be waiting for its last
-activate_store() to complete, and does not need activate_show() to flush
-the write side, so this lock usage can be deleted in these attributes.
-
-Fixes: 48001ea50d17 ("PM, libnvdimm: Add runtime firmware activation support")
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-Link: https://lore.kernel.org/r/165074883800.4116052.10737040861825806582.stgit@dwillia2-desk3.amr.corp.intel.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Link: https://lore.kernel.org/r/tencent_B8048C592777830380A23A7C4409F9DF1305@qq.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvdimm/core.c | 9 ---------
- 1 file changed, 9 deletions(-)
+ drivers/staging/rtl8712/os_intfs.c | 1 -
+ drivers/staging/rtl8712/usb_intf.c | 6 +++---
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/nvdimm/core.c b/drivers/nvdimm/core.c
-index 7de592d7eff4..47625fe4276e 100644
---- a/drivers/nvdimm/core.c
-+++ b/drivers/nvdimm/core.c
-@@ -399,9 +399,7 @@ static ssize_t capability_show(struct device *dev,
- 	if (!nd_desc->fw_ops)
- 		return -EOPNOTSUPP;
+diff --git a/drivers/staging/rtl8712/os_intfs.c b/drivers/staging/rtl8712/os_intfs.c
+index 2214aca09730..daa3180dfde3 100644
+--- a/drivers/staging/rtl8712/os_intfs.c
++++ b/drivers/staging/rtl8712/os_intfs.c
+@@ -332,7 +332,6 @@ void r8712_free_drv_sw(struct _adapter *padapter)
+ 	r8712_free_evt_priv(&padapter->evtpriv);
+ 	r8712_DeInitSwLeds(padapter);
+ 	r8712_free_mlme_priv(&padapter->mlmepriv);
+-	r8712_free_io_queue(padapter);
+ 	_free_xmit_priv(&padapter->xmitpriv);
+ 	_r8712_free_sta_priv(&padapter->stapriv);
+ 	_r8712_free_recv_priv(&padapter->recvpriv);
+diff --git a/drivers/staging/rtl8712/usb_intf.c b/drivers/staging/rtl8712/usb_intf.c
+index fed96d4251bf..77f090bdd36e 100644
+--- a/drivers/staging/rtl8712/usb_intf.c
++++ b/drivers/staging/rtl8712/usb_intf.c
+@@ -266,6 +266,7 @@ static uint r8712_usb_dvobj_init(struct _adapter *padapter)
  
--	nvdimm_bus_lock(dev);
- 	cap = nd_desc->fw_ops->capability(nd_desc);
--	nvdimm_bus_unlock(dev);
+ static void r8712_usb_dvobj_deinit(struct _adapter *padapter)
+ {
++	r8712_free_io_queue(padapter);
+ }
  
- 	switch (cap) {
- 	case NVDIMM_FWA_CAP_QUIESCE:
-@@ -426,10 +424,8 @@ static ssize_t activate_show(struct device *dev,
- 	if (!nd_desc->fw_ops)
- 		return -EOPNOTSUPP;
+ void rtl871x_intf_stop(struct _adapter *padapter)
+@@ -303,9 +304,6 @@ void r871x_dev_unload(struct _adapter *padapter)
+ 			rtl8712_hal_deinit(padapter);
+ 		}
  
--	nvdimm_bus_lock(dev);
- 	cap = nd_desc->fw_ops->capability(nd_desc);
- 	state = nd_desc->fw_ops->activate_state(nd_desc);
--	nvdimm_bus_unlock(dev);
- 
- 	if (cap < NVDIMM_FWA_CAP_QUIESCE)
- 		return -EOPNOTSUPP;
-@@ -474,7 +470,6 @@ static ssize_t activate_store(struct device *dev,
- 	else
- 		return -EINVAL;
- 
--	nvdimm_bus_lock(dev);
- 	state = nd_desc->fw_ops->activate_state(nd_desc);
- 
- 	switch (state) {
-@@ -492,7 +487,6 @@ static ssize_t activate_store(struct device *dev,
- 	default:
- 		rc = -ENXIO;
+-		/*s6.*/
+-		if (padapter->dvobj_deinit)
+-			padapter->dvobj_deinit(padapter);
+ 		padapter->bup = false;
  	}
--	nvdimm_bus_unlock(dev);
- 
- 	if (rc == 0)
- 		rc = len;
-@@ -515,10 +509,7 @@ static umode_t nvdimm_bus_firmware_visible(struct kobject *kobj, struct attribut
- 	if (!nd_desc->fw_ops)
- 		return 0;
- 
--	nvdimm_bus_lock(dev);
- 	cap = nd_desc->fw_ops->capability(nd_desc);
--	nvdimm_bus_unlock(dev);
--
- 	if (cap < NVDIMM_FWA_CAP_QUIESCE)
- 		return 0;
+ }
+@@ -610,6 +608,8 @@ static void r871xu_dev_remove(struct usb_interface *pusb_intf)
+ 	/* Stop driver mlme relation timer */
+ 	r8712_stop_drv_timers(padapter);
+ 	r871x_dev_unload(padapter);
++	if (padapter->dvobj_deinit)
++		padapter->dvobj_deinit(padapter);
+ 	r8712_free_drv_sw(padapter);
+ 	free_netdev(pnetdev);
  
 -- 
 2.35.1
-
-
 
