@@ -2,97 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15982C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:54:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A78C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356796AbiFGTya (ORCPT
+        id S1357013AbiFGTyh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:54:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53936 "EHLO
+        Tue, 7 Jun 2022 15:54:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354040AbiFGSq1 (ORCPT
+        with ESMTP id S1354048AbiFGSq3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C04718E44F;
-        Tue,  7 Jun 2022 10:59:54 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70C518F2E8;
+        Tue,  7 Jun 2022 11:00:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 43752616B6;
-        Tue,  7 Jun 2022 17:59:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84D3FC36AFF;
-        Tue,  7 Jun 2022 17:59:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624793;
-        bh=JzGW/PIlJA/cMyZJ3ANK0AFOuDKSu3Alt53e/wLXUWo=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83ACF618FB;
+        Tue,  7 Jun 2022 18:00:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94338C385A5;
+        Tue,  7 Jun 2022 17:59:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624799;
+        bh=Z2ikQh4GvH5/xZ/DTPW7k20APCT+ZlfJDSw0qWNiTLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pp2dQXMcHnNruHwv7begOWvnX6NyUgcmjE570Y14EV9TRUnR6GSLBEoK/FtEfD+ro
-         KfCR+HtSW5jCjvFZBXvCtQUkS79zAwd8nUrR8nJdDlG6/YWLqCDPbOqH78vYmpochH
-         DXwbyqU0Oc1iHYMSojxjgnz0d0EIxzEaLgSmp5Ba8xi960OGg7ocZEm0mBS0nof+hG
-         c8RJewf6AqrOtguG0/ojr5BCQzaL3HWyTHkTCgUWQ8/Uq3Xq/TT+ot8G+on64dYxv6
-         1N76bT0lznxXiacFR0TXeqtBIe28SBU+PIKnfOWaVZPhyUDcsU3o3s77qMsB0V7PfP
-         LwTvlWctvEbQw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gong Yuanjun <ruc_gongyuanjun@163.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 29/38] drm/radeon: fix a possible null pointer dereference
-Date:   Tue,  7 Jun 2022 13:58:24 -0400
-Message-Id: <20220607175835.480735-29-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
-References: <20220607175835.480735-1-sashal@kernel.org>
+        b=S+F7GpC9qB0i0Qexv5HWxhbe0Yh84rWNNj5NEmGlwhTBi/fa+ziSqUGcDPnCeYeEH
+         THgRE5TCyEh5ltNvNqL+RiDl90qFxvApFxMIdArcWw8xdg1VWmZc00y6/K/fZGdK4D
+         IRvduIxh63W5UBLh7y+zLUS37pyWEHTPk7JZrMjU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mina Almasry <almasrymina@google.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 458/667] hugetlbfs: fix hugetlbfs_statfs() locking
+Date:   Tue,  7 Jun 2022 19:02:03 +0200
+Message-Id: <20220607164948.449157136@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gong Yuanjun <ruc_gongyuanjun@163.com>
+From: Mina Almasry <almasrymina@google.com>
 
-[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
+[ Upstream commit 4b25f030ae69ba710eff587cabb4c57cb7e7a8a1 ]
 
-In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
-is assigned to mode, which will lead to a NULL pointer dereference
-on failure of drm_mode_duplicate(). Add a check to avoid npd.
+After commit db71ef79b59b ("hugetlb: make free_huge_page irq safe"), the
+subpool lock should be locked with spin_lock_irq() and all call sites was
+modified as such, except for the ones in hugetlbfs_statfs().
 
-The failure status of drm_cvt_mode() on the other path is checked too.
-
-Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Link: https://lkml.kernel.org/r/20220429202207.3045-1-almasrymina@google.com
+Fixes: db71ef79b59b ("hugetlb: make free_huge_page irq safe")
+Signed-off-by: Mina Almasry <almasrymina@google.com>
+Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ fs/hugetlbfs/inode.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
-index e30834434442..ef111d460be2 100644
---- a/drivers/gpu/drm/radeon/radeon_connectors.c
-+++ b/drivers/gpu/drm/radeon/radeon_connectors.c
-@@ -473,6 +473,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
- 	    native_mode->vdisplay != 0 &&
- 	    native_mode->clock != 0) {
- 		mode = drm_mode_duplicate(dev, native_mode);
-+		if (!mode)
-+			return NULL;
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		drm_mode_set_name(mode);
+diff --git a/fs/hugetlbfs/inode.c b/fs/hugetlbfs/inode.c
+index bb0651a4a128..d74a49b188c2 100644
+--- a/fs/hugetlbfs/inode.c
++++ b/fs/hugetlbfs/inode.c
+@@ -1048,12 +1048,12 @@ static int hugetlbfs_statfs(struct dentry *dentry, struct kstatfs *buf)
+ 		if (sbinfo->spool) {
+ 			long free_pages;
  
-@@ -487,6 +489,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
- 		 * simpler.
- 		 */
- 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
-+		if (!mode)
-+			return NULL;
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
- 	}
+-			spin_lock(&sbinfo->spool->lock);
++			spin_lock_irq(&sbinfo->spool->lock);
+ 			buf->f_blocks = sbinfo->spool->max_hpages;
+ 			free_pages = sbinfo->spool->max_hpages
+ 				- sbinfo->spool->used_hpages;
+ 			buf->f_bavail = buf->f_bfree = free_pages;
+-			spin_unlock(&sbinfo->spool->lock);
++			spin_unlock_irq(&sbinfo->spool->lock);
+ 			buf->f_files = sbinfo->max_inodes;
+ 			buf->f_ffree = sbinfo->free_inodes;
+ 		}
 -- 
 2.35.1
+
+
 
