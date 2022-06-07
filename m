@@ -2,186 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F4B9CCA490
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D3C7CCA494
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386462AbiFHBgx (ORCPT
+        id S1388025AbiFHBho (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
+        Tue, 7 Jun 2022 21:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385412AbiFGXjJ (ORCPT
+        with ESMTP id S1381947AbiFGVsN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:39:09 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A0922FA01
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:40 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id k73-20020a25244c000000b0065ca88b381aso16139855ybk.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=liucOeq+i8wBW37ckX9CitJW/au6CJxD8EZtE2Dscgc=;
-        b=IN4fgLOAlV1KfJqGAahoaf3ef2R61NuhCc8Zcuigfom73c04gZoF4gqmTlUtsMkVpC
-         JJjG5PLhtp0idJcE3GQZIUcLYjAFyliljLpmJEtskP/d9vDA+SUVMTiFr2hP1UxPLYHS
-         l6qT8pIGPWE5c8PmBss+TQAa+aDolxVsk5hpUIWrgBd/eOL+Ni75YM8tBNHcv5KC2108
-         hX4vi4h52X6J7ztyPP6LvuYeEc4Q8rr/3H40NyyOkO82MsQgFndVerbRD480mQnmy87g
-         d0+G/e3Pf8MNkO8RgEMH0iZYVzv21SEneAUSiIpjkqmdtoD+EB3MUXh+XkggzrR2H7DJ
-         wsyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=liucOeq+i8wBW37ckX9CitJW/au6CJxD8EZtE2Dscgc=;
-        b=zsegZb4GazgncRJxM44ROODuyMZQk1AfIT0EdhWQLyJde0kae1a5BQkPoMBlAiU9Sg
-         NWrjTRES58EC3ahhdfyST4RROKOa5XXTprozUqZVmEKtMPGPyw3khYld4GZzbSWaa8Dl
-         tH/6/ZLwnofcqsYwa0i44GPcot6H497phx7Yd1NtOdxb8mN4dPplD0+0vOv8sFOmE08t
-         ELXjpS9tpFZLqlMFcpT0IGSmzioYk3sSqv0pAq4Kf3Heih2ak2uNh/5QnowMlm6DoKmI
-         zj4aLHuYzhLQAyPCMirPcRSSIxEfQ0jd/Yf1V1DaOZrL/ViAld9AhtpGcQZAmQNbAeWn
-         R6lQ==
-X-Gm-Message-State: AOAM5312B8+CO7Bv7eawJT/PFylOFlUj29FnX83mwvFyoJGziJGadmWa
-        xU7tYBjgZkAutNEcQ7DyIJWeCfmU7z0=
-X-Google-Smtp-Source: ABdhPJwaMXUoyu3EtfXs0KZLcGC4hnzNLLKfYxjZfrDEVK3xRQ3CoJWyKoyj8BCWfKvB0yvC4Lb3ZojZyZM=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a81:9d5:0:b0:2f4:dd93:4513 with SMTP id
- 204-20020a8109d5000000b002f4dd934513mr33067623ywj.54.1654637798700; Tue, 07
- Jun 2022 14:36:38 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  7 Jun 2022 21:36:01 +0000
-In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
-Message-Id: <20220607213604.3346000-13-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220607213604.3346000-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v5 12/15] KVM: nVMX: Extend VMX MSRs quirk to CR0/4 fixed1 bits
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
-        David Matlack <dmatlack@google.com>,
-        Oliver Upton <oupton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 7 Jun 2022 17:48:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7BE2390B4;
+        Tue,  7 Jun 2022 12:08:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A390618D9;
+        Tue,  7 Jun 2022 19:08:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A909C385A5;
+        Tue,  7 Jun 2022 19:08:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628893;
+        bh=UuQZ3aoQiDfMsk594do238/iZ/yCyfLgx4h9ODokf6k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GxAxAlOk/zzWQSBtk2oicDG7otmhPkXu0n/fgr8+DaOHZ8VhN8hbU8nZtL5KnW3rW
+         ca/knTT9HBwlPzUQq/fMaljOq/jJ2yQh2JrkrU1OjG6yhgJ3r4sO59M/L74AEb2CE/
+         YrsROGxOM7352dcXSgzw3zJYxlhzml4yKXe3tt0k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 493/879] thermal/core: Fix memory leak in __thermal_cooling_device_register()
+Date:   Tue,  7 Jun 2022 19:00:11 +0200
+Message-Id: <20220607165017.181609930@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend the VMX MSRs quirk to the CR0/4_FIXED1 MSRs, i.e. when the quirk
-is disabled, allow userspace to set the MSRs and do not rewrite the MSRs
-during CPUID updates.  The bits that the guest (L2 in this case) is
-allowed to set are not directly tied to CPUID.  Enumerating to L1 that it
-can set reserved CR0/4 bits is nonsensical and will ultimately result in
-a failed nested VM-Entry (KVM enforces guest reserved CR4 bits on top of
-the VMX MSRs), but KVM typically doesn't police the vCPU model except
-when doing so is necessary to protect the host kernel.
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-Further restricting CR4 bits is however a reasonable thing to do, e.g. to
-work around a bug in nested virtualization, in which case exposing a
-feature to L1 is ok, but letting L2 use the feature is not.  Of course,
-whether or not the L1 hypervisor will actually _check_ the FIXED1 bits is
-another matter entirely, e.g. KVM currently assumes all bits that can be
-set in the host can also be set in the guest.
+[ Upstream commit 98a160e898c0f4a979af9de3ab48b4b1d42d1dbb ]
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+I got memory leak as follows when doing fault injection test:
+
+unreferenced object 0xffff888010080000 (size 264312):
+  comm "182", pid 102533, jiffies 4296434960 (age 10.100s)
+  hex dump (first 32 bytes):
+    00 00 00 00 ad 4e ad de ff ff ff ff 00 00 00 00  .....N..........
+    ff ff ff ff ff ff ff ff 40 7f 1f b9 ff ff ff ff  ........@.......
+  backtrace:
+    [<0000000038b2f4fc>] kmalloc_order_trace+0x1d/0x110 mm/slab_common.c:969
+    [<00000000ebcb8da5>] __kmalloc+0x373/0x420 include/linux/slab.h:510
+    [<0000000084137f13>] thermal_cooling_device_setup_sysfs+0x15d/0x2d0 include/linux/slab.h:586
+    [<00000000352b8755>] __thermal_cooling_device_register+0x332/0xa60 drivers/thermal/thermal_core.c:927
+    [<00000000fb9f331b>] devm_thermal_of_cooling_device_register+0x6b/0xf0 drivers/thermal/thermal_core.c:1041
+    [<000000009b8012d2>] max6650_probe.cold+0x557/0x6aa drivers/hwmon/max6650.c:211
+    [<00000000da0b7e04>] i2c_device_probe+0x472/0xac0 drivers/i2c/i2c-core-base.c:561
+
+If device_register() fails, thermal_cooling_device_destroy_sysfs() need be called
+to free the memory allocated in thermal_cooling_device_setup_sysfs().
+
+Fixes: 8ea229511e06 ("thermal: Add cooling device's statistics in sysfs")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220511020605.3096734-1-yangyingliang@huawei.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/virt/kvm/api.rst |  8 ++++++++
- arch/x86/kvm/vmx/nested.c      | 33 ++++++++++++++++++++++++++++++---
- arch/x86/kvm/vmx/vmx.c         |  6 +++---
- 3 files changed, 41 insertions(+), 6 deletions(-)
+ drivers/thermal/thermal_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index 1095692ddab7..88d1bbae031e 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -7391,6 +7391,14 @@ The valid bits in cap.args[0] are:
-                                       IA32_VMX_TRUE_EXIT_CTLS[bit 44]
-                                       ('load IA32_PERF_GLOBAL_CTRL'). Otherwise,
-                                       these corresponding MSR bits are cleared.
-+                                    - MSR_IA32_VMX_CR0_FIXED1 is unconditionally
-+                                      set to 0xffffffff
-+                                    - CR4.PCE is unconditionally set in
-+                                      MSR_IA32_VMX_CR4_FIXED1.
-+                                    - All CR4 bits with an associated CPUID
-+                                      feature flag are set in
-+                                      MSR_IA32_VMX_CR4_FIXED1 if the feature is
-+                                      reported as supported in guest CPUID.
+diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+index 82654dc8382b..cdc0552e8c42 100644
+--- a/drivers/thermal/thermal_core.c
++++ b/drivers/thermal/thermal_core.c
+@@ -947,6 +947,7 @@ __thermal_cooling_device_register(struct device_node *np,
+ 	return cdev;
  
-                                     When this quirk is disabled, KVM will not
-                                     change the values of the aformentioned VMX
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 5533c2474128..abce74cfefc9 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -1385,6 +1385,30 @@ static int vmx_restore_fixed0_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
- 	return 0;
- }
- 
-+static u64 *vmx_get_fixed1_msr(struct nested_vmx_msrs *msrs, u32 msr_index)
-+{
-+	switch (msr_index) {
-+	case MSR_IA32_VMX_CR0_FIXED1:
-+		return &msrs->cr0_fixed1;
-+	case MSR_IA32_VMX_CR4_FIXED1:
-+		return &msrs->cr4_fixed1;
-+	default:
-+		BUG();
-+	}
-+}
-+
-+static int vmx_restore_fixed1_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
-+{
-+	const u64 *msr = vmx_get_fixed1_msr(&vmcs_config.nested, msr_index);
-+
-+	/* Bits that "must-be-0" must not be set in the restored value. */
-+	if (!is_bitwise_subset(*msr, data, -1ULL))
-+		return -EINVAL;
-+
-+	*vmx_get_fixed1_msr(&vmx->nested.msrs, msr_index) = data;
-+	return 0;
-+}
-+
- /*
-  * Called when userspace is restoring VMX MSRs.
-  *
-@@ -1432,10 +1456,13 @@ int vmx_set_vmx_msr(struct kvm_vcpu *vcpu, u32 msr_index, u64 data)
- 	case MSR_IA32_VMX_CR0_FIXED1:
- 	case MSR_IA32_VMX_CR4_FIXED1:
- 		/*
--		 * These MSRs are generated based on the vCPU's CPUID, so we
--		 * do not support restoring them directly.
-+		 * These MSRs are generated based on the vCPU's CPUID when KVM
-+		 * "owns" the VMX MSRs, do not allow restoring them directly.
- 		 */
--		return -EINVAL;
-+		if (kvm_check_has_quirk(vmx->vcpu.kvm, KVM_X86_QUIRK_TWEAK_VMX_MSRS))
-+			return -EINVAL;
-+
-+		return vmx_restore_fixed1_msr(vmx, msr_index, data);
- 	case MSR_IA32_VMX_EPT_VPID_CAP:
- 		return vmx_restore_vmx_ept_vpid_cap(vmx, data);
- 	case MSR_IA32_VMX_VMCS_ENUM:
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 4c31c8f24329..139f365ca6bb 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7520,10 +7520,10 @@ static void vmx_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 			~(FEAT_CTL_VMX_ENABLED_INSIDE_SMX |
- 			  FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX);
- 
--	if (nested_vmx_allowed(vcpu)) {
-+	if (nested_vmx_allowed(vcpu) &&
-+	    kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_TWEAK_VMX_MSRS)) {
- 		nested_vmx_cr_fixed1_bits_update(vcpu);
--		if (kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_TWEAK_VMX_MSRS))
--			nested_vmx_entry_exit_ctls_update(vcpu);
-+		nested_vmx_entry_exit_ctls_update(vcpu);
- 	}
- 
- 	if (boot_cpu_has(X86_FEATURE_INTEL_PT) &&
+ out_kfree_type:
++	thermal_cooling_device_destroy_sysfs(cdev);
+ 	kfree(cdev->type);
+ 	put_device(&cdev->device);
+ 	cdev = NULL;
 -- 
-2.36.1.255.ge46751e96f-goog
+2.35.1
+
+
 
