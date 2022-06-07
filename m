@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C46C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E035C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387196AbiFHAaO (ORCPT
+        id S1387595AbiFHAaX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:30:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37852 "EHLO
+        Tue, 7 Jun 2022 20:30:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380035AbiFGWOj (ORCPT
+        with ESMTP id S1384228AbiFGVyV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:14:39 -0400
+        Tue, 7 Jun 2022 17:54:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0757E260CCD;
-        Tue,  7 Jun 2022 12:19:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7684334BA5;
+        Tue,  7 Jun 2022 12:13:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C058618EC;
-        Tue,  7 Jun 2022 19:19:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93E9DC385A2;
-        Tue,  7 Jun 2022 19:19:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CF916190D;
+        Tue,  7 Jun 2022 19:13:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58BD9C385A2;
+        Tue,  7 Jun 2022 19:13:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629591;
-        bh=wVbbGLDEgiHbwO+8ceB4LaEgkGTDRdVe8SWyZV+ln8w=;
+        s=korg; t=1654629188;
+        bh=aUkYZA2RdSkilF75ZvUyPDbWjfQsE3ogg5hPbwbWvtk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vqCr29h/FLXpTniX3UGtcQ/VrKVZXVS7j21OYJF5KOZu3VDNbdtlNBfH+sUMdmuaI
-         e6xpsofLJnDwdxgC0/tGjczF6abE7r2fXPZSOo4ZZkXP3PEy080SE+Cf/pckG02OJv
-         47W1XCYaoYV0IHeTJI23Ren7M5B8O6dWVLU07+wk=
+        b=qmi265/1NwHVJBR4twAQjlfqedz44UMLhlZ4F/XWsXHEty+siQ9bcXjfKDYF/uc9y
+         ZqKQk7lZLqOHIRog7dJXbYftM1WleXqWZxvV0H6EzyhAjOF9J47Bie6DAxGNDKg4w6
+         /8plghkCi6tCpbnRZ9JwhnHqd3Ly70b9bBEm5dwE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.18 746/879] ext4: avoid cycles in directory h-tree
-Date:   Tue,  7 Jun 2022 19:04:24 +0200
-Message-Id: <20220607165024.509940881@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 602/879] drm/msm/dpu: fix error check return value of irq_of_parse_and_map()
+Date:   Tue,  7 Jun 2022 19:02:00 +0200
+Message-Id: <20220607165020.326178256@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,81 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-commit 3ba733f879c2a88910744647e41edeefbc0d92b2 upstream.
+[ Upstream commit 95093595914c17f32e1d6228b4db06fab8cebd35 ]
 
-A maliciously corrupted filesystem can contain cycles in the h-tree
-stored inside a directory. That can easily lead to the kernel corrupting
-tree nodes that were already verified under its hands while doing a node
-split and consequently accessing unallocated memory. Fix the problem by
-verifying traversed block numbers are unique.
+The irq_of_parse_and_map() function returns 0 on failure, and does not
+return a negative value anyhow, so never enter this conditional branch.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220518093332.13986-2-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/483291/
+Link: https://lore.kernel.org/r/20220425090947.3498897-1-lv.ruyi@zte.com.cn
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/namei.c |   22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -777,12 +777,14 @@ static struct dx_frame *
- dx_probe(struct ext4_filename *fname, struct inode *dir,
- 	 struct dx_hash_info *hinfo, struct dx_frame *frame_in)
- {
--	unsigned count, indirect;
-+	unsigned count, indirect, level, i;
- 	struct dx_entry *at, *entries, *p, *q, *m;
- 	struct dx_root *root;
- 	struct dx_frame *frame = frame_in;
- 	struct dx_frame *ret_err = ERR_PTR(ERR_BAD_DX_DIR);
- 	u32 hash;
-+	ext4_lblk_t block;
-+	ext4_lblk_t blocks[EXT4_HTREE_LEVEL];
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index c8089678f733..c95bacd4f458 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -1244,7 +1244,7 @@ static int dpu_bind(struct device *dev, struct device *master, void *data)
  
- 	memset(frame_in, 0, EXT4_HTREE_LEVEL * sizeof(frame_in[0]));
- 	frame->bh = ext4_read_dirblock(dir, 0, INDEX);
-@@ -854,6 +856,8 @@ dx_probe(struct ext4_filename *fname, st
- 	}
+ 	priv->kms = &dpu_kms->base;
  
- 	dxtrace(printk("Look up %x", hash));
-+	level = 0;
-+	blocks[0] = 0;
- 	while (1) {
- 		count = dx_get_count(entries);
- 		if (!count || count > dx_get_limit(entries)) {
-@@ -882,15 +886,27 @@ dx_probe(struct ext4_filename *fname, st
- 			       dx_get_block(at)));
- 		frame->entries = entries;
- 		frame->at = at;
--		if (!indirect--)
-+
-+		block = dx_get_block(at);
-+		for (i = 0; i <= level; i++) {
-+			if (blocks[i] == block) {
-+				ext4_warning_inode(dir,
-+					"dx entry: tree cycle block %u points back to block %u",
-+					blocks[level], block);
-+				goto fail;
-+			}
-+		}
-+		if (++level > indirect)
- 			return frame;
-+		blocks[level] = block;
- 		frame++;
--		frame->bh = ext4_read_dirblock(dir, dx_get_block(at), INDEX);
-+		frame->bh = ext4_read_dirblock(dir, block, INDEX);
- 		if (IS_ERR(frame->bh)) {
- 			ret_err = (struct dx_frame *) frame->bh;
- 			frame->bh = NULL;
- 			goto fail;
- 		}
-+
- 		entries = ((struct dx_node *) frame->bh->b_data)->entries;
+-	return ret;
++	return 0;
+ }
  
- 		if (dx_get_limit(entries) != dx_node_limit(dir)) {
+ static void dpu_unbind(struct device *dev, struct device *master, void *data)
+-- 
+2.35.1
+
 
 
