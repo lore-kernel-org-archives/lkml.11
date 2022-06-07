@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56ADFCCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38746CCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378062AbiFGVAw (ORCPT
+        id S1378031AbiFGVAs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
+        Tue, 7 Jun 2022 17:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356515AbiFGT4X (ORCPT
+        with ESMTP id S1358024AbiFGT4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:56:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99684ADBED;
-        Tue,  7 Jun 2022 11:23:55 -0700 (PDT)
+        Tue, 7 Jun 2022 15:56:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4664AB0CF;
+        Tue,  7 Jun 2022 11:23:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB133B822C0;
-        Tue,  7 Jun 2022 18:23:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 336E0C36AFE;
-        Tue,  7 Jun 2022 18:23:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63D7A60906;
+        Tue,  7 Jun 2022 18:23:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77FEFC34115;
+        Tue,  7 Jun 2022 18:23:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626232;
-        bh=4en+cC/nYj++7MgCIJDMIe5jSsByg+LEvsp7KKofpjw=;
+        s=korg; t=1654626229;
+        bh=dbWiRrbUEdq/jShUoMSStxSROdj/mfEgDgb1SJh4nPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ejIjgjaAVgHsLW2ypiyCrCKaR5sbMxzpBQNTgzaGXV1yOZNxYHcc4nB3dyddYRasD
-         0RpX99g+w51OtPscbRBCyyyCokQHPncn488wu5U8dxalqMPVjoVRuNcUVy++iKO8aD
-         u4NaRTvqJuI10jJ9iHg4Sgskoae1DE4N+MZtST2w=
+        b=J+RWS7Ns48iG6Avhf3lWf7c/u+OltfGHznxbenJd0B8KmhVccSHGFmNQptFroI187
+         uIqLPn4gfZUMnj5ued5hB9SLVamGCNuF6LcjQoCWWF2CYwUO04g9bEvkyAhwQlmrsI
+         ItkI5EjqbTlVf1ukHwG9d0kx08OKCgkh5Y+VMb7g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        "Juan A. Suarez" <jasuarez@igalia.com>,
+        Melissa Wen <melissa.srw@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 305/772] selftests/resctrl: Fix null pointer dereference on open failed
-Date:   Tue,  7 Jun 2022 18:58:17 +0200
-Message-Id: <20220607164958.012085350@linuxfoundation.org>
+Subject: [PATCH 5.17 304/772] drm/v3d: Fix null pointer dereference of pointer perfmon
+Date:   Tue,  7 Jun 2022 18:58:16 +0200
+Message-Id: <20220607164957.982995791@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,46 +53,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Colin Ian King <colin.i.king@gmail.com>
 
-[ Upstream commit c7b607fa9325ccc94982774c505176677117689c ]
+[ Upstream commit ce7a1ecf3f9f1fccaf67295307614511d8e11b13 ]
 
-Currently if opening /dev/null fails to open then file pointer fp
-is null and further access to fp via fprintf will cause a null
-pointer dereference. Fix this by returning a negative error value
-when a null fp is detected.
+In the unlikely event that pointer perfmon is null the WARN_ON return path
+occurs after the pointer has already been deferenced. Fix this by only
+dereferencing perfmon after it has been null checked.
 
-Detected using cppcheck static analysis:
-tools/testing/selftests/resctrl/fill_buf.c:124:6: note: Assuming
-that condition '!fp' is not redundant
- if (!fp)
-     ^
-tools/testing/selftests/resctrl/fill_buf.c:126:10: note: Null
-pointer dereference
- fprintf(fp, "Sum: %d ", ret);
-
-Fixes: a2561b12fe39 ("selftests/resctrl: Add built in benchmark")
+Fixes: 26a4dc29b74a ("drm/v3d: Expose performance counters to userspace")
 Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Reviewed-by: Juan A. Suarez <jasuarez@igalia.com>
+Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220424183512.1365683-1-colin.i.king@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/resctrl/fill_buf.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/v3d/v3d_perfmon.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/resctrl/fill_buf.c b/tools/testing/selftests/resctrl/fill_buf.c
-index 51e5cf22632f..56ccbeae0638 100644
---- a/tools/testing/selftests/resctrl/fill_buf.c
-+++ b/tools/testing/selftests/resctrl/fill_buf.c
-@@ -121,8 +121,10 @@ static int fill_cache_read(unsigned char *start_ptr, unsigned char *end_ptr,
+diff --git a/drivers/gpu/drm/v3d/v3d_perfmon.c b/drivers/gpu/drm/v3d/v3d_perfmon.c
+index 0288ef063513..f6a88abccc7d 100644
+--- a/drivers/gpu/drm/v3d/v3d_perfmon.c
++++ b/drivers/gpu/drm/v3d/v3d_perfmon.c
+@@ -25,11 +25,12 @@ void v3d_perfmon_start(struct v3d_dev *v3d, struct v3d_perfmon *perfmon)
+ {
+ 	unsigned int i;
+ 	u32 mask;
+-	u8 ncounters = perfmon->ncounters;
++	u8 ncounters;
  
- 	/* Consume read result so that reading memory is not optimized out. */
- 	fp = fopen("/dev/null", "w");
--	if (!fp)
-+	if (!fp) {
- 		perror("Unable to write to /dev/null");
-+		return -1;
-+	}
- 	fprintf(fp, "Sum: %d ", ret);
- 	fclose(fp);
+ 	if (WARN_ON_ONCE(!perfmon || v3d->active_perfmon))
+ 		return;
  
++	ncounters = perfmon->ncounters;
+ 	mask = GENMASK(ncounters - 1, 0);
+ 
+ 	for (i = 0; i < ncounters; i++) {
 -- 
 2.35.1
 
