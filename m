@@ -2,73 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ADE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:47:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF83FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:50:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345185AbiFGQr4 (ORCPT
+        id S1344214AbiFGQuj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:47:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60062 "EHLO
+        Tue, 7 Jun 2022 12:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345174AbiFGQrz (ORCPT
+        with ESMTP id S237110AbiFGQuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:47:55 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718671D0F8;
-        Tue,  7 Jun 2022 09:47:54 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 18:47:51 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1654620473;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=lSDsywJB6k683pdbQfJxNfS1KPID3mBqEa5Vp/AoDIo=;
-        b=gWEdLbsAZVKjwpgZjroM0UejhNMN1fzFdMInH76EPGB31BBw8H88bkzk1NUqwGekEkrGcY
-        dY4EKc0DWHVI8W+BBz/lDyyjKcqA6bo61ikjKPdpaaV9CETAv4MWUuoUGiV0wHUpjWOC2P
-        ksQs6+CZApMQdGX5boy/psrG8ktcPjqe7jdjIWCLdXI/GvEnUnrs+aRhCWtcR08SeqW3xu
-        bLN5DIGJPfHRwJyVYWzF6jYRrF6rpDQpFs59GaoGxJPhxszDdGjMJvMks3WScjlzp9qi+N
-        TYF8byAqPqSLVWIhdHFC+ohY1sgV//EatJ3Rqxzn87tFgtMHt/s73n1+QAhv5Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1654620473;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=lSDsywJB6k683pdbQfJxNfS1KPID3mBqEa5Vp/AoDIo=;
-        b=MAH7c61VNSM9hWtcREbn31d1jdc2hKL+ffeAazKqIS4C28xkvGOVkyBgDl5AT6wedS3inS
-        oxOa7mIQ17lDriAQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-rt-users@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [ANNOUNCE] v5.19-rc1-rt1
-Message-ID: <Yp+BNyvZjQPMBDXA@linutronix.de>
+        Tue, 7 Jun 2022 12:50:35 -0400
+Received: from mail-out.m-online.net (mail-out.m-online.net [212.18.0.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4C43464A
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 09:50:31 -0700 (PDT)
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4LHbvT0fRrz1qyc6;
+        Tue,  7 Jun 2022 18:50:29 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4LHbvS6s9Wz1qqkC;
+        Tue,  7 Jun 2022 18:50:28 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id OzqzI33oF718; Tue,  7 Jun 2022 18:50:28 +0200 (CEST)
+X-Auth-Info: 1g4T+5031Hi3noBMLzrRy6buVNpO0fY89VJFB5X85JarwVF+T0y/Y419JziLBmyf
+Received: from igel.home (ppp-46-244-165-19.dynamic.mnet-online.de [46.244.165.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Tue,  7 Jun 2022 18:50:27 +0200 (CEST)
+Received: by igel.home (Postfix, from userid 1000)
+        id 87E3A2C39FE; Tue,  7 Jun 2022 18:50:27 +0200 (CEST)
+From:   Andreas Schwab <schwab@linux-m68k.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Dave Airlie <airlied@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [git pull] drm for 5.19-rc1
+References: <CAPM=9tw62EZfAm0PbiOPmMrpfR98QMFTWGEQcA34G4ap4xxNkA@mail.gmail.com>
+        <CAMuHMdXb5-gOVRsQx6tDqjQMD9cC-p=o56VuF2cBPWyMFRgHMA@mail.gmail.com>
+X-Yow:  Where do your SOCKS go when you lose them in th' WASHER?
+Date:   Tue, 07 Jun 2022 18:50:27 +0200
+In-Reply-To: <CAMuHMdXb5-gOVRsQx6tDqjQMD9cC-p=o56VuF2cBPWyMFRgHMA@mail.gmail.com>
+        (Geert Uytterhoeven's message of "Tue, 7 Jun 2022 12:22:41 +0200")
+Message-ID: <877d5s2zak.fsf@igel.home>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear RT folks!
+On Jun 07 2022, Geert Uytterhoeven wrote:
 
-I'm pleased to announce the v5.19-rc1-rt1 patch set. 
+> On Wed, May 25, 2022 at 4:49 PM Dave Airlie <airlied@gmail.com> wrote:
+>>       drm/amdgpu: add nbio v7_7_0 ip headers
+>
+> These header files are heavy users of large constants lacking the "U"
+> suffix e.g.:
+>
+>     #define NB_ADAPTER_ID__SUBSYSTEM_ID_MASK 0xFFFF0000L
+>
+> Assigning this to unsigned long on 32-bit will trigger a signed integer
+> overflow, which is technically UB, and causes "error: initializer
+> element is not constant" warnings with gcc-5 and -std-gnu11, cfr. [1]
 
-Changes since v5.18-rt11:
-  - Rebase to v5.19-rc1.
+That shouldn't happen here, as hexadecimal constants will be of unsigned
+type if they don't fit in the corresponding signed type.
 
-Known issues
-     - Valentin Schneider reported a few splats on ARM64, see
-          https://lkml.kernel.org/r/20210810134127.1394269-1-valentin.schneider@arm.com
-
-You can get this release via the git tree at:
-
-    git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git v5.19-rc1-rt1
-
-The RT patch against v5.19-rc1 can be found here:
-
-    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.19/older/patch-5.19-rc1-rt1.patch.xz
-
-The split quilt queue is available at:
-
-    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.19/older/patches-5.19-rc1-rt1.tar.xz
-
-Sebastian
+-- 
+Andreas Schwab, schwab@linux-m68k.org
+GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
+"And now for something completely different."
