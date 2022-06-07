@@ -2,86 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DBBCCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDADCCA48C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383895AbiFGVxu (ORCPT
+        id S1383605AbiFGVxV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37952 "EHLO
+        Tue, 7 Jun 2022 17:53:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378688AbiFGVBo (ORCPT
+        with ESMTP id S1377506AbiFGU7n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:01:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147E020E6CB;
-        Tue,  7 Jun 2022 11:45:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A55B76168E;
-        Tue,  7 Jun 2022 18:45:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA8BFC385A2;
-        Tue,  7 Jun 2022 18:45:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627527;
-        bh=YTiQcfVfoUJZDjjvDiV3FiTKkyQKvtmPn1hleT4Vvhw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qNtj3cRj7hsqJCrMJRhvR2ZQASGxI8mzTdGrSWw+vZguV9WN+wI5X0FBjbncArFIs
-         JU+FKTDFUx1mJ5jArIFXFvZocquFOnmOuYbPmYE2zWqCc536Ni4nM5Z/z4J5KuFqRm
-         gYrz6DB2nidGY4WwgwprX1GnEk76vYXErrcuMIsg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>, Coly Li <colyli@suse.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 771/772] md: bcache: check the return value of kzalloc() in detached_dev_do_request()
-Date:   Tue,  7 Jun 2022 19:06:03 +0200
-Message-Id: <20220607165011.739919303@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 16:59:43 -0400
+Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BB366C8A
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:45:00 -0700 (PDT)
+X-ASG-Debug-ID: 1654627498-1cf43917f33966c0001-xx1T2L
+Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id QrVV0e8kIBE4Cwz7; Tue, 07 Jun 2022 14:44:58 -0400 (EDT)
+X-Barracuda-Envelope-From: tonyb@cybernetics.com
+X-ASG-Whitelist: Client
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
+        bh=btLFiUXlrqByYR1DIyy+G6nrdsPdAmYyLow6+1WajEE=;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
+        Content-Language:Subject:MIME-Version:Date:Message-ID; b=kMCkFAqaqzd846YJ+lfv
+        P4h/NJYwHpSNVC1LQlF8sCQD9tdRu8eU6Qyj6nA3UeEKS+Q9SlxZQGnGHONgBLNRjIqoLyhLGMtJU
+        PX5uv5AZczFROzSnYLENhV5Gvejwrk80VJPKT5Zp3M2xPaJ0IR+U/zBt+GENsvWIAsbrV1uxdI=
+Received: from [10.157.2.224] (HELO [192.168.200.1])
+  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
+  with ESMTPS id 11859466; Tue, 07 Jun 2022 14:44:58 -0400
+Message-ID: <b1100f23-7a75-c5a0-851c-42d62554efa2@cybernetics.com>
+Date:   Tue, 7 Jun 2022 14:44:58 -0400
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: [PATCH v6 08/11] dmapool: speedup DMAPOOL_DEBUG with init_on_alloc
+Content-Language: en-US
+X-ASG-Orig-Subj: [PATCH v6 08/11] dmapool: speedup DMAPOOL_DEBUG with init_on_alloc
+From:   Tony Battersby <tonyb@cybernetics.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tony Lindgren <tony@atomide.com>
+References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
+In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Barracuda-Connect: UNKNOWN[10.10.4.126]
+X-Barracuda-Start-Time: 1654627498
+X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
+X-Barracuda-BRTS-Status: 1
+X-Virus-Scanned: by bsmtpd at cybernetics.com
+X-Barracuda-Scan-Msg-Size: 688
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+Avoid double-memset of the same allocated memory in dma_pool_alloc()
+when both DMAPOOL_DEBUG is enabled and init_on_alloc=1.
 
-commit 40f567bbb3b0639d2ec7d1c6ad4b1b018f80cf19 upstream.
-
-The function kzalloc() in detached_dev_do_request() can fail, so its
-return value should be checked.
-
-Fixes: bc082a55d25c ("bcache: fix inaccurate io state for detached bcache devices")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: Coly Li <colyli@suse.de>
-Link: https://lore.kernel.org/r/20220527152818.27545-4-colyli@suse.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
 ---
- drivers/md/bcache/request.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ mm/dmapool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/md/bcache/request.c
-+++ b/drivers/md/bcache/request.c
-@@ -1107,6 +1107,12 @@ static void detached_dev_do_request(stru
- 	 * which would call closure_get(&dc->disk.cl)
- 	 */
- 	ddip = kzalloc(sizeof(struct detached_dev_io_private), GFP_NOIO);
-+	if (!ddip) {
-+		bio->bi_status = BLK_STS_RESOURCE;
-+		bio->bi_end_io(bio);
-+		return;
-+	}
-+
- 	ddip->d = d;
- 	/* Count on the bcache device */
- 	ddip->orig_bdev = orig_bdev;
-
+diff --git a/mm/dmapool.c b/mm/dmapool.c
+index 44038089a41a..c7ec38cb4631 100644
+--- a/mm/dmapool.c
++++ b/mm/dmapool.c
+@@ -356,7 +356,7 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
+ 			break;
+ 		}
+ 	}
+-	if (!(mem_flags & __GFP_ZERO))
++	if (!want_init_on_alloc(mem_flags))
+ 		memset(retval, POOL_POISON_ALLOCATED, pool->size);
+ #endif
+ 	spin_unlock_irqrestore(&pool->lock, flags);
+-- 
+2.25.1
 
