@@ -2,119 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 001CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D776CCA486
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:17:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243567AbiFHDNe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 23:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
+        id S243384AbiFHDRc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 23:17:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245671AbiFHDMz (ORCPT
+        with ESMTP id S1345238AbiFHDOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 23:12:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DA7814A6;
-        Tue,  7 Jun 2022 12:18:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C561061934;
-        Tue,  7 Jun 2022 19:18:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3279C3411F;
-        Tue,  7 Jun 2022 19:18:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629491;
-        bh=vn4JIH1tVKgGS5qXnxkXPSSmPKxh2vj+QagUdCtlYsk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FbRwATdMPdoVL7hwEkccSpbs9Ru24le0EddriHTuwk5ltL4yS24wXLH6Shd0Kw1xO
-         5L8fbK2E6ZJlkdRjR/Neod06jhiprFredUAjyWvPaHvWaQzthPUhzzJrTguVt/Lppn
-         ppgWN/0F0ZRyuUWWKelgI00vF596QpOjah9Vb+ok=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.18 709/879] f2fs: fix to do sanity check on block address in f2fs_do_zero_range()
-Date:   Tue,  7 Jun 2022 19:03:47 +0200
-Message-Id: <20220607165023.433898588@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 23:14:23 -0400
+X-Greylist: delayed 366 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 12:24:22 PDT
+Received: from 11.mo581.mail-out.ovh.net (11.mo581.mail-out.ovh.net [87.98.173.157])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07613277FAC
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:24:21 -0700 (PDT)
+Received: from player698.ha.ovh.net (unknown [10.109.143.220])
+        by mo581.mail-out.ovh.net (Postfix) with ESMTP id 06E6424103
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:24:20 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player698.ha.ovh.net (Postfix) with ESMTPSA id D80BF2B48047A;
+        Tue,  7 Jun 2022 19:24:10 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-110S004c12dac52-d115-480d-84c5-32e704857230,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Antonino Daplas <adaplas@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Helge Deller <deller@gmx.de>, Paul Mackerras <paulus@samba.org>
+Cc:     linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>, dri-devel@lists.freedesktop.org
+Subject: [PATCH 3/7] fbdev: radeon: Use backlight helper
+Date:   Tue,  7 Jun 2022 21:23:31 +0200
+Message-Id: <20220607192335.1137249-4-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220607192335.1137249-1-steve@sk2.org>
+References: <20220607192335.1137249-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11953397840202401513
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekud
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-commit 25f8236213a91efdf708b9d77e9e51b6fc3e141c upstream.
-
-As Yanming reported in bugzilla:
-
-https://bugzilla.kernel.org/show_bug.cgi?id=215894
-
-I have encountered a bug in F2FS file system in kernel v5.17.
-
-I have uploaded the system call sequence as case.c, and a fuzzed image can
-be found in google net disk
-
-The kernel should enable CONFIG_KASAN=y and CONFIG_KASAN_INLINE=y. You can
-reproduce the bug by running the following commands:
-
-kernel BUG at fs/f2fs/segment.c:2291!
-Call Trace:
- f2fs_invalidate_blocks+0x193/0x2d0
- f2fs_fallocate+0x2593/0x4a70
- vfs_fallocate+0x2a5/0xac0
- ksys_fallocate+0x35/0x70
- __x64_sys_fallocate+0x8e/0xf0
- do_syscall_64+0x3b/0x90
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The root cause is, after image was fuzzed, block mapping info in inode
-will be inconsistent with SIT table, so in f2fs_fallocate(), it will cause
-panic when updating SIT with invalid blkaddr.
-
-Let's fix the issue by adding sanity check on block address before updating
-SIT table with it.
-
-Cc: stable@vger.kernel.org
-Reported-by: Ming Yan <yanming@tju.edu.cn>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Helge Deller <deller@gmx.de>
+Cc: linux-fbdev@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
 ---
- fs/f2fs/file.c |   16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/video/fbdev/aty/radeon_backlight.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -1437,11 +1437,19 @@ static int f2fs_do_zero_range(struct dno
- 			ret = -ENOSPC;
- 			break;
- 		}
--		if (dn->data_blkaddr != NEW_ADDR) {
--			f2fs_invalidate_blocks(sbi, dn->data_blkaddr);
--			dn->data_blkaddr = NEW_ADDR;
--			f2fs_set_data_blkaddr(dn);
-+
-+		if (dn->data_blkaddr == NEW_ADDR)
-+			continue;
-+
-+		if (!f2fs_is_valid_blkaddr(sbi, dn->data_blkaddr,
-+					DATA_GENERIC_ENHANCE)) {
-+			ret = -EFSCORRUPTED;
-+			break;
- 		}
-+
-+		f2fs_invalidate_blocks(sbi, dn->data_blkaddr);
-+		dn->data_blkaddr = NEW_ADDR;
-+		f2fs_set_data_blkaddr(dn);
- 	}
+diff --git a/drivers/video/fbdev/aty/radeon_backlight.c b/drivers/video/fbdev/aty/radeon_backlight.c
+index d2c1263ad260..427adc838f77 100644
+--- a/drivers/video/fbdev/aty/radeon_backlight.c
++++ b/drivers/video/fbdev/aty/radeon_backlight.c
+@@ -57,11 +57,7 @@ static int radeon_bl_update_status(struct backlight_device *bd)
+ 	 * backlight. This provides some greater power saving and the display
+ 	 * is useless without backlight anyway.
+ 	 */
+-        if (bd->props.power != FB_BLANK_UNBLANK ||
+-	    bd->props.fb_blank != FB_BLANK_UNBLANK)
+-		level = 0;
+-	else
+-		level = bd->props.brightness;
++	level = backlight_get_brightness(bd);
  
- 	f2fs_update_extent_cache_range(dn, start, 0, index - start);
-
+ 	del_timer_sync(&rinfo->lvds_timer);
+ 	radeon_engine_idle();
+-- 
+2.30.2
 
