@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30E86C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 928BECCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352460AbiFGSbA (ORCPT
+        id S1351841AbiFGSah (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53176 "EHLO
+        Tue, 7 Jun 2022 14:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351985AbiFGSCd (ORCPT
+        with ESMTP id S1351928AbiFGSC0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D165DDED4;
-        Tue,  7 Jun 2022 10:46:36 -0700 (PDT)
+        Tue, 7 Jun 2022 14:02:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64AA5131F16;
+        Tue,  7 Jun 2022 10:46:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A9DB616B1;
-        Tue,  7 Jun 2022 17:46:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 741E1C385A5;
-        Tue,  7 Jun 2022 17:46:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3819616B1;
+        Tue,  7 Jun 2022 17:46:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 096BCC385A5;
+        Tue,  7 Jun 2022 17:46:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623995;
-        bh=WJzjYaTIQ7PBQPp8PTnU5CBeVSbsOqp7md+v/tz9HXU=;
+        s=korg; t=1654623976;
+        bh=fDG575ttLgWbeLrePzoV7rDswfiDL4S0LUn1GVNsufA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RrJdl2K6kztDhozBTSjXi89gETNZLcUdzLPnlduLzTq+zcUAOlxpEtYYRAl25TFie
-         9RVOf3OzwLltBBMbAyANh1MMxpjFRLxlCWm25Xx3AooIcn4GW1pJs0JXnbBKh7YDiZ
-         R4Z90qyd3gTbB14ojt8OALnVTzAlUMHkQKgu9tPc=
+        b=bXiLfHODDGRdz5o/gywSuFWZ2uEytWfK+PYki/mtXPXrOCoHYTKyDI4Cji0FohOv6
+         6dNNLJeckt+Qbw+6KHfg1wavfsKDurRno8H6G5Z0AT59x8fGCYoAUHXxbqZyJNOCh8
+         jXkSl2iiUKx5eLLJn545ORveK5HbqhXUn5AXONDc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 166/667] ARM: dts: exynos: add atmel,24c128 fallback to Samsung EEPROM
-Date:   Tue,  7 Jun 2022 18:57:11 +0200
-Message-Id: <20220607164939.793711538@linuxfoundation.org>
+Subject: [PATCH 5.15 159/667] ALSA: usb-audio: Add quirk bits for enabling/disabling generic implicit fb
+Date:   Tue,  7 Jun 2022 18:57:04 +0200
+Message-Id: <20220607164939.584010460@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,43 +49,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit f038e8186fbc5723d7d38c6fa1d342945107347e ]
+[ Upstream commit 0f1f7a6661394fe4a53db254c346d6aa2dd64397 ]
 
-The Samsung s524ad0xd1 EEPROM should use atmel,24c128 fallback,
-according to the AT24 EEPROM bindings.
+For making easier to test, add the new quirk_flags bits 17 and 18 to
+enable and disable the generic implicit feedback mode.  The bit 17 is
+equivalent with implicit_fb=1 option, applying the generic implicit
+feedback sync mode.  OTOH, the bit 18 disables the implicit fb mode
+forcibly.
 
-Reported-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220426183443.243113-1-krzysztof.kozlowski@linaro.org
+Link: https://lore.kernel.org/r/20220421064101.12456-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/exynos5250-smdk5250.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/sound/alsa-configuration.rst | 4 +++-
+ sound/usb/implicit.c                       | 5 ++++-
+ sound/usb/usbaudio.h                       | 6 ++++++
+ 3 files changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/exynos5250-smdk5250.dts b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-index f042954bdfa5..e4861415a0fe 100644
---- a/arch/arm/boot/dts/exynos5250-smdk5250.dts
-+++ b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-@@ -129,7 +129,7 @@
- 	samsung,i2c-max-bus-freq = <20000>;
+diff --git a/Documentation/sound/alsa-configuration.rst b/Documentation/sound/alsa-configuration.rst
+index 65f61695f561..5d093fb4896b 100644
+--- a/Documentation/sound/alsa-configuration.rst
++++ b/Documentation/sound/alsa-configuration.rst
+@@ -2237,7 +2237,7 @@ implicit_fb
+     Apply the generic implicit feedback sync mode.  When this is set
+     and the playback stream sync mode is ASYNC, the driver tries to
+     tie an adjacent ASYNC capture stream as the implicit feedback
+-    source.
++    source.  This is equivalent with quirk_flags bit 17.
+ use_vmalloc
+     Use vmalloc() for allocations of the PCM buffers (default: yes).
+     For architectures with non-coherent memory like ARM or MIPS, the
+@@ -2279,6 +2279,8 @@ quirk_flags
+         * bit 14: Ignore errors for mixer access
+         * bit 15: Support generic DSD raw U32_BE format
+         * bit 16: Set up the interface at first like UAC1
++        * bit 17: Apply the generic implicit feedback sync mode
++        * bit 18: Don't apply implicit feedback sync mode
  
- 	eeprom@50 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x50>;
- 	};
+ This module supports multiple devices, autoprobe and hotplugging.
  
-@@ -289,7 +289,7 @@
- 	samsung,i2c-max-bus-freq = <20000>;
+diff --git a/sound/usb/implicit.c b/sound/usb/implicit.c
+index 2d444ec74202..1fd087128538 100644
+--- a/sound/usb/implicit.c
++++ b/sound/usb/implicit.c
+@@ -350,7 +350,8 @@ static int audioformat_implicit_fb_quirk(struct snd_usb_audio *chip,
+ 	}
  
- 	eeprom@51 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x51>;
- 	};
+ 	/* Try the generic implicit fb if available */
+-	if (chip->generic_implicit_fb)
++	if (chip->generic_implicit_fb ||
++	    (chip->quirk_flags & QUIRK_FLAG_GENERIC_IMPLICIT_FB))
+ 		return add_generic_implicit_fb(chip, fmt, alts);
  
+ 	/* No quirk */
+@@ -387,6 +388,8 @@ int snd_usb_parse_implicit_fb_quirk(struct snd_usb_audio *chip,
+ 				    struct audioformat *fmt,
+ 				    struct usb_host_interface *alts)
+ {
++	if (chip->quirk_flags & QUIRK_FLAG_SKIP_IMPLICIT_FB)
++		return 0;
+ 	if (fmt->endpoint & USB_DIR_IN)
+ 		return audioformat_capture_quirk(chip, fmt, alts);
+ 	else
+diff --git a/sound/usb/usbaudio.h b/sound/usb/usbaudio.h
+index b8359a0aa008..044cd7ab27cb 100644
+--- a/sound/usb/usbaudio.h
++++ b/sound/usb/usbaudio.h
+@@ -164,6 +164,10 @@ extern bool snd_usb_skip_validation;
+  *  Support generic DSD raw U32_BE format
+  * QUIRK_FLAG_SET_IFACE_FIRST:
+  *  Set up the interface at first like UAC1
++ * QUIRK_FLAG_GENERIC_IMPLICIT_FB
++ *  Apply the generic implicit feedback sync mode (same as implicit_fb=1 option)
++ * QUIRK_FLAG_SKIP_IMPLICIT_FB
++ *  Don't apply implicit feedback sync mode
+  */
+ 
+ #define QUIRK_FLAG_GET_SAMPLE_RATE	(1U << 0)
+@@ -183,5 +187,7 @@ extern bool snd_usb_skip_validation;
+ #define QUIRK_FLAG_IGNORE_CTL_ERROR	(1U << 14)
+ #define QUIRK_FLAG_DSD_RAW		(1U << 15)
+ #define QUIRK_FLAG_SET_IFACE_FIRST	(1U << 16)
++#define QUIRK_FLAG_GENERIC_IMPLICIT_FB	(1U << 17)
++#define QUIRK_FLAG_SKIP_IMPLICIT_FB	(1U << 18)
+ 
+ #endif /* __USBAUDIO_H */
 -- 
 2.35.1
 
