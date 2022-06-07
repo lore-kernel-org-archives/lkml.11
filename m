@@ -2,163 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D94BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E93C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381083AbiFGVjb (ORCPT
+        id S1381098AbiFGVji (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:39:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51692 "EHLO
+        Tue, 7 Jun 2022 17:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377161AbiFGUuQ (ORCPT
+        with ESMTP id S1377147AbiFGUuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:50:16 -0400
-X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 11:39:57 PDT
-Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099651F77E0
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:39:56 -0700 (PDT)
-X-ASG-Debug-ID: 1654627180-1cf43917f33964e0001-xx1T2L
-Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id DY7NxP6F0bNdGTkt; Tue, 07 Jun 2022 14:39:40 -0400 (EDT)
-X-Barracuda-Envelope-From: tonyb@cybernetics.com
-X-ASG-Whitelist: Client
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
-        bh=9dUzxpvwws15FcrE4ulKEcPQJF2dj8RsJsfXaNUjy8Y=;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
-        Content-Language:Subject:MIME-Version:Date:Message-ID; b=Ou8kArJXBehA8GyTgqeQ
-        adcuNOIrLO8fMzz0ojoRfoLJz+wpXSuttbZmibRiMkyO4zjv3Cc4jorMTfjLqzNGd4Ra5SNqwUzks
-        CrBOzuZhKxfRzb7xZ87l9rErl5HNWx/eNoZqJ1E4btmP6cEUUNx+veehFLQCr6cAhEojgbXAZs=
-Received: from [10.157.2.224] (HELO [192.168.200.1])
-  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
-  with ESMTPS id 11859391; Tue, 07 Jun 2022 14:39:40 -0400
-Message-ID: <7ba0de95-5f5b-e140-c4ee-ff34e70e2546@cybernetics.com>
-Date:   Tue, 7 Jun 2022 14:39:40 -0400
+        Tue, 7 Jun 2022 16:50:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10601F77CB;
+        Tue,  7 Jun 2022 11:39:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54577B8233E;
+        Tue,  7 Jun 2022 18:39:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2678C385A5;
+        Tue,  7 Jun 2022 18:39:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654627193;
+        bh=DIdJhrhMDzys4waQkH84mHqeyCx7EgI+hQjsMXPByAw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GKS484lSYzYwirgdEvDozrB7ZW+xJdJkx7S9zlTNyahXaS1WHN5h1wcauIYUAXb/i
+         Ey21zTqUaz/RWwm7hEPOod8B3sMyW3EpZ6BpCoyw3nhJhwpSghK4/TUlxB6Z8eTS5O
+         CAAqKD4XAAFfh0vtevSbKWgV6bmXrvT4l/B0cozI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Daniel Bristot de Oliveria <bristot@kernel.org>,
+        John Kacur <jkacur@redhat.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 601/772] rtla: Minor grammar fix for rtla README
+Date:   Tue,  7 Jun 2022 19:03:13 +0200
+Message-Id: <20220607165006.651737274@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: [PATCH v6 01/11] dmapool: remove checks for dev == NULL
-Content-Language: en-US
-X-ASG-Orig-Subj: [PATCH v6 01/11] dmapool: remove checks for dev == NULL
-From:   Tony Battersby <tonyb@cybernetics.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
-        Matthew Wilcox <willy@infradead.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Tony Lindgren <tony@atomide.com>
-References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
-In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Barracuda-Connect: UNKNOWN[10.10.4.126]
-X-Barracuda-Start-Time: 1654627180
-X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
-X-Barracuda-BRTS-Status: 1
-X-Virus-Scanned: by bsmtpd at cybernetics.com
-X-Barracuda-Scan-Msg-Size: 3594
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dmapool originally tried to support pools without a device because
-dma_alloc_coherent() supports allocations without a device.  But nobody
-ended up using dma pools without a device, and trying to do so will
-result in an oops.  So remove the checks for pool->dev == NULL since they
-are unneeded bloat.
+From: John Kacur <jkacur@redhat.com>
 
-Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
+[ Upstream commit 22d146f7c1e97f4870e4497c0202939a031f740c ]
+
+- Change to "The rtla meta-tool includes"
+- Remove an unnecessary "But, "
+- Adjust the formatting of the paragraph resulting from the changes.
+- Simplify the wording for the libraries and tools.
+
+Link: https://lkml.kernel.org/r/437f0accdde53713ab3cce46f3564be00487e031.1651247710.git.bristot@kernel.org
+Link: https://lore.kernel.org/r/20220408161012.10544-1-jkacur@redhat.com/
+
+Cc: Daniel Bristot de Oliveria <bristot@kernel.org>
+Fixes: 79ce8f43ac5a ("rtla: Real-Time Linux Analysis tool")
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: John Kacur <jkacur@redhat.com>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/dmapool.c | 42 +++++++++++-------------------------------
- 1 file changed, 11 insertions(+), 31 deletions(-)
+ tools/tracing/rtla/README.txt | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/mm/dmapool.c b/mm/dmapool.c
-index a7eb5d0eb2da..0f89de408cbe 100644
---- a/mm/dmapool.c
-+++ b/mm/dmapool.c
-@@ -275,7 +275,7 @@ void dma_pool_destroy(struct dma_pool *pool)
- 	mutex_lock(&pools_reg_lock);
- 	mutex_lock(&pools_lock);
- 	list_del(&pool->pools);
--	if (pool->dev && list_empty(&pool->dev->dma_pools))
-+	if (list_empty(&pool->dev->dma_pools))
- 		empty = true;
- 	mutex_unlock(&pools_lock);
- 	if (empty)
-@@ -284,12 +284,8 @@ void dma_pool_destroy(struct dma_pool *pool)
+diff --git a/tools/tracing/rtla/README.txt b/tools/tracing/rtla/README.txt
+index 6c88446f7e74..0fbad2640b8c 100644
+--- a/tools/tracing/rtla/README.txt
++++ b/tools/tracing/rtla/README.txt
+@@ -1,15 +1,13 @@
+ RTLA: Real-Time Linux Analysis tools
  
- 	list_for_each_entry_safe(page, tmp, &pool->page_list, page_list) {
- 		if (is_page_busy(page)) {
--			if (pool->dev)
--				dev_err(pool->dev, "%s %s, %p busy\n", __func__,
--					pool->name, page->vaddr);
--			else
--				pr_err("%s %s, %p busy\n", __func__,
--				       pool->name, page->vaddr);
-+			dev_err(pool->dev, "%s %s, %p busy\n", __func__,
-+				pool->name, page->vaddr);
- 			/* leak the still-in-use consistent memory */
- 			list_del(&page->page_list);
- 			kfree(page);
-@@ -351,12 +347,8 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
- 		for (i = sizeof(page->offset); i < pool->size; i++) {
- 			if (data[i] == POOL_POISON_FREED)
- 				continue;
--			if (pool->dev)
--				dev_err(pool->dev, "%s %s, %p (corrupted)\n",
--					__func__, pool->name, retval);
--			else
--				pr_err("%s %s, %p (corrupted)\n",
--					__func__, pool->name, retval);
-+			dev_err(pool->dev, "%s %s, %p (corrupted)\n",
-+				__func__, pool->name, retval);
+-The rtla is a meta-tool that includes a set of commands that
+-aims to analyze the real-time properties of Linux. But, instead of
+-testing Linux as a black box, rtla leverages kernel tracing
+-capabilities to provide precise information about the properties
+-and root causes of unexpected results.
++The rtla meta-tool includes a set of commands that aims to analyze
++the real-time properties of Linux. Instead of testing Linux as a black box,
++rtla leverages kernel tracing capabilities to provide precise information
++about the properties and root causes of unexpected results.
  
- 			/*
- 			 * Dump the first 4 bytes even if they are not
-@@ -411,12 +403,8 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
- 	page = pool_find_page(pool, dma);
- 	if (!page) {
- 		spin_unlock_irqrestore(&pool->lock, flags);
--		if (pool->dev)
--			dev_err(pool->dev, "%s %s, %p/%pad (bad dma)\n",
--				__func__, pool->name, vaddr, &dma);
--		else
--			pr_err("%s %s, %p/%pad (bad dma)\n",
--			       __func__, pool->name, vaddr, &dma);
-+		dev_err(pool->dev, "%s %s, %p/%pad (bad dma)\n",
-+			__func__, pool->name, vaddr, &dma);
- 		return;
- 	}
+ Installing RTLA
  
-@@ -426,12 +414,8 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
- #ifdef	DMAPOOL_DEBUG
- 	if ((dma - page->dma) != offset) {
- 		spin_unlock_irqrestore(&pool->lock, flags);
--		if (pool->dev)
--			dev_err(pool->dev, "%s %s, %p (bad vaddr)/%pad\n",
--				__func__, pool->name, vaddr, &dma);
--		else
--			pr_err("%s %s, %p (bad vaddr)/%pad\n",
--			       __func__, pool->name, vaddr, &dma);
-+		dev_err(pool->dev, "%s %s, %p (bad vaddr)/%pad\n",
-+			__func__, pool->name, vaddr, &dma);
- 		return;
- 	}
- 	{
-@@ -442,12 +426,8 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
- 				continue;
- 			}
- 			spin_unlock_irqrestore(&pool->lock, flags);
--			if (pool->dev)
--				dev_err(pool->dev, "%s %s, dma %pad already free\n",
--					__func__, pool->name, &dma);
--			else
--				pr_err("%s %s, dma %pad already free\n",
--				       __func__, pool->name, &dma);
-+			dev_err(pool->dev, "%s %s, dma %pad already free\n",
-+				__func__, pool->name, &dma);
- 			return;
- 		}
- 	}
+-RTLA depends on some libraries and tools. More precisely, it depends on the
+-following libraries:
++RTLA depends on the following libraries and tools:
+ 
+  - libtracefs
+  - libtraceevent
 -- 
-2.25.1
+2.35.1
+
+
 
