@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDDBFCCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A02CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350311AbiFGSKs (ORCPT
+        id S1350220AbiFGSKl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
+        Tue, 7 Jun 2022 14:10:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349915AbiFGRvm (ORCPT
+        with ESMTP id S1349856AbiFGRvj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:42 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECBFF13F415;
-        Tue,  7 Jun 2022 10:39:11 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C05EC13F1F5;
+        Tue,  7 Jun 2022 10:39:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 46596CE23E3;
-        Tue,  7 Jun 2022 17:38:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 553A7C34115;
-        Tue,  7 Jun 2022 17:38:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3383BB81F38;
+        Tue,  7 Jun 2022 17:38:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81488C34115;
+        Tue,  7 Jun 2022 17:38:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623491;
-        bh=mPewBoiGdgt0ZMOFYhhXllvEH0qMUNb+JQwB77vrY7Y=;
+        s=korg; t=1654623502;
+        bh=eZLploCWWHaF/e5TfqlvMEdXoL+bQn3oW0qOysb6+OM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qa5eyoCMHnr8VTivxAirbz+AR+GPNVgnfK/EyJtPw3r45YW7FLSbuq2ulmGcHoZdU
-         unjq4YBizpLw9HQp1S04FWEn8FkeKfoj9yX/4C/h566R263d9yTcluKdciFsDwBIdw
-         pSLmmseUZ8GZBfH0nbacbN0JmWMfOOwhiTso4llo=
+        b=WIIBfbjhPoRSg/hgIhW9/yxODX/jRAytPCEM+fwndQDHqF8yuDP60nbWNS2g3+Scd
+         DD8xVrvIwq2L/WOQfKv1iy0gLkRfmNIh0Q2czbeJiIVOptyW73na6xWAHse1UvdcEL
+         F0HwPGYxTzRikGd8paTSfFwzMZjxbvWOoIH7gusA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.10 420/452] ARM: pxa: maybe fix gpio lookup tables
-Date:   Tue,  7 Jun 2022 19:04:37 +0200
-Message-Id: <20220607164921.072355351@linuxfoundation.org>
+        "yukuai (C)" <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 441/452] bfq: Avoid merging queues with different parents
+Date:   Tue,  7 Jun 2022 19:04:58 +0200
+Message-Id: <20220607164921.704862201@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,72 +49,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Jan Kara <jack@suse.cz>
 
-commit 2672a4bff6c03a20d5ae460a091f67ee782c3eff upstream.
+commit c1cee4ab36acef271be9101590756ed0c0c374d9 upstream.
 
->From inspection I found a couple of GPIO lookups that are
-listed with device "gpio-pxa", but actually have a number
-from a different gpio controller.
+It can happen that the parent of a bfqq changes between the moment we
+decide two queues are worth to merge (and set bic->stable_merge_bfqq)
+and the moment bfq_setup_merge() is called. This can happen e.g. because
+the process submitted IO for a different cgroup and thus bfqq got
+reparented. It can even happen that the bfqq we are merging with has
+parent cgroup that is already offline and going to be destroyed in which
+case the merge can lead to use-after-free issues such as:
 
-Try to rectify that here, with a guess of what the actual
-device name is.
+BUG: KASAN: use-after-free in __bfq_deactivate_entity+0x9cb/0xa50
+Read of size 8 at addr ffff88800693c0c0 by task runc:[2:INIT]/10544
 
-Acked-by: Robert Jarzmik <robert.jarzmik@free.fr>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Cc: stable@vger.kernel.org
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+CPU: 0 PID: 10544 Comm: runc:[2:INIT] Tainted: G            E     5.15.2-0.g5fb85fd-default #1 openSUSE Tumbleweed (unreleased) f1f3b891c72369aebecd2e43e4641a6358867c70
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a-rebuilt.opensuse.org 04/01/2014
+Call Trace:
+ <IRQ>
+ dump_stack_lvl+0x46/0x5a
+ print_address_description.constprop.0+0x1f/0x140
+ ? __bfq_deactivate_entity+0x9cb/0xa50
+ kasan_report.cold+0x7f/0x11b
+ ? __bfq_deactivate_entity+0x9cb/0xa50
+ __bfq_deactivate_entity+0x9cb/0xa50
+ ? update_curr+0x32f/0x5d0
+ bfq_deactivate_entity+0xa0/0x1d0
+ bfq_del_bfqq_busy+0x28a/0x420
+ ? resched_curr+0x116/0x1d0
+ ? bfq_requeue_bfqq+0x70/0x70
+ ? check_preempt_wakeup+0x52b/0xbc0
+ __bfq_bfqq_expire+0x1a2/0x270
+ bfq_bfqq_expire+0xd16/0x2160
+ ? try_to_wake_up+0x4ee/0x1260
+ ? bfq_end_wr_async_queues+0xe0/0xe0
+ ? _raw_write_unlock_bh+0x60/0x60
+ ? _raw_spin_lock_irq+0x81/0xe0
+ bfq_idle_slice_timer+0x109/0x280
+ ? bfq_dispatch_request+0x4870/0x4870
+ __hrtimer_run_queues+0x37d/0x700
+ ? enqueue_hrtimer+0x1b0/0x1b0
+ ? kvm_clock_get_cycles+0xd/0x10
+ ? ktime_get_update_offsets_now+0x6f/0x280
+ hrtimer_interrupt+0x2c8/0x740
+
+Fix the problem by checking that the parent of the two bfqqs we are
+merging in bfq_setup_merge() is the same.
+
+Link: https://lore.kernel.org/linux-block/20211125172809.GC19572@quack2.suse.cz/
+CC: stable@vger.kernel.org
+Fixes: 430a67f9d616 ("block, bfq: merge bursts of newly-created queues")
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-2-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-pxa/cm-x300.c  |    8 ++++----
- arch/arm/mach-pxa/magician.c |    2 +-
- arch/arm/mach-pxa/tosa.c     |    4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ block/bfq-iosched.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/arch/arm/mach-pxa/cm-x300.c
-+++ b/arch/arm/mach-pxa/cm-x300.c
-@@ -354,13 +354,13 @@ static struct platform_device cm_x300_sp
- static struct gpiod_lookup_table cm_x300_spi_gpiod_table = {
- 	.dev_id         = "spi_gpio",
- 	.table          = {
--		GPIO_LOOKUP("gpio-pxa", GPIO_LCD_SCL,
-+		GPIO_LOOKUP("pca9555.1", GPIO_LCD_SCL - GPIO_LCD_BASE,
- 			    "sck", GPIO_ACTIVE_HIGH),
--		GPIO_LOOKUP("gpio-pxa", GPIO_LCD_DIN,
-+		GPIO_LOOKUP("pca9555.1", GPIO_LCD_DIN - GPIO_LCD_BASE,
- 			    "mosi", GPIO_ACTIVE_HIGH),
--		GPIO_LOOKUP("gpio-pxa", GPIO_LCD_DOUT,
-+		GPIO_LOOKUP("pca9555.1", GPIO_LCD_DOUT - GPIO_LCD_BASE,
- 			    "miso", GPIO_ACTIVE_HIGH),
--		GPIO_LOOKUP("gpio-pxa", GPIO_LCD_CS,
-+		GPIO_LOOKUP("pca9555.1", GPIO_LCD_CS - GPIO_LCD_BASE,
- 			    "cs", GPIO_ACTIVE_HIGH),
- 		{ },
- 	},
---- a/arch/arm/mach-pxa/magician.c
-+++ b/arch/arm/mach-pxa/magician.c
-@@ -681,7 +681,7 @@ static struct platform_device bq24022 =
- static struct gpiod_lookup_table bq24022_gpiod_table = {
- 	.dev_id = "gpio-regulator",
- 	.table = {
--		GPIO_LOOKUP("gpio-pxa", EGPIO_MAGICIAN_BQ24022_ISET2,
-+		GPIO_LOOKUP("htc-egpio-0", EGPIO_MAGICIAN_BQ24022_ISET2 - MAGICIAN_EGPIO_BASE,
- 			    NULL, GPIO_ACTIVE_HIGH),
- 		GPIO_LOOKUP("gpio-pxa", GPIO30_MAGICIAN_BQ24022_nCHARGE_EN,
- 			    "enable", GPIO_ACTIVE_LOW),
---- a/arch/arm/mach-pxa/tosa.c
-+++ b/arch/arm/mach-pxa/tosa.c
-@@ -296,9 +296,9 @@ static struct gpiod_lookup_table tosa_mc
- 	.table = {
- 		GPIO_LOOKUP("gpio-pxa", TOSA_GPIO_nSD_DETECT,
- 			    "cd", GPIO_ACTIVE_LOW),
--		GPIO_LOOKUP("gpio-pxa", TOSA_GPIO_SD_WP,
-+		GPIO_LOOKUP("sharp-scoop.0", TOSA_GPIO_SD_WP - TOSA_SCOOP_GPIO_BASE,
- 			    "wp", GPIO_ACTIVE_LOW),
--		GPIO_LOOKUP("gpio-pxa", TOSA_GPIO_PWR_ON,
-+		GPIO_LOOKUP("sharp-scoop.0", TOSA_GPIO_PWR_ON - TOSA_SCOOP_GPIO_BASE,
- 			    "power", GPIO_ACTIVE_HIGH),
- 		{ },
- 	},
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2509,6 +2509,14 @@ bfq_setup_merge(struct bfq_queue *bfqq,
+ 	if (process_refs == 0 || new_process_refs == 0)
+ 		return NULL;
+ 
++	/*
++	 * Make sure merged queues belong to the same parent. Parents could
++	 * have changed since the time we decided the two queues are suitable
++	 * for merging.
++	 */
++	if (new_bfqq->entity.parent != bfqq->entity.parent)
++		return NULL;
++
+ 	bfq_log_bfqq(bfqq->bfqd, bfqq, "scheduling merge with queue %d",
+ 		new_bfqq->pid);
+ 
 
 
