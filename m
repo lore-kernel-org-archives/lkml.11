@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7899CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B877C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:13:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359218AbiFGUNK (ORCPT
+        id S1359135AbiFGUNS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:13:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37196 "EHLO
+        Tue, 7 Jun 2022 16:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354986AbiFGTTH (ORCPT
+        with ESMTP id S1355174AbiFGTTb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:19:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9341053E12;
-        Tue,  7 Jun 2022 11:08:17 -0700 (PDT)
+        Tue, 7 Jun 2022 15:19:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5DBCEA8B1;
+        Tue,  7 Jun 2022 11:08:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A37A6B82354;
-        Tue,  7 Jun 2022 18:08:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1965EC385A5;
-        Tue,  7 Jun 2022 18:08:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56D94617AE;
+        Tue,  7 Jun 2022 18:08:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D4B1C385A5;
+        Tue,  7 Jun 2022 18:08:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625294;
-        bh=a9ZKlcBnYsnE8aDqjIFcOyx82PBbPcD5L2D+T4nFJj0=;
+        s=korg; t=1654625302;
+        bh=0uxE18e2AfanWQQDQShi5sm63VVmRKaaDhXCasV9Sko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i/QNSTcEZjHj0rLEYXKbno1JD9g/0yLpEAqu9D+QUefvrXMotqoognSS1QSXRtafx
-         ROJIfGl2kzIjTJbrFOWGXRzQMCasLRcgrLXVzJNa27XGJ1qV8v5Z+gCTsKSa+6m5eb
-         ks4+N+8kv9Ju/Qg9bbBVAYk6EC8slDVplVA8/s3g=
+        b=TP2bQv/Kxd+mqbgryFxKR2SiHhde5/DKM0bDGgGRmftK/2v7cSn0y2uKtapp65y0T
+         3aQNBrbt8Bue+1ydDHBE7x2UzIqKwIjUsJVBEOCDD6M0tfi6jL/9FHNoLY1ETsKYfs
+         Pxcwd9uv6gWiQJrhuSDGJzRTX/bFSxmox4EhHDxM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
-Subject: [PATCH 5.15 635/667] gma500: fix an incorrect NULL check on list iterator
-Date:   Tue,  7 Jun 2022 19:05:00 +0200
-Message-Id: <20220607164953.707733820@linuxfoundation.org>
+        stable@vger.kernel.org, Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>,
+        Thierry Reding <treding@nvidia.com>
+Subject: [PATCH 5.15 638/667] clk: tegra: Add missing reset deassertion
+Date:   Tue,  7 Jun 2022 19:05:03 +0200
+Message-Id: <20220607164953.795329854@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,49 +49,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
 
-commit bdef417d84536715145f6dc9cc3275c46f26295a upstream.
+commit 23a43cc437e747473d5f8f98b4fe189fb5c433b7 upstream.
 
-The bug is here:
-	return crtc;
+Commit 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling
+clocks") removed deassertion of reset lines when enabling peripheral
+clocks. This breaks the initialization of the DFLL driver which relied
+on this behaviour.
 
-The list iterator value 'crtc' will *always* be set and non-NULL by
-list_for_each_entry(), so it is incorrect to assume that the iterator
-value will be NULL if the list is empty or no element is found.
-
-To fix the bug, return 'crtc' when found, otherwise return NULL.
+Fix this problem by adding explicit deassert/assert requests to the
+driver. Tested on Google Pixel C.
 
 Cc: stable@vger.kernel.org
-fixes: 89c78134cc54d ("gma500: Add Poulsbo support")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Signed-off-by: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220327052028.2013-1-xiam0nd.tong@gmail.com
+Fixes: 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling clocks")
+Signed-off-by: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/gma500/psb_intel_display.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/clk/tegra/clk-dfll.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- a/drivers/gpu/drm/gma500/psb_intel_display.c
-+++ b/drivers/gpu/drm/gma500/psb_intel_display.c
-@@ -536,14 +536,15 @@ void psb_intel_crtc_init(struct drm_devi
- 
- struct drm_crtc *psb_intel_get_crtc_from_pipe(struct drm_device *dev, int pipe)
- {
--	struct drm_crtc *crtc = NULL;
-+	struct drm_crtc *crtc;
- 
- 	list_for_each_entry(crtc, &dev->mode_config.crtc_list, head) {
- 		struct gma_crtc *gma_crtc = to_gma_crtc(crtc);
-+
- 		if (gma_crtc->pipe == pipe)
--			break;
-+			return crtc;
+--- a/drivers/clk/tegra/clk-dfll.c
++++ b/drivers/clk/tegra/clk-dfll.c
+@@ -271,6 +271,7 @@ struct tegra_dfll {
+ 	struct clk			*ref_clk;
+ 	struct clk			*i2c_clk;
+ 	struct clk			*dfll_clk;
++	struct reset_control		*dfll_rst;
+ 	struct reset_control		*dvco_rst;
+ 	unsigned long			ref_rate;
+ 	unsigned long			i2c_clk_rate;
+@@ -1464,6 +1465,7 @@ static int dfll_init(struct tegra_dfll *
+ 		return -EINVAL;
  	}
--	return crtc;
-+	return NULL;
- }
  
- int gma_connector_clones(struct drm_device *dev, int type_mask)
++	reset_control_deassert(td->dfll_rst);
+ 	reset_control_deassert(td->dvco_rst);
+ 
+ 	ret = clk_prepare(td->ref_clk);
+@@ -1509,6 +1511,7 @@ di_err1:
+ 	clk_unprepare(td->ref_clk);
+ 
+ 	reset_control_assert(td->dvco_rst);
++	reset_control_assert(td->dfll_rst);
+ 
+ 	return ret;
+ }
+@@ -1530,6 +1533,7 @@ int tegra_dfll_suspend(struct device *de
+ 	}
+ 
+ 	reset_control_assert(td->dvco_rst);
++	reset_control_assert(td->dfll_rst);
+ 
+ 	return 0;
+ }
+@@ -1548,6 +1552,7 @@ int tegra_dfll_resume(struct device *dev
+ {
+ 	struct tegra_dfll *td = dev_get_drvdata(dev);
+ 
++	reset_control_deassert(td->dfll_rst);
+ 	reset_control_deassert(td->dvco_rst);
+ 
+ 	pm_runtime_get_sync(td->dev);
+@@ -1951,6 +1956,12 @@ int tegra_dfll_register(struct platform_
+ 
+ 	td->soc = soc;
+ 
++	td->dfll_rst = devm_reset_control_get_optional(td->dev, "dfll");
++	if (IS_ERR(td->dfll_rst)) {
++		dev_err(td->dev, "couldn't get dfll reset\n");
++		return PTR_ERR(td->dfll_rst);
++	}
++
+ 	td->dvco_rst = devm_reset_control_get(td->dev, "dvco");
+ 	if (IS_ERR(td->dvco_rst)) {
+ 		dev_err(td->dev, "couldn't get dvco reset\n");
+@@ -2087,6 +2098,7 @@ struct tegra_dfll_soc_data *tegra_dfll_u
+ 	clk_unprepare(td->i2c_clk);
+ 
+ 	reset_control_assert(td->dvco_rst);
++	reset_control_assert(td->dfll_rst);
+ 
+ 	return td->soc;
+ }
 
 
