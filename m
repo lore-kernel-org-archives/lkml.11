@@ -2,98 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77D6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 02:06:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A3EAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 02:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236112AbiFGCGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 22:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40700 "EHLO
+        id S235579AbiFGCSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 22:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235953AbiFGCFh (ORCPT
+        with ESMTP id S233234AbiFGCSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 22:05:37 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92D4BC6D6
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 19:05:28 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LHDG95Jvpz4xZ7;
-        Tue,  7 Jun 2022 12:05:21 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1654567524;
-        bh=8PBLOfNNVcxe/BchOfdldd1aRlQCoiHtBdRm4jougLQ=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=W1DZDLCw0u7bl+3KdOLO3E4JCzPchbpIy2zcqZPBay4042yh5i4ln0MRuWhSVJOz2
-         2NQIfrMEG6mCS3D7pkm1LGyYEetCH5E+BXMC2ZinYQisMrh760p1W9D2oby2EJ4svT
-         rU2MA1wyPZgnSUgVia4gzfTVQ1Mvz7nSTVPJXwPWMq1llrJ1XXP05ANpImpq6wQ5yQ
-         Lh0JyAAMcC8WaWw4phBmpH4xvWZ25nLntkYEKfN1zsar9homM2jZ6wFG5h8jX9rxwO
-         PSniNMuQSbyQE4kTCn0rSFx3K9c5w9+f0tbWdUkjL2eAZpj+Xlu9yn1f8j9FkuFoGR
-         5Kr/n2q7FTVtA==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>, linuxppc-dev@lists.ozlabs.org
-Cc:     linux-kernel@vger.kernel.org,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Yang Li <yang.lee@linux.alibaba.com>
-Subject: Re: outside array bounds error on ppc64_defconfig, GCC 12.1.0
-In-Reply-To: <YpbUcPrm61RLIiZF@debian.me>
-References: <YpbUcPrm61RLIiZF@debian.me>
-Date:   Tue, 07 Jun 2022 12:05:18 +1000
-Message-ID: <87mtepns81.fsf@mpe.ellerman.id.au>
+        Mon, 6 Jun 2022 22:18:43 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F1ACE07
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 19:18:41 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id g186so5618894pgc.1
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 19:18:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=8sGOsf30AB4emDfiLKO1IlUk0AJkLgR+c81RM9kvUeg=;
+        b=23/xn5mUfnbRHw/7rzRolDNvBoA3vJ8Zvi5YH/mMPizfXZRAqEGf1K2xd6h65uCw4B
+         X336gShgxmAzPAqaJyWEXrCo8MaNXGdWVSlPDYLLYyHiCe6iRJBF8jRYyqzCCfWoqqmj
+         Skc6vJCfA/ocFu2mF/RGBfAzkGNiEW/theV44cARZCzxymjqugvtHvvl6bh11PrGg2JD
+         Gy7+kggYxEVh7g28/P5Pjwbeo++DZR6ZYx6g9f8hpIKjN8YRsiM5vMiInKE3rYSewx9A
+         ha22E+aJwCOyd1KWeuki+SPV96uIJXHmXszYv96vQ57TqakvebXz/0msJW5VEt7ai04y
+         k1CQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8sGOsf30AB4emDfiLKO1IlUk0AJkLgR+c81RM9kvUeg=;
+        b=dIXFPBULQ12wCMg5kCwNTlDSWQ80OMzkYLHfn1Rti0pcT6dHvE9meSc1OrR5/S5ADd
+         ljHbDMcQD22NtlmsFLwjgFtsfZdI6CvYWTHnMtAtqRDknwCv5jgy0h/5gyRM/SM90FWp
+         C7L5hDsZTcQpTdg++3rutVRz+rUjIEfDQ6oYDD87axeq8qlFgzGy59KE1RtZcuZzAZPQ
+         K9NfPMSOqIcZSq9mpL+uFurKSWIbc1Fkq3aOu2jWAbpW+SwzbwkcGDRYPLfNn04nANik
+         xOwsJ5ubz/d07NtJggd7WlPV0jx4n+dICivUzHW7FaG1ldKmGI6VmJXaJsljtYvvNPfg
+         cmSQ==
+X-Gm-Message-State: AOAM532JpFH3WfqjCbnWrjt7AJrE1HBaXZGmIjyWA4kIzyH/q19kZWd/
+        6XiS3/qXgNQ9QIscohStvcY1RQ==
+X-Google-Smtp-Source: ABdhPJzd5ZXvpWQ60IJGhalL0hOrDsUY1cmxQggKtjiWvLvBXtomKJRxIhxHb/4bKYIiG3S3A79cLg==
+X-Received: by 2002:a63:8941:0:b0:3fc:7efa:119d with SMTP id v62-20020a638941000000b003fc7efa119dmr23916764pgd.340.1654568320532;
+        Mon, 06 Jun 2022 19:18:40 -0700 (PDT)
+Received: from [10.254.91.102] ([139.177.225.230])
+        by smtp.gmail.com with ESMTPSA id ju10-20020a17090b20ca00b001df264610c4sm13930080pjb.0.2022.06.06.19.18.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jun 2022 19:18:40 -0700 (PDT)
+Message-ID: <64d93544-294b-6149-524d-f7ce227d7e33@bytedance.com>
+Date:   Tue, 7 Jun 2022 10:18:33 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [PATCH v3] mm: memcontrol: add {pgscan,pgsteal}_{kswapd,direct}
+ items in memory.stat of cgroup v2
+Content-Language: en-US
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     roman.gushchin@linux.dev, shakeelb@google.com,
+        songmuchun@bytedance.com, mhocko@kernel.org,
+        akpm@linux-foundation.org, corbet@lwn.net, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        Michal Hocko <mhocko@suse.com>
+References: <20220606154028.55030-1-zhengqi.arch@bytedance.com>
+ <Yp46w4op9JeX9+g9@cmpxchg.org>
+From:   Qi Zheng <zhengqi.arch@bytedance.com>
+In-Reply-To: <Yp46w4op9JeX9+g9@cmpxchg.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bagas Sanjaya <bagasdotme@gmail.com> writes:
-> Hi,
->
-> I'm trying to verify Drop ppc_inst_as_str() patch on [1] by performing
-> ppc64_defconfig build with powerpc64-unknown-linux-gnu-gcc (GCC 12.1.0).
-> The patch is applied on top of powerpc tree, next branch.
 
-Yeah I see it too.
 
-> I got outside array bounds error:
->
->   CC      arch/powerpc/kernel/dbell.o
-> In function 'do_byte_reverse',
->     inlined from 'do_vec_store' at arch/powerpc/lib/sstep.c:722:3,
->     inlined from 'emulate_loadstore' at arch/powerpc/lib/sstep.c:3509:9:
-> arch/powerpc/lib/sstep.c:286:25: error: array subscript [3, 4] is outside array bounds of 'union <anonymous>[1]' [-Werror=array-bounds]
->   286 |                 up[0] = byterev_8(up[3]);
->       |                         ^~~~~~~~~~~~~~~~
->
-> arch/owerpc/lib/sstep.c: In function 'emulate_loadstore':
-> arch/powerpc/lib/sstep.c:708:11: note: at offset [24, 39] into object 'u' of size 16
->   708 |         } u;
->       |           ^
-> In function 'do_byte_reverse',
->     inlined from 'do_vec_store' at arch/powerpc/lib/sstep.c:722:3,
->     inlined from 'emulate_loadstore' at arch/powerpc/lib/sstep.c:3509:9:
-> arch/powerpc/lib/sstep.c:287:23: error: array subscript [3, 4] is outside array bounds of 'union <anonymous>[1]' [-Werror=array-bounds]
->   287 |                 up[3] = tmp;
->       |                 ~~~~~~^~~~~
+On 2022/6/7 1:34 AM, Johannes Weiner wrote:
+> On Mon, Jun 06, 2022 at 11:40:28PM +0800, Qi Zheng wrote:
+>> There are already statistics of {pgscan,pgsteal}_kswapd and
+>> {pgscan,pgsteal}_direct of memcg event here, but now only the
+>> sum of the two is displayed in memory.stat of cgroup v2.
+>>
+>> In order to obtain more accurate information during monitoring
+>> and debugging, and to align with the display in /proc/vmstat,
+>> it better to display {pgscan,pgsteal}_kswapd and
+>> {pgscan,pgsteal}_direct separately.
+>>
+>> Also, for forward compatibility, we still display pgscan and
+>> pgsteal items so that it won't break existing applications.
+>>
+>> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
+>> Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+>> Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
+>> Acked-by: Muchun Song <songmuchun@bytedance.com>
+>> Acked-by: Shakeel Butt <shakeelb@google.com>
+>> Acked-by: Michal Hocko <mhocko@suse.com>
+> 
+> No objection to keeping pgscan and pgsteal, but can you please fix the
+> doc to present the items in the same order as memory.stat has them?
 
-This happens because we have a generic byte reverse function
-(do_byte_reverse()), that takes a size as a parameter. So it will
-reverse 8, 16, 32 bytes etc.
+Sure, will fix.
 
-In some cases the compiler can see that we're passing a pointer to
-storage that is smaller than 32 bytes, but it isn't convinced that the
-size parameter is also smaller than 32 bytes.
+Thanks,
+Qi
 
-Which I think is reasonable, the code that sets the size is separate
-from this code, so the compiler can't really deduce that it's safe.
+> 
+>> @@ -1445,9 +1445,21 @@ PAGE_SIZE multiple when read back.
+>>   	  pgscan (npn)
+>>   		Amount of scanned pages (in an inactive LRU list)
+>>   
+>> +	  pgscan_kswapd (npn)
+>> +		Amount of scanned pages by kswapd (in an inactive LRU list)
+>> +
+>> +	  pgscan_direct (npn)
+>> +		Amount of scanned pages directly  (in an inactive LRU list)
+>> +
+>>   	  pgsteal (npn)
+>>   		Amount of reclaimed pages
+>>   
+>> +	  pgsteal_kswapd (npn)
+>> +		Amount of reclaimed pages by kswapd
+>> +
+>> +	  pgsteal_direct (npn)
+>> +		Amount of reclaimed pages directly
+>> +
+>>   	  pgactivate (npn)
+>>   		Amount of pages moved to the active LRU list
+> 
+> vs:
+> 
+>> @@ -1495,41 +1518,17 @@ static char *memory_stat_format(struct mem_cgroup *memcg)
+>>   	}
+>>   
+>>   	/* Accumulated memory events */
+>> -
+>> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGFAULT),
+>> -		       memcg_events(memcg, PGFAULT));
+>> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGMAJFAULT),
+>> -		       memcg_events(memcg, PGMAJFAULT));
+>> -	seq_buf_printf(&s, "%s %lu\n",  vm_event_name(PGREFILL),
+>> -		       memcg_events(memcg, PGREFILL));
+>>   	seq_buf_printf(&s, "pgscan %lu\n",
+>>   		       memcg_events(memcg, PGSCAN_KSWAPD) +
+>>   		       memcg_events(memcg, PGSCAN_DIRECT));
+>>   	seq_buf_printf(&s, "pgsteal %lu\n",
+>>   		       memcg_events(memcg, PGSTEAL_KSWAPD) +
+>>   		       memcg_events(memcg, PGSTEAL_DIRECT));
+>> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGACTIVATE),
+>> -		       memcg_events(memcg, PGACTIVATE));
+>> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGDEACTIVATE),
+>> -		       memcg_events(memcg, PGDEACTIVATE));
+>> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGLAZYFREE),
+>> -		       memcg_events(memcg, PGLAZYFREE));
+>> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGLAZYFREED),
+>> -		       memcg_events(memcg, PGLAZYFREED));
+>> -
+>> -#if defined(CONFIG_MEMCG_KMEM) && defined(CONFIG_ZSWAP)
+>> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(ZSWPIN),
+>> -		       memcg_events(memcg, ZSWPIN));
+>> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(ZSWPOUT),
+>> -		       memcg_events(memcg, ZSWPOUT));
+>> -#endif
+>>   
+>> -#ifdef CONFIG_TRANSPARENT_HUGEPAGE
+>> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(THP_FAULT_ALLOC),
+>> -		       memcg_events(memcg, THP_FAULT_ALLOC));
+>> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(THP_COLLAPSE_ALLOC),
+>> -		       memcg_events(memcg, THP_COLLAPSE_ALLOC));
+>> -#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+>> +	for (i = 0; i < ARRAY_SIZE(memcg_vm_event_stat); i++)
+>> +		seq_buf_printf(&s, "%s %lu\n",
+>> +			       vm_event_name(memcg_vm_event_stat[i]),
+>> +			       memcg_events(memcg, memcg_vm_event_stat[i]));
+> 
+> Thanks
 
-I don't see a really simple fix. I tried clamping the size parameter to
-do_byte_reverse() with max(), but that didn't work :/
-
-cheers
+-- 
+Thanks,
+Qi
