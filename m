@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C505C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B962CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:04:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356862AbiFGWEB (ORCPT
+        id S1379241AbiFGWEK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:04:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49394 "EHLO
+        Tue, 7 Jun 2022 18:04:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378882AbiFGVE0 (ORCPT
+        with ESMTP id S1378622AbiFGVEM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:04:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31AC18ADB5;
-        Tue,  7 Jun 2022 11:48:53 -0700 (PDT)
+        Tue, 7 Jun 2022 17:04:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 474FB18C05D;
+        Tue,  7 Jun 2022 11:48:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E25561295;
-        Tue,  7 Jun 2022 18:48:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56736C385A2;
-        Tue,  7 Jun 2022 18:48:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 755746168E;
+        Tue,  7 Jun 2022 18:48:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DF2EC385A5;
+        Tue,  7 Jun 2022 18:48:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627732;
-        bh=C9X33pXWCcfrKODJ1R5etG2iGEZfHfyCD+gmXXOfpYc=;
+        s=korg; t=1654627729;
+        bh=zLKqJ7YRx9+AQT3UXBkTEmxLVA2wtgkhaELDhD9VzXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K7G5eb7+WFOw8sAOV0eJH9AHuSsbAUwj7LTO0nZC/65/gZhJFhR3l/yyw+HpqN0Uk
-         7G5JFnDAoOzL5lzToiU69k2ZlGE6xHzMGmuRD9MqjSUfRkJJLnFcMmxhg63sprTcqY
-         sGhShvNYj5m9OjVr+YrwOA2QiBryEQHZGi/xs8Z4=
+        b=srM6ZS3jlJ0Dwzh9hWoMGJb/d6JQlGSvNLcXyE2m19JV7Cb5BsiAMzVmvVt/x4Kw+
+         gnUlaCuu3XY7IGe48caK4QIt32XzhRzkTcfzE2iqJ98H9EHhHi6n49VY21tgLeVN6A
+         CmR2v1Q2WLNrA5oUo0rCz4Ujhry65kB2HcxC9eRo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Seiderer <ps.report@gmx.net>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 074/879] mac80211: minstrel_ht: fix where rate stats are stored (fixes debugfs output)
-Date:   Tue,  7 Jun 2022 18:53:12 +0200
-Message-Id: <20220607165004.839967461@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Niels Dossche <dossche.niels@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 065/879] mwifiex: add mutex lock for call in mwifiex_dfs_chan_sw_work_queue
+Date:   Tue,  7 Jun 2022 18:53:03 +0200
+Message-Id: <20220607165004.579924791@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,73 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Seiderer <ps.report@gmx.net>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 5c6dd7bd569b54c0d2904125d7366aa93f077f67 ]
+[ Upstream commit 3e12968f6d12a34b540c39cbd696a760cc4616f0 ]
 
-Using an ath9k card the debugfs output of minstrel_ht looks like the following
-(note the zero values for the first four rates sum-of success/attempts):
+cfg80211_ch_switch_notify uses ASSERT_WDEV_LOCK to assert that
+net_device->ieee80211_ptr->mtx (which is the same as priv->wdev.mtx)
+is held during the function's execution.
+mwifiex_dfs_chan_sw_work_queue is one of its callers, which does not
+hold that lock, therefore violating the assertion.
+Add a lock around the call.
 
-             best    ____________rate__________    ____statistics___    _____last____    ______sum-of________
-mode guard #  rate   [name   idx airtime  max_tp]  [avg(tp) avg(prob)]  [retry|suc|att]  [#success | #attempts]
-OFDM       1    DP     6.0M  272    1640     5.2       3.1      53.8       3     0 0             0   0
-OFDM       1   C       9.0M  273    1104     7.7       4.6      53.8       4     0 0             0   0
-OFDM       1  B       12.0M  274     836    10.0       6.0      53.8       4     0 0             0   0
-OFDM       1 A    S   18.0M  275     568    14.3       8.5      53.8       5     0 0             0   0
-OFDM       1      S   24.0M  276     436    18.1       0.0       0.0       5     0 1            80   1778
-OFDM       1          36.0M  277     300    24.9       0.0       0.0       0     0 1             0   107
-OFDM       1      S   48.0M  278     236    30.4       0.0       0.0       0     0 0             0   75
-OFDM       1          54.0M  279     212    33.0       0.0       0.0       0     0 0             0   72
+Disclaimer:
+I am currently working on a static analyser to detect missing locks.
+This was a reported case. I manually verified the report by looking
+at the code, so that I do not send wrong information or patches.
+After concluding that this seems to be a true positive, I created
+this patch.
+However, as I do not in fact have this particular hardware,
+I was unable to test it.
 
-Total packet count::    ideal 16582      lookaround 885
-Average # of aggregated frames per A-MPDU: 1.0
-
-Debugging showed that the rate statistics for the first four rates where
-stored in the MINSTREL_CCK_GROUP instead of the MINSTREL_OFDM_GROUP because
-in minstrel_ht_get_stats() the supported check was not honoured as done in
-various other places, e.g net/mac80211/rc80211_minstrel_ht_debugfs.c:
-
- 74                 if (!(mi->supported[i] & BIT(j)))
- 75                         continue;
-
-With the patch applied the output looks good:
-
-              best    ____________rate__________    ____statistics___    _____last____    ______sum-of________
-mode guard #  rate   [name   idx airtime  max_tp]  [avg(tp) avg(prob)]  [retry|suc|att]  [#success | #attempts]
-OFDM       1    D      6.0M  272    1640     5.2       5.2     100.0       3     0 0             1   1
-OFDM       1   C       9.0M  273    1104     7.7       7.7     100.0       4     0 0            38   38
-OFDM       1  B       12.0M  274     836    10.0       9.9      89.5       4     2 2           372   395
-OFDM       1 A   P    18.0M  275     568    14.3      14.3      97.2       5    52 53         6956   7181
-OFDM       1      S   24.0M  276     436    18.1       0.0       0.0       0     0 1             6   163
-OFDM       1          36.0M  277     300    24.9       0.0       0.0       0     0 1             0   35
-OFDM       1      S   48.0M  278     236    30.4       0.0       0.0       0     0 0             0   38
-OFDM       1      S   54.0M  279     212    33.0       0.0       0.0       0     0 0             0   38
-
-Total packet count::    ideal 7097      lookaround 287
-Average # of aggregated frames per A-MPDU: 1.0
-
-Signed-off-by: Peter Seiderer <ps.report@gmx.net>
-Link: https://lore.kernel.org/r/20220404165414.1036-1-ps.report@gmx.net
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220321225515.32113-1-dossche.niels@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rc80211_minstrel_ht.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireless/marvell/mwifiex/11h.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/mac80211/rc80211_minstrel_ht.c b/net/mac80211/rc80211_minstrel_ht.c
-index 9c6ace858107..5a6bf46a4248 100644
---- a/net/mac80211/rc80211_minstrel_ht.c
-+++ b/net/mac80211/rc80211_minstrel_ht.c
-@@ -362,6 +362,9 @@ minstrel_ht_get_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi,
+diff --git a/drivers/net/wireless/marvell/mwifiex/11h.c b/drivers/net/wireless/marvell/mwifiex/11h.c
+index d2ee6469e67b..3fa25cd64cda 100644
+--- a/drivers/net/wireless/marvell/mwifiex/11h.c
++++ b/drivers/net/wireless/marvell/mwifiex/11h.c
+@@ -303,5 +303,7 @@ void mwifiex_dfs_chan_sw_work_queue(struct work_struct *work)
  
- 	group = MINSTREL_CCK_GROUP;
- 	for (idx = 0; idx < ARRAY_SIZE(mp->cck_rates); idx++) {
-+		if (!(mi->supported[group] & BIT(idx)))
-+			continue;
-+
- 		if (rate->idx != mp->cck_rates[idx])
- 			continue;
- 
+ 	mwifiex_dbg(priv->adapter, MSG,
+ 		    "indicating channel switch completion to kernel\n");
++	mutex_lock(&priv->wdev.mtx);
+ 	cfg80211_ch_switch_notify(priv->netdev, &priv->dfs_chandef);
++	mutex_unlock(&priv->wdev.mtx);
+ }
 -- 
 2.35.1
 
