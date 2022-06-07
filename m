@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD02AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:12:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC8B1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:12:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359628AbiFGUM3 (ORCPT
+        id S1359191AbiFGUMn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:12:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54678 "EHLO
+        Tue, 7 Jun 2022 16:12:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355935AbiFGTRq (ORCPT
+        with ESMTP id S1355885AbiFGTRo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:17:46 -0400
+        Tue, 7 Jun 2022 15:17:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42F463FDAA;
-        Tue,  7 Jun 2022 11:08:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2BB65D1D;
+        Tue,  7 Jun 2022 11:07:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 203706171C;
-        Tue,  7 Jun 2022 18:07:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CD40C385A5;
-        Tue,  7 Jun 2022 18:07:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8F85617B0;
+        Tue,  7 Jun 2022 18:07:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D71F6C385A5;
+        Tue,  7 Jun 2022 18:07:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625272;
-        bh=NOiv8Tiyc/iLudToEyG5vrD7UybPASKRRba4y5xBscc=;
+        s=korg; t=1654625264;
+        bh=4v+cu7e+Xt75WklgaATgEEarc6UDXVoriEbxTMfiz7c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ukmExeegYtkPDvSnO3oWoLIDhd9xtk8BdnypbyKmMPvky4Q1BkzyIwXx6es98Uq5n
-         T7Ml+xZJCmf4xW2O3JsGUXh+ofL/+bNiTyKIBtldGOj3aByEQSVZww0vA7HD/OiL7G
-         IVO5cLmpU1vq+Y9ebQEns8iYKRyFAVJG0yiibfeY=
+        b=E0BIzarsI5b4eiqMF/ykTKG6GrXdisXFmfv+6IFcwbVW52HHsn9jbduOyLyyBrK6Z
+         P77E2qLhUddSF/IfhI2Wa+wgtQIJ4VwznXi/CunWUgyxNXwhSRJ8PLkz3C9ThGKYZe
+         DHGlZkRmxhbOePW2TcMErZv7xoMvT3oTG4f5NI8M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
-        Philippe Cornu <philippe.cornu@foss.st.com>
-Subject: [PATCH 5.15 628/667] stm: ltdc: fix two incorrect NULL checks on list iterator
-Date:   Tue,  7 Jun 2022 19:04:53 +0200
-Message-Id: <20220607164953.502810088@linuxfoundation.org>
+        stable@vger.kernel.org, pa@panix.com,
+        Alexander Wetzel <alexander@wetzel-home.de>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.15 625/667] rtl818x: Prevent using not initialized queues
+Date:   Tue,  7 Jun 2022 19:04:50 +0200
+Message-Id: <20220607164953.413859334@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,70 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Alexander Wetzel <alexander@wetzel-home.de>
 
-commit 2e6c86be0e57079d1fb6c7c7e5423db096d0548a upstream.
+commit 746285cf81dc19502ab238249d75f5990bd2d231 upstream.
 
-The two bugs are here:
-	if (encoder) {
-	if (bridge && bridge->timings)
+Using not existing queues can panic the kernel with rtl8180/rtl8185 cards.
+Ignore the skb priority for those cards, they only have one tx queue. Pierre
+Asselin (pa@panix.com) reported the kernel crash in the Gentoo forum:
 
-The list iterator value 'encoder/bridge' will *always* be set and
-non-NULL by drm_for_each_encoder()/list_for_each_entry(), so it is
-incorrect to assume that the iterator value will be NULL if the
-list is empty or no element is found.
+https://forums.gentoo.org/viewtopic-t-1147832-postdays-0-postorder-asc-start-25.html
 
-To fix the bug, use a new variable '*_iter' as the list iterator,
-while use the old variable 'encoder/bridge' as a dedicated pointer
-to point to the found element.
+He also confirmed that this patch fixes the issue. In summary this happened:
+
+After updating wpa_supplicant from 2.9 to 2.10 the kernel crashed with a
+"divide error: 0000" when connecting to an AP. Control port tx now tries to
+use IEEE80211_AC_VO for the priority, which wpa_supplicants starts to use in
+2.10.
+
+Since only the rtl8187se part of the driver supports QoS, the priority
+of the skb is set to IEEE80211_AC_BE (2) by mac80211 for rtl8180/rtl8185
+cards.
+
+rtl8180 is then unconditionally reading out the priority and finally crashes on
+drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c line 544 without this
+patch:
+	idx = (ring->idx + skb_queue_len(&ring->queue)) % ring->entries
+
+"ring->entries" is zero for rtl8180/rtl8185 cards, tx_ring[2] never got
+initialized.
 
 Cc: stable@vger.kernel.org
-Fixes: 99e360442f223 ("drm/stm: Fix bus_flags handling")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Acked-by: Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
-Signed-off-by: Philippe Cornu <philippe.cornu@foss.st.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220327055355.3808-1-xiam0nd.tong@gmail.com
+Reported-by: pa@panix.com
+Tested-by: pa@panix.com
+Signed-off-by: Alexander Wetzel <alexander@wetzel-home.de>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220422145228.7567-1-alexander@wetzel-home.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/stm/ltdc.c |   16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/stm/ltdc.c
-+++ b/drivers/gpu/drm/stm/ltdc.c
-@@ -528,8 +528,8 @@ static void ltdc_crtc_mode_set_nofb(stru
- 	struct drm_device *ddev = crtc->dev;
- 	struct drm_connector_list_iter iter;
- 	struct drm_connector *connector = NULL;
--	struct drm_encoder *encoder = NULL;
--	struct drm_bridge *bridge = NULL;
-+	struct drm_encoder *encoder = NULL, *en_iter;
-+	struct drm_bridge *bridge = NULL, *br_iter;
- 	struct drm_display_mode *mode = &crtc->state->adjusted_mode;
- 	u32 hsync, vsync, accum_hbp, accum_vbp, accum_act_w, accum_act_h;
- 	u32 total_width, total_height;
-@@ -538,15 +538,19 @@ static void ltdc_crtc_mode_set_nofb(stru
- 	int ret;
+--- a/drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c
++++ b/drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c
+@@ -460,8 +460,10 @@ static void rtl8180_tx(struct ieee80211_
+ 	struct rtl8180_priv *priv = dev->priv;
+ 	struct rtl8180_tx_ring *ring;
+ 	struct rtl8180_tx_desc *entry;
++	unsigned int prio = 0;
+ 	unsigned long flags;
+-	unsigned int idx, prio, hw_prio;
++	unsigned int idx, hw_prio;
++
+ 	dma_addr_t mapping;
+ 	u32 tx_flags;
+ 	u8 rc_flags;
+@@ -470,7 +472,9 @@ static void rtl8180_tx(struct ieee80211_
+ 	/* do arithmetic and then convert to le16 */
+ 	u16 frame_duration = 0;
  
- 	/* get encoder from crtc */
--	drm_for_each_encoder(encoder, ddev)
--		if (encoder->crtc == crtc)
-+	drm_for_each_encoder(en_iter, ddev)
-+		if (en_iter->crtc == crtc) {
-+			encoder = en_iter;
- 			break;
-+		}
+-	prio = skb_get_queue_mapping(skb);
++	/* rtl8180/rtl8185 only has one useable tx queue */
++	if (dev->queues > IEEE80211_AC_BK)
++		prio = skb_get_queue_mapping(skb);
+ 	ring = &priv->tx_ring[prio];
  
- 	if (encoder) {
- 		/* get bridge from encoder */
--		list_for_each_entry(bridge, &encoder->bridge_chain, chain_node)
--			if (bridge->encoder == encoder)
-+		list_for_each_entry(br_iter, &encoder->bridge_chain, chain_node)
-+			if (br_iter->encoder == encoder) {
-+				bridge = br_iter;
- 				break;
-+			}
- 
- 		/* Get the connector from encoder */
- 		drm_connector_list_iter_begin(ddev, &iter);
+ 	mapping = dma_map_single(&priv->pdev->dev, skb->data, skb->len,
 
 
