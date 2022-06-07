@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AEE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4374C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:41:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346139AbiFGSl3 (ORCPT
+        id S1351834AbiFGSlh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35898 "EHLO
+        Tue, 7 Jun 2022 14:41:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349622AbiFGSLx (ORCPT
+        with ESMTP id S1349680AbiFGSLx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:11:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEBB5132A05;
-        Tue,  7 Jun 2022 10:48:46 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1842F132A0A;
+        Tue,  7 Jun 2022 10:48:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A279C6171A;
-        Tue,  7 Jun 2022 17:48:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE34EC385A5;
-        Tue,  7 Jun 2022 17:48:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B012B81F38;
+        Tue,  7 Jun 2022 17:48:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03302C385A5;
+        Tue,  7 Jun 2022 17:48:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624126;
-        bh=wWRjEqG2Y+DWTjc/55XtqJj8VE6UoC3O30TEATDi1+w=;
+        s=korg; t=1654624123;
+        bh=y5FpsC0QGeen2RQowSl2Y0D8H3xk4G0Akqg3acr5AMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X9teDVAJwUVVTUDWhKE+JWnv/H0tuWHT4Ptr7xQdhbkCWcpXmj5csSq3y+726GTy7
-         q4mzntzHwhqBjRg/pOUq5j81wc4cNTc9MAl6Ayc9pdveRTXz3NUWeSGSt97GoKAJl9
-         aJa+9KxsDYkC+jjcjTRnxUy9xmYiYSaxO/7xKKno=
+        b=Vfbyb7wC2OGULnwZCC41V/cn1q9c/6rryFV63Z/nha0rGCDnKfnVsGHLFccmqsJ5n
+         Wu1TXHHP6L8Zxl8CLctLoI+GjPBVK8SxclC8qyKY22tQ2866pWc4FTJ3QuwIndZxOM
+         VeibyISur2D6K7AMGl3kHed3u2fB6FKfCBTQNJho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
         Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 212/667] ixp4xx_eth: fix error check return value of platform_get_irq()
-Date:   Tue,  7 Jun 2022 18:57:57 +0200
-Message-Id: <20220607164941.155480514@linuxfoundation.org>
+Subject: [PATCH 5.15 176/667] powerpc/powernv: fix missing of_node_put in uv_init()
+Date:   Tue,  7 Jun 2022 18:57:21 +0200
+Message-Id: <20220607164940.088645081@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -54,36 +53,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit f45ba67eb74ab4b775616af731bdf8944afce3f1 ]
+[ Upstream commit 3ffa9fd471f57f365bc54fc87824c530422f64a5 ]
 
-platform_get_irq() return negative value on failure, so null check of
-return value is incorrect. Fix it by comparing whether it is less than
-zero.
+of_find_compatible_node() returns node pointer with refcount incremented,
+use of_node_put() on it when done.
 
-Fixes: 9055a2f59162 ("ixp4xx_eth: make ptp support a platform driver")
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20220412085126.2532924-1-lv.ruyi@zte.com.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220407090043.2491854-1-lv.ruyi@zte.com.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xscale/ptp_ixp46x.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/platforms/powernv/ultravisor.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/xscale/ptp_ixp46x.c b/drivers/net/ethernet/xscale/ptp_ixp46x.c
-index 39234852e01b..20f6aa508003 100644
---- a/drivers/net/ethernet/xscale/ptp_ixp46x.c
-+++ b/drivers/net/ethernet/xscale/ptp_ixp46x.c
-@@ -272,7 +272,7 @@ static int ptp_ixp_probe(struct platform_device *pdev)
- 	ixp_clock.master_irq = platform_get_irq(pdev, 0);
- 	ixp_clock.slave_irq = platform_get_irq(pdev, 1);
- 	if (IS_ERR(ixp_clock.regs) ||
--	    !ixp_clock.master_irq || !ixp_clock.slave_irq)
-+	    ixp_clock.master_irq < 0 || ixp_clock.slave_irq < 0)
- 		return -ENXIO;
+diff --git a/arch/powerpc/platforms/powernv/ultravisor.c b/arch/powerpc/platforms/powernv/ultravisor.c
+index e4a00ad06f9d..67c8c4b2d8b1 100644
+--- a/arch/powerpc/platforms/powernv/ultravisor.c
++++ b/arch/powerpc/platforms/powernv/ultravisor.c
+@@ -55,6 +55,7 @@ static int __init uv_init(void)
+ 		return -ENODEV;
  
- 	ixp_clock.caps = ptp_ixp_caps;
+ 	uv_memcons = memcons_init(node, "memcons");
++	of_node_put(node);
+ 	if (!uv_memcons)
+ 		return -ENOENT;
+ 
 -- 
 2.35.1
 
