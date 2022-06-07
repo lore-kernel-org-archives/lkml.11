@@ -2,104 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96276C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63054C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353301AbiFGTDo (ORCPT
+        id S1353313AbiFGTEA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:03:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58806 "EHLO
+        Tue, 7 Jun 2022 15:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351971AbiFGSQt (ORCPT
+        with ESMTP id S1351974AbiFGSQt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:16:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599381A06B;
-        Tue,  7 Jun 2022 10:50:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F491339EB;
+        Tue,  7 Jun 2022 10:50:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D17146146F;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5B776159C;
+        Tue,  7 Jun 2022 17:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7FD8C385A5;
         Tue,  7 Jun 2022 17:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2572DC3411F;
-        Tue,  7 Jun 2022 17:50:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624213;
-        bh=u/6BFpc3oKkrIembXPs4WNepmSjV4wLzaru37KJWng0=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624214;
+        bh=7QQ5grX8R7fbK834V+H9zWsoK0HdlbCrvTqdcW37FDI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vBGrPwctFhlr1643owBS6XAVxX+kD+9fBwgdPn6dyHaAiP+O9+yKDhdlfYiQa7TGM
-         yZQHKzy/+XLrwuax89vg4vBf/YoZGRWX8nPklKT/9+rk9tPvw1zJxoPvwIVesM9Svc
-         e9SHyjWRwuv3mfXhc8vnrsZohgohPMP92o3ByAIwJHPFqsAXf/ifIhGjAGBE+S6piu
-         Ufg4E74UR/YkLDekBR5lk3323qA2TTGm20Tv6uCxRwOpgKR6EXhysO7JbMpmkzW4EH
-         MD+6hVQZks4YVw51GN0Z/UbzmqJailnm3+q5jfI0SkPCM5NooTwRP5NJtiTjeY0Ym5
-         9QLoGsXBWWNiQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, mailhol.vincent@wanadoo.fr,
-        cai.huoqing@linux.dev, chi.minghao@zte.com.cn,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 15/68] drivers: usb: host: Fix deadlock in oxu_bus_suspend()
-Date:   Tue,  7 Jun 2022 13:47:41 -0400
-Message-Id: <20220607174846.477972-15-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=z86HsV+r4sPJQvp6LurpHyWU6SEIvlG4d6M9byiubY4I0pGP60bootBAv/Kxp/Z+h
+         IMEknFZ/PEWGja3HMGqgSM63Uc8NPJFyv/3BNPnyqe3gruMZvf4z3jXE+wR/jYwDVA
+         3pnVHyOFGyix6M9MkkX104mI629PnoQAQUOWRHc8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sinan Kaya <okaya@kernel.org>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 219/667] EDAC/dmc520: Dont print an error for each unconfigured interrupt line
+Date:   Tue,  7 Jun 2022 18:58:04 +0200
+Message-Id: <20220607164941.360789811@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Tyler Hicks <tyhicks@linux.microsoft.com>
 
-[ Upstream commit 4d378f2ae58138d4c55684e1d274e7dd94aa6524 ]
+[ Upstream commit ad2df24732e8956a45a00894d2163c4ee8fb0e1f ]
 
-There is a deadlock in oxu_bus_suspend(), which is shown below:
+The dmc520 driver requires that at least one interrupt line, out of the
+ten possible, is configured. The driver prints an error and returns
+-EINVAL from its .probe function if there are no interrupt lines
+configured.
 
-   (Thread 1)              |      (Thread 2)
-                           | timer_action()
-oxu_bus_suspend()          |  mod_timer()
- spin_lock_irq() //(1)     |  (wait a time)
- ...                       | oxu_watchdog()
- del_timer_sync()          |  spin_lock_irq() //(2)
- (wait timer to stop)      |  ...
+Don't print a KERN_ERR level message for each interrupt line that's
+unconfigured as that can confuse users into thinking that there is an
+error condition.
 
-We hold oxu->lock in position (1) of thread 1, and use
-del_timer_sync() to wait timer to stop, but timer handler
-also need oxu->lock in position (2) of thread 2. As a result,
-oxu_bus_suspend() will block forever.
+Before this change, the following KERN_ERR level messages would be
+reported if only dram_ecc_errc and dram_ecc_errd were configured in the
+device tree:
 
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irq(), which could let timer handler to obtain
-the needed lock.
+  dmc520 68000000.dmc: IRQ ram_ecc_errc not found
+  dmc520 68000000.dmc: IRQ ram_ecc_errd not found
+  dmc520 68000000.dmc: IRQ failed_access not found
+  dmc520 68000000.dmc: IRQ failed_prog not found
+  dmc520 68000000.dmc: IRQ link_err not
+  dmc520 68000000.dmc: IRQ temperature_event not found
+  dmc520 68000000.dmc: IRQ arch_fsm not found
+  dmc520 68000000.dmc: IRQ phy_request not found
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417120305.64577-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1088750d7839 ("EDAC: Add EDAC driver for DMC520")
+Reported-by: Sinan Kaya <okaya@kernel.org>
+Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220111163800.22362-1-tyhicks@linux.microsoft.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/oxu210hp-hcd.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/edac/dmc520_edac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/host/oxu210hp-hcd.c b/drivers/usb/host/oxu210hp-hcd.c
-index b741670525e3..ee403df33093 100644
---- a/drivers/usb/host/oxu210hp-hcd.c
-+++ b/drivers/usb/host/oxu210hp-hcd.c
-@@ -3909,8 +3909,10 @@ static int oxu_bus_suspend(struct usb_hcd *hcd)
- 		}
- 	}
+diff --git a/drivers/edac/dmc520_edac.c b/drivers/edac/dmc520_edac.c
+index b8a7d9594afd..1fa5ca57e9ec 100644
+--- a/drivers/edac/dmc520_edac.c
++++ b/drivers/edac/dmc520_edac.c
+@@ -489,7 +489,7 @@ static int dmc520_edac_probe(struct platform_device *pdev)
+ 	dev = &pdev->dev;
  
-+	spin_unlock_irq(&oxu->lock);
- 	/* turn off now-idle HC */
- 	del_timer_sync(&oxu->watchdog);
-+	spin_lock_irq(&oxu->lock);
- 	ehci_halt(oxu);
- 	hcd->state = HC_STATE_SUSPENDED;
- 
+ 	for (idx = 0; idx < NUMBER_OF_IRQS; idx++) {
+-		irq = platform_get_irq_byname(pdev, dmc520_irq_configs[idx].name);
++		irq = platform_get_irq_byname_optional(pdev, dmc520_irq_configs[idx].name);
+ 		irqs[idx] = irq;
+ 		masks[idx] = dmc520_irq_configs[idx].mask;
+ 		if (irq >= 0) {
 -- 
 2.35.1
+
+
 
