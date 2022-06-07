@@ -2,155 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5788C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 833BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:08:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352034AbiFGTIo (ORCPT
+        id S1354011AbiFGTIz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51588 "EHLO
+        Tue, 7 Jun 2022 15:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351410AbiFGSQU (ORCPT
+        with ESMTP id S1350961AbiFGSPM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C543815FE00;
-        Tue,  7 Jun 2022 10:49:32 -0700 (PDT)
+        Tue, 7 Jun 2022 14:15:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EAB215C880;
+        Tue,  7 Jun 2022 10:49:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DDBB6172E;
-        Tue,  7 Jun 2022 17:49:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FAB5C385A5;
-        Tue,  7 Jun 2022 17:49:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624162;
-        bh=fNkJkBOthq+LhW72L2cl/PpwrwQpCtvNTh0mCjjeWfk=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94541B82343;
+        Tue,  7 Jun 2022 17:49:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE484C385A5;
+        Tue,  7 Jun 2022 17:49:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624157;
+        bh=dWtkSMzKDscygiG+tJ3tu1ikyvw0VFXcLcT5fAOsbOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bBOchRv/YT4yHY/xFcAEH/tYHxOASma8KZHuaXYVYGYHqYHDnQjB6ESMjh5VdpmzY
-         hdTrTuWDsOZLGZwyP/MTADigVikOW7jo17e3d5lyUQlkItjCjL75zqkvuyuefw+VJo
-         rj0H74BlZJRkj/AxM8o5gJySB35Hig02i6eacqVg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Steigerwald <Martin.Steigerwald@proact.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 228/667] sched/psi: report zeroes for CPU full at the system level
-Date:   Tue,  7 Jun 2022 18:58:13 +0200
-Message-Id: <20220607164941.628049082@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=LEn1Ki84bYIjnvcaDYJAZU6v0Ro86rBx88p4mTUqS80obkBstkQxew2BVyxVuJ1en
+         GR3y10Il8cn0T0YZqBrKf311HRwzE2km9UGuiSpwzoANmXSua94QZ7seF8E5P3RY0Q
+         ru7vX1nQCXFwo5/fCtqRiq/+ld/gUi6StPYBsFVrRcU87GF9mCTG5y5p21/q3RvwE6
+         NkjGezXp1SS9ej7JVyQoVXvP94dNpDsfwSA9hKNZuyHnKor3H/bRaL/k6uZmDxoKpI
+         ujF1iLpmfrH0vAbhucAGls/eXzA2in0kpwX/ek8rW7B2SHd44A8NrXOXt1T9kAajXg
+         FZU3qnG75XK0A==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Denis Ciocca <denis.ciocca@st.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
+        lars@metafoo.de, andy.shevchenko@gmail.com, aardelean@deviqon.com,
+        cai.huoqing@linux.dev, linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 03/68] iio: st_sensors: Add a local lock for protecting odr
+Date:   Tue,  7 Jun 2022 13:47:29 -0400
+Message-Id: <20220607174846.477972-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengming Zhou <zhouchengming@bytedance.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-[ Upstream commit 890d550d7dbac7a31ecaa78732aa22be282bb6b8 ]
+[ Upstream commit 474010127e2505fc463236470908e1ff5ddb3578 ]
 
-Martin find it confusing when look at the /proc/pressure/cpu output,
-and found no hint about that CPU "full" line in psi Documentation.
+Right now the (framework) mlock lock is (ab)used for multiple purposes:
+1- protecting concurrent accesses over the odr local cache
+2- avoid changing samplig frequency whilst buffer is running
 
-% cat /proc/pressure/cpu
-some avg10=0.92 avg60=0.91 avg300=0.73 total=933490489
-full avg10=0.22 avg60=0.23 avg300=0.16 total=358783277
+Let's start by handling situation #1 with a local lock.
 
-The PSI_CPU_FULL state is introduced by commit e7fcd7622823
-("psi: Add PSI_CPU_FULL state"), which mainly for cgroup level,
-but also counted at the system level as a side effect.
-
-Naturally, the FULL state doesn't exist for the CPU resource at
-the system level. These "full" numbers can come from CPU idle
-schedule latency. For example, t1 is the time when task wakeup
-on an idle CPU, t2 is the time when CPU pick and switch to it.
-The delta of (t2 - t1) will be in CPU_FULL state.
-
-Another case all processes can be stalled is when all cgroups
-have been throttled at the same time, which unlikely to happen.
-
-Anyway, CPU_FULL metric is meaningless and confusing at the
-system level. So this patch will report zeroes for CPU full
-at the system level, and update psi Documentation accordingly.
-
-Fixes: e7fcd7622823 ("psi: Add PSI_CPU_FULL state")
-Reported-by: Martin Steigerwald <Martin.Steigerwald@proact.de>
-Suggested-by: Johannes Weiner <hannes@cmpxchg.org>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-Link: https://lore.kernel.org/r/20220408121914.82855-1-zhouchengming@bytedance.com
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Cc: Denis Ciocca <denis.ciocca@st.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/r/20220207143840.707510-7-miquel.raynal@bootlin.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/accounting/psi.rst |  9 ++++-----
- kernel/sched/psi.c               | 15 +++++++++------
- 2 files changed, 13 insertions(+), 11 deletions(-)
+ .../iio/common/st_sensors/st_sensors_core.c   | 24 ++++++++++++++-----
+ include/linux/iio/common/st_sensors.h         |  3 +++
+ 2 files changed, 21 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/accounting/psi.rst b/Documentation/accounting/psi.rst
-index 860fe651d645..5e40b3f437f9 100644
---- a/Documentation/accounting/psi.rst
-+++ b/Documentation/accounting/psi.rst
-@@ -37,11 +37,7 @@ Pressure interface
- Pressure information for each resource is exported through the
- respective file in /proc/pressure/ -- cpu, memory, and io.
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index fa9bcdf0d190..b92de90a125c 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -71,16 +71,18 @@ static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
  
--The format for CPU is as such::
--
--	some avg10=0.00 avg60=0.00 avg300=0.00 total=0
--
--and for memory and IO::
-+The format is as such::
+ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
+ {
+-	int err;
++	int err = 0;
+ 	struct st_sensor_odr_avl odr_out = {0, 0};
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
  
- 	some avg10=0.00 avg60=0.00 avg300=0.00 total=0
- 	full avg10=0.00 avg60=0.00 avg300=0.00 total=0
-@@ -58,6 +54,9 @@ situation from a state where some tasks are stalled but the CPU is
- still doing productive work. As such, time spent in this subset of the
- stall state is tracked separately and exported in the "full" averages.
- 
-+CPU full is undefined at the system level, but has been reported
-+since 5.13, so it is set to zero for backward compatibility.
++	mutex_lock(&sdata->odr_lock);
 +
- The ratios (in %) are tracked as recent trends over ten, sixty, and
- three hundred second windows, which gives insight into short term events
- as well as medium and long term trends. The total absolute stall time
-diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
-index 422f3b0445cf..cad2a1b34ed0 100644
---- a/kernel/sched/psi.c
-+++ b/kernel/sched/psi.c
-@@ -1062,14 +1062,17 @@ int psi_show(struct seq_file *m, struct psi_group *group, enum psi_res res)
- 	mutex_unlock(&group->avgs_lock);
+ 	if (!sdata->sensor_settings->odr.mask)
+-		return 0;
++		goto unlock_mutex;
  
- 	for (full = 0; full < 2; full++) {
--		unsigned long avg[3];
--		u64 total;
-+		unsigned long avg[3] = { 0, };
-+		u64 total = 0;
- 		int w;
+ 	err = st_sensors_match_odr(sdata->sensor_settings, odr, &odr_out);
+ 	if (err < 0)
+-		goto st_sensors_match_odr_error;
++		goto unlock_mutex;
  
--		for (w = 0; w < 3; w++)
--			avg[w] = group->avg[res * 2 + full][w];
--		total = div_u64(group->total[PSI_AVGS][res * 2 + full],
--				NSEC_PER_USEC);
-+		/* CPU FULL is undefined at the system level */
-+		if (!(group == &psi_system && res == PSI_CPU && full)) {
-+			for (w = 0; w < 3; w++)
-+				avg[w] = group->avg[res * 2 + full][w];
-+			total = div_u64(group->total[PSI_AVGS][res * 2 + full],
-+					NSEC_PER_USEC);
+ 	if ((sdata->sensor_settings->odr.addr ==
+ 					sdata->sensor_settings->pw.addr) &&
+@@ -103,7 +105,9 @@ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
+ 	if (err >= 0)
+ 		sdata->odr = odr_out.hz;
+ 
+-st_sensors_match_odr_error:
++unlock_mutex:
++	mutex_unlock(&sdata->odr_lock);
++
+ 	return err;
+ }
+ EXPORT_SYMBOL_NS(st_sensors_set_odr, IIO_ST_SENSORS);
+@@ -361,6 +365,8 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
+ 	struct st_sensors_platform_data *of_pdata;
+ 	int err = 0;
+ 
++	mutex_init(&sdata->odr_lock);
++
+ 	/* If OF/DT pdata exists, it will take precedence of anything else */
+ 	of_pdata = st_sensors_dev_probe(indio_dev->dev.parent, pdata);
+ 	if (IS_ERR(of_pdata))
+@@ -554,18 +560,24 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+ 		err = -EBUSY;
+ 		goto out;
+ 	} else {
++		mutex_lock(&sdata->odr_lock);
+ 		err = st_sensors_set_enable(indio_dev, true);
+-		if (err < 0)
++		if (err < 0) {
++			mutex_unlock(&sdata->odr_lock);
+ 			goto out;
 +		}
  
- 		seq_printf(m, "%s avg10=%lu.%02lu avg60=%lu.%02lu avg300=%lu.%02lu total=%llu\n",
- 			   full ? "full" : "some",
+ 		msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
+ 		err = st_sensors_read_axis_data(indio_dev, ch, val);
+-		if (err < 0)
++		if (err < 0) {
++			mutex_unlock(&sdata->odr_lock);
+ 			goto out;
++		}
+ 
+ 		*val = *val >> ch->scan_type.shift;
+ 
+ 		err = st_sensors_set_enable(indio_dev, false);
++		mutex_unlock(&sdata->odr_lock);
+ 	}
+ out:
+ 	mutex_unlock(&indio_dev->mlock);
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index 22f67845cdd3..db4a1b260348 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -237,6 +237,7 @@ struct st_sensor_settings {
+  * @hw_irq_trigger: if we're using the hardware interrupt on the sensor.
+  * @hw_timestamp: Latest timestamp from the interrupt handler, when in use.
+  * @buffer_data: Data used by buffer part.
++ * @odr_lock: Local lock for preventing concurrent ODR accesses/changes
+  */
+ struct st_sensor_data {
+ 	struct iio_trigger *trig;
+@@ -261,6 +262,8 @@ struct st_sensor_data {
+ 	s64 hw_timestamp;
+ 
+ 	char buffer_data[ST_SENSORS_MAX_BUFFER_SIZE] ____cacheline_aligned;
++
++	struct mutex odr_lock;
+ };
+ 
+ #ifdef CONFIG_IIO_BUFFER
 -- 
 2.35.1
-
-
 
