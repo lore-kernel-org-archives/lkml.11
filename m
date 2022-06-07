@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21957C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:22:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEC30C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231863AbiFHCWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
+        id S239874AbiFHCWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:22:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444768AbiFHCLS (ORCPT
+        with ESMTP id S1444878AbiFHCLa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:11:18 -0400
+        Tue, 7 Jun 2022 22:11:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23DB254EC4;
-        Tue,  7 Jun 2022 12:18:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0CCD2714A;
+        Tue,  7 Jun 2022 12:25:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 040536192F;
-        Tue,  7 Jun 2022 19:18:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12A17C341C0;
-        Tue,  7 Jun 2022 19:18:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E905609D0;
+        Tue,  7 Jun 2022 19:25:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C95AC385A2;
+        Tue,  7 Jun 2022 19:25:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629510;
-        bh=FjpVwRVNYYlAGn7k/OHLaxc52wPen+gS9TwWMFYhhXE=;
+        s=korg; t=1654629948;
+        bh=K0bdUzOfeyMkxgs4pOZ4/dubG5F1GljN0qv8FWivZ/Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tCyVpjk1fjuXHH9A6PXLj8ci8B/JapyI6SHik/kMIH9uxTn5hJ7EJ4f6j1GPBZ84U
-         9ieQuiZuN7HuAILSblgBVMbd9CcdQR/IvO2RENcUtp1yHc1cYFH/S//3WNXb8Yxzlv
-         Kj/7KxSTlcuzOd3ot4/Ye5wP2FlvY933PyFz/SJ4=
+        b=xA+tovNwnjbKJv+jysR5q66+3Ck3+BwVWGFA7fNAt0h7K6w6b7Iw+qIE7FXC1Hh4B
+         x2Hcr+p0ibXj8UvL+C27WOUlDGCBTzSjvpjN+LfU+tqxtYE44DNcyhkar4MYSYH41p
+         Cu+AIbJV8sgcCt4+sbDKbG6XJ5mf7wBNuGHNi1ug=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.18 715/879] f2fs: fix fallocate to use file_modified to update permissions consistently
-Date:   Tue,  7 Jun 2022 19:03:53 +0200
-Message-Id: <20220607165023.608176335@linuxfoundation.org>
+        stable@vger.kernel.org, Fine Fan <ffan@redhat.com>,
+        Xiao Ni <xni@redhat.com>, Song Liu <song@kernel.org>
+Subject: [PATCH 5.18 875/879] md: Dont set mddev private to NULL in raid0 pers->free
+Date:   Tue,  7 Jun 2022 19:06:33 +0200
+Message-Id: <20220607165028.255117406@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -48,44 +48,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Xiao Ni <xni@redhat.com>
 
-commit 958ed92922028ec67f504dcdc72bfdfd0f43936a upstream.
+commit 0f2571ad7a30ff6b33cde142439f9378669f8b4f upstream.
 
-This patch tries to fix permission consistency issue as all other
-mainline filesystems.
+In normal stop process, it does like this:
+   do_md_stop
+      |
+   __md_stop (pers->free(); mddev->private=NULL)
+      |
+   md_free (free mddev)
+__md_stop sets mddev->private to NULL after pers->free. The raid device
+will be stopped and mddev memory is free. But in reshape, it doesn't
+free the mddev and mddev will still be used in new raid.
 
-Since the initial introduction of (posix) fallocate back at the turn of
-the century, it has been possible to use this syscall to change the
-user-visible contents of files.  This can happen by extending the file
-size during a preallocation, or through any of the newer modes (punch,
-zero, collapse, insert range).  Because the call can be used to change
-file contents, we should treat it like we do any other modification to a
-file -- update the mtime, and drop set[ug]id privileges/capabilities.
+In reshape, it first sets mddev->private to new_pers and then runs
+old_pers->free(). Now raid0 sets mddev->private to NULL in raid0_free.
+The new raid can't work anymore. It will panic when dereference
+mddev->private because of NULL pointer dereference.
 
-The VFS function file_modified() does all this for us if pass it a
-locked inode, so let's make fallocate drop permissions correctly.
+It can panic like this:
+[63010.814972] kernel BUG at drivers/md/raid10.c:928!
+[63010.819778] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+[63010.825011] CPU: 3 PID: 44437 Comm: md0_resync Kdump: loaded Not tainted 5.14.0-86.el9.x86_64 #1
+[63010.833789] Hardware name: Dell Inc. PowerEdge R6415/07YXFK, BIOS 1.15.0 09/11/2020
+[63010.841440] RIP: 0010:raise_barrier+0x161/0x170 [raid10]
+[63010.865508] RSP: 0018:ffffc312408bbc10 EFLAGS: 00010246
+[63010.870734] RAX: 0000000000000000 RBX: ffffa00bf7d39800 RCX: 0000000000000000
+[63010.877866] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffffa00bf7d39800
+[63010.884999] RBP: 0000000000000000 R08: fffffa4945e74400 R09: 0000000000000000
+[63010.892132] R10: ffffa00eed02f798 R11: 0000000000000000 R12: ffffa00bbc435200
+[63010.899266] R13: ffffa00bf7d39800 R14: 0000000000000400 R15: 0000000000000003
+[63010.906399] FS:  0000000000000000(0000) GS:ffffa00eed000000(0000) knlGS:0000000000000000
+[63010.914485] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[63010.920229] CR2: 00007f5cfbe99828 CR3: 0000000105efe000 CR4: 00000000003506e0
+[63010.927363] Call Trace:
+[63010.929822]  ? bio_reset+0xe/0x40
+[63010.933144]  ? raid10_alloc_init_r10buf+0x60/0xa0 [raid10]
+[63010.938629]  raid10_sync_request+0x756/0x1610 [raid10]
+[63010.943770]  md_do_sync.cold+0x3e4/0x94c
+[63010.947698]  md_thread+0xab/0x160
+[63010.951024]  ? md_write_inc+0x50/0x50
+[63010.954688]  kthread+0x149/0x170
+[63010.957923]  ? set_kthread_struct+0x40/0x40
+[63010.962107]  ret_from_fork+0x22/0x30
 
-Cc: stable@kernel.org
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Removing the code that sets mddev->private to NULL in raid0 can fix
+problem.
+
+Fixes: 0c031fd37f69 (md: Move alloc/free acct bioset in to personality)
+Reported-by: Fine Fan <ffan@redhat.com>
+Signed-off-by: Xiao Ni <xni@redhat.com>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/file.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/md/raid0.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -1774,6 +1774,10 @@ static long f2fs_fallocate(struct file *
+--- a/drivers/md/raid0.c
++++ b/drivers/md/raid0.c
+@@ -361,7 +361,6 @@ static void free_conf(struct mddev *mdde
+ 	kfree(conf->strip_zone);
+ 	kfree(conf->devlist);
+ 	kfree(conf);
+-	mddev->private = NULL;
+ }
  
- 	inode_lock(inode);
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out;
-+
- 	if (mode & FALLOC_FL_PUNCH_HOLE) {
- 		if (offset >= inode->i_size)
- 			goto out;
+ static void raid0_free(struct mddev *mddev, void *priv)
 
 
