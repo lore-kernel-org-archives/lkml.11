@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 688C6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6AD0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358694AbiFGUSJ (ORCPT
+        id S1358742AbiFGUSS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50548 "EHLO
+        Tue, 7 Jun 2022 16:18:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356726AbiFGT2J (ORCPT
+        with ESMTP id S1356756AbiFGT2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:28:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6A71A0ACA;
-        Tue,  7 Jun 2022 11:10:35 -0700 (PDT)
+        Tue, 7 Jun 2022 15:28:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4736BFE8;
+        Tue,  7 Jun 2022 11:10:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE92AB82340;
-        Tue,  7 Jun 2022 18:10:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09C94C385A2;
-        Tue,  7 Jun 2022 18:10:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 936E361903;
+        Tue,  7 Jun 2022 18:10:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EA4DC385A2;
+        Tue,  7 Jun 2022 18:10:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625433;
-        bh=Tc0Q39oyVnRW3866dz4/fiiECwqbaxKvAXBOFHJf6O0=;
+        s=korg; t=1654625439;
+        bh=c8rwA1Oweo9bfbt0j50bLlPx4QGY8fStSX1TOc23Wtw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pUF+VOmUHeL9C/KTEpcHbay2R+Ap1/O1ahLuAx2st41mnwvMy1NEn+mPEzTL4gS2+
-         IPZ5LAHRlf4SstS1EAIHzs4K5xbBP8pARDN0fS6nvU3MRZ51nVqzyn4oZXQt/1nXfp
-         bod9j0Uc0pho3qB6Fg+z8hpaoX7Rs49pNVTPBt14=
+        b=qSXQXjWLW4kfpldo4+L26Y5mS7a4tXdaK4i39Qmzsro3zrA74EtKurHMBwegvLzax
+         W72I3rdZXwImbOFV25e74ImWUh4j6VNsKofMjqP8P6HGbOxNtqlk82Ri6nQTiCQguX
+         i/vkodpsz7xAILC1e5PYrikyGoZEdsSEenBqVeTw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Albert Wang <albertccwang@google.com>
-Subject: [PATCH 5.17 018/772] usb: dwc3: gadget: Move null pinter check to proper place
-Date:   Tue,  7 Jun 2022 18:53:30 +0200
-Message-Id: <20220607164949.544429132@linuxfoundation.org>
+        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Kees Cook <keescook@chromium.org>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH 5.17 002/772] binfmt_flat: do not stop relocating GOT entries prematurely on riscv
+Date:   Tue,  7 Jun 2022 18:53:14 +0200
+Message-Id: <20220607164949.061048601@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,71 +51,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Albert Wang <albertccwang@google.com>
+From: Niklas Cassel <niklas.cassel@wdc.com>
 
-commit 3c5880745b4439ac64eccdb040e37fc1cc4c5406 upstream.
+commit 6045ab5fea4c849153ebeb0acb532da5f29d69c4 upstream.
 
-When dwc3_gadget_ep_cleanup_completed_requests() called to
-dwc3_gadget_giveback() where the dwc3 lock is released, other thread is
-able to execute. In this situation, usb_ep_disable() gets the chance to
-clear endpoint descriptor pointer which leds to the null pointer
-dereference problem. So needs to move the null pointer check to a proper
-place.
+bFLT binaries are usually created using elf2flt.
 
-Example call stack:
+The linker script used by elf2flt has defined the .data section like the
+following for the last 19 years:
 
-Thread#1:
-dwc3_thread_interrupt()
-  spin_lock
-  -> dwc3_process_event_buf()
-   -> dwc3_process_event_entry()
-    -> dwc3_endpoint_interrupt()
-     -> dwc3_gadget_endpoint_trbs_complete()
-      -> dwc3_gadget_ep_cleanup_completed_requests()
-       ...
-       -> dwc3_giveback()
-          spin_unlock
-          Thread#2 executes
+.data : {
+	_sdata = . ;
+	__data_start = . ;
+	data_start = . ;
+	*(.got.plt)
+	*(.got)
+	FILL(0) ;
+	. = ALIGN(0x20) ;
+	LONG(-1)
+	. = ALIGN(0x20) ;
+	...
+}
 
-Thread#2:
-configfs_composite_disconnect()
-  -> __composite_disconnect()
-   -> ffs_func_disable()
-    -> ffs_func_set_alt()
-     -> ffs_func_eps_disable()
-      -> usb_ep_disable()
-         wait for dwc3 spin_lock
-         Thread#1 released lock
-         clear endpoint.desc
+It places the .got.plt input section before the .got input section.
+The same is true for the default linker script (ld --verbose) on most
+architectures except x86/x86-64.
 
-Fixes: 26288448120b ("usb: dwc3: gadget: Fix null pointer exception")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Albert Wang <albertccwang@google.com>
-Link: https://lore.kernel.org/r/20220518061315.3359198-1-albertccwang@google.com
+The binfmt_flat loader should relocate all GOT entries until it encounters
+a -1 (the LONG(-1) in the linker script).
+
+The problem is that the .got.plt input section starts with a GOTPLT header
+(which has size 16 bytes on elf64-riscv and 8 bytes on elf32-riscv), where
+the first word is set to -1. See the binutils implementation for riscv [1].
+
+This causes the binfmt_flat loader to stop relocating GOT entries
+prematurely and thus causes the application to crash when running.
+
+Fix this by skipping the whole GOTPLT header, since the whole GOTPLT header
+is reserved for the dynamic linker.
+
+The GOTPLT header will only be skipped for bFLT binaries with flag
+FLAT_FLAG_GOTPIC set. This flag is unconditionally set by elf2flt if the
+supplied ELF binary has the symbol _GLOBAL_OFFSET_TABLE_ defined.
+ELF binaries without a .got input section should thus remain unaffected.
+
+Tested on RISC-V Canaan Kendryte K210 and RISC-V QEMU nommu_virt_defconfig.
+
+[1] https://sourceware.org/git/?p=binutils-gdb.git;a=blob;f=bfd/elfnn-riscv.c;hb=binutils-2_38#l3275
+
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Link: https://lore.kernel.org/r/20220414091018.896737-1-niklas.cassel@wdc.com
+Fixed-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/lkml/202204182333.OIUOotK8-lkp@intel.com
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/gadget.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ fs/binfmt_flat.c |   27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -3335,14 +3335,14 @@ static bool dwc3_gadget_endpoint_trbs_co
- 	struct dwc3		*dwc = dep->dwc;
- 	bool			no_started_trb = true;
+--- a/fs/binfmt_flat.c
++++ b/fs/binfmt_flat.c
+@@ -433,6 +433,30 @@ static void old_reloc(unsigned long rl)
  
--	if (!dep->endpoint.desc)
--		return no_started_trb;
--
- 	dwc3_gadget_ep_cleanup_completed_requests(dep, event, status);
+ /****************************************************************************/
  
- 	if (dep->flags & DWC3_EP_END_TRANSFER_PENDING)
- 		goto out;
- 
-+	if (!dep->endpoint.desc)
-+		return no_started_trb;
++static inline u32 __user *skip_got_header(u32 __user *rp)
++{
++	if (IS_ENABLED(CONFIG_RISCV)) {
++		/*
++		 * RISC-V has a 16 byte GOT PLT header for elf64-riscv
++		 * and 8 byte GOT PLT header for elf32-riscv.
++		 * Skip the whole GOT PLT header, since it is reserved
++		 * for the dynamic linker (ld.so).
++		 */
++		u32 rp_val0, rp_val1;
 +
- 	if (usb_endpoint_xfer_isoc(dep->endpoint.desc) &&
- 		list_empty(&dep->started_list) &&
- 		(list_empty(&dep->pending_list) || status == -EXDEV))
++		if (get_user(rp_val0, rp))
++			return rp;
++		if (get_user(rp_val1, rp + 1))
++			return rp;
++
++		if (rp_val0 == 0xffffffff && rp_val1 == 0xffffffff)
++			rp += 4;
++		else if (rp_val0 == 0xffffffff)
++			rp += 2;
++	}
++	return rp;
++}
++
+ static int load_flat_file(struct linux_binprm *bprm,
+ 		struct lib_info *libinfo, int id, unsigned long *extra_stack)
+ {
+@@ -782,7 +806,8 @@ static int load_flat_file(struct linux_b
+ 	 * image.
+ 	 */
+ 	if (flags & FLAT_FLAG_GOTPIC) {
+-		for (rp = (u32 __user *)datapos; ; rp++) {
++		rp = skip_got_header((u32 __user *) datapos);
++		for (; ; rp++) {
+ 			u32 addr, rp_val;
+ 			if (get_user(rp_val, rp))
+ 				return -EFAULT;
 
 
