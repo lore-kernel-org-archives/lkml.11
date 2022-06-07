@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFB6ACCA493
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 570DCCCA483
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443650AbiFHCDB (ORCPT
+        id S1443811AbiFHCDQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:03:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42730 "EHLO
+        Tue, 7 Jun 2022 22:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1843635AbiFHALQ (ORCPT
+        with ESMTP id S1843648AbiFHALR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:11:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76699277F86;
-        Tue,  7 Jun 2022 12:24:17 -0700 (PDT)
+        Tue, 7 Jun 2022 20:11:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D30119CB77;
+        Tue,  7 Jun 2022 12:26:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 136EBB823CD;
-        Tue,  7 Jun 2022 19:24:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6922DC385A5;
-        Tue,  7 Jun 2022 19:24:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 452D8B8237B;
+        Tue,  7 Jun 2022 19:26:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D06F9C385A5;
+        Tue,  7 Jun 2022 19:26:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629854;
-        bh=mjDVms1mkR0UEE6C7PmyTd3PILZR1jItKQPEJ9Yzcyo=;
+        s=korg; t=1654629971;
+        bh=2b3EwAxT/IxY3yiIFVjw+wSEWXH1+Ouo/kRi/T0Wbxw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GzL9Sg1xiQtZ2IAGgBtnDVAGHyJdhgz49NyMOp4dfJtZCbSmezcqc0BQ4N4QIEY8Y
-         8ud5GPbDG7BCOz4+0sDkZf9dnPGQJuxJwWVJSCmPUsUUPtaKj4OZL4jKC/Gng5/M1o
-         TF7P9UIZcbhwrZo1ipsrb/0HIrCGty/Uxv4kOl60=
+        b=cogw5YqoEGLYQmkzpPP4C1Fv2Fc3DI0mxUDFk+U436W4NkEku7/SxttcoNt2yANyp
+         T33MUY2fzABT+Z7Op3h32kU8DdtMJi5j+ioonp4+qDgwvqhyyoR/OGPq1VWLqXJPmm
+         E/39LJwRAnbWItLOO9QQH+su6+GZqtCZXf4ry3Ng=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.18 840/879] bcache: improve multithreaded bch_sectors_dirty_init()
-Date:   Tue,  7 Jun 2022 19:05:58 +0200
-Message-Id: <20220607165027.234925594@linuxfoundation.org>
+        stable@vger.kernel.org, Ondrej Hubsch <ohubsch@purestorage.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.18 854/879] SMB3: EBADF/EIO errors in rename/open caused by race condition in smb2_compound_op
+Date:   Tue,  7 Jun 2022 19:06:12 +0200
+Message-Id: <20220607165027.643252462@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,146 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Coly Li <colyli@suse.de>
+From: Steve French <stfrench@microsoft.com>
 
-commit 4dc34ae1b45fe26e772a44379f936c72623dd407 upstream.
+commit 0a55cf74ffb5d004b93647e4389096880ce37d6b upstream.
 
-Commit b144e45fc576 ("bcache: make bch_sectors_dirty_init() to be
-multithreaded") makes bch_sectors_dirty_init() to be much faster
-when counting dirty sectors by iterating all dirty keys in the btree.
-But it isn't in ideal shape yet, still can be improved.
+There is  a race condition in smb2_compound_op:
 
-This patch does the following changes to improve current parallel dirty
-keys iteration on the btree,
-- Add read lock to root node when multiple threads iterating the btree,
-  to prevent the root node gets split by I/Os from other registered
-  bcache devices.
-- Remove local variable "char name[32]" and generate kernel thread name
-  string directly when calling kthread_run().
-- Allocate "struct bch_dirty_init_state state" directly on stack and
-  avoid the unnecessary dynamic memory allocation for it.
-- Decrease BCH_DIRTY_INIT_THRD_MAX from 64 to 12 which is enough indeed.
-- Increase &state->started to count created kernel thread after it
-  succeeds to create.
-- When wait for all dirty key counting threads to finish, use
-  wait_event() to replace wait_event_interruptible().
+after_close:
+	num_rqst++;
 
-With the above changes, the code is more clear, and some potential error
-conditions are avoided.
+	if (cfile) {
+		cifsFileInfo_put(cfile); // sends SMB2_CLOSE to the server
+		cfile = NULL;
 
-Fixes: b144e45fc576 ("bcache: make bch_sectors_dirty_init() to be multithreaded")
-Signed-off-by: Coly Li <colyli@suse.de>
+This is triggered by smb2_query_path_info operation that happens during
+revalidate_dentry. In smb2_query_path_info, get_readable_path is called to
+load the cfile, increasing the reference counter. If in the meantime, this
+reference becomes the very last, this call to cifsFileInfo_put(cfile) will
+trigger a SMB2_CLOSE request sent to the server just before sending this compound
+request – and so then the compound request fails either with EBADF/EIO depending
+on the timing at the server, because the handle is already closed.
+
+In the first scenario, the race seems to be happening between smb2_query_path_info
+triggered by the rename operation, and between “cleanup” of asynchronous writes – while
+fsync(fd) likely waits for the asynchronous writes to complete, releasing the writeback
+structures can happen after the close(fd) call. So the EBADF/EIO errors will pop up if
+the timing is such that:
+1) There are still outstanding references after close(fd) in the writeback structures
+2) smb2_query_path_info successfully fetches the cfile, increasing the refcounter by 1
+3) All writeback structures release the same cfile, reducing refcounter to 1
+4) smb2_compound_op is called with that cfile
+
+In the second scenario, the race seems to be similar – here open triggers the
+smb2_query_path_info operation, and if all other threads in the meantime decrease the
+refcounter to 1 similarly to the first scenario, again SMB2_CLOSE will be sent to the
+server just before issuing the compound request. This case is harder to reproduce.
+
+See https://bugzilla.samba.org/show_bug.cgi?id=15051
+
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220524102336.10684-3-colyli@suse.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 8de9e86c67ba ("cifs: create a helper to find a writeable handle by path name")
+Signed-off-by: Ondrej Hubsch <ohubsch@purestorage.com>
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/bcache/writeback.c |   60 ++++++++++++++++--------------------------
- drivers/md/bcache/writeback.h |    2 -
- 2 files changed, 25 insertions(+), 37 deletions(-)
+ fs/cifs/smb2inode.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/drivers/md/bcache/writeback.c
-+++ b/drivers/md/bcache/writeback.c
-@@ -948,10 +948,10 @@ void bch_sectors_dirty_init(struct bcach
- 	struct btree_iter iter;
- 	struct sectors_dirty_init op;
- 	struct cache_set *c = d->c;
--	struct bch_dirty_init_state *state;
--	char name[32];
-+	struct bch_dirty_init_state state;
+--- a/fs/cifs/smb2inode.c
++++ b/fs/cifs/smb2inode.c
+@@ -362,8 +362,6 @@ smb2_compound_op(const unsigned int xid,
+ 	num_rqst++;
  
- 	/* Just count root keys if no leaf node */
-+	rw_lock(0, c->root, c->root->level);
- 	if (c->root->level == 0) {
- 		bch_btree_op_init(&op.op, -1);
- 		op.inode = d->id;
-@@ -961,54 +961,42 @@ void bch_sectors_dirty_init(struct bcach
- 		for_each_key_filter(&c->root->keys,
- 				    k, &iter, bch_ptr_invalid)
- 			sectors_dirty_init_fn(&op.op, c->root, k);
-+		rw_unlock(0, c->root);
- 		return;
- 	}
- 
--	state = kzalloc(sizeof(struct bch_dirty_init_state), GFP_KERNEL);
--	if (!state) {
--		pr_warn("sectors dirty init failed: cannot allocate memory\n");
--		return;
--	}
-+	state.c = c;
-+	state.d = d;
-+	state.total_threads = bch_btre_dirty_init_thread_nr();
-+	state.key_idx = 0;
-+	spin_lock_init(&state.idx_lock);
-+	atomic_set(&state.started, 0);
-+	atomic_set(&state.enough, 0);
-+	init_waitqueue_head(&state.wait);
- 
--	state->c = c;
--	state->d = d;
--	state->total_threads = bch_btre_dirty_init_thread_nr();
--	state->key_idx = 0;
--	spin_lock_init(&state->idx_lock);
--	atomic_set(&state->started, 0);
--	atomic_set(&state->enough, 0);
--	init_waitqueue_head(&state->wait);
--
--	for (i = 0; i < state->total_threads; i++) {
--		/* Fetch latest state->enough earlier */
-+	for (i = 0; i < state.total_threads; i++) {
-+		/* Fetch latest state.enough earlier */
- 		smp_mb__before_atomic();
--		if (atomic_read(&state->enough))
-+		if (atomic_read(&state.enough))
- 			break;
- 
--		state->infos[i].state = state;
--		atomic_inc(&state->started);
--		snprintf(name, sizeof(name), "bch_dirty_init[%d]", i);
--
--		state->infos[i].thread =
--			kthread_run(bch_dirty_init_thread,
--				    &state->infos[i],
--				    name);
--		if (IS_ERR(state->infos[i].thread)) {
-+		state.infos[i].state = &state;
-+		state.infos[i].thread =
-+			kthread_run(bch_dirty_init_thread, &state.infos[i],
-+				    "bch_dirtcnt[%d]", i);
-+		if (IS_ERR(state.infos[i].thread)) {
- 			pr_err("fails to run thread bch_dirty_init[%d]\n", i);
- 			for (--i; i >= 0; i--)
--				kthread_stop(state->infos[i].thread);
-+				kthread_stop(state.infos[i].thread);
- 			goto out;
- 		}
-+		atomic_inc(&state.started);
- 	}
- 
--	/*
--	 * Must wait for all threads to stop.
--	 */
--	wait_event_interruptible(state->wait,
--		 atomic_read(&state->started) == 0);
--
- out:
--	kfree(state);
-+	/* Must wait for all threads to stop. */
-+	wait_event(state.wait, atomic_read(&state.started) == 0);
-+	rw_unlock(0, c->root);
- }
- 
- void bch_cached_dev_writeback_init(struct cached_dev *dc)
---- a/drivers/md/bcache/writeback.h
-+++ b/drivers/md/bcache/writeback.h
-@@ -20,7 +20,7 @@
- #define BCH_WRITEBACK_FRAGMENT_THRESHOLD_MID 57
- #define BCH_WRITEBACK_FRAGMENT_THRESHOLD_HIGH 64
- 
--#define BCH_DIRTY_INIT_THRD_MAX	64
-+#define BCH_DIRTY_INIT_THRD_MAX	12
- /*
-  * 14 (16384ths) is chosen here as something that each backing device
-  * should be a reasonable fraction of the share, and not to blow up
+ 	if (cfile) {
+-		cifsFileInfo_put(cfile);
+-		cfile = NULL;
+ 		rc = compound_send_recv(xid, ses, server,
+ 					flags, num_rqst - 2,
+ 					&rqst[1], &resp_buftype[1],
 
 
