@@ -2,147 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92742C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:09:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E2E6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242507AbiFGLI7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:08:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42224 "EHLO
+        id S242616AbiFGLJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242531AbiFGLI1 (ORCPT
+        with ESMTP id S242620AbiFGLIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 07:08:27 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1B7C10EA4C;
-        Tue,  7 Jun 2022 04:04:32 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id v1so23748007ejg.13;
-        Tue, 07 Jun 2022 04:04:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dE3IfDBto2P1Lw1uX63OsonLCvmTMY25nDr0mUDzn+Q=;
-        b=L3il+xydJWAarPyPUgZutiMe46kqGVZ4BfF4kMo68FgtCnXbiHU6vikypBkE5LvRhl
-         FL7QnepGJil4FpKHDOZE9wbRTJpBHgrCcV5XkK2U459iNIu219cAZNVOCNB9xlpS0jCE
-         5w6HqD8YN1XwLSbkiW+0wMMJ+F/gqx169QTy0GSd1Lu/gwYydPSo/A2BjLxsqrOUKk1X
-         At2BGene276+74Ezm8McnBoDjrruqc1afTRGD5O+02dM2D1v2zibsCnGHAvDYsytUS2s
-         5pLWqOt0nTUClno+zB8d1ealys8sy64/CKp9itA7l/5Okoiuapjq3ExRoxSje1zVvmW/
-         07fQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dE3IfDBto2P1Lw1uX63OsonLCvmTMY25nDr0mUDzn+Q=;
-        b=EVzSCR4Gk+KCZAOb+ViN35LAGkOoxN/mQrG9zbjaRgeGBsywAyWFSpGnYl8Kj5e8Od
-         sH9ZrCl5noV7c3GflqmlzYuLr5SE0iOjjuZo7D/P694eo07QcLydjjTEHTKk2fuavZQt
-         uH3H/Zfjk6sdV5Skk2nUjGTwKVB9Rj6DjEEcefI2wcoetnSvwpo7XDVoq5+oVruSmysX
-         xQW9iVJQxljcVB3bk6MlJnMHa2xberkn+nFStsbKFdZJCSIgxbnMDnGzNGrY19q84Yw6
-         XOWRv/WPOxsrJP2qTvVjgZ0qxzibRjT80MFKejIIGO3l/da4E01zJzuPhxbZksmRS1od
-         78fQ==
-X-Gm-Message-State: AOAM531wLPspeL6ouim0O0m1t13T2TDhzWzL4+lnOHiXu8bjfZXt3W+G
-        OfgNu+fLhrkyp65Pbf/k5bYwaD1YHXE=
-X-Google-Smtp-Source: ABdhPJz32oazMNe3wlp0q6FpQDwb2PX5Xb5qk9yNIcHcCeuIKNwpHmlSOP9joOOtUDAgBRo1uET8/g==
-X-Received: by 2002:a17:907:3fa4:b0:6fe:b83b:d667 with SMTP id hr36-20020a1709073fa400b006feb83bd667mr25618262ejc.481.1654599871163;
-        Tue, 07 Jun 2022 04:04:31 -0700 (PDT)
-Received: from localhost (92.40.203.141.threembb.co.uk. [92.40.203.141])
-        by smtp.gmail.com with ESMTPSA id ft29-20020a170907801d00b0071145c2f494sm3726424ejc.27.2022.06.07.04.04.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 04:04:30 -0700 (PDT)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     paul@crapouillou.net, linus.walleij@linaro.org
-Cc:     linux-mips@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] pinctrl: ingenic: Convert to immutable irq chip
-Date:   Tue,  7 Jun 2022 12:05:25 +0100
-Message-Id: <20220607110525.36922-1-aidanmacdonald.0x0@gmail.com>
+        Tue, 7 Jun 2022 07:08:47 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2245B10F365;
+        Tue,  7 Jun 2022 04:04:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654599888; x=1686135888;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=txlfXjkncT5hC674qNejQhjc3HzGWH2n9+3fSqXFElg=;
+  b=ZuD7XJunqF+oQFgLH70hHJJzUyDX/9Yyc6z/CGQlpdoTx2vRCSnUIMdU
+   c+zfWhewQS+lC0l415FmCsQO53rJ3rhge8dFjRY8a1jhFcm63Mrp0WMax
+   P6O85A56btM6uWNuhZisYsr0CngEkzk9lZJDaEp1LiHgLMy2IgiuryQsw
+   qREJIxgAk54i4xKov6l73S0FeHzeVIP8Sd//H8/nuzDdMYWgpIEUldZ6B
+   dx/PtK3dqDIHU38EmKFI/JcKuKg+qZy7W6E9DR1nJCP7fXN7Krkcx1Dgu
+   3BozaNrA6+MRwCS0xy9xiJHRXuyEIg2IordpDtehhM98fpeYUsJiMw9O1
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="338066809"
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
+   d="scan'208";a="338066809"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 04:04:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
+   d="scan'208";a="614870759"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga001.jf.intel.com with ESMTP; 07 Jun 2022 04:04:18 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 257B4GZI020549;
+        Tue, 7 Jun 2022 12:04:16 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Richard Henderson <rth@twiddle.net>,
+        Matt Turner <mattst88@gmail.com>,
+        Brian Cain <bcain@quicinc.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kees Cook <keescook@chromium.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/6] bitops: unify non-atomic bitops prototypes across architectures
+Date:   Tue,  7 Jun 2022 13:03:10 +0200
+Message-Id: <20220607110310.72649-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <Yp5oMmzNlq+Ut4So@yury-laptop>
+References: <20220606114908.962562-1-alexandr.lobakin@intel.com> <20220606114908.962562-5-alexandr.lobakin@intel.com> <Yp5oMmzNlq+Ut4So@yury-laptop>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the driver to use an immutable IRQ chip to fix this warning:
+From: Yury Norov <yury.norov@gmail.com>
+Date: Mon, 6 Jun 2022 13:48:50 -0700
 
-    "not an immutable chip, please consider fixing it!"
+> On Mon, Jun 06, 2022 at 01:49:05PM +0200, Alexander Lobakin wrote:
+> > Currently, there is a mess with the prototypes of the non-atomic
+> > bitops across the different architectures:
+> > 
+> > ret	bool, int, unsigned long
+> > nr	int, long, unsigned int, unsigned long
+> > addr	volatile unsigned long *, volatile void *
+> > 
+> > Thankfully, it doesn't provoke any bugs, but can sometimes make
+> > the compiler angry when it's not handy at all.
+> > Adjust all the prototypes to the following standard:
+> > 
+> > ret	bool				retval can be only 0 or 1
+> > nr	unsigned long			native; signed makes no sense
+> > addr	volatile unsigned long *	bitmaps are arrays of ulongs
+> > 
+> > Finally, add some static assertions in order to prevent people from
+> > making a mess in this room again.
+> > I also used the %__always_inline attribute consistently they always
+> > get resolved to the actual operations.
+> > 
+> > Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> > ---
+> 
+> Reviewed-by: Yury Norov <yury.norov@gmail.com>
+> 
+> [...]
+> 
+> > diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+> > index 7aaed501f768..5520ac9b1c24 100644
+> > --- a/include/linux/bitops.h
+> > +++ b/include/linux/bitops.h
+> > @@ -26,12 +26,25 @@ extern unsigned int __sw_hweight16(unsigned int w);
+> >  extern unsigned int __sw_hweight32(unsigned int w);
+> >  extern unsigned long __sw_hweight64(__u64 w);
+> >  
+> > +#include <asm-generic/bitops/generic-non-atomic.h>
+> > +
+> >  /*
+> >   * Include this here because some architectures need generic_ffs/fls in
+> >   * scope
+> >   */
+> >  #include <asm/bitops.h>
+> >  
+> > +/* Check that the bitops prototypes are sane */
+> > +#define __check_bitop_pr(name)	static_assert(__same_type(name, gen_##name))
+> > +__check_bitop_pr(__set_bit);
+> > +__check_bitop_pr(__clear_bit);
+> > +__check_bitop_pr(__change_bit);
+> > +__check_bitop_pr(__test_and_set_bit);
+> > +__check_bitop_pr(__test_and_clear_bit);
+> > +__check_bitop_pr(__test_and_change_bit);
+> > +__check_bitop_pr(test_bit);
+> > +#undef __check_bitop_pr
+> 
+> This one is amazing trick! And the series is good overall. Do you want me to
+> take it in bitmap tree, when it's ready, or you'll move it somehow else?
 
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
----
- drivers/pinctrl/pinctrl-ingenic.c | 33 ++++++++++++++++++-------------
- 1 file changed, 19 insertions(+), 14 deletions(-)
+Thanks :) Yeah I'm glad we can use __same_type() (->
+__builtin_types_compatible_p()) for functions as well, it simplifies
+keeping the prototypes unified a lot.
 
-diff --git a/drivers/pinctrl/pinctrl-ingenic.c b/drivers/pinctrl/pinctrl-ingenic.c
-index 1ca11616db74..37258fb05be3 100644
---- a/drivers/pinctrl/pinctrl-ingenic.c
-+++ b/drivers/pinctrl/pinctrl-ingenic.c
-@@ -135,7 +135,6 @@ struct ingenic_pinctrl {
- struct ingenic_gpio_chip {
- 	struct ingenic_pinctrl *jzpc;
- 	struct gpio_chip gc;
--	struct irq_chip irq_chip;
- 	unsigned int irq, reg_base;
- };
- 
-@@ -3419,6 +3418,8 @@ static void ingenic_gpio_irq_enable(struct irq_data *irqd)
- 	struct ingenic_gpio_chip *jzgc = gpiochip_get_data(gc);
- 	int irq = irqd->hwirq;
- 
-+	gpiochip_enable_irq(gc, irq);
-+
- 	if (is_soc_or_above(jzgc->jzpc, ID_JZ4770))
- 		ingenic_gpio_set_bit(jzgc, JZ4770_GPIO_INT, irq, true);
- 	else if (is_soc_or_above(jzgc->jzpc, ID_JZ4740))
-@@ -3443,6 +3444,8 @@ static void ingenic_gpio_irq_disable(struct irq_data *irqd)
- 		ingenic_gpio_set_bit(jzgc, JZ4740_GPIO_SELECT, irq, false);
- 	else
- 		ingenic_gpio_set_bit(jzgc, JZ4730_GPIO_GPIER, irq, false);
-+
-+	gpiochip_disable_irq(gc, irq);
- }
- 
- static void ingenic_gpio_irq_ack(struct irq_data *irqd)
-@@ -3684,6 +3687,20 @@ static void ingenic_gpio_irq_release(struct irq_data *data)
- 	return gpiochip_relres_irq(gpio_chip, data->hwirq);
- }
- 
-+static const struct irq_chip ingenic_gpio_irqchip = {
-+	.name			= "gpio",
-+	.irq_enable		= ingenic_gpio_irq_enable,
-+	.irq_disable		= ingenic_gpio_irq_disable,
-+	.irq_unmask		= ingenic_gpio_irq_unmask,
-+	.irq_mask		= ingenic_gpio_irq_mask,
-+	.irq_ack		= ingenic_gpio_irq_ack,
-+	.irq_set_type		= ingenic_gpio_irq_set_type,
-+	.irq_set_wake		= ingenic_gpio_irq_set_wake,
-+	.irq_request_resources	= ingenic_gpio_irq_request,
-+	.irq_release_resources	= ingenic_gpio_irq_release,
-+	.flags			= IRQCHIP_MASK_ON_SUSPEND | IRQCHIP_IMMUTABLE,
-+};
-+
- static int ingenic_pinmux_set_pin_fn(struct ingenic_pinctrl *jzpc,
- 		int pin, int func)
- {
-@@ -4172,20 +4189,8 @@ static int __init ingenic_gpio_probe(struct ingenic_pinctrl *jzpc,
- 	if (!jzgc->irq)
- 		return -EINVAL;
- 
--	jzgc->irq_chip.name = jzgc->gc.label;
--	jzgc->irq_chip.irq_enable = ingenic_gpio_irq_enable;
--	jzgc->irq_chip.irq_disable = ingenic_gpio_irq_disable;
--	jzgc->irq_chip.irq_unmask = ingenic_gpio_irq_unmask;
--	jzgc->irq_chip.irq_mask = ingenic_gpio_irq_mask;
--	jzgc->irq_chip.irq_ack = ingenic_gpio_irq_ack;
--	jzgc->irq_chip.irq_set_type = ingenic_gpio_irq_set_type;
--	jzgc->irq_chip.irq_set_wake = ingenic_gpio_irq_set_wake;
--	jzgc->irq_chip.irq_request_resources = ingenic_gpio_irq_request;
--	jzgc->irq_chip.irq_release_resources = ingenic_gpio_irq_release;
--	jzgc->irq_chip.flags = IRQCHIP_MASK_ON_SUSPEND;
--
- 	girq = &jzgc->gc.irq;
--	girq->chip = &jzgc->irq_chip;
-+	gpio_irq_chip_set_chip(girq, &ingenic_gpio_irqchip);
- 	girq->parent_handler = ingenic_gpio_irq_handler;
- 	girq->num_parents = 1;
- 	girq->parents = devm_kcalloc(dev, 1, sizeof(*girq->parents),
--- 
-2.35.1
+I'm fine with either your bitmap tree or Arnd's asm-generic tree, so
+it was my question which I happily forgot to ask: which of those two
+is preferred for the series.
 
+> 
+> Thanks,
+> Yury
+
+Thanks,
+Olek
