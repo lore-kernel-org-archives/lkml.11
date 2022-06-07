@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4533CCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC56CCA48F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350640AbiFGSLZ (ORCPT
+        id S1350099AbiFGSK0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40694 "EHLO
+        Tue, 7 Jun 2022 14:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349761AbiFGRvf (ORCPT
+        with ESMTP id S1349702AbiFGRv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4006013C4F9;
-        Tue,  7 Jun 2022 10:38:54 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0DE713C35C;
+        Tue,  7 Jun 2022 10:38:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D432FB80B66;
-        Tue,  7 Jun 2022 17:38:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C61BC385A5;
-        Tue,  7 Jun 2022 17:38:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 203266155F;
+        Tue,  7 Jun 2022 17:38:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2787DC34115;
+        Tue,  7 Jun 2022 17:37:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623532;
-        bh=tSC+E6Ip0e3nHbhE+0OYcMB4fRbht580sqkCUlEtkZw=;
+        s=korg; t=1654623480;
+        bh=84J9qXdJDC7rUknfVU8U8l21hj/ztR4jR9pW95tvWUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RFfZEYPilumljv/sU9D5rl5Q9EO05aSv9RdK0yvmPcOAD4/kM2gG8hJYYyBfJastY
-         A43EQ8nCk4NVGLUNTqrbe2ltFrc7OoyDt48vJMA/2BY3ZaY2IewBxk9rZ5tGcjxcgp
-         ZBvEjvebcimx2FkiU6Vp/hfvTlYQAsT6tI3bvsnU=
+        b=mKGdnCOBQSao/yFvmwvlUv1Lv7iIhMEoq6llXorvvO6lfD4dCwSZ2rXPTmmiWXtnm
+         KAxsGEmTtuEmwoKk+zTFnH/DaqJN7agipRw/zyTcgSwQcNN+jLV+VLLmnc86ebAa/P
+         Qo43rpfgewEUZv0oX5Qtchq12C+CWbeKNnoci2hY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.10 451/452] ext4: only allow test_dummy_encryption when supported
-Date:   Tue,  7 Jun 2022 19:05:08 +0200
-Message-Id: <20220607164922.010945458@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
+        Eric Sandeen <sandeen@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Amir Goldstein <amir73il@gmail.com>
+Subject: [PATCH 5.10 434/452] xfs: restore shutdown check in mapped write fault path
+Date:   Tue,  7 Jun 2022 19:04:51 +0200
+Message-Id: <20220607164921.491238199@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,108 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Brian Foster <bfoster@redhat.com>
 
-commit 5f41fdaea63ddf96d921ab36b2af4a90ccdb5744 upstream.
+commit e4826691cc7e5458bcb659935d0092bcf3f08c20 upstream.
 
-Make the test_dummy_encryption mount option require that the encrypt
-feature flag be already enabled on the filesystem, rather than
-automatically enabling it.  Practically, this means that "-O encrypt"
-will need to be included in MKFS_OPTIONS when running xfstests with the
-test_dummy_encryption mount option.  (ext4/053 also needs an update.)
+XFS triggers an iomap warning in the write fault path due to a
+!PageUptodate() page if a write fault happens to occur on a page
+that recently failed writeback. The iomap writeback error handling
+code can clear the Uptodate flag if no portion of the page is
+submitted for I/O. This is reproduced by fstest generic/019, which
+combines various forms of I/O with simulated disk failures that
+inevitably lead to filesystem shutdown (which then unconditionally
+fails page writeback).
 
-Moreover, as long as the preconditions for test_dummy_encryption are
-being tightened anyway, take the opportunity to start rejecting it when
-!CONFIG_FS_ENCRYPTION rather than ignoring it.
+This is a regression introduced by commit f150b4234397 ("xfs: split
+the iomap ops for buffered vs direct writes") due to the removal of
+a shutdown check and explicit error return in the ->iomap_begin()
+path used by the write fault path. The explicit error return
+historically translated to a SIGBUS, but now carries on with iomap
+processing where it complains about the unexpected state. Restore
+the shutdown check to xfs_buffered_write_iomap_begin() to restore
+historical behavior.
 
-The motivation for requiring the encrypt feature flag is that:
-
-- Having the filesystem auto-enable feature flags is problematic, as it
-  bypasses the usual sanity checks.  The specific issue which came up
-  recently is that in kernel versions where ext4 supports casefold but
-  not encrypt+casefold (v5.1 through v5.10), the kernel will happily add
-  the encrypt flag to a filesystem that has the casefold flag, making it
-  unmountable -- but only for subsequent mounts, not the initial one.
-  This confused the casefold support detection in xfstests, causing
-  generic/556 to fail rather than be skipped.
-
-- The xfstests-bld test runners (kvm-xfstests et al.) already use the
-  required mkfs flag, so they will not be affected by this change.  Only
-  users of test_dummy_encryption alone will be affected.  But, this
-  option has always been for testing only, so it should be fine to
-  require that the few users of this option update their test scripts.
-
-- f2fs already requires it (for its equivalent feature flag).
-
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Gabriel Krisman Bertazi <krisman@collabora.com>
-Link: https://lore.kernel.org/r/20220519204437.61645-1-ebiggers@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: f150b4234397 ("xfs: split the iomap ops for buffered vs direct writes")
+Signed-off-by: Brian Foster <bfoster@redhat.com>
+Reviewed-by: Eric Sandeen <sandeen@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
 ---
- fs/ext4/ext4.h  |    6 ------
- fs/ext4/super.c |   18 ++++++++++--------
- 2 files changed, 10 insertions(+), 14 deletions(-)
+ fs/xfs/xfs_iomap.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -1419,12 +1419,6 @@ struct ext4_super_block {
+--- a/fs/xfs/xfs_iomap.c
++++ b/fs/xfs/xfs_iomap.c
+@@ -870,6 +870,9 @@ xfs_buffered_write_iomap_begin(
+ 	int			allocfork = XFS_DATA_FORK;
+ 	int			error = 0;
  
- #ifdef __KERNEL__
- 
--#ifdef CONFIG_FS_ENCRYPTION
--#define DUMMY_ENCRYPTION_ENABLED(sbi) ((sbi)->s_dummy_enc_policy.policy != NULL)
--#else
--#define DUMMY_ENCRYPTION_ENABLED(sbi) (0)
--#endif
--
- /* Number of quota types we support */
- #define EXT4_MAXQUOTAS 3
- 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -2084,6 +2084,12 @@ static int ext4_set_test_dummy_encryptio
- 	struct ext4_sb_info *sbi = EXT4_SB(sb);
- 	int err;
- 
-+	if (!ext4_has_feature_encrypt(sb)) {
-+		ext4_msg(sb, KERN_WARNING,
-+			 "test_dummy_encryption requires encrypt feature");
-+		return -1;
-+	}
++	if (XFS_FORCED_SHUTDOWN(mp))
++		return -EIO;
 +
- 	/*
- 	 * This mount option is just for testing, and it's not worthwhile to
- 	 * implement the extra complexity (e.g. RCU protection) that would be
-@@ -2111,11 +2117,13 @@ static int ext4_set_test_dummy_encryptio
- 		return -1;
- 	}
- 	ext4_msg(sb, KERN_WARNING, "Test dummy encryption mode enabled");
-+	return 1;
- #else
- 	ext4_msg(sb, KERN_WARNING,
--		 "Test dummy encryption mount option ignored");
-+		 "test_dummy_encryption option not supported");
-+	return -1;
-+
- #endif
--	return 1;
- }
- 
- static int handle_mount_opt(struct super_block *sb, char *opt, int token,
-@@ -4929,12 +4937,6 @@ no_journal:
- 		goto failed_mount_wq;
- 	}
- 
--	if (DUMMY_ENCRYPTION_ENABLED(sbi) && !sb_rdonly(sb) &&
--	    !ext4_has_feature_encrypt(sb)) {
--		ext4_set_feature_encrypt(sb);
--		ext4_commit_super(sb, 1);
--	}
--
- 	/*
- 	 * Get the # of file system overhead blocks from the
- 	 * superblock if present.
+ 	/* we can't use delayed allocations when using extent size hints */
+ 	if (xfs_get_extsz_hint(ip))
+ 		return xfs_direct_write_iomap_begin(inode, offset, count,
 
 
