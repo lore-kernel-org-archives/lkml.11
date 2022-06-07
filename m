@@ -2,87 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E78FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:39:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03BEBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:39:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382128AbiFGWjk (ORCPT
+        id S1382160AbiFGWjw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:39:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38794 "EHLO
+        Tue, 7 Jun 2022 18:39:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379146AbiFGVZO (ORCPT
+        with ESMTP id S1379141AbiFGVZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:25:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A31C7151FC1;
-        Tue,  7 Jun 2022 12:01:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7E52617CC;
-        Tue,  7 Jun 2022 19:01:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D43F7C385A5;
-        Tue,  7 Jun 2022 19:01:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628501;
-        bh=7Oi7c7ERhq7qN2Ka0vo7GkEF09sRa/TAobOsEbe99pY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kEzsfrSjbxi2HMSFiDCtzAP5789tj6+rMXZmoCyuHPLwQQahea0CL23NslpgnZX7n
-         nfO26kvBbkAJgI6XWOflai8pu8p8VzpTo8V2FwvGMktyY5m8wpEzXrhv1zxc4EtOpk
-         Whw/unKfUv80ikvhKLSgpBEbqsXuWqOh07wuyHmU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, SeongJae Park <sj@kernel.org>,
-        Yuanchu Xie <yuanchu@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 352/879] selftests/damon: add damon to selftests root Makefile
-Date:   Tue,  7 Jun 2022 18:57:50 +0200
-Message-Id: <20220607165013.078194263@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E60A150B7B
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:01:42 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id n8so15615164plh.1
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:01:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XlC5WhPEtlChZIl+n5BBhBXh04p3vnO18/6gEyRk/7I=;
+        b=aiEoUfInXs6muqWe9eAFyYvM/XQRsycTnGNXLPtV5k6vx6lf9JLcKGqq5Qnluowoaj
+         z4Wl1unEUXEkk8niQrnFc5kvsyfgbdRvPcRZtypHElhb1b+AmCNk3ZVDHDXvgObfm7Uy
+         eKNnzoJvWvkExKgTkl65s6gsf+sxZl7wd9uc4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XlC5WhPEtlChZIl+n5BBhBXh04p3vnO18/6gEyRk/7I=;
+        b=bTNjKqFT+f7jddMJrKQakCCvURLM86zaNtfinybYS1CTfHhz1rzHR34DExVkcU3azl
+         IUJZLvKDBzGSguiXgsoLuCmqLHQmMxugd0HNO78oLIH8EGrVHOhDpb4NzkeJTNKP4UMf
+         oYNRHN7p3hy39mOaC5yQk2U/0Ou6ULNgWbaBKQ9pLZQ1BB9jDLHT9qBO8+GE1Wq8FOA5
+         Twosna2L1kxNlATt6CyBLe+QzWWMbCOLTYSSIyE1bBUHYf63+LarthKLzlQG92YGVNz/
+         GDzZghXJze7B6nM0KtToEm1Z5zPmFZxwtci7N46r4jBo5xTcgI6GRBeUuuifzehEg0QV
+         Vg9g==
+X-Gm-Message-State: AOAM533LEGiSnz3hLKqNc5fmPRgLKos30H03m7MfxvOLgfgYJGn5Yl2K
+        ndVPfSt7Ho+xxGfdp+FyEMal7/Xl2kHR1Q==
+X-Google-Smtp-Source: ABdhPJys+qHC9VhA3c9fwXaPhk0EIhEKcRgheZtI7KEsqbNQpujN5/HXjl1x4+YKKseCyyA6hK7pOg==
+X-Received: by 2002:a17:90a:2c0c:b0:1ea:14c0:f0ca with SMTP id m12-20020a17090a2c0c00b001ea14c0f0camr2481026pjd.143.1654628501156;
+        Tue, 07 Jun 2022 12:01:41 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id g29-20020aa79ddd000000b0050dc762819esm13236084pfq.120.2022.06.07.12.01.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 12:01:40 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: [PATCH 0/7] usb: typec: Introduce typec-switch binding
+Date:   Tue,  7 Jun 2022 19:00:17 +0000
+Message-Id: <20220607190131.1647511-1-pmalani@chromium.org>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuanchu Xie <yuanchu@google.com>
+This series introduces a binding for Type-C data lane switches. These
+control the routing and operating modes of USB Type-C data lanes based
+on the PD messaging from the Type-C port driver regarding connected peripherals.
 
-[ Upstream commit 678f0cdc572c5fda940cb038d70eebb8d818adc8 ]
+The first patch introduces a change to the Type-C mux class mode-switch
+matching code, while the second adds a config guard to a Type-C header.
+The next couple of patches introduce the new "typec-switch" binding as
+well as one user of it (the ANX7625 drm bridge).
 
-Currently the damon selftests are not built with the rest of the
-selftests. We add damon to the list of targets.
+The remaining patches add functionality to the anx7625 driver to
+register the mode-switches, as well as program its crosspoint
+switch depending on which Type-C port has a DisplayPort (DP) peripheral
+connected to it.
 
-Fixes: b348eb7abd09 ("mm/damon: add user space selftests")
-Reviewed-by: SeongJae Park <sj@kernel.org>
-Signed-off-by: Yuanchu Xie <yuanchu@google.com>
-Acked-by: David Rientjes <rientjes@google.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/testing/selftests/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+Pin-Yen Lin (1):
+  drm/bridge: anx7625: Add typec_mux_set callback function
 
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index 2319ec87f53d..bd2ac8b3bf1f 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -9,6 +9,7 @@ TARGETS += clone3
- TARGETS += core
- TARGETS += cpufreq
- TARGETS += cpu-hotplug
-+TARGETS += damon
- TARGETS += drivers/dma-buf
- TARGETS += efivarfs
- TARGETS += exec
+Prashant Malani (6):
+  usb: typec: mux: Allow muxes to specify mode-switch
+  usb: typec: mux: Add CONFIG guards for functions
+  dt-bindings: usb: Add Type-C switch binding
+  dt-bindings: drm/bridge: anx7625: Add mode-switch support
+  drm/bridge: anx7625: Register number of Type C switches
+  drm/bridge: anx7625: Register Type-C mode switches
+
+ .../display/bridge/analogix,anx7625.yaml      |  56 +++++++
+ .../devicetree/bindings/usb/typec-switch.yaml |  76 +++++++++
+ drivers/gpu/drm/bridge/analogix/anx7625.c     | 151 ++++++++++++++++++
+ drivers/gpu/drm/bridge/analogix/anx7625.h     |  20 +++
+ drivers/usb/typec/mux.c                       |   8 +-
+ include/linux/usb/typec_mux.h                 |  38 +++++
+ 6 files changed, 347 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/usb/typec-switch.yaml
+
 -- 
-2.35.1
-
-
+2.36.1.255.ge46751e96f-goog
 
