@@ -2,129 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8863CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C12CCA495
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356823AbiFGT2N (ORCPT
+        id S1356724AbiFGT2J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56938 "EHLO
+        Tue, 7 Jun 2022 15:28:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352108AbiFGSdU (ORCPT
+        with ESMTP id S240147AbiFGSeE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:33:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3952717EF51;
-        Tue,  7 Jun 2022 10:57:24 -0700 (PDT)
+        Tue, 7 Jun 2022 14:34:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8EC14782F;
+        Tue,  7 Jun 2022 10:57:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9EAD617A7;
-        Tue,  7 Jun 2022 17:57:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6396C34115;
-        Tue,  7 Jun 2022 17:57:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624643;
-        bh=S+LuEB/vAHLawqqkqLNO9RbPIIAJOkBSRKlNXTJ0S4s=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 623DCB81F38;
+        Tue,  7 Jun 2022 17:57:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42B8FC3411C;
+        Tue,  7 Jun 2022 17:57:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624657;
+        bh=RGI/+Kt+yF7/Hi7Ju1QxNMwGev2vPf7BIbJqB3l03Sw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vjFxctQMxYDYfnJWsAE0cP6sB3nmpPpOTAYydsO2Ujcp8tM6HflvYOpAlLFct+TbR
-         QLLmB9Axy4im1gGALnRHBNEeaQx045ec7Hbp1Z6hr93Mci58YuNlVkQhGnD1W5I4AQ
-         09XtvD27OF35O85Zt8AGCR2O8YRbe0yGkpNhZ/EE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Prashant Malani <pmalani@chromium.org>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 402/667] platform/chrome: cros_ec: fix error handling in cros_ec_register()
-Date:   Tue,  7 Jun 2022 19:01:07 +0200
-Message-Id: <20220607164946.801247270@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=Z2DEyGeOHZg40x61dGTEPOtS1PWAujpY9hgi3Q/JNVzdRCXQDx6pWo/TXzrLaiqNt
+         D242Gn11fCNitVPp3tMA1NbAoIyQhQ8NcDJNr34G3tSE1kZ+wS4g51eUQ095xtOAYA
+         NN8QJFd6nNPkota2jS1OMcXMmRKipnlcIGDfGYwPazrGV4kQs5aa7BPNzuYNUpMW1x
+         4cJTNKULPp7W9nA+Z9lKhwXRzhC7ZLYWrNb5xDRIfQDJGegwdqVYKK5EnXcGttnyPB
+         E667OQGH0DA68ZEApk+aoNItRdGhciLAnY45YH0ymNyXZF40wTKvDQjWFrOPdYRNPa
+         KTdHVf4KTjfnQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 36/51] ceph: flush the mdlog for filesystem sync
+Date:   Tue,  7 Jun 2022 13:55:35 -0400
+Message-Id: <20220607175552.479948-36-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
+References: <20220607175552.479948-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tzung-Bi Shih <tzungbi@kernel.org>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit 2cd01bd6b117df07b1bc2852f08694fdd29e40ed ]
+[ Upstream commit 1b2ba3c5616e17ff951359e25c658a1c3f146f1e ]
 
-Fix cros_ec_register() to unregister platform devices if
-blocking_notifier_chain_register() fails.
+Before waiting for a request's safe reply, we will send the mdlog flush
+request to the relevant MDS. And this will also flush the mdlog for all
+the other unsafe requests in the same session, so we can record the last
+session and no need to flush mdlog again in the next loop. But there
+still have cases that it may send the mdlog flush requst twice or more,
+but that should be not often.
 
-Also use the single exit path to handle the platform device
-unregistration.
+Rename wait_unsafe_requests() to
+flush_mdlog_and_wait_mdsc_unsafe_requests() to make it more
+descriptive.
 
-Fixes: 42cd0ab476e2 ("platform/chrome: cros_ec: Query EC protocol version if EC transitions between RO/RW")
-Reviewed-by: Prashant Malani <pmalani@chromium.org>
-Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+[xiubli: fold in MDS request refcount leak fix from Jeff]
+
+URL: https://tracker.ceph.com/issues/55284
+URL: https://tracker.ceph.com/issues/55411
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/chrome/cros_ec.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ fs/ceph/mds_client.c | 33 +++++++++++++++++++++++++++------
+ 1 file changed, 27 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/platform/chrome/cros_ec.c b/drivers/platform/chrome/cros_ec.c
-index fc5aa1525d13..ff2a24b0c611 100644
---- a/drivers/platform/chrome/cros_ec.c
-+++ b/drivers/platform/chrome/cros_ec.c
-@@ -189,6 +189,8 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
- 	ec_dev->max_request = sizeof(struct ec_params_hello);
- 	ec_dev->max_response = sizeof(struct ec_response_get_protocol_info);
- 	ec_dev->max_passthru = 0;
-+	ec_dev->ec = NULL;
-+	ec_dev->pd = NULL;
- 
- 	ec_dev->din = devm_kzalloc(dev, ec_dev->din_size, GFP_KERNEL);
- 	if (!ec_dev->din)
-@@ -245,18 +247,16 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
- 		if (IS_ERR(ec_dev->pd)) {
- 			dev_err(ec_dev->dev,
- 				"Failed to create CrOS PD platform device\n");
--			platform_device_unregister(ec_dev->ec);
--			return PTR_ERR(ec_dev->pd);
-+			err = PTR_ERR(ec_dev->pd);
-+			goto exit;
- 		}
- 	}
- 
- 	if (IS_ENABLED(CONFIG_OF) && dev->of_node) {
- 		err = devm_of_platform_populate(dev);
- 		if (err) {
--			platform_device_unregister(ec_dev->pd);
--			platform_device_unregister(ec_dev->ec);
- 			dev_err(dev, "Failed to register sub-devices\n");
--			return err;
-+			goto exit;
- 		}
- 	}
- 
-@@ -278,7 +278,7 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
- 		err = blocking_notifier_chain_register(&ec_dev->event_notifier,
- 						      &ec_dev->notifier_ready);
- 		if (err)
--			return err;
-+			goto exit;
- 	}
- 
- 	dev_info(dev, "Chrome EC device registered\n");
-@@ -291,6 +291,10 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
- 		cros_ec_irq_thread(0, ec_dev);
- 
- 	return 0;
-+exit:
-+	platform_device_unregister(ec_dev->ec);
-+	platform_device_unregister(ec_dev->pd);
-+	return err;
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index e9409c460acd..912903de4de4 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -4794,15 +4794,17 @@ void ceph_mdsc_pre_umount(struct ceph_mds_client *mdsc)
  }
- EXPORT_SYMBOL(cros_ec_register);
+ 
+ /*
+- * wait for all write mds requests to flush.
++ * flush the mdlog and wait for all write mds requests to flush.
+  */
+-static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
++static void flush_mdlog_and_wait_mdsc_unsafe_requests(struct ceph_mds_client *mdsc,
++						 u64 want_tid)
+ {
+ 	struct ceph_mds_request *req = NULL, *nextreq;
++	struct ceph_mds_session *last_session = NULL;
+ 	struct rb_node *n;
+ 
+ 	mutex_lock(&mdsc->mutex);
+-	dout("wait_unsafe_requests want %lld\n", want_tid);
++	dout("%s want %lld\n", __func__, want_tid);
+ restart:
+ 	req = __get_oldest_req(mdsc);
+ 	while (req && req->r_tid <= want_tid) {
+@@ -4814,14 +4816,32 @@ static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
+ 			nextreq = NULL;
+ 		if (req->r_op != CEPH_MDS_OP_SETFILELOCK &&
+ 		    (req->r_op & CEPH_MDS_OP_WRITE)) {
++			struct ceph_mds_session *s = req->r_session;
++
++			if (!s) {
++				req = nextreq;
++				continue;
++			}
++
+ 			/* write op */
+ 			ceph_mdsc_get_request(req);
+ 			if (nextreq)
+ 				ceph_mdsc_get_request(nextreq);
++			s = ceph_get_mds_session(s);
+ 			mutex_unlock(&mdsc->mutex);
+-			dout("wait_unsafe_requests  wait on %llu (want %llu)\n",
++
++			/* send flush mdlog request to MDS */
++			if (last_session != s) {
++				send_flush_mdlog(s);
++				ceph_put_mds_session(last_session);
++				last_session = s;
++			} else {
++				ceph_put_mds_session(s);
++			}
++			dout("%s wait on %llu (want %llu)\n", __func__,
+ 			     req->r_tid, want_tid);
+ 			wait_for_completion(&req->r_safe_completion);
++
+ 			mutex_lock(&mdsc->mutex);
+ 			ceph_mdsc_put_request(req);
+ 			if (!nextreq)
+@@ -4836,7 +4856,8 @@ static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
+ 		req = nextreq;
+ 	}
+ 	mutex_unlock(&mdsc->mutex);
+-	dout("wait_unsafe_requests done\n");
++	ceph_put_mds_session(last_session);
++	dout("%s done\n", __func__);
+ }
+ 
+ void ceph_mdsc_sync(struct ceph_mds_client *mdsc)
+@@ -4865,7 +4886,7 @@ void ceph_mdsc_sync(struct ceph_mds_client *mdsc)
+ 	dout("sync want tid %lld flush_seq %lld\n",
+ 	     want_tid, want_flush);
+ 
+-	wait_unsafe_requests(mdsc, want_tid);
++	flush_mdlog_and_wait_mdsc_unsafe_requests(mdsc, want_tid);
+ 	wait_caps_flush(mdsc, want_flush);
+ }
  
 -- 
 2.35.1
-
-
 
