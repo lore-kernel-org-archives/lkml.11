@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81694C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35910C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351439AbiFGUGf (ORCPT
+        id S1354819AbiFGUGo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49306 "EHLO
+        Tue, 7 Jun 2022 16:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354773AbiFGTJQ (ORCPT
+        with ESMTP id S1354933AbiFGTKI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:09:16 -0400
+        Tue, 7 Jun 2022 15:10:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1528192C5B;
-        Tue,  7 Jun 2022 11:06:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A605010FE3;
+        Tue,  7 Jun 2022 11:06:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4390B82348;
-        Tue,  7 Jun 2022 18:06:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED530C34115;
-        Tue,  7 Jun 2022 18:06:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29B0FB82182;
+        Tue,  7 Jun 2022 18:06:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 937D1C34115;
+        Tue,  7 Jun 2022 18:06:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625183;
-        bh=b1Xr2VJWigdc8ykk4GIZzlfKaiUflzALbz+WXBikG0s=;
+        s=korg; t=1654625202;
+        bh=mTdIDoujXMOK+HqZWo1bcLLznZ0mfsHSUpSPn8Lcwd8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Gox7or8O/z1ZLKyi4f/UKte5jUHz5qdfxchjaqCVBhNrO97uallkormUihHAC+Uj
-         XvHXZFxlqPamKylQCBZg7yRmS1UO/usuOTu6u53Cr9fckJbpPm5LDvz1o0Sx6lk9OJ
-         SrEdvgWJpZxn8GVSwi3m7BsvMZB4vSd2U3Y7QnOI=
+        b=ETH8PypAeZT/P+j60Z3etmMkzEheiGC7TZlq0hcTqQolV4paQ6LbtCcPW/lvbMIkQ
+         etjbD3Cc3N2gR6uCpgEyvCG+dTePiAJQm4pwfODU9J2I0BXYs1StoYYNUJHKUV6rfR
+         0WXZ9VNm0Kl8EOIFdp051eGTI+jtZgkGOiiTC+do=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 5.15 595/667] md: fix an incorrect NULL check in does_sb_need_changing
-Date:   Tue,  7 Jun 2022 19:04:20 +0200
-Message-Id: <20220607164952.527383419@linuxfoundation.org>
+        stable@vger.kernel.org, GUO Zihua <guozihua@huawei.com>,
+        Stable@vger.kernel.org, Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 5.15 601/667] ima: remove the IMA_TEMPLATE Kconfig option
+Date:   Tue,  7 Jun 2022 19:04:26 +0200
+Message-Id: <20220607164952.704992700@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,55 +49,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: GUO Zihua <guozihua@huawei.com>
 
-commit fc8738343eefc4ea8afb6122826dea48eacde514 upstream.
+commit 891163adf180bc369b2f11c9dfce6d2758d2a5bd upstream.
 
-The bug is here:
-	if (!rdev)
+The original 'ima' measurement list template contains a hash, defined
+as 20 bytes, and a null terminated pathname, limited to 255
+characters.  Other measurement list templates permit both larger hashes
+and longer pathnames.  When the "ima" template is configured as the
+default, a new measurement list template (ima_template=) must be
+specified before specifying a larger hash algorithm (ima_hash=) on the
+boot command line.
 
-The list iterator value 'rdev' will *always* be set and non-NULL
-by rdev_for_each(), so it is incorrect to assume that the iterator
-value will be NULL if the list is empty or no element found.
-Otherwise it will bypass the NULL check and lead to invalid memory
-access passing the check.
+To avoid this boot command line ordering issue, remove the legacy "ima"
+template configuration option, allowing it to still be specified on the
+boot command line.
 
-To fix the bug, use a new variable 'iter' as the list iterator,
-while using the original variable 'rdev' as a dedicated pointer to
-point to the found element.
+The root cause of this issue is that during the processing of ima_hash,
+we would try to check whether the hash algorithm is compatible with the
+template. If the template is not set at the moment we do the check, we
+check the algorithm against the configured default template. If the
+default template is "ima", then we reject any hash algorithm other than
+sha1 and md5.
 
-Cc: stable@vger.kernel.org
-Fixes: 2aa82191ac36 ("md-cluster: Perform a lazy update")
-Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Acked-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
-Signed-off-by: Song Liu <song@kernel.org>
+For example, if the compiled default template is "ima", and the default
+algorithm is sha1 (which is the current default). In the cmdline, we put
+in "ima_hash=sha256 ima_template=ima-ng". The expected behavior would be
+that ima starts with ima-ng as the template and sha256 as the hash
+algorithm. However, during the processing of "ima_hash=",
+"ima_template=" has not been processed yet, and hash_setup would check
+the configured hash algorithm against the compiled default: ima, and
+reject sha256. So at the end, the hash algorithm that is actually used
+will be sha1.
+
+With template "ima" removed from the configured default, we ensure that
+the default tempalte would at least be "ima-ng" which allows for
+basically any hash algorithm.
+
+This change would not break the algorithm compatibility checks for IMA.
+
+Fixes: 4286587dccd43 ("ima: add Kconfig default measurement list template")
+Signed-off-by: GUO Zihua <guozihua@huawei.com>
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/md.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ security/integrity/ima/Kconfig |   14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -2628,14 +2628,16 @@ static void sync_sbs(struct mddev *mddev
+--- a/security/integrity/ima/Kconfig
++++ b/security/integrity/ima/Kconfig
+@@ -69,10 +69,9 @@ choice
+ 	  hash, defined as 20 bytes, and a null terminated pathname,
+ 	  limited to 255 characters.  The 'ima-ng' measurement list
+ 	  template permits both larger hash digests and longer
+-	  pathnames.
++	  pathnames. The configured default template can be replaced
++	  by specifying "ima_template=" on the boot command line.
  
- static bool does_sb_need_changing(struct mddev *mddev)
- {
--	struct md_rdev *rdev;
-+	struct md_rdev *rdev = NULL, *iter;
- 	struct mdp_superblock_1 *sb;
- 	int role;
+-	config IMA_TEMPLATE
+-		bool "ima"
+ 	config IMA_NG_TEMPLATE
+ 		bool "ima-ng (default)"
+ 	config IMA_SIG_TEMPLATE
+@@ -82,7 +81,6 @@ endchoice
+ config IMA_DEFAULT_TEMPLATE
+ 	string
+ 	depends on IMA
+-	default "ima" if IMA_TEMPLATE
+ 	default "ima-ng" if IMA_NG_TEMPLATE
+ 	default "ima-sig" if IMA_SIG_TEMPLATE
  
- 	/* Find a good rdev */
--	rdev_for_each(rdev, mddev)
--		if ((rdev->raid_disk >= 0) && !test_bit(Faulty, &rdev->flags))
-+	rdev_for_each(iter, mddev)
-+		if ((iter->raid_disk >= 0) && !test_bit(Faulty, &iter->flags)) {
-+			rdev = iter;
- 			break;
-+		}
+@@ -102,19 +100,19 @@ choice
  
- 	/* No good device found. */
- 	if (!rdev)
+ 	config IMA_DEFAULT_HASH_SHA256
+ 		bool "SHA256"
+-		depends on CRYPTO_SHA256=y && !IMA_TEMPLATE
++		depends on CRYPTO_SHA256=y
+ 
+ 	config IMA_DEFAULT_HASH_SHA512
+ 		bool "SHA512"
+-		depends on CRYPTO_SHA512=y && !IMA_TEMPLATE
++		depends on CRYPTO_SHA512=y
+ 
+ 	config IMA_DEFAULT_HASH_WP512
+ 		bool "WP512"
+-		depends on CRYPTO_WP512=y && !IMA_TEMPLATE
++		depends on CRYPTO_WP512=y
+ 
+ 	config IMA_DEFAULT_HASH_SM3
+ 		bool "SM3"
+-		depends on CRYPTO_SM3=y && !IMA_TEMPLATE
++		depends on CRYPTO_SM3=y
+ endchoice
+ 
+ config IMA_DEFAULT_HASH
 
 
