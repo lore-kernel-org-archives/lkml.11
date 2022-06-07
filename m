@@ -2,184 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE1FC2BBE5
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2062EC19F56
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352820AbiFGS1H (ORCPT
+        id S1352167AbiFGSZg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32880 "EHLO
+        Tue, 7 Jun 2022 14:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351524AbiFGSCH (ORCPT
+        with ESMTP id S1350894AbiFGSB3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:07 -0400
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61047153525;
-        Tue,  7 Jun 2022 10:44:49 -0700 (PDT)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-2ec42eae76bso184011477b3.10;
-        Tue, 07 Jun 2022 10:44:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W+PiNQ7Ke1EDMoHaTdFM09JbhwxFO++lctg5sJwbwR4=;
-        b=3vMAA1UaS1/xeAOJAkfgny+2HK4QsPFfmlUIq8LDajMksuObgQ1s+tvWBohiUWfymJ
-         F2ByZVwtnWug5x8vuU9cTVE6ZJeL3sNQAeMsTXQvw6fg/7WitgBAm28Jtk8uMRp2MbnY
-         wgsluHA6tbwr/Qy/DORBjlLAEal/KpW3j3lRM9Dj7UUZsLOmisDufwAiNoOcAQNkHnUM
-         97pz9jPEI0XXl2bJs1pRWqVqA1srd9FNxTuxuwJS3Aw58LCtZK29kP5RxH1HmdXGkWE/
-         KZTnT4t34t6uak/fhsk1xESuRGOMgMnQocm9H8o97YSw6OMXal5tKkXK8il9YitHJZ5o
-         OHyw==
-X-Gm-Message-State: AOAM533n/7Mh5e6S+eXveoxQ9WyedSF786VmoQMzIenOSnyO84KTEzWE
-        2AcdHJHDkviKjLcrdbEEk/kMWjb8HCUnOhCGOgo=
-X-Google-Smtp-Source: ABdhPJwzutUKNflb7PpXgywg1Uv/bvtdxWRNOeG6nVPsQilGXkeQttAkd8clvXym4gpzSPRzewnvcZZ1/ttEcYpnDSk=
-X-Received: by 2002:a05:690c:28b:b0:30c:bcc2:240d with SMTP id
- bf11-20020a05690c028b00b0030cbcc2240dmr34156080ywb.19.1654623888166; Tue, 07
- Jun 2022 10:44:48 -0700 (PDT)
+        Tue, 7 Jun 2022 14:01:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E72DF14D79D;
+        Tue,  7 Jun 2022 10:43:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 429C5615B8;
+        Tue,  7 Jun 2022 17:43:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E32DC385A5;
+        Tue,  7 Jun 2022 17:43:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654623818;
+        bh=Nk3kL6bonCgW2p1suaJIp+npmeYoouMji55NiDP4wXM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=yWtM9BxrATpTx2GlE0kO8ap8/Ztyo2U4cerdJWFt6+whtRz6vdeqfaaW78sYgn3Rd
+         hA8atIY8Pp6MhfKVVXiXzqUvTwIQYqiVlLLcrqsPqkH81HLKM/e0BWKQ3dWUAzovot
+         /h0IBXDbfwiAw2hL33XQ2Uu/XsyTQJI1CYfEE1h0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 086/667] drm/plane: Move range check for format_count earlier
+Date:   Tue,  7 Jun 2022 18:55:51 +0200
+Message-Id: <20220607164937.399282938@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220606165640.634811-1-dmitry.osipenko@collabora.com>
-In-Reply-To: <20220606165640.634811-1-dmitry.osipenko@collabora.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 7 Jun 2022 19:44:37 +0200
-Message-ID: <CAJZ5v0icfqdOiPottyc=h6VyagynkbV7-0EqrC+5PZMKV5s6Lg@mail.gmail.com>
-Subject: Re: [PATCH v1] kernel/reboot: Fix powering off using a non-syscall
- code paths
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 6:57 PM Dmitry Osipenko
-<dmitry.osipenko@collabora.com> wrote:
->
-> There are other methods of powering off machine than the reboot syscall.
-> Previously we missed to coved those methods and it created power-off
-> regression for some machines, like the PowerPC e500. Fix this problem
-> by moving the legacy sys-off handler registration to the latest phase
-> of power-off process and making the kernel_can_power_off() to check the
-> legacy pm_power_off presence.
->
-> Tested-by: Michael Ellerman <mpe@ellerman.id.au> # ppce500
-> Reported-by: Michael Ellerman <mpe@ellerman.id.au> # ppce500
-> Fixes: da007f171fc9 ("kernel/reboot: Change registration order of legacy power-off handler")
-> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> ---
->  kernel/reboot.c | 46 ++++++++++++++++++++++++++--------------------
->  1 file changed, 26 insertions(+), 20 deletions(-)
->
-> diff --git a/kernel/reboot.c b/kernel/reboot.c
-> index 3b19b123efec..b5a71d1ff603 100644
-> --- a/kernel/reboot.c
-> +++ b/kernel/reboot.c
-> @@ -320,6 +320,7 @@ static struct sys_off_handler platform_sys_off_handler;
->  static struct sys_off_handler *alloc_sys_off_handler(int priority)
->  {
->         struct sys_off_handler *handler;
-> +       gfp_t flags;
->
->         /*
->          * Platforms like m68k can't allocate sys_off handler dynamically
-> @@ -330,7 +331,12 @@ static struct sys_off_handler *alloc_sys_off_handler(int priority)
->                 if (handler->cb_data)
->                         return ERR_PTR(-EBUSY);
->         } else {
-> -               handler = kzalloc(sizeof(*handler), GFP_KERNEL);
-> +               if (system_state > SYSTEM_RUNNING)
-> +                       flags = GFP_ATOMIC;
-> +               else
-> +                       flags = GFP_KERNEL;
-> +
-> +               handler = kzalloc(sizeof(*handler), flags);
->                 if (!handler)
->                         return ERR_PTR(-ENOMEM);
->         }
-> @@ -440,7 +446,7 @@ void unregister_sys_off_handler(struct sys_off_handler *handler)
->  {
->         int err;
->
-> -       if (!handler)
-> +       if (IS_ERR_OR_NULL(handler))
->                 return;
->
->         if (handler->blocking)
-> @@ -615,7 +621,23 @@ static void do_kernel_power_off_prepare(void)
->   */
->  void do_kernel_power_off(void)
->  {
-> +       struct sys_off_handler *sys_off = NULL;
-> +
-> +       /*
-> +        * Register sys-off handlers for legacy PM callback. This allows
-> +        * legacy PM callbacks temporary co-exist with the new sys-off API.
-> +        *
-> +        * TODO: Remove legacy handlers once all legacy PM users will be
-> +        *       switched to the sys-off based APIs.
-> +        */
-> +       if (pm_power_off)
-> +               sys_off = register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
-> +                                                  SYS_OFF_PRIO_DEFAULT,
-> +                                                  legacy_pm_power_off, NULL);
-> +
->         atomic_notifier_call_chain(&power_off_handler_list, 0, NULL);
-> +
-> +       unregister_sys_off_handler(sys_off);
->  }
->
->  /**
-> @@ -626,7 +648,8 @@ void do_kernel_power_off(void)
->   */
->  bool kernel_can_power_off(void)
->  {
-> -       return !atomic_notifier_call_chain_is_empty(&power_off_handler_list);
-> +       return !atomic_notifier_call_chain_is_empty(&power_off_handler_list) ||
-> +               pm_power_off;
->  }
->  EXPORT_SYMBOL_GPL(kernel_can_power_off);
->
-> @@ -661,7 +684,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
->                 void __user *, arg)
->  {
->         struct pid_namespace *pid_ns = task_active_pid_ns(current);
-> -       struct sys_off_handler *sys_off = NULL;
->         char buffer[256];
->         int ret = 0;
->
-> @@ -686,21 +708,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
->         if (ret)
->                 return ret;
->
-> -       /*
-> -        * Register sys-off handlers for legacy PM callback. This allows
-> -        * legacy PM callbacks temporary co-exist with the new sys-off API.
-> -        *
-> -        * TODO: Remove legacy handlers once all legacy PM users will be
-> -        *       switched to the sys-off based APIs.
-> -        */
-> -       if (pm_power_off) {
-> -               sys_off = register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
-> -                                                  SYS_OFF_PRIO_DEFAULT,
-> -                                                  legacy_pm_power_off, NULL);
-> -               if (IS_ERR(sys_off))
-> -                       return PTR_ERR(sys_off);
-> -       }
-> -
->         /* Instead of trying to make the power_off code look like
->          * halt when pm_power_off is not set do it the easy way.
->          */
-> @@ -758,7 +765,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
->                 break;
->         }
->         mutex_unlock(&system_transition_mutex);
-> -       unregister_sys_off_handler(sys_off);
->         return ret;
->  }
->
-> --
+From: Steven Price <steven.price@arm.com>
 
-Applied (with a couple of edits in the changelog), thanks!
+[ Upstream commit 4b674dd69701c2e22e8e7770c1706a69f3b17269 ]
+
+While the check for format_count > 64 in __drm_universal_plane_init()
+shouldn't be hit (it's a WARN_ON), in its current position it will then
+leak the plane->format_types array and fail to call
+drm_mode_object_unregister() leaking the modeset identifier. Move it to
+the start of the function to avoid allocating those resources in the
+first place.
+
+Signed-off-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://lore.kernel.org/dri-devel/20211203102815.38624-1-steven.price@arm.com/
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/drm_plane.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/gpu/drm/drm_plane.c b/drivers/gpu/drm/drm_plane.c
+index 82afb854141b..fd0bf90fb4c2 100644
+--- a/drivers/gpu/drm/drm_plane.c
++++ b/drivers/gpu/drm/drm_plane.c
+@@ -249,6 +249,13 @@ static int __drm_universal_plane_init(struct drm_device *dev,
+ 	if (WARN_ON(config->num_total_plane >= 32))
+ 		return -EINVAL;
+ 
++	/*
++	 * First driver to need more than 64 formats needs to fix this. Each
++	 * format is encoded as a bit and the current code only supports a u64.
++	 */
++	if (WARN_ON(format_count > 64))
++		return -EINVAL;
++
+ 	WARN_ON(drm_drv_uses_atomic_modeset(dev) &&
+ 		(!funcs->atomic_destroy_state ||
+ 		 !funcs->atomic_duplicate_state));
+@@ -270,13 +277,6 @@ static int __drm_universal_plane_init(struct drm_device *dev,
+ 		return -ENOMEM;
+ 	}
+ 
+-	/*
+-	 * First driver to need more than 64 formats needs to fix this. Each
+-	 * format is encoded as a bit and the current code only supports a u64.
+-	 */
+-	if (WARN_ON(format_count > 64))
+-		return -EINVAL;
+-
+ 	if (format_modifiers) {
+ 		const uint64_t *temp_modifiers = format_modifiers;
+ 
+-- 
+2.35.1
+
+
+
