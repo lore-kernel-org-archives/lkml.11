@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC56CCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CDE5C3F2D4
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350099AbiFGSK0 (ORCPT
+        id S1350340AbiFGSKw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
+        Tue, 7 Jun 2022 14:10:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349702AbiFGRv3 (ORCPT
+        with ESMTP id S1349955AbiFGRvn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0DE713C35C;
-        Tue,  7 Jun 2022 10:38:45 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8693E13F432;
+        Tue,  7 Jun 2022 10:39:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 203266155F;
-        Tue,  7 Jun 2022 17:38:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2787DC34115;
-        Tue,  7 Jun 2022 17:37:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFD4D615A7;
+        Tue,  7 Jun 2022 17:38:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B992EC34119;
+        Tue,  7 Jun 2022 17:38:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623480;
-        bh=84J9qXdJDC7rUknfVU8U8l21hj/ztR4jR9pW95tvWUU=;
+        s=korg; t=1654623500;
+        bh=n5oISyk83ja9vB3obx7iI76Zu1CIB14AI1E3u+TdMDw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mKGdnCOBQSao/yFvmwvlUv1Lv7iIhMEoq6llXorvvO6lfD4dCwSZ2rXPTmmiWXtnm
-         KAxsGEmTtuEmwoKk+zTFnH/DaqJN7agipRw/zyTcgSwQcNN+jLV+VLLmnc86ebAa/P
-         Qo43rpfgewEUZv0oX5Qtchq12C+CWbeKNnoci2hY=
+        b=nS0vzueQ+bYn0P+JldB6r1ULiyExhkZ87VAygqjB6Up6r/683D/gn7qbFl6r5ujqF
+         +73xEG61S/zU8ThWUuySeQ/shkcJh+4+knf/8nmAFs1YT6zMXwL4XR1kTmpwn8uQgW
+         y1Ev9SyVz+eadHWSx4QKUoUWwBosVKPF/IVNrUbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
-        Eric Sandeen <sandeen@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 434/452] xfs: restore shutdown check in mapped write fault path
-Date:   Tue,  7 Jun 2022 19:04:51 +0200
-Message-Id: <20220607164921.491238199@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: [PATCH 5.10 440/452] thermal/core: Fix memory leak in the error path
+Date:   Tue,  7 Jun 2022 19:04:57 +0200
+Message-Id: <20220607164921.674881284@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,50 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Foster <bfoster@redhat.com>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
 
-commit e4826691cc7e5458bcb659935d0092bcf3f08c20 upstream.
+commit d44616c6cc3e35eea03ecfe9040edfa2b486a059 upstream.
 
-XFS triggers an iomap warning in the write fault path due to a
-!PageUptodate() page if a write fault happens to occur on a page
-that recently failed writeback. The iomap writeback error handling
-code can clear the Uptodate flag if no portion of the page is
-submitted for I/O. This is reproduced by fstest generic/019, which
-combines various forms of I/O with simulated disk failures that
-inevitably lead to filesystem shutdown (which then unconditionally
-fails page writeback).
+Fix the following error:
 
-This is a regression introduced by commit f150b4234397 ("xfs: split
-the iomap ops for buffered vs direct writes") due to the removal of
-a shutdown check and explicit error return in the ->iomap_begin()
-path used by the write fault path. The explicit error return
-historically translated to a SIGBUS, but now carries on with iomap
-processing where it complains about the unexpected state. Restore
-the shutdown check to xfs_buffered_write_iomap_begin() to restore
-historical behavior.
+ smatch warnings:
+ drivers/thermal/thermal_core.c:1020 __thermal_cooling_device_register() warn: possible memory leak of 'cdev'
 
-Fixes: f150b4234397 ("xfs: split the iomap ops for buffered vs direct writes")
-Signed-off-by: Brian Foster <bfoster@redhat.com>
-Reviewed-by: Eric Sandeen <sandeen@redhat.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+by freeing the cdev when exiting the function in the error path.
+
+Fixes: 584837618100 ("thermal/drivers/core: Use a char pointer for the cooling device name")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Link: https://lore.kernel.org/r/20210319202257.890848-1-daniel.lezcano@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_iomap.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/thermal/thermal_core.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/xfs/xfs_iomap.c
-+++ b/fs/xfs/xfs_iomap.c
-@@ -870,6 +870,9 @@ xfs_buffered_write_iomap_begin(
- 	int			allocfork = XFS_DATA_FORK;
- 	int			error = 0;
+--- a/drivers/thermal/thermal_core.c
++++ b/drivers/thermal/thermal_core.c
+@@ -1152,6 +1152,7 @@ out_kfree_type:
+ out_ida_remove:
+ 	ida_simple_remove(&thermal_cdev_ida, id);
+ out_kfree_cdev:
++	kfree(cdev);
+ 	return ERR_PTR(ret);
+ }
  
-+	if (XFS_FORCED_SHUTDOWN(mp))
-+		return -EIO;
-+
- 	/* we can't use delayed allocations when using extent size hints */
- 	if (xfs_get_extsz_hint(ip))
- 		return xfs_direct_write_iomap_begin(inode, offset, count,
 
 
