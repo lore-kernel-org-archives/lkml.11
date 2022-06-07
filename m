@@ -2,94 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D01C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F87C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390264AbiFHBq4 (ORCPT
+        id S1345538AbiFHBq7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:46:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46146 "EHLO
+        Tue, 7 Jun 2022 21:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1574447AbiFGXZo (ORCPT
+        with ESMTP id S1385210AbiFGWVV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:25:44 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AEB03798FF
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:18 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id u12-20020a17090a1d4c00b001df78c7c209so22043098pju.1
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+tlXHJz9kisGrwJfIL/WMzkc1MTPDPH2NkDRgofMQXA=;
-        b=CAQl78ghMWdgJpqs5v1tnPv/lepLaq6E6vHOQGSNFpzq0er9j5lbI4PgArppRnxI1i
-         OhUHFhwQFCvy16F1fowJJ0nOReoDaAayxdilL8hHuOdrtYQOZkulXHx7HI4Tqfp0C+OG
-         Vq9dE/RfMBMoIXhW6yIroAQ9UKNnH2hPxxa8k=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+tlXHJz9kisGrwJfIL/WMzkc1MTPDPH2NkDRgofMQXA=;
-        b=0pRA/yoGoOIbLO8On/j1kewG9hKy8YihdrTqwxiJbMmGGxJxwOskO5Pv81CHlI04XM
-         ZMbL3FT9UFzYgdwzGV1xTxo5ayCHJ0qP/kQQymm81aaJJZ/NOZHDXurDCJfMOy8o0YPT
-         D61Op/m6sH0zHSVrGiaALLmdw+5qGgaEoU7KLAnS7Pj51xt3GZLWDDxE/vcntUa0fV/A
-         UmRzCtsRnYLZYH6FZeIAElsD0h82CsQPgCN4i7mc2acE8rgX0+beQT4X3mrcWcNiTSdr
-         k+lRd2mp8hfSl7287hFT6W5POn5Z1vYIgR8BbLggVZGDAe/8eqCSgYMxmGKVoZc1/DpA
-         bD4A==
-X-Gm-Message-State: AOAM533tW8EmFZMURwNpkJ522CTkI5r1svH7LcsFGn/A6Pdnt0H1jXY2
-        WX1ml0E3d9S0y4VuyTDaCSfiFw==
-X-Google-Smtp-Source: ABdhPJwOhl2xigdWsk9Ip1jYWJh9CMdZiN68xBIN0cOrLS7fUs1z4TCbxFVDM92Dxke6O0smj4+FAA==
-X-Received: by 2002:a17:902:9b8a:b0:163:d0ad:f9e8 with SMTP id y10-20020a1709029b8a00b00163d0adf9e8mr30304386plp.79.1654637777427;
-        Tue, 07 Jun 2022 14:36:17 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:b689:cc5b:e6ad:930e])
-        by smtp.gmail.com with ESMTPSA id q21-20020a056a00085500b0051874318772sm5823056pfk.201.2022.06.07.14.36.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 14:36:16 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 14:36:14 -0700
-From:   Brian Norris <briannorris@chromium.org>
-To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Cc:     Heiko Stuebner <heiko@sntech.de>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: rockchip: Assign RK3399 VDU clock rate
-Message-ID: <Yp/EzreGUkFIvwhG@google.com>
-References: <20220607141535.1.Idafe043ffc94756a69426ec68872db0645c5d6e2@changeid>
- <253e2771abb13a3e62c07dfb0b420169bb572c2d.camel@collabora.com>
+        Tue, 7 Jun 2022 18:21:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A1C265FAD;
+        Tue,  7 Jun 2022 12:21:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74D6A60906;
+        Tue,  7 Jun 2022 19:21:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85E91C34115;
+        Tue,  7 Jun 2022 19:21:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629671;
+        bh=a4eiVjuiMdl5Kk9U/T8ygeO3MRd4Li27yrcvZKUmnlo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=njHr9hm/vVOeGgpJsUREdt7za45em6VZ5GB0rbqvwJjsJXb7s4GPhS00pTR1B1oFM
+         wPKzJY1gssRtJt/gWXenJugAYFAFDGEMG/KUn1ZdTFBcYNMkR0dJ7kl3hRKokvuLb4
+         uwuFN+w4tG5DV+DBsj+k85J/JhLGuU1x7671nJd4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Subject: [PATCH 5.18 776/879] samples/landlock: Format with clang-format
+Date:   Tue,  7 Jun 2022 19:04:54 +0200
+Message-Id: <20220607165025.393543562@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <253e2771abb13a3e62c07dfb0b420169bb572c2d.camel@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 05:20:41PM -0400, Nicolas Dufresne wrote:
-> Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+From: Mickaël Salaün <mic@digikod.net>
 
-Thanks!
+commit 81709f3dccacf4104a4bc2daa80bdd767a9c4c54 upstream.
 
-> My only doubt was if you really needed to duplicate that setting into gru-
-> scarlet.dtsi, but I've simply assumed the answer is yes, and that you already
-> checked that.
+Let's follow a consistent and documented coding style.  Everything may
+not be to our liking but it is better than tacit knowledge.  Moreover,
+this will help maintain style consistency between different developers.
 
-I didn't explicitly test without modifying gru-scarlet.dtsi, but the
-unfortunate nature of these long monolithic
-assigned-clocks/assigned-clock-rates properties is that if you want to
-add or override one element in the array, you have to repeat (or
-override) all of them. And because rk3399-gru-scarlet.dtsi already
-overrides some of them, every additional change has to be reflected
-there.
+This contains only whitespace changes.
 
-That's why it would be much nicer to be able to distribute the
-assignments to their various consumer nodes, but as noted in the commit
-message (because you mentioned it to me out-of-band ;) ), we can't do
-that.
+Automatically formatted with:
+clang-format-14 -i samples/landlock/*.[ch]
 
-Regards,
-Brian
+Link: https://lore.kernel.org/r/20220506160513.523257-8-mic@digikod.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ samples/landlock/sandboxer.c |   96 +++++++++++++++++++++++--------------------
+ 1 file changed, 52 insertions(+), 44 deletions(-)
+
+--- a/samples/landlock/sandboxer.c
++++ b/samples/landlock/sandboxer.c
+@@ -22,9 +22,9 @@
+ #include <unistd.h>
+ 
+ #ifndef landlock_create_ruleset
+-static inline int landlock_create_ruleset(
+-		const struct landlock_ruleset_attr *const attr,
+-		const size_t size, const __u32 flags)
++static inline int
++landlock_create_ruleset(const struct landlock_ruleset_attr *const attr,
++			const size_t size, const __u32 flags)
+ {
+ 	return syscall(__NR_landlock_create_ruleset, attr, size, flags);
+ }
+@@ -32,17 +32,18 @@ static inline int landlock_create_rulese
+ 
+ #ifndef landlock_add_rule
+ static inline int landlock_add_rule(const int ruleset_fd,
+-		const enum landlock_rule_type rule_type,
+-		const void *const rule_attr, const __u32 flags)
++				    const enum landlock_rule_type rule_type,
++				    const void *const rule_attr,
++				    const __u32 flags)
+ {
+-	return syscall(__NR_landlock_add_rule, ruleset_fd, rule_type,
+-			rule_attr, flags);
++	return syscall(__NR_landlock_add_rule, ruleset_fd, rule_type, rule_attr,
++		       flags);
+ }
+ #endif
+ 
+ #ifndef landlock_restrict_self
+ static inline int landlock_restrict_self(const int ruleset_fd,
+-		const __u32 flags)
++					 const __u32 flags)
+ {
+ 	return syscall(__NR_landlock_restrict_self, ruleset_fd, flags);
+ }
+@@ -79,9 +80,8 @@ static int parse_path(char *env_path, co
+ 
+ /* clang-format on */
+ 
+-static int populate_ruleset(
+-		const char *const env_var, const int ruleset_fd,
+-		const __u64 allowed_access)
++static int populate_ruleset(const char *const env_var, const int ruleset_fd,
++			    const __u64 allowed_access)
+ {
+ 	int num_paths, i, ret = 1;
+ 	char *env_path_name;
+@@ -111,12 +111,10 @@ static int populate_ruleset(
+ 	for (i = 0; i < num_paths; i++) {
+ 		struct stat statbuf;
+ 
+-		path_beneath.parent_fd = open(path_list[i], O_PATH |
+-				O_CLOEXEC);
++		path_beneath.parent_fd = open(path_list[i], O_PATH | O_CLOEXEC);
+ 		if (path_beneath.parent_fd < 0) {
+ 			fprintf(stderr, "Failed to open \"%s\": %s\n",
+-					path_list[i],
+-					strerror(errno));
++				path_list[i], strerror(errno));
+ 			goto out_free_name;
+ 		}
+ 		if (fstat(path_beneath.parent_fd, &statbuf)) {
+@@ -127,9 +125,10 @@ static int populate_ruleset(
+ 		if (!S_ISDIR(statbuf.st_mode))
+ 			path_beneath.allowed_access &= ACCESS_FILE;
+ 		if (landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
+-					&path_beneath, 0)) {
+-			fprintf(stderr, "Failed to update the ruleset with \"%s\": %s\n",
+-					path_list[i], strerror(errno));
++				      &path_beneath, 0)) {
++			fprintf(stderr,
++				"Failed to update the ruleset with \"%s\": %s\n",
++				path_list[i], strerror(errno));
+ 			close(path_beneath.parent_fd);
+ 			goto out_free_name;
+ 		}
+@@ -171,55 +170,64 @@ int main(const int argc, char *const arg
+ 	int ruleset_fd;
+ 	struct landlock_ruleset_attr ruleset_attr = {
+ 		.handled_access_fs = ACCESS_FS_ROUGHLY_READ |
+-			ACCESS_FS_ROUGHLY_WRITE,
++				     ACCESS_FS_ROUGHLY_WRITE,
+ 	};
+ 
+ 	if (argc < 2) {
+-		fprintf(stderr, "usage: %s=\"...\" %s=\"...\" %s <cmd> [args]...\n\n",
+-				ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
+-		fprintf(stderr, "Launch a command in a restricted environment.\n\n");
++		fprintf(stderr,
++			"usage: %s=\"...\" %s=\"...\" %s <cmd> [args]...\n\n",
++			ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
++		fprintf(stderr,
++			"Launch a command in a restricted environment.\n\n");
+ 		fprintf(stderr, "Environment variables containing paths, "
+ 				"each separated by a colon:\n");
+-		fprintf(stderr, "* %s: list of paths allowed to be used in a read-only way.\n",
+-				ENV_FS_RO_NAME);
+-		fprintf(stderr, "* %s: list of paths allowed to be used in a read-write way.\n",
+-				ENV_FS_RW_NAME);
+-		fprintf(stderr, "\nexample:\n"
+-				"%s=\"/bin:/lib:/usr:/proc:/etc:/dev/urandom\" "
+-				"%s=\"/dev/null:/dev/full:/dev/zero:/dev/pts:/tmp\" "
+-				"%s bash -i\n",
+-				ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
++		fprintf(stderr,
++			"* %s: list of paths allowed to be used in a read-only way.\n",
++			ENV_FS_RO_NAME);
++		fprintf(stderr,
++			"* %s: list of paths allowed to be used in a read-write way.\n",
++			ENV_FS_RW_NAME);
++		fprintf(stderr,
++			"\nexample:\n"
++			"%s=\"/bin:/lib:/usr:/proc:/etc:/dev/urandom\" "
++			"%s=\"/dev/null:/dev/full:/dev/zero:/dev/pts:/tmp\" "
++			"%s bash -i\n",
++			ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
+ 		return 1;
+ 	}
+ 
+-	ruleset_fd = landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
++	ruleset_fd =
++		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
+ 	if (ruleset_fd < 0) {
+ 		const int err = errno;
+ 
+ 		perror("Failed to create a ruleset");
+ 		switch (err) {
+ 		case ENOSYS:
+-			fprintf(stderr, "Hint: Landlock is not supported by the current kernel. "
+-					"To support it, build the kernel with "
+-					"CONFIG_SECURITY_LANDLOCK=y and prepend "
+-					"\"landlock,\" to the content of CONFIG_LSM.\n");
++			fprintf(stderr,
++				"Hint: Landlock is not supported by the current kernel. "
++				"To support it, build the kernel with "
++				"CONFIG_SECURITY_LANDLOCK=y and prepend "
++				"\"landlock,\" to the content of CONFIG_LSM.\n");
+ 			break;
+ 		case EOPNOTSUPP:
+-			fprintf(stderr, "Hint: Landlock is currently disabled. "
+-					"It can be enabled in the kernel configuration by "
+-					"prepending \"landlock,\" to the content of CONFIG_LSM, "
+-					"or at boot time by setting the same content to the "
+-					"\"lsm\" kernel parameter.\n");
++			fprintf(stderr,
++				"Hint: Landlock is currently disabled. "
++				"It can be enabled in the kernel configuration by "
++				"prepending \"landlock,\" to the content of CONFIG_LSM, "
++				"or at boot time by setting the same content to the "
++				"\"lsm\" kernel parameter.\n");
+ 			break;
+ 		}
+ 		return 1;
+ 	}
+ 	if (populate_ruleset(ENV_FS_RO_NAME, ruleset_fd,
+-				ACCESS_FS_ROUGHLY_READ)) {
++			     ACCESS_FS_ROUGHLY_READ)) {
+ 		goto err_close_ruleset;
+ 	}
+ 	if (populate_ruleset(ENV_FS_RW_NAME, ruleset_fd,
+-				ACCESS_FS_ROUGHLY_READ | ACCESS_FS_ROUGHLY_WRITE)) {
++			     ACCESS_FS_ROUGHLY_READ |
++				     ACCESS_FS_ROUGHLY_WRITE)) {
+ 		goto err_close_ruleset;
+ 	}
+ 	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) {
+@@ -236,7 +244,7 @@ int main(const int argc, char *const arg
+ 	cmd_argv = argv + 1;
+ 	execvpe(cmd_path, cmd_argv, envp);
+ 	fprintf(stderr, "Failed to execute \"%s\": %s\n", cmd_path,
+-			strerror(errno));
++		strerror(errno));
+ 	fprintf(stderr, "Hint: access to the binary, the interpreter or "
+ 			"shared libraries may be denied.\n");
+ 	return 1;
+
+
