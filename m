@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8573ACCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:04:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1683FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:04:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378859AbiFGVE0 (ORCPT
+        id S1378728AbiFGVEb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:04:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
+        Tue, 7 Jun 2022 17:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358028AbiFGUCr (ORCPT
+        with ESMTP id S1358022AbiFGUCr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:02:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 942F71C204B;
-        Tue,  7 Jun 2022 11:25:30 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02E31C2047;
+        Tue,  7 Jun 2022 11:25:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 744C8B82368;
-        Tue,  7 Jun 2022 18:24:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8C1FC385A5;
-        Tue,  7 Jun 2022 18:24:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE9F360906;
+        Tue,  7 Jun 2022 18:24:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDC21C385A2;
+        Tue,  7 Jun 2022 18:24:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626290;
-        bh=4crKvbaRKfRDh58CHafqCLlcae/1alFJ2GNdRhB1c08=;
+        s=korg; t=1654626298;
+        bh=aB0jQ82KR7b5RA+Hf2rVDim5Fk3zehrz+vsYPysga2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I3uA4uLg6WKAXEGKZTU52+p94jOBozQe2UZW/v+qryH6azvRwdRytR95aOOEv5ldy
-         onRR56Ro4LsQ816cBrioYuN7nxHZDY0m6Xog7XINg/85l6tW6Fzhvp95SIKG9PGO3K
-         G2BWsXQ3Kjzaps6Mua+gfdoVr50bXo5aXXeSYUP0=
+        b=nuh0riqKaeQggDIGcqZyKHwP2E0zKHu6A3o4bdU2Bb04fLzWm4eBGnqI2GOEumc35
+         haTCwD9Ehq54M7ACHbsxuxMD/kJPcYw4oqfCfWb6OT/NRkx3huTza0wGjBZewinvbq
+         pJBaPrl4bt4+zjkAF9c006Gm8sCZRQ3FIaySoFOE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Latypov <dlatypov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 324/772] kunit: fix debugfs code to use enum kunit_status, not bool
-Date:   Tue,  7 Jun 2022 18:58:36 +0200
-Message-Id: <20220607164958.568925875@linuxfoundation.org>
+Subject: [PATCH 5.17 327/772] perf tools: Use Python devtools for version autodetection rather than runtime
+Date:   Tue,  7 Jun 2022 18:58:39 +0200
+Message-Id: <20220607164958.657064424@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,39 +54,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Latypov <dlatypov@google.com>
+From: James Clark <james.clark@arm.com>
 
-[ Upstream commit 38289a26e1b8a37755f3e07056ca416c1ee2a2e8 ]
+[ Upstream commit 630af16eee495f583db5202c3613d1b191f10694 ]
 
-Commit 6d2426b2f258 ("kunit: Support skipped tests") switched to using
-`enum kunit_status` to track the result of running a test/suite since we
-now have more than just pass/fail.
+This fixes the issue where the build will fail if only the Python2
+runtime is installed but the Python3 devtools are installed. Currently
+the workaround is 'make PYTHON=python3'.
 
-This callsite wasn't updated, silently converting to enum to a bool and
-then back.
+Fix it by autodetecting Python based on whether python[x]-config exists
+rather than just python[x] because both are needed for the build. Then
+-config is stripped to find the Python runtime.
 
-Fixes: 6d2426b2f258 ("kunit: Support skipped tests")
-Signed-off-by: Daniel Latypov <dlatypov@google.com>
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Testing
+=======
+
+ * Auto detect links with Python3 when the v3 devtools are installed
+   and only Python 2 runtime is installed
+ * Auto detect links with Python2 when both devtools are installed
+ * Sensible warning is printed if no Python devtools are installed
+ * 'make PYTHON=x' still automatically sets PYTHON_CONFIG=x-config
+ * 'make PYTHON=x' fails if x-config doesn't exist
+ * 'make PYTHON=python3' overrides Python2 devtools
+ * 'make PYTHON=python2' overrides Python3 devtools
+ * 'make PYTHON_CONFIG=x-config' works
+ * 'make PYTHON=x PYTHON_CONFIG=x' works
+ * 'make PYTHON=missing' reports an error
+ * 'make PYTHON_CONFIG=missing' reports an error
+
+Fixes: 79373082fa9de8be ("perf python: Autodetect python3 binary")
+Signed-off-by: James Clark <james.clark@arm.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: James Clark <james.clark@arm.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Link: https://lore.kernel.org/r/20220309194313.3350126-2-james.clark@arm.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/kunit/debugfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/perf/Makefile.config | 39 ++++++++++++++++++++++++++------------
+ 1 file changed, 27 insertions(+), 12 deletions(-)
 
-diff --git a/lib/kunit/debugfs.c b/lib/kunit/debugfs.c
-index b71db0abc12b..1048ef1b8d6e 100644
---- a/lib/kunit/debugfs.c
-+++ b/lib/kunit/debugfs.c
-@@ -52,7 +52,7 @@ static void debugfs_print_result(struct seq_file *seq,
- static int debugfs_print_results(struct seq_file *seq, void *v)
- {
- 	struct kunit_suite *suite = (struct kunit_suite *)seq->private;
--	bool success = kunit_suite_has_succeeded(suite);
-+	enum kunit_status success = kunit_suite_has_succeeded(suite);
- 	struct kunit_case *test_case;
+diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+index 1bd64e7404b9..c38423807d01 100644
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -239,18 +239,33 @@ ifdef PARSER_DEBUG
+ endif
  
- 	if (!suite || !suite->log)
+ # Try different combinations to accommodate systems that only have
+-# python[2][-config] in weird combinations but always preferring
+-# python2 and python2-config as per pep-0394. If python2 or python
+-# aren't found, then python3 is used.
+-PYTHON_AUTO := python
+-PYTHON_AUTO := $(if $(call get-executable,python3),python3,$(PYTHON_AUTO))
+-PYTHON_AUTO := $(if $(call get-executable,python),python,$(PYTHON_AUTO))
+-PYTHON_AUTO := $(if $(call get-executable,python2),python2,$(PYTHON_AUTO))
+-override PYTHON := $(call get-executable-or-default,PYTHON,$(PYTHON_AUTO))
+-PYTHON_AUTO_CONFIG := \
+-  $(if $(call get-executable,$(PYTHON)-config),$(PYTHON)-config,python-config)
+-override PYTHON_CONFIG := \
+-  $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO_CONFIG))
++# python[2][3]-config in weird combinations in the following order of
++# priority from lowest to highest:
++#   * python3-config
++#   * python-config
++#   * python2-config as per pep-0394.
++#   * $(PYTHON)-config (If PYTHON is user supplied but PYTHON_CONFIG isn't)
++#
++PYTHON_AUTO := python-config
++PYTHON_AUTO := $(if $(call get-executable,python3-config),python3-config,$(PYTHON_AUTO))
++PYTHON_AUTO := $(if $(call get-executable,python-config),python-config,$(PYTHON_AUTO))
++PYTHON_AUTO := $(if $(call get-executable,python2-config),python2-config,$(PYTHON_AUTO))
++
++# If PYTHON is defined but PYTHON_CONFIG isn't, then take $(PYTHON)-config as if it was the user
++# supplied value for PYTHON_CONFIG. Because it's "user supplied", error out if it doesn't exist.
++ifdef PYTHON
++  ifndef PYTHON_CONFIG
++    PYTHON_CONFIG_AUTO := $(call get-executable,$(PYTHON)-config)
++    PYTHON_CONFIG := $(if $(PYTHON_CONFIG_AUTO),$(PYTHON_CONFIG_AUTO),\
++                          $(call $(error $(PYTHON)-config not found)))
++  endif
++endif
++
++# Select either auto detected python and python-config or use user supplied values if they are
++# defined. get-executable-or-default fails with an error if the first argument is supplied but
++# doesn't exist.
++override PYTHON_CONFIG := $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO))
++override PYTHON := $(call get-executable-or-default,PYTHON,$(subst -config,,$(PYTHON_AUTO)))
+ 
+ grep-libs  = $(filter -l%,$(1))
+ strip-libs  = $(filter-out -l%,$(1))
 -- 
 2.35.1
 
