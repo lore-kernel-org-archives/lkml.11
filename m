@@ -2,91 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB1CCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F759C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357018AbiFGT6l (ORCPT
+        id S1356406AbiFGT6p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47658 "EHLO
+        Tue, 7 Jun 2022 15:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348242AbiFGSvy (ORCPT
+        with ESMTP id S1353765AbiFGSwA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:51:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17739149D8D;
-        Tue,  7 Jun 2022 11:03:33 -0700 (PDT)
+        Tue, 7 Jun 2022 14:52:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C024314A27F;
+        Tue,  7 Jun 2022 11:03:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E2D9617B4;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AB21B82374;
+        Tue,  7 Jun 2022 18:03:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01641C341C0;
         Tue,  7 Jun 2022 18:03:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7D4CC3411C;
-        Tue,  7 Jun 2022 18:03:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654625009;
-        bh=lWmHQhIlKE3b0pTV4xUP99UGuC7uf0M6GoZ2g+qfm/0=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654625011;
+        bh=WyFYvzgMPEg0c5Y+7we3M6eOFm8uX0BBTn4HhE+9UY4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LPgNqxl6TeBr/N8mnA9cM36lWuQ8knHzWU0Eyfd18bj+ZfmVYZQ/LutSazMwKTcmN
-         O5bEQfPKCkEewNoIVIsoxrH7i0cbxy5ZRvezezFtzXGjxbBiGF2hvynIEuLYQ7xQX6
-         ZIjQg075Dj/9K3PdHpEnOc093vHLZhfDFq4yjsK7Aop48XX1WaB1qNV/ftOvxBYweP
-         MM8ZjEbLjE0YhfRENdY6ovHA0gInBJ2nj9NKZmCJg/rwPzMJipPVtw8tuFps5/0+XB
-         8BFaAxrFmienrYOOYGb7cdO8sorRVhnSnu07F4C9fD74FDi9/D0N8uXtpGpHtt5YOP
-         S03ulAGAlI5NQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhen Ni <nizhen@uniontech.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, ok@artecdesign.ee,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 06/19] USB: host: isp116x: check return value after calling platform_get_resource()
-Date:   Tue,  7 Jun 2022 14:03:01 -0400
-Message-Id: <20220607180317.482354-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180317.482354-1-sashal@kernel.org>
-References: <20220607180317.482354-1-sashal@kernel.org>
+        b=NRvlGAsX7LvZClpeMCwlNtwLsNx34OLfXop0WexyEE7bYN2q55X84oHPEcA97oLn2
+         qWdM9DBR+Nmf3c1zBkFEewKAwMLHJw24Oq4IUWHoezqhqfSLXYETt3kLRQtRt/fO/r
+         dG6AD0W89QcERT3/UPz7Hgz49fCgrWoDAkU31I2Y=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 535/667] bfq: Drop pointless unlock-lock pair
+Date:   Tue,  7 Jun 2022 19:03:20 +0200
+Message-Id: <20220607164950.747053551@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Ni <nizhen@uniontech.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 134a3408c2d3f7e23eb0e4556e0a2d9f36c2614e ]
+commit fc84e1f941b91221092da5b3102ec82da24c5673 upstream.
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+In bfq_insert_request() we unlock bfqd->lock only to call
+trace_block_rq_insert() and then lock bfqd->lock again. This is really
+pointless since tracing is disabled if we really care about performance
+and even if the tracepoint is enabled, it is a quick call.
 
-Signed-off-by: Zhen Ni <nizhen@uniontech.com>
-Link: https://lore.kernel.org/r/20220302033716.31272-1-nizhen@uniontech.com
+CC: stable@vger.kernel.org
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-5-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/isp116x-hcd.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ block/bfq-iosched.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/usb/host/isp116x-hcd.c b/drivers/usb/host/isp116x-hcd.c
-index d089b3fb7a13..c32145e63aea 100644
---- a/drivers/usb/host/isp116x-hcd.c
-+++ b/drivers/usb/host/isp116x-hcd.c
-@@ -1551,10 +1551,12 @@ static int isp116x_remove(struct platform_device *pdev)
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -6012,11 +6012,8 @@ static void bfq_insert_request(struct bl
+ 		return;
+ 	}
  
- 	iounmap(isp116x->data_reg);
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	release_mem_region(res->start, 2);
-+	if (res)
-+		release_mem_region(res->start, 2);
- 	iounmap(isp116x->addr_reg);
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	release_mem_region(res->start, 2);
-+	if (res)
-+		release_mem_region(res->start, 2);
+-	spin_unlock_irq(&bfqd->lock);
+-
+ 	trace_block_rq_insert(rq);
  
- 	usb_put_hcd(hcd);
- 	return 0;
--- 
-2.35.1
+-	spin_lock_irq(&bfqd->lock);
+ 	bfqq = bfq_init_rq(rq);
+ 	if (!bfqq || at_head) {
+ 		if (at_head)
+
 
