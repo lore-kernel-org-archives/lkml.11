@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B742CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70805C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:33:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233150AbiFHBcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57940 "EHLO
+        id S1351677AbiFHBdO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:33:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385208AbiFGW0j (ORCPT
+        with ESMTP id S1382610AbiFGVvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:26:39 -0400
+        Tue, 7 Jun 2022 17:51:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 709AA270F2B;
-        Tue,  7 Jun 2022 12:23:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8282F02D;
+        Tue,  7 Jun 2022 12:09:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB8DF60BAA;
-        Tue,  7 Jun 2022 19:23:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02BEEC34115;
-        Tue,  7 Jun 2022 19:23:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 03C83618E2;
+        Tue,  7 Jun 2022 19:09:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 137CEC385A2;
+        Tue,  7 Jun 2022 19:09:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629794;
-        bh=Gh2aEhAmI0pJgz2rAYq1FcDxdPMJDbcw7x4laZqox+k=;
+        s=korg; t=1654628945;
+        bh=RLD4YtdsaYVnX+6jAT3sOdk/Zl8sOQA3J/lFzBYiBgs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IU0d4aAsMra/PjR+PCkj+1aCvYCrPhRcQFeM/F4RJESxSrIaJZlEbpNPz+ZBbj8p7
-         DyxYR1B/5YzuzPe37rk4I6sRoN37BFqbD44q1WIJFF/2BB9pQPBjToXZZXCcTQ0UZY
-         1tlrstDGAfZ1Fw80YmesIP2+gn7PD3RqdMZNcuAQ=
+        b=UUiGrv2263SsMgpmmmGaVSchA+A3JWWyoKZheAvfF2ICmoyKBe/ZQOn5rr8Ojq6Vh
+         5lldif4PSom6HUutcq2ExLl/3E0nslB4TP/KvZVuZCx8boVduXD3kMTwk177v4qukS
+         yJXEfb6HK3Jvt8Hbgi2n3IoyviAK5BAtcjvSfwD8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Stephen Zhang <starzhangzsd@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 5.18 820/879] MIPS: IP27: Remove incorrect `cpu_has_fpu override
-Date:   Tue,  7 Jun 2022 19:05:38 +0200
-Message-Id: <20220607165026.653464294@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Iwona Winiarska <iwona.winiarska@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 514/879] hwmon: (dimmtemp) Fix bitmap handling
+Date:   Tue,  7 Jun 2022 19:00:32 +0200
+Message-Id: <20220607165017.796984550@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,39 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Guenter Roeck <linux@roeck-us.net>
 
-commit 424c3781dd1cb401857585331eaaa425a13f2429 upstream.
+[ Upstream commit 9baabde04de64137e86b39112c6259f3da512bd6 ]
 
-Remove unsupported forcing of `cpu_has_fpu' to 1, which makes the `nofpu'
-kernel parameter non-functional, and also causes a link error:
+Building arm:allmodconfig may fail with the following error.
 
-ld: arch/mips/kernel/traps.o: in function `trap_init':
-./arch/mips/include/asm/msa.h:(.init.text+0x348): undefined reference to `handle_fpe'
-ld: ./arch/mips/include/asm/msa.h:(.init.text+0x354): undefined reference to `handle_fpe'
-ld: ./arch/mips/include/asm/msa.h:(.init.text+0x360): undefined reference to `handle_fpe'
+In function 'fortify_memcpy_chk',
+    inlined from 'bitmap_copy' at include/linux/bitmap.h:261:2,
+    inlined from 'bitmap_copy_clear_tail' at include/linux/bitmap.h:270:2,
+    inlined from 'bitmap_from_u64' at include/linux/bitmap.h:622:2,
+    inlined from 'check_populated_dimms' at
+	drivers/hwmon/peci/dimmtemp.c:284:2:
+include/linux/fortify-string.h:344:25: error:
+	call to '__write_overflow_field' declared with attribute warning:
+	detected write beyond size of field (1st parameter)
 
-where the CONFIG_MIPS_FP_SUPPORT configuration option has been disabled.
+The problematic code is
+	bitmap_from_u64(priv->dimm_mask, dimm_mask);
 
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Reported-by: Stephen Zhang <starzhangzsd@gmail.com>
-Fixes: 0ebb2f4159af ("MIPS: IP27: Update/restructure CPU overrides")
-Cc: stable@vger.kernel.org # v4.2+
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+dimm_mask is declared as u64, but the bitmap in priv->dimm_mask is only
+24 bit wide. On 32-bit systems, this results in writes over the end of
+the bitmap.
+
+Fix the problem by using u32 instead of u64 for dimm_mask. This is
+currently sufficient, and a compile time check to ensure that the number
+of dimms does not exceed the bit map size is already in place.
+
+Fixes: 73bc1b885dae ("hwmon: peci: Add dimmtemp driver")
+Cc: Iwona Winiarska <iwona.winiarska@intel.com>
+Reviewed-by: Iwona Winiarska <iwona.winiarska@intel.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/hwmon/peci/dimmtemp.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
-+++ b/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
-@@ -25,7 +25,6 @@
- #define cpu_has_4kex			1
- #define cpu_has_3k_cache		0
- #define cpu_has_4k_cache		1
--#define cpu_has_fpu			1
- #define cpu_has_nofpuex			0
- #define cpu_has_32fpr			1
- #define cpu_has_counter			1
+diff --git a/drivers/hwmon/peci/dimmtemp.c b/drivers/hwmon/peci/dimmtemp.c
+index c8222354c005..53e58a9c28ea 100644
+--- a/drivers/hwmon/peci/dimmtemp.c
++++ b/drivers/hwmon/peci/dimmtemp.c
+@@ -219,7 +219,7 @@ static int check_populated_dimms(struct peci_dimmtemp *priv)
+ 	int chan_rank_max = priv->gen_info->chan_rank_max;
+ 	int dimm_idx_max = priv->gen_info->dimm_idx_max;
+ 	u32 chan_rank_empty = 0;
+-	u64 dimm_mask = 0;
++	u32 dimm_mask = 0;
+ 	int chan_rank, dimm_idx, ret;
+ 	u32 pcs;
+ 
+@@ -278,9 +278,9 @@ static int check_populated_dimms(struct peci_dimmtemp *priv)
+ 		return -EAGAIN;
+ 	}
+ 
+-	dev_dbg(priv->dev, "Scanned populated DIMMs: %#llx\n", dimm_mask);
++	dev_dbg(priv->dev, "Scanned populated DIMMs: %#x\n", dimm_mask);
+ 
+-	bitmap_from_u64(priv->dimm_mask, dimm_mask);
++	bitmap_from_arr32(priv->dimm_mask, &dimm_mask, DIMM_NUMS_MAX);
+ 
+ 	return 0;
+ }
+-- 
+2.35.1
+
 
 
