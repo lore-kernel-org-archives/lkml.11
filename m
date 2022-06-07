@@ -2,138 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53D6ECCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43EA6CCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:02:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383354AbiFGWBv (ORCPT
+        id S1383330AbiFGWBq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50450 "EHLO
+        Tue, 7 Jun 2022 18:01:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379058AbiFGVCA (ORCPT
+        with ESMTP id S1379096AbiFGVCE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:00 -0400
-Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44DEA188E66
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:46:17 -0700 (PDT)
-X-ASG-Debug-ID: 1654627544-1cf43917f3396710001-xx1T2L
-Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id u3h3PzNcv3GISwVG; Tue, 07 Jun 2022 14:45:44 -0400 (EDT)
-X-Barracuda-Envelope-From: tonyb@cybernetics.com
-X-ASG-Whitelist: Client
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
-        bh=fJQpcCRHMP3bElV7sUkA+QTTFc8Tk97S5Mqvw1QDnTQ=;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
-        Content-Language:Subject:MIME-Version:Date:Message-ID; b=ghina6onuUS2ov/P3hH9
-        L5dEdD+6sGEHGT4vP9jtWoQ5eCxd6dCBxtPoExAZw2K5opBuq2H/Z4oCWx5J1HX8r2nziqL09VDv3
-        7e7fCgDlngbrr1wSqKCea76X8QbWpcNpautqqHUnpKW3+01/yk5/iaywpvmAI7fEdg/W5S6oPo=
-Received: from [10.157.2.224] (HELO [192.168.200.1])
-  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
-  with ESMTPS id 11859468; Tue, 07 Jun 2022 14:45:44 -0400
-Message-ID: <11b7e3cd-c929-654c-1f45-1abe9a6f6a98@cybernetics.com>
-Date:   Tue, 7 Jun 2022 14:45:44 -0400
+        Tue, 7 Jun 2022 17:02:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF5811CB53;
+        Tue,  7 Jun 2022 11:46:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D66F9B81FE1;
+        Tue,  7 Jun 2022 18:46:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F833C34115;
+        Tue,  7 Jun 2022 18:46:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654627587;
+        bh=zy8e3PUZwgPf/1N8USf86WS+Opn8Dav5ji2fldlGHyk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bSov8fwdoS+YAcBKOFcBe/Y4CJMM1amha8YEQEUYRGi+Frwlvlf9SU1F8fCej9bXq
+         4/oxjZg2ymV1IWhgSq9b/uEnGydN8y4QsP60QZfxA5pQcHAD+HJbbZ8S3uOzuKkZcB
+         Mf5QPJJW8YGUpPSMw7nU01844Wzh7+c1RFnEpOBI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.18 004/879] parisc/stifb: Implement fb_is_primary_device()
+Date:   Tue,  7 Jun 2022 18:52:02 +0200
+Message-Id: <20220607165002.797731259@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: [PATCH v6 09/11] dmapool: cleanup dma_pool_destroy
-Content-Language: en-US
-X-ASG-Orig-Subj: [PATCH v6 09/11] dmapool: cleanup dma_pool_destroy
-From:   Tony Battersby <tonyb@cybernetics.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
-        Matthew Wilcox <willy@infradead.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Tony Lindgren <tony@atomide.com>
-References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
-In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Barracuda-Connect: UNKNOWN[10.10.4.126]
-X-Barracuda-Start-Time: 1654627544
-X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
-X-Barracuda-BRTS-Status: 1
-X-Virus-Scanned: by bsmtpd at cybernetics.com
-X-Barracuda-Scan-Msg-Size: 2336
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pool_free_page() is called only from dma_pool_destroy(), so inline it
-and make it less generic since we know that the pool is being destroyed.
+From: Helge Deller <deller@gmx.de>
 
-Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
+commit cf936af790a3ef5f41ff687ec91bfbffee141278 upstream.
+
+Implement fb_is_primary_device() function, so that fbcon detects if this
+framebuffer belongs to the default graphics card which was used to start
+the system.
+
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: stable@vger.kernel.org   # v5.10+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
+ arch/parisc/include/asm/fb.h    |    4 ++++
+ drivers/video/console/sticore.c |   17 +++++++++++++++++
+ drivers/video/fbdev/stifb.c     |    4 ++--
+ 3 files changed, 23 insertions(+), 2 deletions(-)
 
-Changes since v5:
-Take the opposite approach and inline pool_free_page() into
-dma_pool_destroy() instead of moving the is_page_busy() check into
-pool_free_page().
-
- mm/dmapool.c | 33 ++++++++++++++-------------------
- 1 file changed, 14 insertions(+), 19 deletions(-)
-
-diff --git a/mm/dmapool.c b/mm/dmapool.c
-index c7ec38cb4631..4e075feb038f 100644
---- a/mm/dmapool.c
-+++ b/mm/dmapool.c
-@@ -241,18 +241,6 @@ static inline bool is_page_busy(struct dma_page *page)
- 	return page->in_use != 0;
+--- a/arch/parisc/include/asm/fb.h
++++ b/arch/parisc/include/asm/fb.h
+@@ -12,9 +12,13 @@ static inline void fb_pgprotect(struct f
+ 	pgprot_val(vma->vm_page_prot) |= _PAGE_NO_CACHE;
  }
  
--static void pool_free_page(struct dma_pool *pool, struct dma_page *page)
--{
--	dma_addr_t dma = page->dma;
--
--#ifdef	DMAPOOL_DEBUG
--	memset(page->vaddr, POOL_POISON_FREED, pool->allocation);
--#endif
--	dma_free_coherent(pool->dev, pool->allocation, page->vaddr, dma);
--	list_del(&page->page_list);
--	kfree(page);
--}
--
- /**
-  * dma_pool_destroy - destroys a pool of dma memory blocks.
-  * @pool: dma pool that will be destroyed
-@@ -280,14 +268,22 @@ void dma_pool_destroy(struct dma_pool *pool)
- 	mutex_unlock(&pools_reg_lock);
- 
- 	list_for_each_entry_safe(page, tmp, &pool->page_list, page_list) {
-+		void *vaddr = page->vaddr;
-+
- 		if (is_page_busy(page)) {
- 			dev_err(pool->dev, "%s %s, %p busy\n", __func__,
--				pool->name, page->vaddr);
-+				pool->name, vaddr);
- 			/* leak the still-in-use consistent memory */
--			list_del(&page->page_list);
--			kfree(page);
--		} else
--			pool_free_page(pool, page);
-+		} else {
-+#ifdef	DMAPOOL_DEBUG
-+			memset(vaddr, POOL_POISON_FREED, pool->allocation);
++#if defined(CONFIG_STI_CONSOLE) || defined(CONFIG_FB_STI)
++int fb_is_primary_device(struct fb_info *info);
++#else
+ static inline int fb_is_primary_device(struct fb_info *info)
+ {
+ 	return 0;
+ }
 +#endif
-+			dma_free_coherent(pool->dev,
-+					  pool->allocation,
-+					  vaddr,
-+					  page->dma);
-+		}
-+		kfree(page);
+ 
+ #endif /* _ASM_FB_H_ */
+--- a/drivers/video/console/sticore.c
++++ b/drivers/video/console/sticore.c
+@@ -30,6 +30,7 @@
+ #include <asm/pdc.h>
+ #include <asm/cacheflush.h>
+ #include <asm/grfioctl.h>
++#include <asm/fb.h>
+ 
+ #include "../fbdev/sticore.h"
+ 
+@@ -1127,6 +1128,22 @@ int sti_call(const struct sti_struct *st
+ 	return ret;
+ }
+ 
++/* check if given fb_info is the primary device */
++int fb_is_primary_device(struct fb_info *info)
++{
++	struct sti_struct *sti;
++
++	sti = sti_get_rom(0);
++
++	/* if no built-in graphics card found, allow any fb driver as default */
++	if (!sti)
++		return true;
++
++	/* return true if it's the default built-in framebuffer driver */
++	return (sti->info == info);
++}
++EXPORT_SYMBOL(fb_is_primary_device);
++
+ MODULE_AUTHOR("Philipp Rumpf, Helge Deller, Thomas Bogendoerfer");
+ MODULE_DESCRIPTION("Core STI driver for HP's NGLE series graphics cards in HP PARISC machines");
+ MODULE_LICENSE("GPL v2");
+--- a/drivers/video/fbdev/stifb.c
++++ b/drivers/video/fbdev/stifb.c
+@@ -1358,11 +1358,11 @@ static int __init stifb_init_fb(struct s
+ 		goto out_err3;
  	}
  
- 	kfree(pool);
-@@ -459,8 +455,7 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
- 	*(int *)vaddr = page->offset;
- 	page->offset = offset;
- 	/*
--	 * Resist a temptation to do
--	 *    if (!is_page_busy(page)) pool_free_page(pool, page);
-+	 * Resist a temptation to free unused pages immediately.
- 	 * Better have a few empty pages hang around.
- 	 */
- 	spin_unlock_irqrestore(&pool->lock, flags);
--- 
-2.25.1
++	/* save for primary gfx device detection & unregister_framebuffer() */
++	sti->info = info;
+ 	if (register_framebuffer(&fb->info) < 0)
+ 		goto out_err4;
+ 
+-	sti->info = info; /* save for unregister_framebuffer() */
+-
+ 	fb_info(&fb->info, "%s %dx%d-%d frame buffer device, %s, id: %04x, mmio: 0x%04lx\n",
+ 		fix->id,
+ 		var->xres, 
+
 
