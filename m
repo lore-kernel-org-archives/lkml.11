@@ -2,92 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 263ECCCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11202CCA481
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357643AbiFGTug (ORCPT
+        id S1357547AbiFGTub (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58460 "EHLO
+        Tue, 7 Jun 2022 15:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354512AbiFGSrG (ORCPT
+        with ESMTP id S1354527AbiFGSrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A5D84A27;
-        Tue,  7 Jun 2022 11:01:44 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFDC9B184;
+        Tue,  7 Jun 2022 11:01:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B074616B6;
-        Tue,  7 Jun 2022 18:01:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19A2FC34115;
-        Tue,  7 Jun 2022 18:01:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624903;
-        bh=eRzrLHb3dA/SfZ9wx5ZQnSWzn70eZOL/0d+mq0SZrAs=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFD4C617B0;
+        Tue,  7 Jun 2022 18:01:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68AA9C34119;
+        Tue,  7 Jun 2022 18:01:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624910;
+        bh=4xrCwR+dSMUMl6tf6Scxfy8ADhapePz4RrscHl0msvY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R1WrvIb/lWBh6nD6bExGdiJBgcRoorT6PcQw3wVmvWJq7H+ltmmGHkwZxE2fQYVxr
-         rpnz2gatGhg1Laky/KxBEP+997fEgZsuweKkqDJvES7UA27gEwt7mm9icEgZQ5E7Cg
-         pbsT8QDS73lj85ShNfFaaXkdpBbVJhrTo4hj129Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 496/667] NFS: Do not report flush errors in nfs_write_end()
-Date:   Tue,  7 Jun 2022 19:02:41 +0200
-Message-Id: <20220607164949.573786458@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=icE/E+//1clvF6H3osUzarQHJjqqNZlmjZfMTUjMkglGCsMm2CjD0dfK2d1cmBCZ2
+         NEEZ+rffVkfN1pxkI5gua7kYz+1tlozxev2N1ztKOB0GjOWwxp9OqYM4q9fN+u+b8a
+         r2M+kSFf22qZdLWNni8rWB0kQ8a6dMOJ3pTSHwFPfZbRVi7TShk8seEymRp2awpwoz
+         J2Tr7HQj28aniVoleiFe8aWbTdfXIuqGFR7VcUBwHbHGhKcKA1a5/8Nfw2nfp6/ZmI
+         aTuuzHwhVw4aq0izws4hcn2uoKMDYn30tMYETmMl2bWdwg7XZ6R9xYEMrdAZRQ9YYs
+         megXsVzVz8l/Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 08/27] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
+Date:   Tue,  7 Jun 2022 14:01:12 -0400
+Message-Id: <20220607180133.481701-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
+References: <20220607180133.481701-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit d95b26650e86175e4a97698d89bc1626cd1df0c6 ]
+[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
 
-If we do flush cached writebacks in nfs_write_end() due to the imminent
-expiration of an RPCSEC_GSS session, then we should defer reporting any
-resulting errors until the calls to file_check_and_advance_wb_err() in
-nfs_file_write() and nfs_file_fsync().
+There is a deadlock in sa1100_set_termios(), which is shown
+below:
 
-Fixes: 6fbda89b257f ("NFS: Replace custom error reporting mechanism with generic one")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+   (Thread 1)              |      (Thread 2)
+                           | sa1100_enable_ms()
+sa1100_set_termios()       |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | sa1100_timeout()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
+
+We hold sport->port.lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need sport->port.lock in position (2) of thread 2. As a result,
+sa1100_set_termios() will block forever.
+
+This patch moves del_timer_sync() before spin_lock_irqsave()
+in order to prevent the deadlock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/file.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/tty/serial/sa1100.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index 1b66362696e0..a8693cc50c7c 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -390,11 +390,8 @@ static int nfs_write_end(struct file *file, struct address_space *mapping,
- 		return status;
- 	NFS_I(mapping->host)->write_io += copied;
+diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
+index a399772be3fc..8a65fb1ce568 100644
+--- a/drivers/tty/serial/sa1100.c
++++ b/drivers/tty/serial/sa1100.c
+@@ -439,6 +439,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
+ 	quot = uart_get_divisor(port, baud);
  
--	if (nfs_ctx_key_to_expire(ctx, mapping->host)) {
--		status = nfs_wb_all(mapping->host);
--		if (status < 0)
--			return status;
--	}
-+	if (nfs_ctx_key_to_expire(ctx, mapping->host))
-+		nfs_wb_all(mapping->host);
++	del_timer_sync(&sport->timer);
++
+ 	spin_lock_irqsave(&sport->port.lock, flags);
  
- 	return copied;
- }
+ 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
+@@ -469,8 +471,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+ 				UTSR1_TO_SM(UTSR1_ROR);
+ 	}
+ 
+-	del_timer_sync(&sport->timer);
+-
+ 	/*
+ 	 * Update the per-port timeout.
+ 	 */
 -- 
 2.35.1
-
-
 
