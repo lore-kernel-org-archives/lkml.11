@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE9ECCA49F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 163C3C19F55
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388785AbiFHAu5 (ORCPT
+        id S1392113AbiFHAvp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:50:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49792 "EHLO
+        Tue, 7 Jun 2022 20:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381813AbiFGWVt (ORCPT
+        with ESMTP id S1380568AbiFGWWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AA526A90C;
-        Tue,  7 Jun 2022 12:22:01 -0700 (PDT)
+        Tue, 7 Jun 2022 18:22:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57EEF26D34A;
+        Tue,  7 Jun 2022 12:22:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9ED83609D0;
-        Tue,  7 Jun 2022 19:21:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA755C385A2;
-        Tue,  7 Jun 2022 19:21:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 053BCB823CA;
+        Tue,  7 Jun 2022 19:22:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76887C385A2;
+        Tue,  7 Jun 2022 19:22:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629711;
-        bh=JResAk/B+hthY8xeZahQu9QuVQDbRBIYLvFy6476UII=;
+        s=korg; t=1654629741;
+        bh=UOKdETRuR5DXM21XqefVhp20EYHK9K/myDZldj1142s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F5jxDbSK9KcMjB2kTdT5ByCgM7vBGSKauRJu90rTZ55c0ks9z1CzCiDm90euJGhIv
-         VcTMf/OS+jLM8OQIf40Hh1pWXM5tpYHvV8d9Wkqcl8c95V6QMXjjy3nDbfjr6e0MBO
-         jy64hhea+FQZejsMCebA4sVmeVMPHWwYfcVPTmNg=
+        b=rKXE6eGZ5nHiJtSXnVaGiNSqaIHrYtWLO+e7HB8KUxMY/UHYr4ln0n8AYDmoEDbP0
+         RQlDxR8MHsMiCT64hujXACfUEyWxAV3usCV7tkBK92FHF2WA+FZ0g4tKiyHQQqb2uy
+         nH55nWi83MbYS8r9Z08nvKbza91wR+6/gCLM5m7s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Moore <paul@paul-moore.com>,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.18 789/879] landlock: Create find_rule() from unmask_layers()
-Date:   Tue,  7 Jun 2022 19:05:07 +0200
-Message-Id: <20220607165025.766953867@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH 5.18 799/879] md: fix an incorrect NULL check in md_reload_sb
+Date:   Tue,  7 Jun 2022 19:05:17 +0200
+Message-Id: <20220607165026.051730455@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,92 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 2cd7cd6eed88b8383cfddce589afe9c0ae1d19b4 upstream.
+commit 64c54d9244a4efe9bc6e9c98e13c4bbb8bb39083 upstream.
 
-This refactoring will be useful in a following commit.
+The bug is here:
+	if (!rdev || rdev->desc_nr != nr) {
 
-Reviewed-by: Paul Moore <paul@paul-moore.com>
-Link: https://lore.kernel.org/r/20220506161102.525323-4-mic@digikod.net
+The list iterator value 'rdev' will *always* be set and non-NULL
+by rdev_for_each_rcu(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+found (In fact, it will be a bogus pointer to an invalid struct
+object containing the HEAD). Otherwise it will bypass the check
+and lead to invalid memory access passing the check.
+
+To fix the bug, use a new variable 'iter' as the list iterator,
+while using the original variable 'pdev' as a dedicated pointer to
+point to the found element.
+
 Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Fixes: 70bcecdb1534 ("md-cluster: Improve md_reload_sb to be less error prone")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/landlock/fs.c |   41 ++++++++++++++++++++++++++++-------------
- 1 file changed, 28 insertions(+), 13 deletions(-)
+ drivers/md/md.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/security/landlock/fs.c
-+++ b/security/landlock/fs.c
-@@ -183,23 +183,36 @@ int landlock_append_fs_rule(struct landl
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -9793,16 +9793,18 @@ static int read_rdev(struct mddev *mddev
  
- /* Access-control management */
- 
--static inline layer_mask_t
--unmask_layers(const struct landlock_ruleset *const domain,
--	      const struct path *const path, const access_mask_t access_request,
--	      layer_mask_t layer_mask)
-+/*
-+ * The lifetime of the returned rule is tied to @domain.
-+ *
-+ * Returns NULL if no rule is found or if @dentry is negative.
-+ */
-+static inline const struct landlock_rule *
-+find_rule(const struct landlock_ruleset *const domain,
-+	  const struct dentry *const dentry)
+ void md_reload_sb(struct mddev *mddev, int nr)
  {
- 	const struct landlock_rule *rule;
- 	const struct inode *inode;
--	size_t i;
+-	struct md_rdev *rdev;
++	struct md_rdev *rdev = NULL, *iter;
+ 	int err;
  
--	if (d_is_negative(path->dentry))
--		/* Ignore nonexistent leafs. */
--		return layer_mask;
--	inode = d_backing_inode(path->dentry);
-+	/* Ignores nonexistent leafs. */
-+	if (d_is_negative(dentry))
-+		return NULL;
-+
-+	inode = d_backing_inode(dentry);
- 	rcu_read_lock();
- 	rule = landlock_find_rule(
- 		domain, rcu_dereference(landlock_inode(inode)->object));
- 	rcu_read_unlock();
-+	return rule;
-+}
-+
-+static inline layer_mask_t unmask_layers(const struct landlock_rule *const rule,
-+					 const access_mask_t access_request,
-+					 layer_mask_t layer_mask)
-+{
-+	size_t layer_level;
-+
- 	if (!rule)
- 		return layer_mask;
+ 	/* Find the rdev */
+-	rdev_for_each_rcu(rdev, mddev) {
+-		if (rdev->desc_nr == nr)
++	rdev_for_each_rcu(iter, mddev) {
++		if (iter->desc_nr == nr) {
++			rdev = iter;
+ 			break;
++		}
+ 	}
  
-@@ -210,8 +223,9 @@ unmask_layers(const struct landlock_rule
- 	 * the remaining layers for each inode, from the first added layer to
- 	 * the last one.
- 	 */
--	for (i = 0; i < rule->num_layers; i++) {
--		const struct landlock_layer *const layer = &rule->layers[i];
-+	for (layer_level = 0; layer_level < rule->num_layers; layer_level++) {
-+		const struct landlock_layer *const layer =
-+			&rule->layers[layer_level];
- 		const layer_mask_t layer_bit = BIT_ULL(layer->level - 1);
- 
- 		/* Checks that the layer grants access to the full request. */
-@@ -269,8 +283,9 @@ static int check_access_path(const struc
- 	while (true) {
- 		struct dentry *parent_dentry;
- 
--		layer_mask = unmask_layers(domain, &walker_path, access_request,
--					   layer_mask);
-+		layer_mask =
-+			unmask_layers(find_rule(domain, walker_path.dentry),
-+				      access_request, layer_mask);
- 		if (layer_mask == 0) {
- 			/* Stops when a rule from each layer grants access. */
- 			allowed = true;
+-	if (!rdev || rdev->desc_nr != nr) {
++	if (!rdev) {
+ 		pr_warn("%s: %d Could not find rdev with nr %d\n", __func__, __LINE__, nr);
+ 		return;
+ 	}
 
 
