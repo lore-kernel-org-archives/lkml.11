@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 802A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C047C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:32:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381200AbiFGVbo (ORCPT
+        id S1380860AbiFGVbZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44468 "EHLO
+        Tue, 7 Jun 2022 17:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377943AbiFGUek (ORCPT
+        with ESMTP id S1378162AbiFGUey (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:40 -0400
+        Tue, 7 Jun 2022 16:34:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2406B17FC06;
-        Tue,  7 Jun 2022 11:36:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5BD181440;
+        Tue,  7 Jun 2022 11:37:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7164F60B3D;
-        Tue,  7 Jun 2022 18:36:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81CFEC385A2;
-        Tue,  7 Jun 2022 18:36:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBC83615E9;
+        Tue,  7 Jun 2022 18:37:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DC10C385A2;
+        Tue,  7 Jun 2022 18:37:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627013;
-        bh=WXLvoDEgOURHcqxi5b70GJyTNlEI6Sj6KOIHstgFnBk=;
+        s=korg; t=1654627055;
+        bh=D5WoLubz/8pRjN+/3WrsVvLyU0W60nyn0u8iM9IvraE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=evtZEGj0vIL7DIGRH+8wGZQiQaDsHI7vSnuBvI9rF2LErS2iTJxRVvftc/ORSOubw
-         tgFVyRvhBDnw0Qn6Tq/FdpGgm/dQkbPbx2ZNzoM8nNzGZUuPW5K0O8iWXN06aPwbTL
-         qSu8FSdRrvBVarzxc5OGNsv+mufD+meumUrKIRMw=
+        b=KZKVD6mDWf63vqP2tNMe1gIlbkTWhOdFdEjAszdulmPTsgywFze+ezcCnMgZ8FPlL
+         S1Jn42/dmxHA3BgLGO4O+Gw27u3s88d8KHHfm1+akYPFIEUXOLyJcQolbjffi7NGXV
+         e2dD0uJJ/7R2Q9vfQw1zZUthaNu/xbcJ9ShHzNlI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Joe Mario <jmario@redhat.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 586/772] NFS: Further fixes to the writeback error handling
-Date:   Tue,  7 Jun 2022 19:02:58 +0200
-Message-Id: <20220607165006.215044926@linuxfoundation.org>
+Subject: [PATCH 5.17 599/772] perf c2c: Use stdio interface if slang is not supported
+Date:   Tue,  7 Jun 2022 19:03:11 +0200
+Message-Id: <20220607165006.591982230@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,98 +56,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Leo Yan <leo.yan@linaro.org>
 
-[ Upstream commit c6fd3511c3397dd9cbc6dc5d105bbedb69bf4061 ]
+[ Upstream commit c4040212bc97d16040712a410335f93bc94d2262 ]
 
-When we handle an error by redirtying the page, we're not corrupting the
-mapping, so we don't want the error to be recorded in the mapping.
-If the caller has specified a sync_mode of WB_SYNC_NONE, we can just
-return AOP_WRITEPAGE_ACTIVATE. However if we're dealing with
-WB_SYNC_ALL, we need to ensure that retries happen when the errors are
-non-fatal.
+If the slang lib is not installed on the system, perf c2c tool disables TUI
+mode and roll back to use stdio mode;  but the flag 'c2c.use_stdio' is
+missed to set true and thus it wrongly applies UI quirks in the function
+ui_quirks().
 
-Reported-by: Olga Kornievskaia <aglo@umich.edu>
-Fixes: 8fc75bed96bb ("NFS: Fix up return value on fatal errors in nfs_page_async_flush()")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+This commit forces to use stdio interface if slang is not supported, and
+it can avoid to apply the UI quirks and show the correct metric header.
+
+Before:
+
+=================================================
+      Shared Cache Line Distribution Pareto
+=================================================
+  -------------------------------------------------------------------------------
+      0        0        0       99        0        0        0      0xaaaac17d6000
+  -------------------------------------------------------------------------------
+    0.00%    0.00%    6.06%    0.00%    0.00%    0.00%   0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
+    0.00%    0.00%   93.94%    0.00%    0.00%    0.00%   0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
+
+After:
+
+=================================================
+      Shared Cache Line Distribution Pareto
+=================================================
+  -------------------------------------------------------------------------------
+      0        0        0       99        0        0        0      0xaaaac17d6000
+  -------------------------------------------------------------------------------
+           0.00%    0.00%    6.06%    0.00%    0.00%    0.00%                0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
+           0.00%    0.00%   93.94%    0.00%    0.00%    0.00%                0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
+
+Fixes: 5a1a99cd2e4e1557 ("perf c2c report: Add main TUI browser")
+Reported-by: Joe Mario <jmario@redhat.com>
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: http://lore.kernel.org/lkml/20220526145400.611249-1-leo.yan@linaro.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/write.c | 39 ++++++++++++++++++---------------------
- 1 file changed, 18 insertions(+), 21 deletions(-)
+ tools/perf/builtin-c2c.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/fs/nfs/write.c b/fs/nfs/write.c
-index b28be2582c90..477162d2e8a2 100644
---- a/fs/nfs/write.c
-+++ b/fs/nfs/write.c
-@@ -603,8 +603,9 @@ static void nfs_write_error(struct nfs_page *req, int error)
-  * Find an associated nfs write request, and prepare to flush it out
-  * May return an error if the user signalled nfs_wait_on_request().
-  */
--static int nfs_page_async_flush(struct nfs_pageio_descriptor *pgio,
--				struct page *page)
-+static int nfs_page_async_flush(struct page *page,
-+				struct writeback_control *wbc,
-+				struct nfs_pageio_descriptor *pgio)
- {
- 	struct nfs_page *req;
- 	int ret = 0;
-@@ -630,11 +631,11 @@ static int nfs_page_async_flush(struct nfs_pageio_descriptor *pgio,
- 		/*
- 		 * Remove the problematic req upon fatal errors on the server
- 		 */
--		if (nfs_error_is_fatal(ret)) {
--			if (nfs_error_is_fatal_on_server(ret))
--				goto out_launder;
--		} else
--			ret = -EAGAIN;
-+		if (nfs_error_is_fatal_on_server(ret))
-+			goto out_launder;
-+		if (wbc->sync_mode == WB_SYNC_NONE)
-+			ret = AOP_WRITEPAGE_ACTIVATE;
-+		redirty_page_for_writepage(wbc, page);
- 		nfs_redirty_request(req);
- 		pgio->pg_error = 0;
- 	} else
-@@ -650,15 +651,8 @@ static int nfs_page_async_flush(struct nfs_pageio_descriptor *pgio,
- static int nfs_do_writepage(struct page *page, struct writeback_control *wbc,
- 			    struct nfs_pageio_descriptor *pgio)
- {
--	int ret;
--
- 	nfs_pageio_cond_complete(pgio, page_index(page));
--	ret = nfs_page_async_flush(pgio, page);
--	if (ret == -EAGAIN) {
--		redirty_page_for_writepage(wbc, page);
--		ret = AOP_WRITEPAGE_ACTIVATE;
--	}
--	return ret;
-+	return nfs_page_async_flush(page, wbc, pgio);
- }
+diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
+index 77dd4afacca4..d8ec683b06a5 100644
+--- a/tools/perf/builtin-c2c.c
++++ b/tools/perf/builtin-c2c.c
+@@ -2734,9 +2734,7 @@ static int perf_c2c__report(int argc, const char **argv)
+ 		   "the input file to process"),
+ 	OPT_INCR('N', "node-info", &c2c.node_info,
+ 		 "show extra node info in report (repeat for more info)"),
+-#ifdef HAVE_SLANG_SUPPORT
+ 	OPT_BOOLEAN(0, "stdio", &c2c.use_stdio, "Use the stdio interface"),
+-#endif
+ 	OPT_BOOLEAN(0, "stats", &c2c.stats_only,
+ 		    "Display only statistic tables (implies --stdio)"),
+ 	OPT_BOOLEAN(0, "full-symbols", &c2c.symbol_full,
+@@ -2766,6 +2764,10 @@ static int perf_c2c__report(int argc, const char **argv)
+ 	if (argc)
+ 		usage_with_options(report_c2c_usage, options);
  
- /*
-@@ -725,12 +719,15 @@ int nfs_writepages(struct address_space *mapping, struct writeback_control *wbc)
- 		priority = wb_priority(wbc);
- 	}
++#ifndef HAVE_SLANG_SUPPORT
++	c2c.use_stdio = true;
++#endif
++
+ 	if (c2c.stats_only)
+ 		c2c.use_stdio = true;
  
--	nfs_pageio_init_write(&pgio, inode, priority, false,
--				&nfs_async_write_completion_ops);
--	pgio.pg_io_completion = ioc;
--	err = write_cache_pages(mapping, wbc, nfs_writepages_callback, &pgio);
--	pgio.pg_error = 0;
--	nfs_pageio_complete(&pgio);
-+	do {
-+		nfs_pageio_init_write(&pgio, inode, priority, false,
-+				      &nfs_async_write_completion_ops);
-+		pgio.pg_io_completion = ioc;
-+		err = write_cache_pages(mapping, wbc, nfs_writepages_callback,
-+					&pgio);
-+		pgio.pg_error = 0;
-+		nfs_pageio_complete(&pgio);
-+	} while (err < 0 && !nfs_error_is_fatal(err));
- 	nfs_io_completion_put(ioc);
- 
- 	if (err < 0)
 -- 
 2.35.1
 
