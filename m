@@ -2,111 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 131B2CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5264CCCA485
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392335AbiFHAwS (ORCPT
+        id S1392499AbiFHAwi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:52:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59370 "EHLO
+        Tue, 7 Jun 2022 20:52:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455626AbiFGXSy (ORCPT
+        with ESMTP id S1384167AbiFGWKY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:18:54 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CFF715436E
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:20:55 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id z17so16585946pff.7
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:20:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xACJxgm2NxMfJ63TOgMaf2wsYKKZyKH+sYO/uMTxdV8=;
-        b=cnhjNgeiucBtliMvRGjPQ9KBtpnKxEuHm7F7qoURydmKKos1SsNd6oNPqrre0KQyd0
-         oJtgjEwR59smODLPbgRC8GsBqT+lNY2j1sg7fNriXcw+ndQFHZsEQXiEkqNs78fush4R
-         eMhMJ+LFjwo3VEdi1oew1qnd+vP2Us70VbhEc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xACJxgm2NxMfJ63TOgMaf2wsYKKZyKH+sYO/uMTxdV8=;
-        b=2097xf7/bIE0G2RpIqAx1+qZYsJR7vUZOrMkDhaMmK+9DQevPynw1L2Gium8jfSsUv
-         eiHkt2D4lniUwS8MCBMlhWAU+INCUR5DNbzAAOhwVKYVSgidgpoeuJuadNOC+CovIkoY
-         hBNE+k3y540CiwiPbINq9CpcxQq9qB5S4fwoLdMnLWyeNdBxERHTxPJyvWPGMcxx3Gmv
-         4IYbKHfEk6Tp2hEcVN7DudD8kMy6ZQprq8qwkZXEPPxh3wFCPQUjhQ1yPE6MquwC8CTo
-         3sbClLa0dzpWCJpNTqNIVkb1Zl8zxz2e1F/xycZDTqd09T2zc/nWR5/PyO81xVX8KJ93
-         tgyA==
-X-Gm-Message-State: AOAM530ac82dQ0V52zZs0HpYWK38cnnXpEZDS14R/221y2WNX8oH4TTK
-        LYupOPejeQzNjSowMO7gsQ9jGg==
-X-Google-Smtp-Source: ABdhPJz1N83MQjqoGWeUnm89J+Kb2P8aSo8x/0iIX66k35MM5DbderyK0bdkWVMnhV9Pr3faH31mxQ==
-X-Received: by 2002:a62:6144:0:b0:51b:99a7:5164 with SMTP id v65-20020a626144000000b0051b99a75164mr31011021pfb.61.1654636853838;
-        Tue, 07 Jun 2022 14:20:53 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:b689:cc5b:e6ad:930e])
-        by smtp.gmail.com with ESMTPSA id je21-20020a170903265500b00163b02822bdsm12916329plb.160.2022.06.07.14.20.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 14:20:53 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 14:20:51 -0700
-From:   Brian Norris <briannorris@chromium.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 5.17 404/772] media: rkvdec: Stop overclocking the decoder
-Message-ID: <Yp/BMw3niNfLjBVI@google.com>
-References: <20220607164948.980838585@linuxfoundation.org>
- <20220607165000.914511779@linuxfoundation.org>
+        Tue, 7 Jun 2022 18:10:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71CA39B81;
+        Tue,  7 Jun 2022 12:19:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92843B823D5;
+        Tue,  7 Jun 2022 19:19:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07AE9C385A2;
+        Tue,  7 Jun 2022 19:19:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629549;
+        bh=8n65b4W0D13H1VusYskSw10GI6Nc3hno/LvUC8WQrGk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MNbH2kZYxfL8qzeltEXvYW9KHLEvjR84KQnMKd0s5gEjyHgnez7oiqlgNhiQ/sKMa
+         Ex1KPdibndV8wcBJX7Jr7g2SI9fX6oTY+feX+cEK/97kyWNGT3CFo+WQ7k+mK0+cKG
+         Li9NLELfZ6bHMiP0q4EYpHZCQw8KZeOZ5LgdgPQA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.18 732/879] bfq: Remove pointless bfq_init_rq() calls
+Date:   Tue,  7 Jun 2022 19:04:10 +0200
+Message-Id: <20220607165024.103327267@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607165000.914511779@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Jan Kara <jack@suse.cz>
 
-On Tue, Jun 07, 2022 at 06:59:56PM +0200, Greg Kroah-Hartman wrote:
-> From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> 
-> [ Upstream commit 9998943f6dfc5d5472bfab2e38527fb6ba5e9da7 ]
-> 
-> While this overclock hack seems to work on some implementations
-> (some ChromeBooks, RockPi4) it also causes instability on other
-> implementations (notably LibreComputer Renegade, but there were more
-> reports in the LibreELEC project, where this has been removed). While
-> performance is indeed affected (tested with GStreamer), 4K playback
-> still works as long as you don't operate in lock step and keep at
-> least 1 frame ahead of time in the decode queue.
-> 
-> After discussion with ChromeOS members, it would seem that their
-> implementation indeed used to synchronously decode each frame, so
-> this hack was simply compensating for their code being less
-> efficient. In my opinion, this hack should not have been included
-> upstream.
-> 
-> Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
-> Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
-> Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-> Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+commit 5f550ede5edf846ecc0067be1ba80514e6fe7f8e upstream.
 
-FWIW, I've noticed a problem that is uncovered by this patch, because
-the default clock rate is not currently acceptable all the time. See my
-fix here:
+We call bfq_init_rq() from request merging functions where requests we
+get should have already gone through bfq_init_rq() during insert and
+anyway we want to do anything only if the request is already tracked by
+BFQ. So replace calls to bfq_init_rq() with RQ_BFQQ() instead to simply
+skip requests untracked by BFQ. We move bfq_init_rq() call in
+bfq_insert_request() a bit earlier to cover request merging and thus
+can transfer FIFO position in case of a merge.
 
-https://lore.kernel.org/all/20220607141535.1.Idafe043ffc94756a69426ec68872db0645c5d6e2@changeid/
-[PATCH] arm64: dts: rockchip: Assign RK3399 VDU clock rate
+CC: stable@vger.kernel.org
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-6-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ block/bfq-iosched.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-It might be nice if $subject patch could be delayed until the fix is in
-too. The 5.19 cycle is only in -rc1, after all.
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2501,8 +2501,6 @@ static int bfq_request_merge(struct requ
+ 	return ELEVATOR_NO_MERGE;
+ }
+ 
+-static struct bfq_queue *bfq_init_rq(struct request *rq);
+-
+ static void bfq_request_merged(struct request_queue *q, struct request *req,
+ 			       enum elv_merge type)
+ {
+@@ -2511,7 +2509,7 @@ static void bfq_request_merged(struct re
+ 	    blk_rq_pos(req) <
+ 	    blk_rq_pos(container_of(rb_prev(&req->rb_node),
+ 				    struct request, rb_node))) {
+-		struct bfq_queue *bfqq = bfq_init_rq(req);
++		struct bfq_queue *bfqq = RQ_BFQQ(req);
+ 		struct bfq_data *bfqd;
+ 		struct request *prev, *next_rq;
+ 
+@@ -2563,8 +2561,8 @@ static void bfq_request_merged(struct re
+ static void bfq_requests_merged(struct request_queue *q, struct request *rq,
+ 				struct request *next)
+ {
+-	struct bfq_queue *bfqq = bfq_init_rq(rq),
+-		*next_bfqq = bfq_init_rq(next);
++	struct bfq_queue *bfqq = RQ_BFQQ(rq),
++		*next_bfqq = RQ_BFQQ(next);
+ 
+ 	if (!bfqq)
+ 		goto remove;
+@@ -6133,6 +6131,8 @@ static inline void bfq_update_insert_sta
+ 					   unsigned int cmd_flags) {}
+ #endif /* CONFIG_BFQ_CGROUP_DEBUG */
+ 
++static struct bfq_queue *bfq_init_rq(struct request *rq);
++
+ static void bfq_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
+ 			       bool at_head)
+ {
+@@ -6148,6 +6148,7 @@ static void bfq_insert_request(struct bl
+ 		bfqg_stats_update_legacy_io(q, rq);
+ #endif
+ 	spin_lock_irq(&bfqd->lock);
++	bfqq = bfq_init_rq(rq);
+ 	if (blk_mq_sched_try_insert_merge(q, rq, &free)) {
+ 		spin_unlock_irq(&bfqd->lock);
+ 		blk_mq_free_requests(&free);
+@@ -6156,7 +6157,6 @@ static void bfq_insert_request(struct bl
+ 
+ 	trace_block_rq_insert(rq);
+ 
+-	bfqq = bfq_init_rq(rq);
+ 	if (!bfqq || at_head) {
+ 		if (at_head)
+ 			list_add(&rq->queuelist, &bfqd->dispatch);
 
-(The same seems to apply for the 5.{18,15,10}.y series too.)
 
-Brian
