@@ -2,129 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD9FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D7B7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:53:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240436AbiFHBs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39444 "EHLO
+        id S1378804AbiFHBtl (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1575397AbiFGX1G (ORCPT
+        with ESMTP id S1383641AbiFGWGF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:27:06 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D39840BA6C
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:39:25 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id y85so6619710iof.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:39:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DMYMqyjnC+Pa1f9t3aRd7d9q29f2hRwNi8wYEpJotmk=;
-        b=h4EOnSJW5qlumjyDRpOGgdjQoOyB4Q+O6l59N39UQahjkhxDl4VSySl01hMTwc9zRT
-         EfuDzgEVqg/pBp3s4lQPkvko7HQkMiBmLEgZ1AEo0N7Phwb0v+fDY90LCrvAPcCNaH2r
-         O3L623yMARWhJhFoBgQ8IewDspFlSDu0Jp5ag=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DMYMqyjnC+Pa1f9t3aRd7d9q29f2hRwNi8wYEpJotmk=;
-        b=TQOfrQNt6BIVCAefIxOM9uAYyJaAq2Z2820hJbCcHB+8vcYm3pjM6zu/wolANk8sRi
-         pw7LFfPNIHCyhAwbCBMZMKVqdQFua0hzdZL70XsM97797T53sp0BtJTvWl9jKPsR+uqz
-         nbVl9/fzOI+hU/Rdjd4pk0Rc25wb3pO3R7MVxI4zZnFEykznHBCJgjrh7EWdNvUhTcwd
-         ViXv0bOujRp3rqmX6HF3MoIwkDvFJF55BNgasBeJino8aW0NaEkp++kgn0PAJNPxrI6l
-         18GbQjNsJWvzJVKgd7jhmi2Vh7qrGvfsHfck/+l4GrDAVQoBrN0oqZ+w4KhlcBhlPfX0
-         PHTw==
-X-Gm-Message-State: AOAM531XWd47azGJAjnPpoirOc/R/AdHMRb98CrqrzqX4MeaEI7SN8AT
-        wG+7YSRUMzGchXDWFUV/o3q2Zw==
-X-Google-Smtp-Source: ABdhPJx4JWLAS1RWT5TFeTIfGK6vW9bn00rsuVLiTtAdQU1cno64ZEk4yj+YCiecaRL9yWnI7GLMpg==
-X-Received: by 2002:a05:6638:1495:b0:331:c58a:301 with SMTP id j21-20020a056638149500b00331c58a0301mr4212898jak.134.1654637962472;
-        Tue, 07 Jun 2022 14:39:22 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id e1-20020a022101000000b0032b3a78179csm7086269jaa.96.2022.06.07.14.39.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 14:39:22 -0700 (PDT)
-Subject: Re: [Bug Report] - kselftest build fails if output directory is first
- level sub-directory
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Shuah Khan <shuah@kernel.org>,
-        KERNEL SELFTEST FRAMEWORK <linux-kselftest@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "kernelci@groups.io" <kernelci@groups.io>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <c25d7ea7-4f72-4a2b-d8c3-d317e64fcbbb@collabora.com>
- <CAK7LNATL4nMmKgrjS8meavnpn=HisD30QxuPUKDqtWWgbGcSZw@mail.gmail.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <a9470bfc-bddc-6aa6-0043-d49eb57611fe@linuxfoundation.org>
-Date:   Tue, 7 Jun 2022 15:39:20 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 7 Jun 2022 18:06:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7716019595B;
+        Tue,  7 Jun 2022 12:16:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04F86618EC;
+        Tue,  7 Jun 2022 19:16:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1505DC385A2;
+        Tue,  7 Jun 2022 19:16:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629408;
+        bh=BUUyuJwqsmQ8ppwNkzVju8FLysHPnnjZRg/0W7ctp2w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rn9/RqC8NPobfc98cJ811h3yVaUeCELZhnTfRZzWTdFcfJX3KXJeFgclZ4BCkw5dh
+         x84YajPMFrDE9GcBQsXeudYHz3qBY1ENWTnvrm0ob8WaUwnZ33xlA9WQ5gsNs8j3YQ
+         kQy/lwr0fOnz03MhE4eGV5ucED6jDFcludvhlDII=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Badger <ebadger@purestorage.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 630/879] PCI/AER: Clear MULTI_ERR_COR/UNCOR_RCV bits
+Date:   Tue,  7 Jun 2022 19:02:28 +0200
+Message-Id: <20220607165021.136028307@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <CAK7LNATL4nMmKgrjS8meavnpn=HisD30QxuPUKDqtWWgbGcSZw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/22/22 11:15 AM, Masahiro Yamada wrote:
-> On Sat, May 21, 2022 at 3:44 PM Muhammad Usama Anjum
-> <usama.anjum@collabora.com> wrote:
->>
->> Hello,
->>
->> kselftest can be built using the kernel's top most Makefile without
->> using kselftest's Makefile directly. But there is bug in the top most
->> Makefile. The build fails if the specified output directory is first
->> level sub-directory. Here is a example to reproduce this bug:
->>
->> make kselftest-all O=build
->>
->> "The Make is working in a wrong directory, that is why the relative path
->> does not work." Masahiro Yamada. Feel free to fix it if someone pin the bug.
->>
->> It should be noted that the build works in some other combinations:
->> make kselftest-all (works)
->> make kselftest-all O=/tmp (works)
->> make kselftest-all O=build/build2 (works)
->>
->> My unsuccessful attempt to fix this bug can be found here:
->> https://lore.kernel.org/lkml/20220223191016.1658728-1-usama.anjum@collabora.com/
->>
->> Thanks,
->> Muhammad Usama Anjum
-> 
-> 
-> This problem starts from the bad design of the kselftest framework.
-> I did some research before. I think I can fix the root cause but
-> currently I do not have enough time to do it.
-> 
-> 
-> KBUILD_ABS_SRCTREE is a user-interface to request
-> Kbuild to use the absolute path.
-> If it is forced in the top Makefile, users have no way to
-> negate it.
-> It is true that using the absolute path is a quick work-around
-> because you do not need to care about the current working directory.
-> 
-> If you insist on it,  just go ahead.  It is just two line changes.
-> Once the issue is fixed in a better way, your patch can be reverted easily.
-> 
-> 
-> 
+From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-Why don't we work on fixing it the wright way? I would rather go that
-route than using short rem fixes.
+[ Upstream commit 203926da2bff8e172200a2f11c758987af112d4a ]
 
-Usama, would you be interested in working on a proper fix as recommended
-by Masahiro?
+When a Root Port or Root Complex Event Collector receives an error Message
+e.g., ERR_COR, it sets PCI_ERR_ROOT_COR_RCV in the Root Error Status
+register and logs the Requester ID in the Error Source Identification
+register.  If it receives a second ERR_COR Message before software clears
+PCI_ERR_ROOT_COR_RCV, hardware sets PCI_ERR_ROOT_MULTI_COR_RCV and the
+Requester ID is lost.
 
-thanks,
--- Shuah
+In the following scenario, PCI_ERR_ROOT_MULTI_COR_RCV was never cleared:
+
+  - hardware receives ERR_COR message
+  - hardware sets PCI_ERR_ROOT_COR_RCV
+  - aer_irq() entered
+  - aer_irq(): status = pci_read_config_dword(PCI_ERR_ROOT_STATUS)
+  - aer_irq(): now status == PCI_ERR_ROOT_COR_RCV
+  - hardware receives second ERR_COR message
+  - hardware sets PCI_ERR_ROOT_MULTI_COR_RCV
+  - aer_irq(): pci_write_config_dword(PCI_ERR_ROOT_STATUS, status)
+  - PCI_ERR_ROOT_COR_RCV is cleared; PCI_ERR_ROOT_MULTI_COR_RCV is set
+  - aer_irq() entered again
+  - aer_irq(): status = pci_read_config_dword(PCI_ERR_ROOT_STATUS)
+  - aer_irq(): now status == PCI_ERR_ROOT_MULTI_COR_RCV
+  - aer_irq() exits because PCI_ERR_ROOT_COR_RCV not set
+  - PCI_ERR_ROOT_MULTI_COR_RCV is still set
+
+The same problem occurred with ERR_NONFATAL/ERR_FATAL Messages and
+PCI_ERR_ROOT_UNCOR_RCV and PCI_ERR_ROOT_MULTI_UNCOR_RCV.
+
+Fix the problem by queueing an AER event and clearing the Root Error Status
+bits when any of these bits are set:
+
+  PCI_ERR_ROOT_COR_RCV
+  PCI_ERR_ROOT_UNCOR_RCV
+  PCI_ERR_ROOT_MULTI_COR_RCV
+  PCI_ERR_ROOT_MULTI_UNCOR_RCV
+
+See the bugzilla link for details from Eric about how to reproduce this
+problem.
+
+[bhelgaas: commit log, move repro details to bugzilla]
+Fixes: e167bfcaa4cd ("PCI: aerdrv: remove magical ROOT_ERR_STATUS_MASKS")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215992
+Link: https://lore.kernel.org/r/20220418150237.1021519-1-sathyanarayanan.kuppuswamy@linux.intel.com
+Reported-by: Eric Badger <ebadger@purestorage.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pci/pcie/aer.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
+index 9fa1f97e5b27..7952e5efd6cf 100644
+--- a/drivers/pci/pcie/aer.c
++++ b/drivers/pci/pcie/aer.c
+@@ -101,6 +101,11 @@ struct aer_stats {
+ #define ERR_COR_ID(d)			(d & 0xffff)
+ #define ERR_UNCOR_ID(d)			(d >> 16)
+ 
++#define AER_ERR_STATUS_MASK		(PCI_ERR_ROOT_UNCOR_RCV |	\
++					PCI_ERR_ROOT_COR_RCV |		\
++					PCI_ERR_ROOT_MULTI_COR_RCV |	\
++					PCI_ERR_ROOT_MULTI_UNCOR_RCV)
++
+ static int pcie_aer_disable;
+ static pci_ers_result_t aer_root_reset(struct pci_dev *dev);
+ 
+@@ -1196,7 +1201,7 @@ static irqreturn_t aer_irq(int irq, void *context)
+ 	struct aer_err_source e_src = {};
+ 
+ 	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_STATUS, &e_src.status);
+-	if (!(e_src.status & (PCI_ERR_ROOT_UNCOR_RCV|PCI_ERR_ROOT_COR_RCV)))
++	if (!(e_src.status & AER_ERR_STATUS_MASK))
+ 		return IRQ_NONE;
+ 
+ 	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_ERR_SRC, &e_src.id);
+-- 
+2.35.1
+
+
+
