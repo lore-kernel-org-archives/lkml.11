@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03936C2BBEF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7089CCA48B
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354824AbiFGS46 (ORCPT
+        id S1354902AbiFGS5U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:56:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42130 "EHLO
+        Tue, 7 Jun 2022 14:57:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352392AbiFGSRF (ORCPT
+        with ESMTP id S1352403AbiFGSRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:05 -0400
+        Tue, 7 Jun 2022 14:17:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A803193E8;
-        Tue,  7 Jun 2022 10:51:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D5122294;
+        Tue,  7 Jun 2022 10:51:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BAE61616A3;
-        Tue,  7 Jun 2022 17:51:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3A9AC34115;
-        Tue,  7 Jun 2022 17:51:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5A0E61797;
+        Tue,  7 Jun 2022 17:51:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2377C34115;
+        Tue,  7 Jun 2022 17:51:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624294;
-        bh=QTqEj261x6htSNu8XBT8A/STkvQUoVY2oB/tVFDKhq4=;
+        s=korg; t=1654624305;
+        bh=ryHxilJ0m5kwi2l7DWgR4sLjPCCPqNz0RUdabj2f13g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vLjfIgVCd0UwGYZtP+Caqefliaoh9VfN8MMGqLBq0NvdBmJq0Av4HQDF2qJ93PHSc
-         wqX4nld6sBl/bKoKGKlDyzFjj3cun5NdqicuxzboschdoCuo6sJFEl4ng4lKPVnfFV
-         3BS/gl8Q3WGdkRYFNRQ/1Rz+1RNzWLRfuCqo366o=
+        b=YQ5Atw5mrk1xXstMmBg9aEY9M4wlrrwkKMxCjhwI335iAKyLXkW+3ErHPKK4iH6Ky
+         gWxCvBOChhyTH9rOy81USyM9jOxJYBu0z/XcnZgdlSu567YpsNHoE0EZgil1c4BLds
+         Bp6Rdvi4ldg7JOEP7Q4BK4FSUZgI15KRU2hXaj6w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 276/667] drm/rockchip: vop: fix possible null-ptr-deref in vop_bind()
-Date:   Tue,  7 Jun 2022 18:59:01 +0200
-Message-Id: <20220607164943.063837310@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 262/667] x86/speculation: Add missing prototype for unpriv_ebpf_notify()
+Date:   Tue,  7 Jun 2022 18:58:47 +0200
+Message-Id: <20220607164942.640860862@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,39 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-[ Upstream commit f8c242908ad15bbd604d3bcb54961b7d454c43f8 ]
+[ Upstream commit 2147c438fde135d6c145a96e373d9348e7076f7f ]
 
-It will cause null-ptr-deref in resource_size(), if platform_get_resource()
-returns NULL, move calling resource_size() after devm_ioremap_resource() that
-will check 'res' to avoid null-ptr-deref.
+Fix the following warnings seen with "make W=1":
 
-Fixes: 2048e3286f34 ("drm: rockchip: Add basic drm driver")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220422032854.2995175-1-yangyingliang@huawei.com
+  kernel/sysctl.c:183:13: warning: no previous prototype for ‘unpriv_ebpf_notify’ [-Wmissing-prototypes]
+    183 | void __weak unpriv_ebpf_notify(int new_state)
+        |             ^~~~~~~~~~~~~~~~~~
+
+  arch/x86/kernel/cpu/bugs.c:659:6: warning: no previous prototype for ‘unpriv_ebpf_notify’ [-Wmissing-prototypes]
+    659 | void unpriv_ebpf_notify(int new_state)
+        |      ^~~~~~~~~~~~~~~~~~
+
+Fixes: 44a3918c8245 ("x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/5689d065f739602ececaee1e05e68b8644009608.1650930000.git.jpoimboe@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/bpf.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index a25b98b7f5bd..8b4287d40379 100644
---- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-+++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-@@ -2116,10 +2116,10 @@ static int vop_bind(struct device *dev, struct device *master, void *data)
- 	vop_win_init(vop);
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index c5c4b6f09e23..bb766a0b9b51 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1991,6 +1991,8 @@ void bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
+ 				       struct net_device *netdev);
+ bool bpf_offload_dev_match(struct bpf_prog *prog, struct net_device *netdev);
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	vop->len = resource_size(res);
- 	vop->regs = devm_ioremap_resource(dev, res);
- 	if (IS_ERR(vop->regs))
- 		return PTR_ERR(vop->regs);
-+	vop->len = resource_size(res);
++void unpriv_ebpf_notify(int new_state);
++
+ #if defined(CONFIG_NET) && defined(CONFIG_BPF_SYSCALL)
+ int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr);
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
- 	if (res) {
 -- 
 2.35.1
 
