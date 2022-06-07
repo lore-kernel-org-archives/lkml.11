@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3581C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54661C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347953AbiFGR4Y (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:56:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53256 "EHLO
+        id S243302AbiFGR4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347809AbiFGRfs (ORCPT
+        with ESMTP id S1347783AbiFGRfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:35:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66CE10A625;
-        Tue,  7 Jun 2022 10:31:37 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC26D10657D;
+        Tue,  7 Jun 2022 10:31:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 13BD1CE23CF;
-        Tue,  7 Jun 2022 17:31:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C592C385A5;
-        Tue,  7 Jun 2022 17:31:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D561B822B9;
+        Tue,  7 Jun 2022 17:31:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9211C34119;
+        Tue,  7 Jun 2022 17:31:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623094;
-        bh=yjlk9Wv4tzE9aM25/THEMLA+VFbHcaf+jGhdKGoRJ8Y=;
+        s=korg; t=1654623083;
+        bh=WJ1qz385d40EjoodeLDV9Fyq2UfN3XLug7kxrcVZJME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zxLhi/ysetASeX7srtkhx9D03a8Ak19u29ZRuh+JAVlLU8FXkdMVy8xOiP8eN9L1C
-         499eVqdf66DLOpaBDFP4PkDYqBhHUUtKbYyFCSXmuj/icEEUd9TcN3xekc+dkSNs08
-         AAHkQ66phIDPmoC0fjksxMHcwXMdq3kwPE1ByCbY=
+        b=nVoN/3sbJqOIL2LQSG3L+ajcNXvRT2PTHwNBuu1hNVR/JhAD/gGHmGvjS8TNh2EVR
+         tnAVfIa3C7imiblrGImnD5h008+9OQrRN4fSqnfe+Hli6G/S5rFobDjpUDrI1tT5+B
+         dRM/BP/Zha/NrTN+0hiD3+2zLhwh2KOsETcment8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Jeffrey Altman <jaltman@auristor.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 252/452] rxrpc: Fix overlapping ACK accounting
-Date:   Tue,  7 Jun 2022 19:01:49 +0200
-Message-Id: <20220607164916.067269428@linuxfoundation.org>
+Subject: [PATCH 5.10 248/452] net: stmmac: fix out-of-bounds access in a selftest
+Date:   Tue,  7 Jun 2022 19:01:45 +0200
+Message-Id: <20220607164915.949032367@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -53,107 +48,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 8940ba3cfe4841928777fd45eaa92051522c7f0c ]
+[ Upstream commit fe5c5fc145edcf98a759b895f52b646730eeb7be ]
 
-Fix accidental overlapping of Rx-phase ACK accounting with Tx-phase ACK
-accounting through variables shared between the two.  call->acks_* members
-refer to ACKs received in the Tx phase and call->ackr_* members to ACKs
-sent/to be sent during the Rx phase.
+GCC 12 points out that struct tc_action is smaller than
+struct tcf_action:
 
-Fixes: 1a2391c30c0b ("rxrpc: Fix detection of out of order acks")
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Jeffrey Altman <jaltman@auristor.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
+drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c: In function ‘stmmac_test_rxp’:
+drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:1132:21: warning: array subscript ‘struct tcf_gact[0]’ is partly outside array bounds of ‘unsigned char[272]’ [-Warray-bounds]
+ 1132 |                 gact->tcf_action = TC_ACT_SHOT;
+      |                     ^~
+
+Fixes: ccfc639a94f2 ("net: stmmac: selftests: Add a selftest for Flexible RX Parser")
+Link: https://lore.kernel.org/r/20220519004305.2109708-1-kuba@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/ar-internal.h |  7 ++++---
- net/rxrpc/input.c       | 16 ++++++++--------
- 2 files changed, 12 insertions(+), 11 deletions(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_selftests.c  | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 3bad9f5f9102..2fc93467780d 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -659,10 +659,9 @@ struct rxrpc_call {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+index e649a3e6a529..dd5c4ef92ef3 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+@@ -1084,8 +1084,9 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
+ 	unsigned char addr[ETH_ALEN] = {0xde, 0xad, 0xbe, 0xef, 0x00, 0x00};
+ 	struct tc_cls_u32_offload cls_u32 = { };
+ 	struct stmmac_packet_attrs attr = { };
+-	struct tc_action **actions, *act;
++	struct tc_action **actions;
+ 	struct tc_u32_sel *sel;
++	struct tcf_gact *gact;
+ 	struct tcf_exts *exts;
+ 	int ret, i, nk = 1;
  
- 	spinlock_t		input_lock;	/* Lock for packet input to this call */
- 
--	/* receive-phase ACK management */
-+	/* Receive-phase ACK management (ACKs we send). */
- 	u8			ackr_reason;	/* reason to ACK */
- 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
--	rxrpc_serial_t		ackr_first_seq;	/* first sequence number received */
- 	rxrpc_seq_t		ackr_prev_seq;	/* previous sequence number received */
- 	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
- 	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
-@@ -675,8 +674,10 @@ struct rxrpc_call {
- #define RXRPC_CALL_RTT_AVAIL_MASK	0xf
- #define RXRPC_CALL_RTT_PEND_SHIFT	8
- 
--	/* transmission-phase ACK management */
-+	/* Transmission-phase ACK management (ACKs we've received). */
- 	ktime_t			acks_latest_ts;	/* Timestamp of latest ACK received */
-+	rxrpc_seq_t		acks_first_seq;	/* first sequence number received */
-+	rxrpc_seq_t		acks_prev_seq;	/* previous sequence number received */
- 	rxrpc_seq_t		acks_lowest_nak; /* Lowest NACK in the buffer (or ==tx_hard_ack) */
- 	rxrpc_seq_t		acks_lost_top;	/* tx_top at the time lost-ack ping sent */
- 	rxrpc_serial_t		acks_lost_ping;	/* Serial number of probe ACK */
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index dc201363f2c4..f11673cda217 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -812,7 +812,7 @@ static void rxrpc_input_soft_acks(struct rxrpc_call *call, u8 *acks,
- static bool rxrpc_is_ack_valid(struct rxrpc_call *call,
- 			       rxrpc_seq_t first_pkt, rxrpc_seq_t prev_pkt)
- {
--	rxrpc_seq_t base = READ_ONCE(call->ackr_first_seq);
-+	rxrpc_seq_t base = READ_ONCE(call->acks_first_seq);
- 
- 	if (after(first_pkt, base))
- 		return true; /* The window advanced */
-@@ -820,7 +820,7 @@ static bool rxrpc_is_ack_valid(struct rxrpc_call *call,
- 	if (before(first_pkt, base))
- 		return false; /* firstPacket regressed */
- 
--	if (after_eq(prev_pkt, call->ackr_prev_seq))
-+	if (after_eq(prev_pkt, call->acks_prev_seq))
- 		return true; /* previousPacket hasn't regressed. */
- 
- 	/* Some rx implementations put a serial number in previousPacket. */
-@@ -906,8 +906,8 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
- 	/* Discard any out-of-order or duplicate ACKs (outside lock). */
- 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
- 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
--					   first_soft_ack, call->ackr_first_seq,
--					   prev_pkt, call->ackr_prev_seq);
-+					   first_soft_ack, call->acks_first_seq,
-+					   prev_pkt, call->acks_prev_seq);
- 		return;
+@@ -1110,8 +1111,8 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
+ 		goto cleanup_exts;
  	}
  
-@@ -922,14 +922,14 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
- 	/* Discard any out-of-order or duplicate ACKs (inside lock). */
- 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
- 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
--					   first_soft_ack, call->ackr_first_seq,
--					   prev_pkt, call->ackr_prev_seq);
-+					   first_soft_ack, call->acks_first_seq,
-+					   prev_pkt, call->acks_prev_seq);
- 		goto out;
+-	act = kcalloc(nk, sizeof(*act), GFP_KERNEL);
+-	if (!act) {
++	gact = kcalloc(nk, sizeof(*gact), GFP_KERNEL);
++	if (!gact) {
+ 		ret = -ENOMEM;
+ 		goto cleanup_actions;
  	}
- 	call->acks_latest_ts = skb->tstamp;
+@@ -1126,9 +1127,7 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
+ 	exts->nr_actions = nk;
+ 	exts->actions = actions;
+ 	for (i = 0; i < nk; i++) {
+-		struct tcf_gact *gact = to_gact(&act[i]);
+-
+-		actions[i] = &act[i];
++		actions[i] = (struct tc_action *)&gact[i];
+ 		gact->tcf_action = TC_ACT_SHOT;
+ 	}
  
--	call->ackr_first_seq = first_soft_ack;
--	call->ackr_prev_seq = prev_pkt;
-+	call->acks_first_seq = first_soft_ack;
-+	call->acks_prev_seq = prev_pkt;
+@@ -1152,7 +1151,7 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
+ 	stmmac_tc_setup_cls_u32(priv, priv, &cls_u32);
  
- 	/* Parse rwind and mtu sizes if provided. */
- 	if (buf.info.rxMTU)
+ cleanup_act:
+-	kfree(act);
++	kfree(gact);
+ cleanup_actions:
+ 	kfree(actions);
+ cleanup_exts:
 -- 
 2.35.1
 
