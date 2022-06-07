@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81627CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E12FDCCA488
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389323AbiFHB2d (ORCPT
+        id S1389910AbiFHB25 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:28:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
+        Tue, 7 Jun 2022 21:28:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383937AbiFGVxx (ORCPT
+        with ESMTP id S1383292AbiFGVxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD600247924;
-        Tue,  7 Jun 2022 12:12:37 -0700 (PDT)
+        Tue, 7 Jun 2022 17:53:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970C42432DD;
+        Tue,  7 Jun 2022 12:11:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C4CB618D9;
-        Tue,  7 Jun 2022 19:12:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85613C34115;
-        Tue,  7 Jun 2022 19:12:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45858B8220B;
+        Tue,  7 Jun 2022 19:11:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B58F4C34115;
+        Tue,  7 Jun 2022 19:11:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629127;
-        bh=bYutRTyCZx340hOqd5JJwkoFAuQUP33ThESNoJBGSPQ=;
+        s=korg; t=1654629064;
+        bh=ZZWF/Lct7Kly7eSjM6A574A1ZQpS2iQCvjZmIC7gaCg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=atxyMfF1b9V0u3X8I/mpjD9O9v9bezDXm6LQPNfcdUjigPI007ZTvstvZmZeuXXmF
-         B6IifIict6caBHw3D1vdYPhBV93hKv5tDFr+9EWd8R8OlFQfFf3RjYKBHY/0WGC0wd
-         R/ZEqc6Pp5Q2FvE6a3X/YFZV4nZAAW1F1Nj4qCzQ=
+        b=FYYCU280zg82+7v6/hNupeU6AxuF2w7z1O/GpSevzR/DZ0h6cjYuHQnh6ZkJoiYAF
+         IK//aMq5+kU0OT87Y7VaZntCFbqqVp+4rFR7VtQUol+3Sc5jZFV2Zxi4uCgfxGSzk7
+         q0ipyWptdUxrIan5BQYiWhq8VwYWI6S7ljYHYQ6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuanhong Guo <gch981213@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+        stable@vger.kernel.org, Prashant Malani <pmalani@chromium.org>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 578/879] arm: mediatek: select arch timer for mt7629
-Date:   Tue,  7 Jun 2022 19:01:36 +0200
-Message-Id: <20220607165019.631458487@linuxfoundation.org>
+Subject: [PATCH 5.18 557/879] platform/chrome: cros_ec: fix error handling in cros_ec_register()
+Date:   Tue,  7 Jun 2022 19:01:15 +0200
+Message-Id: <20220607165019.032065158@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,36 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuanhong Guo <gch981213@gmail.com>
+From: Tzung-Bi Shih <tzungbi@kernel.org>
 
-[ Upstream commit d66aea197d534e23d4989eb72fca9c0c114b97c9 ]
+[ Upstream commit 2cd01bd6b117df07b1bc2852f08694fdd29e40ed ]
 
-This chip has an armv7 arch timer according to the dts. Select it in
-Kconfig to enforce the support for it.
-Otherwise the system time is just completely wrong if user forget to
-enable ARM_ARCH_TIMER in kernel config.
+Fix cros_ec_register() to unregister platform devices if
+blocking_notifier_chain_register() fails.
 
-Fixes: a43379dddf1b ("arm: mediatek: add MT7629 smp bring up code")
-Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
-Link: https://lore.kernel.org/r/20220409091347.2473449-1-gch981213@gmail.com
-Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+Also use the single exit path to handle the platform device
+unregistration.
+
+Fixes: 42cd0ab476e2 ("platform/chrome: cros_ec: Query EC protocol version if EC transitions between RO/RW")
+Reviewed-by: Prashant Malani <pmalani@chromium.org>
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-mediatek/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/platform/chrome/cros_ec.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/mach-mediatek/Kconfig b/arch/arm/mach-mediatek/Kconfig
-index 9e0f592d87d8..35a3430c7942 100644
---- a/arch/arm/mach-mediatek/Kconfig
-+++ b/arch/arm/mach-mediatek/Kconfig
-@@ -30,6 +30,7 @@ config MACH_MT7623
- config MACH_MT7629
- 	bool "MediaTek MT7629 SoCs support"
- 	default ARCH_MEDIATEK
-+	select HAVE_ARM_ARCH_TIMER
+diff --git a/drivers/platform/chrome/cros_ec.c b/drivers/platform/chrome/cros_ec.c
+index d49a4efe46c8..a5cc8f24299e 100644
+--- a/drivers/platform/chrome/cros_ec.c
++++ b/drivers/platform/chrome/cros_ec.c
+@@ -189,6 +189,8 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
+ 	ec_dev->max_request = sizeof(struct ec_params_hello);
+ 	ec_dev->max_response = sizeof(struct ec_response_get_protocol_info);
+ 	ec_dev->max_passthru = 0;
++	ec_dev->ec = NULL;
++	ec_dev->pd = NULL;
  
- config MACH_MT8127
- 	bool "MediaTek MT8127 SoCs support"
+ 	ec_dev->din = devm_kzalloc(dev, ec_dev->din_size, GFP_KERNEL);
+ 	if (!ec_dev->din)
+@@ -245,18 +247,16 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
+ 		if (IS_ERR(ec_dev->pd)) {
+ 			dev_err(ec_dev->dev,
+ 				"Failed to create CrOS PD platform device\n");
+-			platform_device_unregister(ec_dev->ec);
+-			return PTR_ERR(ec_dev->pd);
++			err = PTR_ERR(ec_dev->pd);
++			goto exit;
+ 		}
+ 	}
+ 
+ 	if (IS_ENABLED(CONFIG_OF) && dev->of_node) {
+ 		err = devm_of_platform_populate(dev);
+ 		if (err) {
+-			platform_device_unregister(ec_dev->pd);
+-			platform_device_unregister(ec_dev->ec);
+ 			dev_err(dev, "Failed to register sub-devices\n");
+-			return err;
++			goto exit;
+ 		}
+ 	}
+ 
+@@ -278,7 +278,7 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
+ 		err = blocking_notifier_chain_register(&ec_dev->event_notifier,
+ 						      &ec_dev->notifier_ready);
+ 		if (err)
+-			return err;
++			goto exit;
+ 	}
+ 
+ 	dev_info(dev, "Chrome EC device registered\n");
+@@ -291,6 +291,10 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
+ 		cros_ec_irq_thread(0, ec_dev);
+ 
+ 	return 0;
++exit:
++	platform_device_unregister(ec_dev->ec);
++	platform_device_unregister(ec_dev->pd);
++	return err;
+ }
+ EXPORT_SYMBOL(cros_ec_register);
+ 
 -- 
 2.35.1
 
