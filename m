@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 028A6CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:45:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61786C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:45:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376685AbiFGUpO (ORCPT
+        id S1348420AbiFGUpU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55154 "EHLO
+        Tue, 7 Jun 2022 16:45:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357978AbiFGTmi (ORCPT
+        with ESMTP id S1357977AbiFGTmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:42:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB7FE20BFC;
-        Tue,  7 Jun 2022 11:17:34 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565FE23BDC;
+        Tue,  7 Jun 2022 11:17:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35F89B8237B;
-        Tue,  7 Jun 2022 18:17:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EAD2C385A2;
-        Tue,  7 Jun 2022 18:17:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB9CD60AD9;
+        Tue,  7 Jun 2022 18:17:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC727C385A2;
+        Tue,  7 Jun 2022 18:17:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625852;
-        bh=sbZJ/EgR/Q6h7bQ8bXYkdHk3sVPiz5d14IrGMh6M1ls=;
+        s=korg; t=1654625860;
+        bh=31HpYQaWeWqtZN+AGWXO2osKlfGZ7/fW6vbdG5g5fus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JNOFmqkyKmnJORrEpvBqeuvGUJmwtI+muvrKL1QSXC8EE5YSoAPhZd5zFD5A7jK9F
-         ivkQzzgHz3R9MR7g302aeqfoCXaeBdlOPmoNsCyIoY5juzRPp3NwkZNusbozmeMEsE
-         MrQLZIMEF/dsCh6P+R0b/dpDEmV9NbDysFAkjgCU=
+        b=taw77TShc8T6/SKyuoidxjkihmaUtsia5YZlfJyve8qkcVjONnKPsFeF2jOo+YHSU
+         omZOhpLbIc+SPCLEjfqLcoJorkCZOgWy/nS4GGhJREzZJhDfXGZcJ9vN0Pg47v0o+B
+         AiKf0ZrQ2Yjjoz1SCEVyuqSeeqZQQd9n2nu+9B4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ravi Bangoria <ravi.bangoria@amd.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Zhen Lei <thunder.leizhen@huawei.com>,
+        Rob Herring <robh@kernel.org>, Baoquan He <bhe@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 127/772] perf/amd/ibs: Cascade pmu init functions return value
-Date:   Tue,  7 Jun 2022 18:55:19 +0200
-Message-Id: <20220607164952.787588399@linuxfoundation.org>
+Subject: [PATCH 5.17 120/772] of: Support more than one crash kernel regions for kexec -s
+Date:   Tue,  7 Jun 2022 18:55:12 +0200
+Message-Id: <20220607164952.584710702@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,98 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ravi Bangoria <ravi.bangoria@amd.com>
+From: Zhen Lei <thunder.leizhen@huawei.com>
 
-[ Upstream commit 39b2ca75eec8a33e2ffdb8aa0c4840ec3e3b472c ]
+[ Upstream commit 8af6b91f58341325bf74ecb0389ddc0039091d84 ]
 
-IBS pmu initialization code ignores return value provided by
-callee functions. Fix it.
+When "crashkernel=X,high" is used, there may be two crash regions:
+high=crashk_res and low=crashk_low_res. But now the syscall
+kexec_file_load() only add crashk_res into "linux,usable-memory-range",
+this may cause the second kernel to have no available dma memory.
 
-Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220509044914.1473-2-ravi.bangoria@amd.com
+Fix it like kexec-tools does for option -c, add both 'high' and 'low'
+regions into the dtb.
+
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Acked-by: Baoquan He <bhe@redhat.com>
+Link: https://lore.kernel.org/r/20220506114402.365-6-thunder.leizhen@huawei.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/events/amd/ibs.c | 37 +++++++++++++++++++++++++++++--------
- 1 file changed, 29 insertions(+), 8 deletions(-)
+ drivers/of/kexec.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/arch/x86/events/amd/ibs.c b/arch/x86/events/amd/ibs.c
-index 9739019d4b67..367ca899e6e8 100644
---- a/arch/x86/events/amd/ibs.c
-+++ b/arch/x86/events/amd/ibs.c
-@@ -759,9 +759,10 @@ static __init int perf_ibs_pmu_init(struct perf_ibs *perf_ibs, char *name)
- 	return ret;
- }
- 
--static __init void perf_event_ibs_init(void)
-+static __init int perf_event_ibs_init(void)
- {
- 	struct attribute **attr = ibs_op_format_attrs;
-+	int ret;
- 
- 	/*
- 	 * Some chips fail to reset the fetch count when it is written; instead
-@@ -773,7 +774,9 @@ static __init void perf_event_ibs_init(void)
- 	if (boot_cpu_data.x86 == 0x19 && boot_cpu_data.x86_model < 0x10)
- 		perf_ibs_fetch.fetch_ignore_if_zero_rip = 1;
- 
--	perf_ibs_pmu_init(&perf_ibs_fetch, "ibs_fetch");
-+	ret = perf_ibs_pmu_init(&perf_ibs_fetch, "ibs_fetch");
-+	if (ret)
-+		return ret;
- 
- 	if (ibs_caps & IBS_CAPS_OPCNT) {
- 		perf_ibs_op.config_mask |= IBS_OP_CNT_CTL;
-@@ -786,15 +789,35 @@ static __init void perf_event_ibs_init(void)
- 		perf_ibs_op.cnt_mask    |= IBS_OP_MAX_CNT_EXT_MASK;
+diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
+index b9bd1cff1793..8d374cc552be 100644
+--- a/drivers/of/kexec.c
++++ b/drivers/of/kexec.c
+@@ -386,6 +386,15 @@ void *of_kexec_alloc_and_setup_fdt(const struct kimage *image,
+ 				crashk_res.end - crashk_res.start + 1);
+ 		if (ret)
+ 			goto out;
++
++		if (crashk_low_res.end) {
++			ret = fdt_appendprop_addrrange(fdt, 0, chosen_node,
++					"linux,usable-memory-range",
++					crashk_low_res.start,
++					crashk_low_res.end - crashk_low_res.start + 1);
++			if (ret)
++				goto out;
++		}
  	}
  
--	perf_ibs_pmu_init(&perf_ibs_op, "ibs_op");
-+	ret = perf_ibs_pmu_init(&perf_ibs_op, "ibs_op");
-+	if (ret)
-+		goto err_op;
-+
-+	ret = register_nmi_handler(NMI_LOCAL, perf_ibs_nmi_handler, 0, "perf_ibs");
-+	if (ret)
-+		goto err_nmi;
- 
--	register_nmi_handler(NMI_LOCAL, perf_ibs_nmi_handler, 0, "perf_ibs");
- 	pr_info("perf: AMD IBS detected (0x%08x)\n", ibs_caps);
-+	return 0;
-+
-+err_nmi:
-+	perf_pmu_unregister(&perf_ibs_op.pmu);
-+	free_percpu(perf_ibs_op.pcpu);
-+	perf_ibs_op.pcpu = NULL;
-+err_op:
-+	perf_pmu_unregister(&perf_ibs_fetch.pmu);
-+	free_percpu(perf_ibs_fetch.pcpu);
-+	perf_ibs_fetch.pcpu = NULL;
-+
-+	return ret;
- }
- 
- #else /* defined(CONFIG_PERF_EVENTS) && defined(CONFIG_CPU_SUP_AMD) */
- 
--static __init void perf_event_ibs_init(void) { }
-+static __init int perf_event_ibs_init(void)
-+{
-+	return 0;
-+}
- 
- #endif
- 
-@@ -1064,9 +1087,7 @@ static __init int amd_ibs_init(void)
- 			  x86_pmu_amd_ibs_starting_cpu,
- 			  x86_pmu_amd_ibs_dying_cpu);
- 
--	perf_event_ibs_init();
--
--	return 0;
-+	return perf_event_ibs_init();
- }
- 
- /* Since we need the pci subsystem to init ibs we can't do this earlier: */
+ 	/* add bootargs */
 -- 
 2.35.1
 
