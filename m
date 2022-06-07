@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5E9CCA492
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DADACCCA49A
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353290AbiFGSgt (ORCPT
+        id S1352729AbiFGSfD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41124 "EHLO
+        Tue, 7 Jun 2022 14:35:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350110AbiFGSAo (ORCPT
+        with ESMTP id S1350796AbiFGSB0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:00:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A5B14AF52;
-        Tue,  7 Jun 2022 10:42:43 -0700 (PDT)
+        Tue, 7 Jun 2022 14:01:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F56514CDE0;
+        Tue,  7 Jun 2022 10:43:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FF4761650;
-        Tue,  7 Jun 2022 17:42:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29A89C385A5;
-        Tue,  7 Jun 2022 17:42:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C5F9B82324;
+        Tue,  7 Jun 2022 17:43:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6197C385A5;
+        Tue,  7 Jun 2022 17:43:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623761;
-        bh=Ow6M4ULs7W4f93rXHxWgT7eJhCkKFS4V4mUHz2rkBzU=;
+        s=korg; t=1654623805;
+        bh=cB/zmou4JNBatz0EsRvy0e6Im6lxkG/oKJCnqFwoMfc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RA5wwrvbyXsBBQt/s3GELqmayNf99UKxNTM7mbiykwjZWpWQdnQCii+ar3ij1/tgi
-         KA9x2GM3Ib8yTN8yYBbDjfP4nG5C7uhutnGoQBAg8ymQrAN8CcPiYKuRDV4ZPcZpah
-         OLmYm0Hqa0LfLN1+SayUV4YE6SsJhC5jYR4yndVI=
+        b=ZXs60A+j1JAsbMtJ+X6/ncMMG1GLcCPgpdaza7dAN434Pf57CA/Sgq8atrSZThl1p
+         q826cYtVevIVe+E2bwc6HDZDydf1eqQurM27zwFgo0FH2M2aQ4xkc9z9JachgLSIzZ
+         GrQgVMFgPhtkH4spjYKqgNFjnnZPV0loAFNNEOL0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 080/667] scsi: megaraid: Fix error check return value of register_chrdev()
-Date:   Tue,  7 Jun 2022 18:55:45 +0200
-Message-Id: <20220607164937.221732718@linuxfoundation.org>
+Subject: [PATCH 5.15 099/667] regulator: mt6315: Enforce regulator-compatible, not name
+Date:   Tue,  7 Jun 2022 18:56:04 +0200
+Message-Id: <20220607164937.791000999@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,36 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit c5acd61dbb32b6bda0f3a354108f2b8dcb788985 ]
+[ Upstream commit 6d435a94ba5bb4f2ad381c0828fbae89c66b50fe ]
 
-If major equals 0, register_chrdev() returns an error code when it fails.
-This function dynamically allocates a major and returns its number on
-success, so we should use "< 0" to check it instead of "!".
+The MT6315 PMIC dt-binding should enforce that one of the valid
+regulator-compatible is set in each regulator node. However it was
+mistakenly matching against regulator-name instead.
 
-Link: https://lore.kernel.org/r/20220418105755.2558828-1-lv.ruyi@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fix the typo. This not only fixes the compatible verification, but also
+lifts the regulator-name restriction, so that more meaningful names can
+be set for each platform.
+
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Link: https://lore.kernel.org/r/20220429201325.2205799-1-nfraprado@collabora.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/megaraid.c | 2 +-
+ .../devicetree/bindings/regulator/mt6315-regulator.yaml         | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/megaraid.c b/drivers/scsi/megaraid.c
-index 56910e94dbf2..7dd6dd74d2bc 100644
---- a/drivers/scsi/megaraid.c
-+++ b/drivers/scsi/megaraid.c
-@@ -4628,7 +4628,7 @@ static int __init megaraid_init(void)
- 	 * major number allocation.
- 	 */
- 	major = register_chrdev(0, "megadev_legacy", &megadev_fops);
--	if (!major) {
-+	if (major < 0) {
- 		printk(KERN_WARNING
- 				"megaraid: failed to register char device\n");
- 	}
+diff --git a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
+index 61dd5af80db6..5d2d989de893 100644
+--- a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
++++ b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
+@@ -31,7 +31,7 @@ properties:
+         $ref: "regulator.yaml#"
+ 
+         properties:
+-          regulator-name:
++          regulator-compatible:
+             pattern: "^vbuck[1-4]$"
+ 
+     additionalProperties: false
 -- 
 2.35.1
 
