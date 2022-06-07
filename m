@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E140FCCA498
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 174C6CCA49C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357769AbiFGTmU (ORCPT
+        id S1357892AbiFGTmb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58430 "EHLO
+        Tue, 7 Jun 2022 15:42:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354257AbiFGSqu (ORCPT
+        with ESMTP id S1354359AbiFGSq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:50 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83EC4B55;
-        Tue,  7 Jun 2022 11:00:28 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD26D237CA;
+        Tue,  7 Jun 2022 11:00:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B0C56CE2425;
-        Tue,  7 Jun 2022 18:00:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 574ADC34115;
-        Tue,  7 Jun 2022 18:00:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 900BBB8236D;
+        Tue,  7 Jun 2022 18:00:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60C84C385A5;
+        Tue,  7 Jun 2022 18:00:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624825;
-        bh=VXl2zwaLrzJhmKisP41An05vrIbOHeLzXarsvU7kk8M=;
+        s=k20201202; t=1654624853;
+        bh=/GG/uI1SHmCiMaut98VaM/SKzy5gUyYM4ay2lWKd5Vs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mq1sA97T7Z7gmwckZD0T6qmJZeDRsiQ3lQBmxGbQPZ3TrHsdM3byAlrSDQWvYAh31
-         Cs01gtZaIS5EhOicAQpg08Wi43jFFFRTpDs/Wdm47YgCDBMJsYPmeIOgb+TeMpaFV1
-         ezvpx3eQzB3lfrTZnMor3Kz8jTcrysnJz0tw4hyvuYry7NVpHu2iSUrBiQWxStGgGs
-         L9tt2n2ajtPY8FI0rK4BFiIWC1sESVY8Kdj54CP7pWjkSbJr8a49ADNYOTcjW7Germ
-         MK3FYbupNMEvm2dYDaOqCug2bsbd58r0bS2+g6SEUP8sdb+Z+ezZg0tlVPo6SnBJ2H
-         7PVU2yWrteR6Q==
+        b=EkpxpohwzPXdZ6b1nzTRM0mmPsakWQoNxlQvjbqVLA0Y7Mu2PsVLBtunsfPrTTP4g
+         p+acloM7g/Cbos3oNYgeVHgeTacrRuDYnNcHi0dx1yd49kHPJlcMfyLDwm+Kh5Wfvj
+         lvFT0BTIKnpMHIOACgJZPZxOiubf4aiv1ALy3AUeXMBJpebgEheAEq+r0CzUVmEUhE
+         PFalMlj15+Rv0r5JS+wf1w+6UNh7tp5kbOXdmGwsFjPLQ8xgMNrAh408o10ItI0ceL
+         7U9eYlOnV3iJkDxmqBp7EfEDRVShf5u49sqc0rPvtwwNu2ioRZAYm1mGV52sFgK+tF
+         Ws7VETK3ykn8Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Huang Guobin <huangguobin4@huawei.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 05/34] tty: Fix a possible resource leak in icom_probe
-Date:   Tue,  7 Jun 2022 13:59:40 -0400
-Message-Id: <20220607180011.481266-5-sashal@kernel.org>
+Cc:     Andre Przywara <andre.przywara@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de
+Subject: [PATCH AUTOSEL 5.4 15/34] clocksource/drivers/sp804: Avoid error on multiple instances
+Date:   Tue,  7 Jun 2022 13:59:50 -0400
+Message-Id: <20220607180011.481266-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
 References: <20220607180011.481266-1-sashal@kernel.org>
@@ -53,35 +53,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huang Guobin <huangguobin4@huawei.com>
+From: Andre Przywara <andre.przywara@arm.com>
 
-[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
+[ Upstream commit a98399cbc1e05f7b977419f03905501d566cf54e ]
 
-When pci_read_config_dword failed, call pci_release_regions() and
-pci_disable_device() to recycle the resource previously allocated.
+When a machine sports more than one SP804 timer instance, we only bring
+up the first one, since multiple timers of the same kind are not useful
+to Linux. As this is intentional behaviour, we should not return an
+error message, as we do today:
+===============
+[    0.000800] Failed to initialize '/bus@8000000/motherboard-bus@8000000/iofpga-bus@300000000/timer@120000': -22
+===============
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
-Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Replace the -EINVAL return with a debug message and return 0 instead.
+
+Also we do not reach the init function anymore if the DT node is
+disabled (as this is now handled by OF_DECLARE), so remove the explicit
+check for that case.
+
+This fixes a long standing bogus error when booting ARM's fastmodels.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/20220506162522.3675399-1-andre.przywara@arm.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/icom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/clocksource/timer-sp804.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 624f3d541c68..d047380259b5 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1499,7 +1499,7 @@ static int icom_probe(struct pci_dev *dev,
- 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
- 	if (retval) {
- 		dev_err(&dev->dev, "PCI Config read FAILED\n");
--		return retval;
-+		goto probe_exit0;
- 	}
+diff --git a/drivers/clocksource/timer-sp804.c b/drivers/clocksource/timer-sp804.c
+index 9c841980eed1..c9aa0498fb84 100644
+--- a/drivers/clocksource/timer-sp804.c
++++ b/drivers/clocksource/timer-sp804.c
+@@ -215,6 +215,11 @@ static int __init sp804_of_init(struct device_node *np)
+ 	struct clk *clk1, *clk2;
+ 	const char *name = of_get_property(np, "compatible", NULL);
  
- 	pci_write_config_dword(dev, PCI_COMMAND,
++	if (initialized) {
++		pr_debug("%pOF: skipping further SP804 timer device\n", np);
++		return 0;
++	}
++
+ 	base = of_iomap(np, 0);
+ 	if (!base)
+ 		return -ENXIO;
+@@ -223,11 +228,6 @@ static int __init sp804_of_init(struct device_node *np)
+ 	writel(0, base + TIMER_CTRL);
+ 	writel(0, base + TIMER_2_BASE + TIMER_CTRL);
+ 
+-	if (initialized || !of_device_is_available(np)) {
+-		ret = -EINVAL;
+-		goto err;
+-	}
+-
+ 	clk1 = of_clk_get(np, 0);
+ 	if (IS_ERR(clk1))
+ 		clk1 = NULL;
 -- 
 2.35.1
 
