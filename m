@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FB17C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:27:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F1ACCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:27:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346563AbiFGR06 (ORCPT
+        id S1346582AbiFGR1I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:26:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45226 "EHLO
+        Tue, 7 Jun 2022 13:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346106AbiFGRV7 (ORCPT
+        with ESMTP id S1346254AbiFGRXj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:21:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E971C1078BC;
-        Tue,  7 Jun 2022 10:21:21 -0700 (PDT)
+        Tue, 7 Jun 2022 13:23:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2844F109197;
+        Tue,  7 Jun 2022 10:21:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70F8360920;
-        Tue,  7 Jun 2022 17:21:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77C90C385A5;
-        Tue,  7 Jun 2022 17:21:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BFE79B81F38;
+        Tue,  7 Jun 2022 17:21:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39842C385A5;
+        Tue,  7 Jun 2022 17:21:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622480;
-        bh=Maymb1M0ojyJFMRqarHeva5kqwx2BGWP3YxckPlwec4=;
+        s=korg; t=1654622494;
+        bh=mQu+7jJPIF9TEi1yf1eSXdv0q/LGMuG0jvAGx/7bRBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LFntFB7W4ZE9RbsreL1dGGtnJ481U5Zbou49esroJ6eCr6AOC4j37shSBxpLJY39P
-         voVxAQkzTPahFNl3ALL37gHvrhPJGmlr0jrwrhuhP7Vu5FEVv2G4yI5rNUeMrqKQuf
-         P0yZN84RA4Y3NO2bZn9Q3D9m8G0kfvdeTg1Zfo2g=
+        b=J+RsfxEvVCyFdlWQz6ui8SX+Tf7cuZOfva7jt/0XGAxM4H9E6JoaOljimEZojLjVH
+         B8VedzosEcbNVOAgywSSFAhtD11OT1PthNGxdiFCzZxBejU8yqymLJwaHeIKORcnBX
+         sHii1enA/4L6y6jZk0FTcT6Akbk10dNkXecbgwGc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Travis <mike.travis@hpe.com>,
-        Steve Wahl <steve.wahl@hpe.com>, Borislav Petkov <bp@suse.de>,
-        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 033/452] x86/platform/uv: Update TSC sync state for UV5
-Date:   Tue,  7 Jun 2022 18:58:10 +0200
-Message-Id: <20220607164909.535612789@linuxfoundation.org>
+Subject: [PATCH 5.10 080/452] media: cec-adap.c: fix is_configuring state
+Date:   Tue,  7 Jun 2022 18:58:57 +0200
+Message-Id: <20220607164910.936627651@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,46 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Travis <mike.travis@hpe.com>
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-[ Upstream commit bb3ab81bdbd53f88f26ffabc9fb15bd8466486ec ]
+[ Upstream commit 59267fc34f4900dcd2ec3295f6be04b79aee2186 ]
 
-The UV5 platform synchronizes the TSCs among all chassis, and will not
-proceed to OS boot without achieving synchronization.  Previous UV
-platforms provided a register indicating successful synchronization.
-This is no longer available on UV5.  On this platform TSC_ADJUST
-should not be reset by the kernel.
+If an adapter is trying to claim a free logical address then it is
+in the 'is_configuring' state. If during that process the cable is
+disconnected (HPD goes low, which in turn invalidates the physical
+address), then cec_adap_unconfigure() is called, and that set the
+is_configuring boolean to false, even though the thread that's
+trying to claim an LA is still running.
 
-Signed-off-by: Mike Travis <mike.travis@hpe.com>
-Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
-Acked-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/20220406195149.228164-3-steve.wahl@hpe.com
+Don't touch the is_configuring bool in cec_adap_unconfigure(), it
+will eventually be cleared by the thread. By making that change
+the cec_config_log_addr() function also had to change: it was
+aborting if is_configuring became false (since that is what
+cec_adap_unconfigure() did), but that no longer works. Instead
+check if the physical address is invalid. That is a much
+more appropriate check anyway.
+
+This fixes a bug where the the adapter could be disabled even
+though the device was still configuring. This could cause POLL
+transmits to time out.
+
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/apic/x2apic_uv_x.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/media/cec/core/cec-adap.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kernel/apic/x2apic_uv_x.c b/arch/x86/kernel/apic/x2apic_uv_x.c
-index 40f466de8924..9c283562dfd4 100644
---- a/arch/x86/kernel/apic/x2apic_uv_x.c
-+++ b/arch/x86/kernel/apic/x2apic_uv_x.c
-@@ -199,7 +199,13 @@ static void __init uv_tsc_check_sync(void)
- 	int mmr_shift;
- 	char *state;
+diff --git a/drivers/media/cec/core/cec-adap.c b/drivers/media/cec/core/cec-adap.c
+index 2e5698fbc3a8..e23aa608f66f 100644
+--- a/drivers/media/cec/core/cec-adap.c
++++ b/drivers/media/cec/core/cec-adap.c
+@@ -1271,7 +1271,7 @@ static int cec_config_log_addr(struct cec_adapter *adap,
+ 		 * While trying to poll the physical address was reset
+ 		 * and the adapter was unconfigured, so bail out.
+ 		 */
+-		if (!adap->is_configuring)
++		if (adap->phys_addr == CEC_PHYS_ADDR_INVALID)
+ 			return -EINTR;
  
--	/* Different returns from different UV BIOS versions */
-+	/* UV5 guarantees synced TSCs; do not zero TSC_ADJUST */
-+	if (!is_uv(UV2|UV3|UV4)) {
-+		mark_tsc_async_resets("UV5+");
-+		return;
-+	}
-+
-+	/* UV2,3,4, UV BIOS TSC sync state available */
- 	mmr = uv_early_read_mmr(UVH_TSC_SYNC_MMR);
- 	mmr_shift =
- 		is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
+ 		if (err)
+@@ -1328,7 +1328,6 @@ static void cec_adap_unconfigure(struct cec_adapter *adap)
+ 	    adap->phys_addr != CEC_PHYS_ADDR_INVALID)
+ 		WARN_ON(adap->ops->adap_log_addr(adap, CEC_LOG_ADDR_INVALID));
+ 	adap->log_addrs.log_addr_mask = 0;
+-	adap->is_configuring = false;
+ 	adap->is_configured = false;
+ 	cec_flush(adap);
+ 	wake_up_interruptible(&adap->kthread_waitq);
+@@ -1520,9 +1519,10 @@ static int cec_config_thread_func(void *arg)
+ 	for (i = 0; i < las->num_log_addrs; i++)
+ 		las->log_addr[i] = CEC_LOG_ADDR_INVALID;
+ 	cec_adap_unconfigure(adap);
++	adap->is_configuring = false;
+ 	adap->kthread_config = NULL;
+-	mutex_unlock(&adap->lock);
+ 	complete(&adap->config_completion);
++	mutex_unlock(&adap->lock);
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
