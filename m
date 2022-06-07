@@ -2,133 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6CBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:32:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B113C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245546AbiFGOcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:32:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
+        id S245568AbiFGOde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 10:33:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbiFGOcg (ORCPT
+        with ESMTP id S243354AbiFGOda (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:32:36 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319615B3CF
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 07:32:31 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id u18so14984022plb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 07:32:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=VPOLce4T8uKTl8bDuvP4aIArWmHTCA4t119LiXZasqg=;
-        b=BdkETQXDehKm3RcVOVc9IQ+5+eLDKcr/JN6J0vfmovydms+JFO5qQflU50SLT2xkjL
-         CGp03OfGGatm2GSbk90GTyq4BHJi3G9gZJFLU+L2misnEd2asnYJ+67b7RUAAhXziIqR
-         FHN09RKAdBe/DQ/fup4DHjPtQTdxgrbRDNf065bei0nE414/z1Oh4ThLAKz0hMUHhMuy
-         x9cn0jeuE18MYnd4KogDFU3Q+zDpnoCSn0C308ksuyAOyhxrinC0f+7bDJKqCtCMqjaZ
-         QmQZQOsMz6ky+yVMTgILZSpT9lOiptwPU4tj5plX7Rh4C5+Qbi/bxLvPM8mdmgAYHEJC
-         yVnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VPOLce4T8uKTl8bDuvP4aIArWmHTCA4t119LiXZasqg=;
-        b=TfR8fmDYMnmqkFdF9w0FyLmMb6obPv9k2LLkoah7wHm5USDC6amtC1YplJA8q1O8Bf
-         pkuRhWATPLoLx7bUioexF2Zs/rYphNbhSgWBJsRNcteIgEFbrc97/jcOnJAxb9SAOIYL
-         NwaSoa5GhNsF5LyEJ2CqlVv9toRo6b6TemLN8xlFQknDm8fuNB6yrqZV5NoUiEBKpKAa
-         PiGc24gYLeOQgCp8hm3ac2b9uCMnJNfkiGV3fxCDnQdnzUSm+75jXqW+mgOLCVKJLT10
-         b4Xz5jZYS3RRNvn2AvMJCXxmKZDV+hjr8qj7UEwSugkWvHfHJM6TGYQ/T5XyJu+0q5/X
-         R/bA==
-X-Gm-Message-State: AOAM530tB8ylvt0uFCvUfA1bkfUNRaSTjw1IVkgFN2f4/Id/vdzGS019
-        Z8ixLEEcDR+zz7w8i0exkks=
-X-Google-Smtp-Source: ABdhPJyv9HnBgv55K19xenISwxECGP7eD7YX/uyVGu+CijT7ncOI+nSmLo2B8LGbyhrDTSeymhVBCQ==
-X-Received: by 2002:a17:903:1c5:b0:167:71bd:462f with SMTP id e5-20020a17090301c500b0016771bd462fmr13880919plh.65.1654612350883;
-        Tue, 07 Jun 2022 07:32:30 -0700 (PDT)
-Received: from [192.168.1.104] ([101.86.206.159])
-        by smtp.gmail.com with ESMTPSA id jb15-20020a170903258f00b001688f2ff292sm243875plb.222.2022.06.07.07.32.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 07:32:30 -0700 (PDT)
-Message-ID: <8fc24ba3-1467-b845-a70e-7ed77750e6cd@gmail.com>
-Date:   Tue, 7 Jun 2022 22:32:26 +0800
+        Tue, 7 Jun 2022 10:33:30 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04CC2B36F4;
+        Tue,  7 Jun 2022 07:33:29 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 257EW6VH011786;
+        Tue, 7 Jun 2022 14:33:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=2Fl+E7n61EDWOdDB4Qwnb/kTFDcxq7ECEIrMTRqG8XY=;
+ b=sJN7DibwXj+7XrXFRHe6M2Q/Z28jOZ/4C3e/oG0GNig79P1RfPG6BJLhldUvIxWlU+nr
+ /Zy8KMKzl67zaFMrmNqmakR0YXoZwywpJVAYm6weuc6XaesFCgJ574vT8IjErkpuVPjk
+ 2TLAJ0bdlRMvDNVYwEB+cWMqSbcDMpiyOgOJeZLssEtUqa4Er3s9xXYMqYUMjdLn5jfp
+ yey8lqoniUPob52A+LBBT2iOHSux3qiEflmDN9V7wvhA5DW0Q7+fhkG7kWA2h7dDEO/1
+ rrlnoK6XD3vgC1H+zypXQYxR+f30DmUHrns2nBvc8T4r2KGe911VdOz64nqDECFg8grW Uw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gj7w4s2xk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Jun 2022 14:33:29 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 257EXSXu016064;
+        Tue, 7 Jun 2022 14:33:28 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gj7w4s2wp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Jun 2022 14:33:28 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 257EM5Oj027264;
+        Tue, 7 Jun 2022 14:33:26 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma06ams.nl.ibm.com with ESMTP id 3gfxnhux88-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Jun 2022 14:33:26 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 257EXNG113304116
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 7 Jun 2022 14:33:23 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 04BFCA405B;
+        Tue,  7 Jun 2022 14:33:23 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 75D37A405F;
+        Tue,  7 Jun 2022 14:33:22 +0000 (GMT)
+Received: from li-ca45c2cc-336f-11b2-a85c-c6e71de567f1 (unknown [9.171.69.129])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with SMTP;
+        Tue,  7 Jun 2022 14:33:22 +0000 (GMT)
+Date:   Tue, 7 Jun 2022 16:33:20 +0200
+From:   Nico Boehr <nrb@linux.ibm.com>
+To:     Claudio Imbrenda <imbrenda@linux.ibm.com>
+Cc:     kvm@vger.kernel.org, borntraeger@de.ibm.com, frankja@linux.ibm.com,
+        thuth@redhat.com, pasic@linux.ibm.com, david@redhat.com,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        scgl@linux.ibm.com, mimu@linux.ibm.com
+Subject: Re: [PATCH v11 18/19] KVM: s390: pv: avoid export before import if
+ possible
+Message-ID: <20220607163320.2b1d966a@li-ca45c2cc-336f-11b2-a85c-c6e71de567f1>
+In-Reply-To: <20220603065645.10019-19-imbrenda@linux.ibm.com>
+References: <20220603065645.10019-1-imbrenda@linux.ibm.com>
+        <20220603065645.10019-19-imbrenda@linux.ibm.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 1/4] mm: kmemleak: add OBJECT_PHYS flag for objects
- allocated with physical address
-Content-Language: en-US
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, yee.lee@mediatek.com
-References: <20220603035415.1243913-1-patrick.wang.shcn@gmail.com>
- <20220603035415.1243913-2-patrick.wang.shcn@gmail.com>
- <Yp3rO4WpLzxLA6+7@arm.com>
-From:   Patrick Wang <patrick.wang.shcn@gmail.com>
-In-Reply-To: <Yp3rO4WpLzxLA6+7@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: dIxryWdMW6ZEHAF3_oCd8kaZcK-bbeHW
+X-Proofpoint-GUID: U1AhcWVbAhWctiHHyPKNUB3ZXgTvknfb
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-07_06,2022-06-07_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
+ suspectscore=0 lowpriorityscore=0 phishscore=0 priorityscore=1501
+ malwarescore=0 clxscore=1015 adultscore=0 spamscore=0 mlxlogscore=820
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206070058
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri,  3 Jun 2022 08:56:44 +0200
+Claudio Imbrenda <imbrenda@linux.ibm.com> wrote:
 
-
-On 2022/6/6 19:55, Catalin Marinas wrote:
-> On Fri, Jun 03, 2022 at 11:54:12AM +0800, Patrick Wang wrote:
->> diff --git a/mm/kmemleak.c b/mm/kmemleak.c
->> index a182f5ddaf68..1e9e0aa93ae5 100644
->> --- a/mm/kmemleak.c
->> +++ b/mm/kmemleak.c
->> @@ -172,6 +172,8 @@ struct kmemleak_object {
->>   #define OBJECT_NO_SCAN		(1 << 2)
->>   /* flag set to fully scan the object when scan_area allocation failed */
->>   #define OBJECT_FULL_SCAN	(1 << 3)
->> +/* flag set for object allocated with physical address */
->> +#define OBJECT_PHYS		(1 << 4)
->>   
->>   #define HEX_PREFIX		"    "
->>   /* number of bytes to print per line; must be 16 or 32 */
->> @@ -575,7 +577,8 @@ static int __save_stack_trace(unsigned long *trace)
->>    * memory block and add it to the object_list and object_tree_root.
->>    */
->>   static struct kmemleak_object *create_object(unsigned long ptr, size_t size,
->> -					     int min_count, gfp_t gfp)
->> +					     int min_count, gfp_t gfp,
->> +					     bool is_phys)
+> If the appropriate UV feature bit is set, there is no need to perform
+> an export before import.
 > 
-> The patch looks fine but I wonder whether we should have different
-> functions for is_phys true/false, we may end up fewer changes overall
-> since most places simply pass is_phys == false:
+> Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
 
-This should be better. Will do.
-
-> 
-> static struct kmemleak_object *__create_object(unsigned long ptr, size_t size,
-> 					       int min_count, gfp_t gfp,
-> 					       bool is_phys);
-> 
-> static struct kmemleak_object *create_object(unsigned long ptr, size_t size,
-> 					     int min_count, gfp_t gfp)
-> {
-> 	return __create_object(ptr, size, min_count, gfp, false);
-> }
-> 
-> static struct kmemleak_object *create_object_phys(unsigned long ptr, size_t size,
-> 						  int min_count, gfp_t gfp)
-> {
-> 	return __create_object(ptr, size, min_count, gfp, true);
-> }
-> 
-> Same for the other patches that change a few more functions.
-
-Since the physical objects are only used as gray objects.
-Changes on irrelevant places will be removed.
-
-The leak check could be taken on physical objects. Conversion
-of block address from virtual to physical before lookup should
-make this work (this is useless currently). I think we'd better
-know about this.
-
-Thanks,
-Patrick
-
+Reviewed-by: Nico Boehr <nrb@linux.ibm.com>
