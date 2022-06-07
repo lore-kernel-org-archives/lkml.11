@@ -2,88 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2033C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 04:38:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE34AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 04:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236568AbiFGEiU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 00:38:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50106 "EHLO
+        id S236607AbiFGEu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 00:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiFGEiN (ORCPT
+        with ESMTP id S229784AbiFGEuY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 00:38:13 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 543EE2126A;
-        Mon,  6 Jun 2022 21:38:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654576692; x=1686112692;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=BLQzm4ANOPyOqQWpgZxl6tFyVP4G/i6sNgt5raxU3t4=;
-  b=FsgNdOUpFB7SjkksjtiVnIn3fvTG7Q5T6wBT2D6TvM7eg6yUVgjtPHYy
-   32VQGlQpxpAsA6/GN7Aj3KWiRW/2cxDzV6oZLOT/XvJmQrJwr+LZx3qx1
-   fYbYqCVmREujn8pdTE21DRmxBAMI+LyrxfnMuazwCBDg3W0f1Xl6T0/fI
-   0=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 06 Jun 2022 21:38:10 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 21:38:10 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 6 Jun 2022 21:38:10 -0700
-Received: from [10.50.51.61] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 6 Jun 2022
- 21:38:06 -0700
-Message-ID: <29289523-6779-9a57-8dea-f6108b362062@quicinc.com>
-Date:   Tue, 7 Jun 2022 10:08:02 +0530
+        Tue, 7 Jun 2022 00:50:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F319DD2457
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 21:50:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9ED87B81CA0
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 04:50:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B65C0C385A5;
+        Tue,  7 Jun 2022 04:50:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654577420;
+        bh=lvKuaWgcwr9ep3pA6nWz4hg/HfWPjExkyzheB0QJgcQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=anJkvbIYc81/T2uiEndRwlM1EhCoiITy6Wy8PdLqQHOKpBBOAGr55Kd4Jll5ds7Uo
+         DQddwOWprwSWD2z1wNmgGHx6dWDPMLYf3ATzgAANxef2htSSmq+0Y5PX+emk1rChj0
+         vMgt8zrxrqM9NSC2IFL2P9qPO4TMQ98ZaKIZ0FOQ=
+Date:   Tue, 7 Jun 2022 06:50:17 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Tianfei Zhang <tianfei.zhang@intel.com>
+Cc:     broonie@kernel.org, rafael@kernel.org,
+        linux-kernel@vger.kernel.org, hao.wu@intel.com, trix@redhat.com,
+        yilun.xu@intel.com, russell.h.weight@intel.com,
+        Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Subject: Re: [PATCH v1] regmap: add generic indirect regmap support
+Message-ID: <Yp7ZCWq3yjNcMM4N@kroah.com>
+References: <20220607013755.594554-1-tianfei.zhang@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCHv15 5/9] lib: Add register read/write tracing support
-Content-Language: en-US
-From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-To:     <arnd@arndb.de>, <rostedt@goodmis.org>
-CC:     <gregkh@linuxfoundation.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <suzuki.poulose@arm.com>, <maz@kernel.org>,
-        <quic_psodagud@quicinc.com>, <quic_tsoni@quicinc.com>,
-        <will@kernel.org>, <catalin.marinas@arm.com>
-References: <cover.1652891705.git.quic_saipraka@quicinc.com>
- <f6d1b9e9d70968b506bdfd1b77129cb751b9df9d.1652891705.git.quic_saipraka@quicinc.com>
- <5544ba12-8a7a-3bc5-1416-c8c707500c9d@quicinc.com>
-In-Reply-To: <5544ba12-8a7a-3bc5-1416-c8c707500c9d@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607013755.594554-1-tianfei.zhang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Steve,
+On Mon, Jun 06, 2022 at 09:37:55PM -0400, Tianfei Zhang wrote:
+> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> 
+> This patch adds support for regmap APIs that are intended to be used by
+> the drivers of some devices which support generic indirect register access,
+> for example PMCI (Platform Management Control Interface) device, HSSI
+> (High Speed Serial Interface) device in FPGA.
+> 
+> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+> ---
+>  drivers/base/regmap/Kconfig                   |   3 +
+>  drivers/base/regmap/Makefile                  |   1 +
+>  .../base/regmap/regmap-indirect-register.c    | 133 ++++++++++++++++++
+>  include/linux/regmap.h                        |  12 ++
+>  4 files changed, 149 insertions(+)
+>  create mode 100644 drivers/base/regmap/regmap-indirect-register.c
 
-On 5/24/2022 9:29 AM, Sai Prakash Ranjan wrote:
-> Hi Steve,
->
-> On 5/18/2022 10:14 PM, Sai Prakash Ranjan wrote:
->> From: Prasad Sodagudi <psodagud@codeaurora.org>
->>
->> Generic MMIO read/write i.e., __raw_{read,write}{b,l,w,q} accessors
->> are typically used to read/write from/to memory mapped registers
->> and can cause hangs or some undefined behaviour in following few
->> cases,
->>
-<snip>...
-> How does this version look?
->
+Don't we need users of these before we can take them?
 
-Gentle ping!!
+thanks,
 
-Thanks,
-Sai
+greg k-h
