@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BF4CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F7ACCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231748AbiFHB3a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:29:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50782 "EHLO
+        id S1382713AbiFHBaE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384597AbiFGWUi (ORCPT
+        with ESMTP id S1383537AbiFGVxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:20:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4361263DC6;
-        Tue,  7 Jun 2022 12:20:50 -0700 (PDT)
+        Tue, 7 Jun 2022 17:53:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEBF24538D;
+        Tue,  7 Jun 2022 12:11:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8AA2609FA;
-        Tue,  7 Jun 2022 19:20:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C51EEC385A2;
-        Tue,  7 Jun 2022 19:20:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D3A2B81F6D;
+        Tue,  7 Jun 2022 19:11:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F06C385A2;
+        Tue,  7 Jun 2022 19:11:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629641;
-        bh=wgKRNI73T2zZGmaV8LU9D8Jm69k2YDtN51rVD4phD80=;
+        s=korg; t=1654629111;
+        bh=2jA/GTMKTJHBY2Oc4pOOiy4bZGaqPB82S9nyCCUHw2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zKi0NoQibCWq/4Oj96Ch4VdTfxrhQBPvsX8TdQ2xaLG+AGI6Bi0sOxKtVqrwTK9Mh
-         +db9qwHJ6q18A4ou+jQCI2KqaQGtQ4xeqvojoSYUp5NjmOPLgj6OrsphJNcbp5F0T9
-         tFBU2kJj6HZ6QcAJEG/O9UgJrlPfKnOIi9oSnVpE=
+        b=N687B+zBO2byor9J28k6YGWFTgFnNS5heM0XlevgJJajU3FKlMNBYxHjsHJTOPLx4
+         YNuNyUlIdiZQLGwxqtiBI+l8M0ShOAJ/MLWNYatfMJa9JliMHUBrjI15JlOSCR5lF4
+         1bmUslaOyXBW2WsDDlxm1nb152iGMh/xWaKVLIrY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Gregory Greenman <gregory.greenman@intel.com>
-Subject: [PATCH 5.18 723/879] iwlwifi: mei: fix potential NULL-ptr deref
-Date:   Tue,  7 Jun 2022 19:04:01 +0200
-Message-Id: <20220607165023.839965948@linuxfoundation.org>
+        stable@vger.kernel.org, Thorsten Scherer <t.scherer@eckelmann.de>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 546/879] ARM: dts: ci4x10: Adapt to changes in imx6qdl.dtsi regarding fec clocks
+Date:   Tue,  7 Jun 2022 19:01:04 +0200
+Message-Id: <20220607165018.716632578@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -48,36 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Thorsten Scherer <t.scherer@eckelmann.de>
 
-commit 78488a64aea94a3336ee97f345c1496e9bc5ebdf upstream.
+[ Upstream commit 3d397a1277853498e8b7b305f2610881357c033f ]
 
-If SKB allocation fails, continue rather than using the NULL
-pointer.
+Commit f3e7dae323ab ("ARM: dts: imx6qdl: add enet_out clk
+support") added another item to the list of clocks for the fec
+device. As imx6dl-eckelmann-ci4x10.dts only overwrites clocks,
+but not clock-names this resulted in an inconsistency with
+clocks having one item more than clock-names.
 
-Coverity CID: 1497650
+Also overwrite clock-names with the same value as in
+imx6qdl.dtsi. This is a no-op today, but prevents similar
+inconsistencies if the soc file will be changed in a similar way
+in the future.
 
-Cc: stable@vger.kernel.org
-Fixes: 2da4366f9e2c ("iwlwifi: mei: add the driver to allow cooperation with CSME")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
-Link: https://lore.kernel.org/r/20220517120045.90c1b1fd534e.Ibb42463e74d0ec7d36ec81df22e171ae1f6268b0@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Thorsten Scherer <t.scherer@eckelmann.de>
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Fixes: f3e7dae323ab ("ARM: dts: imx6qdl: add enet_out clk support")
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mei/main.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/net/wireless/intel/iwlwifi/mei/main.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mei/main.c
-@@ -1020,6 +1020,8 @@ static void iwl_mei_handle_sap_data(stru
+diff --git a/arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts b/arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts
+index b4a9523e325b..864dc5018451 100644
+--- a/arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts
++++ b/arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts
+@@ -297,7 +297,11 @@
+ 	phy-mode = "rmii";
+ 	phy-reset-gpios = <&gpio1 18 GPIO_ACTIVE_LOW>;
+ 	phy-handle = <&phy>;
+-	clocks = <&clks IMX6QDL_CLK_ENET>, <&clks IMX6QDL_CLK_ENET>, <&rmii_clk>;
++	clocks = <&clks IMX6QDL_CLK_ENET>,
++		 <&clks IMX6QDL_CLK_ENET>,
++		 <&rmii_clk>,
++		 <&clks IMX6QDL_CLK_ENET_REF>;
++	clock-names = "ipg", "ahb", "ptp", "enet_out";
+ 	status = "okay";
  
- 		/* We need enough room for the WiFi header + SNAP + IV */
- 		skb = netdev_alloc_skb(netdev, len + QOS_HDR_IV_SNAP_LEN);
-+		if (!skb)
-+			continue;
- 
- 		skb_reserve(skb, QOS_HDR_IV_SNAP_LEN);
- 		ethhdr = skb_push(skb, sizeof(*ethhdr));
+ 	mdio {
+-- 
+2.35.1
+
 
 
