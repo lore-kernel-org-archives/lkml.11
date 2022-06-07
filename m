@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9CA7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:30:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76781C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:31:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231512AbiFHCaH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:30:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34686 "EHLO
+        id S231194AbiFHCbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:31:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446950AbiFHC1A (ORCPT
+        with ESMTP id S238794AbiFHC3G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:27:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D205A26854B;
-        Tue,  7 Jun 2022 12:21:42 -0700 (PDT)
+        Tue, 7 Jun 2022 22:29:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75E79874C;
+        Tue,  7 Jun 2022 12:20:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11129B823CE;
-        Tue,  7 Jun 2022 19:21:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74987C385A2;
-        Tue,  7 Jun 2022 19:21:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C07CEB823CA;
+        Tue,  7 Jun 2022 19:20:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B017C385A2;
+        Tue,  7 Jun 2022 19:19:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629699;
-        bh=g87Y1uGDdJzNQpe0rlFlHuESKO6QUlZYQPzLsH/O1Cs=;
+        s=korg; t=1654629599;
+        bh=6XuCpoL494tMHj5PjWws+l+PxKw3BZQmZdyQYxQwgsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ka7IYyRz7MVa30lWw0I7REM7JoJ39KKTl2vPrtUxs4uRopPesDdKdDqSa3zWcH/Mc
-         Tzlp3nuYuMfdT/U2RjEk80diSLWz3PRfjYFG/QKnFAosjw3OXDBjrxkCUol8aEbKZk
-         XKNKCvVowuA/QdQjL8FPB4B+boJEfGDpALO7OYfk=
+        b=1JoRJoa1PjBxT8Uk5HzHqv4nB2G4spUy/kpquOq5iHqa5FsrhN+DAy5Uexq0Y9u+J
+         tCKXrsNe/YgPlOUTpXmF0YZ+la9vbkxsR4Cy6xcbcNbDOa7laPUP1FK+ocKm0yT4em
+         WCnz0PPEk8mPQk9SOpabG3L77whd94c2eDWvnjMk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.18 785/879] landlock: Change landlock_restrict_self(2) check ordering
-Date:   Tue,  7 Jun 2022 19:05:03 +0200
-Message-Id: <20220607165025.654737496@linuxfoundation.org>
+        stable@vger.kernel.org, Laurent Vivier <laurent@vivier.eu>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH 5.18 748/879] tty: goldfish: Introduce gf_ioread32()/gf_iowrite32()
+Date:   Tue,  7 Jun 2022 19:04:26 +0200
+Message-Id: <20220607165024.567536376@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -48,112 +48,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+From: Laurent Vivier <laurent@vivier.eu>
 
-commit eba39ca4b155c54adf471a69e91799cc1727873f upstream.
+commit 2e2ac4a3327479f7e2744cdd88a5c823f2057bad upstream.
 
-According to the Landlock goal to be a security feature available to
-unprivileges processes, it makes more sense to first check for
-no_new_privs before checking anything else (i.e. syscall arguments).
+The goldfish TTY device was clearly defined as having little-endian
+registers, but the switch to __raw_{read,write}l(() broke its driver
+when running on big-endian kernels (if anyone ever tried this).
 
-Merge inval_fd_enforce and unpriv_enforce_without_no_new_privs tests
-into the new restrict_self_checks_ordering.  This is similar to the
-previous commit checking other syscalls.
+The m68k qemu implementation got this wrong, and assumed native-endian
+registers.  While this is a bug in qemu, it is probably impossible to
+fix that since there is no way of knowing which other operating systems
+have started relying on that bug over the years.
 
-Link: https://lore.kernel.org/r/20220506160820.524344-10-mic@digikod.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Hence revert commit da31de35cd2f ("tty: goldfish: use
+__raw_writel()/__raw_readl()", and define gf_ioread32()/gf_iowrite32()
+to be able to use accessors defined by the architecture.
+
+Cc: stable@vger.kernel.org # v5.11+
+Fixes: da31de35cd2fb78f ("tty: goldfish: use __raw_writel()/__raw_readl()")
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+Link: https://lore.kernel.org/r/20220406201523.243733-2-laurent@vivier.eu
+[geert: Add rationale based on Arnd's comments]
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/landlock/syscalls.c                 |    8 ++--
- tools/testing/selftests/landlock/base_test.c |   47 +++++++++++++++++++++------
- 2 files changed, 41 insertions(+), 14 deletions(-)
+ drivers/tty/goldfish.c   |   20 ++++++++++----------
+ include/linux/goldfish.h |   15 +++++++++++----
+ 2 files changed, 21 insertions(+), 14 deletions(-)
 
---- a/security/landlock/syscalls.c
-+++ b/security/landlock/syscalls.c
-@@ -405,10 +405,6 @@ SYSCALL_DEFINE2(landlock_restrict_self,
- 	if (!landlock_initialized)
- 		return -EOPNOTSUPP;
+--- a/drivers/tty/goldfish.c
++++ b/drivers/tty/goldfish.c
+@@ -61,13 +61,13 @@ static void do_rw_io(struct goldfish_tty
+ 	spin_lock_irqsave(&qtty->lock, irq_flags);
+ 	gf_write_ptr((void *)address, base + GOLDFISH_TTY_REG_DATA_PTR,
+ 		     base + GOLDFISH_TTY_REG_DATA_PTR_HIGH);
+-	__raw_writel(count, base + GOLDFISH_TTY_REG_DATA_LEN);
++	gf_iowrite32(count, base + GOLDFISH_TTY_REG_DATA_LEN);
  
--	/* No flag for now. */
--	if (flags)
--		return -EINVAL;
--
- 	/*
- 	 * Similar checks as for seccomp(2), except that an -EPERM may be
- 	 * returned.
-@@ -417,6 +413,10 @@ SYSCALL_DEFINE2(landlock_restrict_self,
- 	    !ns_capable_noaudit(current_user_ns(), CAP_SYS_ADMIN))
- 		return -EPERM;
+ 	if (is_write)
+-		__raw_writel(GOLDFISH_TTY_CMD_WRITE_BUFFER,
++		gf_iowrite32(GOLDFISH_TTY_CMD_WRITE_BUFFER,
+ 		       base + GOLDFISH_TTY_REG_CMD);
+ 	else
+-		__raw_writel(GOLDFISH_TTY_CMD_READ_BUFFER,
++		gf_iowrite32(GOLDFISH_TTY_CMD_READ_BUFFER,
+ 		       base + GOLDFISH_TTY_REG_CMD);
  
-+	/* No flag for now. */
-+	if (flags)
-+		return -EINVAL;
-+
- 	/* Gets and checks the ruleset. */
- 	ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_READ);
- 	if (IS_ERR(ruleset))
---- a/tools/testing/selftests/landlock/base_test.c
-+++ b/tools/testing/selftests/landlock/base_test.c
-@@ -168,22 +168,49 @@ TEST(add_rule_checks_ordering)
- 	ASSERT_EQ(0, close(ruleset_fd));
- }
+ 	spin_unlock_irqrestore(&qtty->lock, irq_flags);
+@@ -142,7 +142,7 @@ static irqreturn_t goldfish_tty_interrup
+ 	unsigned char *buf;
+ 	u32 count;
  
--TEST(inval_fd_enforce)
-+/* Tests ordering of syscall argument and permission checks. */
-+TEST(restrict_self_checks_ordering)
+-	count = __raw_readl(base + GOLDFISH_TTY_REG_BYTES_READY);
++	count = gf_ioread32(base + GOLDFISH_TTY_REG_BYTES_READY);
+ 	if (count == 0)
+ 		return IRQ_NONE;
+ 
+@@ -159,7 +159,7 @@ static int goldfish_tty_activate(struct
  {
-+	const struct landlock_ruleset_attr ruleset_attr = {
-+		.handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE,
-+	};
-+	struct landlock_path_beneath_attr path_beneath_attr = {
-+		.allowed_access = LANDLOCK_ACCESS_FS_EXECUTE,
-+		.parent_fd = -1,
-+	};
-+	const int ruleset_fd =
-+		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
-+
-+	ASSERT_LE(0, ruleset_fd);
-+	path_beneath_attr.parent_fd =
-+		open("/tmp", O_PATH | O_NOFOLLOW | O_DIRECTORY | O_CLOEXEC);
-+	ASSERT_LE(0, path_beneath_attr.parent_fd);
-+	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
-+				       &path_beneath_attr, 0));
-+	ASSERT_EQ(0, close(path_beneath_attr.parent_fd));
-+
-+	/* Checks unprivileged enforcement without no_new_privs. */
-+	drop_caps(_metadata);
-+	ASSERT_EQ(-1, landlock_restrict_self(-1, -1));
-+	ASSERT_EQ(EPERM, errno);
-+	ASSERT_EQ(-1, landlock_restrict_self(-1, 0));
-+	ASSERT_EQ(EPERM, errno);
-+	ASSERT_EQ(-1, landlock_restrict_self(ruleset_fd, 0));
-+	ASSERT_EQ(EPERM, errno);
-+
- 	ASSERT_EQ(0, prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
- 
-+	/* Checks invalid flags. */
-+	ASSERT_EQ(-1, landlock_restrict_self(-1, -1));
-+	ASSERT_EQ(EINVAL, errno);
-+
-+	/* Checks invalid ruleset FD. */
- 	ASSERT_EQ(-1, landlock_restrict_self(-1, 0));
- 	ASSERT_EQ(EBADF, errno);
--}
--
--TEST(unpriv_enforce_without_no_new_privs)
--{
--	int err;
- 
--	drop_caps(_metadata);
--	err = landlock_restrict_self(-1, 0);
--	ASSERT_EQ(EPERM, errno);
--	ASSERT_EQ(err, -1);
-+	/* Checks valid call. */
-+	ASSERT_EQ(0, landlock_restrict_self(ruleset_fd, 0));
-+	ASSERT_EQ(0, close(ruleset_fd));
+ 	struct goldfish_tty *qtty = container_of(port, struct goldfish_tty,
+ 									port);
+-	__raw_writel(GOLDFISH_TTY_CMD_INT_ENABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
++	gf_iowrite32(GOLDFISH_TTY_CMD_INT_ENABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
+ 	return 0;
  }
  
- TEST(ruleset_fd_io)
+@@ -167,7 +167,7 @@ static void goldfish_tty_shutdown(struct
+ {
+ 	struct goldfish_tty *qtty = container_of(port, struct goldfish_tty,
+ 									port);
+-	__raw_writel(GOLDFISH_TTY_CMD_INT_DISABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
++	gf_iowrite32(GOLDFISH_TTY_CMD_INT_DISABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
+ }
+ 
+ static int goldfish_tty_open(struct tty_struct *tty, struct file *filp)
+@@ -202,7 +202,7 @@ static unsigned int goldfish_tty_chars_i
+ {
+ 	struct goldfish_tty *qtty = &goldfish_ttys[tty->index];
+ 	void __iomem *base = qtty->base;
+-	return __raw_readl(base + GOLDFISH_TTY_REG_BYTES_READY);
++	return gf_ioread32(base + GOLDFISH_TTY_REG_BYTES_READY);
+ }
+ 
+ static void goldfish_tty_console_write(struct console *co, const char *b,
+@@ -355,7 +355,7 @@ static int goldfish_tty_probe(struct pla
+ 	 * on Ranchu emulator (qemu2) returns 1 here and
+ 	 * driver will use physical addresses.
+ 	 */
+-	qtty->version = __raw_readl(base + GOLDFISH_TTY_REG_VERSION);
++	qtty->version = gf_ioread32(base + GOLDFISH_TTY_REG_VERSION);
+ 
+ 	/*
+ 	 * Goldfish TTY device on Ranchu emulator (qemu2)
+@@ -374,7 +374,7 @@ static int goldfish_tty_probe(struct pla
+ 		}
+ 	}
+ 
+-	__raw_writel(GOLDFISH_TTY_CMD_INT_DISABLE, base + GOLDFISH_TTY_REG_CMD);
++	gf_iowrite32(GOLDFISH_TTY_CMD_INT_DISABLE, base + GOLDFISH_TTY_REG_CMD);
+ 
+ 	ret = request_irq(irq, goldfish_tty_interrupt, IRQF_SHARED,
+ 			  "goldfish_tty", qtty);
+@@ -436,7 +436,7 @@ static int goldfish_tty_remove(struct pl
+ #ifdef CONFIG_GOLDFISH_TTY_EARLY_CONSOLE
+ static void gf_early_console_putchar(struct uart_port *port, unsigned char ch)
+ {
+-	__raw_writel(ch, port->membase);
++	gf_iowrite32(ch, port->membase);
+ }
+ 
+ static void gf_early_write(struct console *con, const char *s, unsigned int n)
+--- a/include/linux/goldfish.h
++++ b/include/linux/goldfish.h
+@@ -8,14 +8,21 @@
+ 
+ /* Helpers for Goldfish virtual platform */
+ 
++#ifndef gf_ioread32
++#define gf_ioread32 ioread32
++#endif
++#ifndef gf_iowrite32
++#define gf_iowrite32 iowrite32
++#endif
++
+ static inline void gf_write_ptr(const void *ptr, void __iomem *portl,
+ 				void __iomem *porth)
+ {
+ 	const unsigned long addr = (unsigned long)ptr;
+ 
+-	__raw_writel(lower_32_bits(addr), portl);
++	gf_iowrite32(lower_32_bits(addr), portl);
+ #ifdef CONFIG_64BIT
+-	__raw_writel(upper_32_bits(addr), porth);
++	gf_iowrite32(upper_32_bits(addr), porth);
+ #endif
+ }
+ 
+@@ -23,9 +30,9 @@ static inline void gf_write_dma_addr(con
+ 				     void __iomem *portl,
+ 				     void __iomem *porth)
+ {
+-	__raw_writel(lower_32_bits(addr), portl);
++	gf_iowrite32(lower_32_bits(addr), portl);
+ #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+-	__raw_writel(upper_32_bits(addr), porth);
++	gf_iowrite32(upper_32_bits(addr), porth);
+ #endif
+ }
+ 
 
 
