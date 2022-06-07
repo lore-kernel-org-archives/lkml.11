@@ -2,201 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D8ECCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 868F4CCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385595AbiFHAVp (ORCPT
+        id S1385871AbiFHAWC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55190 "EHLO
+        Tue, 7 Jun 2022 20:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391461AbiFGW4a (ORCPT
+        with ESMTP id S1359353AbiFGWbv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:56:30 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B8E30D369
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:58:08 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id mh16-20020a17090b4ad000b001e8313301f1so8405996pjb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:58:08 -0700 (PDT)
+        Tue, 7 Jun 2022 18:31:51 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CF627B9AF
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:25:16 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id bo5so16359991pfb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:25:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=purestorage.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DELD8KMeXui2A7kgi36tgonOPUlj758pTn6fyp8eDBE=;
-        b=T8uYE9Ecxc2t6MbrOBkXDKh7eS8ltpB4bjLpACf74MlXsAbyka9SAXH1cdraZeRe9F
-         /Hz/s0J3LFVZ63ghMAuFTkvDRMsdcc81bfAodrPYTgbkfioO48tib6UR+hcgaN583VHZ
-         +o+fL6CTbCFLliFcOUnhK4WHiveyZFEZjr/78=
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=szR7r+mhCiyllPHOYpWCvCcgEkcODKa3DHmlzg25Uuc=;
+        b=YxOVYFIXNDL2R9Bp5NP7sFBCXOpoBOSoM2+6V+lnOBnYxPPzfDjs2/v/oTsXj4uhLS
+         078BRiHzhGwm+ESUcmIhulF8W4QCV6GSulm+/klLNoOsu0JbpU1VZvx/TBp4Fen3EBH7
+         /jj0leaQxRcNbCpvW6hZMD8BLq397vAcPTfDhJe3C26YNJoQkrv87gKE/wcOPh7xxi5o
+         QCRIdWFaPOS4K/eIwD87pekU6QM+YI/CHK5K6Gic1G7v7fGKPzWBpaF3tvNwt42+LPJk
+         KsE7eVpzhBKnfe7hGrCKvIZU5E3bMVAAdH8DHASpfdSkoz6ia8Lr61B9+lKpxySWVQM/
+         emBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DELD8KMeXui2A7kgi36tgonOPUlj758pTn6fyp8eDBE=;
-        b=wppHstoYrvq41ebV9QXNlxMYAYBZGMkeIKF8FfWsJqpTNpN7WHhD71YYcbyYZbcfvz
-         jIBTXkRUIid34Qpda8rs/3gQhhyRIsu/yWuIsux550llUVqTL+gm49bQrV6Bto4n2XhR
-         0N5MFHU3nv4aPoIQAbwY3cgDh8UHXJDYrGlM0777D6zBKYUqShKLKvhl9VPoTUaPuoLC
-         GdrumW2iuBL6E3WAfIi8e6wgdm9vEQfYyd3hIYWz+/cBcOnwdd3pipfd982DvK2KQBEA
-         WNGf+Jf4vjUp9/sVIfm8KS4omwmy7sFSrREJlNTweFX7srgAmDmgR73NPDWEb2cOWzJy
-         5ahw==
-X-Gm-Message-State: AOAM531/ud+I6awPAdpjvlUancJWt2XNya7jYrr4eDDV6Fc0g+/kvkFM
-        4VSpPvdjpdpjsTOyNn5DwFl6bYX7upK/1fCHhPodBIorDw5sj0AdrI3UohO2zTjkTHuZXtPo0Hb
-        GWGpFLFrTpFNQ/kCcGSuFczfDj4e/9qmOoiQpI6/z1/stud1BTJ9ujFC6HUea6ZjM0L9j+oBXjQ
-        rOWYE=
-X-Google-Smtp-Source: ABdhPJzRyVhZ5MIyAhlDq+8WtxrR0UVAhUM0ei++J0NpXweubP0mJ6OZWV3QkV9K2A1cpnNouAJYeQ==
-X-Received: by 2002:a17:902:758a:b0:15e:ef4f:fed5 with SMTP id j10-20020a170902758a00b0015eef4ffed5mr30609704pll.1.1654631886363;
-        Tue, 07 Jun 2022 12:58:06 -0700 (PDT)
-Received: from localhost.localdomain (vpn.purestorage.com. [192.30.189.1])
-        by smtp.gmail.com with ESMTPSA id e186-20020a6369c3000000b003fd4bd3befesm8005432pgc.55.2022.06.07.12.58.04
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=szR7r+mhCiyllPHOYpWCvCcgEkcODKa3DHmlzg25Uuc=;
+        b=PStEOTEH5NEZobwrIDyqwvMj32WsEc9d8nSkXhWBsx/r2yR6007R6jiqiVZgtYPmnh
+         pWxHs46DSH5zrjRiMa8Zc1r0u6eBKa70Fg2YOq9VdvkOhg9HySAFZ2M4xIcwkGMPPb4b
+         FnhsU2c/NN11CtwmOf7BwpOqL5AhMcB+VYlr/wEWjYUXVViP1pNCRrQouB9b5wJ3P394
+         lGws4gMnbss5Ok8RDBP+TdLPViXUz9f5nXKcpUb1B7hhIfU/RSmVIE+v3sa39QcX2Sk1
+         ZD0mBNNLr5iRlQ1DOt0hNF/g6c2Mhqs4R+j76qVbV/Sl4oE6aVgIGJVUnmHc6UF0ObjA
+         qCSQ==
+X-Gm-Message-State: AOAM532GHuUBjFW/w9iTDZG0jf+iXFt2EWGWuK5VFp7xwZsu8VrUGdsO
+        d94U5WN4Rlqd+/CWZKycxC3Xlw39Mgc=
+X-Google-Smtp-Source: ABdhPJxjqDVgqTFmIHkJXehL20yGslGE4u+0x03+g4O9N4M8WM3QfKusenD1lbiI3tyXzFjnFuTgcg==
+X-Received: by 2002:a05:6a00:88f:b0:510:7a49:b72f with SMTP id q15-20020a056a00088f00b005107a49b72fmr30639671pfj.21.1654629915579;
+        Tue, 07 Jun 2022 12:25:15 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:fa4d])
+        by smtp.gmail.com with ESMTPSA id l5-20020a170902d34500b0015ef27092aasm12865936plk.190.2022.06.07.12.25.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 12:58:05 -0700 (PDT)
-From:   Brian Bunker <brian@purestorage.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     hare@suse.de, mwilck@suse.de, hch@infradead.org,
-        Brian Bunker <brian@purestorage.com>,
-        Krishna Kant <krishna.kant@purestorage.com>,
-        Seamus Connor <sconnor@purestorage.com>
-Subject: [PATCH] scsi_lib: Don't fail the path in ALUA transition state
-Date:   Tue,  7 Jun 2022 12:58:00 -0700
-Message-Id: <20220607195800.43485-1-brian@purestorage.com>
-X-Mailer: git-send-email 2.33.1
+        Tue, 07 Jun 2022 12:25:14 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 7 Jun 2022 09:25:13 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Alex Deucher <alexdeucher@gmail.com>
+Cc:     Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= 
+        <ckoenig.leichtzumerken@gmail.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Christian Koenig <Christian.Koenig@amd.com>
+Subject: Re: [PATCH] Revert "workqueue: remove unused cancel_work()"
+Message-ID: <Yp+mGaY+Ga/wX2h2@slm.duckdns.org>
+References: <20220519135642.83209-1-andrey.grodzovsky@amd.com>
+ <CAJhGHyBQ60Lh3WZCa+2cE4T36t3vjNxYTBCxS7J0xhZr8Eb2wg@mail.gmail.com>
+ <e1e2e63d-a1a9-12ad-97a7-a3771210edda@amd.com>
+ <CAJhGHyC7VLM1PnXMu2zmdX=xtSNKo6VGO5p0AkUnaaMsuZytpA@mail.gmail.com>
+ <045157bb-31a0-2d76-18b7-4272fab218ef@gmail.com>
+ <YodIquufXzK581gw@slm.duckdns.org>
+ <8df16635-658b-b381-9a40-3544828910fc@amd.com>
+ <Yp+HXowR9nTig331@slm.duckdns.org>
+ <CADnq5_OquY8A_nMsCcwMxvDL3r0WzYAxFdrGNzYsKEP7q-Xg7g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADnq5_OquY8A_nMsCcwMxvDL3r0WzYAxFdrGNzYsKEP7q-Xg7g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The error path for the SCSI check condition of not ready, target in
-ALUA state transition, will result in the failure of that path after
-the retries are exhausted. In most cases that is well ahead of the
-transition timeout established in the SCSI ALUA device handler.
+On Tue, Jun 07, 2022 at 01:39:01PM -0400, Alex Deucher wrote:
+> On Tue, Jun 7, 2022 at 1:14 PM Tejun Heo <tj@kernel.org> wrote:
+> >
+> > On Sat, May 21, 2022 at 12:04:00AM -0400, Andrey Grodzovsky wrote:
+> > > From 78df30cc97f10c885f5159a293e6afe2348aa60c Mon Sep 17 00:00:00 2001
+> > > From: Andrey Grodzovsky <andrey.grodzovsky@amd.com>
+> > > Date: Thu, 19 May 2022 09:47:28 -0400
+> > > Subject: Revert "workqueue: remove unused cancel_work()"
+> > >
+> > > This reverts commit 6417250d3f894e66a68ba1cd93676143f2376a6f.
+> > >
+> > > amdpgu need this function in order to prematurly stop pending
+> > > reset works when another reset work already in progress.
+> > >
+> > > Signed-off-by: Andrey Grodzovsky <andrey.grodzovsky@amd.com>
+> >
+> > Applied to wq/for-5.19-fixes.
+> 
+> Could we take it through the drm tree so we can include it with
+> Andrey's patches that depend on it?
 
-Instead, reprep the command and re-add it to the queue after a 1 second
-delay. This will allow the handler to take care of the timeout and
-only fail the path in the transition state if the target has exceeded
-the transition timeout (default 60 seconds).
+Oh sure, please go ahead. Imma revert from my tree.
 
-Acked-by: Krishna Kant <krishna.kant@purestorage.com>
-Acked-by: Seamus Connor <sconnor@purestorage.com>
-Signed-off-by: Brian Bunker <brian@purestorage.com>
----
- drivers/scsi/scsi_lib.c | 44 +++++++++++++++++++++++------------------
- 1 file changed, 25 insertions(+), 19 deletions(-)
+ Acked-by: Tejun Heo <tj@kernel.org>
 
-diff --git a/drivers/scsi/scsi_lib.c b/drivers/scsi/scsi_lib.c
-index 6ffc9e4258a8..1afb267ff9a2 100644
---- a/drivers/scsi/scsi_lib.c
-+++ b/drivers/scsi/scsi_lib.c
-@@ -118,7 +118,7 @@ scsi_set_blocked(struct scsi_cmnd *cmd, int reason)
- 	}
- }
- 
--static void scsi_mq_requeue_cmd(struct scsi_cmnd *cmd)
-+static void scsi_mq_requeue_cmd(struct scsi_cmnd *cmd, unsigned long msecs)
- {
- 	struct request *rq = scsi_cmd_to_rq(cmd);
- 
-@@ -128,7 +128,12 @@ static void scsi_mq_requeue_cmd(struct scsi_cmnd *cmd)
- 	} else {
- 		WARN_ON_ONCE(true);
- 	}
--	blk_mq_requeue_request(rq, true);
-+
-+	if (msecs) {
-+		blk_mq_requeue_request(rq, false);
-+		blk_mq_delay_kick_requeue_list(rq->q, msecs);
-+	} else
-+		blk_mq_requeue_request(rq, true);
- }
- 
- /**
-@@ -658,14 +663,6 @@ static unsigned int scsi_rq_err_bytes(const struct request *rq)
- 	return bytes;
- }
- 
--/* Helper for scsi_io_completion() when "reprep" action required. */
--static void scsi_io_completion_reprep(struct scsi_cmnd *cmd,
--				      struct request_queue *q)
--{
--	/* A new command will be prepared and issued. */
--	scsi_mq_requeue_cmd(cmd);
--}
--
- static bool scsi_cmd_runtime_exceeced(struct scsi_cmnd *cmd)
- {
- 	struct request *req = scsi_cmd_to_rq(cmd);
-@@ -683,14 +680,21 @@ static bool scsi_cmd_runtime_exceeced(struct scsi_cmnd *cmd)
- 	return false;
- }
- 
-+/*
-+ * When ALUA transition state is returned, reprep the cmd to
-+ * use the ALUA handlers transition timeout. Delay the reprep
-+ * 1 sec to avoid aggressive retries of the target in that
-+ * state.
-+ */
-+#define ALUA_TRANSITION_REPREP_DELAY	1000
-+
- /* Helper for scsi_io_completion() when special action required. */
- static void scsi_io_completion_action(struct scsi_cmnd *cmd, int result)
- {
--	struct request_queue *q = cmd->device->request_queue;
- 	struct request *req = scsi_cmd_to_rq(cmd);
- 	int level = 0;
--	enum {ACTION_FAIL, ACTION_REPREP, ACTION_RETRY,
--	      ACTION_DELAYED_RETRY} action;
-+	enum {ACTION_FAIL, ACTION_REPREP, ACTION_DELAYED_REPREP,
-+	      ACTION_RETRY, ACTION_DELAYED_RETRY} action;
- 	struct scsi_sense_hdr sshdr;
- 	bool sense_valid;
- 	bool sense_current = true;      /* false implies "deferred sense" */
-@@ -779,8 +783,8 @@ static void scsi_io_completion_action(struct scsi_cmnd *cmd, int result)
- 					action = ACTION_DELAYED_RETRY;
- 					break;
- 				case 0x0a: /* ALUA state transition */
--					blk_stat = BLK_STS_TRANSPORT;
--					fallthrough;
-+					action = ACTION_DELAYED_REPREP;
-+					break;
- 				default:
- 					action = ACTION_FAIL;
- 					break;
-@@ -839,7 +843,10 @@ static void scsi_io_completion_action(struct scsi_cmnd *cmd, int result)
- 			return;
- 		fallthrough;
- 	case ACTION_REPREP:
--		scsi_io_completion_reprep(cmd, q);
-+		scsi_mq_requeue_cmd(cmd, 0);
-+		break;
-+	case ACTION_DELAYED_REPREP:
-+		scsi_mq_requeue_cmd(cmd, ALUA_TRANSITION_REPREP_DELAY);
- 		break;
- 	case ACTION_RETRY:
- 		/* Retry the same command immediately */
-@@ -933,7 +940,7 @@ static int scsi_io_completion_nz_result(struct scsi_cmnd *cmd, int result,
-  * command block will be released and the queue function will be goosed. If we
-  * are not done then we have to figure out what to do next:
-  *
-- *   a) We can call scsi_io_completion_reprep().  The request will be
-+ *   a) We can call scsi_mq_requeue_cmd().  The request will be
-  *	unprepared and put back on the queue.  Then a new command will
-  *	be created for it.  This should be used if we made forward
-  *	progress, or if we want to switch from READ(10) to READ(6) for
-@@ -949,7 +956,6 @@ static int scsi_io_completion_nz_result(struct scsi_cmnd *cmd, int result,
- void scsi_io_completion(struct scsi_cmnd *cmd, unsigned int good_bytes)
- {
- 	int result = cmd->result;
--	struct request_queue *q = cmd->device->request_queue;
- 	struct request *req = scsi_cmd_to_rq(cmd);
- 	blk_status_t blk_stat = BLK_STS_OK;
- 
-@@ -986,7 +992,7 @@ void scsi_io_completion(struct scsi_cmnd *cmd, unsigned int good_bytes)
- 	 * request just queue the command up again.
- 	 */
- 	if (likely(result == 0))
--		scsi_io_completion_reprep(cmd, q);
-+		scsi_mq_requeue_cmd(cmd, 0);
- 	else
- 		scsi_io_completion_action(cmd, result);
- }
+Thanks.
+
 -- 
-2.33.1
-
+tejun
