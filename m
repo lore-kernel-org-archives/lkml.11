@@ -2,116 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D4FCCA489
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC29CCA48B
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357014AbiFGTku (ORCPT
+        id S1357062AbiFGTk6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:40:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53894 "EHLO
+        Tue, 7 Jun 2022 15:40:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354464AbiFGSrD (ORCPT
+        with ESMTP id S1354449AbiFGSrC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153BA61297;
-        Tue,  7 Jun 2022 11:01:24 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AB1522CD;
+        Tue,  7 Jun 2022 11:01:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C04C9B8236C;
-        Tue,  7 Jun 2022 18:01:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C1E3C34119;
-        Tue,  7 Jun 2022 18:01:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624881;
-        bh=jgYV900Ixg7qwGZpFkcwl38cnjMpLQdOhfZPhadzomc=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33E29618BF;
+        Tue,  7 Jun 2022 18:01:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4537C3411F;
+        Tue,  7 Jun 2022 18:01:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624877;
+        bh=dDemp0i4bzuclYqaTNa4xzi6Eq8uHB7oCI5/N/iW0Mo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KGzQ4V+J4+ZAHMhS0nG11aD8L30R5v0rZQuoyqmGmDCODr5vv4Kr8K1zTN1sCN3kl
-         qKWqpUf4n9YIJRWqBOmm3hCIyOmmAvXVdhL1JPcf2SuS3TQdfjGAXXuN2mvaoI53Yh
-         JTOXFqNJbCaZFUGqg7W+WjQTxEGkLRYuKoSHZBEo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>, Joerg Roedel <jroedel@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 480/667] iommu/amd: Enable swiotlb in all cases
-Date:   Tue,  7 Jun 2022 19:02:25 +0200
-Message-Id: <20220607164949.096642665@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=Ji94AxaRglSrNkIFEPHTGFavuEXyh2owxUr6IS2cv88m2dt4JapVOfqpt77B772mi
+         EGWG0Rmh6+TKzwcbz03kxynWnCGq05hO3DPXqWjvKbbtzU30EUfvHX/plwQC79Yt4m
+         S25jVDHRE1cLRmslB/xlNOUMWhBDPuNsTOAhwi8Uo6524jWCcxw7KR7tLZa4xq9LT2
+         KyhiNbpMbeX1jqbwfLnB51b2OM1ZvwmgS3Wuu454vIhOvzfuMSqBKfqh7WaQL/jCOl
+         96/snj3MdOuDF/1+aoxUkvWBjJSlz0PNppdlq3AFVKueIG5NvxtP1ELXMhj1IFV/rR
+         ye36lvePaDtwA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sasha Levin <sashal@kernel.org>, michal.lkml@markovi.net,
+        linux-kbuild@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 27/34] modpost: fix undefined behavior of is_arm_mapping_symbol()
+Date:   Tue,  7 Jun 2022 14:00:02 -0400
+Message-Id: <20220607180011.481266-27-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
+References: <20220607180011.481266-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 121660bba631104154b7c15e88f208c48c8c3297 ]
+[ Upstream commit d6b732666a1bae0df3c3ae06925043bba34502b1 ]
 
-Previously the AMD IOMMU would only enable SWIOTLB in certain
-circumstances:
- * IOMMU in passthrough mode
- * SME enabled
+The return value of is_arm_mapping_symbol() is unpredictable when "$"
+is passed in.
 
-This logic however doesn't work when an untrusted device is plugged in
-that doesn't do page aligned DMA transactions.  The expectation is
-that a bounce buffer is used for those transactions.
+strchr(3) says:
+  The strchr() and strrchr() functions return a pointer to the matched
+  character or NULL if the character is not found. The terminating null
+  byte is considered part of the string, so that if c is specified as
+  '\0', these functions return a pointer to the terminator.
 
-This fails like this:
+When str[1] is '\0', strchr("axtd", str[1]) is not NULL, and str[2] is
+referenced (i.e. buffer overrun).
 
-swiotlb buffer is full (sz: 4096 bytes), total 0 (slots), used 0 (slots)
+Test code
+---------
 
-That happens because the bounce buffers have been allocated, followed by
-freed during startup but the bounce buffering code expects that all IOMMUs
-have left it enabled.
+  char str1[] = "abc";
+  char str2[] = "ab";
 
-Remove the criteria to set up bounce buffers on AMD systems to ensure
-they're always available for supporting untrusted devices.
+  strcpy(str1, "$");
+  strcpy(str2, "$");
 
-Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
-Suggested-by: Christoph Hellwig <hch@infradead.org>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220404204723.9767-2-mario.limonciello@amd.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+  printf("test1: %d\n", is_arm_mapping_symbol(str1));
+  printf("test2: %d\n", is_arm_mapping_symbol(str2));
+
+Result
+------
+
+  test1: 0
+  test2: 1
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/amd/iommu.c | 7 -------
- 1 file changed, 7 deletions(-)
+ scripts/mod/modpost.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index f46eb7397021..e23e70af718f 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1816,17 +1816,10 @@ void amd_iommu_domain_update(struct protection_domain *domain)
- 	amd_iommu_domain_flush_complete(domain);
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 13cda6aa2688..a878c79fe95a 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1283,7 +1283,8 @@ static int secref_whitelist(const struct sectioncheck *mismatch,
+ 
+ static inline int is_arm_mapping_symbol(const char *str)
+ {
+-	return str[0] == '$' && strchr("axtd", str[1])
++	return str[0] == '$' &&
++	       (str[1] == 'a' || str[1] == 'd' || str[1] == 't' || str[1] == 'x')
+ 	       && (str[2] == '\0' || str[2] == '.');
  }
  
--static void __init amd_iommu_init_dma_ops(void)
--{
--	swiotlb = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
--}
--
- int __init amd_iommu_init_api(void)
- {
- 	int err;
- 
--	amd_iommu_init_dma_ops();
--
- 	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
- 	if (err)
- 		return err;
 -- 
 2.35.1
-
-
 
