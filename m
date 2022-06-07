@@ -2,78 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F15C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:41:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B33C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244015AbiFGMlS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:41:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44112 "EHLO
+        id S236859AbiFGMlp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:41:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243978AbiFGMlD (ORCPT
+        with ESMTP id S244027AbiFGMlh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:41:03 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52087C7A
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:41:02 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LHVKX4Rq1z1KCMb;
-        Tue,  7 Jun 2022 20:39:12 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 7 Jun 2022 20:40:50 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 7 Jun 2022 20:40:50 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     <catalin.marinas@arm.com>, <will@kernel.org>,
-        <akpm@linux-foundation.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <linux-mm@kvack.org>, <hch@infradead.org>, <arnd@arndb.de>,
-        <anshuman.khandual@arm.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: [PATCH v5 3/6] mm: ioremap: Setup phys_addr of struct vm_struct
-Date:   Tue, 7 Jun 2022 20:50:24 +0800
-Message-ID: <20220607125027.44946-4-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220607125027.44946-1-wangkefeng.wang@huawei.com>
-References: <20220607125027.44946-1-wangkefeng.wang@huawei.com>
+        Tue, 7 Jun 2022 08:41:37 -0400
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C385DFF47;
+        Tue,  7 Jun 2022 05:41:36 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id t22-20020a0568301e3600b0060b333f7a1eso12843981otr.0;
+        Tue, 07 Jun 2022 05:41:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Jqn5ENcnbUU/0+opNYmJQjgSQeuwZaQtQYaCaEQBiPI=;
+        b=EfBNNu/iYNWZEw+b59EZt7f23G4b1uF2NCtoCOBprSRTS+oZIgAnvJq1pd3C5/P8QQ
+         gcwmFmsvjMHKgGozGa6PghxD9u2bzm8Ub8MtJjwr2/8qkvB9CYbua5fXn0cPexgVavHr
+         o2x6TgDk3XSqnbaQJpVADuvDimRSwG0ReMgtOUO6OwGK+VrDovhXWxvZXTLfz8+UoETf
+         LWq074HO4nPPq0poPtAtyYBxfMGycUbS0rHEyfIOsqmzWJ50Tia99pZ4i/yxAfdqJ/8q
+         8mNUQK6mxgxLirn1LpTyDd70tmW/wiz0VMrGVT0CZTl4RS/pmWz1Zc9YblQwPeQddvDp
+         v3Cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Jqn5ENcnbUU/0+opNYmJQjgSQeuwZaQtQYaCaEQBiPI=;
+        b=5zIll6EbU3gyg2hUDDeuaxUr037N3E5XelrW/uvv/aYwCioJlicsDYzU54wCk7T0Mu
+         gjcKlR+8x10F7GD1A/GyxHe4TqWJmPrTnfyBv53gUHsnI4wGgVEM8BvGppNDoQoRl2B/
+         sClbydE7KxG3oXohkIPdv1Y9t/fUURh6EKwUrmTJ3L0VCdTAwyNp/tQfwNMdcBMZpTZh
+         QM5NSM2qnfElI5/QbbhPjqsJ9rlHH5f0vaJ9pSV1yLvK8Q4Hd60+7XnD/8fRW8cIDZuM
+         ECt/gOGEwmec8HdcETrkm98Uz59MmIx+p2DSsof4hDRrEjL6UQf1R73phB42EZROemtq
+         Yr9g==
+X-Gm-Message-State: AOAM530PV/vYfqXao1YVbVxRJY/JOVjAvzq4v3JkGASP4pK8cu5LEvOc
+        KZsxHSi9Fc6WTy3fnMBzsigmdfJzovM=
+X-Google-Smtp-Source: ABdhPJyytTlsX8ZhKcQU08iE3UDQqgHYhIS1DZZphg+BE++3QrOjnl/yK7mT1LqXhi8fXU6f9NDzFw==
+X-Received: by 2002:a9d:6081:0:b0:60b:c8f7:272e with SMTP id m1-20020a9d6081000000b0060bc8f7272emr10907645otj.11.1654605695311;
+        Tue, 07 Jun 2022 05:41:35 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id t11-20020a9d728b000000b0060b66b6641fsm8980343otj.5.2022.06.07.05.41.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 05:41:34 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <216b6e68-df86-4117-8519-01b7f1bf199b@roeck-us.net>
+Date:   Tue, 7 Jun 2022 05:41:32 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] dt-bindings: Drop more redundant 'maxItems/minItems' in
+ if/then schemas
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Hu Ziji <huziji@marvell.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Maxime Ripard <mripard@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+References: <20220606225137.1536010-1-robh@kernel.org>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220606225137.1536010-1-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Show physical address of each ioremap in /proc/vmallocinfo.
+On 6/6/22 15:51, Rob Herring wrote:
+> Another round from new cases in 5.19-rc of removing redundant
+> minItems/maxItems when 'items' list is specified. This time it is in
+> if/then schemas as the meta-schema was failing to check this case.
+> 
+> If a property has an 'items' list, then a 'minItems' or 'maxItems' with the
+> same size as the list is redundant and can be dropped. Note that is DT
+> schema specific behavior and not standard json-schema behavior. The tooling
+> will fixup the final schema adding any unspecified minItems/maxItems.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>   .../bindings/memory-controllers/nvidia,tegra186-mc.yaml        | 3 ---
+>   Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.yaml | 1 -
+>   .../devicetree/bindings/watchdog/allwinner,sun4i-a10-wdt.yaml  | 1 -
 
-Acked-by: Andrew Morton <akpm@linux-foundation.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- mm/ioremap.c | 1 +
- 1 file changed, 1 insertion(+)
+Acked-by: Guenter Roeck <linux@roeck-us.net>
 
-diff --git a/mm/ioremap.c b/mm/ioremap.c
-index 2d754b48d230..e1d008e8f87f 100644
---- a/mm/ioremap.c
-+++ b/mm/ioremap.c
-@@ -33,6 +33,7 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
- 	if (!area)
- 		return NULL;
- 	vaddr = (unsigned long)area->addr;
-+	area->phys_addr = phys_addr;
- 
- 	if (ioremap_page_range(vaddr, vaddr + size, phys_addr,
- 			       __pgprot(prot))) {
--- 
-2.35.3
+>   3 files changed, 5 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+> index c7cfa6c2cd81..935d63d181d9 100644
+> --- a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+> +++ b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+> @@ -150,7 +150,6 @@ allOf:
+>             description: 5 memory controller channels and 1 for stream-id registers
+>   
+>           reg-names:
+> -          maxItems: 6
+>             items:
+>               - const: sid
+>               - const: broadcast
+> @@ -170,7 +169,6 @@ allOf:
+>             description: 17 memory controller channels and 1 for stream-id registers
+>   
+>           reg-names:
+> -          minItems: 18
+>             items:
+>               - const: sid
+>               - const: broadcast
+> @@ -202,7 +200,6 @@ allOf:
+>             description: 17 memory controller channels and 1 for stream-id registers
+>   
+>           reg-names:
+> -          minItems: 18
+>             items:
+>               - const: sid
+>               - const: broadcast
+> diff --git a/Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.yaml b/Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.yaml
+> index c79639e9027e..7a2b22dd6d05 100644
+> --- a/Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.yaml
+> +++ b/Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.yaml
+> @@ -145,7 +145,6 @@ allOf:
+>             items:
+>               - description: Xenon IP registers
+>               - description: Armada 3700 SoC PHY PAD Voltage Control register
+> -          minItems: 2
+>   
+>           marvell,pad-type:
+>             $ref: /schemas/types.yaml#/definitions/string
+> diff --git a/Documentation/devicetree/bindings/watchdog/allwinner,sun4i-a10-wdt.yaml b/Documentation/devicetree/bindings/watchdog/allwinner,sun4i-a10-wdt.yaml
+> index cbcf19f51411..ed6c1ca80dcc 100644
+> --- a/Documentation/devicetree/bindings/watchdog/allwinner,sun4i-a10-wdt.yaml
+> +++ b/Documentation/devicetree/bindings/watchdog/allwinner,sun4i-a10-wdt.yaml
+> @@ -64,7 +64,6 @@ if:
+>   then:
+>     properties:
+>       clocks:
+> -      minItems: 2
+>         items:
+>           - description: High-frequency oscillator input, divided internally
+>           - description: Low-frequency oscillator input
 
