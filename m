@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC440C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:07:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C3FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383719AbiFGWH4 (ORCPT
+        id S1378196AbiFGWIF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
+        Tue, 7 Jun 2022 18:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377448AbiFGU7t (ORCPT
+        with ESMTP id S1379814AbiFGVG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:59:49 -0400
+        Tue, 7 Jun 2022 17:06:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373D320C278;
-        Tue,  7 Jun 2022 11:45:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13AD421110C;
+        Tue,  7 Jun 2022 11:50:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29C0561295;
-        Tue,  7 Jun 2022 18:45:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E3C1C385A5;
-        Tue,  7 Jun 2022 18:44:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C699A616B6;
+        Tue,  7 Jun 2022 18:50:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D307BC385A2;
+        Tue,  7 Jun 2022 18:50:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627499;
-        bh=wEN67JUF7h90gFRJYEPgOYbXPQQrDcNRic4aTK3LJmM=;
+        s=korg; t=1654627805;
+        bh=TR74+tfIx5LPTfO6NYsObBj1oQozGcliwE9T2Z1bW0Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RiI/2K2NALua44dQYWsRful3aWEBubsA4t3cBTpxg5/CYOIgFuJVYt1mIVkRbaSQO
-         62SAo2ZTrtD/b9glQkMOhiPFkdN1WZmx/83evsd7UzAmszhuBZFzR7GBiXFg9KQACy
-         fWUsoctoJ9wj59qYe3IxpojNEmHDt4yfhxaeo15g=
+        b=u5mYNW03BS6tRjBIzJT0PR76vkfk7F4tCtW12KqLxQO4yP9jNwLIRBwT6NrHLuc7/
+         1BdKjFCz9oe50/VWRWwANkdTJXNrieKb4Oa3t91oH2/ZaxdmMvDBOtZWFW9KCXs/vS
+         KgLCXpiDAI79VGNno8tMELXnKS6KFMKrmIgWvNYs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 735/772] bcache: remove incremental dirty sector counting for bch_sectors_dirty_init()
-Date:   Tue,  7 Jun 2022 19:05:27 +0200
-Message-Id: <20220607165010.696584347@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 098/879] net: macb: In ZynqMP initialization make SGMII phy configuration optional
+Date:   Tue,  7 Jun 2022 18:53:36 +0200
+Message-Id: <20220607165005.539894668@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,138 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Coly Li <colyli@suse.de>
+From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 
-commit 80db4e4707e78cb22287da7d058d7274bd4cb370 upstream.
+[ Upstream commit 29e96fe9e0ec0f0fe1dd306a4ccb7b8983eae67a ]
 
-After making bch_sectors_dirty_init() being multithreaded, the existing
-incremental dirty sector counting in bch_root_node_dirty_init() doesn't
-release btree occupation after iterating 500000 (INIT_KEYS_EACH_TIME)
-bkeys. Because a read lock is added on btree root node to prevent the
-btree to be split during the dirty sectors counting, other I/O requester
-has no chance to gain the write lock even restart bcache_btree().
+In the macb binding documentation "phys" is an optional property. Make
+implementation in line with it. This change allows the traditional flow
+in which first stage bootloader does PS-GT configuration to work along
+with newer use cases in which PS-GT configuration is managed by the
+phy-zynqmp driver.
 
-That is to say, the incremental dirty sectors counting is incompatible
-to the multhreaded bch_sectors_dirty_init(). We have to choose one and
-drop another one.
+It fixes below macb probe failure when macb DT node doesn't have SGMII
+phys handle.
+"macb ff0b0000.ethernet: error -ENODEV: failed to get PS-GTR PHY"
 
-In my testing, with 512 bytes random writes, I generate 1.2T dirty data
-and a btree with 400K nodes. With single thread and incremental dirty
-sectors counting, it takes 30+ minites to register the backing device.
-And with multithreaded dirty sectors counting, the backing device
-registration can be accomplished within 2 minutes.
-
-The 30+ minutes V.S. 2- minutes difference makes me decide to keep
-multithreaded bch_sectors_dirty_init() and drop the incremental dirty
-sectors counting. This is what this patch does.
-
-But INIT_KEYS_EACH_TIME is kept, in sectors_dirty_init_fn() the CPU
-will be released by cond_resched() after every INIT_KEYS_EACH_TIME keys
-iterated. This is to avoid the watchdog reports a bogus soft lockup
-warning.
-
-Fixes: b144e45fc576 ("bcache: make bch_sectors_dirty_init() to be multithreaded")
-Signed-off-by: Coly Li <colyli@suse.de>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220524102336.10684-4-colyli@suse.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Reviewed-by: Michal Simek <michal.simek@xilinx.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/bcache/writeback.c |   39 ++++++++++++---------------------------
- 1 file changed, 12 insertions(+), 27 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/md/bcache/writeback.c
-+++ b/drivers/md/bcache/writeback.c
-@@ -802,13 +802,11 @@ static int bch_writeback_thread(void *ar
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 61284baa0496..ed7c2c2c4401 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -4594,7 +4594,7 @@ static int zynqmp_init(struct platform_device *pdev)
  
- /* Init */
- #define INIT_KEYS_EACH_TIME	500000
--#define INIT_KEYS_SLEEP_MS	100
+ 	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII) {
+ 		/* Ensure PS-GTR PHY device used in SGMII mode is ready */
+-		bp->sgmii_phy = devm_phy_get(&pdev->dev, "sgmii-phy");
++		bp->sgmii_phy = devm_phy_optional_get(&pdev->dev, NULL);
  
- struct sectors_dirty_init {
- 	struct btree_op	op;
- 	unsigned int	inode;
- 	size_t		count;
--	struct bkey	start;
- };
- 
- static int sectors_dirty_init_fn(struct btree_op *_op, struct btree *b,
-@@ -824,11 +822,8 @@ static int sectors_dirty_init_fn(struct
- 					     KEY_START(k), KEY_SIZE(k));
- 
- 	op->count++;
--	if (atomic_read(&b->c->search_inflight) &&
--	    !(op->count % INIT_KEYS_EACH_TIME)) {
--		bkey_copy_key(&op->start, k);
--		return -EAGAIN;
--	}
-+	if (!(op->count % INIT_KEYS_EACH_TIME))
-+		cond_resched();
- 
- 	return MAP_CONTINUE;
- }
-@@ -843,24 +838,16 @@ static int bch_root_node_dirty_init(stru
- 	bch_btree_op_init(&op.op, -1);
- 	op.inode = d->id;
- 	op.count = 0;
--	op.start = KEY(op.inode, 0, 0);
- 
--	do {
--		ret = bcache_btree(map_keys_recurse,
--				   k,
--				   c->root,
--				   &op.op,
--				   &op.start,
--				   sectors_dirty_init_fn,
--				   0);
--		if (ret == -EAGAIN)
--			schedule_timeout_interruptible(
--				msecs_to_jiffies(INIT_KEYS_SLEEP_MS));
--		else if (ret < 0) {
--			pr_warn("sectors dirty init failed, ret=%d!\n", ret);
--			break;
--		}
--	} while (ret == -EAGAIN);
-+	ret = bcache_btree(map_keys_recurse,
-+			   k,
-+			   c->root,
-+			   &op.op,
-+			   &KEY(op.inode, 0, 0),
-+			   sectors_dirty_init_fn,
-+			   0);
-+	if (ret < 0)
-+		pr_warn("sectors dirty init failed, ret=%d!\n", ret);
- 
- 	return ret;
- }
-@@ -904,7 +891,6 @@ static int bch_dirty_init_thread(void *a
- 				goto out;
- 			}
- 			skip_nr--;
--			cond_resched();
- 		}
- 
- 		if (p) {
-@@ -914,7 +900,6 @@ static int bch_dirty_init_thread(void *a
- 
- 		p = NULL;
- 		prev_idx = cur_idx;
--		cond_resched();
- 	}
- 
- out:
-@@ -953,11 +938,11 @@ void bch_sectors_dirty_init(struct bcach
- 		bch_btree_op_init(&op.op, -1);
- 		op.inode = d->id;
- 		op.count = 0;
--		op.start = KEY(op.inode, 0, 0);
- 
- 		for_each_key_filter(&c->root->keys,
- 				    k, &iter, bch_ptr_invalid)
- 			sectors_dirty_init_fn(&op.op, c->root, k);
-+
- 		rw_unlock(0, c->root);
- 		return;
- 	}
+ 		if (IS_ERR(bp->sgmii_phy)) {
+ 			ret = PTR_ERR(bp->sgmii_phy);
+-- 
+2.35.1
+
 
 
