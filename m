@@ -2,168 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B973CCA485
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B9F8CCA49D
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442804AbiFHCBM (ORCPT
+        id S1442457AbiFHCAe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60826 "EHLO
+        Tue, 7 Jun 2022 22:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1839311AbiFHAC5 (ORCPT
+        with ESMTP id S1837505AbiFHAAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:02:57 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2ED511CB7F;
-        Tue,  7 Jun 2022 16:52:07 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso16851699pjg.0;
-        Tue, 07 Jun 2022 16:52:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=b3NZKzwwnS36QL4ucaqxtIuHPEUyyTomuKdcLQyEKAY=;
-        b=Gf7bKdJ2hUOr/LphELuKt2o2il5QdNDO4rPQYRQp+1RKXfjR13N6bKmp5cYllzWRT1
-         xhWgDv9jhC081rAPWRyoHtai4YiXoOEshYmG98xEi3wfEpFCM2PDCdIuy+YcJ0chYvKT
-         atBYZkLGl8/N43pToDTwRSTpFzFaMaAypJvvAQf+dndtlcYidM4/cRGYnwFcXWEtFEWi
-         Tcg9DoCiNNhHm/4hSnGnujiO9+rEPF9ieyuGMobYFn67e4mR2wStVhet3fN/z1EhPV1t
-         aMmWf/7BmFv9yBtn8Iwp64KBjrIImavp8mV1C3jBkHuJyJPrwDy+v+PnhrbQjoGDC5sB
-         2t0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=b3NZKzwwnS36QL4ucaqxtIuHPEUyyTomuKdcLQyEKAY=;
-        b=PMNOqZv0gYYje7LKbxAyJDyL+ZlHZfMhp5bM+Gk/YtCO37w6dt/stbuRPAuHeIQxEU
-         W/9lu/ToLXXewh7L2Dp0vLRwzv3rrH3vq7aHe/XbS947qmv4b9OyOVqtmqtUaiNXoMnT
-         0VC86ADX/oAYxpXqrBh0FK1wBuYB/5BebDWAs10wjvToBJt151B9sM6ZuoHGamjimXMw
-         rdeJTuxFqN88UTCvNS7E4h8+EPKJYxzxiXiDNkjJYNJSMScfxEHhelqBPQC9dcXiOwWi
-         9qAnrgYpRHQ7b7/V4xZPg5i4FfbQf4Zc1Qs2zXqvXmSbfbK+/iKTsGAhg90+IKW4mdqC
-         rwjA==
-X-Gm-Message-State: AOAM533xkF3DKvaZ61c7W0Rhme3N5NdJlRfA9RnL3Pf0QGFDFR7ZHWue
-        lk613blWefXo7l5Xb85Ya34=
-X-Google-Smtp-Source: ABdhPJxccdrile2mSoYxkExBirNwrH/WiEDWbZeQDdUwJ0Lkq9krO4qFXX5rn/DFlb/QY2Iq77CWPw==
-X-Received: by 2002:a17:902:ce11:b0:167:7d4a:964b with SMTP id k17-20020a170902ce1100b001677d4a964bmr12617889plg.37.1654645927119;
-        Tue, 07 Jun 2022 16:52:07 -0700 (PDT)
-Received: from google.com ([2620:15c:211:201:f30f:4d03:66e6:b121])
-        by smtp.gmail.com with ESMTPSA id t9-20020a1709027fc900b00167863f0e68sm4026924plb.237.2022.06.07.16.52.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 16:52:06 -0700 (PDT)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Tue, 7 Jun 2022 16:52:04 -0700
-From:   Minchan Kim <minchan@kernel.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        regressions@lists.linux.dev, Jens Axboe <axboe@kernel.dk>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Nitin Gupta <ngupta@vflare.org>
-Subject: Re: qemu-arm: zram: mkfs.ext4 : Unable to handle kernel NULL pointer
- dereference at virtual address 00000140
-Message-ID: <Yp/kpPA7GdbArXDo@google.com>
-References: <CA+G9fYtVOfWWpx96fa3zzKzBPKiNu1w3FOD4j++G8MOG3Vs0EA@mail.gmail.com>
- <Yp47DODPCz0kNgE8@google.com>
- <CA+G9fYsjn0zySHU4YYNJWAgkABuJuKtHty7ELHmN-+30VYgCDA@mail.gmail.com>
+        Tue, 7 Jun 2022 20:00:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D48A28E3A;
+        Tue,  7 Jun 2022 12:17:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58187617DA;
+        Tue,  7 Jun 2022 19:17:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26C62C385A2;
+        Tue,  7 Jun 2022 19:17:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629477;
+        bh=CY+iDginr8y7gYfPZBjwiPcljo0h6gLMrOVyX6LMgGE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eF5Qy2yV6IfGzvmfCCxgb5Jrcy96TAqMgUI1ZoBh6zFI0lceChN9YcrGpL/1ZwpAe
+         BzJqCiKMQw40xAp7PTvWGj5LxWe0K/3XVmp78irH6IkRZN+keeuyn1WxfbWNaGbm11
+         VyNV3yPqkpYiHY4tKKI4n6YzM4YAhv2dq05I9zBE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Shishkin <alexander.shishkin@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 704/879] perf jevents: Fix event syntax error caused by ExtSel
+Date:   Tue,  7 Jun 2022 19:03:42 +0200
+Message-Id: <20220607165023.282143005@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYsjn0zySHU4YYNJWAgkABuJuKtHty7ELHmN-+30VYgCDA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 06:51:27AM +0530, Naresh Kamboju wrote:
-> On Mon, 6 Jun 2022 at 23:06, Minchan Kim <minchan@kernel.org> wrote:
-> >
-> > On Thu, Jun 02, 2022 at 02:19:34PM +0530, Naresh Kamboju wrote:
-> > > The following kernel crash reported while running selftests: zram: zram.sh
-> > > test case on qemu-arm with Linux mainline v5.18.0 kernel version.
-> > >
-> > > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> > >
-> > > Started noticing from kernel crash from
-> > > BAD: git_sha: cdeffe87f790dfd1baa193020411ce9a538446d7
-> > > GOOD:   git_sha: babf0bb978e3c9fce6c4eba6b744c8754fd43d8e
-> > >
-> > > # git log  --oneline
-> > > babf0bb978e3c9fce6c4eba6b744c8754fd43d8e..cdeffe87f790dfd1baa193020411ce9a538446d7
-> > >   -- drivers/block/
-> > > 98931dd95fd4 Merge tag 'mm-stable-2022-05-25' of
-> > > git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm
-> > > 6140ae41effe zram: fix Kconfig dependency warning
-> > > b3fbd58fcbb1 mm: Kconfig: simplify zswap configuration
-> > > e7be8d1dd983 zram: remove double compression logic
-> > > a2ad63daa88b VFS: add FMODE_CAN_ODIRECT file flag
-> > > 30226b69f876 zram: add a huge_idle writeback mode
-> >
-> > Hi Nalesh,
-> >
-> > Thanks for the reporting the bug!
-> >
-> > I locally ran the test in my x86 KVM machine but couldn't reproduce it.
-> > How is it easy to reproduce?  Could you help to bisect it?
-> 
-> It works on qemu_x86-64
-> It is always reproducible in qemu arm32 environment.
-> 
-> steps to reproduce:
-> # Please download and use this rootfs and kernel zImage
-> 
-> rootfs: https://oebuilds.tuxbuild.com/29zhlbEc3EWq2wod9Uy964Bp27q/images/am57xx-evm/rpb-console-image-lkft-am57xx-evm-20220601222434.rootfs.ext4.gz
-> kernel: https://builds.tuxbuild.com/29zhqJJizU2Y7Ka7ArhryUOrNDC/zImage
-> 
-> Boot command,
->  /usr/bin/qemu-system-aarch64 -cpu host,aarch64=off -machine
-> virt-2.10,accel=kvm -nographic -net
-> nic,model=virtio,maaacaddr=BA:DD:AD:CC:09:04 -net tap -m 2048 -monitor
-> none -kernel kernel/zImage --append "console=ttyAMA0 root=/dev/vda rw"
-> -hda rootfs/rpb-console-image-lkft-am57xx-evm-20220601222434.rootfs.ext4
-> -m 4096 -smp 2
-> 
-> # cd /opt/kselftests/default-in-kernel/zram
-> # ./zram.sh
-> 
-> Allow me sometime I will try to bisect this problem.
+From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
 
-Thanks for sharing the info. 
+[ Upstream commit f4df0dbbe62ee8e4405a57b27ccd54393971c773 ]
 
-I managed to work your rootfs with my local arm build
-based on the problematic git tip. 
-However, I couldn't suceed to reproduce it.
+In the origin code, when "ExtSel" is 1, the eventcode will change to
+"eventcode |= 1 << 21”. For event “UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS",
+its "ExtSel" is "1", its eventcode will change from 0x1E to 0x20001E,
+but in fact the eventcode should <=0x1FF, so this will cause the parse
+fail:
 
-I needed to build zsmalloc/zram built-in instead of modules
-Is it related? Hmm,
+  # perf stat -e "UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS" -a sleep 0.1
+  event syntax error: '.._RxL_CREDITS_CONSUMED_VN0.DRS'
+                                    \___ value too big for format, maximum is 511
 
-Yeah, It would be very helpful if you could help to bisect it.
-Thanks!
+On the perf kernel side, the kernel assumes the valid bits are continuous.
+It will adjust the 0x100 (bit 8 for perf tool) to bit 21 in HW.
 
-=== &< ====
-create '1' zram device(s)
-zram modules already loaded, kernel supports zram-control interface
-[  936.188541] zram: Added device: zram1
-all zram devices (/dev/zram1~1 successfully created
-set max_comp_streams to zram device(s)
-The device attribute max_comp_streams was deprecated in 4.7
-set disk size to zram device(s)
-/sys/block/zram1/disksize = '1048576'
-zram set disksizes: OK
-set memory limit to zram device(s)
-[  936.214438] zram1: detected capacity change from 0 to 2048
-/sys/block/zram1/mem_limit = '1M'
-zram set memory limit: OK
-make swap with zram device(s)
-[  936.608854] Adding 1020k swap on /dev/zram1.  Priority:-2 extents:1 across:1020k SS
-done with /dev/zram1
-zram making zram mkswap and swapon: OK
-zram swapoff: OK
-zram cleanup
-[  937.063416] zram1: detected capacity change from 2048 to 0
-[  937.189223] zram: Removed device: zram1
-zram02 : [PASS]
-root@am57xx-evm:/opt/kselftests/default-in-kernel/zram# uname -r
-5.18.0-11934-g54eb8462f21f
+DEFINE_UNCORE_FORMAT_ATTR(event_ext, event, "config:0-7,21");
+
+So the perf tool follows the kernel side and just set bit8 other than bit21.
+
+Fixes: fedb2b518239cbc0 ("perf jevents: Add support for parsing uncore json files")
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220525140410.1706851-1-zhengjun.xing@linux.intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/perf/pmu-events/jevents.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/perf/pmu-events/jevents.c b/tools/perf/pmu-events/jevents.c
+index 159d9eab6e79..b1eb68c861e7 100644
+--- a/tools/perf/pmu-events/jevents.c
++++ b/tools/perf/pmu-events/jevents.c
+@@ -612,7 +612,7 @@ static int json_events(const char *fn,
+ 			} else if (json_streq(map, field, "ExtSel")) {
+ 				char *code = NULL;
+ 				addfield(map, &code, "", "", val);
+-				eventcode |= strtoul(code, NULL, 0) << 21;
++				eventcode |= strtoul(code, NULL, 0) << 8;
+ 				free(code);
+ 			} else if (json_streq(map, field, "EventName")) {
+ 				addfield(map, &je.name, "", "", val);
+-- 
+2.35.1
+
+
 
