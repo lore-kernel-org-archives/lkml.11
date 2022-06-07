@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D84CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 835EFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353827AbiFGSsi (ORCPT
+        id S1347583AbiFGSsr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:48:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53244 "EHLO
+        Tue, 7 Jun 2022 14:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352414AbiFGSRI (ORCPT
+        with ESMTP id S1352415AbiFGSRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:17:08 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 362592494D;
-        Tue,  7 Jun 2022 10:51:59 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD082497A;
+        Tue,  7 Jun 2022 10:52:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A3668CE2422;
-        Tue,  7 Jun 2022 17:51:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AA0DC385A5;
-        Tue,  7 Jun 2022 17:51:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE42DB82354;
+        Tue,  7 Jun 2022 17:51:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54FB7C385A5;
+        Tue,  7 Jun 2022 17:51:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624316;
-        bh=wKp8HDsungbWvC983amotRgL7FLHO8cc43t/Whwxl/o=;
+        s=korg; t=1654624318;
+        bh=9ngSOdPjjAPA6F7lCapsC6DrE+l8vaNY0CBrFpoeEAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eNSjbtvNX2hMu7yzYdzJXvbVD15BWnHOY/2UmUw9onTqcmpVQBilvbjKe3ed92c8s
-         o6lC+EVC3Ft9W2v/bUkqScDD4YOqxP4d1YROEA8FTWnUMUKRIaBXkUGAPt7QfQRkhz
-         UGptONRIWvpDvnKpDrif7KXBWonlyj70kCZHKpik=
+        b=iVzh1iFJF5aSAZY+f8IjXTeJWUXRKikalk8kftTlWkGTd/0MRMjRjZ7B4i+01TimX
+         AdEM54vgB0XZJ9n5IBr50SW5k193sNp4CFj6hhO1RqbK34gmDwqAiFCnaD3kSZApYI
+         NLhfjwvdKtGcFPaQ3T13zlxo9OCGKSrFEhnFfuro=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 283/667] irqchip/aspeed-i2c-ic: Fix irq_of_parse_and_map() return value
-Date:   Tue,  7 Jun 2022 18:59:08 +0200
-Message-Id: <20220607164943.269924221@linuxfoundation.org>
+Subject: [PATCH 5.15 284/667] irqchip/aspeed-scu-ic: Fix irq_of_parse_and_map() return value
+Date:   Tue,  7 Jun 2022 18:59:09 +0200
+Message-Id: <20220607164943.299922954@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,32 +52,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 50f0f26e7c8665763d0d7d3372dbcf191f94d077 ]
+[ Upstream commit f03a9670d27d23fe734a456f16e2579b21ec02b4 ]
 
 The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 
-Fixes: f48e699ddf70 ("irqchip/aspeed-i2c-ic: Add I2C IRQ controller for Aspeed")
+Fixes: 04f605906ff0 ("irqchip: Add Aspeed SCU interrupt controller")
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220423094227.33148-1-krzysztof.kozlowski@linaro.org
+Link: https://lore.kernel.org/r/20220423094227.33148-2-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-aspeed-i2c-ic.c | 4 ++--
+ drivers/irqchip/irq-aspeed-scu-ic.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/irqchip/irq-aspeed-i2c-ic.c b/drivers/irqchip/irq-aspeed-i2c-ic.c
-index a47db16ff960..9c9fc3e2967e 100644
---- a/drivers/irqchip/irq-aspeed-i2c-ic.c
-+++ b/drivers/irqchip/irq-aspeed-i2c-ic.c
-@@ -77,8 +77,8 @@ static int __init aspeed_i2c_ic_of_init(struct device_node *node,
+diff --git a/drivers/irqchip/irq-aspeed-scu-ic.c b/drivers/irqchip/irq-aspeed-scu-ic.c
+index 18b77c3e6db4..279e92cf0b16 100644
+--- a/drivers/irqchip/irq-aspeed-scu-ic.c
++++ b/drivers/irqchip/irq-aspeed-scu-ic.c
+@@ -157,8 +157,8 @@ static int aspeed_scu_ic_of_init_common(struct aspeed_scu_ic *scu_ic,
  	}
  
- 	i2c_ic->parent_irq = irq_of_parse_and_map(node, 0);
--	if (i2c_ic->parent_irq < 0) {
--		ret = i2c_ic->parent_irq;
-+	if (!i2c_ic->parent_irq) {
-+		ret = -EINVAL;
- 		goto err_iounmap;
+ 	irq = irq_of_parse_and_map(node, 0);
+-	if (irq < 0) {
+-		rc = irq;
++	if (!irq) {
++		rc = -EINVAL;
+ 		goto err;
  	}
  
 -- 
