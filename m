@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C0ADC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 729BCCCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380407AbiFGVax (ORCPT
+        id S1380642AbiFGVbF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
+        Tue, 7 Jun 2022 17:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377910AbiFGUej (ORCPT
+        with ESMTP id S1378126AbiFGUex (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4150B11E1DC;
-        Tue,  7 Jun 2022 11:36:46 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55AA1E8EAF;
+        Tue,  7 Jun 2022 11:37:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8D0BBCE2439;
-        Tue,  7 Jun 2022 18:36:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 852E0C385A2;
-        Tue,  7 Jun 2022 18:36:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E7B3615D1;
+        Tue,  7 Jun 2022 18:37:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BC80C385A2;
+        Tue,  7 Jun 2022 18:37:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627002;
-        bh=mnPUu1JeXPuFZCR5TXMgkRyJKUvD49C8Pp3UKVqAxIY=;
+        s=korg; t=1654627049;
+        bh=+7xftkGjyf+e5zg4DgvqH+lSjN974cPn3Aj+rSWqdhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hpByAe/eL7B4gwXAfyx/sk265qAsm1ioypQVo8Z7VM4y/kZQfR5wS0tkYy0LAuEIE
-         plFPP7WlbeRJSJKwKYEI0evoVXcNlaaIDmSY05+zBYgDiWxuUEuInI/mQxPTD2dUaJ
-         PTB3maim8BUCTbUAiV0uiRuVFpLyMuk6x5FhXUW8=
+        b=mlHcdwopR3V7HaMQt7Zi9I1RgXnQPlwZcGPvs1T0k53E9CUS6nnBUR6R3W5oj4lG+
+         gtZWuZ0BeGKGGZV4y+ta7cmqBS7N8hFuAE/GDpv4eGNWZy1CpzftEvcKTsCLRaFjyt
+         xR0RvHPVX5/pL0FLlZst71kOF2uQ8Cegh2Rx2ZXo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 582/772] NFS: Dont report ENOSPC write errors twice
-Date:   Tue,  7 Jun 2022 19:02:54 +0200
-Message-Id: <20220607165006.098890705@linuxfoundation.org>
+Subject: [PATCH 5.17 597/772] MIPS: RALINK: Define pci_remap_iospace under CONFIG_PCI_DRIVERS_GENERIC
+Date:   Tue,  7 Jun 2022 19:03:09 +0200
+Message-Id: <20220607165006.534454012@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,102 +52,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Tiezhu Yang <yangtiezhu@loongson.cn>
 
-[ Upstream commit e6005436f6cc9ed13288f936903f0151e5543485 ]
+[ Upstream commit 7e4fd16b38923028b01d3dbadf4ca973d885c53e ]
 
-Any errors reported by the write() system call need to be cleared from
-the file descriptor's error tracking. The current call to nfs_wb_all()
-causes the error to be reported, but since it doesn't call
-file_check_and_advance_wb_err(), we can end up reporting the same error
-a second time when the application calls fsync().
+kernel test robot reports a build error used with clang compiler and
+mips-randconfig [1]:
 
-Note that since Linux 4.13, the rule is that EIO may be reported for
-write(), but it must be reported by a subsequent fsync(), so let's just
-drop reporting it in write.
+    ld.lld: error: undefined symbol: pci_remap_iospace
 
-The check for nfs_ctx_key_to_expire() is just a duplicate to the one
-already in nfs_write_end(), so let's drop that too.
+we can see the following configs in the mips-randconfig file:
 
-Reported-by: ChenXiaoSong <chenxiaosong2@huawei.com>
-Fixes: ce368536dd61 ("nfs: nfs_file_write() should check for writeback errors")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+    CONFIG_RALINK=y
+    CONFIG_SOC_MT7620=y
+    CONFIG_PCI_DRIVERS_LEGACY=y
+    CONFIG_PCI=y
+
+CONFIG_RALINK is set, so pci_remap_iospace is defined in the related
+arch/mips/include/asm/mach-ralink/spaces.h header file:
+
+    #define pci_remap_iospace pci_remap_iospace
+
+CONFIG_PCI is set, so pci_remap_iospace() in drivers/pci/pci.c is not
+built due to pci_remap_iospace is defined under CONFIG_RALINK.
+
+    #ifndef pci_remap_iospace
+    int pci_remap_iospace(const struct resource *res, ...)
+
+    $ objdump -d drivers/pci/pci.o | grep pci_remap_iospace
+    00004cc8 <devm_pci_remap_iospace>:
+        4d18:	10400008 	beqz	v0,4d3c <devm_pci_remap_iospace+0x74>
+        4d2c:	1040000c 	beqz	v0,4d60 <devm_pci_remap_iospace+0x98>
+        4d70:	1000fff3 	b	4d40 <devm_pci_remap_iospace+0x78>
+
+In addition, CONFIG_PCI_DRIVERS_GENERIC is not set, so pci_remap_iospace()
+in arch/mips/pci/pci-generic.c is not built too.
+
+    #ifdef pci_remap_iospace
+    int pci_remap_iospace(const struct resource *res, ...)
+
+For the above reasons, undefined reference pci_remap_iospace() looks like
+reasonable.
+
+Here are simple steps to reproduce used with gcc and defconfig:
+
+    cd mips.git
+    make vocore2_defconfig # set RALINK, SOC_MT7620, PCI_DRIVERS_LEGACY
+    make menuconfig        # set PCI
+    make
+
+there exists the following build error:
+
+      LD      vmlinux.o
+      MODPOST vmlinux.symvers
+      MODINFO modules.builtin.modinfo
+      GEN     modules.builtin
+      LD      .tmp_vmlinux.kallsyms1
+    drivers/pci/pci.o: In function `devm_pci_remap_iospace':
+    pci.c:(.text+0x4d24): undefined reference to `pci_remap_iospace'
+    Makefile:1158: recipe for target 'vmlinux' failed
+    make: *** [vmlinux] Error 1
+
+Define pci_remap_iospace under CONFIG_PCI_DRIVERS_GENERIC can fix the build
+error, with this patch, no build error remains. This patch is similar with
+commit e538e8649892 ("MIPS: asm: pci: define arch-specific
+'pci_remap_iospace()' dependent on 'CONFIG_PCI_DRIVERS_GENERIC'").
+
+[1] https://lore.kernel.org/lkml/202205251247.nQ5cxSV6-lkp@intel.com/
+
+Fixes: 09d97da660ff ("MIPS: Only define pci_remap_iospace() for Ralink")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+Acked-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/file.c | 34 ++++++++++++++--------------------
- 1 file changed, 14 insertions(+), 20 deletions(-)
+ arch/mips/include/asm/mach-ralink/spaces.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index ce761c88d260..7e0ce50e04f6 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -594,18 +594,6 @@ static const struct vm_operations_struct nfs_file_vm_ops = {
- 	.page_mkwrite = nfs_vm_page_mkwrite,
- };
+diff --git a/arch/mips/include/asm/mach-ralink/spaces.h b/arch/mips/include/asm/mach-ralink/spaces.h
+index f7af11ea2d61..a9f0570d0f04 100644
+--- a/arch/mips/include/asm/mach-ralink/spaces.h
++++ b/arch/mips/include/asm/mach-ralink/spaces.h
+@@ -6,7 +6,9 @@
+ #define PCI_IOSIZE	SZ_64K
+ #define IO_SPACE_LIMIT	(PCI_IOSIZE - 1)
  
--static int nfs_need_check_write(struct file *filp, struct inode *inode,
--				int error)
--{
--	struct nfs_open_context *ctx;
--
--	ctx = nfs_file_open_context(filp);
--	if (nfs_error_is_fatal_on_server(error) ||
--	    nfs_ctx_key_to_expire(ctx, inode))
--		return 1;
--	return 0;
--}
--
- ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- {
- 	struct file *file = iocb->ki_filp;
-@@ -633,7 +621,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- 	if (iocb->ki_flags & IOCB_APPEND || iocb->ki_pos > i_size_read(inode)) {
- 		result = nfs_revalidate_file_size(inode, file);
- 		if (result)
--			goto out;
-+			return result;
- 	}
++#ifdef CONFIG_PCI_DRIVERS_GENERIC
+ #define pci_remap_iospace pci_remap_iospace
++#endif
  
- 	nfs_clear_invalid_mapping(file->f_mapping);
-@@ -652,6 +640,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- 
- 	written = result;
- 	iocb->ki_pos += written;
-+	nfs_add_stats(inode, NFSIOS_NORMALWRITTENBYTES, written);
- 
- 	if (mntflags & NFS_MOUNT_WRITE_EAGER) {
- 		result = filemap_fdatawrite_range(file->f_mapping,
-@@ -669,17 +658,22 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- 	}
- 	result = generic_write_sync(iocb, written);
- 	if (result < 0)
--		goto out;
-+		return result;
- 
-+out:
- 	/* Return error values */
- 	error = filemap_check_wb_err(file->f_mapping, since);
--	if (nfs_need_check_write(file, inode, error)) {
--		int err = nfs_wb_all(inode);
--		if (err < 0)
--			result = err;
-+	switch (error) {
-+	default:
-+		break;
-+	case -EDQUOT:
-+	case -EFBIG:
-+	case -ENOSPC:
-+		nfs_wb_all(inode);
-+		error = file_check_and_advance_wb_err(file);
-+		if (error < 0)
-+			result = error;
- 	}
--	nfs_add_stats(inode, NFSIOS_NORMALWRITTENBYTES, written);
--out:
- 	return result;
- 
- out_swapfile:
+ #include <asm/mach-generic/spaces.h>
+ #endif
 -- 
 2.35.1
 
