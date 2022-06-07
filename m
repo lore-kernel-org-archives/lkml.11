@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 156A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:59:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0941C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:59:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377799AbiFGU7I (ORCPT
+        id S1377510AbiFGU7O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48390 "EHLO
+        Tue, 7 Jun 2022 16:59:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358084AbiFGTvm (ORCPT
+        with ESMTP id S1358858AbiFGTxS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:51:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69D07DE30;
-        Tue,  7 Jun 2022 11:19:49 -0700 (PDT)
+        Tue, 7 Jun 2022 15:53:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 460B8AEE20;
+        Tue,  7 Jun 2022 11:22:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 377D86006F;
-        Tue,  7 Jun 2022 18:19:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C475C385A5;
-        Tue,  7 Jun 2022 18:19:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E5EFB822C0;
+        Tue,  7 Jun 2022 18:22:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4E1AC385A2;
+        Tue,  7 Jun 2022 18:22:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625988;
-        bh=Gd+81C6t792u/OyBDJ9pfgOthfvlR8CL7NYdML5/hfE=;
+        s=korg; t=1654626170;
+        bh=owJ9BugnB1NO6H2htMXN/OwXTT9AtJOgxw4uMNv8eg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SOGyaUhmIMx+l6oszXNRTR1kNeeH0C0Ao3fc/oBJzUu883G1XvvUokWKSVxwdo+9I
-         KuWkn8gRqNHRGPunVgR9upKRdBgem7rk7BkERilss02BuZv6ImrAQduHGC9YgV7w6q
-         nfnuUW6N+ENaA7n7sTqzL8Mo5rMrO4kDJRAd4sHc=
+        b=E72zs3caAu2yGC2w2sgNv0q4aXIIkCRHxzj8/CPkZJWLEbcwe4K7TeHizufCQTADI
+         V8JZEIuuHTPH1oK3FqSaiJVIgmmgiby9qCKAx25yD3k7RP1MVxnymv8oOaIeCcxA8E
+         h6bGDAzwMwJ0p4UGpiB+PFh6s8YUDttHuRj5jGx4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Finn Thain <fthain@linux-m68k.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 218/772] macintosh/via-pmu: Fix build failure when CONFIG_INPUT is disabled
-Date:   Tue,  7 Jun 2022 18:56:50 +0200
-Message-Id: <20220607164955.457588500@linuxfoundation.org>
+Subject: [PATCH 5.17 281/772] cpufreq: Fix possible race in cpufreq online error path
+Date:   Tue,  7 Jun 2022 18:57:53 +0200
+Message-Id: <20220607164957.306424916@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,80 +50,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Finn Thain <fthain@linux-m68k.org>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit 86ce436e30d86327c9f5260f718104ae7b21f506 ]
+[ Upstream commit f346e96267cd76175d6c201b40f770c0116a8a04 ]
 
-drivers/macintosh/via-pmu-event.o: In function `via_pmu_event':
-via-pmu-event.c:(.text+0x44): undefined reference to `input_event'
-via-pmu-event.c:(.text+0x68): undefined reference to `input_event'
-via-pmu-event.c:(.text+0x94): undefined reference to `input_event'
-via-pmu-event.c:(.text+0xb8): undefined reference to `input_event'
-drivers/macintosh/via-pmu-event.o: In function `via_pmu_event_init':
-via-pmu-event.c:(.init.text+0x20): undefined reference to `input_allocate_device'
-via-pmu-event.c:(.init.text+0xc4): undefined reference to `input_register_device'
-via-pmu-event.c:(.init.text+0xd4): undefined reference to `input_free_device'
-make[1]: *** [Makefile:1155: vmlinux] Error 1
-make: *** [Makefile:350: __build_one_by_one] Error 2
+When cpufreq online fails, the policy->cpus mask is not cleared and
+policy->rwsem is released too early, so the driver can be invoked
+via the cpuinfo_cur_freq sysfs attribute while its ->offline() or
+->exit() callbacks are being run.
 
-Don't call into the input subsystem unless CONFIG_INPUT is built-in.
+Take policy->clk as an example:
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Finn Thain <fthain@linux-m68k.org>
-Tested-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/5edbe76ce68227f71e09af4614cc4c1bd61c7ec8.1649326292.git.fthain@linux-m68k.org
+static int cpufreq_online(unsigned int cpu)
+{
+  ...
+  // policy->cpus != 0 at this time
+  down_write(&policy->rwsem);
+  ret = cpufreq_add_dev_interface(policy);
+  up_write(&policy->rwsem);
+
+  return 0;
+
+out_destroy_policy:
+	for_each_cpu(j, policy->real_cpus)
+		remove_cpu_dev_symlink(policy, get_cpu_device(j));
+    up_write(&policy->rwsem);
+...
+out_exit_policy:
+  if (cpufreq_driver->exit)
+    cpufreq_driver->exit(policy);
+      clk_put(policy->clk);
+      // policy->clk is a wild pointer
+...
+                                    ^
+                                    |
+                            Another process access
+                            __cpufreq_get
+                              cpufreq_verify_current_freq
+                                cpufreq_generic_get
+                                  // acces wild pointer of policy->clk;
+                                    |
+                                    |
+out_offline_policy:                 |
+  cpufreq_policy_free(policy);      |
+    // deleted here, and will wait for no body reference
+    cpufreq_policy_put_kobj(policy);
+}
+
+Address this by modifying cpufreq_online() to release policy->rwsem
+in the error path after the driver callbacks have run and to clear
+policy->cpus before releasing the semaphore.
+
+Fixes: 7106e02baed4 ("cpufreq: release policy->rwsem on error")
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+[ rjw: Subject and changelog edits ]
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/macintosh/Kconfig   | 4 ++++
- drivers/macintosh/Makefile  | 3 ++-
- drivers/macintosh/via-pmu.c | 2 +-
- 3 files changed, 7 insertions(+), 2 deletions(-)
+ drivers/cpufreq/cpufreq.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
-index 5cdc361da37c..3942db15a2b8 100644
---- a/drivers/macintosh/Kconfig
-+++ b/drivers/macintosh/Kconfig
-@@ -67,6 +67,10 @@ config ADB_PMU
- 	  this device; you should do so if your machine is one of those
- 	  mentioned above.
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index fbaa8e6c7d23..233e8af48848 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -1534,8 +1534,6 @@ static int cpufreq_online(unsigned int cpu)
+ 	for_each_cpu(j, policy->real_cpus)
+ 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
  
-+config ADB_PMU_EVENT
-+	def_bool y
-+	depends on ADB_PMU && INPUT=y
+-	up_write(&policy->rwsem);
+-
+ out_offline_policy:
+ 	if (cpufreq_driver->offline)
+ 		cpufreq_driver->offline(policy);
+@@ -1544,6 +1542,9 @@ static int cpufreq_online(unsigned int cpu)
+ 	if (cpufreq_driver->exit)
+ 		cpufreq_driver->exit(policy);
+ 
++	cpumask_clear(policy->cpus);
++	up_write(&policy->rwsem);
 +
- config ADB_PMU_LED
- 	bool "Support for the Power/iBook front LED"
- 	depends on PPC_PMAC && ADB_PMU
-diff --git a/drivers/macintosh/Makefile b/drivers/macintosh/Makefile
-index 49819b1b6f20..712edcb3e0b0 100644
---- a/drivers/macintosh/Makefile
-+++ b/drivers/macintosh/Makefile
-@@ -12,7 +12,8 @@ obj-$(CONFIG_MAC_EMUMOUSEBTN)	+= mac_hid.o
- obj-$(CONFIG_INPUT_ADBHID)	+= adbhid.o
- obj-$(CONFIG_ANSLCD)		+= ans-lcd.o
- 
--obj-$(CONFIG_ADB_PMU)		+= via-pmu.o via-pmu-event.o
-+obj-$(CONFIG_ADB_PMU)		+= via-pmu.o
-+obj-$(CONFIG_ADB_PMU_EVENT)	+= via-pmu-event.o
- obj-$(CONFIG_ADB_PMU_LED)	+= via-pmu-led.o
- obj-$(CONFIG_PMAC_BACKLIGHT)	+= via-pmu-backlight.o
- obj-$(CONFIG_ADB_CUDA)		+= via-cuda.o
-diff --git a/drivers/macintosh/via-pmu.c b/drivers/macintosh/via-pmu.c
-index 4b98bc26a94b..2109129ea1bb 100644
---- a/drivers/macintosh/via-pmu.c
-+++ b/drivers/macintosh/via-pmu.c
-@@ -1459,7 +1459,7 @@ pmu_handle_data(unsigned char *data, int len)
- 		pmu_pass_intr(data, len);
- 		/* len == 6 is probably a bad check. But how do I
- 		 * know what PMU versions send what events here? */
--		if (len == 6) {
-+		if (IS_ENABLED(CONFIG_ADB_PMU_EVENT) && len == 6) {
- 			via_pmu_event(PMU_EVT_POWER, !!(data[1]&8));
- 			via_pmu_event(PMU_EVT_LID, data[1]&1);
- 		}
+ out_free_policy:
+ 	cpufreq_policy_free(policy);
+ 	return ret;
 -- 
 2.35.1
 
