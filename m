@@ -2,130 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4283BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:24:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F50C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354402AbiFGTYE (ORCPT
+        id S1355096AbiFGTYK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38790 "EHLO
+        Tue, 7 Jun 2022 15:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352489AbiFGSbC (ORCPT
+        with ESMTP id S1353021AbiFGSbg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:31:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E1AF1451CD;
-        Tue,  7 Jun 2022 10:56:14 -0700 (PDT)
+        Tue, 7 Jun 2022 14:31:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3227717CE4E;
+        Tue,  7 Jun 2022 10:56:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA27FB8234A;
-        Tue,  7 Jun 2022 17:56:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF889C3411F;
-        Tue,  7 Jun 2022 17:56:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624571;
-        bh=SIjLdiZEQvxzZ/OkoXP2cni+kJBnPY++4VsCx3A22Lk=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 153A6B82239;
+        Tue,  7 Jun 2022 17:56:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1871C34119;
+        Tue,  7 Jun 2022 17:56:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624598;
+        bh=/iUON9WW6bsYbfVqaGxLRyqJA2zgabLnd46UiDlgoD8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DdsJZiZ7Oz8iWVASdRbNxoy9dLQB4oxpYYQa1YzWQ5iFJ/mKh4/2UU43vQqZEJb2i
-         EAjkvooMSkxEwiJrlm1kUpTFi3UsfEdotB1uhlM5COT4fj7B/NppfXoQsujGje+vZv
-         uP6gsoih/mJd2eQxHeDvZvp/wd1FBZSrADoOYqjM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Juergen Borleis <jbe@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mans Rullgard <mans@mansr.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 375/667] net: dsa: restrict SMSC_LAN9303_I2C kconfig
-Date:   Tue,  7 Jun 2022 19:00:40 +0200
-Message-Id: <20220607164945.996818189@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=JNmVpB3nUuaQ9DqM/EShDYDPAewiTs9dH5n6H4Dg0GU5x/VSR+fYAxwhPVfT8gXOl
+         LnNru7wMQtPDwt8phoEznOKicZ6jp2RcPlLb3+imKytm3JI4YTQZLxduwp3wswrnug
+         qWvPdVhpyOpJe8tIbPu2ZOE1+SbuqgOeufmh8Ut2zHQjPGUWQvRYlXEvhDYRADmBlc
+         40EMZH2F52RDV+H1UqSgtuhfdQiDXhgT7ygWC2Bkf8BWc7QqDU96OGVLHMwlyN12kC
+         z6OeAKK3hsSo95gL+7rG+sSlXYZKTu6W3OsQBjLtYnFHLcxtYtgcysE3VlEMGco0IM
+         PAnJE4AhJ+Qxg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zhen Ni <nizhen@uniontech.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, ok@artecdesign.ee,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 12/51] USB: host: isp116x: check return value after calling platform_get_resource()
+Date:   Tue,  7 Jun 2022 13:55:11 -0400
+Message-Id: <20220607175552.479948-12-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
+References: <20220607175552.479948-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Zhen Ni <nizhen@uniontech.com>
 
-[ Upstream commit 0a3ad7d323686fbaae8688326cc5ea0d185c6fca ]
+[ Upstream commit 134a3408c2d3f7e23eb0e4556e0a2d9f36c2614e ]
 
-Since kconfig 'select' does not follow dependency chains, if symbol KSA
-selects KSB, then KSA should also depend on the same symbols that KSB
-depends on, in order to prevent Kconfig warnings and possible build
-errors.
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-Change NET_DSA_SMSC_LAN9303_I2C and NET_DSA_SMSC_LAN9303_MDIO so that
-they are limited to VLAN_8021Q if the latter is enabled. This prevents
-the Kconfig warning:
-
-WARNING: unmet direct dependencies detected for NET_DSA_SMSC_LAN9303
-  Depends on [m]: NETDEVICES [=y] && NET_DSA [=y] && (VLAN_8021Q [=m] || VLAN_8021Q [=m]=n)
-  Selected by [y]:
-  - NET_DSA_SMSC_LAN9303_I2C [=y] && NETDEVICES [=y] && NET_DSA [=y] && I2C [=y]
-
-Fixes: 430065e26719 ("net: dsa: lan9303: add VLAN IDs to master device")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Vivien Didelot <vivien.didelot@gmail.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Vladimir Oltean <olteanv@gmail.com>
-Cc: Juergen Borleis <jbe@pengutronix.de>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Mans Rullgard <mans@mansr.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Zhen Ni <nizhen@uniontech.com>
+Link: https://lore.kernel.org/r/20220302033716.31272-1-nizhen@uniontech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/usb/host/isp116x-hcd.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
-index 9428aac4a686..6117d4537f88 100644
---- a/drivers/net/dsa/Kconfig
-+++ b/drivers/net/dsa/Kconfig
-@@ -81,7 +81,6 @@ config NET_DSA_REALTEK_SMI
+diff --git a/drivers/usb/host/isp116x-hcd.c b/drivers/usb/host/isp116x-hcd.c
+index 8835f6bd528e..8c7f0991c21b 100644
+--- a/drivers/usb/host/isp116x-hcd.c
++++ b/drivers/usb/host/isp116x-hcd.c
+@@ -1541,10 +1541,12 @@ static int isp116x_remove(struct platform_device *pdev)
  
- config NET_DSA_SMSC_LAN9303
- 	tristate
--	depends on VLAN_8021Q || VLAN_8021Q=n
- 	select NET_DSA_TAG_LAN9303
- 	select REGMAP
- 	help
-@@ -91,6 +90,7 @@ config NET_DSA_SMSC_LAN9303
- config NET_DSA_SMSC_LAN9303_I2C
- 	tristate "SMSC/Microchip LAN9303 3-ports 10/100 ethernet switch in I2C managed mode"
- 	depends on I2C
-+	depends on VLAN_8021Q || VLAN_8021Q=n
- 	select NET_DSA_SMSC_LAN9303
- 	select REGMAP_I2C
- 	help
-@@ -100,6 +100,7 @@ config NET_DSA_SMSC_LAN9303_I2C
- config NET_DSA_SMSC_LAN9303_MDIO
- 	tristate "SMSC/Microchip LAN9303 3-ports 10/100 ethernet switch in MDIO managed mode"
- 	select NET_DSA_SMSC_LAN9303
-+	depends on VLAN_8021Q || VLAN_8021Q=n
- 	help
- 	  Enable access functions if the SMSC/Microchip LAN9303 is configured
- 	  for MDIO managed mode.
+ 	iounmap(isp116x->data_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
+ 	iounmap(isp116x->addr_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
+ 
+ 	usb_put_hcd(hcd);
+ 	return 0;
 -- 
 2.35.1
-
-
 
