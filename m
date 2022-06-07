@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C30CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E135CCA48E
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351326AbiFGSQS (ORCPT
+        id S1352025AbiFGSQv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39648 "EHLO
+        Tue, 7 Jun 2022 14:16:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349172AbiFGRzn (ORCPT
+        with ESMTP id S243117AbiFGR52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:55:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A53B13F40D;
-        Tue,  7 Jun 2022 10:40:03 -0700 (PDT)
+        Tue, 7 Jun 2022 13:57:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC9114915D;
+        Tue,  7 Jun 2022 10:40:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DBAF60BC6;
-        Tue,  7 Jun 2022 17:40:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5421FC385A5;
-        Tue,  7 Jun 2022 17:40:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B82F760BC6;
+        Tue,  7 Jun 2022 17:40:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C444EC385A5;
+        Tue,  7 Jun 2022 17:40:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623601;
-        bh=qO2K96LJDhbirD99gp0YVHECVMdEPs1haKCeGlOd7O0=;
+        s=korg; t=1654623621;
+        bh=q2Xpkw+onYKKa4/Us+LoQ26hoDxY+NiVrhxSovEPERo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=obCMdzKLBWWG0iGUHnlVeN+EHOxl7GTGmT0RH1Amg4EnZVj792YwWCDawjE6i2gQo
-         HXg8b+hli/RjAWEXGKPUicaA5xQmdbCuSu6gboscXZh50xAOkVQ2leC3yuu2Se9KH7
-         Hz5DDvkBgZZJicq8NbqCfOdTL1H/ar60j8IFQtbM=
+        b=UdVFHRoj9BlwEFfCI7jMF2nbEBq41tsZXr8Nmv1zy7uEwjSObkELaOx5WZ9WmHSVw
+         a4icCprPBWQSOPNvjLff9EXnggaC40/3RHZ+kA5tKQhYESr6diWI8i+kC4hsTp65NB
+         F9WAlDHfIajy7FfSE0EBTc6totpb6tGs+t2Q5Bio=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Perches <joe@perches.com>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.15 024/667] fs/ntfs3: In function ntfs_set_acl_ex do not change inode->i_mode if called from function ntfs_init_acl
-Date:   Tue,  7 Jun 2022 18:54:49 +0200
-Message-Id: <20220607164935.522664237@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Gopal Vamshi Krishna <vamshi.krishna.gopal@intel.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.15 030/667] xhci: Allow host runtime PM as default for Intel Alder Lake N xHCI
+Date:   Tue,  7 Jun 2022 18:54:55 +0200
+Message-Id: <20220607164935.699006907@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,71 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+From: Mathias Nyman <mathias.nyman@linux.intel.com>
 
-commit 9186d472ee780fabf74424756c4c00545166157e upstream.
+commit 74f55a62c4c354f43a6d75f77dd184c4f57b9a26 upstream.
 
-ntfs_init_acl sets mode. ntfs_init_acl calls ntfs_set_acl_ex.
-ntfs_set_acl_ex must not change this mode.
-Fixes xfstest generic/444
-Fixes: be71b5cba2e6 ("fs/ntfs3: Add attrib operations")
+Alder Lake N TCSS xHCI needs to be runtime suspended whenever possible
+to allow the TCSS hardware block to enter D3 and thus save energy
 
-Reviewed-by: Joe Perches <joe@perches.com>
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Cc: stable@kernel.org
+Suggested-by: Gopal Vamshi Krishna <vamshi.krishna.gopal@intel.com>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220511220450.85367-10-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/xattr.c |   13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/usb/host/xhci-pci.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/ntfs3/xattr.c
-+++ b/fs/ntfs3/xattr.c
-@@ -541,7 +541,7 @@ struct posix_acl *ntfs_get_acl(struct in
+--- a/drivers/usb/host/xhci-pci.c
++++ b/drivers/usb/host/xhci-pci.c
+@@ -59,6 +59,7 @@
+ #define PCI_DEVICE_ID_INTEL_TIGER_LAKE_XHCI		0x9a13
+ #define PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_XHCI		0x1138
+ #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI		0x461e
++#define PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_XHCI		0x464e
+ #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI	0x51ed
  
- static noinline int ntfs_set_acl_ex(struct user_namespace *mnt_userns,
- 				    struct inode *inode, struct posix_acl *acl,
--				    int type)
-+				    int type, bool init_acl)
- {
- 	const char *name;
- 	size_t size, name_len;
-@@ -554,8 +554,9 @@ static noinline int ntfs_set_acl_ex(stru
- 
- 	switch (type) {
- 	case ACL_TYPE_ACCESS:
--		if (acl) {
--			umode_t mode = inode->i_mode;
-+		/* Do not change i_mode if we are in init_acl */
-+		if (acl && !init_acl) {
-+			umode_t mode;
- 
- 			err = posix_acl_update_mode(mnt_userns, inode, &mode,
- 						    &acl);
-@@ -616,7 +617,7 @@ out:
- int ntfs_set_acl(struct user_namespace *mnt_userns, struct inode *inode,
- 		 struct posix_acl *acl, int type)
- {
--	return ntfs_set_acl_ex(mnt_userns, inode, acl, type);
-+	return ntfs_set_acl_ex(mnt_userns, inode, acl, type, false);
- }
- 
- /*
-@@ -636,7 +637,7 @@ int ntfs_init_acl(struct user_namespace
- 
- 	if (default_acl) {
- 		err = ntfs_set_acl_ex(mnt_userns, inode, default_acl,
--				      ACL_TYPE_DEFAULT);
-+				      ACL_TYPE_DEFAULT, true);
- 		posix_acl_release(default_acl);
- 	} else {
- 		inode->i_default_acl = NULL;
-@@ -647,7 +648,7 @@ int ntfs_init_acl(struct user_namespace
- 	else {
- 		if (!err)
- 			err = ntfs_set_acl_ex(mnt_userns, inode, acl,
--					      ACL_TYPE_ACCESS);
-+					      ACL_TYPE_ACCESS, true);
- 		posix_acl_release(acl);
- 	}
+ #define PCI_DEVICE_ID_AMD_RENOIR_XHCI			0x1639
+@@ -268,6 +269,7 @@ static void xhci_pci_quirks(struct devic
+ 	     pdev->device == PCI_DEVICE_ID_INTEL_TIGER_LAKE_XHCI ||
+ 	     pdev->device == PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_XHCI ||
+ 	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI ||
++	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_XHCI ||
+ 	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI))
+ 		xhci->quirks |= XHCI_DEFAULT_PM_RUNTIME_ALLOW;
  
 
 
