@@ -2,81 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E236CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 13:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D865C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 13:11:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244466AbiFGNLY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 09:11:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36358 "EHLO
+        id S243347AbiFGNLa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 09:11:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242776AbiFGNLW (ORCPT
+        with ESMTP id S244469AbiFGNLY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 09:11:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE24BC9668;
-        Tue,  7 Jun 2022 06:11:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61CFAB81F98;
-        Tue,  7 Jun 2022 13:11:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEDCCC385A5;
-        Tue,  7 Jun 2022 13:11:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654607477;
-        bh=gnONcHJ/AolSb/eRrOjC4crVY3aMOQooVXe77m9/SCI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=E1aM7qDxpgweXoAhOYGiV+2mSw0Is++BU/6XjT2OAM6oXhq1mzMlmVcAuXvUji2Re
-         /bDK0bKs5/JgANacfr2W+969UPUvWxarIxWIUZ6F4Vba6leHS9cxwEUsOVug1tjxMR
-         XAgWgR04m0g1CKjuM6vy+ZQb4nbNBF5Om5n5WEhA=
-Date:   Tue, 7 Jun 2022 15:11:11 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Tom Rix <trix@redhat.com>
-Cc:     jirislaby@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
-        peter@hurleysoftware.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH] serial: core: check if uart_get_info succeeds before
- using
-Message-ID: <Yp9Ob3pXUS8Jggm4@kroah.com>
-References: <20220529134605.12881-1-trix@redhat.com>
+        Tue, 7 Jun 2022 09:11:24 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C42C965E
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 06:11:23 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id v22-20020a5ed716000000b006695c964f37so2794607iom.1
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 06:11:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=QdpiH1zf2g1QfmGEmiyd/ASppcMDWZ+/Qd+vKzppL80=;
+        b=BaYXbBpnruFZ+kz1qe+6LzAt9ti0NMOnISt/RunRbz9SgUzg4yyRai5sPGNRjiV4T5
+         fLkV53Frje1yyy0/FhAh9YQXvH42Mes1jSBfRPovVumkXqARRD1+BspkZvnvSEMhZp7+
+         MRmqsmjtvzrK6yEOyQZXi2t71k4bm/jui0GTrnTj+irYEEF+wXgCxZZGa/dqqtrtzF+g
+         FWFyGiLKzWQzi+Rq5xloB+vnVQ8BkfSq6bTIjYk0BPAFmu0TX+MyOWH1Mmywr6tOrsCz
+         L0iNkGjQdhpLuRef+xBVT6Iv9TJsXZT96LbwN8yKEmfxdD0o2HrHjmVVpRphwq/EV631
+         D7ig==
+X-Gm-Message-State: AOAM532hQevVIBtDvwWgDDacefToxhiauh0S36Q2F5owepGiEfJFp7Zn
+        gwEZdKVcw7NAeSCXxserU2HjapkWhmMFL2ooX6aQNA5N5GdU
+X-Google-Smtp-Source: ABdhPJzpsElH7CPkj15sJP83oYbAf5DXGOYbkFiMYnv/JqtbiwHAf5e7dMZADXg1Y8w3A9Y3Zst4XhlgjYmAuvLs1hgPCC51LgTL
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220529134605.12881-1-trix@redhat.com>
+X-Received: by 2002:a05:6e02:1c26:b0:2d3:bbe3:9223 with SMTP id
+ m6-20020a056e021c2600b002d3bbe39223mr16048928ilh.176.1654607482511; Tue, 07
+ Jun 2022 06:11:22 -0700 (PDT)
+Date:   Tue, 07 Jun 2022 06:11:22 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003ce9d105e0db53c8@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in copy_page_from_iter_atomic (2)
+From:   syzbot <syzbot+d2dd123304b4ae59f1bd@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        syzkaller-bugs@googlegroups.com, willy@infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 29, 2022 at 09:46:05AM -0400, Tom Rix wrote:
-> clang static analysis reports this representative issue
-> drivers/tty/serial/serial_core.c:2818:9: warning: 3rd function call argument is an uninitialized value [core.CallAndMessage]
->         return sprintf(buf, "%d\n", tmp.iomem_reg_shift);
->                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> uart_get_info() is used the *show() functions.  When uart_get_info() fails, what is reported
-> is garbage.  So check if uart_get_info() succeeded.
-> 
-> Fixes: 4047b37122d1 ("serial: core: Prevent unsafe uart port access, part 1")
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  drivers/tty/serial/serial_core.c | 52 ++++++++++++++++++++++++--------
->  1 file changed, 39 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 9a85b41caa0a..4160f6711c5d 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -2690,7 +2690,9 @@ static ssize_t uartclk_show(struct device *dev,
->  	struct serial_struct tmp;
->  	struct tty_port *port = dev_get_drvdata(dev);
->  
-> -	uart_get_info(port, &tmp);
-> +	if (uart_get_info(port, &tmp))
-> +		return 0;
+Hello,
 
-As Andy pointed out, this is an error, don't tell userspace that all
-went well and yet you returned no data?  That will just confuse it.
+syzbot found the following issue on:
 
-thanks,
+HEAD commit:    73d0e32571a0 Add linux-next specific files for 20220607
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1433bacff00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=448ee2b64e828049
+dashboard link: https://syzkaller.appspot.com/bug?extid=d2dd123304b4ae59f1bd
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-greg k-h
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+d2dd123304b4ae59f1bd@syzkaller.appspotmail.com
+
+BTRFS error (device loop2): bad tree block start, want 22036480 have 0
+==================================================================
+BUG: KASAN: use-after-free in copy_page_from_iter_atomic+0xef6/0x1b30 lib/iov_iter.c:969
+Read of size 4096 at addr ffff888177101000 by task kworker/u4:30/4131
+
+CPU: 0 PID: 4131 Comm: kworker/u4:30 Not tainted 5.19.0-rc1-next-20220607-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: loop2 loop_workfn
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
+ print_report mm/kasan/report.c:429 [inline]
+ kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+ check_region_inline mm/kasan/generic.c:183 [inline]
+ kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
+ memcpy+0x20/0x60 mm/kasan/shadow.c:65
+ copy_page_from_iter_atomic+0xef6/0x1b30 lib/iov_iter.c:969
+ generic_perform_write+0x2b8/0x560 mm/filemap.c:3734
+ __generic_file_write_iter+0x2aa/0x4d0 mm/filemap.c:3854
+ generic_file_write_iter+0xd7/0x220 mm/filemap.c:3886
+ call_write_iter include/linux/fs.h:2059 [inline]
+ do_iter_readv_writev+0x3d1/0x640 fs/read_write.c:742
+ do_iter_write+0x182/0x700 fs/read_write.c:868
+ vfs_iter_write+0x70/0xa0 fs/read_write.c:909
+ lo_write_bvec drivers/block/loop.c:249 [inline]
+ lo_write_simple drivers/block/loop.c:271 [inline]
+ do_req_filebacked drivers/block/loop.c:495 [inline]
+ loop_handle_cmd drivers/block/loop.c:1859 [inline]
+ loop_process_work+0xd83/0x2050 drivers/block/loop.c:1894
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+ </TASK>
+
+The buggy address belongs to the physical page:
+page:ffffea0005dc4040 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x177101
+flags: 0x57ff00000000000(node=1|zone=2|lastcpupid=0x7ff)
+raw: 057ff00000000000 ffffea0005dc4048 ffffea0005dc4048 0000000000000000
+raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner info is not present (never set?)
+
+Memory state around the buggy address:
+ ffff888177100f00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff888177100f80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>ffff888177101000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                   ^
+ ffff888177101080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff888177101100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
