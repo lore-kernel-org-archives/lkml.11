@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3216CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:54:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25EA5C3F2D4
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:57:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353746AbiFGSyu (ORCPT
+        id S1353700AbiFGSyz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:54:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51582 "EHLO
+        Tue, 7 Jun 2022 14:54:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352840AbiFGSRg (ORCPT
+        with ESMTP id S1352787AbiFGSRd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F11A60D9F;
-        Tue,  7 Jun 2022 10:52:46 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B6513CA15;
+        Tue,  7 Jun 2022 10:52:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E422D6146F;
-        Tue,  7 Jun 2022 17:52:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57B56C36AFF;
-        Tue,  7 Jun 2022 17:52:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B646CB82377;
+        Tue,  7 Jun 2022 17:52:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07015C36AFF;
+        Tue,  7 Jun 2022 17:52:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624365;
-        bh=8izUmjKo1OhKIvKhyu9R4mftwNwqWzMLwldws7KiUNo=;
+        s=k20201202; t=1654624359;
+        bh=VAG+3uL6h5kOCfu6AuzyUB7t+yIhbm19oEA/UYTLcX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ISEENENNzeoxZE8TPTTmtmBe/EbavlgLCFfp+c28u1SGbk4whAkJexOgIQYVGdvfD
-         Pj6U1LAl8FUxM9Pz+M4N/Ea3WSIRobkSDDGrZPNYU7xyVNrzYxnle3kttHrElgaOwj
-         QVnY2AFPXiuAvIU8HsMNbjVxRIOt5Qeb2Qhyv+//XPCtuFHuVhxFenfX+guxM3Cjy4
-         Dj7jjt7Mo2A3JvvcSFWZz/YT8TFwdYbA9HQetqqxP4G97S413nX4wIoxJvlJvou3Rv
-         /oVOZukfQYDPFjJb87+azbrteU5jeEWkSCZ5xUS22KAofgtUeofELiMnGZpK+ibqwT
-         OSNCFo9G+03Dw==
+        b=GbCR1SehUt5fD9gqWxiNNLUc4PMWw2Ev9RA4UNoUTHur4xkfF6SfFqdXYqnPgvthU
+         cFTY15RPSus80M4c82oTgYMuHRc9wldPtiKzY5h1mCjwnX3/DSUXLvZX+Qc8fQ6FVG
+         cgCpNYCXx8g2JvvgnFg2QeFGLV5hdoljDgpJgMu/g24pyibUlwlvtGIFaQIs4IVjqt
+         YTND+lQ7gba4Sxnc5gL4mm1QiMaUc5Rbz7P6S16nVfgexupWICfOyznCSTRy4V5N/c
+         E4f1Ejiupg/+MEsUBiPgRF+294ZK0PFAZUD6eI53AMPQkN/PBXQ+gdaeQrrSmzlJzE
+         Icl4++TWDlSdA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Steve French <stfrench@microsoft.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
-Subject: [PATCH AUTOSEL 5.18 66/68] cifs: version operations for smb20 unneeded when legacy support disabled
-Date:   Tue,  7 Jun 2022 13:48:32 -0400
-Message-Id: <20220607174846.477972-66-sashal@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Cyril Brulebois <kibi@debian.org>,
+        Sasha Levin <sashal@kernel.org>, nsaenz@kernel.org,
+        jim2101024@gmail.com, f.fainelli@gmail.com, lpieralisi@kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 63/68] Revert "PCI: brcmstb: Split brcm_pcie_setup() into two funcs"
+Date:   Tue,  7 Jun 2022 13:48:29 -0400
+Message-Id: <20220607174846.477972-63-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
 References: <20220607174846.477972-1-sashal@kernel.org>
@@ -53,94 +55,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-[ Upstream commit 7ef93ffccd55fb0ba000ed16ef6a81cd7dee07b5 ]
+[ Upstream commit f4fd559de3434c44bed1d2912bd0c75cfa42898b ]
 
-We should not be including unused smb20 specific code when legacy
-support is disabled (CONFIG_CIFS_ALLOW_INSECURE_LEGACY turned
-off).  For example smb2_operations and smb2_values aren't used
-in that case.  Over time we can move more and more SMB1/CIFS and SMB2.0
-code into the insecure legacy ifdefs
+This reverts commit 830aa6f29f07a4e2f1a947dfa72b3ccddb46dd21.
 
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+This is part of a revert of the following commits:
+
+  11ed8b8624b8 ("PCI: brcmstb: Do not turn off WOL regulators on suspend")
+  93e41f3fca3d ("PCI: brcmstb: Add control of subdevice voltage regulators")
+  67211aadcb4b ("PCI: brcmstb: Add mechanism to turn on subdev regulators")
+  830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup() into two funcs")
+
+Cyril reported that 830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup()
+into two funcs"), which appeared in v5.17-rc1, broke booting on the
+Raspberry Pi Compute Module 4.  Apparently 830aa6f29f07 panics with an
+Asynchronous SError Interrupt, and after further commits here is a black
+screen on HDMI and no output on the serial console.
+
+This does not seem to affect the Raspberry Pi 4 B.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215925
+Link: https://lore.kernel.org/r/20220511201856.808690-5-helgaas@kernel.org
+Reported-by: Cyril Brulebois <kibi@debian.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/cifsglob.h | 4 +++-
- fs/cifs/smb2ops.c  | 7 ++++++-
- 2 files changed, 9 insertions(+), 2 deletions(-)
+ drivers/pci/controller/pcie-brcmstb.c | 65 +++++++++++----------------
+ 1 file changed, 26 insertions(+), 39 deletions(-)
 
-diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
-index 719d419a0a06..04bdd4412c17 100644
---- a/fs/cifs/cifsglob.h
-+++ b/fs/cifs/cifsglob.h
-@@ -1929,11 +1929,13 @@ extern mempool_t *cifs_mid_poolp;
+diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
+index 0e8346114a8d..e61058e13818 100644
+--- a/drivers/pci/controller/pcie-brcmstb.c
++++ b/drivers/pci/controller/pcie-brcmstb.c
+@@ -926,9 +926,16 @@ static inline int brcm_pcie_get_rc_bar2_size_and_offset(struct brcm_pcie *pcie,
  
- /* Operations for different SMB versions */
- #define SMB1_VERSION_STRING	"1.0"
-+#define SMB20_VERSION_STRING    "2.0"
-+#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
- extern struct smb_version_operations smb1_operations;
- extern struct smb_version_values smb1_values;
--#define SMB20_VERSION_STRING	"2.0"
- extern struct smb_version_operations smb20_operations;
- extern struct smb_version_values smb20_values;
-+#endif /* CIFS_ALLOW_INSECURE_LEGACY */
- #define SMB21_VERSION_STRING	"2.1"
- extern struct smb_version_operations smb21_operations;
- extern struct smb_version_values smb21_values;
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index d6aaeff4a30a..304a3cbd205f 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -4323,11 +4323,13 @@ smb3_set_oplock_level(struct cifsInodeInfo *cinode, __u32 oplock,
- 	}
- }
- 
-+#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
- static bool
- smb2_is_read_op(__u32 oplock)
+ static int brcm_pcie_setup(struct brcm_pcie *pcie)
  {
- 	return oplock == SMB2_OPLOCK_LEVEL_II;
- }
-+#endif /* CIFS_ALLOW_INSECURE_LEGACY */
++	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
+ 	u64 rc_bar2_offset, rc_bar2_size;
+ 	void __iomem *base = pcie->base;
+-	int ret, memc;
++	struct device *dev = pcie->dev;
++	struct resource_entry *entry;
++	bool ssc_good = false;
++	struct resource *res;
++	int num_out_wins = 0;
++	u16 nlw, cls, lnksta;
++	int i, ret, memc;
+ 	u32 tmp, burst, aspm_support;
  
- static bool
- smb21_is_read_op(__u32 oplock)
-@@ -5426,7 +5428,7 @@ smb2_make_node(unsigned int xid, struct inode *inode,
- 	return rc;
- }
+ 	/* Reset the bridge */
+@@ -1018,40 +1025,6 @@ static int brcm_pcie_setup(struct brcm_pcie *pcie)
+ 	if (pcie->gen)
+ 		brcm_pcie_set_gen(pcie, pcie->gen);
  
+-	/* Don't advertise L0s capability if 'aspm-no-l0s' */
+-	aspm_support = PCIE_LINK_STATE_L1;
+-	if (!of_property_read_bool(pcie->np, "aspm-no-l0s"))
+-		aspm_support |= PCIE_LINK_STATE_L0S;
+-	tmp = readl(base + PCIE_RC_CFG_PRIV1_LINK_CAPABILITY);
+-	u32p_replace_bits(&tmp, aspm_support,
+-		PCIE_RC_CFG_PRIV1_LINK_CAPABILITY_ASPM_SUPPORT_MASK);
+-	writel(tmp, base + PCIE_RC_CFG_PRIV1_LINK_CAPABILITY);
 -
-+#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
- struct smb_version_operations smb20_operations = {
- 	.compare_fids = smb2_compare_fids,
- 	.setup_request = smb2_setup_request,
-@@ -5525,6 +5527,7 @@ struct smb_version_operations smb20_operations = {
- 	.is_status_io_timeout = smb2_is_status_io_timeout,
- 	.is_network_name_deleted = smb2_is_network_name_deleted,
- };
-+#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+-	/*
+-	 * For config space accesses on the RC, show the right class for
+-	 * a PCIe-PCIe bridge (the default setting is to be EP mode).
+-	 */
+-	tmp = readl(base + PCIE_RC_CFG_PRIV1_ID_VAL3);
+-	u32p_replace_bits(&tmp, 0x060400,
+-			  PCIE_RC_CFG_PRIV1_ID_VAL3_CLASS_CODE_MASK);
+-	writel(tmp, base + PCIE_RC_CFG_PRIV1_ID_VAL3);
+-
+-	return 0;
+-}
+-
+-static int brcm_pcie_linkup(struct brcm_pcie *pcie)
+-{
+-	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
+-	struct device *dev = pcie->dev;
+-	void __iomem *base = pcie->base;
+-	struct resource_entry *entry;
+-	struct resource *res;
+-	int num_out_wins = 0;
+-	u16 nlw, cls, lnksta;
+-	bool ssc_good = false;
+-	u32 tmp;
+-	int ret, i;
+-
+ 	/* Unassert the fundamental reset */
+ 	pcie->perst_set(pcie, 0);
  
- struct smb_version_operations smb21_operations = {
- 	.compare_fids = smb2_compare_fids,
-@@ -5856,6 +5859,7 @@ struct smb_version_operations smb311_operations = {
- 	.is_network_name_deleted = smb2_is_network_name_deleted,
- };
+@@ -1102,6 +1075,24 @@ static int brcm_pcie_linkup(struct brcm_pcie *pcie)
+ 		num_out_wins++;
+ 	}
  
-+#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
- struct smb_version_values smb20_values = {
- 	.version_string = SMB20_VERSION_STRING,
- 	.protocol_id = SMB20_PROT_ID,
-@@ -5876,6 +5880,7 @@ struct smb_version_values smb20_values = {
- 	.signing_required = SMB2_NEGOTIATE_SIGNING_REQUIRED,
- 	.create_lease_size = sizeof(struct create_lease),
- };
-+#endif /* ALLOW_INSECURE_LEGACY */
++	/* Don't advertise L0s capability if 'aspm-no-l0s' */
++	aspm_support = PCIE_LINK_STATE_L1;
++	if (!of_property_read_bool(pcie->np, "aspm-no-l0s"))
++		aspm_support |= PCIE_LINK_STATE_L0S;
++	tmp = readl(base + PCIE_RC_CFG_PRIV1_LINK_CAPABILITY);
++	u32p_replace_bits(&tmp, aspm_support,
++		PCIE_RC_CFG_PRIV1_LINK_CAPABILITY_ASPM_SUPPORT_MASK);
++	writel(tmp, base + PCIE_RC_CFG_PRIV1_LINK_CAPABILITY);
++
++	/*
++	 * For config space accesses on the RC, show the right class for
++	 * a PCIe-PCIe bridge (the default setting is to be EP mode).
++	 */
++	tmp = readl(base + PCIE_RC_CFG_PRIV1_ID_VAL3);
++	u32p_replace_bits(&tmp, 0x060400,
++			  PCIE_RC_CFG_PRIV1_ID_VAL3_CLASS_CODE_MASK);
++	writel(tmp, base + PCIE_RC_CFG_PRIV1_ID_VAL3);
++
+ 	if (pcie->ssc) {
+ 		ret = brcm_pcie_set_ssc(pcie);
+ 		if (ret == 0)
+@@ -1290,10 +1281,6 @@ static int brcm_pcie_resume(struct device *dev)
+ 	if (ret)
+ 		goto err_reset;
  
- struct smb_version_values smb21_values = {
- 	.version_string = SMB21_VERSION_STRING,
+-	ret = brcm_pcie_linkup(pcie);
+-	if (ret)
+-		goto err_reset;
+-
+ 	if (pcie->msi)
+ 		brcm_msi_set_regs(pcie->msi);
+ 
 -- 
 2.35.1
 
