@@ -2,80 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9813CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CCF6CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:33:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242979AbiFGLdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:33:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50018 "EHLO
+        id S242999AbiFGLdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242932AbiFGLcx (ORCPT
+        with ESMTP id S242932AbiFGLdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 07:32:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C8212D0E;
-        Tue,  7 Jun 2022 04:32:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C4374B81F67;
-        Tue,  7 Jun 2022 11:32:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21908C34119;
-        Tue,  7 Jun 2022 11:32:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654601569;
-        bh=G1xOJRnrI7vWtg0lqwYe4nydLW/5JEjU7wyBFucTG98=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PEPVLtpoBVfqNYb2PIg3Rbb4l/muH7WKkloSjxqBn9eFHqq1ttDjvcNdfEyzAqwWH
-         CmfBPrhfhyJ/Sf52TuldOIqnrzcLZcjwpVHG/uX4DnPOa66yP3UDtT0preLETElFIO
-         yetDlVdK1+xb6byn+m+Fqcw4SzwPaYhOGHLgkcrGlol/XcpCphFuSphoac5dqZalc/
-         ANLvy/WMjv+O8icr/q46XuCWKuR4OtIICvcTE3YlbcPlhkfN/EevYwH2zb9b5WBrQB
-         fRqRLYvtJbYjNfftXdx2cjVlXLUA0Puek3TRuRoGJArU0TmQGyywnRNhPGUqcfDU9b
-         4RKF0Q6XVoKbg==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Mark Zhang <markzhang@nvidia.com>,
-        Patrisious Haddad <phaddad@nvidia.com>
-Subject: [PATCH rdma-next v2 0/2] Add gratuitous ARP support to RDMA-CM
-Date:   Tue,  7 Jun 2022 14:32:42 +0300
-Message-Id: <cover.1654601342.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 7 Jun 2022 07:33:44 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269AC1BEB4;
+        Tue,  7 Jun 2022 04:33:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
+        bh=JByD0IFReSSdKluRJr3cr8FLvPb+co+zCn/HoJZLbtg=;
+        b=gTnmsxlgSa+MSV4FLN+emRJ6OZPmKhg43tkFeyN8ZpDUSeNVXQztxAHW1JPmjJpUzxwvPUR800OXL
+         MOLlHASG2e8bP13ZRybwAu/P6u/8Kk1ArMN15xOPIM7OQVqJDtvjtN5OStHlwLBhqZkiLHY6lduQmf
+         VBmKhvH4ultsIxLMaefwJ517D1WOm2IAZshXVAGOxBXT41hIB72Od6Tb5poMN6fZHE+HvbOAAoRWKI
+         hKwEfCe159V4tblj8Qty5DXM8x4unakCNj42PNynQcT4N5hD95xOXqxbuq/wk0UBOiFggXjpeDHbBq
+         8+uV0ME2qC/8a/bm4asm+HdA29V6/bQ==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000010,0.018276)], BW: [Enabled, t: (0.000019,0.000001)], RTDA: [Enabled, t: (0.155832), Hit: No, Details: v2.39.0; Id: 15.52kcej.1g4uv17a6.2ouih; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from localhost.localdomain ([178.70.36.174])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Tue, 7 Jun 2022 14:33:06 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
+        Conor.Dooley@microchip.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        system@metrotek.ru
+Subject: [PATCH v16 0/3] Microchip Polarfire FPGA manager
+Date:   Tue,  7 Jun 2022 14:10:27 +0300
+Message-Id: <20220607111030.3003-1-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+Add support to the FPGA manager for programming Microchip Polarfire
+FPGAs over slave SPI interface with .dat formatted bitsream image.
 
 Changelog:
-v2:
- * Patch 1: used memcp and ipv6_addr_cmp
- * Patch 2: removed cma_netevent_work
-v1: https://lore.kernel.org/linux-rdma/cover.1652935014.git.leonro@nvidia.com/
- * Removed special workqueue
- * Rewrote compare_netdev_and_ip()
-v0: https://lore.kernel.org/all/cover.1649075034.git.leonro@nvidia.com
+  v1 -> v2: fix printk formating
+  v2 -> v3:
+   * replace "microsemi" with "microchip"
+   * replace prefix "microsemi_fpga_" with "mpf_"
+   * more sensible .compatible and .name strings
+   * remove unused defines STATUS_SPI_VIOLATION and STATUS_SPI_ERROR
+  v3 -> v4: fix unused variable warning
+    Put 'mpf_of_ids' definition under conditional compilation, so it
+    would not hang unused if CONFIG_OF is not enabled.
+  v4 -> v5:
+   * prefix defines with MPF_
+   * mdelay() -> usleep_range()
+   * formatting fixes
+   * add DT bindings doc
+   * rework fpga_manager_ops.write() to fpga_manager_ops.write_sg()
+     We can't parse image header in write_init() because image header
+     size is not known beforehand. Thus parsing need to be done in
+     fpga_manager_ops.write() callback, but fpga_manager_ops.write()
+     also need to be reenterable. On the other hand,
+     fpga_manager_ops.write_sg() is called once. Thus, rework usage of
+     write() callback to write_sg().
+  v5 -> v6: fix patch applying
+     I forgot to clean up unrelated local changes which lead to error on
+     patch 0001-fpga-microchip-spi-add-Microchip-MPF-FPGA-manager.patch
+     applying on vanilla kernel.
+  v6 -> v7: fix binding doc to pass dt_binding_check
+  v7 -> v8: another fix for dt_binding_check warning
+  v8 -> v9:
+   * add another patch to support bitstream offset in FPGA image buffer
+   * rework fpga_manager_ops.write_sg() back to fpga_manager_ops.write()
+   * move image header parsing from write() to write_init()
+  v9 -> v10:
+   * add parse_header() callback to fpga_manager_ops
+   * adjust fpga_mgr_write_init[_buf|_sg]() for parse_header() usage
+   * implement parse_header() in microchip-spi driver
+  v10 -> v11: include missing unaligned.h to microchip-spi
+     fix error: implicit declaration of function 'get_unaligned_le[16|32]'
+  v11 -> v12:
+   * microchip-spi: double read hw status, ignore first read, because it
+     can be unreliable.
+   * microchip-spi: remove sleep between status readings in
+     poll_status_not_busy() to save a few seconds. Status is polled on
+     every 16 byte writes - that is quite often, therefore
+     usleep_range() accumulate to a considerable number of seconds.
+  v12 -> v13:
+   * fpga-mgr: separate fpga_mgr_parse_header_buf() from
+     fpga_mgr_write_init_buf()
+   * fpga-mgr: introduce FPGA_MGR_STATE_PARSE_HEADER and
+     FPGA_MGR_STATE_PARSE_HEADER_ERR fpga_mgr_states
+   * fpga-mgr: rename fpga_mgr_write_init_sg() to fpga_mgr_prepare_sg()
+     and rework with respect to a new fpga_mgr_parse_header_buf()
+   * fpga-mgr: rework write accounting in fpga_mgr_buf_load_sg() for
+     better clarity
+   * microchip-spi: rename MPF_STATUS_POLL_TIMEOUT to
+     MPF_STATUS_POLL_RETRIES
+   * microchip-spi: add comment about status reading quirk to
+     mpf_read_status()
+   * microchip-spi: rename poll_status_not_busy() to mpf_poll_status()
+     and add comment.
+   * microchip-spi: make if statement in mpf_poll_status() easier to
+     read.
+  v13 -> v14:
+   * fpga-mgr: improvements from Xu Yilun in
+      - fpga_mgr_parse_header_buf()
+      - fpga_mgr_write_init_buf()
+      - fpga_mgr_prepare_sg()
+      - fpga_mgr_buf_load_sg()
+   * fpga-mgr: add check for -EAGAIN from fpga_mgr_parse_header_buf()
+     when called from fpga_mgr_buf_load_mapped()
+   * microchip-spi: remove excessive cs_change from second spi_transfer
+     in mpf_read_status()
+   * microchip-spi: change type of components_size_start,
+     bitstream_start, i from size_t to u32 in mpf_ops_parse_header()
+  v14 -> v15: eliminate memcpy() in mpf_ops_write()
+    Eliminate excessive memcpy() in mpf_ops_write() by using
+    spi_sync_transfer() instead of spi_write().
+  v15 -> v16:
+   * microchip-spi: change back components_size_start and
+     bitstream_start variables types to size_t, i - to u16 in
+     mpf_ops_parse_header()
+   * fpga-mgr: rename fpga_parse_header_buf() to
+     fpga_parse_header_mapped(). It serves only mapped FPGA image now,
+     adjust it accordingly.
+   * fpga-mgr: separate fpga_mgr_parse_header_sg_first() and
+     fpga_mgr_parse_header_sg() from fpga_mgr_prepare_sg()
 
-----------------------------------------------------------------------------
+Ivan Bornyakov (3):
+  fpga: fpga-mgr: support bitstream offset in image buffer
+  fpga: microchip-spi: add Microchip MPF FPGA manager
+  dt-bindings: fpga: add binding doc for microchip-spi fpga mgr
 
-In this series, Patrisious adds gratuitous ARP support to RDMA-CM, in
-order to speed up migration failover from one node to another.
-
-Thanks
-
-
-Patrisious Haddad (2):
-  RDMA/core: Add an rb_tree that stores cm_ids sorted by ifindex and
-    remote IP
-  RDMA/core: Add a netevent notifier to cma
-
- drivers/infiniband/core/cma.c      | 230 +++++++++++++++++++++++++++--
- drivers/infiniband/core/cma_priv.h |   1 +
- include/rdma/rdma_cm.h             |   1 +
- 3 files changed, 220 insertions(+), 12 deletions(-)
+ .../fpga/microchip,mpf-spi-fpga-mgr.yaml      |  44 ++
+ drivers/fpga/Kconfig                          |   9 +
+ drivers/fpga/Makefile                         |   1 +
+ drivers/fpga/fpga-mgr.c                       | 236 +++++++++--
+ drivers/fpga/microchip-spi.c                  | 393 ++++++++++++++++++
+ include/linux/fpga/fpga-mgr.h                 |  17 +-
+ 6 files changed, 671 insertions(+), 29 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+ create mode 100644 drivers/fpga/microchip-spi.c
 
 -- 
-2.36.1
+2.35.1
+
 
