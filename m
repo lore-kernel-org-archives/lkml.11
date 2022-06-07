@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59937C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 028DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:28:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346675AbiFGR2H (ORCPT
+        id S1346683AbiFGR2K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46760 "EHLO
+        Tue, 7 Jun 2022 13:28:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346312AbiFGRXm (ORCPT
+        with ESMTP id S1345992AbiFGRXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:23:42 -0400
+        Tue, 7 Jun 2022 13:23:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA23106576;
-        Tue,  7 Jun 2022 10:21:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B514710A604;
+        Tue,  7 Jun 2022 10:21:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E30FB8220B;
-        Tue,  7 Jun 2022 17:21:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FEC7C34115;
-        Tue,  7 Jun 2022 17:21:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5591CB82172;
+        Tue,  7 Jun 2022 17:21:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9AF8C34115;
+        Tue,  7 Jun 2022 17:21:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622505;
-        bh=1zEFXMbvXcZkAgqY5Nud7gU+5hyXg2RAGsbNg8AZIwo=;
+        s=korg; t=1654622503;
+        bh=5Lmd3+eZdEPNSsCtjnsLeMRcjHWJoPdqLRlFKh33qHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bcMi6mA5+V9vqmkTTFlzQHu7QCdmavXOYppgjHejKHcQr92bVjwHxr0hjETDZkAey
-         weQyvAEJKeRpJ3tYUDJzeBfpzqa8Phn+MeOeErO53jcRlHNyhn47kO9xVXMcm+sG/g
-         cYcGpaTrDW80VHLSNDLcH1vvQXj5JL8Dy4mTGs5U=
+        b=VLRLNE3yCb3aUO20BcsOELzB934u/gF85HHJKqQHDuHxUvt0FxgObsbWHt6IxswEA
+         gg2+JBAf5YNW+UaAz6jhFg3R82wvnZ8iLVvMxW9nahccR74WMB2nO7yiBicJ5CoVPv
+         yc4D6DDWjHigPLgoa623nPdYQxNVTnG5SVZPhDVc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xu Jianhai <zero.xu@bytedance.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 084/452] nbd: Fix hung on disconnect request if socket is closed before
-Date:   Tue,  7 Jun 2022 18:59:01 +0200
-Message-Id: <20220607164911.057040992@linuxfoundation.org>
+        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 083/452] ASoC: rt5645: Fix errorenous cleanup order
+Date:   Tue,  7 Jun 2022 18:59:00 +0200
+Message-Id: <20220607164911.027597350@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,61 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit 491bf8f236fdeec698fa6744993f1ecf3fafd1a5 ]
+[ Upstream commit 2def44d3aec59e38d2701c568d65540783f90f2f ]
 
-When userspace closes the socket before sending a disconnect
-request, the following I/O requests will be blocked in
-wait_for_reconnect() until dead timeout. This will cause the
-following disconnect request also hung on blk_mq_quiesce_queue().
-That means we have no way to disconnect a nbd device if there
-are some I/O requests waiting for reconnecting until dead timeout.
-It's not expected. So let's wake up the thread waiting for
-reconnecting directly when a disconnect request is sent.
+There is a logic error when removing rt5645 device as the function
+rt5645_i2c_remove() first cancel the &rt5645->jack_detect_work and
+delete the &rt5645->btn_check_timer latter. However, since the timer
+handler rt5645_btn_check_callback() will re-queue the jack_detect_work,
+this cleanup order is buggy.
 
-Reported-by: Xu Jianhai <zero.xu@bytedance.com>
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220322080639.142-1-xieyongji@bytedance.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+That is, once the del_timer_sync in rt5645_i2c_remove is concurrently
+run with the rt5645_btn_check_callback, the canceled jack_detect_work
+will be rescheduled again, leading to possible use-after-free.
+
+This patch fix the issue by placing the del_timer_sync function before
+the cancel_delayed_work_sync.
+
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220516092035.28283-1-linma@zju.edu.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/nbd.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ sound/soc/codecs/rt5645.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 59c452fff835..ecde800ba210 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -880,11 +880,15 @@ static int wait_for_reconnect(struct nbd_device *nbd)
- 	struct nbd_config *config = nbd->config;
- 	if (!config->dead_conn_timeout)
- 		return 0;
--	if (test_bit(NBD_RT_DISCONNECTED, &config->runtime_flags))
-+
-+	if (!wait_event_timeout(config->conn_wait,
-+				test_bit(NBD_RT_DISCONNECTED,
-+					 &config->runtime_flags) ||
-+				atomic_read(&config->live_connections) > 0,
-+				config->dead_conn_timeout))
- 		return 0;
--	return wait_event_timeout(config->conn_wait,
--				  atomic_read(&config->live_connections) > 0,
--				  config->dead_conn_timeout) > 0;
-+
-+	return !test_bit(NBD_RT_DISCONNECTED, &config->runtime_flags);
- }
+diff --git a/sound/soc/codecs/rt5645.c b/sound/soc/codecs/rt5645.c
+index 420003d062c7..d1533e95a74f 100644
+--- a/sound/soc/codecs/rt5645.c
++++ b/sound/soc/codecs/rt5645.c
+@@ -4095,9 +4095,14 @@ static int rt5645_i2c_remove(struct i2c_client *i2c)
+ 	if (i2c->irq)
+ 		free_irq(i2c->irq, rt5645);
  
- static int nbd_handle_cmd(struct nbd_cmd *cmd, int index)
-@@ -2029,6 +2033,7 @@ static void nbd_disconnect_and_put(struct nbd_device *nbd)
- 	mutex_lock(&nbd->config_lock);
- 	nbd_disconnect(nbd);
- 	sock_shutdown(nbd);
-+	wake_up(&nbd->config->conn_wait);
- 	/*
- 	 * Make sure recv thread has finished, so it does not drop the last
- 	 * config ref and try to destroy the workqueue from inside the work
++	/*
++	 * Since the rt5645_btn_check_callback() can queue jack_detect_work,
++	 * the timer need to be delted first
++	 */
++	del_timer_sync(&rt5645->btn_check_timer);
++
+ 	cancel_delayed_work_sync(&rt5645->jack_detect_work);
+ 	cancel_delayed_work_sync(&rt5645->rcclock_work);
+-	del_timer_sync(&rt5645->btn_check_timer);
+ 
+ 	regulator_bulk_disable(ARRAY_SIZE(rt5645->supplies), rt5645->supplies);
+ 
 -- 
 2.35.1
 
