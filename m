@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66154CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A50ACCA48D
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378118AbiFGUv2 (ORCPT
+        id S1378339AbiFGUvj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:51:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40566 "EHLO
+        Tue, 7 Jun 2022 16:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358460AbiFGTwb (ORCPT
+        with ESMTP id S1358516AbiFGTwg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF16313C379;
-        Tue,  7 Jun 2022 11:20:36 -0700 (PDT)
+        Tue, 7 Jun 2022 15:52:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC7DBDA24;
+        Tue,  7 Jun 2022 11:20:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7014460C1C;
-        Tue,  7 Jun 2022 18:20:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83CD1C385A2;
-        Tue,  7 Jun 2022 18:20:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D02AB8237B;
+        Tue,  7 Jun 2022 18:20:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DCD8C385A2;
+        Tue,  7 Jun 2022 18:20:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626035;
-        bh=H0eiMGV5exGeCtYUmKb4h3NCR4TTqbXzzA85284RBE0=;
+        s=korg; t=1654626052;
+        bh=y0JC6v+FcEvZLcllLY+AqmUU60NKF5q7zJLtbIBvJ8s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uSXnQBgm6LbQLhIv8R7pqpL/aHm7OvVDSeI9I6A/pCkX09BkO0OHzqIdxlAGGey3p
-         qJSiD0Tas+B0p42O9DCkgE8ZPKpyiUZxvzfGe95eSdlwACrA5EGz+meLVShLrcSKz2
-         eBpvHwwfiPboyKBoy5r9ZvBj+kceN5W3dAIJTUzQ=
+        b=jiJlesYufh/toHeGfGXgbLU7M5JWPhAyyz0ZHzvJO9jHimHk5ACXIhNkS2qxepC7C
+         lsxaodL762DpOHKtMFSHzYhRrlOZL9UCvOvjHgf7EH8IYq0+X6GAKvgEwn+37iwWC6
+         aJzG1639izV+qjOdnpW1lsHZHlUSYqWUpbGUHh0I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Hui Wang <hui.wang@canonical.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 234/772] drm/bridge: adv7511: clean up CEC adapter when probe fails
-Date:   Tue,  7 Jun 2022 18:57:06 +0200
-Message-Id: <20220607164955.928375778@linuxfoundation.org>
+Subject: [PATCH 5.17 239/772] ASoC: cs35l41: Fix an out-of-bounds access in otp_packed_element_t
+Date:   Tue,  7 Jun 2022 18:57:11 +0200
+Message-Id: <20220607164956.073616721@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,35 +53,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+From: Hui Wang <hui.wang@canonical.com>
 
-[ Upstream commit 7ed2b0dabf7a22874cb30f8878df239ef638eb53 ]
+[ Upstream commit 9f342904216f378e88008bb0ce1ae200a4b99fe8 ]
 
-When the probe routine fails we also need to clean up the
-CEC adapter registered in adv7511_cec_init().
+The CS35L41_NUM_OTP_ELEM is 100, but only 99 entries are defined in
+the array otp_map_1/2[CS35L41_NUM_OTP_ELEM], this will trigger UBSAN
+to report a shift-out-of-bounds warning in the cs35l41_otp_unpack()
+since the last entry in the array will result in GENMASK(-1, 0).
 
-Fixes: 3b1b975003e4 ("drm: adv7511/33: add HDMI CEC support")
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220321104705.2804423-1-l.stach@pengutronix.de
+UBSAN reports this problem:
+ UBSAN: shift-out-of-bounds in /home/hwang4/build/jammy/jammy/sound/soc/codecs/cs35l41-lib.c:836:8
+ shift exponent 64 is too large for 64-bit type 'long unsigned int'
+ CPU: 10 PID: 595 Comm: systemd-udevd Not tainted 5.15.0-23-generic #23
+ Hardware name: LENOVO \x02MFG_IN_GO/\x02MFG_IN_GO, BIOS N3GET19W (1.00 ) 03/11/2022
+ Call Trace:
+  <TASK>
+  show_stack+0x52/0x58
+  dump_stack_lvl+0x4a/0x5f
+  dump_stack+0x10/0x12
+  ubsan_epilogue+0x9/0x45
+  __ubsan_handle_shift_out_of_bounds.cold+0x61/0xef
+  ? regmap_unlock_mutex+0xe/0x10
+  cs35l41_otp_unpack.cold+0x1c6/0x2b2 [snd_soc_cs35l41_lib]
+  cs35l41_hda_probe+0x24f/0x33a [snd_hda_scodec_cs35l41]
+  cs35l41_hda_i2c_probe+0x65/0x90 [snd_hda_scodec_cs35l41_i2c]
+  ? cs35l41_hda_i2c_remove+0x20/0x20 [snd_hda_scodec_cs35l41_i2c]
+  i2c_device_probe+0x252/0x2b0
+
+Fixes: 6450ef559056 ("ASoC: cs35l41: CS35L41 Boosted Smart Amplifier")
+Reviewed-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Hui Wang <hui.wang@canonical.com>
+Link: https://lore.kernel.org/r/20220328123535.50000-2-hui.wang@canonical.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/sound/cs35l41.h        |  1 -
+ sound/soc/codecs/cs35l41-lib.c | 14 +++++++-------
+ 2 files changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-index 77118c3395bf..320cbd5d90b8 100644
---- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-+++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-@@ -1313,6 +1313,7 @@ static int adv7511_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
- 	adv7511_audio_exit(adv7511);
- 	drm_bridge_remove(&adv7511->bridge);
- err_unregister_cec:
-+	cec_unregister_adapter(adv7511->cec_adap);
- 	i2c_unregister_device(adv7511->i2c_cec);
- 	clk_disable_unprepare(adv7511->cec_clk);
- err_i2c_unregister_packet:
+diff --git a/include/sound/cs35l41.h b/include/sound/cs35l41.h
+index bf7f9a9aeba0..9341130257ea 100644
+--- a/include/sound/cs35l41.h
++++ b/include/sound/cs35l41.h
+@@ -536,7 +536,6 @@
+ 
+ #define CS35L41_MAX_CACHE_REG		36
+ #define CS35L41_OTP_SIZE_WORDS		32
+-#define CS35L41_NUM_OTP_ELEM		100
+ 
+ #define CS35L41_VALID_PDATA		0x80000000
+ #define CS35L41_NUM_SUPPLIES            2
+diff --git a/sound/soc/codecs/cs35l41-lib.c b/sound/soc/codecs/cs35l41-lib.c
+index 281a710a4123..8de5038ee9b3 100644
+--- a/sound/soc/codecs/cs35l41-lib.c
++++ b/sound/soc/codecs/cs35l41-lib.c
+@@ -422,7 +422,7 @@ static bool cs35l41_volatile_reg(struct device *dev, unsigned int reg)
+ 	}
+ }
+ 
+-static const struct cs35l41_otp_packed_element_t otp_map_1[CS35L41_NUM_OTP_ELEM] = {
++static const struct cs35l41_otp_packed_element_t otp_map_1[] = {
+ 	/* addr         shift   size */
+ 	{ 0x00002030,	0,	4 }, /*TRIM_OSC_FREQ_TRIM*/
+ 	{ 0x00002030,	7,	1 }, /*TRIM_OSC_TRIM_DONE*/
+@@ -525,7 +525,7 @@ static const struct cs35l41_otp_packed_element_t otp_map_1[CS35L41_NUM_OTP_ELEM]
+ 	{ 0x00017044,	0,	24 }, /*LOT_NUMBER*/
+ };
+ 
+-static const struct cs35l41_otp_packed_element_t otp_map_2[CS35L41_NUM_OTP_ELEM] = {
++static const struct cs35l41_otp_packed_element_t otp_map_2[] = {
+ 	/* addr         shift   size */
+ 	{ 0x00002030,	0,	4 }, /*TRIM_OSC_FREQ_TRIM*/
+ 	{ 0x00002030,	7,	1 }, /*TRIM_OSC_TRIM_DONE*/
+@@ -671,35 +671,35 @@ static const struct cs35l41_otp_map_element_t cs35l41_otp_map_map[] = {
+ 	{
+ 		.id = 0x01,
+ 		.map = otp_map_1,
+-		.num_elements = CS35L41_NUM_OTP_ELEM,
++		.num_elements = ARRAY_SIZE(otp_map_1),
+ 		.bit_offset = 16,
+ 		.word_offset = 2,
+ 	},
+ 	{
+ 		.id = 0x02,
+ 		.map = otp_map_2,
+-		.num_elements = CS35L41_NUM_OTP_ELEM,
++		.num_elements = ARRAY_SIZE(otp_map_2),
+ 		.bit_offset = 16,
+ 		.word_offset = 2,
+ 	},
+ 	{
+ 		.id = 0x03,
+ 		.map = otp_map_2,
+-		.num_elements = CS35L41_NUM_OTP_ELEM,
++		.num_elements = ARRAY_SIZE(otp_map_2),
+ 		.bit_offset = 16,
+ 		.word_offset = 2,
+ 	},
+ 	{
+ 		.id = 0x06,
+ 		.map = otp_map_2,
+-		.num_elements = CS35L41_NUM_OTP_ELEM,
++		.num_elements = ARRAY_SIZE(otp_map_2),
+ 		.bit_offset = 16,
+ 		.word_offset = 2,
+ 	},
+ 	{
+ 		.id = 0x08,
+ 		.map = otp_map_1,
+-		.num_elements = CS35L41_NUM_OTP_ELEM,
++		.num_elements = ARRAY_SIZE(otp_map_1),
+ 		.bit_offset = 16,
+ 		.word_offset = 2,
+ 	},
 -- 
 2.35.1
 
