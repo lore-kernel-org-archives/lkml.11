@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C389CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30989C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387047AbiFGWtu (ORCPT
+        id S1383036AbiFGWoJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45296 "EHLO
+        Tue, 7 Jun 2022 18:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381409AbiFGVkm (ORCPT
+        with ESMTP id S1380955AbiFGVb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1518232A41;
-        Tue,  7 Jun 2022 12:06:50 -0700 (PDT)
+        Tue, 7 Jun 2022 17:31:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C42C22C47B;
+        Tue,  7 Jun 2022 12:03:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A47EB8220B;
-        Tue,  7 Jun 2022 19:06:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A77A1C385A2;
-        Tue,  7 Jun 2022 19:06:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 441B6B8220B;
+        Tue,  7 Jun 2022 19:03:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84085C385A2;
+        Tue,  7 Jun 2022 19:03:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628808;
-        bh=Z7yu1bDK0mC1xruvohs/rezvFKpeCucwSrm7QYxW3E0=;
+        s=korg; t=1654628620;
+        bh=zvkWQXaxftvOIUbrHG5XsPOlAGPZGXkzs+x/ENuSNts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VDJxY3e9gLYQQHpFpkR/MURYvI7KsG9dbyVF6c7gwHEgmUq7KJe0D07kjIXkOJOjQ
-         uiGnE1CnUCchQbEoxpZQrM3UJoEHc1Guixc9n1w3Qf5edL5iwo1bQw+KtkKOg7oEe7
-         piV10xFV2jCq/WwSS7L9xPOltsgAvnx3xa8b8F7g=
+        b=be3jRuZuvF8dvYYaB3yifgK560hvfV4wgQjxkiYEQF1ZPEfELljvYCriyPj4CcVBB
+         RzNmMEr9KOZh3rpGBOMdmA5dS4s/GWir4MEyge8bFMxoZiqYAyc3DHixkg3B6010HT
+         uot4Nn9nvYi2FGJ6zuttr+YSzDqtCXRIYeQP7YaU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 412/879] scsi: lpfc: Fix element offset in __lpfc_sli_release_iocbq_s4()
-Date:   Tue,  7 Jun 2022 18:58:50 +0200
-Message-Id: <20220607165014.821351437@linuxfoundation.org>
+Subject: [PATCH 5.18 395/879] ACPI: AGDI: Fix missing prototype warning for acpi_agdi_init()
+Date:   Tue,  7 Jun 2022 18:58:33 +0200
+Message-Id: <20220607165014.329272037@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,39 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Ilkka Koskinen <ilkka@os.amperecomputing.com>
 
-[ Upstream commit 84c6f99e39074d45f75986e42ca28e27c140fd0d ]
+[ Upstream commit 988d7a14408db4183202f16bb02b8149b9da3727 ]
 
-The prior commit that moved from iocb elements to explicit wqe elements
-missed a name change.
+When building with W=1, we get the following warning:
 
-Correct __lpfc_sli_release_iocbq_s4() to reference wqe rather than iocb.
+drivers/acpi/arm64/agdi.c:88:13: warning: no previous prototype for ‘acpi_agdi_init’ [-Wmissing-prototypes]
+ void __init acpi_agdi_init(void)
 
-Link: https://lore.kernel.org/r/20220506035519.50908-2-jsmart2021@gmail.com
-Fixes: a680a9298e7b ("scsi: lpfc: SLI path split: Refactor lpfc_iocbq")
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Include AGDI driver's header file to pull in the prototype definition
+for acpi_agdi_init() to get rid of the compiler warning
+
+Fixes: a2a591fb76e6 ("ACPI: AGDI: Add driver for Arm Generic Diagnostic Dump and Reset device")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Ilkka Koskinen <ilkka@os.amperecomputing.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_sli.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/arm64/agdi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
-index 11f907278f09..c307f551d114 100644
---- a/drivers/scsi/lpfc/lpfc_sli.c
-+++ b/drivers/scsi/lpfc/lpfc_sli.c
-@@ -1373,7 +1373,7 @@ static void
- __lpfc_sli_release_iocbq_s4(struct lpfc_hba *phba, struct lpfc_iocbq *iocbq)
- {
- 	struct lpfc_sglq *sglq;
--	size_t start_clean = offsetof(struct lpfc_iocbq, iocb);
-+	size_t start_clean = offsetof(struct lpfc_iocbq, wqe);
- 	unsigned long iflag = 0;
- 	struct lpfc_sli_ring *pring;
+diff --git a/drivers/acpi/arm64/agdi.c b/drivers/acpi/arm64/agdi.c
+index 4df337d545b7..cf31abd0ed1b 100644
+--- a/drivers/acpi/arm64/agdi.c
++++ b/drivers/acpi/arm64/agdi.c
+@@ -9,6 +9,7 @@
+ #define pr_fmt(fmt) "ACPI: AGDI: " fmt
  
+ #include <linux/acpi.h>
++#include <linux/acpi_agdi.h>
+ #include <linux/arm_sdei.h>
+ #include <linux/io.h>
+ #include <linux/kernel.h>
 -- 
 2.35.1
 
