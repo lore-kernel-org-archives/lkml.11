@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A217CCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58EDDCCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359716AbiFGUQF (ORCPT
+        id S1359767AbiFGUQK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:16:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51428 "EHLO
+        Tue, 7 Jun 2022 16:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355475AbiFGTZV (ORCPT
+        with ESMTP id S1355548AbiFGTZX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:25:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BFA119C3B7;
-        Tue,  7 Jun 2022 11:09:22 -0700 (PDT)
+        Tue, 7 Jun 2022 15:25:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50E019D609;
+        Tue,  7 Jun 2022 11:09:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5B5F617AE;
-        Tue,  7 Jun 2022 18:09:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D28D3C385A2;
-        Tue,  7 Jun 2022 18:09:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5E8061927;
+        Tue,  7 Jun 2022 18:09:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88BF6C385A2;
+        Tue,  7 Jun 2022 18:09:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625361;
-        bh=BS4LhklgbHD1Ban1mKPw+ahHo/zgwk3EvO5RXlVE5wk=;
+        s=korg; t=1654625364;
+        bh=yI9kI2cUy2EEHoPBVfyPg7NWlnZiJY+u04TNrxOuZLo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w1QFWHGZNQ2GbtYaBtIj8cXQmMEHHIa1ihmUQMmY0tpEZo/ZEWBaUkGjgc9ROpGOG
-         l0QL/nYwFLrWojmmXg0rzNZQ/FnZBXsGTbPv0LBej0Bc34uublkUWIq5nbrbwMojmv
-         hQjyuj8zdKmYENBC3EYcWAS1210+LgKIfbmX8aDc=
+        b=vDA1zE2Q0k+FiaYOgXcGeUxGsYejTl7acnLeThJsKS2SkEs2wip3xhLraPCimZMfc
+         ofsAt51xDvnwlWj+w9dDorbcJGuLTrdf8Byf8991dFobIuEGqTLxevdFawcStfC0GF
+         kg5Oy5ENTiz3EYVKbl0XwTsHczV1kvYuVonBJ9lM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yunfei Wang <yf.wang@mediatek.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.15 618/667] iommu/dma: Fix iova map result check bug
-Date:   Tue,  7 Jun 2022 19:04:43 +0200
-Message-Id: <20220607164953.205306807@linuxfoundation.org>
+        stable@vger.kernel.org, Dong Aisheng <aisheng.dong@nxp.com>,
+        Minchan Kim <minchan@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Lecopzer Chen <lecopzer.chen@mediatek.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 619/667] Revert "mm/cma.c: remove redundant cma_mutex lock"
+Date:   Tue,  7 Jun 2022 19:04:44 +0200
+Message-Id: <20220607164953.235548518@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,65 +54,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yunfei Wang <yf.wang@mediatek.com>
+From: Dong Aisheng <aisheng.dong@nxp.com>
 
-commit a3884774d731f03d3a3dd4fb70ec2d9341ceb39d upstream.
+commit 60a60e32cf91169840abcb4a80f0b0df31708ba7 upstream.
 
-The data type of the return value of the iommu_map_sg_atomic
-is ssize_t, but the data type of iova size is size_t,
-e.g. one is int while the other is unsigned int.
+This reverts commit a4efc174b382fcdb which introduced a regression issue
+that when there're multiple processes allocating dma memory in parallel by
+calling dma_alloc_coherent(), it may fail sometimes as follows:
 
-When iommu_map_sg_atomic return value is compared with iova size,
-it will force the signed int to be converted to unsigned int, if
-iova map fails and iommu_map_sg_atomic return error code is less
-than 0, then (ret < iova_len) is false, which will to cause not
-do free iova, and the master can still successfully get the iova
-of map fail, which is not expected.
+Error log:
+cma: cma_alloc: linux,cma: alloc failed, req-size: 148 pages, ret: -16
+cma: number of available pages:
+3@125+20@172+12@236+4@380+32@736+17@2287+23@2473+20@36076+99@40477+108@40852+44@41108+20@41196+108@41364+108@41620+
+108@42900+108@43156+483@44061+1763@45341+1440@47712+20@49324+20@49388+5076@49452+2304@55040+35@58141+20@58220+20@58284+
+7188@58348+84@66220+7276@66452+227@74525+6371@75549=> 33161 free of 81920 total pages
 
-Therefore, we need to check the return value of iommu_map_sg_atomic
-in two cases according to whether it is less than 0.
+When issue happened, we saw there were still 33161 pages (129M) free CMA
+memory and a lot available free slots for 148 pages in CMA bitmap that we
+want to allocate.
 
-Fixes: ad8f36e4b6b1 ("iommu: return full error code from iommu_map_sg[_atomic]()")
-Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-Cc: <stable@vger.kernel.org> # 5.15.*
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Link: https://lore.kernel.org/r/20220507085204.16914-1-yf.wang@mediatek.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+When dumping memory info, we found that there was also ~342M normal
+memory, but only 1352K CMA memory left in buddy system while a lot of
+pageblocks were isolated.
+
+Memory info log:
+Normal free:351096kB min:30000kB low:37500kB high:45000kB reserved_highatomic:0KB
+	    active_anon:98060kB inactive_anon:98948kB active_file:60864kB inactive_file:31776kB
+	    unevictable:0kB writepending:0kB present:1048576kB managed:1018328kB mlocked:0kB
+	    bounce:0kB free_pcp:220kB local_pcp:192kB free_cma:1352kB lowmem_reserve[]: 0 0 0
+Normal: 78*4kB (UECI) 1772*8kB (UMECI) 1335*16kB (UMECI) 360*32kB (UMECI) 65*64kB (UMCI)
+	36*128kB (UMECI) 16*256kB (UMCI) 6*512kB (EI) 8*1024kB (UEI) 4*2048kB (MI) 8*4096kB (EI)
+	8*8192kB (UI) 3*16384kB (EI) 8*32768kB (M) = 489288kB
+
+The root cause of this issue is that since commit a4efc174b382 ("mm/cma.c:
+remove redundant cma_mutex lock"), CMA supports concurrent memory
+allocation.  It's possible that the memory range process A trying to alloc
+has already been isolated by the allocation of process B during memory
+migration.
+
+The problem here is that the memory range isolated during one allocation
+by start_isolate_page_range() could be much bigger than the real size we
+want to alloc due to the range is aligned to MAX_ORDER_NR_PAGES.
+
+Taking an ARMv7 platform with 1G memory as an example, when
+MAX_ORDER_NR_PAGES is big (e.g.  32M with max_order 14) and CMA memory is
+relatively small (e.g.  128M), there're only 4 MAX_ORDER slot, then it's
+very easy that all CMA memory may have already been isolated by other
+processes when one trying to allocate memory using dma_alloc_coherent().
+Since current CMA code will only scan one time of whole available CMA
+memory, then dma_alloc_coherent() may easy fail due to contention with
+other processes.
+
+This patch simply falls back to the original method that using cma_mutex
+to make alloc_contig_range() run sequentially to avoid the issue.
+
+Link: https://lkml.kernel.org/r/20220509094551.3596244-1-aisheng.dong@nxp.com
+Link: https://lore.kernel.org/all/20220315144521.3810298-2-aisheng.dong@nxp.com/
+Fixes: a4efc174b382 ("mm/cma.c: remove redundant cma_mutex lock")
+Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
+Acked-by: Minchan Kim <minchan@kernel.org>
+Acked-by: David Hildenbrand <david@redhat.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Lecopzer Chen <lecopzer.chen@mediatek.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: <stable@vger.kernel.org>	[5.11+]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/dma-iommu.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ mm/cma.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -619,6 +619,7 @@ static struct page **__iommu_dma_alloc_n
- 	unsigned int count, min_size, alloc_sizes = domain->pgsize_bitmap;
- 	struct page **pages;
- 	dma_addr_t iova;
-+	ssize_t ret;
+--- a/mm/cma.c
++++ b/mm/cma.c
+@@ -37,6 +37,7 @@
  
- 	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
- 	    iommu_deferred_attach(dev, domain))
-@@ -656,8 +657,8 @@ static struct page **__iommu_dma_alloc_n
- 			arch_dma_prep_coherent(sg_page(sg), sg->length);
- 	}
+ struct cma cma_areas[MAX_CMA_AREAS];
+ unsigned cma_area_count;
++static DEFINE_MUTEX(cma_mutex);
  
--	if (iommu_map_sg_atomic(domain, iova, sgt->sgl, sgt->orig_nents, ioprot)
--			< size)
-+	ret = iommu_map_sg_atomic(domain, iova, sgt->sgl, sgt->orig_nents, ioprot);
-+	if (ret < 0 || ret < size)
- 		goto out_free_sg;
+ phys_addr_t cma_get_base(const struct cma *cma)
+ {
+@@ -471,9 +472,10 @@ struct page *cma_alloc(struct cma *cma,
+ 		spin_unlock_irq(&cma->lock);
  
- 	sgt->sgl->dma_address = iova;
-@@ -1054,7 +1055,7 @@ static int iommu_dma_map_sg(struct devic
- 	 * implementation - it knows better than we do.
- 	 */
- 	ret = iommu_map_sg_atomic(domain, iova, sg, nents, prot);
--	if (ret < iova_len)
-+	if (ret < 0 || ret < iova_len)
- 		goto out_free_iova;
- 
- 	return __finalise_sg(dev, sg, nents, iova);
+ 		pfn = cma->base_pfn + (bitmap_no << cma->order_per_bit);
++		mutex_lock(&cma_mutex);
+ 		ret = alloc_contig_range(pfn, pfn + count, MIGRATE_CMA,
+ 				     GFP_KERNEL | (no_warn ? __GFP_NOWARN : 0));
+-
++		mutex_unlock(&cma_mutex);
+ 		if (ret == 0) {
+ 			page = pfn_to_page(pfn);
+ 			break;
 
 
