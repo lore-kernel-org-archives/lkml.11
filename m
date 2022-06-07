@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4FA5CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED128C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:21:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380039AbiFGVU7 (ORCPT
+        id S1380129AbiFGVVF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:20:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51106 "EHLO
+        Tue, 7 Jun 2022 17:21:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359544AbiFGUXD (ORCPT
+        with ESMTP id S1359385AbiFGUYh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:23:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6551F1D5193;
-        Tue,  7 Jun 2022 11:32:05 -0700 (PDT)
+        Tue, 7 Jun 2022 16:24:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3994B1D5183;
+        Tue,  7 Jun 2022 11:32:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 896A361501;
-        Tue,  7 Jun 2022 18:32:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9406EC385A2;
-        Tue,  7 Jun 2022 18:32:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CABC5B82349;
+        Tue,  7 Jun 2022 18:32:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F50EC385A2;
+        Tue,  7 Jun 2022 18:32:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626724;
-        bh=yRHFUJLE9xSqVhgzgjZ7u51QhzkbKY04Y0WQF2bXGUQ=;
+        s=korg; t=1654626732;
+        bh=wppAPTYZacra8jvjOGCwiUf7y78jF2kYF71m4qcN1Bo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DoCKntrbV3C9ONjcCf9jcZzTQwz/pa/Vl0R/OT8j33xL+YIY2p9bKUyRtFFVGxNSe
-         y463Zs4zhMmLAO6p0me3K3Tx3LOKl7TzHc2fYVpCW1FBcXB9EVIW+viDpK4zWZhn1l
-         uqTv5LUIkliJvonulKt6INiHYMnMaO5pIyfDdmEU=
+        b=NRYCccp7K04KU/7xD2cklyI1HqoTV5YAXtBzEKQuiCWEyBUcYdSRW1Cv8ctxHiWbh
+         9KOZExrd6+K+SJArpbGU6X8ufhCDzkEDF18CHjvsiSCDfS4WnL6YQ4l2XrcGIZHP5P
+         cLqRY0Rrh8s9g9WZzt3aadrgKRil85r0M8uBLVpY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladis Dronov <vdronov@redhat.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 482/772] hwrng: cn10k - Make check_rng_health() return an error code
-Date:   Tue,  7 Jun 2022 19:01:14 +0200
-Message-Id: <20220607165003.192732982@linuxfoundation.org>
+Subject: [PATCH 5.17 485/772] pinctrl: bcm2835: implement hook for missing gpio-ranges
+Date:   Tue,  7 Jun 2022 19:01:17 +0200
+Message-Id: <20220607165003.278285697@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,67 +51,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladis Dronov <vdronov@redhat.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-[ Upstream commit 32547a6aedda132907fcd15cdc8271429609f216 ]
+[ Upstream commit d2b67744fd99b06555b7e4d67302ede6c7c6a638 ]
 
-Currently check_rng_health() returns zero unconditionally.
-Make it to output an error code and return it.
+The commit c8013355ead6 ("ARM: dts: gpio-ranges property is now required")
+fixed the GPIO probing issues caused by "pinctrl: bcm2835: Change init
+order for gpio hogs". This changed only the kernel DTS files. Unfortunately
+it isn't guaranteed that these files are shipped to all users.
 
-Fixes: 38e9791a0209 ("hwrng: cn10k - Add random number generator support")
-Signed-off-by: Vladis Dronov <vdronov@redhat.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+So implement the necessary backward compatibility for BCM2835 and
+BCM2711 platform.
+
+Fixes: 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio hogs")
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220409095129.45786-3-stefan.wahren@i2se.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/hw_random/cn10k-rng.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ drivers/pinctrl/bcm/pinctrl-bcm2835.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/drivers/char/hw_random/cn10k-rng.c b/drivers/char/hw_random/cn10k-rng.c
-index dd226630b67d..a01e9307737c 100644
---- a/drivers/char/hw_random/cn10k-rng.c
-+++ b/drivers/char/hw_random/cn10k-rng.c
-@@ -31,26 +31,23 @@ struct cn10k_rng {
- 
- #define PLAT_OCTEONTX_RESET_RNG_EBG_HEALTH_STATE     0xc2000b0f
- 
--static int reset_rng_health_state(struct cn10k_rng *rng)
-+static unsigned long reset_rng_health_state(struct cn10k_rng *rng)
- {
- 	struct arm_smccc_res res;
- 
- 	/* Send SMC service call to reset EBG health state */
- 	arm_smccc_smc(PLAT_OCTEONTX_RESET_RNG_EBG_HEALTH_STATE, 0, 0, 0, 0, 0, 0, 0, &res);
--	if (res.a0 != 0UL)
--		return -EIO;
--
--	return 0;
-+	return res.a0;
+diff --git a/drivers/pinctrl/bcm/pinctrl-bcm2835.c b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+index 47e433e09c5c..dad453054776 100644
+--- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
++++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+@@ -358,6 +358,22 @@ static int bcm2835_gpio_direction_output(struct gpio_chip *chip,
+ 	return 0;
  }
  
- static int check_rng_health(struct cn10k_rng *rng)
- {
- 	u64 status;
--	int err;
-+	unsigned long err;
++static int bcm2835_of_gpio_ranges_fallback(struct gpio_chip *gc,
++					   struct device_node *np)
++{
++	struct pinctrl_dev *pctldev = of_pinctrl_get(np);
++
++	of_node_put(np);
++
++	if (!pctldev)
++		return 0;
++
++	gpiochip_add_pin_range(gc, pinctrl_dev_get_devname(pctldev), 0, 0,
++			       gc->ngpio);
++
++	return 0;
++}
++
+ static const struct gpio_chip bcm2835_gpio_chip = {
+ 	.label = MODULE_NAME,
+ 	.owner = THIS_MODULE,
+@@ -372,6 +388,7 @@ static const struct gpio_chip bcm2835_gpio_chip = {
+ 	.base = -1,
+ 	.ngpio = BCM2835_NUM_GPIOS,
+ 	.can_sleep = false,
++	.of_gpio_ranges_fallback = bcm2835_of_gpio_ranges_fallback,
+ };
  
- 	/* Skip checking health */
- 	if (!rng->reg_base)
--		return 0;
-+		return -ENODEV;
+ static const struct gpio_chip bcm2711_gpio_chip = {
+@@ -388,6 +405,7 @@ static const struct gpio_chip bcm2711_gpio_chip = {
+ 	.base = -1,
+ 	.ngpio = BCM2711_NUM_GPIOS,
+ 	.can_sleep = false,
++	.of_gpio_ranges_fallback = bcm2835_of_gpio_ranges_fallback,
+ };
  
- 	status = readq(rng->reg_base + RNM_PF_EBG_HEALTH);
- 	if (status & BIT_ULL(20)) {
-@@ -58,7 +55,9 @@ static int check_rng_health(struct cn10k_rng *rng)
- 		if (err) {
- 			dev_err(&rng->pdev->dev, "HWRNG: Health test failed (status=%llx)\n",
- 					status);
--			dev_err(&rng->pdev->dev, "HWRNG: error during reset\n");
-+			dev_err(&rng->pdev->dev, "HWRNG: error during reset (error=%lx)\n",
-+					err);
-+			return -EIO;
- 		}
- 	}
- 	return 0;
+ static void bcm2835_gpio_irq_handle_bank(struct bcm2835_pinctrl *pc,
 -- 
 2.35.1
 
