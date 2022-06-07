@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 946F5CCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB7BCCA494
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380441AbiFGV0r (ORCPT
+        id S1380486AbiFGV1C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:26:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44464 "EHLO
+        Tue, 7 Jun 2022 17:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377459AbiFGUdZ (ORCPT
+        with ESMTP id S1377542AbiFGUdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:33:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 940CB1E4532;
-        Tue,  7 Jun 2022 11:35:10 -0700 (PDT)
+        Tue, 7 Jun 2022 16:33:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D681E4BDC;
+        Tue,  7 Jun 2022 11:35:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01960B8237D;
-        Tue,  7 Jun 2022 18:35:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EE25C385A2;
-        Tue,  7 Jun 2022 18:35:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A94DC612F2;
+        Tue,  7 Jun 2022 18:35:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB1BFC385A2;
+        Tue,  7 Jun 2022 18:35:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626906;
-        bh=90hcqqTDbuainC8u75Jns7z4qyyeclpWRSFDaglmv18=;
+        s=korg; t=1654626923;
+        bh=RiYoesI/2/VhLz4xXzKPGtNRHm3pm6lxNILgLYxpFek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cQ6mfpqSozfCD25AbpECvMePuw/ly3AriwtN/WfXHBVQDRUXG+UUX+USUh2jXsQgV
-         sMwFdIUeBXdd4J27CZEm59YbgGR7buvHNUC1KvrjgLZne/NUEUumodv5pkRK1eUXib
-         nC3vBG7rcjCpGc3GYckRzcvi3778UdMTlFiT6x5I=
+        b=Ws2tMD87SHml2j2EfzpT8tADNnbVbAXS4Lj95z5w6j7FGyIanelvcFwAMa/+fmAHW
+         kpDc3iAJJk22TbcuZyYA7wSwFWA9KNkNRDYj+T5BHLCmKsyIYAFtr5vfqaNqNPpNMV
+         mkz2asn6Mfly9x6K0jsfcC/5lVr7E7FPyi5ErZCU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
-        Russell Currey <ruscur@russell.cc>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 546/772] powerpc/powernv: Get L1D flush requirements from device-tree
-Date:   Tue,  7 Jun 2022 19:02:18 +0200
-Message-Id: <20220607165005.052761549@linuxfoundation.org>
+Subject: [PATCH 5.17 552/772] powerpc/xive: Fix refcount leak in xive_spapr_init
+Date:   Tue,  7 Jun 2022 19:02:24 +0200
+Message-Id: <20220607165005.228266147@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,49 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell Currey <ruscur@russell.cc>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 2efee6adb56159288bce9d1ab51fc9056d7007d4 ]
+[ Upstream commit 1d1fb9618bdd5a5fbf9a9eb75133da301d33721c ]
 
-The device-tree properties no-need-l1d-flush-msr-pr-1-to-0 and
-no-need-l1d-flush-kernel-on-user-access are the equivalents of
-H_CPU_BEHAV_NO_L1D_FLUSH_ENTRY and H_CPU_BEHAV_NO_L1D_FLUSH_UACCESS
-from the H_GET_CPU_CHARACTERISTICS hcall on pseries respectively.
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-In commit d02fa40d759f ("powerpc/powernv: Remove POWER9 PVR version
-check for entry and uaccess flushes") the condition for disabling the
-L1D flush on kernel entry and user access was changed from any non-P9
-CPU to only checking P7 and P8.  Without the appropriate device-tree
-checks for newer processors on powernv, these flushes are unnecessarily
-enabled on those systems.  This patch corrects this.
-
-Fixes: d02fa40d759f ("powerpc/powernv: Remove POWER9 PVR version check for entry and uaccess flushes")
-Reported-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Russell Currey <ruscur@russell.cc>
+Fixes: eac1e731b59e ("powerpc/xive: guest exploitation of the XIVE interrupt controller")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Cédric Le Goater <clg@kaod.org>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220404101536.104794-1-ruscur@russell.cc
+Link: https://lore.kernel.org/r/20220512090535.33397-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powernv/setup.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/powerpc/sysdev/xive/spapr.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/platforms/powernv/setup.c b/arch/powerpc/platforms/powernv/setup.c
-index 105d889abd51..378f7e5f18d2 100644
---- a/arch/powerpc/platforms/powernv/setup.c
-+++ b/arch/powerpc/platforms/powernv/setup.c
-@@ -96,6 +96,12 @@ static void __init init_fw_feat_flags(struct device_node *np)
+diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
+index 29456c255f9f..503f544d28e2 100644
+--- a/arch/powerpc/sysdev/xive/spapr.c
++++ b/arch/powerpc/sysdev/xive/spapr.c
+@@ -830,12 +830,12 @@ bool __init xive_spapr_init(void)
+ 	/* Resource 1 is the OS ring TIMA */
+ 	if (of_address_to_resource(np, 1, &r)) {
+ 		pr_err("Failed to get thread mgmnt area resource\n");
+-		return false;
++		goto err_put;
+ 	}
+ 	tima = ioremap(r.start, resource_size(&r));
+ 	if (!tima) {
+ 		pr_err("Failed to map thread mgmnt area\n");
+-		return false;
++		goto err_put;
+ 	}
  
- 	if (fw_feature_is("disabled", "needs-spec-barrier-for-bound-checks", np))
- 		security_ftr_clear(SEC_FTR_BNDS_CHK_SPEC_BAR);
-+
-+	if (fw_feature_is("enabled", "no-need-l1d-flush-msr-pr-1-to-0", np))
-+		security_ftr_clear(SEC_FTR_L1D_FLUSH_ENTRY);
-+
-+	if (fw_feature_is("enabled", "no-need-l1d-flush-kernel-on-user-access", np))
-+		security_ftr_clear(SEC_FTR_L1D_FLUSH_UACCESS);
+ 	if (!xive_get_max_prio(&max_prio))
+@@ -871,6 +871,7 @@ bool __init xive_spapr_init(void)
+ 	if (!xive_core_init(np, &xive_spapr_ops, tima, TM_QW1_OS, max_prio))
+ 		goto err_mem_free;
+ 
++	of_node_put(np);
+ 	pr_info("Using %dkB queues\n", 1 << (xive_queue_shift - 10));
+ 	return true;
+ 
+@@ -878,6 +879,8 @@ bool __init xive_spapr_init(void)
+ 	xive_irq_bitmap_remove_all();
+ err_unmap:
+ 	iounmap(tima);
++err_put:
++	of_node_put(np);
+ 	return false;
  }
  
- static void __init pnv_setup_security_mitigations(void)
 -- 
 2.35.1
 
