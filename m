@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5546CCA48D
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:03:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9DFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:03:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351783AbiFHA7L (ORCPT
+        id S1387414AbiFHA77 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46894 "EHLO
+        Tue, 7 Jun 2022 20:59:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382118AbiFGVzh (ORCPT
+        with ESMTP id S1383736AbiFGWSX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:55:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC8124C0B1;
-        Tue,  7 Jun 2022 12:13:44 -0700 (PDT)
+        Tue, 7 Jun 2022 18:18:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A5026273B;
+        Tue,  7 Jun 2022 12:20:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A5F36187F;
-        Tue,  7 Jun 2022 19:13:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84F99C385A2;
-        Tue,  7 Jun 2022 19:13:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1941B823D5;
+        Tue,  7 Jun 2022 19:20:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 555E8C385A5;
+        Tue,  7 Jun 2022 19:20:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629221;
-        bh=ahpB3z3e2xSNZkK8vXSnKkUONv9J/XSv9U0JcNldZX8=;
+        s=korg; t=1654629607;
+        bh=Tem+o6lhnk3u6n4qq+jmQ3aT0Hf1azAIzJZfIeFJADE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OfveBuSuHRiqDO8b5Yb0DLsXhtuXBRuC46r5DKYbvgn9ToZ4FI7wSwxJ3s9ZQskUc
-         UGwfBOy3hIPE1r/eWsLew1VIdLcvloAdBbaqPWDQSuAdFhTMwd5nfUzjQq+QmHlBKu
-         SeyuDDUnGq/Hlb67PNzZyTF/YA7s1ZojzHhwVxP0=
+        b=NeIXa9DbexgVV1DXzlCyGSnQYUDu/4NZv+TlKvMvdonWREJhi1ShLaO6/KIcJ9g9P
+         w3w5N+QMirscn5bmaZKB5cs1d52yrSUYayywna25cHoyqgeeCJefqQ5U/EnncMo2Xx
+         0etH81JtKKtxSV65VaP7eWA/SJ+niPTUv4dqMW7Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 613/879] ASoC: atmel-classd: Remove endianness flag on class d component
-Date:   Tue,  7 Jun 2022 19:02:11 +0200
-Message-Id: <20220607165020.642605947@linuxfoundation.org>
+        stable@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+        Baik Song An <bsahn@etri.re.kr>,
+        Hong Yeon Kim <kimhy@etri.re.kr>,
+        Taeung Song <taeung@reallinux.co.kr>, linuxgeek@linuxgeek.io,
+        Wonhyuk Yang <vvghjk1234@gmail.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.18 751/879] tracing: Fix return value of trace_pid_write()
+Date:   Tue,  7 Jun 2022 19:04:29 +0200
+Message-Id: <20220607165024.659732528@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,44 +53,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Wonhyuk Yang <vvghjk1234@gmail.com>
 
-[ Upstream commit 0104d52a6a69b06b0e8167f7c1247e8c76aca070 ]
+commit b27f266f74fbda4ee36c2b2b04d15992860cf23b upstream.
 
-The endianness flag should have been removed when the driver was
-ported across from having both a CODEC and CPU side component, to
-just having a CPU component and using the dummy for the CODEC. The
-endianness flag is used to indicate that the device is completely
-ambivalent to the endianness of the data, typically due to the
-endianness being lost over the hardware link (ie. the link defines
-bit ordering). It's usage didn't have any effect when the driver
-had both a CPU and CODEC component, since the union of those equals
-the CPU side settings, but now causes the driver to falsely report
-it supports big endian. Correct this by removing the flag.
+Setting set_event_pid with trailing whitespace lead to endless write
+system calls like below.
 
-Fixes: 1dfdbe73ccf9 ("ASoC: atmel-classd: remove codec component")
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220504170905.332415-4-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+    $ strace echo "123 " > /sys/kernel/debug/tracing/set_event_pid
+    execve("/usr/bin/echo", ["echo", "123 "], ...) = 0
+    ...
+    write(1, "123 \n", 5)                   = 4
+    write(1, "\n", 1)                       = 0
+    write(1, "\n", 1)                       = 0
+    write(1, "\n", 1)                       = 0
+    write(1, "\n", 1)                       = 0
+    write(1, "\n", 1)                       = 0
+    ....
+
+This is because, the result of trace_get_user's are not returned when it
+read at least one pid. To fix it, update read variable even if
+parser->idx == 0.
+
+The result of applied patch is below.
+
+    $ strace echo "123 " > /sys/kernel/debug/tracing/set_event_pid
+    execve("/usr/bin/echo", ["echo", "123 "], ...) = 0
+    ...
+    write(1, "123 \n", 5)                   = 5
+    close(1)                                = 0
+
+Link: https://lkml.kernel.org/r/20220503050546.288911-1-vvghjk1234@gmail.com
+
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Baik Song An <bsahn@etri.re.kr>
+Cc: Hong Yeon Kim <kimhy@etri.re.kr>
+Cc: Taeung Song <taeung@reallinux.co.kr>
+Cc: linuxgeek@linuxgeek.io
+Cc: stable@vger.kernel.org
+Fixes: 4909010788640 ("tracing: Add set_event_pid directory for future use")
+Signed-off-by: Wonhyuk Yang <vvghjk1234@gmail.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/atmel/atmel-classd.c | 1 -
- 1 file changed, 1 deletion(-)
+ kernel/trace/trace.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/atmel/atmel-classd.c b/sound/soc/atmel/atmel-classd.c
-index a9f9f449c48c..74b7b2611aa7 100644
---- a/sound/soc/atmel/atmel-classd.c
-+++ b/sound/soc/atmel/atmel-classd.c
-@@ -458,7 +458,6 @@ static const struct snd_soc_component_driver atmel_classd_cpu_dai_component = {
- 	.num_controls		= ARRAY_SIZE(atmel_classd_snd_controls),
- 	.idle_bias_on		= 1,
- 	.use_pmdown_time	= 1,
--	.endianness		= 1,
- };
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -721,13 +721,16 @@ int trace_pid_write(struct trace_pid_lis
+ 		pos = 0;
  
- /* ASoC sound card */
--- 
-2.35.1
-
+ 		ret = trace_get_user(&parser, ubuf, cnt, &pos);
+-		if (ret < 0 || !trace_parser_loaded(&parser))
++		if (ret < 0)
+ 			break;
+ 
+ 		read += ret;
+ 		ubuf += ret;
+ 		cnt -= ret;
+ 
++		if (!trace_parser_loaded(&parser))
++			break;
++
+ 		ret = -EINVAL;
+ 		if (kstrtoul(parser.buffer, 0, &val))
+ 			break;
+@@ -753,7 +756,6 @@ int trace_pid_write(struct trace_pid_lis
+ 	if (!nr_pids) {
+ 		/* Cleared the list of pids */
+ 		trace_pid_list_free(pid_list);
+-		read = ret;
+ 		pid_list = NULL;
+ 	}
+ 
 
 
