@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94657C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3F0CCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359727AbiFGUZ3 (ORCPT
+        id S1359833AbiFGUZs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59958 "EHLO
+        Tue, 7 Jun 2022 16:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355668AbiFGTdS (ORCPT
+        with ESMTP id S1355923AbiFGTe0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:33:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718B51AA164;
-        Tue,  7 Jun 2022 11:12:59 -0700 (PDT)
+        Tue, 7 Jun 2022 15:34:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2A41AA17E;
+        Tue,  7 Jun 2022 11:13:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 148EEB80B66;
-        Tue,  7 Jun 2022 18:12:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79B46C385A2;
-        Tue,  7 Jun 2022 18:12:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 06CF060B3B;
+        Tue,  7 Jun 2022 18:13:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EF5FC385A2;
+        Tue,  7 Jun 2022 18:13:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625568;
-        bh=RsqfcE3Vlaza98kvhQkeITROjqKHS5OvbTROZhct/dA=;
+        s=korg; t=1654625585;
+        bh=j8edraf78Gz65VYZ9nUIUzDh7hJEDVGQ5Xh3R5WcUCQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Usl9rcon5j6AGVerpFbjjXb/17UghqpPaJOJuo+wSsKXlJCfR8zY7oAm1KWiH9hOT
-         TmqAfog2raGzPVEgxf3BLyAR+geRNGWMhI8o4OVz6M0URWtsD6v2V6VxqrmC5AQtb2
-         4c1AUGWfc+DCd+AKK2eJL4/B76BaUW1iZkRRgeno=
+        b=GOeJwOT1WeEJ1syymSdTgEVvRZdkYhDYQiMiYB8b8b/QwoXF9Px3VnT6ZWEDKYYR8
+         bu7KIlABArThNrz5dCQfa9S2Iv0SehQ1rWfej9gNLDR2zixcNzGK99RJAqp+pp5P+H
+         Rk94vwo5HspzqJ8yiGtLFNaqjg7OAhIE4Gk/knTQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 064/772] ACPICA: Avoid cache flush inside virtual machines
-Date:   Tue,  7 Jun 2022 18:54:16 +0200
-Message-Id: <20220607164950.925917985@linuxfoundation.org>
+Subject: [PATCH 5.17 070/772] rcu-tasks: Handle sparse cpu_possible_mask in rcu_tasks_invoke_cbs()
+Date:   Tue,  7 Jun 2022 18:54:22 +0200
+Message-Id: <20220607164951.103939864@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,69 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 
-[ Upstream commit e2efb6359e620521d1e13f69b2257de8ceaa9475 ]
+[ Upstream commit ab2756ea6b74987849b44ad0e33c3cfec159033b ]
 
-While running inside virtual machine, the kernel can bypass cache
-flushing. Changing sleep state in a virtual machine doesn't affect the
-host system sleep state and cannot lead to data loss.
+If the cpu_possible_mask is sparse (for example, if bits are set only for
+CPUs 0, 4, 8, ...), then rcu_tasks_invoke_cbs() will access per-CPU data
+for a CPU not in cpu_possible_mask.  It makes these accesses while doing
+a workqueue-based binary search for non-empty callback lists.  Although
+this search must pass through CPUs not represented in cpu_possible_mask,
+it has no need to check the callback list for such CPUs.
 
-Before entering sleep states, the ACPI code flushes caches to prevent
-data loss using the WBINVD instruction.  This mechanism is required on
-bare metal.
+This commit therefore changes the rcu_tasks_invoke_cbs() function's
+binary search so as to only check callback lists for CPUs present in
+cpu_possible_mask.
 
-But, any use WBINVD inside of a guest is worthless.  Changing sleep
-state in a virtual machine doesn't affect the host system sleep state
-and cannot lead to data loss, so most hypervisors simply ignore it.
-Despite this, the ACPI code calls WBINVD unconditionally anyway.
-It's useless, but also normally harmless.
-
-In TDX guests, though, WBINVD stops being harmless; it triggers a
-virtualization exception (#VE).  If the ACPI cache-flushing WBINVD
-were left in place, TDX guests would need handling to recover from
-the exception.
-
-Avoid using WBINVD whenever running under a hypervisor.  This both
-removes the useless WBINVDs and saves TDX from implementing WBINVD
-handling.
-
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lkml.kernel.org/r/20220405232939.73860-30-kirill.shutemov@linux.intel.com
+Reported-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/acenv.h | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ kernel/rcu/tasks.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/acenv.h b/arch/x86/include/asm/acenv.h
-index 9aff97f0de7f..d937c55e717e 100644
---- a/arch/x86/include/asm/acenv.h
-+++ b/arch/x86/include/asm/acenv.h
-@@ -13,7 +13,19 @@
+diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+index 30c42797f53b..1664e472524b 100644
+--- a/kernel/rcu/tasks.h
++++ b/kernel/rcu/tasks.h
+@@ -460,7 +460,7 @@ static void rcu_tasks_invoke_cbs(struct rcu_tasks *rtp, struct rcu_tasks_percpu
+ 		}
+ 	}
  
- /* Asm macros */
- 
--#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
-+/*
-+ * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
-+ * It is required to prevent data loss.
-+ *
-+ * While running inside virtual machine, the kernel can bypass cache flushing.
-+ * Changing sleep state in a virtual machine doesn't affect the host system
-+ * sleep state and cannot lead to data loss.
-+ */
-+#define ACPI_FLUSH_CPU_CACHE()					\
-+do {								\
-+	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))	\
-+		wbinvd();					\
-+} while (0)
- 
- int __acpi_acquire_global_lock(unsigned int *lock);
- int __acpi_release_global_lock(unsigned int *lock);
+-	if (rcu_segcblist_empty(&rtpcp->cblist))
++	if (rcu_segcblist_empty(&rtpcp->cblist) || !cpu_possible(cpu))
+ 		return;
+ 	raw_spin_lock_irqsave_rcu_node(rtpcp, flags);
+ 	rcu_segcblist_advance(&rtpcp->cblist, rcu_seq_current(&rtp->tasks_gp_seq));
 -- 
 2.35.1
 
