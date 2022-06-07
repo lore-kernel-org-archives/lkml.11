@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6636C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353154AbiFGS6U (ORCPT
+        id S1353226AbiFGS6i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
+        Tue, 7 Jun 2022 14:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352069AbiFGSUt (ORCPT
+        with ESMTP id S1352497AbiFGSVN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:20:49 -0400
+        Tue, 7 Jun 2022 14:21:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F7D130541;
-        Tue,  7 Jun 2022 10:53:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA11239832;
+        Tue,  7 Jun 2022 10:53:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4F2BB8236D;
-        Tue,  7 Jun 2022 17:53:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB7D5C34115;
-        Tue,  7 Jun 2022 17:53:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE990B82367;
+        Tue,  7 Jun 2022 17:53:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0829C341C8;
+        Tue,  7 Jun 2022 17:53:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624405;
-        bh=C3p8V+CShGR7nozEVmR7aMQKSLK+SVYLvPNgHctlLf8=;
+        s=k20201202; t=1654624416;
+        bh=/iUON9WW6bsYbfVqaGxLRyqJA2zgabLnd46UiDlgoD8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kol9521fs7CqhKFDDdll/nC+p02+bkXFS15aavvICnohaQrV6tFixRJ0Idw9GOANc
-         C/W1NJZvdimJL3Xq2DlR+aV2pg2BaqEa90/9jqDHZwlBkIr0JlPDzxsFljVyjYhy/5
-         Ky/niUUAbVb7tmrPcdGpI+2Io19wPbu3wpqxQHlHhQqy0IYGMp/Z3GiSipypfvykBA
-         0vkuANyr4RZ/2m0mKcejc8OxbMq20zJ3h45UO4K+nSv2+khfyIrq35Fdz4jG6VgVS9
-         1LrH8lCFqDZvS8yVjiHi3aYAjldyjjItKlxdE0nRMbHXfGF/eWe5wP0Wi5/xwCHXSQ
-         43AD/R5TJpKmg==
+        b=ge/AWhTqcshdGP1srRsiES0+3M9jsITNsil1CZaU7yiXRA7ou8RfUPZe4EEpC4wkU
+         VFzjrNxBiK6mCOyLJa/yxQr51v3nfN8VUPHJptrj25Gl4o6jre2eMMQoaqZ14X4pAg
+         AhxUmdSaVHbrNgPK11G7DGQwOG56xCNpCSRh4AnEy47Enx670nY1j2+8E339gST28p
+         gN8yx4IccchtrSolgjsqKTwFabTg1FBdWZofMTvjJ7hJagTcF2eKDhPsptd03jC4v/
+         +JAdubpkm7lc2z3CbOiP/xa3J7ukVDteHo6v88fi2VP3akl89noErVkYo43htsCHxk
+         49pd92h+LUi+g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Huang Guobin <huangguobin4@huawei.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
+Cc:     Zhen Ni <nizhen@uniontech.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 08/60] tty: Fix a possible resource leak in icom_probe
-Date:   Tue,  7 Jun 2022 13:52:05 -0400
-Message-Id: <20220607175259.478835-8-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, ok@artecdesign.ee,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 12/60] USB: host: isp116x: check return value after calling platform_get_resource()
+Date:   Tue,  7 Jun 2022 13:52:09 -0400
+Message-Id: <20220607175259.478835-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
 References: <20220607175259.478835-1-sashal@kernel.org>
@@ -53,35 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huang Guobin <huangguobin4@huawei.com>
+From: Zhen Ni <nizhen@uniontech.com>
 
-[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
+[ Upstream commit 134a3408c2d3f7e23eb0e4556e0a2d9f36c2614e ]
 
-When pci_read_config_dword failed, call pci_release_regions() and
-pci_disable_device() to recycle the resource previously allocated.
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
-Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
+Signed-off-by: Zhen Ni <nizhen@uniontech.com>
+Link: https://lore.kernel.org/r/20220302033716.31272-1-nizhen@uniontech.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/icom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/host/isp116x-hcd.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 03a2fe9f4c9a..02b375ba2f07 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1501,7 +1501,7 @@ static int icom_probe(struct pci_dev *dev,
- 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
- 	if (retval) {
- 		dev_err(&dev->dev, "PCI Config read FAILED\n");
--		return retval;
-+		goto probe_exit0;
- 	}
+diff --git a/drivers/usb/host/isp116x-hcd.c b/drivers/usb/host/isp116x-hcd.c
+index 8835f6bd528e..8c7f0991c21b 100644
+--- a/drivers/usb/host/isp116x-hcd.c
++++ b/drivers/usb/host/isp116x-hcd.c
+@@ -1541,10 +1541,12 @@ static int isp116x_remove(struct platform_device *pdev)
  
- 	pci_write_config_dword(dev, PCI_COMMAND,
+ 	iounmap(isp116x->data_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
+ 	iounmap(isp116x->addr_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
+ 
+ 	usb_put_hcd(hcd);
+ 	return 0;
 -- 
 2.35.1
 
