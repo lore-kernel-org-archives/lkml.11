@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2867C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:47:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B4B9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348266AbiFGRrj (ORCPT
+        id S1348290AbiFGRrv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:47:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40076 "EHLO
+        Tue, 7 Jun 2022 13:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347562AbiFGRav (ORCPT
+        with ESMTP id S1347556AbiFGRav (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:30:51 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F676B043E;
-        Tue,  7 Jun 2022 10:27:30 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2054222B2;
+        Tue,  7 Jun 2022 10:27:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8EC35CE23B7;
-        Tue,  7 Jun 2022 17:27:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8569EC385A5;
-        Tue,  7 Jun 2022 17:27:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32A1061281;
+        Tue,  7 Jun 2022 17:27:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44D45C385A5;
+        Tue,  7 Jun 2022 17:27:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622846;
-        bh=kFw8Mls9M4ZsKhP5fl9qeA9gBZSTMihNWxDT51k+lYw=;
+        s=korg; t=1654622838;
+        bh=zzLjHQn9lB2pijnSi35CskEX2ppSihB6gIvtUPCZ9ys=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H0Yp10Ql5BwgFs+TpUCk3e1fhI7CxEeKQGLoHcr7Vzb6PGY/zrYXYw6PIfW5LA/ON
-         ZOGIrJ/ZxZNWDoX/z+G93qLF7DifgoZ8csXAVxbNHShBRf3yTtOnRb0IZG0hMzkW4c
-         byLv8CL4mVCX08XROD7ng/XU4njC0M4MkZDgXZ7U=
+        b=VGWTm7T5b88AxU+/wjVoApapmamr1jouQTN3Fjcxrw3WLbTkgQxypR9TmKEdPZWrI
+         dmGeI4qNgWOPXAU3VSKDHHOTvE/aUt9MhuLf/YyG5LlSkRp8UTkupJd0CxHC20a+pu
+         Pqc9qIVzdTh0MvPNHEp4yusOvBYlYjiLvL6qZxgA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Khazhismel Kumykov <khazhy@google.com>,
+        Amir Goldstein <amir73il@gmail.com>, Jan Kara <jack@suse.cz>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 163/452] scsi: ufs: qcom: Fix ufs_qcom_resume()
-Date:   Tue,  7 Jun 2022 19:00:20 +0200
-Message-Id: <20220607164913.419213412@linuxfoundation.org>
+Subject: [PATCH 5.10 160/452] fsnotify: fix wrong lockdep annotations
+Date:   Tue,  7 Jun 2022 19:00:17 +0200
+Message-Id: <20220607164913.329714310@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,45 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Amir Goldstein <amir73il@gmail.com>
 
-[ Upstream commit bee40dc167da159ea5b939c074e1da258610a3d6 ]
+[ Upstream commit 623af4f538b5df9b416e1b82f720af7371b4c771 ]
 
-Clearing hba->is_sys_suspended if ufs_qcom_resume() succeeds is wrong. That
-variable must only be cleared if all actions involved in a resume succeed.
-Hence remove the statement that clears hba->is_sys_suspended from
-ufs_qcom_resume().
+Commit 6960b0d909cd ("fsnotify: change locking order") changed some
+of the mark_mutex locks in direct reclaim path to use:
+  mutex_lock_nested(&group->mark_mutex, SINGLE_DEPTH_NESTING);
 
-Link: https://lore.kernel.org/r/20220419225811.4127248-23-bvanassche@acm.org
-Fixes: 81c0fc51b7a7 ("ufs-qcom: add support for Qualcomm Technologies Inc platforms")
-Tested-by: Bean Huo <beanhuo@micron.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Bean Huo <beanhuo@micron.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+This change is explained:
+ "...It uses nested locking to avoid deadlock in case we do the final
+  iput() on an inode which still holds marks and thus would take the
+  mutex again when calling fsnotify_inode_delete() in destroy_inode()."
+
+The problem is that the mutex_lock_nested() is not a nested lock at
+all. In fact, it has the opposite effect of preventing lockdep from
+warning about a very possible deadlock.
+
+Due to these wrong annotations, a deadlock that was introduced with
+nfsd filecache in kernel v5.4 went unnoticed in v5.4.y for over two
+years until it was reported recently by Khazhismel Kumykov, only to
+find out that the deadlock was already fixed in kernel v5.5.
+
+Fix the wrong lockdep annotations.
+
+Cc: Khazhismel Kumykov <khazhy@google.com>
+Fixes: 6960b0d909cd ("fsnotify: change locking order")
+Link: https://lore.kernel.org/r/20220321112310.vpr7oxro2xkz5llh@quack3.lan/
+Link: https://lore.kernel.org/r/20220422120327.3459282-4-amir73il@gmail.com
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufs-qcom.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ fs/notify/mark.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ufs-qcom.c b/drivers/scsi/ufs/ufs-qcom.c
-index 20182e39cb28..117740b302fa 100644
---- a/drivers/scsi/ufs/ufs-qcom.c
-+++ b/drivers/scsi/ufs/ufs-qcom.c
-@@ -623,12 +623,7 @@ static int ufs_qcom_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
- 			return err;
- 	}
+diff --git a/fs/notify/mark.c b/fs/notify/mark.c
+index 8387937b9d01..5b44be5f93dd 100644
+--- a/fs/notify/mark.c
++++ b/fs/notify/mark.c
+@@ -430,7 +430,7 @@ void fsnotify_free_mark(struct fsnotify_mark *mark)
+ void fsnotify_destroy_mark(struct fsnotify_mark *mark,
+ 			   struct fsnotify_group *group)
+ {
+-	mutex_lock_nested(&group->mark_mutex, SINGLE_DEPTH_NESTING);
++	mutex_lock(&group->mark_mutex);
+ 	fsnotify_detach_mark(mark);
+ 	mutex_unlock(&group->mark_mutex);
+ 	fsnotify_free_mark(mark);
+@@ -742,7 +742,7 @@ void fsnotify_clear_marks_by_group(struct fsnotify_group *group,
+ 	 * move marks to free to to_free list in one go and then free marks in
+ 	 * to_free list one by one.
+ 	 */
+-	mutex_lock_nested(&group->mark_mutex, SINGLE_DEPTH_NESTING);
++	mutex_lock(&group->mark_mutex);
+ 	list_for_each_entry_safe(mark, lmark, &group->marks_list, g_list) {
+ 		if ((1U << mark->connector->type) & type_mask)
+ 			list_move(&mark->g_list, &to_free);
+@@ -751,7 +751,7 @@ void fsnotify_clear_marks_by_group(struct fsnotify_group *group,
  
--	err = ufs_qcom_ice_resume(host);
--	if (err)
--		return err;
--
--	hba->is_sys_suspended = false;
--	return 0;
-+	return ufs_qcom_ice_resume(host);
- }
- 
- static void ufs_qcom_dev_ref_clk_ctrl(struct ufs_qcom_host *host, bool enable)
+ clear:
+ 	while (1) {
+-		mutex_lock_nested(&group->mark_mutex, SINGLE_DEPTH_NESTING);
++		mutex_lock(&group->mark_mutex);
+ 		if (list_empty(head)) {
+ 			mutex_unlock(&group->mark_mutex);
+ 			break;
 -- 
 2.35.1
 
