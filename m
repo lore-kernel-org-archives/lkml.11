@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC13CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E92EFCCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383385AbiFGWki (ORCPT
+        id S1383455AbiFGWkn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46236 "EHLO
+        Tue, 7 Jun 2022 18:40:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376551AbiFGV1J (ORCPT
+        with ESMTP id S1376901AbiFGV1J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:27:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DD7151FF8;
-        Tue,  7 Jun 2022 12:02:00 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A298E152412;
+        Tue,  7 Jun 2022 12:02:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06EA7B8220B;
-        Tue,  7 Jun 2022 19:01:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 740D8C385A5;
-        Tue,  7 Jun 2022 19:01:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34C2C6179F;
+        Tue,  7 Jun 2022 19:02:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41C54C385A5;
+        Tue,  7 Jun 2022 19:02:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628517;
-        bh=5UyCFB4gTsJjkenL8FLM1HvxfFX8u5ctKllpEI4wXVs=;
+        s=korg; t=1654628520;
+        bh=dbWiRrbUEdq/jShUoMSStxSROdj/mfEgDgb1SJh4nPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=usVaTPoTbSKHOzBniNa9cZwqc+9YmWTnoozCf+8wO9V/I4eys8PtUWwFDMbF2VrYI
-         NMQmEp7eSLsPn5EgsYN7gTGpKaUEh6rUL3H7/UAfORuwa5e2qitvv1JMP26wdmdj4S
-         5GOm0gFSSiy/6GnSqmEGjbLKrulJ2qDPpj0vanh0=
+        b=mc3JKcJcjQbJ4wS8ZQaRlI01OPU6RQmOlnkTPVF11ieq3wzCH3TMgqRy9qWkLjXlX
+         oGPi49+kDu7QEBCHZOd4lJJPlPcOEQHg5Ij02HmfeZ8mmyIPeS039SSToK7X7Ve9+F
+         RzwMqZGcNuvHNx+1HSSHH+EjzWYxmJdVTZf7EymI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kiwoong Kim <kwmad.kim@samsung.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
+        "Juan A. Suarez" <jasuarez@igalia.com>,
+        Melissa Wen <melissa.srw@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 357/879] scsi: ufs: core: Exclude UECxx from SFR dump list
-Date:   Tue,  7 Jun 2022 18:57:55 +0200
-Message-Id: <20220607165013.226875284@linuxfoundation.org>
+Subject: [PATCH 5.18 358/879] drm/v3d: Fix null pointer dereference of pointer perfmon
+Date:   Tue,  7 Jun 2022 18:57:56 +0200
+Message-Id: <20220607165013.255708953@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,45 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kiwoong Kim <kwmad.kim@samsung.com>
+From: Colin Ian King <colin.i.king@gmail.com>
 
-[ Upstream commit ef60031022eb6d972aac86ca26c98c33e1289436 ]
+[ Upstream commit ce7a1ecf3f9f1fccaf67295307614511d8e11b13 ]
 
-Some devices may return invalid or zeroed data during an UIC error
-condition. In addition, reading these SFRs will clear them. This means the
-subsequent error handling will not be able to see them and therefore no
-error handling will be scheduled.
+In the unlikely event that pointer perfmon is null the WARN_ON return path
+occurs after the pointer has already been deferenced. Fix this by only
+dereferencing perfmon after it has been null checked.
 
-Skip reading these SFRs in ufshcd_dump_regs().
-
-Link: https://lore.kernel.org/r/1648689845-33521-1-git-send-email-kwmad.kim@samsung.com
-Fixes: d67247566450 ("scsi: ufs: Use explicit access size in ufshcd_dump_regs")
-Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 26a4dc29b74a ("drm/v3d: Expose performance counters to userspace")
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Reviewed-by: Juan A. Suarez <jasuarez@igalia.com>
+Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220424183512.1365683-1-colin.i.king@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/v3d/v3d_perfmon.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 3f9caafa91bf..4c9eb4be449c 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -113,8 +113,13 @@ int ufshcd_dump_regs(struct ufs_hba *hba, size_t offset, size_t len,
- 	if (!regs)
- 		return -ENOMEM;
+diff --git a/drivers/gpu/drm/v3d/v3d_perfmon.c b/drivers/gpu/drm/v3d/v3d_perfmon.c
+index 0288ef063513..f6a88abccc7d 100644
+--- a/drivers/gpu/drm/v3d/v3d_perfmon.c
++++ b/drivers/gpu/drm/v3d/v3d_perfmon.c
+@@ -25,11 +25,12 @@ void v3d_perfmon_start(struct v3d_dev *v3d, struct v3d_perfmon *perfmon)
+ {
+ 	unsigned int i;
+ 	u32 mask;
+-	u8 ncounters = perfmon->ncounters;
++	u8 ncounters;
  
--	for (pos = 0; pos < len; pos += 4)
-+	for (pos = 0; pos < len; pos += 4) {
-+		if (offset == 0 &&
-+		    pos >= REG_UIC_ERROR_CODE_PHY_ADAPTER_LAYER &&
-+		    pos <= REG_UIC_ERROR_CODE_DME)
-+			continue;
- 		regs[pos / 4] = ufshcd_readl(hba, offset + pos);
-+	}
+ 	if (WARN_ON_ONCE(!perfmon || v3d->active_perfmon))
+ 		return;
  
- 	ufshcd_hex_dump(prefix, regs, len);
- 	kfree(regs);
++	ncounters = perfmon->ncounters;
+ 	mask = GENMASK(ncounters - 1, 0);
+ 
+ 	for (i = 0; i < ncounters; i++) {
 -- 
 2.35.1
 
