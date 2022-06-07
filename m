@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48AAACCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82850CCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356639AbiFGTbw (ORCPT
+        id S1356271AbiFGTbz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:31:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38140 "EHLO
+        Tue, 7 Jun 2022 15:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353399AbiFGSlF (ORCPT
+        with ESMTP id S1353450AbiFGSlX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:41:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6051862B9;
-        Tue,  7 Jun 2022 10:58:45 -0700 (PDT)
+        Tue, 7 Jun 2022 14:41:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E1818629C;
+        Tue,  7 Jun 2022 10:58:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3344EB81F38;
-        Tue,  7 Jun 2022 17:58:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ED04C385A5;
-        Tue,  7 Jun 2022 17:58:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AF69B8236C;
+        Tue,  7 Jun 2022 17:58:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDEC5C34115;
+        Tue,  7 Jun 2022 17:58:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624720;
-        bh=Kw55ogd+UksAEvHHk1V0dss2Rjc0d6qyG+RxuJsUNVQ=;
+        s=korg; t=1654624706;
+        bh=zH/pSgAZjZwfNYbHLmOYRBuLfI0NNzWZ3BELSFKBlck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PYwXj1zdN5Qslp+CfJbsYqBIeu2h2e3hOSXT+DeBNRj0sanKMexVVjFCvyTRxWy+9
-         gHLHtGBymWfQT8FyK0Uivv/5pSnsNpzINZryEIi+3k+NKwsUUod1vXtCkEs/l30gMl
-         QgMDspmrYuETxb6iDGzjGvTzyA3T6ypE5b4XSLdI=
+        b=YO2e98vTN2LKZTeTxMqnm/9PdtUbZMVWjNKZ2PIsCSvt137RJ0TzbuIBL26d2Vf/R
+         wSwWjqIFqhNDzb2e2Lq53Yw9git8pUKtpgmVbPv4oDkizEqXmX9RiXUseLR8kXmwC5
+         D5CIi1Oe4g2XRNAfTezp5jT6A6Dowpg1rsFcGdrU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
+        stable@vger.kernel.org, QintaoShen <unSimple1993@163.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 428/667] firmware: arm_scmi: Fix list protocols enumeration in the base protocol
-Date:   Tue,  7 Jun 2022 19:01:33 +0200
-Message-Id: <20220607164947.564383373@linuxfoundation.org>
+Subject: [PATCH 5.15 423/667] soc: bcm: Check for NULL return of devm_kzalloc()
+Date:   Tue,  7 Jun 2022 19:01:28 +0200
+Message-Id: <20220607164947.418341271@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,41 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cristian Marussi <cristian.marussi@arm.com>
+From: QintaoShen <unSimple1993@163.com>
 
-[ Upstream commit 8009120e0354a67068e920eb10dce532391361d0 ]
+[ Upstream commit b4bd2aafacce48db26b0a213d849818d940556dd ]
 
-While enumerating protocols implemented by the SCMI platform using
-BASE_DISCOVER_LIST_PROTOCOLS, the number of returned protocols is
-currently validated in an improper way since the check employs a sum
-between unsigned integers that could overflow and cause the check itself
-to be silently bypassed if the returned value 'loop_num_ret' is big
-enough.
+As the potential failure of allocation, devm_kzalloc() may return NULL.  Then
+the 'pd->pmb' and the follow lines of code may bring null pointer dereference.
 
-Fix the validation avoiding the addition.
+Therefore, it is better to check the return value of devm_kzalloc() to avoid
+this confusion.
 
-Link: https://lore.kernel.org/r/20220330150551.2573938-4-cristian.marussi@arm.com
-Fixes: b6f20ff8bd94 ("firmware: arm_scmi: add common infrastructure and support for base protocol")
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Fixes: 8bcac4011ebe ("soc: bcm: add PM driver for Broadcom's PMB")
+Signed-off-by: QintaoShen <unSimple1993@163.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/arm_scmi/base.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/bcm/bcm63xx/bcm-pmb.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/firmware/arm_scmi/base.c b/drivers/firmware/arm_scmi/base.c
-index f5219334fd3a..3fe172c03c24 100644
---- a/drivers/firmware/arm_scmi/base.c
-+++ b/drivers/firmware/arm_scmi/base.c
-@@ -197,7 +197,7 @@ scmi_base_implementation_list_get(const struct scmi_protocol_handle *ph,
- 			break;
+diff --git a/drivers/soc/bcm/bcm63xx/bcm-pmb.c b/drivers/soc/bcm/bcm63xx/bcm-pmb.c
+index 774465c119be..2ac20084e5a5 100644
+--- a/drivers/soc/bcm/bcm63xx/bcm-pmb.c
++++ b/drivers/soc/bcm/bcm63xx/bcm-pmb.c
+@@ -314,6 +314,9 @@ static int bcm_pmb_probe(struct platform_device *pdev)
+ 	for (e = table; e->name; e++) {
+ 		struct bcm_pmb_pm_domain *pd = devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
  
- 		loop_num_ret = le32_to_cpu(*num_ret);
--		if (tot_num_ret + loop_num_ret > MAX_PROTOCOLS_IMP) {
-+		if (loop_num_ret > MAX_PROTOCOLS_IMP - tot_num_ret) {
- 			dev_err(dev, "No. of Protocol > MAX_PROTOCOLS_IMP");
- 			break;
- 		}
++		if (!pd)
++			return -ENOMEM;
++
+ 		pd->pmb = pmb;
+ 		pd->data = e;
+ 		pd->genpd.name = e->name;
 -- 
 2.35.1
 
