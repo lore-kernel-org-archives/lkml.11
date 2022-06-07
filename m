@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 932EACCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D88CCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351138AbiFGSPr (ORCPT
+        id S1351161AbiFGSPx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48706 "EHLO
+        Tue, 7 Jun 2022 14:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348996AbiFGRzU (ORCPT
+        with ESMTP id S1349153AbiFGRzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:55:20 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED94D1455B4;
-        Tue,  7 Jun 2022 10:39:59 -0700 (PDT)
+        Tue, 7 Jun 2022 13:55:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE82E146416;
+        Tue,  7 Jun 2022 10:40:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 87588CE1D50;
-        Tue,  7 Jun 2022 17:39:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8423CC385A5;
-        Tue,  7 Jun 2022 17:39:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64CF56146F;
+        Tue,  7 Jun 2022 17:35:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AB68C385A5;
+        Tue,  7 Jun 2022 17:34:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623565;
-        bh=pqBCAdYHPs2wo7zQLMzzRsdCj5voCUhEHbJdgs2Va04=;
+        s=korg; t=1654623299;
+        bh=54fPIN8G1JovSP05z2k3xNR+dvWsXyhzfXkHCXyejmo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sZa7HNhzL55TuYlfpqE5bbP23Oe2lzkLoZnHcHbOjB8nNS1oNEff1AJdBlbmE7si4
-         IdODUps6/RrOsO5o38XyksMa6arPLZ9Hqaqx9vOI2lYCSzriz7AilK1QhfyzgrR81n
-         tldOGU0RvYzWvNeFYFiYc+2XKAetqvZmOe4CBoIE=
+        b=N40sMEUQm/Lv0JGi8Ie07s9FUFffkrCcwqD+1FlG7gscSzVCD2oSahz+1dduQmdKT
+         Ri/nXvO4CwAqY4skivGNMlXUXLVLvPL5dgJnUbrW4mV8X0hLImICUrLpbZF+sy4mF5
+         OAsQftg1onk48CqGc6+tBPDRscOIuSPEHiBHv0zg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Marios Levogiannis <marios.levogiannis@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 012/667] ALSA: hda/realtek - Fix microphone noise on ASUS TUF B550M-PLUS
-Date:   Tue,  7 Jun 2022 18:54:37 +0200
-Message-Id: <20220607164935.158144266@linuxfoundation.org>
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.10 366/452] ACPI: property: Release subnode properties with data nodes
+Date:   Tue,  7 Jun 2022 19:03:43 +0200
+Message-Id: <20220607164919.469141778@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
+In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
+References: <20220607164908.521895282@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,68 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marios Levogiannis <marios.levogiannis@gmail.com>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-commit 9bfa7b36343c7d84370bc61c9ed774635b05e4eb upstream.
+commit 3bd561e1572ee02a50cd1a5be339abf1a5b78d56 upstream.
 
-Set microphone pins 0x18 (rear) and 0x19 (front) to VREF_50 to fix the
-microphone noise on ASUS TUF B550M-PLUS which uses the ALCS1200A codec.
-The initial value was VREF_80.
+struct acpi_device_properties describes one source of properties present
+on either struct acpi_device or struct acpi_data_node. When properties are
+parsed, both are populated but when released, only those properties that
+are associated with the device node are freed.
 
-The same issue is also present on Windows using both the default Windows
-driver and all tested Realtek drivers before version 6.0.9049.1. Comparing
-Realtek driver 6.0.9049.1 (the first one without the microphone noise) to
-Realtek driver 6.0.9047.1 (the last one with the microphone noise)
-revealed that the fix is the result of setting pins 0x18 and 0x19 to
-VREF_50.
+Fix this by also releasing memory of the data node properties.
 
-This fix may also work for other boards that have been reported to have
-the same microphone issue and use the ALC1150 and ALCS1200A codecs, since
-these codecs are similar and the fix in the Realtek driver on Windows is
-common for both. However, it is currently enabled only for ASUS TUF
-B550M-PLUS as this is the only board that could be tested.
-
-Signed-off-by: Marios Levogiannis <marios.levogiannis@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220530074131.12258-1-marios.levogiannis@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 5f5e4890d57a ("ACPI / property: Allow multiple property compatible _DSD entries")
+Cc: 4.20+ <stable@vger.kernel.org> # 4.20+
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/acpi/property.c |   18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -1976,6 +1976,7 @@ enum {
- 	ALC1220_FIXUP_CLEVO_PB51ED_PINS,
- 	ALC887_FIXUP_ASUS_AUDIO,
- 	ALC887_FIXUP_ASUS_HMIC,
-+	ALCS1200A_FIXUP_MIC_VREF,
- };
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -433,6 +433,16 @@ void acpi_init_properties(struct acpi_de
+ 		acpi_extract_apple_properties(adev);
+ }
  
- static void alc889_fixup_coef(struct hda_codec *codec,
-@@ -2521,6 +2522,14 @@ static const struct hda_fixup alc882_fix
- 		.chained = true,
- 		.chain_id = ALC887_FIXUP_ASUS_AUDIO,
- 	},
-+	[ALCS1200A_FIXUP_MIC_VREF] = {
-+		.type = HDA_FIXUP_PINCTLS,
-+		.v.pins = (const struct hda_pintbl[]) {
-+			{ 0x18, PIN_VREF50 }, /* rear mic */
-+			{ 0x19, PIN_VREF50 }, /* front mic */
-+			{}
-+		}
-+	},
- };
++static void acpi_free_device_properties(struct list_head *list)
++{
++	struct acpi_device_properties *props, *tmp;
++
++	list_for_each_entry_safe(props, tmp, list, list) {
++		list_del(&props->list);
++		kfree(props);
++	}
++}
++
+ static void acpi_destroy_nondev_subnodes(struct list_head *list)
+ {
+ 	struct acpi_data_node *dn, *next;
+@@ -445,22 +455,18 @@ static void acpi_destroy_nondev_subnodes
+ 		wait_for_completion(&dn->kobj_done);
+ 		list_del(&dn->sibling);
+ 		ACPI_FREE((void *)dn->data.pointer);
++		acpi_free_device_properties(&dn->data.properties);
+ 		kfree(dn);
+ 	}
+ }
  
- static const struct snd_pci_quirk alc882_fixup_tbl[] = {
-@@ -2558,6 +2567,7 @@ static const struct snd_pci_quirk alc882
- 	SND_PCI_QUIRK(0x1043, 0x835f, "Asus Eee 1601", ALC888_FIXUP_EEE1601),
- 	SND_PCI_QUIRK(0x1043, 0x84bc, "ASUS ET2700", ALC887_FIXUP_ASUS_BASS),
- 	SND_PCI_QUIRK(0x1043, 0x8691, "ASUS ROG Ranger VIII", ALC882_FIXUP_GPIO3),
-+	SND_PCI_QUIRK(0x1043, 0x8797, "ASUS TUF B550M-PLUS", ALCS1200A_FIXUP_MIC_VREF),
- 	SND_PCI_QUIRK(0x104d, 0x9043, "Sony Vaio VGC-LN51JGB", ALC882_FIXUP_NO_PRIMARY_HP),
- 	SND_PCI_QUIRK(0x104d, 0x9044, "Sony VAIO AiO", ALC882_FIXUP_NO_PRIMARY_HP),
- 	SND_PCI_QUIRK(0x104d, 0x9047, "Sony Vaio TT", ALC889_FIXUP_VAIO_TT),
+ void acpi_free_properties(struct acpi_device *adev)
+ {
+-	struct acpi_device_properties *props, *tmp;
+-
+ 	acpi_destroy_nondev_subnodes(&adev->data.subnodes);
+ 	ACPI_FREE((void *)adev->data.pointer);
+ 	adev->data.of_compatible = NULL;
+ 	adev->data.pointer = NULL;
+-	list_for_each_entry_safe(props, tmp, &adev->data.properties, list) {
+-		list_del(&props->list);
+-		kfree(props);
+-	}
++	acpi_free_device_properties(&adev->data.properties);
+ }
+ 
+ /**
 
 
