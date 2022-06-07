@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C833C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:09:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8DC0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378784AbiFGWJP (ORCPT
+        id S1351269AbiFGWJY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:09:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33200 "EHLO
+        Tue, 7 Jun 2022 18:09:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379942AbiFGVGh (ORCPT
+        with ESMTP id S1379569AbiFGVGG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:06:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB5C212561;
-        Tue,  7 Jun 2022 11:50:39 -0700 (PDT)
+        Tue, 7 Jun 2022 17:06:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BCA41F0FE8;
+        Tue,  7 Jun 2022 11:49:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73919B82182;
-        Tue,  7 Jun 2022 18:50:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2653C385A2;
-        Tue,  7 Jun 2022 18:50:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1983B8220B;
+        Tue,  7 Jun 2022 18:49:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2141AC385A5;
+        Tue,  7 Jun 2022 18:49:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627838;
-        bh=FQ0KiZojiiCMdSntTJQX+VlNmgl4iS0gWsxYxk6CTm8=;
+        s=korg; t=1654627785;
+        bh=NQr4DnHVulh4RbREC1iNFCv8RKjtbaKcjTm0ZM5tSvU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WS19y0ofb56z6PskalvI9tPZeevjymP5pwlPmvVqMwI2h2303YQq4xhrcWyRpTWw8
-         e6EAHYN5YTT8tmWvNWDH0kNp5s1C3cZHgjFu5N5+He3MTZ45blhjE/hWe1AdhAThTQ
-         SSp4zOzsqtlhYK9AeOgnDb5T5GH+7KYhA7UNdrLA=
+        b=lwza+0FIK/iHzE/JosxV+v1GpzIbRPfH+mdLT0pEPckaMC4pYyP3svFBgs3gxQTzF
+         nssUpM+fPEMzsaNb6dJV4uu2ePVZme6P64m+gli00cNiWgWi7RVXVvrP+RpxKHRIvq
+         GJ4Y5Vnrm0xi6tBjHUIWjCqvn/6DdHXgluyrViAw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Travis <mike.travis@hpe.com>,
-        Steve Wahl <steve.wahl@hpe.com>, Borislav Petkov <bp@suse.de>,
-        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 071/879] x86/platform/uv: Update TSC sync state for UV5
-Date:   Tue,  7 Jun 2022 18:53:09 +0200
-Message-Id: <20220607165004.752723928@linuxfoundation.org>
+Subject: [PATCH 5.18 092/879] scsi: lpfc: Fix call trace observed during I/O with CMF enabled
+Date:   Tue,  7 Jun 2022 18:53:30 +0200
+Message-Id: <20220607165005.362959230@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,46 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Travis <mike.travis@hpe.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit bb3ab81bdbd53f88f26ffabc9fb15bd8466486ec ]
+[ Upstream commit d6d45f67a11136cb88a70a29ab22ea6db8ae6bd5 ]
 
-The UV5 platform synchronizes the TSCs among all chassis, and will not
-proceed to OS boot without achieving synchronization.  Previous UV
-platforms provided a register indicating successful synchronization.
-This is no longer available on UV5.  On this platform TSC_ADJUST
-should not be reset by the kernel.
+The following was seen with CMF enabled:
 
-Signed-off-by: Mike Travis <mike.travis@hpe.com>
-Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
-Acked-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/20220406195149.228164-3-steve.wahl@hpe.com
+BUG: using smp_processor_id() in preemptible
+code: systemd-udevd/31711
+kernel: caller is lpfc_update_cmf_cmd+0x214/0x420  [lpfc]
+kernel: CPU: 12 PID: 31711 Comm: systemd-udevd
+kernel: Call Trace:
+kernel: <TASK>
+kernel: dump_stack_lvl+0x44/0x57
+kernel: check_preemption_disabled+0xbf/0xe0
+kernel: lpfc_update_cmf_cmd+0x214/0x420 [lpfc]
+kernel: lpfc_nvme_fcp_io_submit+0x23b4/0x4df0 [lpfc]
+
+this_cpu_ptr() calls smp_processor_id() in a preemptible context.
+
+Fix by using per_cpu_ptr() with raw_smp_processor_id() instead.
+
+Link: https://lore.kernel.org/r/20220412222008.126521-16-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/apic/x2apic_uv_x.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/scsi/lpfc/lpfc_scsi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kernel/apic/x2apic_uv_x.c b/arch/x86/kernel/apic/x2apic_uv_x.c
-index f5a48e66e4f5..a6e9c2794ef5 100644
---- a/arch/x86/kernel/apic/x2apic_uv_x.c
-+++ b/arch/x86/kernel/apic/x2apic_uv_x.c
-@@ -199,7 +199,13 @@ static void __init uv_tsc_check_sync(void)
- 	int mmr_shift;
- 	char *state;
+diff --git a/drivers/scsi/lpfc/lpfc_scsi.c b/drivers/scsi/lpfc/lpfc_scsi.c
+index c4fa7d68fe03..f617a2ef6b0f 100644
+--- a/drivers/scsi/lpfc/lpfc_scsi.c
++++ b/drivers/scsi/lpfc/lpfc_scsi.c
+@@ -3835,7 +3835,7 @@ lpfc_update_cmf_cmpl(struct lpfc_hba *phba,
+ 		else
+ 			time = div_u64(time + 500, 1000); /* round it */
  
--	/* Different returns from different UV BIOS versions */
-+	/* UV5 guarantees synced TSCs; do not zero TSC_ADJUST */
-+	if (!is_uv(UV2|UV3|UV4)) {
-+		mark_tsc_async_resets("UV5+");
-+		return;
-+	}
-+
-+	/* UV2,3,4, UV BIOS TSC sync state available */
- 	mmr = uv_early_read_mmr(UVH_TSC_SYNC_MMR);
- 	mmr_shift =
- 		is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
+-		cgs = this_cpu_ptr(phba->cmf_stat);
++		cgs = per_cpu_ptr(phba->cmf_stat, raw_smp_processor_id());
+ 		atomic64_add(size, &cgs->rcv_bytes);
+ 		atomic64_add(time, &cgs->rx_latency);
+ 		atomic_inc(&cgs->rx_io_cnt);
+@@ -3879,7 +3879,7 @@ lpfc_update_cmf_cmd(struct lpfc_hba *phba, uint32_t size)
+ 			atomic_set(&phba->rx_max_read_cnt, size);
+ 	}
+ 
+-	cgs = this_cpu_ptr(phba->cmf_stat);
++	cgs = per_cpu_ptr(phba->cmf_stat, raw_smp_processor_id());
+ 	atomic64_add(size, &cgs->total_bytes);
+ 	return 0;
+ }
 -- 
 2.35.1
 
