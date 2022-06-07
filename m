@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B080DCCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B603CCA48E
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350203AbiFGRv6 (ORCPT
+        id S1350042AbiFGRvu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53236 "EHLO
+        Tue, 7 Jun 2022 13:51:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347584AbiFGRf0 (ORCPT
+        with ESMTP id S1347546AbiFGRfU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5AD189;
-        Tue,  7 Jun 2022 10:30:56 -0700 (PDT)
+        Tue, 7 Jun 2022 13:35:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62DB01105CF;
+        Tue,  7 Jun 2022 10:30:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F068B822B4;
-        Tue,  7 Jun 2022 17:30:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 698C7C385A5;
-        Tue,  7 Jun 2022 17:30:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97AEE61534;
+        Tue,  7 Jun 2022 17:30:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A58F3C385A5;
+        Tue,  7 Jun 2022 17:30:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623038;
-        bh=QKHbAsvs05ymoaBVxoMJKqmHZ8l5en3w076iT945xkM=;
+        s=korg; t=1654623036;
+        bh=J/azCPSQ0VO4DD7qTLVSy/w+Lu0bBYHWXC1kJ2ry6o4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iWaRnVCRxoLTKfCBZlk3LbrPjHfyJiITIBI+yr1f01ONy+F//jPwqngN4PU01r73a
-         jFacV2BFwDPAasD0I9v7cPe/TflzUb+hP5ownL9D1xq/c8r+BtGI46ayE3U2Oryk82
-         8FZl/EZlbFt3ZlvEv4UIcewdgnURwPVRHAv2gOhI=
+        b=jz6FPM1LZDevnR799i57SIIFg69iHMxV1T8tmhvlrgC3rJ1hPsbAi9vo8B/4h9RhH
+         mLZTp9qn/4WzKvLTO+QrceAeW5wbLeR3QsTeXzbummWtecXrC5HDa6Cfje4YR1RwJR
+         4quNfWEEnX0tFQi7yvbV3jyf8s66rDlhWsHaSv3I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Daisuke Nojiri <dnojiri@chromium.org>,
+        Rob Barnes <robbarnes@google.com>,
+        Rajat Jain <rajatja@google.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Parth Malkan <parthmalkan@google.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 246/452] ASoC: max98090: Move check for invalid values before casting in max98090_put_enab_tlv()
-Date:   Tue,  7 Jun 2022 19:01:43 +0200
-Message-Id: <20220607164915.889662759@linuxfoundation.org>
+Subject: [PATCH 5.10 272/452] platform/chrome: Re-introduce cros_ec_cmd_xfer and use it for ioctls
+Date:   Tue,  7 Jun 2022 19:02:09 +0200
+Message-Id: <20220607164916.656902908@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,48 +55,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Khoroshilov <khoroshilov@ispras.ru>
+From: Guenter Roeck <linux@roeck-us.net>
 
-[ Upstream commit f7a344468105ef8c54086dfdc800e6f5a8417d3e ]
+[ Upstream commit 57b888ca2541785de2fcb90575b378921919b6c0 ]
 
-Validation of signed input should be done before casting to unsigned int.
+Commit 413dda8f2c6f ("platform/chrome: cros_ec_chardev: Use
+cros_ec_cmd_xfer_status helper") inadvertendly changed the userspace ABI.
+Previously, cros_ec ioctls would only report errors if the EC communication
+failed, and otherwise return success and the result of the EC
+communication. An EC command execution failure was reported in the EC
+response field. The above mentioned commit changed this behavior, and the
+ioctl itself would fail. This breaks userspace commands trying to analyze
+the EC command execution error since the actual EC command response is no
+longer reported to userspace.
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+Fix the problem by re-introducing the cros_ec_cmd_xfer() helper, and use it
+to handle ioctl messages.
 
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Suggested-by: Mark Brown <broonie@kernel.org>
-Fixes: 2fbe467bcbfc ("ASoC: max98090: Reject invalid values in custom control put()")
-Link: https://lore.kernel.org/r/1652999486-29653-1-git-send-email-khoroshilov@ispras.ru
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 413dda8f2c6f ("platform/chrome: cros_ec_chardev: Use cros_ec_cmd_xfer_status helper")
+Cc: Daisuke Nojiri <dnojiri@chromium.org>
+Cc: Rob Barnes <robbarnes@google.com>
+Cc: Rajat Jain <rajatja@google.com>
+Cc: Brian Norris <briannorris@chromium.org>
+Cc: Parth Malkan <parthmalkan@google.com>
+Reviewed-by: Daisuke Nojiri <dnojiri@chromium.org>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/max98090.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/platform/chrome/cros_ec_chardev.c   |  2 +-
+ drivers/platform/chrome/cros_ec_proto.c     | 50 +++++++++++++++++----
+ include/linux/platform_data/cros_ec_proto.h |  3 ++
+ 3 files changed, 45 insertions(+), 10 deletions(-)
 
-diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
-index 5b6405392f08..0c73979cad4a 100644
---- a/sound/soc/codecs/max98090.c
-+++ b/sound/soc/codecs/max98090.c
-@@ -393,7 +393,8 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
- 	struct soc_mixer_control *mc =
- 		(struct soc_mixer_control *)kcontrol->private_value;
- 	unsigned int mask = (1 << fls(mc->max)) - 1;
--	unsigned int sel = ucontrol->value.integer.value[0];
-+	int sel_unchecked = ucontrol->value.integer.value[0];
-+	unsigned int sel;
- 	unsigned int val = snd_soc_component_read(component, mc->reg);
- 	unsigned int *select;
+diff --git a/drivers/platform/chrome/cros_ec_chardev.c b/drivers/platform/chrome/cros_ec_chardev.c
+index e0bce869c49a..fd33de546aee 100644
+--- a/drivers/platform/chrome/cros_ec_chardev.c
++++ b/drivers/platform/chrome/cros_ec_chardev.c
+@@ -301,7 +301,7 @@ static long cros_ec_chardev_ioctl_xcmd(struct cros_ec_dev *ec, void __user *arg)
+ 	}
  
-@@ -413,8 +414,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ 	s_cmd->command += ec->cmd_offset;
+-	ret = cros_ec_cmd_xfer_status(ec->ec_dev, s_cmd);
++	ret = cros_ec_cmd_xfer(ec->ec_dev, s_cmd);
+ 	/* Only copy data to userland if data was received. */
+ 	if (ret < 0)
+ 		goto exit;
+diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+index 9f698a7aad12..e1fadf059e05 100644
+--- a/drivers/platform/chrome/cros_ec_proto.c
++++ b/drivers/platform/chrome/cros_ec_proto.c
+@@ -560,22 +560,28 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+ EXPORT_SYMBOL(cros_ec_query_all);
  
- 	val = (val >> mc->shift) & mask;
+ /**
+- * cros_ec_cmd_xfer_status() - Send a command to the ChromeOS EC.
++ * cros_ec_cmd_xfer() - Send a command to the ChromeOS EC.
+  * @ec_dev: EC device.
+  * @msg: Message to write.
+  *
+- * Call this to send a command to the ChromeOS EC. This should be used instead of calling the EC's
+- * cmd_xfer() callback directly. It returns success status only if both the command was transmitted
+- * successfully and the EC replied with success status.
++ * Call this to send a command to the ChromeOS EC. This should be used instead
++ * of calling the EC's cmd_xfer() callback directly. This function does not
++ * convert EC command execution error codes to Linux error codes. Most
++ * in-kernel users will want to use cros_ec_cmd_xfer_status() instead since
++ * that function implements the conversion.
+  *
+  * Return:
+- * >=0 - The number of bytes transferred
+- * <0 - Linux error code
++ * >0 - EC command was executed successfully. The return value is the number
++ *      of bytes returned by the EC (excluding the header).
++ * =0 - EC communication was successful. EC command execution results are
++ *      reported in msg->result. The result will be EC_RES_SUCCESS if the
++ *      command was executed successfully or report an EC command execution
++ *      error.
++ * <0 - EC communication error. Return value is the Linux error code.
+  */
+-int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
+-			    struct cros_ec_command *msg)
++int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
+ {
+-	int ret, mapped;
++	int ret;
  
--	if (sel < 0 || sel > mc->max)
-+	if (sel_unchecked < 0 || sel_unchecked > mc->max)
- 		return -EINVAL;
-+	sel = sel_unchecked;
+ 	mutex_lock(&ec_dev->lock);
+ 	if (ec_dev->proto_version == EC_PROTO_VERSION_UNKNOWN) {
+@@ -616,6 +622,32 @@ int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
+ 	ret = send_command(ec_dev, msg);
+ 	mutex_unlock(&ec_dev->lock);
  
- 	*select = sel;
++	return ret;
++}
++EXPORT_SYMBOL(cros_ec_cmd_xfer);
++
++/**
++ * cros_ec_cmd_xfer_status() - Send a command to the ChromeOS EC.
++ * @ec_dev: EC device.
++ * @msg: Message to write.
++ *
++ * Call this to send a command to the ChromeOS EC. This should be used instead of calling the EC's
++ * cmd_xfer() callback directly. It returns success status only if both the command was transmitted
++ * successfully and the EC replied with success status.
++ *
++ * Return:
++ * >=0 - The number of bytes transferred.
++ * <0 - Linux error code
++ */
++int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
++			    struct cros_ec_command *msg)
++{
++	int ret, mapped;
++
++	ret = cros_ec_cmd_xfer(ec_dev, msg);
++	if (ret < 0)
++		return ret;
++
+ 	mapped = cros_ec_map_error(msg->result);
+ 	if (mapped) {
+ 		dev_dbg(ec_dev->dev, "Command result (err: %d [%d])\n",
+diff --git a/include/linux/platform_data/cros_ec_proto.h b/include/linux/platform_data/cros_ec_proto.h
+index 02599687770c..7f03e02c48cd 100644
+--- a/include/linux/platform_data/cros_ec_proto.h
++++ b/include/linux/platform_data/cros_ec_proto.h
+@@ -216,6 +216,9 @@ int cros_ec_prepare_tx(struct cros_ec_device *ec_dev,
+ int cros_ec_check_result(struct cros_ec_device *ec_dev,
+ 			 struct cros_ec_command *msg);
+ 
++int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev,
++		     struct cros_ec_command *msg);
++
+ int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
+ 			    struct cros_ec_command *msg);
  
 -- 
 2.35.1
