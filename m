@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A41C7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8EA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379794AbiFGVNi (ORCPT
+        id S1379807AbiFGVNn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37750 "EHLO
+        Tue, 7 Jun 2022 17:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359253AbiFGUOs (ORCPT
+        with ESMTP id S1376476AbiFGUQt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:14:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6591316F912;
-        Tue,  7 Jun 2022 11:28:20 -0700 (PDT)
+        Tue, 7 Jun 2022 16:16:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6211CEAC8;
+        Tue,  7 Jun 2022 11:29:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0979A611B9;
-        Tue,  7 Jun 2022 18:28:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AAF5C385A2;
-        Tue,  7 Jun 2022 18:28:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73B37B82340;
+        Tue,  7 Jun 2022 18:29:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2D0FC385A2;
+        Tue,  7 Jun 2022 18:29:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626498;
-        bh=HIQk/uw7vS5y7k9V6eMIFVegpbu+WXgZ8oYpaSKok5U=;
+        s=korg; t=1654626548;
+        bh=8vn3WfCeBWbip3UZVakqAn6ebEUw0ACv6P34zaVi2U0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jttEN5czCg+WY5Kl0aYewm0ZYwI+Svk3zfoFcdPmV3tCL+8a+t01TnOCZ+kT1ttkg
-         OviOQYtbPBxRpGNIrwa3E+iJTsapEXS6yfPc8VxLPLvB5xChgbcfgG7+P3Faz9ra+Z
-         4PvaPUMSbO3FtQsR+zECKOCKMIG6X+nbfWqXnWKM=
+        b=sl3+lvHgBJEotYiKJN/UvyMotvazLSSWXFpjadk8Z9H9fQY/ArTDEEHDblNSG0svB
+         vY5N+gZ3nae2tO7ssaBsGcwyMziAGstqhg7GJBIVwhCQr2zhyrayIU3RvwTKQLFgI0
+         GDoH1123vv0eZlBA7lcqAXPAtjHWemkaT+Q6mEjk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 401/772] kselftest/arm64: bti: force static linking
-Date:   Tue,  7 Jun 2022 18:59:53 +0200
-Message-Id: <20220607165000.828181528@linuxfoundation.org>
+Subject: [PATCH 5.17 417/772] drm/i915: Fix CFI violation with show_dynamic_id()
+Date:   Tue,  7 Jun 2022 19:00:09 +0200
+Message-Id: <20220607165001.295022095@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,64 +53,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit d7a49291d786b4400996afe3afcc3ef5eeb6f0ef ]
+[ Upstream commit 58606220a2f1407a7516c547f09a1ba7b4350a73 ]
 
-The "bti" selftests are built with -nostdlib, which apparently
-automatically creates a statically linked binary, which is what we want
-and need for BTI (to avoid interactions with the dynamic linker).
+When an attribute group is created with sysfs_create_group(), the
+->sysfs_ops() callback is set to kobj_sysfs_ops, which sets the ->show()
+callback to kobj_attr_show(). kobj_attr_show() uses container_of() to
+get the ->show() callback from the attribute it was passed, meaning the
+->show() callback needs to be the same type as the ->show() callback in
+'struct kobj_attribute'.
 
-However this is not true when building a PIE binary, which some
-toolchains (Ubuntu) configure as the default.
-When compiling btitest with such a toolchain, it will create a
-dynamically linked binary, which will probably fail some tests, as the
-dynamic linker might not support BTI:
-===================
-TAP version 13
-1..18
-not ok 1 nohint_func/call_using_br_x0
-not ok 2 nohint_func/call_using_br_x16
-not ok 3 nohint_func/call_using_blr
-....
-===================
+However, show_dynamic_id() has the type of the ->show() callback in
+'struct device_attribute', which causes a CFI violation when opening the
+'id' sysfs node under drm/card0/metrics. This happens to work because
+the layout of 'struct kobj_attribute' and 'struct device_attribute' are
+the same, so the container_of() cast happens to allow the ->show()
+callback to still work.
 
-To make sure we create static binaries, add an explicit -static on the
-linker command line. This forces static linking even if the toolchain
-defaults to PIE builds, and fixes btitest runs on BTI enabled machines.
+Change the type of show_dynamic_id() to match the ->show() callback in
+'struct kobj_attributes' and update the type of sysfs_metric_id to
+match, which resolves the CFI violation.
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Mark Brown <broonie@kernel.org>
-Fixes: 314bcbf09f14 ("kselftest: arm64: Add BTI tests")
-Link: https://lore.kernel.org/r/20220511172129.2078337-1-andre.przywara@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Fixes: f89823c21224 ("drm/i915/perf: Implement I915_PERF_ADD/REMOVE_CONFIG interface")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Sami Tolvanen <samitolvanen@google.com>
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220513075136.1027007-1-tvrtko.ursulin@linux.intel.com
+(cherry picked from commit 18fb42db05a0b93ab5dd5eab5315e50eaa3ca620)
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/arm64/bti/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/i915/i915_perf.c       | 4 ++--
+ drivers/gpu/drm/i915/i915_perf_types.h | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/arm64/bti/Makefile b/tools/testing/selftests/arm64/bti/Makefile
-index 73e013c082a6..dafa1c2aa5c4 100644
---- a/tools/testing/selftests/arm64/bti/Makefile
-+++ b/tools/testing/selftests/arm64/bti/Makefile
-@@ -39,7 +39,7 @@ BTI_OBJS =                                      \
- 	teststubs-bti.o                         \
- 	trampoline-bti.o
- gen/btitest: $(BTI_OBJS)
--	$(CC) $(CFLAGS_BTI) $(CFLAGS_COMMON) -nostdlib -o $@ $^
-+	$(CC) $(CFLAGS_BTI) $(CFLAGS_COMMON) -nostdlib -static -o $@ $^
+diff --git a/drivers/gpu/drm/i915/i915_perf.c b/drivers/gpu/drm/i915/i915_perf.c
+index e27f3b7cf094..abcf7e66fe6a 100644
+--- a/drivers/gpu/drm/i915/i915_perf.c
++++ b/drivers/gpu/drm/i915/i915_perf.c
+@@ -4008,8 +4008,8 @@ static struct i915_oa_reg *alloc_oa_regs(struct i915_perf *perf,
+ 	return ERR_PTR(err);
+ }
  
- NOBTI_OBJS =                                    \
- 	test-nobti.o                         \
-@@ -50,7 +50,7 @@ NOBTI_OBJS =                                    \
- 	teststubs-nobti.o                       \
- 	trampoline-nobti.o
- gen/nobtitest: $(NOBTI_OBJS)
--	$(CC) $(CFLAGS_BTI) $(CFLAGS_COMMON) -nostdlib -o $@ $^
-+	$(CC) $(CFLAGS_BTI) $(CFLAGS_COMMON) -nostdlib -static -o $@ $^
+-static ssize_t show_dynamic_id(struct device *dev,
+-			       struct device_attribute *attr,
++static ssize_t show_dynamic_id(struct kobject *kobj,
++			       struct kobj_attribute *attr,
+ 			       char *buf)
+ {
+ 	struct i915_oa_config *oa_config =
+diff --git a/drivers/gpu/drm/i915/i915_perf_types.h b/drivers/gpu/drm/i915/i915_perf_types.h
+index aa14354a5120..f682c7a6474d 100644
+--- a/drivers/gpu/drm/i915/i915_perf_types.h
++++ b/drivers/gpu/drm/i915/i915_perf_types.h
+@@ -55,7 +55,7 @@ struct i915_oa_config {
  
- # Including KSFT lib.mk here will also mangle the TEST_GEN_PROGS list
- # to account for any OUTPUT target-dirs optionally provided by
+ 	struct attribute_group sysfs_metric;
+ 	struct attribute *attrs[2];
+-	struct device_attribute sysfs_metric_id;
++	struct kobj_attribute sysfs_metric_id;
+ 
+ 	struct kref ref;
+ 	struct rcu_head rcu;
 -- 
 2.35.1
 
