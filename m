@@ -2,106 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E314C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:58:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BB84C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:58:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357426AbiFGT6S (ORCPT
+        id S1356648AbiFGT6b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:58:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49724 "EHLO
+        Tue, 7 Jun 2022 15:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349204AbiFGSvX (ORCPT
+        with ESMTP id S1352855AbiFGSvg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:51:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 014AC149A8C;
-        Tue,  7 Jun 2022 11:03:31 -0700 (PDT)
+        Tue, 7 Jun 2022 14:51:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B9D149D89;
+        Tue,  7 Jun 2022 11:03:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D420B82182;
+        by ams.source.kernel.org (Postfix) with ESMTPS id B828EB82368;
         Tue,  7 Jun 2022 18:03:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E65DCC385A5;
-        Tue,  7 Jun 2022 18:03:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654625008;
-        bh=YfQvhTNtRCQoxAKmCzCkkxrzlP3GHt4D3FPbvmkZ/vM=;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3591CC34115;
+        Tue,  7 Jun 2022 18:03:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654625008;
+        bh=A4LxXTI158BhWcvZYzhEsqBOc17JZjK70Ha38Xgs+PQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HyldphA3vaApruQxkBOlDtx1hcu7tyyLvgF+2+f4dtskFIfIDcin/kitBcrnH1MNg
-         Ig3nhKN+eXrjBrDIbygsljUH8Mo3f1rvXT4OqLAjerQF5t48G3GOzQ5rbq522L2FA8
-         67K+4B012euDB4DkGV9rcB4rwbc32HYowkyquUNk06v0d1cWavWZ3xkJpOTlqamBcB
-         6ZJ2PuKkhRCqk8Nip4S7RNZMGCZmD1k1sotS0n7miaH/HYgkH4JZhbjO++5yopmhyS
-         i+hJSQ8nejksFCfm7Hg0iOdgBOAuXdl310h72jgT8oH+NCWVmWxkMZSj530z41djNf
-         6zN0Fa+L5jq3w==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, baihaowen@meizu.com,
-        dan.carpenter@oracle.com, edumazet@google.com, dave@stgolabs.net,
-        len.baker@gmx.com, wjsota@gmail.com, yangyingliang@huawei.com,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 4.9 05/19] drivers: staging: rtl8192e: Fix deadlock in rtllib_beacons_stop()
-Date:   Tue,  7 Jun 2022 14:03:00 -0400
-Message-Id: <20220607180317.482354-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180317.482354-1-sashal@kernel.org>
-References: <20220607180317.482354-1-sashal@kernel.org>
+        b=CX5YKxXHzuv1+Xt9co2+uDvbXptL4ev5fjAaXxYonADHdngZ+uETjrVjeU0FoLo5P
+         P+4pDSRDbI7cjbENuGSPh1QouFmL733fznyQ7z13ujN1bw7oAaiYVHIDSK9dKH6E6J
+         /Lvz5NlD2vkQWAKR8puhawLTEjRijTsfGndE6hg4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 534/667] bfq: Update cgroup information before merging bio
+Date:   Tue,  7 Jun 2022 19:03:19 +0200
+Message-Id: <20220607164950.717619615@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 9b6bdbd9337de3917945847bde262a34a87a6303 ]
+commit ea591cd4eb270393810e7be01feb8fde6a34fbbe upstream.
 
-There is a deadlock in rtllib_beacons_stop(), which is shown
-below:
+When the process is migrated to a different cgroup (or in case of
+writeback just starts submitting bios associated with a different
+cgroup) bfq_merge_bio() can operate with stale cgroup information in
+bic. Thus the bio can be merged to a request from a different cgroup or
+it can result in merging of bfqqs for different cgroups or bfqqs of
+already dead cgroups and causing possible use-after-free issues. Fix the
+problem by updating cgroup information in bfq_merge_bio().
 
-   (Thread 1)              |      (Thread 2)
-                           | rtllib_send_beacon()
-rtllib_beacons_stop()      |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | rtllib_send_beacon_cb()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
-
-We hold ieee->beacon_lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need ieee->beacon_lock in position (2) of thread 2.
-As a result, rtllib_beacons_stop() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417141641.124388-1-duoming@zju.edu.cn
+CC: stable@vger.kernel.org
+Fixes: e21b7a0b9887 ("block, bfq: add full hierarchical scheduling and cgroups support")
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-4-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192e/rtllib_softmac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ block/bfq-iosched.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
-index da74dc49b95e..f46def63967b 100644
---- a/drivers/staging/rtl8192e/rtllib_softmac.c
-+++ b/drivers/staging/rtl8192e/rtllib_softmac.c
-@@ -655,9 +655,9 @@ static void rtllib_beacons_stop(struct rtllib_device *ieee)
- 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2335,10 +2335,17 @@ static bool bfq_bio_merge(struct request
  
- 	ieee->beacon_txing = 0;
--	del_timer_sync(&ieee->beacon_timer);
+ 	spin_lock_irq(&bfqd->lock);
  
- 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
-+	del_timer_sync(&ieee->beacon_timer);
+-	if (bic)
++	if (bic) {
++		/*
++		 * Make sure cgroup info is uptodate for current process before
++		 * considering the merge.
++		 */
++		bfq_bic_update_cgroup(bic, bio);
++
+ 		bfqd->bio_bfqq = bic_to_bfqq(bic, op_is_sync(bio->bi_opf));
+-	else
++	} else {
+ 		bfqd->bio_bfqq = NULL;
++	}
+ 	bfqd->bio_bic = bic;
  
- }
- 
--- 
-2.35.1
+ 	ret = blk_mq_sched_try_merge(q, bio, nr_segs, &free);
+
 
