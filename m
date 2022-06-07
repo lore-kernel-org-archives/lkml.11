@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80559C04E85
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B33EDC04E88
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352443AbiFGS0L (ORCPT
+        id S1352619AbiFGS00 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:26:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55844 "EHLO
+        Tue, 7 Jun 2022 14:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351288AbiFGSB4 (ORCPT
+        with ESMTP id S1351390AbiFGSCB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:01:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A44151FC5;
-        Tue,  7 Jun 2022 10:44:14 -0700 (PDT)
+        Tue, 7 Jun 2022 14:02:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B59DA151FFF;
+        Tue,  7 Jun 2022 10:44:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F212AB822B8;
-        Tue,  7 Jun 2022 17:44:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63FF0C385A5;
-        Tue,  7 Jun 2022 17:44:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 413A961480;
+        Tue,  7 Jun 2022 17:44:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 514F3C385A5;
+        Tue,  7 Jun 2022 17:44:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623851;
-        bh=Poz0P3FU8oei4d2vEBfJHhiPc/hGrkpoKT1vFnt42T4=;
+        s=korg; t=1654623862;
+        bh=Xo83pvCZaeA+yRtlS2J30OFiQmLfqR0YGtYjdxcFqD0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XX6zviO+GoaUc17P0P/HO/usVE9K0yzaBiXx1oVxIQIeTxjwlxYBzpoDpJN+3GsFs
-         hfkfsj6r7V5ScPYxuVrDN2CKJu3yvWQmXed25XLskx/BbtSeGqb60goznTmhTr2KNY
-         Ti5QLutwQP+AAgyPaGPuI8I8WyGB7MkGTqjqKHwE=
+        b=y/5ibvrXyIIL4H8fJAwBY4/q9XAf288n8rzq82uY2O1AjUEIETH1PdMjERtvqab3J
+         BxV7PS5URIPQp5nF1Vr6jSrRv0kJUCc6NEyxTKQTw6HXn78DJy1VpGHnhVpfs5ebaZ
+         DwHgkmtpUwuCUAANLa5NdjA8C/XnwqH1nopniotw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        stable@vger.kernel.org,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 114/667] mt76: mt7921: accept rx frames with non-standard VHT MCS10-11
-Date:   Tue,  7 Jun 2022 18:56:19 +0200
-Message-Id: <20220607164938.242310109@linuxfoundation.org>
+Subject: [PATCH 5.15 118/667] media: hantro: HEVC: unconditionnaly set pps_{cb/cr}_qp_offset values
+Date:   Tue,  7 Jun 2022 18:56:23 +0200
+Message-Id: <20220607164938.362649842@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,31 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 
-[ Upstream commit 3128ea016965ce9f91ddf4e1dd944724462d1698 ]
+[ Upstream commit 46c836569196f377f87a3657b330cffaf94bd727 ]
 
-The hardware receives them properly, they should not be dropped
+Always set pps_cb_qp_offset and pps_cr_qp_offset values in Hantro/G2
+register whatever is V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT
+flag value.
+The vendor code does the same to set these values.
+This fixes conformance test CAINIT_G_SHARP_3.
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fluster HEVC score is increase by one with this patch.
+
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index c093920a597d..5024ddf07cbc 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -563,7 +563,7 @@ int mt7921_mac_fill_rx(struct mt7921_dev *dev, struct sk_buff *skb)
- 			status->nss =
- 				FIELD_GET(MT_PRXV_NSTS, v0) + 1;
- 			status->encoding = RX_ENC_VHT;
--			if (i > 9)
-+			if (i > 11)
- 				return -EINVAL;
- 			break;
- 		case MT_PHY_TYPE_HE_MU:
+diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+index 340efb57fd18..ee069564205a 100644
+--- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
++++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+@@ -194,13 +194,8 @@ static void set_params(struct hantro_ctx *ctx)
+ 		hantro_reg_write(vpu, &g2_max_cu_qpd_depth, 0);
+ 	}
+ 
+-	if (pps->flags & V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT) {
+-		hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
+-		hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
+-	} else {
+-		hantro_reg_write(vpu, &g2_cb_qp_offset, 0);
+-		hantro_reg_write(vpu, &g2_cr_qp_offset, 0);
+-	}
++	hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
++	hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
+ 
+ 	hantro_reg_write(vpu, &g2_filt_offset_beta, pps->pps_beta_offset_div2);
+ 	hantro_reg_write(vpu, &g2_filt_offset_tc, pps->pps_tc_offset_div2);
 -- 
 2.35.1
 
