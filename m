@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C982C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2488FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347494AbiFGRnK (ORCPT
+        id S1347430AbiFGRnQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:43:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39718 "EHLO
+        Tue, 7 Jun 2022 13:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347859AbiFGRbU (ORCPT
+        with ESMTP id S1347866AbiFGRbU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:31:20 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9703B1059CB;
-        Tue,  7 Jun 2022 10:28:37 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012E410A63F;
+        Tue,  7 Jun 2022 10:28:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BC931CE2396;
-        Tue,  7 Jun 2022 17:28:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8030C385A5;
-        Tue,  7 Jun 2022 17:28:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92B1A60906;
+        Tue,  7 Jun 2022 17:28:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A18F5C385A5;
+        Tue,  7 Jun 2022 17:28:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622914;
-        bh=hKaaFKKJkTwL/NOcTKoKRquAfxInXdQEATkMxPCLz1A=;
+        s=korg; t=1654622917;
+        bh=b9T2ytWkws7EL7G3oLxeMYXBSBUH+aLsHZbV06loISc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=euZ1V3lF2vYOho1A7FOeMBiaq5VSfaiLCRZsxr6UpHSySd2o7BGheEiGRC/Ga4Iml
-         7PqgM+Km1z4YLfcrSYQ02yvS7NbVVcaX2q5Fz5gu7E8YB3CcNLYgzMFimtnED2Vn+F
-         9VbaCJ3ru9UvvWVZpRqTzz3G50iEpl9OMLjyKGEQ=
+        b=k3M+Vsai+sZefGe8rxImIalKZltYxanheDUAEIK4KW9H+ti76lJD4LJ66Atv8HM6F
+         9G8gaRPWfit5zAGfPPfsydx5yz69v0HwdP8mGU/q/OCCBEeWV5fmNbfP1S7fvefmj8
+         OTXFQQ6lZjE3B4tmXXvX+LboRqNFpCh05Il+UL7Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 228/452] media: ov7670: remove ov7670_power_off from ov7670_remove
-Date:   Tue,  7 Jun 2022 19:01:25 +0200
-Message-Id: <20220607164915.356419505@linuxfoundation.org>
+Subject: [PATCH 5.10 202/452] ASoC: fsl: Fix refcount leak in imx_sgtl5000_probe
+Date:   Tue,  7 Jun 2022 19:00:59 +0200
+Message-Id: <20220607164914.583496888@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,37 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 5bf19572e31375368f19edd2dbb2e0789518bb99 ]
+[ Upstream commit 41cd312dfe980af869c3503b4d38e62ed20dd3b7 ]
 
-In ov7670_probe, it always invokes ov7670_power_off() no matter
-the execution is successful or failed. So we cannot invoke it
-agiain in ov7670_remove().
+of_find_i2c_device_by_node() takes a reference,
+In error paths, we should call put_device() to drop
+the reference to aviod refount leak.
 
-Fix this by removing ov7670_power_off from ov7670_remove.
-
-Fixes: 030f9f682e66 ("media: ov7670: control clock along with power")
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 81e8e4926167 ("ASoC: fsl: add sgtl5000 clock support for imx-sgtl5000")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Link: https://lore.kernel.org/r/20220511065803.3957-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/ov7670.c | 1 -
- 1 file changed, 1 deletion(-)
+ sound/soc/fsl/imx-sgtl5000.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/media/i2c/ov7670.c b/drivers/media/i2c/ov7670.c
-index b42b289faaef..154776d0069e 100644
---- a/drivers/media/i2c/ov7670.c
-+++ b/drivers/media/i2c/ov7670.c
-@@ -2000,7 +2000,6 @@ static int ov7670_remove(struct i2c_client *client)
- 	v4l2_async_unregister_subdev(sd);
- 	v4l2_ctrl_handler_free(&info->hdl);
- 	media_entity_cleanup(&info->sd.entity);
--	ov7670_power_off(sd);
- 	return 0;
- }
+diff --git a/sound/soc/fsl/imx-sgtl5000.c b/sound/soc/fsl/imx-sgtl5000.c
+index f45cb4bbb6c4..5997bb5acb73 100644
+--- a/sound/soc/fsl/imx-sgtl5000.c
++++ b/sound/soc/fsl/imx-sgtl5000.c
+@@ -120,19 +120,19 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
+ 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+ 	if (!data) {
+ 		ret = -ENOMEM;
+-		goto fail;
++		goto put_device;
+ 	}
  
+ 	comp = devm_kzalloc(&pdev->dev, 3 * sizeof(*comp), GFP_KERNEL);
+ 	if (!comp) {
+ 		ret = -ENOMEM;
+-		goto fail;
++		goto put_device;
+ 	}
+ 
+ 	data->codec_clk = clk_get(&codec_dev->dev, NULL);
+ 	if (IS_ERR(data->codec_clk)) {
+ 		ret = PTR_ERR(data->codec_clk);
+-		goto fail;
++		goto put_device;
+ 	}
+ 
+ 	data->clk_frequency = clk_get_rate(data->codec_clk);
+@@ -158,10 +158,10 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
+ 	data->card.dev = &pdev->dev;
+ 	ret = snd_soc_of_parse_card_name(&data->card, "model");
+ 	if (ret)
+-		goto fail;
++		goto put_device;
+ 	ret = snd_soc_of_parse_audio_routing(&data->card, "audio-routing");
+ 	if (ret)
+-		goto fail;
++		goto put_device;
+ 	data->card.num_links = 1;
+ 	data->card.owner = THIS_MODULE;
+ 	data->card.dai_link = &data->dai;
+@@ -176,7 +176,7 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
+ 		if (ret != -EPROBE_DEFER)
+ 			dev_err(&pdev->dev, "snd_soc_register_card failed (%d)\n",
+ 				ret);
+-		goto fail;
++		goto put_device;
+ 	}
+ 
+ 	of_node_put(ssi_np);
+@@ -184,6 +184,8 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
+ 
+ 	return 0;
+ 
++put_device:
++	put_device(&codec_dev->dev);
+ fail:
+ 	if (data && !IS_ERR(data->codec_clk))
+ 		clk_put(data->codec_clk);
 -- 
 2.35.1
 
