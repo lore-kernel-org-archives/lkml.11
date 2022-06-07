@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C829C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C37DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350049AbiFGSMw (ORCPT
+        id S1349366AbiFGSM6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40694 "EHLO
+        Tue, 7 Jun 2022 14:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349648AbiFGRv0 (ORCPT
+        with ESMTP id S1349588AbiFGRvX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:26 -0400
+        Tue, 7 Jun 2022 13:51:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3D813C1C4;
-        Tue,  7 Jun 2022 10:38:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A649A13B8FC;
+        Tue,  7 Jun 2022 10:38:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D6606157B;
-        Tue,  7 Jun 2022 17:37:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B026C385A5;
-        Tue,  7 Jun 2022 17:37:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6D8A614BC;
+        Tue,  7 Jun 2022 17:37:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF2A4C385A5;
+        Tue,  7 Jun 2022 17:37:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623477;
-        bh=jqBp+YTbylwh1DJj9yoGKwUK3G1UP5qserMh8zArCPc=;
+        s=korg; t=1654623472;
+        bh=QChJCPRL3ejMsldfIYXq0fqN8Advy9XyAn/s7MLk7ns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G13WpNndJKnjHTlWz5crhcQyQLLpQ1ujCIAqj2PF2mC8DaZTvZkW2LFtLR1FowzEo
-         OSMHOUsZZYvNYQ2ede2UQbRLDGVto5aT7m/4xUaOP1Ljd0FabdTCJeWq+ViyLAKoB9
-         AxG9ZljwvAWiQJsA5TsawNDeInSoNJQ5DHqpyt6k=
+        b=FZZsO5uBdeIOhWuZj+UJS0GNi7QHYR3bQML0c9bIi3pc1iqvFgP1cKxJ8iyl6zn2H
+         H3mCwgHQpUxSXFk+Y91mO5vhOncS7XScZ2er5B2FR4Hy0C3qVK/V27rLO+nlePY2YB
+         ZijCUjWoyMmBUvfOM66DoliAr3IOXwvYOlp7GPMQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
-        Brian Foster <bfoster@redhat.com>,
-        Chandan Babu R <chandanrlinux@gmail.com>,
+        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
+        Gao Xiang <hsiangkao@redhat.com>,
+        Allison Henderson <allison.henderson@oracle.com>,
+        "Darrick J. Wong" <darrick.wong@oracle.com>,
+        Bill ODonnell <billodo@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
         Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 433/452] xfs: fix incorrect root dquot corruption error when switching group/project quota types
-Date:   Tue,  7 Jun 2022 19:04:50 +0200
-Message-Id: <20220607164921.460244852@linuxfoundation.org>
+Subject: [PATCH 5.10 431/452] xfs: sync lazy sb accounting on quiesce of read-only mounts
+Date:   Tue,  7 Jun 2022 19:04:48 +0200
+Message-Id: <20220607164921.397643133@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,92 +54,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Darrick J. Wong" <djwong@kernel.org>
+From: Brian Foster <bfoster@redhat.com>
 
-commit 45068063efb7dd0a8d115c106aa05d9ab0946257 upstream.
+commit 50d25484bebe94320c49dd1347d3330c7063bbdb upstream.
 
-While writing up a regression test for broken behavior when a chprojid
-request fails, I noticed that we were logging corruption notices about
-the root dquot of the group/project quota file at mount time when
-testing V4 filesystems.
+xfs_log_sbcount() syncs the superblock specifically to accumulate
+the in-core percpu superblock counters and commit them to disk. This
+is required to maintain filesystem consistency across quiesce
+(freeze, read-only mount/remount) or unmount when lazy superblock
+accounting is enabled because individual transactions do not update
+the superblock directly.
 
-In commit afeda6000b0c, I was trying to improve ondisk dquot validation
-by making sure that when we load an ondisk dquot into memory on behalf
-of an incore dquot, the dquot id and type matches.  Unfortunately, I
-forgot that V4 filesystems only have two quota files, and can switch
-that file between group and project quota types at mount time.  When we
-perform that switch, we'll try to load the default quota limits from the
-root dquot prior to running quotacheck and log a corruption error when
-the types don't match.
+This mechanism works as expected for writable mounts, but
+xfs_log_sbcount() skips the update for read-only mounts. Read-only
+mounts otherwise still allow log recovery and write out an unmount
+record during log quiesce. If a read-only mount performs log
+recovery, it can modify the in-core superblock counters and write an
+unmount record when the filesystem unmounts without ever syncing the
+in-core counters. This leaves the filesystem with a clean log but in
+an inconsistent state with regard to lazy sb counters.
 
-This is inconsequential because quotacheck will reset the second quota
-file as part of doing the switch, but we shouldn't leave scary messages
-in the kernel log.
+Update xfs_log_sbcount() to use the same logic
+xfs_log_unmount_write() uses to determine when to write an unmount
+record. This ensures that lazy accounting is always synced before
+the log is cleaned. Refactor this logic into a new helper to
+distinguish between a writable filesystem and a writable log.
+Specifically, the log is writable unless the filesystem is mounted
+with the norecovery mount option, the underlying log device is
+read-only, or the filesystem is shutdown. Drop the freeze state
+check because the update is already allowed during the freezing
+process and no context calls this function on an already frozen fs.
+Also, retain the shutdown check in xfs_log_unmount_write() to catch
+the case where the preceding log force might have triggered a
+shutdown.
 
-Fixes: afeda6000b0c ("xfs: validate ondisk/incore dquot flags")
+Signed-off-by: Brian Foster <bfoster@redhat.com>
+Reviewed-by: Gao Xiang <hsiangkao@redhat.com>
+Reviewed-by: Allison Henderson <allison.henderson@oracle.com>
+Reviewed-by: Darrick J. Wong <darrick.wong@oracle.com>
+Reviewed-by: Bill O'Donnell <billodo@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Brian Foster <bfoster@redhat.com>
-Reviewed-by: Chandan Babu R <chandanrlinux@gmail.com>
 Signed-off-by: Amir Goldstein <amir73il@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_dquot.c |   39 +++++++++++++++++++++++++++++++++++++--
- 1 file changed, 37 insertions(+), 2 deletions(-)
+ fs/xfs/xfs_log.c   |   28 ++++++++++++++++++++--------
+ fs/xfs/xfs_log.h   |    1 +
+ fs/xfs/xfs_mount.c |    3 +--
+ 3 files changed, 22 insertions(+), 10 deletions(-)
 
---- a/fs/xfs/xfs_dquot.c
-+++ b/fs/xfs/xfs_dquot.c
-@@ -500,6 +500,42 @@ xfs_dquot_alloc(
- 	return dqp;
+--- a/fs/xfs/xfs_log.c
++++ b/fs/xfs/xfs_log.c
+@@ -347,6 +347,25 @@ xlog_tic_add_region(xlog_ticket_t *tic,
+ 	tic->t_res_num++;
  }
  
-+/* Check the ondisk dquot's id and type match what the incore dquot expects. */
-+static bool
-+xfs_dquot_check_type(
-+	struct xfs_dquot	*dqp,
-+	struct xfs_disk_dquot	*ddqp)
++bool
++xfs_log_writable(
++	struct xfs_mount	*mp)
 +{
-+	uint8_t			ddqp_type;
-+	uint8_t			dqp_type;
-+
-+	ddqp_type = ddqp->d_type & XFS_DQTYPE_REC_MASK;
-+	dqp_type = xfs_dquot_type(dqp);
-+
-+	if (be32_to_cpu(ddqp->d_id) != dqp->q_id)
++	/*
++	 * Never write to the log on norecovery mounts, if the block device is
++	 * read-only, or if the filesystem is shutdown. Read-only mounts still
++	 * allow internal writes for log recovery and unmount purposes, so don't
++	 * restrict that case here.
++	 */
++	if (mp->m_flags & XFS_MOUNT_NORECOVERY)
 +		return false;
-+
-+	/*
-+	 * V5 filesystems always expect an exact type match.  V4 filesystems
-+	 * expect an exact match for user dquots and for non-root group and
-+	 * project dquots.
-+	 */
-+	if (xfs_sb_version_hascrc(&dqp->q_mount->m_sb) ||
-+	    dqp_type == XFS_DQTYPE_USER || dqp->q_id != 0)
-+		return ddqp_type == dqp_type;
-+
-+	/*
-+	 * V4 filesystems support either group or project quotas, but not both
-+	 * at the same time.  The non-user quota file can be switched between
-+	 * group and project quota uses depending on the mount options, which
-+	 * means that we can encounter the other type when we try to load quota
-+	 * defaults.  Quotacheck will soon reset the the entire quota file
-+	 * (including the root dquot) anyway, but don't log scary corruption
-+	 * reports to dmesg.
-+	 */
-+	return ddqp_type == XFS_DQTYPE_GROUP || ddqp_type == XFS_DQTYPE_PROJ;
++	if (xfs_readonly_buftarg(mp->m_log->l_targ))
++		return false;
++	if (XFS_FORCED_SHUTDOWN(mp))
++		return false;
++	return true;
 +}
 +
- /* Copy the in-core quota fields in from the on-disk buffer. */
- STATIC int
- xfs_dquot_from_disk(
-@@ -512,8 +548,7 @@ xfs_dquot_from_disk(
- 	 * Ensure that we got the type and ID we were looking for.
- 	 * Everything else was checked by the dquot buffer verifier.
- 	 */
--	if ((ddqp->d_type & XFS_DQTYPE_REC_MASK) != xfs_dquot_type(dqp) ||
--	    be32_to_cpu(ddqp->d_id) != dqp->q_id) {
-+	if (!xfs_dquot_check_type(dqp, ddqp)) {
- 		xfs_alert_tag(bp->b_mount, XFS_PTAG_VERIFIER_ERROR,
- 			  "Metadata corruption detected at %pS, quota %u",
- 			  __this_address, dqp->q_id);
+ /*
+  * Replenish the byte reservation required by moving the grant write head.
+  */
+@@ -886,15 +905,8 @@ xfs_log_unmount_write(
+ {
+ 	struct xlog		*log = mp->m_log;
+ 
+-	/*
+-	 * Don't write out unmount record on norecovery mounts or ro devices.
+-	 * Or, if we are doing a forced umount (typically because of IO errors).
+-	 */
+-	if (mp->m_flags & XFS_MOUNT_NORECOVERY ||
+-	    xfs_readonly_buftarg(log->l_targ)) {
+-		ASSERT(mp->m_flags & XFS_MOUNT_RDONLY);
++	if (!xfs_log_writable(mp))
+ 		return;
+-	}
+ 
+ 	xfs_log_force(mp, XFS_LOG_SYNC);
+ 
+--- a/fs/xfs/xfs_log.h
++++ b/fs/xfs/xfs_log.h
+@@ -127,6 +127,7 @@ int	  xfs_log_reserve(struct xfs_mount *
+ int	  xfs_log_regrant(struct xfs_mount *mp, struct xlog_ticket *tic);
+ void      xfs_log_unmount(struct xfs_mount *mp);
+ int	  xfs_log_force_umount(struct xfs_mount *mp, int logerror);
++bool	xfs_log_writable(struct xfs_mount *mp);
+ 
+ struct xlog_ticket *xfs_log_ticket_get(struct xlog_ticket *ticket);
+ void	  xfs_log_ticket_put(struct xlog_ticket *ticket);
+--- a/fs/xfs/xfs_mount.c
++++ b/fs/xfs/xfs_mount.c
+@@ -1176,8 +1176,7 @@ xfs_fs_writable(
+ int
+ xfs_log_sbcount(xfs_mount_t *mp)
+ {
+-	/* allow this to proceed during the freeze sequence... */
+-	if (!xfs_fs_writable(mp, SB_FREEZE_COMPLETE))
++	if (!xfs_log_writable(mp))
+ 		return 0;
+ 
+ 	/*
 
 
