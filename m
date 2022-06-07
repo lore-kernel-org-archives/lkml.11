@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB3BCCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A83FCCA490
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383808AbiFGWGd (ORCPT
+        id S1383834AbiFGWGh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:06:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
+        Tue, 7 Jun 2022 18:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379702AbiFGVGP (ORCPT
+        with ESMTP id S1379656AbiFGVGL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:06:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA1B20FC78;
-        Tue,  7 Jun 2022 11:50:09 -0700 (PDT)
+        Tue, 7 Jun 2022 17:06:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8923420EEB9;
+        Tue,  7 Jun 2022 11:50:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2A5EB82391;
-        Tue,  7 Jun 2022 18:50:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A933C385A2;
-        Tue,  7 Jun 2022 18:49:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0D9C6156D;
+        Tue,  7 Jun 2022 18:49:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7EF1C385A5;
+        Tue,  7 Jun 2022 18:49:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627799;
-        bh=e4rQjDbcX7pYuLi/MagzF5WQm9G9+qVy7DrNZMANN00=;
+        s=korg; t=1654627791;
+        bh=NCZ8ENLCATeP2GIJLaAP/xz+MzB5wHdRUTpcdOOL+I4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wg7KUYJe+KcdapDlENFDpXmeTX8NeR1FjWL1L8+WBsQGkwMPzGm8WB23eVdQAzIYJ
-         Y7KwnglzI9qfMUnIi2O8p5x9hAsH+3Q3XsCJTv6Rxly/yoE0+r5s8vv/oZcDA2vB7I
-         k7JmTuuuZSHitJVDZXHT+SUKiVNvTm+IE4HZXWGI=
+        b=jgwOor5ZznYmNjZbJHwCJmCMCRx/jCeDvPyR2Z/59Q/6ZClXxdbQ0SjEvh59kCmv2
+         EEqTE1H9gjEQAn+cDZ1PriBK8RYvfFFOs1iOlEhBsgJovJ/uwkP+XphULku8/9l20h
+         IXDNW3nERfNVGwcPMTgpSK8G4cXW75ByoC2Y39fU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 096/879] ASoC: rsnd: care default case on rsnd_ssiu_busif_err_status_clear()
-Date:   Tue,  7 Jun 2022 18:53:34 +0200
-Message-Id: <20220607165005.479481319@linuxfoundation.org>
+        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 067/879] b43: Fix assigning negative value to unsigned variable
+Date:   Tue,  7 Jun 2022 18:53:05 +0200
+Message-Id: <20220607165004.636696475@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,54 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit b1384d4c95088d01f4266237faabf165d3d605fc ]
+[ Upstream commit 11800d893b38e0e12d636c170c1abc19c43c730c ]
 
-commit cfb7b8bf1e2d66 ("ASoC: rsnd: tidyup
-rsnd_ssiu_busif_err_status_clear()") merged duplicate code, but it didn't
-care about default case, and causes smatch warnings.
+fix warning reported by smatch:
+drivers/net/wireless/broadcom/b43/phy_n.c:585 b43_nphy_adjust_lna_gain_table()
+warn: assigning (-2) to unsigned variable '*(lna_gain[0])'
 
-smatch warnings:
-sound/soc/sh/rcar/ssiu.c:112 rsnd_ssiu_busif_err_status_clear() \
-	error: uninitialized symbol 'offset'.
-sound/soc/sh/rcar/ssiu.c:114 rsnd_ssiu_busif_err_status_clear() \
-	error: uninitialized symbol 'shift'.
-
-This patch cares it.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Link: https://lore.kernel.org/r/87r15rgn6p.wl-kuninori.morimoto.gx@renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/1648203315-28093-1-git-send-email-baihaowen@meizu.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rcar/ssiu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wireless/broadcom/b43/phy_n.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/sh/rcar/ssiu.c b/sound/soc/sh/rcar/ssiu.c
-index 0d8f97633dd2..138f95dd9f4a 100644
---- a/sound/soc/sh/rcar/ssiu.c
-+++ b/sound/soc/sh/rcar/ssiu.c
-@@ -102,6 +102,8 @@ bool rsnd_ssiu_busif_err_status_clear(struct rsnd_mod *mod)
- 		shift  = 1;
- 		offset = 1;
- 		break;
-+	default:
-+		goto out;
- 	}
+diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
+index cf3ccf4ddfe7..aa5c99465674 100644
+--- a/drivers/net/wireless/broadcom/b43/phy_n.c
++++ b/drivers/net/wireless/broadcom/b43/phy_n.c
+@@ -582,7 +582,7 @@ static void b43_nphy_adjust_lna_gain_table(struct b43_wldev *dev)
+ 	u16 data[4];
+ 	s16 gain[2];
+ 	u16 minmax[2];
+-	static const u16 lna_gain[4] = { -2, 10, 19, 25 };
++	static const s16 lna_gain[4] = { -2, 10, 19, 25 };
  
- 	for (i = 0; i < 4; i++) {
-@@ -120,7 +122,7 @@ bool rsnd_ssiu_busif_err_status_clear(struct rsnd_mod *mod)
- 		}
- 		rsnd_mod_write(mod, reg, val);
- 	}
--
-+out:
- 	return error;
- }
- 
+ 	if (nphy->hang_avoid)
+ 		b43_nphy_stay_in_carrier_search(dev, 1);
 -- 
 2.35.1
 
