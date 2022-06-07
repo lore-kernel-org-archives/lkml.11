@@ -2,104 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B8D8CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:23:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1099EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354991AbiFGTXC (ORCPT
+        id S1354703AbiFGTXG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44752 "EHLO
+        Tue, 7 Jun 2022 15:23:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352788AbiFGSbS (ORCPT
+        with ESMTP id S1352790AbiFGSbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:31:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7841451CA;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6B31451C6;
         Tue,  7 Jun 2022 10:56:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D060D617E1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06486B8233D;
         Tue,  7 Jun 2022 17:56:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A334C36AFE;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A8DAC385A5;
         Tue,  7 Jun 2022 17:56:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624592;
-        bh=CEpjbcmExVzwCDja6tm1KJGkaef2pBcfEFZdREugcso=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624590;
+        bh=o16gdiCI+e/vcS0aPAmhUcf3xEZW+nayP2m184cicPw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iWLh7o12r/leQro4Q/FWiUSj4YzJPXiyySXRR/hxn4Ryd+w+koi7BTX4WmgOZDCXT
-         9ZX2G/F/PI6Kgr+d9S6dtD9/TOb+UZ4IfZPVAAKEzpCgUL7MOb0OaT/Lk5KCiyS3+K
-         M9EzxmJuHw55+tpycep1p2GtECLYAoI4SUdu0gKPvmNrp+PgFn0thgNqcvgsIrKYO0
-         2/mzQhZo7nvP6KbD4lVPgQAbRVgt83UwwNVEGQ0qjSO8prdAG5X0cI6CE8mR6XkmgX
-         gB6L9rukRODCp4CEg+/6eshi3yy1SJVm2wS5iefum/3Vf5WfAigqFUxSWYXMIAmCPn
-         OkCdx08VXYqEQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, baihaowen@meizu.com,
-        dave@stgolabs.net, len.baker@gmx.com, wangborong@cdjrlc.com,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 10/51] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
-Date:   Tue,  7 Jun 2022 13:55:09 -0400
-Message-Id: <20220607175552.479948-10-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+        b=iOTqX48IupyxlsZvZlbiKn5pQui0qebhWqVabu2z0Fmq7NrKt3z0U3Q9QpE8ZTgBN
+         9RUOtC7cT+g1y3qDOixHCOq/3faXfUD0aGH5tfHuLhivz3CSlU7tl3ZStLZVuiSljE
+         P1yy+p58RVDOjnHVxTF5wvXeO9VgTpSBnz5HNyDw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Shawn Lin <shawn.lin@rock-chips.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 381/667] arm64: dts: rockchip: Move drive-impedance-ohm to emmc phy on rk3399
+Date:   Tue,  7 Jun 2022 19:00:46 +0200
+Message-Id: <20220607164946.177025095@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Shawn Lin <shawn.lin@rock-chips.com>
 
-[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
+[ Upstream commit 4246d0bab2a8685e3d4aec2cb0ef8c526689ce96 ]
 
-There is a deadlock in ieee80211_beacons_stop(), which is shown below:
+drive-impedance-ohm is introduced for emmc phy instead of pcie phy.
 
-   (Thread 1)              |      (Thread 2)
-                           | ieee80211_send_beacon()
-ieee80211_beacons_stop()   |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | ieee80211_send_beacon_cb()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
-
-We hold ieee->beacon_lock in position (1) of thread 1 and use
-del_timer_sync() to wait timer to stop, but timer handler
-also need ieee->beacon_lock in position (2) of thread 2.
-As a result, ieee80211_beacons_stop() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: fb8b7460c995 ("arm64: dts: rockchip: Define drive-impedance-ohm for RK3399's emmc-phy.")
+Signed-off-by: Shawn Lin <shawn.lin@rock-chips.com>
+Link: https://lore.kernel.org/r/1647336426-154797-1-git-send-email-shawn.lin@rock-chips.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3399.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-index 1a193f900779..2b06706a7071 100644
---- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-+++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-@@ -528,9 +528,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
- 	spin_lock_irqsave(&ieee->beacon_lock, flags);
- 
- 	ieee->beacon_txing = 0;
--	del_timer_sync(&ieee->beacon_timer);
- 
- 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
-+	del_timer_sync(&ieee->beacon_timer);
- }
- 
- void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+index 00f1d036dfe0..4255e2d7a72f 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+@@ -1477,6 +1477,7 @@
+ 			reg = <0xf780 0x24>;
+ 			clocks = <&sdhci>;
+ 			clock-names = "emmcclk";
++			drive-impedance-ohm = <50>;
+ 			#phy-cells = <0>;
+ 			status = "disabled";
+ 		};
+@@ -1487,7 +1488,6 @@
+ 			clock-names = "refclk";
+ 			#phy-cells = <1>;
+ 			resets = <&cru SRST_PCIEPHY>;
+-			drive-impedance-ohm = <50>;
+ 			reset-names = "phy";
+ 			status = "disabled";
+ 		};
 -- 
 2.35.1
+
+
 
