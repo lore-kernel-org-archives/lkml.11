@@ -2,90 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9873DCCA495
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 172C7CCA49C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442213AbiFHB7v (ORCPT
+        id S1442372AbiFHCAY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48324 "EHLO
+        Tue, 7 Jun 2022 22:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835814AbiFGX5C (ORCPT
+        with ESMTP id S1837532AbiFHAAJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:57:02 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6677B9E1
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:23:56 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id lk16-20020a17090b33d000b001e68a9ac3a1so10017351pjb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:23:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
-        bh=bo5BCelcXXt3fHu9uBgQz0Xkxt3J+8ZEKQKzX+su88Q=;
-        b=AiWxLo79QymuoxjFrVU0MccHOPdDVerKMgDPDOQLVx7/paevTTfLP5MwnqRr0H2DQ1
-         uWS0vJOABqTtIaXzHaSqXGOrcdd9nuhFb7ZbsL0rf6NF5PwgMuLZ2wl0J5PVJlVuqWZj
-         npkbf1QsdROJjca6fCWGfw3CI5Uzx9EyRv+7Lbe9Q3fYDnyxqsi9wUDqJJBSxKS5Z2KK
-         BTO5PvSVRPL8Y295Rirvtu71qnFQSp+pCXjEKkb7t53+qd6RV5MdPRnGzkbHNdBrosdp
-         W9ML1PpUppa5yLI+rn8oRKOfmaKPLjGfhIXb2LVFqVLE/6cOBADFiTsySyENVhxwwRGR
-         NRNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
-         :from:to:cc;
-        bh=bo5BCelcXXt3fHu9uBgQz0Xkxt3J+8ZEKQKzX+su88Q=;
-        b=Q8dw0z3Iv2UMvfWpwyui5FoHBRy0g+v2brIkddWLJw5rV6UdtpZ8LpfQbZaq6QXtap
-         O6lGkavLkBP8n6KH7i+Ga9GBmNzYKA7RKgAqqAtuc+IzELFKSWjhN/NJ12xd4ZU6qsvx
-         8Q7stQds0W0gGoQF1XhxTp3F/Lv+2VDhe569+4AbAUvBgycCEmtfv7C3Q3JeAKeahgdU
-         m55U2t4e0YJ7TaczlCvD6T3/aMNwl6dbep9e39Y8OJ97wruSHbTsjXAutOFVQ+3sjUeN
-         O4jmPdd1tQWyEbBXctUBxjTGMT2vOMDFgVTMQU7KJho9cL/XbWhTh+uS88vdEV8tdJb4
-         hTPQ==
-X-Gm-Message-State: AOAM530vuha1I4tco62Mn937a0Ti1DibtUMUv2IKixOuHAx3FPG1NSNQ
-        QWfYh110IXs7zNN1pyJrXJgWjzNKGbA=
-X-Google-Smtp-Source: ABdhPJyWjszfOTBfQZ2L5GPUQD53SR9MIfNT6OkCd2LGRz0f74hUIQI6IopOkm2dZFMlwhpBGzb0jy7Rp8c=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:807:b0:51b:f4b5:db82 with SMTP id
- m7-20020a056a00080700b0051bf4b5db82mr19693888pfk.57.1654644236226; Tue, 07
- Jun 2022 16:23:56 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  7 Jun 2022 23:23:50 +0000
-Message-Id: <20220607232353.3375324-1-seanjc@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH 0/3] KVM: VMX: Let userspace set IA32_FEAT_CTL at will
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 7 Jun 2022 20:00:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F1119C3A9;
+        Tue,  7 Jun 2022 12:23:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1AD52B823CC;
+        Tue,  7 Jun 2022 19:22:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CF32C385A5;
+        Tue,  7 Jun 2022 19:22:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629774;
+        bh=RgCuTiD3kozF3mlD2ezwdETxBXaIcFW+5/2P0Urfp64=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vl9tpxgVZi6sCC8n6bVPLDKKSJMDAOVfGKlJJ6Ed4oM24LrF+D5tofHCJZBrGDkfg
+         0jsxa6wfun+113XwL8sgKuPMFqP9pZ3081gkZsi6momcerJAZoVw+094foQ8dKlodT
+         0BmwJhH96VQ+IiCEcn+R5/lFLc5JiOJBrTAwhnc0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.18 805/879] Kconfig: Add option for asm goto w/ tied outputs to workaround clang-13 bug
+Date:   Tue,  7 Jun 2022 19:05:23 +0200
+Message-Id: <20220607165026.224872138@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix a bug where KVM requires userspace to set the guest CPUID model
-in order to enable features via IA32_FEAT_CTL.
+From: Sean Christopherson <seanjc@google.com>
 
-Note, the selftest builds on the vmx_msrs_test from the VMX MSRs series[*],
-i.e. it won't apply cleanly on kvm/queue.  
+commit 1aa0e8b144b6474c4914439d232d15bfe883636b upstream.
 
-[*] https://lkml.kernel.org/r/20220607213604.3346000-1-seanjc@google.com
+Add a config option to guard (future) usage of asm_volatile_goto() that
+includes "tied outputs", i.e. "+" constraints that specify both an input
+and output parameter.  clang-13 has a bug[1] that causes compilation of
+such inline asm to fail, and KVM wants to use a "+m" constraint to
+implement a uaccess form of CMPXCHG[2].  E.g. the test code fails with
 
-Sean Christopherson (3):
-  KVM: VMX: Allow userspace to set all supported FEATURE_CONTROL bits
-  KVM: VMX: Move MSR_IA32_FEAT_CTL.LOCKED check into "is valid" helper
-  KVM: selftests: Verify userspace can stuff IA32_FEATURE_CONTROL at
-    will
+  <stdin>:1:29: error: invalid operand in inline asm: '.long (${1:l}) - .'
+  int foo(int *x) { asm goto (".long (%l[bar]) - .\n": "+m"(*x) ::: bar); return *x; bar: return 0; }
+                            ^
+  <stdin>:1:29: error: unknown token in expression
+  <inline asm>:1:9: note: instantiated into assembly here
+          .long () - .
+                 ^
+  2 errors generated.
 
- arch/x86/kvm/vmx/vmx.c                        | 43 ++++++++++++++---
- .../selftests/kvm/include/x86_64/processor.h  |  2 +
- .../selftests/kvm/x86_64/vmx_msrs_test.c      | 47 +++++++++++++++++++
- 3 files changed, 85 insertions(+), 7 deletions(-)
+on clang-13, but passes on gcc (with appropriate asm goto support).  The
+bug is fixed in clang-14, but won't be backported to clang-13 as the
+changes are too invasive/risky.
 
+gcc also had a similar bug[3], fixed in gcc-11, where gcc failed to
+account for its behavior of assigning two numbers to tied outputs (one
+for input, one for output) when evaluating symbolic references.
 
-base-commit: 838fd3e5a7208ee3b95bf73898c135a44a0c589d
--- 
-2.36.1.255.ge46751e96f-goog
+[1] https://github.com/ClangBuiltLinux/linux/issues/1512
+[2] https://lore.kernel.org/all/YfMruK8%2F1izZ2VHS@google.com
+[3] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=98096
+
+Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220202004945.2540433-2-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ init/Kconfig |    5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -77,6 +77,11 @@ config CC_HAS_ASM_GOTO_OUTPUT
+ 	depends on CC_HAS_ASM_GOTO
+ 	def_bool $(success,echo 'int foo(int x) { asm goto ("": "=r"(x) ::: bar); return x; bar: return 0; }' | $(CC) -x c - -c -o /dev/null)
+ 
++config CC_HAS_ASM_GOTO_TIED_OUTPUT
++	depends on CC_HAS_ASM_GOTO_OUTPUT
++	# Detect buggy gcc and clang, fixed in gcc-11 clang-14.
++	def_bool $(success,echo 'int foo(int *x) { asm goto (".long (%l[bar]) - .\n": "+m"(*x) ::: bar); return *x; bar: return 0; }' | $CC -x c - -c -o /dev/null)
++
+ config TOOLS_SUPPORT_RELR
+ 	def_bool $(success,env "CC=$(CC)" "LD=$(LD)" "NM=$(NM)" "OBJCOPY=$(OBJCOPY)" $(srctree)/scripts/tools-support-relr.sh)
+ 
+
 
