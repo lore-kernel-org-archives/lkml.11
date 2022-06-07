@@ -2,165 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 064CBCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 385FDCCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381840AbiFGVpI (ORCPT
+        id S1381897AbiFGVpa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
+        Tue, 7 Jun 2022 17:45:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378864AbiFGUwi (ORCPT
+        with ESMTP id S1378985AbiFGUwq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:38 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9AE2E696
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:43:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654627395; x=1686163395;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=A/5BMYgNu0Yt+eZ+D/1xw5NF6LjHXm/NfMiYDFkov/E=;
-  b=fz8aDaP64ANsWlhebzZNz0ydhV/mOiheQKp4ixSKXUo8Ty1p2rB2sEvs
-   mEgZHmwrT9EVtjosLpMIr+UC64Ws44c99hVJDACbCfYMtCP6/BgO48ofr
-   DT9idM/1VgsdFTIVqn6li9gwxU6X4Pk/9Upu6aCDFldzvks8+Db2gob8Q
-   +i0Hwjo2mDJgMm8UsKADQpvgt1du16bRjx9X5vspJBmN14lcrTwhgxmfs
-   mBQ0nm7GXBhMf33ETn3mVJGJJrIORpbDIv9a2DLYWr5Hq1kFESHgLo/CH
-   vXWpFSQdpCU4/DGMFwrTvQEqgOiBK5L30bp6mLq5bsGYZNmuDurOfX8nu
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="257178716"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="257178716"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 11:43:06 -0700
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="579716176"
-Received: from schen9-mobl.amr.corp.intel.com ([10.251.8.166])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 11:43:05 -0700
-Message-ID: <92649c9a6e0b6931b34aeaaf22c0a1e874484b7f.camel@linux.intel.com>
-Subject: Re: [PATCH v5 1/9] mm/demotion: Add support for explicit memory
- tiers
-From:   Tim Chen <tim.c.chen@linux.intel.com>
-To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
-        Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-Date:   Tue, 07 Jun 2022 11:43:05 -0700
-In-Reply-To: <20220603134237.131362-2-aneesh.kumar@linux.ibm.com>
-References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
-         <20220603134237.131362-2-aneesh.kumar@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+        Tue, 7 Jun 2022 16:52:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF6D5EBFC;
+        Tue,  7 Jun 2022 11:43:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3DE660B3D;
+        Tue,  7 Jun 2022 18:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2C8BC385A2;
+        Tue,  7 Jun 2022 18:43:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654627411;
+        bh=e5c3CxGrpbc0Jirl6dkEelSrmn2mfAXYagN8IL4SVRg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NfaRmVWzwfrr0QrA9e6B7hPzcwkQgLlXgieHvScPps5yhKCbUIaGbZgZ2HWLVbjNR
+         4RuoHm3EFkcdhtRDwq/BRw5TOV0m6va2554GkN2KRpfoZOOZAGFJW3cXM1v4dVNgOm
+         tpvGGRQxaxq4fzrsso8P5VH6RocbdzRJS2sIfTz8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yi Yang <yiyang13@huawei.com>,
+        Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH 5.17 728/772] xtensa/simdisk: fix proc_read_simdisk()
+Date:   Tue,  7 Jun 2022 19:05:20 +0200
+Message-Id: <20220607165010.493623154@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-06-03 at 19:12 +0530, Aneesh Kumar K.V wrote:
-> 
-> 
-> The nodes which are part of a specific memory tier can be listed
-> via
-> /sys/devices/system/memtier/memtierN/nodelist
-> 
-> "Rank" is an opaque value. Its absolute value doesn't have any
-> special meaning. But the rank values of different memtiers can be
-> compared with each other to determine the memory tier order.
-> 
-> For example, if we have 3 memtiers: memtier0, memtier1, memiter2, and
-> their rank values are 300, 200, 100, then the memory tier order is:
-> memtier0 -> memtier2 -> memtier1, 
+From: Yi Yang <yiyang13@huawei.com>
 
-Why is memtier2 (rank 100) higher than memtier1 (rank 200)?  Seems like
-the order should be memtier0 -> memtier1 -> memtier2?
-                    (rank 300)  (rank 200)  (rank 100)
+commit b011946d039d66bbc7102137e98cc67e1356aa87 upstream.
 
-> where memtier0 is the highest tier
-> and memtier1 is the lowest tier.
+The commit a69755b18774 ("xtensa simdisk: switch to proc_create_data()")
+split read operation into two parts, first retrieving the path when it's
+non-null and second retrieving the trailing '\n'. However when the path
+is non-null the first simple_read_from_buffer updates ppos, and the
+second simple_read_from_buffer returns 0 if ppos is greater than 1 (i.e.
+almost always). As a result reading from that proc file is almost always
+empty.
 
-I think memtier2 is the lowest as it has the lowest rank value.
-> 
-> The rank value of each memtier should be unique.
-> 
-> 
-> +
-> +static void memory_tier_device_release(struct device *dev)
-> +{
-> +	struct memory_tier *tier = to_memory_tier(dev);
-> +
+Fix it by making a temporary copy of the path with the trailing '\n' and
+using simple_read_from_buffer on that copy.
 
-Do we need some ref counts on memory_tier?
-If there is another device still using the same memtier,
-free below could cause problem.
+Cc: stable@vger.kernel.org
+Fixes: a69755b18774 ("xtensa simdisk: switch to proc_create_data()")
+Signed-off-by: Yi Yang <yiyang13@huawei.com>
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/xtensa/platforms/iss/simdisk.c |   18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-> +	kfree(tier);
-> +}
-> +
-> 
-...
-> +static struct memory_tier *register_memory_tier(unsigned int tier)
-> +{
-> +	int error;
-> +	struct memory_tier *memtier;
-> +
-> +	if (tier >= MAX_MEMORY_TIERS)
-> +		return NULL;
-> +
-> +	memtier = kzalloc(sizeof(struct memory_tier), GFP_KERNEL);
-> +	if (!memtier)
-> +		return NULL;
-> +
-> +	memtier->dev.id = tier;
-> +	memtier->rank = get_rank_from_tier(tier);
-> +	memtier->dev.bus = &memory_tier_subsys;
-> +	memtier->dev.release = memory_tier_device_release;
-> +	memtier->dev.groups = memory_tier_dev_groups;
-> +
+--- a/arch/xtensa/platforms/iss/simdisk.c
++++ b/arch/xtensa/platforms/iss/simdisk.c
+@@ -211,12 +211,18 @@ static ssize_t proc_read_simdisk(struct
+ 	struct simdisk *dev = pde_data(file_inode(file));
+ 	const char *s = dev->filename;
+ 	if (s) {
+-		ssize_t n = simple_read_from_buffer(buf, size, ppos,
+-							s, strlen(s));
+-		if (n < 0)
+-			return n;
+-		buf += n;
+-		size -= n;
++		ssize_t len = strlen(s);
++		char *temp = kmalloc(len + 2, GFP_KERNEL);
++
++		if (!temp)
++			return -ENOMEM;
++
++		len = scnprintf(temp, len + 2, "%s\n", s);
++		len = simple_read_from_buffer(buf, size, ppos,
++					      temp, len);
++
++		kfree(temp);
++		return len;
+ 	}
+ 	return simple_read_from_buffer(buf, size, ppos, "\n", 1);
+ }
 
-Should you take the mem_tier_lock before you insert to
-memtier-list?
-
-> +	insert_memory_tier(memtier);
-> +
-> +	error = device_register(&memtier->dev);
-> +	if (error) {
-> +		list_del(&memtier->list);
-> +		put_device(&memtier->dev);
-> +		return NULL;
-> +	}
-> +	return memtier;
-> +}
-> +
-> +__maybe_unused // temporay to prevent warnings during bisects
-> +static void unregister_memory_tier(struct memory_tier *memtier)
-> +{
-
-I think we should take mem_tier_lock before modifying memtier->list.
-
-> +	list_del(&memtier->list);
-> +	device_unregister(&memtier->dev);
-> +}
-> +
-> 
-
-Thanks.
-
-Tim
 
