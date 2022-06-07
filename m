@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 642A4CCA494
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA41FCCA496
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389018AbiFHAfK (ORCPT
+        id S1389245AbiFHAff (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:35:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56406 "EHLO
+        Tue, 7 Jun 2022 20:35:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382903AbiFGV6j (ORCPT
+        with ESMTP id S1385115AbiFGWVB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:58:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF5885DE68;
-        Tue,  7 Jun 2022 12:14:05 -0700 (PDT)
+        Tue, 7 Jun 2022 18:21:01 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563C7265607;
+        Tue,  7 Jun 2022 12:21:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D98EB823B1;
-        Tue,  7 Jun 2022 19:14:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B665AC385A5;
-        Tue,  7 Jun 2022 19:14:03 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 219C8CE24B5;
+        Tue,  7 Jun 2022 19:20:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17184C385A2;
+        Tue,  7 Jun 2022 19:20:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629244;
-        bh=yhkFxIityw8ZimP6Eb+PxG7OS7+EztpNKvsgiyHhzhQ=;
+        s=korg; t=1654629649;
+        bh=o6j1igLMNLxBnF8TPbs7l3iBQRwCDPWNKbDNPRs6GJk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GhXxEvmxZ8QCO00VazPs2TS9Pi+SKGOsigCYeeOYC8bPMB833NII+WuQAyQwDnCG+
-         ZP1eQHXYqdilcr+XWzJ2F1TOPD70jh4TCTgXYK4OQEb5GH9gq+FgWBzI123Y3GH34k
-         DqAXFvhYkdZZsu0c94RrqwYxra0f6kmZpuK0XyA8=
+        b=vYv1BLU7WWAt1a4ypWuSxtfi3gCwKHcJmSTIsXxmcB4ttPB6POlYVMaYBPe2cNiCP
+         8ShpVGWm/1XmLA4xDQlsID2CnayYbzdtKsgj+nM1u5/QsMiy4bZ7KG4oOl2/ZZqI7F
+         QddNur6H4Iia7LMC2IZeyNEO++L0SPc/Ny2RU/w8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qi Zheng <zhengqi.arch@bytedance.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 620/879] tty: fix deadlock caused by calling printk() under tty_port->lock
-Date:   Tue,  7 Jun 2022 19:02:18 +0200
-Message-Id: <20220607165020.846504217@linuxfoundation.org>
+        stable@vger.kernel.org, Aditya Garg <gargaditya08@live.com>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 5.18 726/879] efi: Do not import certificates from UEFI Secure Boot for T2 Macs
+Date:   Tue,  7 Jun 2022 19:04:04 +0200
+Message-Id: <20220607165023.928954292@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -54,143 +49,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qi Zheng <zhengqi.arch@bytedance.com>
+From: Aditya Garg <gargaditya08@live.com>
 
-[ Upstream commit 6b9dbedbe3499fef862c4dff5217cf91f34e43b3 ]
+commit 155ca952c7ca19aa32ecfb7373a32bbc2e1ec6eb upstream.
 
-pty_write() invokes kmalloc() which may invoke a normal printk() to print
-failure message.  This can cause a deadlock in the scenario reported by
-syz-bot below:
+On Apple T2 Macs, when Linux attempts to read the db and dbx efi variables
+at early boot to load UEFI Secure Boot certificates, a page fault occurs
+in Apple firmware code and EFI runtime services are disabled with the
+following logs:
 
-       CPU0              CPU1                    CPU2
-       ----              ----                    ----
-                         lock(console_owner);
-                                                 lock(&port_lock_key);
-  lock(&port->lock);
-                         lock(&port_lock_key);
-                                                 lock(&port->lock);
-  lock(console_owner);
+[Firmware Bug]: Page fault caused by firmware at PA: 0xffffb1edc0068000
+WARNING: CPU: 3 PID: 104 at arch/x86/platform/efi/quirks.c:735 efi_crash_gracefully_on_page_fault+0x50/0xf0
+(Removed some logs from here)
+Call Trace:
+ <TASK>
+ page_fault_oops+0x4f/0x2c0
+ ? search_bpf_extables+0x6b/0x80
+ ? search_module_extables+0x50/0x80
+ ? search_exception_tables+0x5b/0x60
+ kernelmode_fixup_or_oops+0x9e/0x110
+ __bad_area_nosemaphore+0x155/0x190
+ bad_area_nosemaphore+0x16/0x20
+ do_kern_addr_fault+0x8c/0xa0
+ exc_page_fault+0xd8/0x180
+ asm_exc_page_fault+0x1e/0x30
+(Removed some logs from here)
+ ? __efi_call+0x28/0x30
+ ? switch_mm+0x20/0x30
+ ? efi_call_rts+0x19a/0x8e0
+ ? process_one_work+0x222/0x3f0
+ ? worker_thread+0x4a/0x3d0
+ ? kthread+0x17a/0x1a0
+ ? process_one_work+0x3f0/0x3f0
+ ? set_kthread_struct+0x40/0x40
+ ? ret_from_fork+0x22/0x30
+ </TASK>
+---[ end trace 1f82023595a5927f ]---
+efi: Froze efi_rts_wq and disabled EFI Runtime Services
+integrity: Couldn't get size: 0x8000000000000015
+integrity: MODSIGN: Couldn't get UEFI db list
+efi: EFI Runtime Services are disabled!
+integrity: Couldn't get size: 0x8000000000000015
+integrity: Couldn't get UEFI dbx list
+integrity: Couldn't get size: 0x8000000000000015
+integrity: Couldn't get mokx list
+integrity: Couldn't get size: 0x80000000
 
-As commit dbdda842fe96 ("printk: Add console owner and waiter logic to
-load balance console writes") said, such deadlock can be prevented by
-using printk_deferred() in kmalloc() (which is invoked in the section
-guarded by the port->lock).  But there are too many printk() on the
-kmalloc() path, and kmalloc() can be called from anywhere, so changing
-printk() to printk_deferred() is too complicated and inelegant.
+So we avoid reading these UEFI variables and thus prevent the crash.
 
-Therefore, this patch chooses to specify __GFP_NOWARN to kmalloc(), so
-that printk() will not be called, and this deadlock problem can be
-avoided.
-
-Syzbot reported the following lockdep error:
-
-======================================================
-WARNING: possible circular locking dependency detected
-5.4.143-00237-g08ccc19a-dirty #10 Not tainted
-------------------------------------------------------
-syz-executor.4/29420 is trying to acquire lock:
-ffffffff8aedb2a0 (console_owner){....}-{0:0}, at: console_trylock_spinning kernel/printk/printk.c:1752 [inline]
-ffffffff8aedb2a0 (console_owner){....}-{0:0}, at: vprintk_emit+0x2ca/0x470 kernel/printk/printk.c:2023
-
-but task is already holding lock:
-ffff8880119c9158 (&port->lock){-.-.}-{2:2}, at: pty_write+0xf4/0x1f0 drivers/tty/pty.c:120
-
-which lock already depends on the new lock.
-
-the existing dependency chain (in reverse order) is:
-
--> #2 (&port->lock){-.-.}-{2:2}:
-       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
-       _raw_spin_lock_irqsave+0x35/0x50 kernel/locking/spinlock.c:159
-       tty_port_tty_get drivers/tty/tty_port.c:288 [inline]          		<-- lock(&port->lock);
-       tty_port_default_wakeup+0x1d/0xb0 drivers/tty/tty_port.c:47
-       serial8250_tx_chars+0x530/0xa80 drivers/tty/serial/8250/8250_port.c:1767
-       serial8250_handle_irq.part.0+0x31f/0x3d0 drivers/tty/serial/8250/8250_port.c:1854
-       serial8250_handle_irq drivers/tty/serial/8250/8250_port.c:1827 [inline] 	<-- lock(&port_lock_key);
-       serial8250_default_handle_irq+0xb2/0x220 drivers/tty/serial/8250/8250_port.c:1870
-       serial8250_interrupt+0xfd/0x200 drivers/tty/serial/8250/8250_core.c:126
-       __handle_irq_event_percpu+0x109/0xa50 kernel/irq/handle.c:156
-       [...]
-
--> #1 (&port_lock_key){-.-.}-{2:2}:
-       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
-       _raw_spin_lock_irqsave+0x35/0x50 kernel/locking/spinlock.c:159
-       serial8250_console_write+0x184/0xa40 drivers/tty/serial/8250/8250_port.c:3198
-										<-- lock(&port_lock_key);
-       call_console_drivers kernel/printk/printk.c:1819 [inline]
-       console_unlock+0x8cb/0xd00 kernel/printk/printk.c:2504
-       vprintk_emit+0x1b5/0x470 kernel/printk/printk.c:2024			<-- lock(console_owner);
-       vprintk_func+0x8d/0x250 kernel/printk/printk_safe.c:394
-       printk+0xba/0xed kernel/printk/printk.c:2084
-       register_console+0x8b3/0xc10 kernel/printk/printk.c:2829
-       univ8250_console_init+0x3a/0x46 drivers/tty/serial/8250/8250_core.c:681
-       console_init+0x49d/0x6d3 kernel/printk/printk.c:2915
-       start_kernel+0x5e9/0x879 init/main.c:713
-       secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:241
-
--> #0 (console_owner){....}-{0:0}:
-       [...]
-       lock_acquire+0x127/0x340 kernel/locking/lockdep.c:4734
-       console_trylock_spinning kernel/printk/printk.c:1773 [inline]		<-- lock(console_owner);
-       vprintk_emit+0x307/0x470 kernel/printk/printk.c:2023
-       vprintk_func+0x8d/0x250 kernel/printk/printk_safe.c:394
-       printk+0xba/0xed kernel/printk/printk.c:2084
-       fail_dump lib/fault-inject.c:45 [inline]
-       should_fail+0x67b/0x7c0 lib/fault-inject.c:144
-       __should_failslab+0x152/0x1c0 mm/failslab.c:33
-       should_failslab+0x5/0x10 mm/slab_common.c:1224
-       slab_pre_alloc_hook mm/slab.h:468 [inline]
-       slab_alloc_node mm/slub.c:2723 [inline]
-       slab_alloc mm/slub.c:2807 [inline]
-       __kmalloc+0x72/0x300 mm/slub.c:3871
-       kmalloc include/linux/slab.h:582 [inline]
-       tty_buffer_alloc+0x23f/0x2a0 drivers/tty/tty_buffer.c:175
-       __tty_buffer_request_room+0x156/0x2a0 drivers/tty/tty_buffer.c:273
-       tty_insert_flip_string_fixed_flag+0x93/0x250 drivers/tty/tty_buffer.c:318
-       tty_insert_flip_string include/linux/tty_flip.h:37 [inline]
-       pty_write+0x126/0x1f0 drivers/tty/pty.c:122				<-- lock(&port->lock);
-       n_tty_write+0xa7a/0xfc0 drivers/tty/n_tty.c:2356
-       do_tty_write drivers/tty/tty_io.c:961 [inline]
-       tty_write+0x512/0x930 drivers/tty/tty_io.c:1045
-       __vfs_write+0x76/0x100 fs/read_write.c:494
-       [...]
-
-other info that might help us debug this:
-
-Chain exists of:
-  console_owner --> &port_lock_key --> &port->lock
-
-Link: https://lkml.kernel.org/r/20220511061951.1114-2-zhengqi.arch@bytedance.com
-Link: https://lkml.kernel.org/r/20220510113809.80626-2-zhengqi.arch@bytedance.com
-Fixes: b6da31b2c07c ("tty: Fix data race in tty_insert_flip_string_fixed_flag")
-Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
-Acked-by: Jiri Slaby <jirislaby@kernel.org>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Aditya Garg <gargaditya08@live.com>
+Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/tty_buffer.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ security/integrity/platform_certs/keyring_handler.h |    8 ++++
+ security/integrity/platform_certs/load_uefi.c       |   33 ++++++++++++++++++++
+ 2 files changed, 41 insertions(+)
 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 646510476c30..bfa431a8e690 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -175,7 +175,8 @@ static struct tty_buffer *tty_buffer_alloc(struct tty_port *port, size_t size)
- 	 */
- 	if (atomic_read(&port->buf.mem_used) > port->buf.mem_limit)
- 		return NULL;
--	p = kmalloc(sizeof(struct tty_buffer) + 2 * size, GFP_ATOMIC);
-+	p = kmalloc(sizeof(struct tty_buffer) + 2 * size,
-+		    GFP_ATOMIC | __GFP_NOWARN);
- 	if (p == NULL)
- 		return NULL;
+--- a/security/integrity/platform_certs/keyring_handler.h
++++ b/security/integrity/platform_certs/keyring_handler.h
+@@ -35,3 +35,11 @@ efi_element_handler_t get_handler_for_mo
+ efi_element_handler_t get_handler_for_dbx(const efi_guid_t *sig_type);
  
--- 
-2.35.1
-
+ #endif
++
++#ifndef UEFI_QUIRK_SKIP_CERT
++#define UEFI_QUIRK_SKIP_CERT(vendor, product) \
++		 .matches = { \
++			DMI_MATCH(DMI_BOARD_VENDOR, vendor), \
++			DMI_MATCH(DMI_PRODUCT_NAME, product), \
++		},
++#endif
+--- a/security/integrity/platform_certs/load_uefi.c
++++ b/security/integrity/platform_certs/load_uefi.c
+@@ -3,6 +3,7 @@
+ #include <linux/kernel.h>
+ #include <linux/sched.h>
+ #include <linux/cred.h>
++#include <linux/dmi.h>
+ #include <linux/err.h>
+ #include <linux/efi.h>
+ #include <linux/slab.h>
+@@ -13,6 +14,31 @@
+ #include "keyring_handler.h"
+ 
+ /*
++ * On T2 Macs reading the db and dbx efi variables to load UEFI Secure Boot
++ * certificates causes occurrence of a page fault in Apple's firmware and
++ * a crash disabling EFI runtime services. The following quirk skips reading
++ * these variables.
++ */
++static const struct dmi_system_id uefi_skip_cert[] = {
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,2") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,3") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,4") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,2") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,3") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,4") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,2") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir9,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacMini8,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacPro7,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,2") },
++	{ }
++};
++
++/*
+  * Look to see if a UEFI variable called MokIgnoreDB exists and return true if
+  * it does.
+  *
+@@ -138,6 +164,13 @@ static int __init load_uefi_certs(void)
+ 	unsigned long dbsize = 0, dbxsize = 0, mokxsize = 0;
+ 	efi_status_t status;
+ 	int rc = 0;
++	const struct dmi_system_id *dmi_id;
++
++	dmi_id = dmi_first_match(uefi_skip_cert);
++	if (dmi_id) {
++		pr_err("Reading UEFI Secure Boot Certs is not supported on T2 Macs.\n");
++		return false;
++	}
+ 
+ 	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
+ 		return false;
 
 
