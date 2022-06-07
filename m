@@ -2,132 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E092AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF595CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381109AbiFGVjm (ORCPT
+        id S1381120AbiFGVjs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:39:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49000 "EHLO
+        Tue, 7 Jun 2022 17:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377275AbiFGUud (ORCPT
+        with ESMTP id S1377311AbiFGUug (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:50:33 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D4A1F77FC;
-        Tue,  7 Jun 2022 11:39:58 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 8FBF65FD02;
-        Tue,  7 Jun 2022 21:39:26 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1654627166;
-        bh=KhjSexn3nEphWw72vrwnNoGa5BPxsszVKS1AlIdu0Pg=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=lKIENIBWdBPmv1/xP3RgrpXxhDDPhM8YsjMNm+rOVxBDZVYiLJpGOC39kZtLb9yNL
-         Fkbu5CemUtyNwX8xWogHNOc7WMlbLTxeVE6kQkxlfZUqR4d+HraVHjca7541oeWEMz
-         r9wgSiVryplcBdJv9C5WHWos1RkdiofcRoDauGXMqz/bvq2w53IUugy6YvbuHm9S6H
-         MGFqpKQ08vo3lxPHCl6vQl8pQB38XOCRQ/EiJgMp9G0rzw57/f+V64ZBTK5CMJXDxL
-         X3oQaZ+PYrcFA3QFdTyvomXMyTWMcUxQcO3pWlhy/4sBzvVb1jYVU+o2bXb+owJI5t
-         ggUd4B+KMApZA==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Tue,  7 Jun 2022 21:39:26 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "noname.nuno@gmail.com" <noname.nuno@gmail.com>
-CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "rockosov@gmail.com" <rockosov@gmail.com>,
-        Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: [PATCH v3] iio: trigger: warn about non-registered iio trigger
- getting attempt
-Thread-Topic: [PATCH v3] iio: trigger: warn about non-registered iio trigger
- getting attempt
-Thread-Index: AQHYep3lZdCBX5wfLkWR1miHp7T4Og==
-Date:   Tue, 7 Jun 2022 18:39:18 +0000
-Message-ID: <20220607183907.20017-1-ddrokosov@sberdevices.ru>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 7 Jun 2022 16:50:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5531F8985;
+        Tue,  7 Jun 2022 11:40:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC6326159D;
+        Tue,  7 Jun 2022 18:39:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7120C385A2;
+        Tue,  7 Jun 2022 18:39:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654627190;
+        bh=vn4JIH1tVKgGS5qXnxkXPSSmPKxh2vj+QagUdCtlYsk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AP0JNlbOdRV/x9rTzj25IoAgnxNMo8eyPTyH1t6mArne+2BcutFMjsC4JwtmwT2hV
+         acgNrIjJ6V3L68H7ttPkQQiRP74+E3PaN1hWtaXehbYfrQF4jKTmeXVzkp5RkbPbVm
+         yInGch+HqlsEcEi4adDssJZ7NXWrNFENBKZlwgS0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.17 610/772] f2fs: fix to do sanity check on block address in f2fs_do_zero_range()
+Date:   Tue,  7 Jun 2022 19:03:22 +0200
+Message-Id: <20220607165006.915505366@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/06/07 15:55:00 #19701172
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As a part of patch series about wrong trigger register() and get()
-calls order in the some IIO drivers trigger initialization path:
+From: Chao Yu <chao@kernel.org>
 
-https://lore.kernel.org/all/20220524181150.9240-1-ddrokosov@sberdevices.ru/
+commit 25f8236213a91efdf708b9d77e9e51b6fc3e141c upstream.
 
-runtime WARN_ONCE() is added to alarm IIO driver authors who make such
-a mistake.
+As Yanming reported in bugzilla:
 
-When an IIO driver allocates a new IIO trigger, it should register it
-before calling the get() operation. In other words, each IIO driver
-must abide by IIO trigger alloc()/register()/get() calls order.
+https://bugzilla.kernel.org/show_bug.cgi?id=215894
 
-Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+I have encountered a bug in F2FS file system in kernel v5.17.
+
+I have uploaded the system call sequence as case.c, and a fuzzed image can
+be found in google net disk
+
+The kernel should enable CONFIG_KASAN=y and CONFIG_KASAN_INLINE=y. You can
+reproduce the bug by running the following commands:
+
+kernel BUG at fs/f2fs/segment.c:2291!
+Call Trace:
+ f2fs_invalidate_blocks+0x193/0x2d0
+ f2fs_fallocate+0x2593/0x4a70
+ vfs_fallocate+0x2a5/0xac0
+ ksys_fallocate+0x35/0x70
+ __x64_sys_fallocate+0x8e/0xf0
+ do_syscall_64+0x3b/0x90
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The root cause is, after image was fuzzed, block mapping info in inode
+will be inconsistent with SIT table, so in f2fs_fallocate(), it will cause
+panic when updating SIT with invalid blkaddr.
+
+Let's fix the issue by adding sanity check on block address before updating
+SIT table with it.
+
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Changes:
-v1 -> v2: totally reworked the patch, used trig->list entry instead of
-          trig->owner as driver registration indicator.
-          It works perfectly for both builtin and built as a module
-          drivers.
+ fs/f2fs/file.c |   16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-v2 -> v3: changed WARN() call to WARN_ONCE() to avoid warn spamming
-          during deferred probe() as Andy suggested.
----
- drivers/iio/industrialio-trigger.c | 2 ++
- include/linux/iio/trigger.h        | 5 +++++
- 2 files changed, 7 insertions(+)
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -1437,11 +1437,19 @@ static int f2fs_do_zero_range(struct dno
+ 			ret = -ENOSPC;
+ 			break;
+ 		}
+-		if (dn->data_blkaddr != NEW_ADDR) {
+-			f2fs_invalidate_blocks(sbi, dn->data_blkaddr);
+-			dn->data_blkaddr = NEW_ADDR;
+-			f2fs_set_data_blkaddr(dn);
++
++		if (dn->data_blkaddr == NEW_ADDR)
++			continue;
++
++		if (!f2fs_is_valid_blkaddr(sbi, dn->data_blkaddr,
++					DATA_GENERIC_ENHANCE)) {
++			ret = -EFSCORRUPTED;
++			break;
+ 		}
++
++		f2fs_invalidate_blocks(sbi, dn->data_blkaddr);
++		dn->data_blkaddr = NEW_ADDR;
++		f2fs_set_data_blkaddr(dn);
+ 	}
+ 
+ 	f2fs_update_extent_cache_range(dn, start, 0, index - start);
 
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-=
-trigger.c
-index f504ed351b3e..d6277e72d515 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -581,6 +581,8 @@ struct iio_trigger *viio_trigger_alloc(struct device *p=
-arent,
- 	if (trig->name =3D=3D NULL)
- 		goto free_descs;
-=20
-+	INIT_LIST_HEAD(&trig->list);
-+
- 	trig->subirq_chip.name =3D trig->name;
- 	trig->subirq_chip.irq_mask =3D &iio_trig_subirqmask;
- 	trig->subirq_chip.irq_unmask =3D &iio_trig_subirqunmask;
-diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
-index 4c69b144677b..03b1d6863436 100644
---- a/include/linux/iio/trigger.h
-+++ b/include/linux/iio/trigger.h
-@@ -93,6 +93,11 @@ static inline void iio_trigger_put(struct iio_trigger *t=
-rig)
- static inline struct iio_trigger *iio_trigger_get(struct iio_trigger *trig=
-)
- {
- 	get_device(&trig->dev);
-+
-+	WARN_ONCE(list_empty(&trig->list),
-+		  "Getting non-registered iio trigger %s is prohibited\n",
-+		  trig->name);
-+
- 	__module_get(trig->owner);
-=20
- 	return trig;
---=20
-2.36.0
+
