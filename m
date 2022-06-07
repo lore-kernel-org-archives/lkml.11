@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63CE1CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F489CCA487
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386134AbiFGWsD (ORCPT
+        id S1385979AbiFGWrm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37000 "EHLO
+        Tue, 7 Jun 2022 18:47:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380822AbiFGViz (ORCPT
+        with ESMTP id S1379560AbiFGVif (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:38:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518E233E39;
-        Tue,  7 Jun 2022 12:05:40 -0700 (PDT)
+        Tue, 7 Jun 2022 17:38:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C69328725;
+        Tue,  7 Jun 2022 12:05:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7931BCE249F;
-        Tue,  7 Jun 2022 19:05:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62816C341C4;
-        Tue,  7 Jun 2022 19:05:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3E9561277;
+        Tue,  7 Jun 2022 19:05:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC3DDC385A2;
+        Tue,  7 Jun 2022 19:05:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628736;
-        bh=VvEMwFTsWdTGPEoYmkCgqck1dH6F3jcTrr8S+0Olq6o=;
+        s=korg; t=1654628731;
+        bh=XRdlFyv+l3XGOOPJ1/GlOwJ8FsDzpPl1DlTotQCzzgk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OyZBzEgcsOdHoec92xQZXNvGZmJfRaSVX/INX6tc6Z6mHzgY6hZCHZR5NQ8jIaTSW
-         rYpp9xjf4M45wJVuyxMKSsbN4uxDUvpYkqAd/iVALLyi4L07vL4zGIvH/z/0YHX8Ak
-         k64Q+P+XfXmapEU1zZ3+MEpSk8ogzmpo1m7z6Tfk=
+        b=CDHKf3gbSUIup9J/iDExCts24GKbrAL0/wS3W7QMlbpBuTi5kCT3MEQGW3wXMOWKt
+         MPJx4anKj2s26qpUQuXJMvP2CauogHTp9BplVmHCH83lsKjwmNuGHn9z54eq+7BOvK
+         7Y0qnvTU9pLsZvKMcW1aedr9bDotb2l9cI0EbPPA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Deren Wu <deren.wu@mediatek.com>,
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
         Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 437/879] mt76: fix antenna config missing in 6G cap
-Date:   Tue,  7 Jun 2022 18:59:15 +0200
-Message-Id: <20220607165015.554653307@linuxfoundation.org>
+Subject: [PATCH 5.18 435/879] mt76: mt7915: do not pass data pointer to mt7915_mcu_muru_debug_set
+Date:   Tue,  7 Jun 2022 18:59:13 +0200
+Message-Id: <20220607165015.497497087@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,43 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Deren Wu <deren.wu@mediatek.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit abba345311a740d9dca1b5eb293b3b1c296715dd ]
+[ Upstream commit badb6ffaa1439fce30fc6ef10571dcf45a622b44 ]
 
-To make sure we have the proper antenna config in 6g cap,
-move IEEE80211_VHT_CAP_[T/R]X_ANTENNA_PATTERN to stream init.
+Fix typo in mt7915_muru_debug_set routine and pass muru_debug value to
+mt7915_mcu_muru_debug_set() instead of data pointer.
 
-Fixes: edf9dab8ba27 ("mt76: add 6GHz support")
-Signed-off-by: Deren Wu <deren.wu@mediatek.com>
+Fixes: 1966a5078f2d ("mt76: mt7915: add mu-mimo and ofdma debugfs knobs")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mac80211.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mac80211.c b/drivers/net/wireless/mediatek/mt76/mac80211.c
-index 5b53d008eb66..917ea20c026b 100644
---- a/drivers/net/wireless/mediatek/mt76/mac80211.c
-+++ b/drivers/net/wireless/mediatek/mt76/mac80211.c
-@@ -248,6 +248,8 @@ static void mt76_init_stream_cap(struct mt76_phy *phy,
- 		vht_cap->cap |= IEEE80211_VHT_CAP_TXSTBC;
- 	else
- 		vht_cap->cap &= ~IEEE80211_VHT_CAP_TXSTBC;
-+	vht_cap->cap |= IEEE80211_VHT_CAP_TX_ANTENNA_PATTERN |
-+			IEEE80211_VHT_CAP_RX_ANTENNA_PATTERN;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
+index 4e1ecaec8f4f..dece0a6e00b3 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
+@@ -95,7 +95,7 @@ mt7915_muru_debug_set(void *data, u64 val)
+ 	struct mt7915_dev *dev = data;
  
- 	for (i = 0; i < 8; i++) {
- 		if (i < nstream)
-@@ -323,8 +325,6 @@ mt76_init_sband(struct mt76_phy *phy, struct mt76_sband *msband,
- 	vht_cap->cap |= IEEE80211_VHT_CAP_RXLDPC |
- 			IEEE80211_VHT_CAP_RXSTBC_1 |
- 			IEEE80211_VHT_CAP_SHORT_GI_80 |
--			IEEE80211_VHT_CAP_RX_ANTENNA_PATTERN |
--			IEEE80211_VHT_CAP_TX_ANTENNA_PATTERN |
- 			(3 << IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_SHIFT);
+ 	dev->muru_debug = val;
+-	mt7915_mcu_muru_debug_set(dev, data);
++	mt7915_mcu_muru_debug_set(dev, dev->muru_debug);
  
  	return 0;
+ }
 -- 
 2.35.1
 
