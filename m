@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 838CBC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A77EEC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386335AbiFGWsu (ORCPT
+        id S1385724AbiFGWq2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47060 "EHLO
+        Tue, 7 Jun 2022 18:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381234AbiFGVkU (ORCPT
+        with ESMTP id S1381043AbiFGVg1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:20 -0400
+        Tue, 7 Jun 2022 17:36:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2E5152DA7;
-        Tue,  7 Jun 2022 12:06:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0BBD22FA2D;
+        Tue,  7 Jun 2022 12:04:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C16BBB823AF;
-        Tue,  7 Jun 2022 19:05:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24F3BC385A2;
-        Tue,  7 Jun 2022 19:05:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28F7AB82182;
+        Tue,  7 Jun 2022 19:04:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81DAFC385A2;
+        Tue,  7 Jun 2022 19:04:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628758;
-        bh=l+0I0SbIqtb+A2f2/RYmBLgaBp3aFf+0oUxXgNg1N6s=;
+        s=korg; t=1654628686;
+        bh=18FgYgxpK/GSh/zk3qboJruba3KYu3wZkoqWO2P5yoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rvCHNBvSPsGsGIwRzcXTsoehpmxLn8QURMCdNdVAMQdiexUzZ/XUfeuyMXnbUJgQj
-         32LwdnypIy8KiUq5IPhwJyC2lWkCBgLaq278IfrolGYoHvHTgA7Nj/zAyhadfOGzb/
-         I0UuFd1Z/lCtKUeRQRoPhNsTx4GSWSJI9eQ34nnw=
+        b=fUp1mxikn5sLH9RAR3Hvkv5NK1z+HJg5wL89t8338OKk5soCyikfEhM5wa2HI6OFK
+         lHNTuCJbwQMxgnVIHEObVbsXn2GjEiL6HdxXlrIHnPIi0xctthH7AkL4O9Yx9JNy9M
+         yh8aCj4QT/UvkYUazkBLIqNn4tt/Ti1KxaKFXF48=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Vinod Polimera <quic_vpolimer@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 444/879] media: i2c: rdacm2x: properly set subdev entity function
-Date:   Tue,  7 Jun 2022 18:59:22 +0200
-Message-Id: <20220607165015.760039300@linuxfoundation.org>
+Subject: [PATCH 5.18 368/879] drm/msm/disp/dpu1: set vbif hw config to NULL to avoid use after memory free during pm runtime resume
+Date:   Tue,  7 Jun 2022 18:58:06 +0200
+Message-Id: <20220607165013.554997161@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -54,58 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
+From: Vinod Polimera <quic_vpolimer@quicinc.com>
 
-[ Upstream commit d2facee67b4883bb3e7461a0a93fd70d0c7b7261 ]
+[ Upstream commit fa5186b279ecf44b14fb435540d2065be91cb1ed ]
 
-The subdevice entity function was left unset, which produces a warning
-when probing the device:
+BUG: Unable to handle kernel paging request at virtual address 006b6b6b6b6b6be3
 
-mxc-md bus@58000000:camera: Entity type for entity rdacm20 19-0051 was
-not initialized!
+Call trace:
+  dpu_vbif_init_memtypes+0x40/0xb8
+  dpu_runtime_resume+0xcc/0x1c0
+  pm_generic_runtime_resume+0x30/0x44
+  __genpd_runtime_resume+0x68/0x7c
+  genpd_runtime_resume+0x134/0x258
+  __rpm_callback+0x98/0x138
+  rpm_callback+0x30/0x88
+  rpm_resume+0x36c/0x49c
+  __pm_runtime_resume+0x80/0xb0
+  dpu_core_irq_uninstall+0x30/0xb0
+  dpu_irq_uninstall+0x18/0x24
+  msm_drm_uninit+0xd8/0x16c
 
-This patch will set entity function to MEDIA_ENT_F_CAM_SENSOR and leave
-flags unset.
-
-Fixes: 34009bffc1c6 ("media: i2c: Add RDACM20 driver")
-Fixes: a59f853b3b4b ("media: i2c: Add driver for RDACM21 camera module")
-Signed-off-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
-Reviewed-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
+Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/483255/
+Link: https://lore.kernel.org/r/1650857213-30075-1-git-send-email-quic_vpolimer@quicinc.com
+[DB: fixed Fixes tag]
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/rdacm20.c | 2 +-
- drivers/media/i2c/rdacm21.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/i2c/rdacm20.c b/drivers/media/i2c/rdacm20.c
-index 025a610de893..9c6f66cab564 100644
---- a/drivers/media/i2c/rdacm20.c
-+++ b/drivers/media/i2c/rdacm20.c
-@@ -611,7 +611,7 @@ static int rdacm20_probe(struct i2c_client *client)
- 		goto error_free_ctrls;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index e29796c4f27b..ad13a9423601 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -793,8 +793,10 @@ static void _dpu_kms_hw_destroy(struct dpu_kms *dpu_kms)
+ 		for (i = 0; i < dpu_kms->catalog->vbif_count; i++) {
+ 			u32 vbif_idx = dpu_kms->catalog->vbif[i].id;
  
- 	dev->pad.flags = MEDIA_PAD_FL_SOURCE;
--	dev->sd.entity.flags |= MEDIA_ENT_F_CAM_SENSOR;
-+	dev->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
- 	ret = media_entity_pads_init(&dev->sd.entity, 1, &dev->pad);
- 	if (ret < 0)
- 		goto error_free_ctrls;
-diff --git a/drivers/media/i2c/rdacm21.c b/drivers/media/i2c/rdacm21.c
-index 12ec5467ed1e..ef31cf5f23ca 100644
---- a/drivers/media/i2c/rdacm21.c
-+++ b/drivers/media/i2c/rdacm21.c
-@@ -583,7 +583,7 @@ static int rdacm21_probe(struct i2c_client *client)
- 		goto error_free_ctrls;
+-			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx])
++			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx]) {
+ 				dpu_hw_vbif_destroy(dpu_kms->hw_vbif[vbif_idx]);
++				dpu_kms->hw_vbif[vbif_idx] = NULL;
++			}
+ 		}
+ 	}
  
- 	dev->pad.flags = MEDIA_PAD_FL_SOURCE;
--	dev->sd.entity.flags |= MEDIA_ENT_F_CAM_SENSOR;
-+	dev->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
- 	ret = media_entity_pads_init(&dev->sd.entity, 1, &dev->pad);
- 	if (ret < 0)
- 		goto error_free_ctrls;
 -- 
 2.35.1
 
