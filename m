@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B36ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD350C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:34:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355867AbiFGTeW (ORCPT
+        id S1351781AbiFGTe3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:34:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38140 "EHLO
+        Tue, 7 Jun 2022 15:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353495AbiFGSmt (ORCPT
+        with ESMTP id S1346859AbiFGSnh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:42:49 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45647187C0A;
-        Tue,  7 Jun 2022 10:59:02 -0700 (PDT)
+        Tue, 7 Jun 2022 14:43:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A55187C20;
+        Tue,  7 Jun 2022 10:59:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D57EACE243F;
-        Tue,  7 Jun 2022 17:59:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E961EC341C5;
-        Tue,  7 Jun 2022 17:58:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18313616B6;
+        Tue,  7 Jun 2022 17:59:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24B05C34119;
+        Tue,  7 Jun 2022 17:59:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624739;
-        bh=WYUm3IfFlBJsTPpfZgfJ8+0Ib/s2pOnubORdt3YOv3g=;
+        s=korg; t=1654624747;
+        bh=8zuQueNsSr1TyJypSiaofzqDHTFGwa1xbHSs9LGhZiI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rBJcchxRQ961HAFPPt4AtkPXB03Q24rbckphzimkkS0ebJk3VCVJtJWiVlQcRNlM4
-         c/4E4/0FR+0I5Zj0AlkmNddL3NuIXq2NTkny5+QOfcdKUzI9rlnsk1b+O4gr2Q4WT4
-         pLdQCoGD04uR5IA7mQ7xYnxgkpizfyajJgP15OI4=
+        b=hyT0SnVmqkJ1EZIgkI2uyadYHUqceF9uD7gC99fC3G3p8VTtNHlGGeszesKQEC8Om
+         epxLIDILbZ8o6b9oKx2KFdwOk9ci7QZExKfy4JI6CIHgK2Mu2wWww7XSb478bP1Rh9
+         Uv5ss4AZuWbajElRLuzuOCj6MzKrIhtj4Orw/a3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Michal Hocko <mhocko@suse.com>,
-        David Hildenbrand <david@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Scott Cheloha <cheloha@linux.vnet.ibm.com>,
-        Nathan Lynch <nathanl@linux.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Fiona Trahe <fiona.trahe@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 434/667] drivers/base/memory: fix an unlikely reference counting issue in __add_memory_block()
-Date:   Tue,  7 Jun 2022 19:01:39 +0200
-Message-Id: <20220607164947.742315266@linuxfoundation.org>
+Subject: [PATCH 5.15 398/667] crypto: qat - set CIPHER capability for QAT GEN2
+Date:   Tue,  7 Jun 2022 19:01:03 +0200
+Message-Id: <20220607164946.681876644@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -56,50 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
 
-[ Upstream commit f47f758cff59c68015d6b9b9c077110df7c2c828 ]
+[ Upstream commit 547bde7bd4ecd78f36f98744e6c9a0999e52da5a ]
 
-__add_memory_block() calls both put_device() and device_unregister() when
-storing the memory block into the xarray.  This is incorrect because
-xarray doesn't take an additional reference and device_unregister()
-already calls put_device().
+Set the CIPHER capability for QAT GEN2 devices if the hardware supports
+it. This is done if both the CIPHER and the AUTHENTICATION engines are
+available on the device.
 
-Triggering the issue looks really unlikely and its only effect should be
-to log a spurious warning about a ref counted issue.
-
-Link: https://lkml.kernel.org/r/d44c63d78affe844f020dc02ad6af29abc448fc4.1650611702.git.christophe.jaillet@wanadoo.fr
-Fixes: 4fb6eabf1037 ("drivers/base/memory.c: cache memory blocks in xarray to accelerate lookup")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Reviewed-by: David Hildenbrand <david@redhat.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Scott Cheloha <cheloha@linux.vnet.ibm.com>
-Cc: Nathan Lynch <nathanl@linux.ibm.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
+Reviewed-by: Fiona Trahe <fiona.trahe@intel.com>
+Reviewed-by: Marco Chiappero <marco.chiappero@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/memory.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/crypto/qat/qat_common/adf_gen2_hw_data.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/base/memory.c b/drivers/base/memory.c
-index 60c38f9cf1a7..c0d501a3a714 100644
---- a/drivers/base/memory.c
-+++ b/drivers/base/memory.c
-@@ -634,10 +634,9 @@ int register_memory(struct memory_block *memory)
- 	}
- 	ret = xa_err(xa_store(&memory_blocks, memory->dev.id, memory,
- 			      GFP_KERNEL));
--	if (ret) {
--		put_device(&memory->dev);
-+	if (ret)
- 		device_unregister(&memory->dev);
--	}
-+
- 	return ret;
- }
+diff --git a/drivers/crypto/qat/qat_common/adf_gen2_hw_data.c b/drivers/crypto/qat/qat_common/adf_gen2_hw_data.c
+index 9e560c7d4163..9c5871e1752a 100644
+--- a/drivers/crypto/qat/qat_common/adf_gen2_hw_data.c
++++ b/drivers/crypto/qat/qat_common/adf_gen2_hw_data.c
+@@ -161,17 +161,23 @@ u32 adf_gen2_get_accel_cap(struct adf_accel_dev *accel_dev)
+ 	u32 legfuses;
+ 	u32 capabilities = ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC |
+ 			   ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC |
+-			   ICP_ACCEL_CAPABILITIES_AUTHENTICATION;
++			   ICP_ACCEL_CAPABILITIES_AUTHENTICATION |
++			   ICP_ACCEL_CAPABILITIES_CIPHER;
  
+ 	/* Read accelerator capabilities mask */
+ 	pci_read_config_dword(pdev, ADF_DEVICE_LEGFUSE_OFFSET, &legfuses);
+ 
+-	if (legfuses & ICP_ACCEL_MASK_CIPHER_SLICE)
++	/* A set bit in legfuses means the feature is OFF in this SKU */
++	if (legfuses & ICP_ACCEL_MASK_CIPHER_SLICE) {
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC;
++		capabilities &= ~ICP_ACCEL_CAPABILITIES_CIPHER;
++	}
+ 	if (legfuses & ICP_ACCEL_MASK_PKE_SLICE)
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC;
+-	if (legfuses & ICP_ACCEL_MASK_AUTH_SLICE)
++	if (legfuses & ICP_ACCEL_MASK_AUTH_SLICE) {
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_AUTHENTICATION;
++		capabilities &= ~ICP_ACCEL_CAPABILITIES_CIPHER;
++	}
+ 
+ 	if ((straps | fuses) & ADF_POWERGATE_PKE)
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC;
 -- 
 2.35.1
 
