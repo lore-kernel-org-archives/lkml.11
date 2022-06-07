@@ -2,146 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1833CCA485
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29A3CCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352740AbiFGSR3 (ORCPT
+        id S1352935AbiFGSRr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:17:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
+        Tue, 7 Jun 2022 14:17:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348950AbiFGR5t (ORCPT
+        with ESMTP id S1349046AbiFGR5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:57:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 79B8F4FC4E
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:40:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654623645;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8C0NEBO/ea6+vfvU3O1/xfsUBzcZiJoiCFBeBhlMW4s=;
-        b=FZQX3RouvbJMgGfzpBflRNhBCfCs7lbrsf25cf/MCDxWONo0H5Ejn/PPM6j88cQd0e+pt7
-        0GZ1BQFKu7QGi/dapdE5rIdXZDFht4quwjqsfFE6lYnnOxYe6Iq7wV2SJtofVg82a02GTF
-        XOmOMTl8fDeK8RPjK8r039XULw6DiPA=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-594-8SPZt3LoMg2FMyuIDhAfJA-1; Tue, 07 Jun 2022 13:40:44 -0400
-X-MC-Unique: 8SPZt3LoMg2FMyuIDhAfJA-1
-Received: by mail-wr1-f70.google.com with SMTP id r13-20020adff10d000000b002160e9d64f8so2681577wro.0
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:40:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8C0NEBO/ea6+vfvU3O1/xfsUBzcZiJoiCFBeBhlMW4s=;
-        b=jWtccbZ9kQRtvKyUr3ClyBfDg0B2VxnG41t8lFHPbAf4yQsWaJ6kQED55ShsTRtrgl
-         HjadpMPr1nSfEm7UC1JOa//NdKlbq9Es7sQKezS/Pr2maONL1ZwsMW/ohm1aPS7vDFgd
-         CiYIoyG7eGfJbYtdQvCAFu4165KNmULUsUWYXtatTYlsQ95dCJxIzfIdOI0vMnB3E+gi
-         0JfvUFu3EtpwWdsKlCX35z426Wh5x5kkcmJaIWMPi51Eq/BRHF8zXanrIq8aMkYa2jMu
-         laZZj73kwBUKru9NE9Byc9z5jN/B/nSXgeFrMEjwOcUzC8YGErfvkCtXMmcG6fgwjEps
-         kw/A==
-X-Gm-Message-State: AOAM533BmvMud/vV9A5eMwsaC8G4IISurEnDfnElkf3kQnKLni4sRA8B
-        2h6o919TByqoKEPAVnKnxQii658VzB5yw2UBwxUSh841+wvp5aW3Ltm0tfsxWPZZ2c3+GXFMVsF
-        lsxNvrHQ7P41lhc8DzXwxCy8L
-X-Received: by 2002:a5d:6e01:0:b0:210:1a7c:7319 with SMTP id h1-20020a5d6e01000000b002101a7c7319mr28352630wrz.227.1654623642500;
-        Tue, 07 Jun 2022 10:40:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx5QIu9HFXcvDPWLU03G7ZoVTO2C4kFZ1I91LvWeDKHDznQ8bnGcRSAU8CITtMC8w64B9s67A==
-X-Received: by 2002:a5d:6e01:0:b0:210:1a7c:7319 with SMTP id h1-20020a5d6e01000000b002101a7c7319mr28352599wrz.227.1654623642212;
-        Tue, 07 Jun 2022 10:40:42 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id v190-20020a1cacc7000000b003975c7058bfsm21166382wme.12.2022.06.07.10.40.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 10:40:41 -0700 (PDT)
-Message-ID: <badc8e91-f843-2c96-9c02-4fbb59accdc4@redhat.com>
-Date:   Tue, 7 Jun 2022 19:40:40 +0200
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7F74A911;
+        Tue,  7 Jun 2022 10:40:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 262036165B;
+        Tue,  7 Jun 2022 17:40:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33151C385A5;
+        Tue,  7 Jun 2022 17:40:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654623651;
+        bh=/LhHZS7KZOsRLjw20/Yc+E1iY9xUP5yA1eGvoz1lRmU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=va+pQ+JCFJmksengzKwJhm95Sc7YR7x2jvmd1AICbCuSWAkoYaY5Jz2lx+p4Ds6Rd
+         miey4VGDgLQU9BRWjzUoe2KT4W1CIm4a8Jb9JsqjK+8WHI2SBaJb1Fw/+J+FyUHdDk
+         k1rW2uJ5XvSBMbJ79phPgiUYzGVDO+I/7ltZ2f4M=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Huaming Jiang <jianghuaming.jhm@alibaba-inc.com>,
+        Guo Ren <guoren@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Nick Kossifidis <mick@ics.forth.gr>
+Subject: [PATCH 5.15 005/667] RISC-V: Mark IORESOURCE_EXCLUSIVE for reserved mem instead of IORESOURCE_BUSY
+Date:   Tue,  7 Jun 2022 18:54:30 +0200
+Message-Id: <20220607164934.940034192@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 0/2] Improve vfio-pci primary GPU assignment behavior
-Content-Language: en-US
-To:     Alex Williamson <alex.williamson@redhat.com>,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch
-Cc:     kvm@vger.kernel.org, Laszlo Ersek <lersek@redhat.com>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-References: <165453797543.3592816.6381793341352595461.stgit@omen>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <165453797543.3592816.6381793341352595461.stgit@omen>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Alex,
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-On 6/6/22 19:53, Alex Williamson wrote:
-> Users attempting to enable vfio PCI device assignment with a GPU will
-> often block the default PCI driver from the device to avoid conflicts
-> with the device initialization or release path.  This means that
-> vfio-pci is sometimes the first PCI driver to bind to the device.  In 
-> the case of assigning the primary graphics device, low-level console
-> drivers may still generate resource conflicts.  Users often employ
-> kernel command line arguments to disable conflicting drivers or
-> perform unbinding in userspace to avoid this, but the actual solution
-> is often distribution/kernel config specific based on the included
-> drivers.
-> 
-> We can instead allow vfio-pci to copy the behavior of
-> drm_aperture_remove_conflicting_pci_framebuffers() in order to remove
-> these low-level drivers with conflicting resources.  vfio-pci is not
-> however a DRM driver, nor does vfio-pci depend on DRM config options,
-> thus we split out and export the necessary DRM apterture support and
-> mirror the framebuffer and VGA support.
-> 
-> I'd be happy to pull this series in through the vfio branch if
-> approved by the DRM maintainers.  Thanks,
->
+commit e61bf5c071148c80d091f8e7220b3b9130780ae3 upstream.
 
-I understand your issue but I really don't think that using this helper
-is the correct thing to do. We already have some races with the current
-aperture infrastructure As an example you can look at [0].
+Commit 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
+marked IORESOURCE_BUSY for reserved memory, which caused resource map
+failed in subsequent operations of related driver, so remove the
+IORESOURCE_BUSY flag. In order to prohibit userland mapping reserved
+memory, mark IORESOURCE_EXCLUSIVE for it.
 
-The agreement on the mentioned thread is that we want to unify the fbdev
-and DRM drivers apertures into a single list, and ideally moving all to
-the Linux device model to handle the removal of conflicting devices.
+The code to reproduce the issue,
+dts:
+        mem0: memory@a0000000 {
+                reg = <0x0 0xa0000000 0 0x1000000>;
+                no-map;
+        };
 
-That's why I don't feel that leaking the DRM aperture helper to another
-is desirable since it would make even harder to cleanup this later.
+        &test {
+                status = "okay";
+                memory-region = <&mem0>;
+        };
 
-But also, this issue isn't something that only affects graphic devices,
-right? AFAIU from [1] and [2], the same issue happens if a PCI device
-has to be bound to vfio-pci but already was bound to a host driver.
+code:
+        np = of_parse_phandle(pdev->dev.of_node, "memory-region", 0);
+        ret = of_address_to_resource(np, 0, &r);
+        base = devm_ioremap_resource(&pdev->dev, &r);
+        // base = -EBUSY
 
-The fact that DRM happens to have some infrastructure to remove devices
-that conflict with an aperture is just a coincidence. Since this is used
-to remove devices bound to drivers that make use of the firmware-provided
-system framebuffer.
+Fixes: 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
+Reported-by: Huaming Jiang <jianghuaming.jhm@alibaba-inc.com>
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
+Co-developed-by: Nick Kossifidis <mick@ics.forth.gr>
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220518013428.1338983-1-xianting.tian@linux.alibaba.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/riscv/kernel/setup.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-The series [0] mentioned above, adds a sysfb_disable() that disables the
-Generic System Framebuffer logic that is what registers the framebuffer
-devices that are bound to these generic video drivers. On disable, the
-devices registered by sysfb are also unregistered.
+--- a/arch/riscv/kernel/setup.c
++++ b/arch/riscv/kernel/setup.c
+@@ -199,7 +199,7 @@ static void __init init_resources(void)
+ 		res = &mem_res[res_idx--];
+ 
+ 		res->name = "Reserved";
+-		res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
++		res->flags = IORESOURCE_MEM | IORESOURCE_EXCLUSIVE;
+ 		res->start = __pfn_to_phys(memblock_region_reserved_base_pfn(region));
+ 		res->end = __pfn_to_phys(memblock_region_reserved_end_pfn(region)) - 1;
+ 
+@@ -224,7 +224,7 @@ static void __init init_resources(void)
+ 
+ 		if (unlikely(memblock_is_nomap(region))) {
+ 			res->name = "Reserved";
+-			res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
++			res->flags = IORESOURCE_MEM | IORESOURCE_EXCLUSIVE;
+ 		} else {
+ 			res->name = "System RAM";
+ 			res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
 
-Would be enough for your use case to use that helper function if it lands
-or do you really need to look at the apertures? That is, do you want to
-remove the {vesa,efi,simple}fb and simpledrm drivers or is there a need
-to also remove real fbdev and DRM drivers?
-
-[0]: https://lore.kernel.org/lkml/YnvrxICnisXU6I1y@ravnborg.org/T/
-[1]: https://www.ibm.com/docs/en/linux-on-systems?topic=through-pci
-[2]: https://www.kernel.org/doc/Documentation/vfio.txt
-
--- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
 
