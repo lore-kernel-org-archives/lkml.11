@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F39CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0018EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357695AbiFGTul (ORCPT
+        id S1357457AbiFGTuZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57842 "EHLO
+        Tue, 7 Jun 2022 15:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354517AbiFGSrG (ORCPT
+        with ESMTP id S1354516AbiFGSrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DA17B9E8;
-        Tue,  7 Jun 2022 11:01:41 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4C3880CC;
+        Tue,  7 Jun 2022 11:01:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03529B82354;
-        Tue,  7 Jun 2022 18:01:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED9E6C34115;
-        Tue,  7 Jun 2022 18:01:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4529E617A7;
+        Tue,  7 Jun 2022 18:01:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98F81C385A5;
+        Tue,  7 Jun 2022 18:01:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624898;
-        bh=cO+MlwZPZfzLK6MD1rKEn5/lcgTLQLFpZ1PoZlE/mYg=;
+        s=k20201202; t=1654624903;
+        bh=ss5NCjJvt9POin4Vj0SlpF22PHkI6I1R+GC2c+AlgBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U1Gxm2BsDSPu3bPIQwYieDTQd8Lv/I4UzPEL+jAAKsue1KrNTHSPkSpaIgiFRW7b4
-         DShmjT/NQtcOkDHX38TTEPFAkMOlpZbfGMrv4AExrffL24blSCaVtdUEpCyvFP6Fod
-         Tqeq3aW/KENTtnM1540TjO3kXwd09VcjjNYH1NaNx9BZDWFHzvhcQ451SgNoPapdMn
-         GStYVb4kV3FjBxaYzCAYzv+LynctDVz0P/vJZ1Cjv3i4qDUlBVlej+9swYazbAoQEw
-         GnTMYBrbGoZ2IF1axFKrSlDk6MYNv26DSxPEVnu1jva36uF/N9A2nV6wcbdmgubDWj
-         tx94J9UZtZPXg==
+        b=VU4ZLLYui9Jv2UnRaoD2V0f2j69EE/X7PMWozZlZGpBAhr9aKfBMhWqc6pkZNwUgJ
+         uJlEUOWsCutk9RbmIS5i13i4geqOXSJIUxqlofin/xGKovL8pdIjgMExoQu5G1lGXC
+         Bkzk2daY1zRsnGr6k7Gsf/z3kRRKc7HztEUCCzkRgEZrxzUZcildS7tgH9QHcCV2ET
+         2CEvS9sAGkauHWn8A977ipnbvxgaQV87hGsRxC0AxMkGP4BPl1iKcGqtVk+J79+bcM
+         0MkXlrjo2D7M/Z159Wt3lEICQhsc8e1yn206b4dD7HDHzVRU/6KnLuvZRoyA862KRj
+         TYS1t9a5PA54Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Jiri Slaby <jirislaby@kernel.org>,
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 03/27] tty: synclink_gt: Fix null-pointer-dereference in slgt_clean()
-Date:   Tue,  7 Jun 2022 14:01:07 -0400
-Message-Id: <20220607180133.481701-3-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, baihaowen@meizu.com,
+        dave@stgolabs.net, len.baker@gmx.com, wangborong@cdjrlc.com,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 4.19 05/27] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
+Date:   Tue,  7 Jun 2022 14:01:09 -0400
+Message-Id: <20220607180133.481701-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
 References: <20220607180133.481701-1-sashal@kernel.org>
@@ -52,45 +54,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 689ca31c542687709ba21ec2195c1fbce34fd029 ]
+[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
 
-When the driver fails at alloc_hdlcdev(), and then we remove the driver
-module, we will get the following splat:
+There is a deadlock in ieee80211_beacons_stop(), which is shown below:
 
-[   25.065966] general protection fault, probably for non-canonical address 0xdffffc0000000182: 0000 [#1] PREEMPT SMP KASAN PTI
-[   25.066914] KASAN: null-ptr-deref in range [0x0000000000000c10-0x0000000000000c17]
-[   25.069262] RIP: 0010:detach_hdlc_protocol+0x2a/0x3e0
-[   25.077709] Call Trace:
-[   25.077924]  <TASK>
-[   25.078108]  unregister_hdlc_device+0x16/0x30
-[   25.078481]  slgt_cleanup+0x157/0x9f0 [synclink_gt]
+   (Thread 1)              |      (Thread 2)
+                           | ieee80211_send_beacon()
+ieee80211_beacons_stop()   |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | ieee80211_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-Fix this by checking whether the 'info->netdev' is a null pointer first.
+We hold ieee->beacon_lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, ieee80211_beacons_stop() will block forever.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220410114814.3920474-1-zheyuma97@gmail.com
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/synclink_gt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index afe34beec720..11c62fcd67f2 100644
---- a/drivers/tty/synclink_gt.c
-+++ b/drivers/tty/synclink_gt.c
-@@ -1753,6 +1753,8 @@ static int hdlcdev_init(struct slgt_info *info)
-  */
- static void hdlcdev_exit(struct slgt_info *info)
- {
-+	if (!info->netdev)
-+		return;
- 	unregister_hdlc_device(info->netdev);
- 	free_netdev(info->netdev);
- 	info->netdev = NULL;
+diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+index 212cc9ccbb96..426966a29d31 100644
+--- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
++++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+@@ -529,9 +529,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+ 
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
+ 
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
+ }
+ 
+ void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
 -- 
 2.35.1
 
