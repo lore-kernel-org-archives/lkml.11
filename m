@@ -2,122 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CDD7CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B7FDCCA48C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384749AbiFHB0C (ORCPT
+        id S1386005AbiFHB0Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:26:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46788 "EHLO
+        Tue, 7 Jun 2022 21:26:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383749AbiFGWGP (ORCPT
+        with ESMTP id S1387222AbiFGWuE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:06:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA1AF1366;
-        Tue,  7 Jun 2022 12:17:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 7 Jun 2022 18:50:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7309D2AA9BB
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:38:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654630718;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hsx3oAqr1YyiMu9WVK+sac9BkEiiKmmsbAsRI+A9Kzg=;
+        b=FPUJ0/jbcmj/ke3ZmqcT6w7z8BfTj37xgLZulmWs1p1YE+wWTlwdsEDXbMoWa71N1mJAlP
+        n3fJLRuXw/aDaX7JdzrgtDYGge0W/f/96JT98Z25CViJL/qOcTfP9Bo20dL0PL/iNj93DB
+        /PVieyrevXgxfTWQLoPpLH973kif1TU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-609-CvDC0OMKN9ywaW1RYumngA-1; Tue, 07 Jun 2022 15:38:34 -0400
+X-MC-Unique: CvDC0OMKN9ywaW1RYumngA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2949061929;
-        Tue,  7 Jun 2022 19:17:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 343E6C385A2;
-        Tue,  7 Jun 2022 19:17:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629436;
-        bh=/fej+mXE9IrJnCoGX4AW8AzyF2M8v1cIvlXyCB/f208=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t5C5RphSGM64LPF+KyI/OhhxvGh0HVorQSOgaTfL/63/r0lXILSYZuVbFZsGqnwpb
-         qpgvvO384HF5pqnWtx/q7CHJe65WIqg8+ilJSlFpmKCZhotssC4hmQdlYfNxkMrx9i
-         EwnuK/hAWiQ331PmxF61sMZ3ryY3HjpmPCuxS5Ds=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 691/879] i2c: rcar: fix PM ref counts in probe error paths
-Date:   Tue,  7 Jun 2022 19:03:29 +0200
-Message-Id: <20220607165022.905400150@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DC6A7857A82;
+        Tue,  7 Jun 2022 19:37:07 +0000 (UTC)
+Received: from emerald.redhat.com (unknown [10.22.9.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D7BB2D15284;
+        Tue,  7 Jun 2022 19:36:38 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org
+Cc:     Wayne Lin <Wayne.Lin@amd.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RESEND RFC 15/18] drm/display/dp_mst: Skip releasing payloads if last connected port isn't connected
+Date:   Tue,  7 Jun 2022 15:29:30 -0400
+Message-Id: <20220607192933.1333228-16-lyude@redhat.com>
+In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
+References: <20220607192933.1333228-1-lyude@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+In the past, we've ran into strange issues regarding errors in response to
+trying to destroy payloads after a port has been unplugged. We fixed this
+back in:
 
-[ Upstream commit 3fe2ec59db1a7569e18594b9c0cf1f4f1afd498e ]
+This is intended to replace the workaround that was added here:
 
-We have to take care of ID_P_PM_BLOCKED when bailing out during probe.
+commit 3769e4c0af5b ("drm/dp_mst: Avoid to mess up payload table by ports in stale topology")
 
-Fixes: 7ee24eb508d6 ("i2c: rcar: disable PM in multi-master mode")
-Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+which was intended fix to some of the payload leaks that were observed
+before, where we would attempt to determine if the port was still connected
+to the topology before updating payloads using
+drm_dp_mst_port_downstream_of_branch. This wasn't a particularly good
+solution, since one of the points of still having port and mstb validation
+is to avoid sending messages to newly disconnected branches wherever
+possible - thus the required use of drm_dp_mst_port_downstream_of_branch
+would indicate something may be wrong with said validation.
+
+It seems like it may have just been races and luck that made
+drm_dp_mst_port_downstream_of_branch work however, as while I was trying to
+figure out the true cause of this issue when removing the legacy MST code -
+I discovered an important excerpt in section 2.14.2.3.3.6 of the DP 2.0
+specs:
+
+"BAD_PARAM - This reply is transmitted when a Message Transaction parameter
+is in error; for example, the next port number is invalid or /no device is
+connected/ to the port associated with the port number."
+
+Sure enough - removing the calls to drm_dp_mst_port_downstream_of_branch()
+and instead checking the ->ddps field of the parent port to see whether we
+should release a given payload or not seems to totally fix the issue. This
+does actually make sense to me, as it seems the implication is that given a
+topology where an MSTB is removed, the payload for the MST parent's port
+will be released automatically if that port is also marked as disconnected.
+However, if there's another parent in the chain after that which is
+connected - payloads must be released there with an ALLOCATE_PAYLOAD
+message.
+
+So, let's do that!
+
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Imre Deak <imre.deak@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sean Paul <sean@poorly.run>
 ---
- drivers/i2c/busses/i2c-rcar.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/display/drm_dp_mst_topology.c | 51 +++++++------------
+ 1 file changed, 17 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-rcar.c b/drivers/i2c/busses/i2c-rcar.c
-index 0db3d7559066..0064c632af5c 100644
---- a/drivers/i2c/busses/i2c-rcar.c
-+++ b/drivers/i2c/busses/i2c-rcar.c
-@@ -1063,8 +1063,10 @@ static int rcar_i2c_probe(struct platform_device *pdev)
- 	pm_runtime_enable(dev);
- 	pm_runtime_get_sync(dev);
- 	ret = rcar_i2c_clock_calculate(priv);
--	if (ret < 0)
--		goto out_pm_put;
-+	if (ret < 0) {
-+		pm_runtime_put(dev);
-+		goto out_pm_disable;
-+	}
+diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+index dd314586bac3..70adb8db4335 100644
+--- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
++++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+@@ -3137,7 +3137,7 @@ static struct drm_dp_mst_port *drm_dp_get_last_connected_port_to_mstb(struct drm
+ static struct drm_dp_mst_branch *
+ drm_dp_get_last_connected_port_and_mstb(struct drm_dp_mst_topology_mgr *mgr,
+ 					struct drm_dp_mst_branch *mstb,
+-					int *port_num)
++					struct drm_dp_mst_port **last_port)
+ {
+ 	struct drm_dp_mst_branch *rmstb = NULL;
+ 	struct drm_dp_mst_port *found_port;
+@@ -3153,7 +3153,8 @@ drm_dp_get_last_connected_port_and_mstb(struct drm_dp_mst_topology_mgr *mgr,
  
- 	rcar_i2c_write(priv, ICSAR, 0); /* Gen2: must be 0 if not using slave */
+ 		if (drm_dp_mst_topology_try_get_mstb(found_port->parent)) {
+ 			rmstb = found_port->parent;
+-			*port_num = found_port->port_num;
++			*last_port = found_port;
++			drm_dp_mst_get_port_malloc(found_port);
+ 		} else {
+ 			/* Search again, starting from this parent */
+ 			mstb = found_port->parent;
+@@ -3170,7 +3171,7 @@ static int drm_dp_payload_send_msg(struct drm_dp_mst_topology_mgr *mgr,
+ 				   int pbn)
+ {
+ 	struct drm_dp_sideband_msg_tx *txmsg;
+-	struct drm_dp_mst_branch *mstb;
++	struct drm_dp_mst_branch *mstb = NULL;
+ 	int ret, port_num;
+ 	u8 sinks[DRM_DP_MAX_SDP_STREAMS];
+ 	int i;
+@@ -3178,12 +3179,22 @@ static int drm_dp_payload_send_msg(struct drm_dp_mst_topology_mgr *mgr,
+ 	port_num = port->port_num;
+ 	mstb = drm_dp_mst_topology_get_mstb_validated(mgr, port->parent);
+ 	if (!mstb) {
+-		mstb = drm_dp_get_last_connected_port_and_mstb(mgr,
+-							       port->parent,
+-							       &port_num);
++		struct drm_dp_mst_port *rport = NULL;
++		bool ddps;
  
-@@ -1093,19 +1095,19 @@ static int rcar_i2c_probe(struct platform_device *pdev)
- 
- 	ret = platform_get_irq(pdev, 0);
- 	if (ret < 0)
--		goto out_pm_disable;
-+		goto out_pm_put;
- 	priv->irq = ret;
- 	ret = devm_request_irq(dev, priv->irq, irqhandler, irqflags, dev_name(dev), priv);
- 	if (ret < 0) {
- 		dev_err(dev, "cannot get irq %d\n", priv->irq);
--		goto out_pm_disable;
-+		goto out_pm_put;
++		mstb = drm_dp_get_last_connected_port_and_mstb(mgr, port->parent, &rport);
+ 		if (!mstb)
+ 			return -EINVAL;
++
++		ddps = rport->ddps;
++		port_num = rport->port_num;
++		drm_dp_mst_put_port_malloc(rport);
++
++		/* If the port is currently marked as disconnected, don't send a payload message */
++		if (!ddps) {
++			ret = -EINVAL;
++			goto fail_put;
++		}
  	}
  
- 	platform_set_drvdata(pdev, priv);
+ 	txmsg = kzalloc(sizeof(*txmsg), GFP_KERNEL);
+@@ -3384,7 +3395,6 @@ int drm_dp_update_payload_part1(struct drm_dp_mst_topology_mgr *mgr, int start_s
+ 	struct drm_dp_mst_port *port;
+ 	int i, j;
+ 	int cur_slots = start_slot;
+-	bool skip;
  
- 	ret = i2c_add_numbered_adapter(adap);
- 	if (ret < 0)
--		goto out_pm_disable;
-+		goto out_pm_put;
+ 	mutex_lock(&mgr->payload_lock);
+ 	for (i = 0; i < mgr->max_payloads; i++) {
+@@ -3399,16 +3409,6 @@ int drm_dp_update_payload_part1(struct drm_dp_mst_topology_mgr *mgr, int start_s
+ 			port = container_of(vcpi, struct drm_dp_mst_port,
+ 					    vcpi);
  
- 	if (priv->flags & ID_P_HOST_NOTIFY) {
- 		priv->host_notify_client = i2c_new_slave_host_notify_device(adap);
-@@ -1122,7 +1124,8 @@ static int rcar_i2c_probe(struct platform_device *pdev)
-  out_del_device:
- 	i2c_del_adapter(&priv->adap);
-  out_pm_put:
--	pm_runtime_put(dev);
-+	if (priv->flags & ID_P_PM_BLOCKED)
-+		pm_runtime_put(dev);
-  out_pm_disable:
- 	pm_runtime_disable(dev);
- 	return ret;
+-			mutex_lock(&mgr->lock);
+-			skip = !drm_dp_mst_port_downstream_of_branch(port, mgr->mst_primary);
+-			mutex_unlock(&mgr->lock);
+-
+-			if (skip) {
+-				drm_dbg_kms(mgr->dev,
+-					    "Virtual channel %d is not in current topology\n",
+-					    i);
+-				continue;
+-			}
+ 			/* Validated ports don't matter if we're releasing
+ 			 * VCPI
+ 			 */
+@@ -3509,7 +3509,6 @@ int drm_dp_update_payload_part2(struct drm_dp_mst_topology_mgr *mgr)
+ 	struct drm_dp_mst_port *port;
+ 	int i;
+ 	int ret = 0;
+-	bool skip;
+ 
+ 	mutex_lock(&mgr->payload_lock);
+ 	for (i = 0; i < mgr->max_payloads; i++) {
+@@ -3519,13 +3518,6 @@ int drm_dp_update_payload_part2(struct drm_dp_mst_topology_mgr *mgr)
+ 
+ 		port = container_of(mgr->proposed_vcpis[i], struct drm_dp_mst_port, vcpi);
+ 
+-		mutex_lock(&mgr->lock);
+-		skip = !drm_dp_mst_port_downstream_of_branch(port, mgr->mst_primary);
+-		mutex_unlock(&mgr->lock);
+-
+-		if (skip)
+-			continue;
+-
+ 		drm_dbg_kms(mgr->dev, "payload %d %d\n", i, mgr->payloads[i].payload_state);
+ 		if (mgr->payloads[i].payload_state == DP_PAYLOAD_LOCAL) {
+ 			ret = drm_dp_create_payload_step2(mgr, port, mgr->proposed_vcpis[i]->vcpi, &mgr->payloads[i]);
+@@ -4780,18 +4772,9 @@ EXPORT_SYMBOL(drm_dp_mst_reset_vcpi_slots);
+ void drm_dp_mst_deallocate_vcpi(struct drm_dp_mst_topology_mgr *mgr,
+ 				struct drm_dp_mst_port *port)
+ {
+-	bool skip;
+-
+ 	if (!port->vcpi.vcpi)
+ 		return;
+ 
+-	mutex_lock(&mgr->lock);
+-	skip = !drm_dp_mst_port_downstream_of_branch(port, mgr->mst_primary);
+-	mutex_unlock(&mgr->lock);
+-
+-	if (skip)
+-		return;
+-
+ 	drm_dp_mst_put_payload_id(mgr, port->vcpi.vcpi);
+ 	port->vcpi.num_slots = 0;
+ 	port->vcpi.pbn = 0;
 -- 
-2.35.1
-
-
+2.35.3
 
