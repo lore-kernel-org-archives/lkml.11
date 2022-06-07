@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B535ECCA494
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5110CCA492
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380712AbiFGVQr (ORCPT
+        id S1380659AbiFGVQk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47346 "EHLO
+        Tue, 7 Jun 2022 17:16:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359653AbiFGUU4 (ORCPT
+        with ESMTP id S1359622AbiFGUU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:20:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A34A1D2ACC;
-        Tue,  7 Jun 2022 11:30:30 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DABC1D2AE2;
+        Tue,  7 Jun 2022 11:30:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 770B5B8237C;
-        Tue,  7 Jun 2022 18:30:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC144C385A2;
-        Tue,  7 Jun 2022 18:30:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56AA3614D7;
+        Tue,  7 Jun 2022 18:30:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 623D7C385A2;
+        Tue,  7 Jun 2022 18:30:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626627;
-        bh=ANzoiVHiz1mg0UvW8TF8kLoCpbg7+wK2bKa61PuaCYw=;
+        s=korg; t=1654626632;
+        bh=iihB1Nj/oC6Dql4f7TYbefgPehcT4wyHwaG7/rB40vY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NSqRW/y/LL5xvlKVfRTQCp6DB5C67A+Xe8ynTGcBZT2+95CYSkNiqRT2cWvs1paAS
-         RWgUTIGSAMP+wYll5rKrvJCmAsAZCPdgQObEv25giXC0yfT14hbCB3fykCtf8gOshb
-         QvhIFQrMu0DEHy5h0+YhnOJ1OSKSn08E195Xq85Q=
+        b=ovl5LUGY76zlkGhAtsXaaId/0RtTPVjmoORcuKHig8fhgiHjsgKSz7UFcEvglFPkF
+         mHrP5lHKBvZdVorejofsyPxx18o6OgE6JQFOBvE4l4UCaYZxkm2fY59FnNj3+fy0id
+         BDz1447nxSSQ97LBK/hjdiUAlAI9wxmpR3Q9ym+Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 446/772] net/smc: fix listen processing for SMC-Rv2
-Date:   Tue,  7 Jun 2022 19:00:38 +0200
-Message-Id: <20220607165002.144634330@linuxfoundation.org>
+Subject: [PATCH 5.17 448/772] Bluetooth: hci_sync: Cleanup hci_conn if it cannot be aborted
+Date:   Tue,  7 Jun 2022 19:00:40 +0200
+Message-Id: <20220607165002.203044274@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,124 +51,180 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: liuyacan <liuyacan@corp.netease.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 8c3b8dc5cc9bf6d273ebe18b16e2d6882bcfb36d ]
+[ Upstream commit 9b3628d79b46f06157affc56fdb218fdd4988321 ]
 
-In the process of checking whether RDMAv2 is available, the current
-implementation first sets ini->smcrv2.ib_dev_v2, and then allocates
-smc buf desc, but the latter may fail. Unfortunately, the caller
-will only check the former. In this case, a NULL pointer reference
-will occur in smc_clc_send_confirm_accept() when accessing
-conn->rmb_desc.
+This attempts to cleanup the hci_conn if it cannot be aborted as
+otherwise it would likely result in having the controller and host
+stack out of sync with respect to connection handle.
 
-This patch does two things:
-1. Use the return code to determine whether V2 is available.
-2. If the return code is NODEV, continue to check whether V1 is
-available.
-
-Fixes: e49300a6bf62 ("net/smc: add listen processing for SMC-Rv2")
-Signed-off-by: liuyacan <liuyacan@corp.netease.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/af_smc.c | 44 +++++++++++++++++++++++++++-----------------
- 1 file changed, 27 insertions(+), 17 deletions(-)
+ include/net/bluetooth/hci_core.h |  2 +-
+ net/bluetooth/hci_conn.c         | 32 ++++++++++++++++++++++++--------
+ net/bluetooth/hci_event.c        | 13 ++++---------
+ net/bluetooth/hci_sync.c         | 11 ++++++++++-
+ 4 files changed, 39 insertions(+), 19 deletions(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index b9fe31834354..dafb2bc0b6b6 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -1930,13 +1930,13 @@ static int smc_listen_rdma_reg(struct smc_sock *new_smc, bool local_first)
- 	return 0;
- }
+diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+index 49a88b2f4678..4524920e4895 100644
+--- a/include/net/bluetooth/hci_core.h
++++ b/include/net/bluetooth/hci_core.h
+@@ -1147,7 +1147,7 @@ int hci_conn_switch_role(struct hci_conn *conn, __u8 role);
  
--static void smc_find_rdma_v2_device_serv(struct smc_sock *new_smc,
--					 struct smc_clc_msg_proposal *pclc,
--					 struct smc_init_info *ini)
-+static int smc_find_rdma_v2_device_serv(struct smc_sock *new_smc,
-+					struct smc_clc_msg_proposal *pclc,
-+					struct smc_init_info *ini)
+ void hci_conn_enter_active_mode(struct hci_conn *conn, __u8 force_active);
+ 
+-void hci_le_conn_failed(struct hci_conn *conn, u8 status);
++void hci_conn_failed(struct hci_conn *conn, u8 status);
+ 
+ /*
+  * hci_conn_get() and hci_conn_put() are used to control the life-time of an
+diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
+index cd51bf2a709b..882a7df13005 100644
+--- a/net/bluetooth/hci_conn.c
++++ b/net/bluetooth/hci_conn.c
+@@ -670,7 +670,7 @@ static void le_conn_timeout(struct work_struct *work)
+ 		/* Disable LE Advertising */
+ 		le_disable_advertising(hdev);
+ 		hci_dev_lock(hdev);
+-		hci_le_conn_failed(conn, HCI_ERROR_ADVERTISING_TIMEOUT);
++		hci_conn_failed(conn, HCI_ERROR_ADVERTISING_TIMEOUT);
+ 		hci_dev_unlock(hdev);
+ 		return;
+ 	}
+@@ -873,7 +873,7 @@ struct hci_dev *hci_get_route(bdaddr_t *dst, bdaddr_t *src, uint8_t src_type)
+ EXPORT_SYMBOL(hci_get_route);
+ 
+ /* This function requires the caller holds hdev->lock */
+-void hci_le_conn_failed(struct hci_conn *conn, u8 status)
++static void hci_le_conn_failed(struct hci_conn *conn, u8 status)
  {
- 	struct smc_clc_v2_extension *smc_v2_ext;
- 	u8 smcr_version;
--	int rc;
-+	int rc = 0;
+ 	struct hci_dev *hdev = conn->hdev;
+ 	struct hci_conn_params *params;
+@@ -886,8 +886,6 @@ void hci_le_conn_failed(struct hci_conn *conn, u8 status)
+ 		params->conn = NULL;
+ 	}
  
- 	if (!(ini->smcr_version & SMC_V2) || !smcr_indicated(ini->smc_type_v2))
- 		goto not_found;
-@@ -1954,26 +1954,31 @@ static void smc_find_rdma_v2_device_serv(struct smc_sock *new_smc,
- 	ini->smcrv2.saddr = new_smc->clcsock->sk->sk_rcv_saddr;
- 	ini->smcrv2.daddr = smc_ib_gid_to_ipv4(smc_v2_ext->roce);
- 	rc = smc_find_rdma_device(new_smc, ini);
--	if (rc) {
--		smc_find_ism_store_rc(rc, ini);
-+	if (rc)
- 		goto not_found;
--	}
-+
- 	if (!ini->smcrv2.uses_gateway)
- 		memcpy(ini->smcrv2.nexthop_mac, pclc->lcl.mac, ETH_ALEN);
- 
- 	smcr_version = ini->smcr_version;
- 	ini->smcr_version = SMC_V2;
- 	rc = smc_listen_rdma_init(new_smc, ini);
--	if (!rc)
--		rc = smc_listen_rdma_reg(new_smc, ini->first_contact_local);
--	if (!rc)
--		return;
--	ini->smcr_version = smcr_version;
--	smc_find_ism_store_rc(rc, ini);
-+	if (rc) {
-+		ini->smcr_version = smcr_version;
-+		goto not_found;
-+	}
-+	rc = smc_listen_rdma_reg(new_smc, ini->first_contact_local);
-+	if (rc) {
-+		ini->smcr_version = smcr_version;
-+		goto not_found;
-+	}
-+	return 0;
- 
- not_found:
-+	rc = rc ?: SMC_CLC_DECL_NOSMCDEV;
- 	ini->smcr_version &= ~SMC_V2;
- 	ini->check_smcrv2 = false;
-+	return rc;
- }
- 
- static int smc_find_rdma_v1_device_serv(struct smc_sock *new_smc,
-@@ -2006,6 +2011,7 @@ static int smc_listen_find_device(struct smc_sock *new_smc,
- 				  struct smc_init_info *ini)
- {
- 	int prfx_rc;
-+	int rc;
- 
- 	/* check for ISM device matching V2 proposed device */
- 	smc_find_ism_v2_device_serv(new_smc, pclc, ini);
-@@ -2033,14 +2039,18 @@ static int smc_listen_find_device(struct smc_sock *new_smc,
- 		return ini->rc ?: SMC_CLC_DECL_NOSMCDDEV;
- 
- 	/* check if RDMA V2 is available */
--	smc_find_rdma_v2_device_serv(new_smc, pclc, ini);
--	if (ini->smcrv2.ib_dev_v2)
-+	rc = smc_find_rdma_v2_device_serv(new_smc, pclc, ini);
-+	if (!rc)
- 		return 0;
- 
-+	/* skip V1 check if V2 is unavailable for non-Device reason */
-+	if (rc != SMC_CLC_DECL_NOSMCDEV &&
-+	    rc != SMC_CLC_DECL_NOSMCRDEV &&
-+	    rc != SMC_CLC_DECL_NOSMCDDEV)
-+		return rc;
-+
- 	/* check if RDMA V1 is available */
- 	if (!prfx_rc) {
--		int rc;
+-	conn->state = BT_CLOSED;
 -
- 		rc = smc_find_rdma_v1_device_serv(new_smc, pclc, ini);
- 		smc_find_ism_store_rc(rc, ini);
- 		return (!rc) ? 0 : ini->rc;
+ 	/* If the status indicates successful cancellation of
+ 	 * the attempt (i.e. Unknown Connection Id) there's no point of
+ 	 * notifying failure since we'll go back to keep trying to
+@@ -899,10 +897,6 @@ void hci_le_conn_failed(struct hci_conn *conn, u8 status)
+ 		mgmt_connect_failed(hdev, &conn->dst, conn->type,
+ 				    conn->dst_type, status);
+ 
+-	hci_connect_cfm(conn, status);
+-
+-	hci_conn_del(conn);
+-
+ 	/* Since we may have temporarily stopped the background scanning in
+ 	 * favor of connection establishment, we should restart it.
+ 	 */
+@@ -914,6 +908,28 @@ void hci_le_conn_failed(struct hci_conn *conn, u8 status)
+ 	hci_enable_advertising(hdev);
+ }
+ 
++/* This function requires the caller holds hdev->lock */
++void hci_conn_failed(struct hci_conn *conn, u8 status)
++{
++	struct hci_dev *hdev = conn->hdev;
++
++	bt_dev_dbg(hdev, "status 0x%2.2x", status);
++
++	switch (conn->type) {
++	case LE_LINK:
++		hci_le_conn_failed(conn, status);
++		break;
++	case ACL_LINK:
++		mgmt_connect_failed(hdev, &conn->dst, conn->type,
++				    conn->dst_type, status);
++		break;
++	}
++
++	conn->state = BT_CLOSED;
++	hci_connect_cfm(conn, status);
++	hci_conn_del(conn);
++}
++
+ static void create_le_conn_complete(struct hci_dev *hdev, void *data, int err)
+ {
+ 	struct hci_conn *conn = data;
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 4002a47832bc..1be745b228c1 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -2846,7 +2846,7 @@ static void hci_cs_le_create_conn(struct hci_dev *hdev, u8 status)
+ 	bt_dev_dbg(hdev, "status 0x%2.2x", status);
+ 
+ 	/* All connection failure handling is taken care of by the
+-	 * hci_le_conn_failed function which is triggered by the HCI
++	 * hci_conn_failed function which is triggered by the HCI
+ 	 * request completion callbacks used for connecting.
+ 	 */
+ 	if (status)
+@@ -2871,7 +2871,7 @@ static void hci_cs_le_ext_create_conn(struct hci_dev *hdev, u8 status)
+ 	bt_dev_dbg(hdev, "status 0x%2.2x", status);
+ 
+ 	/* All connection failure handling is taken care of by the
+-	 * hci_le_conn_failed function which is triggered by the HCI
++	 * hci_conn_failed function which is triggered by the HCI
+ 	 * request completion callbacks used for connecting.
+ 	 */
+ 	if (status)
+@@ -3185,12 +3185,7 @@ static void hci_conn_complete_evt(struct hci_dev *hdev, void *data,
+ 
+ done:
+ 	if (status) {
+-		conn->state = BT_CLOSED;
+-		if (conn->type == ACL_LINK)
+-			mgmt_connect_failed(hdev, &conn->dst, conn->type,
+-					    conn->dst_type, status);
+-		hci_connect_cfm(conn, status);
+-		hci_conn_del(conn);
++		hci_conn_failed(conn, status);
+ 	} else if (ev->link_type == SCO_LINK) {
+ 		switch (conn->setting & SCO_AIRMODE_MASK) {
+ 		case SCO_AIRMODE_CVSD:
+@@ -5626,7 +5621,7 @@ static void le_conn_complete_evt(struct hci_dev *hdev, u8 status,
+ 	}
+ 
+ 	if (status) {
+-		hci_le_conn_failed(conn, status);
++		hci_conn_failed(conn, status);
+ 		goto unlock;
+ 	}
+ 
+diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+index 8f4c5698913d..13600bf120b0 100644
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -4408,12 +4408,21 @@ static int hci_reject_conn_sync(struct hci_dev *hdev, struct hci_conn *conn,
+ static int hci_abort_conn_sync(struct hci_dev *hdev, struct hci_conn *conn,
+ 			       u8 reason)
+ {
++	int err;
++
+ 	switch (conn->state) {
+ 	case BT_CONNECTED:
+ 	case BT_CONFIG:
+ 		return hci_disconnect_sync(hdev, conn, reason);
+ 	case BT_CONNECT:
+-		return hci_connect_cancel_sync(hdev, conn);
++		err = hci_connect_cancel_sync(hdev, conn);
++		/* Cleanup hci_conn object if it cannot be cancelled as it
++		 * likelly means the controller and host stack are out of sync.
++		 */
++		if (err)
++			hci_conn_failed(conn, err);
++
++		return err;
+ 	case BT_CONNECT2:
+ 		return hci_reject_conn_sync(hdev, conn, reason);
+ 	default:
 -- 
 2.35.1
 
