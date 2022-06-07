@@ -2,255 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A740CCA49D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BB45CCA47C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386467AbiFHAuL (ORCPT
+        id S1388155AbiFHAur (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:50:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
+        Tue, 7 Jun 2022 20:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381319AbiFGXjC (ORCPT
+        with ESMTP id S1382705AbiFGVvo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:39:02 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9879222DFBD
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:27 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id 92-20020a17090a09e500b001d917022847so9810145pjo.1
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=kIHbaDeE5+Xu+cED69bXs6B1hwEW4reTl6ZJqla8mJM=;
-        b=ddoNjco06S2NNUIkU9zlbWUj0xo8C+FljBGgAoCnXG3GPpuHeGRRJa/Hytg/tzaFog
-         TPGRWsGbPaJNUE53ORYSeT+B+Ou+QNyhqzU3dCnLoaKSH47ocD7dwM8yy/l+ThzeXw0B
-         0SYzBG/MpunS62oHsfCPu3GsM+48gGrN1TIHc2CbEz8+gxAHEBjk2aJZ9Atz4LW3517V
-         rsjQM4khW9D2bkFm6qMHrLURJhB7GwySH2AHAxiJBImS344oLk4txlQz9NN9bFp6uKi2
-         km0A3NH62ctAsu/gofq2sGRWdzuD+xJSjnj7ZT6ilVJYVNsw58eLq7HYAtLtV/eY88bY
-         QG4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=kIHbaDeE5+Xu+cED69bXs6B1hwEW4reTl6ZJqla8mJM=;
-        b=AxOxFKQl/c4lamc8xeDTN5CXARZRHezT1X+e/6A+uI9tcPP/jUGAP9cnsa+GpWikuC
-         ycPl+gr2Ti5k6Zp3s7fCOSZK4FNLVxvjP76xt3tJ0YEeEGO7ll/wxrDpv9Yxy6jilKZg
-         3WAw0Dvj00rEZq6fpullMh50pzMRAzsM0aOrq4G5pJi/j7KAY8tyMTC+gEHE7ZmUfsVo
-         jXagUWrQ/UisMf+WIyd+qDzAx/GItyAj4J1spzYFCTfxYbrwCyLvMzOhbDVdyeECFILm
-         zuUuEQrQOuUb33BlJCdBqcbS2LWJVIzyqm6UH2lRgk5BwJn5rcRw3Et4Jg8qXQ21AAnu
-         7Sdg==
-X-Gm-Message-State: AOAM532J2wBtuvDOy11IURrH2tp5XdrS7sQ4aZf/t1JARaCUlfAEHxIZ
-        MD6RBNkXRNrss2hjeH5pGkBmCZhNMfw=
-X-Google-Smtp-Source: ABdhPJyzOGNGFBCl5CqBHPWYmK+RmIfbSPiaIyoa64t/YktmSSIesEUxPj1DS5IaUAxlajJYp2atKl8ttVY=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:178f:b0:1e3:3ba:c185 with SMTP id
- q15-20020a17090a178f00b001e303bac185mr409798pja.1.1654637786593; Tue, 07 Jun
- 2022 14:36:26 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  7 Jun 2022 21:35:54 +0000
-In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
-Message-Id: <20220607213604.3346000-6-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220607213604.3346000-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v5 05/15] KVM: nVMX: Let userspace set nVMX MSR to any _host_
- supported value
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
-        David Matlack <dmatlack@google.com>,
-        Oliver Upton <oupton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 7 Jun 2022 17:51:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C9E150B49;
+        Tue,  7 Jun 2022 12:09:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F047E618D6;
+        Tue,  7 Jun 2022 19:09:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0572AC385A2;
+        Tue,  7 Jun 2022 19:09:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628956;
+        bh=d5f3waSstqFwsHwR92Wq26SEDDhS6+RyUHdRiynwipA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pn9sOZ5d14S2TUvY/BB0kMl5qcJv0okZDQ8s2imRAVsuYQobKp2htripz0iN1olJT
+         4SJV+Hof6M5xYXTNVMaP7Wd9mZ74LggU7mRM+P12vh3NMJaIf1se04oflyejc4UQCq
+         T6P2k0mrdC1uv1VsT7TnlIxuhG38Cqm7qWLuDGiA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 518/879] rxrpc: Dont try to resend the request if were receiving the reply
+Date:   Tue,  7 Jun 2022 19:00:36 +0200
+Message-Id: <20220607165017.911288090@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Restrict the nVMX MSRs based on KVM's config, not based on the guest's
-current config.  Using the guest's config to audit the new config
-prevents userspace from restoring the original config (KVM's config) if
-at any point in the past the guest's config was restricted in any way.
+From: David Howells <dhowells@redhat.com>
 
-Fixes: 62cc6b9dc61e ("KVM: nVMX: support restore of VMX capability MSRs")
-Cc: stable@vger.kernel.org
-Cc: David Matlack <dmatlack@google.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+[ Upstream commit 114af61f88fbe34d641b13922d098ffec4c1be1b ]
+
+rxrpc has a timer to trigger resending of unacked data packets in a call.
+This is not cancelled when a client call switches to the receive phase on
+the basis that most calls don't last long enough for it to ever expire.
+However, if it *does* expire after we've started to receive the reply, we
+shouldn't then go into trying to retransmit or pinging the server to find
+out if an ack got lost.
+
+Fix this by skipping the resend code if we're into receiving the reply to a
+client call.
+
+Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/nested.c | 100 ++++++++++++++++++++------------------
- 1 file changed, 52 insertions(+), 48 deletions(-)
+ net/rxrpc/call_event.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 00c7b00c017a..fca30e79b3a0 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -1223,7 +1223,7 @@ static int vmx_restore_vmx_basic(struct vcpu_vmx *vmx, u64 data)
- 		BIT_ULL(49) | BIT_ULL(54) | BIT_ULL(55) |
- 		/* reserved */
- 		BIT_ULL(31) | GENMASK_ULL(47, 45) | GENMASK_ULL(63, 56);
--	u64 vmx_basic = vmx->nested.msrs.basic;
-+	u64 vmx_basic = vmcs_config.nested.basic;
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index e426f6831aab..f8ecad2b730e 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -406,7 +406,8 @@ void rxrpc_process_call(struct work_struct *work)
+ 		goto recheck_state;
+ 	}
  
- 	if (!is_bitwise_subset(vmx_basic, data, feature_and_reserved))
- 		return -EINVAL;
-@@ -1246,36 +1246,42 @@ static int vmx_restore_vmx_basic(struct vcpu_vmx *vmx, u64 data)
- 	return 0;
- }
- 
-+static void vmx_get_control_msr(struct nested_vmx_msrs *msrs, u32 msr_index,
-+				u32 **low, u32 **high)
-+{
-+	switch (msr_index) {
-+	case MSR_IA32_VMX_TRUE_PINBASED_CTLS:
-+		*low = &msrs->pinbased_ctls_low;
-+		*high = &msrs->pinbased_ctls_high;
-+		break;
-+	case MSR_IA32_VMX_TRUE_PROCBASED_CTLS:
-+		*low = &msrs->procbased_ctls_low;
-+		*high = &msrs->procbased_ctls_high;
-+		break;
-+	case MSR_IA32_VMX_TRUE_EXIT_CTLS:
-+		*low = &msrs->exit_ctls_low;
-+		*high = &msrs->exit_ctls_high;
-+		break;
-+	case MSR_IA32_VMX_TRUE_ENTRY_CTLS:
-+		*low = &msrs->entry_ctls_low;
-+		*high = &msrs->entry_ctls_high;
-+		break;
-+	case MSR_IA32_VMX_PROCBASED_CTLS2:
-+		*low = &msrs->secondary_ctls_low;
-+		*high = &msrs->secondary_ctls_high;
-+		break;
-+	default:
-+		BUG();
-+	}
-+}
-+
- static int
- vmx_restore_control_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
- {
--	u64 supported;
- 	u32 *lowp, *highp;
-+	u64 supported;
- 
--	switch (msr_index) {
--	case MSR_IA32_VMX_TRUE_PINBASED_CTLS:
--		lowp = &vmx->nested.msrs.pinbased_ctls_low;
--		highp = &vmx->nested.msrs.pinbased_ctls_high;
--		break;
--	case MSR_IA32_VMX_TRUE_PROCBASED_CTLS:
--		lowp = &vmx->nested.msrs.procbased_ctls_low;
--		highp = &vmx->nested.msrs.procbased_ctls_high;
--		break;
--	case MSR_IA32_VMX_TRUE_EXIT_CTLS:
--		lowp = &vmx->nested.msrs.exit_ctls_low;
--		highp = &vmx->nested.msrs.exit_ctls_high;
--		break;
--	case MSR_IA32_VMX_TRUE_ENTRY_CTLS:
--		lowp = &vmx->nested.msrs.entry_ctls_low;
--		highp = &vmx->nested.msrs.entry_ctls_high;
--		break;
--	case MSR_IA32_VMX_PROCBASED_CTLS2:
--		lowp = &vmx->nested.msrs.secondary_ctls_low;
--		highp = &vmx->nested.msrs.secondary_ctls_high;
--		break;
--	default:
--		BUG();
--	}
-+	vmx_get_control_msr(&vmcs_config.nested, msr_index, &lowp, &highp);
- 
- 	supported = vmx_control_msr(*lowp, *highp);
- 
-@@ -1287,6 +1293,7 @@ vmx_restore_control_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
- 	if (!is_bitwise_subset(supported, data, GENMASK_ULL(63, 32)))
- 		return -EINVAL;
- 
-+	vmx_get_control_msr(&vmx->nested.msrs, msr_index, &lowp, &highp);
- 	*lowp = data;
- 	*highp = data >> 32;
- 	return 0;
-@@ -1300,10 +1307,8 @@ static int vmx_restore_vmx_misc(struct vcpu_vmx *vmx, u64 data)
- 		BIT_ULL(28) | BIT_ULL(29) | BIT_ULL(30) |
- 		/* reserved */
- 		GENMASK_ULL(13, 9) | BIT_ULL(31);
--	u64 vmx_misc;
--
--	vmx_misc = vmx_control_msr(vmx->nested.msrs.misc_low,
--				   vmx->nested.msrs.misc_high);
-+	u64 vmx_misc = vmx_control_msr(vmcs_config.nested.misc_low,
-+				       vmcs_config.nested.misc_high);
- 
- 	if (!is_bitwise_subset(vmx_misc, data, feature_and_reserved_bits))
- 		return -EINVAL;
-@@ -1331,10 +1336,8 @@ static int vmx_restore_vmx_misc(struct vcpu_vmx *vmx, u64 data)
- 
- static int vmx_restore_vmx_ept_vpid_cap(struct vcpu_vmx *vmx, u64 data)
- {
--	u64 vmx_ept_vpid_cap;
--
--	vmx_ept_vpid_cap = vmx_control_msr(vmx->nested.msrs.ept_caps,
--					   vmx->nested.msrs.vpid_caps);
-+	u64 vmx_ept_vpid_cap = vmx_control_msr(vmcs_config.nested.ept_caps,
-+					       vmcs_config.nested.vpid_caps);
- 
- 	/* Every bit is either reserved or a feature bit. */
- 	if (!is_bitwise_subset(vmx_ept_vpid_cap, data, -1ULL))
-@@ -1345,20 +1348,21 @@ static int vmx_restore_vmx_ept_vpid_cap(struct vcpu_vmx *vmx, u64 data)
- 	return 0;
- }
- 
-+static u64 *vmx_get_fixed0_msr(struct nested_vmx_msrs *msrs, u32 msr_index)
-+{
-+	switch (msr_index) {
-+	case MSR_IA32_VMX_CR0_FIXED0:
-+		return &msrs->cr0_fixed0;
-+	case MSR_IA32_VMX_CR4_FIXED0:
-+		return &msrs->cr4_fixed0;
-+	default:
-+		BUG();
-+	}
-+}
-+
- static int vmx_restore_fixed0_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
- {
--	u64 *msr;
--
--	switch (msr_index) {
--	case MSR_IA32_VMX_CR0_FIXED0:
--		msr = &vmx->nested.msrs.cr0_fixed0;
--		break;
--	case MSR_IA32_VMX_CR4_FIXED0:
--		msr = &vmx->nested.msrs.cr4_fixed0;
--		break;
--	default:
--		BUG();
--	}
-+	const u64 *msr = vmx_get_fixed0_msr(&vmcs_config.nested, msr_index);
- 
- 	/*
- 	 * 1 bits (which indicates bits which "must-be-1" during VMX operation)
-@@ -1367,7 +1371,7 @@ static int vmx_restore_fixed0_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
- 	if (!is_bitwise_subset(data, *msr, -1ULL))
- 		return -EINVAL;
- 
--	*msr = data;
-+	*vmx_get_fixed0_msr(&vmx->nested.msrs, msr_index) = data;
- 	return 0;
- }
- 
-@@ -1428,7 +1432,7 @@ int vmx_set_vmx_msr(struct kvm_vcpu *vcpu, u32 msr_index, u64 data)
- 		vmx->nested.msrs.vmcs_enum = data;
- 		return 0;
- 	case MSR_IA32_VMX_VMFUNC:
--		if (data & ~vmx->nested.msrs.vmfunc_controls)
-+		if (data & ~vmcs_config.nested.vmfunc_controls)
- 			return -EINVAL;
- 		vmx->nested.msrs.vmfunc_controls = data;
- 		return 0;
+-	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events)) {
++	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events) &&
++	    call->state != RXRPC_CALL_CLIENT_RECV_REPLY) {
+ 		rxrpc_resend(call, now);
+ 		goto recheck_state;
+ 	}
 -- 
-2.36.1.255.ge46751e96f-goog
+2.35.1
+
+
 
