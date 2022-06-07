@@ -2,139 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E33C3F2D4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AADE5CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355176AbiFGTLT (ORCPT
+        id S1355194AbiFGTLZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51584 "EHLO
+        Tue, 7 Jun 2022 15:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351429AbiFGSQV (ORCPT
+        with ESMTP id S1351395AbiFGSQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C558C15FE05;
-        Tue,  7 Jun 2022 10:49:32 -0700 (PDT)
+        Tue, 7 Jun 2022 14:16:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98461611C3;
+        Tue,  7 Jun 2022 10:49:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A31D61732;
-        Tue,  7 Jun 2022 17:49:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45C14C34115;
-        Tue,  7 Jun 2022 17:49:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624167;
-        bh=qoPbMV8oPXml9N7dYYeY2+90OzfkkdGHN6XcgA1S0kQ=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EEE486174D;
+        Tue,  7 Jun 2022 17:49:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF0FC34115;
+        Tue,  7 Jun 2022 17:49:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624164;
+        bh=UUqfrO9tkAxiVWeETgPMgTcjkhd0rSmhrqnbOtnL9k8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wpcqDoEi0bn2NFKOADe4XcBWZDekxS3PyoE2Ys7xb6SD+aOB1dCQsOmRV0fd6KjOP
-         /uQYmH6zSuORYKxflmlvC1HQMjEpax5zLlrN492hgKnBC/k6kY729BoRsMVe+hgV3M
-         KICtGoxMZoHVdVFFhIukFjA+IlLC23uptQLTzIV4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 230/667] cpufreq: Fix possible race in cpufreq online error path
-Date:   Tue,  7 Jun 2022 18:58:15 +0200
-Message-Id: <20220607164941.686333872@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=EfsyAkrj0XVeJ4KCwc8WIc+Nwff9S7uIdyiswR5NEQRoJx6Fj8W33V4ZPMF/BQEB7
+         5q6lPilHLSANb390EtCvU42ohKWrx/GxJhXLFcxyC2PAv3ap21TXIZxPI3ySIdf+Bq
+         GBBkO9RrZEfnGZqkMCnkpGPu2uNoespywY3HtYu7AT28lAZS/h6q/7Cc7Rp7EbZWRn
+         dnHWhq1Ll47j8Dc7k/0KO8n6NVeveCy4HR8Uvo5BtZFUwWbhbxlQpRUC4L6fZNhpf+
+         RE2JnFk6CxPOqRCiz/Y++ds5E19QFJK28XZcDFMUFTcZDuGwF3pBLsWXdh7ft4S3i+
+         WiNIWzAnX1tsw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, fabioaiuto83@gmail.com,
+        hdegoede@redhat.com, sevinj.aghayeva@gmail.com,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.18 05/68] drivers: staging: rtl8723bs: Fix deadlock in rtw_surveydone_event_callback()
+Date:   Tue,  7 Jun 2022 13:47:31 -0400
+Message-Id: <20220607174846.477972-5-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Schspa Shi <schspa@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit f346e96267cd76175d6c201b40f770c0116a8a04 ]
+[ Upstream commit cc7ad0d77b51c872d629bcd98aea463a3c4109e7 ]
 
-When cpufreq online fails, the policy->cpus mask is not cleared and
-policy->rwsem is released too early, so the driver can be invoked
-via the cpuinfo_cur_freq sysfs attribute while its ->offline() or
-->exit() callbacks are being run.
+There is a deadlock in rtw_surveydone_event_callback(),
+which is shown below:
 
-Take policy->clk as an example:
+   (Thread 1)                  |      (Thread 2)
+                               | _set_timer()
+rtw_surveydone_event_callback()|  mod_timer()
+ spin_lock_bh() //(1)          |  (wait a time)
+ ...                           | rtw_scan_timeout_handler()
+ del_timer_sync()              |  spin_lock_bh() //(2)
+ (wait timer to stop)          |  ...
 
-static int cpufreq_online(unsigned int cpu)
-{
-  ...
-  // policy->cpus != 0 at this time
-  down_write(&policy->rwsem);
-  ret = cpufreq_add_dev_interface(policy);
-  up_write(&policy->rwsem);
+We hold pmlmepriv->lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need pmlmepriv->lock in position (2) of thread 2.
+As a result, rtw_surveydone_event_callback() will block forever.
 
-  return 0;
+This patch extracts del_timer_sync() from the protection of
+spin_lock_bh(), which could let timer handler to obtain
+the needed lock. What`s more, we change spin_lock_bh() in
+rtw_scan_timeout_handler() to spin_lock_irq(). Otherwise,
+spin_lock_bh() will also cause deadlock() in timer handler.
 
-out_destroy_policy:
-	for_each_cpu(j, policy->real_cpus)
-		remove_cpu_dev_symlink(policy, get_cpu_device(j));
-    up_write(&policy->rwsem);
-...
-out_exit_policy:
-  if (cpufreq_driver->exit)
-    cpufreq_driver->exit(policy);
-      clk_put(policy->clk);
-      // policy->clk is a wild pointer
-...
-                                    ^
-                                    |
-                            Another process access
-                            __cpufreq_get
-                              cpufreq_verify_current_freq
-                                cpufreq_generic_get
-                                  // acces wild pointer of policy->clk;
-                                    |
-                                    |
-out_offline_policy:                 |
-  cpufreq_policy_free(policy);      |
-    // deleted here, and will wait for no body reference
-    cpufreq_policy_put_kobj(policy);
-}
-
-Address this by modifying cpufreq_online() to release policy->rwsem
-in the error path after the driver callbacks have run and to clear
-policy->cpus before releasing the semaphore.
-
-Fixes: 7106e02baed4 ("cpufreq: release policy->rwsem on error")
-Signed-off-by: Schspa Shi <schspa@gmail.com>
-[ rjw: Subject and changelog edits ]
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220409061836.60529-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/cpufreq.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/staging/rtl8723bs/core/rtw_mlme.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index cddf7e13c232..502245710ee0 100644
---- a/drivers/cpufreq/cpufreq.c
-+++ b/drivers/cpufreq/cpufreq.c
-@@ -1528,8 +1528,6 @@ static int cpufreq_online(unsigned int cpu)
- 	for_each_cpu(j, policy->real_cpus)
- 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
+diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme.c b/drivers/staging/rtl8723bs/core/rtw_mlme.c
+index ed2d3b7d44d9..62f140985e3f 100644
+--- a/drivers/staging/rtl8723bs/core/rtw_mlme.c
++++ b/drivers/staging/rtl8723bs/core/rtw_mlme.c
+@@ -751,7 +751,9 @@ void rtw_surveydone_event_callback(struct adapter	*adapter, u8 *pbuf)
+ 	}
  
--	up_write(&policy->rwsem);
--
- out_offline_policy:
- 	if (cpufreq_driver->offline)
- 		cpufreq_driver->offline(policy);
-@@ -1538,6 +1536,9 @@ static int cpufreq_online(unsigned int cpu)
- 	if (cpufreq_driver->exit)
- 		cpufreq_driver->exit(policy);
+ 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY)) {
++		spin_unlock_bh(&pmlmepriv->lock);
+ 		del_timer_sync(&pmlmepriv->scan_to_timer);
++		spin_lock_bh(&pmlmepriv->lock);
+ 		_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY);
+ 	}
  
-+	cpumask_clear(policy->cpus);
-+	up_write(&policy->rwsem);
-+
- out_free_policy:
- 	cpufreq_policy_free(policy);
- 	return ret;
+@@ -1586,11 +1588,11 @@ void rtw_scan_timeout_handler(struct timer_list *t)
+ 						  mlmepriv.scan_to_timer);
+ 	struct	mlme_priv *pmlmepriv = &adapter->mlmepriv;
+ 
+-	spin_lock_bh(&pmlmepriv->lock);
++	spin_lock_irq(&pmlmepriv->lock);
+ 
+ 	_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY);
+ 
+-	spin_unlock_bh(&pmlmepriv->lock);
++	spin_unlock_irq(&pmlmepriv->lock);
+ 
+ 	rtw_indicate_scan_done(adapter, true);
+ }
 -- 
 2.35.1
-
-
 
