@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76456CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90C12CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349005AbiFGRuZ (ORCPT
+        id S1349132AbiFGRud (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:50:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
+        Tue, 7 Jun 2022 13:50:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346880AbiFGR3a (ORCPT
+        with ESMTP id S1346978AbiFGRcW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:29:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01228118D23;
-        Tue,  7 Jun 2022 10:24:52 -0700 (PDT)
+        Tue, 7 Jun 2022 13:32:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4817154194;
+        Tue,  7 Jun 2022 10:30:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3797FCE2018;
-        Tue,  7 Jun 2022 17:24:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C19DC385A5;
-        Tue,  7 Jun 2022 17:24:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6817F614AE;
+        Tue,  7 Jun 2022 17:30:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EC12C385A5;
+        Tue,  7 Jun 2022 17:29:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622689;
-        bh=seCFZk7YL+TVjD/DOD0zsxuIbf6/QXBn7zKIHdKSTeo=;
+        s=korg; t=1654622999;
+        bh=liNhd+rQWFOn1syJrUOicb3uykE30jaLc4TMIIZdHug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BPeK23IdpqrZ4KHvKoeqNDZpBwN0C78Md9PngHaswo8hvlxuilVhfstSwik1bQ66L
-         BUd4G4EiGcQC8LL1VI0z7cyfQ5aToTNsxE3dF9Pm++xHJ1Li3G/fRm6PTZnFp/8h+z
-         A83v8L95jvqMIcMzHQTJLzpJPHvT48i231pJtNM0=
+        b=jHsCIo0jLjcy5HRCpDANLggp9clsCLHJjTMpBT+cs+E6Zm4rLR1cJr3raMn6X0i6N
+         QDW53pYYJ14QFW1DnlXVnYhV9SCF/LlM8xFYy9Ld/L3s1v4VCdrrhW6648iwuEMPht
+         8BYDmvcglNJCMFOyh193qwTvH+I/q1wkG0gXB6zI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 148/452] mtd: rawnand: denali: Use managed device resources
-Date:   Tue,  7 Jun 2022 19:00:05 +0200
-Message-Id: <20220607164912.968882142@linuxfoundation.org>
+Subject: [PATCH 5.10 260/452] ARM: dts: suniv: F1C100: fix watchdog compatible
+Date:   Tue,  7 Jun 2022 19:01:57 +0200
+Message-Id: <20220607164916.302389302@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,90 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Andre Przywara <andre.przywara@arm.com>
 
-[ Upstream commit 3a745b51cddafade99aaea1b93aad31e9614e230 ]
+[ Upstream commit 01a850ee61cbf0ab77dcbf26bb133fec2dd640d6 ]
 
-All of the resources used by this driver has managed interfaces, so use
-them. Otherwise we will get the following splat:
+The F1C100 series of SoCs actually have their watchdog IP being
+compatible with the newer Allwinner generation, not the older one.
 
-[    4.472703] denali-nand-pci 0000:00:05.0: timeout while waiting for irq 0x1000
-[    4.474071] denali-nand-pci: probe of 0000:00:05.0 failed with error -5
-[    4.473538] nand: No NAND device found
-[    4.474068] BUG: unable to handle page fault for address: ffffc90005000410
-[    4.475169] #PF: supervisor write access in kernel mode
-[    4.475579] #PF: error_code(0x0002) - not-present page
-[    4.478362] RIP: 0010:iowrite32+0x9/0x50
-[    4.486068] Call Trace:
-[    4.486269]  <IRQ>
-[    4.486443]  denali_isr+0x15b/0x300 [denali]
-[    4.486788]  ? denali_direct_write+0x50/0x50 [denali]
-[    4.487189]  __handle_irq_event_percpu+0x161/0x3b0
-[    4.487571]  handle_irq_event+0x7d/0x1b0
-[    4.487884]  handle_fasteoi_irq+0x2b0/0x770
-[    4.488219]  __common_interrupt+0xc8/0x1b0
-[    4.488549]  common_interrupt+0x9a/0xc0
+The currently described sun4i-a10-wdt actually does not work, neither
+the watchdog functionality (just never fires), nor the reset part
+(reboot hangs).
 
-Fixes: 93db446a424c ("mtd: nand: move raw NAND related code to the raw/ subdir")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220411125808.958276-1-zheyuma97@gmail.com
+Replace the compatible string with the one used by the newer generation.
+Verified to work with both the watchdog and reboot functionality on a
+LicheePi Nano.
+
+Also add the missing interrupt line and clock source, to make it binding
+compliant.
+
+Fixes: 4ba16d17efdd ("ARM: dts: suniv: add initial DTSI file for F1C100s")
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Acked-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20220317162349.739636-4-andre.przywara@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/denali_pci.c | 15 ++++-----------
- 1 file changed, 4 insertions(+), 11 deletions(-)
+ arch/arm/boot/dts/suniv-f1c100s.dtsi | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/nand/raw/denali_pci.c b/drivers/mtd/nand/raw/denali_pci.c
-index 20c085a30adc..de7e722d3826 100644
---- a/drivers/mtd/nand/raw/denali_pci.c
-+++ b/drivers/mtd/nand/raw/denali_pci.c
-@@ -74,22 +74,21 @@ static int denali_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
- 		return ret;
- 	}
+diff --git a/arch/arm/boot/dts/suniv-f1c100s.dtsi b/arch/arm/boot/dts/suniv-f1c100s.dtsi
+index 6100d3b75f61..def830101448 100644
+--- a/arch/arm/boot/dts/suniv-f1c100s.dtsi
++++ b/arch/arm/boot/dts/suniv-f1c100s.dtsi
+@@ -104,8 +104,10 @@
  
--	denali->reg = ioremap(csr_base, csr_len);
-+	denali->reg = devm_ioremap(denali->dev, csr_base, csr_len);
- 	if (!denali->reg) {
- 		dev_err(&dev->dev, "Spectra: Unable to remap memory region\n");
- 		return -ENOMEM;
- 	}
+ 		wdt: watchdog@1c20ca0 {
+ 			compatible = "allwinner,suniv-f1c100s-wdt",
+-				     "allwinner,sun4i-a10-wdt";
++				     "allwinner,sun6i-a31-wdt";
+ 			reg = <0x01c20ca0 0x20>;
++			interrupts = <16>;
++			clocks = <&osc32k>;
+ 		};
  
--	denali->host = ioremap(mem_base, mem_len);
-+	denali->host = devm_ioremap(denali->dev, mem_base, mem_len);
- 	if (!denali->host) {
- 		dev_err(&dev->dev, "Spectra: ioremap failed!");
--		ret = -ENOMEM;
--		goto out_unmap_reg;
-+		return -ENOMEM;
- 	}
- 
- 	ret = denali_init(denali);
- 	if (ret)
--		goto out_unmap_host;
-+		return ret;
- 
- 	nsels = denali->nbanks;
- 
-@@ -117,10 +116,6 @@ static int denali_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
- 
- out_remove_denali:
- 	denali_remove(denali);
--out_unmap_host:
--	iounmap(denali->host);
--out_unmap_reg:
--	iounmap(denali->reg);
- 	return ret;
- }
- 
-@@ -129,8 +124,6 @@ static void denali_pci_remove(struct pci_dev *dev)
- 	struct denali_controller *denali = pci_get_drvdata(dev);
- 
- 	denali_remove(denali);
--	iounmap(denali->reg);
--	iounmap(denali->host);
- }
- 
- static struct pci_driver denali_pci_driver = {
+ 		uart0: serial@1c25000 {
 -- 
 2.35.1
 
