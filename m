@@ -2,95 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3679EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:07:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5781EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353704AbiFGTHS (ORCPT
+        id S1353755AbiFGTHa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:07:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50232 "EHLO
+        Tue, 7 Jun 2022 15:07:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351671AbiFGSQg (ORCPT
+        with ESMTP id S1351649AbiFGSQf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269A1168354;
+        Tue, 7 Jun 2022 14:16:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0854616834F;
         Tue,  7 Jun 2022 10:49:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72F23B82349;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2AC6961732;
+        Tue,  7 Jun 2022 17:49:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34DA4C385A5;
         Tue,  7 Jun 2022 17:49:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88CE5C34119;
-        Tue,  7 Jun 2022 17:49:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624188;
-        bh=EbHpsNQsZRgTMF45CSYfLlirVAaStJQ+cyuj+aVwgLI=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624189;
+        bh=DAVkXLoZmPCpqomLHk0d4STLVUVEyI8ZqRmBoWg21lE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XajSSnIZOEwu1Y6DU6j1K881NN+iXC5AUTm5HvFZ08kNjCsSqdnNcbCy+QB1gaajQ
-         zPug7v7NS3n8CTXgaqH9ulWSCQ3t8DcY9NrazpDAyJFz0vPohV9PEZkOBfoAGXh+3/
-         HROWryArnxunopEKorMDxrJVKl3sG9HRJfhyrmzmnafi26h1ExwWfmbTu5//Ns18Hm
-         v92aHYL+cbXRGXYDb3B6+Z58XLuClHlCL6uPtpS6U6984o7C3kiZBoVDV7yV6HkgGR
-         +z3NJDVTN5ocfIMR+Y1bQv3uaMHaqYv5+HEsyFXAH8QoTFKUHpPfb82OWOPfgWXX81
-         IjGdKKR+b7xTg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        b=d96SS/mtSP04EIIFuBxfiROxTBOJDs4F2qKf3gWWDQo/L+C3X1OhlJ8znj7ipGagc
+         2ye2XmK6Kf5D/4gqlI1Gw1pP4ZQ7ffTq/ehQALiuOiUuRAYoxkqo2MmtVacQyrAboi
+         wqv+uKFT3r78qoklqJW/mWWzMWtQVn5TAnRmWP9E=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.18 08/68] tty: synclink_gt: Fix null-pointer-dereference in slgt_clean()
-Date:   Tue,  7 Jun 2022 13:47:34 -0400
-Message-Id: <20220607174846.477972-8-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+Subject: [PATCH 5.15 237/667] media: i2c: max9286: fix kernel oops when removing module
+Date:   Tue,  7 Jun 2022 18:58:22 +0200
+Message-Id: <20220607164941.892502484@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
 
-[ Upstream commit 689ca31c542687709ba21ec2195c1fbce34fd029 ]
+[ Upstream commit 365ab7ebc24eebb42b9e020aeb440d51af8960cd ]
 
-When the driver fails at alloc_hdlcdev(), and then we remove the driver
-module, we will get the following splat:
+When removing the max9286 module we get a kernel oops:
 
-[   25.065966] general protection fault, probably for non-canonical address 0xdffffc0000000182: 0000 [#1] PREEMPT SMP KASAN PTI
-[   25.066914] KASAN: null-ptr-deref in range [0x0000000000000c10-0x0000000000000c17]
-[   25.069262] RIP: 0010:detach_hdlc_protocol+0x2a/0x3e0
-[   25.077709] Call Trace:
-[   25.077924]  <TASK>
-[   25.078108]  unregister_hdlc_device+0x16/0x30
-[   25.078481]  slgt_cleanup+0x157/0x9f0 [synclink_gt]
+Unable to handle kernel paging request at virtual address 000000aa00000094
+Mem abort info:
+  ESR = 0x96000004
+  EC = 0x25: DABT (current EL), IL = 32 bits
+  SET = 0, FnV = 0
+  EA = 0, S1PTW = 0
+  FSC = 0x04: level 0 translation fault
+Data abort info:
+  ISV = 0, ISS = 0x00000004
+  CM = 0, WnR = 0
+user pgtable: 4k pages, 48-bit VAs, pgdp=0000000880d85000
+[000000aa00000094] pgd=0000000000000000, p4d=0000000000000000
+Internal error: Oops: 96000004 [#1] PREEMPT SMP
+Modules linked in: fsl_jr_uio caam_jr rng_core libdes caamkeyblob_desc caamhash_desc caamalg_desc crypto_engine max9271 authenc crct10dif_ce mxc_jpeg_encdec
+CPU: 2 PID: 713 Comm: rmmod Tainted: G         C        5.15.5-00057-gaebcd29c8ed7-dirty #5
+Hardware name: Freescale i.MX8QXP MEK (DT)
+pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : i2c_mux_del_adapters+0x24/0xf0
+lr : max9286_remove+0x28/0xd0 [max9286]
+sp : ffff800013a9bbf0
+x29: ffff800013a9bbf0 x28: ffff00080b6da940 x27: 0000000000000000
+x26: 0000000000000000 x25: 0000000000000000 x24: 0000000000000000
+x23: ffff000801a5b970 x22: ffff0008048b0890 x21: ffff800009297000
+x20: ffff0008048b0f70 x19: 000000aa00000064 x18: 0000000000000000
+x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000000000
+x14: 0000000000000014 x13: 0000000000000000 x12: ffff000802da49e8
+x11: ffff000802051918 x10: ffff000802da4920 x9 : ffff000800030098
+x8 : 0101010101010101 x7 : 7f7f7f7f7f7f7f7f x6 : fefefeff6364626d
+x5 : 8080808000000000 x4 : 0000000000000000 x3 : 0000000000000000
+x2 : ffffffffffffffff x1 : ffff00080b6da940 x0 : 0000000000000000
+Call trace:
+ i2c_mux_del_adapters+0x24/0xf0
+ max9286_remove+0x28/0xd0 [max9286]
+ i2c_device_remove+0x40/0x110
+ __device_release_driver+0x188/0x234
+ driver_detach+0xc4/0x150
+ bus_remove_driver+0x60/0xe0
+ driver_unregister+0x34/0x64
+ i2c_del_driver+0x58/0xa0
+ max9286_i2c_driver_exit+0x1c/0x490 [max9286]
+ __arm64_sys_delete_module+0x194/0x260
+ invoke_syscall+0x48/0x114
+ el0_svc_common.constprop.0+0xd4/0xfc
+ do_el0_svc+0x2c/0x94
+ el0_svc+0x28/0x80
+ el0t_64_sync_handler+0xa8/0x130
+ el0t_64_sync+0x1a0/0x1a4
 
-Fix this by checking whether the 'info->netdev' is a null pointer first.
+The Oops happens because the I2C client data does not point to
+max9286_priv anymore but to v4l2_subdev. The change happened in
+max9286_init() which calls v4l2_i2c_subdev_init() later on...
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220410114814.3920474-1-zheyuma97@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Besides fixing the max9286_remove() function, remove the call to
+i2c_set_clientdata() in max9286_probe(), to avoid confusion, and make
+the necessary changes to max9286_init() so that it doesn't have to use
+i2c_get_clientdata() in order to fetch the pointer to priv.
+
+Fixes: 66d8c9d2422d ("media: i2c: Add MAX9286 driver")
+Signed-off-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/synclink_gt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/media/i2c/max9286.c | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index 25c558e65ece..9bc2a9265277 100644
---- a/drivers/tty/synclink_gt.c
-+++ b/drivers/tty/synclink_gt.c
-@@ -1746,6 +1746,8 @@ static int hdlcdev_init(struct slgt_info *info)
-  */
- static void hdlcdev_exit(struct slgt_info *info)
+diff --git a/drivers/media/i2c/max9286.c b/drivers/media/i2c/max9286.c
+index 6c9aa6b04bc8..ce943702ffe9 100644
+--- a/drivers/media/i2c/max9286.c
++++ b/drivers/media/i2c/max9286.c
+@@ -1144,22 +1144,18 @@ static int max9286_poc_enable(struct max9286_priv *priv, bool enable)
+ 	return ret;
+ }
+ 
+-static int max9286_init(struct device *dev)
++static int max9286_init(struct max9286_priv *priv)
  {
-+	if (!info->netdev)
-+		return;
- 	unregister_hdlc_device(info->netdev);
- 	free_netdev(info->netdev);
- 	info->netdev = NULL;
+-	struct max9286_priv *priv;
+-	struct i2c_client *client;
++	struct i2c_client *client = priv->client;
+ 	int ret;
+ 
+-	client = to_i2c_client(dev);
+-	priv = i2c_get_clientdata(client);
+-
+ 	ret = max9286_poc_enable(priv, true);
+ 	if (ret)
+ 		return ret;
+ 
+ 	ret = max9286_setup(priv);
+ 	if (ret) {
+-		dev_err(dev, "Unable to setup max9286\n");
++		dev_err(&client->dev, "Unable to setup max9286\n");
+ 		goto err_poc_disable;
+ 	}
+ 
+@@ -1169,13 +1165,13 @@ static int max9286_init(struct device *dev)
+ 	 */
+ 	ret = max9286_v4l2_register(priv);
+ 	if (ret) {
+-		dev_err(dev, "Failed to register with V4L2\n");
++		dev_err(&client->dev, "Failed to register with V4L2\n");
+ 		goto err_poc_disable;
+ 	}
+ 
+ 	ret = max9286_i2c_mux_init(priv);
+ 	if (ret) {
+-		dev_err(dev, "Unable to initialize I2C multiplexer\n");
++		dev_err(&client->dev, "Unable to initialize I2C multiplexer\n");
+ 		goto err_v4l2_register;
+ 	}
+ 
+@@ -1330,7 +1326,6 @@ static int max9286_probe(struct i2c_client *client)
+ 	mutex_init(&priv->mutex);
+ 
+ 	priv->client = client;
+-	i2c_set_clientdata(client, priv);
+ 
+ 	priv->gpiod_pwdn = devm_gpiod_get_optional(&client->dev, "enable",
+ 						   GPIOD_OUT_HIGH);
+@@ -1366,7 +1361,7 @@ static int max9286_probe(struct i2c_client *client)
+ 	if (ret)
+ 		goto err_powerdown;
+ 
+-	ret = max9286_init(&client->dev);
++	ret = max9286_init(priv);
+ 	if (ret < 0)
+ 		goto err_cleanup_dt;
+ 
+@@ -1382,7 +1377,7 @@ static int max9286_probe(struct i2c_client *client)
+ 
+ static int max9286_remove(struct i2c_client *client)
+ {
+-	struct max9286_priv *priv = i2c_get_clientdata(client);
++	struct max9286_priv *priv = sd_to_max9286(i2c_get_clientdata(client));
+ 
+ 	i2c_mux_del_adapters(priv->mux);
+ 
 -- 
 2.35.1
+
+
 
