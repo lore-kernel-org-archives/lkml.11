@@ -2,151 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FD5CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54181CCA487
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392541AbiFHB61 (ORCPT
+        id S1392447AbiFHB6F convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:58:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48030 "EHLO
+        Tue, 7 Jun 2022 21:58:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835732AbiFGX4u (ORCPT
+        with ESMTP id S1588570AbiFGXyr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:56:50 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBC235878
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:18:09 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id z10so388658qta.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:18:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=K7/gzK+9zEAB7m+URXpWPKFV8Md7lwbStbXqUp9N1Lw=;
-        b=kD7H9kmH0TOh5IRdxAaVmdhiPL9BuO0CGy9mJpJnw8mQDcrCA/O7nS9XO4O0K/Hjpc
-         2VZB+xlv+DN2kYxk2NJWqLqp8xLprTQ3FjA7xiHLSbCLjUxvIpCopvsz9mAaO664Nu3e
-         mJ1v72wx4cPChKaqrwmhtD7SSvRpL5N8YOXWCfw7QwyvyiAm+g/Z9FOwXAY5YPf3gzkc
-         jKLBcXA30soO2y2k5vRIFLE5gJ1nsDuh7XJxwp2mqt3eUNZNREHdkEVIxjXDDVetw29Z
-         Dy6R8zsmcORzvM/epQqyUn8bcIB6SNaGjDNgqzwlFWMkqIXufBR+9ch8T84OxAplWDCH
-         L2FA==
+        Tue, 7 Jun 2022 19:54:47 -0400
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673F8152B9F;
+        Tue,  7 Jun 2022 16:40:31 -0700 (PDT)
+Received: by mail-yb1-f170.google.com with SMTP id v22so33715034ybd.5;
+        Tue, 07 Jun 2022 16:40:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=K7/gzK+9zEAB7m+URXpWPKFV8Md7lwbStbXqUp9N1Lw=;
-        b=xM5OKdxcnaYY1s5E8JFL1rHT66ziCXC3S/puoCMOsASj3psA7x9SIUQZgPTglziKx2
-         G9Bu6XsvQ2xJs6USORteqmWKHBU9j4M+DNXau/EdJSVz2+pmaWhgUBbVB9EzzN/dd2BG
-         05MGyEaiz84jp2jMwAta4B+WZSprOzcd9p/HNIoC+PJMNJIJmsYAO2VqH9ZykRwIHwiP
-         OpsBWObg0HJgMZYxdXbo6IXtUkuDTvGu8JYyu5hV9Bd+hyntHvZYoyd5rZNhUI+hzlid
-         p5CLrcFZVoJYIhwcZyQaBUHCllPOXovrTttqqV0nJL8k4ZjWUzBdzicRgp+FwN1oG0P6
-         3Ifw==
-X-Gm-Message-State: AOAM533uY0nxMHQfeNrBmqzuGH0rZPe6rKFgaW5TkCkl2reYmldaeUBd
-        3W+aNyXqYffe1FkhVLGEccs3DRA0rC8PsWTR6ZwW+w==
-X-Google-Smtp-Source: ABdhPJwWaEMpZd6sm7MREATgjYhP0WVx5ZHG+STuqGDMV32g2q4lA/btHLzN3suLQfbF0mlblinbGfcb3VQRH13J6mQ=
-X-Received: by 2002:ac8:5990:0:b0:304:c8d6:3147 with SMTP id
- e16-20020ac85990000000b00304c8d63147mr25556691qte.370.1654643888839; Tue, 07
- Jun 2022 16:18:08 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1/qjcxsmWGOF/l/i6wu2yu8n5nSie7FdU/Wmm/ZoLiA=;
+        b=FEGo4BIPhQ6rBbGz/te7oqzvA6sPIIClqGH2fSRL/KFEGxOhtEiybtDTS+vgZEm1r5
+         aay+2R1bCo22yVd2roumhMahJRxzKur8qeFNlu0thHw0t9SU5Uxq2381c3a0R18/igl3
+         Vb+bEz5tG0nVv0uPSPJ8nacweRcKl1saeUN10duxf5e5RERJoXosIMlnLBRnSfFTh0ix
+         4Myu1gTArDUXXqnISIEn5yZ63tltcuVLWHHGA7gMh0a+ooUu1JRG0g6mEAxKi/E0cA6B
+         SnRfuWO7qqUYBM/i5eSIoO7NcItzN4YsjE3XLCBYFDU0rT8Fa9wEJWiBRy1rVMwQTEIL
+         dVJA==
+X-Gm-Message-State: AOAM532co8w+i4fP0Aw9d6cNPMEHs4u9CMNqFVyTbc3qzbQEPaq/nI+g
+        /QVOGBRaCefsFUz/y5t4LbEdrzx6JkyU6ImZL8E=
+X-Google-Smtp-Source: ABdhPJx2grNnlWzYraRXZjQ0ZQiMaFvd8I8Sz3hAXA1NCs5u0ESEaB4A+/hoH1sM/bQfc6KjRyjZAXo4eFe0VimxJzM=
+X-Received: by 2002:a25:9841:0:b0:663:eaf2:4866 with SMTP id
+ k1-20020a259841000000b00663eaf24866mr3790359ybo.381.1654645230591; Tue, 07
+ Jun 2022 16:40:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
- <20220607213543.4057620-3-bjorn.andersson@linaro.org> <f16657a3-15e5-f7d6-1f2b-58e2ea83dddc@linaro.org>
- <Yp/VCg3UznbLKLuk@ripper>
-In-Reply-To: <Yp/VCg3UznbLKLuk@ripper>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Wed, 8 Jun 2022 02:17:57 +0300
-Message-ID: <CAA8EJporMU9b42cuBfCBSw4yAakUcj47d6bY5yZRLkW-2Ciq_w@mail.gmail.com>
-Subject: Re: [PATCH v2 2/5] phy: qcom-qmp: Add USB3 5NM QMP UNI registers
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Manu Gautam <mgautam@codeaurora.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220604163000.211077-1-mailhol.vincent@wanadoo.fr> <20220604163000.211077-5-mailhol.vincent@wanadoo.fr>
+ <CAMuHMdXkq7+yvD=ju-LY14yOPkiiHwL6H+9G-4KgX=GJjX=h9g@mail.gmail.com>
+ <CAMZ6RqLEEHOZjrMH+-GLC--jjfOaWYOPLf+PpefHwy=cLpWTYg@mail.gmail.com>
+ <20220607182216.5fb1084e.max@enpas.org> <20220607150614.6248c504@kernel.org>
+In-Reply-To: <20220607150614.6248c504@kernel.org>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Wed, 8 Jun 2022 08:40:19 +0900
+Message-ID: <CAMZ6Rq+vYNvrTcToqVqqKSPJXAdjs3RkUY_SNuwB7n9FMuqQiQ@mail.gmail.com>
+Subject: Re: [PATCH v5 4/7] can: Kconfig: add CONFIG_CAN_RX_OFFLOAD
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Max Staudt <max@enpas.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 8 Jun 2022 at 01:43, Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
+On Wed. 8 Jun 2022 à 07:06, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue, 7 Jun 2022 18:22:16 +0200 Max Staudt wrote:
+> > > Honestly, I am totally happy to have the "default y" tag, the "if
+> > > unsure, say Y" comment and the "select CAN_RX_OFFLOAD" all together.
+> > >
+> > > Unless I am violating some kind of best practices, I prefer to keep it
+> > > as-is. Hope this makes sense.
 >
-> On Tue 07 Jun 14:58 PDT 2022, Dmitry Baryshkov wrote:
-> > On 08/06/2022 00:35, Bjorn Andersson wrote:
-> [..]
-> > > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_CMP_CODE2_MODE0     0x1b0
-> > > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_CMP_CODE1_MODE1     0x1b4
-> > > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_CMP_CODE2_MODE1     0x1b8
-> > > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_HSCLK_SEL           0x1bc
-> > > +#define USB3_V5_5NM_UNI_QSERDES_COM_RESERVED_1                     0x1c0
-> > > +#define USB3_V5_5NM_UNI_QSERDES_COM_MODE_OPERATION_STATUS          0x1c4
+> AFAIU Linus likes for everything that results in code being added to
+> the kernel to default to n.
+
+A "make defconfig" would not select CONFIG_CAN (on which
+CAN_RX_OFFLOAD indirectly depends) and so by default this code is not
+added to the kernel.
+
+> If the drivers hard-select that Kconfig
+> why bother user with the question at all? My understanding is that
+> Linus also likes to keep Kconfig as simple as possible.
+
+I do not think that this is so convoluted. What would bother me is
+that RX offload is not a new feature. Before this series, RX offload
+is built-in the can-dev.o by default. If this new CAN_RX_OFFLOAD does
+not default to yes, then the default features built-in can-dev.o would
+change before and after this series.
+But you being one of the maintainers, if you insist I will go in your
+direction. So will removing the "default yes" and the comment "If
+unsure, say yes" from the CAN_RX_OFFLOAD satisfy you?
+
+> > I wholeheartedly agree with Vincent's decision.
 > >
-> > These defines look completely compatible with the existing ones in the
-> > QSERDES_V5_COM_ namespace. Please use them instead.
-> >
+> > One example case would be users of my can327 driver, as long as it is
+> > not upstream yet. They need to have RX_OFFLOAD built into their
+> > distribution's can_dev.ko, otherwise they will have no choice but to
+> > build their own kernel.
 >
-> Can you please confirm that all these constants are exactly the same as
-> the existing V5 entries?
+> Upstream mentioning out-of-tree modules may have the opposite effect
+> to what you intend :( Forgive my ignorance, what's the reason to keep
+> the driver out of tree?
 
-The only difference that I see is the phy-qcom-qmp.h defining
-QSERDES_V5_COM_CMN_MODE to 0x1a4, which should be 0x1a0. This is
-clearly a mistake on the upstream side (confirmed by the msm-5.10).
-Could you please send a patch for it?
+I can answer for Max. The can327 patch is under review with the clear
+intent to have it upstream. c.f.:
+https://lore.kernel.org/linux-can/20220602213544.68273-1-max@enpas.org/
+
+But until the patch gets accepted, it is defacto an out of tree module.
 
 
->
-> [..]
-> > > +/* Module: USB3_UNI_PCS_USB3_PCIE_USB3_UNI_PCS_USB3 */
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_POWER_STATE_CONFIG1               0x00
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_AUTONOMOUS_MODE_STATUS            0x04
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_AUTONOMOUS_MODE_CTRL              0x08
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_AUTONOMOUS_MODE_CTRL2             0x0c
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_RXTERM_IRQ_SOURCE_STATUS     0x10
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_RXTERM_IRQ_CLEAR             0x14
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_DET_HIGH_COUNT_VAL           0x18
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_TX_ECSTART                   0x1c
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_PER_TIMER_VAL                0x20
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_TX_END_CNT_U3_START          0x24
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_CONFIG1                      0x28
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_LOCK_TIME            0x2c
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_WAIT_TIME            0x30
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_CTLE_TIME            0x34
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_WAIT_TIME_S2         0x38
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_DFE_TIME_S2          0x3c
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RCVR_DTCT_DLY_U3_L                0x40
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RCVR_DTCT_DLY_U3_H                0x44
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_ARCVR_DTCT_EN_PERIOD              0x48
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_ARCVR_DTCT_CM_DLY                 0x4c
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_TXONESZEROS_RUN_LENGTH            0x50
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_ALFPS_DEGLITCH_VAL                0x54
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_SIGDET_STARTUP_TIMER_VAL          0x58
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_TEST_CONTROL                      0x5c
-> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RXTERMINATION_DLY_SEL             0x60
-> >
-> > These look like QPHY_V5_PCS_USB3, but without additional 0x300 offset. I'd
-> > suggest modifying qcom-qmp-phy-usb.c to allocate another register space for
-> > pcs_usb and updating QPHY_V4_PCS_USB3_foo / QPHY_V5_PCS_USB3_foo defines to
-> > remove this offset.
-> >
-> > Afterwards most if not all constants from this header can be merged into
-> > phy-qcom-qmp.h I do not think that it makes sense to split this header at
-> > this moment. The QSERDES_COM/_TX/_RX/_PCS defines are common to all PHY
-> > types.
-> >
->
-> You might be right, but I spent considerable time debugging the combo
-> phy (which is version 5.0.0) and in the end it turned out that it's not
-> the same offsets.
->
-> I really would prefer that we stop haphazardly try to fit things into
-> the phy-qcom-qmp.h with version numbers that we essentially make up
-> base, when Qualcomm dumps the register layout for each generation in
-> their downstream kernel.
-
-Well... Let's come up with a better versioning/naming scheme. But I
-don't think we should dump repeatable symbol headers, which are in
-reality common between different PHYs. This would make things harder
-to understand and harder to maintain.
-
--- 
-With best wishes
-Dmitry
+Yours sincerely,
+Vincent Mailhol
