@@ -2,189 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF97CCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10B0ACCA494
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391588AbiFHBwu (ORCPT
+        id S1391421AbiFHBwq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57788 "EHLO
+        Tue, 7 Jun 2022 21:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376546AbiFGXi4 (ORCPT
+        with ESMTP id S1383847AbiFGWbA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:38:56 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E875C40079B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:42 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id 92-20020a17090a09e500b001d917022847so9810377pjo.1
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=Y4MZ3Sym9w/pI1xJDthLYzwUgTFZC459iHyqI3Vsa9Y=;
-        b=WEOEPyV3UHc47hAJUKfpAzZ48ZUzFYmQHB0fWCeJcFiChg8dzGz4HlnKycnt7EstWP
-         qWt5lhkRyxo5y7pF+NPGwBCH8eWH8A1F6RtDttq17muu/nVoMccq2tahltetZmaPl8bE
-         tnfnQomRLxMsMC9CK2foUlEbbxNe++WpIbzhy93MOifVYMKUnU9nvfhOPf0Y+TuNGGBi
-         COrc/o+V12V4juRHqx0A7lT/+abgtAlMWx3pILFyG2/jtuV1WCSiHZygxHTB2YfdE3Fl
-         cDqoPn5lvDD8jYxSyrEEmI/KBv//22VG+PkZOCw8M9KOUa6Xq7MRzFbbWI3BEXSq+917
-         5nog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=Y4MZ3Sym9w/pI1xJDthLYzwUgTFZC459iHyqI3Vsa9Y=;
-        b=1EmB+23v92nj8f+MQrYzq9weDmvva3ymKx37rgkc+tjZv/SfbyP5YJGeotVZPUB6a1
-         JkLLCgUDNUckYFiWhUJHRzp78pk/y/bSxwlJXuT/ugHMFg9eNpfCtVJ5s/2jpjI9ehJ6
-         dnTNZcXFafQHbP6BuimvOzAjAiMZrnHHw/uOpf8Z7NJ+0tE5uFDNOGrGxupUopn8q3TF
-         CPdkJ2TZRqOMM6BDIJRorQXfp6uhrDAEqZ9FWbDGFdEConoZgB6gXUOXo5YtKSv0IHyP
-         e4jrbXeB3DmAhMdCdORgEct/HK6v6JvdlPnfCbcAT8DtIV8HX0E0vrplgruq29mSLi9c
-         eOdw==
-X-Gm-Message-State: AOAM531TqsiDloZi0dE8iISPVKT6XpNi5QKMXkEkjEnWTva6KB1A3iaX
-        93eYbdqmt7hNlQCByxkw/MN/YVmKJyc=
-X-Google-Smtp-Source: ABdhPJwEt7iBU7YM9aCf297nNnfk6Mo5q0/MsDJTnsQDWr/qDTwCDRdN2IJkkUsNOIbDYF3MHiU5HwHgsTo=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:a10:b0:51b:fbe1:cedb with SMTP id
- p16-20020a056a000a1000b0051bfbe1cedbmr18012140pfh.68.1654637802174; Tue, 07
- Jun 2022 14:36:42 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  7 Jun 2022 21:36:03 +0000
-In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
-Message-Id: <20220607213604.3346000-15-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220607213604.3346000-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v5 14/15] KVM: selftests: Extend VMX MSRs test to cover
- CR4_FIXED1 (and its quirks)
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
-        David Matlack <dmatlack@google.com>,
-        Oliver Upton <oupton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 7 Jun 2022 18:31:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4AF4DF06;
+        Tue,  7 Jun 2022 12:24:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 300F0B823CA;
+        Tue,  7 Jun 2022 19:24:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A2C2C385A2;
+        Tue,  7 Jun 2022 19:24:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629852;
+        bh=MNGbb0y6lx7BzfYUSDabvaF+OEPYHabK0nbEfAzr7mo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FCiiG9nYlyF9+IsMSeAJ/rePXDTwn9TW35ST2NzQKV5xfvtD6GZVOKKEER6efKPe1
+         HxUWlJ8ZXX236Ow5rPpppJbOwDQmf++2XN3iHmhflaMXnahaIEQ/RjXIzyvFPwlC8R
+         znqhaetkCl2qdQwzZx2uLXa+opWu3EKJcjk+hCn8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.18 839/879] bcache: improve multithreaded bch_btree_check()
+Date:   Tue,  7 Jun 2022 19:05:57 +0200
+Message-Id: <20220607165027.207360448@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend the VMX MSRs test to verify that KVM adheres to its established
-quirky ABI for CR4_FIXED1 when VMX MSRS quirk is enabled, and that KV
-doesn't touch CR4_FIXED1 when the quirk is disabled.
+From: Coly Li <colyli@suse.de>
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+commit 622536443b6731ec82c563aae7807165adbe9178 upstream.
+
+Commit 8e7102273f59 ("bcache: make bch_btree_check() to be
+multithreaded") makes bch_btree_check() to be much faster when checking
+all btree nodes during cache device registration. But it isn't in ideal
+shap yet, still can be improved.
+
+This patch does the following thing to improve current parallel btree
+nodes check by multiple threads in bch_btree_check(),
+- Add read lock to root node while checking all the btree nodes with
+  multiple threads. Although currently it is not mandatory but it is
+  good to have a read lock in code logic.
+- Remove local variable 'char name[32]', and generate kernel thread name
+  string directly when calling kthread_run().
+- Allocate local variable "struct btree_check_state check_state" on the
+  stack and avoid unnecessary dynamic memory allocation for it.
+- Reduce BCH_BTR_CHKTHREAD_MAX from 64 to 12 which is enough indeed.
+- Increase check_state->started to count created kernel thread after it
+  succeeds to create.
+- When wait for all checking kernel threads to finish, use wait_event()
+  to replace wait_event_interruptible().
+
+With this change, the code is more clear, and some potential error
+conditions are avoided.
+
+Fixes: 8e7102273f59 ("bcache: make bch_btree_check() to be multithreaded")
+Signed-off-by: Coly Li <colyli@suse.de>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220524102336.10684-2-colyli@suse.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../selftests/kvm/include/x86_64/processor.h  |  7 ++
- .../selftests/kvm/x86_64/vmx_msrs_test.c      | 65 +++++++++++++++++++
- 2 files changed, 72 insertions(+)
+ drivers/md/bcache/btree.c |   58 ++++++++++++++++++++--------------------------
+ drivers/md/bcache/btree.h |    2 -
+ 2 files changed, 27 insertions(+), 33 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index 51cab9b080f7..716e72bc9163 100644
---- a/tools/testing/selftests/kvm/include/x86_64/processor.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -87,9 +87,16 @@ struct kvm_x86_cpu_feature {
- #define	X86_FEATURE_XSAVE		KVM_X86_CPU_FEATURE(0x1, 0, ECX, 26)
- #define	X86_FEATURE_OSXSAVE		KVM_X86_CPU_FEATURE(0x1, 0, ECX, 27)
- #define	X86_FEATURE_RDRAND		KVM_X86_CPU_FEATURE(0x1, 0, ECX, 30)
-+#define	X86_FEATURE_VME			KVM_X86_CPU_FEATURE(0x1, 0, EDX, 1)
-+#define	X86_FEATURE_DE			KVM_X86_CPU_FEATURE(0x1, 0, EDX, 2)
-+#define	X86_FEATURE_PSE			KVM_X86_CPU_FEATURE(0x1, 0, EDX, 3)
-+#define	X86_FEATURE_TSC			KVM_X86_CPU_FEATURE(0x1, 0, EDX, 4)
-+#define	X86_FEATURE_PAE			KVM_X86_CPU_FEATURE(0x1, 0, EDX, 6)
- #define	X86_FEATURE_MCE			KVM_X86_CPU_FEATURE(0x1, 0, EDX, 7)
- #define	X86_FEATURE_APIC		KVM_X86_CPU_FEATURE(0x1, 0, EDX, 9)
-+#define	X86_FEATURE_PGE			KVM_X86_CPU_FEATURE(0x1, 0, EDX, 13)
- #define	X86_FEATURE_CLFLUSH		KVM_X86_CPU_FEATURE(0x1, 0, EDX, 19)
-+#define	X86_FEATURE_FXSR		KVM_X86_CPU_FEATURE(0x1, 0, EDX, 24)
- #define	X86_FEATURE_XMM			KVM_X86_CPU_FEATURE(0x1, 0, EDX, 25)
- #define	X86_FEATURE_XMM2		KVM_X86_CPU_FEATURE(0x1, 0, EDX, 26)
- #define	X86_FEATURE_FSGSBASE		KVM_X86_CPU_FEATURE(0x7, 0, EBX, 0)
-diff --git a/tools/testing/selftests/kvm/x86_64/vmx_msrs_test.c b/tools/testing/selftests/kvm/x86_64/vmx_msrs_test.c
-index 9be2c2e3acf1..c0c4252a6a03 100644
---- a/tools/testing/selftests/kvm/x86_64/vmx_msrs_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/vmx_msrs_test.c
-@@ -143,6 +143,70 @@ static void load_and_clear_bndcfgs_test(struct kvm_vm *vm, struct kvm_vcpu *vcpu
- 	test_vmx_ctrls(vm, vcpu, VM_ENTRY_LOAD_BNDCFGS, VM_EXIT_CLEAR_BNDCFGS);
+--- a/drivers/md/bcache/btree.c
++++ b/drivers/md/bcache/btree.c
+@@ -2006,8 +2006,7 @@ int bch_btree_check(struct cache_set *c)
+ 	int i;
+ 	struct bkey *k = NULL;
+ 	struct btree_iter iter;
+-	struct btree_check_state *check_state;
+-	char name[32];
++	struct btree_check_state check_state;
+ 
+ 	/* check and mark root node keys */
+ 	for_each_key_filter(&c->root->keys, k, &iter, bch_ptr_invalid)
+@@ -2018,63 +2017,58 @@ int bch_btree_check(struct cache_set *c)
+ 	if (c->root->level == 0)
+ 		return 0;
+ 
+-	check_state = kzalloc(sizeof(struct btree_check_state), GFP_KERNEL);
+-	if (!check_state)
+-		return -ENOMEM;
+-
+-	check_state->c = c;
+-	check_state->total_threads = bch_btree_chkthread_nr();
+-	check_state->key_idx = 0;
+-	spin_lock_init(&check_state->idx_lock);
+-	atomic_set(&check_state->started, 0);
+-	atomic_set(&check_state->enough, 0);
+-	init_waitqueue_head(&check_state->wait);
++	check_state.c = c;
++	check_state.total_threads = bch_btree_chkthread_nr();
++	check_state.key_idx = 0;
++	spin_lock_init(&check_state.idx_lock);
++	atomic_set(&check_state.started, 0);
++	atomic_set(&check_state.enough, 0);
++	init_waitqueue_head(&check_state.wait);
+ 
++	rw_lock(0, c->root, c->root->level);
+ 	/*
+ 	 * Run multiple threads to check btree nodes in parallel,
+-	 * if check_state->enough is non-zero, it means current
++	 * if check_state.enough is non-zero, it means current
+ 	 * running check threads are enough, unncessary to create
+ 	 * more.
+ 	 */
+-	for (i = 0; i < check_state->total_threads; i++) {
+-		/* fetch latest check_state->enough earlier */
++	for (i = 0; i < check_state.total_threads; i++) {
++		/* fetch latest check_state.enough earlier */
+ 		smp_mb__before_atomic();
+-		if (atomic_read(&check_state->enough))
++		if (atomic_read(&check_state.enough))
+ 			break;
+ 
+-		check_state->infos[i].result = 0;
+-		check_state->infos[i].state = check_state;
+-		snprintf(name, sizeof(name), "bch_btrchk[%u]", i);
+-		atomic_inc(&check_state->started);
++		check_state.infos[i].result = 0;
++		check_state.infos[i].state = &check_state;
+ 
+-		check_state->infos[i].thread =
++		check_state.infos[i].thread =
+ 			kthread_run(bch_btree_check_thread,
+-				    &check_state->infos[i],
+-				    name);
+-		if (IS_ERR(check_state->infos[i].thread)) {
++				    &check_state.infos[i],
++				    "bch_btrchk[%d]", i);
++		if (IS_ERR(check_state.infos[i].thread)) {
+ 			pr_err("fails to run thread bch_btrchk[%d]\n", i);
+ 			for (--i; i >= 0; i--)
+-				kthread_stop(check_state->infos[i].thread);
++				kthread_stop(check_state.infos[i].thread);
+ 			ret = -ENOMEM;
+ 			goto out;
+ 		}
++		atomic_inc(&check_state.started);
+ 	}
+ 
+ 	/*
+ 	 * Must wait for all threads to stop.
+ 	 */
+-	wait_event_interruptible(check_state->wait,
+-				 atomic_read(&check_state->started) == 0);
++	wait_event(check_state.wait, atomic_read(&check_state.started) == 0);
+ 
+-	for (i = 0; i < check_state->total_threads; i++) {
+-		if (check_state->infos[i].result) {
+-			ret = check_state->infos[i].result;
++	for (i = 0; i < check_state.total_threads; i++) {
++		if (check_state.infos[i].result) {
++			ret = check_state.infos[i].result;
+ 			goto out;
+ 		}
+ 	}
+ 
+ out:
+-	kfree(check_state);
++	rw_unlock(0, c->root);
+ 	return ret;
  }
  
-+static void cr4_reserved_bit_test(struct kvm_vm *vm, struct kvm_vcpu *vcpu,
-+				  uint64_t cr4_bit,
-+				  struct kvm_x86_cpu_feature feature)
-+{
-+	uint64_t val;
-+	int r;
-+
-+	if (!kvm_cpu_has(feature))
-+		return;
-+
-+	vcpu_set_cpuid_feature(vcpu, feature);
-+	val = vcpu_get_msr(vcpu, MSR_IA32_VMX_CR4_FIXED1);
-+	TEST_ASSERT(val & cr4_bit,
-+		    "KVM should set CR4 bit when quirk and feature are enabled");
-+
-+	vcpu_clear_cpuid_feature(vcpu, feature);
-+	val = vcpu_get_msr(vcpu, MSR_IA32_VMX_CR4_FIXED1);
-+	TEST_ASSERT(!(val & cr4_bit),
-+		    "KVM should clear CR4 bit when quirk and feature are enabled");
-+
-+	r = _vcpu_set_msr(vcpu, MSR_IA32_VMX_CR4_FIXED1, val);
-+	TEST_ASSERT(r == 0, "Writing CR4_FIXED1 should fail when quirk is enabled");
-+
-+	vm_enable_cap(vm, KVM_CAP_DISABLE_QUIRKS2, KVM_X86_QUIRK_TWEAK_VMX_MSRS);
-+
-+	val &= ~cr4_bit;
-+	vcpu_set_msr(vcpu, MSR_IA32_VMX_CR4_FIXED1, val);
-+
-+	vcpu_set_cpuid_feature(vcpu, feature);
-+	TEST_ASSERT(!(val & cr4_bit),
-+		    "KVM shouldn't set CR4 bit when quirk is disabled");
-+
-+	val |= cr4_bit;
-+	vcpu_clear_cpuid_feature(vcpu, feature);
-+	TEST_ASSERT(val & cr4_bit,
-+		    "KVM shouldn't clear CR4 bit when quirk is disabled");
-+
-+	vm_enable_cap(vm, KVM_CAP_DISABLE_QUIRKS2, 0);
-+}
-+
-+static void cr4_reserved_bits_test(struct kvm_vm *vm, struct kvm_vcpu *vcpu)
-+{
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_VME,        X86_FEATURE_VME);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_PVI,        X86_FEATURE_VME);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_TSD,        X86_FEATURE_TSC);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_DE,         X86_FEATURE_DE);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_PSE,        X86_FEATURE_PSE);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_PAE,        X86_FEATURE_PAE);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_MCE,        X86_FEATURE_MCE);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_PGE,        X86_FEATURE_PGE);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_OSFXSR,     X86_FEATURE_FXSR);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_OSXMMEXCPT, X86_FEATURE_XMM);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_VMXE,       X86_FEATURE_VMX);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_SMXE,       X86_FEATURE_SMX);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_PCIDE,      X86_FEATURE_PCID);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_OSXSAVE,    X86_FEATURE_XSAVE);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_FSGSBASE,   X86_FEATURE_FSGSBASE);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_SMEP,       X86_FEATURE_SMEP);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_SMAP,       X86_FEATURE_SMAP);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_PKE,        X86_FEATURE_PKU);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_UMIP,       X86_FEATURE_UMIP);
-+	cr4_reserved_bit_test(vm, vcpu, X86_CR4_LA57,       X86_FEATURE_LA57);
-+}
-+
- int main(void)
- {
- 	struct kvm_vcpu *vcpu;
-@@ -156,6 +220,7 @@ int main(void)
+--- a/drivers/md/bcache/btree.h
++++ b/drivers/md/bcache/btree.h
+@@ -226,7 +226,7 @@ struct btree_check_info {
+ 	int				result;
+ };
  
- 	load_perf_global_ctrl_test(vm, vcpu);
- 	load_and_clear_bndcfgs_test(vm, vcpu);
-+	cr4_reserved_bits_test(vm, vcpu);
- 
- 	kvm_vm_free(vm);
- }
--- 
-2.36.1.255.ge46751e96f-goog
+-#define BCH_BTR_CHKTHREAD_MAX	64
++#define BCH_BTR_CHKTHREAD_MAX	12
+ struct btree_check_state {
+ 	struct cache_set		*c;
+ 	int				total_threads;
+
 
