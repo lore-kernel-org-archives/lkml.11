@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C025EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28028C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:28:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234577AbiFGW2X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54454 "EHLO
+        id S1380612AbiFGW22 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 18:28:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381130AbiFGVRV (ORCPT
+        with ESMTP id S1377921AbiFGVTB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:17:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC5A132771;
-        Tue,  7 Jun 2022 11:58:21 -0700 (PDT)
+        Tue, 7 Jun 2022 17:19:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB2A224441;
+        Tue,  7 Jun 2022 11:59:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B86D5617E7;
-        Tue,  7 Jun 2022 18:58:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC352C385A2;
-        Tue,  7 Jun 2022 18:58:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 699DFB823A1;
+        Tue,  7 Jun 2022 18:59:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC5CAC385A2;
+        Tue,  7 Jun 2022 18:59:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628300;
-        bh=eXwn9jpORhMFXa/l7hvpGfaQ1a87GZ++SVdKibfdzLY=;
+        s=korg; t=1654628366;
+        bh=B1mGJDCgUMNLtQ+ObxvdZWb5V/Djv7GIn7G0SDoX2cM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Av/vi081c7iyDUuIQjKun7wmELEqYYe2JspBvTNdCV0m1gQ3s7x9o4fgZx5VGj4ye
-         cMUct/oPSrcYxdHmTVcP3uUXXUa8yDNSTJamu89aydnJ3s7vrLRTz+/LQqhEfRKIMW
-         50YqO3YOg+D4XokKg1pjQYxCHzT5X0dFj1zr0X2M=
+        b=ZotGOdSyVxZ06yYKLS/kboY38Zgc+iFDQdKSUmvWFyv/nxavpuBbRdrZ6LaVYxZAT
+         oumi/aVpxnBuWTsaqYaQPNAMdTMHOuItQ+YoRW2TmRQtW5ZB78L3gntpZIfSdkBO0M
+         sW0wJLRtKrWRd/kUyvw/v1nVnnhsRxR+94jl4rT0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Enzo Matsumiya <ematsumiya@suse.de>,
-        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Yongqiang Sun <yongqiang.sun@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 242/879] cifs: return ENOENT for DFS lookup_cache_entry()
-Date:   Tue,  7 Jun 2022 18:56:00 +0200
-Message-Id: <20220607165009.877765372@linuxfoundation.org>
+Subject: [PATCH 5.18 303/879] drm/amd/amdgpu: Fix asm/hypervisor.h build error.
+Date:   Tue,  7 Jun 2022 18:57:01 +0200
+Message-Id: <20220607165011.644122781@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,105 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Enzo Matsumiya <ematsumiya@suse.de>
+From: Yongqiang Sun <yongqiang.sun@amd.com>
 
-[ Upstream commit 337b8b0e4343567221ef8d88aac5e418208d4ac1 ]
+[ Upstream commit d9e50239a9611b9a1759e007e9a810c8d178da28 ]
 
-EEXIST didn't make sense to use when dfs_cache_find() couldn't find a
-cache entry nor retrieve a referral target.
+Add CONFIG_X86 check to fix the build error.
 
-It also doesn't make sense cifs_dfs_query_info_nonascii_quirk() to
-emulate ENOENT anymore.
-
-Signed-off-by: Enzo Matsumiya <ematsumiya@suse.de>
-Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Fixes: 49aa98ca30cd18 ("drm/amd/amdgpu: Only reserve vram for firmware with vega9 MS_HYPERV host.")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Yongqiang Sun <yongqiang.sun@amd.com>
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/connect.c   | 6 ++++--
- fs/cifs/dfs_cache.c | 6 +++---
- fs/cifs/misc.c      | 6 +-----
- 3 files changed, 8 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_gmc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
-index 2a639fc79c30..b28b1ff39fed 100644
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -3406,8 +3406,9 @@ cifs_are_all_path_components_accessible(struct TCP_Server_Info *server,
- }
- 
- /*
-- * Check if path is remote (e.g. a DFS share). Return -EREMOTE if it is,
-- * otherwise 0.
-+ * Check if path is remote (i.e. a DFS share).
-+ *
-+ * Return -EREMOTE if it is, otherwise 0 or -errno.
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_gmc.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_gmc.c
+index 3e9582c245bb..88b852b3a2cb 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_gmc.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_gmc.c
+@@ -25,7 +25,9 @@
   */
- static int is_path_remote(struct mount_ctx *mnt_ctx)
- {
-@@ -3697,6 +3698,7 @@ int cifs_mount(struct cifs_sb_info *cifs_sb, struct smb3_fs_context *ctx)
- 	if (!isdfs)
- 		goto out;
  
-+	/* proceed as DFS mount */
- 	uuid_gen(&mnt_ctx.mount_id);
- 	rc = connect_dfs_root(&mnt_ctx, &tl);
- 	dfs_cache_free_tgts(&tl);
-diff --git a/fs/cifs/dfs_cache.c b/fs/cifs/dfs_cache.c
-index 956f8e5cf3e7..c5dd6f7305bd 100644
---- a/fs/cifs/dfs_cache.c
-+++ b/fs/cifs/dfs_cache.c
-@@ -654,7 +654,7 @@ static struct cache_entry *__lookup_cache_entry(const char *path, unsigned int h
- 			return ce;
+ #include <linux/io-64-nonatomic-lo-hi.h>
++#ifdef CONFIG_X86
+ #include <asm/hypervisor.h>
++#endif
+ 
+ #include "amdgpu.h"
+ #include "amdgpu_gmc.h"
+@@ -650,10 +652,12 @@ void amdgpu_gmc_get_vbios_allocations(struct amdgpu_device *adev)
+ 		/*
+ 		 * VEGA10 SRIOV VF with MS_HYPERV host needs some firmware reserved area.
+ 		 */
++#ifdef CONFIG_X86
+ 		if (amdgpu_sriov_vf(adev) && hypervisor_is_type(X86_HYPER_MS_HYPERV)) {
+ 			adev->mman.stolen_reserved_offset = 0x500000;
+ 			adev->mman.stolen_reserved_size = 0x200000;
  		}
- 	}
--	return ERR_PTR(-EEXIST);
-+	return ERR_PTR(-ENOENT);
- }
- 
- /*
-@@ -662,7 +662,7 @@ static struct cache_entry *__lookup_cache_entry(const char *path, unsigned int h
-  *
-  * Use whole path components in the match.  Must be called with htable_rw_lock held.
-  *
-- * Return ERR_PTR(-EEXIST) if the entry is not found.
-+ * Return ERR_PTR(-ENOENT) if the entry is not found.
-  */
- static struct cache_entry *lookup_cache_entry(const char *path)
- {
-@@ -710,7 +710,7 @@ static struct cache_entry *lookup_cache_entry(const char *path)
- 		while (e > s && *e != sep)
- 			e--;
- 	}
--	return ERR_PTR(-EEXIST);
-+	return ERR_PTR(-ENOENT);
- }
- 
- /**
-diff --git a/fs/cifs/misc.c b/fs/cifs/misc.c
-index 114810e563a9..5a803d686146 100644
---- a/fs/cifs/misc.c
-+++ b/fs/cifs/misc.c
-@@ -1308,7 +1308,7 @@ int cifs_update_super_prepath(struct cifs_sb_info *cifs_sb, char *prefix)
-  * for "\<server>\<dfsname>\<linkpath>" DFS reference,
-  * where <dfsname> contains non-ASCII unicode symbols.
-  *
-- * Check such DFS reference and emulate -ENOENT if it is actual.
-+ * Check such DFS reference.
-  */
- int cifs_dfs_query_info_nonascii_quirk(const unsigned int xid,
- 				       struct cifs_tcon *tcon,
-@@ -1340,10 +1340,6 @@ int cifs_dfs_query_info_nonascii_quirk(const unsigned int xid,
- 		cifs_dbg(FYI, "DFS ref '%s' is found, emulate -EREMOTE\n",
- 			 dfspath);
- 		rc = -EREMOTE;
--	} else if (rc == -EEXIST) {
--		cifs_dbg(FYI, "DFS ref '%s' is not found, emulate -ENOENT\n",
--			 dfspath);
--		rc = -ENOENT;
- 	} else {
- 		cifs_dbg(FYI, "%s: dfs_cache_find returned %d\n", __func__, rc);
- 	}
++#endif
+ 		break;
+ 	case CHIP_RAVEN:
+ 	case CHIP_RENOIR:
 -- 
 2.35.1
 
