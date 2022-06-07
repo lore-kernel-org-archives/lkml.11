@@ -2,89 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A373C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:02:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E30C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240509AbiFGKC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
+        id S240535AbiFGKCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:02:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231598AbiFGKCY (ORCPT
+        with ESMTP id S240469AbiFGKCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 06:02:24 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012065F8A;
-        Tue,  7 Jun 2022 03:02:21 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id b8so5598211edj.11;
-        Tue, 07 Jun 2022 03:02:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=22+arTrvo1OVycmSNW1K2UlJf5Gwa3d1qjbfOB+SNko=;
-        b=cV86jW/RsJl2yp7PQbKCu9MZT5W0tt917FmbE7LQFsCFYKR/+6cET4Vpqo+25wnjgH
-         Ci5V7Bp8Up8EuYPAHO3jjHCFOBeJI7/y0JtD40tZDk70n9SRsYlWwMacFdyJcej3MuYn
-         YHa1NFtpw1UpHqmRDJa3JE3i5kgVJ3QHciWa5nTAtSXl7gRaFiBHwF4eWIhTJgRiGA/C
-         +ZBOFxeyZcCWx0n9g9uJaPaZdkng+08RtBfYgdDS8e0bch4RuB5Fzy4RQ99dxKSxDKtE
-         SknIlasik/AwzDThv+THmwyXu9IDv6Z71IpqojJstsxoNAnln7n4A1fBPYwV1yj/pa2q
-         Qz6Q==
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 892F3627A
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:02:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654596141;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+wTyd/bEFDThq5tL0AyR1D39CXScLRIvSvqGEADWj0c=;
+        b=Pj9GnS3zPxhIyj5+GhomCKxfpc9IxsA4pG44XYrBO8OCZ6zLSAip/7m9epFEfLcPJjs/Yi
+        uaonyMQk9VlDSytK3A5HHRrogK2YsYt8dS+A5cD8EbfXG2dUMHgitUjfPFdW0P9OOOtCJx
+        nRKfRI8KJNjgNMUvrpcx+I/+dPu3jV8=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-107-81IaMWP_OiKRcQANW5AOrg-1; Tue, 07 Jun 2022 06:02:20 -0400
+X-MC-Unique: 81IaMWP_OiKRcQANW5AOrg-1
+Received: by mail-qv1-f71.google.com with SMTP id j2-20020a0cfd42000000b0045ad9cba5deso10531051qvs.5
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 03:02:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=22+arTrvo1OVycmSNW1K2UlJf5Gwa3d1qjbfOB+SNko=;
-        b=kF7fF8IrGnRruTDbxjpLctGz+sZFD/aWXX17GwwpcexadwC28p7xWcJbvhgR7lGF3o
-         yENTQPosTkjt1eW/LZSkAEFIwHVXDRk7PuDpfQdgYJYrXPrD4jegnuIFGBkCqcjwEVdT
-         sdhmUjCfbxQ7Qwf5EwOKA12phvfxq7EA6IVwabEleFEbY6F0/fI/gci28iEbhM2ldU6J
-         f5U3phExocZ2ZcpdXyThtozeyWq+YxiBouVs5dQwnAiywprw4dUOE4P/V9ccqGekc6d/
-         N+ccrhRjP0Sz3BbJyIM5E+rduUHCClgggUjeoSlIvhLH19WjuOp1OyenB9J8oLaVx+vY
-         xf0Q==
-X-Gm-Message-State: AOAM531DpHL4HnR19lCSpaFwhn9E9Eyi074nLzZmPg0530JQl98BA6UB
-        eyOlnZo/aDSJ7Tb+Ixei5kgql6lfZKq3m7VVJEDw9dOykjwIVQ==
-X-Google-Smtp-Source: ABdhPJxS6upelYsko+7tcj8nHvCDiiy+DHldiJIy/Cp1PC5H7P/jz3xowxK1vVGqmmk/JXNwgtJXZ91S87U3T6RKsbE=
-X-Received: by 2002:aa7:d481:0:b0:42d:d5fd:f963 with SMTP id
- b1-20020aa7d481000000b0042dd5fdf963mr32390900edr.209.1654596140504; Tue, 07
- Jun 2022 03:02:20 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220602083128.22540-1-jslaby@suse.cz> <20220602083128.22540-2-jslaby@suse.cz>
- <CAHp75VfsR6sVwO9iF6RA0bhVjMF1jC1_JEkv106TubPgL_m8YA@mail.gmail.com>
- <4d4549ef-f8f8-d0cb-6d27-e6200aa14048@kernel.org> <CAHp75Vd4H2AOcDV-cWug+MCup5RY0udTZX2uq3rzP+czy0uiJg@mail.gmail.com>
-In-Reply-To: <CAHp75Vd4H2AOcDV-cWug+MCup5RY0udTZX2uq3rzP+czy0uiJg@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 7 Jun 2022 12:01:44 +0200
-Message-ID: <CAHp75VeTHUe=VCs-mq27ffk6uFXZ-vkPvb=r7S1S8-_oi1FtJw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] tty/vt: Makefile, add --unicode for loadkeys invocation
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=+wTyd/bEFDThq5tL0AyR1D39CXScLRIvSvqGEADWj0c=;
+        b=pDFGQsj+WDX823iEvTWk4AKUwYfnO/m9qvsqhLhbdKA7qZq2yIu+4fDYDmQewABuUE
+         qM7AkD4n+ZwKj/s/5/FKaABlGUY6iA3WxYT9sqDn7ppZcHkzSFYhB1Gd+t8KayCxA8lX
+         a95I4d7ouYntS/Im/q8/Qv774EKI1jQoyBwe8WijN3KwNXjY1pQn3F/0DteFm4rTHD1k
+         BSZRt/k1tuwbCbDJVMIvqqlOsRf8REmxRU6kCewYAnI+aoM+FMrHU06/MVFcC2cpaq30
+         dpXzKW7qNjvsrtFmQfxUmrg2WlST+MmbHFYoaQ888TUVrycml7z8+2JAdxAQNLBlc4lS
+         xpzA==
+X-Gm-Message-State: AOAM530Mwa7erub5Q8YHfLslW1lDMlcRLprhoLSibD70bF5rboSE2mZv
+        ZO4Mf8bAEpCjXrPp1GoW4tB5yyF/L1IncFz1VicDkYjOqcloBKyNiuOxUrxCVKY6oMpQXwQ9Ty6
+        3FLMjXOXUC9tSKKkhy3TXWO0i
+X-Received: by 2002:a05:620a:4621:b0:6a6:d28c:3c5f with SMTP id br33-20020a05620a462100b006a6d28c3c5fmr3005892qkb.678.1654596139690;
+        Tue, 07 Jun 2022 03:02:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzHUoWW7v2VB++uHD9XaTV5Lw+IbMUSEAze4tT7Vpdpr313oGd/oAemiQ6XaQXO6Bz7BU4lGw==
+X-Received: by 2002:a05:620a:4621:b0:6a6:d28c:3c5f with SMTP id br33-20020a05620a462100b006a6d28c3c5fmr3005870qkb.678.1654596139399;
+        Tue, 07 Jun 2022 03:02:19 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id n22-20020a05620a295600b006a6a7d34f7bsm8684852qkp.23.2022.06.07.03.02.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 03:02:18 -0700 (PDT)
+Message-ID: <33ddebdb9bc7283acd3d70c39e03645580089795.camel@redhat.com>
+Subject: Re: [PATCH v6 21/38] KVM: nVMX: hyper-v: Enable L2 TLB flush
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 07 Jun 2022 13:02:15 +0300
+In-Reply-To: <20220606083655.2014609-22-vkuznets@redhat.com>
+References: <20220606083655.2014609-1-vkuznets@redhat.com>
+         <20220606083655.2014609-22-vkuznets@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 11:58 AM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Tue, Jun 7, 2022 at 7:42 AM Jiri Slaby <jirislaby@kernel.org> wrote:
-> > On 06. 06. 22, 16:35, Andy Shevchenko wrote:
-> > > On Thu, Jun 2, 2022 at 12:30 PM Jiri Slaby <jslaby@suse.cz> wrote:
-> > >>
-> > >> For a long time, we generate unicode tables using loadkeys. So fix
-> > >> Makefile to use that flag too.
-> > >
-> > > generated
-> >
-> > We still do, but I didn't even know there is even a rule for that ;).
->
-> I understand, but here is English stylistics like this. You need to
-> use past ind. or present perfect ("for a long time" dictates that).
+On Mon, 2022-06-06 at 10:36 +0200, Vitaly Kuznetsov wrote:
+> Enable L2 TLB flush feature on nVMX when:
+> - Enlightened VMCS is in use.
+> - The feature flag is enabled in eVMCS.
+> - The feature flag is enabled in partition assist page.
+> 
+> Perform synthetic vmexit to L1 after processing TLB flush call upon
+> request (HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH).
+> 
+> Note: nested_evmcs_l2_tlb_flush_enabled() uses cached VP assist page copy
+> which gets updated from nested_vmx_handle_enlightened_vmptrld(). This is
+> also guaranteed to happen post migration with eVMCS backed L2 running.
+> 
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
+>  arch/x86/kvm/vmx/evmcs.c  | 17 +++++++++++++++++
+>  arch/x86/kvm/vmx/evmcs.h  | 10 ++++++++++
+>  arch/x86/kvm/vmx/nested.c | 22 ++++++++++++++++++++++
+>  3 files changed, 49 insertions(+)
+> 
+> diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
+> index 7cd7b16942c6..870de69172be 100644
+> --- a/arch/x86/kvm/vmx/evmcs.c
+> +++ b/arch/x86/kvm/vmx/evmcs.c
+> @@ -6,6 +6,7 @@
+>  #include "../hyperv.h"
+>  #include "../cpuid.h"
+>  #include "evmcs.h"
+> +#include "nested.h"
+>  #include "vmcs.h"
+>  #include "vmx.h"
+>  #include "trace.h"
+> @@ -433,6 +434,22 @@ int nested_enable_evmcs(struct kvm_vcpu *vcpu,
+>         return 0;
+>  }
+>  
+> +bool nested_evmcs_l2_tlb_flush_enabled(struct kvm_vcpu *vcpu)
+> +{
+> +       struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+> +       struct vcpu_vmx *vmx = to_vmx(vcpu);
+> +       struct hv_enlightened_vmcs *evmcs = vmx->nested.hv_evmcs;
+> +
+> +       if (!hv_vcpu || !evmcs)
+> +               return false;
+> +
+> +       if (!evmcs->hv_enlightenments_control.nested_flush_hypercall)
+> +               return false;
+> +
+> +       return hv_vcpu->vp_assist_page.nested_control.features.directhypercall;
+> +}
+> +
+>  void vmx_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu)
+>  {
+> +       nested_vmx_vmexit(vcpu, HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH, 0, 0);
+>  }
+> diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
+> index 22d238b36238..0267b6191e6c 100644
+> --- a/arch/x86/kvm/vmx/evmcs.h
+> +++ b/arch/x86/kvm/vmx/evmcs.h
+> @@ -66,6 +66,15 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
+>  #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
+>  #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
+>  
+> +/*
+> + * Note, Hyper-V isn't actually stealing bit 28 from Intel, just abusing it by
+> + * pairing it with architecturally impossible exit reasons.  Bit 28 is set only
+> + * on SMI exits to a SMI transfer monitor (STM) and if and only if a MTF VM-Exit
+> + * is pending.  I.e. it will never be set by hardware for non-SMI exits (there
+> + * are only three), nor will it ever be set unless the VMM is an STM.
+> + */
+> +#define HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH 0x10000031
+> +
+>  struct evmcs_field {
+>         u16 offset;
+>         u16 clean_field;
+> @@ -245,6 +254,7 @@ int nested_enable_evmcs(struct kvm_vcpu *vcpu,
+>                         uint16_t *vmcs_version);
+>  void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata);
+>  int nested_evmcs_check_controls(struct vmcs12 *vmcs12);
+> +bool nested_evmcs_l2_tlb_flush_enabled(struct kvm_vcpu *vcpu);
+>  void vmx_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu);
+>  
+>  #endif /* __KVM_X86_VMX_EVMCS_H */
+> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+> index 87bff81f7f3e..69d06f77d7b4 100644
+> --- a/arch/x86/kvm/vmx/nested.c
+> +++ b/arch/x86/kvm/vmx/nested.c
+> @@ -1170,6 +1170,17 @@ static void nested_vmx_transition_tlb_flush(struct kvm_vcpu *vcpu,
+>  {
+>         struct vcpu_vmx *vmx = to_vmx(vcpu);
+>  
+> +       /*
+> +        * KVM_REQ_HV_TLB_FLUSH flushes entries from either L1's VP_ID or
+> +        * L2's VP_ID upon request from the guest. Make sure we check for
+> +        * pending entries for the case when the request got misplaced (e.g.
+> +        * a transition from L2->L1 happened while processing L2 TLB flush
+> +        * request or vice versa). kvm_hv_vcpu_flush_tlb() will not flush
+> +        * anything if there are no requests in the corresponding buffer.
+> +        */
+> +       if (to_hv_vcpu(vcpu))
+> +               kvm_make_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
+> +
+>         /*
+>          * If vmcs12 doesn't use VPID, L1 expects linear and combined mappings
+>          * for *all* contexts to be flushed on VM-Enter/VM-Exit, i.e. it's a
+> @@ -3278,6 +3289,12 @@ static bool nested_get_vmcs12_pages(struct kvm_vcpu *vcpu)
+>  
+>  static bool vmx_get_nested_state_pages(struct kvm_vcpu *vcpu)
+>  {
+> +       /*
+> +        * Note: nested_get_evmcs_page() also updates 'vp_assist_page' copy
+> +        * in 'struct kvm_vcpu_hv' in case eVMCS is in use, this is mandatory
+> +        * to make nested_evmcs_l2_tlb_flush_enabled() work correctly post
+> +        * migration.
+> +        */
+>         if (!nested_get_evmcs_page(vcpu)) {
+>                 pr_debug_ratelimited("%s: enlightened vmptrld failed\n",
+>                                      __func__);
+> @@ -6007,6 +6024,11 @@ static bool nested_vmx_l0_wants_exit(struct kvm_vcpu *vcpu,
+>                  * Handle L2's bus locks in L0 directly.
+>                  */
+>                 return true;
+> +       case EXIT_REASON_VMCALL:
+> +               /* Hyper-V L2 TLB flush hypercall is handled by L0 */
+> +               return guest_hv_cpuid_has_l2_tlb_flush(vcpu) &&
+> +                       nested_evmcs_l2_tlb_flush_enabled(vcpu) &&
+> +                       kvm_hv_is_tlb_flush_hcall(vcpu);
+>         default:
+>                 break;
+>         }
 
-Okay, now even more explanation, present perfect should be used here.
 
-we have generated
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 
+Best regards,
+	Maxim Levitsky
 
--- 
-With Best Regards,
-Andy Shevchenko
