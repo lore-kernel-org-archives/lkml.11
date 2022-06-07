@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28476CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB4DC2BBE5
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:56:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392157AbiFHAvu (ORCPT
+        id S1392227AbiFHAwA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
+        Tue, 7 Jun 2022 20:52:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383130AbiFGVwT (ORCPT
+        with ESMTP id S1384080AbiFGVyH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0064D2428D2;
-        Tue,  7 Jun 2022 12:10:34 -0700 (PDT)
+        Tue, 7 Jun 2022 17:54:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D76FF07;
+        Tue,  7 Jun 2022 12:12:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D431617DA;
-        Tue,  7 Jun 2022 19:10:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BE74C385A5;
-        Tue,  7 Jun 2022 19:10:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4AAFBB823B1;
+        Tue,  7 Jun 2022 19:12:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B625C385A2;
+        Tue,  7 Jun 2022 19:12:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629033;
-        bh=sbeesrX8k2qss3TrN1ELNXYZUKhfSZzbV0X6jfu5Hrk=;
+        s=korg; t=1654629139;
+        bh=eQUZ+ey7/BLiW6pckJTv8Wved40zL6Bggxfybl1hKZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=elvsiia+UVhsbSTWLVTgvHniBNin2R8691u6L4oz/9bB8MY6Gt9YrCOEWsdFr7fMF
-         yUO80QB0OIcCeDtbld9HSjATIRgx26Fi2uPsRwHEMf9FXVunEY89HQwg9eZQcG3NQh
-         m78tz3c7F9sc7+4OWfaKQh8JpLA9qutEDQYA3MXA=
+        b=DP0Z5hoI8B6wdyUW6aI5qK6okKE8K8kBG14vnL8R/fT5aiXu6ISTUYlqfrTQjXa16
+         CKk5hAAXzYRWaHO0Ga2n3JXNW28vdyjz0dcI4Ey3zG1LVR4GoklVIgpc2EkZH7cWzB
+         CXM+xuB6YzZFDHR2XRGT71MU3YjT26jK9kHt+qoY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yihang Li <liyihang6@hisilicon.com>,
-        Xiang Chen <chenxiang66@hisilicon.com>,
-        John Garry <john.garry@huawei.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 504/879] scsi: hisi_sas: Fix rescan after deleting a disk
-Date:   Tue,  7 Jun 2022 19:00:22 +0200
-Message-Id: <20220607165017.504815896@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 582/879] Drivers: hv: vmbus: Fix handling of messages with transaction ID of zero
+Date:   Tue,  7 Jun 2022 19:01:40 +0200
+Message-Id: <20220607165019.746812158@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,139 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Garry <john.garry@huawei.com>
+From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
 
-[ Upstream commit e9dedc13bb11bc553754abecb322e5e41d1b4fef ]
+[ Upstream commit 82cd4bacff88a11e36f143e2cb950174b09c86c3 ]
 
-Removing an ATA device via sysfs means that the device may not be found
-through re-scanning:
+vmbus_request_addr() returns 0 (zero) if the transaction ID passed
+to as argument is 0.  This is unfortunate for two reasons: first,
+netvsc_send_completion() does not check for a NULL cmd_rqst (before
+dereferencing the corresponding NVSP message); second, 0 is a *valid*
+value of cmd_rqst in netvsc_send_tx_complete(), cf. the call of
+vmbus_sendpacket() in netvsc_send_pkt().
 
-root@ubuntu:/home/john# lsscsi
-[0:0:0:0] disk SanDisk LT0200MO P404 /dev/sda
-[0:0:1:0] disk ATA HGST HUS724040AL A8B0 /dev/sdb
-[0:0:8:0] enclosu 12G SAS Expander RevB -
-root@ubuntu:/home/john# echo 1 > /sys/block/sdb/device/delete
-root@ubuntu:/home/john# echo "- - -" > /sys/class/scsi_host/host0/scan
-root@ubuntu:/home/john# lsscsi
-[0:0:0:0] disk SanDisk LT0200MO P404 /dev/sda
-[0:0:8:0] enclosu 12G SAS Expander RevB -
-root@ubuntu:/home/john#
+vmbus_request_addr() has included the code in question since its
+introduction with commit e8b7db38449ac ("Drivers: hv: vmbus: Add
+vmbus_requestor data structure for VMBus hardening"); such code was
+motivated by the early use of vmbus_requestor by hv_storvsc.  Since
+hv_storvsc moved to a tag-based mechanism to generate and retrieve
+transaction IDs with commit bf5fd8cae3c8f ("scsi: storvsc: Use
+blk_mq_unique_tag() to generate requestIDs"), vmbus_request_addr()
+can be modified to return VMBUS_RQST_ERROR if the ID is 0.  This
+change solves the issues in hv_netvsc (and makes the handling of
+messages with transaction ID of 0 consistent with the semantics
+"the ID is not contained in the requestor/invalid ID").
 
-The problem is that the rescan of the device may conflict with the device
-in being re-initialized, as follows:
+vmbus_next_request_id(), vmbus_request_addr() should still reserve
+the ID of 0 for Hyper-V, because Hyper-V will "ignore" (not respond
+to) VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED packets/requests with
+transaction ID of 0 from the guest.
 
- - In the rescan we call hisi_sas_slave_alloc() in store_scan() ->
-   sas_user_scan() -> [__]scsi_scan_target() -> scsi_probe_and_add_lunc()
-   -> scsi_alloc_sdev() -> hisi_sas_slave_alloc() -> hisi_sas_init_device()
-   In hisi_sas_init_device() we issue an IT nexus reset for ATA devices
-
- - That IT nexus causes the remote PHY to go down and this triggers a bcast
-   event
-
- - In parallel libsas processes the bcast event, finds that the phy is down
-   and marks the device as gone
-
-The hard reset issued in hisi_sas_init_device() is unncessary - as
-described in the code comment - so remove it. Also set dev status as
-HISI_SAS_DEV_NORMAL as the hisi_sas_init_device() call.
-
-Link: https://lore.kernel.org/r/1652354134-171343-4-git-send-email-john.garry@huawei.com
-Fixes: 36c6b7613ef1 ("scsi: hisi_sas: Initialise devices in .slave_alloc callback")
-Tested-by: Yihang Li <liyihang6@hisilicon.com>
-Reviewed-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: bf5fd8cae3c8f ("scsi: storvsc: Use blk_mq_unique_tag() to generate requestIDs")
+Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/20220419122325.10078-2-parri.andrea@gmail.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/hisi_sas/hisi_sas_main.c | 47 ++++++++++-----------------
- 1 file changed, 18 insertions(+), 29 deletions(-)
+ drivers/hv/channel.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_main.c b/drivers/scsi/hisi_sas/hisi_sas_main.c
-index 4bda2f6cb352..86cbfab78dfe 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_main.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_main.c
-@@ -709,8 +709,6 @@ static int hisi_sas_init_device(struct domain_device *device)
- 	struct scsi_lun lun;
- 	int retry = HISI_SAS_DISK_RECOVER_CNT;
- 	struct hisi_hba *hisi_hba = dev_to_hisi_hba(device);
--	struct device *dev = hisi_hba->dev;
--	struct sas_phy *local_phy;
+diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
+index dc5c35210c16..20fc8d50a039 100644
+--- a/drivers/hv/channel.c
++++ b/drivers/hv/channel.c
+@@ -1245,7 +1245,9 @@ u64 vmbus_next_request_id(struct vmbus_channel *channel, u64 rqst_addr)
  
- 	switch (device->dev_type) {
- 	case SAS_END_DEVICE:
-@@ -729,30 +727,18 @@ static int hisi_sas_init_device(struct domain_device *device)
- 	case SAS_SATA_PM_PORT:
- 	case SAS_SATA_PENDING:
- 		/*
--		 * send HARD RESET to clear previous affiliation of
--		 * STP target port
-+		 * If an expander is swapped when a SATA disk is attached then
-+		 * we should issue a hard reset to clear previous affiliation
-+		 * of STP target port, see SPL (chapter 6.19.4).
-+		 *
-+		 * However we don't need to issue a hard reset here for these
-+		 * reasons:
-+		 * a. When probing the device, libsas/libata already issues a
-+		 * hard reset in sas_probe_sata() -> ata_sas_async_probe().
-+		 * Note that in hisi_sas_debug_I_T_nexus_reset() we take care
-+		 * to issue a hard reset by checking the dev status (== INIT).
-+		 * b. When resetting the controller, this is simply unnecessary.
- 		 */
--		local_phy = sas_get_local_phy(device);
--		if (!scsi_is_sas_phy_local(local_phy) &&
--		    !test_bit(HISI_SAS_RESETTING_BIT, &hisi_hba->flags)) {
--			unsigned long deadline = ata_deadline(jiffies, 20000);
--			struct sata_device *sata_dev = &device->sata_dev;
--			struct ata_host *ata_host = sata_dev->ata_host;
--			struct ata_port_operations *ops = ata_host->ops;
--			struct ata_port *ap = sata_dev->ap;
--			struct ata_link *link;
--			unsigned int classes;
--
--			ata_for_each_link(link, ap, EDGE)
--				rc = ops->hardreset(link, &classes,
--						    deadline);
--		}
--		sas_put_local_phy(local_phy);
--		if (rc) {
--			dev_warn(dev, "SATA disk hardreset fail: %d\n", rc);
--			return rc;
--		}
--
- 		while (retry-- > 0) {
- 			rc = hisi_sas_softreset_ata_disk(device);
- 			if (!rc)
-@@ -768,15 +754,19 @@ static int hisi_sas_init_device(struct domain_device *device)
- 
- int hisi_sas_slave_alloc(struct scsi_device *sdev)
- {
--	struct domain_device *ddev;
-+	struct domain_device *ddev = sdev_to_domain_dev(sdev);
-+	struct hisi_sas_device *sas_dev = ddev->lldd_dev;
- 	int rc;
- 
- 	rc = sas_slave_alloc(sdev);
- 	if (rc)
- 		return rc;
--	ddev = sdev_to_domain_dev(sdev);
- 
--	return hisi_sas_init_device(ddev);
-+	rc = hisi_sas_init_device(ddev);
-+	if (rc)
-+		return rc;
-+	sas_dev->dev_status = HISI_SAS_DEV_NORMAL;
-+	return 0;
+ 	/*
+ 	 * Cannot return an ID of 0, which is reserved for an unsolicited
+-	 * message from Hyper-V.
++	 * message from Hyper-V; Hyper-V does not acknowledge (respond to)
++	 * VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED requests with ID of
++	 * 0 sent by the guest.
+ 	 */
+ 	return current_id + 1;
  }
- EXPORT_SYMBOL_GPL(hisi_sas_slave_alloc);
+@@ -1270,7 +1272,7 @@ u64 vmbus_request_addr(struct vmbus_channel *channel, u64 trans_id)
  
-@@ -826,7 +816,6 @@ static int hisi_sas_dev_found(struct domain_device *device)
- 	dev_info(dev, "dev[%d:%x] found\n",
- 		sas_dev->device_id, sas_dev->dev_type);
+ 	/* Hyper-V can send an unsolicited message with ID of 0 */
+ 	if (!trans_id)
+-		return trans_id;
++		return VMBUS_RQST_ERROR;
  
--	sas_dev->dev_status = HISI_SAS_DEV_NORMAL;
- 	return 0;
+ 	spin_lock_irqsave(&rqstor->req_lock, flags);
  
- err_out:
 -- 
 2.35.1
 
