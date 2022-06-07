@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C403CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E85D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:41:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232653AbiFHBil (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46196 "EHLO
+        id S1383634AbiFHBky (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:40:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383325AbiFGVxD (ORCPT
+        with ESMTP id S1383959AbiFGWMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:03 -0400
+        Tue, 7 Jun 2022 18:12:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311012D1D1;
-        Tue,  7 Jun 2022 12:11:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C6225A827;
+        Tue,  7 Jun 2022 12:19:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73256612EC;
-        Tue,  7 Jun 2022 19:11:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E2C9C385A2;
-        Tue,  7 Jun 2022 19:11:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2D5D61956;
+        Tue,  7 Jun 2022 19:19:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B444CC385A2;
+        Tue,  7 Jun 2022 19:19:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629088;
-        bh=7KnDXt2IhoTx0a8oStiA4n1AOIYZqrwuBMqgu/mvnbk=;
+        s=korg; t=1654629552;
+        bh=7z/LJZ+JUfk/CoOc11G3rJSu0+44RrtrKYssjymRpGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J2MGY0hWe8daEpR+jZYZ/QKqlCoOWf5pv3QwIB2EvMByFyFEexXHHf4YDW9QJwHrC
-         e7uR6z47VDttXmr06XrGaNWEXTFy3HpArvtiKuXjiJo2bTuqwcnIl+i3lNMv9fv0oJ
-         7K3jqB/S6Ruflh+jZb1nOrpTpcyvhM/h49AL9mcg=
+        b=xxrvjCEfky61S5wGXrSFy/zuNQHnzuMKkClXDg5ypuBnJDxI4d+1xPARz8SCExzt4
+         P7srWfX+sPW1Lu0YDBx1ARLtuZax6AJ67NbT4KkaRDLM8AiBnJf333o7zKv/OzxtIB
+         JwGQF8S/d5UlkTQlAZRcrqhhj9oV4j5c+ACWgxMc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 565/879] arm64: dts: qcom: sm8450: Fix missing iommus for qup1
-Date:   Tue,  7 Jun 2022 19:01:23 +0200
-Message-Id: <20220607165019.261141072@linuxfoundation.org>
+        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.18 733/879] bfq: Track whether bfq_group is still online
+Date:   Tue,  7 Jun 2022 19:04:11 +0200
+Message-Id: <20220607165024.133157498@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,38 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinod Koul <vkoul@kernel.org>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 67ebdc6dd1e2049fd9620f0572bc81a809afbe24 ]
+commit 09f871868080c33992cd6a9b72a5ca49582578fa upstream.
 
-qupv3_id_1 was missing iommus property which cause any dma transaction
-to fail and board crash. So add the missing iommus.
+Track whether bfq_group is still online. We cannot rely on
+blkcg_gq->online because that gets cleared only after all policies are
+offlined and we need something that gets updated already under
+bfqd->lock when we are cleaning up our bfq_group to be able to guarantee
+that when we see online bfq_group, it will stay online while we are
+holding bfqd->lock lock.
 
-Fixes: 5188049c9b36 ("arm64: dts: qcom: Add base SM8450 DTSI")
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220414101630.1189052-7-vkoul@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: stable@vger.kernel.org
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-7-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/qcom/sm8450.dtsi | 3 +++
- 1 file changed, 3 insertions(+)
+ block/bfq-cgroup.c  |    3 ++-
+ block/bfq-iosched.h |    2 ++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-index 5facb4a5bf63..e63b7b0458cf 100644
---- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-@@ -721,6 +721,9 @@
- 			clock-names = "m-ahb", "s-ahb";
- 			clocks = <&gcc GCC_QUPV3_WRAP_1_M_AHB_CLK>,
- 				 <&gcc GCC_QUPV3_WRAP_1_S_AHB_CLK>;
-+			iommus = <&apps_smmu 0x43 0x0>;
-+			interconnects = <&clk_virt MASTER_QUP_CORE_1 0 &clk_virt SLAVE_QUP_CORE_1 0>;
-+			interconnect-names = "qup-core";
- 			#address-cells = <2>;
- 			#size-cells = <2>;
- 			ranges;
--- 
-2.35.1
-
+--- a/block/bfq-cgroup.c
++++ b/block/bfq-cgroup.c
+@@ -557,6 +557,7 @@ static void bfq_pd_init(struct blkg_poli
+ 				   */
+ 	bfqg->bfqd = bfqd;
+ 	bfqg->active_entities = 0;
++	bfqg->online = true;
+ 	bfqg->rq_pos_tree = RB_ROOT;
+ }
+ 
+@@ -603,7 +604,6 @@ struct bfq_group *bfq_find_set_group(str
+ 	struct bfq_entity *entity;
+ 
+ 	bfqg = bfq_lookup_bfqg(bfqd, blkcg);
+-
+ 	if (unlikely(!bfqg))
+ 		return NULL;
+ 
+@@ -979,6 +979,7 @@ static void bfq_pd_offline(struct blkg_p
+ 
+ put_async_queues:
+ 	bfq_put_async_queues(bfqd, bfqg);
++	bfqg->online = false;
+ 
+ 	spin_unlock_irqrestore(&bfqd->lock, flags);
+ 	/*
+--- a/block/bfq-iosched.h
++++ b/block/bfq-iosched.h
+@@ -929,6 +929,8 @@ struct bfq_group {
+ 
+ 	/* reference counter (see comments in bfq_bic_update_cgroup) */
+ 	int ref;
++	/* Is bfq_group still online? */
++	bool online;
+ 
+ 	struct bfq_entity entity;
+ 	struct bfq_sched_data sched_data;
 
 
