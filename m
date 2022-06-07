@@ -2,245 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B7FDCCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFD7CCA490
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386005AbiFHB0Y (ORCPT
+        id S1386764AbiFHB0q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:26:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45172 "EHLO
+        Tue, 7 Jun 2022 21:26:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387222AbiFGWuE (ORCPT
+        with ESMTP id S1382676AbiFGXjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:50:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7309D2AA9BB
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:38:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654630718;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hsx3oAqr1YyiMu9WVK+sac9BkEiiKmmsbAsRI+A9Kzg=;
-        b=FPUJ0/jbcmj/ke3ZmqcT6w7z8BfTj37xgLZulmWs1p1YE+wWTlwdsEDXbMoWa71N1mJAlP
-        n3fJLRuXw/aDaX7JdzrgtDYGge0W/f/96JT98Z25CViJL/qOcTfP9Bo20dL0PL/iNj93DB
-        /PVieyrevXgxfTWQLoPpLH973kif1TU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-609-CvDC0OMKN9ywaW1RYumngA-1; Tue, 07 Jun 2022 15:38:34 -0400
-X-MC-Unique: CvDC0OMKN9ywaW1RYumngA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DC6A7857A82;
-        Tue,  7 Jun 2022 19:37:07 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.9.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D7BB2D15284;
-        Tue,  7 Jun 2022 19:36:38 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [RESEND RFC 15/18] drm/display/dp_mst: Skip releasing payloads if last connected port isn't connected
-Date:   Tue,  7 Jun 2022 15:29:30 -0400
-Message-Id: <20220607192933.1333228-16-lyude@redhat.com>
-In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
-References: <20220607192933.1333228-1-lyude@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+        Tue, 7 Jun 2022 19:39:05 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68CA16F34A
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:33 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id g3-20020a170902868300b00163cd75c014so10004148plo.14
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=b2y6HIM0yFuupb/Asz+ocPiupQ2BH2KLPsPF8kzjrkw=;
+        b=m9SlpsGTqZNrbbB28kCBcURN1oC2as0iS1/ePdYn+z9eVKChoC0y5YYloYFRM6viLn
+         MwdmyILQveyGVDpO50TdB8AnQZapzqw9WtsZ9c6tol2WHl2eOmthABe6MA9jd0KVU++E
+         uPc51dyF0P2g9keIN2hwDykX7XCJI5GZg1SfKPjrscBSw/U1/4swV3Tnn8MxFbdbocYw
+         ifJr35+TuoVkg2KGklLjtR3nccuVqd2rieEm7huqqv6g82byL4uL2QqnZBFjmUr2Sh/8
+         pioxGoHE/ToGuY4gzekI9l/Llte/+S1BNToib5RDZOD1haOfL7gcI/jvzaqTcHFgIcog
+         /iTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=b2y6HIM0yFuupb/Asz+ocPiupQ2BH2KLPsPF8kzjrkw=;
+        b=cDib4hvp7z9PkiST3lQAq9CSxDpWGMJy+4LiJjZiox2Fm2W4ipl//E7nOTQ/7MqbiE
+         1WCMnMS4pvH44nMTNOyW9OKdHFo9ClcHI2c/N03iKoiSqjdiDa3Rj4H8C6Kb90I8D1M0
+         OKs/OS+IpoVEZpmJmCIPHZ1q9DIcBczBGfoTz0EcOWIVqUhlMc/QgGSU5M1SUPwXCSfT
+         avZ2SfsoZqDq8xuHjeD5yecSIRh/K1oge8vIoZpDihlJf+fd4qst7oxXRnAbuCl33vi0
+         /XC/K6b/vRkucM2DJpjjTIY/v0mszDOH7YIH7uN5Gf02aM0/ISJpgkhczjbDHT9iNf3g
+         TjkA==
+X-Gm-Message-State: AOAM532v/D4GepJ4Fk/jZQxCqSg9WiozJqjg18EDreR8fvHktzuTYaKQ
+        8/oN7Wj2dgMD/hsSoJGYyg9rQsgQGEo=
+X-Google-Smtp-Source: ABdhPJwgtT75q6YVsktniY/VHzibvVaHAIcTz9UivR7D0BpOChyXwBs/01A9v7fwrZCt9bFCGn2ylPNciYw=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:aa7:8890:0:b0:51c:454f:c93f with SMTP id
+ z16-20020aa78890000000b0051c454fc93fmr3586124pfe.35.1654637793364; Tue, 07
+ Jun 2022 14:36:33 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue,  7 Jun 2022 21:35:58 +0000
+In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
+Message-Id: <20220607213604.3346000-10-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220607213604.3346000-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v5 09/15] KVM: nVMX: Drop nested_vmx_pmu_refresh()
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        David Matlack <dmatlack@google.com>,
+        Oliver Upton <oupton@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the past, we've ran into strange issues regarding errors in response to
-trying to destroy payloads after a port has been unplugged. We fixed this
-back in:
+From: Oliver Upton <oupton@google.com>
 
-This is intended to replace the workaround that was added here:
+nested_vmx_pmu_refresh() is now unneeded, as the call to
+nested_vmx_entry_exit_ctls_update() in vmx_vcpu_after_set_cpuid()
+guarantees that the VM-{Entry,Exit} control MSR changes are applied
+after setting CPUID. Drop all vestiges of nested_vmx_pmu_refresh().
 
-commit 3769e4c0af5b ("drm/dp_mst: Avoid to mess up payload table by ports in stale topology")
+No functional change intended.
 
-which was intended fix to some of the payload leaks that were observed
-before, where we would attempt to determine if the port was still connected
-to the topology before updating payloads using
-drm_dp_mst_port_downstream_of_branch. This wasn't a particularly good
-solution, since one of the points of still having port and mstb validation
-is to avoid sending messages to newly disconnected branches wherever
-possible - thus the required use of drm_dp_mst_port_downstream_of_branch
-would indicate something may be wrong with said validation.
-
-It seems like it may have just been races and luck that made
-drm_dp_mst_port_downstream_of_branch work however, as while I was trying to
-figure out the true cause of this issue when removing the legacy MST code -
-I discovered an important excerpt in section 2.14.2.3.3.6 of the DP 2.0
-specs:
-
-"BAD_PARAM - This reply is transmitted when a Message Transaction parameter
-is in error; for example, the next port number is invalid or /no device is
-connected/ to the port associated with the port number."
-
-Sure enough - removing the calls to drm_dp_mst_port_downstream_of_branch()
-and instead checking the ->ddps field of the parent port to see whether we
-should release a given payload or not seems to totally fix the issue. This
-does actually make sense to me, as it seems the implication is that given a
-topology where an MSTB is removed, the payload for the MST parent's port
-will be released automatically if that port is also marked as disconnected.
-However, if there's another parent in the chain after that which is
-connected - payloads must be released there with an ALLOCATE_PAYLOAD
-message.
-
-So, let's do that!
-
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: Wayne Lin <Wayne.Lin@amd.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Imre Deak <imre.deak@intel.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sean Paul <sean@poorly.run>
+Signed-off-by: Oliver Upton <oupton@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- drivers/gpu/drm/display/drm_dp_mst_topology.c | 51 +++++++------------
- 1 file changed, 17 insertions(+), 34 deletions(-)
+ arch/x86/kvm/vmx/nested.c    | 22 ----------------------
+ arch/x86/kvm/vmx/nested.h    |  2 --
+ arch/x86/kvm/vmx/pmu_intel.c |  3 ---
+ 3 files changed, 27 deletions(-)
 
-diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-index dd314586bac3..70adb8db4335 100644
---- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-@@ -3137,7 +3137,7 @@ static struct drm_dp_mst_port *drm_dp_get_last_connected_port_to_mstb(struct drm
- static struct drm_dp_mst_branch *
- drm_dp_get_last_connected_port_and_mstb(struct drm_dp_mst_topology_mgr *mgr,
- 					struct drm_dp_mst_branch *mstb,
--					int *port_num)
-+					struct drm_dp_mst_port **last_port)
- {
- 	struct drm_dp_mst_branch *rmstb = NULL;
- 	struct drm_dp_mst_port *found_port;
-@@ -3153,7 +3153,8 @@ drm_dp_get_last_connected_port_and_mstb(struct drm_dp_mst_topology_mgr *mgr,
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index d1c21d387716..4ba0e5540908 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -4847,28 +4847,6 @@ int get_vmx_mem_address(struct kvm_vcpu *vcpu, unsigned long exit_qualification,
+ 	return 0;
+ }
  
- 		if (drm_dp_mst_topology_try_get_mstb(found_port->parent)) {
- 			rmstb = found_port->parent;
--			*port_num = found_port->port_num;
-+			*last_port = found_port;
-+			drm_dp_mst_get_port_malloc(found_port);
- 		} else {
- 			/* Search again, starting from this parent */
- 			mstb = found_port->parent;
-@@ -3170,7 +3171,7 @@ static int drm_dp_payload_send_msg(struct drm_dp_mst_topology_mgr *mgr,
- 				   int pbn)
- {
- 	struct drm_dp_sideband_msg_tx *txmsg;
--	struct drm_dp_mst_branch *mstb;
-+	struct drm_dp_mst_branch *mstb = NULL;
- 	int ret, port_num;
- 	u8 sinks[DRM_DP_MAX_SDP_STREAMS];
- 	int i;
-@@ -3178,12 +3179,22 @@ static int drm_dp_payload_send_msg(struct drm_dp_mst_topology_mgr *mgr,
- 	port_num = port->port_num;
- 	mstb = drm_dp_mst_topology_get_mstb_validated(mgr, port->parent);
- 	if (!mstb) {
--		mstb = drm_dp_get_last_connected_port_and_mstb(mgr,
--							       port->parent,
--							       &port_num);
-+		struct drm_dp_mst_port *rport = NULL;
-+		bool ddps;
- 
-+		mstb = drm_dp_get_last_connected_port_and_mstb(mgr, port->parent, &rport);
- 		if (!mstb)
- 			return -EINVAL;
-+
-+		ddps = rport->ddps;
-+		port_num = rport->port_num;
-+		drm_dp_mst_put_port_malloc(rport);
-+
-+		/* If the port is currently marked as disconnected, don't send a payload message */
-+		if (!ddps) {
-+			ret = -EINVAL;
-+			goto fail_put;
-+		}
- 	}
- 
- 	txmsg = kzalloc(sizeof(*txmsg), GFP_KERNEL);
-@@ -3384,7 +3395,6 @@ int drm_dp_update_payload_part1(struct drm_dp_mst_topology_mgr *mgr, int start_s
- 	struct drm_dp_mst_port *port;
- 	int i, j;
- 	int cur_slots = start_slot;
--	bool skip;
- 
- 	mutex_lock(&mgr->payload_lock);
- 	for (i = 0; i < mgr->max_payloads; i++) {
-@@ -3399,16 +3409,6 @@ int drm_dp_update_payload_part1(struct drm_dp_mst_topology_mgr *mgr, int start_s
- 			port = container_of(vcpi, struct drm_dp_mst_port,
- 					    vcpi);
- 
--			mutex_lock(&mgr->lock);
--			skip = !drm_dp_mst_port_downstream_of_branch(port, mgr->mst_primary);
--			mutex_unlock(&mgr->lock);
+-void nested_vmx_pmu_refresh(struct kvm_vcpu *vcpu,
+-			    bool vcpu_has_perf_global_ctrl)
+-{
+-	struct vcpu_vmx *vmx;
 -
--			if (skip) {
--				drm_dbg_kms(mgr->dev,
--					    "Virtual channel %d is not in current topology\n",
--					    i);
--				continue;
--			}
- 			/* Validated ports don't matter if we're releasing
- 			 * VCPI
- 			 */
-@@ -3509,7 +3509,6 @@ int drm_dp_update_payload_part2(struct drm_dp_mst_topology_mgr *mgr)
- 	struct drm_dp_mst_port *port;
- 	int i;
- 	int ret = 0;
--	bool skip;
- 
- 	mutex_lock(&mgr->payload_lock);
- 	for (i = 0; i < mgr->max_payloads; i++) {
-@@ -3519,13 +3518,6 @@ int drm_dp_update_payload_part2(struct drm_dp_mst_topology_mgr *mgr)
- 
- 		port = container_of(mgr->proposed_vcpis[i], struct drm_dp_mst_port, vcpi);
- 
--		mutex_lock(&mgr->lock);
--		skip = !drm_dp_mst_port_downstream_of_branch(port, mgr->mst_primary);
--		mutex_unlock(&mgr->lock);
--
--		if (skip)
--			continue;
--
- 		drm_dbg_kms(mgr->dev, "payload %d %d\n", i, mgr->payloads[i].payload_state);
- 		if (mgr->payloads[i].payload_state == DP_PAYLOAD_LOCAL) {
- 			ret = drm_dp_create_payload_step2(mgr, port, mgr->proposed_vcpis[i]->vcpi, &mgr->payloads[i]);
-@@ -4780,18 +4772,9 @@ EXPORT_SYMBOL(drm_dp_mst_reset_vcpi_slots);
- void drm_dp_mst_deallocate_vcpi(struct drm_dp_mst_topology_mgr *mgr,
- 				struct drm_dp_mst_port *port)
- {
--	bool skip;
--
- 	if (!port->vcpi.vcpi)
- 		return;
- 
--	mutex_lock(&mgr->lock);
--	skip = !drm_dp_mst_port_downstream_of_branch(port, mgr->mst_primary);
--	mutex_unlock(&mgr->lock);
--
--	if (skip)
+-	if (!nested_vmx_allowed(vcpu))
 -		return;
 -
- 	drm_dp_mst_put_payload_id(mgr, port->vcpi.vcpi);
- 	port->vcpi.num_slots = 0;
- 	port->vcpi.pbn = 0;
+-	vmx = to_vmx(vcpu);
+-	if (vcpu_has_perf_global_ctrl) {
+-		vmx->nested.msrs.entry_ctls_high |=
+-				VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
+-		vmx->nested.msrs.exit_ctls_high |=
+-				VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
+-	} else {
+-		vmx->nested.msrs.entry_ctls_high &=
+-				~VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
+-		vmx->nested.msrs.exit_ctls_high &=
+-				~VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
+-	}
+-}
+-
+ static int nested_vmx_get_vmptr(struct kvm_vcpu *vcpu, gpa_t *vmpointer,
+ 				int *ret)
+ {
+diff --git a/arch/x86/kvm/vmx/nested.h b/arch/x86/kvm/vmx/nested.h
+index 129ae4e01f7c..88b00a7359e4 100644
+--- a/arch/x86/kvm/vmx/nested.h
++++ b/arch/x86/kvm/vmx/nested.h
+@@ -32,8 +32,6 @@ int vmx_set_vmx_msr(struct kvm_vcpu *vcpu, u32 msr_index, u64 data);
+ int vmx_get_vmx_msr(struct nested_vmx_msrs *msrs, u32 msr_index, u64 *pdata);
+ int get_vmx_mem_address(struct kvm_vcpu *vcpu, unsigned long exit_qualification,
+ 			u32 vmx_instruction_info, bool wr, int len, gva_t *ret);
+-void nested_vmx_pmu_refresh(struct kvm_vcpu *vcpu,
+-			    bool vcpu_has_perf_global_ctrl);
+ void nested_mark_vmcs12_pages_dirty(struct kvm_vcpu *vcpu);
+ bool nested_vmx_check_io_bitmaps(struct kvm_vcpu *vcpu, unsigned int port,
+ 				 int size);
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index 6ce3b066f7d9..515ab6594333 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -597,9 +597,6 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
+ 	bitmap_set(pmu->all_valid_pmc_idx,
+ 		INTEL_PMC_MAX_GENERIC, pmu->nr_arch_fixed_counters);
+ 
+-	nested_vmx_pmu_refresh(vcpu,
+-			       intel_is_valid_msr(vcpu, MSR_CORE_PERF_GLOBAL_CTRL, false));
+-
+ 	if (cpuid_model_is_consistent(vcpu))
+ 		x86_perf_get_lbr(&lbr_desc->records);
+ 	else
 -- 
-2.35.3
+2.36.1.255.ge46751e96f-goog
 
