@@ -2,44 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6713DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:24:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EC18C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378103AbiFGVYj (ORCPT
+        id S1377984AbiFGVYp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34150 "EHLO
+        Tue, 7 Jun 2022 17:24:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376998AbiFGU2U (ORCPT
+        with ESMTP id S1376986AbiFGU2T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:28:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C00821DA0A1;
-        Tue,  7 Jun 2022 11:33:40 -0700 (PDT)
+        Tue, 7 Jun 2022 16:28:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8411DA082;
+        Tue,  7 Jun 2022 11:33:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D5FB61504;
-        Tue,  7 Jun 2022 18:33:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82768C385A2;
-        Tue,  7 Jun 2022 18:33:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A88BB82349;
+        Tue,  7 Jun 2022 18:33:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7A28C385A2;
+        Tue,  7 Jun 2022 18:33:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626818;
-        bh=BLFFKabw1uBbk566mu6bjmsWa8miu+GSa++UAqziYfI=;
+        s=korg; t=1654626813;
+        bh=WDi9eZKrDjNID0ZsV7FKg95K6kjV/su4UXky+RTVxQQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ikXBmIteCrNZwoV0ujt9VUkdksODmrHJYLVHgBMUdnE4a3xyoNA5LdHf7aJR8xlm4
-         YwtgabbcpyJ3RI7vdOFAjmi9IuT1tnw/Ml29tvrYNFdh40T6JYgfGLbExxEpccGSXN
-         fuJOhQC8u06NmldNrzcXxXfiV6Rurm3xnfes1alg=
+        b=iFuMY0Hf2YSS+HoIrFitkxFYtqMRKhnDzca4VR9h9+/TVT7ghkvM4xt2hZ3Pmx7ev
+         WceSt6v4gR5+3wJwg5eJS2iR4j7a1iRjfuhzrgZI6zWku161trPUHqWs02WG1NJ3CN
+         2/xhFi0GXcvHKIW27DrI3YHqwV5nqZ1iuz2f9PTU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 474/772] dt-bindings: soc: qcom: smd-rpm: Fix missing MSM8936 compatible
-Date:   Tue,  7 Jun 2022 19:01:06 +0200
-Message-Id: <20220607165002.962714652@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        syzbot+bdd6e38a1ed5ee58d8bd@syzkaller.appspotmail.com,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        "Soheil Hassas Yeganeh" <soheil@google.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        "Sridhar Samudrala" <sridhar.samudrala@intel.com>,
+        Alexander Duyck <alexander.h.duyck@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: [PATCH 5.17 511/772] list: fix a data-race around ep->rdllist
+Date:   Tue,  7 Jun 2022 19:01:43 +0200
+Message-Id: <20220607165004.036825460@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,36 +57,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 
-[ Upstream commit e930244918092d44b60a7b538cf60d737010ceef ]
+[ Upstream commit d679ae94fdd5d3ab00c35078f5af5f37e068b03d ]
 
-Add compatible msm8936. msm8936 covers both msm8936 and msm8939.
-The relevant driver already has the compat string but, we haven't
-documented it.
+ep_poll() first calls ep_events_available() with no lock held and checks
+if ep->rdllist is empty by list_empty_careful(), which reads
+rdllist->prev.  Thus all accesses to it need some protection to avoid
+store/load-tearing.
 
-Fixes: d6e52482f5ab ("drivers: soc: Add MSM8936 SMD RPM compatible")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220418231857.3061053-1-bryan.odonoghue@linaro.org
+Note INIT_LIST_HEAD_RCU() already has the annotation for both prev
+and next.
+
+Commit bf3b9f6372c4 ("epoll: Add busy poll support to epoll with socket
+fds.") added the first lockless ep_events_available(), and commit
+c5a282e9635e ("fs/epoll: reduce the scope of wq lock in epoll_wait()")
+made some ep_events_available() calls lockless and added single call under
+a lock, finally commit e59d3c64cba6 ("epoll: eliminate unnecessary lock
+for zero timeout") made the last ep_events_available() lockless.
+
+BUG: KCSAN: data-race in do_epoll_wait / do_epoll_wait
+
+write to 0xffff88810480c7d8 of 8 bytes by task 1802 on cpu 0:
+ INIT_LIST_HEAD include/linux/list.h:38 [inline]
+ list_splice_init include/linux/list.h:492 [inline]
+ ep_start_scan fs/eventpoll.c:622 [inline]
+ ep_send_events fs/eventpoll.c:1656 [inline]
+ ep_poll fs/eventpoll.c:1806 [inline]
+ do_epoll_wait+0x4eb/0xf40 fs/eventpoll.c:2234
+ do_epoll_pwait fs/eventpoll.c:2268 [inline]
+ __do_sys_epoll_pwait fs/eventpoll.c:2281 [inline]
+ __se_sys_epoll_pwait+0x12b/0x240 fs/eventpoll.c:2275
+ __x64_sys_epoll_pwait+0x74/0x80 fs/eventpoll.c:2275
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+read to 0xffff88810480c7d8 of 8 bytes by task 1799 on cpu 1:
+ list_empty_careful include/linux/list.h:329 [inline]
+ ep_events_available fs/eventpoll.c:381 [inline]
+ ep_poll fs/eventpoll.c:1797 [inline]
+ do_epoll_wait+0x279/0xf40 fs/eventpoll.c:2234
+ do_epoll_pwait fs/eventpoll.c:2268 [inline]
+ __do_sys_epoll_pwait fs/eventpoll.c:2281 [inline]
+ __se_sys_epoll_pwait+0x12b/0x240 fs/eventpoll.c:2275
+ __x64_sys_epoll_pwait+0x74/0x80 fs/eventpoll.c:2275
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+value changed: 0xffff88810480c7d0 -> 0xffff888103c15098
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 1799 Comm: syz-fuzzer Tainted: G        W         5.17.0-rc7-syzkaller-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Link: https://lkml.kernel.org/r/20220322002653.33865-3-kuniyu@amazon.co.jp
+Fixes: e59d3c64cba6 ("epoll: eliminate unnecessary lock for zero timeout")
+Fixes: c5a282e9635e ("fs/epoll: reduce the scope of wq lock in epoll_wait()")
+Fixes: bf3b9f6372c4 ("epoll: Add busy poll support to epoll with socket fds.")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Reported-by: syzbot+bdd6e38a1ed5ee58d8bd@syzkaller.appspotmail.com
+Cc: Al Viro <viro@zeniv.linux.org.uk>, Andrew Morton <akpm@linux-foundation.org>
+Cc: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc: Kuniyuki Iwashima <kuni1840@gmail.com>
+Cc: "Soheil Hassas Yeganeh" <soheil@google.com>
+Cc: Davidlohr Bueso <dave@stgolabs.net>
+Cc: "Sridhar Samudrala" <sridhar.samudrala@intel.com>
+Cc: Alexander Duyck <alexander.h.duyck@intel.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/list.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
-index b32457c2fc0b..3361218e278f 100644
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
-@@ -34,6 +34,7 @@ properties:
-       - qcom,rpm-ipq6018
-       - qcom,rpm-msm8226
-       - qcom,rpm-msm8916
-+      - qcom,rpm-msm8936
-       - qcom,rpm-msm8953
-       - qcom,rpm-msm8974
-       - qcom,rpm-msm8976
+diff --git a/include/linux/list.h b/include/linux/list.h
+index 0f7d8ec5b4ed..0df13cb03028 100644
+--- a/include/linux/list.h
++++ b/include/linux/list.h
+@@ -35,7 +35,7 @@
+ static inline void INIT_LIST_HEAD(struct list_head *list)
+ {
+ 	WRITE_ONCE(list->next, list);
+-	list->prev = list;
++	WRITE_ONCE(list->prev, list);
+ }
+ 
+ #ifdef CONFIG_DEBUG_LIST
+@@ -306,7 +306,7 @@ static inline int list_empty(const struct list_head *head)
+ static inline void list_del_init_careful(struct list_head *entry)
+ {
+ 	__list_del_entry(entry);
+-	entry->prev = entry;
++	WRITE_ONCE(entry->prev, entry);
+ 	smp_store_release(&entry->next, entry);
+ }
+ 
+@@ -326,7 +326,7 @@ static inline void list_del_init_careful(struct list_head *entry)
+ static inline int list_empty_careful(const struct list_head *head)
+ {
+ 	struct list_head *next = smp_load_acquire(&head->next);
+-	return list_is_head(next, head) && (next == head->prev);
++	return list_is_head(next, head) && (next == READ_ONCE(head->prev));
+ }
+ 
+ /**
 -- 
 2.35.1
 
