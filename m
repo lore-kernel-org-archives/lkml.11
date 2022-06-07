@@ -2,117 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF1FCC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 03:38:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 576CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 03:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233614AbiFGDif (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 23:38:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39608 "EHLO
+        id S236323AbiFGDjK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 23:39:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233296AbiFGDic (ORCPT
+        with ESMTP id S236186AbiFGDit (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 23:38:32 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A551535DE5
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 20:38:30 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id fu3so31088955ejc.7
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 20:38:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lJ9t0JsMzf9+b8G+NsrCGuGZ2WHm7yJdraWRSfiKGkA=;
-        b=luqlEGHcZ3EsuUaCVY6GMNpFf/WWxyuViWZVeRqUEErf9I9VtVM1lds0X9kadOzOJN
-         cszTD9YoVUoRI7Y7blXJ11oo9McRcIKLzrEKA7N554p76iZLgY8Rd3ITfDBweQcSXSEp
-         ZvIHkSGHIxEHuVqKNxRubd5d5H8shRx58lWHE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lJ9t0JsMzf9+b8G+NsrCGuGZ2WHm7yJdraWRSfiKGkA=;
-        b=7ox13zhroVbkdSeXr+LN9jzawv7DxpYgfEinAdmqUvVoQpDVUKCrW2ZeUOEBK654+l
-         avUf3soxl18Kldsv84eMbpPamBkjZMW0LJlx6TFo9II/wOLgyVWjynqj70I7h0cGfDiD
-         1xO1THX68ehUz/YRENlJJWpA44AjPcS1buQLe594vpRvB9feMPcLzI137xFLtwQ73KEn
-         u1pEzYaZfFdaivX5nZhJ6kl5AsAEUXpB2poBQw/j3rpKbE6N7xG24T2FiwDRvvwODo3R
-         a4jAw9+FTq1tpKlUCM/YhPfzMMU5ooKBvdHlXydUVi2LjAE/27DLeSOgHpqOiGGskhda
-         0YXg==
-X-Gm-Message-State: AOAM5301RBEIcLwIp1WniwqYa2kXlrnvTwPNLyeCWoJKD5/2oH8FhWuD
-        uWPT7KJWvEc6LpwCbSEz+iKDgnokBn5b9ydl8iK4/A==
-X-Google-Smtp-Source: ABdhPJxvmyTN4ySZ5rqR9pOFJ1zEcnVcYm+SktOdEe+JR5rDOKDREJpcaAfPg15x/AOi9cNPiXshMUiWFFvhktMChtw=
-X-Received: by 2002:a17:907:868f:b0:702:f865:55de with SMTP id
- qa15-20020a170907868f00b00702f86555demr24650686ejc.24.1654573109183; Mon, 06
- Jun 2022 20:38:29 -0700 (PDT)
+        Mon, 6 Jun 2022 23:38:49 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B88387BA;
+        Mon,  6 Jun 2022 20:38:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654573128; x=1686109128;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=w4xeyqU+kOhDYzyqy82v69OYCHkAH6xk8Nd95qrz48A=;
+  b=cI2CtkAJJHCwTU24iLHMl95jI+TLyqQ/r3CzxiuMBsum3Zv2lOijhywx
+   7DQxnW0svepR7cp/Rauiczc3JEk/wEP7uw+iZJv1Ee5IL74PR6EiMkyxq
+   D7kbQjvry7tdZe4f42EZ/drgMjgpCADrgfxO3h3i3qQ1FeSLQWIkDJQYB
+   kieFIk5f/kvR16vOGkqCCcMAg/9btpMI1Y088XhRrhM/chcTLjbk9KAPd
+   Ho5/plGjKvI5ADJA8DLH/y62CuUwY1ISoqsWmZM36GUBflL+xLtTSWE3x
+   /dgtopIsWdfkoEzeAqYkJ9xLs+k8sMlFV0uH6o0ehNoz6lj9zRqRFrxQB
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="275480643"
+X-IronPort-AV: E=Sophos;i="5.91,282,1647327600"; 
+   d="scan'208";a="275480643"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 20:38:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,282,1647327600"; 
+   d="scan'208";a="579430786"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 06 Jun 2022 20:38:40 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nyQ3D-000DJf-KE;
+        Tue, 07 Jun 2022 03:38:39 +0000
+Date:   Tue, 7 Jun 2022 11:37:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        linux-fsdevel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-aio@kvack.org, linux-btrfs@vger.kernel.org,
+        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
+        cluster-devel@redhat.com, linux-mm@kvack.org,
+        linux-xfs@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-ntfs-dev@lists.sourceforge.net, ocfs2-devel@oss.oracle.com,
+        linux-mtd@lists.infradead.org,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH 04/20] mm/migrate: Convert buffer_migrate_page() to
+ buffer_migrate_folio()
+Message-ID: <202206071139.aWSx4GHH-lkp@intel.com>
+References: <20220606204050.2625949-5-willy@infradead.org>
 MIME-Version: 1.0
-References: <20220606152431.1889185-1-hsinyi@chromium.org> <20220606152431.1889185-9-hsinyi@chromium.org>
- <CAE-0n51Lq381dQW6zw3D0fibdj=Jm4r3uAYG59ySo4CXbx+EpA@mail.gmail.com>
-In-Reply-To: <CAE-0n51Lq381dQW6zw3D0fibdj=Jm4r3uAYG59ySo4CXbx+EpA@mail.gmail.com>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Tue, 7 Jun 2022 11:46:24 +0800
-Message-ID: <CAJMQK-hoKB+W4AY8trW-ni145oxde4ot1_z+d6sbxGrbQ6aMig@mail.gmail.com>
-Subject: Re: [PATCH v4 8/8] drm/mediatek: Config orientation property if panel
- provides it
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        Rob Clark <robdclark@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606204050.2625949-5-willy@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 3:16 AM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> Quoting Hsin-Yi Wang (2022-06-06 08:24:31)
-> > diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> > index d9f10a33e6fa..c56282412bfa 100644
-> > --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> > +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> > @@ -822,6 +823,12 @@ static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
-> >                 ret = PTR_ERR(dsi->connector);
-> >                 goto err_cleanup_encoder;
-> >         }
-> > +
-> > +       /* Read panel orientation */
-> > +       if (dsi->panel)
-> > +               drm_connector_set_panel_orientation(dsi->connector,
-> > +                               drm_panel_get_orientation(dsi->panel));
-> > +
->
-> It could be simplified like so?
->
->         drm_connector_set_orientation_from_panel(dsi->connector, dsi->panel);
->
-> Then the API could get the orientation if the panel pointer is valid.
-> Does any code need to use/modify the orientation value besides
-> drm_connector_set_panel_orientation()?
->
+Hi "Matthew,
 
-We can add another function to call
-drm_connector_set_orientation_from_panel(), which will be like
+I love your patch! Perhaps something to improve:
 
-void drm_connector_set_orientation_from_panel(connector, panel)
-{
-     if (panel)
-          drm_connector_set_panel_orientation(connector,drm_panel_get_orientation(panel));
-}
+[auto build test WARNING on linus/master]
+[also build test WARNING on v5.19-rc1 next-20220606]
+[cannot apply to jaegeuk-f2fs/dev-test trondmy-nfs/linux-next kdave/for-next xfs-linux/for-next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Though it's very should but I can add this if this can make the caller
-more convenient.
+url:    https://github.com/intel-lab-lkp/linux/commits/Matthew-Wilcox-Oracle/Convert-aops-migratepage-to-aops-migrate_folio/20220607-044509
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git f2906aa863381afb0015a9eb7fefad885d4e5a56
+config: i386-defconfig (https://download.01.org/0day-ci/archive/20220607/202206071139.aWSx4GHH-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/96e64ba8b1be545885d89f44b1d8b968b22bdb4d
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Matthew-Wilcox-Oracle/Convert-aops-migratepage-to-aops-migrate_folio/20220607-044509
+        git checkout 96e64ba8b1be545885d89f44b1d8b968b22bdb4d
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-> >         drm_connector_attach_encoder(dsi->connector, &dsi->encoder);
-> >
-> >         return 0;
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> mm/migrate.c:775: warning: expecting prototype for buffer_migrate_folio_noref(). Prototype was for buffer_migrate_folio_norefs() instead
+
+
+vim +775 mm/migrate.c
+
+89cb0888ca1483a Jan Kara                2018-12-28  758  
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  759) /**
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  760)  * buffer_migrate_folio_noref() - Migration function for folios with buffers.
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  761)  * @mapping: The address space containing @src.
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  762)  * @dst: The folio to migrate to.
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  763)  * @src: The folio to migrate from.
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  764)  * @mode: How to migrate the folio.
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  765)  *
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  766)  * Like buffer_migrate_folio() except that this variant is more careful
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  767)  * and checks that there are also no buffer head references. This function
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  768)  * is the right one for mappings where buffer heads are directly looked
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  769)  * up and referenced (such as block device mappings).
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  770)  *
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  771)  * Return: 0 on success or a negative errno on failure.
+89cb0888ca1483a Jan Kara                2018-12-28  772   */
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  773) int buffer_migrate_folio_norefs(struct address_space *mapping,
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  774) 		struct folio *dst, struct folio *src, enum migrate_mode mode)
+89cb0888ca1483a Jan Kara                2018-12-28 @775  {
+96e64ba8b1be545 Matthew Wilcox (Oracle  2022-06-06  776) 	return __buffer_migrate_folio(mapping, dst, src, mode, true);
+89cb0888ca1483a Jan Kara                2018-12-28  777  }
+9361401eb7619c0 David Howells           2006-09-30  778  #endif
+1d8b85ccf1ed53a Christoph Lameter       2006-06-23  779  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
