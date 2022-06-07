@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C35CCA48D
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF5ECCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350934AbiFGSBc (ORCPT
+        id S1351811AbiFGSCW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49374 "EHLO
+        Tue, 7 Jun 2022 14:02:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347691AbiFGRl5 (ORCPT
+        with ESMTP id S1347613AbiFGRnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:41:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1264B12817C;
-        Tue,  7 Jun 2022 10:34:43 -0700 (PDT)
+        Tue, 7 Jun 2022 13:43:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F7A12E821;
+        Tue,  7 Jun 2022 10:35:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4243D61521;
-        Tue,  7 Jun 2022 17:33:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E501C34119;
-        Tue,  7 Jun 2022 17:33:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94AEAB820C3;
+        Tue,  7 Jun 2022 17:34:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E27A0C385A5;
+        Tue,  7 Jun 2022 17:34:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623227;
-        bh=zUGWNpkSuhTUd8ndrp/NfGoBpdvKTMcgOzrrhZ4XplM=;
+        s=korg; t=1654623291;
+        bh=QA+MxPxiiJo46VxlK3bstEStKaJoIImZ6K8HNFzLsPM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OsPSaeLqwCDYac0GA7QT/4mUE+macst8ZtM20UKxaf77zQW1mXpghnNh+oeQdXtd1
-         /Y3ZJ9UCdtUEpQekat7soTjelDir6lWgrxXUxMww7sLymOhIO0PIuk28EOsYkQdWvk
-         EnRiFyLGowIQV+PQag8AVCUhmvMAqic6iYLOhC6M=
+        b=lKgTzHJVU0/p+z7UYm48nC+HyS9MRUHjBCqV4tRmzFFS8Z2rEOt1L8Tb85cZYboCJ
+         dMHXqFqLOn6tku//kACGEa5aaBAq/Vs50zkbiUZ92nBuSa/8fIDxj/5wukypWzX3zW
+         VHcaQD6+gUJEmuUD5gIXfp3UuHvaWnAZ9xgVrP70=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Mario <jmario@redhat.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 342/452] perf c2c: Use stdio interface if slang is not supported
-Date:   Tue,  7 Jun 2022 19:03:19 +0200
-Message-Id: <20220607164918.748727861@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.10 363/452] ext4: fix bug_on in __es_tree_search
+Date:   Tue,  7 Jun 2022 19:03:40 +0200
+Message-Id: <20220607164919.381448988@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -56,82 +51,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Yan <leo.yan@linaro.org>
+From: Baokun Li <libaokun1@huawei.com>
 
-[ Upstream commit c4040212bc97d16040712a410335f93bc94d2262 ]
+commit d36f6ed761b53933b0b4126486c10d3da7751e7f upstream.
 
-If the slang lib is not installed on the system, perf c2c tool disables TUI
-mode and roll back to use stdio mode;  but the flag 'c2c.use_stdio' is
-missed to set true and thus it wrongly applies UI quirks in the function
-ui_quirks().
+Hulk Robot reported a BUG_ON:
+==================================================================
+kernel BUG at fs/ext4/extents_status.c:199!
+[...]
+RIP: 0010:ext4_es_end fs/ext4/extents_status.c:199 [inline]
+RIP: 0010:__es_tree_search+0x1e0/0x260 fs/ext4/extents_status.c:217
+[...]
+Call Trace:
+ ext4_es_cache_extent+0x109/0x340 fs/ext4/extents_status.c:766
+ ext4_cache_extents+0x239/0x2e0 fs/ext4/extents.c:561
+ ext4_find_extent+0x6b7/0xa20 fs/ext4/extents.c:964
+ ext4_ext_map_blocks+0x16b/0x4b70 fs/ext4/extents.c:4384
+ ext4_map_blocks+0xe26/0x19f0 fs/ext4/inode.c:567
+ ext4_getblk+0x320/0x4c0 fs/ext4/inode.c:980
+ ext4_bread+0x2d/0x170 fs/ext4/inode.c:1031
+ ext4_quota_read+0x248/0x320 fs/ext4/super.c:6257
+ v2_read_header+0x78/0x110 fs/quota/quota_v2.c:63
+ v2_check_quota_file+0x76/0x230 fs/quota/quota_v2.c:82
+ vfs_load_quota_inode+0x5d1/0x1530 fs/quota/dquot.c:2368
+ dquot_enable+0x28a/0x330 fs/quota/dquot.c:2490
+ ext4_quota_enable fs/ext4/super.c:6137 [inline]
+ ext4_enable_quotas+0x5d7/0x960 fs/ext4/super.c:6163
+ ext4_fill_super+0xa7c9/0xdc00 fs/ext4/super.c:4754
+ mount_bdev+0x2e9/0x3b0 fs/super.c:1158
+ mount_fs+0x4b/0x1e4 fs/super.c:1261
+[...]
+==================================================================
 
-This commit forces to use stdio interface if slang is not supported, and
-it can avoid to apply the UI quirks and show the correct metric header.
+Above issue may happen as follows:
+-------------------------------------
+ext4_fill_super
+ ext4_enable_quotas
+  ext4_quota_enable
+   ext4_iget
+    __ext4_iget
+     ext4_ext_check_inode
+      ext4_ext_check
+       __ext4_ext_check
+        ext4_valid_extent_entries
+         Check for overlapping extents does't take effect
+   dquot_enable
+    vfs_load_quota_inode
+     v2_check_quota_file
+      v2_read_header
+       ext4_quota_read
+        ext4_bread
+         ext4_getblk
+          ext4_map_blocks
+           ext4_ext_map_blocks
+            ext4_find_extent
+             ext4_cache_extents
+              ext4_es_cache_extent
+               ext4_es_cache_extent
+                __es_tree_search
+                 ext4_es_end
+                  BUG_ON(es->es_lblk + es->es_len < es->es_lblk)
 
-Before:
+The error ext4 extents is as follows:
+0af3 0300 0400 0000 00000000    extent_header
+00000000 0100 0000 12000000     extent1
+00000000 0100 0000 18000000     extent2
+02000000 0400 0000 14000000     extent3
 
-=================================================
-      Shared Cache Line Distribution Pareto
-=================================================
-  -------------------------------------------------------------------------------
-      0        0        0       99        0        0        0      0xaaaac17d6000
-  -------------------------------------------------------------------------------
-    0.00%    0.00%    6.06%    0.00%    0.00%    0.00%   0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
-    0.00%    0.00%   93.94%    0.00%    0.00%    0.00%   0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
+In the ext4_valid_extent_entries function,
+if prev is 0, no error is returned even if lblock<=prev.
+This was intended to skip the check on the first extent, but
+in the error image above, prev=0+1-1=0 when checking the second extent,
+so even though lblock<=prev, the function does not return an error.
+As a result, bug_ON occurs in __es_tree_search and the system panics.
 
-After:
+To solve this problem, we only need to check that:
+1. The lblock of the first extent is not less than 0.
+2. The lblock of the next extent  is not less than
+   the next block of the previous extent.
+The same applies to extent_idx.
 
-=================================================
-      Shared Cache Line Distribution Pareto
-=================================================
-  -------------------------------------------------------------------------------
-      0        0        0       99        0        0        0      0xaaaac17d6000
-  -------------------------------------------------------------------------------
-           0.00%    0.00%    6.06%    0.00%    0.00%    0.00%                0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
-           0.00%    0.00%   93.94%    0.00%    0.00%    0.00%                0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
-
-Fixes: 5a1a99cd2e4e1557 ("perf c2c report: Add main TUI browser")
-Reported-by: Joe Mario <jmario@redhat.com>
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: http://lore.kernel.org/lkml/20220526145400.611249-1-leo.yan@linaro.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@kernel.org
+Fixes: 5946d089379a ("ext4: check for overlapping extents in ext4_valid_extent_entries()")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220518120816.1541863-1-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/builtin-c2c.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ fs/ext4/extents.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
-index d5bea5d3cd51..7f7111d4b3ad 100644
---- a/tools/perf/builtin-c2c.c
-+++ b/tools/perf/builtin-c2c.c
-@@ -2694,9 +2694,7 @@ static int perf_c2c__report(int argc, const char **argv)
- 		   "the input file to process"),
- 	OPT_INCR('N', "node-info", &c2c.node_info,
- 		 "show extra node info in report (repeat for more info)"),
--#ifdef HAVE_SLANG_SUPPORT
- 	OPT_BOOLEAN(0, "stdio", &c2c.use_stdio, "Use the stdio interface"),
--#endif
- 	OPT_BOOLEAN(0, "stats", &c2c.stats_only,
- 		    "Display only statistic tables (implies --stdio)"),
- 	OPT_BOOLEAN(0, "full-symbols", &c2c.symbol_full,
-@@ -2725,6 +2723,10 @@ static int perf_c2c__report(int argc, const char **argv)
- 	if (argc)
- 		usage_with_options(report_c2c_usage, options);
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -371,7 +371,7 @@ static int ext4_valid_extent_entries(str
+ {
+ 	unsigned short entries;
+ 	ext4_lblk_t lblock = 0;
+-	ext4_lblk_t prev = 0;
++	ext4_lblk_t cur = 0;
  
-+#ifndef HAVE_SLANG_SUPPORT
-+	c2c.use_stdio = true;
-+#endif
-+
- 	if (c2c.stats_only)
- 		c2c.use_stdio = true;
+ 	if (eh->eh_entries == 0)
+ 		return 1;
+@@ -395,11 +395,11 @@ static int ext4_valid_extent_entries(str
  
--- 
-2.35.1
-
+ 			/* Check for overlapping extents */
+ 			lblock = le32_to_cpu(ext->ee_block);
+-			if ((lblock <= prev) && prev) {
++			if (lblock < cur) {
+ 				*pblk = ext4_ext_pblock(ext);
+ 				return 0;
+ 			}
+-			prev = lblock + ext4_ext_get_actual_len(ext) - 1;
++			cur = lblock + ext4_ext_get_actual_len(ext);
+ 			ext++;
+ 			entries--;
+ 		}
+@@ -419,13 +419,13 @@ static int ext4_valid_extent_entries(str
+ 
+ 			/* Check for overlapping index extents */
+ 			lblock = le32_to_cpu(ext_idx->ei_block);
+-			if ((lblock <= prev) && prev) {
++			if (lblock < cur) {
+ 				*pblk = ext4_idx_pblock(ext_idx);
+ 				return 0;
+ 			}
+ 			ext_idx++;
+ 			entries--;
+-			prev = lblock;
++			cur = lblock + 1;
+ 		}
+ 	}
+ 	return 1;
 
 
