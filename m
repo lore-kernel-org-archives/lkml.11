@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAB21C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:44:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F32D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348114AbiFGRoZ (ORCPT
+        id S1347948AbiFGRod (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40498 "EHLO
+        Tue, 7 Jun 2022 13:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348031AbiFGRb3 (ORCPT
+        with ESMTP id S1348024AbiFGRb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:31:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0872B11E1E5;
-        Tue,  7 Jun 2022 10:29:07 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38FA511E1DA;
+        Tue,  7 Jun 2022 10:29:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D788B80B66;
-        Tue,  7 Jun 2022 17:29:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECE3CC34115;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 36CEDCE0E13;
         Tue,  7 Jun 2022 17:29:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FEDAC34119;
+        Tue,  7 Jun 2022 17:29:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622944;
-        bh=xBv6tJDlch4Q+R44u/yc6uFBFpYzdy9GWDdo29+6hIM=;
+        s=korg; t=1654622941;
+        bh=3NVrkpZM0vx99wE1NC9rRmh0UfYplLuMiESkX4HrmcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uJ+FPFha2qY8pYXtiz//cffG9Qe/InT0kLtKWaX+onCcDUfVCn4DACyoiP/1x4zM/
-         k4UgSWtkHQEHZ53YM1Rp5VUudZlaBUPkVspHdK3Dm6Qt56ODiaUkZzthNWLrU1P0TS
-         85y7R5du0tDvpy7irRa5lGd7uUWvgngIyMUdUX3g=
+        b=WcvyDqW8fIjKKI+itHmGPGVgMrCFAJ1H0U9ou3OUhADDYYRvWnN/RPoARr3WuFpLZ
+         s8pKgMIvEfNkkumVDm8r3zV+ARLXjWnLnb785+fzztgSRJyxK2omThnKX9l8Y08nvP
+         OP4tRbxcm5oF4MfRaKke8AWGjBipj+U/swKbTxuo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
+        stable@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 238/452] drm/i915: Fix CFI violation with show_dynamic_id()
-Date:   Tue,  7 Jun 2022 19:01:35 +0200
-Message-Id: <20220607164915.652871599@linuxfoundation.org>
+Subject: [PATCH 5.10 237/452] drm/msm/dpu: handle pm_runtime_get_sync() errors in bind path
+Date:   Tue,  7 Jun 2022 19:01:34 +0200
+Message-Id: <20220607164915.622399147@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -53,70 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Abhinav Kumar <quic_abhinavk@quicinc.com>
 
-[ Upstream commit 58606220a2f1407a7516c547f09a1ba7b4350a73 ]
+[ Upstream commit 64b22a0da12adb571c01edd671ee43634ebd7e41 ]
 
-When an attribute group is created with sysfs_create_group(), the
-->sysfs_ops() callback is set to kobj_sysfs_ops, which sets the ->show()
-callback to kobj_attr_show(). kobj_attr_show() uses container_of() to
-get the ->show() callback from the attribute it was passed, meaning the
-->show() callback needs to be the same type as the ->show() callback in
-'struct kobj_attribute'.
+If there are errors while trying to enable the pm in the
+bind path, it will lead to unclocked access of hw revision
+register thereby crashing the device.
 
-However, show_dynamic_id() has the type of the ->show() callback in
-'struct device_attribute', which causes a CFI violation when opening the
-'id' sysfs node under drm/card0/metrics. This happens to work because
-the layout of 'struct kobj_attribute' and 'struct device_attribute' are
-the same, so the container_of() cast happens to allow the ->show()
-callback to still work.
+This will not address why the pm_runtime_get_sync() fails
+but at the very least we should be able to prevent the
+crash by handling the error and bailing out earlier.
 
-Change the type of show_dynamic_id() to match the ->show() callback in
-'struct kobj_attributes' and update the type of sysfs_metric_id to
-match, which resolves the CFI violation.
+changes in v2:
+	- use pm_runtime_resume_and_get() instead of
+	  pm_runtime_get_sync()
 
-Fixes: f89823c21224 ("drm/i915/perf: Implement I915_PERF_ADD/REMOVE_CONFIG interface")
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Sami Tolvanen <samitolvanen@google.com>
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220513075136.1027007-1-tvrtko.ursulin@linux.intel.com
-(cherry picked from commit 18fb42db05a0b93ab5dd5eab5315e50eaa3ca620)
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
+Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Reviewed-by: Rob Clark <robdclark@gmail.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/486721/
+Link: https://lore.kernel.org/r/20220518223407.26147-1-quic_abhinavk@quicinc.com
+Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/i915_perf.c       | 4 ++--
- drivers/gpu/drm/i915/i915_perf_types.h | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/i915_perf.c b/drivers/gpu/drm/i915/i915_perf.c
-index 74e66dea5708..5e670aace59f 100644
---- a/drivers/gpu/drm/i915/i915_perf.c
-+++ b/drivers/gpu/drm/i915/i915_perf.c
-@@ -3964,8 +3964,8 @@ static struct i915_oa_reg *alloc_oa_regs(struct i915_perf *perf,
- 	return ERR_PTR(err);
- }
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index b05ff46d773d..7503f093f3b6 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -939,7 +939,9 @@ static int dpu_kms_hw_init(struct msm_kms *kms)
  
--static ssize_t show_dynamic_id(struct device *dev,
--			       struct device_attribute *attr,
-+static ssize_t show_dynamic_id(struct kobject *kobj,
-+			       struct kobj_attribute *attr,
- 			       char *buf)
- {
- 	struct i915_oa_config *oa_config =
-diff --git a/drivers/gpu/drm/i915/i915_perf_types.h b/drivers/gpu/drm/i915/i915_perf_types.h
-index a36a455ae336..534951ff38bb 100644
---- a/drivers/gpu/drm/i915/i915_perf_types.h
-+++ b/drivers/gpu/drm/i915/i915_perf_types.h
-@@ -54,7 +54,7 @@ struct i915_oa_config {
+ 	dpu_kms_parse_data_bus_icc_path(dpu_kms);
  
- 	struct attribute_group sysfs_metric;
- 	struct attribute *attrs[2];
--	struct device_attribute sysfs_metric_id;
-+	struct kobj_attribute sysfs_metric_id;
+-	pm_runtime_get_sync(&dpu_kms->pdev->dev);
++	rc = pm_runtime_resume_and_get(&dpu_kms->pdev->dev);
++	if (rc < 0)
++		goto error;
  
- 	struct kref ref;
- 	struct rcu_head rcu;
+ 	dpu_kms->core_rev = readl_relaxed(dpu_kms->mmio + 0x0);
+ 
 -- 
 2.35.1
 
