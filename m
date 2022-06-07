@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13758CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D7BAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358350AbiFGUO4 (ORCPT
+        id S1359411AbiFGUPK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:14:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34238 "EHLO
+        Tue, 7 Jun 2022 16:15:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355381AbiFGTUM (ORCPT
+        with ESMTP id S1352722AbiFGTVk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:20:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294711994A4;
-        Tue,  7 Jun 2022 11:08:39 -0700 (PDT)
+        Tue, 7 Jun 2022 15:21:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B0219C3A0;
+        Tue,  7 Jun 2022 11:08:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97815B82366;
-        Tue,  7 Jun 2022 18:08:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3392BC385A5;
-        Tue,  7 Jun 2022 18:08:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEA9E6192C;
+        Tue,  7 Jun 2022 18:08:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4DBBC385A5;
+        Tue,  7 Jun 2022 18:08:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625316;
-        bh=KH4fuz8UG4r07IwZutHOJgGTN/Jkvx5rEU2w49s+K1E=;
+        s=korg; t=1654625333;
+        bh=WGSj4W086o1+ZNgctrT1C4iZahxev2p7Ktexo1KmK6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cBhX3EXdCL2pWMv4H7Lola0ZSm1kWwjhBGIQ36McUIYDW80OHU2jHXL8Z0OHFOaUM
-         oj7zy0/gOAJbHthKHLJML9UynhNBprZ1DKa0S/oZdIWjRFbkl0yDlfTNB/DwaTNr9F
-         h2/w9gje5aAQ1ZtEe37Li6K7qaUU1Ig7/odMaFZ8=
+        b=U2ejnFWiGc/lZj7I+wwduRrRQ5K9q/WLalWGOYcYo88Sjn29AsPYKrDWe8zz8fu11
+         YBLPkgXL7poqjQwWD2N//3aQ6oOvnoZjF0rCmTMFceLiKi81p83qSObKjQGCycZxEm
+         GfonKigRp+zX24mfLrVJyEfputElLa1NB6RQHqws=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ondrej Hubsch <ohubsch@purestorage.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.15 642/667] SMB3: EBADF/EIO errors in rename/open caused by race condition in smb2_compound_op
-Date:   Tue,  7 Jun 2022 19:05:07 +0200
-Message-Id: <20220607164953.912486593@linuxfoundation.org>
+        stable@vger.kernel.org, Vivek Gautam <vivek.gautam@codeaurora.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.15 648/667] phy: qcom-qmp: fix reset-controller leak on probe errors
+Date:   Tue,  7 Jun 2022 19:05:13 +0200
+Message-Id: <20220607164954.088152006@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,65 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-commit 0a55cf74ffb5d004b93647e4389096880ce37d6b upstream.
+commit 4d2900f20edfe541f75756a00deeb2ffe7c66bc1 upstream.
 
-There is  a race condition in smb2_compound_op:
+Make sure to release the lane reset controller in case of a late probe
+error (e.g. probe deferral).
 
-after_close:
-	num_rqst++;
+Note that due to the reset controller being defined in devicetree in
+"lane" child nodes, devm_reset_control_get_exclusive() cannot be used
+directly.
 
-	if (cfile) {
-		cifsFileInfo_put(cfile); // sends SMB2_CLOSE to the server
-		cfile = NULL;
-
-This is triggered by smb2_query_path_info operation that happens during
-revalidate_dentry. In smb2_query_path_info, get_readable_path is called to
-load the cfile, increasing the reference counter. If in the meantime, this
-reference becomes the very last, this call to cifsFileInfo_put(cfile) will
-trigger a SMB2_CLOSE request sent to the server just before sending this compound
-request – and so then the compound request fails either with EBADF/EIO depending
-on the timing at the server, because the handle is already closed.
-
-In the first scenario, the race seems to be happening between smb2_query_path_info
-triggered by the rename operation, and between “cleanup” of asynchronous writes – while
-fsync(fd) likely waits for the asynchronous writes to complete, releasing the writeback
-structures can happen after the close(fd) call. So the EBADF/EIO errors will pop up if
-the timing is such that:
-1) There are still outstanding references after close(fd) in the writeback structures
-2) smb2_query_path_info successfully fetches the cfile, increasing the refcounter by 1
-3) All writeback structures release the same cfile, reducing refcounter to 1
-4) smb2_compound_op is called with that cfile
-
-In the second scenario, the race seems to be similar – here open triggers the
-smb2_query_path_info operation, and if all other threads in the meantime decrease the
-refcounter to 1 similarly to the first scenario, again SMB2_CLOSE will be sent to the
-server just before issuing the compound request. This case is harder to reproduce.
-
-See https://bugzilla.samba.org/show_bug.cgi?id=15051
-
-Cc: stable@vger.kernel.org
-Fixes: 8de9e86c67ba ("cifs: create a helper to find a writeable handle by path name")
-Signed-off-by: Ondrej Hubsch <ohubsch@purestorage.com>
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Fixes: e78f3d15e115 ("phy: qcom-qmp: new qmp phy driver for qcom-chipsets")
+Cc: stable@vger.kernel.org      # 4.12
+Cc: Vivek Gautam <vivek.gautam@codeaurora.org>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220427063243.32576-3-johan+linaro@kernel.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/smb2inode.c |    2 --
- 1 file changed, 2 deletions(-)
+ drivers/phy/qualcomm/phy-qcom-qmp.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/fs/cifs/smb2inode.c
-+++ b/fs/cifs/smb2inode.c
-@@ -358,8 +358,6 @@ smb2_compound_op(const unsigned int xid,
- 	num_rqst++;
+--- a/drivers/phy/qualcomm/phy-qcom-qmp.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
+@@ -5382,6 +5382,11 @@ static const struct phy_ops qcom_qmp_pci
+ 	.owner		= THIS_MODULE,
+ };
  
- 	if (cfile) {
--		cifsFileInfo_put(cfile);
--		cfile = NULL;
- 		rc = compound_send_recv(xid, ses, server,
- 					flags, num_rqst - 2,
- 					&rqst[1], &resp_buftype[1],
++static void qcom_qmp_reset_control_put(void *data)
++{
++	reset_control_put(data);
++}
++
+ static
+ int qcom_qmp_phy_create(struct device *dev, struct device_node *np, int id,
+ 			void __iomem *serdes, const struct qmp_phy_cfg *cfg)
+@@ -5476,6 +5481,10 @@ int qcom_qmp_phy_create(struct device *d
+ 			dev_err(dev, "failed to get lane%d reset\n", id);
+ 			return PTR_ERR(qphy->lane_rst);
+ 		}
++		ret = devm_add_action_or_reset(dev, qcom_qmp_reset_control_put,
++					       qphy->lane_rst);
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	if (cfg->type == PHY_TYPE_UFS || cfg->type == PHY_TYPE_PCIE)
 
 
