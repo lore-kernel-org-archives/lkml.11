@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28BD9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:08:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359125AbiFGUIo (ORCPT
+        id S1358410AbiFGUIt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55128 "EHLO
+        Tue, 7 Jun 2022 16:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355251AbiFGTOI (ORCPT
+        with ESMTP id S1355262AbiFGTOd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:14:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD06194BFC;
-        Tue,  7 Jun 2022 11:07:28 -0700 (PDT)
+        Tue, 7 Jun 2022 15:14:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428081957A5;
+        Tue,  7 Jun 2022 11:07:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45315617A5;
-        Tue,  7 Jun 2022 18:07:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55353C34115;
-        Tue,  7 Jun 2022 18:07:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6DB3B82354;
+        Tue,  7 Jun 2022 18:07:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18B3EC385A5;
+        Tue,  7 Jun 2022 18:07:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625244;
-        bh=jAfyJdtY7AW8Hezy+hcbPYqE7q7fX2MgEkIpU715TEs=;
+        s=korg; t=1654625247;
+        bh=cZw00FcXzKGE4OHvTRGrB4gPCSzcpEsJfY0vT9c+ZNs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W2gfXERaUQ9MQQadlHhOCIXZfzo5GTOnK+ohyLjcXktbfuGbREoXYSGrmh1AMzMHd
-         c6Gf5fRmde08kd8FHc/ijjKhkL4V+7gvo90S08MG9fTl5R+2tvt/3b2bBxIj/5p7+9
-         3ZdkY2S2Hj6xpGwhhoYJ8yOwpKlxwxSGVLhQ4Ln8=
+        b=tCEtOQhOm7OTeW1+wmAeWl5nTvGDvUFe4BMhDP8VsSlshGbxPX80YHb20ACIDMww9
+         g17eFv4fHm63SvwBbUibNhXXadexuav+2YHKhjCDuN6ALVlqhiPhXjRuOTQyShYd8Q
+         uf5HlcG8EDjK9Uw8RaabpLxOf0WVBJNosg+ziKMc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.15 567/667] landlock: Add clang-format exceptions
-Date:   Tue,  7 Jun 2022 19:03:52 +0200
-Message-Id: <20220607164951.699114218@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.15 611/667] um: Use asm-generic/dma-mapping.h
+Date:   Tue,  7 Jun 2022 19:04:36 +0200
+Message-Id: <20220607164952.999920980@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,83 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit 6cc2df8e3a3967e7c13a424f87f6efb1d4a62d80 upstream.
+commit 365719035526e8eda214a1cedb2e1c96e969a0d7 upstream.
 
-In preparation to a following commit, add clang-format on and
-clang-format off stanzas around constant definitions.  This enables to
-keep aligned values, which is much more readable than packed
-definitions.
+If DMA (PCI over virtio) is enabled, then some drivers may
+enable CONFIG_DMA_OPS as well, and then we pull in the x86
+definition of get_arch_dma_ops(), which uses the dma_ops
+symbol, which isn't defined.
 
-Link: https://lore.kernel.org/r/20220506160513.523257-2-mic@digikod.net
+Since we don't have real DMA ops nor any kind of IOMMU fix
+this in the simplest possible way: pull in the asm-generic
+file instead of inheriting the x86 one. It's not clear why
+those drivers that do (e.g. VDPA) "select DMA_OPS", and if
+they'd even work with this, but chances are nobody will be
+wanting to do that anyway, so fixing the build failure is
+good enough.
+
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Fixes: 68f5d3f3b654 ("um: add PCI over virtio emulation driver")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/linux/landlock.h |    4 ++++
- security/landlock/fs.c        |    2 ++
- security/landlock/limits.h    |    4 ++++
- 3 files changed, 10 insertions(+)
+ arch/um/include/asm/Kbuild | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/include/uapi/linux/landlock.h
-+++ b/include/uapi/linux/landlock.h
-@@ -33,7 +33,9 @@ struct landlock_ruleset_attr {
-  * - %LANDLOCK_CREATE_RULESET_VERSION: Get the highest supported Landlock ABI
-  *   version.
-  */
-+/* clang-format off */
- #define LANDLOCK_CREATE_RULESET_VERSION			(1U << 0)
-+/* clang-format on */
- 
- /**
-  * enum landlock_rule_type - Landlock rule type
-@@ -120,6 +122,7 @@ struct landlock_path_beneath_attr {
-  *   :manpage:`access(2)`.
-  *   Future Landlock evolutions will enable to restrict them.
-  */
-+/* clang-format off */
- #define LANDLOCK_ACCESS_FS_EXECUTE			(1ULL << 0)
- #define LANDLOCK_ACCESS_FS_WRITE_FILE			(1ULL << 1)
- #define LANDLOCK_ACCESS_FS_READ_FILE			(1ULL << 2)
-@@ -133,5 +136,6 @@ struct landlock_path_beneath_attr {
- #define LANDLOCK_ACCESS_FS_MAKE_FIFO			(1ULL << 10)
- #define LANDLOCK_ACCESS_FS_MAKE_BLOCK			(1ULL << 11)
- #define LANDLOCK_ACCESS_FS_MAKE_SYM			(1ULL << 12)
-+/* clang-format on */
- 
- #endif /* _UAPI_LINUX_LANDLOCK_H */
---- a/security/landlock/fs.c
-+++ b/security/landlock/fs.c
-@@ -141,10 +141,12 @@ retry:
- }
- 
- /* All access rights that can be tied to files. */
-+/* clang-format off */
- #define ACCESS_FILE ( \
- 	LANDLOCK_ACCESS_FS_EXECUTE | \
- 	LANDLOCK_ACCESS_FS_WRITE_FILE | \
- 	LANDLOCK_ACCESS_FS_READ_FILE)
-+/* clang-format on */
- 
- /*
-  * @path: Should have been checked by get_path_from_fd().
---- a/security/landlock/limits.h
-+++ b/security/landlock/limits.h
-@@ -12,10 +12,14 @@
- #include <linux/limits.h>
- #include <uapi/linux/landlock.h>
- 
-+/* clang-format off */
-+
- #define LANDLOCK_MAX_NUM_LAYERS		64
- #define LANDLOCK_MAX_NUM_RULES		U32_MAX
- 
- #define LANDLOCK_LAST_ACCESS_FS		LANDLOCK_ACCESS_FS_MAKE_SYM
- #define LANDLOCK_MASK_ACCESS_FS		((LANDLOCK_LAST_ACCESS_FS << 1) - 1)
- 
-+/* clang-format on */
-+
- #endif /* _SECURITY_LANDLOCK_LIMITS_H */
+diff --git a/arch/um/include/asm/Kbuild b/arch/um/include/asm/Kbuild
+index f1f3f52f1e9c..b2d834a29f3a 100644
+--- a/arch/um/include/asm/Kbuild
++++ b/arch/um/include/asm/Kbuild
+@@ -4,6 +4,7 @@ generic-y += bug.h
+ generic-y += compat.h
+ generic-y += current.h
+ generic-y += device.h
++generic-y += dma-mapping.h
+ generic-y += emergency-restart.h
+ generic-y += exec.h
+ generic-y += extable.h
+-- 
+2.36.1
+
 
 
