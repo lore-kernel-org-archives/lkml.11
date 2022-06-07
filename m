@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B585DCCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 941B8CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383612AbiFGWfU (ORCPT
+        id S1383405AbiFGWfL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:35:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55246 "EHLO
+        Tue, 7 Jun 2022 18:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380320AbiFGVVR (ORCPT
+        with ESMTP id S1380321AbiFGVVT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:21:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D57118027;
-        Tue,  7 Jun 2022 11:59:55 -0700 (PDT)
+        Tue, 7 Jun 2022 17:21:19 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB9315FE1B;
+        Tue,  7 Jun 2022 11:59:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 83FB661787;
-        Tue,  7 Jun 2022 18:59:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C434C385A2;
-        Tue,  7 Jun 2022 18:59:50 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B1D34CE247A;
+        Tue,  7 Jun 2022 18:59:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4071C385A2;
+        Tue,  7 Jun 2022 18:59:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628390;
-        bh=mPjFnB12v9QIjvkloTIVfkJB+ZjteATQWCqedBdGsPw=;
+        s=korg; t=1654628388;
+        bh=o1okmvwlLbbSfG3kdZ8LEKllXVWDEzZvHhSawU1CUr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cCC+02Zl5jldYfKGqXndauODc0JNXbKAvYhttgzmoosfKePLIX6gS7Tz6asnBK4HB
-         2Xep4H2xdL9ZtCcsVCsRFdggr0wyzddrfZUDnTuhq3AsULUyakhJBfDAjsGXwDMtFU
-         wOjAfknVruY1/sl97ApKjmxyErCISJF29erXbTJ0=
+        b=IH0A5cJPqR37lqkyXR0HrrCjqBxG2DDhysMWhON4YosCoaZdmvzUBx6rvFmXcuqEM
+         S0ItoWXwYEnDWeipeu0+eBp5qNkDpXx3W3BHZPU4oMmo6N8PhpLmk/jx+NFEWkN6gg
+         Oitdg55nYuCWBeDIcEGUtTUk9/uC3XNmu4Xv35m4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 285/879] x86/delay: Fix the wrong asm constraint in delay_loop()
-Date:   Tue,  7 Jun 2022 18:56:43 +0200
-Message-Id: <20220607165011.119924192@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Larsson <alexl@redhat.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 311/879] efi: Allow to enable EFI runtime services by default on RT
+Date:   Tue,  7 Jun 2022 18:57:09 +0200
+Message-Id: <20220607165011.873446410@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,49 +51,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+From: Javier Martinez Canillas <javierm@redhat.com>
 
-[ Upstream commit b86eb74098a92afd789da02699b4b0dd3f73b889 ]
+[ Upstream commit a031651ff2144a3d81d4916856c093bc1ea0a413 ]
 
-The asm constraint does not reflect the fact that the asm statement can
-modify the value of the local variable loops. Which it does.
+Commit d9f283ae71af ("efi: Disable runtime services on RT") disabled EFI
+runtime services by default when the CONFIG_PREEMPT_RT option is enabled.
 
-Specifying the wrong constraint may lead to undefined behavior, it may
-clobber random stuff (e.g. local variable, important temporary value in
-regs, etc.). This is especially dangerous when the compiler decides to
-inline the function and since it doesn't know that the value gets
-modified, it might decide to use it from a register directly without
-reloading it.
+The rationale for that commit is that some EFI calls could take too much
+time, leading to large latencies which is an issue for Real-Time kernels.
 
-Change the constraint to "+a" to denote that the first argument is an
-input and an output argument.
+But a side effect of that change was that now is not possible anymore to
+enable the EFI runtime services by default when CONFIG_PREEMPT_RT is set,
+without passing an efi=runtime command line parameter to the kernel.
 
-  [ bp: Fix typo, massage commit message. ]
+Instead, let's add a new EFI_DISABLE_RUNTIME boolean Kconfig option, that
+would be set to n by default but to y if CONFIG_PREEMPT_RT is enabled.
 
-Fixes: e01b70ef3eb3 ("x86: fix bug in arch/i386/lib/delay.c file, delay_loop function")
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220329104705.65256-2-ammarfaizi2@gnuweeb.org
+That way, the current behaviour is preserved but gives users a mechanism
+to enable the EFI runtimes services in their kernels if that is required.
+For example, if the firmware could guarantee bounded time for EFI calls.
+
+Also, having a separate boolean config could allow users to disable the
+EFI runtime services by default even when CONFIG_PREEMPT_RT is not set.
+
+Reported-by: Alexander Larsson <alexl@redhat.com>
+Fixes: d9f283ae71af ("efi: Disable runtime services on RT")
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Link: https://lore.kernel.org/r/20220331151654.184433-1-javierm@redhat.com
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/lib/delay.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/firmware/efi/Kconfig | 15 +++++++++++++++
+ drivers/firmware/efi/efi.c   |  2 +-
+ 2 files changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/lib/delay.c b/arch/x86/lib/delay.c
-index 65d15df6212d..0e65d00e2339 100644
---- a/arch/x86/lib/delay.c
-+++ b/arch/x86/lib/delay.c
-@@ -54,8 +54,8 @@ static void delay_loop(u64 __loops)
- 		"	jnz 2b		\n"
- 		"3:	dec %0		\n"
+diff --git a/drivers/firmware/efi/Kconfig b/drivers/firmware/efi/Kconfig
+index 2c3dac5ecb36..243882f5e5f9 100644
+--- a/drivers/firmware/efi/Kconfig
++++ b/drivers/firmware/efi/Kconfig
+@@ -284,3 +284,18 @@ config EFI_CUSTOM_SSDT_OVERLAYS
  
--		: /* we don't need output */
--		:"a" (loops)
-+		: "+a" (loops)
-+		:
- 	);
- }
+ 	  See Documentation/admin-guide/acpi/ssdt-overlays.rst for more
+ 	  information.
++
++config EFI_DISABLE_RUNTIME
++	bool "Disable EFI runtime services support by default"
++	default y if PREEMPT_RT
++	help
++	  Allow to disable the EFI runtime services support by default. This can
++	  already be achieved by using the efi=noruntime option, but it could be
++	  useful to have this default without any kernel command line parameter.
++
++	  The EFI runtime services are disabled by default when PREEMPT_RT is
++	  enabled, because measurements have shown that some EFI functions calls
++	  might take too much time to complete, causing large latencies which is
++	  an issue for Real-Time kernels.
++
++	  This default can be overridden by using the efi=runtime option.
+diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
+index 5502e176d51b..ff57db8f8d05 100644
+--- a/drivers/firmware/efi/efi.c
++++ b/drivers/firmware/efi/efi.c
+@@ -66,7 +66,7 @@ struct mm_struct efi_mm = {
  
+ struct workqueue_struct *efi_rts_wq;
+ 
+-static bool disable_runtime = IS_ENABLED(CONFIG_PREEMPT_RT);
++static bool disable_runtime = IS_ENABLED(CONFIG_EFI_DISABLE_RUNTIME);
+ static int __init setup_noefi(char *arg)
+ {
+ 	disable_runtime = true;
 -- 
 2.35.1
 
