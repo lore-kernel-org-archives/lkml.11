@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84911CCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF04ACCA492
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383659AbiFGVx0 (ORCPT
+        id S1383956AbiFGVxz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45688 "EHLO
+        Tue, 7 Jun 2022 17:53:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378474AbiFGVBW (ORCPT
+        with ESMTP id S1378791AbiFGVBt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:01:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9CE20E17B;
-        Tue,  7 Jun 2022 11:45:11 -0700 (PDT)
+        Tue, 7 Jun 2022 17:01:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E725D20ED51;
+        Tue,  7 Jun 2022 11:45:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0852261295;
-        Tue,  7 Jun 2022 18:45:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18A3CC385A2;
-        Tue,  7 Jun 2022 18:45:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 850666156D;
+        Tue,  7 Jun 2022 18:45:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91D39C385A2;
+        Tue,  7 Jun 2022 18:45:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627510;
-        bh=/WUznTYi4+ekIcUEKN6koRodGOYPqPC/ciEieSmX2uo=;
+        s=korg; t=1654627537;
+        bh=u3BGt4PKsLXxAzxsq/aZZArjOH52aSbr80e3Qobz3pY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W+jE6+IOPUGdsL1q84SLM9F/Bw7oye6O7155f78egdleOWO6/0CfYvEszCpj+Vgjh
-         vd2ZLt3fLX1p0pVVuPsDU+l1LY3hpTwHOX7VKMPe2+Mj0GXNZKHbQKK0mTQAcBeGNV
-         U5ZnxFP0QKeb4KC6zShQeX1NXgQLtM12gR155c0g=
+        b=CJncDHI+K2/qi/x2VCTbhK2e17siPUwwOTJP/kmxzxNN7wTbVigjYALaARLCVNZYh
+         sauF7+uYvZ9+V1oCBcWfQoOs/HU79aIu/J71ss5edt2pMQ13/xn3yTEMWiF4gJzAOH
+         QsBuuithAekQKCSCS1B8ZqUlIhKvQtSCg6qdDKGs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.17 765/772] ext4: only allow test_dummy_encryption when supported
-Date:   Tue,  7 Jun 2022 19:05:57 +0200
-Message-Id: <20220607165011.565988027@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Jyri Sarha <jyri.sarha@iki.fi>
+Subject: [PATCH 5.17 738/772] tilcdc: tilcdc_external: fix an incorrect NULL check on list iterator
+Date:   Tue,  7 Jun 2022 19:05:30 +0200
+Message-Id: <20220607165010.783351592@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,162 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 5f41fdaea63ddf96d921ab36b2af4a90ccdb5744 upstream.
+commit 8b917cbe38e9b0d002492477a9fc2bfee2412ce4 upstream.
 
-Make the test_dummy_encryption mount option require that the encrypt
-feature flag be already enabled on the filesystem, rather than
-automatically enabling it.  Practically, this means that "-O encrypt"
-will need to be included in MKFS_OPTIONS when running xfstests with the
-test_dummy_encryption mount option.  (ext4/053 also needs an update.)
+The bug is here:
+	if (!encoder) {
 
-Moreover, as long as the preconditions for test_dummy_encryption are
-being tightened anyway, take the opportunity to start rejecting it when
-!CONFIG_FS_ENCRYPTION rather than ignoring it.
+The list iterator value 'encoder' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+is found.
 
-The motivation for requiring the encrypt feature flag is that:
+To fix the bug, use a new variable 'iter' as the list iterator,
+while use the original variable 'encoder' as a dedicated pointer
+to point to the found element.
 
-- Having the filesystem auto-enable feature flags is problematic, as it
-  bypasses the usual sanity checks.  The specific issue which came up
-  recently is that in kernel versions where ext4 supports casefold but
-  not encrypt+casefold (v5.1 through v5.10), the kernel will happily add
-  the encrypt flag to a filesystem that has the casefold flag, making it
-  unmountable -- but only for subsequent mounts, not the initial one.
-  This confused the casefold support detection in xfstests, causing
-  generic/556 to fail rather than be skipped.
-
-- The xfstests-bld test runners (kvm-xfstests et al.) already use the
-  required mkfs flag, so they will not be affected by this change.  Only
-  users of test_dummy_encryption alone will be affected.  But, this
-  option has always been for testing only, so it should be fine to
-  require that the few users of this option update their test scripts.
-
-- f2fs already requires it (for its equivalent feature flag).
-
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Gabriel Krisman Bertazi <krisman@collabora.com>
-Link: https://lore.kernel.org/r/20220519204437.61645-1-ebiggers@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@vger.kernel.org
+Fixes: ec9eab097a500 ("drm/tilcdc: Add drm bridge support for attaching drm bridge drivers")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Reviewed-by: Jyri Sarha <jyri.sarha@iki.fi>
+Tested-by: Jyri Sarha <jyri.sarha@iki.fi>
+Signed-off-by: Jyri Sarha <jyri.sarha@iki.fi>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220327061516.5076-1-xiam0nd.tong@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/ext4.h  |    6 -----
- fs/ext4/super.c |   60 +++++++++++++++++++++++++++++++++++---------------------
- 2 files changed, 38 insertions(+), 28 deletions(-)
+ drivers/gpu/drm/tilcdc/tilcdc_external.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -1438,12 +1438,6 @@ struct ext4_super_block {
- 
- #ifdef __KERNEL__
- 
--#ifdef CONFIG_FS_ENCRYPTION
--#define DUMMY_ENCRYPTION_ENABLED(sbi) ((sbi)->s_dummy_enc_policy.policy != NULL)
--#else
--#define DUMMY_ENCRYPTION_ENABLED(sbi) (0)
--#endif
--
- /* Number of quota types we support */
- #define EXT4_MAXQUOTAS 3
- 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -2428,11 +2428,12 @@ static int ext4_parse_param(struct fs_co
- 		ctx->spec |= EXT4_SPEC_DUMMY_ENCRYPTION;
- 		ctx->test_dummy_enc_arg = kmemdup_nul(param->string, param->size,
- 						      GFP_KERNEL);
-+		return 0;
- #else
- 		ext4_msg(NULL, KERN_WARNING,
--			 "Test dummy encryption mount option ignored");
-+			 "test_dummy_encryption option not supported");
-+		return -EINVAL;
- #endif
--		return 0;
- 	case Opt_dax:
- 	case Opt_dax_type:
- #ifdef CONFIG_FS_DAX
-@@ -2789,12 +2790,44 @@ err_jquota_specified:
- #endif
- }
- 
-+static int ext4_check_test_dummy_encryption(const struct fs_context *fc,
-+					    struct super_block *sb)
-+{
-+#ifdef CONFIG_FS_ENCRYPTION
-+	const struct ext4_fs_context *ctx = fc->fs_private;
-+	const struct ext4_sb_info *sbi = EXT4_SB(sb);
-+
-+	if (!(ctx->spec & EXT4_SPEC_DUMMY_ENCRYPTION))
-+		return 0;
-+
-+	if (!ext4_has_feature_encrypt(sb)) {
-+		ext4_msg(NULL, KERN_WARNING,
-+			 "test_dummy_encryption requires encrypt feature");
-+		return -EINVAL;
-+	}
-+	/*
-+	 * This mount option is just for testing, and it's not worthwhile to
-+	 * implement the extra complexity (e.g. RCU protection) that would be
-+	 * needed to allow it to be set or changed during remount.  We do allow
-+	 * it to be specified during remount, but only if there is no change.
-+	 */
-+	if (fc->purpose == FS_CONTEXT_FOR_RECONFIGURE &&
-+	    !sbi->s_dummy_enc_policy.policy) {
-+		ext4_msg(NULL, KERN_WARNING,
-+			 "Can't set test_dummy_encryption on remount");
-+		return -EINVAL;
-+	}
-+#endif /* CONFIG_FS_ENCRYPTION */
-+	return 0;
-+}
-+
- static int ext4_check_opt_consistency(struct fs_context *fc,
- 				      struct super_block *sb)
+--- a/drivers/gpu/drm/tilcdc/tilcdc_external.c
++++ b/drivers/gpu/drm/tilcdc/tilcdc_external.c
+@@ -60,11 +60,13 @@ struct drm_connector *tilcdc_encoder_fin
+ int tilcdc_add_component_encoder(struct drm_device *ddev)
  {
- 	struct ext4_fs_context *ctx = fc->fs_private;
- 	struct ext4_sb_info *sbi = fc->s_fs_info;
- 	int is_remount = fc->purpose == FS_CONTEXT_FOR_RECONFIGURE;
-+	int err;
+ 	struct tilcdc_drm_private *priv = ddev->dev_private;
+-	struct drm_encoder *encoder;
++	struct drm_encoder *encoder = NULL, *iter;
  
- 	if ((ctx->opt_flags & MOPT_NO_EXT2) && IS_EXT2_SB(sb)) {
- 		ext4_msg(NULL, KERN_ERR,
-@@ -2824,20 +2857,9 @@ static int ext4_check_opt_consistency(st
- 				 "for blocksize < PAGE_SIZE");
- 	}
+-	list_for_each_entry(encoder, &ddev->mode_config.encoder_list, head)
+-		if (encoder->possible_crtcs & (1 << priv->crtc->index))
++	list_for_each_entry(iter, &ddev->mode_config.encoder_list, head)
++		if (iter->possible_crtcs & (1 << priv->crtc->index)) {
++			encoder = iter;
+ 			break;
++		}
  
--#ifdef CONFIG_FS_ENCRYPTION
--	/*
--	 * This mount option is just for testing, and it's not worthwhile to
--	 * implement the extra complexity (e.g. RCU protection) that would be
--	 * needed to allow it to be set or changed during remount.  We do allow
--	 * it to be specified during remount, but only if there is no change.
--	 */
--	if ((ctx->spec & EXT4_SPEC_DUMMY_ENCRYPTION) &&
--	    is_remount && !sbi->s_dummy_enc_policy.policy) {
--		ext4_msg(NULL, KERN_WARNING,
--			 "Can't set test_dummy_encryption on remount");
--		return -1;
--	}
--#endif
-+	err = ext4_check_test_dummy_encryption(fc, sb);
-+	if (err)
-+		return err;
- 
- 	if ((ctx->spec & EXT4_SPEC_DATAJ) && is_remount) {
- 		if (!sbi->s_journal) {
-@@ -5267,12 +5289,6 @@ no_journal:
- 		goto failed_mount_wq;
- 	}
- 
--	if (DUMMY_ENCRYPTION_ENABLED(sbi) && !sb_rdonly(sb) &&
--	    !ext4_has_feature_encrypt(sb)) {
--		ext4_set_feature_encrypt(sb);
--		ext4_commit_super(sb);
--	}
--
- 	/*
- 	 * Get the # of file system overhead blocks from the
- 	 * superblock if present.
+ 	if (!encoder) {
+ 		dev_err(ddev->dev, "%s: No suitable encoder found\n", __func__);
 
 
