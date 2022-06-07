@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE681C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF50EC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354939AbiFGTKJ (ORCPT
+        id S1354907AbiFGTKC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:10:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47378 "EHLO
+        Tue, 7 Jun 2022 15:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350204AbiFGSXA (ORCPT
+        with ESMTP id S237897AbiFGSXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:23:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F2D4C5E5D;
-        Tue,  7 Jun 2022 10:54:19 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0B6C5DA6;
+        Tue,  7 Jun 2022 10:54:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50697617ED;
-        Tue,  7 Jun 2022 17:53:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C2D6C385A5;
-        Tue,  7 Jun 2022 17:53:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 506E961825;
+        Tue,  7 Jun 2022 17:54:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EC7EC385A5;
+        Tue,  7 Jun 2022 17:54:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624437;
-        bh=Es88hOl7dOsT5p4S16j5QOi4YudCVRc+UBvDlBjPxw8=;
+        s=korg; t=1654624448;
+        bh=wXAfGWgTE2nwx+GSzU2Lgt8EBZdj6oFr+d45/+PJBiU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NASDzK+Go+FaPliYVEVwMt2x0uRZ/kZbCG4vM/QkTFlsssnR14s9BnqbZEAScx5xh
-         3nPRkm2B34nZoFHWxma2ETQuqb6MfnoqR8sP03uGTgHWFF/fGX57GK4QSRRQvw7Avp
-         Wf5b353PhEspijPqBOi2eGeyj4io8K/AYvrUPFzo=
+        b=zPQf1mpNDw6qZDoM+4VLDFJajNH6zSuGwPRUvjMN9DYxURqfDts84LmSX329u0BUi
+         vUtka1eB9MIA0H8kalfPawRUvGTMU3wi5nr9RwS5e609APnh1UTVboSdqf1b0Y1hYS
+         H7H4Z7g3THnGCeSrARagJv4+FJbC5Sl9sX/5x0bM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 327/667] media: atmel: atmel-sama5d2-isc: fix wrong mask in YUYV format check
-Date:   Tue,  7 Jun 2022 18:59:52 +0200
-Message-Id: <20220607164944.576619529@linuxfoundation.org>
+Subject: [PATCH 5.15 331/667] Bluetooth: use hdev lock for accept_list and reject_list in conn req
+Date:   Tue,  7 Jun 2022 18:59:56 +0200
+Message-Id: <20220607164944.696448493@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -53,38 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugen Hristev <eugen.hristev@microchip.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 91f49b80983f7bffdea9498209b2b896231ac776 ]
+[ Upstream commit fb048cae51bacdfbbda2954af3c213fdb1d484f4 ]
 
-While this does not happen in production, this check should be done
-versus the mask, as checking with the YCYC value may not include
-some bits that may be set.
-It is correct and safe to check the whole mask.
+All accesses (both reads and modifications) to
+hdev->{accept,reject}_list are protected by hdev lock,
+except the ones in hci_conn_request_evt. This can cause a race
+condition in the form of a list corruption.
+The solution is to protect these lists in hci_conn_request_evt as well.
 
-Fixes: 123aaf816b95 ("media: atmel: atmel-sama5d2-isc: fix YUYV format")
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+I was unable to find the exact commit that introduced the issue for the
+reject list, I was only able to find it for the accept list.
+
+Fixes: a55bd29d5227 ("Bluetooth: Add white list lookup for incoming connection requests")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/atmel/atmel-sama5d2-isc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bluetooth/hci_event.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/media/platform/atmel/atmel-sama5d2-isc.c b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-index c8ed9315ef31..7421bc51709c 100644
---- a/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-+++ b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-@@ -267,7 +267,7 @@ static void isc_sama5d2_config_rlp(struct isc_device *isc)
- 	 * Thus, if the YCYC mode is selected, replace it with the
- 	 * sama5d2-compliant mode which is YYCC .
- 	 */
--	if ((rlp_mode & ISC_RLP_CFG_MODE_YCYC) == ISC_RLP_CFG_MODE_YCYC) {
-+	if ((rlp_mode & ISC_RLP_CFG_MODE_MASK) == ISC_RLP_CFG_MODE_YCYC) {
- 		rlp_mode &= ~ISC_RLP_CFG_MODE_MASK;
- 		rlp_mode |= ISC_RLP_CFG_MODE_YYCC;
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index e984a8b4b914..5ac3aca6deeb 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -2790,10 +2790,12 @@ static void hci_conn_request_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		return;
  	}
+ 
++	hci_dev_lock(hdev);
++
+ 	if (hci_bdaddr_list_lookup(&hdev->reject_list, &ev->bdaddr,
+ 				   BDADDR_BREDR)) {
+ 		hci_reject_conn(hdev, &ev->bdaddr);
+-		return;
++		goto unlock;
+ 	}
+ 
+ 	/* Require HCI_CONNECTABLE or an accept list entry to accept the
+@@ -2805,13 +2807,11 @@ static void hci_conn_request_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 	    !hci_bdaddr_list_lookup_with_flags(&hdev->accept_list, &ev->bdaddr,
+ 					       BDADDR_BREDR)) {
+ 		hci_reject_conn(hdev, &ev->bdaddr);
+-		return;
++		goto unlock;
+ 	}
+ 
+ 	/* Connection accepted */
+ 
+-	hci_dev_lock(hdev);
+-
+ 	ie = hci_inquiry_cache_lookup(hdev, &ev->bdaddr);
+ 	if (ie)
+ 		memcpy(ie->data.dev_class, ev->dev_class, 3);
+@@ -2823,8 +2823,7 @@ static void hci_conn_request_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 				    HCI_ROLE_SLAVE);
+ 		if (!conn) {
+ 			bt_dev_err(hdev, "no memory for new connection");
+-			hci_dev_unlock(hdev);
+-			return;
++			goto unlock;
+ 		}
+ 	}
+ 
+@@ -2864,6 +2863,10 @@ static void hci_conn_request_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		conn->state = BT_CONNECT2;
+ 		hci_connect_cfm(conn, 0);
+ 	}
++
++	return;
++unlock:
++	hci_dev_unlock(hdev);
+ }
+ 
+ static u8 hci_to_mgmt_reason(u8 err)
 -- 
 2.35.1
 
