@@ -2,175 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5679C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B36ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:34:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355583AbiFGTeT (ORCPT
+        id S1355867AbiFGTeW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:34:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38118 "EHLO
+        Tue, 7 Jun 2022 15:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353447AbiFGSmo (ORCPT
+        with ESMTP id S1353495AbiFGSmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:42:44 -0400
+        Tue, 7 Jun 2022 14:42:49 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB716540A;
-        Tue,  7 Jun 2022 10:58:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45647187C0A;
+        Tue,  7 Jun 2022 10:59:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0CBDCCE2428;
-        Tue,  7 Jun 2022 17:58:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0989FC34115;
-        Tue,  7 Jun 2022 17:58:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624735;
-        bh=QjdCu1aptZA0HMTYSO5wIg0K7eKoSRF/GSpxcxLlggo=;
+        by sin.source.kernel.org (Postfix) with ESMTPS id D57EACE243F;
+        Tue,  7 Jun 2022 17:59:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E961EC341C5;
+        Tue,  7 Jun 2022 17:58:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624739;
+        bh=WYUm3IfFlBJsTPpfZgfJ8+0Ib/s2pOnubORdt3YOv3g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UIc7eHT1hzsasZvSWi/Uk13nW6Prlwf/gdnRtfyCRbirNY3O2SPz9od6pdAy51bx4
-         vmr9Vgdp2F5akze6yFFOIGCPwgQHiakhnbVpP05QhSzqQ+pWh95MNM7OQ8Gt5ZK7ss
-         TskBlowZfASlm3vppHyW1UCkUAmzvl+gldcU3MgbXZSYmLMDQCsBDwJR/WjWzINGYW
-         CNJjW18itybUG/u+l5rKHx2FhJ0cJVYZ43j0+tlRxIgmN9IQTrrNNP+KeI7LeOyBkJ
-         2AJSnekdyCKMzNe3p6Op0ca4npEduui1ftOr0azqOpSf+EJZLdLvojG4GTibNRjkEh
-         kyZbtSj920poQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Denis Ciocca <denis.ciocca@st.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
-        cai.huoqing@linux.dev, andy.shevchenko@gmail.com,
-        aardelean@deviqon.com, lars@metafoo.de, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 03/38] iio: st_sensors: Add a local lock for protecting odr
-Date:   Tue,  7 Jun 2022 13:57:58 -0400
-Message-Id: <20220607175835.480735-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
-References: <20220607175835.480735-1-sashal@kernel.org>
+        b=rBJcchxRQ961HAFPPt4AtkPXB03Q24rbckphzimkkS0ebJk3VCVJtJWiVlQcRNlM4
+         c/4E4/0FR+0I5Zj0AlkmNddL3NuIXq2NTkny5+QOfcdKUzI9rlnsk1b+O4gr2Q4WT4
+         pLdQCoGD04uR5IA7mQ7xYnxgkpizfyajJgP15OI4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Michal Hocko <mhocko@suse.com>,
+        David Hildenbrand <david@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Scott Cheloha <cheloha@linux.vnet.ibm.com>,
+        Nathan Lynch <nathanl@linux.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 434/667] drivers/base/memory: fix an unlikely reference counting issue in __add_memory_block()
+Date:   Tue,  7 Jun 2022 19:01:39 +0200
+Message-Id: <20220607164947.742315266@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 474010127e2505fc463236470908e1ff5ddb3578 ]
+[ Upstream commit f47f758cff59c68015d6b9b9c077110df7c2c828 ]
 
-Right now the (framework) mlock lock is (ab)used for multiple purposes:
-1- protecting concurrent accesses over the odr local cache
-2- avoid changing samplig frequency whilst buffer is running
+__add_memory_block() calls both put_device() and device_unregister() when
+storing the memory block into the xarray.  This is incorrect because
+xarray doesn't take an additional reference and device_unregister()
+already calls put_device().
 
-Let's start by handling situation #1 with a local lock.
+Triggering the issue looks really unlikely and its only effect should be
+to log a spurious warning about a ref counted issue.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/r/20220207143840.707510-7-miquel.raynal@bootlin.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Link: https://lkml.kernel.org/r/d44c63d78affe844f020dc02ad6af29abc448fc4.1650611702.git.christophe.jaillet@wanadoo.fr
+Fixes: 4fb6eabf1037 ("drivers/base/memory.c: cache memory blocks in xarray to accelerate lookup")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Reviewed-by: David Hildenbrand <david@redhat.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Scott Cheloha <cheloha@linux.vnet.ibm.com>
+Cc: Nathan Lynch <nathanl@linux.ibm.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../iio/common/st_sensors/st_sensors_core.c   | 24 ++++++++++++++-----
- include/linux/iio/common/st_sensors.h         |  3 +++
- 2 files changed, 21 insertions(+), 6 deletions(-)
+ drivers/base/memory.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 7a69c1be7393..56206fdbceb9 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -70,16 +70,18 @@ static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
- 
- int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
- {
--	int err;
-+	int err = 0;
- 	struct st_sensor_odr_avl odr_out = {0, 0};
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
- 
-+	mutex_lock(&sdata->odr_lock);
-+
- 	if (!sdata->sensor_settings->odr.mask)
--		return 0;
-+		goto unlock_mutex;
- 
- 	err = st_sensors_match_odr(sdata->sensor_settings, odr, &odr_out);
- 	if (err < 0)
--		goto st_sensors_match_odr_error;
-+		goto unlock_mutex;
- 
- 	if ((sdata->sensor_settings->odr.addr ==
- 					sdata->sensor_settings->pw.addr) &&
-@@ -102,7 +104,9 @@ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
- 	if (err >= 0)
- 		sdata->odr = odr_out.hz;
- 
--st_sensors_match_odr_error:
-+unlock_mutex:
-+	mutex_unlock(&sdata->odr_lock);
-+
- 	return err;
- }
- EXPORT_SYMBOL(st_sensors_set_odr);
-@@ -364,6 +368,8 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
- 	struct st_sensors_platform_data *of_pdata;
- 	int err = 0;
- 
-+	mutex_init(&sdata->odr_lock);
-+
- 	/* If OF/DT pdata exists, it will take precedence of anything else */
- 	of_pdata = st_sensors_dev_probe(indio_dev->dev.parent, pdata);
- 	if (IS_ERR(of_pdata))
-@@ -557,18 +563,24 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
- 		err = -EBUSY;
- 		goto out;
- 	} else {
-+		mutex_lock(&sdata->odr_lock);
- 		err = st_sensors_set_enable(indio_dev, true);
--		if (err < 0)
-+		if (err < 0) {
-+			mutex_unlock(&sdata->odr_lock);
- 			goto out;
-+		}
- 
- 		msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
- 		err = st_sensors_read_axis_data(indio_dev, ch, val);
--		if (err < 0)
-+		if (err < 0) {
-+			mutex_unlock(&sdata->odr_lock);
- 			goto out;
-+		}
- 
- 		*val = *val >> ch->scan_type.shift;
- 
- 		err = st_sensors_set_enable(indio_dev, false);
-+		mutex_unlock(&sdata->odr_lock);
+diff --git a/drivers/base/memory.c b/drivers/base/memory.c
+index 60c38f9cf1a7..c0d501a3a714 100644
+--- a/drivers/base/memory.c
++++ b/drivers/base/memory.c
+@@ -634,10 +634,9 @@ int register_memory(struct memory_block *memory)
  	}
- out:
- 	mutex_unlock(&indio_dev->mlock);
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 33e939977444..c16a9dda3ad5 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -228,6 +228,7 @@ struct st_sensor_settings {
-  * @hw_irq_trigger: if we're using the hardware interrupt on the sensor.
-  * @hw_timestamp: Latest timestamp from the interrupt handler, when in use.
-  * @buffer_data: Data used by buffer part.
-+ * @odr_lock: Local lock for preventing concurrent ODR accesses/changes
-  */
- struct st_sensor_data {
- 	struct device *dev;
-@@ -253,6 +254,8 @@ struct st_sensor_data {
- 	s64 hw_timestamp;
- 
- 	char buffer_data[ST_SENSORS_MAX_BUFFER_SIZE] ____cacheline_aligned;
+ 	ret = xa_err(xa_store(&memory_blocks, memory->dev.id, memory,
+ 			      GFP_KERNEL));
+-	if (ret) {
+-		put_device(&memory->dev);
++	if (ret)
+ 		device_unregister(&memory->dev);
+-	}
 +
-+	struct mutex odr_lock;
- };
+ 	return ret;
+ }
  
- #ifdef CONFIG_IIO_BUFFER
 -- 
 2.35.1
+
+
 
