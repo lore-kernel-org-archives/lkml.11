@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6351C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4DEFCCA488
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346546AbiFGTGo (ORCPT
+        id S1354625AbiFGTGS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33778 "EHLO
+        Tue, 7 Jun 2022 15:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352093AbiFGSQx (ORCPT
+        with ESMTP id S1352034AbiFGSUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 169BFD110;
-        Tue,  7 Jun 2022 10:50:30 -0700 (PDT)
+        Tue, 7 Jun 2022 14:20:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9134DA76C0;
+        Tue,  7 Jun 2022 10:53:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BDF6616A3;
-        Tue,  7 Jun 2022 17:50:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAACFC34119;
-        Tue,  7 Jun 2022 17:50:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 542EDB8236C;
+        Tue,  7 Jun 2022 17:53:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25EADC34119;
+        Tue,  7 Jun 2022 17:53:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624229;
-        bh=uR7CQe4V55FxsHzDZ0qleDY1nvIx7lIoX7D3hsclkWQ=;
+        s=k20201202; t=1654624403;
+        bh=BBbKxzBTSgGkElDL5HOf2Rr4T8+XctVQOFZU15enauU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kP/Vq8LiuRq1IO9bMnesam9anPQZt6Qcix7OCGhnqWbLnZsjCu9rztmKHjDe0TCDE
-         OVJkDhDfp/22dju6CF8rhL7axWl1y77gFtSc1XDciMcowjp8OiUPdJp6/fO20JrNvb
-         c7PIZcR2t+EbuowwI1FJ3qBIiMuwTNEYHspTJO71YjNKscLszPRZeqX6EcNLr5E5JT
-         U8WKaTY2Vq5LWAR+ZKx5PzEx4Fo74WiaBnT37k/IANLpqzgEoZHobc8EsyuzIbJOBw
-         D+BvMsG7IgkBwrUQ5kVzcBH+8Z1gJFOt8Oc0kHbhWAckutv4s1aCrILOvf1a5/tFcm
-         vIlBamuJE/UbA==
+        b=Sw8fTKqsJ6aizKfLvZOjzSOGF9oTcJ91EZdzI/CmvANPib86KYjjuM+K7w92FkSZ7
+         wXN48JCBtPqe6CRTMl59Q38+xNPuAXLUBxHkaQLErQOQMb7UNJKm9sqBGlMR2wV1oE
+         y+mUiYvFsDyBwu0LVBUG/0RyOkjKPnUCT1lJouyPazUvl/3quCYcHFaqoDPr/ecA5g
+         xeUtpLPRCe0WgjOD/+LK2e55nTV/9s+qJcYT33PbMZ+0iZdWGbB/KXMOWgmhlDrKtL
+         I40dy6R5YHFkEObutDqHx30KmVdw6gKqvsSf1mZK0qRSpYCcvVfbR2jnKys1yqXcU6
+         WjHbwCVTrOusQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.18 23/68] misc: rtsx: set NULL intfdata when probe fails
-Date:   Tue,  7 Jun 2022 13:47:49 -0400
-Message-Id: <20220607174846.477972-23-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, fabioaiuto83@gmail.com,
+        hdegoede@redhat.com, sevinj.aghayeva@gmail.com,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.17 06/60] drivers: staging: rtl8192bs: Fix deadlock in rtw_joinbss_event_prehandle()
+Date:   Tue,  7 Jun 2022 13:52:03 -0400
+Message-Id: <20220607175259.478835-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,37 +54,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit f861d36e021e1ac4a0a2a1f6411d623809975d63 ]
+[ Upstream commit 041879b12ddb0c6c83ed9c0bdd10dc82a056f2fc ]
 
-rtsx_usb_probe() doesn't call usb_set_intfdata() to null out the
-interface pointer when probe fails. This leaves a stale pointer.
-Noticed the missing usb_set_intfdata() while debugging an unrelated
-invalid DMA mapping problem.
+There is a deadlock in rtw_joinbss_event_prehandle(), which is shown
+below:
 
-Fix it with a call to usb_set_intfdata(..., NULL).
+   (Thread 1)                |      (Thread 2)
+                             | _set_timer()
+rtw_joinbss_event_prehandle()|  mod_timer()
+ spin_lock_bh() //(1)        |  (wait a time)
+ ...                         | _rtw_join_timeout_handler()
+ del_timer_sync()            |  spin_lock_bh() //(2)
+ (wait timer to stop)        |  ...
 
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220429210913.46804-1-skhan@linuxfoundation.org
+We hold pmlmepriv->lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need pmlmepriv->lock in position (2) of thread 2.
+As a result, rtw_joinbss_event_prehandle() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_bh(), which could let timer handler to obtain
+the needed lock. What`s more, we change spin_lock_bh() to
+spin_lock_irq() in _rtw_join_timeout_handler() in order to
+prevent deadlock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220409064953.67420-1-duoming@zju.edu.cn
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/cardreader/rtsx_usb.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/rtl8723bs/core/rtw_mlme.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/misc/cardreader/rtsx_usb.c b/drivers/misc/cardreader/rtsx_usb.c
-index 59eda55d92a3..1ef9b61077c4 100644
---- a/drivers/misc/cardreader/rtsx_usb.c
-+++ b/drivers/misc/cardreader/rtsx_usb.c
-@@ -667,6 +667,7 @@ static int rtsx_usb_probe(struct usb_interface *intf,
- 	return 0;
+diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme.c b/drivers/staging/rtl8723bs/core/rtw_mlme.c
+index a6e5f2332e12..c29e3c68e61e 100644
+--- a/drivers/staging/rtl8723bs/core/rtw_mlme.c
++++ b/drivers/staging/rtl8723bs/core/rtw_mlme.c
+@@ -1240,8 +1240,10 @@ void rtw_joinbss_event_prehandle(struct adapter *adapter, u8 *pbuf)
  
- out_init_fail:
-+	usb_set_intfdata(ucr->pusb_intf, NULL);
- 	usb_free_coherent(ucr->pusb_dev, IOBUF_SIZE, ucr->iobuf,
- 			ucr->iobuf_dma);
- 	return ret;
+ 			spin_unlock_bh(&pmlmepriv->scanned_queue.lock);
+ 
++			spin_unlock_bh(&pmlmepriv->lock);
+ 			/* s5. Cancel assoc_timer */
+ 			del_timer_sync(&pmlmepriv->assoc_timer);
++			spin_lock_bh(&pmlmepriv->lock);
+ 		} else {
+ 			spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
+ 		}
+@@ -1547,7 +1549,7 @@ void _rtw_join_timeout_handler(struct timer_list *t)
+ 	if (adapter->bDriverStopped || adapter->bSurpriseRemoved)
+ 		return;
+ 
+-	spin_lock_bh(&pmlmepriv->lock);
++	spin_lock_irq(&pmlmepriv->lock);
+ 
+ 	if (rtw_to_roam(adapter) > 0) { /* join timeout caused by roaming */
+ 		while (1) {
+@@ -1575,7 +1577,7 @@ void _rtw_join_timeout_handler(struct timer_list *t)
+ 
+ 	}
+ 
+-	spin_unlock_bh(&pmlmepriv->lock);
++	spin_unlock_irq(&pmlmepriv->lock);
+ }
+ 
+ /*
 -- 
 2.35.1
 
