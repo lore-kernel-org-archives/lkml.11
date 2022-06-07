@@ -2,73 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0258C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC3FCCA483
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243811AbiFGMgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54230 "EHLO
+        id S243834AbiFGMgJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242892AbiFGMgB (ORCPT
+        with ESMTP id S243821AbiFGMgF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:36:01 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D8AC3D27;
-        Tue,  7 Jun 2022 05:36:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654605360; x=1686141360;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=fggAZg52M+xMcqVYJKihBT5Si3qyQ9v49tvW0AhIkSM=;
-  b=dzd3WgnWLdzgVmXjgW9ye1cwx94LRB8VKLCy6DAwNyPshKmZYwZcMVMs
-   gfMXOzMZMencavDB3UtfVPHnimLJ/LpXedezYSZ6quVe+lwU4mSeiInXW
-   /XIepVA2nMHx79lkjbcd+npZYwL+u9/lRViwMpQO/Rp2wdNtyu80h0l9p
-   g=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 05:36:00 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 05:35:59 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 7 Jun 2022 05:35:58 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 7 Jun 2022 05:35:52 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, <vkoul@kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH 0/2] Add software clock gating requirement check
-Date:   Tue, 7 Jun 2022 18:05:32 +0530
-Message-ID: <1654605334-32030-1-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 7 Jun 2022 08:36:05 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A01C509D;
+        Tue,  7 Jun 2022 05:36:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654605365; x=1686141365;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=LKum10K4tBKordUqJVSe2dQMizH1jkij74BmVhgNhM0=;
+  b=klm4PHmKuSNJKi67IymNsGqZE2bp2tX3a7Ph5yMtDvy7S7X7Q0xcT3+G
+   TdN1qKweIfM3X23r0wCymU9duTXHXYw48+QTUd3Jy9BvZCkje3Arm3rqx
+   daDv8ba1Hl80tV1Nc8+osCUa4Cvq6wQfBiYKlRhuE1mKmrYyqn+h2TS1T
+   zRHTG72Ntn3uJcCCorbJ0RrjeUlR/gOIML0NDsMG2cr+ObkgqABOFghuQ
+   NpxKCb4wzzy/jODXJGxPMRccnkaC+T/ggIXtDqQ0X0A/R/34pkNMiY70t
+   L3cARvTeRmaQhesluyC1YNES3+5/NycGpDI5VopV+/O4UACNvu3lWPg/j
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="275494800"
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
+   d="scan'208";a="275494800"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 05:36:04 -0700
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
+   d="scan'208";a="636107823"
+Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 05:36:03 -0700
+Date:   Tue, 7 Jun 2022 15:36:01 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 02/36] tty/vt: consolemap: rename and document struct
+ uni_pagedir
+In-Reply-To: <20220607104946.18710-2-jslaby@suse.cz>
+Message-ID: <46cbc044-5157-65d8-65f0-2ecbee908150@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-2-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch set is to add software clock gating requirement check
+On Tue, 7 Jun 2022, Jiri Slaby wrote:
 
-Srinivasa Rao Mandadapu (2):
-  soundwire: qcom: Add flag for software clock gating check
-  ASoC: qcom: soundwire: Add software clock gating requirement check
+> struct uni_pagedir contains 32 unicode page directories, so the name of
+> the structure is a bit misleading. Rename the structure to uni_pagedict,
+> so it looks like this:
+> struct uni_pagedict
+>   -> 32 page dirs
+>      -> 32 rows
+>        -> 64 glyphs
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> ---
 
- drivers/soundwire/qcom.c | 28 +++++++++++++++++++++-------
- 1 file changed, 21 insertions(+), 7 deletions(-)
+The rename looks incomplete:
+
+>  drivers/tty/vt/consolemap.c    | 47 ++++++++++++++++++++--------------
+>  drivers/video/console/vgacon.c |  4 +--
+>  include/linux/console_struct.h |  6 ++---
+>  3 files changed, 33 insertions(+), 24 deletions(-)
+
+vs
+
+$ git grep -l vc_uni_pagedir
+drivers/tty/vt/consolemap.c
+drivers/tty/vt/vt.c
+drivers/usb/misc/sisusbvga/sisusb_con.c
+drivers/video/console/vgacon.c
+drivers/video/fbdev/core/fbcon.c
+include/linux/console_struct.h
+$
+
+???
+
 
 -- 
-2.7.4
+ i.
 
