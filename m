@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1683FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:04:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17929C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378728AbiFGVEb (ORCPT
+        id S1379060AbiFGVEg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:04:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
+        Tue, 7 Jun 2022 17:04:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358022AbiFGUCr (ORCPT
+        with ESMTP id S1358065AbiFGUCs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:02:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02E31C2047;
-        Tue,  7 Jun 2022 11:25:29 -0700 (PDT)
+        Tue, 7 Jun 2022 16:02:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BE7E8BA7;
+        Tue,  7 Jun 2022 11:25:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE9F360906;
-        Tue,  7 Jun 2022 18:24:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDC21C385A2;
-        Tue,  7 Jun 2022 18:24:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9693DCE244F;
+        Tue,  7 Jun 2022 18:25:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F879C385A2;
+        Tue,  7 Jun 2022 18:25:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626298;
-        bh=aB0jQ82KR7b5RA+Hf2rVDim5Fk3zehrz+vsYPysga2s=;
+        s=korg; t=1654626328;
+        bh=EmN6mRFvHUwuZ+ZkA9xdAmcxV93AgiIPJqyOVregxIY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nuh0riqKaeQggDIGcqZyKHwP2E0zKHu6A3o4bdU2Bb04fLzWm4eBGnqI2GOEumc35
-         haTCwD9Ehq54M7ACHbsxuxMD/kJPcYw4oqfCfWb6OT/NRkx3huTza0wGjBZewinvbq
-         pJBaPrl4bt4+zjkAF9c006Gm8sCZRQ3FIaySoFOE=
+        b=HT75eLvRfRYgZ45FlpQrv/+gk9Vwbm9QSCLAkH3nIBRYiqLQIUpkHGthISChKB27j
+         hiY7hEQuw7DKwSThzfHdEWOQGuqdKgdP0Pad475mFpnq8PVkIcfIOUAZQxFJ8AOmI3
+         FHm9fNh49HnG80Fd+4H+wp+8+n7VGQNyTbYmOzHM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Vinod Polimera <quic_vpolimer@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 327/772] perf tools: Use Python devtools for version autodetection rather than runtime
-Date:   Tue,  7 Jun 2022 18:58:39 +0200
-Message-Id: <20220607164958.657064424@linuxfoundation.org>
+Subject: [PATCH 5.17 337/772] drm/msm/disp/dpu1: avoid clearing hw interrupts if hw_intr is null during drm uninit
+Date:   Tue,  7 Jun 2022 18:58:49 +0200
+Message-Id: <20220607164958.953767945@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -54,98 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Clark <james.clark@arm.com>
+From: Vinod Polimera <quic_vpolimer@quicinc.com>
 
-[ Upstream commit 630af16eee495f583db5202c3613d1b191f10694 ]
+[ Upstream commit 01013ba9bbddc62f7d011163cebfd7ed06bb698b ]
 
-This fixes the issue where the build will fail if only the Python2
-runtime is installed but the Python3 devtools are installed. Currently
-the workaround is 'make PYTHON=python3'.
+If edp modeset init is failed due to panel being not ready and
+probe defers during drm bind, avoid clearing irqs and dereference
+hw_intr when hw_intr is null.
 
-Fix it by autodetecting Python based on whether python[x]-config exists
-rather than just python[x] because both are needed for the build. Then
--config is stripped to find the Python runtime.
+BUG: Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
 
-Testing
-=======
+Call trace:
+ dpu_core_irq_uninstall+0x50/0xb0
+ dpu_irq_uninstall+0x18/0x24
+ msm_drm_uninit+0xd8/0x16c
+ msm_drm_bind+0x580/0x5fc
+ try_to_bring_up_master+0x168/0x1c0
+ __component_add+0xb4/0x178
+ component_add+0x1c/0x28
+ dp_display_probe+0x38c/0x400
+ platform_probe+0xb0/0xd0
+ really_probe+0xcc/0x2c8
+ __driver_probe_device+0xbc/0xe8
+ driver_probe_device+0x48/0xf0
+ __device_attach_driver+0xa0/0xc8
+ bus_for_each_drv+0x8c/0xd8
+ __device_attach+0xc4/0x150
+ device_initial_probe+0x1c/0x28
 
- * Auto detect links with Python3 when the v3 devtools are installed
-   and only Python 2 runtime is installed
- * Auto detect links with Python2 when both devtools are installed
- * Sensible warning is printed if no Python devtools are installed
- * 'make PYTHON=x' still automatically sets PYTHON_CONFIG=x-config
- * 'make PYTHON=x' fails if x-config doesn't exist
- * 'make PYTHON=python3' overrides Python2 devtools
- * 'make PYTHON=python2' overrides Python3 devtools
- * 'make PYTHON_CONFIG=x-config' works
- * 'make PYTHON=x PYTHON_CONFIG=x' works
- * 'make PYTHON=missing' reports an error
- * 'make PYTHON_CONFIG=missing' reports an error
+Changes in V2:
+- Update commit message and coreect fixes tag.
 
-Fixes: 79373082fa9de8be ("perf python: Autodetect python3 binary")
-Signed-off-by: James Clark <james.clark@arm.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: James Clark <james.clark@arm.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Link: https://lore.kernel.org/r/20220309194313.3350126-2-james.clark@arm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: f25f656608e3 ("drm/msm/dpu: merge struct dpu_irq into struct dpu_hw_intr")
+Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/484430/
+Link: https://lore.kernel.org/r/1651509846-4842-1-git-send-email-quic_vpolimer@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/Makefile.config | 39 ++++++++++++++++++++++++++------------
- 1 file changed, 27 insertions(+), 12 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
-index 1bd64e7404b9..c38423807d01 100644
---- a/tools/perf/Makefile.config
-+++ b/tools/perf/Makefile.config
-@@ -239,18 +239,33 @@ ifdef PARSER_DEBUG
- endif
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
+index a77a5eaa78ad..6730e771bffa 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
+@@ -593,6 +593,9 @@ void dpu_core_irq_uninstall(struct dpu_kms *dpu_kms)
+ {
+ 	int i;
  
- # Try different combinations to accommodate systems that only have
--# python[2][-config] in weird combinations but always preferring
--# python2 and python2-config as per pep-0394. If python2 or python
--# aren't found, then python3 is used.
--PYTHON_AUTO := python
--PYTHON_AUTO := $(if $(call get-executable,python3),python3,$(PYTHON_AUTO))
--PYTHON_AUTO := $(if $(call get-executable,python),python,$(PYTHON_AUTO))
--PYTHON_AUTO := $(if $(call get-executable,python2),python2,$(PYTHON_AUTO))
--override PYTHON := $(call get-executable-or-default,PYTHON,$(PYTHON_AUTO))
--PYTHON_AUTO_CONFIG := \
--  $(if $(call get-executable,$(PYTHON)-config),$(PYTHON)-config,python-config)
--override PYTHON_CONFIG := \
--  $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO_CONFIG))
-+# python[2][3]-config in weird combinations in the following order of
-+# priority from lowest to highest:
-+#   * python3-config
-+#   * python-config
-+#   * python2-config as per pep-0394.
-+#   * $(PYTHON)-config (If PYTHON is user supplied but PYTHON_CONFIG isn't)
-+#
-+PYTHON_AUTO := python-config
-+PYTHON_AUTO := $(if $(call get-executable,python3-config),python3-config,$(PYTHON_AUTO))
-+PYTHON_AUTO := $(if $(call get-executable,python-config),python-config,$(PYTHON_AUTO))
-+PYTHON_AUTO := $(if $(call get-executable,python2-config),python2-config,$(PYTHON_AUTO))
++	if (!dpu_kms->hw_intr)
++		return;
 +
-+# If PYTHON is defined but PYTHON_CONFIG isn't, then take $(PYTHON)-config as if it was the user
-+# supplied value for PYTHON_CONFIG. Because it's "user supplied", error out if it doesn't exist.
-+ifdef PYTHON
-+  ifndef PYTHON_CONFIG
-+    PYTHON_CONFIG_AUTO := $(call get-executable,$(PYTHON)-config)
-+    PYTHON_CONFIG := $(if $(PYTHON_CONFIG_AUTO),$(PYTHON_CONFIG_AUTO),\
-+                          $(call $(error $(PYTHON)-config not found)))
-+  endif
-+endif
-+
-+# Select either auto detected python and python-config or use user supplied values if they are
-+# defined. get-executable-or-default fails with an error if the first argument is supplied but
-+# doesn't exist.
-+override PYTHON_CONFIG := $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO))
-+override PYTHON := $(call get-executable-or-default,PYTHON,$(subst -config,,$(PYTHON_AUTO)))
- 
- grep-libs  = $(filter -l%,$(1))
- strip-libs  = $(filter-out -l%,$(1))
+ 	pm_runtime_get_sync(&dpu_kms->pdev->dev);
+ 	for (i = 0; i < dpu_kms->hw_intr->total_irqs; i++)
+ 		if (!list_empty(&dpu_kms->hw_intr->irq_cb_tbl[i]))
 -- 
 2.35.1
 
