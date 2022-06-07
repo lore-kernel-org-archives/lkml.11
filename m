@@ -2,128 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29314C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:05:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5C87C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:06:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238871AbiFGJFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39628 "EHLO
+        id S238885AbiFGJGA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:06:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237671AbiFGJFm (ORCPT
+        with ESMTP id S238875AbiFGJF5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:05:42 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9912CA3F9
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:05:39 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2578DSs3026664;
-        Tue, 7 Jun 2022 09:05:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=wIF17mc88TQDikBWbO5rcF1fzzeQJu0QKNUSoKAazAg=;
- b=GWNy+uYhBNqEAfS3OhoGZZcWezgFNBXaGolxBwjyiDWEKHLatI7Zf5JOFyZk7NkGMRSz
- QTd8rhNQ3wwVOH1LE0WXE1cL1Cw+uOsATZYiFGjM7YW5dhyy/VrgY7FetyRYeIqzvctT
- zYWZHUFSyNItujAp5rpQl476N+Gq/pF8msYhtsRVRyLMDzXcoi6Rfi7+xB4LtRiQ8FSI
- 01gv2Rvua6lWlu+qN8KAaUPcdS75QAWE3sy7gbv7dxRI70jO8iEdnjaenTnrGprf1XeS
- N1nYS3oXoWJqEpE+J+G5xs7/PFtJkUyqTReDxgEOmIbbYSm4PCf8XEiU5CrGQInTKDdn nw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gj2yms1q6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 07 Jun 2022 09:05:27 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2578H5BP007254;
-        Tue, 7 Jun 2022 09:05:26 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gj2yms1pf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 07 Jun 2022 09:05:26 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2578pjmB012598;
-        Tue, 7 Jun 2022 09:05:24 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma06fra.de.ibm.com with ESMTP id 3gfxnj2qxj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 07 Jun 2022 09:05:24 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 257958XR21758334
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 7 Jun 2022 09:05:08 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 67BEE11C04A;
-        Tue,  7 Jun 2022 09:05:22 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EB05311C04C;
-        Tue,  7 Jun 2022 09:05:21 +0000 (GMT)
-Received: from [9.171.53.11] (unknown [9.171.53.11])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  7 Jun 2022 09:05:21 +0000 (GMT)
-Message-ID: <96560c72-3c24-f4fd-4212-3daa26c0f96f@linux.ibm.com>
-Date:   Tue, 7 Jun 2022 11:05:21 +0200
+        Tue, 7 Jun 2022 05:05:57 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D00D2469
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:05:55 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id s68so15269507pgs.10
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:05:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=U4LE7zrySWEA9gMurfRvYyAHVJx1m9VkHmbAjloR5rc=;
+        b=OSmFZAqcOBYpVk9PtT//wYdshGIbZFqLmNvinrT7LM2bplu1QaPw+SAh9TblfHTm81
+         tHtOg9TZdOLiWycsapflLUGU+qZw0lGKzsP2SvF0Sru6lkn3VoC4KdThYPVwFRvsn7IC
+         DSxoneUuol+XxCC8sHbzH+zHV1oF13gvUW5o4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=U4LE7zrySWEA9gMurfRvYyAHVJx1m9VkHmbAjloR5rc=;
+        b=lOQ0qq6eY2SaI8VDmRuQaV4FedXgyHbOQmvjsawKtj7blvePCYbyoxsEO1PDTzZfty
+         AP1mJXz1mKk/Hw3Y6aQAnLxJiZyCGFRMrkRcvVYH93tDXO3ClcXZ2lE5SjGfaIbpHf2s
+         4bSc0LskJH1X3PwrnvLxEa/y04m5aNurU1UmbrIkG1j7HPX4PhATlXxlNaoMsnZDo5A/
+         gU6w36CIqcefq+hPwEXOG/6vyhcN0TXfpIhez9X4gtkBT/BG87wT4kcH6+J7462Y/2wT
+         5INNktKTFchwFTGII1hEYXCo5nIeYwdGYtom+sIdlRqC3iQiJQ5NVL8L3z19VB8VqBMH
+         Z7tw==
+X-Gm-Message-State: AOAM531/Tj6I3o16NVXCnoF44Tq+uvfFj+t37IKxPCDODHenChGSgWlB
+        +Li2TvDMg0CJDnKpMudO4RE/K5PhlluDeQ==
+X-Google-Smtp-Source: ABdhPJw1n+xUkdGWbXx1cahLihtS+UTJFd1fPnlTaE3+N4brLzLb0z8zg/XQOnqI8aeTH/v2v9Cp7g==
+X-Received: by 2002:a05:6a00:244a:b0:4fa:ebf9:75de with SMTP id d10-20020a056a00244a00b004faebf975demr28675288pfj.73.1654592755183;
+        Tue, 07 Jun 2022 02:05:55 -0700 (PDT)
+Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:40b7:55ce:10ee:c7a0])
+        by smtp.gmail.com with ESMTPSA id t27-20020aa7947b000000b0051c0fe8fb8csm4507010pfq.95.2022.06.07.02.05.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 02:05:54 -0700 (PDT)
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org,
+        Rob Clark <robdclark@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 0/8] Add a panel API to set orientation properly
+Date:   Tue,  7 Jun 2022 17:05:41 +0800
+Message-Id: <20220607090549.2345795-1-hsinyi@chromium.org>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] cxl: Fix refcount leak in cxl_calc_capp_routing
-Content-Language: en-US
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Christophe Lombard <clombard@linux.vnet.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-References: <20220605060038.62217-1-linmq006@gmail.com>
-From:   Frederic Barrat <fbarrat@linux.ibm.com>
-In-Reply-To: <20220605060038.62217-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: -TzHRbacfZORohthD5M3Eik4ozt_Wj-0
-X-Proofpoint-ORIG-GUID: ybabcjRcUJTIDj3fzWbz9mQkkuuf99zO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-07_03,2022-06-03_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
- mlxscore=0 malwarescore=0 suspectscore=0 mlxlogscore=999 bulkscore=0
- adultscore=0 spamscore=0 lowpriorityscore=0 priorityscore=1501
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206070037
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Panels usually call drm_connector_set_panel_orientation(), which is
+later than drm/kms driver calling drm_dev_register(). This leads to a
+WARN()[1].
 
+The orientation property is known earlier. For example, some panels
+parse the property through device tree during probe.
 
-On 05/06/2022 08:00, Miaoqian Lin wrote:
-> of_get_next_parent() returns a node pointer with refcount incremented,
-> we should use of_node_put() on it when not need anymore.
-> This function only calls of_node_put() in normal path,
-> missing it in the error path.
-> Add missing of_node_put() to avoid refcount leak.
-> 
-> Fixes: f24be42aab37 ("cxl: Add psl9 specific code")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+The series add a panel API drm_connector_set_orientation_from_panel()
+for drm/kms drivers. The drivers can call the API to set panel's
+orientation before drm_dev_register().
 
+Panel needs to implement .get_orientation callback to return the property.
 
-Indeed. Thanks!
-Acked-by: Frederic Barrat <fbarrat@linux.ibm.com>
+[1] https://patchwork.kernel.org/project/linux-mediatek/patch/20220530081910.3947168-2-hsinyi@chromium.org/
 
-   Fred
+v4 of this series is "Add a panel API to return panel orientation":
+https://lore.kernel.org/lkml/20220606152431.1889185-1-hsinyi@chromium.org/
 
+Hsin-Yi Wang (8):
+  drm/panel: Add an API to allow drm to set orientation from panel
+  drm/panel: boe-tv101wum-nl6: Implement .get_orientation callback
+  drm/panel: panel-edp: Implement .get_orientation callback
+  drm/panel: lvds: Implement .get_orientation callback
+  drm/panel: panel-simple: Implement .get_orientation callback
+  drm/panel: ili9881c: Implement .get_orientation callback
+  drm/panel: elida-kd35t133: Implement .get_orientation callback
+  drm/mediatek: Config orientation property if panel provides it
 
-> ---
->   drivers/misc/cxl/pci.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/misc/cxl/pci.c b/drivers/misc/cxl/pci.c
-> index 3de0aea62ade..62385a529d86 100644
-> --- a/drivers/misc/cxl/pci.c
-> +++ b/drivers/misc/cxl/pci.c
-> @@ -387,6 +387,7 @@ int cxl_calc_capp_routing(struct pci_dev *dev, u64 *chipid,
->   	rc = get_phb_index(np, phb_index);
->   	if (rc) {
->   		pr_err("cxl: invalid phb index\n");
-> +		of_node_put(np);
->   		return rc;
->   	}
->   
+ drivers/gpu/drm/drm_connector.c               | 32 +++++++++++++++++++
+ drivers/gpu/drm/mediatek/mtk_dsi.c            | 15 +++++++++
+ .../gpu/drm/panel/panel-boe-tv101wum-nl6.c    | 12 +++++++
+ drivers/gpu/drm/panel/panel-edp.c             | 13 +++++++-
+ drivers/gpu/drm/panel/panel-elida-kd35t133.c  | 12 +++++++
+ drivers/gpu/drm/panel/panel-ilitek-ili9881c.c | 12 +++++++
+ drivers/gpu/drm/panel/panel-lvds.c            | 13 ++++++++
+ drivers/gpu/drm/panel/panel-simple.c          | 14 +++++++-
+ include/drm/drm_connector.h                   |  4 +++
+ include/drm/drm_panel.h                       |  9 ++++++
+ 10 files changed, 134 insertions(+), 2 deletions(-)
+
+-- 
+2.36.1.255.ge46751e96f-goog
+
