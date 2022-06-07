@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC3ACCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C488CCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378217AbiFGUzp (ORCPT
+        id S1378179AbiFGUzk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:55:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50210 "EHLO
+        Tue, 7 Jun 2022 16:55:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358899AbiFGTxV (ORCPT
+        with ESMTP id S1358884AbiFGTxU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:53:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3624D64BE1;
-        Tue,  7 Jun 2022 11:23:02 -0700 (PDT)
+        Tue, 7 Jun 2022 15:53:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EADA5DD13;
+        Tue,  7 Jun 2022 11:22:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D244260DB7;
-        Tue,  7 Jun 2022 18:23:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF419C385A2;
-        Tue,  7 Jun 2022 18:23:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 323B1B82368;
+        Tue,  7 Jun 2022 18:22:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86057C34115;
+        Tue,  7 Jun 2022 18:22:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626181;
-        bh=nJKABFV7L4RLPvBO5QH7DR8OColWYo8kBeH2aJhbCnU=;
+        s=korg; t=1654626175;
+        bh=5wTe8xp3bPphxbab5SuvbWv/JTwQZ9BIaBxc4S8Z9iI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lc8E3I5FuHzPTdx1LIi/3lSfOHFP6J4pMUHo0vpHXdZzoxx6npkN3GGPZx2707if7
-         1IL2qGrLKbdZ5TlfLwSRjnfcabpOnBjuHSCxxaCSTMq/vTvpzAh0pIptdFJQyweavp
-         IkfBb2u+sFXvoJWeJUW9dhbOydrZZpJmYXHkLBOA=
+        b=rQ6tVTMClGc3WOSKAibyAdx62FW6hjVYiFZyRVPuyxgF+Bj8ju9OdQd3VUdJrFLvG
+         NfImwX0uExke0j/KabRR6SMVb9gpbqQOhq9mWEcwW/9fizNw4+JDu9bhE+N692WUIu
+         MTj5fAXUIV4p5RuliLlcKheIr22dJAbb3WdB8Ihc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 285/772] ath9k_htc: fix potential out of bounds access with invalid rxstatus->rs_keyix
-Date:   Tue,  7 Jun 2022 18:57:57 +0200
-Message-Id: <20220607164957.423222535@linuxfoundation.org>
+        stable@vger.kernel.org, John Ogness <john.ogness@linutronix.de>,
+        Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 283/772] printk: add missing memory barrier to wake_up_klogd()
+Date:   Tue,  7 Jun 2022 18:57:55 +0200
+Message-Id: <20220607164957.364764600@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,45 +49,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit 2dc509305cf956381532792cb8dceef2b1504765 ]
+[ Upstream commit 1f5d783094cf28b4905f51cad846eb5d1db6673e ]
 
-The "rxstatus->rs_keyix" eventually gets passed to test_bit() so we need to
-ensure that it is within the bitmap.
+It is important that any new records are visible to preparing
+waiters before the waker checks if the wait queue is empty.
+Otherwise it is possible that:
 
-drivers/net/wireless/ath/ath9k/common.c:46 ath9k_cmn_rx_accept()
-error: passing untrusted data 'rx_stats->rs_keyix' to 'test_bit()'
+- there are new records available
+- the waker sees an empty wait queue and does not wake
+- the preparing waiter sees no new records and begins to wait
 
-Fixes: 4ed1a8d4a257 ("ath9k_htc: use ath9k_cmn_rx_accept")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220409061225.GA5447@kili
+This is exactly the problem that the function description of
+waitqueue_active() warns about.
+
+Use wq_has_sleeper() instead of waitqueue_active() because it
+includes the necessary full memory barrier.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20220421212250.565456-4-john.ogness@linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ kernel/printk/printk.c | 39 ++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 36 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
-index 6a850a0bfa8a..a23eaca0326d 100644
---- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
-@@ -1016,6 +1016,14 @@ static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
- 		goto rx_next;
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 74c92dd70c80..8964b1db2745 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -735,8 +735,19 @@ static ssize_t devkmsg_read(struct file *file, char __user *buf,
+ 			goto out;
+ 		}
+ 
++		/*
++		 * Guarantee this task is visible on the waitqueue before
++		 * checking the wake condition.
++		 *
++		 * The full memory barrier within set_current_state() of
++		 * prepare_to_wait_event() pairs with the full memory barrier
++		 * within wq_has_sleeper().
++		 *
++		 * This pairs with wake_up_klogd:A.
++		 */
+ 		ret = wait_event_interruptible(log_wait,
+-				prb_read_valid(prb, atomic64_read(&user->seq), r));
++				prb_read_valid(prb,
++					atomic64_read(&user->seq), r)); /* LMM(devkmsg_read:A) */
+ 		if (ret)
+ 			goto out;
  	}
+@@ -1502,7 +1513,18 @@ static int syslog_print(char __user *buf, int size)
+ 		seq = syslog_seq;
  
-+	if (rxstatus->rs_keyix >= ATH_KEYMAX &&
-+	    rxstatus->rs_keyix != ATH9K_RXKEYIX_INVALID) {
-+		ath_dbg(common, ANY,
-+			"Invalid keyix, dropping (keyix: %d)\n",
-+			rxstatus->rs_keyix);
-+		goto rx_next;
-+	}
-+
- 	/* Get the RX status information */
+ 		mutex_unlock(&syslog_lock);
+-		len = wait_event_interruptible(log_wait, prb_read_valid(prb, seq, NULL));
++		/*
++		 * Guarantee this task is visible on the waitqueue before
++		 * checking the wake condition.
++		 *
++		 * The full memory barrier within set_current_state() of
++		 * prepare_to_wait_event() pairs with the full memory barrier
++		 * within wq_has_sleeper().
++		 *
++		 * This pairs with wake_up_klogd:A.
++		 */
++		len = wait_event_interruptible(log_wait,
++				prb_read_valid(prb, seq, NULL)); /* LMM(syslog_print:A) */
+ 		mutex_lock(&syslog_lock);
  
- 	memset(rx_status, 0, sizeof(struct ieee80211_rx_status));
+ 		if (len)
+@@ -3251,7 +3273,18 @@ void wake_up_klogd(void)
+ 		return;
+ 
+ 	preempt_disable();
+-	if (waitqueue_active(&log_wait)) {
++	/*
++	 * Guarantee any new records can be seen by tasks preparing to wait
++	 * before this context checks if the wait queue is empty.
++	 *
++	 * The full memory barrier within wq_has_sleeper() pairs with the full
++	 * memory barrier within set_current_state() of
++	 * prepare_to_wait_event(), which is called after ___wait_event() adds
++	 * the waiter but before it has checked the wait condition.
++	 *
++	 * This pairs with devkmsg_read:A and syslog_print:A.
++	 */
++	if (wq_has_sleeper(&log_wait)) { /* LMM(wake_up_klogd:A) */
+ 		this_cpu_or(printk_pending, PRINTK_PENDING_WAKEUP);
+ 		irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
+ 	}
 -- 
 2.35.1
 
