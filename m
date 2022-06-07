@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB768C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C49EACCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:18:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345526AbiFGRS1 (ORCPT
+        id S1345534AbiFGRSd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:18:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36864 "EHLO
+        Tue, 7 Jun 2022 13:18:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345516AbiFGRSV (ORCPT
+        with ESMTP id S1345517AbiFGRSW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:18:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4B71021E7;
-        Tue,  7 Jun 2022 10:18:19 -0700 (PDT)
+        Tue, 7 Jun 2022 13:18:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45473104C96;
+        Tue,  7 Jun 2022 10:18:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E839B822AF;
-        Tue,  7 Jun 2022 17:18:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F57EC385A5;
-        Tue,  7 Jun 2022 17:18:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D68B0618CF;
+        Tue,  7 Jun 2022 17:18:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E44F0C34115;
+        Tue,  7 Jun 2022 17:18:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622297;
-        bh=QooOaZj5AtTvxIJbbtRZNKitn1Re3sKl1qSBz6sPd1w=;
+        s=korg; t=1654622300;
+        bh=quySYJtomJ+ruxzvdbbgP8BcCD9LVEd0iWQJMe7v50s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WqgqVgz6D6+eEGyOw53k6z4ATkm8JZDd8e8GbMCUbJ9x5nj3Y8sxRrbGXzT9VO3zq
-         r7kND3LBcreE13ZD0V12pJ2Q1oJ7GUNXtJZYhEaaW5ojRXDMQWfC5ZBRZdxCxVrY/W
-         mmwr8T7fm4ZzcCu0cHbbNuw/oqCZ1ycqX9tKLN/o=
+        b=y755U4w0ekXmuxuiWgXTRZNrCxnJ9X1i8CeBX9hwKYhbVhVsbIZXI+H/8lDhppveo
+         ib5olTDb11dgfKsxk9Ha+hqAE/nF7d07qK3bT+2AsrF3ZPLwPUAH6W6gku9wlPOmUq
+         Lma93u7KJV3n85ll+XAFwAYrAblhyRb8Y5sKAekA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Monish Kumar R <monish.kumar.r@intel.com>
-Subject: [PATCH 5.10 010/452] USB: new quirk for Dell Gen 2 devices
-Date:   Tue,  7 Jun 2022 18:57:47 +0200
-Message-Id: <20220607164908.842229467@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Albert Wang <albertccwang@google.com>
+Subject: [PATCH 5.10 011/452] usb: dwc3: gadget: Move null pinter check to proper place
+Date:   Tue,  7 Jun 2022 18:57:48 +0200
+Message-Id: <20220607164908.873134406@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -48,34 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Monish Kumar R <monish.kumar.r@intel.com>
+From: Albert Wang <albertccwang@google.com>
 
-commit 97fa5887cf283bb75ffff5f6b2c0e71794c02400 upstream.
+commit 3c5880745b4439ac64eccdb040e37fc1cc4c5406 upstream.
 
-Add USB_QUIRK_NO_LPM and USB_QUIRK_RESET_RESUME quirks for Dell usb gen
-2 device to not fail during enumeration.
+When dwc3_gadget_ep_cleanup_completed_requests() called to
+dwc3_gadget_giveback() where the dwc3 lock is released, other thread is
+able to execute. In this situation, usb_ep_disable() gets the chance to
+clear endpoint descriptor pointer which leds to the null pointer
+dereference problem. So needs to move the null pointer check to a proper
+place.
 
-Found this bug on own testing
+Example call stack:
 
-Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
-Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220520130044.17303-1-monish.kumar.r@intel.com
+Thread#1:
+dwc3_thread_interrupt()
+  spin_lock
+  -> dwc3_process_event_buf()
+   -> dwc3_process_event_entry()
+    -> dwc3_endpoint_interrupt()
+     -> dwc3_gadget_endpoint_trbs_complete()
+      -> dwc3_gadget_ep_cleanup_completed_requests()
+       ...
+       -> dwc3_giveback()
+          spin_unlock
+          Thread#2 executes
+
+Thread#2:
+configfs_composite_disconnect()
+  -> __composite_disconnect()
+   -> ffs_func_disable()
+    -> ffs_func_set_alt()
+     -> ffs_func_eps_disable()
+      -> usb_ep_disable()
+         wait for dwc3 spin_lock
+         Thread#1 released lock
+         clear endpoint.desc
+
+Fixes: 26288448120b ("usb: dwc3: gadget: Fix null pointer exception")
+Cc: stable <stable@kernel.org>
+Signed-off-by: Albert Wang <albertccwang@google.com>
+Link: https://lore.kernel.org/r/20220518061315.3359198-1-albertccwang@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/core/quirks.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/usb/dwc3/gadget.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/usb/core/quirks.c
-+++ b/drivers/usb/core/quirks.c
-@@ -511,6 +511,9 @@ static const struct usb_device_id usb_qu
- 	/* DJI CineSSD */
- 	{ USB_DEVICE(0x2ca3, 0x0031), .driver_info = USB_QUIRK_NO_LPM },
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -2960,14 +2960,14 @@ static bool dwc3_gadget_endpoint_trbs_co
+ 	struct dwc3		*dwc = dep->dwc;
+ 	bool			no_started_trb = true;
  
-+	/* DELL USB GEN2 */
-+	{ USB_DEVICE(0x413c, 0xb062), .driver_info = USB_QUIRK_NO_LPM | USB_QUIRK_RESET_RESUME },
+-	if (!dep->endpoint.desc)
+-		return no_started_trb;
+-
+ 	dwc3_gadget_ep_cleanup_completed_requests(dep, event, status);
+ 
+ 	if (dep->flags & DWC3_EP_END_TRANSFER_PENDING)
+ 		goto out;
+ 
++	if (!dep->endpoint.desc)
++		return no_started_trb;
 +
- 	/* VCOM device */
- 	{ USB_DEVICE(0x4296, 0x7570), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
- 
+ 	if (usb_endpoint_xfer_isoc(dep->endpoint.desc) &&
+ 		list_empty(&dep->started_list) &&
+ 		(list_empty(&dep->pending_list) || status == -EXDEV))
 
 
