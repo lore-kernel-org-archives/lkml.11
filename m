@@ -2,110 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CFE3CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8275C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347266AbiFGRw1 (ORCPT
+        id S1347735AbiFGRwd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53228 "EHLO
+        Tue, 7 Jun 2022 13:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347760AbiFGRfq (ORCPT
+        with ESMTP id S1347782AbiFGRfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD5B10A600;
-        Tue,  7 Jun 2022 10:31:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1369FB822B5;
-        Tue,  7 Jun 2022 17:31:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EC9FC385A5;
-        Tue,  7 Jun 2022 17:31:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623074;
-        bh=UjyGDJ0/V1WJUaLWf/X0zXbs93iWcKUJUEAjXL4IIaQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AC2FB7m7RF5FBRkwjKIbi8coRQlv2vU/pz94aCWCXy/FOlFez3oHKpBonn0QzTybq
-         MKwiV8dj90c445ONRDRckMe3W+BEZCHHIJhFyyxSGkYJwlEeFeeTJhS868jz3+Lwpj
-         trXnEDd/NbEUtd0Yjx1SpPRE2QrRw8qGFZ1C8yxY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hari Bathini <hbathini@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 284/452] powerpc/fadump: fix PT_LOAD segment for boot memory area
-Date:   Tue,  7 Jun 2022 19:02:21 +0200
-Message-Id: <20220607164917.013753371@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
-References: <20220607164908.521895282@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 13:35:48 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1BF1059DA
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:31:27 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id y19so36618910ejq.6
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:31:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=OZRPVWzaQMgbVoviEAuvw5THWHpQk40QUpB065iwJlU=;
+        b=BoIPLJL5GB9NCpFZFdyH7VkNWJCUk3msnt1PR9Z1mZzhXDJBucu9fZfsM3DYX3htDI
+         /FqdXs576e7blLmRvKorHvixVKr/96HsvZIGuF/PhbTeg6XOpdHC6M2tpE8KNVTsWwBe
+         USSE/XZHe5hXKXklKrmLGy6l2vgPzcRf8FOgVNyWXuKbuFNRSULAUZCEtpyIhmRgPDar
+         2+ME7g9Z1RthKYkP/aByLwfv1sRQzKnoPBG3apge4x51KyKsu3jLsp+PlZrkYRxUokCr
+         BVFuiaCryWv76dwnobKtqeUyr2/K+lNFqyhLxFLZoGfkIYUc4dyimld3p0+H6zshVs9N
+         3HGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OZRPVWzaQMgbVoviEAuvw5THWHpQk40QUpB065iwJlU=;
+        b=vJbZsdnvX/m1m5sbUhGcpttmIFNozdtdd0KUIZrh5nqpyciaK0BPDb1dCaWmR3paOB
+         fE957mnjaHiG0Y8qrWuz8VH+BhFtfgJxqcnxc2p8qBHlAwxczRAfiqc98ccH5VBVNblT
+         TTnW86lBUcr1g/FgYJySszl+h3F25A9YWLEpGcYEor68LzyXxazdaHSK1mdiIJ7w6rAE
+         yZeeposHtqQBBu3w5FE05hVmY3WCJUXbItkOT50WEP4zwm0/4TLybqLYyFa77G/nV7mS
+         4Kk9HR8x6SFzXs19dYIY4uEM8gQj7o7Q3yHFtkHsQmQCmdzqhTFpFk0H7ytmlUVrFK22
+         WjtA==
+X-Gm-Message-State: AOAM533YIR7soMnStDwOfw+hiEB0g4O7oZ72Za7ydQNAarzjnKpyw9yo
+        /XMk8Md2OJrRw1Co8A3IZLlRkhXrLgNMPA==
+X-Google-Smtp-Source: ABdhPJwD7Q2eTkyoUdQ0/IhH7OWF5BIIgX9/48//zhgYw3ugXugmQPzZ+SVbrauoCDHEs8Cx0rfwTg==
+X-Received: by 2002:a17:906:d8b8:b0:711:c73e:906b with SMTP id qc24-20020a170906d8b800b00711c73e906bmr13417707ejb.225.1654623085786;
+        Tue, 07 Jun 2022 10:31:25 -0700 (PDT)
+Received: from [192.168.0.187] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id v3-20020aa7cd43000000b0043153c9f4d0sm4425820edw.11.2022.06.07.10.31.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 10:31:25 -0700 (PDT)
+Message-ID: <1bd31c96-52c9-af27-7093-2ed025022eef@linaro.org>
+Date:   Tue, 7 Jun 2022 19:31:24 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 09/10] dt-bindings: arm: freescale: Add fsl,scu-wdt yaml
+ file
+Content-Language: en-US
+To:     Abel Vesa <abel.vesa@nxp.com>, Rob Herring <robh@kernel.org>
+Cc:     Shawn Guo <shawnguo@kernel.org>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220607105951.1821519-1-abel.vesa@nxp.com>
+ <20220607105951.1821519-10-abel.vesa@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220607105951.1821519-10-abel.vesa@nxp.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hari Bathini <hbathini@linux.ibm.com>
+On 07/06/2022 12:59, Abel Vesa wrote:
+> This documents separately the watchdog child node of the SCU main node.
+> 
+> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+> ---
+>  .../bindings/arm/freescale/fsl,scu-wdt.yaml   | 29 +++++++++++++++++++
+>  1 file changed, 29 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/freescale/fsl,scu-wdt.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/freescale/fsl,scu-wdt.yaml b/Documentation/devicetree/bindings/arm/freescale/fsl,scu-wdt.yaml
+> new file mode 100644
+> index 000000000000..c5d71ca83963
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/arm/freescale/fsl,scu-wdt.yaml
+> @@ -0,0 +1,29 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/arm/freescale/fsl,scu-wdt.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: i.MX SCU Client Device Node - Watchdog bindings based on SCU Message Protocol
+> +
+> +maintainers:
+> +  - Shawn Guo <shawnguo@kernel.org>
+> +
+> +description: i.MX SCU Client Device Node
+> +  Client nodes are maintained as children of the relevant IMX-SCU device node.
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - items:
+> +          - const: fsl,imx8qxp-sc-wdt
+> +          - const: fsl,imx-sc-wdt
+> +      - items:
+> +          - const: fsl,imx-sc-wdt
 
-[ Upstream commit 15eb77f873255cf9f4d703b63cfbd23c46579654 ]
-
-Boot memory area is setup as separate PT_LOAD segment in the vmcore
-as it is moved by f/w, on crash, to a destination address provided by
-the kernel. Having separate PT_LOAD segment helps in handling the
-different physical address and offset for boot memory area in the
-vmcore.
-
-Commit ced1bf52f477 ("powerpc/fadump: merge adjacent memory ranges to
-reduce PT_LOAD segements") inadvertly broke this pre-condition for
-cases where some of the first kernel memory is available adjacent to
-boot memory area. This scenario is rare but possible when memory for
-fadump could not be reserved adjacent to boot memory area owing to
-memory hole or such. Reading memory from a vmcore exported in such
-scenario provides incorrect data.  Fix it by ensuring no other region
-is folded into boot memory area.
-
-Fixes: ced1bf52f477 ("powerpc/fadump: merge adjacent memory ranges to reduce PT_LOAD segements")
-Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220406093839.206608-2-hbathini@linux.ibm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/powerpc/kernel/fadump.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/arch/powerpc/kernel/fadump.c b/arch/powerpc/kernel/fadump.c
-index c3bb800dc435..1a5ba26aab15 100644
---- a/arch/powerpc/kernel/fadump.c
-+++ b/arch/powerpc/kernel/fadump.c
-@@ -861,7 +861,6 @@ static int fadump_alloc_mem_ranges(struct fadump_mrange_info *mrange_info)
- 				       sizeof(struct fadump_memory_range));
- 	return 0;
- }
--
- static inline int fadump_add_mem_range(struct fadump_mrange_info *mrange_info,
- 				       u64 base, u64 end)
- {
-@@ -880,7 +879,12 @@ static inline int fadump_add_mem_range(struct fadump_mrange_info *mrange_info,
- 		start = mem_ranges[mrange_info->mem_range_cnt - 1].base;
- 		size  = mem_ranges[mrange_info->mem_range_cnt - 1].size;
- 
--		if ((start + size) == base)
-+		/*
-+		 * Boot memory area needs separate PT_LOAD segment(s) as it
-+		 * is moved to a different location at the time of crash.
-+		 * So, fold only if the region is not boot memory area.
-+		 */
-+		if ((start + size) == base && start >= fw_dump.boot_mem_top)
- 			is_adjacent = true;
- 	}
- 	if (!is_adjacent) {
--- 
-2.35.1
+No need for second items, it is just one item with const (same issue in
+few other patches).
 
 
-
+Best regards,
+Krzysztof
