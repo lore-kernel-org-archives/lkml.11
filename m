@@ -2,145 +2,352 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4A77C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 255D6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:48:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240127AbiFGJsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38304 "EHLO
+        id S240149AbiFGJs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240020AbiFGJsT (ORCPT
+        with ESMTP id S240044AbiFGJsV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:48:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51A3AE732B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:48:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654595295;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IFV6m742eJK5fjIllJH8j+SCBmQdPpQ1B+N/I8SMuIc=;
-        b=fsCHB+lvJvmuySj2batn5E2zz/9coofIfNjFTOKVsHuzQW208ZwlIqvGNauGjDZgF19suH
-        qb40Gk0M/+7GYhIBu0u4k2ywPvo1jg0gHecwfQCRwNGgok2RZLq9LkjxxwSo+w4Uq5K+Vk
-        WTwM1Tu9sJfHVP54c9hWGhMCquLMngI=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-398-rWl89KHAMSa0ZQn2OR3AJQ-1; Tue, 07 Jun 2022 05:48:14 -0400
-X-MC-Unique: rWl89KHAMSa0ZQn2OR3AJQ-1
-Received: by mail-qv1-f70.google.com with SMTP id v15-20020ad4554f000000b004646455c054so10494646qvy.10
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:48:14 -0700 (PDT)
+        Tue, 7 Jun 2022 05:48:21 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E199D02A3
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:48:19 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id k16so23357733wrg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:48:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Hg+fyB+R4Q3yPGfYEvg6uZVcvjloB1KZxDlCqHLSkx0=;
+        b=Laes7FMmJZjDmjjJuy+Oa49hwZwENEmEkKfM9C/m3iTwEbLqVVm2Pqt6w4WoGmg+CX
+         KBMls/+o0pNZE3o4ltyecdb6l8+/TAMZTg9xlg12TjfEQGBndiShOganTbHllIFi3Tfq
+         mgAxiTafR0DBOZi8QvgKMlP1mgITkAVjF5EZ4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=IFV6m742eJK5fjIllJH8j+SCBmQdPpQ1B+N/I8SMuIc=;
-        b=Px0V9gr0a2Ewa9wPc6GPEypbt34jHHP70HXFtPw22sgTCe5+Jb188iWQD8SRvTc/ah
-         3+iqC1ec6g/XkTV8HKG4ZO55IlOuzcC1iKmiJqloUTnFX4cjg24GTn+LHxY5ZgmQoXbH
-         rtrtcfXElkPs0IPoTxcRSnFYUTluxrGvkSurwNEi2BvcDxdKtqZ/x+RfxZmM1AdpS6M0
-         Lc6DLrPvP7/fnQqRDZcUoQWYylJxM03YtLu3jIHz2urVBokV/NIW2rWJyZfnXCCwTZiQ
-         RFrJD0Gycj5TiQ/2PnOqSQKpWCZOc7h6KExptahhwhcGMjbSkk4yhPMuTBvPIrKmOpSs
-         fOXg==
-X-Gm-Message-State: AOAM5312BpjBPMfPszmUX8MjWhOvrX/PzKZh5DTBillPl0NHH1LsZqge
-        Atdp9mScmvVhbJ1XGoQOovP3zRHN5PoeGO1IUJSHAbdObDEJys0UCWxj4SScoHnQCUBM9uCX8Wp
-        LAmj/ZPFALayL0PD++35zJ46i
-X-Received: by 2002:a37:a0c1:0:b0:6a6:9647:3548 with SMTP id j184-20020a37a0c1000000b006a696473548mr14546091qke.155.1654595293851;
-        Tue, 07 Jun 2022 02:48:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwvMMVQxxX5Pf8YRgVde+mcpTypTBPlxZsx8/NMqJEuNU630kVMBm8gKxAIEY9Kf36NXraa7w==
-X-Received: by 2002:a37:a0c1:0:b0:6a6:9647:3548 with SMTP id j184-20020a37a0c1000000b006a696473548mr14546084qke.155.1654595293650;
-        Tue, 07 Jun 2022 02:48:13 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id d19-20020a05620a241300b006a6c230f5e0sm4256533qkn.31.2022.06.07.02.48.11
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Hg+fyB+R4Q3yPGfYEvg6uZVcvjloB1KZxDlCqHLSkx0=;
+        b=D4EnFfBAx7ikA23yfsp8DHlLYAYSRM/sYPkrcOuJshGUNPNrUu6iQYh+oNZrmFHUAO
+         5ajCKoh6hifAc3vqcR1Rx6/7b0Ay4rzJhUnGmiyReGH2nQpY7Le2kwOLzDV+CxQSwBHD
+         BIAWNvZn2WLNEJbfl8ZPK+/nQzfDbEzLqQe19jN+0RIRY1ZgMkxWw9q5LDx/K1pQsH59
+         n7zR+9+6cCd+ldwJ2FWrP/6e1sITjF6IVE6ehYLEcjN7T4i/Olm4dp53V4qVZdSThUFJ
+         frb9Hwdp5xSnzWUhKuxMxCcKUb9ss7S/xBOIqKPLQ7RLcJs2vZTKWif8abHmt2p+H/Kn
+         dFpg==
+X-Gm-Message-State: AOAM532qrlfSkSuxiJDzXlNNIrKLzR//Kpg6G6PsYcNnYCV944c5g1jb
+        RRYMgLqPcq9nAyi6VbG9Q6E5JPoQ7OGY1Q==
+X-Google-Smtp-Source: ABdhPJy/b/x3a3Weaxwxs1/n894LHu7/568OgsbvBi10NUxBRcKOJDg0GZ6TniSHnRNuL7julMuF7Q==
+X-Received: by 2002:adf:eb11:0:b0:213:19dd:e1aa with SMTP id s17-20020adfeb11000000b0021319dde1aamr25605595wrn.324.1654595297228;
+        Tue, 07 Jun 2022 02:48:17 -0700 (PDT)
+Received: from dario-ThinkPad-T14s-Gen-2i.pdxnet.pdxeng.ch (mob-5-90-137-51.net.vodafone.it. [5.90.137.51])
+        by smtp.gmail.com with ESMTPSA id o4-20020a05600c510400b0039748be12dbsm23200547wms.47.2022.06.07.02.48.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 02:48:13 -0700 (PDT)
-Message-ID: <9df598de5072fdbc6606363f0a75f6f0bea6fd60.camel@redhat.com>
-Subject: Re: [PATCH v6 18/38] KVM: x86: hyper-v: Introduce fast
- guest_hv_cpuid_has_l2_tlb_flush() check
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        Yuan Yao <yuan.yao@linux.intel.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 07 Jun 2022 12:48:09 +0300
-In-Reply-To: <20220606083655.2014609-19-vkuznets@redhat.com>
-References: <20220606083655.2014609-1-vkuznets@redhat.com>
-         <20220606083655.2014609-19-vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
+        Tue, 07 Jun 2022 02:48:16 -0700 (PDT)
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [RFC PATCH 04/13] can: slcan: use CAN network device driver API
+Date:   Tue,  7 Jun 2022 11:47:43 +0200
+Message-Id: <20220607094752.1029295-5-dario.binacchi@amarulasolutions.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
+References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-06-06 at 10:36 +0200, Vitaly Kuznetsov wrote:
-> Introduce a helper to quickly check if KVM needs to handle VMCALL/VMMCALL
-> from L2 in L0 to process L2 TLB flush requests.
-> 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  arch/x86/include/asm/kvm_host.h | 1 +
->  arch/x86/kvm/hyperv.c           | 6 ++++++
->  arch/x86/kvm/hyperv.h           | 7 +++++++
->  3 files changed, 14 insertions(+)
-> 
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 5d60c66ee0de..f9a34af0a5cc 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -642,6 +642,7 @@ struct kvm_vcpu_hv {
->                 u32 enlightenments_eax; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EAX */
->                 u32 enlightenments_ebx; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EBX */
->                 u32 syndbg_cap_eax; /* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
-> +               u32 nested_features_eax; /* HYPERV_CPUID_NESTED_FEATURES.EAX */
->         } cpuid_cache;
->  
->         struct kvm_vcpu_hv_tlb_flush_fifo tlb_flush_fifo[HV_NR_TLB_FLUSH_FIFOS];
-> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-> index 740190917c1c..4396d75588d8 100644
-> --- a/arch/x86/kvm/hyperv.c
-> +++ b/arch/x86/kvm/hyperv.c
-> @@ -2229,6 +2229,12 @@ void kvm_hv_set_cpuid(struct kvm_vcpu *vcpu)
->                 hv_vcpu->cpuid_cache.syndbg_cap_eax = entry->eax;
->         else
->                 hv_vcpu->cpuid_cache.syndbg_cap_eax = 0;
-> +
-> +       entry = kvm_find_cpuid_entry(vcpu, HYPERV_CPUID_NESTED_FEATURES, 0);
-> +       if (entry)
-> +               hv_vcpu->cpuid_cache.nested_features_eax = entry->eax;
-> +       else
-> +               hv_vcpu->cpuid_cache.nested_features_eax = 0;
->  }
->  
->  int kvm_hv_set_enforce_cpuid(struct kvm_vcpu *vcpu, bool enforce)
-> diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
-> index 7778b3a5913c..2aa6fb7fc599 100644
-> --- a/arch/x86/kvm/hyperv.h
-> +++ b/arch/x86/kvm/hyperv.h
-> @@ -170,6 +170,13 @@ static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu, bool is_gu
->         kfifo_reset_out(&tlb_flush_fifo->entries);
->  }
->  
-> +static inline bool guest_hv_cpuid_has_l2_tlb_flush(struct kvm_vcpu *vcpu)
-> +{
-> +       struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-> +
-> +       return hv_vcpu && (hv_vcpu->cpuid_cache.nested_features_eax & HV_X64_NESTED_DIRECT_FLUSH);
-> +}
-> +
->  static inline bool kvm_hv_is_tlb_flush_hcall(struct kvm_vcpu *vcpu)
->  {
->         struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+As suggested by commit [1], now the driver uses the functions and the
+data structures provided by the CAN network device driver interface.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+There is no way to set bitrate for SLCAN based devices via ip tool, so
+you'll have to do this by slcand/slcan_attach invocation through the
+-sX parameter:
 
-Best regards,
-	Maxim Levitsky
+- slcan_attach -f -s6 -o /dev/ttyACM0
+- slcand -f -s8 -o /dev/ttyUSB0
+
+where -s6 in will set adapter's bitrate to 500 Kbit/s and -s8 to
+1Mbit/s.
+See the table below for further CAN bitrates:
+- s0 ->   10 Kbit/s
+- s1 ->   20 Kbit/s
+- s2 ->   50 Kbit/s
+- s3 ->  100 Kbit/s
+- s4 ->  125 Kbit/s
+- s5 ->  250 Kbit/s
+- s6 ->  500 Kbit/s
+- s7 ->  800 Kbit/s
+- s8 -> 1000 Kbit/s
+
+In doing so, the struct can_priv::bittiming.bitrate of the driver is not
+set and since the open_candev() checks that the bitrate has been set, it
+must be a non-zero value, the bitrate is set to a fake value (-1) before
+it is called.
+
+[1] 39549eef3587f ("can: CAN Network device driver and Netlink interface")
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+---
+
+ drivers/net/can/slcan.c | 112 ++++++++++++++++++++--------------------
+ 1 file changed, 57 insertions(+), 55 deletions(-)
+
+diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
+index 964b02f321ab..956b47bd40a7 100644
+--- a/drivers/net/can/slcan.c
++++ b/drivers/net/can/slcan.c
+@@ -56,7 +56,6 @@
+ #include <linux/can.h>
+ #include <linux/can/dev.h>
+ #include <linux/can/skb.h>
+-#include <linux/can/can-ml.h>
+ 
+ MODULE_ALIAS_LDISC(N_SLCAN);
+ MODULE_DESCRIPTION("serial line CAN interface");
+@@ -79,6 +78,7 @@ MODULE_PARM_DESC(maxdev, "Maximum number of slcan interfaces");
+ #define SLC_EFF_ID_LEN 8
+ 
+ struct slcan {
++	struct can_priv         can;
+ 	int			magic;
+ 
+ 	/* Various fields. */
+@@ -100,6 +100,7 @@ struct slcan {
+ };
+ 
+ static struct net_device **slcan_devs;
++static DEFINE_SPINLOCK(slcan_lock);
+ 
+  /************************************************************************
+   *			SLCAN ENCAPSULATION FORMAT			 *
+@@ -369,7 +370,7 @@ static netdev_tx_t slc_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	spin_unlock(&sl->lock);
+ 
+ out:
+-	kfree_skb(skb);
++	can_put_echo_skb(skb, dev, 0, 0);
+ 	return NETDEV_TX_OK;
+ }
+ 
+@@ -389,6 +390,8 @@ static int slc_close(struct net_device *dev)
+ 		clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
+ 	}
+ 	netif_stop_queue(dev);
++	close_candev(dev);
++	sl->can.state = CAN_STATE_STOPPED;
+ 	sl->rcount   = 0;
+ 	sl->xleft    = 0;
+ 	spin_unlock_bh(&sl->lock);
+@@ -400,21 +403,36 @@ static int slc_close(struct net_device *dev)
+ static int slc_open(struct net_device *dev)
+ {
+ 	struct slcan *sl = netdev_priv(dev);
++	int err;
+ 
+ 	if (sl->tty == NULL)
+ 		return -ENODEV;
+ 
++	/* The baud rate is not set with the command
++	 * `ip link set <iface> type can bitrate <baud>' and therefore
++	 * can.bittiming.bitrate is 0, causing open_candev() to fail.
++	 * So let's set to a fake value.
++	 */
++	sl->can.bittiming.bitrate = -1;
++	err = open_candev(dev);
++	if (err) {
++		netdev_err(dev, "failed to open can device\n");
++		return err;
++	}
++
++	sl->can.state = CAN_STATE_ERROR_ACTIVE;
+ 	sl->flags &= BIT(SLF_INUSE);
+ 	netif_start_queue(dev);
+ 	return 0;
+ }
+ 
+-/* Hook the destructor so we can free slcan devs at the right point in time */
+-static void slc_free_netdev(struct net_device *dev)
++static void slc_dealloc(struct slcan *sl)
+ {
+-	int i = dev->base_addr;
++	int i = sl->dev->base_addr;
+ 
+-	slcan_devs[i] = NULL;
++	free_candev(sl->dev);
++	if (slcan_devs)
++		slcan_devs[i] = NULL;
+ }
+ 
+ static int slcan_change_mtu(struct net_device *dev, int new_mtu)
+@@ -429,24 +447,6 @@ static const struct net_device_ops slc_netdev_ops = {
+ 	.ndo_change_mtu         = slcan_change_mtu,
+ };
+ 
+-static void slc_setup(struct net_device *dev)
+-{
+-	dev->netdev_ops		= &slc_netdev_ops;
+-	dev->needs_free_netdev	= true;
+-	dev->priv_destructor	= slc_free_netdev;
+-
+-	dev->hard_header_len	= 0;
+-	dev->addr_len		= 0;
+-	dev->tx_queue_len	= 10;
+-
+-	dev->mtu		= CAN_MTU;
+-	dev->type		= ARPHRD_CAN;
+-
+-	/* New-style flags. */
+-	dev->flags		= IFF_NOARP;
+-	dev->features           = NETIF_F_HW_CSUM;
+-}
+-
+ /******************************************
+   Routines looking at TTY side.
+  ******************************************/
+@@ -509,11 +509,8 @@ static void slc_sync(void)
+ static struct slcan *slc_alloc(void)
+ {
+ 	int i;
+-	char name[IFNAMSIZ];
+ 	struct net_device *dev = NULL;
+-	struct can_ml_priv *can_ml;
+ 	struct slcan       *sl;
+-	int size;
+ 
+ 	for (i = 0; i < maxdev; i++) {
+ 		dev = slcan_devs[i];
+@@ -526,16 +523,14 @@ static struct slcan *slc_alloc(void)
+ 	if (i >= maxdev)
+ 		return NULL;
+ 
+-	sprintf(name, "slcan%d", i);
+-	size = ALIGN(sizeof(*sl), NETDEV_ALIGN) + sizeof(struct can_ml_priv);
+-	dev = alloc_netdev(size, name, NET_NAME_UNKNOWN, slc_setup);
++	dev = alloc_candev(sizeof(*sl), 1);
+ 	if (!dev)
+ 		return NULL;
+ 
++	snprintf(dev->name, sizeof(dev->name), "slcan%d", i);
++	dev->netdev_ops = &slc_netdev_ops;
+ 	dev->base_addr  = i;
+ 	sl = netdev_priv(dev);
+-	can_ml = (void *)sl + ALIGN(sizeof(*sl), NETDEV_ALIGN);
+-	can_set_ml_priv(dev, can_ml);
+ 
+ 	/* Initialize channel control data */
+ 	sl->magic = SLCAN_MAGIC;
+@@ -568,11 +563,7 @@ static int slcan_open(struct tty_struct *tty)
+ 	if (tty->ops->write == NULL)
+ 		return -EOPNOTSUPP;
+ 
+-	/* RTnetlink lock is misused here to serialize concurrent
+-	   opens of slcan channels. There are better ways, but it is
+-	   the simplest one.
+-	 */
+-	rtnl_lock();
++	spin_lock(&slcan_lock);
+ 
+ 	/* Collect hanged up channels. */
+ 	slc_sync();
+@@ -600,13 +591,15 @@ static int slcan_open(struct tty_struct *tty)
+ 
+ 		set_bit(SLF_INUSE, &sl->flags);
+ 
+-		err = register_netdevice(sl->dev);
+-		if (err)
++		err = register_candev(sl->dev);
++		if (err) {
++			pr_err("slcan: can't register candev\n");
+ 			goto err_free_chan;
++		}
+ 	}
+ 
+ 	/* Done.  We have linked the TTY line to a channel. */
+-	rtnl_unlock();
++	spin_unlock(&slcan_lock);
+ 	tty->receive_room = 65536;	/* We don't flow control */
+ 
+ 	/* TTY layer expects 0 on success */
+@@ -616,14 +609,10 @@ static int slcan_open(struct tty_struct *tty)
+ 	sl->tty = NULL;
+ 	tty->disc_data = NULL;
+ 	clear_bit(SLF_INUSE, &sl->flags);
+-	slc_free_netdev(sl->dev);
+-	/* do not call free_netdev before rtnl_unlock */
+-	rtnl_unlock();
+-	free_netdev(sl->dev);
+-	return err;
++	slc_dealloc(sl);
+ 
+ err_exit:
+-	rtnl_unlock();
++	spin_unlock(&slcan_lock);
+ 
+ 	/* Count references from TTY module */
+ 	return err;
+@@ -653,9 +642,11 @@ static void slcan_close(struct tty_struct *tty)
+ 	synchronize_rcu();
+ 	flush_work(&sl->tx_work);
+ 
+-	/* Flush network side */
+-	unregister_netdev(sl->dev);
+-	/* This will complete via sl_free_netdev */
++	slc_close(sl->dev);
++	unregister_candev(sl->dev);
++	spin_lock(&slcan_lock);
++	slc_dealloc(sl);
++	spin_unlock(&slcan_lock);
+ }
+ 
+ static void slcan_hangup(struct tty_struct *tty)
+@@ -763,18 +754,29 @@ static void __exit slcan_exit(void)
+ 		dev = slcan_devs[i];
+ 		if (!dev)
+ 			continue;
+-		slcan_devs[i] = NULL;
+ 
+-		sl = netdev_priv(dev);
+-		if (sl->tty) {
+-			netdev_err(dev, "tty discipline still running\n");
+-		}
++		spin_lock(&slcan_lock);
++		dev = slcan_devs[i];
++		if (dev) {
++			slcan_devs[i] = NULL;
++			spin_unlock(&slcan_lock);
++			sl = netdev_priv(dev);
++			if (sl->tty) {
++				netdev_err(dev,
++					   "tty discipline still running\n");
++			}
+ 
+-		unregister_netdev(dev);
++			slc_close(dev);
++			unregister_candev(dev);
++		} else {
++			spin_unlock(&slcan_lock);
++		}
+ 	}
+ 
++	spin_lock(&slcan_lock);
+ 	kfree(slcan_devs);
+ 	slcan_devs = NULL;
++	spin_unlock(&slcan_lock);
+ 
+ 	tty_unregister_ldisc(&slc_ldisc);
+ }
+-- 
+2.32.0
 
