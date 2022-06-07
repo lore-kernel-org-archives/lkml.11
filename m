@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F85AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A08C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379343AbiFGVdk (ORCPT
+        id S1379396AbiFGVdp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35264 "EHLO
+        Tue, 7 Jun 2022 17:33:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377460AbiFGUdZ (ORCPT
+        with ESMTP id S1377472AbiFGUdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:33:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C041E4534;
-        Tue,  7 Jun 2022 11:35:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0B11E4B50;
+        Tue,  7 Jun 2022 11:35:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B6C1B8237C;
-        Tue,  7 Jun 2022 18:35:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE1EC385A2;
-        Tue,  7 Jun 2022 18:35:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD88BB8237B;
+        Tue,  7 Jun 2022 18:35:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B410C385A2;
+        Tue,  7 Jun 2022 18:35:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626904;
-        bh=2clv+eIChWCU75Deg8PZdCXvoxeLsnNaYAdk+/FkBa4=;
+        s=korg; t=1654626909;
+        bh=W+FTR3kkajvWd2nZMl638Zr2vjMDmiXlj6AHR6X5zLQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oeI7QY/YceDwp4v/kBvBQQwHpRCdjQtEkZfvrQ88RxD8IDDBhr+IGyoh1kJpydXnI
-         7Fkx6sFm28+/oRz0U4OhO8YRVgeipc9o0qNe242tVZRIcrkn/9ZoSpsQhxXshaT7Pj
-         JRUpzwf8NCadh6LhFAwGVYGZIeBJQ9kV+ZMqzldU=
+        b=nBPSEqmBUZKD7bR8VO+5mKhV/MSK+ZWJOLgq4Dyw+0jaRBFeok5jbqJwKd/YCXS1q
+         4jbi5nnvJa8At6DXWtbLbmkaj6kXx+BRpKRYgOPxk+y8Tiso6wt+7Vjxd6VBAdJ9qY
+         8qZA2VggSH63JvVYod5oDSv/3rZbSYOpBaKt9J4Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
+        Russell Currey <ruscur@russell.cc>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 545/772] powerpc/64: Only WARN if __pa()/__va() called with bad addresses
-Date:   Tue,  7 Jun 2022 19:02:17 +0200
-Message-Id: <20220607165005.023104946@linuxfoundation.org>
+Subject: [PATCH 5.17 547/772] powerpc/powernv: Get STF barrier requirements from device-tree
+Date:   Tue,  7 Jun 2022 19:02:19 +0200
+Message-Id: <20220607165005.082331213@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,54 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Russell Currey <ruscur@russell.cc>
 
-[ Upstream commit c4bce84d0bd3f396f702d69be2e92bbd8af97583 ]
+[ Upstream commit d2a3c131981d4498571908df95c3c9393a00adf5 ]
 
-We added checks to __pa() / __va() to ensure they're only called with
-appropriate addresses. But using BUG_ON() is too strong, it means
-virt_addr_valid() will BUG when DEBUG_VIRTUAL is enabled.
+The device-tree property no-need-store-drain-on-priv-state-switch is
+equivalent to H_CPU_BEHAV_NO_STF_BARRIER from the
+H_CPU_GET_CHARACTERISTICS hcall on pseries.
 
-Instead switch them to warnings, arm64 does the same.
+Since commit 84ed26fd00c5 ("powerpc/security: Add a security feature for
+STF barrier") powernv systems with this device-tree property have been
+enabling the STF barrier when they have no need for it.  This patch
+fixes this by clearing the STF barrier feature on those systems.
 
-Fixes: 4dd7554a6456 ("powerpc/64: Add VIRTUAL_BUG_ON checks for __va and __pa addresses")
+Fixes: 84ed26fd00c5 ("powerpc/security: Add a security feature for STF barrier")
+Reported-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Russell Currey <ruscur@russell.cc>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220406145802.538416-5-mpe@ellerman.id.au
+Link: https://lore.kernel.org/r/20220404101536.104794-2-ruscur@russell.cc
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/page.h | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/powerpc/platforms/powernv/setup.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/powerpc/include/asm/page.h b/arch/powerpc/include/asm/page.h
-index f2c5c26869f1..03ae544eb6cc 100644
---- a/arch/powerpc/include/asm/page.h
-+++ b/arch/powerpc/include/asm/page.h
-@@ -216,6 +216,9 @@ static inline bool pfn_valid(unsigned long pfn)
- #define __pa(x) ((phys_addr_t)(unsigned long)(x) - VIRT_PHYS_OFFSET)
- #else
- #ifdef CONFIG_PPC64
-+
-+#define VIRTUAL_WARN_ON(x)	WARN_ON(IS_ENABLED(CONFIG_DEBUG_VIRTUAL) && (x))
-+
- /*
-  * gcc miscompiles (unsigned long)(&static_var) - PAGE_OFFSET
-  * with -mcmodel=medium, so we use & and | instead of - and + on 64-bit.
-@@ -223,13 +226,13 @@ static inline bool pfn_valid(unsigned long pfn)
-  */
- #define __va(x)								\
- ({									\
--	VIRTUAL_BUG_ON((unsigned long)(x) >= PAGE_OFFSET);		\
-+	VIRTUAL_WARN_ON((unsigned long)(x) >= PAGE_OFFSET);		\
- 	(void *)(unsigned long)((phys_addr_t)(x) | PAGE_OFFSET);	\
- })
+diff --git a/arch/powerpc/platforms/powernv/setup.c b/arch/powerpc/platforms/powernv/setup.c
+index 378f7e5f18d2..824c3ad7a0fa 100644
+--- a/arch/powerpc/platforms/powernv/setup.c
++++ b/arch/powerpc/platforms/powernv/setup.c
+@@ -102,6 +102,9 @@ static void __init init_fw_feat_flags(struct device_node *np)
  
- #define __pa(x)								\
- ({									\
--	VIRTUAL_BUG_ON((unsigned long)(x) < PAGE_OFFSET);		\
-+	VIRTUAL_WARN_ON((unsigned long)(x) < PAGE_OFFSET);		\
- 	(unsigned long)(x) & 0x0fffffffffffffffUL;			\
- })
+ 	if (fw_feature_is("enabled", "no-need-l1d-flush-kernel-on-user-access", np))
+ 		security_ftr_clear(SEC_FTR_L1D_FLUSH_UACCESS);
++
++	if (fw_feature_is("enabled", "no-need-store-drain-on-priv-state-switch", np))
++		security_ftr_clear(SEC_FTR_STF_BARRIER);
+ }
  
+ static void __init pnv_setup_security_mitigations(void)
 -- 
 2.35.1
 
