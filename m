@@ -2,292 +2,320 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36D7CCCA497
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC134C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387295AbiFHB1R (ORCPT
+        id S1388754AbiFHB1u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
+        Tue, 7 Jun 2022 21:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382485AbiFGWEb (ORCPT
+        with ESMTP id S1578995AbiFGXjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:04:31 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E82195908
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:16:05 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id e18-20020a170902ef5200b0016153d857a6so9848146plx.5
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:16:04 -0700 (PDT)
+        Tue, 7 Jun 2022 19:39:09 -0400
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B94437AD7C
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:41 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id x19-20020aa78f13000000b0051bdda60a06so7029802pfr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=kIErM4k6WhLC0n6Ns2bjZKjlflhoJThht73EacMy2qk=;
-        b=Zg5C6wO5vUcCUbuYsPt4beKzGiXy+rxA2PKUAbTNLJ1rLtk/XsZt+lYpgRva4Oe10/
-         5nQlQYM/MhvdUkY8nb+q2tuwUYIhPpfmXFvcRLvF/SqbVk4wbJsASqg7A/OL8NddBONn
-         HjMxCakD8IPiuOWS5hvjzDMkEbwnXK3CJmtCJd4hzVc+BanqXedUNyvu1BXHuXgN0Fnw
-         AScgVGcbFjMhluFiR++2wL759Xqy+6ps85bnotbc5hAa+KlDhRfPBIojz5cXSkIijTzt
-         oFHQLgzeeLN/nTRvxxWogky8oHFQkinuBn/pzl16wkJaRoIKpB2Uhw3MNsrjPiOLBJGM
-         BZ7g==
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=A1QzBL/Nmqz2F6BNd27eYTxcbJ/pZ61eqO0oiIixNDI=;
+        b=Db1SvxBIb2DsUy46A0dAj6+ZmFkSPF27w+9DEhO6qhsgUf1mF7uhTxBpIVMqodwop5
+         hl59ox8ukdMh6gqTO+TVRsOjuVyydSw2Ch1+iQ/51z02ULBPNGGCVBXCXHZBJORabQQr
+         yAzTWmdbP0G9QqrpoF3qp/mF7nwOdbY42N40ypztvPYkD0GmhkGpohsNNbVO+nOi+Oln
+         DH17NxAMQLpue4YNQP5sL5WKI1253rM1qQXwoXI0lpgbsV+h1fwSAqzsZvx7NIVn/rAP
+         An5btIOpDLEhQZH4+DjuuhfSi82Ddfcgkmptvjtp3mAMupEcgw9OenMvw78lId0WAxkl
+         42mQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=kIErM4k6WhLC0n6Ns2bjZKjlflhoJThht73EacMy2qk=;
-        b=sogrt/8GSu3CkGrdczwrTTl7aIF9FGaP2KNT5yFXL+dPXqgqCkB8ZnLa3FTeCoBBaG
-         qQdj0LMZyzo7RZLbY5ZQAww0HrUyHSrxpJ51IuAGPJS9J2w0j+KUsRr+Ro2PV+cYrr6H
-         9GeHoE9IiCKe4z0C8FG8qLTeQVJMudewzDptp5VTa30FYXmRFAY/bfscm6HfRdJyBHQ3
-         6/dfnWVhgaerNmuroJYSjhbhaAsqJJsTWyLGqk0hmF3Gt8PAb5Gmi40KFhSPzjlTUTAz
-         XF3Y+fQlIxEx9p4sL2hHae3K5Y3cl4poj/gDy1U5GDfSIE7bkjUV1UQA4+M/vCBYP0it
-         WddQ==
-X-Gm-Message-State: AOAM533lJngsECdCUB/66pY6JfvaWctHZStRdNJ5fMBDeppipYLGyS5U
-        p0H+oesA9DlpZVKLjGBgFfNN+Eh9G7f0OPPq
-X-Google-Smtp-Source: ABdhPJxrSlVvA4MyvWzvWiYXFr65wiAwy6FMhxpeLr/ttpdkEgkeM6++R+P8PeqwXtfBXjHFsgVv6CfX8cSC6EyB
-X-Received: from blakejones.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:411c])
- (user=blakejones job=sendgmr) by 2002:a17:902:e34b:b0:166:342f:82c6 with SMTP
- id p11-20020a170902e34b00b00166342f82c6mr29823442plc.29.1654629364408; Tue,
- 07 Jun 2022 12:16:04 -0700 (PDT)
-Date:   Tue,  7 Jun 2022 12:15:50 -0700
-Message-Id: <20220607191550.4141024-1-blakejones@google.com>
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=A1QzBL/Nmqz2F6BNd27eYTxcbJ/pZ61eqO0oiIixNDI=;
+        b=K6TrOFP8UyB9mR2YL/ozKXE8RDpv2bjsZ9jllrbnHUnb0Gd4ZztFy+b3ZJwXPttwE5
+         nbmA5YDkjKb6IIkBJlMoxkMvszkOzQ5v69chytbejuyG1tg8SaMOi0PaRRc1S955Xzk4
+         ElxAQ55mMpJ/ZCQg9wSnzeHmgIhTCVKm1OQ8M8LJK162XtL+fK3QPCmvw6zNUvp6gvy5
+         mpi8RWvHlNyyUy5c3QtG63ZAegyGd63l8ERADM31gr9aM5JS3AHc7neAjCBcdgJz4E8o
+         FMRnh2w+jJy4XqOxHT3BV+CMWiByx78htpNIjp+l74rIYcP7neGKSOqEjZShaE9LqBR1
+         rREg==
+X-Gm-Message-State: AOAM531zeGT1IH3Bxz/i2BRREAhu66e3rW/L0SdJONUlqW1B+7toWe9G
+        FrZRMy91Vgn41d+4et5fAwzwt7N+Pt8=
+X-Google-Smtp-Source: ABdhPJy3l2yd61SiPhtcX+F+gl5mfqfQO84DcbbvRYxt/Y/zuLGXuz0A4cZ3aBAfXillFcWAGIViKSVWEhM=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:1a8f:b0:51c:2f82:cdba with SMTP id
+ e15-20020a056a001a8f00b0051c2f82cdbamr7674725pfv.85.1654637800483; Tue, 07
+ Jun 2022 14:36:40 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue,  7 Jun 2022 21:36:02 +0000
+In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
+Message-Id: <20220607213604.3346000-14-seanjc@google.com>
 Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH RESEND] Add a "-m" option to "perf buildid-list".
-From:   Blake Jones <blakejones@google.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Blake Jones <blakejones@google.com>
+References: <20220607213604.3346000-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v5 13/15] KVM: selftests: Add test to verify KVM's VMX MSRs
+ quirk for controls
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        David Matlack <dmatlack@google.com>,
+        Oliver Upton <oupton@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This new option displays all of the information needed to do external
-BuildID-based symbolization of kernel stack traces, such as those collected
-by bpf_get_stackid(). For each kernel module plus the main kernel, it
-displays the BuildID, the start and end virtual addresses of that module's
-text range (rounded out to page boundaries), and the pathname of the
-module.
+Add a test to verify KVM's established ABI with respect to the entry/exit
+controls for PERF_GLOBAL_CTRL and BNDCFGS.  KVM has a quirk where KVM
+updates the VMX "true" entry/exit control MSRs to force PERF_GLOBAL_CTRL
+and BNDCFGS to follow the guest CPUID model, i.e. set when supported,
+clear when not, even though the MSR values are not strictly associated
+with CPUID.  Note, KVM's ABI is that its modifications to the MSRs are
+preserved even when userspace explicitly writes the MSRs.
 
-When run as a non-privileged user, the actual addresses of the modules'
-text ranges are not available, so the tools displays "0, <text length>" for
-kernel modules and "0, ffffffffffffffff" for the kernel itself.
+Verify that KVM correctly tweaks the MSRs When the quirk is enabled (the
+default behavior), and does not touch them when the quirk is disabled.
 
-This patch has been rebased as of this afternoon, but is otherwise
-identical to the version I sent out last month.
-
-Sample output:
-
-root# perf buildid-list -m
-cf6df852fd4da122d616153353cc8f560fd12fe0 ffffffffa5400000 ffffffffa6001e27 [kernel.kallsyms]
-1aa7209aa2acb067d66ed6cf7676d65066384d61 ffffffffc0087000 ffffffffc008b000 /lib/modules/5.15.15-1rodete2-amd64/kernel/crypto/sha512_generic.ko
-3857815b5bf0183697b68f8fe0ea06121644041e ffffffffc008c000 ffffffffc0098000 /lib/modules/5.15.15-1rodete2-amd64/kernel/arch/x86/crypto/sha512-ssse3.ko
-4081fde0bca2bc097cb3e9d1efcb836047d485f1 ffffffffc0099000 ffffffffc009f000 /lib/modules/5.15.15-1rodete2-amd64/kernel/drivers/acpi/button.ko
-1ef81ba4890552ea6b0314f9635fc43fc8cef568 ffffffffc00a4000 ffffffffc00aa000 /lib/modules/5.15.15-1rodete2-amd64/kernel/crypto/cryptd.ko
-cc5c985506cb240d7d082b55ed260cbb851f983e ffffffffc00af000 ffffffffc00b6000 /lib/modules/5.15.15-1rodete2-amd64/kernel/drivers/i2c/busses/i2c-piix4.ko
-[...]
-
-Signed-off-by: Blake Jones <blakejones@google.com>
+Suggested-by: Oliver Upton <oupton@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../perf/Documentation/perf-buildid-list.txt  |  3 ++
- tools/perf/builtin-buildid-list.c             | 33 ++++++++++++++++++-
- tools/perf/util/dso.c                         | 23 +++++++++++++
- tools/perf/util/dso.h                         |  2 ++
- tools/perf/util/machine.c                     | 13 ++++++++
- tools/perf/util/machine.h                     |  5 +++
- 6 files changed, 78 insertions(+), 1 deletion(-)
+ tools/testing/selftests/kvm/.gitignore        |   1 +
+ tools/testing/selftests/kvm/Makefile          |   1 +
+ .../selftests/kvm/include/x86_64/processor.h  |   1 +
+ .../selftests/kvm/include/x86_64/vmx.h        |   2 +
+ .../selftests/kvm/x86_64/vmx_msrs_test.c      | 161 ++++++++++++++++++
+ 5 files changed, 166 insertions(+)
+ create mode 100644 tools/testing/selftests/kvm/x86_64/vmx_msrs_test.c
 
-diff --git a/tools/perf/Documentation/perf-buildid-list.txt b/tools/perf/Documentation/perf-buildid-list.txt
-index 25c52efcc7f0..a82e92c2667d 100644
---- a/tools/perf/Documentation/perf-buildid-list.txt
-+++ b/tools/perf/Documentation/perf-buildid-list.txt
-@@ -33,6 +33,9 @@ OPTIONS
- -k::
- --kernel::
- 	Show running kernel build id.
-+-m::
-+--modules::
-+	Show buildid, start/end text address, and path of kernel and modules.
- -v::
- --verbose::
- 	Be more verbose.
-diff --git a/tools/perf/builtin-buildid-list.c b/tools/perf/builtin-buildid-list.c
-index cebadd632234..9a5587de8fd0 100644
---- a/tools/perf/builtin-buildid-list.c
-+++ b/tools/perf/builtin-buildid-list.c
-@@ -12,6 +12,7 @@
- #include "util/build-id.h"
- #include "util/debug.h"
- #include "util/dso.h"
-+#include "util/map.h"
- #include <subcmd/pager.h>
- #include <subcmd/parse-options.h>
- #include "util/session.h"
-@@ -20,6 +21,29 @@
- #include <errno.h>
- #include <linux/err.h>
+diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
+index 0ab0e255d292..5893804b5196 100644
+--- a/tools/testing/selftests/kvm/.gitignore
++++ b/tools/testing/selftests/kvm/.gitignore
+@@ -47,6 +47,7 @@
+ /x86_64/vmx_dirty_log_test
+ /x86_64/vmx_exception_with_invalid_guest_state
+ /x86_64/vmx_invalid_nested_guest_state
++/x86_64/vmx_msrs_test
+ /x86_64/vmx_preemption_timer_test
+ /x86_64/vmx_set_nested_state_test
+ /x86_64/vmx_tsc_adjust_test
+diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+index 9a256c1f1bdf..2ee2dc55c100 100644
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -74,6 +74,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/vmx_apic_access_test
+ TEST_GEN_PROGS_x86_64 += x86_64/vmx_close_while_nested_test
+ TEST_GEN_PROGS_x86_64 += x86_64/vmx_dirty_log_test
+ TEST_GEN_PROGS_x86_64 += x86_64/vmx_exception_with_invalid_guest_state
++TEST_GEN_PROGS_x86_64 += x86_64/vmx_msrs_test
+ TEST_GEN_PROGS_x86_64 += x86_64/vmx_invalid_nested_guest_state
+ TEST_GEN_PROGS_x86_64 += x86_64/vmx_set_nested_state_test
+ TEST_GEN_PROGS_x86_64 += x86_64/vmx_tsc_adjust_test
+diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
+index 3fd3d58148c2..51cab9b080f7 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/processor.h
++++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
+@@ -98,6 +98,7 @@ struct kvm_x86_cpu_feature {
+ #define	X86_FEATURE_SMEP	        KVM_X86_CPU_FEATURE(0x7, 0, EBX, 7)
+ #define	X86_FEATURE_INVPCID		KVM_X86_CPU_FEATURE(0x7, 0, EBX, 10)
+ #define	X86_FEATURE_RTM			KVM_X86_CPU_FEATURE(0x7, 0, EBX, 11)
++#define	X86_FEATURE_MPX			KVM_X86_CPU_FEATURE(0x7, 0, EBX, 14)
+ #define	X86_FEATURE_SMAP		KVM_X86_CPU_FEATURE(0x7, 0, EBX, 20)
+ #define	X86_FEATURE_PCOMMIT		KVM_X86_CPU_FEATURE(0x7, 0, EBX, 22)
+ #define	X86_FEATURE_CLFLUSHOPT		KVM_X86_CPU_FEATURE(0x7, 0, EBX, 23)
+diff --git a/tools/testing/selftests/kvm/include/x86_64/vmx.h b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+index fe0ebb790b49..5a6002b34d2b 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/vmx.h
++++ b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+@@ -80,6 +80,7 @@
+ #define VM_EXIT_SAVE_IA32_EFER			0x00100000
+ #define VM_EXIT_LOAD_IA32_EFER			0x00200000
+ #define VM_EXIT_SAVE_VMX_PREEMPTION_TIMER	0x00400000
++#define VM_EXIT_CLEAR_BNDCFGS			0x00800000
  
-+static int buildid__map_cb(struct map *map, void *arg __maybe_unused)
-+{
-+	struct build_id build_id;
-+	char bid_buf[SBUILD_ID_SIZE];
-+	char modpath[255];
-+
-+	dso__get_build_id(map->dso, &build_id);
-+	build_id__sprintf(&build_id, bid_buf);
-+	dso__get_long_name(map->dso, modpath, sizeof(modpath));
-+	printf("%s %16lx %16lx %s\n", bid_buf, map->start, map->end, modpath);
-+
-+	return 0;
-+}
-+
-+static void buildid__show_kernel_modules(void)
-+{
-+	struct machine *machine;
-+
-+	machine = machine__new_host();
-+	machine__for_each_kernel_map(machine, buildid__map_cb, NULL);
-+	machine__delete(machine);
-+}
-+
- static int sysfs__fprintf_build_id(FILE *fp)
- {
- 	char sbuild_id[SBUILD_ID_SIZE];
-@@ -99,6 +123,7 @@ static int perf_session__list_build_ids(bool force, bool with_hits)
- int cmd_buildid_list(int argc, const char **argv)
- {
- 	bool show_kernel = false;
-+	bool show_modules = false;
- 	bool with_hits = false;
- 	bool force = false;
- 	const struct option options[] = {
-@@ -106,6 +131,8 @@ int cmd_buildid_list(int argc, const char **argv)
- 	OPT_STRING('i', "input", &input_name, "file", "input file name"),
- 	OPT_BOOLEAN('f', "force", &force, "don't complain, do it"),
- 	OPT_BOOLEAN('k', "kernel", &show_kernel, "Show current kernel build id"),
-+	OPT_BOOLEAN('m', "modules", &show_modules,
-+	    "Show build id of current kernel + modules"),
- 	OPT_INCR('v', "verbose", &verbose, "be more verbose"),
- 	OPT_END()
- 	};
-@@ -117,8 +144,12 @@ int cmd_buildid_list(int argc, const char **argv)
- 	argc = parse_options(argc, argv, options, buildid_list_usage, 0);
- 	setup_pager();
+ #define VM_EXIT_ALWAYSON_WITHOUT_TRUE_MSR	0x00036dff
  
--	if (show_kernel)
-+	if (show_kernel) {
- 		return !(sysfs__fprintf_build_id(stdout) > 0);
-+	} else if (show_modules) {
-+		buildid__show_kernel_modules();
-+		return 0;
-+	}
+@@ -90,6 +91,7 @@
+ #define VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL	0x00002000
+ #define VM_ENTRY_LOAD_IA32_PAT			0x00004000
+ #define VM_ENTRY_LOAD_IA32_EFER			0x00008000
++#define VM_ENTRY_LOAD_BNDCFGS			0x00010000
  
- 	return perf_session__list_build_ids(force, with_hits);
- }
-diff --git a/tools/perf/util/dso.c b/tools/perf/util/dso.c
-index 5ac13958d1bd..7c490b5ce449 100644
---- a/tools/perf/util/dso.c
-+++ b/tools/perf/util/dso.c
-@@ -1227,6 +1227,19 @@ void dso__set_long_name(struct dso *dso, const char *name, bool name_allocated)
- 	dso__set_long_name_id(dso, name, NULL, name_allocated);
- }
+ #define VM_ENTRY_ALWAYSON_WITHOUT_TRUE_MSR	0x000011ff
  
-+void dso__get_long_name(const struct dso *dso, char *name, size_t len)
-+{
-+	if (len == 0)
-+		return;
-+	if (dso->long_name == NULL) {
-+		name[0] = '\0';
-+		return;
+diff --git a/tools/testing/selftests/kvm/x86_64/vmx_msrs_test.c b/tools/testing/selftests/kvm/x86_64/vmx_msrs_test.c
+new file mode 100644
+index 000000000000..9be2c2e3acf1
+--- /dev/null
++++ b/tools/testing/selftests/kvm/x86_64/vmx_msrs_test.c
+@@ -0,0 +1,161 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * VMX control MSR test
++ *
++ * Copyright (C) 2022 Google LLC.
++ *
++ * Tests for KVM ownership of bits in the VMX entry/exit control MSRs. Checks
++ * that KVM will set owned bits where appropriate, and will not if
++ * KVM_X86_QUIRK_TWEAK_VMX_CTRL_MSRS is disabled.
++ */
++
++#include "kvm_util.h"
++#include "vmx.h"
++
++#define SUBTEST_REQUIRE(f)					\
++	if (!(f)) {						\
++		print_skip("Requirement not met: %s", #f);	\
++		return;						\
 +	}
 +
-+	strncpy(name, dso->long_name, len);
-+	name[len - 1] = '\0';
-+}
-+
- void dso__set_short_name(struct dso *dso, const char *name, bool name_allocated)
- {
- 	if (name == NULL)
-@@ -1359,6 +1372,16 @@ void dso__set_build_id(struct dso *dso, struct build_id *bid)
- 	dso->has_build_id = 1;
- }
- 
-+void dso__get_build_id(struct dso *dso, struct build_id *bid)
++static bool vmx_has_ctrl(struct kvm_vcpu *vcpu, uint32_t msr, uint32_t ctrl_mask)
 +{
-+	if (dso->has_build_id) {
-+		*bid = dso->bid;
-+	} else {
-+		bid->size = 0;
-+		memset(bid->data, 0, sizeof(*bid->data));
-+	}
++	return (vcpu_get_msr(vcpu, msr) >> 32) & ctrl_mask;
 +}
 +
- bool dso__build_id_equal(const struct dso *dso, struct build_id *bid)
- {
- 	if (dso->bid.size > bid->size && dso->bid.size == BUILD_ID_SIZE) {
-diff --git a/tools/perf/util/dso.h b/tools/perf/util/dso.h
-index 97047a11282b..e531f9d0818d 100644
---- a/tools/perf/util/dso.h
-+++ b/tools/perf/util/dso.h
-@@ -239,6 +239,7 @@ void dso__delete(struct dso *dso);
- int dso__cmp_id(struct dso *a, struct dso *b);
- void dso__set_short_name(struct dso *dso, const char *name, bool name_allocated);
- void dso__set_long_name(struct dso *dso, const char *name, bool name_allocated);
-+void dso__get_long_name(const struct dso *dso, char *name, size_t len);
- 
- int dso__name_len(const struct dso *dso);
- 
-@@ -265,6 +266,7 @@ void dso__set_sorted_by_name(struct dso *dso);
- void dso__sort_by_name(struct dso *dso);
- 
- void dso__set_build_id(struct dso *dso, struct build_id *bid);
-+void dso__get_build_id(struct dso *dso, struct build_id *bid);
- bool dso__build_id_equal(const struct dso *dso, struct build_id *bid);
- void dso__read_running_kernel_build_id(struct dso *dso,
- 				       struct machine *machine);
-diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
-index 009061852808..28fff9a02ab0 100644
---- a/tools/perf/util/machine.c
-+++ b/tools/perf/util/machine.c
-@@ -3327,3 +3327,16 @@ int machine__for_each_dso(struct machine *machine, machine__dso_t fn, void *priv
- 	}
- 	return err;
- }
-+
-+int machine__for_each_kernel_map(struct machine *machine, machine__map_t fn, void *priv)
++static void test_vmx_ctrl_msr(struct kvm_vcpu *vcpu,
++			      uint32_t msr, uint64_t ctrl_mask,
++			      bool quirk_enabled, bool feature_enabled)
 +{
-+	struct maps *maps = machine__kernel_maps(machine);
-+	struct map *map;
-+	int err = 0;
++	uint64_t ctrl_allowed1 = ctrl_mask << 32;
++	uint64_t val = vcpu_get_msr(vcpu, msr);
 +
-+	for (map = maps__first(maps); map != NULL; map = map__next(map)) {
-+		if (fn(map, priv))
-+			err = -1;
-+	}
-+	return err;
++	/*
++	 * If the quirk is enabled, KVM should have modified the MSR when the
++	 * guest's CPUID was set.  Don't assert anything when the quirk is
++	 * disabled, the value of the MSR is not known (it could be made known,
++	 * but it gets messy and the added value is minimal).
++	 */
++	TEST_ASSERT(!quirk_enabled || (!!(val & ctrl_allowed1) == feature_enabled),
++		    "KVM owns the ctrl when the quirk is enabled, want 0x%lx, got 0x%lx",
++		    feature_enabled ? ctrl_allowed1 : 0, val & ctrl_allowed1);
++
++	val |= ctrl_allowed1;
++	vcpu_set_msr(vcpu, msr, val);
++
++	val = vcpu_get_msr(vcpu, msr);
++	if (quirk_enabled)
++		TEST_ASSERT(!!(val & ctrl_allowed1) == feature_enabled,
++			    "KVM owns the ctrl when the quirk is enabled, want 0x%lx, got 0x%lx",
++			    feature_enabled ? ctrl_allowed1 : 0, val & ctrl_allowed1);
++	else
++		TEST_ASSERT(val & ctrl_allowed1,
++			    "KVM shouldn't clear the ctrl when the quirk is disabled");
++
++	val &= ~ctrl_allowed1;
++	vcpu_set_msr(vcpu, msr, val);
++
++	val = vcpu_get_msr(vcpu, msr);
++	if (quirk_enabled)
++		TEST_ASSERT(!!(val & ctrl_allowed1) == feature_enabled,
++			    "KVM owns the ctrl when the quirk is enabled, want 0x%lx, got 0x%lx",
++			    feature_enabled ? ctrl_allowed1 : 0, val & ctrl_allowed1);
++	else
++		TEST_ASSERT(!(val & ctrl_allowed1),
++			    "KVM shouldn't set the ctrl when the quirk is disabled");
 +}
-diff --git a/tools/perf/util/machine.h b/tools/perf/util/machine.h
-index 5d7daf7cb7bc..e1476343cbb2 100644
---- a/tools/perf/util/machine.h
-+++ b/tools/perf/util/machine.h
-@@ -262,6 +262,11 @@ typedef int (*machine__dso_t)(struct dso *dso, struct machine *machine, void *pr
- 
- int machine__for_each_dso(struct machine *machine, machine__dso_t fn,
- 			  void *priv);
 +
-+typedef int (*machine__map_t)(struct map *map, void *priv);
-+int machine__for_each_kernel_map(struct machine *machine, machine__map_t fn,
-+				 void *priv);
++static void test_vmx_ctrl_msrs_pair(struct kvm_vcpu *vcpu,
++				    bool quirk_enabled, bool feature_enabled,
++				    uint32_t entry_msr, uint64_t entry_mask,
++				    uint32_t exit_msr, uint64_t exit_mask)
++{
++	test_vmx_ctrl_msr(vcpu, entry_msr, entry_mask, quirk_enabled, feature_enabled);
++	test_vmx_ctrl_msr(vcpu, exit_msr, exit_mask, quirk_enabled, feature_enabled);
++}
 +
- int machine__for_each_thread(struct machine *machine,
- 			     int (*fn)(struct thread *thread, void *p),
- 			     void *priv);
-
-base-commit: 1bcca2b1bd67f3c0e5c3a88ed16c6389f01a5b31
++static void test_vmx_ctrls(struct kvm_vm *vm, struct kvm_vcpu *vcpu,
++			   uint64_t entry_ctrl, uint64_t exit_ctrl)
++{
++	/*
++	 * KVM's quirky behavior only exists for PERF_GLOBAL_CTRL and BNDCFGS,
++	 * any attempt to extend KVM's quirky behavior must be met with fierce
++	 * resistance!
++	 */
++	TEST_ASSERT(entry_ctrl == VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL ||
++		    entry_ctrl == VM_ENTRY_LOAD_BNDCFGS,
++		    "Don't let KVM expand its quirk beyond PERF_GLOBAL_CTRL and BNDCFSG");
++
++	SUBTEST_REQUIRE(vmx_has_ctrl(vcpu, MSR_IA32_VMX_TRUE_ENTRY_CTLS, entry_ctrl));
++	SUBTEST_REQUIRE(vmx_has_ctrl(vcpu, MSR_IA32_VMX_TRUE_EXIT_CTLS, exit_ctrl));
++
++	/*
++	 * Test that, when the quirk is enabled, KVM sets/clears the VMX MSR
++	 * bits based on whether or not the feature is exposed to the guest.
++	 */
++	test_vmx_ctrl_msrs_pair(vcpu, true, true,
++				MSR_IA32_VMX_TRUE_ENTRY_CTLS, entry_ctrl,
++				MSR_IA32_VMX_TRUE_EXIT_CTLS, exit_ctrl);
++
++	/* Hide the feature in CPUID. */
++	if (entry_ctrl == VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
++		vcpu_clear_cpuid_entry(vcpu, 0xa);
++	else
++		vcpu_clear_cpuid_feature(vcpu, X86_FEATURE_MPX);
++
++	test_vmx_ctrl_msrs_pair(vcpu, true, false,
++				MSR_IA32_VMX_TRUE_ENTRY_CTLS, entry_ctrl,
++				MSR_IA32_VMX_TRUE_EXIT_CTLS, exit_ctrl);
++
++	/*
++	 * Disable the quirk, giving userspace control of the VMX MSRs.  KVM
++	 * should not touch the MSR, i.e. should allow hiding the control when
++	 * a vPMU is supported, and should allow exposing the control when a
++	 * vPMU is not supported.
++	 */
++	vm_enable_cap(vm, KVM_CAP_DISABLE_QUIRKS2, KVM_X86_QUIRK_TWEAK_VMX_MSRS);
++
++	test_vmx_ctrl_msrs_pair(vcpu, false, false,
++				MSR_IA32_VMX_TRUE_ENTRY_CTLS, entry_ctrl,
++				MSR_IA32_VMX_TRUE_EXIT_CTLS, exit_ctrl);
++
++	/* Restore the full CPUID to expose the feature to the guest. */
++	vcpu_init_cpuid(vcpu, kvm_get_supported_cpuid());
++	test_vmx_ctrl_msrs_pair(vcpu, false, true,
++				MSR_IA32_VMX_TRUE_ENTRY_CTLS, entry_ctrl,
++				MSR_IA32_VMX_TRUE_EXIT_CTLS, exit_ctrl);
++
++	vm_enable_cap(vm, KVM_CAP_DISABLE_QUIRKS2, 0);
++}
++
++static void load_perf_global_ctrl_test(struct kvm_vm *vm, struct kvm_vcpu *vcpu)
++{
++	SUBTEST_REQUIRE(kvm_get_cpuid_max_basic() >= 0xa);
++
++	test_vmx_ctrls(vm, vcpu, VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL,
++		       VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL);
++}
++
++static void load_and_clear_bndcfgs_test(struct kvm_vm *vm, struct kvm_vcpu *vcpu)
++{
++	SUBTEST_REQUIRE(kvm_cpu_has(X86_FEATURE_MPX));
++
++	test_vmx_ctrls(vm, vcpu, VM_ENTRY_LOAD_BNDCFGS, VM_EXIT_CLEAR_BNDCFGS);
++}
++
++int main(void)
++{
++	struct kvm_vcpu *vcpu;
++	struct kvm_vm *vm;
++
++	TEST_REQUIRE(kvm_has_cap(KVM_CAP_DISABLE_QUIRKS2));
++	TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_VMX));
++
++	/* No need to actually do KVM_RUN, thus no guest code. */
++	vm = vm_create_with_one_vcpu(&vcpu, NULL);
++
++	load_perf_global_ctrl_test(vm, vcpu);
++	load_and_clear_bndcfgs_test(vm, vcpu);
++
++	kvm_vm_free(vm);
++}
 -- 
-2.36.1.476.g0c4daa206d-goog
+2.36.1.255.ge46751e96f-goog
 
