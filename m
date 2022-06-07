@@ -2,141 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 774B5CCA48C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1BD4CCA48E
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442557AbiFHCAm (ORCPT
+        id S1443385AbiFHCCS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33998 "EHLO
+        Tue, 7 Jun 2022 22:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1837548AbiFHAAK (ORCPT
+        with ESMTP id S1588476AbiFGXyl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:00:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B5827CCCE;
-        Tue,  7 Jun 2022 12:26:01 -0700 (PDT)
+        Tue, 7 Jun 2022 19:54:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5EE44A07;
+        Tue,  7 Jun 2022 16:11:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4A84609D0;
-        Tue,  7 Jun 2022 19:26:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B513BC385A5;
-        Tue,  7 Jun 2022 19:25:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629960;
-        bh=+cCPHyDiE6bNC1DR+IBdCXwECQlqi81MVWn1zojPDGI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=08b5ShS7wl4naBnwHKIFQJwgwZ2g9j5YdYoeOH4m/ApgApT0CJKdJcHcsfTgJ/JR+
-         DCUX56wHsWeIv3HyN4nV+m2OmJ020jThBa2jqqsCzxWra+gXJOO2gKBU743ns4hl+G
-         FqEvgCdb5S5UTdO6ozzxbGb+B8RCcoNlDKc1eoTY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+d0e94b65ac259c29ce7a@syzkaller.appspotmail.com,
-        Ziyang Xuan <william.xuanziyang@huawei.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.18 878/879] macsec: fix UAF bug for real_dev
-Date:   Tue,  7 Jun 2022 19:06:36 +0200
-Message-Id: <20220607165028.341154150@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 037FBB82475;
+        Tue,  7 Jun 2022 23:11:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45CB1C3411E;
+        Tue,  7 Jun 2022 23:11:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654643476;
+        bh=oVYqK/0JGUVxA40hqtkxUoCBbKWyupsiiQCi9jG6aqM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=TODwYeDxp3rkB9pChXaGC6C2OJWJtQMiJjapUpvVZFHb2Z/f2eOJr+5QFq/iGJnhr
+         xDN4F+xgtWDlidfpsbNlobeXiJRHngrRcsmlz48zMKUd9i2IYPbwhCcX8WQb11toj0
+         QzoqtyqdCY0f/TI5/eJwGxxV2m5EMjLT/qsnIYd3vCMcZTcPGBFd3WCPbEHNtzH15G
+         35jNS/UsCwKt+gJiFOrFEMl/V8Z2rD1z/IYfbjuTBPVtGIdYkRYoOLjyhU1Io07GCx
+         jAqJAyjG/6nacyW68E25sNFF8mJ4c3JJsDPpWQT3xGHJVSo/YqDON12im/kvOJXZ2s
+         JtDZt0U6ti1Jw==
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Helge Deller <deller@gmx.de>
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-pm@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 0/2] video: fbdev: Convert from PCI to generic power management
+Date:   Tue,  7 Jun 2022 18:11:10 -0500
+Message-Id: <20220607231112.354165-1-helgaas@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ziyang Xuan <william.xuanziyang@huawei.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-commit 196a888ca6571deb344468e1d7138e3273206335 upstream.
+PCI-specific power management (pci_driver.suspend and pci_driver.resume) is
+deprecated.  If drivers implement power management, they should use the
+generic power management framework, not the PCI-specific hooks.
 
-Create a new macsec device but not get reference to real_dev. That can
-not ensure that real_dev is freed after macsec. That will trigger the
-UAF bug for real_dev as following:
+No fbdev drivers actually implement PCI power management, but there are a
+cirrusfb has some commented-out references to it and skeletonfb has
+examples of it.  Remove these.
 
-==================================================================
-BUG: KASAN: use-after-free in macsec_get_iflink+0x5f/0x70 drivers/net/macsec.c:3662
-Call Trace:
- ...
- macsec_get_iflink+0x5f/0x70 drivers/net/macsec.c:3662
- dev_get_iflink+0x73/0xe0 net/core/dev.c:637
- default_operstate net/core/link_watch.c:42 [inline]
- rfc2863_policy+0x233/0x2d0 net/core/link_watch.c:54
- linkwatch_do_dev+0x2a/0x150 net/core/link_watch.c:161
+Bjorn Helgaas (2):
+  video: fbdev: cirrusfb: Remove useless reference to PCI power
+    management
+  video: fbdev: skeletonfb: Convert to generic power management
 
-Allocated by task 22209:
- ...
- alloc_netdev_mqs+0x98/0x1100 net/core/dev.c:10549
- rtnl_create_link+0x9d7/0xc00 net/core/rtnetlink.c:3235
- veth_newlink+0x20e/0xa90 drivers/net/veth.c:1748
+ drivers/video/fbdev/cirrusfb.c   |  6 ------
+ drivers/video/fbdev/skeletonfb.c | 13 +++++++------
+ 2 files changed, 7 insertions(+), 12 deletions(-)
 
-Freed by task 8:
- ...
- kfree+0xd6/0x4d0 mm/slub.c:4552
- kvfree+0x42/0x50 mm/util.c:615
- device_release+0x9f/0x240 drivers/base/core.c:2229
- kobject_cleanup lib/kobject.c:673 [inline]
- kobject_release lib/kobject.c:704 [inline]
- kref_put include/linux/kref.h:65 [inline]
- kobject_put+0x1c8/0x540 lib/kobject.c:721
- netdev_run_todo+0x72e/0x10b0 net/core/dev.c:10327
-
-After commit faab39f63c1f ("net: allow out-of-order netdev unregistration")
-and commit e5f80fcf869a ("ipv6: give an IPv6 dev to blackhole_netdev"), we
-can add dev_hold_track() in macsec_dev_init() and dev_put_track() in
-macsec_free_netdev() to fix the problem.
-
-Fixes: 2bce1ebed17d ("macsec: fix refcnt leak in module exit routine")
-Reported-by: syzbot+d0e94b65ac259c29ce7a@syzkaller.appspotmail.com
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-Link: https://lore.kernel.org/r/20220531074500.1272846-1-william.xuanziyang@huawei.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/macsec.c |    7 +++++++
- 1 file changed, 7 insertions(+)
-
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -99,6 +99,7 @@ struct pcpu_secy_stats {
-  * struct macsec_dev - private data
-  * @secy: SecY config
-  * @real_dev: pointer to underlying netdevice
-+ * @dev_tracker: refcount tracker for @real_dev reference
-  * @stats: MACsec device stats
-  * @secys: linked list of SecY's on the underlying device
-  * @gro_cells: pointer to the Generic Receive Offload cell
-@@ -107,6 +108,7 @@ struct pcpu_secy_stats {
- struct macsec_dev {
- 	struct macsec_secy secy;
- 	struct net_device *real_dev;
-+	netdevice_tracker dev_tracker;
- 	struct pcpu_secy_stats __percpu *stats;
- 	struct list_head secys;
- 	struct gro_cells gro_cells;
-@@ -3459,6 +3461,9 @@ static int macsec_dev_init(struct net_de
- 	if (is_zero_ether_addr(dev->broadcast))
- 		memcpy(dev->broadcast, real_dev->broadcast, dev->addr_len);
- 
-+	/* Get macsec's reference to real_dev */
-+	dev_hold_track(real_dev, &macsec->dev_tracker, GFP_KERNEL);
-+
- 	return 0;
- }
- 
-@@ -3704,6 +3709,8 @@ static void macsec_free_netdev(struct ne
- 	free_percpu(macsec->stats);
- 	free_percpu(macsec->secy.tx_sc.stats);
- 
-+	/* Get rid of the macsec's reference to real_dev */
-+	dev_put_track(macsec->real_dev, &macsec->dev_tracker);
- }
- 
- static void macsec_setup(struct net_device *dev)
-
+-- 
+2.25.1
 
