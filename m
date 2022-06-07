@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 579BEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:13:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C946FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383873AbiFGWNS (ORCPT
+        id S1353748AbiFGWNZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33150 "EHLO
+        Tue, 7 Jun 2022 18:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379775AbiFGVK7 (ORCPT
+        with ESMTP id S1379821AbiFGVLD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:10:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864B0215E55;
-        Tue,  7 Jun 2022 11:52:04 -0700 (PDT)
+        Tue, 7 Jun 2022 17:11:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A438B215E7F;
+        Tue,  7 Jun 2022 11:52:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB0FB61787;
-        Tue,  7 Jun 2022 18:52:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBC36C385A2;
-        Tue,  7 Jun 2022 18:52:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 259B8B81FE1;
+        Tue,  7 Jun 2022 18:52:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ED2CC385A2;
+        Tue,  7 Jun 2022 18:52:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627923;
-        bh=yWcmRdVyi+FWys7GZ9HWj6oxRlxBcBG6kQKuSmRN7nY=;
+        s=korg; t=1654627925;
+        bh=OkvOHVTj+0RUFez+W4m7EDCBB4EaSlENkTb8ZwkIaAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nlxCumJ7KfDghPj03b5R3q+PCe0sbPpqXFcHnfFJQr5M+97/Zy3LRfwnBZV2OAfEs
-         CFT+jdwDkOcEWTZZixHVem4BVUkO6BGpbb7DtzV0G/wHesbCmt+B0BBm3YOUyq/2RB
-         2ojD3SOMDlexAQ+b2EksFUJ4jDWnDp02eAaxk/xo=
+        b=Iee8egRh1HPtgHgTpiedPTd0c7uOilwPVWg18V4c+vghMrEyKOJERngoXS/guJ+Fg
+         abdWb3T0etPgL3WJCLYfbC5OG7gkUuEsx+xYHaS/sl0Lo4jV5dyozeW2eOdcQ8NGEr
+         1iH1WfpArBEa0sYnQQkajwBkeL4R4EjNAjBnbd0I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Brent Lu <brent.lu@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Yihang Li <liyihang6@hisilicon.com>,
+        Xiang Chen <chenxiang66@hisilicon.com>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 141/879] ASoC: Intel: sof_ssp_amp: fix no DMIC BE Link on Chromebooks
-Date:   Tue,  7 Jun 2022 18:54:19 +0200
-Message-Id: <20220607165006.798317953@linuxfoundation.org>
+Subject: [PATCH 5.18 142/879] scsi: hisi_sas: Undo RPM resume for failed notify phy event for v3 HW
+Date:   Tue,  7 Jun 2022 18:54:20 +0200
+Message-Id: <20220607165006.827225822@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,73 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brent Lu <brent.lu@intel.com>
+From: Xiang Chen <chenxiang66@hisilicon.com>
 
-[ Upstream commit d1c808765deb2bcd35d827402ed4d75d068aae18 ]
+[ Upstream commit 9b5387fe5af38116b452259d87cd66594b6277c1 ]
 
-The SOF topology supports 2 BE Links(dmic01 and dmic16k) and each
-link supports up to four DMICs. However, Chromebook does not implement
-ACPI NHLT table so the mach->mach_params.dmic_num is always zero. We
-add a quirk so machine driver knows it's running on a Chromebook and
-need to create BE Links for DMIC.
+If we fail to notify the phy up event then undo the RPM resume, as the phy
+up notify event handling pairs with that RPM resume.
 
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Signed-off-by: Brent Lu <brent.lu@intel.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220509170922.54868-3-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/1651839939-101188-1-git-send-email-john.garry@huawei.com
+Reported-by: Yihang Li <liyihang6@hisilicon.com>
+Tested-by: Yihang Li <liyihang6@hisilicon.com>
+Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/boards/sof_ssp_amp.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/intel/boards/sof_ssp_amp.c b/sound/soc/intel/boards/sof_ssp_amp.c
-index 88530e9de543..ef70c6f27fe1 100644
---- a/sound/soc/intel/boards/sof_ssp_amp.c
-+++ b/sound/soc/intel/boards/sof_ssp_amp.c
-@@ -9,6 +9,7 @@
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index 79f87d7c3e68..7d819fc0395e 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -1563,9 +1563,15 @@ static irqreturn_t phy_up_v3_hw(int phy_no, struct hisi_hba *hisi_hba)
  
- #include <linux/acpi.h>
- #include <linux/delay.h>
-+#include <linux/dmi.h>
- #include <linux/module.h>
- #include <linux/platform_device.h>
- #include <sound/core.h>
-@@ -78,6 +79,16 @@ struct sof_card_private {
- 	bool idisp_codec;
- };
+ 	phy->port_id = port_id;
  
-+static const struct dmi_system_id chromebook_platforms[] = {
-+	{
-+		.ident = "Google Chromebooks",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Google"),
-+		}
-+	},
-+	{},
-+};
-+
- static const struct snd_soc_dapm_widget sof_ssp_amp_dapm_widgets[] = {
- 	SND_SOC_DAPM_MIC("SoC DMIC", NULL),
- };
-@@ -371,7 +382,7 @@ static int sof_ssp_amp_probe(struct platform_device *pdev)
- 	struct snd_soc_dai_link *dai_links;
- 	struct snd_soc_acpi_mach *mach;
- 	struct sof_card_private *ctx;
--	int dmic_be_num, hdmi_num = 0;
-+	int dmic_be_num = 0, hdmi_num = 0;
- 	int ret, ssp_codec;
+-	/* Call pm_runtime_put_sync() with pairs in hisi_sas_phyup_pm_work() */
++	/*
++	 * Call pm_runtime_get_noresume() which pairs with
++	 * hisi_sas_phyup_pm_work() -> pm_runtime_put_sync().
++	 * For failure call pm_runtime_put() as we are in a hardirq context.
++	 */
+ 	pm_runtime_get_noresume(dev);
+-	hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
++	res = hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
++	if (!res)
++		pm_runtime_put(dev);
  
- 	ctx = devm_kzalloc(&pdev->dev, sizeof(*ctx), GFP_KERNEL);
-@@ -383,7 +394,8 @@ static int sof_ssp_amp_probe(struct platform_device *pdev)
- 
- 	mach = pdev->dev.platform_data;
- 
--	dmic_be_num = mach->mach_params.dmic_num;
-+	if (dmi_check_system(chromebook_platforms) || mach->mach_params.dmic_num > 0)
-+		dmic_be_num = 2;
- 
- 	ssp_codec = sof_ssp_amp_quirk & SOF_AMPLIFIER_SSP_MASK;
+ 	res = IRQ_HANDLED;
  
 -- 
 2.35.1
