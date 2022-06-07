@@ -2,133 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E61BCCCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 08:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE2EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 08:07:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238020AbiFGIB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 04:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32796 "EHLO
+        id S238044AbiFGIH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 04:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231132AbiFGIBx (ORCPT
+        with ESMTP id S238003AbiFGIH0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 04:01:53 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFA7CC162;
-        Tue,  7 Jun 2022 01:01:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654588912; x=1686124912;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mQzWEDPxMO7UmRFxluiJ1Ca9g136QsEllPnrNDFo86E=;
-  b=LYdWTevVknceaxiHI5ZDb/kI7p95Z6aLACFHfjht6bFO/e1Fv3uLKpyh
-   IyNoGXGjrm37ZETgDB6N8giq+NDy+DeLckytqVwU43agmCIfCWz0Cansc
-   kAGfJYfAPMNnrF2Q3dnEZnpddYOrNWLWfE1Mjm0H7bjOoxQlljfV/6oJm
-   gkJ2ANcVbNT0/4ef9eABJk17qVtyiaIsJy8KzcRvcJWjv6BGWsRbI44Dl
-   fQ5QpqRp31rAZM/wBWIFIQUef1hyrKVlrrUyczfKy0WZALp13iCcGpsGl
-   CBKunH91Zx/Rt+1+6NUiGvpWqZQGcbH6hk9zyI1055+TM59Yl8uK7Fc5/
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="302073764"
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="302073764"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 01:01:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="709385390"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 07 Jun 2022 01:01:47 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nyU9q-000DUT-Qe;
-        Tue, 07 Jun 2022 08:01:46 +0000
-Date:   Tue, 7 Jun 2022 16:01:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-fsdevel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-aio@kvack.org, linux-btrfs@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        cluster-devel@redhat.com, linux-mm@kvack.org,
-        linux-xfs@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-ntfs-dev@lists.sourceforge.net, ocfs2-devel@oss.oracle.com,
-        linux-mtd@lists.infradead.org,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH 04/20] mm/migrate: Convert buffer_migrate_page() to
- buffer_migrate_folio()
-Message-ID: <202206071552.6lOdScLW-lkp@intel.com>
-References: <20220606204050.2625949-5-willy@infradead.org>
+        Tue, 7 Jun 2022 04:07:26 -0400
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7616BA441;
+        Tue,  7 Jun 2022 01:07:21 -0700 (PDT)
+Received: by mail-qt1-f180.google.com with SMTP id y15so12091257qtx.4;
+        Tue, 07 Jun 2022 01:07:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8nGjrTIeofqRJeA4GWWs8vd7hIjiLENiB/8ryQPveu0=;
+        b=DNFR9EZhTaflmlytk8SVGW6fA2NnqGMqXps0BnhcUwhC/n5/VEtkkJzeMdLt3MOJyE
+         zLUHvSHYxLkwaHOe9rQlRX1vRNg9MGLx52IJSSwHszhnCC4+1JLC1w/oJvfb1Evu0Qwn
+         gb6EpEDW3JbmcJ/omJ/06A4FOWkN7Jxo8c4RZmNaKawHw5eES+GF3pH15l6HKojigZGI
+         /vqGO8Bbqo8OeSpBQSs+ETEjuFjKasu69E0QexkuKFWf9zCgYr6yEhIQlTX+QEd6pTY7
+         CtCbVNVwp43RUfztCBpbWIkIlz3qh+8OUVzDaPA6yqW82EwuRaKmm4mPsFvuQpVDitzW
+         xI2g==
+X-Gm-Message-State: AOAM532FbqfMQV7cjAi+3ZX4pRMf8wwg8hIbff6MbLDMDbR/YzB/jFaT
+        EE7vEp/eYbeknYnz0VNASx4Afa5D72+qlA==
+X-Google-Smtp-Source: ABdhPJwTs8QYYzk92z2c+3mHSnKJgN2imVXGdT70UsjlTeykYQrug7B83FJNbMjSiT5ljpVjaVsbQw==
+X-Received: by 2002:ac8:4e82:0:b0:304:efb6:6197 with SMTP id 2-20020ac84e82000000b00304efb66197mr5317481qtp.224.1654589240349;
+        Tue, 07 Jun 2022 01:07:20 -0700 (PDT)
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
+        by smtp.gmail.com with ESMTPSA id j19-20020a05620a289300b006a6ab259261sm7903280qkp.29.2022.06.07.01.07.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 01:07:20 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-30ec2aa3b6cso166597467b3.11;
+        Tue, 07 Jun 2022 01:07:19 -0700 (PDT)
+X-Received: by 2002:a81:4811:0:b0:30c:8021:4690 with SMTP id
+ v17-20020a814811000000b0030c80214690mr30121193ywa.47.1654589239317; Tue, 07
+ Jun 2022 01:07:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220606204050.2625949-5-willy@infradead.org>
+References: <cover.1654529011.git.mchehab@kernel.org> <39b24f99f5b71eb5ac025b438b7eb2a0df2258a1.1654529011.git.mchehab@kernel.org>
+In-Reply-To: <39b24f99f5b71eb5ac025b438b7eb2a0df2258a1.1654529011.git.mchehab@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 7 Jun 2022 10:07:07 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUPfOjVWkDgthbhxrgyfb8oEjRh61xWxL7=HX0PfCxpHA@mail.gmail.com>
+Message-ID: <CAMuHMdUPfOjVWkDgthbhxrgyfb8oEjRh61xWxL7=HX0PfCxpHA@mail.gmail.com>
+Subject: Re: [PATCH 23/23] arch: m68k: q40: README: drop references to IDE driver
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Matthew,
+Hi Mauro,
 
-I love your patch! Perhaps something to improve:
+Thanks for your patch!
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v5.19-rc1 next-20220607]
-[cannot apply to jaegeuk-f2fs/dev-test trondmy-nfs/linux-next kdave/for-next xfs-linux/for-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+On Mon, Jun 6, 2022 at 5:25 PM Mauro Carvalho Chehab <mchehab@kernel.org> wrote:
+> Since IDE support was deleted by Christoph Hellwig <hch@lst.de>,
+> Jun 16 2021, drop the left-over from README file.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Matthew-Wilcox-Oracle/Convert-aops-migratepage-to-aops-migrate_folio/20220607-044509
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git f2906aa863381afb0015a9eb7fefad885d4e5a56
-config: s390-randconfig-c005-20220606 (https://download.01.org/0day-ci/archive/20220607/202206071552.6lOdScLW-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b92436efcb7813fc481b30f2593a4907568d917a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/96e64ba8b1be545885d89f44b1d8b968b22bdb4d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Matthew-Wilcox-Oracle/Convert-aops-migratepage-to-aops-migrate_folio/20220607-044509
-        git checkout 96e64ba8b1be545885d89f44b1d8b968b22bdb4d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
+This is only half of the story, cfr. commit 44b1fbc0f5f30e66 ("m68k/q40:
+Replace q40ide driver with pata_falcon and falconide").
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> Fixes: b7fb14d3ac63 ("ide: remove the legacy ide driver")
 
-All warnings (new ones prefixed by >>):
+Hence this Fixes tag should be dropped...
 
->> mm/migrate.c:775: warning: expecting prototype for buffer_migrate_folio_noref(). Prototype was for buffer_migrate_folio_norefs() instead
+> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> ---
+>
+> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+> See [PATCH 00/23] at: https://lore.kernel.org/all/cover.1654529011.git.mchehab@kernel.org/
+>
+>  arch/m68k/q40/README | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+>
+> diff --git a/arch/m68k/q40/README b/arch/m68k/q40/README
+> index a4991d2d8af6..4db6db54d57a 100644
+> --- a/arch/m68k/q40/README
+> +++ b/arch/m68k/q40/README
+> @@ -30,9 +30,7 @@ drivers used by the Q40, apart from the very obvious (console etc.):
+>                      genrtc.c           # RTC
+>                 char/joystick/*         # most of this should work, not
+>                                         # in default config.in
+> -               block/q40ide.c          # startup for ide
+> -                     ide*              # see Documentation/ide/ide.rst
 
+... and the above should be replaced by ata/pata_falcon.c.
+There doesn't seem to be an ATA replacement for Documentation/ide/ide.rst?
 
-vim +775 mm/migrate.c
+> -                     floppy.c          # normal PC driver, DMA emu in asm/floppy.h
+> +               block/floppy.c          # normal PC driver, DMA emu in asm/floppy.h
+>                                         # and arch/m68k/kernel/entry.S
+>                                         # see drivers/block/README.fd
+>                 net/ne.c
 
-89cb0888ca1483 Jan Kara                2018-12-28  758  
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  759) /**
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  760)  * buffer_migrate_folio_noref() - Migration function for folios with buffers.
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  761)  * @mapping: The address space containing @src.
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  762)  * @dst: The folio to migrate to.
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  763)  * @src: The folio to migrate from.
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  764)  * @mode: How to migrate the folio.
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  765)  *
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  766)  * Like buffer_migrate_folio() except that this variant is more careful
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  767)  * and checks that there are also no buffer head references. This function
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  768)  * is the right one for mappings where buffer heads are directly looked
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  769)  * up and referenced (such as block device mappings).
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  770)  *
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  771)  * Return: 0 on success or a negative errno on failure.
-89cb0888ca1483 Jan Kara                2018-12-28  772   */
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  773) int buffer_migrate_folio_norefs(struct address_space *mapping,
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  774) 		struct folio *dst, struct folio *src, enum migrate_mode mode)
-89cb0888ca1483 Jan Kara                2018-12-28 @775  {
-96e64ba8b1be54 Matthew Wilcox (Oracle  2022-06-06  776) 	return __buffer_migrate_folio(mapping, dst, src, mode, true);
-89cb0888ca1483 Jan Kara                2018-12-28  777  }
-9361401eb7619c David Howells           2006-09-30  778  #endif
-1d8b85ccf1ed53 Christoph Lameter       2006-06-23  779  
+Gr{oetje,eeting}s,
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
