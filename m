@@ -2,93 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D60B9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6734BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:19:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354338AbiFGTSs (ORCPT
+        id S1354141AbiFGTS6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:18:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
+        Tue, 7 Jun 2022 15:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351673AbiFGSaU (ORCPT
+        with ESMTP id S1351579AbiFGSaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:30:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C10E17B85D;
-        Tue,  7 Jun 2022 10:55:38 -0700 (PDT)
+        Tue, 7 Jun 2022 14:30:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C816817B85B;
+        Tue,  7 Jun 2022 10:55:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 038D7617A8;
-        Tue,  7 Jun 2022 17:55:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 142E0C34115;
-        Tue,  7 Jun 2022 17:55:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624537;
-        bh=2YrUAPy0Va4065/bPQ5aKGCMCndYYbCob222IpPQICg=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A059B82370;
+        Tue,  7 Jun 2022 17:55:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E23E0C341C5;
+        Tue,  7 Jun 2022 17:55:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624536;
+        bh=reSh3o33ZqNq0NqYioUu+8w+hd6FEd7K/Cf3BqMB9N8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lai+P6vhoodwBtEqsq4qWjx4l+t+05hPf34LBpS+0sE/pcKdss8FTw9Rj868/4Wyz
-         mpupBF9uu4SHC9gqbVufMxaxXolI9zpA/avfMILcgLL1fhS8zNtcbzbA/l59lNdOwb
-         MFv3HCr9Ds4a4Hl/eS7VW9L5G0rhbrqiK+/RzEqk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 364/667] net: stmmac: selftests: Use kcalloc() instead of kzalloc()
-Date:   Tue,  7 Jun 2022 19:00:29 +0200
-Message-Id: <20220607164945.670784826@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=Yyp3XO9lLG8PDkjm6oHJrzY+j9nDVAjwZRIrs0a5GrJdii72ofS3KTB8A82pH9RVN
+         NCKyZ8QdUHxR+68D1uCxx5PapObMJ0sr1/8A3G9nWL3KbchYQUdDP/0b421I15aD0R
+         DCppTRSLOZrO5Qh0i5JCx2UefmyC+AESenCI2XjVERO8H2fAIJt3YdRtKTLhT5WgxO
+         V22IKKIjH5iFuSAt3jqpCE9f9fdzRMKUEvXV+WxWqWSvzTLkASKVpXCyauyINWlSJD
+         Xfn0Y2JOAChdGPhjgMPA8PR1tiODdtT6vij1gLI2KWIb6o+UAd0wvxlNe3HCKz9+/u
+         f05G/tVnsFfsQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>, frankja@linux.ibm.com,
+        gor@linux.ibm.com, kvm@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 57/60] s390/gmap: voluntarily schedule during key setting
+Date:   Tue,  7 Jun 2022 13:52:54 -0400
+Message-Id: <20220607175259.478835-57-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gustavo A. R. Silva <gustavoars@kernel.org>
+From: Christian Borntraeger <borntraeger@linux.ibm.com>
 
-[ Upstream commit 36371876e000012ae4440fcf3097c2f0ed0f83e7 ]
+[ Upstream commit 6d5946274df1fff539a7eece458a43be733d1db8 ]
 
-Use 2-factor multiplication argument form kcalloc() instead
-of kzalloc().
+With large and many guest with storage keys it is possible to create
+large latencies or stalls during initial key setting:
 
-Link: https://github.com/KSPP/linux/issues/162
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-Link: https://lore.kernel.org/r/20211006180944.GA913477@embeddedor
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+rcu: INFO: rcu_sched self-detected stall on CPU
+rcu:   18-....: (2099 ticks this GP) idle=54e/1/0x4000000000000002 softirq=35598716/35598716 fqs=998
+       (t=2100 jiffies g=155867385 q=20879)
+Task dump for CPU 18:
+CPU 1/KVM       R  running task        0 1030947 256019 0x06000004
+Call Trace:
+sched_show_task
+rcu_dump_cpu_stacks
+rcu_sched_clock_irq
+update_process_times
+tick_sched_handle
+tick_sched_timer
+__hrtimer_run_queues
+hrtimer_interrupt
+do_IRQ
+ext_int_handler
+ptep_zap_key
+
+The mmap lock is held during the page walking but since this is a
+semaphore scheduling is still possible. Same for the kvm srcu.
+To minimize overhead do this on every segment table entry or large page.
+
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Reviewed-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220530092706.11637-2-borntraeger@linux.ibm.com
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/s390/mm/gmap.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-index 0462dcc93e53..e649a3e6a529 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-@@ -1104,13 +1104,13 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
- 		goto cleanup_sel;
- 	}
+diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
+index dfee0ebb2fac..88f6d923ee45 100644
+--- a/arch/s390/mm/gmap.c
++++ b/arch/s390/mm/gmap.c
+@@ -2601,6 +2601,18 @@ static int __s390_enable_skey_pte(pte_t *pte, unsigned long addr,
+ 	return 0;
+ }
  
--	actions = kzalloc(nk * sizeof(*actions), GFP_KERNEL);
-+	actions = kcalloc(nk, sizeof(*actions), GFP_KERNEL);
- 	if (!actions) {
- 		ret = -ENOMEM;
- 		goto cleanup_exts;
- 	}
++/*
++ * Give a chance to schedule after setting a key to 256 pages.
++ * We only hold the mm lock, which is a rwsem and the kvm srcu.
++ * Both can sleep.
++ */
++static int __s390_enable_skey_pmd(pmd_t *pmd, unsigned long addr,
++				  unsigned long next, struct mm_walk *walk)
++{
++	cond_resched();
++	return 0;
++}
++
+ static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
+ 				      unsigned long hmask, unsigned long next,
+ 				      struct mm_walk *walk)
+@@ -2623,12 +2635,14 @@ static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
+ 	end = start + HPAGE_SIZE - 1;
+ 	__storage_key_init_range(start, end);
+ 	set_bit(PG_arch_1, &page->flags);
++	cond_resched();
+ 	return 0;
+ }
  
--	act = kzalloc(nk * sizeof(*act), GFP_KERNEL);
-+	act = kcalloc(nk, sizeof(*act), GFP_KERNEL);
- 	if (!act) {
- 		ret = -ENOMEM;
- 		goto cleanup_actions;
+ static const struct mm_walk_ops enable_skey_walk_ops = {
+ 	.hugetlb_entry		= __s390_enable_skey_hugetlb,
+ 	.pte_entry		= __s390_enable_skey_pte,
++	.pmd_entry		= __s390_enable_skey_pmd,
+ };
+ 
+ int s390_enable_skey(void)
 -- 
 2.35.1
-
-
 
