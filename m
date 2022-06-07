@@ -2,89 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14CB3C2BBF0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4077CCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354932AbiFGS5a (ORCPT
+        id S1354975AbiFGS5i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42256 "EHLO
+        Tue, 7 Jun 2022 14:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352416AbiFGSRI (ORCPT
+        with ESMTP id S1352375AbiFGSRE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505812716B;
-        Tue,  7 Jun 2022 10:52:03 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D659BF89C;
+        Tue,  7 Jun 2022 10:51:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA53FB82366;
-        Tue,  7 Jun 2022 17:52:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCCD5C34119;
-        Tue,  7 Jun 2022 17:51:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624320;
-        bh=aqBhceqBGhC+HNxaI5YNjyD+0ZRKEAmv1OOd4cUY2SY=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38B09617A8;
+        Tue,  7 Jun 2022 17:51:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4270EC385A5;
+        Tue,  7 Jun 2022 17:51:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624288;
+        bh=CdgY2UMdM7b4PIzezruemoOeBob9V9P4jF5Sqw7qqn0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WIO/KgIgI7mwWA611k4B0yOcu3Ja91pgk4SZDZuJ3xkQVpo0B8N8HEFrfOmJRgCAi
-         cFgl/HfzVsXp1O9KDhpov/SWJadfF6aYCuLeluMUVgrRJJ8hYjNcvPFTlGFpcJyQ0X
-         p18R5G32Wat0GE1QR84sRswIxVLvWN4a+0z+A28EZrKv01PAW0ljru7prAzF1w61FI
-         x1LYPIg7uRWXxptsSn+/SDN7WJii0LfsHvBKKOL1HA0aRSH38zPXg7wLSHCD1zqAlb
-         JdX/1O1FPxztGt3LoYVp3FimonQnRjw4Y8dnZB1JknmrvBzt7gNF2ieGqLSj84h6kA
-         vvFyDzIFnU+JQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lijo Lazar <lijo.lazar@amd.com>,
-        Yang Wang <kevinyang.wang@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, kevin1.wang@amd.com, luben.tuikov@amd.com,
-        Stanley.Yang@amd.com, tao.zhou1@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.18 49/68] drm/amd/pm: Fix missing thermal throttler status
-Date:   Tue,  7 Jun 2022 13:48:15 -0400
-Message-Id: <20220607174846.477972-49-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=yI1AkgNEvZVdo3G67EjG2J7xNQeVuLTPGMt2Cyu83dm+7646HgQJBxQoOYxTVKWfq
+         ZqZtDM3kiM6RKzSx5VRFZLSIr+lzWorEfkpy/G0cTA1usBNWfV76aKsMj7os+lLQMl
+         TJ/tMBPBD795bYdZruOKCZyGZIJMYtvRHdUtxDls=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jagan Teki <jagan@amarulasolutions.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 274/667] drm/panel: panel-simple: Fix proper bpc for AM-1280800N3TZQW-T00H
+Date:   Tue,  7 Jun 2022 18:58:59 +0200
+Message-Id: <20220607164943.003208468@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lijo Lazar <lijo.lazar@amd.com>
+From: Jagan Teki <jagan@amarulasolutions.com>
 
-[ Upstream commit b0f4d663fce6a4232d3c20ce820f919111b1c60b ]
+[ Upstream commit 7eafbecd2288c542ea15ea20cf1a7e64a25c21bc ]
 
-On aldebaran, when thermal throttling happens due to excessive GPU
-temperature, the reason for throttling event is missed in warning
-message. This patch fixes it.
+AM-1280800N3TZQW-T00H panel support 8 bpc not 6 bpc as per
+recent testing in i.MX8MM platform.
 
-Signed-off-by: Lijo Lazar <lijo.lazar@amd.com>
-Reviewed-by: Yang Wang <kevinyang.wang@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fix it.
+
+Fixes: bca684e69c4c ("drm/panel: simple: Add AM-1280800N3TZQW-T00H")
+Signed-off-by: Jagan Teki <jagan@amarulasolutions.com>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211111094103.494831-1-jagan@amarulasolutions.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/panel/panel-simple.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
-index cd81f848d45a..7f998f24af81 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
-@@ -1664,6 +1664,7 @@ static const struct throttling_logging_label {
- 	uint32_t feature_mask;
- 	const char *label;
- } logging_label[] = {
-+	{(1U << THROTTLER_TEMP_GPU_BIT), "GPU"},
- 	{(1U << THROTTLER_TEMP_MEM_BIT), "HBM"},
- 	{(1U << THROTTLER_TEMP_VR_GFX_BIT), "VR of GFX rail"},
- 	{(1U << THROTTLER_TEMP_VR_MEM_BIT), "VR of HBM rail"},
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index 93a1d6b41117..8dd7013c75f2 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -862,7 +862,7 @@ static const struct drm_display_mode ampire_am_1280800n3tzqw_t00h_mode = {
+ static const struct panel_desc ampire_am_1280800n3tzqw_t00h = {
+ 	.modes = &ampire_am_1280800n3tzqw_t00h_mode,
+ 	.num_modes = 1,
+-	.bpc = 6,
++	.bpc = 8,
+ 	.size = {
+ 		.width = 217,
+ 		.height = 136,
 -- 
 2.35.1
+
+
 
