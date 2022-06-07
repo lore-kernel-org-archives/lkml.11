@@ -2,85 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8412C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE06CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:33:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232947AbiFGWdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:33:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44106 "EHLO
+        id S1381529AbiFGWdM (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 18:33:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380483AbiFGVQW (ORCPT
+        with ESMTP id S1380424AbiFGVQS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:16:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9609621D3F0;
-        Tue,  7 Jun 2022 11:55:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF396B82182;
-        Tue,  7 Jun 2022 18:55:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5538CC385A5;
-        Tue,  7 Jun 2022 18:55:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628110;
-        bh=87fusB1NbeF9d5w5FokHgelhk1HMeGJ7WnXMAGuYKQw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EfB+GPB7W22LB3MUc+gl9xd6bLXhMqyNudm8ZmkMU3TP9M+DCEkRriFBCenZ4dlx+
-         ng7oakCh/h6Hxc8h6rGvjVziw+dHCZlzXr4G5u+XKKoiv05DMgt8bj9sgIfch2zHSs
-         FqSOhCMajwS2geHLnkqgJqJZoEXW1XiR6OgXecNk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 211/879] ARM: dts: ox820: align interrupt controller node name with dtschema
-Date:   Tue,  7 Jun 2022 18:55:29 +0200
-Message-Id: <20220607165008.976963456@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:16:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 907D46FA1F
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:55:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654628105;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=c3aEghlIFYXizBn7fhAGiu6GPETp/GU2W/Dl4rLj3u8=;
+        b=ENOADYxcN+DRtiEGUKXWpGVTWOvrJ+YACtCDSzviA0f45R8wahAhVSUTEH9G43nAb88HzB
+        gd2SIbyk9PZw6G3rDT8dEMn5qS0GKaEcfPKIamgxEmgi2EW48DRcMyM1k++ktatj6ScUzX
+        pE2wqWCMf+QdhsAi6VTd+GgKWG/UHZs=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-110-SvZRZizaOM6tEb9QUeDRoQ-1; Tue, 07 Jun 2022 14:55:05 -0400
+X-MC-Unique: SvZRZizaOM6tEb9QUeDRoQ-1
+Received: by mail-il1-f199.google.com with SMTP id a3-20020a924443000000b002d1bc79da14so14334434ilm.15
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:55:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=c3aEghlIFYXizBn7fhAGiu6GPETp/GU2W/Dl4rLj3u8=;
+        b=X4lebnES4QdSdzB6ngT+z6rI/+IYAjxdl8nNjovARicoaFQ/SFCWoComIDAPQa2xF8
+         cnLYsPG426uA5zboQzA+JfmPcHSdc07ODMNtVEKgDYbvrTOYq1G9rWZ1xXKemm9H8UhJ
+         YnfLl+IzffYyUd7fuPa8TitXr1TzPcOH4TopRs8n3IZVLTwNQN0aCGORlyugHYDwPx9C
+         Him7DbTMfLG5SMGWYZzG5VRfg7257SVWdCBIIRZGLk6yYDpBj18m/H9vheyA8ZmTtoMt
+         aNUDCrs0++TZjqpOMYiIJ5WZXulRZgbXG5AlxI44JHc0peoYjxuhagFvA4fWTSvb/nZI
+         pwzA==
+X-Gm-Message-State: AOAM5328PRxJH4g9eaT9NxJZ92naXI99XmAXWSLapparmnvOuJrMxT4H
+        JPGw7Bpn8mu6oFcF460WhBCNf3uDkd4/Gm8fCkSflfRsKM13V01DVn1jUHSBrRljOp0W6p/jICs
+        1DOy8nl/EIeBQxGI8V4w6GDOU
+X-Received: by 2002:a92:c891:0:b0:2d3:a221:ad70 with SMTP id w17-20020a92c891000000b002d3a221ad70mr17415282ilo.99.1654628104167;
+        Tue, 07 Jun 2022 11:55:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwAWiMxiIah55qjWrBgtZJoBW5mBNKo/lw5sPFyB6V+3oGTBURSejh1hzG6kMrqhY/vmksCkg==
+X-Received: by 2002:a92:c891:0:b0:2d3:a221:ad70 with SMTP id w17-20020a92c891000000b002d3a221ad70mr17415270ilo.99.1654628103881;
+        Tue, 07 Jun 2022 11:55:03 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id k14-20020a928e4e000000b002d54d827007sm1580963ilh.17.2022.06.07.11.55.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 11:55:03 -0700 (PDT)
+Date:   Tue, 7 Jun 2022 14:55:01 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Leonardo Bras <leobras@redhat.com>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org,
+        chang.seok.bae@intel.com, luto@kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.16 07/28] x86/kvm/fpu: Limit guest
+ user_xfeatures to supported bits of XCR0
+Message-ID: <Yp+fBeyf7TjI1qgo@xz-m1.local>
+References: <20220301201344.18191-1-sashal@kernel.org>
+ <20220301201344.18191-7-sashal@kernel.org>
+ <5f2b7b93-d4c9-1d59-14df-6e8b2366ca8a@redhat.com>
+ <YppVupW+IWsm7Osr@xz-m1.local>
+ <2d9ba70b-ac18-a461-7a57-22df2c0165c6@redhat.com>
+ <Yp5xSi6P3q187+A+@xz-m1.local>
+ <9d336622-6964-454a-605f-1ca90b902836@redhat.com>
+ <Yp9o+y0NcRW/0puA@google.com>
+ <Yp+WUoA+6x7ZpsaM@xz-m1.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yp+WUoA+6x7ZpsaM@xz-m1.local>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+On Tue, Jun 07, 2022 at 02:17:54PM -0400, Peter Xu wrote:
+> On Tue, Jun 07, 2022 at 03:04:27PM +0000, Sean Christopherson wrote:
+> > On Tue, Jun 07, 2022, Paolo Bonzini wrote:
+> > > On 6/6/22 23:27, Peter Xu wrote:
+> > > > On Mon, Jun 06, 2022 at 06:18:12PM +0200, Paolo Bonzini wrote:
+> > > > > > However there seems to be something missing at least to me, on why it'll
+> > > > > > fail a migration from 5.15 (without this patch) to 5.18 (with this patch).
+> > > > > > In my test case, user_xfeatures will be 0x7 (FP|SSE|YMM) if without this
+> > > > > > patch, but 0x0 if with it.
+> > > > > 
+> > > > > What CPU model are you using for the VM?
+> > > > 
+> > > > I didn't specify it, assuming it's qemu64 with no extra parameters.
+> > > 
+> > > Ok, so indeed it lacks AVX and this patch can have an effect.
+> > > 
+> > > > > For example, if the source lacks this patch but the destination has it,
+> > > > > the source will transmit YMM registers, but the destination will fail to
+> > > > > set them if they are not available for the selected CPU model.
+> > > > > 
+> > > > > See the commit message: "As a bonus, it will also fail if userspace tries to
+> > > > > set fpu features (with the KVM_SET_XSAVE ioctl) that are not compatible to
+> > > > > the guest configuration.  Such features will never be returned by
+> > > > > KVM_GET_XSAVE or KVM_GET_XSAVE2."
+> > > > 
+> > > > IIUC you meant we should have failed KVM_SET_XSAVE when they're not aligned
+> > > > (probably by failing validate_user_xstate_header when checking against the
+> > > > user_xfeatures on dest host). But that's probably not my case, because here
+> > > > KVM_SET_XSAVE succeeded, it's just that the guest gets a double fault after
+> > > > the precopy migration completes (or for postcopy when the switchover is
+> > > > done).
+> > > 
+> > > Difficult to say what's happening without seeing at least the guest code
+> > > around the double fault (above you said "fail a migration" and I thought
+> > > that was a different scenario than the double fault), and possibly which was
+> > > the first exception that contributed to the double fault.
+> > 
+> > Regardless of why the guest explodes in the way it does, is someone planning on
+> > bisecting this (if necessary?) and sending a backport to v5.15?  There's another
+> > bug report that is more than likely hitting the same bug.
+> 
+> What's the bisection you mentioned?  I actually did a bisection and I also
+> checked reverting Leo's change can also fix this issue.  Or do you mean
+> something else?
 
-[ Upstream commit fbcd5ad7a419ad40644a0bb8b4152bc660172d8a ]
+Ah, I forgot to mention on the "stable tree decisions": IIUC it also means
+we should apply Leo's patch to all the stable trees if possible, then
+migrations between them won't trigger the misterous faults anymore,
+including when migrating to the latest Linux versions.
 
-Fixes dtbs_check warnings like:
+However there's the delimma that other kernels (any kernel that does not
+have Leo's patch) will start to fail migrations to the stable branches that
+apply Leo's patch too..  So that's kind of a slight pity.  It's just IIUC
+the stable trees are more important, because it should have a broader
+audience (most Linux distros)?
 
-  gic@1000: $nodename:0: 'gic@1000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
+> 
+> > 
+> > https://lore.kernel.org/all/48353e0d-e771-8a97-21d4-c65ff3bc4192@sentex.net
+> 
+> That is kvm64, and I agree it could be the same problem since both qemu64
+> and kvm64 models do not have any xsave feature bit declared in cpuid 0xd,
+> so potentially we could be migrating some fpu states to it even with
+> user_xfeatures==0 on dest host.
+> 
+> So today I continued the investigation, and I think what's really missing
+> is qemu seems to be ignoring the user_xfeatures check for KVM_SET_XSAVE and
+> continues even if it returns -EINVAL.  IOW, I'm wondering whether we should
+> fail properly and start to check kvm_arch_put_registers() retcode.  But
+> that'll be a QEMU fix, and it'll at least not causing random faults
+> (e.g. double faults) in guest but we should fail the migration gracefully.
+> 
+> Sean: a side note is that I can also easily trigger one WARN_ON_ONCE() in
+> your commit 98c25ead5eda5 in kvm_arch_vcpu_ioctl_run():
+> 
+> 	WARN_ON_ONCE(kvm_lapic_hv_timer_in_use(vcpu));
+> 
+> It'll be great if you'd like to check that up.
+> 
+> Thanks,
+> 
+> -- 
+> Peter Xu
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220317115705.450427-1-krzysztof.kozlowski@canonical.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/boot/dts/ox820.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm/boot/dts/ox820.dtsi b/arch/arm/boot/dts/ox820.dtsi
-index 90846a7655b4..dde4364892bf 100644
---- a/arch/arm/boot/dts/ox820.dtsi
-+++ b/arch/arm/boot/dts/ox820.dtsi
-@@ -287,7 +287,7 @@
- 				clocks = <&armclk>;
- 			};
- 
--			gic: gic@1000 {
-+			gic: interrupt-controller@1000 {
- 				compatible = "arm,arm11mp-gic";
- 				interrupt-controller;
- 				#interrupt-cells = <3>;
 -- 
-2.35.1
-
-
+Peter Xu
 
