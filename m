@@ -2,90 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D78CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D4A9CCA486
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381823AbiFGVpC (ORCPT
+        id S1381916AbiFGVpk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:45:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
+        Tue, 7 Jun 2022 17:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378932AbiFGUwm (ORCPT
+        with ESMTP id S1378749AbiFGUw0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:42 -0400
-X-Greylist: delayed 277 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 11:43:22 PDT
-Received: from 8.mo575.mail-out.ovh.net (8.mo575.mail-out.ovh.net [46.105.74.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692083F332
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:43:20 -0700 (PDT)
-Received: from player746.ha.ovh.net (unknown [10.108.16.8])
-        by mo575.mail-out.ovh.net (Postfix) with ESMTP id B9FFC22A18
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:34:27 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player746.ha.ovh.net (Postfix) with ESMTPSA id 6A0ED1DF14EEC;
-        Tue,  7 Jun 2022 18:34:21 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-108S002f51240c6-cd04-485d-92a4-59fa50673865,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH] backlight: Use backlight helper
-Date:   Tue,  7 Jun 2022 20:34:11 +0200
-Message-Id: <20220607183411.1125030-1-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
+        Tue, 7 Jun 2022 16:52:26 -0400
+Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206B91ADBF
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:42:58 -0700 (PDT)
+X-ASG-Debug-ID: 1654627376-1cf43917f33965e0001-xx1T2L
+Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id 9IJWbVWe0kxl8Q4W; Tue, 07 Jun 2022 14:42:56 -0400 (EDT)
+X-Barracuda-Envelope-From: tonyb@cybernetics.com
+X-ASG-Whitelist: Client
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
+        bh=eQM8tN6t62Fopbgjt8uTQgBSZ1EO2wkhvfxABlFtH9o=;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
+        Content-Language:Subject:MIME-Version:Date:Message-ID; b=IixmWpGiaqvQUprEzkz0
+        RLY8E/16bD+CZb7eDVxwsJJx0WhcGJberWRDEq6vXklSwUFj/Uz/gezadInQpSSObCp8dKbeGiBa7
+        w3Y7jLuYeY+HtSBYaVfbLDLoltgTK+A7YCT6QfatyfhhlsxJVy8j/AsCZzK72KxdoC1mOT995M=
+Received: from [10.157.2.224] (HELO [192.168.200.1])
+  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
+  with ESMTPS id 11859435; Tue, 07 Jun 2022 14:42:56 -0400
+Message-ID: <c918d44b-1822-b076-0833-7645a2079809@cybernetics.com>
+Date:   Tue, 7 Jun 2022 14:42:56 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11111224708588406284
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejgeeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejhe
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: [PATCH v6 05/11] dmapool: improve accuracy of debug statistics
+Content-Language: en-US
+X-ASG-Orig-Subj: [PATCH v6 05/11] dmapool: improve accuracy of debug statistics
+From:   Tony Battersby <tonyb@cybernetics.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tony Lindgren <tony@atomide.com>
+References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
+In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Barracuda-Connect: UNKNOWN[10.10.4.126]
+X-Barracuda-Start-Time: 1654627376
+X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
+X-Barracuda-BRTS-Status: 1
+X-Virus-Scanned: by bsmtpd at cybernetics.com
+X-Barracuda-Scan-Msg-Size: 1818
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-backlight_properties.fb_blank is deprecated. The states it represents
-are handled by other properties; but instead of accessing those
-properties directly, drivers should use the helpers provided by
-backlight.h.
+The "total number of blocks in pool" debug statistic currently does not
+take the boundary value into account, so it diverges from the "total
+number of blocks in use" statistic when a boundary is in effect.  Add a
+calculation for the number of blocks per allocation that takes the
+boundary into account, and use it to replace the inaccurate calculation.
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+This depends on the patch "dmapool: fix boundary comparison" for the
+calculated blks_per_alloc value to be correct.
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: linuxppc-dev@lists.ozlabs.org
+Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
 ---
- drivers/macintosh/via-pmu-backlight.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/macintosh/via-pmu-backlight.c b/drivers/macintosh/via-pmu-backlight.c
-index 2194016122d2..c2d87e7fa85b 100644
---- a/drivers/macintosh/via-pmu-backlight.c
-+++ b/drivers/macintosh/via-pmu-backlight.c
-@@ -71,12 +71,7 @@ static int pmu_backlight_get_level_brightness(int level)
- static int __pmu_backlight_update_status(struct backlight_device *bd)
- {
- 	struct adb_request req;
--	int level = bd->props.brightness;
--
--
--	if (bd->props.power != FB_BLANK_UNBLANK ||
--	    bd->props.fb_blank != FB_BLANK_UNBLANK)
--		level = 0;
-+	int level = backlight_get_brightness(bd);
+The added blks_per_alloc value will also be used in the next patch.
+
+ mm/dmapool.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/mm/dmapool.c b/mm/dmapool.c
+index 122781fe2c03..d3e5a6151fb4 100644
+--- a/mm/dmapool.c
++++ b/mm/dmapool.c
+@@ -47,6 +47,7 @@ struct dma_pool {		/* the pool */
+ 	unsigned int size;
+ 	unsigned int allocation;
+ 	unsigned int boundary;
++	unsigned int blks_per_alloc;
+ 	char name[32];
+ 	struct list_head pools;
+ };
+@@ -85,8 +86,7 @@ static ssize_t pools_show(struct device *dev, struct device_attribute *attr, cha
+ 		/* per-pool info, no real statistics yet */
+ 		size += sysfs_emit_at(buf, size, "%-16s %4zu %4zu %4u %2u\n",
+ 				      pool->name, blocks,
+-				      (size_t) pages *
+-				      (pool->allocation / pool->size),
++				      (size_t) pages * pool->blks_per_alloc,
+ 				      pool->size, pages);
+ 	}
+ 	mutex_unlock(&pools_lock);
+@@ -159,6 +159,9 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
+ 	retval->size = size;
+ 	retval->boundary = boundary;
+ 	retval->allocation = allocation;
++	retval->blks_per_alloc =
++		(allocation / boundary) * (boundary / size) +
++		(allocation % boundary) / size;
  
- 	if (level > 0) {
- 		int pmulevel = pmu_backlight_get_level_brightness(level);
-
-base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+ 	INIT_LIST_HEAD(&retval->pools);
+ 
 -- 
-2.30.2
+2.25.1
 
