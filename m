@@ -2,107 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71AFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:59:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E76D1CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347181AbiFGS7w (ORCPT
+        id S1352787AbiFGS7z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46938 "EHLO
+        Tue, 7 Jun 2022 14:59:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352561AbiFGSVO (ORCPT
+        with ESMTP id S1352560AbiFGSVO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:21:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6277488A7;
-        Tue,  7 Jun 2022 10:53:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F4F43EE7;
+        Tue,  7 Jun 2022 10:53:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C94AB82375;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 487B5B82372;
         Tue,  7 Jun 2022 17:53:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED1CC385A5;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 371B7C36B00;
         Tue,  7 Jun 2022 17:53:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624418;
-        bh=6YrCI+l0IOC3AVhc9noSBQK9oVvDSAmwD3NpB6TjHo8=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624418;
+        bh=KPi+PDnXetNqe8k0T50PiyVPHdsSkTnx9m4diIFuL3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XQngWVD7VjUSDYZTjZDao5RrKjYdmKm54BmeF+6L6nh8y9e1Ot+IzIa8k6eoDPSp8
-         7jJYExj+zPsPcvW3nghI0VOr5hm45Hlf0Vsu/9JeNDF0s1Fwj2OQT3DnawbSUECUmr
-         ZG9MICQVpgJ4wvt/rJm4eVO+AgMfXayO1t3Qk+Y4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Hugues Fruchet <hugues.fruchet@foss.st.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 321/667] media: st-delta: Fix PM disable depth imbalance in delta_probe
-Date:   Tue,  7 Jun 2022 18:59:46 +0200
-Message-Id: <20220607164944.398790654@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=OwTHk1Pu5TYAxERGqeq6A7DwPmpTMCXStWbZKHEabU6c2RLXufl4Mya3nlVk+znCl
+         hWoCLm5Ev5R5pSh9PmDy3ERC9w0JlDVN8UVsNe2CVtS68po76/vv2KYYRtFJcGgjbh
+         YbAuNs3by9S8EcyhCjMd8Oumm+rNS97tCQQByp7PeBzZZ2UWyqpTG1WKjPlZ9bIfaq
+         UW61/r8oJwcX+yw0UizHevDplLq37hS1NbsrllOw/SC+ZMXFTKlWJ4fMkCgB6hvY0K
+         Y2niemE8IrgumkgCeRQQrrVTsWPS2H+m6wGHLxipC6WOdUEtIOpOLD5USNL75vnvMN
+         VcGE5HmZ3ldSQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 13/60] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
+Date:   Tue,  7 Jun 2022 13:52:10 -0400
+Message-Id: <20220607175259.478835-13-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 94e3dba710fe0afc772172305444250023fc2d30 ]
+[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
 
-The pm_runtime_enable will decrease power disable depth.
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
+There is a deadlock in sa1100_set_termios(), which is shown
+below:
 
-Fixes: f386509e4959 ("[media] st-delta: STiH4xx multi-format video decoder v4l2 driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Hugues Fruchet <hugues.fruchet@foss.st.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+   (Thread 1)              |      (Thread 2)
+                           | sa1100_enable_ms()
+sa1100_set_termios()       |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | sa1100_timeout()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
+
+We hold sport->port.lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need sport->port.lock in position (2) of thread 2. As a result,
+sa1100_set_termios() will block forever.
+
+This patch moves del_timer_sync() before spin_lock_irqsave()
+in order to prevent the deadlock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/sti/delta/delta-v4l2.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/sa1100.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/platform/sti/delta/delta-v4l2.c b/drivers/media/platform/sti/delta/delta-v4l2.c
-index c887a31ebb54..420ad4d8df5d 100644
---- a/drivers/media/platform/sti/delta/delta-v4l2.c
-+++ b/drivers/media/platform/sti/delta/delta-v4l2.c
-@@ -1859,7 +1859,7 @@ static int delta_probe(struct platform_device *pdev)
- 	if (ret) {
- 		dev_err(delta->dev, "%s failed to initialize firmware ipc channel\n",
- 			DELTA_PREFIX);
--		goto err;
-+		goto err_pm_disable;
+diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
+index 697b6a002a16..4ddcc985621a 100644
+--- a/drivers/tty/serial/sa1100.c
++++ b/drivers/tty/serial/sa1100.c
+@@ -446,6 +446,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
+ 	quot = uart_get_divisor(port, baud);
+ 
++	del_timer_sync(&sport->timer);
++
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+ 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
+@@ -476,8 +478,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+ 				UTSR1_TO_SM(UTSR1_ROR);
  	}
  
- 	/* register all available decoders */
-@@ -1873,7 +1873,7 @@ static int delta_probe(struct platform_device *pdev)
- 	if (ret) {
- 		dev_err(delta->dev, "%s failed to register V4L2 device\n",
- 			DELTA_PREFIX);
--		goto err;
-+		goto err_pm_disable;
- 	}
- 
- 	delta->work_queue = create_workqueue(DELTA_NAME);
-@@ -1898,6 +1898,8 @@ static int delta_probe(struct platform_device *pdev)
- 	destroy_workqueue(delta->work_queue);
- err_v4l2:
- 	v4l2_device_unregister(&delta->v4l2_dev);
-+err_pm_disable:
-+	pm_runtime_disable(dev);
- err:
- 	return ret;
- }
+-	del_timer_sync(&sport->timer);
+-
+ 	/*
+ 	 * Update the per-port timeout.
+ 	 */
 -- 
 2.35.1
-
-
 
