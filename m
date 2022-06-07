@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5606CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346070AbiFGRVt (ORCPT
+        id S1345984AbiFGRVx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:21:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41130 "EHLO
+        Tue, 7 Jun 2022 13:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345785AbiFGRTS (ORCPT
+        with ESMTP id S1345767AbiFGRTQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:19:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7381053F0;
-        Tue,  7 Jun 2022 10:19:17 -0700 (PDT)
+        Tue, 7 Jun 2022 13:19:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7153A1053E6;
+        Tue,  7 Jun 2022 10:19:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37434B822B2;
-        Tue,  7 Jun 2022 17:19:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 882B5C36B03;
-        Tue,  7 Jun 2022 17:19:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF6F1617C0;
+        Tue,  7 Jun 2022 17:19:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDC2CC34115;
+        Tue,  7 Jun 2022 17:19:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622354;
-        bh=u5A224ITF7Jbd92lBShOSFEqPcfNp0/n/3/NNPqjs1g=;
+        s=korg; t=1654622352;
+        bh=LBiJ3+FZSoVrfzq6JdYxgX57MW0j1x0ukRRc5zVpJG0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oJ4PYiy7FKBwvBglogJ0to5XGvZgrbI2KpKfpupBFQ6Yhr/qK+FxePfRD/4aFYWGJ
-         PHObj0WCvxFtvuQzPRluYy4KIN6XOOY7CqUHR5pF/deaIVv0zyID3T+fNG85WrVyXs
-         VmIy7Ths7qQ/oViWAWSWCsdJXE64C4Nj0bxTprf4=
+        b=nLokItaS5cTgXvPWvJqOtoyoD6nYxodt8N3OTYxRvh6AApR9G8vjEOOWe2P22sBxG
+         RS9sr1HwWbELs4yjCdZBW/FYRScx3dHEY+WwXiHllXnrXM8oD+OEcne1rJ6G2NJNn8
+         ODkAECRneYanMNDaNrEsLDbUM321rm+8xkB5EViY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+6912c9592caca7ca0e7d@syzkaller.appspotmail.com,
+        Marios Levogiannis <marios.levogiannis@gmail.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 008/452] ALSA: usb-audio: Cancel pending work at closing a MIDI substream
-Date:   Tue,  7 Jun 2022 18:57:45 +0200
-Message-Id: <20220607164908.782783180@linuxfoundation.org>
+Subject: [PATCH 5.10 007/452] ALSA: hda/realtek - Fix microphone noise on ASUS TUF B550M-PLUS
+Date:   Tue,  7 Jun 2022 18:57:44 +0200
+Message-Id: <20220607164908.751258638@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,36 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Marios Levogiannis <marios.levogiannis@gmail.com>
 
-commit 0125de38122f0f66bf61336158d12a1aabfe6425 upstream.
+commit 9bfa7b36343c7d84370bc61c9ed774635b05e4eb upstream.
 
-At closing a USB MIDI output substream, there might be still a pending
-work, which would eventually access the rawmidi runtime object that is
-being released.  For fixing the race, make sure to cancel the pending
-work at closing.
+Set microphone pins 0x18 (rear) and 0x19 (front) to VREF_50 to fix the
+microphone noise on ASUS TUF B550M-PLUS which uses the ALCS1200A codec.
+The initial value was VREF_80.
 
-Reported-by: syzbot+6912c9592caca7ca0e7d@syzkaller.appspotmail.com
+The same issue is also present on Windows using both the default Windows
+driver and all tested Realtek drivers before version 6.0.9049.1. Comparing
+Realtek driver 6.0.9049.1 (the first one without the microphone noise) to
+Realtek driver 6.0.9047.1 (the last one with the microphone noise)
+revealed that the fix is the result of setting pins 0x18 and 0x19 to
+VREF_50.
+
+This fix may also work for other boards that have been reported to have
+the same microphone issue and use the ALC1150 and ALCS1200A codecs, since
+these codecs are similar and the fix in the Realtek driver on Windows is
+common for both. However, it is currently enabled only for ASUS TUF
+B550M-PLUS as this is the only board that could be tested.
+
+Signed-off-by: Marios Levogiannis <marios.levogiannis@gmail.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/000000000000e7e75005dfd07cf6@google.com
-Link: https://lore.kernel.org/r/20220525131203.11299-1-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220530074131.12258-1-marios.levogiannis@gmail.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/midi.c |    3 +++
- 1 file changed, 3 insertions(+)
+ sound/pci/hda/patch_realtek.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/sound/usb/midi.c
-+++ b/sound/usb/midi.c
-@@ -1161,6 +1161,9 @@ static int snd_usbmidi_output_open(struc
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -1990,6 +1990,7 @@ enum {
+ 	ALC1220_FIXUP_CLEVO_PB51ED_PINS,
+ 	ALC887_FIXUP_ASUS_AUDIO,
+ 	ALC887_FIXUP_ASUS_HMIC,
++	ALCS1200A_FIXUP_MIC_VREF,
+ };
  
- static int snd_usbmidi_output_close(struct snd_rawmidi_substream *substream)
- {
-+	struct usbmidi_out_port *port = substream->runtime->private_data;
-+
-+	cancel_work_sync(&port->ep->work);
- 	return substream_open(substream, 0, 0);
- }
+ static void alc889_fixup_coef(struct hda_codec *codec,
+@@ -2535,6 +2536,14 @@ static const struct hda_fixup alc882_fix
+ 		.chained = true,
+ 		.chain_id = ALC887_FIXUP_ASUS_AUDIO,
+ 	},
++	[ALCS1200A_FIXUP_MIC_VREF] = {
++		.type = HDA_FIXUP_PINCTLS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x18, PIN_VREF50 }, /* rear mic */
++			{ 0x19, PIN_VREF50 }, /* front mic */
++			{}
++		}
++	},
+ };
  
+ static const struct snd_pci_quirk alc882_fixup_tbl[] = {
+@@ -2572,6 +2581,7 @@ static const struct snd_pci_quirk alc882
+ 	SND_PCI_QUIRK(0x1043, 0x835f, "Asus Eee 1601", ALC888_FIXUP_EEE1601),
+ 	SND_PCI_QUIRK(0x1043, 0x84bc, "ASUS ET2700", ALC887_FIXUP_ASUS_BASS),
+ 	SND_PCI_QUIRK(0x1043, 0x8691, "ASUS ROG Ranger VIII", ALC882_FIXUP_GPIO3),
++	SND_PCI_QUIRK(0x1043, 0x8797, "ASUS TUF B550M-PLUS", ALCS1200A_FIXUP_MIC_VREF),
+ 	SND_PCI_QUIRK(0x104d, 0x9043, "Sony Vaio VGC-LN51JGB", ALC882_FIXUP_NO_PRIMARY_HP),
+ 	SND_PCI_QUIRK(0x104d, 0x9044, "Sony VAIO AiO", ALC882_FIXUP_NO_PRIMARY_HP),
+ 	SND_PCI_QUIRK(0x104d, 0x9047, "Sony Vaio TT", ALC889_FIXUP_VAIO_TT),
 
 
