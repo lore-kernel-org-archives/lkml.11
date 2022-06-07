@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A239BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:33:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC9FCCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347169AbiFGRdw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45962 "EHLO
+        id S243728AbiFGRd4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:33:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347018AbiFGRZi (ORCPT
+        with ESMTP id S1347023AbiFGRZi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:25:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F76111B93;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E65113A18;
         Tue,  7 Jun 2022 10:23:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E20FFCE2015;
-        Tue,  7 Jun 2022 17:23:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF0E4C385A5;
-        Tue,  7 Jun 2022 17:23:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E28A60DB7;
+        Tue,  7 Jun 2022 17:23:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 821DFC385A5;
+        Tue,  7 Jun 2022 17:23:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622636;
-        bh=IOLloMgWNNND+MG+cMpo8BWAM9qcdlYLA/9sHrIUEEU=;
+        s=korg; t=1654622638;
+        bh=a8W1Xyi5UJaRH3cOEV6KFlvHU+44TiyfFTT5jZ3JfqY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1ziiQU9de8IawnLC881D3uPkiZxji3DRJI/lu1gsTTuqRCmlKCYdn6cj9Crjzcp7j
-         agRvuCb39sxZpHqNXQaJrXBJQoqEsKe84pcDesbq64g3Ag1nVg0qr4uSJ+gWHR2K/d
-         /vDi0MUXbbTLvknO+C2T7S3TPVnJzMUYMY5E1Bp4=
+        b=JsdUg888WuWasYehweHYFr9Q9a01UKX6YKCjDoYHcbPGeza4pVCrhHD3xPJ/uyIo+
+         k1uLC4IGirNSgB9jwxmuXsn3vgSsDFyuqx5UwnTH21+DAfuNdtL5Ldo7TAGAZ5gjSb
+         peF2mK3Ypy8WvECai83yDknjsGSYzK0SK4xMzdz8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vasily Averin <vvs@openvz.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Miles Chen <miles.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Zhiqiang Lin <zhiqiang.lin@mediatek.com>,
+        CK Hu <ck.hu@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 113/452] tracing: incorrect isolate_mote_t cast in mm_vmscan_lru_isolate
-Date:   Tue,  7 Jun 2022 18:59:30 +0200
-Message-Id: <20220607164911.923013028@linuxfoundation.org>
+Subject: [PATCH 5.10 131/452] drm/mediatek: Fix mtk_cec_mask()
+Date:   Tue,  7 Jun 2022 18:59:48 +0200
+Message-Id: <20220607164912.462816952@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,52 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vasily Averin <vvs@openvz.org>
+From: Miles Chen <miles.chen@mediatek.com>
 
-[ Upstream commit 2b132903de7124dd9a758be0c27562e91a510848 ]
+[ Upstream commit 2c5d69b0a141e1e98febe3111e6f4fd8420493a5 ]
 
-Fixes following sparse warnings:
+In current implementation, mtk_cec_mask() writes val into target register
+and ignores the mask. After talking to our hdmi experts, mtk_cec_mask()
+should read a register, clean only mask bits, and update (val | mask) bits
+to the register.
 
-  CHECK   mm/vmscan.c
-mm/vmscan.c: note: in included file (through
-include/trace/trace_events.h, include/trace/define_trace.h,
-include/trace/events/vmscan.h):
-./include/trace/events/vmscan.h:281:1: sparse: warning:
- cast to restricted isolate_mode_t
-./include/trace/events/vmscan.h:281:1: sparse: warning:
- restricted isolate_mode_t degrades to integer
-
-Link: https://lkml.kernel.org/r/e85d7ff2-fd10-53f8-c24e-ba0458439c1b@openvz.org
-Signed-off-by: Vasily Averin <vvs@openvz.org>
-Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220315232301.2434-1-miles.chen@mediatek.com/
+Fixes: 8f83f26891e1 ("drm/mediatek: Add HDMI support")
+Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Zhiqiang Lin <zhiqiang.lin@mediatek.com>
+Cc: CK Hu <ck.hu@mediatek.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/vmscan.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_cec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/trace/events/vmscan.h b/include/trace/events/vmscan.h
-index 2070df64958e..b4feeb4b216a 100644
---- a/include/trace/events/vmscan.h
-+++ b/include/trace/events/vmscan.h
-@@ -283,7 +283,7 @@ TRACE_EVENT(mm_vmscan_lru_isolate,
- 		__field(unsigned long, nr_scanned)
- 		__field(unsigned long, nr_skipped)
- 		__field(unsigned long, nr_taken)
--		__field(isolate_mode_t, isolate_mode)
-+		__field(unsigned int, isolate_mode)
- 		__field(int, lru)
- 	),
+diff --git a/drivers/gpu/drm/mediatek/mtk_cec.c b/drivers/gpu/drm/mediatek/mtk_cec.c
+index cb29b649fcdb..12bf93769497 100644
+--- a/drivers/gpu/drm/mediatek/mtk_cec.c
++++ b/drivers/gpu/drm/mediatek/mtk_cec.c
+@@ -84,7 +84,7 @@ static void mtk_cec_mask(struct mtk_cec *cec, unsigned int offset,
+ 	u32 tmp = readl(cec->regs + offset) & ~mask;
  
-@@ -294,7 +294,7 @@ TRACE_EVENT(mm_vmscan_lru_isolate,
- 		__entry->nr_scanned = nr_scanned;
- 		__entry->nr_skipped = nr_skipped;
- 		__entry->nr_taken = nr_taken;
--		__entry->isolate_mode = isolate_mode;
-+		__entry->isolate_mode = (__force unsigned int)isolate_mode;
- 		__entry->lru = lru;
- 	),
+ 	tmp |= val & mask;
+-	writel(val, cec->regs + offset);
++	writel(tmp, cec->regs + offset);
+ }
  
+ void mtk_cec_set_hpd_event(struct device *dev,
 -- 
 2.35.1
 
