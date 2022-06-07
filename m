@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A832EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BECDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346740AbiFGR3k (ORCPT
+        id S1346829AbiFGR3r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46076 "EHLO
+        Tue, 7 Jun 2022 13:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346881AbiFGRZd (ORCPT
+        with ESMTP id S1346888AbiFGRZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:25:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8512D106A70;
-        Tue,  7 Jun 2022 10:23:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A989110AC6;
+        Tue,  7 Jun 2022 10:23:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2270060DDE;
-        Tue,  7 Jun 2022 17:23:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3344AC34115;
-        Tue,  7 Jun 2022 17:23:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DAF4D60DBA;
+        Tue,  7 Jun 2022 17:23:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9983C385A5;
+        Tue,  7 Jun 2022 17:23:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622608;
-        bh=XJ50Jb/dd9venn1pdAoNrEN6xPogM9j8x9SREus6Qzo=;
+        s=korg; t=1654622611;
+        bh=0W2U+U9TrnGFvN5vWdzDj81w5VtmT57fNeeoKVQJu6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WDP66qHBTDtGV3NDEdN6nF2TTFmNASSWng0Nv0EMAwxphFhaU8vTSB3IwTfxqnRwE
-         ZVx8zsxVFMEsc0vC+NYGckfPdxONE3KB6gXU7tCB7c+8q5agk/Suu99OBw4Johazaz
-         wFlHQP+3hWgrFu3IsGkKKIiLjES4L4zcD4SwgwgM=
+        b=Mehz/povVLXlqkGT4Ek/XFa+XNoMIQdFtszYPPwXCreaqErMDn4taPZlJlRhigD0i
+         iFZ1rjDG6q0KVIh/SWKGxdBu/3JjZAKb2NoJdb8o/IYEkQx+BTTHQhZiua93Q/4Jdg
+         jbq/FmqFovWvbFqFJ/TkF+MmpVTVQ9bnYD2+fZHw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        David Lechner <david@lechnology.com>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 121/452] dt-bindings: display: sitronix, st7735r: Fix backlight in example
-Date:   Tue,  7 Jun 2022 18:59:38 +0200
-Message-Id: <20220607164912.165107218@linuxfoundation.org>
+Subject: [PATCH 5.10 122/452] ath11k: acquire ab->base_lock in unassign when finding the peer by addr
+Date:   Tue,  7 Jun 2022 18:59:39 +0200
+Message-Id: <20220607164912.195471591@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -53,37 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Noralf Trønnes <noralf@tronnes.org>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 471e201f543559e2cb19b182b680ebf04d80ee31 ]
+[ Upstream commit 2db80f93869d491be57cbc2b36f30d0d3a0e5bde ]
 
-The backlight property was lost during conversion to yaml in commit
-abdd9e3705c8 ("dt-bindings: display: sitronix,st7735r: Convert to DT schema").
-Put it back.
+ath11k_peer_find_by_addr states via lockdep that ab->base_lock must be
+held when calling that function in order to protect the list. All
+callers except ath11k_mac_op_unassign_vif_chanctx have that lock
+acquired when calling ath11k_peer_find_by_addr. That lock is also not
+transitively held by a path towards ath11k_mac_op_unassign_vif_chanctx.
+The solution is to acquire the lock when calling
+ath11k_peer_find_by_addr inside ath11k_mac_op_unassign_vif_chanctx.
 
-Fixes: abdd9e3705c8 ("dt-bindings: display: sitronix,st7735r: Convert to DT schema")
-Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: David Lechner <david@lechnology.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211124150757.17929-2-noralf@tronnes.org
+I am currently working on a static analyser to detect missing locks and
+this was a reported case. I manually verified the report by looking at
+the code, but I do not have real hardware so this is compile tested
+only.
+
+Fixes: 701e48a43e15 ("ath11k: add packet log support for QCA6390")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220314215253.92658-1-dossche.niels@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/display/sitronix,st7735r.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/ath11k/mac.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml b/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
-index 0cebaaefda03..419c3b2ac5a6 100644
---- a/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
-+++ b/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
-@@ -72,6 +72,7 @@ examples:
-                     dc-gpios = <&gpio 43 GPIO_ACTIVE_HIGH>;
-                     reset-gpios = <&gpio 80 GPIO_ACTIVE_HIGH>;
-                     rotation = <270>;
-+                    backlight = <&backlight>;
-             };
-     };
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index cc9122f42024..b2928a5cf72e 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -5325,6 +5325,7 @@ ath11k_mac_op_unassign_vif_chanctx(struct ieee80211_hw *hw,
+ 	struct ath11k *ar = hw->priv;
+ 	struct ath11k_base *ab = ar->ab;
+ 	struct ath11k_vif *arvif = (void *)vif->drv_priv;
++	struct ath11k_peer *peer;
+ 	int ret;
  
+ 	mutex_lock(&ar->conf_mutex);
+@@ -5336,9 +5337,13 @@ ath11k_mac_op_unassign_vif_chanctx(struct ieee80211_hw *hw,
+ 	WARN_ON(!arvif->is_started);
+ 
+ 	if (ab->hw_params.vdev_start_delay &&
+-	    arvif->vdev_type == WMI_VDEV_TYPE_MONITOR &&
+-	    ath11k_peer_find_by_addr(ab, ar->mac_addr))
+-		ath11k_peer_delete(ar, arvif->vdev_id, ar->mac_addr);
++	    arvif->vdev_type == WMI_VDEV_TYPE_MONITOR) {
++		spin_lock_bh(&ab->base_lock);
++		peer = ath11k_peer_find_by_addr(ab, ar->mac_addr);
++		spin_unlock_bh(&ab->base_lock);
++		if (peer)
++			ath11k_peer_delete(ar, arvif->vdev_id, ar->mac_addr);
++	}
+ 
+ 	ret = ath11k_mac_vdev_stop(arvif);
+ 	if (ret)
 -- 
 2.35.1
 
