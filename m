@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 431F1CCA48F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2458CCA48C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385348AbiFGW1A (ORCPT
+        id S1385191AbiFGW0f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54904 "EHLO
+        Tue, 7 Jun 2022 18:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381398AbiFGVRl (ORCPT
+        with ESMTP id S1381274AbiFGVRc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:17:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51494222A46;
-        Tue,  7 Jun 2022 11:58:54 -0700 (PDT)
+        Tue, 7 Jun 2022 17:17:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066C9222341;
+        Tue,  7 Jun 2022 11:58:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F32A461768;
-        Tue,  7 Jun 2022 18:58:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D2DAC385A5;
-        Tue,  7 Jun 2022 18:58:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1641D61787;
+        Tue,  7 Jun 2022 18:58:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F86CC385A2;
+        Tue,  7 Jun 2022 18:58:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628333;
-        bh=Fip7iQDSr+SZ/arPL1+2akkIFJzGJcippf1XA2GNJk8=;
+        s=korg; t=1654628319;
+        bh=y5FpsC0QGeen2RQowSl2Y0D8H3xk4G0Akqg3acr5AMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZCsDIJfHRFl9mo73uRLM3080PM+MVS4sjaAZhROwpHQeX/imK4qRzlEjkmPzSnncp
-         z8ZhnN0ymjPsr9MbLgB/jE8CzboDpcY5i4gS0J3WPtBWkvLAtr4/Z8SjTEQfu4cgUI
-         bkBStjWL5VQuVByBcgg97PaOhFkVWF2WotFEA7Vg=
+        b=mS//OFsqV9x5h/aHKs2099p4bTMlfp5jsxZlerGUbvcefB0A6XvfReiVbbPdUhiNw
+         0tWmYrVXuBJ0GW/+BtjO20mFNHyPMmqSLSPhoGmDTki8WLpdiKG4qL4FlNq3GTWJC8
+         rL+Q+WPrVofq/gOqopgXWX2/cYe+w3MQ7Rko1Wjw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 292/879] drm/vc4: hvs: Reset muxes at probe time
-Date:   Tue,  7 Jun 2022 18:56:50 +0200
-Message-Id: <20220607165011.323354031@linuxfoundation.org>
+Subject: [PATCH 5.18 245/879] powerpc/powernv: fix missing of_node_put in uv_init()
+Date:   Tue,  7 Jun 2022 18:56:03 +0200
+Message-Id: <20220607165009.964228978@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,87 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 8514e6b1f40319e31ac4aa3fbf606796786366c9 ]
+[ Upstream commit 3ffa9fd471f57f365bc54fc87824c530422f64a5 ]
 
-By default, the HVS driver will force the HVS output 3 to be muxed to
-the HVS channel 2. However, the Transposer can only be assigned to the
-HVS channel 2, so whenever we try to use the writeback connector, we'll
-mux its associated output (Output 2) to the channel 2.
+of_find_compatible_node() returns node pointer with refcount incremented,
+use of_node_put() on it when done.
 
-This leads to both the output 2 and 3 feeding from the same channel,
-which is explicitly discouraged in the documentation.
-
-In order to avoid this, let's reset all the output muxes to their reset
-value.
-
-Fixes: 87ebcd42fb7b ("drm/vc4: crtc: Assign output to channel automatically")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://lore.kernel.org/r/20220328153659.2382206-2-maxime@cerno.tech
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220407090043.2491854-1-lv.ruyi@zte.com.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hvs.c | 26 +++++++++++++++++++++-----
- 1 file changed, 21 insertions(+), 5 deletions(-)
+ arch/powerpc/platforms/powernv/ultravisor.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hvs.c b/drivers/gpu/drm/vc4/vc4_hvs.c
-index c8cae10500b9..9d88bfb50c9b 100644
---- a/drivers/gpu/drm/vc4/vc4_hvs.c
-+++ b/drivers/gpu/drm/vc4/vc4_hvs.c
-@@ -605,6 +605,7 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
- 	struct vc4_hvs *hvs = NULL;
- 	int ret;
- 	u32 dispctrl;
-+	u32 reg;
+diff --git a/arch/powerpc/platforms/powernv/ultravisor.c b/arch/powerpc/platforms/powernv/ultravisor.c
+index e4a00ad06f9d..67c8c4b2d8b1 100644
+--- a/arch/powerpc/platforms/powernv/ultravisor.c
++++ b/arch/powerpc/platforms/powernv/ultravisor.c
+@@ -55,6 +55,7 @@ static int __init uv_init(void)
+ 		return -ENODEV;
  
- 	hvs = devm_kzalloc(&pdev->dev, sizeof(*hvs), GFP_KERNEL);
- 	if (!hvs)
-@@ -676,6 +677,26 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
- 
- 	vc4->hvs = hvs;
- 
-+	reg = HVS_READ(SCALER_DISPECTRL);
-+	reg &= ~SCALER_DISPECTRL_DSP2_MUX_MASK;
-+	HVS_WRITE(SCALER_DISPECTRL,
-+		  reg | VC4_SET_FIELD(0, SCALER_DISPECTRL_DSP2_MUX));
-+
-+	reg = HVS_READ(SCALER_DISPCTRL);
-+	reg &= ~SCALER_DISPCTRL_DSP3_MUX_MASK;
-+	HVS_WRITE(SCALER_DISPCTRL,
-+		  reg | VC4_SET_FIELD(3, SCALER_DISPCTRL_DSP3_MUX));
-+
-+	reg = HVS_READ(SCALER_DISPEOLN);
-+	reg &= ~SCALER_DISPEOLN_DSP4_MUX_MASK;
-+	HVS_WRITE(SCALER_DISPEOLN,
-+		  reg | VC4_SET_FIELD(3, SCALER_DISPEOLN_DSP4_MUX));
-+
-+	reg = HVS_READ(SCALER_DISPDITHER);
-+	reg &= ~SCALER_DISPDITHER_DSP5_MUX_MASK;
-+	HVS_WRITE(SCALER_DISPDITHER,
-+		  reg | VC4_SET_FIELD(3, SCALER_DISPDITHER_DSP5_MUX));
-+
- 	dispctrl = HVS_READ(SCALER_DISPCTRL);
- 
- 	dispctrl |= SCALER_DISPCTRL_ENABLE;
-@@ -683,10 +704,6 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
- 		    SCALER_DISPCTRL_DISPEIRQ(1) |
- 		    SCALER_DISPCTRL_DISPEIRQ(2);
- 
--	/* Set DSP3 (PV1) to use HVS channel 2, which would otherwise
--	 * be unused.
--	 */
--	dispctrl &= ~SCALER_DISPCTRL_DSP3_MUX_MASK;
- 	dispctrl &= ~(SCALER_DISPCTRL_DMAEIRQ |
- 		      SCALER_DISPCTRL_SLVWREIRQ |
- 		      SCALER_DISPCTRL_SLVRDEIRQ |
-@@ -700,7 +717,6 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
- 		      SCALER_DISPCTRL_DSPEISLUR(1) |
- 		      SCALER_DISPCTRL_DSPEISLUR(2) |
- 		      SCALER_DISPCTRL_SCLEIRQ);
--	dispctrl |= VC4_SET_FIELD(2, SCALER_DISPCTRL_DSP3_MUX);
- 
- 	HVS_WRITE(SCALER_DISPCTRL, dispctrl);
+ 	uv_memcons = memcons_init(node, "memcons");
++	of_node_put(node);
+ 	if (!uv_memcons)
+ 		return -ENOENT;
  
 -- 
 2.35.1
