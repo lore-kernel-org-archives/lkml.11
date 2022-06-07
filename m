@@ -2,141 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A6ACCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1702CCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385084AbiFGWpV (ORCPT
+        id S1385316AbiFGWps (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:45:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
+        Tue, 7 Jun 2022 18:45:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380319AbiFGVam (ORCPT
+        with ESMTP id S1379673AbiFGVdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:30:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E69229B74;
-        Tue,  7 Jun 2022 12:02:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86D3B617E4;
-        Tue,  7 Jun 2022 19:02:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 912E8C385A2;
-        Tue,  7 Jun 2022 19:02:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628569;
-        bh=brWqBySsTGrjDuMpp7++td+H+52jN/Qy6jJTsXAgFRQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kPccrwz6CTtiMyMEGTPe46Cn9Scf+7wFcvlacXKIxzOJ7JBHnag3uWlkjATh2ip+j
-         7VXVM7BJ/O9TH2Wx9XYY+w1S93YCEJthv9c4jx8P5yw46ckLNiOnurysKdbypRWHwX
-         72o4quSempaUuZTnNiFnobgBBE9coM5KkjXepUGM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pin-Yen Lin <treapking@chromium.org>,
+        Tue, 7 Jun 2022 17:33:02 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499A8177043
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:04:18 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id w21so16358408pfc.0
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:04:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UPHySLfOpgOfXsztwA/AoI4liAt+hRYFwSofNUnDeK0=;
+        b=NMRk8qUnzsCyyw2urc38alI23uarraGbB57Y33MpslHFrAZKVuxonD/MN435lJFYZs
+         jvf2LGisHWNkv78vR/azokCTzZxCkKzp+1nQlFH8JOnRQAMElQgYhq6QWNRlBwFumzv1
+         CE9Dheipng0OFhGsDMHPi3dp10SkQAl55SIuw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UPHySLfOpgOfXsztwA/AoI4liAt+hRYFwSofNUnDeK0=;
+        b=KxIcFwW+6Xd6bl5ZQ8FTcI07+DfM3G+HMCS6NcmcRcfAqj2I/ZpdjsDsaUchEssYmg
+         Sg3hNkm4ReYG+7MRQDiNsLTxLVifgv7ZFP2oDtNRxCyZ+2339nFrBqHVYKEv8llXn0Pn
+         W/deo1T17S9mC2bjFxP6dgWXBN1E7fN6YUV6Or9S0Rg/1eX1X3HHKHpYD1VOoMgiqv0N
+         HR2tW3bsGskAF25ALYYBMwnW5eXOjEARip8iC6WKae96P2xGevT2gl2AcMCYwX7ZbM6f
+         /9gpw8dUzMUW5Ve5CPAM7U19NuI0w06RkXwODYD1laKYtjEhWh79ourGqfQ2NW6pJx/e
+         MByg==
+X-Gm-Message-State: AOAM531rF8Wk8Cd4dwd591c5wmIEWL8dwOxfhp0/kz3CHNXbOp7U3/Lr
+        I/vj7xXJTsY2R5z79lwYrcsg/HRl1liyoA==
+X-Google-Smtp-Source: ABdhPJzUhOSgysTyTRCREBnClkvK0Im2EtwyJP1WVB3p1tRJEXapV3kd1TN/wP/ojvVD63SBsIHboA==
+X-Received: by 2002:a05:6a00:240c:b0:51b:9bfc:90db with SMTP id z12-20020a056a00240c00b0051b9bfc90dbmr31109429pfh.24.1654628657712;
+        Tue, 07 Jun 2022 12:04:17 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id g29-20020aa79ddd000000b0050dc762819esm13236084pfq.120.2022.06.07.12.04.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 12:04:17 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
         Robert Foss <robert.foss@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 378/879] drm/bridge: it6505: Send DPCD SET_POWER to downstream
-Date:   Tue,  7 Jun 2022 18:58:16 +0200
-Message-Id: <20220607165013.842501152@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: [PATCH 1/7] usb: typec: mux: Allow muxes to specify mode-switch
+Date:   Tue,  7 Jun 2022 19:00:19 +0000
+Message-Id: <20220607190131.1647511-2-pmalani@chromium.org>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+In-Reply-To: <20220607190131.1647511-1-pmalani@chromium.org>
+References: <20220607190131.1647511-1-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pin-Yen Lin <treapking@chromium.org>
+Loosen the typec_mux_match() requirements so that searches where an
+alt mode is not specified, but the target mux device lists the
+"mode-switch" property, return a success.
 
-[ Upstream commit 46ca7da7f1e8592af6059419176dd58c10dcdb5b ]
+This is helpful in Type C port drivers which would like to get a pointer
+to the mux switch associated with a Type C port, but don't want to
+specify a particular alt mode.
 
-Send DPCD SET_POWER command to downstream in .atomic_disable to make the
-downstream monitor enter the power down mode, so the device suspend won't
-be affected.
-
-Fixes: b5c84a9edcd418 ("drm/bridge: add it6505 driver")
-Signed-off-by: Pin-Yen Lin <treapking@chromium.org>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220425134424.1150965-1-treapking@chromium.org
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
 ---
- drivers/gpu/drm/bridge/ite-it6505.c | 29 ++++++++++++++++++-----------
- 1 file changed, 18 insertions(+), 11 deletions(-)
+ drivers/usb/typec/mux.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/ite-it6505.c b/drivers/gpu/drm/bridge/ite-it6505.c
-index f2f101220ade..c54664677172 100644
---- a/drivers/gpu/drm/bridge/ite-it6505.c
-+++ b/drivers/gpu/drm/bridge/ite-it6505.c
-@@ -737,8 +737,9 @@ static int it6505_drm_dp_link_probe(struct drm_dp_aux *aux,
- 	return 0;
- }
+diff --git a/drivers/usb/typec/mux.c b/drivers/usb/typec/mux.c
+index fd55c2c516a5..464330776cd6 100644
+--- a/drivers/usb/typec/mux.c
++++ b/drivers/usb/typec/mux.c
+@@ -281,9 +281,13 @@ static void *typec_mux_match(struct fwnode_handle *fwnode, const char *id,
+ 	if (match)
+ 		goto find_mux;
  
--static int it6505_drm_dp_link_power_up(struct drm_dp_aux *aux,
--				       struct it6505_drm_dp_link *link)
-+static int it6505_drm_dp_link_set_power(struct drm_dp_aux *aux,
-+					struct it6505_drm_dp_link *link,
-+					u8 mode)
- {
- 	u8 value;
- 	int err;
-@@ -752,18 +753,20 @@ static int it6505_drm_dp_link_power_up(struct drm_dp_aux *aux,
- 		return err;
- 
- 	value &= ~DP_SET_POWER_MASK;
--	value |= DP_SET_POWER_D0;
-+	value |= mode;
- 
- 	err = drm_dp_dpcd_writeb(aux, DP_SET_POWER, value);
- 	if (err < 0)
- 		return err;
- 
--	/*
--	 * According to the DP 1.1 specification, a "Sink Device must exit the
--	 * power saving state within 1 ms" (Section 2.5.3.1, Table 5-52, "Sink
--	 * Control Field" (register 0x600).
--	 */
--	usleep_range(1000, 2000);
-+	if (mode == DP_SET_POWER_D0) {
+-	/* Accessory Mode muxes */
+ 	if (!desc) {
+-		match = fwnode_property_present(fwnode, "accessory");
 +		/*
-+		 * According to the DP 1.1 specification, a "Sink Device must
-+		 * exit the power saving state within 1 ms" (Section 2.5.3.1,
-+		 * Table 5-52, "Sink Control Field" (register 0x600).
++		 * Accessory Mode muxes & muxes which explicitly specify
++		 * the required identifier can avoid SVID matching.
 +		 */
-+		usleep_range(1000, 2000);
-+	}
- 
- 	return 0;
- }
-@@ -2624,7 +2627,8 @@ static enum drm_connector_status it6505_detect(struct it6505 *it6505)
- 	if (it6505_get_sink_hpd_status(it6505)) {
- 		it6505_aux_on(it6505);
- 		it6505_drm_dp_link_probe(&it6505->aux, &it6505->link);
--		it6505_drm_dp_link_power_up(&it6505->aux, &it6505->link);
-+		it6505_drm_dp_link_set_power(&it6505->aux, &it6505->link,
-+					     DP_SET_POWER_D0);
- 		it6505->auto_train_retry = AUTO_TRAIN_RETRY;
- 
- 		if (it6505->dpcd[0] == 0) {
-@@ -2960,8 +2964,11 @@ static void it6505_bridge_atomic_disable(struct drm_bridge *bridge,
- 
- 	DRM_DEV_DEBUG_DRIVER(dev, "start");
- 
--	if (it6505->powered)
-+	if (it6505->powered) {
- 		it6505_video_disable(it6505);
-+		it6505_drm_dp_link_set_power(&it6505->aux, &it6505->link,
-+					     DP_SET_POWER_D3);
-+	}
- }
- 
- static enum drm_connector_status
++		match = fwnode_property_present(fwnode, "accessory") ||
++			fwnode_property_present(fwnode, id);
+ 		if (match)
+ 			goto find_mux;
+ 		return NULL;
 -- 
-2.35.1
-
-
+2.36.1.255.ge46751e96f-goog
 
