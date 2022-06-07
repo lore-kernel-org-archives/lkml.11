@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1360CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E2BECCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349491AbiFGSAM (ORCPT
+        id S1349953AbiFGSAi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55198 "EHLO
+        Tue, 7 Jun 2022 14:00:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348411AbiFGRkt (ORCPT
+        with ESMTP id S1347312AbiFGRjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:40:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50846B018;
-        Tue,  7 Jun 2022 10:34:12 -0700 (PDT)
+        Tue, 7 Jun 2022 13:39:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5545736147;
+        Tue,  7 Jun 2022 10:33:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7748A614AE;
-        Tue,  7 Jun 2022 17:33:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85C77C34115;
-        Tue,  7 Jun 2022 17:33:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1654B822AD;
+        Tue,  7 Jun 2022 17:33:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04C4EC385A5;
+        Tue,  7 Jun 2022 17:33:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623191;
-        bh=1GMGT98+przndzzSNbR0Qqjc8joCQ0M2vp1ljX+83FI=;
+        s=korg; t=1654623183;
+        bh=HWrh3eNyUWp0UeZbAh0SxbRayZHDbgIJWamQdjsz8cM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oxnsPTjEbggi8muUX4gOad4VrvL5NrS7mb+rq3NdtZgV/6qSV+iTj17UhUPdXQJBz
-         RWdneC33pk8dhpD+9X9cNWzVNZEOljckGmes9IBjW2gLugwRhw7LxxiraIJC+uHtOJ
-         S9snLH/3jhSsBxH+l2yjvgDHNfQ5kVYxmWHlkkuQ=
+        b=AlhWFEMhwJAlon2Y+v99nHH9QiPqvVgP0twIeMvnyTnBJ2JvWQ0WlFtZsPQDzPtP9
+         StXVa6iLK78DsE44HF8R6RLHx2IGeuOGTm4qJoIw0PdGDZeFF8hUZc6179/9ooBXQb
+         ArptaftaCorV9D+VQuk8HgU6bUmYTikWZcDY0XUo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Mel Gorman <mel@csn.ul.ie>,
-        Minchan Kim <minchan.kim@gmail.com>,
-        KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>,
-        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 291/452] drivers/base/node.c: fix compaction sysfs file leak
-Date:   Tue,  7 Jun 2022 19:02:28 +0200
-Message-Id: <20220607164917.222200219@linuxfoundation.org>
+Subject: [PATCH 5.10 324/452] cpufreq: mediatek: Unregister platform device on exit
+Date:   Tue,  7 Jun 2022 19:03:01 +0200
+Message-Id: <20220607164918.215272229@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -55,42 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-[ Upstream commit da63dc84befaa9e6079a0bc363ff0eaa975f9073 ]
+[ Upstream commit f126fbadce92b92c3a7be41e4abc1fbae93ae2ef ]
 
-Compaction sysfs file is created via compaction_register_node in
-register_node.  But we forgot to remove it in unregister_node.  Thus
-compaction sysfs file is leaked.  Using compaction_unregister_node to fix
-this issue.
+We register the platform device when driver inits. However, we do not
+unregister it when driver exits.
 
-Link: https://lkml.kernel.org/r/20220401070905.43679-1-linmiaohe@huawei.com
-Fixes: ed4a6d7f0676 ("mm: compaction: add /sys trigger for per-node memory compaction")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Rafael J. Wysocki <rafael@kernel.org>
-Cc: Mel Gorman <mel@csn.ul.ie>
-Cc: Minchan Kim <minchan.kim@gmail.com>
-Cc: KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>
-Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+To resolve this, we declare the platform data to be a global static
+variable and rename it to be "cpufreq_pdev". With this global variable,
+we can do platform_device_unregister() when driver exits.
+
+Fixes: 501c574f4e3a ("cpufreq: mediatek: Add support of cpufreq to MT2701/MT7623 SoC")
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+[ Viresh: Commit log and Subject ]
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/node.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/cpufreq/mediatek-cpufreq.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/base/node.c b/drivers/base/node.c
-index 21965de8538b..5f745c906c33 100644
---- a/drivers/base/node.c
-+++ b/drivers/base/node.c
-@@ -655,6 +655,7 @@ static int register_node(struct node *node, int num)
-  */
- void unregister_node(struct node *node)
+diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
+index 07ba238a0e0e..82f6592bbadb 100644
+--- a/drivers/cpufreq/mediatek-cpufreq.c
++++ b/drivers/cpufreq/mediatek-cpufreq.c
+@@ -44,6 +44,8 @@ struct mtk_cpu_dvfs_info {
+ 	bool need_voltage_tracking;
+ };
+ 
++static struct platform_device *cpufreq_pdev;
++
+ static LIST_HEAD(dvfs_info_list);
+ 
+ static struct mtk_cpu_dvfs_info *mtk_cpu_dvfs_info_lookup(int cpu)
+@@ -546,7 +548,6 @@ static int __init mtk_cpufreq_driver_init(void)
  {
-+	compaction_unregister_node(node);
- 	hugetlb_unregister_node(node);		/* no-op, if memoryless node */
- 	node_remove_accesses(node);
- 	node_remove_caches(node);
+ 	struct device_node *np;
+ 	const struct of_device_id *match;
+-	struct platform_device *pdev;
+ 	int err;
+ 
+ 	np = of_find_node_by_path("/");
+@@ -570,11 +571,11 @@ static int __init mtk_cpufreq_driver_init(void)
+ 	 * and the device registration codes are put here to handle defer
+ 	 * probing.
+ 	 */
+-	pdev = platform_device_register_simple("mtk-cpufreq", -1, NULL, 0);
+-	if (IS_ERR(pdev)) {
++	cpufreq_pdev = platform_device_register_simple("mtk-cpufreq", -1, NULL, 0);
++	if (IS_ERR(cpufreq_pdev)) {
+ 		pr_err("failed to register mtk-cpufreq platform device\n");
+ 		platform_driver_unregister(&mtk_cpufreq_platdrv);
+-		return PTR_ERR(pdev);
++		return PTR_ERR(cpufreq_pdev);
+ 	}
+ 
+ 	return 0;
+@@ -583,6 +584,7 @@ module_init(mtk_cpufreq_driver_init)
+ 
+ static void __exit mtk_cpufreq_driver_exit(void)
+ {
++	platform_device_unregister(cpufreq_pdev);
+ 	platform_driver_unregister(&mtk_cpufreq_platdrv);
+ }
+ module_exit(mtk_cpufreq_driver_exit)
 -- 
 2.35.1
 
