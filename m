@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8957CCA49A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC04CCCA498
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350687AbiFGSGb (ORCPT
+        id S1350575AbiFGSGS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40380 "EHLO
+        Tue, 7 Jun 2022 14:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348493AbiFGRp3 (ORCPT
+        with ESMTP id S1348646AbiFGRpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:45:29 -0400
+        Tue, 7 Jun 2022 13:45:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A8E131F2E;
-        Tue,  7 Jun 2022 10:35:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 789F8132A01;
+        Tue,  7 Jun 2022 10:35:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C16F61529;
-        Tue,  7 Jun 2022 17:35:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A81EC385A5;
-        Tue,  7 Jun 2022 17:35:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00D4561480;
+        Tue,  7 Jun 2022 17:35:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D1A8C385A5;
+        Tue,  7 Jun 2022 17:35:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623332;
-        bh=XAGJ6U13VmkrVh5Zc7zRwbkmBQUzO0nmuegqfoYHRKQ=;
+        s=korg; t=1654623338;
+        bh=kkLcL0lXyNtpQEf5iq89zh3G3KGZ6xoM63TcfS0HYPU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JfYwCZDtEfM0jM8C6KMywolLhbrjdi+30hQb1cOhr1SBgc5snIcD1duU5tvsvTmqF
-         aa4OfzCpYH7JoQbkD0iftJRxtocDMmimPu68RamB7DEvCz/O2V5RszpqqWeqwhwr9K
-         /G7GRDq0UJX5EozZl0dPq0muQx/8X/BP8Hzw9wpo=
+        b=jBlHtSGcPic5qwxRZnQV8tGFmyZ+XFkc6rPrTSf6LmkFGaW2uNf9N/k3e708g1E4c
+         EJaKUlouggzYZZmNfh4ozbDuM3cTRt8S9lGZTasOVnSHIFB9nrg5GUQkR8o0q1Jyx7
+         tVRA/5uK6prVkAtiQto5YrgcNi4uIfhCSF0gDv4U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tyrone Ting <kfting@nuvoton.com>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 339/452] i2c: npcm: Correct register access width
-Date:   Tue,  7 Jun 2022 19:03:16 +0200
-Message-Id: <20220607164918.658664342@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 331/452] NFS: Dont report errors from nfs_pageio_complete() more than once
+Date:   Tue,  7 Jun 2022 19:03:08 +0200
+Message-Id: <20220607164918.423002293@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,49 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyrone Ting <kfting@nuvoton.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit ea9f8426d17620214ee345ffb77ee6cc196ff14f ]
+[ Upstream commit c5e483b77cc2edb318da152abe07e33006b975fd ]
 
-The SMBnCTL3 register is 8-bit wide and the 32-bit access was always
-incorrect, but simply didn't cause a visible error on the 32-bit machine.
+Since errors from nfs_pageio_complete() are already being reported
+through nfs_async_write_error(), we should not be returning them to the
+callers of do_writepages() as well. They will end up being reported
+through the generic mechanism instead.
 
-On the 64-bit machine, the kernel message reports that ESR value is
-0x96000021. Checking Arm Architecture Reference Manual Armv8 suggests that
-it's the alignment fault.
-
-SMBnCTL3's address is 0xE.
-
-Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
-Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
-Reviewed-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: 6fbda89b257f ("NFS: Replace custom error reporting mechanism with generic one")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-npcm7xx.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/nfs/write.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
-index 92fd88a3f415..cdea7f440a9e 100644
---- a/drivers/i2c/busses/i2c-npcm7xx.c
-+++ b/drivers/i2c/busses/i2c-npcm7xx.c
-@@ -359,14 +359,14 @@ static int npcm_i2c_get_SCL(struct i2c_adapter *_adap)
- {
- 	struct npcm_i2c *bus = container_of(_adap, struct npcm_i2c, adap);
- 
--	return !!(I2CCTL3_SCL_LVL & ioread32(bus->reg + NPCM_I2CCTL3));
-+	return !!(I2CCTL3_SCL_LVL & ioread8(bus->reg + NPCM_I2CCTL3));
+diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+index b08323ed0c25..dc08a0c02f09 100644
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -675,11 +675,7 @@ static int nfs_writepage_locked(struct page *page,
+ 	err = nfs_do_writepage(page, wbc, &pgio);
+ 	pgio.pg_error = 0;
+ 	nfs_pageio_complete(&pgio);
+-	if (err < 0)
+-		return err;
+-	if (nfs_error_is_fatal(pgio.pg_error))
+-		return pgio.pg_error;
+-	return 0;
++	return err;
  }
  
- static int npcm_i2c_get_SDA(struct i2c_adapter *_adap)
- {
- 	struct npcm_i2c *bus = container_of(_adap, struct npcm_i2c, adap);
+ int nfs_writepage(struct page *page, struct writeback_control *wbc)
+@@ -730,9 +726,6 @@ int nfs_writepages(struct address_space *mapping, struct writeback_control *wbc)
  
--	return !!(I2CCTL3_SDA_LVL & ioread32(bus->reg + NPCM_I2CCTL3));
-+	return !!(I2CCTL3_SDA_LVL & ioread8(bus->reg + NPCM_I2CCTL3));
- }
- 
- static inline u16 npcm_i2c_get_index(struct npcm_i2c *bus)
+ 	if (err < 0)
+ 		goto out_err;
+-	err = pgio.pg_error;
+-	if (nfs_error_is_fatal(err))
+-		goto out_err;
+ 	return 0;
+ out_err:
+ 	return err;
 -- 
 2.35.1
 
