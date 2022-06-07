@@ -2,92 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 491A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:23:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3CDCC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:23:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238022AbiFHCX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:23:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
+        id S241584AbiFHCXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444862AbiFHCLY (ORCPT
+        with ESMTP id S1444908AbiFHCLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:11:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3DE25A818;
-        Tue,  7 Jun 2022 12:24:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04F4D6077B;
-        Tue,  7 Jun 2022 19:24:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C548C385A2;
-        Tue,  7 Jun 2022 19:24:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629882;
-        bh=SOVgZGmxox99chUL0j/dLJdoiw+f0+Ci7SsA5C0yofA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fIKEqwJ9JY35nTCOAossBxhSiCDoORh09P8h7/Omfe2LvJRX8wKOKghtMS6/h7sm4
-         Kk7kKAYF5v0p2S1K5Ee/yvVmiRUl2F3efG8CwGdqlw7p0evLqQoV/nSp1DFBSP9qX8
-         Dwq1VtFSGXmvyAOmGG7aaoPjDfcyzp0ANQIsNOJ0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 5.18 810/879] irqchip/armada-370-xp: Do not touch Performance Counter Overflow on A375, A38x, A39x
-Date:   Tue,  7 Jun 2022 19:05:28 +0200
-Message-Id: <20220607165026.369091113@linuxfoundation.org>
+        Tue, 7 Jun 2022 22:11:41 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10C319EC3A
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:26:37 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id i29so13079038lfp.3
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:26:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7a/Vr1nOHr0fdDem7DkzJVpMhvssXRRyxw7xup5e79I=;
+        b=DfruFfsNeZwf5QHWRX3tl2wx4WCbK5YG3dRedjaUTJcnKKzbeWm3OI+O6GWuK1V8WZ
+         R2cVADOtKEjE6rwstxA/aSOEX84upsZTEltFqI1i4cDc9pt32h9ZI2ZTikTBmoANe6rQ
+         Fe9AQ4otShRqgXhtohsBeMtR/tJktVZhA+HpLrvI3D/5g08qT8vExdO4ei/rWac7lDND
+         8hZS3mL6zwKyrdiK13QeXtpqKCYXJ6gEMpG+duT/YJ3HGrHk18KGzw9M1c5QSmzYRCXx
+         sAhtBQvKehi2NrqQdfTFSzkitswebZAXA9ycCxWqPcPSY0t5z2DrqoVAX1ByApVeS7Qi
+         g6ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7a/Vr1nOHr0fdDem7DkzJVpMhvssXRRyxw7xup5e79I=;
+        b=4WRmnQXYiXQpmzZpsbgLNLoVb8vWjZlssO3lAZBUwJg917m6eV3sL0Kcuom29gFEdM
+         /V39kk8h/4MDc7hQ0v/qzpvaoVkJw0pbg7eFdLJ8QFyinno/GRxYgfmW5c4ZXziHpA03
+         TbrqvyHhs/JjZuyyOo1mtrG5w169fF+pqWQ5abB4ZM9H1tIE+I7NR66J3w4K+7EqU6ip
+         9RvJk5zSE4dTVvKmRtms8BjbWmoRFrdQ6LbmWNOfDUTJKmiRPwFMsEvLS2VJRkjPU0LF
+         9srbgvaJV+I1F/bVD3DP/6MgNBHXVG8LXSknIxhW7I409aiRXzboqlNcaLHGKiLsYk2z
+         Yomw==
+X-Gm-Message-State: AOAM533wj1gEwgD9g6jA5fmec0CegYc44859Q3lnAQcWr1ufnhBaQ4DA
+        JUi0V6gegVXbWJpKqfXil4Q=
+X-Google-Smtp-Source: ABdhPJwrX47Y3YIqgEzQI+Z6/heU8hdGTYhoZaqHpiJucG3APs43e/cTPUq4MmfmFa90H7KIPhnkew==
+X-Received: by 2002:ac2:488b:0:b0:479:2674:f1b0 with SMTP id x11-20020ac2488b000000b004792674f1b0mr11586089lfc.118.1654629996066;
+        Tue, 07 Jun 2022 12:26:36 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.229.27])
+        by smtp.gmail.com with ESMTPSA id t28-20020a05651c205c00b00253b24a90b6sm2982603ljo.17.2022.06.07.12.26.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 12:26:35 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     gregkh@linuxfoundation.org, Larry.Finger@lwfinger.net,
+        phil@philpotter.co.uk, straube.linux@gmail.com,
+        dan.carpenter@oracle.com
+Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        Pavel Skripkin <paskripkin@gmail.com>
+Subject: [PATCH v4 4/4] MAINTAINERS: add myself as r8188eu reviewer
+Date:   Tue,  7 Jun 2022 22:26:31 +0300
+Message-Id: <d6f6420a0d5ceff6bb50d268023f7d2e117027c5.1654629778.git.paskripkin@gmail.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <cover.1654629778.git.paskripkin@gmail.com>
+References: <cover.1654629778.git.paskripkin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+I was reviewing r8188eu patches for a while, but I am missing some of
+them, since I am not in CC list. I want to be CC'ed to help reviewing
+and testing more patches.
 
-commit a3d66a76348daf559873f19afc912a2a7c2ccdaf upstream.
-
-Register ARMADA_370_XP_INT_FABRIC_MASK_OFFS is Armada 370 and XP specific
-and on new Armada platforms it has different meaning. It does not configure
-Performance Counter Overflow interrupt masking. So do not touch this
-register on non-A370/XP platforms (A375, A38x and A39x).
-
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Cc: stable@vger.kernel.org
-Fixes: 28da06dfd9e4 ("irqchip: armada-370-xp: Enable the PMU interrupts")
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220425113706.29310-1-pali@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Acked-by: Phillip Potter <phil@philpotter.co.uk>
 ---
- drivers/irqchip/irq-armada-370-xp.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/irqchip/irq-armada-370-xp.c
-+++ b/drivers/irqchip/irq-armada-370-xp.c
-@@ -308,7 +308,16 @@ static inline int armada_370_xp_msi_init
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a6d3bd9d2a8d..60e5e4007844 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -18920,6 +18920,7 @@ F:	drivers/staging/olpc_dcon/
+ STAGING - REALTEK RTL8188EU DRIVERS
+ M:	Larry Finger <Larry.Finger@lwfinger.net>
+ M:	Phillip Potter <phil@philpotter.co.uk>
++R:	Pavel Skripkin <paskripkin@gmail.com>
+ S:	Supported
+ F:	drivers/staging/r8188eu/
  
- static void armada_xp_mpic_perf_init(void)
- {
--	unsigned long cpuid = cpu_logical_map(smp_processor_id());
-+	unsigned long cpuid;
-+
-+	/*
-+	 * This Performance Counter Overflow interrupt is specific for
-+	 * Armada 370 and XP. It is not available on Armada 375, 38x and 39x.
-+	 */
-+	if (!of_machine_is_compatible("marvell,armada-370-xp"))
-+		return;
-+
-+	cpuid = cpu_logical_map(smp_processor_id());
- 
- 	/* Enable Performance Counter Overflow interrupts */
- 	writel(ARMADA_370_XP_INT_CAUSE_PERF(cpuid),
-
+-- 
+2.36.1
 
