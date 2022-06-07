@@ -2,93 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5FB1CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B27CCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:31:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355692AbiFGTaa (ORCPT
+        id S1355634AbiFGTaW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38350 "EHLO
+        Tue, 7 Jun 2022 15:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351729AbiFGSiT (ORCPT
+        with ESMTP id S1351322AbiFGSiS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:38:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082651842D9;
-        Tue,  7 Jun 2022 10:58:13 -0700 (PDT)
+        Tue, 7 Jun 2022 14:38:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A91C11842CC;
+        Tue,  7 Jun 2022 10:58:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8785C618D8;
-        Tue,  7 Jun 2022 17:58:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28BA4C36AFE;
-        Tue,  7 Jun 2022 17:58:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624692;
-        bh=KcOo1oA3ujYCM/X6/pxf5zQ0h3TH3jWllfC3FvL+cl8=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5858AB80B66;
+        Tue,  7 Jun 2022 17:58:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5BADC3411C;
+        Tue,  7 Jun 2022 17:58:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624687;
+        bh=wTWdaBdQZjklB5Tlbw1WFcRpHyBz0f7VM+9i9DOB7Po=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SgoGLE/q/+3Q9217pAsHLFVrRAOFzgEpx5Fxui2Tdmde6u88GGhKXzcQUG8GFuwGk
-         B6S8vQ0ZeE89qn/Hjde6wTfPqmHCp+eTrl6rmQvgU9rqN2NzoctTg8zHk7peaTii3n
-         4vxXYF6ZnHjrXt2zPS5Z6/GPLFQJb8dIJOSM5EoHmBnMIu2rRNQGOYlcsvtPsu9lkp
-         ec9as9AjcXxXR9uxVOho7AWS1Jie5XqRYJwe+vaMrl+ni743Pn7ECcJ494Zl+lvI9B
-         5fsj/zjvGbdcNVb3Wewus7Ul6zocyprhrXsj71Vj4/Y4PO1/KpSz0MV7blRpKcD1fS
-         +DfjqVOZQY86w==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Sasha Levin <sashal@kernel.org>, jpoimboe@kernel.org,
-        jbaron@akamai.com
-Subject: [PATCH AUTOSEL 5.15 43/51] jump_label,noinstr: Avoid instrumentation for JUMP_LABEL=n builds
-Date:   Tue,  7 Jun 2022 13:55:42 -0400
-Message-Id: <20220607175552.479948-43-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+        b=puNtImMrDpBL64nflNOtzwPfKOV9vbyJxlEaFdyqpsB98NKnFTctWRTjOyCQZLUp/
+         o5sywIbltisEAX8+PVb/RWSgGvWSvH4uWJUahBAZEzMMeuB/lTOnz5sElQ5LENKJ7S
+         PIZvG+fc2US1iDJGGUBPkFfnpbt9ArPUfDu50gYQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 417/667] pinctrl: mediatek: mt8195: enable driver on mtk platforms
+Date:   Tue,  7 Jun 2022 19:01:22 +0200
+Message-Id: <20220607164947.243229381@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Fabien Parent <fparent@baylibre.com>
 
-[ Upstream commit 656d054e0a15ec327bd82801ccd58201e59f6896 ]
+[ Upstream commit 931d7fa89e640dea146e00b77c1d73459e66ab6e ]
 
-When building x86_64 with JUMP_LABEL=n it's possible for
-instrumentation to sneak into noinstr:
+Set the pinctrl driver as built-in by default if
+ARM64 and ARCH_MEDIATEK are enabled.
 
-vmlinux.o: warning: objtool: exit_to_user_mode+0x14: call to static_key_count.constprop.0() leaves .noinstr.text section
-vmlinux.o: warning: objtool: syscall_exit_to_user_mode+0x2d: call to static_key_count.constprop.0() leaves .noinstr.text section
-vmlinux.o: warning: objtool: irqentry_exit_to_user_mode+0x1b: call to static_key_count.constprop.0() leaves .noinstr.text section
-
-Switch to arch_ prefixed atomic to avoid the explicit instrumentation.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Fixes: 6cf5e9ef362a ("pinctrl: add pinctrl driver on mt8195")
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Link: https://lore.kernel.org/r/20220327160813.2978637-1-fparent@baylibre.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/jump_label.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pinctrl/mediatek/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
-index 48b9b2a82767..019e55c13248 100644
---- a/include/linux/jump_label.h
-+++ b/include/linux/jump_label.h
-@@ -261,9 +261,9 @@ extern void static_key_disable_cpuslocked(struct static_key *key);
- #include <linux/atomic.h>
- #include <linux/bug.h>
+diff --git a/drivers/pinctrl/mediatek/Kconfig b/drivers/pinctrl/mediatek/Kconfig
+index 246b0e951e1c..8a1706c8bb6e 100644
+--- a/drivers/pinctrl/mediatek/Kconfig
++++ b/drivers/pinctrl/mediatek/Kconfig
+@@ -152,6 +152,7 @@ config PINCTRL_MT8195
+ 	bool "Mediatek MT8195 pin control"
+ 	depends on OF
+ 	depends on ARM64 || COMPILE_TEST
++	default ARM64 && ARCH_MEDIATEK
+ 	select PINCTRL_MTK_PARIS
  
--static inline int static_key_count(struct static_key *key)
-+static __always_inline int static_key_count(struct static_key *key)
- {
--	return atomic_read(&key->enabled);
-+	return arch_atomic_read(&key->enabled);
- }
- 
- static __always_inline void jump_label_init(void)
+ config PINCTRL_MT8365
 -- 
 2.35.1
+
+
 
