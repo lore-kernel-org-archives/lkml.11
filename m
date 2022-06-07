@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B639FCCA488
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19680CCA48B
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352833AbiFGSf3 (ORCPT
+        id S1352963AbiFGSfm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55840 "EHLO
+        Tue, 7 Jun 2022 14:35:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349664AbiFGSEJ (ORCPT
+        with ESMTP id S1350529AbiFGSBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:04:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D185004A;
-        Tue,  7 Jun 2022 10:47:11 -0700 (PDT)
+        Tue, 7 Jun 2022 14:01:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC56DB0D18;
+        Tue,  7 Jun 2022 10:43:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6213B6171A;
-        Tue,  7 Jun 2022 17:47:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D708C34115;
-        Tue,  7 Jun 2022 17:47:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C2A2B822A6;
+        Tue,  7 Jun 2022 17:43:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8D6FC34115;
+        Tue,  7 Jun 2022 17:43:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624029;
-        bh=dRHnLty4MtAIw+i5ImmnnIcgHxwQeHJnYQbo8DkdFr4=;
+        s=korg; t=1654623797;
+        bh=6PJF83MYmr1iD+sEdmRIMreTQhVP/kon/lfjZYqbT1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H0/vWdB4Lfg+QVia1gloWnsKdFwlF2igblbUjJgDGQnN/XX6CLID9bK7NUl0IigCG
-         iKvo5CmMkEYXyY7dgQ0cu5yZurnJLljwIAoSoqf7jnumdAS8HydBEcY9CDucXtHonB
-         28+ZiuxuXzCwhG7haiTLYhyaxglEDwRzp8S/F9Bw=
+        b=bC3HTgcB04D149fsbGE4DZOYGHajlsxBgbjP+gYDkvAv+KaohPW6CxzYGSo8mygks
+         EL/uFbfp2oBJED//5Qar6/p1MrTTE+2CvlKsLgVLkDssYZKC8671Qn6pBDj00V+8mZ
+         2lc4055AEoMvbxSjMJyBmlqVQKJhK/yCqiiZebnY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sathishkumar S <sathishkumar.sundararaju@amd.com>,
-        Lijo Lazar <lijo.lazar@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 128/667] drm/amd/pm: update smartshift powerboost calc for smu13
-Date:   Tue,  7 Jun 2022 18:56:33 +0200
-Message-Id: <20220607164938.665213084@linuxfoundation.org>
+Subject: [PATCH 5.15 096/667] mlxsw: Treat LLDP packets as control
+Date:   Tue,  7 Jun 2022 18:56:01 +0200
+Message-Id: <20220607164937.700463981@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,113 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sathishkumar S <sathishkumar.sundararaju@amd.com>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit cdf4c8ec39872a61a58d62f19b4db80f0f7bc586 ]
+[ Upstream commit 0106668cd2f91bf913fb78972840dedfba80a3c3 ]
 
-smartshift apu and dgpu power boost are reported as percentage
-with respect to their power limits. adjust the units of power before
-calculating the percentage of boost.
+When trapping packets for on-CPU processing, Spectrum machines
+differentiate between control and non-control traps. Traffic trapped
+through non-control traps is treated as data and kept in shared buffer in
+pools 0-4. Traffic trapped through control traps is kept in the dedicated
+control buffer 9. The advantage of marking traps as control is that
+pressure in the data plane does not prevent the control traffic to be
+processed.
 
-Signed-off-by: Sathishkumar S <sathishkumar.sundararaju@amd.com>
-Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+When the LLDP trap was introduced, it was marked as a control trap. But
+then in commit aed4b5721143 ("mlxsw: spectrum: PTP: Hook into packet
+receive path"), PTP traps were introduced. Because Ethernet-encapsulated
+PTP packets look to the Spectrum-1 ASIC as LLDP traffic and are trapped
+under the LLDP trap, this trap was reconfigured as non-control, in sync
+with the PTP traps.
+
+There is however no requirement that PTP traffic be handled as data.
+Besides, the usual encapsulation for PTP traffic is UDP, not bare Ethernet,
+and that is in deployments that even need PTP, which is far less common
+than LLDP. This is reflected by the default policer, which was not bumped
+up to the 19Kpps / 24Kpps that is the expected load of a PTP-enabled
+Spectrum-1 switch.
+
+Marking of LLDP trap as non-control was therefore probably misguided. In
+this patch, change it back to control.
+
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c  | 62 ++++++++++++++-----
- 1 file changed, 46 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-index 0e1a843608e4..33bd5430c6de 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-@@ -305,6 +305,42 @@ static int yellow_carp_mode2_reset(struct smu_context *smu)
- 	return yellow_carp_mode_reset(smu, SMU_RESET_MODE_2);
- }
- 
-+
-+static void yellow_carp_get_ss_power_percent(SmuMetrics_t *metrics,
-+					uint32_t *apu_percent, uint32_t *dgpu_percent)
-+{
-+	uint32_t apu_boost = 0;
-+	uint32_t dgpu_boost = 0;
-+	uint16_t apu_limit = 0;
-+	uint16_t dgpu_limit = 0;
-+	uint16_t apu_power = 0;
-+	uint16_t dgpu_power = 0;
-+
-+	/* APU and dGPU power values are reported in milli Watts
-+	 * and STAPM power limits are in Watts */
-+	apu_power = metrics->ApuPower/1000;
-+	apu_limit = metrics->StapmOpnLimit;
-+	if (apu_power > apu_limit && apu_limit != 0)
-+		apu_boost =  ((apu_power - apu_limit) * 100) / apu_limit;
-+	apu_boost = (apu_boost > 100) ? 100 : apu_boost;
-+
-+	dgpu_power = metrics->dGpuPower/1000;
-+	if (metrics->StapmCurrentLimit > metrics->StapmOpnLimit)
-+		dgpu_limit = metrics->StapmCurrentLimit - metrics->StapmOpnLimit;
-+	if (dgpu_power > dgpu_limit && dgpu_limit != 0)
-+		dgpu_boost = ((dgpu_power - dgpu_limit) * 100) / dgpu_limit;
-+	dgpu_boost = (dgpu_boost > 100) ? 100 : dgpu_boost;
-+
-+	if (dgpu_boost >= apu_boost)
-+		apu_boost = 0;
-+	else
-+		dgpu_boost = 0;
-+
-+	*apu_percent = apu_boost;
-+	*dgpu_percent = dgpu_boost;
-+
-+}
-+
- static int yellow_carp_get_smu_metrics_data(struct smu_context *smu,
- 							MetricsMember_t member,
- 							uint32_t *value)
-@@ -313,6 +349,8 @@ static int yellow_carp_get_smu_metrics_data(struct smu_context *smu,
- 
- 	SmuMetrics_t *metrics = (SmuMetrics_t *)smu_table->metrics_table;
- 	int ret = 0;
-+	uint32_t apu_percent = 0;
-+	uint32_t dgpu_percent = 0;
- 
- 	mutex_lock(&smu->metrics_lock);
- 
-@@ -365,26 +403,18 @@ static int yellow_carp_get_smu_metrics_data(struct smu_context *smu,
- 		*value = metrics->Voltage[1];
- 		break;
- 	case METRICS_SS_APU_SHARE:
--		/* return the percentage of APU power with respect to APU's power limit.
--		 * percentage is reported, this isn't boost value. Smartshift power
--		 * boost/shift is only when the percentage is more than 100.
-+		/* return the percentage of APU power boost
-+		 * with respect to APU's power limit.
- 		 */
--		if (metrics->StapmOpnLimit > 0)
--			*value =  (metrics->ApuPower * 100) / metrics->StapmOpnLimit;
--		else
--			*value = 0;
-+		yellow_carp_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
-+		*value = apu_percent;
- 		break;
- 	case METRICS_SS_DGPU_SHARE:
--		/* return the percentage of dGPU power with respect to dGPU's power limit.
--		 * percentage is reported, this isn't boost value. Smartshift power
--		 * boost/shift is only when the percentage is more than 100.
-+		/* return the percentage of dGPU power boost
-+		 * with respect to dGPU's power limit.
- 		 */
--		if ((metrics->dGpuPower > 0) &&
--		    (metrics->StapmCurrentLimit > metrics->StapmOpnLimit))
--			*value = (metrics->dGpuPower * 100) /
--				  (metrics->StapmCurrentLimit - metrics->StapmOpnLimit);
--		else
--			*value = 0;
-+		yellow_carp_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
-+		*value = dgpu_percent;
- 		break;
- 	default:
- 		*value = UINT_MAX;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+index 26d01adbedad..ce6f6590a777 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+@@ -864,7 +864,7 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
+ 		.trap = MLXSW_SP_TRAP_CONTROL(LLDP, LLDP, TRAP),
+ 		.listeners_arr = {
+ 			MLXSW_RXL(mlxsw_sp_rx_ptp_listener, LLDP, TRAP_TO_CPU,
+-				  false, SP_LLDP, DISCARD),
++				  true, SP_LLDP, DISCARD),
+ 		},
+ 	},
+ 	{
 -- 
 2.35.1
 
