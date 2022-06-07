@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 498D1CCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9DC3CCA49B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350277AbiFGSFt (ORCPT
+        id S1350635AbiFGSGX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59172 "EHLO
+        Tue, 7 Jun 2022 14:06:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349055AbiFGRqo (ORCPT
+        with ESMTP id S1348619AbiFGRpv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:46:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F5260B97;
-        Tue,  7 Jun 2022 10:36:22 -0700 (PDT)
+        Tue, 7 Jun 2022 13:45:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F85B13275A;
+        Tue,  7 Jun 2022 10:35:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0BD0ECE23E3;
-        Tue,  7 Jun 2022 17:36:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0550BC385A5;
-        Tue,  7 Jun 2022 17:36:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00D746155F;
+        Tue,  7 Jun 2022 17:35:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CCE2C385A5;
+        Tue,  7 Jun 2022 17:35:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623379;
-        bh=+3e4woYPj1YYXK+ih5wW15uzJg6CSLuSkjVNKXFyNM0=;
+        s=korg; t=1654623305;
+        bh=Oq2LO3gi1p7+wDu3z0bH5ntPpaLNi+IqC9qqJ5SJqCU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rww6uB1xEmwElgJw/2TJI+MI4FkcUpMNGmX4dip3cCTpTfeewaz/F1yyFDFjZE/sk
-         2AqZzgGml7gBDStYPngFPmhZ1qjPMFxiQH68pv6yZO9SyzrXarnROLIP2dJ+lhIVdC
-         5r027rqo0RTucFHpnwikBVvu4kLsFs8v9v9RZQzA=
+        b=RIsm/5DjpeeZgjuhauYF+/nOwJcTW9nMBG7emoeNBXjNkcGKAxbpL7nJLrK0HBUiH
+         XlI+N1bYqEVrfUZTDpj29Iu1/bBevLqyc+HyindpnXft3aLER6o0NtVMQCMe5gxnrJ
+         K/z0EsWHhGDPzBnWawUzXFAII9AV7TUNC0uPo7oQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dimitri John Ledkov <dimitri.ledkov@canonical.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.10 396/452] cfg80211: declare MODULE_FIRMWARE for regulatory.db
-Date:   Tue,  7 Jun 2022 19:04:13 +0200
-Message-Id: <20220607164920.362594817@linuxfoundation.org>
+        stable@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 5.10 368/452] PCI/PM: Fix bridge_d3_blacklist[] Elo i2 overwrite of Gigabyte X299
+Date:   Tue,  7 Jun 2022 19:03:45 +0200
+Message-Id: <20220607164919.528923803@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,42 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-commit 7bc7981eeebe1b8e603ad2ffc5e84f4df76920dd upstream.
+commit 12068bb346db5776d0ec9bb4cd073f8427a1ac92 upstream.
 
-Add MODULE_FIRMWARE declarations for regulatory.db and
-regulatory.db.p7s such that userspace tooling can discover and include
-these files.
+92597f97a40b ("PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold") omitted
+braces around the new Elo i2 entry, so it overwrote the existing Gigabyte
+X299 entry.  Add the appropriate braces.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
-Link: https://lore.kernel.org/r/20220414125004.267819-1-dimitri.ledkov@canonical.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Found by:
+
+  $ make W=1 drivers/pci/pci.o
+    CC      drivers/pci/pci.o
+  drivers/pci/pci.c:2974:12: error: initialized field overwritten [-Werror=override-init]
+   2974 |   .ident = "Elo i2",
+        |            ^~~~~~~~
+
+Link: https://lore.kernel.org/r/20220526221258.GA409855@bhelgaas
+Fixes: 92597f97a40b ("PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold")
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org  # v5.15+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/wireless/reg.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/pci/pci.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/net/wireless/reg.c
-+++ b/net/wireless/reg.c
-@@ -787,6 +787,8 @@ static int __init load_builtin_regdb_key
- 	return 0;
- }
- 
-+MODULE_FIRMWARE("regulatory.db.p7s");
-+
- static bool regdb_has_valid_signature(const u8 *data, unsigned int size)
- {
- 	const struct firmware *sig;
-@@ -1058,6 +1060,8 @@ static void regdb_fw_cb(const struct fir
- 	release_firmware(fw);
- }
- 
-+MODULE_FIRMWARE("regulatory.db");
-+
- static int query_regdb_file(const char *alpha2)
- {
- 	ASSERT_RTNL();
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -2829,6 +2829,8 @@ static const struct dmi_system_id bridge
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
+ 			DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
+ 		},
++	},
++	{
+ 		/*
+ 		 * Downstream device is not accessible after putting a root port
+ 		 * into D3cold and back into D0 on Elo i2.
 
 
