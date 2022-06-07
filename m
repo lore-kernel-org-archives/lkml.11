@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17929C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:04:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C190C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:04:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379060AbiFGVEg (ORCPT
+        id S1357576AbiFGVEq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43028 "EHLO
+        Tue, 7 Jun 2022 17:04:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358065AbiFGUCs (ORCPT
+        with ESMTP id S1358060AbiFGUCs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:02:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BE7E8BA7;
-        Tue,  7 Jun 2022 11:25:32 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62398E8BA2;
+        Tue,  7 Jun 2022 11:25:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9693DCE244F;
-        Tue,  7 Jun 2022 18:25:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F879C385A2;
-        Tue,  7 Jun 2022 18:25:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20908B82389;
+        Tue,  7 Jun 2022 18:25:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79E9BC385A2;
+        Tue,  7 Jun 2022 18:25:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626328;
-        bh=EmN6mRFvHUwuZ+ZkA9xdAmcxV93AgiIPJqyOVregxIY=;
+        s=korg; t=1654626303;
+        bh=bECevGEJQRm9zlwoTsq4nSUU2ACxTtNGL7gJ4lWePVc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HT75eLvRfRYgZ45FlpQrv/+gk9Vwbm9QSCLAkH3nIBRYiqLQIUpkHGthISChKB27j
-         hiY7hEQuw7DKwSThzfHdEWOQGuqdKgdP0Pad475mFpnq8PVkIcfIOUAZQxFJ8AOmI3
-         FHm9fNh49HnG80Fd+4H+wp+8+n7VGQNyTbYmOzHM=
+        b=ZPVqThyBtxgBOvI6VdSJgmawB3eBna5Q2ALXsaMoqnTx6SKjEveSOjLBpUmgveoG/
+         KmEbDBNWJEf+nvcwAAGo4ZKLgub+EnQT6mI2bJu7oMCwpoG5WGDC8Vy6+mxH3kjMRh
+         vj6PNJRea5lJt3o8uciENGoPdUHF/qUFt/Nk4Plo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vinod Polimera <quic_vpolimer@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 337/772] drm/msm/disp/dpu1: avoid clearing hw interrupts if hw_intr is null during drm uninit
-Date:   Tue,  7 Jun 2022 18:58:49 +0200
-Message-Id: <20220607164958.953767945@linuxfoundation.org>
+Subject: [PATCH 5.17 329/772] nl80211: dont hold RTNL in color change request
+Date:   Tue,  7 Jun 2022 18:58:41 +0200
+Message-Id: <20220607164958.718055320@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,63 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinod Polimera <quic_vpolimer@quicinc.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 01013ba9bbddc62f7d011163cebfd7ed06bb698b ]
+[ Upstream commit 1b550a0bebfc0b69d6ec08fe6eb58953a8aec48a ]
 
-If edp modeset init is failed due to panel being not ready and
-probe defers during drm bind, avoid clearing irqs and dereference
-hw_intr when hw_intr is null.
+It's not necessary to hold the RTNL across color change
+requests, since all the inner locking needs only the
+wiphy mutex which we already hold as well.
 
-BUG: Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-
-Call trace:
- dpu_core_irq_uninstall+0x50/0xb0
- dpu_irq_uninstall+0x18/0x24
- msm_drm_uninit+0xd8/0x16c
- msm_drm_bind+0x580/0x5fc
- try_to_bring_up_master+0x168/0x1c0
- __component_add+0xb4/0x178
- component_add+0x1c/0x28
- dp_display_probe+0x38c/0x400
- platform_probe+0xb0/0xd0
- really_probe+0xcc/0x2c8
- __driver_probe_device+0xbc/0xe8
- driver_probe_device+0x48/0xf0
- __device_attach_driver+0xa0/0xc8
- bus_for_each_drv+0x8c/0xd8
- __device_attach+0xc4/0x150
- device_initial_probe+0x1c/0x28
-
-Changes in V2:
-- Update commit message and coreect fixes tag.
-
-Fixes: f25f656608e3 ("drm/msm/dpu: merge struct dpu_irq into struct dpu_hw_intr")
-Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/484430/
-Link: https://lore.kernel.org/r/1651509846-4842-1-git-send-email-quic_vpolimer@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: 0d2ab3aea50b ("nl80211: add support for BSS coloring")
+Link: https://lore.kernel.org/r/20220414140402.32e03e8c261b.I5e7dc6bc563a129b938c43298da6bb4e812400a5@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/wireless/nl80211.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
-index a77a5eaa78ad..6730e771bffa 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
-@@ -593,6 +593,9 @@ void dpu_core_irq_uninstall(struct dpu_kms *dpu_kms)
- {
- 	int i;
- 
-+	if (!dpu_kms->hw_intr)
-+		return;
-+
- 	pm_runtime_get_sync(&dpu_kms->pdev->dev);
- 	for (i = 0; i < dpu_kms->hw_intr->total_irqs; i++)
- 		if (!list_empty(&dpu_kms->hw_intr->irq_cb_tbl[i]))
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index ba53bc820d81..0aad974f17a7 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -16194,8 +16194,7 @@ static const struct genl_small_ops nl80211_small_ops[] = {
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nl80211_color_change,
+ 		.flags = GENL_UNS_ADMIN_PERM,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+-				  NL80211_FLAG_NEED_RTNL,
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP,
+ 	},
+ 	{
+ 		.cmd = NL80211_CMD_SET_FILS_AAD,
 -- 
 2.35.1
 
