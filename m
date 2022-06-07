@@ -2,119 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2AF5CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:54:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD46BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:55:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350006AbiFHByM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:54:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35586 "EHLO
+        id S232144AbiFHByn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584664AbiFGXs3 (ORCPT
+        with ESMTP id S1586687AbiFGXvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:48:29 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B25048989D;
-        Tue,  7 Jun 2022 15:25:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=0YiMkBagw10WMJGuNob9S5dY4o5Fq5z46VhZ483pA3A=; b=sCSF0zEDHJ1FuAcGsEAIZaTXYd
-        fNmlETUv1/cYtfUE3DNw/KfFCn2nGzCNmDNdQQ9HlYu2CtB6I1TGW9jCVycqcuLYGKpW05N/4jw+l
-        upDe9ygg/ws6o5RUvqaxgw+q1JTYJk1FAV40lw4+6DXhPlKwwVBwiaUOFrGzfnBrChJipc//5Egia
-        tnVA0Wx3TYkzrT4rqu1M6hmTwPBYzvS2A0Cy0rSBu7uRwAAYHLckPQLY7sSG2ZqBhIwS0HJoXwUwE
-        esPvo7cdxnKvslmhZI+QDa8WNx7ka15Pz2C3NBMm82ud+evXBSGsuouRH4qoXcQjsyQLtVwrvhr0t
-        JYAPPybQ==;
-Received: from [179.110.79.194] (helo=localhost)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1nyhdV-00DgtH-7s; Wed, 08 Jun 2022 00:25:18 +0200
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     linux-acpi@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        rafael.j.wysocki@intel.com, kernel@gpiccoli.net,
-        kernel-dev@igalia.com,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Len Brown <lenb@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>
-Subject: [PATCH] ACPI: processor/idle: Annotate more functions to live in cpuidle section
-Date:   Tue,  7 Jun 2022 19:24:58 -0300
-Message-Id: <20220607222458.1864805-1-gpiccoli@igalia.com>
-X-Mailer: git-send-email 2.36.0
+        Tue, 7 Jun 2022 19:51:50 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78AA228DC2D
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:43:10 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id b12so9817041ljq.3
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 15:43:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Xt01xp86lqL0/6AjJBope1HTOp03keAnvABg9sLTIEA=;
+        b=UHgsazWQmeU1NR6jOOBK0qGzfYbJQXzgSI0eKTHcQO2WAP2crTBr7b/+hBIGmTkWET
+         eaeI8PxMo/qMYOJQXvc79Tax4fvqB0zsF+dnhvp4wvLkdHT+KEcQKEYIfyO6dFWS9JAk
+         xRe7n/80iXhEW4gCXmy1KpD6JnslfRdVAmFamIl+GjL5w9+W5S5MLB4lQcEzMogc0Sfh
+         XF4cvnKjdp6lsHLn/Ker4XPQosO2YPJrCGThRBO0DzyMVpLbyoF0wXM1YwginkQVcP8F
+         /ZZtlzXQ6YTWAFzzAeIAaFQH3KIVYsMJh1sMGwJ4CQuqeG6GQ6F82L83ujInHYVddxlK
+         ASIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Xt01xp86lqL0/6AjJBope1HTOp03keAnvABg9sLTIEA=;
+        b=rAlajgo9yYsvY+YbeM1h2VwNEpoiLuZL/7D5IPDAli7kZ3SV4eq4VQt4NdsJuVPDqN
+         enQqyuwyeegt9tVyDCiiXy3VLTNNRbhccefrj59zfviSvgbM76QFoQvOD4sOn7/ixVe9
+         pibL1PulNQTwIBaa26aCyrmQugquYQvljIyFVQy3fkRpUnbnOnB7EbE4ED8/dxWDVrSP
+         wPwCjKRfhEF7gs7BUa3ullDpZ8ASZiX46l6HpegM1BKcJbmhmj7fe74b0Zh7IjJOu+cH
+         tO7YJRFMcW1cnwpULimH2yNCbEAdHdIvfPafq2sw7LlE4eheEo1HMHsjRYZpzLehvnP9
+         Pjrw==
+X-Gm-Message-State: AOAM530kAKqJuyoZY2+Todwyyu/S4JYDrrfX3EWC0SCr0Vy6mTYbd7zG
+        KKXfpLUPWwWE3G2uTPhGGSXlJVQ0h8ql7H+Bv07pMA==
+X-Google-Smtp-Source: ABdhPJylrRmI3sSEhsMpeXgzL2yRHODPE01/WwB6x35Xdnj/KDNkuNvsOgTE/u/vqpRRU0mPfqaMth+nqrwqFZ6C8Sc=
+X-Received: by 2002:a2e:8e98:0:b0:255:9d3d:bac3 with SMTP id
+ z24-20020a2e8e98000000b002559d3dbac3mr6176311ljk.103.1654641788193; Tue, 07
+ Jun 2022 15:43:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220607222006.22719-1-jstitt007@gmail.com> <20220607152744.d7c801d092529309500ac9a6@linux-foundation.org>
+In-Reply-To: <20220607152744.d7c801d092529309500ac9a6@linux-foundation.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 7 Jun 2022 15:42:56 -0700
+Message-ID: <CAKwvOdmXeRbFjkHgFXps4pLH6Q6pGWRNOqA85=h2aFnR=uaggg@mail.gmail.com>
+Subject: Re: [PATCH] include/uapi/linux/swab.h: add __u16 cast to __swab16 conditional
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Justin Stitt <jstitt007@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Richard Smith <richardsmith@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 6727ad9e206c ("nmi_backtrace: generate one-line reports for idle cpus")
-introduced a new text section called cpuidle; with that, we have a mechanism
-to add idling functions in such section and skip them from nmi_backtrace
-output, since they're useless and potentially flooding for such report.
+On Tue, Jun 7, 2022 at 3:27 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+>
+> On Tue,  7 Jun 2022 15:20:06 -0700 Justin Stitt <jstitt007@gmail.com> wrote:
+>
+> > if __HAVE_BUILTIN_BSWAP16__ is defined then __swab16 utilizes a __u16 cast.
+> > This same cast should be used if __HAVE_BUILTIN_BSWAP16__ is not defined as
+> > well. This should fix loads (at least a few) clang -Wformat warnings
+> > specifically with `ntohs()`
+> >
+> > ...
+> >
+> > --- a/include/uapi/linux/swab.h
+> > +++ b/include/uapi/linux/swab.h
+> > @@ -102,7 +102,7 @@ static inline __attribute_const__ __u32 __fswahb32(__u32 val)
+> >  #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+> >  #else
+> >  #define __swab16(x)                          \
+> > -     (__builtin_constant_p((__u16)(x)) ?     \
+> > +     (__u16)(__builtin_constant_p((__u16)(x)) ?      \
+> >       ___constant_swab16(x) :                 \
+> >       __fswab16(x))
+> >  #endif
+>
+> More explanation, please?  Both ___constant_swab16() and __fswab16()
+> return __u16, so why does this patch have any effect?
+>
 
-Happens that inlining might cause some real idle functions to end-up
-outside of such section; this is currently the case of ACPI processor_idle
-driver; the functions acpi_idle_enter_* do inline acpi_idle_do_entry(),
-hence they stay out of the cpuidle section.
-Fix that by marking such functions to also live in the cpuidle section.
+See this example:
+https://godbolt.org/z/fzE73jn13
+And the ImplicitCastExpr nodes adding to the AST:
+https://godbolt.org/z/oYeYxYdKW
 
-Fixes: 6727ad9e206c ("nmi_backtrace: generate one-line reports for idle cpus")
-Cc: Len Brown <lenb@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Rafael J. Wysocki <rafael@kernel.org>
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
----
+Both the second and third operand are promoted to int.
 
-Hi folks, this was tested on top of v5.19-rc1, with sysrq-l.
+C11: https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1548.pdf
 
-An alternative for this approach would be to mark acpi_idle_do_entry()
-as noinline, but I'd risk to say that's a bit worse performance-wise.
-Let me know your preference, I can rework the patch if you prefer =)
-
-Thanks in advance for reviews,
-
-
-Guilherme
-
-
- drivers/acpi/processor_idle.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
-index 6a5572a1a80c..13200969ccf3 100644
---- a/drivers/acpi/processor_idle.c
-+++ b/drivers/acpi/processor_idle.c
-@@ -607,7 +607,7 @@ static DEFINE_RAW_SPINLOCK(c3_lock);
-  * @cx: Target state context
-  * @index: index of target state
-  */
--static int acpi_idle_enter_bm(struct cpuidle_driver *drv,
-+static int __cpuidle acpi_idle_enter_bm(struct cpuidle_driver *drv,
- 			       struct acpi_processor *pr,
- 			       struct acpi_processor_cx *cx,
- 			       int index)
-@@ -664,7 +664,7 @@ static int acpi_idle_enter_bm(struct cpuidle_driver *drv,
- 	return index;
- }
- 
--static int acpi_idle_enter(struct cpuidle_device *dev,
-+static int __cpuidle acpi_idle_enter(struct cpuidle_device *dev,
- 			   struct cpuidle_driver *drv, int index)
- {
- 	struct acpi_processor_cx *cx = per_cpu(acpi_cstate[index], dev->cpu);
-@@ -693,7 +693,7 @@ static int acpi_idle_enter(struct cpuidle_device *dev,
- 	return index;
- }
- 
--static int acpi_idle_enter_s2idle(struct cpuidle_device *dev,
-+static int __cpuidle acpi_idle_enter_s2idle(struct cpuidle_device *dev,
- 				  struct cpuidle_driver *drv, int index)
- {
- 	struct acpi_processor_cx *cx = per_cpu(acpi_cstate[index], dev->cpu);
+6.5.15/5
+>> If both the second and third operands have arithmetic type, the result type that would be determined by the usual arithmetic conversions, were they applied to those two operands, is the type of the result.
+6.3.1.8/1
+>> Otherwise, the integer promotions are performed on both operands.
+6.3.1.1/2
+>> If an int can represent all values of the original type (as restricted by the width, for a bit-field), the value is converted to an int; otherwise, it is converted to an unsigned int. These are called the integer promotions.
 -- 
-2.36.0
-
+Thanks,
+~Nick Desaulniers
