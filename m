@@ -2,92 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17287C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:54:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A749CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:54:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236468AbiFHByF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:54:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49132 "EHLO
+        id S1376323AbiFHByW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:54:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584071AbiFGXrm (ORCPT
+        with ESMTP id S1586635AbiFGXve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:47:42 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC39F262D61
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:20:52 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id e9so6345877pju.5
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 15:20:52 -0700 (PDT)
+        Tue, 7 Jun 2022 19:51:34 -0400
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261A128DC1D
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:43:09 -0700 (PDT)
+Received: by mail-ot1-x32b.google.com with SMTP id r14-20020a056830418e00b0060b8da9ff75so13887791otu.11
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 15:43:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OAR2/RmOjZbYj98rO6ac1mg+RH5GE5HBqimT+k5kjhE=;
-        b=M3MPEpZWkUQnUQtZkqtKjHgTaFJPCuP8yD6txsdbih3NMKLrTcEvP0q/avKLCBU41/
-         /3puSqoegNDh7Vw58ZqTAqzFQvXNZo4vjupzMO9x6vGIuef2mPLe7QDoK12FQf8TRNCU
-         QXDScL4D3ps9PbPDGeE2keSpUqUtL0+rZ+N+gpkGis57IM+IWoIh39TagtQ/5ncRsRFB
-         rUvPu3HI3WC7nwKIGFJgWkBm9tDiJ/IAkD64f5OZO24Fdg3LlE9AH/BANr5RyATboyZA
-         RGUeSYZ4GkusZ++xgV7AaoVhJFjcoyb3Xlm3XaDEUfvY6itgyXI7eYERZqVVaMGoHmtS
-         VyuA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2fKoWW6NOg5lxeXgt4oK9futpOxTdvNtK6BCDtPAU98=;
+        b=SolS7aXqDUswytp1fIPeZ8E1O3SQf6wC7YBU78MIsnycc/aht7NFwCUavHoI6an47Y
+         TUuuc48GSuMVJYOpJ14Z5Y+qsODzrZYwDUObm1f8e4XyCvphW5hPQrTajc6XPdZKzCb5
+         LlCje7mUunZrQIvSOEXGVBawzYxgCxwUeMkYQ+SkapFy5RW4cxafIQosi3FzQhYE/G6u
+         aqQW/J4nFuZ2gbrnANdIzSDKP1fwBuWLt40+SkGe1cGhRDeMOojyaJPQG64uf6DJ/buU
+         Fi9TXW46Rs2RP/CenV0BX0mwXdkI4o+sHrahqRUdSVkraBny2sYLjM9Hs90H4S/+7FYl
+         li8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OAR2/RmOjZbYj98rO6ac1mg+RH5GE5HBqimT+k5kjhE=;
-        b=uY2eFttuil6IY13dYCgnakF3cZ/I9gWphLY1mBk52Yw2ezC0fFK61mvPAYWBiYnGuA
-         m/NnxsubIR4i/2YcNo89vmmy3+CiTnWneZQibnwNHvsIKxbVIe53jPgKy6hDKyE+8v86
-         sBqUbOOmWg5Vem/N+vxqybccUcXYRse9QzjcjejBaXsHP5p/XNAomevBg8JrHjGOGWZc
-         ByjJq9l8HH+O7THLc2PnmCcygM9QQVABsjZ4ZRfZR1WwmX8XoT3eprQeoWFqWGqX88RU
-         gJCSz+0m5tPMPBktgQExKcKRnTqRyOfMlHt749bNGHfwwjNdkcCK0J4ZgcVoVyP3KsOo
-         XDqA==
-X-Gm-Message-State: AOAM531J4/FtWOf3muo2dRA2NzluiZRlUQCgL0qvBKr6v5GkZv8zgsuz
-        sF5J9iXduU9Y7IJtr0Zoo6w=
-X-Google-Smtp-Source: ABdhPJwXcISX0IOahOjg2aruo+uAMtXRJD494uIGO8TUrweujgZqug76VqTpGVNJXoGSOVg1tSYsMA==
-X-Received: by 2002:a17:903:1247:b0:156:25b4:4206 with SMTP id u7-20020a170903124700b0015625b44206mr31259117plh.146.1654640450835;
-        Tue, 07 Jun 2022 15:20:50 -0700 (PDT)
-Received: from penguin.lxd ([2620:0:1000:2514:216:3eff:fe31:a1ca])
-        by smtp.googlemail.com with ESMTPSA id p10-20020a170902780a00b001640aad2f71sm13286969pll.180.2022.06.07.15.20.49
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2fKoWW6NOg5lxeXgt4oK9futpOxTdvNtK6BCDtPAU98=;
+        b=F4eVtOdokACHqWtPH4vT7bxm/2D0wIsZSAs4Q9Ar7qvgcwyNMxLjzCahWfipj0eEwd
+         yG4+I17nH1Dbrhtoto2/OXRA/dJxJYJ850wS0YkRnU5seneZiiGzonyS47NkKKDszB6+
+         hT3u+8FV2iqPC8uHDOzWSm/v4CDc/Kt1Zaa3PwdI10lyC7b976VNkvVRcRcREPpb9oE3
+         zN5lxvfBnaTLnZAUlRZ60PXuOurnz5I2XCbO1SMDA80QHTJu2XtW082NQs3V/UzJCQOr
+         UI0lrWX1NEJX6xOZsH+Q3x/QQHk3m3G+gFB5T8hJX2vVWx7Zmqe1kyCuQ1nK0fpyPilz
+         QpZQ==
+X-Gm-Message-State: AOAM531Bk2Fdnz7LDN7OgRaTV1EiwYaCzqFb5PzDN+qPWTpIrUm3pl+C
+        6yfhGfMlZuSJscSMJNwMTDUH+w==
+X-Google-Smtp-Source: ABdhPJySCSkrxVapnCB2pbL3mqq6c/Ha6taOEPIvN6imZnQFuRSIOn++8Bc839jTB8lMMNU1tRmMyA==
+X-Received: by 2002:a05:6830:9c2:b0:606:1e0a:cc8d with SMTP id y2-20020a05683009c200b006061e0acc8dmr13468851ott.265.1654641787842;
+        Tue, 07 Jun 2022 15:43:07 -0700 (PDT)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id u13-20020a056871008d00b000f5d4e5b9a0sm8903477oaa.2.2022.06.07.15.43.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 15:20:50 -0700 (PDT)
-From:   Justin Stitt <jstitt007@gmail.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Justin Stitt <jstitt007@gmail.com>
-Subject: [PATCH] include/uapi/linux/swab.h: add __u16 cast to __swab16 conditional
-Date:   Tue,  7 Jun 2022 15:20:06 -0700
-Message-Id: <20220607222006.22719-1-jstitt007@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 07 Jun 2022 15:43:07 -0700 (PDT)
+Date:   Tue, 7 Jun 2022 15:45:30 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Manu Gautam <mgautam@codeaurora.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/5] phy: qcom-qmp: Add USB3 5NM QMP UNI registers
+Message-ID: <Yp/VCg3UznbLKLuk@ripper>
+References: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
+ <20220607213543.4057620-3-bjorn.andersson@linaro.org>
+ <f16657a3-15e5-f7d6-1f2b-58e2ea83dddc@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f16657a3-15e5-f7d6-1f2b-58e2ea83dddc@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-if __HAVE_BUILTIN_BSWAP16__ is defined then __swab16 utilizes a __u16 cast.
-This same cast should be used if __HAVE_BUILTIN_BSWAP16__ is not defined as
-well. This should fix loads (at least a few) clang -Wformat warnings
-specifically with `ntohs()`
+On Tue 07 Jun 14:58 PDT 2022, Dmitry Baryshkov wrote:
+> On 08/06/2022 00:35, Bjorn Andersson wrote:
+[..]
+> > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_CMP_CODE2_MODE0	0x1b0
+> > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_CMP_CODE1_MODE1	0x1b4
+> > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_CMP_CODE2_MODE1	0x1b8
+> > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_HSCLK_SEL		0x1bc
+> > +#define USB3_V5_5NM_UNI_QSERDES_COM_RESERVED_1			0x1c0
+> > +#define USB3_V5_5NM_UNI_QSERDES_COM_MODE_OPERATION_STATUS		0x1c4
+> 
+> These defines look completely compatible with the existing ones in the
+> QSERDES_V5_COM_ namespace. Please use them instead.
+> 
 
-Link: https://github.com/ClangBuiltLinux/linux/issues/378
-Signed-off-by: Justin Stitt <jstitt007@gmail.com>
----
- include/uapi/linux/swab.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Can you please confirm that all these constants are exactly the same as
+the existing V5 entries?
 
-diff --git a/include/uapi/linux/swab.h b/include/uapi/linux/swab.h
-index 7272f85d6d6a..f6be3f2e6fee 100644
---- a/include/uapi/linux/swab.h
-+++ b/include/uapi/linux/swab.h
-@@ -102,7 +102,7 @@ static inline __attribute_const__ __u32 __fswahb32(__u32 val)
- #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
- #else
- #define __swab16(x)				\
--	(__builtin_constant_p((__u16)(x)) ?	\
-+	(__u16)(__builtin_constant_p((__u16)(x)) ?	\
- 	___constant_swab16(x) :			\
- 	__fswab16(x))
- #endif
--- 
-2.30.2
+[..]
+> > +/* Module: USB3_UNI_PCS_USB3_PCIE_USB3_UNI_PCS_USB3 */
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_POWER_STATE_CONFIG1		0x00
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_AUTONOMOUS_MODE_STATUS		0x04
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_AUTONOMOUS_MODE_CTRL		0x08
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_AUTONOMOUS_MODE_CTRL2		0x0c
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_RXTERM_IRQ_SOURCE_STATUS	0x10
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_RXTERM_IRQ_CLEAR		0x14
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_DET_HIGH_COUNT_VAL		0x18
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_TX_ECSTART			0x1c
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_PER_TIMER_VAL		0x20
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_TX_END_CNT_U3_START		0x24
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_CONFIG1			0x28
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_LOCK_TIME		0x2c
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_WAIT_TIME		0x30
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_CTLE_TIME		0x34
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_WAIT_TIME_S2		0x38
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_DFE_TIME_S2		0x3c
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_RCVR_DTCT_DLY_U3_L		0x40
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_RCVR_DTCT_DLY_U3_H		0x44
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_ARCVR_DTCT_EN_PERIOD		0x48
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_ARCVR_DTCT_CM_DLY			0x4c
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_TXONESZEROS_RUN_LENGTH		0x50
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_ALFPS_DEGLITCH_VAL		0x54
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_SIGDET_STARTUP_TIMER_VAL		0x58
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_TEST_CONTROL			0x5c
+> > +#define USB3_V5_5NM_UNI_PCS_USB3_RXTERMINATION_DLY_SEL		0x60
+> 
+> These look like QPHY_V5_PCS_USB3, but without additional 0x300 offset. I'd
+> suggest modifying qcom-qmp-phy-usb.c to allocate another register space for
+> pcs_usb and updating QPHY_V4_PCS_USB3_foo / QPHY_V5_PCS_USB3_foo defines to
+> remove this offset.
+> 
+> Afterwards most if not all constants from this header can be merged into
+> phy-qcom-qmp.h I do not think that it makes sense to split this header at
+> this moment. The QSERDES_COM/_TX/_RX/_PCS defines are common to all PHY
+> types.
+> 
 
+You might be right, but I spent considerable time debugging the combo
+phy (which is version 5.0.0) and in the end it turned out that it's not
+the same offsets.
+
+I really would prefer that we stop haphazardly try to fit things into
+the phy-qcom-qmp.h with version numbers that we essentially make up
+base, when Qualcomm dumps the register layout for each generation in
+their downstream kernel.
+
+Regards,
+Bjorn
