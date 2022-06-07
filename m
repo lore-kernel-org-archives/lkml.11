@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E350ECCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D92CCCA486
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350369AbiFGSKz (ORCPT
+        id S1350482AbiFGSLA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:10:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47544 "EHLO
+        Tue, 7 Jun 2022 14:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349987AbiFGRvo (ORCPT
+        with ESMTP id S1350049AbiFGRvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:44 -0400
+        Tue, 7 Jun 2022 13:51:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7676F13FD45;
-        Tue,  7 Jun 2022 10:39:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB25F140418;
+        Tue,  7 Jun 2022 10:39:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADFACB820C3;
-        Tue,  7 Jun 2022 17:38:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2620CC36B00;
-        Tue,  7 Jun 2022 17:38:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 698E2B81F38;
+        Tue,  7 Jun 2022 17:39:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCA55C385A5;
+        Tue,  7 Jun 2022 17:39:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623508;
-        bh=tyM7H0z0JY6XjH8ccFzhWzhTEOySrH0mR0zkxhylm3w=;
+        s=korg; t=1654623563;
+        bh=Fe2OthShKb7dtDW/ujH69Xda4tM3CFRwC0Aue/JcfXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MyVftNFP6guKVJFafFRhFCvogkq7NPaNN3RroKiXpieLHFTZG5SPv0D2gc5xMlf8a
-         8CjG5BbamvMGzefa+p6GG4e2WUEBXbCdaw29rUnnc1epjEIbE9ZlDCuThL3ciRG6Up
-         zMpCMVvK/zgDnOq8WKZ64CCOA8U/An8EdFQmE7DA=
+        b=D5NlJYqrV/C5jpxZaHhPg26C/GppBoIyV3rHcDRqmpfwhP+lUQpJe7zFcsuI/fvcE
+         OtBzxzmuKLicaBKY0/BmJxgs7RiWkt7mzrQZQo3UEznGk3/NhOOhQ6Ig4sVGo52hrk
+         ju4t60lgJoTc3wtzrawAuvxn0nON7LbXvPinKWcw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "yukuai (C)" <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 443/452] bfq: Remove pointless bfq_init_rq() calls
-Date:   Tue,  7 Jun 2022 19:05:00 +0200
-Message-Id: <20220607164921.768178714@linuxfoundation.org>
+        stable@vger.kernel.org, Rik van der Kemp <rik@upto11.nl>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 011/667] ALSA: hda/realtek: Enable 4-speaker output for Dell XPS 15 9520 laptop
+Date:   Tue,  7 Jun 2022 18:54:36 +0200
+Message-Id: <20220607164935.127881034@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
-References: <20220607164908.521895282@linuxfoundation.org>
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,84 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Rik van der Kemp <rik@upto11.nl>
 
-commit 5f550ede5edf846ecc0067be1ba80514e6fe7f8e upstream.
+commit 15dad62f4bdb5dc0f0efde8181d680db9963544c upstream.
 
-We call bfq_init_rq() from request merging functions where requests we
-get should have already gone through bfq_init_rq() during insert and
-anyway we want to do anything only if the request is already tracked by
-BFQ. So replace calls to bfq_init_rq() with RQ_BFQQ() instead to simply
-skip requests untracked by BFQ. We move bfq_init_rq() call in
-bfq_insert_request() a bit earlier to cover request merging and thus
-can transfer FIFO position in case of a merge.
+The 2022-model XPS 15 appears to use the same 4-speakers-on-ALC289
+audio setup as the Dell XPS 15 9510, so requires the same quirk to
+enable woofer output. Tested on my own 9520.
 
-CC: stable@vger.kernel.org
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-6-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[ Move the entry to the right position in the SSID order -- tiwai ]
+
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216035
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Rik van der Kemp <rik@upto11.nl>
+Link: https://lore.kernel.org/r/181056a137b.d14baf90133058.8425453735588429828@upto11.nl
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/bfq-iosched.c |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2267,8 +2267,6 @@ static int bfq_request_merge(struct requ
- 	return ELEVATOR_NO_MERGE;
- }
- 
--static struct bfq_queue *bfq_init_rq(struct request *rq);
--
- static void bfq_request_merged(struct request_queue *q, struct request *req,
- 			       enum elv_merge type)
- {
-@@ -2277,7 +2275,7 @@ static void bfq_request_merged(struct re
- 	    blk_rq_pos(req) <
- 	    blk_rq_pos(container_of(rb_prev(&req->rb_node),
- 				    struct request, rb_node))) {
--		struct bfq_queue *bfqq = bfq_init_rq(req);
-+		struct bfq_queue *bfqq = RQ_BFQQ(req);
- 		struct bfq_data *bfqd;
- 		struct request *prev, *next_rq;
- 
-@@ -2329,8 +2327,8 @@ static void bfq_request_merged(struct re
- static void bfq_requests_merged(struct request_queue *q, struct request *rq,
- 				struct request *next)
- {
--	struct bfq_queue *bfqq = bfq_init_rq(rq),
--		*next_bfqq = bfq_init_rq(next);
-+	struct bfq_queue *bfqq = RQ_BFQQ(rq),
-+		*next_bfqq = RQ_BFQQ(next);
- 
- 	if (!bfqq)
- 		return;
-@@ -5518,6 +5516,8 @@ static inline void bfq_update_insert_sta
- 					   unsigned int cmd_flags) {}
- #endif /* CONFIG_BFQ_CGROUP_DEBUG */
- 
-+static struct bfq_queue *bfq_init_rq(struct request *rq);
-+
- static void bfq_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
- 			       bool at_head)
- {
-@@ -5532,6 +5532,7 @@ static void bfq_insert_request(struct bl
- 		bfqg_stats_update_legacy_io(q, rq);
- #endif
- 	spin_lock_irq(&bfqd->lock);
-+	bfqq = bfq_init_rq(rq);
- 	if (blk_mq_sched_try_insert_merge(q, rq)) {
- 		spin_unlock_irq(&bfqd->lock);
- 		return;
-@@ -5539,7 +5540,6 @@ static void bfq_insert_request(struct bl
- 
- 	blk_mq_sched_request_inserted(rq);
- 
--	bfqq = bfq_init_rq(rq);
- 	if (!bfqq || at_head || blk_rq_is_passthrough(rq)) {
- 		if (at_head)
- 			list_add(&rq->queuelist, &bfqd->dispatch);
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8713,6 +8713,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1028, 0x0a62, "Dell Precision 5560", ALC289_FIXUP_DUAL_SPK),
+ 	SND_PCI_QUIRK(0x1028, 0x0a9d, "Dell Latitude 5430", ALC269_FIXUP_DELL4_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1028, 0x0a9e, "Dell Latitude 5430", ALC269_FIXUP_DELL4_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x1028, 0x0b19, "Dell XPS 15 9520", ALC289_FIXUP_DUAL_SPK),
+ 	SND_PCI_QUIRK(0x1028, 0x164a, "Dell", ALC293_FIXUP_DELL1_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1028, 0x164b, "Dell", ALC293_FIXUP_DELL1_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x103c, 0x1586, "HP", ALC269_FIXUP_HP_MUTE_LED_MIC2),
 
 
