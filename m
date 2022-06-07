@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56003C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:39:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 911F4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:43:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359542AbiFGUjP (ORCPT
+        id S1359612AbiFGUjj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55138 "EHLO
+        Tue, 7 Jun 2022 16:39:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357777AbiFGTmU (ORCPT
+        with ESMTP id S1357874AbiFGTm3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:20 -0400
+        Tue, 7 Jun 2022 15:42:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6868D1B7002;
-        Tue,  7 Jun 2022 11:16:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42E915BAF2;
+        Tue,  7 Jun 2022 11:16:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EBABB80B66;
-        Tue,  7 Jun 2022 18:16:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82698C34115;
-        Tue,  7 Jun 2022 18:16:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72E47B81F38;
+        Tue,  7 Jun 2022 18:16:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0146C385A2;
+        Tue,  7 Jun 2022 18:16:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625771;
-        bh=WXE3h52fOurnVlECd+Kj5Tga/VKW/SB9MyprE7My13k=;
+        s=korg; t=1654625802;
+        bh=M0zhwaQCp82msv5xxOtfvTQZBbX1HfR6ZwhxZERc+B0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r7ksMEURge5sbzqxXK6KvwH6YATb1zNQoN8FH3EuI08DFEpd0JVnpmaChan+AtEwG
-         NGEYBLu/DBJrn9q3FX0IauS6/K0SQ4H+H7tsWRzYShGgXArcVNTyTxtGJhIeupRPhm
-         BpKXayGnqsuV/5AioJ45ant30iDFs/WNMSCPZnCk=
+        b=aqxzkBB5BnONr1BzCsCcVRYxq/Kny4zTzeEiuZ97iMPYX7mu6ztMJBKOcIUWdgb2D
+         feKTsMZNnSXWmsXYh9b9DOVDw9GmptGN8/gVm4z5nkqXXVLcqoUgehx9CvRYPlyEtn
+         qGx368JCent3crMKur0fMb/cf2/6aKTJJyJGeEJ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thibaut=20VAR=C3=88NE?= <hacks+kernel@slashdirt.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 139/772] mt76: fix encap offload ethernet type check
-Date:   Tue,  7 Jun 2022 18:55:31 +0200
-Message-Id: <20220607164953.140086249@linuxfoundation.org>
+        stable@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 149/772] Bluetooth: btusb: Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA
+Date:   Tue,  7 Jun 2022 18:55:41 +0200
+Message-Id: <20220607164953.434317473@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,67 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Zijun Hu <quic_zijuhu@quicinc.com>
 
-[ Upstream commit bc98e7fdd80d215b4b55eea001023231eb8ce12e ]
+[ Upstream commit 247f226adadfb7be09dd537f177429f4415aef8e ]
 
-The driver needs to check if the format is 802.2 vs 802.3 in order to set
-a tx descriptor flag. skb->protocol can't be used, since it may not be properly
-initialized for packets coming in from a packet socket.
-Fix misdetection by checking the ethertype from the skb data instead
+Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA controllers since
+they answer HCI_OP_READ_DEF_ERR_DATA_REPORTING with error code
+"UNKNOWN HCI COMMAND" as shown below:
 
-Reported-by: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+[  580.517552] Bluetooth: hci0: unexpected cc 0x0c5a length: 1 < 2
+[  580.517660] Bluetooth: hci0: Opcode 0x c5a failed: -38
+
+hcitool -i hci0 cmd 0x03 0x5a
+< HCI Command: ogf 0x03, ocf 0x005a, plen 0
+> HCI Event: 0x0e plen 4
+  01 5A 0C 01
+
+btmon log:
+< HCI Command: Read Default Erroneous Data Reporting (0x03|0x005a) plen 0
+> HCI Event: Command Complete (0x0e) plen 4
+      Read Default Erroneous Data Reporting (0x03|0x005a) ncmd 1
+        Status: Unknown HCI Command (0x01)
+
+Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 4 +++-
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/bluetooth/btusb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-index e4c300aa1526..efc04f7a3c71 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-@@ -982,6 +982,7 @@ mt7915_mac_write_txwi_8023(struct mt7915_dev *dev, __le32 *txwi,
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 34215dc5e684..304351d2cfdf 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -3321,6 +3321,7 @@ static int btusb_setup_qca(struct hci_dev *hdev)
+ 	 * work with the likes of HSP/HFP mSBC.
+ 	 */
+ 	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
++	set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
  
- 	u8 tid = skb->priority & IEEE80211_QOS_CTL_TID_MASK;
- 	u8 fc_type, fc_stype;
-+	u16 ethertype;
- 	bool wmm = false;
- 	u32 val;
- 
-@@ -995,7 +996,8 @@ mt7915_mac_write_txwi_8023(struct mt7915_dev *dev, __le32 *txwi,
- 	val = FIELD_PREP(MT_TXD1_HDR_FORMAT, MT_HDR_FORMAT_802_3) |
- 	      FIELD_PREP(MT_TXD1_TID, tid);
- 
--	if (be16_to_cpu(skb->protocol) >= ETH_P_802_3_MIN)
-+	ethertype = get_unaligned_be16(&skb->data[12]);
-+	if (ethertype >= ETH_P_802_3_MIN)
- 		val |= MT_TXD1_ETH_802_3;
- 
- 	txwi[1] |= cpu_to_le32(val);
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index e07707f518a2..eac2d85b5864 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -816,6 +816,7 @@ mt7921_mac_write_txwi_8023(struct mt7921_dev *dev, __le32 *txwi,
- {
- 	u8 tid = skb->priority & IEEE80211_QOS_CTL_TID_MASK;
- 	u8 fc_type, fc_stype;
-+	u16 ethertype;
- 	bool wmm = false;
- 	u32 val;
- 
-@@ -829,7 +830,8 @@ mt7921_mac_write_txwi_8023(struct mt7921_dev *dev, __le32 *txwi,
- 	val = FIELD_PREP(MT_TXD1_HDR_FORMAT, MT_HDR_FORMAT_802_3) |
- 	      FIELD_PREP(MT_TXD1_TID, tid);
- 
--	if (be16_to_cpu(skb->protocol) >= ETH_P_802_3_MIN)
-+	ethertype = get_unaligned_be16(&skb->data[12]);
-+	if (ethertype >= ETH_P_802_3_MIN)
- 		val |= MT_TXD1_ETH_802_3;
- 
- 	txwi[1] |= cpu_to_le32(val);
+ 	return 0;
+ }
 -- 
 2.35.1
 
