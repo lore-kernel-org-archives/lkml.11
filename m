@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC5BC2BBE6
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A933C2BBE7
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352841AbiFGS1M (ORCPT
+        id S1351391AbiFGS1Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60980 "EHLO
+        Tue, 7 Jun 2022 14:27:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351581AbiFGSCJ (ORCPT
+        with ESMTP id S1351668AbiFGSCM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 277F215644B;
-        Tue,  7 Jun 2022 10:44:56 -0700 (PDT)
+        Tue, 7 Jun 2022 14:02:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8623315876C;
+        Tue,  7 Jun 2022 10:45:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A30E4B82239;
-        Tue,  7 Jun 2022 17:44:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2802C385A5;
-        Tue,  7 Jun 2022 17:44:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 028686159C;
+        Tue,  7 Jun 2022 17:45:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C7B5C385A5;
+        Tue,  7 Jun 2022 17:45:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623893;
-        bh=elhLJgnyMsasOtb8cxU+DSEo7qMotW6TsQWH859S98M=;
+        s=korg; t=1654623904;
+        bh=zqKkk3ngvML06SimDRXhnKVNzO0XNOGW/eElEV6oaXU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZlxYPxRt3M5iAF6drZwD9r1t+jwrXv4SAiMadpJk1LERjBftEQ61HAhegQpohAe0B
-         aXDQlbeSgl+QRGDcg8eSb6Nv11s0yA4KxyW7bOYXvyiaTr9wTLlM3pmmPKgQcWm7RO
-         Fjscr8GnYynDHyo0TM+t5H/22GwEIp89TIRpd4us=
+        b=sdjDnHE/ZM7SPCCo+ivDxr1txx2nlS5q6QQs+n4w3v33L08Mulym3f76QDSk0qlgB
+         pT9E7E2mJnAMNtZafV9/qrpENJpUareV0gjrGiiNqUbuDuc2eflIH06xwDfpEtYMm8
+         gXnrYSWvzEsKOD0MWpaGmyxDgDzY7nZ5rDWg2nyM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 089/667] arm64: compat: Do not treat syscall number as ESR_ELx for a bad syscall
-Date:   Tue,  7 Jun 2022 18:55:54 +0200
-Message-Id: <20220607164937.488778923@linuxfoundation.org>
+Subject: [PATCH 5.15 093/667] net/mlx5: fs, delete the FTE when there are no rules attached to it
+Date:   Tue,  7 Jun 2022 18:55:58 +0200
+Message-Id: <20220607164937.610217630@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,74 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandru Elisei <alexandru.elisei@arm.com>
+From: Mark Bloch <mbloch@nvidia.com>
 
-[ Upstream commit 3fed9e551417b84038b15117732ea4505eee386b ]
+[ Upstream commit 7b0c6338597613f465d131bd939a51844a00455a ]
 
-If a compat process tries to execute an unknown system call above the
-__ARM_NR_COMPAT_END number, the kernel sends a SIGILL signal to the
-offending process. Information about the error is printed to dmesg in
-compat_arm_syscall() -> arm64_notify_die() -> arm64_force_sig_fault() ->
-arm64_show_signal().
+When an FTE has no children is means all the rules where removed
+and the FTE can be deleted regardless of the dests_size value.
+While dests_size should be 0 when there are no children
+be extra careful not to leak memory or get firmware syndrome
+if the proper bookkeeping of dests_size wasn't done.
 
-arm64_show_signal() interprets a non-zero value for
-current->thread.fault_code as an exception syndrome and displays the
-message associated with the ESR_ELx.EC field (bits 31:26).
-current->thread.fault_code is set in compat_arm_syscall() ->
-arm64_notify_die() with the bad syscall number instead of a valid ESR_ELx
-value. This means that the ESR_ELx.EC field has the value that the user set
-for the syscall number and the kernel can end up printing bogus exception
-messages*. For example, for the syscall number 0x68000000, which evaluates
-to ESR_ELx.EC value of 0x1A (ESR_ELx_EC_FPAC) the kernel prints this error:
-
-[   18.349161] syscall[300]: unhandled exception: ERET/ERETAA/ERETAB, ESR 0x68000000, Oops - bad compat syscall(2) in syscall[10000+50000]
-[   18.350639] CPU: 2 PID: 300 Comm: syscall Not tainted 5.18.0-rc1 #79
-[   18.351249] Hardware name: Pine64 RockPro64 v2.0 (DT)
-[..]
-
-which is misleading, as the bad compat syscall has nothing to do with
-pointer authentication.
-
-Stop arm64_show_signal() from printing exception syndrome information by
-having compat_arm_syscall() set the ESR_ELx value to 0, as it has no
-meaning for an invalid system call number. The example above now becomes:
-
-[   19.935275] syscall[301]: unhandled exception: Oops - bad compat syscall(2) in syscall[10000+50000]
-[   19.936124] CPU: 1 PID: 301 Comm: syscall Not tainted 5.18.0-rc1-00005-g7e08006d4102 #80
-[   19.936894] Hardware name: Pine64 RockPro64 v2.0 (DT)
-[..]
-
-which although shows less information because the syscall number,
-wrongfully advertised as the ESR value, is missing, it is better than
-showing plainly wrong information. The syscall number can be easily
-obtained with strace.
-
-*A 32-bit value above or equal to 0x8000_0000 is interpreted as a negative
-integer in compat_arm_syscal() and the condition scno < __ARM_NR_COMPAT_END
-evaluates to true; the syscall will exit to userspace in this case with the
-ENOSYS error code instead of arm64_notify_die() being called.
-
-Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
-Reviewed-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220425114444.368693-3-alexandru.elisei@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/sys_compat.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/kernel/sys_compat.c b/arch/arm64/kernel/sys_compat.c
-index db5159a3055f..b88a52f7188f 100644
---- a/arch/arm64/kernel/sys_compat.c
-+++ b/arch/arm64/kernel/sys_compat.c
-@@ -114,6 +114,6 @@ long compat_arm_syscall(struct pt_regs *regs, int scno)
- 	addr = instruction_pointer(regs) - (compat_thumb_mode(regs) ? 2 : 4);
- 
- 	arm64_notify_die("Oops - bad compat syscall(2)", regs,
--			 SIGILL, ILL_ILLTRP, addr, scno);
-+			 SIGILL, ILL_ILLTRP, addr, 0);
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index 00834c914dc6..a197dd7ca73b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -2031,16 +2031,16 @@ void mlx5_del_flow_rules(struct mlx5_flow_handle *handle)
+ 	down_write_ref_node(&fte->node, false);
+ 	for (i = handle->num_rules - 1; i >= 0; i--)
+ 		tree_remove_node(&handle->rule[i]->node, true);
+-	if (fte->dests_size) {
+-		if (fte->modify_mask)
+-			modify_fte(fte);
+-		up_write_ref_node(&fte->node, false);
+-	} else if (list_empty(&fte->node.children)) {
++	if (list_empty(&fte->node.children)) {
+ 		del_hw_fte(&fte->node);
+ 		/* Avoid double call to del_hw_fte */
+ 		fte->node.del_hw_func = NULL;
+ 		up_write_ref_node(&fte->node, false);
+ 		tree_put_node(&fte->node, false);
++	} else if (fte->dests_size) {
++		if (fte->modify_mask)
++			modify_fte(fte);
++		up_write_ref_node(&fte->node, false);
+ 	} else {
+ 		up_write_ref_node(&fte->node, false);
+ 	}
 -- 
 2.35.1
 
