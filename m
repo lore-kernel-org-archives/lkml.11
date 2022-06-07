@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD350C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:34:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3054C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351781AbiFGTe3 (ORCPT
+        id S1355057AbiFGTem (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38374 "EHLO
+        Tue, 7 Jun 2022 15:34:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346859AbiFGSnh (ORCPT
+        with ESMTP id S1352486AbiFGSna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:43:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A55187C20;
-        Tue,  7 Jun 2022 10:59:08 -0700 (PDT)
+        Tue, 7 Jun 2022 14:43:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA695B88A;
+        Tue,  7 Jun 2022 10:59:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18313616B6;
-        Tue,  7 Jun 2022 17:59:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24B05C34119;
-        Tue,  7 Jun 2022 17:59:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CCCD618DF;
+        Tue,  7 Jun 2022 17:59:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CAB7C341C4;
+        Tue,  7 Jun 2022 17:59:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624747;
-        bh=8zuQueNsSr1TyJypSiaofzqDHTFGwa1xbHSs9LGhZiI=;
+        s=korg; t=1654624744;
+        bh=esRZ71aidqUr83KEQejDQR/4i8FiS1jQb5xNQ5bjwmE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hyT0SnVmqkJ1EZIgkI2uyadYHUqceF9uD7gC99fC3G3p8VTtNHlGGeszesKQEC8Om
-         epxLIDILbZ8o6b9oKx2KFdwOk9ci7QZExKfy4JI6CIHgK2Mu2wWww7XSb478bP1Rh9
-         Uv5ss4AZuWbajElRLuzuOCj6MzKrIhtj4Orw/a3g=
+        b=FlSPUUvATYq69ACNXa15+Kb+MhstGw1db7CraxaT36oRbz+DMNom98ZT86sP/+9dv
+         ZtPhtDxYOjmNgT3612IuS5UBqznpcxfF+h+0Z/JhYGgL9UyAfxqfnZ9hutTKhUHmu+
+         RKcfMHYibJ6sXZLz1CYTTsT2HgsW3XFLIcYHAIDo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Marco Chiappero <marco.chiappero@intel.com>,
-        Fiona Trahe <fiona.trahe@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Chenyi Qiang <chenyi.qiang@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 398/667] crypto: qat - set CIPHER capability for QAT GEN2
-Date:   Tue,  7 Jun 2022 19:01:03 +0200
-Message-Id: <20220607164946.681876644@linuxfoundation.org>
+Subject: [PATCH 5.15 397/667] KVM: nVMX: Clear IDT vectoring on nested VM-Exit for double/triple fault
+Date:   Tue,  7 Jun 2022 19:01:02 +0200
+Message-Id: <20220607164946.651521052@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -53,55 +51,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 547bde7bd4ecd78f36f98744e6c9a0999e52da5a ]
+[ Upstream commit 9bd1f0efa859b61950d109b32ff8d529cc33a3ad ]
 
-Set the CIPHER capability for QAT GEN2 devices if the hardware supports
-it. This is done if both the CIPHER and the AUTHENTICATION engines are
-available on the device.
+Clear the IDT vectoring field in vmcs12 on next VM-Exit due to a double
+or triple fault.  Per the SDM, a VM-Exit isn't considered to occur during
+event delivery if the exit is due to an intercepted double fault or a
+triple fault.  Opportunistically move the default clearing (no event
+"pending") into the helper so that it's more obvious that KVM does indeed
+handle this case.
 
-Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
-Reviewed-by: Fiona Trahe <fiona.trahe@intel.com>
-Reviewed-by: Marco Chiappero <marco.chiappero@intel.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Note, the double fault case is worded rather wierdly in the SDM:
+
+  The original event results in a double-fault exception that causes the
+  VM exit directly.
+
+Temporarily ignoring injected events, double faults can _only_ occur if
+an exception occurs while attempting to deliver a different exception,
+i.e. there's _always_ an original event.  And for injected double fault,
+while there's no original event, injected events are never subject to
+interception.
+
+Presumably the SDM is calling out that a the vectoring info will be valid
+if a different exit occurs after a double fault, e.g. if a #PF occurs and
+is intercepted while vectoring #DF, then the vectoring info will show the
+double fault.  In other words, the clause can simply be read as:
+
+  The VM exit is caused by a double-fault exception.
+
+Fixes: 4704d0befb07 ("KVM: nVMX: Exiting from L2 to L1")
+Cc: Chenyi Qiang <chenyi.qiang@intel.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220407002315.78092-4-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/qat/qat_common/adf_gen2_hw_data.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ arch/x86/kvm/vmx/nested.c | 32 ++++++++++++++++++++++++++++----
+ arch/x86/kvm/vmx/vmcs.h   |  5 +++++
+ 2 files changed, 33 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/crypto/qat/qat_common/adf_gen2_hw_data.c b/drivers/crypto/qat/qat_common/adf_gen2_hw_data.c
-index 9e560c7d4163..9c5871e1752a 100644
---- a/drivers/crypto/qat/qat_common/adf_gen2_hw_data.c
-+++ b/drivers/crypto/qat/qat_common/adf_gen2_hw_data.c
-@@ -161,17 +161,23 @@ u32 adf_gen2_get_accel_cap(struct adf_accel_dev *accel_dev)
- 	u32 legfuses;
- 	u32 capabilities = ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC |
- 			   ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC |
--			   ICP_ACCEL_CAPABILITIES_AUTHENTICATION;
-+			   ICP_ACCEL_CAPABILITIES_AUTHENTICATION |
-+			   ICP_ACCEL_CAPABILITIES_CIPHER;
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index e0b5a4a83241..f7bdb62d6cec 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3678,12 +3678,34 @@ vmcs12_guest_cr4(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12)
+ }
  
- 	/* Read accelerator capabilities mask */
- 	pci_read_config_dword(pdev, ADF_DEVICE_LEGFUSE_OFFSET, &legfuses);
+ static void vmcs12_save_pending_event(struct kvm_vcpu *vcpu,
+-				      struct vmcs12 *vmcs12)
++				      struct vmcs12 *vmcs12,
++				      u32 vm_exit_reason, u32 exit_intr_info)
+ {
+ 	u32 idt_vectoring;
+ 	unsigned int nr;
  
--	if (legfuses & ICP_ACCEL_MASK_CIPHER_SLICE)
-+	/* A set bit in legfuses means the feature is OFF in this SKU */
-+	if (legfuses & ICP_ACCEL_MASK_CIPHER_SLICE) {
- 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC;
-+		capabilities &= ~ICP_ACCEL_CAPABILITIES_CIPHER;
-+	}
- 	if (legfuses & ICP_ACCEL_MASK_PKE_SLICE)
- 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC;
--	if (legfuses & ICP_ACCEL_MASK_AUTH_SLICE)
-+	if (legfuses & ICP_ACCEL_MASK_AUTH_SLICE) {
- 		capabilities &= ~ICP_ACCEL_CAPABILITIES_AUTHENTICATION;
-+		capabilities &= ~ICP_ACCEL_CAPABILITIES_CIPHER;
-+	}
+-	if (vcpu->arch.exception.injected) {
++	/*
++	 * Per the SDM, VM-Exits due to double and triple faults are never
++	 * considered to occur during event delivery, even if the double/triple
++	 * fault is the result of an escalating vectoring issue.
++	 *
++	 * Note, the SDM qualifies the double fault behavior with "The original
++	 * event results in a double-fault exception".  It's unclear why the
++	 * qualification exists since exits due to double fault can occur only
++	 * while vectoring a different exception (injected events are never
++	 * subject to interception), i.e. there's _always_ an original event.
++	 *
++	 * The SDM also uses NMI as a confusing example for the "original event
++	 * causes the VM exit directly" clause.  NMI isn't special in any way,
++	 * the same rule applies to all events that cause an exit directly.
++	 * NMI is an odd choice for the example because NMIs can only occur on
++	 * instruction boundaries, i.e. they _can't_ occur during vectoring.
++	 */
++	if ((u16)vm_exit_reason == EXIT_REASON_TRIPLE_FAULT ||
++	    ((u16)vm_exit_reason == EXIT_REASON_EXCEPTION_NMI &&
++	     is_double_fault(exit_intr_info))) {
++		vmcs12->idt_vectoring_info_field = 0;
++	} else if (vcpu->arch.exception.injected) {
+ 		nr = vcpu->arch.exception.nr;
+ 		idt_vectoring = nr | VECTORING_INFO_VALID_MASK;
  
- 	if ((straps | fuses) & ADF_POWERGATE_PKE)
- 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC;
+@@ -3716,6 +3738,8 @@ static void vmcs12_save_pending_event(struct kvm_vcpu *vcpu,
+ 			idt_vectoring |= INTR_TYPE_EXT_INTR;
+ 
+ 		vmcs12->idt_vectoring_info_field = idt_vectoring;
++	} else {
++		vmcs12->idt_vectoring_info_field = 0;
+ 	}
+ }
+ 
+@@ -4202,8 +4226,8 @@ static void prepare_vmcs12(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
+ 		 * Transfer the event that L0 or L1 may wanted to inject into
+ 		 * L2 to IDT_VECTORING_INFO_FIELD.
+ 		 */
+-		vmcs12->idt_vectoring_info_field = 0;
+-		vmcs12_save_pending_event(vcpu, vmcs12);
++		vmcs12_save_pending_event(vcpu, vmcs12,
++					  vm_exit_reason, exit_intr_info);
+ 
+ 		vmcs12->vm_exit_intr_info = exit_intr_info;
+ 		vmcs12->vm_exit_instruction_len = vmcs_read32(VM_EXIT_INSTRUCTION_LEN);
+diff --git a/arch/x86/kvm/vmx/vmcs.h b/arch/x86/kvm/vmx/vmcs.h
+index 6e5de2e2b0da..4de2a6e3b190 100644
+--- a/arch/x86/kvm/vmx/vmcs.h
++++ b/arch/x86/kvm/vmx/vmcs.h
+@@ -104,6 +104,11 @@ static inline bool is_breakpoint(u32 intr_info)
+ 	return is_exception_n(intr_info, BP_VECTOR);
+ }
+ 
++static inline bool is_double_fault(u32 intr_info)
++{
++	return is_exception_n(intr_info, DF_VECTOR);
++}
++
+ static inline bool is_page_fault(u32 intr_info)
+ {
+ 	return is_exception_n(intr_info, PF_VECTOR);
 -- 
 2.35.1
 
