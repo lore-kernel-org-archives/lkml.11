@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3753CCCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F693C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355036AbiFGVgi (ORCPT
+        id S1376517AbiFGVgt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:36:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57288 "EHLO
+        Tue, 7 Jun 2022 17:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376930AbiFGUks (ORCPT
+        with ESMTP id S1377509AbiFGUmW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:40:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0315C1EE6FA;
-        Tue,  7 Jun 2022 11:38:29 -0700 (PDT)
+        Tue, 7 Jun 2022 16:42:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5FF1F0FDC;
+        Tue,  7 Jun 2022 11:38:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 816D1B8233E;
-        Tue,  7 Jun 2022 18:38:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2769C385A2;
-        Tue,  7 Jun 2022 18:38:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3BEBCB82394;
+        Tue,  7 Jun 2022 18:38:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB265C34115;
+        Tue,  7 Jun 2022 18:38:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627108;
-        bh=qgIarFfVi30ywsrZa61GfYB3RcK1JjLpu8nUPCGSHOs=;
+        s=korg; t=1654627097;
+        bh=/UkVf+1jsl/YfbqkhDJuluBixX7X+IBxjb6+U5x8v0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eEwliN9hiDgfHoWfJPuQZNdPVDoxuUzbyHcioYj7sxOfPVrNSZJR7z+LxB/+4xyhv
-         FX7UzIfGw2n1uBHqCidtBs6IRxLto933vYBCNHo5eadArCKHEPssVS05wIWIfE6YeO
-         xzKKsUkySDBt22lNKZZmPVsrO37namT9f0JQl60o=
+        b=sUbvLd+/oQash0KgV5Yi6+tVyifoy7wH7W4qjtzXBFVl6XHLrRVD3NbxCNtebTA+y
+         jVuHtaL4wNftwNo9YtzaBy0KYgAroKMZPGDKq36bD3Vu+xnZjd6GKIP9x1e+glD3JW
+         qp6Z1qOyETl6oOMEVqCjGbAhO46FxiJVspbjleRU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juri Lelli <juri.lelli@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 603/772] tracing/timerlat: Notify IRQ new max latency only if stop tracing is set
-Date:   Tue,  7 Jun 2022 19:03:15 +0200
-Message-Id: <20220607165006.709755739@linuxfoundation.org>
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.17 617/772] f2fs: fix to do sanity check for inline inode
+Date:   Tue,  7 Jun 2022 19:03:29 +0200
+Message-Id: <20220607165007.119369026@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,64 +49,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit aa748949b4e665f473bc5abdc5f66029cb5f5522 ]
+commit 677a82b44ebf263d4f9a0cfbd576a6ade797a07b upstream.
 
-Currently, the notification of a new max latency is sent from
-timerlat's IRQ handler anytime a new max latency is found.
+Yanming reported a kernel bug in Bugzilla kernel [1], which can be
+reproduced. The bug message is:
 
-While this behavior is not wrong, the send IPI overhead itself
-will increase the thread latency and that is not the desired
-effect (tracing overhead).
+The kernel message is shown below:
 
-Moreover, the thread will notify a new max latency again because
-the thread latency as it is always higher than the IRQ latency
-that woke it up.
+kernel BUG at fs/inode.c:611!
+Call Trace:
+ evict+0x282/0x4e0
+ __dentry_kill+0x2b2/0x4d0
+ dput+0x2dd/0x720
+ do_renameat2+0x596/0x970
+ __x64_sys_rename+0x78/0x90
+ do_syscall_64+0x3b/0x90
 
-The only case in which it is helpful to notify a new max latency
-from IRQ is when stop tracing (for the IRQ) is set, as in this
-case, the thread will not be dispatched.
+[1] https://bugzilla.kernel.org/show_bug.cgi?id=215895
 
-Notify a new max latency from the IRQ handler only if stop tracing is
-set for the IRQ handler.
+The bug is due to fuzzed inode has both inline_data and encrypted flags.
+During f2fs_evict_inode(), as the inode was deleted by rename(), it
+will cause inline data conversion due to conflicting flags. The page
+cache will be polluted and the panic will be triggered in clear_inode().
 
-Link: https://lkml.kernel.org/r/2c2d9a56c0886c8402ba320de32856cbbb10c2bb.1652175637.git.bristot@kernel.org
+Try fixing the bug by doing more sanity checks for inline data inode in
+sanity_check_inode().
 
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Reported-by: Clark Williams <williams@redhat.com>
-Fixes: a955d7eac177 ("trace: Add timerlat tracer")
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_osnoise.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ fs/f2fs/f2fs.h   |    1 +
+ fs/f2fs/inline.c |   29 ++++++++++++++++++++++++-----
+ fs/f2fs/inode.c  |    3 +--
+ 3 files changed, 26 insertions(+), 7 deletions(-)
 
-diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
-index 5e3c62a08fc0..61c3fff488bf 100644
---- a/kernel/trace/trace_osnoise.c
-+++ b/kernel/trace/trace_osnoise.c
-@@ -1576,11 +1576,12 @@ static enum hrtimer_restart timerlat_irq(struct hrtimer *timer)
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -3955,6 +3955,7 @@ extern struct kmem_cache *f2fs_inode_ent
+  * inline.c
+  */
+ bool f2fs_may_inline_data(struct inode *inode);
++bool f2fs_sanity_check_inline_data(struct inode *inode);
+ bool f2fs_may_inline_dentry(struct inode *inode);
+ void f2fs_do_read_inline_data(struct page *page, struct page *ipage);
+ void f2fs_truncate_inline_inode(struct inode *inode,
+--- a/fs/f2fs/inline.c
++++ b/fs/f2fs/inline.c
+@@ -14,21 +14,40 @@
+ #include "node.h"
+ #include <trace/events/f2fs.h>
  
- 	trace_timerlat_sample(&s);
- 
--	notify_new_max_latency(diff);
+-bool f2fs_may_inline_data(struct inode *inode)
++static bool support_inline_data(struct inode *inode)
+ {
+ 	if (f2fs_is_atomic_file(inode))
+ 		return false;
 -
--	if (osnoise_data.stop_tracing)
--		if (time_to_us(diff) >= osnoise_data.stop_tracing)
-+	if (osnoise_data.stop_tracing) {
-+		if (time_to_us(diff) >= osnoise_data.stop_tracing) {
- 			osnoise_stop_tracing();
-+			notify_new_max_latency(diff);
-+		}
-+	}
+ 	if (!S_ISREG(inode->i_mode) && !S_ISLNK(inode->i_mode))
+ 		return false;
+-
+ 	if (i_size_read(inode) > MAX_INLINE_DATA(inode))
+ 		return false;
++	return true;
++}
++
++bool f2fs_may_inline_data(struct inode *inode)
++{
++	if (!support_inline_data(inode))
++		return false;
++
++	return !f2fs_post_read_required(inode);
++}
  
- 	wake_up_process(tlat->kthread);
+-	if (f2fs_post_read_required(inode))
++bool f2fs_sanity_check_inline_data(struct inode *inode)
++{
++	if (!f2fs_has_inline_data(inode))
+ 		return false;
  
--- 
-2.35.1
-
+-	return true;
++	if (!support_inline_data(inode))
++		return true;
++
++	/*
++	 * used by sanity_check_inode(), when disk layout fields has not
++	 * been synchronized to inmem fields.
++	 */
++	return (S_ISREG(inode->i_mode) &&
++		(file_is_encrypt(inode) || file_is_verity(inode) ||
++		(F2FS_I(inode)->i_flags & F2FS_COMPR_FL)));
+ }
+ 
+ bool f2fs_may_inline_dentry(struct inode *inode)
+--- a/fs/f2fs/inode.c
++++ b/fs/f2fs/inode.c
+@@ -276,8 +276,7 @@ static bool sanity_check_inode(struct in
+ 		}
+ 	}
+ 
+-	if (f2fs_has_inline_data(inode) &&
+-			(!S_ISREG(inode->i_mode) && !S_ISLNK(inode->i_mode))) {
++	if (f2fs_sanity_check_inline_data(inode)) {
+ 		set_sbi_flag(sbi, SBI_NEED_FSCK);
+ 		f2fs_warn(sbi, "%s: inode (ino=%lx, mode=%u) should not have inline_data, run fsck to fix",
+ 			  __func__, inode->i_ino, inode->i_mode);
 
 
