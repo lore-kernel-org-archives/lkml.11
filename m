@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70208CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBBE9CCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353628AbiFGSps (ORCPT
+        id S1353735AbiFGSp7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58052 "EHLO
+        Tue, 7 Jun 2022 14:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351750AbiFGSQj (ORCPT
+        with ESMTP id S1351925AbiFGSQs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:39 -0400
+        Tue, 7 Jun 2022 14:16:48 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83AB9169E1F;
-        Tue,  7 Jun 2022 10:49:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8A31203D1;
+        Tue,  7 Jun 2022 10:50:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1042B82354;
-        Tue,  7 Jun 2022 17:49:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12662C385A5;
-        Tue,  7 Jun 2022 17:49:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F8DEB82348;
+        Tue,  7 Jun 2022 17:50:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD40EC385A5;
+        Tue,  7 Jun 2022 17:50:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624192;
-        bh=LtD2sJe2boOYtX6cow/+32eJTyD0CxUW8sSQ2go5Sdw=;
+        s=korg; t=1654624206;
+        bh=VQ5EhX/1Y2JAck2MGUrUMm+ylhKEXTYBnwnSHm3qpQc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KPua9Uv7TOOiYOxX9i83hMftMQEpmMjYF/Tp+x0WEkH9xBrTkLUOFAj8kLgRI5xzX
-         ydaFU+jeYVDfzUF/YokDZmidolI/R08WUUp6tpKMYpRLkj9RsDFaoTejsvBMK71oVc
-         PnJ9i5y80ZqQCeJSjYZlWLbOE59zxyUMN+WtPAaM=
+        b=1QlykbC+zdOdaRwg8iFlMVPxtei5pQkKmUlyas4YyD0McKgVfkuZwiZHuXA00ceZi
+         gXTasFhPoiGC616EBsTJZHb/1OzH6Amo8PQW0zkQ1zkK92f+h1upahNhloXUBVzS82
+         +ltWebLBXC66Z2NwYnAvocEaWF4FQzHSS6+LEvHY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Khazhismel Kumykov <khazhy@google.com>,
+        Amir Goldstein <amir73il@gmail.com>, Jan Kara <jack@suse.cz>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 238/667] media: hantro: Empty encoder capture buffers by default
-Date:   Tue,  7 Jun 2022 18:58:23 +0200
-Message-Id: <20220607164941.922864144@linuxfoundation.org>
+Subject: [PATCH 5.15 243/667] fsnotify: fix wrong lockdep annotations
+Date:   Tue,  7 Jun 2022 18:58:28 +0200
+Message-Id: <20220607164942.071751319@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,50 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Amir Goldstein <amir73il@gmail.com>
 
-[ Upstream commit 309373a3571ef7175bd9da0c9b13476a718e8478 ]
+[ Upstream commit 623af4f538b5df9b416e1b82f720af7371b4c771 ]
 
-The payload size for encoder capture buffers is set by the driver upon
-finishing encoding each frame, based on the encoded length returned from
-hardware, and whatever header and padding length used. Setting a
-non-zero default serves no real purpose, and also causes issues if the
-capture buffer is returned to userspace unused, confusing the
-application.
+Commit 6960b0d909cd ("fsnotify: change locking order") changed some
+of the mark_mutex locks in direct reclaim path to use:
+  mutex_lock_nested(&group->mark_mutex, SINGLE_DEPTH_NESTING);
 
-Instead, always set the payload size to 0 for encoder capture buffers
-when preparing them.
+This change is explained:
+ "...It uses nested locking to avoid deadlock in case we do the final
+  iput() on an inode which still holds marks and thus would take the
+  mutex again when calling fsnotify_inode_delete() in destroy_inode()."
 
-Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
-Fixes: 082aaecff35f ("media: hantro: Fix .buf_prepare")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+The problem is that the mutex_lock_nested() is not a nested lock at
+all. In fact, it has the opposite effect of preventing lockdep from
+warning about a very possible deadlock.
+
+Due to these wrong annotations, a deadlock that was introduced with
+nfsd filecache in kernel v5.4 went unnoticed in v5.4.y for over two
+years until it was reported recently by Khazhismel Kumykov, only to
+find out that the deadlock was already fixed in kernel v5.5.
+
+Fix the wrong lockdep annotations.
+
+Cc: Khazhismel Kumykov <khazhy@google.com>
+Fixes: 6960b0d909cd ("fsnotify: change locking order")
+Link: https://lore.kernel.org/r/20220321112310.vpr7oxro2xkz5llh@quack3.lan/
+Link: https://lore.kernel.org/r/20220422120327.3459282-4-amir73il@gmail.com
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_v4l2.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ fs/notify/mark.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
-index bcb0bdff4a9a..629bf40a5e5c 100644
---- a/drivers/staging/media/hantro/hantro_v4l2.c
-+++ b/drivers/staging/media/hantro/hantro_v4l2.c
-@@ -647,8 +647,12 @@ static int hantro_buf_prepare(struct vb2_buffer *vb)
- 	 * (for OUTPUT buffers, if userspace passes 0 bytesused, v4l2-core sets
- 	 * it to buffer length).
+diff --git a/fs/notify/mark.c b/fs/notify/mark.c
+index fa1d99101f89..bea106fac090 100644
+--- a/fs/notify/mark.c
++++ b/fs/notify/mark.c
+@@ -452,7 +452,7 @@ void fsnotify_free_mark(struct fsnotify_mark *mark)
+ void fsnotify_destroy_mark(struct fsnotify_mark *mark,
+ 			   struct fsnotify_group *group)
+ {
+-	mutex_lock_nested(&group->mark_mutex, SINGLE_DEPTH_NESTING);
++	mutex_lock(&group->mark_mutex);
+ 	fsnotify_detach_mark(mark);
+ 	mutex_unlock(&group->mark_mutex);
+ 	fsnotify_free_mark(mark);
+@@ -767,7 +767,7 @@ void fsnotify_clear_marks_by_group(struct fsnotify_group *group,
+ 	 * move marks to free to to_free list in one go and then free marks in
+ 	 * to_free list one by one.
  	 */
--	if (V4L2_TYPE_IS_CAPTURE(vq->type))
--		vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
-+	if (V4L2_TYPE_IS_CAPTURE(vq->type)) {
-+		if (ctx->is_encoder)
-+			vb2_set_plane_payload(vb, 0, 0);
-+		else
-+			vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
-+	}
+-	mutex_lock_nested(&group->mark_mutex, SINGLE_DEPTH_NESTING);
++	mutex_lock(&group->mark_mutex);
+ 	list_for_each_entry_safe(mark, lmark, &group->marks_list, g_list) {
+ 		if ((1U << mark->connector->type) & type_mask)
+ 			list_move(&mark->g_list, &to_free);
+@@ -776,7 +776,7 @@ void fsnotify_clear_marks_by_group(struct fsnotify_group *group,
  
- 	return 0;
- }
+ clear:
+ 	while (1) {
+-		mutex_lock_nested(&group->mark_mutex, SINGLE_DEPTH_NESTING);
++		mutex_lock(&group->mark_mutex);
+ 		if (list_empty(head)) {
+ 			mutex_unlock(&group->mark_mutex);
+ 			break;
 -- 
 2.35.1
 
