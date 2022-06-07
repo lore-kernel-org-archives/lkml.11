@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0929FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243102AbiFGTIA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42274 "EHLO
+        id S1353950AbiFGTIC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 15:08:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352720AbiFGSVR (ORCPT
+        with ESMTP id S1352709AbiFGSVR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:21:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F462CE16;
-        Tue,  7 Jun 2022 10:54:01 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A076CAB4;
+        Tue,  7 Jun 2022 10:54:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AC6ECCE2428;
-        Tue,  7 Jun 2022 17:53:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 909A4C34115;
-        Tue,  7 Jun 2022 17:53:54 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6C1AECE2422;
+        Tue,  7 Jun 2022 17:53:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76705C34119;
+        Tue,  7 Jun 2022 17:53:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624435;
-        bh=QcTT9tWSEZAh16mynkwIDPHeS0sPX5L9CulWKauULAU=;
+        s=korg; t=1654624423;
+        bh=l+0I0SbIqtb+A2f2/RYmBLgaBp3aFf+0oUxXgNg1N6s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kIxwjnRsNRvzmA2toRYrovEuVlnN4fHoDiY90bw6eg/Ht58kd0W7MjbEuxFcRt7Wa
-         7k/eqqSHa38GBu+pFDX63shXqD4GNKoPJW8Onek11Exs0IUBK34Wf+aZwJWVMcCQEX
-         ONZxNBfOSEgeoB3BmZZvXXHWql9na2XxKtG9UVKc=
+        b=bQgoT4Q7ZyC1qupB5fjF0dx2H8dKXoUr2gkodG6XNyhjUFmHjaU5JTsAAFbh8Lhav
+         q50gk9U/dZTFiqScX8jahiWphZd2LqvXJJ9uBl9T174mPFszBo6Hp6kp3Jik0OItCX
+         +argsGk2erVDAn6MxolVgvZZxLq3BbIgWINac7hk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Rodin <mrodin@de.adit-jv.com>,
-        LUU HOAI <hoai.luu.ub@renesas.com>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        stable@vger.kernel.org,
+        Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>,
+        Jacopo Mondi <jacopo+renesas@jmondi.org>,
         Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 326/667] media: vsp1: Fix offset calculation for plane cropping
-Date:   Tue,  7 Jun 2022 18:59:51 +0200
-Message-Id: <20220607164944.547278101@linuxfoundation.org>
+Subject: [PATCH 5.15 323/667] media: i2c: rdacm2x: properly set subdev entity function
+Date:   Tue,  7 Jun 2022 18:59:48 +0200
+Message-Id: <20220607164944.457188582@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,49 +54,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Rodin <mrodin@de.adit-jv.com>
+From: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
 
-[ Upstream commit 5f25abec8f21b7527c1223a354d23c270befddb3 ]
+[ Upstream commit d2facee67b4883bb3e7461a0a93fd70d0c7b7261 ]
 
-The vertical subsampling factor is currently not considered in the
-offset calculation for plane cropping done in rpf_configure_partition.
-This causes a distortion (shift of the color plane) when formats with
-the vsub factor larger than 1 are used (e.g. NV12, see
-vsp1_video_formats in vsp1_pipe.c). This commit considers vsub factor
-for all planes except plane 0 (luminance).
+The subdevice entity function was left unset, which produces a warning
+when probing the device:
 
-Drop generalization of the offset calculation to reduce the binary size.
+mxc-md bus@58000000:camera: Entity type for entity rdacm20 19-0051 was
+not initialized!
 
-Fixes: e5ad37b64de9 ("[media] v4l: vsp1: Add cropping support")
-Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
-Signed-off-by: LUU HOAI <hoai.luu.ub@renesas.com>
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+This patch will set entity function to MEDIA_ENT_F_CAM_SENSOR and leave
+flags unset.
+
+Fixes: 34009bffc1c6 ("media: i2c: Add RDACM20 driver")
+Fixes: a59f853b3b4b ("media: i2c: Add driver for RDACM21 camera module")
+Signed-off-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
+Reviewed-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
 Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/vsp1/vsp1_rpf.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/media/i2c/rdacm20.c | 2 +-
+ drivers/media/i2c/rdacm21.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/platform/vsp1/vsp1_rpf.c b/drivers/media/platform/vsp1/vsp1_rpf.c
-index 85587c1b6a37..75083cb234fe 100644
---- a/drivers/media/platform/vsp1/vsp1_rpf.c
-+++ b/drivers/media/platform/vsp1/vsp1_rpf.c
-@@ -291,11 +291,11 @@ static void rpf_configure_partition(struct vsp1_entity *entity,
- 		     + crop.left * fmtinfo->bpp[0] / 8;
+diff --git a/drivers/media/i2c/rdacm20.c b/drivers/media/i2c/rdacm20.c
+index 025a610de893..9c6f66cab564 100644
+--- a/drivers/media/i2c/rdacm20.c
++++ b/drivers/media/i2c/rdacm20.c
+@@ -611,7 +611,7 @@ static int rdacm20_probe(struct i2c_client *client)
+ 		goto error_free_ctrls;
  
- 	if (format->num_planes > 1) {
-+		unsigned int bpl = format->plane_fmt[1].bytesperline;
- 		unsigned int offset;
+ 	dev->pad.flags = MEDIA_PAD_FL_SOURCE;
+-	dev->sd.entity.flags |= MEDIA_ENT_F_CAM_SENSOR;
++	dev->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
+ 	ret = media_entity_pads_init(&dev->sd.entity, 1, &dev->pad);
+ 	if (ret < 0)
+ 		goto error_free_ctrls;
+diff --git a/drivers/media/i2c/rdacm21.c b/drivers/media/i2c/rdacm21.c
+index 12ec5467ed1e..ef31cf5f23ca 100644
+--- a/drivers/media/i2c/rdacm21.c
++++ b/drivers/media/i2c/rdacm21.c
+@@ -583,7 +583,7 @@ static int rdacm21_probe(struct i2c_client *client)
+ 		goto error_free_ctrls;
  
--		offset = crop.top * format->plane_fmt[1].bytesperline
--		       + crop.left / fmtinfo->hsub
--		       * fmtinfo->bpp[1] / 8;
-+		offset = crop.top / fmtinfo->vsub * bpl
-+		       + crop.left / fmtinfo->hsub * fmtinfo->bpp[1] / 8;
- 		mem.addr[1] += offset;
- 		mem.addr[2] += offset;
- 	}
+ 	dev->pad.flags = MEDIA_PAD_FL_SOURCE;
+-	dev->sd.entity.flags |= MEDIA_ENT_F_CAM_SENSOR;
++	dev->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
+ 	ret = media_entity_pads_init(&dev->sd.entity, 1, &dev->pad);
+ 	if (ret < 0)
+ 		goto error_free_ctrls;
 -- 
 2.35.1
 
