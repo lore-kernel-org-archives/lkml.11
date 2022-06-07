@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64CAACCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E86D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359289AbiFGUUf (ORCPT
+        id S1359272AbiFGUU1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48170 "EHLO
+        Tue, 7 Jun 2022 16:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356759AbiFGT2K (ORCPT
+        with ESMTP id S1356794AbiFGT2M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:28:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1407F71A02;
-        Tue,  7 Jun 2022 11:10:42 -0700 (PDT)
+        Tue, 7 Jun 2022 15:28:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7F01A194C;
+        Tue,  7 Jun 2022 11:10:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4868661924;
-        Tue,  7 Jun 2022 18:10:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56AEBC385A2;
-        Tue,  7 Jun 2022 18:10:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0E2661903;
+        Tue,  7 Jun 2022 18:10:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDE9BC385A2;
+        Tue,  7 Jun 2022 18:10:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625441;
-        bh=olJ7lIIHnlUBlLPxAjAKa/zgn327a21xiprbpUtxOYE=;
+        s=korg; t=1654625447;
+        bh=0wUPtvcxsDb/X2qUcKd/zlt/iXNEj20UtsVY8xySO5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aOB7nOPXWm/XODjT1NDD58pCr44e4OTJerkk8/OeCeh91FrXWRIctdD0rQcTHB3JH
-         TFriGU8pwXyfWoBg5FJVZO5kw7IDtJ1Mz7pwF9kSb5bbUYi8QDknqJC+bXrN+iZHQ9
-         22N6+RfRtKlFTQohKB3g3HNhPIl/Sh88os0Y2+bA=
+        b=SGXzilW8yIk41KA1DHZE+kcOJ/qR1TrR+80DU74l2LzjbAwGxoBmGyu99H5w7+y6x
+         gEMlUsRWEEki1jeZrCIUEi0nU3sq3e621I+bLnBOojsPUj5cDwlRMBM2ObNcsVwhuH
+         alCRRoHoLNEw4MxMqDTFdwYabasA/Hp8cMX+iIFE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Ganapathi Kamath <hgkamath@hotmail.com>,
+        Kari Argillander <kari.argillander@gmail.com>,
         Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.17 020/772] fs/ntfs3: Update valid size if -EIOCBQUEUED
-Date:   Tue,  7 Jun 2022 18:53:32 +0200
-Message-Id: <20220607164949.606003566@linuxfoundation.org>
+Subject: [PATCH 5.17 022/772] fs/ntfs3: Keep preallocated only if option prealloc enabled
+Date:   Tue,  7 Jun 2022 18:53:34 +0200
+Message-Id: <20220607164949.667015775@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,48 +52,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 
-commit 52e00ea6b26e45fb8159e3b57cdde8d3f9bdd8e9 upstream.
+commit e95113ed4d428219e3395044e29f5713fc446720 upstream.
 
-Update valid size if write is still in I/O queue.
-Fixes xfstest generic/240
-Fixes: 82cae269cfa9 ("fs/ntfs3: Add initialization of super block")
+If size of file was reduced, we still kept allocated blocks.
+This commit makes ntfs3 work as other fs like btrfs.
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214719
+Fixes: 4342306f0f0d ("fs/ntfs3: Add file operations and implementation")
 
+Reported-by: Ganapathi Kamath <hgkamath@hotmail.com>
+Tested-by: Ganapathi Kamath <hgkamath@hotmail.com>
+Reviewed-by: Kari Argillander <kari.argillander@gmail.com>
 Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/inode.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ fs/ntfs3/file.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ntfs3/inode.c b/fs/ntfs3/inode.c
-index 859951d785cb..879952254071 100644
---- a/fs/ntfs3/inode.c
-+++ b/fs/ntfs3/inode.c
-@@ -757,6 +757,7 @@ static ssize_t ntfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
- 	loff_t vbo = iocb->ki_pos;
- 	loff_t end;
- 	int wr = iov_iter_rw(iter) & WRITE;
-+	size_t iter_count = iov_iter_count(iter);
- 	loff_t valid;
- 	ssize_t ret;
+--- a/fs/ntfs3/file.c
++++ b/fs/ntfs3/file.c
+@@ -495,7 +495,7 @@ static int ntfs_truncate(struct inode *i
  
-@@ -770,10 +771,13 @@ static ssize_t ntfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
- 				 wr ? ntfs_get_block_direct_IO_W
- 				    : ntfs_get_block_direct_IO_R);
+ 	down_write(&ni->file.run_lock);
+ 	err = attr_set_size(ni, ATTR_DATA, NULL, 0, &ni->file.run, new_size,
+-			    &new_valid, true, NULL);
++			    &new_valid, ni->mi.sbi->options->prealloc, NULL);
+ 	up_write(&ni->file.run_lock);
  
--	if (ret <= 0)
-+	if (ret > 0)
-+		end = vbo + ret;
-+	else if (wr && ret == -EIOCBQUEUED)
-+		end = vbo + iter_count;
-+	else
- 		goto out;
- 
--	end = vbo + ret;
- 	valid = ni->i_valid;
- 	if (wr) {
- 		if (end > valid && !S_ISBLK(inode->i_mode)) {
--- 
-2.36.1
-
+ 	if (new_valid < ni->i_valid)
 
 
