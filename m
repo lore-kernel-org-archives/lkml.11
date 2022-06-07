@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D40CCA499
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D25CCA497
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348573AbiFGRgf (ORCPT
+        id S1348530AbiFGRg1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:36:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
+        Tue, 7 Jun 2022 13:36:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347033AbiFGR37 (ORCPT
+        with ESMTP id S1346984AbiFGR3z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:29:59 -0400
+        Tue, 7 Jun 2022 13:29:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826756BFCB;
-        Tue,  7 Jun 2022 10:25:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5928A47ACA;
+        Tue,  7 Jun 2022 10:25:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18FBC60DD7;
-        Tue,  7 Jun 2022 17:25:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 246F2C385A5;
-        Tue,  7 Jun 2022 17:25:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB82960BC6;
+        Tue,  7 Jun 2022 17:25:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 048C2C385A5;
+        Tue,  7 Jun 2022 17:25:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622727;
-        bh=AztLQTwV6c2/ORAaTr9VKJzhEhFLOmaLcCN74dgSRZc=;
+        s=korg; t=1654622719;
+        bh=BaKhQqgyfbfjuRLsJf8naFAGGNIsWBbdAWduy+Wsrg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2eBocirEYzuZL9en6b8bJzstxeKP57R/8s0Hy2stJj6cCYzXxLeByD5dHfocF/HLC
-         ofpcviJEgg2VCdFFEIctQPH0tOTZst79pCiKW2WfhUipT1g909FXaGb+WP8pwDt1GY
-         NDJqKPelBja9S26EABMVbRb7BPM8iRaYKtAbaANU=
+        b=q6zWPcoj/I76zo9aXfV2r+YD4bKJd6BFRS5nW9t//zd17cnuAdRkDvxU8OoRddNrl
+         CtUkJG7e71BYwsRNNJjKdSUug2wBt/SXQwlxwK43VMMd7ZiuVducc/DGZNgvTenyBK
+         TxWQOEomKIjL2Dcqd9jCi7bZTUEbBAKFHK64BJfM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Peng Wu <wupeng58@huawei.com>,
-        Wei Xu <xuwei5@hisilicon.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 111/452] ARM: hisi: Add missing of_node_put after of_find_compatible_node
-Date:   Tue,  7 Jun 2022 18:59:28 +0200
-Message-Id: <20220607164911.864183175@linuxfoundation.org>
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 118/452] powerpc/iommu: Add missing of_node_put in iommu_init_early_dart
+Date:   Tue,  7 Jun 2022 18:59:35 +0200
+Message-Id: <20220607164912.075552885@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,48 +52,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peng Wu <wupeng58@huawei.com>
 
-[ Upstream commit 9bc72e47d4630d58a840a66a869c56b29554cfe4 ]
+[ Upstream commit 57b742a5b8945118022973e6416b71351df512fb ]
 
-of_find_compatible_node  will increment the refcount of the returned
-device_node. Calling of_node_put() to avoid the refcount leak
+The device_node pointer is returned by of_find_compatible_node
+with refcount incremented. We should use of_node_put() to avoid
+the refcount leak.
 
 Signed-off-by: Peng Wu <wupeng58@huawei.com>
-Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220425081245.21705-1-wupeng58@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-hisi/platsmp.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/powerpc/sysdev/dart_iommu.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mach-hisi/platsmp.c b/arch/arm/mach-hisi/platsmp.c
-index da7a09c1dae5..1cd1d9b0aabf 100644
---- a/arch/arm/mach-hisi/platsmp.c
-+++ b/arch/arm/mach-hisi/platsmp.c
-@@ -67,14 +67,17 @@ static void __init hi3xxx_smp_prepare_cpus(unsigned int max_cpus)
- 		}
- 		ctrl_base = of_iomap(np, 0);
- 		if (!ctrl_base) {
-+			of_node_put(np);
- 			pr_err("failed to map address\n");
- 			return;
- 		}
- 		if (of_property_read_u32(np, "smp-offset", &offset) < 0) {
-+			of_node_put(np);
- 			pr_err("failed to find smp-offset property\n");
- 			return;
- 		}
- 		ctrl_base += offset;
-+		of_node_put(np);
+diff --git a/arch/powerpc/sysdev/dart_iommu.c b/arch/powerpc/sysdev/dart_iommu.c
+index 6b4a34b36d98..8ff9bcfe4b8d 100644
+--- a/arch/powerpc/sysdev/dart_iommu.c
++++ b/arch/powerpc/sysdev/dart_iommu.c
+@@ -403,9 +403,10 @@ void __init iommu_init_early_dart(struct pci_controller_ops *controller_ops)
  	}
+ 
+ 	/* Initialize the DART HW */
+-	if (dart_init(dn) != 0)
++	if (dart_init(dn) != 0) {
++		of_node_put(dn);
+ 		return;
+-
++	}
+ 	/*
+ 	 * U4 supports a DART bypass, we use it for 64-bit capable devices to
+ 	 * improve performance.  However, that only works for devices connected
+@@ -418,6 +419,7 @@ void __init iommu_init_early_dart(struct pci_controller_ops *controller_ops)
+ 
+ 	/* Setup pci_dma ops */
+ 	set_pci_dma_ops(&dma_iommu_ops);
++	of_node_put(dn);
  }
  
-@@ -160,6 +163,7 @@ static int hip01_boot_secondary(unsigned int cpu, struct task_struct *idle)
- 	if (WARN_ON(!node))
- 		return -1;
- 	ctrl_base = of_iomap(node, 0);
-+	of_node_put(node);
- 
- 	/* set the secondary core boot from DDR */
- 	remap_reg_value = readl_relaxed(ctrl_base + REG_SC_CTRL);
+ #ifdef CONFIG_PM
 -- 
 2.35.1
 
