@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD5DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:44:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D8FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347912AbiFGRoj (ORCPT
+        id S1348126AbiFGRor (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39914 "EHLO
+        Tue, 7 Jun 2022 13:44:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348064AbiFGRbb (ORCPT
+        with ESMTP id S1348053AbiFGRba (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4E811E1F7;
-        Tue,  7 Jun 2022 10:29:10 -0700 (PDT)
+        Tue, 7 Jun 2022 13:31:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1B411E1F2;
+        Tue,  7 Jun 2022 10:29:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B6B060BC6;
-        Tue,  7 Jun 2022 17:29:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94588C385A5;
-        Tue,  7 Jun 2022 17:29:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6121CB822B5;
+        Tue,  7 Jun 2022 17:29:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C075EC34115;
+        Tue,  7 Jun 2022 17:29:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622950;
-        bh=Wx7YnWuj9keFIOHhuf82Tmvlop58HW39xxMEACIdscQ=;
+        s=korg; t=1654622947;
+        bh=5/vVnNusKQ1c6xBERbmSxaQIa1cZza04t79AM+OyS9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wAxcXZzhOahAvRrl0xlJLeh8Fnmq9/UVluyj7gTNTF1VCLQyVlgnh4A7YUniSwRpX
-         QjKJ25fnhol2FbFd2LMDnz1zOtX2XCAK3C257RcBvs41h5LS9rT6Su2UDSVsjhzYCK
-         MwacsEaqBCxUgP34Ex6Vvt+Xm2cAeysMo/yZMciU=
+        b=FUxS53Kpemxi5DamJ6+HqlDSgUAYyayQu3KzGRK1Te/mkEc5xPtVUyxfteI3hER15
+         AXLnLa/xHcZ2AMnekapJ1Q/7GD46q44BZ3gg6aC9G+7hB93YT9cfTtN+iboMvruMif
+         TZ4iHWen9nEFFEFAu7YGANJf7ciTmIbmDjSxFshE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 239/452] thermal/drivers/bcm2711: Dont clamp temperature at zero
-Date:   Tue,  7 Jun 2022 19:01:36 +0200
-Message-Id: <20220607164915.681928564@linuxfoundation.org>
+Subject: [PATCH 5.10 203/452] ASoC: mxs-saif: Fix refcount leak in mxs_saif_probe
+Date:   Tue,  7 Jun 2022 19:01:00 +0200
+Message-Id: <20220607164914.613882100@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,49 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@i2se.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 106e0121e243de4da7d634338089a68a8da2abe9 ]
+[ Upstream commit 2be84f73785fa9ed6443e3c5b158730266f1c2ee ]
 
-The thermal sensor on BCM2711 is capable of negative temperatures, so don't
-clamp the measurements at zero. Since this was the only use for variable t,
-drop it.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
 
-This change based on a patch by Dom Cobley, who also tested the fix.
-
-Fixes: 59b781352dc4 ("thermal: Add BCM2711 thermal driver")
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220412195423.104511-1-stefan.wahren@i2se.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Fixes: 08641c7c74dd ("ASoC: mxs: add device tree support for mxs-saif")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220511133725.39039-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/thermal/broadcom/bcm2711_thermal.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ sound/soc/mxs/mxs-saif.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/thermal/broadcom/bcm2711_thermal.c b/drivers/thermal/broadcom/bcm2711_thermal.c
-index 67c2a737bc9d..7b536c8a59dc 100644
---- a/drivers/thermal/broadcom/bcm2711_thermal.c
-+++ b/drivers/thermal/broadcom/bcm2711_thermal.c
-@@ -38,7 +38,6 @@ static int bcm2711_get_temp(void *data, int *temp)
- 	int offset = thermal_zone_get_offset(priv->thermal);
- 	u32 val;
- 	int ret;
--	long t;
- 
- 	ret = regmap_read(priv->regmap, AVS_RO_TEMP_STATUS, &val);
- 	if (ret)
-@@ -50,9 +49,7 @@ static int bcm2711_get_temp(void *data, int *temp)
- 	val &= AVS_RO_TEMP_STATUS_DATA_MSK;
- 
- 	/* Convert a HW code to a temperature reading (millidegree celsius) */
--	t = slope * val + offset;
--
--	*temp = t < 0 ? 0 : t;
-+	*temp = slope * val + offset;
- 
- 	return 0;
- }
+diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
+index f2eda81985e2..d87ac26999cf 100644
+--- a/sound/soc/mxs/mxs-saif.c
++++ b/sound/soc/mxs/mxs-saif.c
+@@ -764,6 +764,7 @@ static int mxs_saif_probe(struct platform_device *pdev)
+ 		saif->master_id = saif->id;
+ 	} else {
+ 		ret = of_alias_get_id(master, "saif");
++		of_node_put(master);
+ 		if (ret < 0)
+ 			return ret;
+ 		else
 -- 
 2.35.1
 
