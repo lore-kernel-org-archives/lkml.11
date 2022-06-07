@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34EBACCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D5ABCCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385153AbiFGWVL (ORCPT
+        id S1385175AbiFGWVU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:21:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
+        Tue, 7 Jun 2022 18:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380530AbiFGVQ0 (ORCPT
+        with ESMTP id S1380535AbiFGVQ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:16:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBDAA21D49E;
-        Tue,  7 Jun 2022 11:55:20 -0700 (PDT)
+        Tue, 7 Jun 2022 17:16:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08BF021DA0D;
+        Tue,  7 Jun 2022 11:55:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7DDA61311;
-        Tue,  7 Jun 2022 18:55:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EAF1C385A2;
-        Tue,  7 Jun 2022 18:55:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90977612F2;
+        Tue,  7 Jun 2022 18:55:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B05DC385A2;
+        Tue,  7 Jun 2022 18:55:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628119;
-        bh=ogyjMyihZQAL3OGvTEq7dTUDoOlDFa9mgae1624z+fw=;
+        s=korg; t=1654628122;
+        bh=ysGPMCEE6zTrrAwWhMonkdrC5EuSx87LJP4/nYS+s1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eGN1FEcH9s+pyjYoRp58H6naqi8zXxKFI25bXILOqlEH80xr9osq8fgPXxstToQwF
-         vK6wNJFgYlmZwzvKAdM7FNln7E8Lgb9qh+kjTe8L9SWenjvb0Oy4DO24mFeqBWQKML
-         +1kecucVVyUGfcEllOiSAm8tFUJ8kcz7BSiF6gVk=
+        b=wqrUJgvIrMxUKx7I1gwvXkKToyohig6VjTNfj3ARuHLWDBi2rOG2MG/DsKV/A8t3V
+         nv+nPKrKHOATWxgdr6gUpZiIdLAl/doIa1kZ3Zo+x8HxVgji1qwHhTIQEIxu4ITQeK
+         1DnP0JBpK8Zca/yTwakRh06y3WdqUW5vb8bp6J3k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 196/879] selftests/bpf: Add missing trampoline program type to trampoline_count test
-Date:   Tue,  7 Jun 2022 18:55:14 +0200
-Message-Id: <20220607165008.534939978@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 214/879] ASoC: amd: Add driver data to acp6x machine driver
+Date:   Tue,  7 Jun 2022 18:55:32 +0200
+Message-Id: <20220607165009.066381782@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,261 +51,182 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuntao Wang <ytcoode@gmail.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit b23316aabffa835ecc516cb81daeef5b9155e8a5 ]
+[ Upstream commit e521f087780d07731e8c950f2f34d08358c86bc9 ]
 
-Currently the trampoline_count test doesn't include any fmod_ret bpf
-programs, fix it to make the test cover all possible trampoline program
-types.
+Currently all of the quirked systems use the same card and so the
+DMI quirk list doesn't contain driver data.
 
-Since fmod_ret bpf programs can't be attached to __set_task_comm function,
-as it's neither whitelisted for error injection nor a security hook, change
-it to bpf_modify_return_test.
+Add driver data to these quirks and then check the data was present
+or not.  This will allow potentially setting quirks for systems with
+faulty firmware that claims to have a DMIC but doesn't really.
 
-This patch also does some other cleanups such as removing duplicate code,
-dropping inconsistent comments, etc.
-
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20220519150610.601313-1-ytcoode@gmail.com
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Link: https://lore.kernel.org/r/20220411134532.13538-2-mario.limonciello@amd.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/bpf.h                           |   2 +-
- .../bpf/prog_tests/trampoline_count.c         | 134 +++++++-----------
- .../bpf/progs/test_trampoline_count.c         |  16 ++-
- 3 files changed, 61 insertions(+), 91 deletions(-)
+ sound/soc/amd/yc/acp6x-mach.c | 29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index bdb5298735ce..f084b251fce7 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -672,7 +672,7 @@ struct btf_func_model {
- #define BPF_TRAMP_F_RET_FENTRY_RET	BIT(4)
+diff --git a/sound/soc/amd/yc/acp6x-mach.c b/sound/soc/amd/yc/acp6x-mach.c
+index 9a767f47b89f..959b70e8baf2 100644
+--- a/sound/soc/amd/yc/acp6x-mach.c
++++ b/sound/soc/amd/yc/acp6x-mach.c
+@@ -45,108 +45,126 @@ static struct snd_soc_card acp6x_card = {
  
- /* Each call __bpf_prog_enter + call bpf_func + call __bpf_prog_exit is ~50
-- * bytes on x86.  Pick a number to fit into BPF_IMAGE_SIZE / 2
-+ * bytes on x86.
-  */
- #define BPF_MAX_TRAMP_PROGS 38
+ static const struct dmi_system_id yc_acp_quirk_table[] = {
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21D2"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21D3"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21D4"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21D5"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CF"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CG"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CQ"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CR"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21AW"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21AX"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21BN"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21BQ"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CH"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CJ"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CK"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CL"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21D8"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21D9"),
+@@ -157,18 +175,21 @@ static const struct dmi_system_id yc_acp_quirk_table[] = {
  
-diff --git a/tools/testing/selftests/bpf/prog_tests/trampoline_count.c b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-index 9c795ee52b7b..b0acbda6dbf5 100644
---- a/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-+++ b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-@@ -1,126 +1,94 @@
- // SPDX-License-Identifier: GPL-2.0-only
- #define _GNU_SOURCE
--#include <sched.h>
--#include <sys/prctl.h>
- #include <test_progs.h>
- 
- #define MAX_TRAMP_PROGS 38
- 
- struct inst {
- 	struct bpf_object *obj;
--	struct bpf_link   *link_fentry;
--	struct bpf_link   *link_fexit;
-+	struct bpf_link   *link;
- };
- 
--static int test_task_rename(void)
--{
--	int fd, duration = 0, err;
--	char buf[] = "test_overhead";
--
--	fd = open("/proc/self/comm", O_WRONLY|O_TRUNC);
--	if (CHECK(fd < 0, "open /proc", "err %d", errno))
--		return -1;
--	err = write(fd, buf, sizeof(buf));
--	if (err < 0) {
--		CHECK(err < 0, "task rename", "err %d", errno);
--		close(fd);
--		return -1;
--	}
--	close(fd);
--	return 0;
--}
--
--static struct bpf_link *load(struct bpf_object *obj, const char *name)
-+static struct bpf_program *load_prog(char *file, char *name, struct inst *inst)
+ static int acp6x_probe(struct platform_device *pdev)
  {
-+	struct bpf_object *obj;
- 	struct bpf_program *prog;
--	int duration = 0;
-+	int err;
++	const struct dmi_system_id *dmi_id;
+ 	struct acp6x_pdm *machine = NULL;
+ 	struct snd_soc_card *card;
+ 	int ret;
+-	const struct dmi_system_id *dmi_id;
+ 
++	/* check for any DMI overrides */
+ 	dmi_id = dmi_first_match(yc_acp_quirk_table);
+-	if (!dmi_id)
++	if (dmi_id)
++		platform_set_drvdata(pdev, dmi_id->driver_data);
 +
-+	obj = bpf_object__open_file(file, NULL);
-+	if (!ASSERT_OK_PTR(obj, "obj_open_file"))
-+		return NULL;
-+
-+	inst->obj = obj;
-+
-+	err = bpf_object__load(obj);
-+	if (!ASSERT_OK(err, "obj_load"))
-+		return NULL;
++	card = platform_get_drvdata(pdev);
++	if (!card)
+ 		return -ENODEV;
+-	card = &acp6x_card;
+ 	acp6x_card.dev = &pdev->dev;
  
- 	prog = bpf_object__find_program_by_name(obj, name);
--	if (CHECK(!prog, "find_probe", "prog '%s' not found\n", name))
--		return ERR_PTR(-EINVAL);
--	return bpf_program__attach_trace(prog);
-+	if (!ASSERT_OK_PTR(prog, "obj_find_prog"))
-+		return NULL;
-+
-+	return prog;
- }
- 
- /* TODO: use different target function to run in concurrent mode */
- void serial_test_trampoline_count(void)
- {
--	const char *fentry_name = "prog1";
--	const char *fexit_name = "prog2";
--	const char *object = "test_trampoline_count.o";
--	struct inst inst[MAX_TRAMP_PROGS] = {};
--	int err, i = 0, duration = 0;
--	struct bpf_object *obj;
-+	char *file = "test_trampoline_count.o";
-+	char *const progs[] = { "fentry_test", "fmod_ret_test", "fexit_test" };
-+	struct inst inst[MAX_TRAMP_PROGS + 1] = {};
-+	struct bpf_program *prog;
- 	struct bpf_link *link;
--	char comm[16] = {};
-+	int prog_fd, err, i;
-+	LIBBPF_OPTS(bpf_test_run_opts, opts);
- 
- 	/* attach 'allowed' trampoline programs */
- 	for (i = 0; i < MAX_TRAMP_PROGS; i++) {
--		obj = bpf_object__open_file(object, NULL);
--		if (!ASSERT_OK_PTR(obj, "obj_open_file")) {
--			obj = NULL;
-+		prog = load_prog(file, progs[i % ARRAY_SIZE(progs)], &inst[i]);
-+		if (!prog)
- 			goto cleanup;
--		}
- 
--		err = bpf_object__load(obj);
--		if (CHECK(err, "obj_load", "err %d\n", err))
-+		link = bpf_program__attach(prog);
-+		if (!ASSERT_OK_PTR(link, "attach_prog"))
- 			goto cleanup;
--		inst[i].obj = obj;
--		obj = NULL;
--
--		if (rand() % 2) {
--			link = load(inst[i].obj, fentry_name);
--			if (!ASSERT_OK_PTR(link, "attach_prog")) {
--				link = NULL;
--				goto cleanup;
--			}
--			inst[i].link_fentry = link;
--		} else {
--			link = load(inst[i].obj, fexit_name);
--			if (!ASSERT_OK_PTR(link, "attach_prog")) {
--				link = NULL;
--				goto cleanup;
--			}
--			inst[i].link_fexit = link;
--		}
-+
-+		inst[i].link = link;
- 	}
- 
- 	/* and try 1 extra.. */
--	obj = bpf_object__open_file(object, NULL);
--	if (!ASSERT_OK_PTR(obj, "obj_open_file")) {
--		obj = NULL;
-+	prog = load_prog(file, "fmod_ret_test", &inst[i]);
-+	if (!prog)
- 		goto cleanup;
--	}
--
--	err = bpf_object__load(obj);
--	if (CHECK(err, "obj_load", "err %d\n", err))
--		goto cleanup_extra;
- 
- 	/* ..that needs to fail */
--	link = load(obj, fentry_name);
--	err = libbpf_get_error(link);
--	if (!ASSERT_ERR_PTR(link, "cannot attach over the limit")) {
--		bpf_link__destroy(link);
--		goto cleanup_extra;
-+	link = bpf_program__attach(prog);
-+	if (!ASSERT_ERR_PTR(link, "attach_prog")) {
-+		inst[i].link = link;
-+		goto cleanup;
- 	}
- 
- 	/* with E2BIG error */
--	ASSERT_EQ(err, -E2BIG, "proper error check");
--	ASSERT_EQ(link, NULL, "ptr_is_null");
-+	if (!ASSERT_EQ(libbpf_get_error(link), -E2BIG, "E2BIG"))
-+		goto cleanup;
-+	if (!ASSERT_EQ(link, NULL, "ptr_is_null"))
-+		goto cleanup;
- 
- 	/* and finaly execute the probe */
--	if (CHECK_FAIL(prctl(PR_GET_NAME, comm, 0L, 0L, 0L)))
--		goto cleanup_extra;
--	CHECK_FAIL(test_task_rename());
--	CHECK_FAIL(prctl(PR_SET_NAME, comm, 0L, 0L, 0L));
-+	prog_fd = bpf_program__fd(prog);
-+	if (!ASSERT_GE(prog_fd, 0, "bpf_program__fd"))
-+		goto cleanup;
-+
-+	err = bpf_prog_test_run_opts(prog_fd, &opts);
-+	if (!ASSERT_OK(err, "bpf_prog_test_run_opts"))
-+		goto cleanup;
-+
-+	ASSERT_EQ(opts.retval & 0xffff, 4, "bpf_modify_return_test.result");
-+	ASSERT_EQ(opts.retval >> 16, 1, "bpf_modify_return_test.side_effect");
- 
--cleanup_extra:
--	bpf_object__close(obj);
- cleanup:
--	if (i >= MAX_TRAMP_PROGS)
--		i = MAX_TRAMP_PROGS - 1;
- 	for (; i >= 0; i--) {
--		bpf_link__destroy(inst[i].link_fentry);
--		bpf_link__destroy(inst[i].link_fexit);
-+		bpf_link__destroy(inst[i].link);
- 		bpf_object__close(inst[i].obj);
- 	}
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_trampoline_count.c b/tools/testing/selftests/bpf/progs/test_trampoline_count.c
-index f030e469d05b..7765720da7d5 100644
---- a/tools/testing/selftests/bpf/progs/test_trampoline_count.c
-+++ b/tools/testing/selftests/bpf/progs/test_trampoline_count.c
-@@ -1,20 +1,22 @@
- // SPDX-License-Identifier: GPL-2.0
--#include <stdbool.h>
--#include <stddef.h>
- #include <linux/bpf.h>
- #include <bpf/bpf_helpers.h>
- #include <bpf/bpf_tracing.h>
- 
--struct task_struct;
-+SEC("fentry/bpf_modify_return_test")
-+int BPF_PROG(fentry_test, int a, int *b)
-+{
-+	return 0;
-+}
- 
--SEC("fentry/__set_task_comm")
--int BPF_PROG(prog1, struct task_struct *tsk, const char *buf, bool exec)
-+SEC("fmod_ret/bpf_modify_return_test")
-+int BPF_PROG(fmod_ret_test, int a, int *b, int ret)
- {
- 	return 0;
- }
- 
--SEC("fexit/__set_task_comm")
--int BPF_PROG(prog2, struct task_struct *tsk, const char *buf, bool exec)
-+SEC("fexit/bpf_modify_return_test")
-+int BPF_PROG(fexit_test, int a, int *b, int ret)
- {
- 	return 0;
- }
+-	platform_set_drvdata(pdev, card);
+ 	snd_soc_card_set_drvdata(card, machine);
+ 	ret = devm_snd_soc_register_card(&pdev->dev, card);
+ 	if (ret) {
 -- 
 2.35.1
 
