@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B27CCA485
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:31:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF4CDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:32:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355634AbiFGTaW (ORCPT
+        id S1355720AbiFGTak (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58700 "EHLO
+        Tue, 7 Jun 2022 15:30:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351322AbiFGSiS (ORCPT
+        with ESMTP id S1344407AbiFGSiU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:38:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A91C11842CC;
-        Tue,  7 Jun 2022 10:58:11 -0700 (PDT)
+        Tue, 7 Jun 2022 14:38:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820AA3B3E7;
+        Tue,  7 Jun 2022 10:58:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5858AB80B66;
-        Tue,  7 Jun 2022 17:58:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5BADC3411C;
-        Tue,  7 Jun 2022 17:58:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29533618D2;
+        Tue,  7 Jun 2022 17:58:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A1B8C36B00;
+        Tue,  7 Jun 2022 17:58:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624687;
-        bh=wTWdaBdQZjklB5Tlbw1WFcRpHyBz0f7VM+9i9DOB7Po=;
+        s=korg; t=1654624692;
+        bh=f+U1OkGMCasbcTsAbpK24GfUNZ9VX0StZI8RsX++zvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=puNtImMrDpBL64nflNOtzwPfKOV9vbyJxlEaFdyqpsB98NKnFTctWRTjOyCQZLUp/
-         o5sywIbltisEAX8+PVb/RWSgGvWSvH4uWJUahBAZEzMMeuB/lTOnz5sElQ5LENKJ7S
-         PIZvG+fc2US1iDJGGUBPkFfnpbt9ArPUfDu50gYQ=
+        b=YJjbRUSVO5JJrqt6fS7Vqnv17OG1gpqNOK5FJdReqOxBu5WOlBeY60n3kVgzALDmh
+         QwbGA6o0aGQrEsM6Ljtb2oSBYyYILABGknvaxkKYqV6TndjxcBMA5+08VJ0NMWOmJC
+         SO0kCvoHyR746L3h/YN5Jis3pb4DLKQKcZTVO8Ps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 417/667] pinctrl: mediatek: mt8195: enable driver on mtk platforms
-Date:   Tue,  7 Jun 2022 19:01:22 +0200
-Message-Id: <20220607164947.243229381@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 419/667] Drivers: hv: vmbus: Fix handling of messages with transaction ID of zero
+Date:   Tue,  7 Jun 2022 19:01:24 +0200
+Message-Id: <20220607164947.301937816@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -53,36 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabien Parent <fparent@baylibre.com>
+From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
 
-[ Upstream commit 931d7fa89e640dea146e00b77c1d73459e66ab6e ]
+[ Upstream commit 82cd4bacff88a11e36f143e2cb950174b09c86c3 ]
 
-Set the pinctrl driver as built-in by default if
-ARM64 and ARCH_MEDIATEK are enabled.
+vmbus_request_addr() returns 0 (zero) if the transaction ID passed
+to as argument is 0.  This is unfortunate for two reasons: first,
+netvsc_send_completion() does not check for a NULL cmd_rqst (before
+dereferencing the corresponding NVSP message); second, 0 is a *valid*
+value of cmd_rqst in netvsc_send_tx_complete(), cf. the call of
+vmbus_sendpacket() in netvsc_send_pkt().
 
-Fixes: 6cf5e9ef362a ("pinctrl: add pinctrl driver on mt8195")
-Signed-off-by: Fabien Parent <fparent@baylibre.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Link: https://lore.kernel.org/r/20220327160813.2978637-1-fparent@baylibre.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+vmbus_request_addr() has included the code in question since its
+introduction with commit e8b7db38449ac ("Drivers: hv: vmbus: Add
+vmbus_requestor data structure for VMBus hardening"); such code was
+motivated by the early use of vmbus_requestor by hv_storvsc.  Since
+hv_storvsc moved to a tag-based mechanism to generate and retrieve
+transaction IDs with commit bf5fd8cae3c8f ("scsi: storvsc: Use
+blk_mq_unique_tag() to generate requestIDs"), vmbus_request_addr()
+can be modified to return VMBUS_RQST_ERROR if the ID is 0.  This
+change solves the issues in hv_netvsc (and makes the handling of
+messages with transaction ID of 0 consistent with the semantics
+"the ID is not contained in the requestor/invalid ID").
+
+vmbus_next_request_id(), vmbus_request_addr() should still reserve
+the ID of 0 for Hyper-V, because Hyper-V will "ignore" (not respond
+to) VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED packets/requests with
+transaction ID of 0 from the guest.
+
+Fixes: bf5fd8cae3c8f ("scsi: storvsc: Use blk_mq_unique_tag() to generate requestIDs")
+Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/20220419122325.10078-2-parri.andrea@gmail.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mediatek/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/hv/channel.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/mediatek/Kconfig b/drivers/pinctrl/mediatek/Kconfig
-index 246b0e951e1c..8a1706c8bb6e 100644
---- a/drivers/pinctrl/mediatek/Kconfig
-+++ b/drivers/pinctrl/mediatek/Kconfig
-@@ -152,6 +152,7 @@ config PINCTRL_MT8195
- 	bool "Mediatek MT8195 pin control"
- 	depends on OF
- 	depends on ARM64 || COMPILE_TEST
-+	default ARM64 && ARCH_MEDIATEK
- 	select PINCTRL_MTK_PARIS
+diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
+index f3761c73b074..6b967bb38690 100644
+--- a/drivers/hv/channel.c
++++ b/drivers/hv/channel.c
+@@ -1221,7 +1221,9 @@ u64 vmbus_next_request_id(struct vmbus_channel *channel, u64 rqst_addr)
  
- config PINCTRL_MT8365
+ 	/*
+ 	 * Cannot return an ID of 0, which is reserved for an unsolicited
+-	 * message from Hyper-V.
++	 * message from Hyper-V; Hyper-V does not acknowledge (respond to)
++	 * VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED requests with ID of
++	 * 0 sent by the guest.
+ 	 */
+ 	return current_id + 1;
+ }
+@@ -1246,7 +1248,7 @@ u64 vmbus_request_addr(struct vmbus_channel *channel, u64 trans_id)
+ 
+ 	/* Hyper-V can send an unsolicited message with ID of 0 */
+ 	if (!trans_id)
+-		return trans_id;
++		return VMBUS_RQST_ERROR;
+ 
+ 	spin_lock_irqsave(&rqstor->req_lock, flags);
+ 
 -- 
 2.35.1
 
