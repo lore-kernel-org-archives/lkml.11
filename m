@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44527C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E498FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345942AbiFGTdZ (ORCPT
+        id S1353398AbiFGTde (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37560 "EHLO
+        Tue, 7 Jun 2022 15:33:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353504AbiFGSlf (ORCPT
+        with ESMTP id S1353506AbiFGSlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:41:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2F45C87E;
-        Tue,  7 Jun 2022 10:58:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E152F186B9C;
+        Tue,  7 Jun 2022 10:58:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3B7161680;
-        Tue,  7 Jun 2022 17:58:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4063C385A5;
-        Tue,  7 Jun 2022 17:58:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB3ABB82182;
+        Tue,  7 Jun 2022 17:58:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25506C385A5;
+        Tue,  7 Jun 2022 17:58:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624728;
-        bh=iLP3JKq+6tc3Xe12H49Dx6ol4z6cCangnxLnLXsDDbc=;
+        s=korg; t=1654624725;
+        bh=1ASL6fBMDAmWBj3axiWH/dhSFOu0lxh5MMkutiN/P/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aefhhWiVNizLG4S/cNpNi3tY9Bv2hrC3MND7rHpbVDU0SILRo4ff+PiZcvxcnplsf
-         76GrshJRRC40VrKo0i91lH7au1g0vlV36UlBbfd0IsP3wQIJ5eqwq3ASvBRQm2HhYk
-         /1XeVbIGOKP3Bzd3MDdPs1n4vj4q+CyryfLfDHiw=
+        b=lPE3VFCdTWfTgEBIEAVA1gVGmUrSW0eWgQTGHHZ1DEDLQXZT4yOmgnliYs9eDembW
+         h1tkLLfRUvdoOo88lC5xzW8UlBJUM7HUBn0zBOpeBrxeD8r/h+jzJgAJyhGi6QtRh9
+         zCwq6bkgIO7jRgudRo0HZDqYI3GoenxxMzVfMj2k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Jeff Moyer <jmoyer@redhat.com>,
+        Krzysztof Kensicki <krzysztof.kensicki@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 395/667] soc: qcom: llcc: Add MODULE_DEVICE_TABLE()
-Date:   Tue,  7 Jun 2022 19:01:00 +0200
-Message-Id: <20220607164946.593070525@linuxfoundation.org>
+Subject: [PATCH 5.15 430/667] nvdimm: Allow overwrite in the presence of disabled dimms
+Date:   Tue,  7 Jun 2022 19:01:35 +0200
+Message-Id: <20220607164947.622541412@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,36 +54,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: Dan Williams <dan.j.williams@intel.com>
 
-[ Upstream commit 5334a3b12a7233b31788de60d61bfd890059d783 ]
+[ Upstream commit bb7bf697fed58eae9d3445944e457ab0de4da54f ]
 
-The llcc-qcom driver can be compiled as a module, but lacks
-MODULE_DEVICE_TABLE() and will therefore not be loaded automatically.
-Fix this.
+It is not clear why the original implementation of overwrite support
+required the dimm driver to be active before overwrite could proceed. In
+fact that can lead to cases where the kernel retains an invalid cached
+copy of the labels from before the overwrite. Unfortunately the kernel
+has not only allowed that case, but enforced it.
 
-Fixes: a3134fb09e0b ("drivers: soc: Add LLCC driver")
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220408213336.581661-3-bjorn.andersson@linaro.org
+Going forward, allow for overwrite to happen while the label area is
+offline, and follow-on with updates to 'ndctl sanitize-dimm --overwrite'
+to trigger the label area invalidation by default.
+
+Cc: Vishal Verma <vishal.l.verma@intel.com>
+Cc: Dave Jiang <dave.jiang@intel.com>
+Cc: Ira Weiny <ira.weiny@intel.com>
+Cc: Jeff Moyer <jmoyer@redhat.com>
+Reported-by: Krzysztof Kensicki <krzysztof.kensicki@intel.com>
+Fixes: 7d988097c546 ("acpi/nfit, libnvdimm/security: Add security DSM overwrite support")
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/llcc-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/nvdimm/security.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/soc/qcom/llcc-qcom.c b/drivers/soc/qcom/llcc-qcom.c
-index e53109a5c3da..cabd8870316d 100644
---- a/drivers/soc/qcom/llcc-qcom.c
-+++ b/drivers/soc/qcom/llcc-qcom.c
-@@ -630,6 +630,7 @@ static const struct of_device_id qcom_llcc_of_match[] = {
- 	{ .compatible = "qcom,sm8250-llcc", .data = &sm8250_cfg },
- 	{ }
- };
-+MODULE_DEVICE_TABLE(of, qcom_llcc_of_match);
+diff --git a/drivers/nvdimm/security.c b/drivers/nvdimm/security.c
+index 4b80150e4afa..b5aa55c61461 100644
+--- a/drivers/nvdimm/security.c
++++ b/drivers/nvdimm/security.c
+@@ -379,11 +379,6 @@ static int security_overwrite(struct nvdimm *nvdimm, unsigned int keyid)
+ 			|| !nvdimm->sec.flags)
+ 		return -EOPNOTSUPP;
  
- static struct platform_driver qcom_llcc_driver = {
- 	.driver = {
+-	if (dev->driver == NULL) {
+-		dev_dbg(dev, "Unable to overwrite while DIMM active.\n");
+-		return -EINVAL;
+-	}
+-
+ 	rc = check_security_state(nvdimm);
+ 	if (rc)
+ 		return rc;
 -- 
 2.35.1
 
