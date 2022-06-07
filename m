@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1902BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E86CCA483
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377794AbiFGVDt (ORCPT
+        id S1378458AbiFGVD7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34264 "EHLO
+        Tue, 7 Jun 2022 17:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352980AbiFGUCX (ORCPT
+        with ESMTP id S1353086AbiFGUCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:02:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4F71C14CC;
-        Tue,  7 Jun 2022 11:25:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37711C14D7;
+        Tue,  7 Jun 2022 11:25:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 470EC60C1A;
-        Tue,  7 Jun 2022 18:25:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AE4EC385A2;
-        Tue,  7 Jun 2022 18:25:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 359F561324;
+        Tue,  7 Jun 2022 18:25:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E001C385A2;
+        Tue,  7 Jun 2022 18:25:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626317;
-        bh=NBSceq6uO3g8F5OgwQ3chol+ONy6+vsRb+EPZbZlLzM=;
+        s=korg; t=1654626320;
+        bh=xJEmcH7BdIMe2MshrxICDjoyR5Wr/24nzN4gOgNNMsA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A4o0Nn0s7ETj6MTD0UiUdIPlzFb6oML5pE/EUSoulsxpRPDlyyYwjKXRlJW5uwyeb
-         TS4ElcQjqCIf3VnVfq5ZnlFuj1qJHnaWTh7CmIP+c+OmTfcEDvRrmVHR91B4/mSvmN
-         31iC5nAd90EdHHHHwUb0/omeiNpSSBJrst3tssgw=
+        b=XH7QHU6y4+QQVSQNcxnyaEP0i+6ZlraX1dObPFuugGf5NB251U2pXsO26DgWLC4wh
+         LbB09TmSzQhp3ALElECwvr3u9ZkDnK9fZSh2SntwmW82DJZtKoBmHka/Ux37EW1H4d
+         uf/FyVpXK8nwW8r5lIETUfAdVOyyBdYlIklUYs0E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, SeongJae Park <sj@kernel.org>,
-        Yuanchu Xie <yuanchu@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 298/772] selftests/damon: add damon to selftests root Makefile
-Date:   Tue,  7 Jun 2022 18:58:10 +0200
-Message-Id: <20220607164957.805165705@linuxfoundation.org>
+        stable@vger.kernel.org, Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 334/772] x86/mm: Cleanup the control_va_addr_alignment() __setup handler
+Date:   Tue,  7 Jun 2022 18:58:46 +0200
+Message-Id: <20220607164958.865407948@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,35 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuanchu Xie <yuanchu@google.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 678f0cdc572c5fda940cb038d70eebb8d818adc8 ]
+[ Upstream commit 1ef64b1e89e6d4018da46e08ffc32779a31160c7 ]
 
-Currently the damon selftests are not built with the rest of the
-selftests. We add damon to the list of targets.
+Clean up control_va_addr_alignment():
 
-Fixes: b348eb7abd09 ("mm/damon: add user space selftests")
-Reviewed-by: SeongJae Park <sj@kernel.org>
-Signed-off-by: Yuanchu Xie <yuanchu@google.com>
-Acked-by: David Rientjes <rientjes@google.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+a. Make '=' required instead of optional (as documented).
+b. Print a warning if an invalid option value is used.
+c. Return 1 from the __setup handler when an invalid option value is
+   used. This prevents the kernel from polluting init's (limited)
+   environment space with the entire string.
+
+Fixes: dfb09f9b7ab0 ("x86, amd: Avoid cache aliasing penalties on AMD family 15h")
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Link: https://lore.kernel.org/r/20220315001045.7680-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kernel/sys_x86_64.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index d08fe4cfe811..ffe453760a12 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -9,6 +9,7 @@ TARGETS += clone3
- TARGETS += core
- TARGETS += cpufreq
- TARGETS += cpu-hotplug
-+TARGETS += damon
- TARGETS += drivers/dma-buf
- TARGETS += efivarfs
- TARGETS += exec
+diff --git a/arch/x86/kernel/sys_x86_64.c b/arch/x86/kernel/sys_x86_64.c
+index 660b78827638..8cc653ffdccd 100644
+--- a/arch/x86/kernel/sys_x86_64.c
++++ b/arch/x86/kernel/sys_x86_64.c
+@@ -68,9 +68,6 @@ static int __init control_va_addr_alignment(char *str)
+ 	if (*str == 0)
+ 		return 1;
+ 
+-	if (*str == '=')
+-		str++;
+-
+ 	if (!strcmp(str, "32"))
+ 		va_align.flags = ALIGN_VA_32;
+ 	else if (!strcmp(str, "64"))
+@@ -80,11 +77,11 @@ static int __init control_va_addr_alignment(char *str)
+ 	else if (!strcmp(str, "on"))
+ 		va_align.flags = ALIGN_VA_32 | ALIGN_VA_64;
+ 	else
+-		return 0;
++		pr_warn("invalid option value: 'align_va_addr=%s'\n", str);
+ 
+ 	return 1;
+ }
+-__setup("align_va_addr", control_va_addr_alignment);
++__setup("align_va_addr=", control_va_addr_alignment);
+ 
+ SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
+ 		unsigned long, prot, unsigned long, flags,
 -- 
 2.35.1
 
