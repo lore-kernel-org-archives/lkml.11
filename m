@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D84ACCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C6A6CCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380556AbiFGVfd (ORCPT
+        id S1380581AbiFGVfi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:35:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57484 "EHLO
+        Tue, 7 Jun 2022 17:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376937AbiFGUkt (ORCPT
+        with ESMTP id S1376696AbiFGU1c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:40:49 -0400
+        Tue, 7 Jun 2022 16:27:32 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8BD71EEBA9;
-        Tue,  7 Jun 2022 11:38:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 928961D8711;
+        Tue,  7 Jun 2022 11:33:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D5F7B8237E;
-        Tue,  7 Jun 2022 18:38:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BCE9C385A2;
-        Tue,  7 Jun 2022 18:38:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AD50B82340;
+        Tue,  7 Jun 2022 18:33:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAC2CC385A2;
+        Tue,  7 Jun 2022 18:33:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627111;
-        bh=DWWQnprN+kklfnxxfGaSSrsNVdWKU38XVsj5mB66ck8=;
+        s=korg; t=1654626782;
+        bh=1rY7bqasLjyT2TBe+kiOEacP0hDZYUDWD+Gxh39GZZ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g8lOcxAgCrzEjXuPajCV7QG/tHGl1xpWWhb9O9BjC3Y3hw1qe5WPPe2fYmqEejbL1
-         Pp/1v0DLSS5lvmE5CJv7sYcOmCnfYwH/dZq2wV6+0bvYQLdZqajYet8VdHXpmR9aWo
-         xElTSDYMbX/9jtcDhp6JLIkE77yBYHDXe9inH/Lo=
+        b=uQ+adMForTeRKqfSVlLv/S2kLS31d1V4JF2s2M1vf8acTRHPbd4F1LOWWz4cD1bv7
+         ldSbm9VxzDHQnUqgiz798b9iH69oVM/EP4i4cAeEWX+jzAc9cJ7C6Uz2bjxGluOA0T
+         4ixii6W8ab3Hzg5cNXTro0S6R0+kgLOL+MWkEuu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Gregory Greenman <gregory.greenman@intel.com>
-Subject: [PATCH 5.17 621/772] iwlwifi: fw: init SAR GEO table only if data is present
-Date:   Tue,  7 Jun 2022 19:03:33 +0200
-Message-Id: <20220607165007.234863541@linuxfoundation.org>
+        stable@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 501/772] nvdimm: Fix firmware activation deadlock scenarios
+Date:   Tue,  7 Jun 2022 19:01:33 +0200
+Message-Id: <20220607165003.744230226@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,40 +50,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Dan Williams <dan.j.williams@intel.com>
 
-commit d1f6530c3e373ddd7c76b05646052a27eead14ad upstream.
+[ Upstream commit e6829d1bd3c4b58296ee9e412f7ed4d6cb390192 ]
 
-When no table data was read from ACPI, then filling the data
-and returning success here will fill zero values, which means
-transmit power will be limited to 0 dBm. This is clearly not
-intended.
+Lockdep reports the following deadlock scenarios for CXL root device
+power-management, device_prepare(), operations, and device_shutdown()
+operations for 'nd_region' devices:
 
-Return an error from iwl_sar_geo_init() if there's no data to
-fill into the command structure.
+ Chain exists of:
+   &nvdimm_region_key --> &nvdimm_bus->reconfig_mutex --> system_transition_mutex
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Fixes: 78a19d5285d9 ("iwlwifi: mvm: Read the PPAG and SAR tables at INIT stage")
-Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
-Link: https://lore.kernel.org/r/20220517120044.bc45923b74e9.Id2b4362234b7f8ced82c591b95d4075dd2ec12f4@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  Possible unsafe locking scenario:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock(system_transition_mutex);
+                                lock(&nvdimm_bus->reconfig_mutex);
+                                lock(system_transition_mutex);
+   lock(&nvdimm_region_key);
+
+ Chain exists of:
+   &cxl_nvdimm_bridge_key --> acpi_scan_lock --> &cxl_root_key
+
+  Possible unsafe locking scenario:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock(&cxl_root_key);
+                                lock(acpi_scan_lock);
+                                lock(&cxl_root_key);
+   lock(&cxl_nvdimm_bridge_key);
+
+These stem from holding nvdimm_bus_lock() over hibernate_quiet_exec()
+which walks the entire system device topology taking device_lock() along
+the way. The nvdimm_bus_lock() is protecting against unregistration,
+multiple simultaneous ops callers, and preventing activate_show() from
+racing activate_store(). For the first 2, the lock is redundant.
+Unregistration already flushes all ops users, and sysfs already prevents
+multiple threads to be active in an ops handler at the same time. For
+the last userspace should already be waiting for its last
+activate_store() to complete, and does not need activate_show() to flush
+the write side, so this lock usage can be deleted in these attributes.
+
+Fixes: 48001ea50d17 ("PM, libnvdimm: Add runtime firmware activation support")
+Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+Link: https://lore.kernel.org/r/165074883800.4116052.10737040861825806582.stgit@dwillia2-desk3.amr.corp.intel.com
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/acpi.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/nvdimm/core.c | 9 ---------
+ 1 file changed, 9 deletions(-)
 
---- a/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
-@@ -902,6 +902,9 @@ int iwl_sar_geo_init(struct iwl_fw_runti
- {
- 	int i, j;
- 
-+	if (!fwrt->geo_enabled)
-+		return -ENODATA;
-+
- 	if (!iwl_sar_geo_support(fwrt))
+diff --git a/drivers/nvdimm/core.c b/drivers/nvdimm/core.c
+index 69a03358817f..681cc28703a3 100644
+--- a/drivers/nvdimm/core.c
++++ b/drivers/nvdimm/core.c
+@@ -368,9 +368,7 @@ static ssize_t capability_show(struct device *dev,
+ 	if (!nd_desc->fw_ops)
  		return -EOPNOTSUPP;
  
+-	nvdimm_bus_lock(dev);
+ 	cap = nd_desc->fw_ops->capability(nd_desc);
+-	nvdimm_bus_unlock(dev);
+ 
+ 	switch (cap) {
+ 	case NVDIMM_FWA_CAP_QUIESCE:
+@@ -395,10 +393,8 @@ static ssize_t activate_show(struct device *dev,
+ 	if (!nd_desc->fw_ops)
+ 		return -EOPNOTSUPP;
+ 
+-	nvdimm_bus_lock(dev);
+ 	cap = nd_desc->fw_ops->capability(nd_desc);
+ 	state = nd_desc->fw_ops->activate_state(nd_desc);
+-	nvdimm_bus_unlock(dev);
+ 
+ 	if (cap < NVDIMM_FWA_CAP_QUIESCE)
+ 		return -EOPNOTSUPP;
+@@ -443,7 +439,6 @@ static ssize_t activate_store(struct device *dev,
+ 	else
+ 		return -EINVAL;
+ 
+-	nvdimm_bus_lock(dev);
+ 	state = nd_desc->fw_ops->activate_state(nd_desc);
+ 
+ 	switch (state) {
+@@ -461,7 +456,6 @@ static ssize_t activate_store(struct device *dev,
+ 	default:
+ 		rc = -ENXIO;
+ 	}
+-	nvdimm_bus_unlock(dev);
+ 
+ 	if (rc == 0)
+ 		rc = len;
+@@ -484,10 +478,7 @@ static umode_t nvdimm_bus_firmware_visible(struct kobject *kobj, struct attribut
+ 	if (!nd_desc->fw_ops)
+ 		return 0;
+ 
+-	nvdimm_bus_lock(dev);
+ 	cap = nd_desc->fw_ops->capability(nd_desc);
+-	nvdimm_bus_unlock(dev);
+-
+ 	if (cap < NVDIMM_FWA_CAP_QUIESCE)
+ 		return 0;
+ 
+-- 
+2.35.1
+
 
 
