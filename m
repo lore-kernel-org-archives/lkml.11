@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C5BCCA495
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8E0CCA497
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350412AbiFGSGA (ORCPT
+        id S1350466AbiFGSGG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40504 "EHLO
+        Tue, 7 Jun 2022 14:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349087AbiFGRqo (ORCPT
+        with ESMTP id S1349095AbiFGRqp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:46:44 -0400
+        Tue, 7 Jun 2022 13:46:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180BFDDC;
-        Tue,  7 Jun 2022 10:36:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A360764A;
+        Tue,  7 Jun 2022 10:36:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3FDF60DB5;
-        Tue,  7 Jun 2022 17:36:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BD73C34115;
-        Tue,  7 Jun 2022 17:36:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D36EE614D8;
+        Tue,  7 Jun 2022 17:36:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6193C385A5;
+        Tue,  7 Jun 2022 17:36:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623401;
-        bh=BKDiudZLKwUjmUNuEeuh3+EvZlg333FoIxYJtPU6H8A=;
+        s=korg; t=1654623404;
+        bh=c5+zOy+1lyAaxZtwws/4oxbj2X7+DJiWWXy825tMdNI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FPplOxpKj3S5wr3m0g+Ktqahkqbrnxoerq6qgCBgvRekY5rQgSeUXXzgjm8N753OB
-         EqyKEhQ4bQ3n3TxpE6jVPNUaS+8UF29p5lAZ+BwpOq2K4ouCYoNtqj5kWDgxfDVs/M
-         2YoT0XjBPxXuSFimORni6XzGJ5jaGIp0hO0qjFkc=
+        b=zBPkegn/p9JTu/0gCmtEBNv008rR3qKwiBD4WaUu7XqzIeh5FC296QsqtzQ8LDCof
+         D+IL/dBRjRY5o3aLw0bXsVmXGKEfNrvU+V+uZDVQ4s0RN32RAzyhwJasEEEr+TQL0T
+         QIBvQg+6p6vYtwtu/XnRiin447VQtHzQPpNrvDQM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 377/452] scsi: ufs: qcom: Add a readl() to make sure ref_clk gets enabled
-Date:   Tue,  7 Jun 2022 19:03:54 +0200
-Message-Id: <20220607164919.798185166@linuxfoundation.org>
+        stable@vger.kernel.org, Mike Kravetz <mike.kravetz@oracle.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.10 404/452] hugetlb: fix huge_pmd_unshare address update
+Date:   Tue,  7 Jun 2022 19:04:21 +0200
+Message-Id: <20220607164920.599354616@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,51 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Mike Kravetz <mike.kravetz@oracle.com>
 
-commit 8eecddfca30e1651dc1c74531ed5eef21dcce7e3 upstream.
+commit 48381273f8734d28ef56a5bdf1966dd8530111bc upstream.
 
-In ufs_qcom_dev_ref_clk_ctrl(), it was noted that the ref_clk needs to be
-stable for at least 1us. Even though there is wmb() to make sure the write
-gets "completed", there is no guarantee that the write actually reached the
-UFS device. There is a good chance that the write could be stored in a
-Write Buffer (WB). In that case, even though the CPU waits for 1us, the
-ref_clk might not be stable for that period.
+The routine huge_pmd_unshare() is passed a pointer to an address
+associated with an area which may be unshared.  If unshare is successful
+this address is updated to 'optimize' callers iterating over huge page
+addresses.  For the optimization to work correctly, address should be
+updated to the last huge page in the unmapped/unshared area.  However, in
+the common case where the passed address is PUD_SIZE aligned, the address
+is incorrectly updated to the address of the preceding huge page.  That
+wastes CPU cycles as the unmapped/unshared range is scanned twice.
 
-So lets do a readl() to make sure that the previous write has reached the
-UFS device before udelay().
-
-Also, the wmb() after writel_relaxed() is not really needed. Both writel()
-and readl() are ordered on all architectures and the CPU won't speculate
-instructions after readl() due to the in-built control dependency with read
-value on weakly ordered architectures. So it can be safely removed.
-
-Link: https://lore.kernel.org/r/20220504084212.11605-4-manivannan.sadhasivam@linaro.org
-Fixes: f06fcc7155dc ("scsi: ufs-qcom: add QUniPro hardware support and power optimizations")
-Cc: stable@vger.kernel.org
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Link: https://lkml.kernel.org/r/20220524205003.126184-1-mike.kravetz@oracle.com
+Fixes: 39dde65c9940 ("shared page table for hugetlb page")
+Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+Acked-by: Muchun Song <songmuchun@bytedance.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/ufs/ufs-qcom.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ mm/hugetlb.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/drivers/scsi/ufs/ufs-qcom.c
-+++ b/drivers/scsi/ufs/ufs-qcom.c
-@@ -664,8 +664,11 @@ static void ufs_qcom_dev_ref_clk_ctrl(st
- 
- 		writel_relaxed(temp, host->dev_ref_clk_ctrl_mmio);
- 
--		/* ensure that ref_clk is enabled/disabled before we return */
--		wmb();
-+		/*
-+		 * Make sure the write to ref_clk reaches the destination and
-+		 * not stored in a Write Buffer (WB).
-+		 */
-+		readl(host->dev_ref_clk_ctrl_mmio);
- 
- 		/*
- 		 * If we call hibern8 exit after this, we need to make sure that
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -5465,7 +5465,14 @@ int huge_pmd_unshare(struct mm_struct *m
+ 	pud_clear(pud);
+ 	put_page(virt_to_page(ptep));
+ 	mm_dec_nr_pmds(mm);
+-	*addr = ALIGN(*addr, HPAGE_SIZE * PTRS_PER_PTE) - HPAGE_SIZE;
++	/*
++	 * This update of passed address optimizes loops sequentially
++	 * processing addresses in increments of huge page size (PMD_SIZE
++	 * in this case).  By clearing the pud, a PUD_SIZE area is unmapped.
++	 * Update address to the 'last page' in the cleared area so that
++	 * calling loop can move to first page past this area.
++	 */
++	*addr |= PUD_SIZE - PMD_SIZE;
+ 	return 1;
+ }
+ #define want_pmd_share()	(1)
 
 
