@@ -2,108 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE9D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E298C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344008AbiFGPXu (ORCPT
+        id S1344027AbiFGP0T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33758 "EHLO
+        Tue, 7 Jun 2022 11:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343998AbiFGPXq (ORCPT
+        with ESMTP id S243190AbiFGP0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:23:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A10AEC5E75
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:23:45 -0700 (PDT)
+        Tue, 7 Jun 2022 11:26:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 01522B0D33
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:26:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654615424;
+        s=mimecast20190719; t=1654615576;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uGqsi3KJd9LaOiP/2DKVqWgAXQfJ4BFecWZlXXq685g=;
-        b=RcOv5nO4hzPDkygro2xWKTFpmrdRZo4U1LTx4puorgHWpH+tVxOi3m9QVhn+DJ/oPdajEx
-        pH+HvY6aMiyVkAbRnJuuchvtjzDlOiYeqHfOrYsPQpxYBVOdg2ir457JwcgT0jTIIOBsru
-        H4b5W1sGiZxzlebeegqoBEO5XkAOk/k=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=HuCZf+EG4tjlRlQ6eyt+b3Zz/g4UZvXSEMkRpd1yJXs=;
+        b=OIxYaR2rzdacvahLzz/GJg8ZIuu2k4kmSJKvMyVj9lRY3LZE/ymRtom4tyirlABS2CD8dW
+        FZ1DVvHO9vI71O81NIU7i9IURuKsOkoyydqNhv6NKPRCon7SM1jaGvSwd1ScB61nMJPAlP
+        mJa4PwNZ5WmlEQAu4bHVEvfIzhQNQmw=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-275-v02VOAFfNh6GQmH5_y6Dvw-1; Tue, 07 Jun 2022 11:23:43 -0400
-X-MC-Unique: v02VOAFfNh6GQmH5_y6Dvw-1
-Received: by mail-wr1-f70.google.com with SMTP id s14-20020adfa28e000000b0020ac7532f08so4032583wra.15
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 08:23:43 -0700 (PDT)
+ us-mta-38-1fHV4yufMzyUckri1xuqPQ-1; Tue, 07 Jun 2022 11:26:10 -0400
+X-MC-Unique: 1fHV4yufMzyUckri1xuqPQ-1
+Received: by mail-wr1-f69.google.com with SMTP id d9-20020adfe849000000b00213375a746aso3543704wrn.18
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 08:26:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=uGqsi3KJd9LaOiP/2DKVqWgAXQfJ4BFecWZlXXq685g=;
-        b=vxUV/8JNePFpF7OCVXvqMXgsMjQWgZjZ2fuQGhuWoa113yYOVplcs7eJD80GNFifvJ
-         aPyiL1/36+zbHjvPV5c1kx298VbG+pxDKpeP0KTcPZSi1TOS2tQzS/uMrQzHmLY+/wAA
-         WsmREfI2xKFvCjmTN0zhKspMd8TYpM9ioFXC205n89v18W6P2iD1ZiH7qgeSRZWg09p2
-         a5JtYiXljTCry1fV+Y0XcqgUSYzYY70Iw3yDmSHg2AtuMRxQu5Q7qs0/wgOiL3SIjcxu
-         vdf5KzBwXry6s3aIAdg/hT2t0M7YPx6nv0lhAOlGzUZO46G2pTXvZJZ/ODT9KuR47bFD
-         y0Gw==
-X-Gm-Message-State: AOAM531ILup6HSa63WqXjGSOS/bFsqBPFGZqXk4tHHvZ0SfU6KzWQRRa
-        MawnCp/NR+kULcvEwsYr0KmgdAhJ/iwrjw4yyvgkNs8oe9vfDRZ3o8wjK6E2xEwFUzhQGU65g3u
-        KchiDOxRfM64fAb2hgvTK3sV/
-X-Received: by 2002:adf:f5d0:0:b0:216:5680:b41e with SMTP id k16-20020adff5d0000000b002165680b41emr17135762wrp.216.1654615422410;
-        Tue, 07 Jun 2022 08:23:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJymxyv939js1nCuiezDwMezdK7yYmsUnLpwyHlPMFlqmHxZ41tVGiSN5DSbEsqemA33zqMWzg==
-X-Received: by 2002:adf:f5d0:0:b0:216:5680:b41e with SMTP id k16-20020adff5d0000000b002165680b41emr17135716wrp.216.1654615422026;
-        Tue, 07 Jun 2022 08:23:42 -0700 (PDT)
+        bh=HuCZf+EG4tjlRlQ6eyt+b3Zz/g4UZvXSEMkRpd1yJXs=;
+        b=IPmLu98tTfMe5tvyiinzWuG7mxJuTC1veS3Eipktl0/GNeCFmiYEv/FUB3NMQOF8Hi
+         TK98rRwM3ZS1Bg/cyBi1ysHABt07IqF0QO1J5MYvPQRrMnE8VOUC9Aoqlny+vwV+5qCp
+         21BJQ3N5BGzAhABV4YF+XPXWD5ep3xJP7xwXu6iyN2/e3uLje1mRm/tOrd2QcAlaS9dR
+         pnGQpwBbXMl/S2n6VcFRkYGJm3SddzI9Xe+84SIWIq1LenTGGCtSMfdGLN94675BnNMm
+         aLqCybMOBbyMxw50esfVjZUNfx5PmDWbOhHYm0T2bzmPt6KZRoZL85IEOS4437RDDiL9
+         bgLw==
+X-Gm-Message-State: AOAM533iGxk/gxiKsNupyZHR7UseZ+2XwOawZ7MPwos5AnWfEsugg+uW
+        jZTnVZgjCFLSYbboIGsmNMTAb31QOtzvdSTo2SsEqS2v92kGGN08Lo6Rh0YEfS5WbanJ6bxt8ZH
+        +vKt3yCEMD8Mlewf64e6CQIR2
+X-Received: by 2002:a05:600c:2e48:b0:39c:55ba:e4e9 with SMTP id q8-20020a05600c2e4800b0039c55bae4e9mr7834500wmf.180.1654615568693;
+        Tue, 07 Jun 2022 08:26:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzURo0IvLNNJyb01U71GmD/UPNpY1M0FxVGqPYO6LI3DeN+Bfbg+IXG3677DlNpT4wuUumYJw==
+X-Received: by 2002:a05:600c:2e48:b0:39c:55ba:e4e9 with SMTP id q8-20020a05600c2e4800b0039c55bae4e9mr7834445wmf.180.1654615568293;
+        Tue, 07 Jun 2022 08:26:08 -0700 (PDT)
 Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
-        by smtp.googlemail.com with ESMTPSA id bw1-20020a0560001f8100b002184280b3cbsm4675249wrb.91.2022.06.07.08.23.39
+        by smtp.googlemail.com with ESMTPSA id h1-20020a05600c414100b0039c5cecf206sm1000625wmm.4.2022.06.07.08.26.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 08:23:41 -0700 (PDT)
-Message-ID: <2c561959-2382-f668-7cb8-01d17d627dd6@redhat.com>
-Date:   Tue, 7 Jun 2022 17:23:38 +0200
+        Tue, 07 Jun 2022 08:26:07 -0700 (PDT)
+Message-ID: <f6b48819-9c0e-69f7-de07-2d49cd0aa1c1@redhat.com>
+Date:   Tue, 7 Jun 2022 17:26:04 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH] KVM: x86: preserve interrupt shadow across SMM entries
+Subject: Re: [PATCH] KVM: SVM: fix tsc scaling cache logic
 Content-Language: en-US
 To:     Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org
-Cc:     x86@kernel.org, Borislav Petkov <bp@alien8.de>,
-        linux-kernel@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Sean Christopherson <seanjc@google.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
+        linux-kernel@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
         Jim Mattson <jmattson@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Ilias Stamatis <ilstam@amazon.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <20220607151647.307157-1-mlevitsk@redhat.com>
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Ingo Molnar <mingo@redhat.com>
+References: <20220606181149.103072-1-mlevitsk@redhat.com>
 From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220607151647.307157-1-mlevitsk@redhat.com>
+In-Reply-To: <20220606181149.103072-1-mlevitsk@redhat.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/7/22 17:16, Maxim Levitsky wrote:
-> If the #SMI happens while the vCPU is in the interrupt shadow,
-> (after STI or MOV SS),
-> we must both clear it to avoid VM entry failure on VMX,
-> due to consistency check vs EFLAGS.IF which is cleared on SMM entries,
-> and restore it on RSM so that #SMI is transparent to the non SMM code.
+On 6/6/22 20:11, Maxim Levitsky wrote:
+> SVM uses a per-cpu variable to cache the current value of the
+> tsc scaling multiplier msr on each cpu.
 > 
-> To support migration, reuse upper 4 bits of
-> 'kvm_vcpu_events.interrupt.shadow' to store the smm interrupt shadow.
+> Commit 1ab9287add5e2
+> ("KVM: X86: Add vendor callbacks for writing the TSC multiplier")
+> broke this caching logic.
 > 
-> This was lightly tested with a linux guest and smm load script,
-> and a unit test will be soon developed to test this better.
+> Refactor the code so that all TSC scaling multiplier writes go through
+> a single function which checks and updates the cache.
 > 
-> For discussion: there are other ways to fix this issue:
+> This fixes the following scenario:
 > 
-> 1. The SMM shadow can be stored in SMRAM at some unused
-> offset, this will allow to avoid changes to kvm_vcpu_ioctl_x86_set_vcpu_events
+> 1. A CPU runs a guest with some tsc scaling ratio.
+> 
+> 2. New guest with different tsc scaling ratio starts on this CPU
+>     and terminates almost immediately.
+> 
+>     This ensures that the short running guest had set the tsc scaling ratio just
+>     once when it was set via KVM_SET_TSC_KHZ. Due to the bug,
+>     the per-cpu cache is not updated.
+> 
+> 3. The original guest continues to run, it doesn't restore the msr
+>     value back to its own value, because the cache matches,
+>     and thus continues to run with a wrong tsc scaling ratio.
+> 
+> 
+> Fixes: 1ab9287add5e2 ("KVM: X86: Add vendor callbacks for writing the TSC multiplier")
+> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+> ---
+>   arch/x86/kvm/svm/nested.c |  4 ++--
+>   arch/x86/kvm/svm/svm.c    | 32 ++++++++++++++++++++------------
+>   arch/x86/kvm/svm/svm.h    |  2 +-
+>   3 files changed, 23 insertions(+), 15 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+> index 88da8edbe1e1f..83bae1f2eeb8a 100644
+> --- a/arch/x86/kvm/svm/nested.c
+> +++ b/arch/x86/kvm/svm/nested.c
+> @@ -1037,7 +1037,7 @@ int nested_svm_vmexit(struct vcpu_svm *svm)
+>   	if (svm->tsc_ratio_msr != kvm_caps.default_tsc_scaling_ratio) {
+>   		WARN_ON(!svm->tsc_scaling_enabled);
+>   		vcpu->arch.tsc_scaling_ratio = vcpu->arch.l1_tsc_scaling_ratio;
+> -		svm_write_tsc_multiplier(vcpu, vcpu->arch.tsc_scaling_ratio);
+> +		__svm_write_tsc_multiplier(vcpu->arch.tsc_scaling_ratio);
+>   	}
+>   
+>   	svm->nested.ctl.nested_cr3 = 0;
+> @@ -1442,7 +1442,7 @@ void nested_svm_update_tsc_ratio_msr(struct kvm_vcpu *vcpu)
+>   	vcpu->arch.tsc_scaling_ratio =
+>   		kvm_calc_nested_tsc_multiplier(vcpu->arch.l1_tsc_scaling_ratio,
+>   					       svm->tsc_ratio_msr);
+> -	svm_write_tsc_multiplier(vcpu, vcpu->arch.tsc_scaling_ratio);
+> +	__svm_write_tsc_multiplier(vcpu->arch.tsc_scaling_ratio);
+>   }
+>   
+>   /* Inverse operation of nested_copy_vmcb_control_to_cache(). asid is copied too. */
+> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> index 4aea82f668fb1..5c873db9432e5 100644
+> --- a/arch/x86/kvm/svm/svm.c
+> +++ b/arch/x86/kvm/svm/svm.c
+> @@ -512,11 +512,24 @@ static int has_svm(void)
+>   	return 1;
+>   }
+>   
+> +void __svm_write_tsc_multiplier(u64 multiplier)
+> +{
+> +	preempt_disable();
+> +
+> +	if (multiplier == __this_cpu_read(current_tsc_ratio))
+> +		goto out;
+> +
+> +	wrmsrl(MSR_AMD64_TSC_RATIO, multiplier);
+> +	__this_cpu_write(current_tsc_ratio, multiplier);
+> +out:
+> +	preempt_enable();
+> +}
+> +
+>   static void svm_hardware_disable(void)
+>   {
+>   	/* Make sure we clean up behind us */
+>   	if (tsc_scaling)
+> -		wrmsrl(MSR_AMD64_TSC_RATIO, SVM_TSC_RATIO_DEFAULT);
+> +		__svm_write_tsc_multiplier(SVM_TSC_RATIO_DEFAULT);
+>   
+>   	cpu_svm_disable();
+>   
+> @@ -562,8 +575,7 @@ static int svm_hardware_enable(void)
+>   		 * Set the default value, even if we don't use TSC scaling
+>   		 * to avoid having stale value in the msr
+>   		 */
+> -		wrmsrl(MSR_AMD64_TSC_RATIO, SVM_TSC_RATIO_DEFAULT);
+> -		__this_cpu_write(current_tsc_ratio, SVM_TSC_RATIO_DEFAULT);
+> +		__svm_write_tsc_multiplier(SVM_TSC_RATIO_DEFAULT);
+>   	}
+>   
+>   
+> @@ -1046,11 +1058,12 @@ static void svm_write_tsc_offset(struct kvm_vcpu *vcpu, u64 offset)
+>   	vmcb_mark_dirty(svm->vmcb, VMCB_INTERCEPTS);
+>   }
+>   
+> -void svm_write_tsc_multiplier(struct kvm_vcpu *vcpu, u64 multiplier)
+> +static void svm_write_tsc_multiplier(struct kvm_vcpu *vcpu, u64 multiplier)
+>   {
+> -	wrmsrl(MSR_AMD64_TSC_RATIO, multiplier);
+> +	__svm_write_tsc_multiplier(multiplier);
+>   }
+>   
+> +
+>   /* Evaluate instruction intercepts that depend on guest CPUID features. */
+>   static void svm_recalc_instruction_intercepts(struct kvm_vcpu *vcpu,
+>   					      struct vcpu_svm *svm)
+> @@ -1410,13 +1423,8 @@ static void svm_prepare_switch_to_guest(struct kvm_vcpu *vcpu)
+>   		sev_es_prepare_switch_to_guest(hostsa);
+>   	}
+>   
+> -	if (tsc_scaling) {
+> -		u64 tsc_ratio = vcpu->arch.tsc_scaling_ratio;
+> -		if (tsc_ratio != __this_cpu_read(current_tsc_ratio)) {
+> -			__this_cpu_write(current_tsc_ratio, tsc_ratio);
+> -			wrmsrl(MSR_AMD64_TSC_RATIO, tsc_ratio);
+> -		}
+> -	}
+> +	if (tsc_scaling)
+> +		__svm_write_tsc_multiplier(vcpu->arch.tsc_scaling_ratio);
+>   
+>   	if (likely(tsc_aux_uret_slot >= 0))
+>   		kvm_set_user_return_msr(tsc_aux_uret_slot, svm->tsc_aux, -1ull);
+> diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+> index cd92f43437539..2495fe548b5e9 100644
+> --- a/arch/x86/kvm/svm/svm.h
+> +++ b/arch/x86/kvm/svm/svm.h
+> @@ -594,7 +594,7 @@ int nested_svm_check_exception(struct vcpu_svm *svm, unsigned nr,
+>   			       bool has_error_code, u32 error_code);
+>   int nested_svm_exit_special(struct vcpu_svm *svm);
+>   void nested_svm_update_tsc_ratio_msr(struct kvm_vcpu *vcpu);
+> -void svm_write_tsc_multiplier(struct kvm_vcpu *vcpu, u64 multiplier);
+> +void __svm_write_tsc_multiplier(u64 multiplier);
+>   void nested_copy_vmcb_control_to_cache(struct vcpu_svm *svm,
+>   				       struct vmcb_control_area *control);
+>   void nested_copy_vmcb_save_to_cache(struct vcpu_svm *svm,
 
-Yes, that would be better (and would not require a new cap).
+Queued, thanks.
 
 Paolo
 
