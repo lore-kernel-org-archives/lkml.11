@@ -2,86 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FF80CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCC9CCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383556AbiFGWFu (ORCPT
+        id S1383587AbiFGWFz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53574 "EHLO
+        Tue, 7 Jun 2022 18:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379210AbiFGVFn (ORCPT
+        with ESMTP id S1379188AbiFGVFl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:05:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B759F106A5D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:49:17 -0700 (PDT)
+        Tue, 7 Jun 2022 17:05:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0907FBCE9C;
+        Tue,  7 Jun 2022 11:49:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0170C61724
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:49:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C86F0C3411F;
-        Tue,  7 Jun 2022 18:49:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654627756;
-        bh=RYYhrO8fEP8cSRkLcxoofnSD4Lmtn28uxTvW4Mk4fDo=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=EIVC50APv1WnV/YPh/hwX/QQRcPyt9wz6IQTW8RaidD0DhRZti7uhkD13w1xoFLm7
-         7NnJi9qEHEW2WNAJkorw5WgXxXNp4dlh/CckY1VN+gzJoklz9FVH5u8iC/G9v9GAOB
-         6iebOKO5VQC4SMZ4bwthTKgpbvcvqh1cvaXKX3d61do3lZZgEDzLznBiL5wSBQI0Rp
-         WfSzSlq0k5o+kHf7crSQa2HPA45WBBWgjE3v9F0GVwkPQUkexF42kSAwViqqEf5FPd
-         pWrmymQ/WT9uafxR5w0c6fWl8uijM6+bQZNvDmr/dnjtNBsvIorgSItBZW+hRZ9/6D
-         oh8AwLoKIrWtw==
-From:   Mark Brown <broonie@kernel.org>
-To:     linux-kernel@vger.kernel.org, lgirdwood@gmail.com,
-        alsa-devel@alsa-project.org, linmq006@gmail.com,
-        s.nawrocki@samsung.com, perex@perex.cz,
-        krzysztof.kozlowski@linaro.org, tiwai@suse.com
-In-Reply-To: <20220602130218.14901-1-linmq006@gmail.com>
-References: <20220602130218.14901-1-linmq006@gmail.com>
-Subject: Re: [PATCH] ASoC: samsung: Fix error handling in aries_audio_probe
-Message-Id: <165462775454.3480784.5012321883700193915.b4-ty@kernel.org>
-Date:   Tue, 07 Jun 2022 19:49:14 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6373EB8239B;
+        Tue,  7 Jun 2022 18:49:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B89E0C385A2;
+        Tue,  7 Jun 2022 18:49:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654627752;
+        bh=GTHiEG6Fbnv6d3nL/QXh9DsjWVX96eO95njhrpvwukM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=G6E6Q1KxfrqXTDuLYCeTxa4BlucrdRUhoovOnsdxJM0nb4uKr54SIbBkStzcezRgg
+         GVUC0sk7sVExR/OyACbJfXy/v85Z23fqnTotqX3kfcgXgDj0i5IHGuTMHOux0x09Bn
+         edP/+1JSnftM0u6i4FdHyXer+pDmLQoBM8L8qb8o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 081/879] ALSA: jack: Access input_dev under mutex
+Date:   Tue,  7 Jun 2022 18:53:19 +0200
+Message-Id: <20220607165005.041295530@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2 Jun 2022 17:02:17 +0400, Miaoqian Lin wrote:
-> of_get_child_by_name() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when not need anymore.
-> This function is missing of_node_put(cpu) in the error path.
-> Fix this by goto out label. of_node_put() will check NULL pointer.
-> 
-> 
+From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
 
-Applied to
+[ Upstream commit 1b6a6fc5280e97559287b61eade2d4b363e836f2 ]
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+It is possible when using ASoC that input_dev is unregistered while
+calling snd_jack_report, which causes NULL pointer dereference.
+In order to prevent this serialize access to input_dev using mutex lock.
 
-Thanks!
+Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Link: https://lore.kernel.org/r/20220412091628.3056922-1-amadeuszx.slawinski@linux.intel.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ include/sound/jack.h |  1 +
+ sound/core/jack.c    | 34 +++++++++++++++++++++++++++-------
+ 2 files changed, 28 insertions(+), 7 deletions(-)
 
-[1/1] ASoC: samsung: Fix error handling in aries_audio_probe
-      commit: 3e2649c5e8643bea0867bb1dd970fedadb0eb7f3
+diff --git a/include/sound/jack.h b/include/sound/jack.h
+index 1181f536557e..1ed90e2109e9 100644
+--- a/include/sound/jack.h
++++ b/include/sound/jack.h
+@@ -62,6 +62,7 @@ struct snd_jack {
+ 	const char *id;
+ #ifdef CONFIG_SND_JACK_INPUT_DEV
+ 	struct input_dev *input_dev;
++	struct mutex input_dev_lock;
+ 	int registered;
+ 	int type;
+ 	char name[100];
+diff --git a/sound/core/jack.c b/sound/core/jack.c
+index d1e3055f2b6a..88493cc31914 100644
+--- a/sound/core/jack.c
++++ b/sound/core/jack.c
+@@ -42,8 +42,11 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
+ #ifdef CONFIG_SND_JACK_INPUT_DEV
+ 	struct snd_jack *jack = device->device_data;
+ 
+-	if (!jack->input_dev)
++	mutex_lock(&jack->input_dev_lock);
++	if (!jack->input_dev) {
++		mutex_unlock(&jack->input_dev_lock);
+ 		return 0;
++	}
+ 
+ 	/* If the input device is registered with the input subsystem
+ 	 * then we need to use a different deallocator. */
+@@ -52,6 +55,7 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
+ 	else
+ 		input_free_device(jack->input_dev);
+ 	jack->input_dev = NULL;
++	mutex_unlock(&jack->input_dev_lock);
+ #endif /* CONFIG_SND_JACK_INPUT_DEV */
+ 	return 0;
+ }
+@@ -90,8 +94,11 @@ static int snd_jack_dev_register(struct snd_device *device)
+ 	snprintf(jack->name, sizeof(jack->name), "%s %s",
+ 		 card->shortname, jack->id);
+ 
+-	if (!jack->input_dev)
++	mutex_lock(&jack->input_dev_lock);
++	if (!jack->input_dev) {
++		mutex_unlock(&jack->input_dev_lock);
+ 		return 0;
++	}
+ 
+ 	jack->input_dev->name = jack->name;
+ 
+@@ -116,6 +123,7 @@ static int snd_jack_dev_register(struct snd_device *device)
+ 	if (err == 0)
+ 		jack->registered = 1;
+ 
++	mutex_unlock(&jack->input_dev_lock);
+ 	return err;
+ }
+ #endif /* CONFIG_SND_JACK_INPUT_DEV */
+@@ -517,9 +525,11 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
+ 		return -ENOMEM;
+ 	}
+ 
+-	/* don't creat input device for phantom jack */
+-	if (!phantom_jack) {
+ #ifdef CONFIG_SND_JACK_INPUT_DEV
++	mutex_init(&jack->input_dev_lock);
++
++	/* don't create input device for phantom jack */
++	if (!phantom_jack) {
+ 		int i;
+ 
+ 		jack->input_dev = input_allocate_device();
+@@ -537,8 +547,8 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
+ 				input_set_capability(jack->input_dev, EV_SW,
+ 						     jack_switch_types[i]);
+ 
+-#endif /* CONFIG_SND_JACK_INPUT_DEV */
+ 	}
++#endif /* CONFIG_SND_JACK_INPUT_DEV */
+ 
+ 	err = snd_device_new(card, SNDRV_DEV_JACK, jack, &ops);
+ 	if (err < 0)
+@@ -578,10 +588,14 @@ EXPORT_SYMBOL(snd_jack_new);
+ void snd_jack_set_parent(struct snd_jack *jack, struct device *parent)
+ {
+ 	WARN_ON(jack->registered);
+-	if (!jack->input_dev)
++	mutex_lock(&jack->input_dev_lock);
++	if (!jack->input_dev) {
++		mutex_unlock(&jack->input_dev_lock);
+ 		return;
++	}
+ 
+ 	jack->input_dev->dev.parent = parent;
++	mutex_unlock(&jack->input_dev_lock);
+ }
+ EXPORT_SYMBOL(snd_jack_set_parent);
+ 
+@@ -629,6 +643,8 @@ EXPORT_SYMBOL(snd_jack_set_key);
+ 
+ /**
+  * snd_jack_report - Report the current status of a jack
++ * Note: This function uses mutexes and should be called from a
++ * context which can sleep (such as a workqueue).
+  *
+  * @jack:   The jack to report status for
+  * @status: The current status of the jack
+@@ -654,8 +670,11 @@ void snd_jack_report(struct snd_jack *jack, int status)
+ 					     status & jack_kctl->mask_bits);
+ 
+ #ifdef CONFIG_SND_JACK_INPUT_DEV
+-	if (!jack->input_dev)
++	mutex_lock(&jack->input_dev_lock);
++	if (!jack->input_dev) {
++		mutex_unlock(&jack->input_dev_lock);
+ 		return;
++	}
+ 
+ 	for (i = 0; i < ARRAY_SIZE(jack->key); i++) {
+ 		int testbit = ((SND_JACK_BTN_0 >> i) & ~mask_bits);
+@@ -675,6 +694,7 @@ void snd_jack_report(struct snd_jack *jack, int status)
+ 	}
+ 
+ 	input_sync(jack->input_dev);
++	mutex_unlock(&jack->input_dev_lock);
+ #endif /* CONFIG_SND_JACK_INPUT_DEV */
+ }
+ EXPORT_SYMBOL(snd_jack_report);
+-- 
+2.35.1
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
