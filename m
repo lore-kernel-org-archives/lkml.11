@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D28E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B43EFCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:09:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383904AbiFGWJg (ORCPT
+        id S1383923AbiFGWJr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
+        Tue, 7 Jun 2022 18:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379474AbiFGVF7 (ORCPT
+        with ESMTP id S1379945AbiFGVGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:05:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B5918F2EE;
-        Tue,  7 Jun 2022 11:49:35 -0700 (PDT)
+        Tue, 7 Jun 2022 17:06:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B87212550;
+        Tue,  7 Jun 2022 11:50:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB76F616FF;
-        Tue,  7 Jun 2022 18:49:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D35BAC385A2;
-        Tue,  7 Jun 2022 18:49:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 836B861724;
+        Tue,  7 Jun 2022 18:50:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90C6BC385A2;
+        Tue,  7 Jun 2022 18:50:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627774;
-        bh=kdM3fNE5gu/C38KDzzmn5dQwtfjNDKoBsKPgDt1kxYY=;
+        s=korg; t=1654627830;
+        bh=PH+cowAQ+wr2TocWy9i17v14NXwGOM4fF5selByEHAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YENpRzuEfjIOs2D61Bh6R2C+BoNNm9W7StHLNGuBkqwy/6wu4KigxFADt9ymJRqdK
-         eAX0TxT6U/dj73nNXfzrD3IkRtespqvoibyQqhPg8pDXE37tJ/yO0EuMMnQoc7c9Dj
-         h/wvd/Wp0ioDs/HZVxr/Ti/6/Qt8EbCt4ZDdiCBo=
+        b=tw92rxTiqSReUKVqKQoZDOWVr1JJGJI5M677AGd0aavRwqRVPHPMIQiWr67HtN3Ex
+         QTw5nbgCw0lpPVN9SZKsgtHngQHChRap+gYk2cX/yHErJJzjVXYV92HiYgCPG02lB3
+         4Grdn6ZJr+Tlf/dmk1iVPEQERKCwaPLIxX/4WOQA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Heming Zhao <heming.zhao@suse.com>, Song Liu <song@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 088/879] scsi: lpfc: Move cfg_log_verbose check before calling lpfc_dmp_dbg()
-Date:   Tue,  7 Jun 2022 18:53:26 +0200
-Message-Id: <20220607165005.247623393@linuxfoundation.org>
+Subject: [PATCH 5.18 106/879] md/bitmap: dont set sb values if cant pass sanity check
+Date:   Tue,  7 Jun 2022 18:53:44 +0200
+Message-Id: <20220607165005.771344896@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,110 +52,161 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Heming Zhao <heming.zhao@suse.com>
 
-[ Upstream commit e294647b1aed4247fe52851f3a3b2b19ae906228 ]
+[ Upstream commit e68cb83a57a458b01c9739e2ad9cb70b04d1e6d2 ]
 
-In an attempt to log message 0126 with LOG_TRACE_EVENT, the following hard
-lockup call trace hangs the system.
+If bitmap area contains invalid data, kernel will crash then mdadm
+triggers "Segmentation fault".
+This is cluster-md speical bug. In non-clustered env, mdadm will
+handle broken metadata case. In clustered array, only kernel space
+handles bitmap slot info. But even this bug only happened in clustered
+env, current sanity check is wrong, the code should be changed.
 
-Call Trace:
- _raw_spin_lock_irqsave+0x32/0x40
- lpfc_dmp_dbg.part.32+0x28/0x220 [lpfc]
- lpfc_cmpl_els_fdisc+0x145/0x460 [lpfc]
- lpfc_sli_cancel_jobs+0x92/0xd0 [lpfc]
- lpfc_els_flush_cmd+0x43c/0x670 [lpfc]
- lpfc_els_flush_all_cmd+0x37/0x60 [lpfc]
- lpfc_sli4_async_event_proc+0x956/0x1720 [lpfc]
- lpfc_do_work+0x1485/0x1d70 [lpfc]
- kthread+0x112/0x130
- ret_from_fork+0x1f/0x40
-Kernel panic - not syncing: Hard LOCKUP
+How to trigger: (faulty injection)
 
-The same CPU tries to claim the phba->port_list_lock twice.
+dd if=/dev/zero bs=1M count=1 oflag=direct of=/dev/sda
+dd if=/dev/zero bs=1M count=1 oflag=direct of=/dev/sdb
+mdadm -C /dev/md0 -b clustered -e 1.2 -n 2 -l mirror /dev/sda /dev/sdb
+mdadm -Ss
+echo aaa > magic.txt
+ == below modifying slot 2 bitmap data ==
+dd if=magic.txt of=/dev/sda seek=16384 bs=1 count=3 <== destroy magic
+dd if=/dev/zero of=/dev/sda seek=16436 bs=1 count=4 <== ZERO chunksize
+mdadm -A /dev/md0 /dev/sda /dev/sdb
+ == kernel crashes. mdadm outputs "Segmentation fault" ==
 
-Move the cfg_log_verbose checks as part of the lpfc_printf_vlog() and
-lpfc_printf_log() macros before calling lpfc_dmp_dbg().  There is no need
-to take the phba->port_list_lock within lpfc_dmp_dbg().
+Reason of kernel crash:
 
-Link: https://lore.kernel.org/r/20220412222008.126521-3-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+In md_bitmap_read_sb (called by md_bitmap_create), bad bitmap magic didn't
+block chunksize assignment, and zero value made DIV_ROUND_UP_SECTOR_T()
+trigger "divide error".
+
+Crash log:
+
+kernel: md: md0 stopped.
+kernel: md/raid1:md0: not clean -- starting background reconstruction
+kernel: md/raid1:md0: active with 2 out of 2 mirrors
+kernel: dlm: ... ...
+kernel: md-cluster: Joined cluster 44810aba-38bb-e6b8-daca-bc97a0b254aa slot 1
+kernel: md0: invalid bitmap file superblock: bad magic
+kernel: md_bitmap_copy_from_slot can't get bitmap from slot 2
+kernel: md-cluster: Could not gather bitmaps from slot 2
+kernel: divide error: 0000 [#1] SMP NOPTI
+kernel: CPU: 0 PID: 1603 Comm: mdadm Not tainted 5.14.6-1-default
+kernel: Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+kernel: RIP: 0010:md_bitmap_create+0x1d1/0x850 [md_mod]
+kernel: RSP: 0018:ffffc22ac0843ba0 EFLAGS: 00010246
+kernel: ... ...
+kernel: Call Trace:
+kernel:  ? dlm_lock_sync+0xd0/0xd0 [md_cluster 77fe..7a0]
+kernel:  md_bitmap_copy_from_slot+0x2c/0x290 [md_mod 24ea..d3a]
+kernel:  load_bitmaps+0xec/0x210 [md_cluster 77fe..7a0]
+kernel:  md_bitmap_load+0x81/0x1e0 [md_mod 24ea..d3a]
+kernel:  do_md_run+0x30/0x100 [md_mod 24ea..d3a]
+kernel:  md_ioctl+0x1290/0x15a0 [md_mod 24ea....d3a]
+kernel:  ? mddev_unlock+0xaa/0x130 [md_mod 24ea..d3a]
+kernel:  ? blkdev_ioctl+0xb1/0x2b0
+kernel:  block_ioctl+0x3b/0x40
+kernel:  __x64_sys_ioctl+0x7f/0xb0
+kernel:  do_syscall_64+0x59/0x80
+kernel:  ? exit_to_user_mode_prepare+0x1ab/0x230
+kernel:  ? syscall_exit_to_user_mode+0x18/0x40
+kernel:  ? do_syscall_64+0x69/0x80
+kernel:  entry_SYSCALL_64_after_hwframe+0x44/0xae
+kernel: RIP: 0033:0x7f4a15fa722b
+kernel: ... ...
+kernel: ---[ end trace 8afa7612f559c868 ]---
+kernel: RIP: 0010:md_bitmap_create+0x1d1/0x850 [md_mod]
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Heming Zhao <heming.zhao@suse.com>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_init.c   | 29 +----------------------------
- drivers/scsi/lpfc/lpfc_logmsg.h |  6 +++---
- 2 files changed, 4 insertions(+), 31 deletions(-)
+ drivers/md/md-bitmap.c | 44 ++++++++++++++++++++++--------------------
+ 1 file changed, 23 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
-index 461d333b1b3a..f9cd4b72d949 100644
---- a/drivers/scsi/lpfc/lpfc_init.c
-+++ b/drivers/scsi/lpfc/lpfc_init.c
-@@ -15700,34 +15700,7 @@ void lpfc_dmp_dbg(struct lpfc_hba *phba)
- 	unsigned int temp_idx;
- 	int i;
- 	int j = 0;
--	unsigned long rem_nsec, iflags;
--	bool log_verbose = false;
--	struct lpfc_vport *port_iterator;
--
--	/* Don't dump messages if we explicitly set log_verbose for the
--	 * physical port or any vport.
+diff --git a/drivers/md/md-bitmap.c b/drivers/md/md-bitmap.c
+index bfd6026d7809..612460d2bdaf 100644
+--- a/drivers/md/md-bitmap.c
++++ b/drivers/md/md-bitmap.c
+@@ -639,14 +639,6 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
+ 	daemon_sleep = le32_to_cpu(sb->daemon_sleep) * HZ;
+ 	write_behind = le32_to_cpu(sb->write_behind);
+ 	sectors_reserved = le32_to_cpu(sb->sectors_reserved);
+-	/* Setup nodes/clustername only if bitmap version is
+-	 * cluster-compatible
 -	 */
--	if (phba->cfg_log_verbose)
--		return;
--
--	spin_lock_irqsave(&phba->port_list_lock, iflags);
--	list_for_each_entry(port_iterator, &phba->port_list, listentry) {
--		if (port_iterator->load_flag & FC_UNLOADING)
--			continue;
--		if (scsi_host_get(lpfc_shost_from_vport(port_iterator))) {
--			if (port_iterator->cfg_log_verbose)
--				log_verbose = true;
--
--			scsi_host_put(lpfc_shost_from_vport(port_iterator));
--
--			if (log_verbose) {
--				spin_unlock_irqrestore(&phba->port_list_lock,
--						       iflags);
--				return;
--			}
--		}
+-	if (sb->version == cpu_to_le32(BITMAP_MAJOR_CLUSTERED)) {
+-		nodes = le32_to_cpu(sb->nodes);
+-		strlcpy(bitmap->mddev->bitmap_info.cluster_name,
+-				sb->cluster_name, 64);
 -	}
--	spin_unlock_irqrestore(&phba->port_list_lock, iflags);
-+	unsigned long rem_nsec;
  
- 	if (atomic_cmpxchg(&phba->dbg_log_dmping, 0, 1) != 0)
- 		return;
-diff --git a/drivers/scsi/lpfc/lpfc_logmsg.h b/drivers/scsi/lpfc/lpfc_logmsg.h
-index 7d480c798794..a5aafe230c74 100644
---- a/drivers/scsi/lpfc/lpfc_logmsg.h
-+++ b/drivers/scsi/lpfc/lpfc_logmsg.h
-@@ -73,7 +73,7 @@ do { \
- #define lpfc_printf_vlog(vport, level, mask, fmt, arg...) \
- do { \
- 	{ if (((mask) & (vport)->cfg_log_verbose) || (level[1] <= '3')) { \
--		if ((mask) & LOG_TRACE_EVENT) \
-+		if ((mask) & LOG_TRACE_EVENT && !(vport)->cfg_log_verbose) \
- 			lpfc_dmp_dbg((vport)->phba); \
- 		dev_printk(level, &((vport)->phba->pcidev)->dev, "%d:(%d):" \
- 			   fmt, (vport)->phba->brd_no, vport->vpi, ##arg);  \
-@@ -89,11 +89,11 @@ do { \
- 				 (phba)->pport->cfg_log_verbose : \
- 				 (phba)->cfg_log_verbose; \
- 	if (((mask) & log_verbose) || (level[1] <= '3')) { \
--		if ((mask) & LOG_TRACE_EVENT) \
-+		if ((mask) & LOG_TRACE_EVENT && !log_verbose) \
- 			lpfc_dmp_dbg(phba); \
- 		dev_printk(level, &((phba)->pcidev)->dev, "%d:" \
- 			fmt, phba->brd_no, ##arg); \
--	} else  if (!(phba)->cfg_log_verbose)\
-+	} else if (!log_verbose)\
- 		lpfc_dbg_print(phba, "%d:" fmt, phba->brd_no, ##arg); \
- 	} \
- } while (0)
+ 	/* verify that the bitmap-specific fields are valid */
+ 	if (sb->magic != cpu_to_le32(BITMAP_MAGIC))
+@@ -668,6 +660,16 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
+ 		goto out;
+ 	}
+ 
++	/*
++	 * Setup nodes/clustername only if bitmap version is
++	 * cluster-compatible
++	 */
++	if (sb->version == cpu_to_le32(BITMAP_MAJOR_CLUSTERED)) {
++		nodes = le32_to_cpu(sb->nodes);
++		strlcpy(bitmap->mddev->bitmap_info.cluster_name,
++				sb->cluster_name, 64);
++	}
++
+ 	/* keep the array size field of the bitmap superblock up to date */
+ 	sb->sync_size = cpu_to_le64(bitmap->mddev->resync_max_sectors);
+ 
+@@ -700,9 +702,9 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
+ 
+ out:
+ 	kunmap_atomic(sb);
+-	/* Assigning chunksize is required for "re_read" */
+-	bitmap->mddev->bitmap_info.chunksize = chunksize;
+ 	if (err == 0 && nodes && (bitmap->cluster_slot < 0)) {
++		/* Assigning chunksize is required for "re_read" */
++		bitmap->mddev->bitmap_info.chunksize = chunksize;
+ 		err = md_setup_cluster(bitmap->mddev, nodes);
+ 		if (err) {
+ 			pr_warn("%s: Could not setup cluster service (%d)\n",
+@@ -713,18 +715,18 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
+ 		goto re_read;
+ 	}
+ 
+-
+ out_no_sb:
+-	if (test_bit(BITMAP_STALE, &bitmap->flags))
+-		bitmap->events_cleared = bitmap->mddev->events;
+-	bitmap->mddev->bitmap_info.chunksize = chunksize;
+-	bitmap->mddev->bitmap_info.daemon_sleep = daemon_sleep;
+-	bitmap->mddev->bitmap_info.max_write_behind = write_behind;
+-	bitmap->mddev->bitmap_info.nodes = nodes;
+-	if (bitmap->mddev->bitmap_info.space == 0 ||
+-	    bitmap->mddev->bitmap_info.space > sectors_reserved)
+-		bitmap->mddev->bitmap_info.space = sectors_reserved;
+-	if (err) {
++	if (err == 0) {
++		if (test_bit(BITMAP_STALE, &bitmap->flags))
++			bitmap->events_cleared = bitmap->mddev->events;
++		bitmap->mddev->bitmap_info.chunksize = chunksize;
++		bitmap->mddev->bitmap_info.daemon_sleep = daemon_sleep;
++		bitmap->mddev->bitmap_info.max_write_behind = write_behind;
++		bitmap->mddev->bitmap_info.nodes = nodes;
++		if (bitmap->mddev->bitmap_info.space == 0 ||
++			bitmap->mddev->bitmap_info.space > sectors_reserved)
++			bitmap->mddev->bitmap_info.space = sectors_reserved;
++	} else {
+ 		md_bitmap_print_sb(bitmap);
+ 		if (bitmap->cluster_slot < 0)
+ 			md_cluster_stop(bitmap->mddev);
 -- 
 2.35.1
 
