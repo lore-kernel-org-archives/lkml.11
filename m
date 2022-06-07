@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF755C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:24:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF3EAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346172AbiFGRYV (ORCPT
+        id S1346281AbiFGRYb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42946 "EHLO
+        Tue, 7 Jun 2022 13:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345827AbiFGRT5 (ORCPT
+        with ESMTP id S1345946AbiFGRUG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:19:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB3C1059C6;
-        Tue,  7 Jun 2022 10:19:50 -0700 (PDT)
+        Tue, 7 Jun 2022 13:20:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F3C1059CF;
+        Tue,  7 Jun 2022 10:19:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91977618BF;
-        Tue,  7 Jun 2022 17:19:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A154CC385A5;
-        Tue,  7 Jun 2022 17:19:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3556A617C0;
+        Tue,  7 Jun 2022 17:19:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D103C385A5;
+        Tue,  7 Jun 2022 17:19:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622389;
-        bh=QBOKpU9FLpN80m8mad13Ydk7s0gfGAfX4dnPlkXcfts=;
+        s=korg; t=1654622394;
+        bh=EI6kyMEv2r+oMfMB12oZQKomnwfH3xTNuKb7+f/Swr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s3zhq3pBoyJwF+wi0p6hlVXAZMKPwCR12lChG4BCJ+j2HN8ujJbHwxqnNulfLFWXD
-         kO5SPMjBm+lqTEAEuT1EffahEHgfDpOo+h16332ijtlq3dlFwLotLfUzIsKO6jQlbS
-         Io+Vew/CjOtidruyycT94gyudMJRFV4KvgVA8WKI=
+        b=0B2md4TahkScyU5lCKEz+tYAVmui4zMZqmb5+tDCxfn6ZCiHl9NolRXxj2ugox5SI
+         D8yhevW2f1gNQtc8FFD6utuVxILCOcKTsbogu+P9IBbwl1DiXPtqZB2JhBIFx6dSo5
+         zoC4fEu2CgbV2/uT7jXti8bpFLte1kM6e0bNslhY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Nikolay Borisov <nborisov@suse.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 042/452] drm/amd/pm: fix double free in si_parse_power_table()
-Date:   Tue,  7 Jun 2022 18:58:19 +0200
-Message-Id: <20220607164909.802699610@linuxfoundation.org>
+Subject: [PATCH 5.10 026/452] selftests/bpf: Fix vfs_link kprobe definition
+Date:   Tue,  7 Jun 2022 18:58:03 +0200
+Message-Id: <20220607164909.326145660@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,68 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+From: Nikolay Borisov <nborisov@suse.com>
 
-[ Upstream commit f3fa2becf2fc25b6ac7cf8d8b1a2e4a86b3b72bd ]
+[ Upstream commit e299bcd4d16ff86f46c48df1062c8aae0eca1ed8 ]
 
-In function si_parse_power_table(), array adev->pm.dpm.ps and its member
-is allocated. If the allocation of each member fails, the array itself
-is freed and returned with an error code. However, the array is later
-freed again in si_dpm_fini() function which is called when the function
-returns an error.
+Since commit 6521f8917082 ("namei: prepare for idmapped mounts")
+vfs_link's prototype was changed, the kprobe definition in
+profiler selftest in turn wasn't updated. The result is that all
+argument after the first are now stored in different registers. This
+means that self-test has been broken ever since. Fix it by updating the
+kprobe definition accordingly.
 
-This leads to potential double free of the array adev->pm.dpm.ps, as
-well as leak of its array members, since the members are not freed in
-the allocation function and the array is not nulled when freed.
-In addition adev->pm.dpm.num_ps, which keeps track of the allocated
-array member, is not updated until the member allocation is
-successfully finished, this could also lead to either use after free,
-or uninitialized variable access in si_dpm_fini().
-
-Fix this by postponing the free of the array until si_dpm_fini() and
-increment adev->pm.dpm.num_ps everytime the array member is allocated.
-
-Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Nikolay Borisov <nborisov@suse.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220331140949.1410056-1-nborisov@suse.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/powerplay/si_dpm.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ tools/testing/selftests/bpf/progs/profiler.inc.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c b/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
-index a1e7ba5995c5..d6544a6dabc7 100644
---- a/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
-+++ b/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
-@@ -7250,17 +7250,15 @@ static int si_parse_power_table(struct amdgpu_device *adev)
- 	if (!adev->pm.dpm.ps)
- 		return -ENOMEM;
- 	power_state_offset = (u8 *)state_array->states;
--	for (i = 0; i < state_array->ucNumEntries; i++) {
-+	for (adev->pm.dpm.num_ps = 0, i = 0; i < state_array->ucNumEntries; i++) {
- 		u8 *idx;
- 		power_state = (union pplib_power_state *)power_state_offset;
- 		non_clock_array_index = power_state->v2.nonClockInfoIndex;
- 		non_clock_info = (struct _ATOM_PPLIB_NONCLOCK_INFO *)
- 			&non_clock_info_array->nonClockInfo[non_clock_array_index];
- 		ps = kzalloc(sizeof(struct  si_ps), GFP_KERNEL);
--		if (ps == NULL) {
--			kfree(adev->pm.dpm.ps);
-+		if (ps == NULL)
- 			return -ENOMEM;
--		}
- 		adev->pm.dpm.ps[i].ps_priv = ps;
- 		si_parse_pplib_non_clock_info(adev, &adev->pm.dpm.ps[i],
- 					      non_clock_info,
-@@ -7282,8 +7280,8 @@ static int si_parse_power_table(struct amdgpu_device *adev)
- 			k++;
- 		}
- 		power_state_offset += 2 + power_state->v2.ucNumDPMLevels;
-+		adev->pm.dpm.num_ps++;
- 	}
--	adev->pm.dpm.num_ps = state_array->ucNumEntries;
+diff --git a/tools/testing/selftests/bpf/progs/profiler.inc.h b/tools/testing/selftests/bpf/progs/profiler.inc.h
+index 4896fdf816f7..92331053dba3 100644
+--- a/tools/testing/selftests/bpf/progs/profiler.inc.h
++++ b/tools/testing/selftests/bpf/progs/profiler.inc.h
+@@ -826,8 +826,9 @@ int kprobe_ret__do_filp_open(struct pt_regs* ctx)
  
- 	/* fill in the vce power states */
- 	for (i = 0; i < adev->pm.dpm.num_of_vce_states; i++) {
+ SEC("kprobe/vfs_link")
+ int BPF_KPROBE(kprobe__vfs_link,
+-	       struct dentry* old_dentry, struct inode* dir,
+-	       struct dentry* new_dentry, struct inode** delegated_inode)
++	       struct dentry* old_dentry, struct user_namespace *mnt_userns,
++	       struct inode* dir, struct dentry* new_dentry,
++	       struct inode** delegated_inode)
+ {
+ 	struct bpf_func_stats_ctx stats_ctx;
+ 	bpf_stats_enter(&stats_ctx, profiler_bpf_vfs_link);
 -- 
 2.35.1
 
