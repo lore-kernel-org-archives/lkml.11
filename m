@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A233DCCA493
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 995C6CCA48C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348106AbiFGRgE (ORCPT
+        id S1347431AbiFGRfP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:36:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40330 "EHLO
+        Tue, 7 Jun 2022 13:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346526AbiFGR3S (ORCPT
+        with ESMTP id S1346521AbiFGR0Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:29:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2949310D915;
-        Tue,  7 Jun 2022 10:24:42 -0700 (PDT)
+        Tue, 7 Jun 2022 13:26:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6FA106379;
+        Tue,  7 Jun 2022 10:24:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B57FC60DE2;
-        Tue,  7 Jun 2022 17:24:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDE4CC385A5;
-        Tue,  7 Jun 2022 17:24:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7547660906;
+        Tue,  7 Jun 2022 17:24:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83856C34119;
+        Tue,  7 Jun 2022 17:24:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622681;
-        bh=DgrERhmiPRNQUiFMyWldud2/MZurlP6RAhmt8cL/kkQ=;
+        s=korg; t=1654622652;
+        bh=i0n7vj0XzvH+QmDSjXJOuvHN92orgDsJAIEJrLuSHVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CkP5sEAxqdqe9xARuEPRD0dUTdPyaHaS6u0sszurTJeY2Vq9UzsP5Zkr+FqN9xcoM
-         ApIL35sGIrbeyuHZoqCx2x7huRMuTnJxXnTRsOh0GTPEE/yECsFvbqoKr0+T9bqveg
-         iNNcI61Q5mqUb80EIzF/lvjDaWuf8IYfi6cnO+oo=
+        b=xj1XID5NXyNELUE77/0FvlgMgeT81uzmWeoT/j9l3i6pOLthlD0FLeILbTVRzwo3V
+         E++sX6wej/UwB9ajhChZIT3/1kGXeboPp4mIcULN5cs6A+6YI7JipRgQotH2wIJz+s
+         pxWFBLanveIO8gi1W9M3bAs2CM67Zui4LCY63Zh4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 145/452] target: remove an incorrect unmap zeroes data deduction
-Date:   Tue,  7 Jun 2022 19:00:02 +0200
-Message-Id: <20220607164912.881571689@linuxfoundation.org>
+        stable@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 136/452] bpf: Fix excessive memory allocation in stack_map_alloc()
+Date:   Tue,  7 Jun 2022 18:59:53 +0200
+Message-Id: <20220607164912.613808833@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,40 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Yuntao Wang <ytcoode@gmail.com>
 
-[ Upstream commit 179d8609d8424529e95021df939ed7b0b82b37f1 ]
+[ Upstream commit b45043192b3e481304062938a6561da2ceea46a6 ]
 
-For block devices, the SCSI target drivers implements UNMAP as calls to
-blkdev_issue_discard, which does not guarantee zeroing just because
-Write Zeroes is supported.
+The 'n_buckets * (value_size + sizeof(struct stack_map_bucket))' part of the
+allocated memory for 'smap' is never used after the memlock accounting was
+removed, thus get rid of it.
 
-Note that this does not affect the file backed path which uses
-fallocate to punch holes.
+[ Note, Daniel:
 
-Fixes: 2237498f0b5c ("target/iblock: Convert WRITE_SAME to blkdev_issue_zeroout")
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Martin K. Petersen <martin.petersen@oracle.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Link: https://lore.kernel.org/r/20220415045258.199825-2-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Commit b936ca643ade ("bpf: rework memlock-based memory accounting for maps")
+moved `cost += n_buckets * (value_size + sizeof(struct stack_map_bucket))`
+up and therefore before the bpf_map_area_alloc() allocation, sigh. In a later
+step commit c85d69135a91 ("bpf: move memory size checks to bpf_map_charge_init()"),
+and the overflow checks of `cost >= U32_MAX - PAGE_SIZE` moved into
+bpf_map_charge_init(). And then 370868107bf6 ("bpf: Eliminate rlimit-based
+memory accounting for stackmap maps") finally removed the bpf_map_charge_init().
+Anyway, the original code did the allocation same way as /after/ this fix. ]
+
+Fixes: b936ca643ade ("bpf: rework memlock-based memory accounting for maps")
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220407130423.798386-1-ytcoode@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/target/target_core_device.c | 1 -
+ kernel/bpf/stackmap.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/target/target_core_device.c b/drivers/target/target_core_device.c
-index 109f019d2148..1eded5c4ebda 100644
---- a/drivers/target/target_core_device.c
-+++ b/drivers/target/target_core_device.c
-@@ -831,7 +831,6 @@ bool target_configure_unmap_from_queue(struct se_dev_attrib *attrib,
- 	attrib->unmap_granularity = q->limits.discard_granularity / block_size;
- 	attrib->unmap_granularity_alignment = q->limits.discard_alignment /
- 								block_size;
--	attrib->unmap_zeroes_data = !!(q->limits.max_write_zeroes_sectors);
- 	return true;
- }
- EXPORT_SYMBOL(target_configure_unmap_from_queue);
+diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
+index 4575d2d60cb1..c19e669afba0 100644
+--- a/kernel/bpf/stackmap.c
++++ b/kernel/bpf/stackmap.c
+@@ -121,7 +121,6 @@ static struct bpf_map *stack_map_alloc(union bpf_attr *attr)
+ 		return ERR_PTR(-E2BIG);
+ 
+ 	cost = n_buckets * sizeof(struct stack_map_bucket *) + sizeof(*smap);
+-	cost += n_buckets * (value_size + sizeof(struct stack_map_bucket));
+ 	err = bpf_map_charge_init(&mem, cost);
+ 	if (err)
+ 		return ERR_PTR(err);
 -- 
 2.35.1
 
