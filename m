@@ -2,92 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 627BCCCA49B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0032FCCA499
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356135AbiFGTSA (ORCPT
+        id S1355913AbiFGTRp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
+        Tue, 7 Jun 2022 15:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352017AbiFGSao (ORCPT
+        with ESMTP id S1351264AbiFGS3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:30:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD0102F02D;
-        Tue,  7 Jun 2022 10:55:51 -0700 (PDT)
+        Tue, 7 Jun 2022 14:29:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F76179C3C;
+        Tue,  7 Jun 2022 10:55:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 802F3B8236F;
-        Tue,  7 Jun 2022 17:55:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9957C34115;
-        Tue,  7 Jun 2022 17:55:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624549;
-        bh=OiWcNo8ZYY30dH2anHOyo07VcMU3yIki7I1363nLZfg=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDA2861827;
+        Tue,  7 Jun 2022 17:55:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CAE1C385A5;
+        Tue,  7 Jun 2022 17:55:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624526;
+        bh=h9I8z9yfCsj9WKik3+U8sz5LvflAmBBSL/fxUrdruoU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a4EaAwaVxRU95dfnkOXmowNT/ol44cqUm6rHTJZAefwwejOhYmiWYbQSGYAngcKzD
-         JVTofQN//zpFXuVbvFINCq09T0lFHqz96bGPrwpchMVNWprYnvGDUdRsZiOffubTAj
-         qLGB5u82lwCvUA2MPR4zeyi/nWdlngQF6k0xIvDc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 350/667] selftests/bpf: Add missed ima_setup.sh in Makefile
-Date:   Tue,  7 Jun 2022 19:00:15 +0200
-Message-Id: <20220607164945.254574806@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=VCMivFLbvGfQnvLUG2ocKSeY/JcfmWr6k1jXTw3VLdFx97IOXWaCFkaIfpGn6YNPt
+         /fxicwqDJ1VhR/3cnpK+BWvFwZ3YK0iC6KgWNwDqoJIw0YE9qUvSoj1z5qQfXDZAVA
+         QCPrwKAOEtwMUO0+ehFuR3nYmVKrF/C5TOV9q0P2e4Q76q65isC4U5Z69p/1WMyiAb
+         rgvZN2UsYj+vSjS6GNtodrJYM0druJxWW4/WP4zLujYppDeqOERDTmrMAfcvCAgOR0
+         plPxmqE8JfjZ7tvBDQX+MGIz03cTEovWYCdcMCr5WBGPO692Kly8OAKw+ahQk3VXZ+
+         Qte+cGt9jl8Mw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Namjae Jeon <linkinjeon@kernel.org>,
+        Gerald Lee <sundaywind2004@gmail.com>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
+        Sasha Levin <sashal@kernel.org>, ntfs3@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.17 52/60] fs/ntfs3: Fix invalid free in log_replay
+Date:   Tue,  7 Jun 2022 13:52:49 -0400
+Message-Id: <20220607175259.478835-52-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit 70a1b25326dd77e145157ccf1a31c1948032eec4 ]
+[ Upstream commit f26967b9f7a830e228bb13fb41bd516ddd9d789d ]
 
-When build bpf test and install it to another folder, e.g.
+log_read_rst() returns ENOMEM error when there is not enough memory.
+In this case, if info is returned without initialization,
+it attempts to kfree the uninitialized info->r_page pointer. This patch
+moves the memset initialization code to before log_read_rst() is called.
 
-  make -j10 install -C tools/testing/selftests/ TARGETS="bpf" \
-	SKIP_TARGETS="" INSTALL_PATH=/tmp/kselftests
-
-The ima_setup.sh is missed in target folder, which makes test_ima failed.
-
-Fix it by adding ima_setup.sh to TEST_PROGS_EXTENDED.
-
-Fixes: 34b82d3ac105 ("bpf: Add a selftest for bpf_ima_inode_hash")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20220516040020.653291-1-liuhangbin@gmail.com
+Reported-by: Gerald Lee <sundaywind2004@gmail.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ntfs3/fslog.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 799b88152e9e..638966ae8ad9 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -78,7 +78,7 @@ TEST_PROGS := test_kmod.sh \
- 	test_xsk.sh
+diff --git a/fs/ntfs3/fslog.c b/fs/ntfs3/fslog.c
+index 06492f088d60..fc36c53b865a 100644
+--- a/fs/ntfs3/fslog.c
++++ b/fs/ntfs3/fslog.c
+@@ -1185,8 +1185,6 @@ static int log_read_rst(struct ntfs_log *log, u32 l_size, bool first,
+ 	if (!r_page)
+ 		return -ENOMEM;
  
- TEST_PROGS_EXTENDED := with_addr.sh \
--	with_tunnels.sh \
-+	with_tunnels.sh ima_setup.sh \
- 	test_xdp_vlan.sh test_bpftool.py
+-	memset(info, 0, sizeof(struct restart_info));
+-
+ 	/* Determine which restart area we are looking for. */
+ 	if (first) {
+ 		vbo = 0;
+@@ -3791,10 +3789,11 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
+ 	if (!log)
+ 		return -ENOMEM;
  
- # Compile but not part of 'make run_tests'
++	memset(&rst_info, 0, sizeof(struct restart_info));
++
+ 	log->ni = ni;
+ 	log->l_size = l_size;
+ 	log->one_page_buf = kmalloc(page_size, GFP_NOFS);
+-
+ 	if (!log->one_page_buf) {
+ 		err = -ENOMEM;
+ 		goto out;
+@@ -3842,6 +3841,7 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
+ 	if (rst_info.vbo)
+ 		goto check_restart_area;
+ 
++	memset(&rst_info2, 0, sizeof(struct restart_info));
+ 	err = log_read_rst(log, l_size, false, &rst_info2);
+ 
+ 	/* Determine which restart area to use. */
 -- 
 2.35.1
-
-
 
