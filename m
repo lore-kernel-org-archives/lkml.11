@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B91C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0571CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:09:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383583AbiFGWIz (ORCPT
+        id S1358289AbiFGWJF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:08:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51234 "EHLO
+        Tue, 7 Jun 2022 18:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379729AbiFGVGQ (ORCPT
+        with ESMTP id S1379703AbiFGVGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:06:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1462109FC;
-        Tue,  7 Jun 2022 11:50:15 -0700 (PDT)
+        Tue, 7 Jun 2022 17:06:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3F52109D6;
+        Tue,  7 Jun 2022 11:50:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F98361734;
-        Tue,  7 Jun 2022 18:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FE90C385A5;
-        Tue,  7 Jun 2022 18:50:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED681B81FE1;
+        Tue,  7 Jun 2022 18:49:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 610DEC385A2;
+        Tue,  7 Jun 2022 18:49:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627810;
-        bh=CHObYO3QTAakNe5T3Fe914iXUbpSy1aT88lWYZtUQ/Y=;
+        s=korg; t=1654627796;
+        bh=Sn2E5T7+eZANOZsUBkk4ShXP8E0TUT3ruFCM8ktCFR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DdWjTtJMisMc+TDXrS+pSGp4xjALh81EB7M+cVpbddyONwjR9SxtcZJu6lFNeFtJ/
-         zhFKccXY636b/Fj4B4Pf8M/Wnk4Z1Kj0RHIHWqPFkvtTXZXmKM5z5Bij2EHvc+x1Jk
-         6XyfABvz+veIGTOZVndYtwZR82jqtoA4F9tbPebM=
+        b=OYMn5ibTP6E5H8TS4asnICu2Yj7fngka75HK44yy2mj4sJHVQGayy+uD/cjS9ZZbv
+         GjmUPzzA63XgRnrVkGmZapuNJtaatKkRwEKrh7uhWah1wHxFq/j5VP292D+5r1vLOm
+         KvhEdfPOiUpObbgw3svBL0y/bXSK7I7KKk7xEhY4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Bingbu Cao <bingbu.cao@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 100/879] media: Revert "media: dw9768: activate runtime PM and turn off device"
-Date:   Tue,  7 Jun 2022 18:53:38 +0200
-Message-Id: <20220607165005.598260361@linuxfoundation.org>
+Subject: [PATCH 5.18 095/879] drm/amd/pm: fix double free in si_parse_power_table()
+Date:   Tue,  7 Jun 2022 18:53:33 +0200
+Message-Id: <20220607165005.450407171@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,48 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
 
-[ Upstream commit 7dd0f93a31af03cba81c684c4c361bba510ffe71 ]
+[ Upstream commit f3fa2becf2fc25b6ac7cf8d8b1a2e4a86b3b72bd ]
 
-This reverts commit c09d776eaa060534a1663e3b89d842db3e1d9076.
+In function si_parse_power_table(), array adev->pm.dpm.ps and its member
+is allocated. If the allocation of each member fails, the array itself
+is freed and returned with an error code. However, the array is later
+freed again in si_dpm_fini() function which is called when the function
+returns an error.
 
-Revert the commit as it breaks runtime PM support on OF based systems.
-More fixes to the driver are needed.
+This leads to potential double free of the array adev->pm.dpm.ps, as
+well as leak of its array members, since the members are not freed in
+the allocation function and the array is not nulled when freed.
+In addition adev->pm.dpm.num_ps, which keeps track of the allocated
+array member, is not updated until the member allocation is
+successfully finished, this could also lead to either use after free,
+or uninitialized variable access in si_dpm_fini().
 
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Tomasz Figa <tfiga@chromium.org>
-Reviewed-by: Bingbu Cao <bingbu.cao@intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fix this by postponing the free of the array until si_dpm_fini() and
+increment adev->pm.dpm.num_ps everytime the array member is allocated.
+
+Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/dw9768.c | 6 ------
- 1 file changed, 6 deletions(-)
+ drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/media/i2c/dw9768.c b/drivers/media/i2c/dw9768.c
-index 65c6acf3ced9..c086580efac7 100644
---- a/drivers/media/i2c/dw9768.c
-+++ b/drivers/media/i2c/dw9768.c
-@@ -469,11 +469,6 @@ static int dw9768_probe(struct i2c_client *client)
- 
- 	dw9768->sd.entity.function = MEDIA_ENT_F_LENS;
- 
--	/*
--	 * Device is already turned on by i2c-core with ACPI domain PM.
--	 * Attempt to turn off the device to satisfy the privacy LED concerns.
--	 */
--	pm_runtime_set_active(dev);
- 	pm_runtime_enable(dev);
- 	if (!pm_runtime_enabled(dev)) {
- 		ret = dw9768_runtime_resume(dev);
-@@ -488,7 +483,6 @@ static int dw9768_probe(struct i2c_client *client)
- 		dev_err(dev, "failed to register V4L2 subdev: %d", ret);
- 		goto err_power_off;
+diff --git a/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c b/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
+index 633dab14f51c..49c398ec0aaf 100644
+--- a/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
++++ b/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
+@@ -7297,17 +7297,15 @@ static int si_parse_power_table(struct amdgpu_device *adev)
+ 	if (!adev->pm.dpm.ps)
+ 		return -ENOMEM;
+ 	power_state_offset = (u8 *)state_array->states;
+-	for (i = 0; i < state_array->ucNumEntries; i++) {
++	for (adev->pm.dpm.num_ps = 0, i = 0; i < state_array->ucNumEntries; i++) {
+ 		u8 *idx;
+ 		power_state = (union pplib_power_state *)power_state_offset;
+ 		non_clock_array_index = power_state->v2.nonClockInfoIndex;
+ 		non_clock_info = (struct _ATOM_PPLIB_NONCLOCK_INFO *)
+ 			&non_clock_info_array->nonClockInfo[non_clock_array_index];
+ 		ps = kzalloc(sizeof(struct  si_ps), GFP_KERNEL);
+-		if (ps == NULL) {
+-			kfree(adev->pm.dpm.ps);
++		if (ps == NULL)
+ 			return -ENOMEM;
+-		}
+ 		adev->pm.dpm.ps[i].ps_priv = ps;
+ 		si_parse_pplib_non_clock_info(adev, &adev->pm.dpm.ps[i],
+ 					      non_clock_info,
+@@ -7329,8 +7327,8 @@ static int si_parse_power_table(struct amdgpu_device *adev)
+ 			k++;
+ 		}
+ 		power_state_offset += 2 + power_state->v2.ucNumDPMLevels;
++		adev->pm.dpm.num_ps++;
  	}
--	pm_runtime_idle(dev);
+-	adev->pm.dpm.num_ps = state_array->ucNumEntries;
  
- 	return 0;
- 
+ 	/* fill in the vce power states */
+ 	for (i = 0; i < adev->pm.dpm.num_of_vce_states; i++) {
 -- 
 2.35.1
 
