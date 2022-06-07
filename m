@@ -2,122 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:55:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A48C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:55:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244270AbiFGMzK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:55:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54618 "EHLO
+        id S244297AbiFGMzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244264AbiFGMzE (ORCPT
+        with ESMTP id S244276AbiFGMzU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:55:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4E8C7891F
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:55:02 -0700 (PDT)
+        Tue, 7 Jun 2022 08:55:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AEB3F7B9C2
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:55:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654606501;
+        s=mimecast20190719; t=1654606514;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=PikFI8IuFGilq0ztM72f7JxwavOO8rV8L+cu0/Iu4x8=;
-        b=EtyB1LWhWNfL63MlIGdNjX7xkKZh6WdCCsqcT1FhR6nbBrzqwI7jA/wQ061S55QEmUqJlM
-        ME6XiAPavt1U6eQjEnVpklA1DWoy/tSmKkiFA89EsdtrPhPvhpcE4GaFt1QynKfhlENZA/
-        /vLDx8E8zee/wo7xHV8+De7ZrsLyAsU=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=5RVe0C3aiNOz3oukHUGPNmLDRkCuls8RKalvV3ngHRA=;
+        b=KtgiTA3UuuxpgGVXdwM/f0J2AAZrFRUy49DTrk2dyELY3KyZg5JG2qMYmhZZARQVdbr4kv
+        7/iwhpm67/zYjMWIgzrL4ZlDmVn/pqfTZAJFmbDzJRG36vRICGIp84ziAikOlCwI5DJXU3
+        KIAlPveZXy1NZ37jA2qT67YQCA7sEaI=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-631-eC6JHXFYOyezfyOzDqmr_g-1; Tue, 07 Jun 2022 08:54:21 -0400
-X-MC-Unique: eC6JHXFYOyezfyOzDqmr_g-1
-Received: by mail-wm1-f70.google.com with SMTP id n18-20020a05600c3b9200b00397335edc7dso12730224wms.7
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 05:54:21 -0700 (PDT)
+ us-mta-437-Va_IpmGINBSADjGOSOQ2Rw-1; Tue, 07 Jun 2022 08:55:13 -0400
+X-MC-Unique: Va_IpmGINBSADjGOSOQ2Rw-1
+Received: by mail-wm1-f69.google.com with SMTP id p24-20020a05600c1d9800b0039c51c2da19so1591083wms.0
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 05:55:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+         :content-language:to:cc:references:from:organization:in-reply-to
          :content-transfer-encoding;
-        bh=PikFI8IuFGilq0ztM72f7JxwavOO8rV8L+cu0/Iu4x8=;
-        b=FtklVp74+x7iBVZkyUiBzu+7y3ucHsiWQOhjyemnWuuU80k0sEC6B7mPgLXs5lZyUF
-         WMt4L4tgXEpZ+k9V9P31noUCyM8ngwEaLH6XC5z3TFEBZioR/ZkAyQRyGvWvjdSuhSyu
-         SLGlUpR/CQVLaPdfrgAFCiQlfVzlT3QoHS+HHQReM8GRtBCPo2q/pBSYkyeESeWZmwh+
-         2QbYmxVGlBmxicIzzc799gZ3LxnD9PlxqPzBcvLh7XusTw57guSuC3ofj8bWWYP71ZNe
-         jn7Fys6SFADadJy77Cj+yJeYmQIJuE1ypoqVGl96LaeTJg7ihsiw1DShsDlX/kfUCkiC
-         dLRg==
-X-Gm-Message-State: AOAM532MoY06ntSGMNdEomNk6dsx99ci6b+MT4mtpSKh7x3Hip14dMaT
-        77o7LX4fNKOcZSXAVLOSQnnaBgwdZr8GTBbeWa5B8n/aoKhvFhDijzzxqAHXdQWh7zuzFXcAAEK
-        RN+l6dOlseSldqZDx0xEfJjIz
-X-Received: by 2002:a7b:c401:0:b0:397:26fb:ebf7 with SMTP id k1-20020a7bc401000000b0039726fbebf7mr29011209wmi.90.1654606459915;
-        Tue, 07 Jun 2022 05:54:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwJa9Ztgs/feNXwUUZcblGX2ZWB3NuTx5Hif1QltOBA4EuHQl1hdGlGjZxUtoDL/Nv8LMki0A==
-X-Received: by 2002:a7b:c401:0:b0:397:26fb:ebf7 with SMTP id k1-20020a7bc401000000b0039726fbebf7mr29011177wmi.90.1654606459567;
-        Tue, 07 Jun 2022 05:54:19 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
-        by smtp.googlemail.com with ESMTPSA id g6-20020a056000118600b002183fabc53csm5233442wrx.17.2022.06.07.05.54.16
+        bh=5RVe0C3aiNOz3oukHUGPNmLDRkCuls8RKalvV3ngHRA=;
+        b=acUn9Zs/NNTX/qCzTMni5q6UhkvvdCskn3iO7uFnKw7lAFTn0FW2VfBjfmEbuVtzuS
+         soD26Erlu3mCEH/PeQO3ePWXdd8udRXLKq5kq1Lw28ee/sinjz3+DSo9WuFW6i/ghorX
+         myZP0jNcNkc7vaJFFi3f41tab4KWq7xeFZqhu7DDrfhw+pBQ9qAn4nTSEc5ClLyC3Yhc
+         W6wcnCNQyBg6OpopcXKAghVqAWWqIYrcrP1aNkBbvbUO8Ul1CQ/Ij1Xo9cyLtz81pxxT
+         uT4Y7dCKrmVPodBN5kQQhQDneH7KE6odjLw/P1jZGKdB2oj4q9J7y+JWJuscL6xVstZH
+         N0mg==
+X-Gm-Message-State: AOAM530tPj6P4Q/YDCTVgrdPjGKjnF8cSSAaV3fLfri5SAV+2rTl858p
+        1m0tQ+WffaJi06HmUudTT4Iprek9QNFr7rL32GcgaHz5B0oObsnOInV/55vxRFmml8ub+zqCJst
+        CW4mEHCaBkc2Ntc5sOxKaC35o
+X-Received: by 2002:a05:6000:1869:b0:211:7f25:89da with SMTP id d9-20020a056000186900b002117f2589damr27583436wri.696.1654606512504;
+        Tue, 07 Jun 2022 05:55:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzbWFPyRplg1fzsNFrxr12dVS/TCLObe8BDTTUd8jCGAm7C/o75+Wu8cxSIdVKTvYrcl5Ga5w==
+X-Received: by 2002:a05:6000:1869:b0:211:7f25:89da with SMTP id d9-20020a056000186900b002117f2589damr27583405wri.696.1654606512140;
+        Tue, 07 Jun 2022 05:55:12 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c709:500:4c8d:4886:f874:7b6f? (p200300cbc70905004c8d4886f8747b6f.dip0.t-ipconnect.de. [2003:cb:c709:500:4c8d:4886:f874:7b6f])
+        by smtp.gmail.com with ESMTPSA id w11-20020a05600018cb00b0020d0435c97bsm18212989wrq.92.2022.06.07.05.55.09
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 05:54:18 -0700 (PDT)
-Message-ID: <9d336622-6964-454a-605f-1ca90b902836@redhat.com>
-Date:   Tue, 7 Jun 2022 14:54:14 +0200
+        Tue, 07 Jun 2022 05:55:11 -0700 (PDT)
+Message-ID: <fc866097-f529-158e-8f24-5d42b11d28b1@redhat.com>
+Date:   Tue, 7 Jun 2022 14:55:05 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH AUTOSEL 5.16 07/28] x86/kvm/fpu: Limit guest
- user_xfeatures to supported bits of XCR0
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] mm: add a new emergency page migratetype.
 Content-Language: en-US
-To:     Peter Xu <peterx@redhat.com>
-Cc:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Leonardo Bras <leobras@redhat.com>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        chang.seok.bae@intel.com, luto@kernel.org, kvm@vger.kernel.org,
-        Sean Christopherson <seanjc@google.com>
-References: <20220301201344.18191-1-sashal@kernel.org>
- <20220301201344.18191-7-sashal@kernel.org>
- <5f2b7b93-d4c9-1d59-14df-6e8b2366ca8a@redhat.com>
- <YppVupW+IWsm7Osr@xz-m1.local>
- <2d9ba70b-ac18-a461-7a57-22df2c0165c6@redhat.com>
- <Yp5xSi6P3q187+A+@xz-m1.local>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <Yp5xSi6P3q187+A+@xz-m1.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Huanpeng Xin <xinhuanpeng9@gmail.com>, akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        xinhuanpeng <xinhuanpeng@xiaomi.com>
+References: <20220606032709.11800-1-xinhuanpeng9@gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220606032709.11800-1-xinhuanpeng9@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/6/22 23:27, Peter Xu wrote:
-> On Mon, Jun 06, 2022 at 06:18:12PM +0200, Paolo Bonzini wrote:
->>> However there seems to be something missing at least to me, on why it'll
->>> fail a migration from 5.15 (without this patch) to 5.18 (with this patch).
->>> In my test case, user_xfeatures will be 0x7 (FP|SSE|YMM) if without this
->>> patch, but 0x0 if with it.
->>
->> What CPU model are you using for the VM?
+On 06.06.22 05:27, Huanpeng Xin wrote:
+> From: xinhuanpeng <xinhuanpeng@xiaomi.com>
 > 
-> I didn't specify it, assuming it's qemu64 with no extra parameters.
+> add a new page migratetype reserved for
+> non-costly non-NOWARN page allocation failure.
 
-Ok, so indeed it lacks AVX and this patch can have an effect.
+Sorry to say, but this patch description is not expressive enough. I
+have absolutely no clue what you are trying to achieve and why we should
+care.
 
->> For example, if the source lacks this patch but the destination has it,
->> the source will transmit YMM registers, but the destination will fail to
->> set them if they are not available for the selected CPU model.
->>
->> See the commit message: "As a bonus, it will also fail if userspace tries to
->> set fpu features (with the KVM_SET_XSAVE ioctl) that are not compatible to
->> the guest configuration.  Such features will never be returned by
->> KVM_GET_XSAVE or KVM_GET_XSAVE2."
-> 
-> IIUC you meant we should have failed KVM_SET_XSAVE when they're not aligned
-> (probably by failing validate_user_xstate_header when checking against the
-> user_xfeatures on dest host). But that's probably not my case, because here
-> KVM_SET_XSAVE succeeded, it's just that the guest gets a double fault after
-> the precopy migration completes (or for postcopy when the switchover is
-> done).
+Especially, why do we care about locally grouping these allocations
+(that's what pageblock flags are for after all)?
 
-Difficult to say what's happening without seeing at least the guest code 
-around the double fault (above you said "fail a migration" and I thought 
-that was a different scenario than the double fault), and possibly which 
-was the first exception that contributed to the double fault.
+Your Kconfig option is also not particularly user friendly to read either:
 
-Paolo
+"This enables the migration type MIGRATE_EMERGENCY,which reserves
+ a small amount of memory for non-costly non-NOWARN page allocation
+ failure."
+
+Usually we reserve memory via different mechanisms, like atomic
+reserves? Why can't something like that be used.
+
+On first sight, defining a new pageblock migratype feels wrong to me.
+But then, I have no clue what you are actually trying to achieve.
+
+-- 
+Thanks,
+
+David / dhildenb
 
