@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA38C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF03CCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384333AbiFGWK7 (ORCPT
+        id S1384355AbiFGWLE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34216 "EHLO
+        Tue, 7 Jun 2022 18:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379044AbiFGVIn (ORCPT
+        with ESMTP id S1377717AbiFGVIv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:08:43 -0400
+        Tue, 7 Jun 2022 17:08:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C80213295;
-        Tue,  7 Jun 2022 11:50:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16572132A7;
+        Tue,  7 Jun 2022 11:51:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38B85616AF;
-        Tue,  7 Jun 2022 18:50:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47D90C385A2;
-        Tue,  7 Jun 2022 18:50:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D4640616A9;
+        Tue,  7 Jun 2022 18:51:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E72FEC385A2;
+        Tue,  7 Jun 2022 18:50:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627857;
-        bh=vCRnmPPAkAz3/aZj4ABaUxpyCMnNCPoQsR3C6GEciKE=;
+        s=korg; t=1654627860;
+        bh=dMH/huRRqAdoiUb0Rl7RxxXYfjvxgvx+UaGWVg1/P4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1oGaZmh5+HOZP+0AOFO2VQ7RRCvPRQ7xn+uQCslgFJ+XLKEpcIH0WjqQz0e7WBFzj
-         xMi50PxMsHng/5XnlXtO51Lw7lmP5D0NPlYKdKERC/+z9DhaoA57yOIbbbHX7MWdUn
-         56ZAnxVsxT094PPEcqqidZ+QnJ1ebPjP9NP6FVUo=
+        b=bg/NmM5c4SEv5dvVDuXZjvHBhjrJ9EH0JPBBlv7NP9bUP3NZnruE2AqCOa7qb/gNF
+         iuMKcP+XHkqGQb87uma6U+imf9Yp7Lj6ZBqh8oRLYzVRdxmo13eFZAU+d9hIZewPPg
+         dawDGDAUVPTP+rQbfdR/74qooL5Zb4yXp4Dj3Cpc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 119/879] arm64: compat: Do not treat syscall number as ESR_ELx for a bad syscall
-Date:   Tue,  7 Jun 2022 18:53:57 +0200
-Message-Id: <20220607165006.156133667@linuxfoundation.org>
+Subject: [PATCH 5.18 120/879] drm: msm: fix error check return value of irq_of_parse_and_map()
+Date:   Tue,  7 Jun 2022 18:53:58 +0200
+Message-Id: <20220607165006.185252914@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,74 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandru Elisei <alexandru.elisei@arm.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 3fed9e551417b84038b15117732ea4505eee386b ]
+[ Upstream commit b9e4f1d2b505df8e2439b63e67afaa287c1c43e2 ]
 
-If a compat process tries to execute an unknown system call above the
-__ARM_NR_COMPAT_END number, the kernel sends a SIGILL signal to the
-offending process. Information about the error is printed to dmesg in
-compat_arm_syscall() -> arm64_notify_die() -> arm64_force_sig_fault() ->
-arm64_show_signal().
+The irq_of_parse_and_map() function returns 0 on failure, and does not
+return an negative value.
 
-arm64_show_signal() interprets a non-zero value for
-current->thread.fault_code as an exception syndrome and displays the
-message associated with the ESR_ELx.EC field (bits 31:26).
-current->thread.fault_code is set in compat_arm_syscall() ->
-arm64_notify_die() with the bad syscall number instead of a valid ESR_ELx
-value. This means that the ESR_ELx.EC field has the value that the user set
-for the syscall number and the kernel can end up printing bogus exception
-messages*. For example, for the syscall number 0x68000000, which evaluates
-to ESR_ELx.EC value of 0x1A (ESR_ELx_EC_FPAC) the kernel prints this error:
-
-[   18.349161] syscall[300]: unhandled exception: ERET/ERETAA/ERETAB, ESR 0x68000000, Oops - bad compat syscall(2) in syscall[10000+50000]
-[   18.350639] CPU: 2 PID: 300 Comm: syscall Not tainted 5.18.0-rc1 #79
-[   18.351249] Hardware name: Pine64 RockPro64 v2.0 (DT)
-[..]
-
-which is misleading, as the bad compat syscall has nothing to do with
-pointer authentication.
-
-Stop arm64_show_signal() from printing exception syndrome information by
-having compat_arm_syscall() set the ESR_ELx value to 0, as it has no
-meaning for an invalid system call number. The example above now becomes:
-
-[   19.935275] syscall[301]: unhandled exception: Oops - bad compat syscall(2) in syscall[10000+50000]
-[   19.936124] CPU: 1 PID: 301 Comm: syscall Not tainted 5.18.0-rc1-00005-g7e08006d4102 #80
-[   19.936894] Hardware name: Pine64 RockPro64 v2.0 (DT)
-[..]
-
-which although shows less information because the syscall number,
-wrongfully advertised as the ESR value, is missing, it is better than
-showing plainly wrong information. The syscall number can be easily
-obtained with strace.
-
-*A 32-bit value above or equal to 0x8000_0000 is interpreted as a negative
-integer in compat_arm_syscal() and the condition scno < __ARM_NR_COMPAT_END
-evaluates to true; the syscall will exit to userspace in this case with the
-ENOSYS error code instead of arm64_notify_die() being called.
-
-Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
-Reviewed-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220425114444.368693-3-alexandru.elisei@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/483175/
+Link: https://lore.kernel.org/r/20220424031959.3172406-1-lv.ruyi@zte.com.cn
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/sys_compat.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/kernel/sys_compat.c b/arch/arm64/kernel/sys_compat.c
-index 12c6864e51e1..df14336c3a29 100644
---- a/arch/arm64/kernel/sys_compat.c
-+++ b/arch/arm64/kernel/sys_compat.c
-@@ -113,6 +113,6 @@ long compat_arm_syscall(struct pt_regs *regs, int scno)
- 	addr = instruction_pointer(regs) - (compat_thumb_mode(regs) ? 2 : 4);
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
+index 3b92372e7bdf..1d4bbde29320 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
+@@ -570,9 +570,9 @@ struct msm_kms *mdp5_kms_init(struct drm_device *dev)
+ 	}
  
- 	arm64_notify_die("Oops - bad compat syscall(2)", regs,
--			 SIGILL, ILL_ILLTRP, addr, scno);
-+			 SIGILL, ILL_ILLTRP, addr, 0);
- 	return 0;
- }
+ 	irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
+-	if (irq < 0) {
+-		ret = irq;
+-		DRM_DEV_ERROR(&pdev->dev, "failed to get irq: %d\n", ret);
++	if (!irq) {
++		ret = -EINVAL;
++		DRM_DEV_ERROR(&pdev->dev, "failed to get irq\n");
+ 		goto fail;
+ 	}
+ 
 -- 
 2.35.1
 
