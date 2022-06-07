@@ -2,43 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D16ACCA485
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:07:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 965CDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350730AbiFGSGh (ORCPT
+        id S1349496AbiFGSHE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40510 "EHLO
+        Tue, 7 Jun 2022 14:07:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348663AbiFGRpx (ORCPT
+        with ESMTP id S1349084AbiFGRqo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:45:53 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3929132A02;
-        Tue,  7 Jun 2022 10:35:39 -0700 (PDT)
+        Tue, 7 Jun 2022 13:46:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FADFBB5;
+        Tue,  7 Jun 2022 10:36:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3B89ECE23D2;
-        Tue,  7 Jun 2022 17:35:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42C11C34115;
-        Tue,  7 Jun 2022 17:35:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4105E614D8;
+        Tue,  7 Jun 2022 17:36:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FC55C385A5;
+        Tue,  7 Jun 2022 17:36:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623335;
-        bh=C8Kxegd4PI5II8y+ubn00uNxU/foHuFO7sI4QL9NruY=;
+        s=korg; t=1654623398;
+        bh=1deBv8pWO4EhlblSV+d3qc0OS1zA34siQuYQ1ppkR98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lMrlG8JuqBhD2aDa3+pRrsdegWYAURTzYEQGoGHrv0reQ8Ybe6gObno57//Rn35f3
-         Gyy7BPb/lZs+QJczR/KsKWcjeGGultPfvqKlC5QLFy+EroFnMc9RuK+Xf5SvvIuJZH
-         6uOmeGXRT0FQa1FdxYWrv/rwVmtPiSdRDk5Gwt9A=
+        b=lYe6IKyFlDnLoTHFFrTk8L2NV4t0xr6XZsCMj8eybpAA9+d+tKdxtiLiCTTySkpht
+         xvO0E9mRMgdb9Lw/wwQ1VNnWUC9cfsxmDrfqv28JQKT5M57dqQLOrzw3jauaLpHjri
+         qaztdH4T5tq6z2XCKV1ZoWwfOfo3dq7gTYP9KqQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tali Perry <tali.perry1@gmail.com>,
-        Tyrone Ting <kfting@nuvoton.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 340/452] i2c: npcm: Handle spurious interrupts
-Date:   Tue,  7 Jun 2022 19:03:17 +0200
-Message-Id: <20220607164918.688987556@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe de Dinechin <christophe@dinechin.org>,
+        Christophe de Dinechin <dinechin@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ben Segall <bsegall@google.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Mel Gorman <mgorman@suse.de>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: [PATCH 5.10 403/452] nodemask.h: fix compilation error with GCC12
+Date:   Tue,  7 Jun 2022 19:04:20 +0200
+Message-Id: <20220607164920.568752125@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,255 +63,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tali Perry <tali.perry1@gmail.com>
+From: Christophe de Dinechin <dinechin@redhat.com>
 
-[ Upstream commit e5222d408de2a88e6b206c38217b48d092184553 ]
+commit 37462a920392cb86541650a6f4121155f11f1199 upstream.
 
-On some platforms in rare cases (1 to 100,000 transactions),
-the i2c gets a spurious interrupt which means that we enter an interrupt
-but in the interrupt handler we don't find any status bit that points to
-the reason we got this interrupt.
+With gcc version 12.0.1 20220401 (Red Hat 12.0.1-0), building with
+defconfig results in the following compilation error:
 
-This may be a case of a rare HW issue or signal integrity issue that is
-still under investigation.
+|   CC      mm/swapfile.o
+| mm/swapfile.c: In function `setup_swap_info':
+| mm/swapfile.c:2291:47: error: array subscript -1 is below array bounds
+|  of `struct plist_node[]' [-Werror=array-bounds]
+|  2291 |                                 p->avail_lists[i].prio = 1;
+|       |                                 ~~~~~~~~~~~~~~^~~
+| In file included from mm/swapfile.c:16:
+| ./include/linux/swap.h:292:27: note: while referencing `avail_lists'
+|   292 |         struct plist_node avail_lists[]; /*
+|       |                           ^~~~~~~~~~~
 
-In order to overcome this we are doing the following:
-1. Disable incoming interrupts in master mode only when slave mode is not
-   enabled.
-2. Clear end of busy (EOB) after every interrupt.
-3. Clear other status bits (just in case since we found them cleared)
-4. Return correct status during the interrupt that will finish the
-   transaction.
+This is due to the compiler detecting that the mask in
+node_states[__state] could theoretically be zero, which would lead to
+first_node() returning -1 through find_first_bit.
 
-On next xmit transaction if the bus is still busy the master will issue a
-recovery process before issuing the new transaction.
+I believe that the warning/error is legitimate.  I first tried adding a
+test to check that the node mask is not emtpy, since a similar test exists
+in the case where MAX_NUMNODES == 1.
 
-Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
-Signed-off-by: Tali Perry <tali.perry1@gmail.com>
-Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+However, adding the if statement causes other warnings to appear in
+for_each_cpu_node_but, because it introduces a dangling else ambiguity.
+And unfortunately, GCC is not smart enough to detect that the added test
+makes the case where (node) == -1 impossible, so it still complains with
+the same message.
+
+This is why I settled on replacing that with a harmless, but relatively
+useless (node) >= 0 test.  Based on the warning for the dangling else, I
+also decided to fix the case where MAX_NUMNODES == 1 by moving the
+condition inside the for loop.  It will still only be tested once.  This
+ensures that the meaning of an else following for_each_node_mask or
+derivatives would not silently have a different meaning depending on the
+configuration.
+
+Link: https://lkml.kernel.org/r/20220414150855.2407137-3-dinechin@redhat.com
+Signed-off-by: Christophe de Dinechin <christophe@dinechin.org>
+Signed-off-by: Christophe de Dinechin <dinechin@redhat.com>
+Reviewed-by: Andrew Morton <akpm@linux-foundation.org>
+Cc: Ben Segall <bsegall@google.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc: Vincent Guittot <vincent.guittot@linaro.org>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-npcm7xx.c | 91 ++++++++++++++++++++++----------
- 1 file changed, 62 insertions(+), 29 deletions(-)
+ include/linux/nodemask.h |   13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
-index cdea7f440a9e..20a2f903b7f6 100644
---- a/drivers/i2c/busses/i2c-npcm7xx.c
-+++ b/drivers/i2c/busses/i2c-npcm7xx.c
-@@ -563,6 +563,15 @@ static inline void npcm_i2c_nack(struct npcm_i2c *bus)
- 	iowrite8(val, bus->reg + NPCM_I2CCTL1);
+--- a/include/linux/nodemask.h
++++ b/include/linux/nodemask.h
+@@ -375,14 +375,13 @@ static inline void __nodes_fold(nodemask
  }
  
-+static inline void npcm_i2c_clear_master_status(struct npcm_i2c *bus)
-+{
-+	u8 val;
-+
-+	/* Clear NEGACK, STASTR and BER bits */
-+	val = NPCM_I2CST_BER | NPCM_I2CST_NEGACK | NPCM_I2CST_STASTR;
-+	iowrite8(val, bus->reg + NPCM_I2CST);
-+}
-+
- #if IS_ENABLED(CONFIG_I2C_SLAVE)
- static void npcm_i2c_slave_int_enable(struct npcm_i2c *bus, bool enable)
- {
-@@ -642,8 +651,8 @@ static void npcm_i2c_reset(struct npcm_i2c *bus)
- 	iowrite8(NPCM_I2CCST_BB, bus->reg + NPCM_I2CCST);
- 	iowrite8(0xFF, bus->reg + NPCM_I2CST);
+ #if MAX_NUMNODES > 1
+-#define for_each_node_mask(node, mask)			\
+-	for ((node) = first_node(mask);			\
+-		(node) < MAX_NUMNODES;			\
+-		(node) = next_node((node), (mask)))
++#define for_each_node_mask(node, mask)				    \
++	for ((node) = first_node(mask);				    \
++	     (node >= 0) && (node) < MAX_NUMNODES;		    \
++	     (node) = next_node((node), (mask)))
+ #else /* MAX_NUMNODES == 1 */
+-#define for_each_node_mask(node, mask)			\
+-	if (!nodes_empty(mask))				\
+-		for ((node) = 0; (node) < 1; (node)++)
++#define for_each_node_mask(node, mask)                                  \
++	for ((node) = 0; (node) < 1 && !nodes_empty(mask); (node)++)
+ #endif /* MAX_NUMNODES */
  
--	/* Clear EOB bit */
--	iowrite8(NPCM_I2CCST3_EO_BUSY, bus->reg + NPCM_I2CCST3);
-+	/* Clear and disable EOB */
-+	npcm_i2c_eob_int(bus, false);
- 
- 	/* Clear all fifo bits: */
- 	iowrite8(NPCM_I2CFIF_CTS_CLR_FIFO, bus->reg + NPCM_I2CFIF_CTS);
-@@ -655,6 +664,9 @@ static void npcm_i2c_reset(struct npcm_i2c *bus)
- 	}
- #endif
- 
-+	/* clear status bits for spurious interrupts */
-+	npcm_i2c_clear_master_status(bus);
-+
- 	bus->state = I2C_IDLE;
- }
- 
-@@ -815,15 +827,6 @@ static void npcm_i2c_read_fifo(struct npcm_i2c *bus, u8 bytes_in_fifo)
- 	}
- }
- 
--static inline void npcm_i2c_clear_master_status(struct npcm_i2c *bus)
--{
--	u8 val;
--
--	/* Clear NEGACK, STASTR and BER bits */
--	val = NPCM_I2CST_BER | NPCM_I2CST_NEGACK | NPCM_I2CST_STASTR;
--	iowrite8(val, bus->reg + NPCM_I2CST);
--}
--
- static void npcm_i2c_master_abort(struct npcm_i2c *bus)
- {
- 	/* Only current master is allowed to issue a stop condition */
-@@ -1231,7 +1234,16 @@ static irqreturn_t npcm_i2c_int_slave_handler(struct npcm_i2c *bus)
- 		ret = IRQ_HANDLED;
- 	} /* SDAST */
- 
--	return ret;
-+	/*
-+	 * if irq is not one of the above, make sure EOB is disabled and all
-+	 * status bits are cleared.
-+	 */
-+	if (ret == IRQ_NONE) {
-+		npcm_i2c_eob_int(bus, false);
-+		npcm_i2c_clear_master_status(bus);
-+	}
-+
-+	return IRQ_HANDLED;
- }
- 
- static int npcm_i2c_reg_slave(struct i2c_client *client)
-@@ -1467,6 +1479,9 @@ static void npcm_i2c_irq_handle_nack(struct npcm_i2c *bus)
- 		npcm_i2c_eob_int(bus, false);
- 		npcm_i2c_master_stop(bus);
- 
-+		/* Clear SDA Status bit (by reading dummy byte) */
-+		npcm_i2c_rd_byte(bus);
-+
- 		/*
- 		 * The bus is released from stall only after the SW clears
- 		 * NEGACK bit. Then a Stop condition is sent.
-@@ -1474,6 +1489,8 @@ static void npcm_i2c_irq_handle_nack(struct npcm_i2c *bus)
- 		npcm_i2c_clear_master_status(bus);
- 		readx_poll_timeout_atomic(ioread8, bus->reg + NPCM_I2CCST, val,
- 					  !(val & NPCM_I2CCST_BUSY), 10, 200);
-+		/* verify no status bits are still set after bus is released */
-+		npcm_i2c_clear_master_status(bus);
- 	}
- 	bus->state = I2C_IDLE;
- 
-@@ -1672,10 +1689,10 @@ static int npcm_i2c_recovery_tgclk(struct i2c_adapter *_adap)
- 	int              iter = 27;
- 
- 	if ((npcm_i2c_get_SDA(_adap) == 1) && (npcm_i2c_get_SCL(_adap) == 1)) {
--		dev_dbg(bus->dev, "bus%d recovery skipped, bus not stuck",
--			bus->num);
-+		dev_dbg(bus->dev, "bus%d-0x%x recovery skipped, bus not stuck",
-+			bus->num, bus->dest_addr);
- 		npcm_i2c_reset(bus);
--		return status;
-+		return 0;
- 	}
- 
- 	npcm_i2c_int_enable(bus, false);
-@@ -1909,6 +1926,7 @@ static int npcm_i2c_init_module(struct npcm_i2c *bus, enum i2c_mode mode,
- 	    bus_freq_hz < I2C_FREQ_MIN_HZ || bus_freq_hz > I2C_FREQ_MAX_HZ)
- 		return -EINVAL;
- 
-+	npcm_i2c_int_enable(bus, false);
- 	npcm_i2c_disable(bus);
- 
- 	/* Configure FIFO mode : */
-@@ -1937,10 +1955,17 @@ static int npcm_i2c_init_module(struct npcm_i2c *bus, enum i2c_mode mode,
- 	val = (val | NPCM_I2CCTL1_NMINTE) & ~NPCM_I2CCTL1_RWS;
- 	iowrite8(val, bus->reg + NPCM_I2CCTL1);
- 
--	npcm_i2c_int_enable(bus, true);
--
- 	npcm_i2c_reset(bus);
- 
-+	/* check HW is OK: SDA and SCL should be high at this point. */
-+	if ((npcm_i2c_get_SDA(&bus->adap) == 0) || (npcm_i2c_get_SCL(&bus->adap) == 0)) {
-+		dev_err(bus->dev, "I2C%d init fail: lines are low\n", bus->num);
-+		dev_err(bus->dev, "SDA=%d SCL=%d\n", npcm_i2c_get_SDA(&bus->adap),
-+			npcm_i2c_get_SCL(&bus->adap));
-+		return -ENXIO;
-+	}
-+
-+	npcm_i2c_int_enable(bus, true);
- 	return 0;
- }
- 
-@@ -1988,10 +2013,14 @@ static irqreturn_t npcm_i2c_bus_irq(int irq, void *dev_id)
- #if IS_ENABLED(CONFIG_I2C_SLAVE)
- 	if (bus->slave) {
- 		bus->master_or_slave = I2C_SLAVE;
--		return npcm_i2c_int_slave_handler(bus);
-+		if (npcm_i2c_int_slave_handler(bus))
-+			return IRQ_HANDLED;
- 	}
- #endif
--	return IRQ_NONE;
-+	/* clear status bits for spurious interrupts */
-+	npcm_i2c_clear_master_status(bus);
-+
-+	return IRQ_HANDLED;
- }
- 
- static bool npcm_i2c_master_start_xmit(struct npcm_i2c *bus,
-@@ -2048,7 +2077,6 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
- 	u8 *write_data, *read_data;
- 	u8 slave_addr;
- 	unsigned long timeout;
--	int ret = 0;
- 	bool read_block = false;
- 	bool read_PEC = false;
- 	u8 bus_busy;
-@@ -2138,12 +2166,12 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
- 	bus->read_block_use = read_block;
- 
- 	reinit_completion(&bus->cmd_complete);
--	if (!npcm_i2c_master_start_xmit(bus, slave_addr, nwrite, nread,
--					write_data, read_data, read_PEC,
--					read_block))
--		ret = -EBUSY;
- 
--	if (ret != -EBUSY) {
-+	npcm_i2c_int_enable(bus, true);
-+
-+	if (npcm_i2c_master_start_xmit(bus, slave_addr, nwrite, nread,
-+				       write_data, read_data, read_PEC,
-+				       read_block)) {
- 		time_left = wait_for_completion_timeout(&bus->cmd_complete,
- 							timeout);
- 
-@@ -2157,26 +2185,31 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
- 			}
- 		}
- 	}
--	ret = bus->cmd_err;
- 
- 	/* if there was BER, check if need to recover the bus: */
- 	if (bus->cmd_err == -EAGAIN)
--		ret = i2c_recover_bus(adap);
-+		bus->cmd_err = i2c_recover_bus(adap);
- 
- 	/*
- 	 * After any type of error, check if LAST bit is still set,
- 	 * due to a HW issue.
- 	 * It cannot be cleared without resetting the module.
- 	 */
--	if (bus->cmd_err &&
--	    (NPCM_I2CRXF_CTL_LAST_PEC & ioread8(bus->reg + NPCM_I2CRXF_CTL)))
-+	else if (bus->cmd_err &&
-+		 (NPCM_I2CRXF_CTL_LAST_PEC & ioread8(bus->reg + NPCM_I2CRXF_CTL)))
- 		npcm_i2c_reset(bus);
- 
-+	/* after any xfer, successful or not, stall and EOB must be disabled */
-+	npcm_i2c_stall_after_start(bus, false);
-+	npcm_i2c_eob_int(bus, false);
-+
- #if IS_ENABLED(CONFIG_I2C_SLAVE)
- 	/* reenable slave if it was enabled */
- 	if (bus->slave)
- 		iowrite8((bus->slave->addr & 0x7F) | NPCM_I2CADDR_SAEN,
- 			 bus->reg + NPCM_I2CADDR1);
-+#else
-+	npcm_i2c_int_enable(bus, false);
- #endif
- 	return bus->cmd_err;
- }
--- 
-2.35.1
-
+ /*
 
 
