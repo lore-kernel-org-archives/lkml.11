@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF793CCA488
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D83CCA48B
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349906AbiFGSFO (ORCPT
+        id S1350059AbiFGSFU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
+        Tue, 7 Jun 2022 14:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349063AbiFGRqo (ORCPT
+        with ESMTP id S1349034AbiFGRqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:46:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 840EA6833A;
-        Tue,  7 Jun 2022 10:36:25 -0700 (PDT)
+        Tue, 7 Jun 2022 13:46:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09EDC2BD;
+        Tue,  7 Jun 2022 10:36:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CB7E60DB5;
-        Tue,  7 Jun 2022 17:36:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6081DC385A5;
-        Tue,  7 Jun 2022 17:36:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF9D8614D8;
+        Tue,  7 Jun 2022 17:36:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE4F7C385A5;
+        Tue,  7 Jun 2022 17:36:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623384;
-        bh=yBMfBMsenoejD3SJApeyaIR+DRPPPmmkDIHXMUaPI6E=;
+        s=korg; t=1654623368;
+        bh=ZsBH+abYMj2l1STkIQRTzR0SQKeKcobrxNXlw/MWR3g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=093OFRn2v9FG/OHeLKJz5XxtuSQk3aaE/2kx7vyOigiWbjh6EqIGzj34m1c+jOC6W
-         7nFH4YJxpHNMq4MP5RetKkGlNtJvjfxKJJjssVdQd3VcxOSLglbVUqYiOMlOR4LC/9
-         8jC2sJiLhHjfaCKc7sfd7tWvmAfAgHOajs9eBgek=
+        b=U0TmU5k6UpxTW8fGczsqT81tVPo9CdmtgAI0gjlUgg5SX1NdcG/+4ijXgVt7W7yQg
+         HBNoVIoa/X8Zh9O5YXREPsng2EcRdachLg5+mx8UbrN156MMoTaPQDIDv6zIXMRBSA
+         ldz3TN2HJnMWGb0NonvP5Rgc+fOmwfGZMwJfSqfU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 5.10 398/452] um: chan_user: Fix winch_tramp() return value
-Date:   Tue,  7 Jun 2022 19:04:15 +0200
-Message-Id: <20220607164920.420938754@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: [PATCH 5.10 393/452] csky: patch_text: Fixup last cpu should be master
+Date:   Tue,  7 Jun 2022 19:04:10 +0200
+Message-Id: <20220607164920.274774457@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,64 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-commit 57ae0b67b747031bc41fb44643aa5344ab58607e upstream.
+commit 8c4d16471e2babe9bdfe41d6ef724526629696cb upstream.
 
-The previous fix here was only partially correct, it did
-result in returning a proper error value in case of error,
-but it also clobbered the pid that we need to return from
-this function (not just zero for success).
+These patch_text implementations are using stop_machine_cpuslocked
+infrastructure with atomic cpu_count. The original idea: When the
+master CPU patch_text, the others should wait for it. But current
+implementation is using the first CPU as master, which couldn't
+guarantee the remaining CPUs are waiting. This patch changes the
+last CPU as the master to solve the potential risk.
 
-As a result, it returned 0 here, but later this is treated
-as a pid and used to kill the process, but since it's now
-0 we kill(0, SIGKILL), which makes UML kill itself rather
-than just the helper thread.
-
-Fix that and make it more obvious by using a separate
-variable for the pid.
-
-Fixes: ccf1236ecac4 ("um: fix error return code in winch_tramp()")
-Reported-and-tested-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Fixes: 33e53ae1ce41 ("csky: Add kprobes supported")
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: <stable@vger.kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/drivers/chan_user.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/csky/kernel/probes/kprobes.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/um/drivers/chan_user.c
-+++ b/arch/um/drivers/chan_user.c
-@@ -220,7 +220,7 @@ static int winch_tramp(int fd, struct tt
- 		       unsigned long *stack_out)
- {
- 	struct winch_data data;
--	int fds[2], n, err;
-+	int fds[2], n, err, pid;
- 	char c;
+--- a/arch/csky/kernel/probes/kprobes.c
++++ b/arch/csky/kernel/probes/kprobes.c
+@@ -28,7 +28,7 @@ static int __kprobes patch_text_cb(void
+ 	struct csky_insn_patch *param = priv;
+ 	unsigned int addr = (unsigned int)param->addr;
  
- 	err = os_pipe(fds, 1, 1);
-@@ -238,8 +238,9 @@ static int winch_tramp(int fd, struct tt
- 	 * problem with /dev/net/tun, which if held open by this
- 	 * thread, prevents the TUN/TAP device from being reused.
- 	 */
--	err = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
--	if (err < 0) {
-+	pid = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
-+	if (pid < 0) {
-+		err = pid;
- 		printk(UM_KERN_ERR "fork of winch_thread failed - errno = %d\n",
- 		       -err);
- 		goto out_close;
-@@ -263,7 +264,7 @@ static int winch_tramp(int fd, struct tt
- 		goto out_close;
- 	}
- 
--	return err;
-+	return pid;
- 
-  out_close:
- 	close(fds[1]);
+-	if (atomic_inc_return(&param->cpu_count) == 1) {
++	if (atomic_inc_return(&param->cpu_count) == num_online_cpus()) {
+ 		*(u16 *) addr = cpu_to_le16(param->opcode);
+ 		dcache_wb_range(addr, addr + 2);
+ 		atomic_inc(&param->cpu_count);
 
 
