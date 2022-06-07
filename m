@@ -2,102 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9277BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD2C3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:34:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380370AbiFGWeQ (ORCPT
+        id S1359630AbiFGWeY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
+        Tue, 7 Jun 2022 18:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378406AbiFGVWP (ORCPT
+        with ESMTP id S1378774AbiFGVWi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:22:15 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340B51660AC;
-        Tue,  7 Jun 2022 12:00:08 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id f7so14933859ilr.5;
-        Tue, 07 Jun 2022 12:00:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=gmFsGC5asBOsMwTokySfFmYzyb+MMlB/ax36UF7roRM=;
-        b=KRprMFMJQ8BOYYCx4BfqQEDBD1M4TY98wxdYru5+suebV78nXfhlLKrGnc8GaVErSP
-         cjwIYbFU0/mGYM7apRJck5JB2BYQ6/ubIr49yDDlC2WBbGksnuJdw6dxc8K5QQ9NJ8FJ
-         LB0gqVLUHL332MSl+0Ggup1JJ9BBGATmQcUsE1L91zB727xv6cHXfEryOy1UPzae8mHq
-         lO2544zOWTuhEeJE6bv/A3JYhM2l6pHKhj9R1IZNatNsW08RpBcsS84yGLi5gskQ/zCT
-         ebhawZivg1kJjrGwcIhAnVqhXya9oaFlDhC/SBBNHi9cibNN7nYHnHlTLybvCHF4N4qe
-         1RVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=gmFsGC5asBOsMwTokySfFmYzyb+MMlB/ax36UF7roRM=;
-        b=vL3vWZSDMALOxknYlh+UZiiNtJUyylmi6iXVU/Yam53SqCcOoalR45jz10IH3E+nvW
-         Uo7+lke2+kxdZnG2UcxvT1Vrew57Gj1JhERmx1MvyA0SY9qF8NQv6bUPtK12ItMs0SBT
-         P4FpOMAVORH6w9zcE2xuE1mJ3PsIefoqg4F+8/CGhJvGi2WL4ooZwnkUX/dsLwHjQGQx
-         hlUwUD4o8tPry1DhvYJEt+BdV8iSXgeS2+V+pPOFWZRwSv66gZF77KoS3uYacfDLtGdn
-         BTDvppplE67W6C5ehkLRW3j99JLGAxKtOs6R5AaCkST3FGL72MHEB+pL5SgXgrwwit1W
-         bVvA==
-X-Gm-Message-State: AOAM532BFuXk334mmb7Zmq4qCh25wFCMh0EJK0Vwt52wD4cSTk9QB2eM
-        atDx9ZUP8pg9IHZ14omJ712lvq2oTZdkxTKpBZcHb4Rbdml4tQ==
-X-Google-Smtp-Source: ABdhPJxwLclFuAiiWhqiQoKXWYkJmP0Ngrn9iwSDQKmH+bDO8rFtb0bRQAPa6wYRnhdIUYRQyM1vNCrbUMeS0Q2A0LA=
-X-Received: by 2002:a92:cc8b:0:b0:2d6:5389:e7f4 with SMTP id
- x11-20020a92cc8b000000b002d65389e7f4mr1465481ilo.245.1654628407330; Tue, 07
- Jun 2022 12:00:07 -0700 (PDT)
+        Tue, 7 Jun 2022 17:22:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0890226548;
+        Tue,  7 Jun 2022 12:00:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 041EAB8239C;
+        Tue,  7 Jun 2022 19:00:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AA1CC34115;
+        Tue,  7 Jun 2022 19:00:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628404;
+        bh=u0uLyzgE+ia6tDIqfwqEGTu45WQk2+LGG1+RdUhBmCU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cpCnUYaaP8UR/yD7JaARtLMQrS80cEHV25tGV+gLVBLWH9cBQAf5aycqpCxNuGD4l
+         yWuX8a9La608ePTVUCq3I36YUeIvKq3U8hNpE4Y+CUBpY8DsagUawfEtxEp0Yp0nKb
+         rHaZFu9A3bNZtnIoP/g58E8MPszBi3wvXmbgqg+Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 316/879] target: remove an incorrect unmap zeroes data deduction
+Date:   Tue,  7 Jun 2022 18:57:14 +0200
+Message-Id: <20220607165012.021317087@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220607000851.39798-1-irogers@google.com>
-In-Reply-To: <20220607000851.39798-1-irogers@google.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Tue, 7 Jun 2022 20:59:31 +0200
-Message-ID: <CA+icZUWpSF6ge76JVp1qBC5QhC1AwNacs5Di=e1QSbAD+SVKUA@mail.gmail.com>
-Subject: [Linux v5.19-rc1] tools/perf/a.out remains after make -C tools/perf clean
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Christoph Hellwig <hch@lst.de>
 
-I observed this some time ago - so this is not only Linux v5.19-rc1 related.
+[ Upstream commit 179d8609d8424529e95021df939ed7b0b82b37f1 ]
 
-$ LC_ALL=C make -C tools/perf clean 2>&1 | tee ../make-log_perf-clean.txt
-make: Entering directory '/home/dileks/src/linux-kernel/git/tools/perf'
- CLEAN   x86
- CLEAN   libtraceevent
- CLEAN   libapi
- CLEAN   libbpf
- CLEAN   libsubcmd
- CLEAN   libperf
- CLEAN   fixdep
- CLEAN   feature-detect
- CLEAN   python
- CLEAN   bpf-skel
- CLEAN   core-objs
- CLEAN   core-progs
- CLEAN   core-gen
- CLEAN   Documentation
-make: Leaving directory '/home/dileks/src/linux-kernel/git/tools/perf'
+For block devices, the SCSI target drivers implements UNMAP as calls to
+blkdev_issue_discard, which does not guarantee zeroing just because
+Write Zeroes is supported.
 
-$ git status -s
-M tools/perf/util/unwind-libunwind-local.c
-?? tools/perf/a.out
+Note that this does not affect the file backed path which uses
+fallocate to punch holes.
 
-$ rm -v tools/perf/a.out
-'tools/perf/a.out' deleted
+Fixes: 2237498f0b5c ("target/iblock: Convert WRITE_SAME to blkdev_issue_zeroout")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Link: https://lore.kernel.org/r/20220415045258.199825-2-hch@lst.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/target/target_core_device.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-$ git checkout -- tools/perf/util/unwind-libunwind-local.c
+diff --git a/drivers/target/target_core_device.c b/drivers/target/target_core_device.c
+index 44bb380e7390..fa866acef5bb 100644
+--- a/drivers/target/target_core_device.c
++++ b/drivers/target/target_core_device.c
+@@ -850,7 +850,6 @@ bool target_configure_unmap_from_queue(struct se_dev_attrib *attrib,
+ 	attrib->unmap_granularity = q->limits.discard_granularity / block_size;
+ 	attrib->unmap_granularity_alignment = q->limits.discard_alignment /
+ 								block_size;
+-	attrib->unmap_zeroes_data = !!(q->limits.max_write_zeroes_sectors);
+ 	return true;
+ }
+ EXPORT_SYMBOL(target_configure_unmap_from_queue);
+-- 
+2.35.1
 
-$ git status -s
-[ empty ]
 
-Thanks.
 
-Regards,
--Sedat-
