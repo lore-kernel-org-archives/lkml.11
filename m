@@ -2,113 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 932F1CCA487
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:35:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F51ECCA48E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:35:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378216AbiFGUfC (ORCPT
+        id S1378237AbiFGUfL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55188 "EHLO
+        Tue, 7 Jun 2022 16:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357586AbiFGTmI (ORCPT
+        with ESMTP id S1357632AbiFGTmK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:08 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E3615A3C1
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:15:26 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id bg6so17033701ejb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:15:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lANEaRZF8RNlGQuEjAUuCnlc1k8UC96t1LkjmMu7vvs=;
-        b=gsCc3TvjLneSHG/GMjspzmVXJk8TNOJ8UT6qlP4EOH6kvkrxzAaJXttxEyf4ZD8SkL
-         s66S60CaayzPMN6BMjs/lZf1xjYPrMCmXs/KcnpQvQqJSX5JOHaqjVzqpx2cYgAk8b0W
-         8E+vMj04FOfMjKT2XIjjIVYWclACVZJqmBOTY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lANEaRZF8RNlGQuEjAUuCnlc1k8UC96t1LkjmMu7vvs=;
-        b=VpoW/t4w7p2Cpdg/Va/EFGEUpKaCDntIO1KY1x/lAReDFbZsvbZVxwMmerr0UyxSds
-         3J8T0ny4FbGRxgpBg+4+KDoKRUyPiTa5LK6p3vBHuoXAEMmyzN2mz6P/Cu5YbsrnmbY8
-         ZkBr6L3kTs00IQdlbh6BOf7saq0jgq0fL95AOKwHKt1x4oSWeKjV0A+mBaI2gLKbXo0W
-         iTH8o9yy7LBnSY64NXsfzmAANdZuyG1feB2tO2k3UTFeUSjERBhLU2Cu7v+cfB+3AR4R
-         X0Prhwqlpia1DvVIVybV2k3dtLefxRpD09q4V7bOHhYl9XBQtPOtoQ36BcIv/319xOtB
-         QvlQ==
-X-Gm-Message-State: AOAM530dZYNsUhh+2Bjb2bfg0h9tlR9jnStoAy5EgJCU60HoV/kGtCdo
-        1CB5diYrpkH0wOZ3fCFzEx1StiZUmFz+Nw5vNiM=
-X-Google-Smtp-Source: ABdhPJx9O8kRqndWoOgfhL1MCslxtEC2dWveuZxfIYBufG8PcT5hepJl4q2toYzk5yWgV0SDYH3pVw==
-X-Received: by 2002:a17:906:52c7:b0:6ce:a880:50a3 with SMTP id w7-20020a17090652c700b006cea88050a3mr28073754ejn.437.1654625724918;
-        Tue, 07 Jun 2022 11:15:24 -0700 (PDT)
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com. [209.85.128.48])
-        by smtp.gmail.com with ESMTPSA id r24-20020a170906549800b006f3ef214db9sm8029612ejo.31.2022.06.07.11.15.23
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 11:15:23 -0700 (PDT)
-Received: by mail-wm1-f48.google.com with SMTP id q15so6600188wmj.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:15:23 -0700 (PDT)
-X-Received: by 2002:a05:600c:42c6:b0:39c:4bfd:a4a9 with SMTP id
- j6-20020a05600c42c600b0039c4bfda4a9mr15814099wme.8.1654625723046; Tue, 07 Jun
- 2022 11:15:23 -0700 (PDT)
+        Tue, 7 Jun 2022 15:42:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2B31B6053;
+        Tue,  7 Jun 2022 11:15:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEE1AB822C0;
+        Tue,  7 Jun 2022 18:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D177C385A2;
+        Tue,  7 Jun 2022 18:15:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654625733;
+        bh=w+Mx4L1UD8ofc/ecEwIzqvOnTw6oXAnw/UDczpyP7ds=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mSketXd12WIpFheNnLCOpEQSXbn9WO8eejrItc9HGE7DpIuQEYHGC36kScxUtR0Ue
+         +JE0Svx0yB52TbWE4qG5a7F3RGUR1fXYgltusj8fzrjoOgdEIGCnUu0DD03t0bjLI5
+         htEso9tZDz6EEZZbXUPiwVYkIUfGW4hmOLHrYC8I=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 083/772] drm/amd/pm: fix double free in si_parse_power_table()
+Date:   Tue,  7 Jun 2022 18:54:35 +0200
+Message-Id: <20220607164951.487694850@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <CAPM=9tw62EZfAm0PbiOPmMrpfR98QMFTWGEQcA34G4ap4xxNkA@mail.gmail.com>
- <CAMuHMdXb5-gOVRsQx6tDqjQMD9cC-p=o56VuF2cBPWyMFRgHMA@mail.gmail.com>
-In-Reply-To: <CAMuHMdXb5-gOVRsQx6tDqjQMD9cC-p=o56VuF2cBPWyMFRgHMA@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 7 Jun 2022 11:15:06 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgcv_YewP0rgwR1+gj3YF-7Jz8WPVzDgndx0DVMVKzV=Q@mail.gmail.com>
-Message-ID: <CAHk-=wgcv_YewP0rgwR1+gj3YF-7Jz8WPVzDgndx0DVMVKzV=Q@mail.gmail.com>
-Subject: Re: [git pull] drm for 5.19-rc1
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Dave Airlie <airlied@gmail.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 3:23 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> These header files are heavy users of large constants lacking the "U"
-> suffix e.g.:
->
->     #define NB_ADAPTER_ID__SUBSYSTEM_ID_MASK 0xFFFF0000L
+From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
 
-As Andreas says, this is not undefined behavior.
+[ Upstream commit f3fa2becf2fc25b6ac7cf8d8b1a2e4a86b3b72bd ]
 
-A hexadecimal integer constant will always get a type that fits the
-actual value. So on a 32-bit architecture, because 0xFFFF0000 doesn't
-fit in 'long', it will automatically become 'unsigned long'.
+In function si_parse_power_table(), array adev->pm.dpm.ps and its member
+is allocated. If the allocation of each member fails, the array itself
+is freed and returned with an error code. However, the array is later
+freed again in si_dpm_fini() function which is called when the function
+returns an error.
 
-Now, a C compiler might still warn about such implicit type
-conversions, but I'd be a bit surprised if any version of gcc actually
-would do that, because this behavior for hex constants is *very*
-traditional, and very common.
+This leads to potential double free of the array adev->pm.dpm.ps, as
+well as leak of its array members, since the members are not freed in
+the allocation function and the array is not nulled when freed.
+In addition adev->pm.dpm.num_ps, which keeps track of the allocated
+array member, is not updated until the member allocation is
+successfully finished, this could also lead to either use after free,
+or uninitialized variable access in si_dpm_fini().
 
-It's also true that the type of the constant - but not the value -
-will be different on 32-bit and 64-bit architectures (ie on 64-bit, it
-will be plain "long" and never extended to "unsigned long", because
-the hex value obviously fits just fine).
+Fix this by postponing the free of the array until si_dpm_fini() and
+increment adev->pm.dpm.num_ps everytime the array member is allocated.
 
-I don't see any normal situation where that really matters, since any
-normal use will have the same result.
+Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/pm/powerplay/si_dpm.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-The case you point to at
+diff --git a/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c b/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
+index 81f82aa05ec2..66fc63f1f1c1 100644
+--- a/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
++++ b/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
+@@ -7247,17 +7247,15 @@ static int si_parse_power_table(struct amdgpu_device *adev)
+ 	if (!adev->pm.dpm.ps)
+ 		return -ENOMEM;
+ 	power_state_offset = (u8 *)state_array->states;
+-	for (i = 0; i < state_array->ucNumEntries; i++) {
++	for (adev->pm.dpm.num_ps = 0, i = 0; i < state_array->ucNumEntries; i++) {
+ 		u8 *idx;
+ 		power_state = (union pplib_power_state *)power_state_offset;
+ 		non_clock_array_index = power_state->v2.nonClockInfoIndex;
+ 		non_clock_info = (struct _ATOM_PPLIB_NONCLOCK_INFO *)
+ 			&non_clock_info_array->nonClockInfo[non_clock_array_index];
+ 		ps = kzalloc(sizeof(struct  si_ps), GFP_KERNEL);
+-		if (ps == NULL) {
+-			kfree(adev->pm.dpm.ps);
++		if (ps == NULL)
+ 			return -ENOMEM;
+-		}
+ 		adev->pm.dpm.ps[i].ps_priv = ps;
+ 		si_parse_pplib_non_clock_info(adev, &adev->pm.dpm.ps[i],
+ 					      non_clock_info,
+@@ -7279,8 +7277,8 @@ static int si_parse_power_table(struct amdgpu_device *adev)
+ 			k++;
+ 		}
+ 		power_state_offset += 2 + power_state->v2.ucNumDPMLevels;
++		adev->pm.dpm.num_ps++;
+ 	}
+-	adev->pm.dpm.num_ps = state_array->ucNumEntries;
+ 
+ 	/* fill in the vce power states */
+ 	for (i = 0; i < adev->pm.dpm.num_of_vce_states; i++) {
+-- 
+2.35.1
 
-  https://lore.kernel.org/r/CAK8P3a0QrihBR_2FQ7uZ5w2JmLjv7czfrrarCMmJOhvNdJ3p9g@mail.gmail.com
 
-is very different, because the constant "1" is always just a plain
-signed "int". So when you do "(1 << 31)", that is now a signed integer
-with the top bit set, and so it will have an actual negative value,
-and that can cause various problems (when right-shifted, or when
-compared to other values).
 
-But hexadecimal constants can be signed types, but they never have
-negative values.
-
-                 Linus
