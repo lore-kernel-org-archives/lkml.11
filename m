@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E433C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02CE1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378133AbiFGVeP (ORCPT
+        id S1378202AbiFGVeU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55304 "EHLO
+        Tue, 7 Jun 2022 17:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376900AbiFGUhy (ORCPT
+        with ESMTP id S1376643AbiFGUgm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:37:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89F81ECD76;
-        Tue,  7 Jun 2022 11:38:09 -0700 (PDT)
+        Tue, 7 Jun 2022 16:36:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73C11EC54B;
+        Tue,  7 Jun 2022 11:37:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 645BCB8233E;
-        Tue,  7 Jun 2022 18:38:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B699BC385A2;
-        Tue,  7 Jun 2022 18:38:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30386612EC;
+        Tue,  7 Jun 2022 18:37:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CAE5C385A5;
+        Tue,  7 Jun 2022 18:37:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627083;
-        bh=ibFWBZNYf96bTV+pa3KOvrMz/s+3mgQ+XsQOvLGXtoY=;
+        s=korg; t=1654627074;
+        bh=DoN97BzVWaUBYNLiwbSz9xwe8JL/QSUwvWAA7WD4j7M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oRbrHRzasMwz/pW7a3n8f4I5Xhs6ywfuTVCOxgxRRxdAHjaGHLpdRpPjfftjtVfA/
-         MLlQVh+ZSbSgJ4YTrZa/Q74RSg3PSYCTkifcYyhhYn3ij6uFy6pEVwMJQC/nwbbC/1
-         151+41M7TvHu1oUxkHl/p72rfzz5MnPPpKijiH6Y=
+        b=0VdBRUPGzG3/KL/VsTF79cO0nx7GGr4ekgMfFcvudLna37HAMl13ej0oRFZS+VPQL
+         BZBMJpeWu0Ca7Csezg/VXEGSRlaezfSIOUe9lihv0AfgCSxCoGzHXq6Tw8e85t/QKN
+         9eBFQ4eFSLs3ZcnqPrT38vd7rFaxEdlnWGMoFBKo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.17 612/772] f2fs: fix deadloop in foreground GC
-Date:   Tue,  7 Jun 2022 19:03:24 +0200
-Message-Id: <20220607165006.973302774@linuxfoundation.org>
+        stable@vger.kernel.org, Julian Schroeder <jumaco@amazon.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 557/772] nfsd: destroy percpu stats counters after reply cache shutdown
+Date:   Tue,  7 Jun 2022 19:02:29 +0200
+Message-Id: <20220607165005.372595082@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,92 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Julian Schroeder <jumaco@amazon.com>
 
-commit cfd66bb715fd11fde3338d0660cffa1396adc27d upstream.
+[ Upstream commit fd5e363eac77ef81542db77ddad0559fa0f9204e ]
 
-As Yanming reported in bugzilla:
+Upon nfsd shutdown any pending DRC cache is freed. DRC cache use is
+tracked via a percpu counter. In the current code the percpu counter
+is destroyed before. If any pending cache is still present,
+percpu_counter_add is called with a percpu counter==NULL. This causes
+a kernel crash.
+The solution is to destroy the percpu counter after the cache is freed.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215914
-
-The root cause is: in a very small sized image, it's very easy to
-exceed threshold of foreground GC, if we calculate free space and
-dirty data based on section granularity, in corner case,
-has_not_enough_free_secs() will always return true, result in
-deadloop in f2fs_gc().
-
-So this patch refactors has_not_enough_free_secs() as below to fix
-this issue:
-1. calculate needed space based on block granularity, and separate
-all blocks to two parts, section part, and block part, comparing
-section part to free section, and comparing block part to free space
-in openned log.
-2. account F2FS_DIRTY_NODES, F2FS_DIRTY_IMETA and F2FS_DIRTY_DENTS
-as node block consumer;
-3. account F2FS_DIRTY_DENTS as data block consumer;
-
-Cc: stable@vger.kernel.org
-Reported-by: Ming Yan <yanming@tju.edu.cn>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e567b98ce9a4b (“nfsd: protect concurrent access to nfsd stats counters”)
+Signed-off-by: Julian Schroeder <jumaco@amazon.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/segment.h |   32 ++++++++++++++++++++------------
- 1 file changed, 20 insertions(+), 12 deletions(-)
+ fs/nfsd/nfscache.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/f2fs/segment.h
-+++ b/fs/f2fs/segment.h
-@@ -572,11 +572,10 @@ static inline int reserved_sections(stru
- 	return GET_SEC_FROM_SEG(sbi, reserved_segments(sbi));
- }
+diff --git a/fs/nfsd/nfscache.c b/fs/nfsd/nfscache.c
+index a4a69ab6ab28..a83890950290 100644
+--- a/fs/nfsd/nfscache.c
++++ b/fs/nfsd/nfscache.c
+@@ -212,7 +212,6 @@ void nfsd_reply_cache_shutdown(struct nfsd_net *nn)
+ 	struct svc_cacherep	*rp;
+ 	unsigned int i;
  
--static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
-+static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi,
-+			unsigned int node_blocks, unsigned int dent_blocks)
- {
--	unsigned int node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
--					get_pages(sbi, F2FS_DIRTY_DENTS);
--	unsigned int dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
-+
- 	unsigned int segno, left_blocks;
- 	int i;
+-	nfsd_reply_cache_stats_destroy(nn);
+ 	unregister_shrinker(&nn->nfsd_reply_cache_shrinker);
  
-@@ -602,19 +601,28 @@ static inline bool has_curseg_enough_spa
- static inline bool has_not_enough_free_secs(struct f2fs_sb_info *sbi,
- 					int freed, int needed)
- {
--	int node_secs = get_blocktype_secs(sbi, F2FS_DIRTY_NODES);
--	int dent_secs = get_blocktype_secs(sbi, F2FS_DIRTY_DENTS);
--	int imeta_secs = get_blocktype_secs(sbi, F2FS_DIRTY_IMETA);
-+	unsigned int total_node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
-+					get_pages(sbi, F2FS_DIRTY_DENTS) +
-+					get_pages(sbi, F2FS_DIRTY_IMETA);
-+	unsigned int total_dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
-+	unsigned int node_secs = total_node_blocks / BLKS_PER_SEC(sbi);
-+	unsigned int dent_secs = total_dent_blocks / BLKS_PER_SEC(sbi);
-+	unsigned int node_blocks = total_node_blocks % BLKS_PER_SEC(sbi);
-+	unsigned int dent_blocks = total_dent_blocks % BLKS_PER_SEC(sbi);
-+	unsigned int free, need_lower, need_upper;
+ 	for (i = 0; i < nn->drc_hashsize; i++) {
+@@ -223,6 +222,7 @@ void nfsd_reply_cache_shutdown(struct nfsd_net *nn)
+ 									rp, nn);
+ 		}
+ 	}
++	nfsd_reply_cache_stats_destroy(nn);
  
- 	if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING)))
- 		return false;
- 
--	if (free_sections(sbi) + freed == reserved_sections(sbi) + needed &&
--			has_curseg_enough_space(sbi))
-+	free = free_sections(sbi) + freed;
-+	need_lower = node_secs + dent_secs + reserved_sections(sbi) + needed;
-+	need_upper = need_lower + (node_blocks ? 1 : 0) + (dent_blocks ? 1 : 0);
-+
-+	if (free > need_upper)
- 		return false;
--	return (free_sections(sbi) + freed) <=
--		(node_secs + 2 * dent_secs + imeta_secs +
--		reserved_sections(sbi) + needed);
-+	else if (free <= need_lower)
-+		return true;
-+	return !has_curseg_enough_space(sbi, node_blocks, dent_blocks);
- }
- 
- static inline bool f2fs_is_checkpoint_ready(struct f2fs_sb_info *sbi)
+ 	kvfree(nn->drc_hashtbl);
+ 	nn->drc_hashtbl = NULL;
+-- 
+2.35.1
+
 
 
