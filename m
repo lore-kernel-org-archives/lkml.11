@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14CB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:05:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B081FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357260AbiFHCEr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44002 "EHLO
+        id S232770AbiFHCFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:05:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386291AbiFHAWO (ORCPT
+        with ESMTP id S1386353AbiFHAWP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:22:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EACF1973CD;
-        Tue,  7 Jun 2022 12:20:12 -0700 (PDT)
+        Tue, 7 Jun 2022 20:22:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8148719B6A5;
+        Tue,  7 Jun 2022 12:22:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1993061947;
-        Tue,  7 Jun 2022 19:20:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 207BDC385A2;
-        Tue,  7 Jun 2022 19:20:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09FE7B82182;
+        Tue,  7 Jun 2022 19:22:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FF9EC385A2;
+        Tue,  7 Jun 2022 19:22:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629610;
-        bh=OcWhrdsFQIgNPCqf/QrOHTOvPgdXZMIducRNLcG6Qdg=;
+        s=korg; t=1654629727;
+        bh=MLkY1OvX2VTXtWkd4B2hKU9SxPB0F0RJYdX5ADWhvgw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WLrGoU6PjoTwR3dTsYNoD9AwMI3ydfIfW0JZ5OzAA0vYvKD7vWKs7TIB1UornFAFo
-         PTntIuDaf5cHtE7xu4m4TG+TbemKtqz9a6kXo8eviCqwa1T3tkTGrVUEwPTCGmsoxI
-         vEFxtCEqKYjOuJF33Yi9eJI4ghICZ+/etSFatbI0=
+        b=J00rBA9iTpC2qyCa9gN5d1164JNPVqKOL3u4R3ciCvxUD76f5Hu44HRI/ygzjqQI3
+         /ZSXYL1yVDleg6pPFb5EkALD9sSLwSA5eA2Uhnr8mlaAf0QzjhkJNyDeYg8Cxi6kDA
+         cKlw/bwPZTW2UoqhZwDv+d6lDiCvWCdw6PE3sE7Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        Gautam Menghani <gautammenghani201@gmail.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.18 752/879] tracing: Initialize integer variable to prevent garbage return value
-Date:   Tue,  7 Jun 2022 19:04:30 +0200
-Message-Id: <20220607165024.689097542@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 5.18 794/879] drm/nouveau/clk: Fix an incorrect NULL check on list iterator
+Date:   Tue,  7 Jun 2022 19:05:12 +0200
+Message-Id: <20220607165025.910136291@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,37 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gautam Menghani <gautammenghani201@gmail.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 154827f8e53d8c492b3fb0cb757fbcadb5d516b5 upstream.
+commit 1c3b2a27def609473ed13b1cd668cb10deab49b4 upstream.
 
-Initialize the integer variable to 0 to fix the clang scan warning:
-Undefined or garbage value returned to caller
-[core.uninitialized.UndefReturn]
-        return ret;
+The bug is here:
+	if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
+		return cstate;
 
-Link: https://lkml.kernel.org/r/20220522061826.1751-1-gautammenghani201@gmail.com
+The list iterator value 'cstate' will *always* be set and non-NULL
+by list_for_each_entry_from_reverse(), so it is incorrect to assume
+that the iterator value will be unchanged if the list is empty or no
+element is found (In fact, it will be a bogus pointer to an invalid
+structure object containing the HEAD). Also it missed a NULL check
+at callsite and may lead to invalid memory access after that.
+
+To fix this bug, just return 'encoder' when found, otherwise return
+NULL. And add the NULL check.
 
 Cc: stable@vger.kernel.org
-Fixes: 8993665abcce ("tracing/boot: Support multiple handlers for per-event histogram")
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: 1f7f3d91ad38a ("drm/nouveau/clk: Respect voltage limits in nvkm_cstate_prog")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220327075824.11806-1-xiam0nd.tong@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_boot.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/kernel/trace/trace_boot.c
-+++ b/kernel/trace/trace_boot.c
-@@ -300,7 +300,7 @@ trace_boot_hist_add_handlers(struct xbc_
- {
- 	struct xbc_node *node;
- 	const char *p, *handler;
--	int ret;
-+	int ret = 0;
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
+@@ -135,10 +135,10 @@ nvkm_cstate_find_best(struct nvkm_clk *c
  
- 	handler = xbc_node_get_data(hnode);
+ 	list_for_each_entry_from_reverse(cstate, &pstate->list, head) {
+ 		if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
+-			break;
++			return cstate;
+ 	}
  
+-	return cstate;
++	return NULL;
+ }
+ 
+ static struct nvkm_cstate *
+@@ -169,6 +169,8 @@ nvkm_cstate_prog(struct nvkm_clk *clk, s
+ 	if (!list_empty(&pstate->list)) {
+ 		cstate = nvkm_cstate_get(clk, pstate, cstatei);
+ 		cstate = nvkm_cstate_find_best(clk, pstate, cstate);
++		if (!cstate)
++			return -EINVAL;
+ 	} else {
+ 		cstate = &pstate->base;
+ 	}
 
 
