@@ -2,120 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65924C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33304C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240279AbiFGJwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39286 "EHLO
+        id S240320AbiFGJx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240415AbiFGJwa (ORCPT
+        with ESMTP id S233046AbiFGJxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:52:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC33FEBE8F;
-        Tue,  7 Jun 2022 02:51:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F22EB81E79;
-        Tue,  7 Jun 2022 09:51:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8173C385A5;
-        Tue,  7 Jun 2022 09:51:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654595464;
-        bh=c53iMFsek4aDHjn5Gc9SrQFad4s69M1znk7Uy+IQOB0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZCvag8OmWSoqImIrmPSTjMWq+V0WxOa1CPAvgU2Kq2JoBWDybCuMKFF6bumzBIRN5
-         /8lTjcg0S74NlBy3wG8PTufV/iapGlVGt5UFC5BMBMqUsSEen9C6THagPJ470qJa9H
-         yW3kh32Yn7myW5v5OUaFgFs0ef/peNQw6WifQLItq7od6+NnCFgaM0bDLQ6xl/jg9c
-         bVc0XlyJ3LWYPnWzPcXjTCqCfVtSHcrwoTpfpUnzVm1A3oaqCt2FSqN78DadsjuQfE
-         EkWwXWDwo9gcPmiygBiD7ZQ94oGwUmepxFGSsMRu6MxjBmRCFPCHaJQ8pgvrwYwlpG
-         97dFZVGfWwJ8Q==
-Date:   Tue, 7 Jun 2022 12:49:08 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
-Cc:     linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        peterhuewe@gmx.de, jgg@ziepe.ca
-Subject: Re: [PATCH v3] tpm: Add upgrade/reduced mode support for TPM1.2
- modules
-Message-ID: <Yp8fFNMzBLAXdNig@iki.fi>
-References: <20220603084156.7090-1-stefan.mahnke-hartmann@infineon.com>
+        Tue, 7 Jun 2022 05:53:54 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF94C580C8
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:53:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654595632; x=1686131632;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=4MYxWixXXeFkYzqpLsRkGqZgqtADSRc+X+29/9R2/D4=;
+  b=ESjmSzcecZRiqxSl3bF4ZS7H3mx6WUoLay5e3Q7/dsqYpUVwqGrr2aTt
+   KfH4ypcuXrjnUqCsxz7zMcMmDyOjS7P6zAUDqmhV7to3Ydm8FbFpogAvN
+   wIrvHKtedvlW/IZQmBqaBOjPk1Mhpe7PFKiygja1vgZZU5Q58SbrmYJog
+   AC1AUkjLgyB5zzdRy8YzalsDjsAx6k7S4sSd10PS8/JXXsEw3ytS/uqs6
+   OSlYcV2K5ORFDGC7TCigt2y32iCuXbfdQ8zYlrtymX5KY6A9KNIoVHLU4
+   8kM/hyaR2q6wsDF2r8kDzrcJ6T53C6lfhvBI3jgkea+UfEEJNSUSra7RO
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="257158835"
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
+   d="scan'208";a="257158835"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 02:53:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
+   d="scan'208";a="709416568"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 07 Jun 2022 02:53:50 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nyVuH-000DZ3-GP;
+        Tue, 07 Jun 2022 09:53:49 +0000
+Date:   Tue, 7 Jun 2022 17:53:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Aaron Tomlin <atomlin@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>
+Subject: kernel/module/main.c:4515:14: warning: variable 'exit' set but not
+ used
+Message-ID: <202206071718.QNuYKpUb-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220603084156.7090-1-stefan.mahnke-hartmann@infineon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 10:41:58AM +0200, Stefan Mahnke-Hartmann wrote:
-> In case a TPM in failure mode is detected, the TPM should be accessible
-> through a transparent communication channel for analysing purposes (e.g.
-> TPM_GetTestResult) or a field upgrade. Since a TPM in failure mode has
-> similar reduced functionality as in field upgrade mode, the flag
-> TPM_CHIP_FLAG_FIRMWARE_UPGRADE is also valid.
-> 
-> As described in TCG TPM Main Part1 Design Principles, Revision 116,
-> chapter 9.2.1. the TPM also allows an update function in case a TPM is
-> in failure mode.
-> 
-> If the TPM in failure mode is detected, the function tpm1_auto_startup()
-> sets TPM_CHIP_FLAG_FIRMWARE_UPGRADE flag, which is used later during
-> driver initialization/deinitialization to disable functionality which
-> makes no sense or will fail in the current TPM state. The following
-> functionality is affected:
->  * Do not register TPM as a hwrng
->  * Do not get pcr allocation
->  * Do not register sysfs entries which provide information impossible to
->    obtain in limited mode
-> 
-> Signed-off-by: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
-> ---
-> Changelog:
->  * v3:
->    * Change kernel messages
-> 
->  drivers/char/tpm/tpm.h      | 1 +
->  drivers/char/tpm/tpm1-cmd.c | 7 ++++++-
->  2 files changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/char/tpm/tpm.h b/drivers/char/tpm/tpm.h
-> index 2163c6ee0d36..24ee4e1cc452 100644
-> --- a/drivers/char/tpm/tpm.h
-> +++ b/drivers/char/tpm/tpm.h
-> @@ -55,6 +55,7 @@ enum tpm_addr {
->  #define TPM_WARN_DOING_SELFTEST 0x802
->  #define TPM_ERR_DEACTIVATED     0x6
->  #define TPM_ERR_DISABLED        0x7
-> +#define TPM_ERR_FAILEDSELFTEST  0x1C
->  #define TPM_ERR_INVALID_POSTINIT 38
->  
->  #define TPM_TAG_RQU_COMMAND 193
-> diff --git a/drivers/char/tpm/tpm1-cmd.c b/drivers/char/tpm/tpm1-cmd.c
-> index f7dc986fa4a0..cf64c7385105 100644
-> --- a/drivers/char/tpm/tpm1-cmd.c
-> +++ b/drivers/char/tpm/tpm1-cmd.c
-> @@ -709,7 +709,12 @@ int tpm1_auto_startup(struct tpm_chip *chip)
->  	if (rc)
->  		goto out;
->  	rc = tpm1_do_selftest(chip);
-> -	if (rc) {
-> +	if (rc == TPM_ERR_FAILEDSELFTEST) {
-> +		dev_warn(&chip->dev, "TPM self test failed, switching to the firmware upgrade mode\n");
-> +		/* A TPM in this state possibly allows or needs a firmware upgrade */
-> +		chip->flags |= TPM_CHIP_FLAG_FIRMWARE_UPGRADE;
-> +		return 0;
-> +	} else if (rc) {
->  		dev_err(&chip->dev, "TPM self test failed\n");
->  		goto out;
->  	}
-> -- 
-> 2.25.1
-> 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   e71e60cd74df9386c3f684c54888f2367050b831
+commit: cfc1d277891eb499b3b5354df33b30f598683e90 module: Move all into module/
+date:   9 weeks ago
+config: arm64-buildonly-randconfig-r011-20220607 (https://download.01.org/0day-ci/archive/20220607/202206071718.QNuYKpUb-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b92436efcb7813fc481b30f2593a4907568d917a)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=cfc1d277891eb499b3b5354df33b30f598683e90
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout cfc1d277891eb499b3b5354df33b30f598683e90
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash kernel/module/
 
-I think this looks good now, thanks for patience:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+All warnings (new ones prefixed by >>):
 
-BR, Jarkko
+>> kernel/module/main.c:4515:14: warning: variable 'exit' set but not used [-Wunused-but-set-variable]
+           exitcall_t *exit;
+                       ^
+   kernel/module/main.c:4802:6: warning: no previous prototype for function 'module_layout' [-Wmissing-prototypes]
+   void module_layout(struct module *mod,
+        ^
+   kernel/module/main.c:4802:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void module_layout(struct module *mod,
+   ^
+   static 
+   2 warnings generated.
+
+
+vim +/exit +4515 kernel/module/main.c
+
+^1da177e4c3f41 kernel/module.c Linus Torvalds 2005-04-16  4510  
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4511  static void cfi_init(struct module *mod)
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4512  {
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4513  #ifdef CONFIG_CFI_CLANG
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4514  	initcall_t *init;
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08 @4515  	exitcall_t *exit;
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4516  
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4517  	rcu_read_lock_sched();
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4518  	mod->cfi_check = (cfi_check_fn)
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4519  		find_kallsyms_symbol_value(mod, "__cfi_check");
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4520  	init = (initcall_t *)
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4521  		find_kallsyms_symbol_value(mod, "__cfi_jt_init_module");
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4522  	exit = (exitcall_t *)
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4523  		find_kallsyms_symbol_value(mod, "__cfi_jt_cleanup_module");
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4524  	rcu_read_unlock_sched();
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4525  
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4526  	/* Fix init/exit functions to point to the CFI jump table */
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4527  	if (init)
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4528  		mod->init = *init;
+0d67e332e6df72 kernel/module.c Arnd Bergmann  2021-09-27  4529  #ifdef CONFIG_MODULE_UNLOAD
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4530  	if (exit)
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4531  		mod->exit = *exit;
+0d67e332e6df72 kernel/module.c Arnd Bergmann  2021-09-27  4532  #endif
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4533  
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4534  	cfi_module_add(mod, module_addr_min);
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4535  #endif
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4536  }
+cf68fffb66d60d kernel/module.c Sami Tolvanen  2021-04-08  4537  
+
+:::::: The code at line 4515 was first introduced by commit
+:::::: cf68fffb66d60d96209446bfc4a15291dc5a5d41 add support for Clang CFI
+
+:::::: TO: Sami Tolvanen <samitolvanen@google.com>
+:::::: CC: Kees Cook <keescook@chromium.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
