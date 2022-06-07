@@ -2,125 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F9ACCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE5CCCA47E
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353553AbiFGSp0 (ORCPT
+        id S1353599AbiFGSpj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47622 "EHLO
+        Tue, 7 Jun 2022 14:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351483AbiFGSQX (ORCPT
+        with ESMTP id S1351599AbiFGSQ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07C71611E2;
-        Tue,  7 Jun 2022 10:49:34 -0700 (PDT)
+        Tue, 7 Jun 2022 14:16:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9AA166684;
+        Tue,  7 Jun 2022 10:49:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BEA5BB82340;
-        Tue,  7 Jun 2022 17:49:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7044FC385A5;
-        Tue,  7 Jun 2022 17:49:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624169;
-        bh=pxMSMF/hF72JQ4c3POFMv6XIIGFKrqfTwgmbPp1Ct7w=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1BB3616A3;
+        Tue,  7 Jun 2022 17:49:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF6E0C385A5;
+        Tue,  7 Jun 2022 17:49:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624184;
+        bh=qIYd8/ev6v0TAKf2EUSnVS6Vd+2qm0R8PpAvKOukWTw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jJwz1MQgy7iCbTTLolOt2uYMG9suEYayh9vAuAKG3fM9+uoL1CffKR7w2feP5MgU/
-         Ob6Eeo6Gai7cewMXpvSVT5ngv+a946v6d0wTlVgVmcbrCgsN2A6yHkrb0tipeXqG9k
-         yM0XKpiKe5GLleT9JPRKqbE07qn4bunApyl009GrFoxHXkjq7fvlrxzZEcnRqhIqBR
-         vjoLcujIqq50+enYrknEYv6h2wLwoJA4vJ/HqLf3V3//frjMBqdE7iUza90aclcxp4
-         Lw984aZeVvjVtizu+gnVtKLe45A7g23leKpKcDFvio/2zWMHGJiT1qSTgI1W/Mk6xP
-         GQNw+9OoKHACw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, fabioaiuto83@gmail.com,
-        hdegoede@redhat.com, sevinj.aghayeva@gmail.com,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.18 06/68] drivers: staging: rtl8192bs: Fix deadlock in rtw_joinbss_event_prehandle()
-Date:   Tue,  7 Jun 2022 13:47:32 -0400
-Message-Id: <20220607174846.477972-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=VVnyZQ93MTww2qVkrPt4+poZ2pZPGQ1TPW1lWASQPWEtpZRVa+qQHbwgQpAAw5XoI
+         mAw5uL2b+Tkosf5jSGKvEdfZ6sSzYyaRp+nfBZn4fSbKaasaxpH6nUIqkwGaWrtbyR
+         6ELXmZB/K9J1sVzKzbA3tbtRm1rjGOMOptFS4s2Y=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 218/667] drbd: fix duplicate array initializer
+Date:   Tue,  7 Jun 2022 18:58:03 +0200
+Message-Id: <20220607164941.331261454@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit 041879b12ddb0c6c83ed9c0bdd10dc82a056f2fc ]
+[ Upstream commit 33cb0917bbe241dd17a2b87ead63514c1b7e5615 ]
 
-There is a deadlock in rtw_joinbss_event_prehandle(), which is shown
-below:
+There are two initializers for P_RETRY_WRITE:
 
-   (Thread 1)                |      (Thread 2)
-                             | _set_timer()
-rtw_joinbss_event_prehandle()|  mod_timer()
- spin_lock_bh() //(1)        |  (wait a time)
- ...                         | _rtw_join_timeout_handler()
- del_timer_sync()            |  spin_lock_bh() //(2)
- (wait timer to stop)        |  ...
+drivers/block/drbd/drbd_main.c:3676:22: warning: initialized field overwritten [-Woverride-init]
 
-We hold pmlmepriv->lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need pmlmepriv->lock in position (2) of thread 2.
-As a result, rtw_joinbss_event_prehandle() will block forever.
+Remove the first one since it was already ignored by the compiler
+and reorder the list to match the enum definition. As P_ZEROES had
+no entry, add that one instead.
 
-This patch extracts del_timer_sync() from the protection of
-spin_lock_bh(), which could let timer handler to obtain
-the needed lock. What`s more, we change spin_lock_bh() to
-spin_lock_irq() in _rtw_join_timeout_handler() in order to
-prevent deadlock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220409064953.67420-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 036b17eaab93 ("drbd: Receiving part for the PROTOCOL_UPDATE packet")
+Fixes: f31e583aa2c2 ("drbd: introduce P_ZEROES (REQ_OP_WRITE_ZEROES on the "wire")")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
+Link: https://lore.kernel.org/r/20220406190715.1938174-2-christoph.boehmwalder@linbit.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8723bs/core/rtw_mlme.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/block/drbd/drbd_main.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme.c b/drivers/staging/rtl8723bs/core/rtw_mlme.c
-index 62f140985e3f..24d6af886f72 100644
---- a/drivers/staging/rtl8723bs/core/rtw_mlme.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_mlme.c
-@@ -1240,8 +1240,10 @@ void rtw_joinbss_event_prehandle(struct adapter *adapter, u8 *pbuf)
+diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
+index 6db0333b5b7a..8ba2fe356f01 100644
+--- a/drivers/block/drbd/drbd_main.c
++++ b/drivers/block/drbd/drbd_main.c
+@@ -3607,9 +3607,8 @@ const char *cmdname(enum drbd_packet cmd)
+ 	 * when we want to support more than
+ 	 * one PRO_VERSION */
+ 	static const char *cmdnames[] = {
++
+ 		[P_DATA]	        = "Data",
+-		[P_WSAME]	        = "WriteSame",
+-		[P_TRIM]	        = "Trim",
+ 		[P_DATA_REPLY]	        = "DataReply",
+ 		[P_RS_DATA_REPLY]	= "RSDataReply",
+ 		[P_BARRIER]	        = "Barrier",
+@@ -3620,7 +3619,6 @@ const char *cmdname(enum drbd_packet cmd)
+ 		[P_DATA_REQUEST]	= "DataRequest",
+ 		[P_RS_DATA_REQUEST]     = "RSDataRequest",
+ 		[P_SYNC_PARAM]	        = "SyncParam",
+-		[P_SYNC_PARAM89]	= "SyncParam89",
+ 		[P_PROTOCOL]            = "ReportProtocol",
+ 		[P_UUIDS]	        = "ReportUUIDs",
+ 		[P_SIZES]	        = "ReportSizes",
+@@ -3628,6 +3626,7 @@ const char *cmdname(enum drbd_packet cmd)
+ 		[P_SYNC_UUID]           = "ReportSyncUUID",
+ 		[P_AUTH_CHALLENGE]      = "AuthChallenge",
+ 		[P_AUTH_RESPONSE]	= "AuthResponse",
++		[P_STATE_CHG_REQ]       = "StateChgRequest",
+ 		[P_PING]		= "Ping",
+ 		[P_PING_ACK]	        = "PingAck",
+ 		[P_RECV_ACK]	        = "RecvAck",
+@@ -3638,23 +3637,25 @@ const char *cmdname(enum drbd_packet cmd)
+ 		[P_NEG_DREPLY]	        = "NegDReply",
+ 		[P_NEG_RS_DREPLY]	= "NegRSDReply",
+ 		[P_BARRIER_ACK]	        = "BarrierAck",
+-		[P_STATE_CHG_REQ]       = "StateChgRequest",
+ 		[P_STATE_CHG_REPLY]     = "StateChgReply",
+ 		[P_OV_REQUEST]          = "OVRequest",
+ 		[P_OV_REPLY]            = "OVReply",
+ 		[P_OV_RESULT]           = "OVResult",
+ 		[P_CSUM_RS_REQUEST]     = "CsumRSRequest",
+ 		[P_RS_IS_IN_SYNC]	= "CsumRSIsInSync",
++		[P_SYNC_PARAM89]	= "SyncParam89",
+ 		[P_COMPRESSED_BITMAP]   = "CBitmap",
+ 		[P_DELAY_PROBE]         = "DelayProbe",
+ 		[P_OUT_OF_SYNC]		= "OutOfSync",
+-		[P_RETRY_WRITE]		= "RetryWrite",
+ 		[P_RS_CANCEL]		= "RSCancel",
+ 		[P_CONN_ST_CHG_REQ]	= "conn_st_chg_req",
+ 		[P_CONN_ST_CHG_REPLY]	= "conn_st_chg_reply",
+ 		[P_PROTOCOL_UPDATE]	= "protocol_update",
++		[P_TRIM]	        = "Trim",
+ 		[P_RS_THIN_REQ]         = "rs_thin_req",
+ 		[P_RS_DEALLOCATED]      = "rs_deallocated",
++		[P_WSAME]	        = "WriteSame",
++		[P_ZEROES]		= "Zeroes",
  
- 			spin_unlock_bh(&pmlmepriv->scanned_queue.lock);
- 
-+			spin_unlock_bh(&pmlmepriv->lock);
- 			/* s5. Cancel assoc_timer */
- 			del_timer_sync(&pmlmepriv->assoc_timer);
-+			spin_lock_bh(&pmlmepriv->lock);
- 		} else {
- 			spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
- 		}
-@@ -1547,7 +1549,7 @@ void _rtw_join_timeout_handler(struct timer_list *t)
- 	if (adapter->bDriverStopped || adapter->bSurpriseRemoved)
- 		return;
- 
--	spin_lock_bh(&pmlmepriv->lock);
-+	spin_lock_irq(&pmlmepriv->lock);
- 
- 	if (rtw_to_roam(adapter) > 0) { /* join timeout caused by roaming */
- 		while (1) {
-@@ -1575,7 +1577,7 @@ void _rtw_join_timeout_handler(struct timer_list *t)
- 
- 	}
- 
--	spin_unlock_bh(&pmlmepriv->lock);
-+	spin_unlock_irq(&pmlmepriv->lock);
- }
- 
- /*
+ 		/* enum drbd_packet, but not commands - obsoleted flags:
+ 		 *	P_MAY_IGNORE
 -- 
 2.35.1
+
+
 
