@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24732C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C77EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:43:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381327AbiFGVnK (ORCPT
+        id S1381346AbiFGVnS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:43:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51640 "EHLO
+        Tue, 7 Jun 2022 17:43:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378817AbiFGUwe (ORCPT
+        with ESMTP id S1378861AbiFGUwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDBD1057B;
-        Tue,  7 Jun 2022 11:43:10 -0700 (PDT)
+        Tue, 7 Jun 2022 16:52:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7A6D36687;
+        Tue,  7 Jun 2022 11:43:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDCDD6169F;
-        Tue,  7 Jun 2022 18:43:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DF70C385A2;
-        Tue,  7 Jun 2022 18:43:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11120B8220B;
+        Tue,  7 Jun 2022 18:43:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66F44C385A2;
+        Tue,  7 Jun 2022 18:43:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627389;
-        bh=p6AyCMNuodEwCOkW6r5sEFSQXrSzPjcthGFZPDEb/Xg=;
+        s=korg; t=1654627394;
+        bh=yI9kI2cUy2EEHoPBVfyPg7NWlnZiJY+u04TNrxOuZLo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I/4IzPnM6QEd5U6THkPyc7/RE/G9iXLH1rbx/pmOunImiLe2aD5yQOoJtAIdqDe5L
-         lpEYh7/CedW5NUIG+pehfXqQDjRZypIO42lIUaqG5MXFJMiMMPHdmrNR0Z/fAirkPL
-         U5frNQ1mRnXcBwi56x+hr4k3h1y5DCHIpWQejeho=
+        b=OgpOaKEuIR+OOUDfcMG8hWDlXw2YhtvJTuGERnh2lYECEjlG4ohhwXI4ux7dSFpyz
+         lKtJbBQgkrbNC/NEsesp7hZ42E7eCB7jDxaXthbbxKOvWimzyOPZ+BLlp32RuF3VVy
+         rWif5u2r1EG0scYL96qRYmAqjywNopVRuytoKF+o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.17 721/772] iommu/msm: Fix an incorrect NULL check on list iterator
-Date:   Tue,  7 Jun 2022 19:05:13 +0200
-Message-Id: <20220607165010.287116485@linuxfoundation.org>
+        stable@vger.kernel.org, Dong Aisheng <aisheng.dong@nxp.com>,
+        Minchan Kim <minchan@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Lecopzer Chen <lecopzer.chen@mediatek.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.17 723/772] Revert "mm/cma.c: remove redundant cma_mutex lock"
+Date:   Tue,  7 Jun 2022 19:05:15 +0200
+Message-Id: <20220607165010.345912864@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,58 +54,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Dong Aisheng <aisheng.dong@nxp.com>
 
-commit 8b9ad480bd1dd25f4ff4854af5685fa334a2f57a upstream.
+commit 60a60e32cf91169840abcb4a80f0b0df31708ba7 upstream.
 
-The bug is here:
-	if (!iommu || iommu->dev->of_node != spec->np) {
+This reverts commit a4efc174b382fcdb which introduced a regression issue
+that when there're multiple processes allocating dma memory in parallel by
+calling dma_alloc_coherent(), it may fail sometimes as follows:
 
-The list iterator value 'iommu' will *always* be set and non-NULL by
-list_for_each_entry(), so it is incorrect to assume that the iterator
-value will be NULL if the list is empty or no element is found (in fact,
-it will point to a invalid structure object containing HEAD).
+Error log:
+cma: cma_alloc: linux,cma: alloc failed, req-size: 148 pages, ret: -16
+cma: number of available pages:
+3@125+20@172+12@236+4@380+32@736+17@2287+23@2473+20@36076+99@40477+108@40852+44@41108+20@41196+108@41364+108@41620+
+108@42900+108@43156+483@44061+1763@45341+1440@47712+20@49324+20@49388+5076@49452+2304@55040+35@58141+20@58220+20@58284+
+7188@58348+84@66220+7276@66452+227@74525+6371@75549=> 33161 free of 81920 total pages
 
-To fix the bug, use a new value 'iter' as the list iterator, while use
-the old value 'iommu' as a dedicated variable to point to the found one,
-and remove the unneeded check for 'iommu->dev->of_node != spec->np'
-outside the loop.
+When issue happened, we saw there were still 33161 pages (129M) free CMA
+memory and a lot available free slots for 148 pages in CMA bitmap that we
+want to allocate.
 
-Cc: stable@vger.kernel.org
-Fixes: f78ebca8ff3d6 ("iommu/msm: Add support for generic master bindings")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220501132823.12714-1-xiam0nd.tong@gmail.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+When dumping memory info, we found that there was also ~342M normal
+memory, but only 1352K CMA memory left in buddy system while a lot of
+pageblocks were isolated.
+
+Memory info log:
+Normal free:351096kB min:30000kB low:37500kB high:45000kB reserved_highatomic:0KB
+	    active_anon:98060kB inactive_anon:98948kB active_file:60864kB inactive_file:31776kB
+	    unevictable:0kB writepending:0kB present:1048576kB managed:1018328kB mlocked:0kB
+	    bounce:0kB free_pcp:220kB local_pcp:192kB free_cma:1352kB lowmem_reserve[]: 0 0 0
+Normal: 78*4kB (UECI) 1772*8kB (UMECI) 1335*16kB (UMECI) 360*32kB (UMECI) 65*64kB (UMCI)
+	36*128kB (UMECI) 16*256kB (UMCI) 6*512kB (EI) 8*1024kB (UEI) 4*2048kB (MI) 8*4096kB (EI)
+	8*8192kB (UI) 3*16384kB (EI) 8*32768kB (M) = 489288kB
+
+The root cause of this issue is that since commit a4efc174b382 ("mm/cma.c:
+remove redundant cma_mutex lock"), CMA supports concurrent memory
+allocation.  It's possible that the memory range process A trying to alloc
+has already been isolated by the allocation of process B during memory
+migration.
+
+The problem here is that the memory range isolated during one allocation
+by start_isolate_page_range() could be much bigger than the real size we
+want to alloc due to the range is aligned to MAX_ORDER_NR_PAGES.
+
+Taking an ARMv7 platform with 1G memory as an example, when
+MAX_ORDER_NR_PAGES is big (e.g.  32M with max_order 14) and CMA memory is
+relatively small (e.g.  128M), there're only 4 MAX_ORDER slot, then it's
+very easy that all CMA memory may have already been isolated by other
+processes when one trying to allocate memory using dma_alloc_coherent().
+Since current CMA code will only scan one time of whole available CMA
+memory, then dma_alloc_coherent() may easy fail due to contention with
+other processes.
+
+This patch simply falls back to the original method that using cma_mutex
+to make alloc_contig_range() run sequentially to avoid the issue.
+
+Link: https://lkml.kernel.org/r/20220509094551.3596244-1-aisheng.dong@nxp.com
+Link: https://lore.kernel.org/all/20220315144521.3810298-2-aisheng.dong@nxp.com/
+Fixes: a4efc174b382 ("mm/cma.c: remove redundant cma_mutex lock")
+Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
+Acked-by: Minchan Kim <minchan@kernel.org>
+Acked-by: David Hildenbrand <david@redhat.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Lecopzer Chen <lecopzer.chen@mediatek.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: <stable@vger.kernel.org>	[5.11+]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/msm_iommu.c |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ mm/cma.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -615,16 +615,19 @@ static void insert_iommu_master(struct d
- static int qcom_iommu_of_xlate(struct device *dev,
- 			       struct of_phandle_args *spec)
+--- a/mm/cma.c
++++ b/mm/cma.c
+@@ -37,6 +37,7 @@
+ 
+ struct cma cma_areas[MAX_CMA_AREAS];
+ unsigned cma_area_count;
++static DEFINE_MUTEX(cma_mutex);
+ 
+ phys_addr_t cma_get_base(const struct cma *cma)
  {
--	struct msm_iommu_dev *iommu;
-+	struct msm_iommu_dev *iommu = NULL, *iter;
- 	unsigned long flags;
- 	int ret = 0;
+@@ -471,9 +472,10 @@ struct page *cma_alloc(struct cma *cma,
+ 		spin_unlock_irq(&cma->lock);
  
- 	spin_lock_irqsave(&msm_iommu_lock, flags);
--	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node)
--		if (iommu->dev->of_node == spec->np)
-+	list_for_each_entry(iter, &qcom_iommu_devices, dev_node) {
-+		if (iter->dev->of_node == spec->np) {
-+			iommu = iter;
+ 		pfn = cma->base_pfn + (bitmap_no << cma->order_per_bit);
++		mutex_lock(&cma_mutex);
+ 		ret = alloc_contig_range(pfn, pfn + count, MIGRATE_CMA,
+ 				     GFP_KERNEL | (no_warn ? __GFP_NOWARN : 0));
+-
++		mutex_unlock(&cma_mutex);
+ 		if (ret == 0) {
+ 			page = pfn_to_page(pfn);
  			break;
-+		}
-+	}
- 
--	if (!iommu || iommu->dev->of_node != spec->np) {
-+	if (!iommu) {
- 		ret = -ENODEV;
- 		goto fail;
- 	}
 
 
