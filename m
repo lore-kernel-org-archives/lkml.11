@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C49CCA486
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C7F0CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391833AbiFHAme (ORCPT
+        id S1391624AbiFHAmK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:42:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
+        Tue, 7 Jun 2022 20:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383558AbiFGVxS (ORCPT
+        with ESMTP id S1383780AbiFGWGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBB02E6B0;
-        Tue,  7 Jun 2022 12:11:57 -0700 (PDT)
+        Tue, 7 Jun 2022 18:06:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010FF2514B7;
+        Tue,  7 Jun 2022 12:17:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 350A2618E2;
-        Tue,  7 Jun 2022 19:11:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4103BC385A5;
-        Tue,  7 Jun 2022 19:11:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 909D861929;
+        Tue,  7 Jun 2022 19:17:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C750C385A2;
+        Tue,  7 Jun 2022 19:17:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629116;
-        bh=p64XoYKsCewnEP25aozt6DMdmueR/3Rv9fpOXREktKU=;
+        s=korg; t=1654629461;
+        bh=NrAeKNkxmSE5W5CrvSELKazV+if6cVxvBs1EbjA7sm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tb6B1ZG848OjVJQTFlCiimSmMse0Vp7PhNF5g9AFh7VDno5VRQdRs/yn8ABfGTuYh
-         yxEJN5BxUMp2cNmk+qQcxcikGv5Y0yogN0D14yJEJ//j/AOu7dqwZehAJ1j2AXcWNp
-         3Q9x0wf7+yfRO/YAA4ebkYPv0O2vKlH7h4NUp0VE=
+        b=2K0KKnG7ODsGXjeopDzHxjWsZKPM8m76z5vJ1KFWzyBgNpA5t7IUPKegFrdhBHulk
+         q8MzgHjdHj1yDhMSo1nMXEDml3odqqGEox1dV3mUhrn8W2sTOzwyny7ho0CVy/OGV9
+         LzPZRywOM48s2armHKcOfTlz4yLoNpGTgMedi7gA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org,
+        Daniel Bristot de Oliveria <bristot@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        John Kacur <jkacur@redhat.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 574/879] gpiolib: of: Introduce hook for missing gpio-ranges
-Date:   Tue,  7 Jun 2022 19:01:32 +0200
-Message-Id: <20220607165019.516657451@linuxfoundation.org>
+Subject: [PATCH 5.18 699/879] rtla: Dont overwrite existing directory mode
+Date:   Tue,  7 Jun 2022 19:03:37 +0200
+Message-Id: <20220607165023.137393581@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,71 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@i2se.com>
+From: John Kacur <jkacur@redhat.com>
 
-[ Upstream commit 3550bba25d5587a701e6edf20e20984d2ee72c78 ]
+[ Upstream commit 39c3d84cb5b52792a7323a338334d8d65b2dbe3f ]
 
-Since commit 2ab73c6d8323 ("gpio: Support GPIO controllers without pin-ranges")
-the device tree nodes of GPIO controller need the gpio-ranges property to
-handle gpio-hogs. Unfortunately it's impossible to guarantee that every new
-kernel is shipped with an updated device tree binary.
+The mode on /usr/bin is often 555 these days,
+but make install on rtla overwrites this with 755
 
-In order to provide backward compatibility with those older DTB, we need a
-callback within of_gpiochip_add_pin_range() so the relevant platform driver
-can handle this case.
+Fix this by preserving the current directory if it exists.
 
-Fixes: 2ab73c6d8323 ("gpio: Support GPIO controllers without pin-ranges")
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
-Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Link: https://lore.kernel.org/r/20220409095129.45786-2-stefan.wahren@i2se.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lkml.kernel.org/r/8c294a6961080a1970fd8b73f7bcf1e3984579e2.1651247710.git.bristot@kernel.org
+Link: https://lore.kernel.org/r/20220402043939.6962-1-jkacur@redhat.com
+
+Cc: Daniel Bristot de Oliveria <bristot@redhat.com>
+Fixes: 79ce8f43ac5a ("rtla: Real-Time Linux Analysis tool")
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: John Kacur <jkacur@redhat.com>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpiolib-of.c   |  5 +++++
- include/linux/gpio/driver.h | 12 ++++++++++++
- 2 files changed, 17 insertions(+)
+ tools/tracing/rtla/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
-index 7e5e51d49d09..6dec81b1f24b 100644
---- a/drivers/gpio/gpiolib-of.c
-+++ b/drivers/gpio/gpiolib-of.c
-@@ -931,6 +931,11 @@ static int of_gpiochip_add_pin_range(struct gpio_chip *chip)
- 	if (!np)
- 		return 0;
+diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+index 11fb417abb42..5a3226e436ef 100644
+--- a/tools/tracing/rtla/Makefile
++++ b/tools/tracing/rtla/Makefile
+@@ -23,6 +23,7 @@ $(call allow-override,LD_SO_CONF_PATH,/etc/ld.so.conf.d/)
+ $(call allow-override,LDCONFIG,ldconfig)
  
-+	if (!of_property_read_bool(np, "gpio-ranges") &&
-+	    chip->of_gpio_ranges_fallback) {
-+		return chip->of_gpio_ranges_fallback(chip, np);
-+	}
-+
- 	group_names = of_find_property(np, group_names_propname, NULL);
+ INSTALL	=	install
++MKDIR	=	mkdir
+ FOPTS	:=	-flto=auto -ffat-lto-objects -fexceptions -fstack-protector-strong \
+ 		-fasynchronous-unwind-tables -fstack-clash-protection
+ WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -Wno-maybe-uninitialized
+@@ -68,7 +69,7 @@ static: $(OBJ)
  
- 	for (;; index++) {
-diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
-index 874aabd270c9..48d03eb4e5d8 100644
---- a/include/linux/gpio/driver.h
-+++ b/include/linux/gpio/driver.h
-@@ -501,6 +501,18 @@ struct gpio_chip {
- 	 */
- 	int (*of_xlate)(struct gpio_chip *gc,
- 			const struct of_phandle_args *gpiospec, u32 *flags);
-+
-+	/**
-+	 * @of_gpio_ranges_fallback:
-+	 *
-+	 * Optional hook for the case that no gpio-ranges property is defined
-+	 * within the device tree node "np" (usually DT before introduction
-+	 * of gpio-ranges). So this callback is helpful to provide the
-+	 * necessary backward compatibility for the pin ranges.
-+	 */
-+	int (*of_gpio_ranges_fallback)(struct gpio_chip *gc,
-+				       struct device_node *np);
-+
- #endif /* CONFIG_OF_GPIO */
- };
- 
+ .PHONY: install
+ install: doc_install
+-	$(INSTALL) -d -m 755 $(DESTDIR)$(BINDIR)
++	$(MKDIR) -p $(DESTDIR)$(BINDIR)
+ 	$(INSTALL) rtla -m 755 $(DESTDIR)$(BINDIR)
+ 	$(STRIP) $(DESTDIR)$(BINDIR)/rtla
+ 	@test ! -f $(DESTDIR)$(BINDIR)/osnoise || rm $(DESTDIR)$(BINDIR)/osnoise
 -- 
 2.35.1
 
