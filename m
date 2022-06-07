@@ -2,172 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77930C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1DC3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238707AbiFGLwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40290 "EHLO
+        id S243259AbiFGLw1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:52:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243232AbiFGLvq (ORCPT
+        with ESMTP id S243310AbiFGLvs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 07:51:46 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4C0B5259;
-        Tue,  7 Jun 2022 04:51:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654602681; x=1686138681;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=LH242uOUOVYSvyf632u/YdcynqcsDhqbq4iJHhnzjHY=;
-  b=mYN2Y6lTD1O81RglgIiwGq3g86x3h3tKbuGZ6XFHBys3pircKVMyzBPN
-   7GVpUVQYLHzbATfvAZE67uPJunlQkGjBHfc4Lb8uEReeiSvVNUvYSFNzj
-   aJ/LQPazwjRXwiCteEbI2EtIkQiBMLtCTvcE2+oxpf2Nbx5bFhgY/2uKi
-   I=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 04:51:20 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 04:51:20 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 7 Jun 2022 04:51:20 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 7 Jun 2022 04:51:15 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V14 9/9] arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
-Date:   Tue, 7 Jun 2022 17:20:15 +0530
-Message-ID: <1654602615-28849-10-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1654602615-28849-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1654602615-28849-1-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 7 Jun 2022 07:51:48 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C13ABA57B;
+        Tue,  7 Jun 2022 04:51:24 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LHTG06BCMz9sqr;
+        Tue,  7 Jun 2022 19:51:04 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 7 Jun 2022 19:51:22 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 7 Jun 2022 19:51:21 +0800
+Subject: Re: [PATCH -next v5 0/3] support concurrent sync io for bfq on a
+ specail occasion
+To:     Jan Kara <jack@suse.cz>
+CC:     <paolo.valente@linaro.org>, <tj@kernel.org>,
+        <linux-block@vger.kernel.org>, <cgroups@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>,
+        Jens Axboe <axboe@kernel.dk>
+References: <20220428120837.3737765-1-yukuai3@huawei.com>
+ <d50df657-d859-79cf-c292-412eaa383d2c@huawei.com>
+ <61b67d5e-829c-8130-7bda-81615d654829@huawei.com>
+ <81411289-e13c-20f5-df63-c059babca57a@huawei.com>
+ <d5a90a08-1ac6-587a-e900-0436bd45543a@kernel.dk>
+ <55919e29-1f22-e8aa-f3d2-08c57d9e1c22@huawei.com>
+ <20220523085902.wmxoebyq3crerecr@quack3.lan>
+ <25f6703e-9e10-75d9-a893-6df1e6b75254@kernel.dk>
+ <20220523152516.7sr247i3bzwhr44w@quack3.lan>
+ <21cd1c49-838a-7f03-ab13-9a4f2ac65979@huawei.com>
+ <20220607095430.kac5jgzm2gvd7x3c@quack3.lan>
+From:   Yu Kuai <yukuai3@huawei.com>
+Message-ID: <9a51c7b1-ba6c-0a56-85cf-5e602b9c6ec2@huawei.com>
+Date:   Tue, 7 Jun 2022 19:51:20 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+In-Reply-To: <20220607095430.kac5jgzm2gvd7x3c@quack3.lan>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add pm8008 infra and regulators support for sc7280 idp.
+在 2022/06/07 17:54, Jan Kara 写道:
+> On Tue 07-06-22 11:10:27, Yu Kuai wrote:
+>> 在 2022/05/23 23:25, Jan Kara 写道:
+>>> Hum, for me all emails from Huawei I've received even today fail the DKIM
+>>> check. After some more digging there is interesting inconsistency in DMARC
+>>> configuration for huawei.com domain. There is DMARC record for huawei.com
+>>> like:
+>>>
+>>> huawei.com.		600	IN	TXT	"v=DMARC1;p=none;rua=mailto:dmarc@edm.huawei.com"
+>>>
+>>> which means no DKIM is required but _dmarc.huawei.com has:
+>>>
+>>> _dmarc.huawei.com.	600	IN	TXT	"v=DMARC1;p=quarantine;ruf=mailto:dmarc@huawei.com;rua=mailto:dmarc@huawei.com"
+>>>
+>>> which says that DKIM is required. I guess this inconsistency may be the
+>>> reason why there are problems with DKIM validation for senders from
+>>> huawei.com. Yu Kuai, can you perhaps take this to your IT support to fix
+>>> this? Either make sure huawei.com emails get properly signed with DKIM or
+>>> remove the 'quarantine' record from _dmarc.huawei.com. Thanks!
+>>>
+>>> 								Honza
+>>>
+>> Hi, Jan and Jens
+>>
+>> I just got response from our IT support:
+>>
+>> 'fo' is not set in our dmarc configuration(default is 0), which means
+>> SPF and DKIM verify both failed so that emails will end up in spam.
+>>
+>> It right that DKIM verify is failed because there is no signed key,
+>> however, our IT support are curious how SPF verify faild.
+>>
+>> Can you guys please take a look at ip address of sender? So our IT
+>> support can take a look if they miss it from SPF records.
+> 
+> So SPF is what makes me receive direct emails from you. For example on this
+> email I can see:
+> 
+> Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+>          [185.176.79.56])
+>          (using TLSv1.2 with cipher ECDHE-ECDSA-AES128-GCM-SHA256 (128/128
+>          bits))
+>          (No client certificate requested)
+>          by smtp-in2.suse.de (Postfix) with ESMTPS id 4LHFjN2L0dzZfj
+>          for <jack@suse.cz>; Tue,  7 Jun 2022 03:10:32 +0000 (UTC)
+> ...
+> Authentication-Results: smtp-in2.suse.de;
+>          dkim=none;
+>          dmarc=pass (policy=quarantine) header.from=huawei.com;
+>          spf=pass (smtp-in2.suse.de: domain of yukuai3@huawei.com designates
+>          185.176.79.56 as permitted sender) smtp.mailfrom=yukuai3@huawei.com
+> 
+> So indeed frasgout.his.huawei.com is correct outgoing server which makes
+> smtp-in2.suse.de believe the email despite missing DKIM signature. But the
+> problem starts when you send email to a mailing list. Let me take for
+> example your email from June 2 with Message-ID
+> <20220602082129.2805890-1-yukuai3@huawei.com>, subject "[PATCH -next]
+> mm/filemap: fix that first page is not mark accessed in filemap_read()".
+> There the mailing list server forwards the email so we have:
+> 
+> Received: from smtp-in2.suse.de ([192.168.254.78])
+>          (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+>          by dovecot-director2.suse.de with LMTPS
+>          id 8MC5NfVvmGIPLwAApTUePA
+>          (envelope-from <linux-fsdevel-owner@vger.kernel.org>)
+>          for <jack@imap.suse.de>; Thu, 02 Jun 2022 08:08:21 +0000
+> Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
+>          by smtp-in2.suse.de (Postfix) with ESMTP id 4LDJYK5bf0zZg5
+>          for <jack@suse.cz>; Thu,  2 Jun 2022 08:08:21 +0000 (UTC)
+> Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+>          id S232063AbiFBIIM (ORCPT <rfc822;jack@suse.cz>);
+>          Thu, 2 Jun 2022 04:08:12 -0400
+> Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56178 "EHLO
+>          lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by
+>          vger.kernel.org
+>          with ESMTP id S232062AbiFBIIL (ORCPT
+>          <rfc822;linux-fsdevel@vger.kernel.org>);
+>          Thu, 2 Jun 2022 04:08:11 -0400
+> Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+>          by lindbergh.monkeyblade.net (Postfix) with ESMTPS id
+>          75DDB25FE;
+>          Thu,  2 Jun 2022 01:08:08 -0700 (PDT)
+> 
+> and thus smtp-in2.suse.de complains:
+> 
+> Authentication-Results: smtp-in2.suse.de;
+>          dkim=none;
+>          dmarc=fail reason="SPF not aligned (relaxed), No valid DKIM"
+>          header.from=huawei.com (policy=quarantine);
+>          spf=pass (smtp-in2.suse.de: domain of
+>          linux-fsdevel-owner@vger.kernel.org designates 2620:137:e000::1:20 as
+>          permitted sender) smtp.mailfrom=linux-fsdevel-owner@vger.kernel.org
+> 
+> Because now we've got email with "From" header from huawei.com domain from
+> a vger mail server which was forwarding it. So SPF has no chance to match
+> (in fact SPF did pass for the Return-Path header which points to
+> vger.kernel.org but DMARC defines that if "From" and "Return-Path" do not
+> match, additional validation is needed - this is the "SPF not aligned
+> (relaxed)" message above). And missing DKIM (the additional validation
+> method) sends the email to spam.
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
-Changes in V14:
- - None.
+Thanks a lot for your analysis, afaics, in order to fix the
+problem, either your mail server change the configuration to set
+alignment mode to "relaxed" instead of "strict", or our mail server
+add correct DKIM signature for emails.
 
-Changes in V13:
- - None.
+I'll contact with our IT support and try to add DKIM signature.
 
-Changes in V12:
- - None.
-
-Changes in V11:
- - Add ldos and parent supplies directly under pm8008@8 node.
-
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 66 ++++++++++++++++++++++++++++++++
- 1 file changed, 66 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index 5eb6689..166812e 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -271,6 +271,63 @@
- 	};
- };
- 
-+pm8008_bus: &i2c1 {
-+	status = "okay";
-+};
-+
-+#include "pm8008.dtsi"
-+
-+&pm8008 {
-+	interrupt-parent = <&tlmm>;
-+	interrupts = <24 IRQ_TYPE_EDGE_RISING>;
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pm8008_active>;
-+
-+	reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_LOW>;
-+
-+	vdd_l1_l2-supply = <&vreg_s8b_1p2>;
-+	vdd_l3_l4-supply = <&vreg_s1b_1p8>;
-+	vdd_l5-supply = <&vreg_bob>;
-+	vdd_l6-supply = <&vreg_bob>;
-+	vdd_l7-supply = <&vreg_bob>;
-+};
-+
-+&pm8008_l1 {
-+	regulator-min-microvolt = <950000>;
-+	regulator-max-microvolt = <1300000>;
-+};
-+
-+&pm8008_l2 {
-+	regulator-min-microvolt = <950000>;
-+	regulator-max-microvolt = <1250000>;
-+};
-+
-+&pm8008_l3 {
-+	regulator-min-microvolt = <1650000>;
-+	regulator-max-microvolt = <3000000>;
-+};
-+
-+&pm8008_l4 {
-+	regulator-min-microvolt = <1504000>;
-+	regulator-max-microvolt = <1600000>;
-+};
-+
-+&pm8008_l5 {
-+	regulator-min-microvolt = <2600000>;
-+	regulator-max-microvolt = <3000000>;
-+};
-+
-+&pm8008_l6 {
-+	regulator-min-microvolt = <2600000>;
-+	regulator-max-microvolt = <3000000>;
-+};
-+
-+&pm8008_l7 {
-+	regulator-min-microvolt = <3000000>;
-+	regulator-max-microvolt = <3544000>;
-+};
-+
- &qfprom {
- 	vcc-supply = <&vreg_l1c_1p8>;
- };
-@@ -383,6 +440,15 @@
- 	drive-strength = <2>;
- };
- 
-+&pm8350c_gpios {
-+	pm8008_active: pm8008-active {
-+		pins = "gpio4";
-+		function = "normal";
-+		bias-disable;
-+		power-source = <0>;
-+	};
-+};
-+
- &qspi_cs0 {
- 	bias-disable;
- };
--- 
-2.7.4
-
+Thanks,
+Kuai
