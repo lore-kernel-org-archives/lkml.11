@@ -2,112 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B29C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:56:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44FA6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:57:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242218AbiFGK4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58102 "EHLO
+        id S242234AbiFGK5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242642AbiFGK4A (ORCPT
+        with ESMTP id S242323AbiFGK5L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:56:00 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9A718A323
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:52:39 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nyWp1-00068N-Le; Tue, 07 Jun 2022 12:52:27 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id C13678DBA9;
-        Tue,  7 Jun 2022 10:52:25 +0000 (UTC)
-Date:   Tue, 7 Jun 2022 12:52:25 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 11/13] can: slcan: add ethtool support to reset
- adapter errors
-Message-ID: <20220607105225.xw33w32en7fd4vmh@pengutronix.de>
-References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
- <20220607094752.1029295-12-dario.binacchi@amarulasolutions.com>
+        Tue, 7 Jun 2022 06:57:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280E3B1C11
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:53:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4135B81F0B
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:53:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4504AC385A5;
+        Tue,  7 Jun 2022 10:53:12 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="FYsodRvy"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1654599190;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=rxjelNcjeEt0i9dOEV3EH5f97SJIFoWKoD8/aRDdXMk=;
+        b=FYsodRvyQ/GSo9VM9xueKCXO4s+bED2nxbUoGM6Z7ltR4eq0Ke4TmNVvK4hLqH2ARwy5Sx
+        h9Nm51JE8gQzzzMdFk2gkJDlucSnh2kuqLHkfNri5jWDosb55GaMG0S4SZ0utFcZX76qTI
+        0FZFv9U/txW75FypzRBf1d23097YKx8=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 633b2b86 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 7 Jun 2022 10:53:10 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Subject: [PATCH] random: avoid checking crng_ready() twice in random_init()
+Date:   Tue,  7 Jun 2022 12:53:03 +0200
+Message-Id: <20220607105303.744076-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="iuaxzdq6irzebpfy"
-Content-Disposition: inline
-In-Reply-To: <20220607094752.1029295-12-dario.binacchi@amarulasolutions.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The current flow expands to:
 
---iuaxzdq6irzebpfy
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+    if (crng_ready())
+       ...
+    else if (...)
+        if (!crng_ready())
+            ...
 
-On 07.06.2022 11:47:50, Dario Binacchi wrote:
-> This patch adds a private flag to the slcan driver to switch the
-> "err-rst-on-open" setting on and off.
->=20
-> "err-rst-on-open" on  - Reset error states on opening command
->=20
-> "err-rst-on-open" off - Don't reset error states on opening command
->                         (default)
->=20
-> The setting can only be changed if the interface is down:
->=20
->     ip link set dev can0 down
->     ethtool --set-priv-flags can0 err-rst-on-open {off|on}
->     ip link set dev can0 up
->=20
-> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+The second crng_ready() call is redundant, but can't so easily be
+optimized out by the compiler.
 
-I'm a big fan of bringing the device into a well known good state during
-ifup. What would be the reasons/use cases to not reset the device?
+This commit simplifies that to:
 
-Marc
+    if (crng_ready()
+        ...
+    else if (...)
+        ...
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Fixes: 560181c27b58 ("random: move initialization functions out of hot pages")
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ drivers/char/random.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---iuaxzdq6irzebpfy
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index b691b9d59503..4862d4d3ec49 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -801,7 +801,7 @@ int __init random_init(const char *command_line)
+ 	if (crng_ready())
+ 		crng_reseed();
+ 	else if (trust_cpu)
+-		credit_init_bits(arch_bytes * 8);
++		_credit_init_bits(arch_bytes * 8);
+ 	used_arch_random = arch_bytes * 8 >= POOL_READY_BITS;
+ 
+ 	WARN_ON(register_pm_notifier(&pm_notifier));
+-- 
+2.35.1
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKfLeYACgkQrX5LkNig
-012aSQf/XyECEKk/TwoC1qpcrU6CZDRxLCJs8tO38g6r8u6mGtbNQEwIhtUIYwPZ
-4bPJ+V4a3GaJ1QyY0uAQUZVvrJLergmgsAw+xXg4wYHFzwSG46M7gxtAFiHP7JE8
-rT9u+6IYs7gnhDsp24FpscyE/B7PJ+DaJRvqXe6WO74cPR9hIYlNHgNX5NElUWcz
-IT1rFeGbnYpuW481T0PELKvF7sx8QnGSMPFtrij3vxaNOE9iI5ikMaTiotYM3u2S
-9rG8i3HKyN8xpGt5WXr4mDei4ZQrxSFrUdGQnl6bsDve27+3os44YrXWeFF/+Opa
-T9DFUSWf/2gt3UrSmFM/Kfb6qvxL0Q==
-=PcMi
------END PGP SIGNATURE-----
-
---iuaxzdq6irzebpfy--
