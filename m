@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95B9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:57:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F017C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348501AbiFGR5a (ORCPT
+        id S1348822AbiFGR5h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32930 "EHLO
+        Tue, 7 Jun 2022 13:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347729AbiFGRfp (ORCPT
+        with ESMTP id S1347589AbiFGRf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9927101733;
-        Tue,  7 Jun 2022 10:31:12 -0700 (PDT)
+        Tue, 7 Jun 2022 13:35:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5A5D8C;
+        Tue,  7 Jun 2022 10:30:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99E6E6141D;
-        Tue,  7 Jun 2022 17:31:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1281C385A5;
-        Tue,  7 Jun 2022 17:31:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E845614B5;
+        Tue,  7 Jun 2022 17:30:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15669C385A5;
+        Tue,  7 Jun 2022 17:30:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623072;
-        bh=bYutRTyCZx340hOqd5JJwkoFAuQUP33ThESNoJBGSPQ=;
+        s=korg; t=1654623055;
+        bh=QkOH8aBw7HbsAVaM5zKar+EG2d5a++2v14+Ybugj7nQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sBquOTSOFusKPkZglPP/kOBqVxuhuEmrwZbGYOIvLnO/YszKmT9W73m/qbT2qaxuG
-         jzl4iZdmNh9tY1AoaZZy+S87ODNoLwTZGczJAo2rEZaHxvAnuhgNW70luPx0vIV68u
-         Cx3+NCsYFnP/Q655HzyvN0ab6oNlrWgLnUxxjyl8=
+        b=qn9GOwKP2nqA+Sk4ZNdsOjwC25vjBtA40hq45zdqmYZaGimMwws+CBYm8rqk5P0jn
+         s8b977YjS2G7BtpAcMPh202Yiaw8EVweonWFWpW65Zdk2t51vNhYei2LDQIvL8Cu59
+         z0m0Gudhz9bx/arZ1dt5kXk8saMXvpJbTruWbzmc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuanhong Guo <gch981213@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 283/452] arm: mediatek: select arch timer for mt7629
-Date:   Tue,  7 Jun 2022 19:02:20 +0200
-Message-Id: <20220607164916.984007283@linuxfoundation.org>
+Subject: [PATCH 5.10 278/452] ARM: dts: bcm2835-rpi-b: Fix GPIO line names
+Date:   Tue,  7 Jun 2022 19:02:15 +0200
+Message-Id: <20220607164916.834300719@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,36 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuanhong Guo <gch981213@gmail.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-[ Upstream commit d66aea197d534e23d4989eb72fca9c0c114b97c9 ]
+[ Upstream commit 97bd8659c1c46c23e4daea7e040befca30939950 ]
 
-This chip has an armv7 arch timer according to the dts. Select it in
-Kconfig to enforce the support for it.
-Otherwise the system time is just completely wrong if user forget to
-enable ARM_ARCH_TIMER in kernel config.
+Recently this has been fixed in the vendor tree, so upstream this.
 
-Fixes: a43379dddf1b ("arm: mediatek: add MT7629 smp bring up code")
-Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
-Link: https://lore.kernel.org/r/20220409091347.2473449-1-gch981213@gmail.com
-Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+Fixes: 731b26a6ac17 ("ARM: bcm2835: Add names for the Raspberry Pi GPIO lines")
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-mediatek/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/bcm2835-rpi-b.dts | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm/mach-mediatek/Kconfig b/arch/arm/mach-mediatek/Kconfig
-index 9e0f592d87d8..35a3430c7942 100644
---- a/arch/arm/mach-mediatek/Kconfig
-+++ b/arch/arm/mach-mediatek/Kconfig
-@@ -30,6 +30,7 @@ config MACH_MT7623
- config MACH_MT7629
- 	bool "MediaTek MT7629 SoCs support"
- 	default ARCH_MEDIATEK
-+	select HAVE_ARM_ARCH_TIMER
- 
- config MACH_MT8127
- 	bool "MediaTek MT8127 SoCs support"
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-b.dts b/arch/arm/boot/dts/bcm2835-rpi-b.dts
+index 1b63d6b19750..25d87212cefd 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-b.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-b.dts
+@@ -53,18 +53,17 @@
+ 			  "GPIO18",
+ 			  "NC", /* GPIO19 */
+ 			  "NC", /* GPIO20 */
+-			  "GPIO21",
++			  "CAM_GPIO0",
+ 			  "GPIO22",
+ 			  "GPIO23",
+ 			  "GPIO24",
+ 			  "GPIO25",
+ 			  "NC", /* GPIO26 */
+-			  "CAM_GPIO0",
+-			  /* Binary number representing build/revision */
+-			  "CONFIG0",
+-			  "CONFIG1",
+-			  "CONFIG2",
+-			  "CONFIG3",
++			  "GPIO27",
++			  "GPIO28",
++			  "GPIO29",
++			  "GPIO30",
++			  "GPIO31",
+ 			  "NC", /* GPIO32 */
+ 			  "NC", /* GPIO33 */
+ 			  "NC", /* GPIO34 */
 -- 
 2.35.1
 
