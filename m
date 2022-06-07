@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E51D6CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:24:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B73B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349809AbiFGSYW (ORCPT
+        id S1349979AbiFGSY0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58438 "EHLO
+        Tue, 7 Jun 2022 14:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350248AbiFGSAt (ORCPT
+        with ESMTP id S1350239AbiFGSAt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:00:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0625066CA0;
-        Tue,  7 Jun 2022 10:42:55 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 775846129D;
+        Tue,  7 Jun 2022 10:42:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C2BF61480;
-        Tue,  7 Jun 2022 17:42:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67599C34119;
-        Tue,  7 Jun 2022 17:42:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4335CB81F38;
+        Tue,  7 Jun 2022 17:42:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A611AC385A5;
+        Tue,  7 Jun 2022 17:42:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623758;
-        bh=Oi8ynjuCy12/rKuZoMa+tK0Cg4GnEu3gJj9p6v5n/ic=;
+        s=korg; t=1654623756;
+        bh=3os4nm//VWdtnukH4DMduEp3AKayG5T+pbN7X5F8Egs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jUNF/tkfVSIHH6fDMFiiq54YMeZbYTkF2lTAKXtjoQXu6eY8q8xwUIH80QhVJJJrh
-         8fNtylHkSsOk7aiN8pDKi42t1L9VLBE6B4YXW4iuMZYHXliDqjP0Ke9+W7quBrMsIT
-         WDKOzV1ofaTTK0WyhxcLGlJAFRqf9Vskv6yactNE=
+        b=CXckkpdf9DqDh2geOMFNKWhUonFOF9KphdihsU7b2bNtYneDkAzXlY07lHrybfajr
+         7tjey177Lw1iToZO8t4IhDhIKASc/Kyy1L/fwGZXlVB0ZtnSrtJqGzs77lrKMh1KGd
+         qO3pCdwQLY2d6mpGcoarUojuDrX/nCXioWxj4/+k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
-        Martin Krastev <krastevm@vmware.com>,
+        stable@vger.kernel.org, Vignesh Raghavendra <vigneshr@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 044/667] drm/vmwgfx: validate the screen formats
-Date:   Tue,  7 Jun 2022 18:55:09 +0200
-Message-Id: <20220607164936.125993367@linuxfoundation.org>
+Subject: [PATCH 5.15 079/667] drivers: mmc: sdhci_am654: Add the quirk to set TESTCD bit
+Date:   Tue,  7 Jun 2022 18:55:44 +0200
+Message-Id: <20220607164937.189911146@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,84 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zack Rusin <zackr@vmware.com>
+From: Vignesh Raghavendra <vigneshr@ti.com>
 
-[ Upstream commit 8bb75aeb58bd688d70827ae179bd3da57b6d975b ]
+[ Upstream commit c7666240ec76422cb7546bd07cc8ae80dc0ccdd2 ]
 
-The kms code wasn't validating the modifiers and was letting through
-unsupported formats. rgb8 was never properly supported and has no
-matching svga screen target format so remove it.
-This fixes format/modifier failures in kms_addfb_basic from IGT.
+The ARASAN MMC controller on Keystone 3 class of devices need the SDCD
+line to be connected for proper functioning. Similar to the issue pointed
+out in sdhci-of-arasan.c driver, commit 3794c542641f ("mmc:
+sdhci-of-arasan: Set controller to test mode when no CD bit").
 
-Signed-off-by: Zack Rusin <zackr@vmware.com>
-Reviewed-by: Martin Krastev <krastevm@vmware.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220318174332.440068-4-zack@kde.org
+In cases where this can't be connected, add a quirk to force the
+controller into test mode and set the TESTCD bit. Use the flag
+"ti,fails-without-test-cd", to implement this above quirk when required.
+
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+Link: https://lore.kernel.org/r/20220425063120.10135-3-a-govindraju@ti.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vmwgfx/vmwgfx_kms.c | 30 +++++++++++++++--------------
- drivers/gpu/drm/vmwgfx/vmwgfx_kms.h |  1 -
- 2 files changed, 16 insertions(+), 15 deletions(-)
+ drivers/mmc/host/sdhci_am654.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
-index 50c64e7813be..171e90c4b9f3 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
-@@ -916,6 +916,15 @@ static int vmw_kms_new_framebuffer_surface(struct vmw_private *dev_priv,
- 	 * Sanity checks.
- 	 */
- 
-+	if (!drm_any_plane_has_format(&dev_priv->drm,
-+				      mode_cmd->pixel_format,
-+				      mode_cmd->modifier[0])) {
-+		drm_dbg(&dev_priv->drm,
-+			"unsupported pixel format %p4cc / modifier 0x%llx\n",
-+			&mode_cmd->pixel_format, mode_cmd->modifier[0]);
-+		return -EINVAL;
-+	}
+diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
+index b4891bb26648..a3e62e212631 100644
+--- a/drivers/mmc/host/sdhci_am654.c
++++ b/drivers/mmc/host/sdhci_am654.c
+@@ -147,6 +147,9 @@ struct sdhci_am654_data {
+ 	int drv_strength;
+ 	int strb_sel;
+ 	u32 flags;
++	u32 quirks;
 +
- 	/* Surface must be marked as a scanout. */
- 	if (unlikely(!surface->metadata.scanout))
- 		return -EINVAL;
-@@ -1229,20 +1238,13 @@ static int vmw_kms_new_framebuffer_bo(struct vmw_private *dev_priv,
- 		return -EINVAL;
- 	}
- 
--	/* Limited framebuffer color depth support for screen objects */
--	if (dev_priv->active_display_unit == vmw_du_screen_object) {
--		switch (mode_cmd->pixel_format) {
--		case DRM_FORMAT_XRGB8888:
--		case DRM_FORMAT_ARGB8888:
--			break;
--		case DRM_FORMAT_XRGB1555:
--		case DRM_FORMAT_RGB565:
--			break;
--		default:
--			DRM_ERROR("Invalid pixel format: %p4cc\n",
--				  &mode_cmd->pixel_format);
--			return -EINVAL;
--		}
-+	if (!drm_any_plane_has_format(&dev_priv->drm,
-+				      mode_cmd->pixel_format,
-+				      mode_cmd->modifier[0])) {
-+		drm_dbg(&dev_priv->drm,
-+			"unsupported pixel format %p4cc / modifier 0x%llx\n",
-+			&mode_cmd->pixel_format, mode_cmd->modifier[0]);
-+		return -EINVAL;
- 	}
- 
- 	vfbd = kzalloc(sizeof(*vfbd), GFP_KERNEL);
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
-index bbc809f7bd8a..8c8ee87fd3ac 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
-@@ -248,7 +248,6 @@ struct vmw_framebuffer_bo {
- static const uint32_t __maybe_unused vmw_primary_plane_formats[] = {
- 	DRM_FORMAT_XRGB1555,
- 	DRM_FORMAT_RGB565,
--	DRM_FORMAT_RGB888,
- 	DRM_FORMAT_XRGB8888,
- 	DRM_FORMAT_ARGB8888,
++#define SDHCI_AM654_QUIRK_FORCE_CDTEST BIT(0)
  };
+ 
+ struct sdhci_am654_driver_data {
+@@ -369,6 +372,21 @@ static void sdhci_am654_write_b(struct sdhci_host *host, u8 val, int reg)
+ 	}
+ }
+ 
++static void sdhci_am654_reset(struct sdhci_host *host, u8 mask)
++{
++	u8 ctrl;
++	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
++	struct sdhci_am654_data *sdhci_am654 = sdhci_pltfm_priv(pltfm_host);
++
++	sdhci_reset(host, mask);
++
++	if (sdhci_am654->quirks & SDHCI_AM654_QUIRK_FORCE_CDTEST) {
++		ctrl = sdhci_readb(host, SDHCI_HOST_CONTROL);
++		ctrl |= SDHCI_CTRL_CDTEST_INS | SDHCI_CTRL_CDTEST_EN;
++		sdhci_writeb(host, ctrl, SDHCI_HOST_CONTROL);
++	}
++}
++
+ static int sdhci_am654_execute_tuning(struct mmc_host *mmc, u32 opcode)
+ {
+ 	struct sdhci_host *host = mmc_priv(mmc);
+@@ -500,7 +518,7 @@ static struct sdhci_ops sdhci_j721e_4bit_ops = {
+ 	.set_clock = sdhci_j721e_4bit_set_clock,
+ 	.write_b = sdhci_am654_write_b,
+ 	.irq = sdhci_am654_cqhci_irq,
+-	.reset = sdhci_reset,
++	.reset = sdhci_am654_reset,
+ };
+ 
+ static const struct sdhci_pltfm_data sdhci_j721e_4bit_pdata = {
+@@ -719,6 +737,9 @@ static int sdhci_am654_get_of_property(struct platform_device *pdev,
+ 	device_property_read_u32(dev, "ti,clkbuf-sel",
+ 				 &sdhci_am654->clkbuf_sel);
+ 
++	if (device_property_read_bool(dev, "ti,fails-without-test-cd"))
++		sdhci_am654->quirks |= SDHCI_AM654_QUIRK_FORCE_CDTEST;
++
+ 	sdhci_get_of_property(pdev);
+ 
+ 	return 0;
 -- 
 2.35.1
 
