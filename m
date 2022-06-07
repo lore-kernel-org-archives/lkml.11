@@ -2,110 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA7DC2BBE9
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC8D1C2BBE8
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354693AbiFGS4Z (ORCPT
+        id S1354659AbiFGS4T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49664 "EHLO
+        Tue, 7 Jun 2022 14:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352543AbiFGSRR (ORCPT
+        with ESMTP id S1352580AbiFGSRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9268F13893F;
-        Tue,  7 Jun 2022 10:52:21 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2D4139C9C;
+        Tue,  7 Jun 2022 10:52:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C1C3617AA;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2600EB80B66;
+        Tue,  7 Jun 2022 17:52:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B88EC36AFE;
         Tue,  7 Jun 2022 17:52:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D215C36B02;
-        Tue,  7 Jun 2022 17:52:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624340;
-        bh=Fx89bDr0xooQi1N967Gfk2wxPKTRWLLtU0MNHtBaIxc=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624340;
+        bh=rIWEQtuxPfuKBsbbuJZf9HyCJZEe/1UXdJJHnQuAxVI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FneBxfGRnRwuKOn+qiHEcWtwuKnd76MvdTMomOCLs+VhQY3O52+8lRExSnAHX8cke
-         XTRsDPRJp6FJs9JHbJrzvo2gityKzSZBQaaLvRDcNDXOBFXDKRVYYIDq3HF6LmI4re
-         +VhO8N8aIL1n8mijyeBjVVtApSsr+f4XGkR8SwsHZ8KioJddP2Kjb5Umz45ZQiD/Z3
-         XnRBi9rnaXogV9PjipFDxAUQt87gHlygpKIHIHk2u+ue6Sw7iM1aJCRtuFZtaP0M3A
-         O3e4aU1CMs56CzxWrN2RrGZU+suGHGtK81XM5YbM2Va4KyWDcahPv3dVOAXQIYtL/y
-         jtZmFZ+yfwmZQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Sasha Levin <sashal@kernel.org>, jpoimboe@kernel.org
-Subject: [PATCH AUTOSEL 5.18 53/68] objtool: Mark __ubsan_handle_builtin_unreachable() as noreturn
-Date:   Tue,  7 Jun 2022 13:48:19 -0400
-Message-Id: <20220607174846.477972-53-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=H2k8nFkFSCxe/v3i+0qauiE0lYgq43l6xugLXMGcsrwW9TH80Q8wYOspFKvhCriLt
+         Tbl5znUYll4ZC8yGFRHt3xag4IzUvX2OIxrKQuIAGexLacE3uwrgeHi3pog4aws/vx
+         lzutNAVVv3tsBZ5w2I4MAvu5cv5eMapcT36+JNlo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Jessica Zhang <quic_jesszhan@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 291/667] drm/msm/mdp5: Return error code in mdp5_mixer_release when deadlock is detected
+Date:   Tue,  7 Jun 2022 18:59:16 +0200
+Message-Id: <20220607164943.506465662@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Jessica Zhang <quic_jesszhan@quicinc.com>
 
-[ Upstream commit 385bd430c011a8cb8278e61c32d602d11e06f414 ]
+[ Upstream commit ca75f6f7c6f89365e40f10f641b15981b1f07c31 ]
 
-  fs/ntfs3/ntfs3.prelink.o: warning: objtool: ni_read_frame() falls through to next function ni_readpage_cmpr.cold()
+There is a possibility for mdp5_get_global_state to return
+-EDEADLK when acquiring the modeset lock, but currently global_state in
+mdp5_mixer_release doesn't check for if an error is returned.
 
-That is in fact:
+To avoid a NULL dereference error, let's have mdp5_mixer_release
+check if an error is returned and propagate that error.
 
-000000000000124a <ni_read_frame.cold>:
-    124a:       44 89 e0                mov    %r12d,%eax
-    124d:       0f b6 55 98             movzbl -0x68(%rbp),%edx
-    1251:       48 c7 c7 00 00 00 00    mov    $0x0,%rdi        1254: R_X86_64_32S      .data+0x1380
-    1258:       48 89 c6                mov    %rax,%rsi
-    125b:       e8 00 00 00 00          call   1260 <ni_read_frame.cold+0x16>   125c: R_X86_64_PLT32    __ubsan_handle_shift_out_of_bounds-0x4
-    1260:       48 8d 7d cc             lea    -0x34(%rbp),%rdi
-    1264:       e8 00 00 00 00          call   1269 <ni_read_frame.cold+0x1f>   1265: R_X86_64_PLT32    __tsan_read4-0x4
-    1269:       8b 45 cc                mov    -0x34(%rbp),%eax
-    126c:       e9 00 00 00 00          jmp    1271 <ni_read_frame.cold+0x27>   126d: R_X86_64_PC32     .text+0x19109
-    1271:       48 8b 75 a0             mov    -0x60(%rbp),%rsi
-    1275:       48 63 d0                movslq %eax,%rdx
-    1278:       48 c7 c7 00 00 00 00    mov    $0x0,%rdi        127b: R_X86_64_32S      .data+0x13a0
-    127f:       89 45 88                mov    %eax,-0x78(%rbp)
-    1282:       e8 00 00 00 00          call   1287 <ni_read_frame.cold+0x3d>   1283: R_X86_64_PLT32    __ubsan_handle_shift_out_of_bounds-0x4
-    1287:       8b 45 88                mov    -0x78(%rbp),%eax
-    128a:       e9 00 00 00 00          jmp    128f <ni_read_frame.cold+0x45>   128b: R_X86_64_PC32     .text+0x19098
-    128f:       48 c7 c7 00 00 00 00    mov    $0x0,%rdi        1292: R_X86_64_32S      .data+0x11f0
-    1296:       e8 00 00 00 00          call   129b <ni_readpage_cmpr.cold>     1297: R_X86_64_PLT32    __ubsan_handle_builtin_unreachable-0x4
-
-000000000000129b <ni_readpage_cmpr.cold>:
-
-Tell objtool that __ubsan_handle_builtin_unreachable() is a noreturn.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220502091514.GB479834@worktop.programming.kicks-ass.net
+Reported-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
+Fixes: 7907a0d77cb4 ("drm/msm/mdp5: Use the new private_obj state")
+Reviewed-by: Rob Clark <robdclark@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485181/
+Link: https://lore.kernel.org/r/20220505214051.155-2-quic_jesszhan@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/objtool/check.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c  | 10 ++++++++--
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c | 15 +++++++++++----
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h |  4 ++--
+ 3 files changed, 21 insertions(+), 8 deletions(-)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index ca5b74603008..a0b4a5874fce 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -184,7 +184,8 @@ static bool __dead_end_function(struct objtool_file *file, struct symbol *func,
- 		"do_group_exit",
- 		"stop_this_cpu",
- 		"__invalid_creds",
--               "cpu_startup_entry",
-+		"cpu_startup_entry",
-+		"__ubsan_handle_builtin_unreachable",
- 	};
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
+index bb7d066618e6..477cda4ec23b 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
+@@ -612,9 +612,15 @@ static int mdp5_crtc_setup_pipeline(struct drm_crtc *crtc,
+ 		if (ret)
+ 			return ret;
  
- 	if (!func)
+-		mdp5_mixer_release(new_crtc_state->state, old_mixer);
++		ret = mdp5_mixer_release(new_crtc_state->state, old_mixer);
++		if (ret)
++			return ret;
++
+ 		if (old_r_mixer) {
+-			mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
++			ret = mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
++			if (ret)
++				return ret;
++
+ 			if (!need_right_mixer)
+ 				pipeline->r_mixer = NULL;
+ 		}
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
+index 954db683ae44..2536def2a000 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
+@@ -116,21 +116,28 @@ int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
+ 	return 0;
+ }
+ 
+-void mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
++int mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
+ {
+ 	struct mdp5_global_state *global_state = mdp5_get_global_state(s);
+-	struct mdp5_hw_mixer_state *new_state = &global_state->hwmixer;
++	struct mdp5_hw_mixer_state *new_state;
+ 
+ 	if (!mixer)
+-		return;
++		return 0;
++
++	if (IS_ERR(global_state))
++		return PTR_ERR(global_state);
++
++	new_state = &global_state->hwmixer;
+ 
+ 	if (WARN_ON(!new_state->hwmixer_to_crtc[mixer->idx]))
+-		return;
++		return -EINVAL;
+ 
+ 	DBG("%s: release from crtc %s", mixer->name,
+ 	    new_state->hwmixer_to_crtc[mixer->idx]->name);
+ 
+ 	new_state->hwmixer_to_crtc[mixer->idx] = NULL;
++
++	return 0;
+ }
+ 
+ void mdp5_mixer_destroy(struct mdp5_hw_mixer *mixer)
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
+index 43c9ba43ce18..545ee223b9d7 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
+@@ -30,7 +30,7 @@ void mdp5_mixer_destroy(struct mdp5_hw_mixer *lm);
+ int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
+ 		      uint32_t caps, struct mdp5_hw_mixer **mixer,
+ 		      struct mdp5_hw_mixer **r_mixer);
+-void mdp5_mixer_release(struct drm_atomic_state *s,
+-			struct mdp5_hw_mixer *mixer);
++int mdp5_mixer_release(struct drm_atomic_state *s,
++		       struct mdp5_hw_mixer *mixer);
+ 
+ #endif /* __MDP5_LM_H__ */
 -- 
 2.35.1
+
+
 
