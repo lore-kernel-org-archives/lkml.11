@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DFCBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:53:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242114AbiFGKxt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:53:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42606 "EHLO
+        id S242139AbiFGKxz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:53:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242344AbiFGKuN (ORCPT
+        with ESMTP id S242304AbiFGKuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:50:13 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0902F6892;
-        Tue,  7 Jun 2022 03:49:56 -0700 (PDT)
+        Tue, 7 Jun 2022 06:50:10 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD73F5D2E;
+        Tue,  7 Jun 2022 03:49:53 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 53E9D1F975;
-        Tue,  7 Jun 2022 10:49:55 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 738BA21B73;
+        Tue,  7 Jun 2022 10:49:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654598995; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1654598991; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jGuyYfR3xrhwVD96qOXCK+oM3bpU5xT+JbiivgZ/87A=;
-        b=A5RebowsptA6JoT6dBBO/u2bV9uCEubqdJBBwjGMYV/nk9SPoJuRN+Vk7vuuSjo7tbkgVv
-        g2hJDHJu+DDz+FxC/r+DXqKpYat40e1qlNoK/j7ZCFCr4pYE3bNrEVpj3SV6QcaEdj4se4
-        jn8UVdWqQFx2sOAJzhofyGp2g7IYrfc=
+        bh=Dc00+v41riTVE2YjckLepBjcqVd8iCS58CfTEBLud4Y=;
+        b=aPkQU7QatxA0ndTGVmWwi98BoSWSBucHDbrdPuvKI7PHtB2itPhtsLQqRcdsPYuSw95/Yr
+        oRtVdhD26cmJ8/n+9GLH9ev0ZDOpYr5In3QNr4SpvKOOf53jDfZrEQyMsYjMte0irKP335
+        hzpbfqQjD7efrShM8tza6M5uBkzdV/c=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654598995;
+        s=susede2_ed25519; t=1654598991;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jGuyYfR3xrhwVD96qOXCK+oM3bpU5xT+JbiivgZ/87A=;
-        b=I6VDfcbmBnTuhbfRpBI5m+M7DVAj1hl0NObf0WfgDfAPJo23WXlx/0w1+6AEBca6vALrF/
-        cKSD7VWXLSG6Q9CQ==
+        bh=Dc00+v41riTVE2YjckLepBjcqVd8iCS58CfTEBLud4Y=;
+        b=mSRdvcID3iyPhFaB8N0vRJraa2xJaq/KqjLmqV/l/V8jF7Z9SMMlnQma51Nre7z7a2DW1b
+        pcq9R3WAla78p9Cw==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 2C5CB2C141;
-        Tue,  7 Jun 2022 10:49:55 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 4CCE92C141;
+        Tue,  7 Jun 2022 10:49:51 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 28/36] tty/vt: consolemap: saner variable names in con_get_unimap()
-Date:   Tue,  7 Jun 2022 12:49:38 +0200
-Message-Id: <20220607104946.18710-28-jslaby@suse.cz>
+Subject: [PATCH 09/36] tty/vt: consolemap: use | for binary addition
+Date:   Tue,  7 Jun 2022 12:49:19 +0200
+Message-Id: <20220607104946.18710-9-jslaby@suse.cz>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607104946.18710-1-jslaby@suse.cz>
 References: <20220607104946.18710-1-jslaby@suse.cz>
@@ -57,79 +57,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function uses too vague variable names like i, j, k for iterators, p,
-q, p1, p2 for pointers etc.
-
-Rename all these, so that it is clear what is going on:
-- dict: for dictionaries.
-- d, r, g: for dir, row, glyph iterators -- these are unsigned now.
-- dir, row: for directory and row pointers.
-- glyph: for the glyph.
-- and so on...
+Unicode letters are composed as a bit shifts and sums of three values.
+Use "|" and not "+" for these bit operations. The former is indeed more
+appropriate.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/consolemap.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ drivers/tty/vt/consolemap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index dcbeb38a3a0a..b8f2acb6e388 100644
+index f97081e01b71..016c1a0b4290 100644
 --- a/drivers/tty/vt/consolemap.c
 +++ b/drivers/tty/vt/consolemap.c
-@@ -773,11 +773,11 @@ EXPORT_SYMBOL(con_copy_unimap);
- int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct,
- 		struct unipair __user *list)
- {
--	int i, j, k, ret = 0;
- 	ushort ect;
--	u16 **p1, *p2;
--	struct uni_pagedict *p;
-+	struct uni_pagedict *dict;
- 	struct unipair *unilist;
-+	unsigned int d, r, g;
-+	int ret = 0;
- 
- 	unilist = kvmalloc_array(ct, sizeof(*unilist), GFP_KERNEL);
- 	if (!unilist)
-@@ -786,26 +786,26 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct,
- 	console_lock();
- 
- 	ect = 0;
--	p = *vc->vc_uni_pagedir_loc;
--	if (!p)
-+	dict = *vc->vc_uni_pagedir_loc;
-+	if (!dict)
- 		goto unlock;
- 
--	for (i = 0; i < UNI_DIRS; i++) {
--		p1 = p->uni_pgdir[i];
--		if (!p1)
-+	for (d = 0; d < UNI_DIRS; d++) {
-+		u16 **dir = dict->uni_pgdir[d];
-+		if (!dir)
- 			continue;
- 
--		for (j = 0; j < UNI_DIR_ROWS; j++, p1++) {
--			p2 = *p1;
--			if (!p2)
-+		for (r = 0; r < UNI_DIR_ROWS; r++) {
-+			u16 *row = dir[r];
-+			if (!row)
- 				continue;
- 
--			for (k = 0; k < UNI_ROW_GLYPHS; k++, p2++) {
--				if (*p2 >= MAX_GLYPH)
-+			for (g = 0; g < UNI_ROW_GLYPHS; g++, row++) {
-+				if (*row >= MAX_GLYPH)
- 					continue;
- 				if (ect < ct) {
--					unilist[ect].unicode = UNI(i, j, k);
--					unilist[ect].fontpos = *p2;
-+					unilist[ect].unicode = UNI(d, r, g);
-+					unilist[ect].fontpos = *row;
- 				}
- 				ect++;
+@@ -265,7 +265,7 @@ static void set_inverse_trans_unicode(struct vc_data *conp,
+ 				glyph = p2[k];
+ 				if (glyph >= 0 && glyph < MAX_GLYPH
+ 					       && q[glyph] < 32)
+-		  			q[glyph] = (i << 11) + (j << 6) + k;
++					q[glyph] = (i << 11) | (j << 6) | k;
  			}
+ 		}
+ 	}
+@@ -788,7 +788,7 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct, struct uni
+ 						continue;
+ 					if (ect < ct) {
+ 						unilist[ect].unicode =
+-							(i<<11)+(j<<6)+k;
++							(i<<11) | (j<<6) | k;
+ 						unilist[ect].fontpos = *p2;
+ 					}
+ 					ect++;
 -- 
 2.36.1
 
