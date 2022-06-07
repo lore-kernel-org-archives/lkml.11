@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CDEBCCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B82BCCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:06:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358940AbiFGUF5 (ORCPT
+        id S1358958AbiFGUGI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:05:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58742 "EHLO
+        Tue, 7 Jun 2022 16:06:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354870AbiFGTJQ (ORCPT
+        with ESMTP id S1354865AbiFGTJQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:09:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9482F19226F;
-        Tue,  7 Jun 2022 11:06:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA92E192C4C;
+        Tue,  7 Jun 2022 11:06:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 296CE6171C;
-        Tue,  7 Jun 2022 18:06:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38D94C385A5;
-        Tue,  7 Jun 2022 18:06:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64937616B6;
+        Tue,  7 Jun 2022 18:06:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 796F1C385A5;
+        Tue,  7 Jun 2022 18:06:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625180;
-        bh=RJrjyvSFLG5vaE/YCedMXiTGe5JIDbSiGT/RnpKzjtI=;
+        s=korg; t=1654625177;
+        bh=HplrpNmY7M+tguF3+6EkcKSnhuhXimBvQS/rGeEEEww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1glqT2o1RI0brNLaHaNqsSYNxljv+McoBZahXffSX4U4TrnAjEFrXNzjl2OdtE5dF
-         d8h5J4ltUMiwKTXWkiHsMf5AG7h0ZBkHB7458sJr+EZFExkBvruvCtnayAweHiR85q
-         +xQyrHojr6o0Vp29lD1fatCghPUGXXNSzFLVWwD4=
+        b=rflYA2XxIs8enM9qhFYWGPS5PE2F75FrugtHxcrvehaMPKXC0qzJop7zpTyvMEPlC
+         ci6ZeoodPYJQz0TgGh0bWM6CMze4ExpP6FWmeptbiwxTDTJB0UO2FEkzu86y38RDEb
+         Jgq36MVIKPKJHuVqkbIhmF3ZCYgrbwT/1K9S8gzM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ville Syrjala <ville.syrjala@linux.intel.com>,
-        Jani Nikula <jani.nikula@intel.com>
-Subject: [PATCH 5.15 594/667] drm/i915/dsi: fix VBT send packet port selection for ICL+
-Date:   Tue,  7 Jun 2022 19:04:19 +0200
-Message-Id: <20220607164952.497615195@linuxfoundation.org>
+        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: [PATCH 5.15 593/667] drm/bridge: analogix_dp: Grab runtime PM reference for DP-AUX
+Date:   Tue,  7 Jun 2022 19:04:18 +0200
+Message-Id: <20220607164952.467753831@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,88 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jani Nikula <jani.nikula@intel.com>
+From: Brian Norris <briannorris@chromium.org>
 
-commit 0ea917819d12fed41ea4662cc26ffa0060a5c354 upstream.
+commit 8fb6c44fe8468f92ac7b8bbfcca4404a4e88645f upstream.
 
-The VBT send packet port selection was never updated for ICL+ where the
-2nd link is on port B instead of port C as in VLV+ DSI.
+If the display is not enable()d, then we aren't holding a runtime PM
+reference here. Thus, it's easy to accidentally cause a hang, if user
+space is poking around at /dev/drm_dp_aux0 at the "wrong" time.
 
-First, single link DSI needs to use the configured port instead of
-relying on the VBT sequence block port. Remove the hard-coded port C
-check here and make it generic. For reference, see commit f915084edc5a
-("drm/i915: Changes related to the sequence port no for") for the
-original VLV specific fix.
+Let's get a runtime PM reference, and check that we "see" the panel.
+Don't force any panel power-up, etc., because that can be intrusive, and
+that's not what other drivers do (see
+drivers/gpu/drm/bridge/ti-sn65dsi86.c and
+drivers/gpu/drm/bridge/parade-ps8640.c.)
 
-Second, the sequence block port number is either 0 or 1, where 1
-indicates the 2nd link. Remove the hard-coded port C here for 2nd
-link. (This could be a "find second set bit" on DSI ports, but just
-check the two possible options.)
-
-Third, sanity check the result with a warning to avoid a NULL pointer
-dereference.
-
-Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/5984
-Cc: stable@vger.kernel.org # v4.19+
-Cc: Ville Syrjala <ville.syrjala@linux.intel.com>
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220520094600.2066945-1-jani.nikula@intel.com
-(cherry picked from commit 08c59dde71b73a0ac94e3ed2d431345b01f20485)
+Fixes: 0d97ad03f422 ("drm/bridge: analogix_dp: Remove duplicated code")
+Cc: <stable@vger.kernel.org>
+Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220301181107.v4.1.I773a08785666ebb236917b0c8e6c05e3de471e75@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/display/intel_dsi_vbt.c |   33 ++++++++++++++++++---------
- 1 file changed, 22 insertions(+), 11 deletions(-)
+ drivers/gpu/drm/bridge/analogix/analogix_dp_core.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/i915/display/intel_dsi_vbt.c
-+++ b/drivers/gpu/drm/i915/display/intel_dsi_vbt.c
-@@ -121,9 +121,25 @@ struct i2c_adapter_lookup {
- #define  ICL_GPIO_DDPA_CTRLCLK_2	8
- #define  ICL_GPIO_DDPA_CTRLDATA_2	9
- 
--static enum port intel_dsi_seq_port_to_port(u8 port)
-+static enum port intel_dsi_seq_port_to_port(struct intel_dsi *intel_dsi,
-+					    u8 seq_port)
+--- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
++++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
+@@ -1632,8 +1632,19 @@ static ssize_t analogix_dpaux_transfer(s
+ 				       struct drm_dp_aux_msg *msg)
  {
--	return port ? PORT_C : PORT_A;
-+	/*
-+	 * If single link DSI is being used on any port, the VBT sequence block
-+	 * send packet apparently always has 0 for the port. Just use the port
-+	 * we have configured, and ignore the sequence block port.
-+	 */
-+	if (hweight8(intel_dsi->ports) == 1)
-+		return ffs(intel_dsi->ports) - 1;
+ 	struct analogix_dp_device *dp = to_dp(aux);
++	int ret;
+ 
+-	return analogix_dp_transfer(dp, msg);
++	pm_runtime_get_sync(dp->dev);
 +
-+	if (seq_port) {
-+		if (intel_dsi->ports & PORT_B)
-+			return PORT_B;
-+		else if (intel_dsi->ports & PORT_C)
-+			return PORT_C;
-+	}
++	ret = analogix_dp_detect_hpd(dp);
++	if (ret)
++		goto out;
 +
-+	return PORT_A;
++	ret = analogix_dp_transfer(dp, msg);
++out:
++	pm_runtime_put(dp->dev);
++
++	return ret;
  }
  
- static const u8 *mipi_exec_send_packet(struct intel_dsi *intel_dsi,
-@@ -145,15 +161,10 @@ static const u8 *mipi_exec_send_packet(s
- 
- 	seq_port = (flags >> MIPI_PORT_SHIFT) & 3;
- 
--	/* For DSI single link on Port A & C, the seq_port value which is
--	 * parsed from Sequence Block#53 of VBT has been set to 0
--	 * Now, read/write of packets for the DSI single link on Port A and
--	 * Port C will based on the DVO port from VBT block 2.
--	 */
--	if (intel_dsi->ports == (1 << PORT_C))
--		port = PORT_C;
--	else
--		port = intel_dsi_seq_port_to_port(seq_port);
-+	port = intel_dsi_seq_port_to_port(intel_dsi, seq_port);
-+
-+	if (drm_WARN_ON(&dev_priv->drm, !intel_dsi->dsi_hosts[port]))
-+		goto out;
- 
- 	dsi_device = intel_dsi->dsi_hosts[port]->device;
- 	if (!dsi_device) {
+ struct analogix_dp_device *
 
 
