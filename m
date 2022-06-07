@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19680CCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01DD5CCA489
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352963AbiFGSfm (ORCPT
+        id S1352918AbiFGSfi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43364 "EHLO
+        Tue, 7 Jun 2022 14:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350529AbiFGSBR (ORCPT
+        with ESMTP id S1350622AbiFGSBU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:01:17 -0400
+        Tue, 7 Jun 2022 14:01:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC56DB0D18;
-        Tue,  7 Jun 2022 10:43:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A19614B2ED;
+        Tue,  7 Jun 2022 10:43:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C2A2B822A6;
-        Tue,  7 Jun 2022 17:43:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8D6FC34115;
-        Tue,  7 Jun 2022 17:43:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C50DB82285;
+        Tue,  7 Jun 2022 17:43:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E8AEC385A5;
+        Tue,  7 Jun 2022 17:43:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623797;
-        bh=6PJF83MYmr1iD+sEdmRIMreTQhVP/kon/lfjZYqbT1c=;
+        s=korg; t=1654623780;
+        bh=zLKqJ7YRx9+AQT3UXBkTEmxLVA2wtgkhaELDhD9VzXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bC3HTgcB04D149fsbGE4DZOYGHajlsxBgbjP+gYDkvAv+KaohPW6CxzYGSo8mygks
-         EL/uFbfp2oBJED//5Qar6/p1MrTTE+2CvlKsLgVLkDssYZKC8671Qn6pBDj00V+8mZ
-         2lc4055AEoMvbxSjMJyBmlqVQKJhK/yCqiiZebnY=
+        b=GlUGuVQQDNvj6lGWmJ/1NJLBhxi+Tu7tkDN0fgha0Psco+6rNah0RRrPnFUzTjR76
+         QJO/V1nbcg0dwF1kIBWYRKnZHmMkmBLEHRDJCR80d8DwcYmbJ6u+rpb7EEFio5CNxl
+         ifLmSBpBfeYu+0v+qQ3qHai3OaRm4V9xacrXnFZQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 096/667] mlxsw: Treat LLDP packets as control
-Date:   Tue,  7 Jun 2022 18:56:01 +0200
-Message-Id: <20220607164937.700463981@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Niels Dossche <dossche.niels@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 048/667] mwifiex: add mutex lock for call in mwifiex_dfs_chan_sw_work_queue
+Date:   Tue,  7 Jun 2022 18:55:13 +0200
+Message-Id: <20220607164936.247014318@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,57 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 0106668cd2f91bf913fb78972840dedfba80a3c3 ]
+[ Upstream commit 3e12968f6d12a34b540c39cbd696a760cc4616f0 ]
 
-When trapping packets for on-CPU processing, Spectrum machines
-differentiate between control and non-control traps. Traffic trapped
-through non-control traps is treated as data and kept in shared buffer in
-pools 0-4. Traffic trapped through control traps is kept in the dedicated
-control buffer 9. The advantage of marking traps as control is that
-pressure in the data plane does not prevent the control traffic to be
-processed.
+cfg80211_ch_switch_notify uses ASSERT_WDEV_LOCK to assert that
+net_device->ieee80211_ptr->mtx (which is the same as priv->wdev.mtx)
+is held during the function's execution.
+mwifiex_dfs_chan_sw_work_queue is one of its callers, which does not
+hold that lock, therefore violating the assertion.
+Add a lock around the call.
 
-When the LLDP trap was introduced, it was marked as a control trap. But
-then in commit aed4b5721143 ("mlxsw: spectrum: PTP: Hook into packet
-receive path"), PTP traps were introduced. Because Ethernet-encapsulated
-PTP packets look to the Spectrum-1 ASIC as LLDP traffic and are trapped
-under the LLDP trap, this trap was reconfigured as non-control, in sync
-with the PTP traps.
+Disclaimer:
+I am currently working on a static analyser to detect missing locks.
+This was a reported case. I manually verified the report by looking
+at the code, so that I do not send wrong information or patches.
+After concluding that this seems to be a true positive, I created
+this patch.
+However, as I do not in fact have this particular hardware,
+I was unable to test it.
 
-There is however no requirement that PTP traffic be handled as data.
-Besides, the usual encapsulation for PTP traffic is UDP, not bare Ethernet,
-and that is in deployments that even need PTP, which is far less common
-than LLDP. This is reflected by the default policer, which was not bumped
-up to the 19Kpps / 24Kpps that is the expected load of a PTP-enabled
-Spectrum-1 switch.
-
-Marking of LLDP trap as non-control was therefore probably misguided. In
-this patch, change it back to control.
-
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220321225515.32113-1-dossche.niels@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/marvell/mwifiex/11h.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 26d01adbedad..ce6f6590a777 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -864,7 +864,7 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
- 		.trap = MLXSW_SP_TRAP_CONTROL(LLDP, LLDP, TRAP),
- 		.listeners_arr = {
- 			MLXSW_RXL(mlxsw_sp_rx_ptp_listener, LLDP, TRAP_TO_CPU,
--				  false, SP_LLDP, DISCARD),
-+				  true, SP_LLDP, DISCARD),
- 		},
- 	},
- 	{
+diff --git a/drivers/net/wireless/marvell/mwifiex/11h.c b/drivers/net/wireless/marvell/mwifiex/11h.c
+index d2ee6469e67b..3fa25cd64cda 100644
+--- a/drivers/net/wireless/marvell/mwifiex/11h.c
++++ b/drivers/net/wireless/marvell/mwifiex/11h.c
+@@ -303,5 +303,7 @@ void mwifiex_dfs_chan_sw_work_queue(struct work_struct *work)
+ 
+ 	mwifiex_dbg(priv->adapter, MSG,
+ 		    "indicating channel switch completion to kernel\n");
++	mutex_lock(&priv->wdev.mtx);
+ 	cfg80211_ch_switch_notify(priv->netdev, &priv->dfs_chandef);
++	mutex_unlock(&priv->wdev.mtx);
+ }
 -- 
 2.35.1
 
