@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECE0BCCA486
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B8FCCA48A
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:56:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349118AbiFGRzj (ORCPT
+        id S1349281AbiFGR4B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:55:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53226 "EHLO
+        Tue, 7 Jun 2022 13:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347953AbiFGRf4 (ORCPT
+        with ESMTP id S1347836AbiFGRfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DCBA1116D2;
-        Tue,  7 Jun 2022 10:32:08 -0700 (PDT)
+        Tue, 7 Jun 2022 13:35:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31609110991;
+        Tue,  7 Jun 2022 10:31:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90770B80B66;
-        Tue,  7 Jun 2022 17:32:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0E96C385A5;
-        Tue,  7 Jun 2022 17:32:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1FAC60BC6;
+        Tue,  7 Jun 2022 17:31:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D28D6C385A5;
+        Tue,  7 Jun 2022 17:31:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623125;
-        bh=GdsQyyURWX4InDurQ58yv+y6f3NCaX/dKn+qjGn6t1g=;
+        s=korg; t=1654623111;
+        bh=hpHZm2hdq6YzSfFDfUFKjf/mbBCahDRKcsLFaCrwalA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qyvXsJszkA4SthCuqxgzFVzl7FGHgpEytENIt0Bnqrhl/sFm2mwkQ0cnzqkr6sIJI
-         JlYAzmRBHpSxnnLF2WZ0uC7lg4claSACYfw13HYRQoeSWye0Ix8a+8sJX5zTRS00sJ
-         beYH7mzp3iGscEYFSxD2VBtT9iqoNRNC2FzOM6qg=
+        b=QhukTvsRjjvbyYiltIoLEmp+9McpjyjR1f+fWwD1hO8VYX4RtNv5BJnfPDzEwvYLF
+         sRIgztnrwcvdF5aon2AZglDhQ8ob/PmMTV9X6A14YMk89czA3NTUl1UhiasC6ZH50N
+         j5wW1YCJ940KF9VhoptQN7y0iCJHqMkApY53/DuI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
+        hui li <juanfengpy@gmail.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 305/452] crypto: sun8i-ss - handle zero sized sg
-Date:   Tue,  7 Jun 2022 19:02:42 +0200
-Message-Id: <20220607164917.648249331@linuxfoundation.org>
+Subject: [PATCH 5.10 300/452] proc: fix dentry/inode overinstantiating under /proc/${pid}/net
+Date:   Tue,  7 Jun 2022 19:02:37 +0200
+Message-Id: <20220607164917.497853904@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,47 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Alexey Dobriyan <adobriyan@gmail.com>
 
-[ Upstream commit c149e4763d28bb4c0e5daae8a59f2c74e889f407 ]
+[ Upstream commit 7055197705709c59b8ab77e6a5c7d46d61edd96e ]
 
-sun8i-ss does not handle well the possible zero sized sg.
+When a process exits, /proc/${pid}, and /proc/${pid}/net dentries are
+flushed.  However some leaf dentries like /proc/${pid}/net/arp_cache
+aren't.  That's because respective PDEs have proc_misc_d_revalidate() hook
+which returns 1 and leaves dentries/inodes in the LRU.
 
-Fixes: d9b45418a917 ("crypto: sun8i-ss - support hash algorithms")
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Force revalidation/lookup on everything under /proc/${pid}/net by
+inheriting proc_net_dentry_ops.
+
+[akpm@linux-foundation.org: coding-style cleanups]
+Link: https://lkml.kernel.org/r/YjdVHgildbWO7diJ@localhost.localdomain
+Fixes: c6c75deda813 ("proc: fix lookup in /proc/net subdirectories after setns(2)")
+Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+Reported-by: hui li <juanfengpy@gmail.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ fs/proc/generic.c  | 3 +++
+ fs/proc/proc_net.c | 3 +++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
-index c9edecd43ef9..55d652cd468b 100644
---- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
-+++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
-@@ -379,13 +379,21 @@ int sun8i_ss_hash_run(struct crypto_engine *engine, void *breq)
- 	}
+diff --git a/fs/proc/generic.c b/fs/proc/generic.c
+index 09e4d8a499a3..5898761698c2 100644
+--- a/fs/proc/generic.c
++++ b/fs/proc/generic.c
+@@ -453,6 +453,9 @@ static struct proc_dir_entry *__proc_create(struct proc_dir_entry **parent,
+ 	proc_set_user(ent, (*parent)->uid, (*parent)->gid);
  
- 	len = areq->nbytes;
--	for_each_sg(areq->src, sg, nr_sgs, i) {
-+	sg = areq->src;
-+	i = 0;
-+	while (len > 0 && sg) {
-+		if (sg_dma_len(sg) == 0) {
-+			sg = sg_next(sg);
-+			continue;
-+		}
- 		rctx->t_src[i].addr = sg_dma_address(sg);
- 		todo = min(len, sg_dma_len(sg));
- 		rctx->t_src[i].len = todo / 4;
- 		len -= todo;
- 		rctx->t_dst[i].addr = addr_res;
- 		rctx->t_dst[i].len = digestsize / 4;
-+		sg = sg_next(sg);
-+		i++;
- 	}
- 	if (len > 0) {
- 		dev_err(ss->dev, "remaining len %d\n", len);
+ 	ent->proc_dops = &proc_misc_dentry_ops;
++	/* Revalidate everything under /proc/${pid}/net */
++	if ((*parent)->proc_dops == &proc_net_dentry_ops)
++		pde_force_lookup(ent);
+ 
+ out:
+ 	return ent;
+diff --git a/fs/proc/proc_net.c b/fs/proc/proc_net.c
+index 1aa9236bf1af..707477e27f83 100644
+--- a/fs/proc/proc_net.c
++++ b/fs/proc/proc_net.c
+@@ -362,6 +362,9 @@ static __net_init int proc_net_ns_init(struct net *net)
+ 
+ 	proc_set_user(netd, uid, gid);
+ 
++	/* Seed dentry revalidation for /proc/${pid}/net */
++	pde_force_lookup(netd);
++
+ 	err = -EEXIST;
+ 	net_statd = proc_net_mkdir(net, "stat", netd);
+ 	if (!net_statd)
 -- 
 2.35.1
 
