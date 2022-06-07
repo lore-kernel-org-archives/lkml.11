@@ -2,101 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCE51CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE1FC2BBE5
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352798AbiFGS07 (ORCPT
+        id S1352820AbiFGS1H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:26:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55848 "EHLO
+        Tue, 7 Jun 2022 14:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351504AbiFGSCG (ORCPT
+        with ESMTP id S1351524AbiFGSCH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A19FC152DA3;
-        Tue,  7 Jun 2022 10:44:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A191B80B66;
-        Tue,  7 Jun 2022 17:44:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7BC3C385A5;
-        Tue,  7 Jun 2022 17:44:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623885;
-        bh=0qLbL55MF/P0+Qou/QahJDBlhd7ow5V6cdXeBWPYJEE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vfMpUfSMmS9exOZqS3FazQaS4+ZPU25RWxDKqdwglEvwobY0uks+1c6XVYWiDJs98
-         Pk5EiVCL5jLr4VX5dByU3/TDC4GOKf/KQDp/WhvHNnHZvTr+E+FTcIAPBDvajKdxdC
-         iJt/rYvOUtFeQDNrxC05LOyPNJA2ZSpQakhlaABU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 125/667] ASoC: rt5645: Fix errorenous cleanup order
-Date:   Tue,  7 Jun 2022 18:56:30 +0200
-Message-Id: <20220607164938.574807955@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 14:02:07 -0400
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61047153525;
+        Tue,  7 Jun 2022 10:44:49 -0700 (PDT)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-2ec42eae76bso184011477b3.10;
+        Tue, 07 Jun 2022 10:44:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=W+PiNQ7Ke1EDMoHaTdFM09JbhwxFO++lctg5sJwbwR4=;
+        b=3vMAA1UaS1/xeAOJAkfgny+2HK4QsPFfmlUIq8LDajMksuObgQ1s+tvWBohiUWfymJ
+         F2ByZVwtnWug5x8vuU9cTVE6ZJeL3sNQAeMsTXQvw6fg/7WitgBAm28Jtk8uMRp2MbnY
+         wgsluHA6tbwr/Qy/DORBjlLAEal/KpW3j3lRM9Dj7UUZsLOmisDufwAiNoOcAQNkHnUM
+         97pz9jPEI0XXl2bJs1pRWqVqA1srd9FNxTuxuwJS3Aw58LCtZK29kP5RxH1HmdXGkWE/
+         KZTnT4t34t6uak/fhsk1xESuRGOMgMnQocm9H8o97YSw6OMXal5tKkXK8il9YitHJZ5o
+         OHyw==
+X-Gm-Message-State: AOAM533n/7Mh5e6S+eXveoxQ9WyedSF786VmoQMzIenOSnyO84KTEzWE
+        2AcdHJHDkviKjLcrdbEEk/kMWjb8HCUnOhCGOgo=
+X-Google-Smtp-Source: ABdhPJwzutUKNflb7PpXgywg1Uv/bvtdxWRNOeG6nVPsQilGXkeQttAkd8clvXym4gpzSPRzewnvcZZ1/ttEcYpnDSk=
+X-Received: by 2002:a05:690c:28b:b0:30c:bcc2:240d with SMTP id
+ bf11-20020a05690c028b00b0030cbcc2240dmr34156080ywb.19.1654623888166; Tue, 07
+ Jun 2022 10:44:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220606165640.634811-1-dmitry.osipenko@collabora.com>
+In-Reply-To: <20220606165640.634811-1-dmitry.osipenko@collabora.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 7 Jun 2022 19:44:37 +0200
+Message-ID: <CAJZ5v0icfqdOiPottyc=h6VyagynkbV7-0EqrC+5PZMKV5s6Lg@mail.gmail.com>
+Subject: Re: [PATCH v1] kernel/reboot: Fix powering off using a non-syscall
+ code paths
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+On Mon, Jun 6, 2022 at 6:57 PM Dmitry Osipenko
+<dmitry.osipenko@collabora.com> wrote:
+>
+> There are other methods of powering off machine than the reboot syscall.
+> Previously we missed to coved those methods and it created power-off
+> regression for some machines, like the PowerPC e500. Fix this problem
+> by moving the legacy sys-off handler registration to the latest phase
+> of power-off process and making the kernel_can_power_off() to check the
+> legacy pm_power_off presence.
+>
+> Tested-by: Michael Ellerman <mpe@ellerman.id.au> # ppce500
+> Reported-by: Michael Ellerman <mpe@ellerman.id.au> # ppce500
+> Fixes: da007f171fc9 ("kernel/reboot: Change registration order of legacy power-off handler")
+> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> ---
+>  kernel/reboot.c | 46 ++++++++++++++++++++++++++--------------------
+>  1 file changed, 26 insertions(+), 20 deletions(-)
+>
+> diff --git a/kernel/reboot.c b/kernel/reboot.c
+> index 3b19b123efec..b5a71d1ff603 100644
+> --- a/kernel/reboot.c
+> +++ b/kernel/reboot.c
+> @@ -320,6 +320,7 @@ static struct sys_off_handler platform_sys_off_handler;
+>  static struct sys_off_handler *alloc_sys_off_handler(int priority)
+>  {
+>         struct sys_off_handler *handler;
+> +       gfp_t flags;
+>
+>         /*
+>          * Platforms like m68k can't allocate sys_off handler dynamically
+> @@ -330,7 +331,12 @@ static struct sys_off_handler *alloc_sys_off_handler(int priority)
+>                 if (handler->cb_data)
+>                         return ERR_PTR(-EBUSY);
+>         } else {
+> -               handler = kzalloc(sizeof(*handler), GFP_KERNEL);
+> +               if (system_state > SYSTEM_RUNNING)
+> +                       flags = GFP_ATOMIC;
+> +               else
+> +                       flags = GFP_KERNEL;
+> +
+> +               handler = kzalloc(sizeof(*handler), flags);
+>                 if (!handler)
+>                         return ERR_PTR(-ENOMEM);
+>         }
+> @@ -440,7 +446,7 @@ void unregister_sys_off_handler(struct sys_off_handler *handler)
+>  {
+>         int err;
+>
+> -       if (!handler)
+> +       if (IS_ERR_OR_NULL(handler))
+>                 return;
+>
+>         if (handler->blocking)
+> @@ -615,7 +621,23 @@ static void do_kernel_power_off_prepare(void)
+>   */
+>  void do_kernel_power_off(void)
+>  {
+> +       struct sys_off_handler *sys_off = NULL;
+> +
+> +       /*
+> +        * Register sys-off handlers for legacy PM callback. This allows
+> +        * legacy PM callbacks temporary co-exist with the new sys-off API.
+> +        *
+> +        * TODO: Remove legacy handlers once all legacy PM users will be
+> +        *       switched to the sys-off based APIs.
+> +        */
+> +       if (pm_power_off)
+> +               sys_off = register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
+> +                                                  SYS_OFF_PRIO_DEFAULT,
+> +                                                  legacy_pm_power_off, NULL);
+> +
+>         atomic_notifier_call_chain(&power_off_handler_list, 0, NULL);
+> +
+> +       unregister_sys_off_handler(sys_off);
+>  }
+>
+>  /**
+> @@ -626,7 +648,8 @@ void do_kernel_power_off(void)
+>   */
+>  bool kernel_can_power_off(void)
+>  {
+> -       return !atomic_notifier_call_chain_is_empty(&power_off_handler_list);
+> +       return !atomic_notifier_call_chain_is_empty(&power_off_handler_list) ||
+> +               pm_power_off;
+>  }
+>  EXPORT_SYMBOL_GPL(kernel_can_power_off);
+>
+> @@ -661,7 +684,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+>                 void __user *, arg)
+>  {
+>         struct pid_namespace *pid_ns = task_active_pid_ns(current);
+> -       struct sys_off_handler *sys_off = NULL;
+>         char buffer[256];
+>         int ret = 0;
+>
+> @@ -686,21 +708,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+>         if (ret)
+>                 return ret;
+>
+> -       /*
+> -        * Register sys-off handlers for legacy PM callback. This allows
+> -        * legacy PM callbacks temporary co-exist with the new sys-off API.
+> -        *
+> -        * TODO: Remove legacy handlers once all legacy PM users will be
+> -        *       switched to the sys-off based APIs.
+> -        */
+> -       if (pm_power_off) {
+> -               sys_off = register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
+> -                                                  SYS_OFF_PRIO_DEFAULT,
+> -                                                  legacy_pm_power_off, NULL);
+> -               if (IS_ERR(sys_off))
+> -                       return PTR_ERR(sys_off);
+> -       }
+> -
+>         /* Instead of trying to make the power_off code look like
+>          * halt when pm_power_off is not set do it the easy way.
+>          */
+> @@ -758,7 +765,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+>                 break;
+>         }
+>         mutex_unlock(&system_transition_mutex);
+> -       unregister_sys_off_handler(sys_off);
+>         return ret;
+>  }
+>
+> --
 
-[ Upstream commit 2def44d3aec59e38d2701c568d65540783f90f2f ]
-
-There is a logic error when removing rt5645 device as the function
-rt5645_i2c_remove() first cancel the &rt5645->jack_detect_work and
-delete the &rt5645->btn_check_timer latter. However, since the timer
-handler rt5645_btn_check_callback() will re-queue the jack_detect_work,
-this cleanup order is buggy.
-
-That is, once the del_timer_sync in rt5645_i2c_remove is concurrently
-run with the rt5645_btn_check_callback, the canceled jack_detect_work
-will be rescheduled again, leading to possible use-after-free.
-
-This patch fix the issue by placing the del_timer_sync function before
-the cancel_delayed_work_sync.
-
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220516092035.28283-1-linma@zju.edu.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/codecs/rt5645.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/sound/soc/codecs/rt5645.c b/sound/soc/codecs/rt5645.c
-index 9408ee63cb26..8ea6d4333562 100644
---- a/sound/soc/codecs/rt5645.c
-+++ b/sound/soc/codecs/rt5645.c
-@@ -4154,9 +4154,14 @@ static int rt5645_i2c_remove(struct i2c_client *i2c)
- 	if (i2c->irq)
- 		free_irq(i2c->irq, rt5645);
- 
-+	/*
-+	 * Since the rt5645_btn_check_callback() can queue jack_detect_work,
-+	 * the timer need to be delted first
-+	 */
-+	del_timer_sync(&rt5645->btn_check_timer);
-+
- 	cancel_delayed_work_sync(&rt5645->jack_detect_work);
- 	cancel_delayed_work_sync(&rt5645->rcclock_work);
--	del_timer_sync(&rt5645->btn_check_timer);
- 
- 	regulator_bulk_disable(ARRAY_SIZE(rt5645->supplies), rt5645->supplies);
- 
--- 
-2.35.1
-
-
-
+Applied (with a couple of edits in the changelog), thanks!
