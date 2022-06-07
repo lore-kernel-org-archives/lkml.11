@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1963CCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC3D3CCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379722AbiFGV0A (ORCPT
+        id S1379838AbiFGV0I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:26:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56930 "EHLO
+        Tue, 7 Jun 2022 17:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376813AbiFGU2L (ORCPT
+        with ESMTP id S1376553AbiFGUbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:28:11 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5D11D92CA;
-        Tue,  7 Jun 2022 11:33:14 -0700 (PDT)
+        Tue, 7 Jun 2022 16:31:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C6F1E1745;
+        Tue,  7 Jun 2022 11:34:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A7F1DCE240B;
-        Tue,  7 Jun 2022 18:33:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F1FAC385A2;
-        Tue,  7 Jun 2022 18:33:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23CD5B8237B;
+        Tue,  7 Jun 2022 18:34:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E6EEC34115;
+        Tue,  7 Jun 2022 18:34:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626791;
-        bh=Pm1sdPAeGW7S0pQyTrq8Rdh0/AYBc4BFWlu2G/4YV0M=;
+        s=korg; t=1654626862;
+        bh=ucIaXTRbVB/oL/7bl68xYrtIpt1U6H0UrivdO4ahS1Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T25DMwlFjKmsg3ot7bubjOSzselnbXcIqSZwq7H2Qm4EhN/6luxxQpQ08+hotAlKU
-         O+ik5k/xD8p59dpj82xyUhYlWA91XW6lVn65PcsfTQbpA72gTOcd169UVA/Xc3u6UO
-         et447AIGklN7jRwUZAupJFZ6YuvvWeSc17Ayepoo=
+        b=cX0eDpnmo9GNCEhU818YTH3+W50I0O8q961MiCLCABqKxoNCIkpD1WKGPowkWyywO
+         ntAPvVVaBAp+dwJ46lVQ3RaJSbQJsLMRGrx2gbpQWOdUq8YRMZLsFVDDxcEpmgi4Sm
+         tWzLiUoKPPqzDdWj00WUAdz9EaR8BkOkyq46iE5o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jacky Li <jackyli@google.com>,
-        Peter Gonda <pgonda@google.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
+        stable@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 504/772] crypto: ccp - Fix the INIT_EX data file open failure
-Date:   Tue,  7 Jun 2022 19:01:36 +0200
-Message-Id: <20220607165003.831479908@linuxfoundation.org>
+Subject: [PATCH 5.17 532/772] crypto: cryptd - Protect per-CPU resource by disabling BH.
+Date:   Tue,  7 Jun 2022 19:02:04 +0200
+Message-Id: <20220607165004.646799415@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,95 +51,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jacky Li <jackyli@google.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-[ Upstream commit 05def5cacfa0bd5ba380116046747da07ff5bd78 ]
+[ Upstream commit 91e8bcd7b4da182e09ea19a2c73167345fe14c98 ]
 
-There are 2 common cases when INIT_EX data file might not be
-opened successfully and fail the sev initialization:
+The access to cryptd_queue::cpu_queue is synchronized by disabling
+preemption in cryptd_enqueue_request() and disabling BH in
+cryptd_queue_worker(). This implies that access is allowed from BH.
 
-1. In user namespaces, normal user tasks (e.g. VMM) can change their
-   current->fs->root to point to arbitrary directories. While
-   init_ex_path is provided as a module param related to root file
-   system. Solution: use the root directory of init_task to avoid
-   accessing the wrong file.
+If cryptd_enqueue_request() is invoked from preemptible context _and_
+soft interrupt then this can lead to list corruption since
+cryptd_enqueue_request() is not protected against access from
+soft interrupt.
 
-2. Normal user tasks (e.g. VMM) don't have the privilege to access
-   the INIT_EX data file. Solution: open the file as root and
-   restore permissions immediately.
+Replace get_cpu() in cryptd_enqueue_request() with local_bh_disable()
+to ensure BH is always disabled.
+Remove preempt_disable() from cryptd_queue_worker() since it is not
+needed because local_bh_disable() ensures synchronisation.
 
-Fixes: 3d725965f836 ("crypto: ccp - Add SEV_INIT_EX support")
-Signed-off-by: Jacky Li <jackyli@google.com>
-Reviewed-by: Peter Gonda <pgonda@google.com>
-Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
+Fixes: 254eff771441 ("crypto: cryptd - Per-CPU thread implementation...")
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/ccp/sev-dev.c | 30 ++++++++++++++++++++++++++++--
- 1 file changed, 28 insertions(+), 2 deletions(-)
+ crypto/cryptd.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
-index 6ab93dfd478a..3aefb177715e 100644
---- a/drivers/crypto/ccp/sev-dev.c
-+++ b/drivers/crypto/ccp/sev-dev.c
-@@ -23,6 +23,7 @@
- #include <linux/gfp.h>
- #include <linux/cpufeature.h>
- #include <linux/fs.h>
-+#include <linux/fs_struct.h>
+diff --git a/crypto/cryptd.c b/crypto/cryptd.c
+index a1bea0f4baa8..668095eca0fa 100644
+--- a/crypto/cryptd.c
++++ b/crypto/cryptd.c
+@@ -39,6 +39,10 @@ struct cryptd_cpu_queue {
+ };
  
- #include <asm/smp.h>
+ struct cryptd_queue {
++	/*
++	 * Protected by disabling BH to allow enqueueing from softinterrupt and
++	 * dequeuing from kworker (cryptd_queue_worker()).
++	 */
+ 	struct cryptd_cpu_queue __percpu *cpu_queue;
+ };
  
-@@ -170,6 +171,31 @@ static void *sev_fw_alloc(unsigned long len)
- 	return page_address(page);
- }
- 
-+static struct file *open_file_as_root(const char *filename, int flags, umode_t mode)
-+{
-+	struct file *fp;
-+	struct path root;
-+	struct cred *cred;
-+	const struct cred *old_cred;
-+
-+	task_lock(&init_task);
-+	get_fs_root(init_task.fs, &root);
-+	task_unlock(&init_task);
-+
-+	cred = prepare_creds();
-+	if (!cred)
-+		return ERR_PTR(-ENOMEM);
-+	cred->fsuid = GLOBAL_ROOT_UID;
-+	old_cred = override_creds(cred);
-+
-+	fp = file_open_root(&root, filename, flags, mode);
-+	path_put(&root);
-+
-+	revert_creds(old_cred);
-+
-+	return fp;
-+}
-+
- static int sev_read_init_ex_file(void)
+@@ -125,28 +129,28 @@ static void cryptd_fini_queue(struct cryptd_queue *queue)
+ static int cryptd_enqueue_request(struct cryptd_queue *queue,
+ 				  struct crypto_async_request *request)
  {
- 	struct sev_device *sev = psp_master->sev_data;
-@@ -181,7 +207,7 @@ static int sev_read_init_ex_file(void)
- 	if (!sev_init_ex_buffer)
- 		return -EOPNOTSUPP;
+-	int cpu, err;
++	int err;
+ 	struct cryptd_cpu_queue *cpu_queue;
+ 	refcount_t *refcnt;
  
--	fp = filp_open(init_ex_path, O_RDONLY, 0);
-+	fp = open_file_as_root(init_ex_path, O_RDONLY, 0);
- 	if (IS_ERR(fp)) {
- 		int ret = PTR_ERR(fp);
+-	cpu = get_cpu();
++	local_bh_disable();
+ 	cpu_queue = this_cpu_ptr(queue->cpu_queue);
+ 	err = crypto_enqueue_request(&cpu_queue->queue, request);
  
-@@ -217,7 +243,7 @@ static void sev_write_init_ex_file(void)
- 	if (!sev_init_ex_buffer)
- 		return;
+ 	refcnt = crypto_tfm_ctx(request->tfm);
  
--	fp = filp_open(init_ex_path, O_CREAT | O_WRONLY, 0600);
-+	fp = open_file_as_root(init_ex_path, O_CREAT | O_WRONLY, 0600);
- 	if (IS_ERR(fp)) {
- 		dev_err(sev->dev,
- 			"SEV: could not open file for write, error %ld\n",
+ 	if (err == -ENOSPC)
+-		goto out_put_cpu;
++		goto out;
+ 
+-	queue_work_on(cpu, cryptd_wq, &cpu_queue->work);
++	queue_work_on(smp_processor_id(), cryptd_wq, &cpu_queue->work);
+ 
+ 	if (!refcount_read(refcnt))
+-		goto out_put_cpu;
++		goto out;
+ 
+ 	refcount_inc(refcnt);
+ 
+-out_put_cpu:
+-	put_cpu();
++out:
++	local_bh_enable();
+ 
+ 	return err;
+ }
+@@ -162,15 +166,10 @@ static void cryptd_queue_worker(struct work_struct *work)
+ 	cpu_queue = container_of(work, struct cryptd_cpu_queue, work);
+ 	/*
+ 	 * Only handle one request at a time to avoid hogging crypto workqueue.
+-	 * preempt_disable/enable is used to prevent being preempted by
+-	 * cryptd_enqueue_request(). local_bh_disable/enable is used to prevent
+-	 * cryptd_enqueue_request() being accessed from software interrupts.
+ 	 */
+ 	local_bh_disable();
+-	preempt_disable();
+ 	backlog = crypto_get_backlog(&cpu_queue->queue);
+ 	req = crypto_dequeue_request(&cpu_queue->queue);
+-	preempt_enable();
+ 	local_bh_enable();
+ 
+ 	if (!req)
 -- 
 2.35.1
 
