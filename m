@@ -2,114 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B7AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6AF0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:33:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344254AbiFGQck (ORCPT
+        id S1345031AbiFGQdr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49680 "EHLO
+        Tue, 7 Jun 2022 12:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235612AbiFGQci (ORCPT
+        with ESMTP id S237616AbiFGQdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:32:38 -0400
-Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E539022BCD;
-        Tue,  7 Jun 2022 09:32:36 -0700 (PDT)
-Received: by mail-io1-f52.google.com with SMTP id d7so9498406iof.10;
-        Tue, 07 Jun 2022 09:32:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rVeOPt1rquCTzA9kjd/p/dlOlMYCaOYG3RBeb0SndAg=;
-        b=ZS+PZQoSn2sASIZ3iX7ndCR/SJBykl5IBju5bU6pSut5kGIfR9yWXytk89P0VWJe/4
-         Qy32bwcj6yU6oMzY0rlzND0FkHmRuZrQwrJVCiVl3eiMh0hlzOokrat6VtyELDxsdclr
-         zUsn/lFOTpjKKb55HdyVihW8sFeDPVTBJwyITwcnEb3SzgyXkAG+XlhyL5lzRBDPdI/1
-         1IrDaH+bC1opyOjYXlhekGbwPShOoa11J1G2C8S0TGaZhS4piJrdrosmOPW98rbaS5B/
-         ChdkOvYv+vFjbpZUNpa3WCiQemVQx/Yh6PDEckTkb5gu1r51zrNb+e3YtPCHiLKazsE4
-         aWAw==
-X-Gm-Message-State: AOAM531OBL+ZgVa3v8gmKb+KP1eCNB5c5u6rQAOBGUI1uqRsN9Vke1Mr
-        1YxYLG2kzv5neMnepJV4eA==
-X-Google-Smtp-Source: ABdhPJwxy5B7FSxAcypBGvH0qkzPyXdFxGcvh0ARIoNUf/Ssjkc7hT+UhVIXEto2xhsx82Tfyt/aXg==
-X-Received: by 2002:a05:6602:2d0e:b0:64f:d1ff:ac9c with SMTP id c14-20020a0566022d0e00b0064fd1ffac9cmr14578583iow.41.1654619556127;
-        Tue, 07 Jun 2022 09:32:36 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id l10-20020a02cd8a000000b00330f8579e2csm6785921jap.99.2022.06.07.09.32.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 09:32:35 -0700 (PDT)
-Received: (nullmailer pid 3391203 invoked by uid 1000);
-        Tue, 07 Jun 2022 16:32:31 -0000
-Date:   Tue, 7 Jun 2022 10:32:31 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Abel Vesa <abel.vesa@nxp.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 09/10] dt-bindings: arm: freescale: Add fsl,scu-wdt yaml
- file
-Message-ID: <20220607163231.GC3384053-robh@kernel.org>
-References: <20220607105951.1821519-1-abel.vesa@nxp.com>
- <20220607105951.1821519-10-abel.vesa@nxp.com>
+        Tue, 7 Jun 2022 12:33:44 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6420E140E9;
+        Tue,  7 Jun 2022 09:33:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654619623; x=1686155623;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=GVRCx6VMUkvoUh4rTdpxk3rMYV/vXBx5Cs+h/nOmupc=;
+  b=eKCDwCHYMQ9NvBS0sJJtTA4/GH3FO29lKA7VPy6O9a9qQAYtR0okQs9I
+   2Ja45QlHYNOB5fJi5y23IckyfK+GSzrhsaxRUrx53l2hV+427hBikQD0T
+   E4GBtdKIwDtBBnR1m2unYm4gZSUt35iR/YTsMasHqU+WqR60KFoddTbZO
+   +E+DTTGqF2f4xGTwkUr1eFO/jPHN7OW/YUOJuAxAR9XyMoJd2ouPgLdis
+   Ly1jsScUa7BDw1CTGffZEx+bRhjyu+CAfJNEGXoHNMOsrhOBiK7KvkmBd
+   BNGynOUZ4NVgNg2gyHKIks9GO/4aVhDZJsUU7BY8sNztGFtKvW5d0+ZC3
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="265231020"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="265231020"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 09:25:07 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="636199916"
+Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 09:25:05 -0700
+Date:   Tue, 7 Jun 2022 19:25:03 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 36/36] tty/vt: consolemap: walk the buffer only once in
+ con_set_trans_old()
+In-Reply-To: <20220607104946.18710-36-jslaby@suse.cz>
+Message-ID: <4fee5c3-bdd7-f69-d8c5-2d5610eb5c3b@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-36-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607105951.1821519-10-abel.vesa@nxp.com>
+Content-Type: multipart/mixed; boundary="8323329-1117444838-1654619107=:1622"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 01:59:50PM +0300, Abel Vesa wrote:
-> This documents separately the watchdog child node of the SCU main node.
-> 
-> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> ---
->  .../bindings/arm/freescale/fsl,scu-wdt.yaml   | 29 +++++++++++++++++++
->  1 file changed, 29 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/arm/freescale/fsl,scu-wdt.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/freescale/fsl,scu-wdt.yaml b/Documentation/devicetree/bindings/arm/freescale/fsl,scu-wdt.yaml
-> new file mode 100644
-> index 000000000000..c5d71ca83963
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/arm/freescale/fsl,scu-wdt.yaml
-> @@ -0,0 +1,29 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/arm/freescale/fsl,scu-wdt.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: i.MX SCU Client Device Node - Watchdog bindings based on SCU Message Protocol
-> +
-> +maintainers:
-> +  - Shawn Guo <shawnguo@kernel.org>
-> +
-> +description: i.MX SCU Client Device Node
-> +  Client nodes are maintained as children of the relevant IMX-SCU device node.
-> +
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Need a ref to watchdog.yaml
+--8323329-1117444838-1654619107=:1622
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - items:
-> +          - const: fsl,imx8qxp-sc-wdt
-> +          - const: fsl,imx-sc-wdt
-> +      - items:
-> +          - const: fsl,imx-sc-wdt
-> +
-> +  timeout-sec: true
-> +
-> +additionalProperties: false
-> +
-> +required:
-> +  - compatible
-> -- 
-> 2.34.3
+On Tue, 7 Jun 2022, Jiri Slaby wrote:
+
+> Fetch the user data one by one (by get_user()) and fill in the local
+> buffer simultaneously. I.e. we no longer require to walk two buffers and
+> save thus 256 B from stack (whole ubuf).
 > 
-> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+...for this and all patches that were not commented individually.
+
+-- 
+ i.
+
+--8323329-1117444838-1654619107=:1622--
