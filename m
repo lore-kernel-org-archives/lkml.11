@@ -2,50 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 409EDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:53:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E72A0CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352985AbiFGSxi (ORCPT
+        id S1352819AbiFGSxv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:53:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42296 "EHLO
+        Tue, 7 Jun 2022 14:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349799AbiFGSSY (ORCPT
+        with ESMTP id S1353007AbiFGSRw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:18:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40E3EAD11;
-        Tue,  7 Jun 2022 10:53:17 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3646F14040E;
+        Tue,  7 Jun 2022 10:52:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6087B617A7;
-        Tue,  7 Jun 2022 17:53:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 005D0C34119;
-        Tue,  7 Jun 2022 17:53:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BEC66170B;
+        Tue,  7 Jun 2022 17:52:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37CC9C385A5;
+        Tue,  7 Jun 2022 17:52:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624395;
-        bh=6nfGQcmOO+nzmnVXs7EuA6e3s87z59d7FQhJE3qTKds=;
+        s=k20201202; t=1654624373;
+        bh=LYQzyA3EYOwaI3hpcICIfprp+dWtUSLsCT350YaAutI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D+gbhFe99K1HAn0Wl3mhWZZ7Bm23x9Cx9DzKl0fzq0zmtAY0NF0quYuMbfQwN7cGT
-         GJlGyDXc6eQU8MOhCSuIhMlcMPzEsnapqdDrrgZRLZf+2SPofo363s6a6fqXsYeFgk
-         zPRw2UOZSup0Xx1ivkWkgopuXRFiin0NhBkA2QFMpeiBK2vT8Zq8LDsSUkuZk//eHO
-         h+HLNrzcadR9hktOKpkuDNM9Mdrkpzz7+M3t1LFz/SgEU4vAnwvHcOyIqXT8FBjdYA
-         MhK++a/yLN83ihYGRgjTyfC/raRZy0szu2JXAwFzuYkYHEYPfBmQbct0R9fsXyHcPA
-         e7uDQJPV6M/gQ==
+        b=mVutd+eVskD4IIqimz2qMaSVPzAvbiR++yEYPYXpijjMSp5Jj02FgPbMdEymHbxWr
+         8uo2NfrMFm8WGsXTMd+bkV0IeQQoPZIAFnsJ2dN39el3I23/IdKkXjqAp0VipB5i33
+         91CaQgBTZ6sPS6FmcDBOi9fhT8Au/CpetRgG9xVLyGFW16JbZeFhzk2O8bvvuNMKtz
+         lCiVBVmg/uIAXL2b7VUv5s2ovlGXaVQtYpPVMm9xrspjCbq1UyhC/smhNaUXCfq7Yk
+         1pEY31Jujygcak3dpuMrvdtpSbiD9R9S9tR1MVEIW4MNiEWy7ZMrSEVcc9P9cnEGvm
+         ApmmO3BnVVDZw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.17 04/60] lkdtm/usercopy: Expand size of "out of frame" object
-Date:   Tue,  7 Jun 2022 13:52:01 -0400
-Message-Id: <20220607175259.478835-4-sashal@kernel.org>
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
+        alexander.deucher@amd.com, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        lijo.lazar@amd.com, guchun.chen@amd.com, Jack.Gui@amd.com,
+        darren.powell@amd.com, Hawking.Zhang@amd.com,
+        mario.limonciello@amd.com, kenneth.feng@amd.com, tim.huang@amd.com,
+        kevin1.wang@amd.com, Xiaomeng.Hou@amd.com, tao.zhou1@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 67/68] drm/amd/pm: use bitmap_{from,to}_arr32 where appropriate
+Date:   Tue,  7 Jun 2022 13:48:33 -0400
+Message-Id: <20220607174846.477972-67-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,73 +68,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Yury Norov <yury.norov@gmail.com>
 
-[ Upstream commit f387e86d3a74407bdd9c5815820ac9d060962840 ]
+[ Upstream commit 525d6515604eb1373ce5e6372a6b6640953b2d6a ]
 
-To be sufficiently out of range for the usercopy test to see the lifetime
-mismatch, expand the size of the "bad" buffer, which will let it be
-beyond current_stack_pointer regardless of stack growth direction.
-Paired with the recent addition of stack depth checking under
-CONFIG_HARDENED_USERCOPY=y, this will correctly start tripping again.
+The smu_v1X_0_set_allowed_mask() uses bitmap_copy() to convert
+bitmap to 32-bit array. This may be wrong due to endiannes issues.
+Fix it by switching to bitmap_{from,to}_arr32.
 
-Reported-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Link: https://lore.kernel.org/lkml/762faf1b-0443-5ddf-4430-44a20cf2ec4d@collabora.com/
-Signed-off-by: Kees Cook <keescook@chromium.org>
+CC: Alexander Gordeev <agordeev@linux.ibm.com>
+CC: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC: Christian Borntraeger <borntraeger@linux.ibm.com>
+CC: Claudio Imbrenda <imbrenda@linux.ibm.com>
+CC: David Hildenbrand <david@redhat.com>
+CC: Heiko Carstens <hca@linux.ibm.com>
+CC: Janosch Frank <frankja@linux.ibm.com>
+CC: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+CC: Sven Schnelle <svens@linux.ibm.com>
+CC: Vasily Gorbik <gor@linux.ibm.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/lkdtm/usercopy.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c | 2 +-
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/misc/lkdtm/usercopy.c b/drivers/misc/lkdtm/usercopy.c
-index 9161ce7ed47a..3fead5efe523 100644
---- a/drivers/misc/lkdtm/usercopy.c
-+++ b/drivers/misc/lkdtm/usercopy.c
-@@ -30,12 +30,12 @@ static const unsigned char test_text[] = "This is a test.\n";
-  */
- static noinline unsigned char *trick_compiler(unsigned char *stack)
- {
--	return stack + 0;
-+	return stack + unconst;
- }
- 
- static noinline unsigned char *do_usercopy_stack_callee(int value)
- {
--	unsigned char buf[32];
-+	unsigned char buf[128];
- 	int i;
- 
- 	/* Exercise stack to avoid everything living in registers. */
-@@ -43,7 +43,12 @@ static noinline unsigned char *do_usercopy_stack_callee(int value)
- 		buf[i] = value & 0xff;
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
+index b87f550af26b..5f8809f6990d 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
+@@ -781,7 +781,7 @@ int smu_v11_0_set_allowed_mask(struct smu_context *smu)
+ 		goto failed;
  	}
  
--	return trick_compiler(buf);
-+	/*
-+	 * Put the target buffer in the middle of stack allocation
-+	 * so that we don't step on future stack users regardless
-+	 * of stack growth direction.
-+	 */
-+	return trick_compiler(&buf[(128/2)-32]);
- }
+-	bitmap_copy((unsigned long *)feature_mask, feature->allowed, 64);
++	bitmap_to_arr32(feature_mask, feature->allowed, 64);
  
- static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
-@@ -66,6 +71,12 @@ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
- 		bad_stack -= sizeof(unsigned long);
- 	}
+ 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetAllowedFeaturesMaskHigh,
+ 					  feature_mask[1], NULL);
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
+index cf09e30bdfe0..747430ce6394 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
+@@ -730,7 +730,7 @@ int smu_v13_0_set_allowed_mask(struct smu_context *smu)
+ 	    feature->feature_num < 64)
+ 		return -EINVAL;
  
-+#ifdef ARCH_HAS_CURRENT_STACK_POINTER
-+	pr_info("stack     : %px\n", (void *)current_stack_pointer);
-+#endif
-+	pr_info("good_stack: %px-%px\n", good_stack, good_stack + sizeof(good_stack));
-+	pr_info("bad_stack : %px-%px\n", bad_stack, bad_stack + sizeof(good_stack));
-+
- 	user_addr = vm_mmap(NULL, 0, PAGE_SIZE,
- 			    PROT_READ | PROT_WRITE | PROT_EXEC,
- 			    MAP_ANONYMOUS | MAP_PRIVATE, 0);
+-	bitmap_copy((unsigned long *)feature_mask, feature->allowed, 64);
++	bitmap_to_arr32(feature_mask, feature->allowed, 64);
+ 
+ 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetAllowedFeaturesMaskHigh,
+ 					      feature_mask[1], NULL);
 -- 
 2.35.1
 
