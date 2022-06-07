@@ -2,128 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07881C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:58:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E7ECC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377534AbiFGU6t (ORCPT
+        id S1377355AbiFGU67 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
+        Tue, 7 Jun 2022 16:58:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358775AbiFGTxJ (ORCPT
+        with ESMTP id S1358765AbiFGTxJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:53:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740252B25E;
-        Tue,  7 Jun 2022 11:22:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDE1060DB7;
-        Tue,  7 Jun 2022 18:22:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1371C385A2;
-        Tue,  7 Jun 2022 18:22:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626146;
-        bh=Q0WqdpuerdelIGApzLLq8ngnGEkv8eTzVhis2qaV8ZU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=egRtGxge0glboQWOv07Hm6wvqmz4i6dRGeMo3EYrXyL8vayJ+7dAcJxPQQ7yfVLPr
-         pvvR4BxTRGWLt2SRexTN9cBEEtSNKNq07j6Y0tbWJ04F2tbuz5VrzIlw5p2Hoh6atC
-         XlHqlvQHiz5AWGXnMCth9AJpbPaKEDdVh3eVnHIE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 274/772] drm/bridge: Fix error handling in analogix_dp_probe
-Date:   Tue,  7 Jun 2022 18:57:46 +0200
-Message-Id: <20220607164957.101269427@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail.tpi.com (mail.tpi.com [50.126.108.186])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279472494B;
+        Tue,  7 Jun 2022 11:22:19 -0700 (PDT)
+Received: from [10.0.0.212] (sushi.tpi.com [10.0.0.212])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client did not present a certificate)
+        by mail.tpi.com (Postfix) with ESMTPSA id 0508747EC7AC;
+        Tue,  7 Jun 2022 11:22:19 -0700 (PDT)
+Message-ID: <2527f90b-eb5a-98ce-6b7f-d3b048a7dd8c@tpi.com>
+Date:   Tue, 7 Jun 2022 11:22:18 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+From:   Dean Gehnert <deang@tpi.com>
+Subject: Re: [PATCH] ASoC: topology: Avoid card NULL deref in
+ snd_soc_tplg_component_remove()
+Reply-To: deang@tpi.com
+To:     =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>, linux-kernel@vger.kernel.org
+Cc:     alsa-devel@alsa-project.org, Takashi Iwai <tiwai@suse.com>,
+        stable@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+References: <20220603201425.2590-1-deang@tpi.com>
+ <238510b7-fc5f-4f1b-9e25-6e38b49c2535@linux.intel.com>
+Content-Language: en-US
+Organization: TriplePoint, Inc.
+In-Reply-To: <238510b7-fc5f-4f1b-9e25-6e38b49c2535@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
-
-[ Upstream commit 9f15930bb2ef9f031d62ffc49629cbae89137733 ]
-
-In the error handling path, the clk_prepare_enable() function
-call should be balanced by a corresponding 'clk_disable_unprepare()'
-call, as already done in the remove function.
-
-Fixes: 3424e3a4f844 ("drm: bridge: analogix/dp: split exynos dp driver to bridge directory")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220420011644.25730-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../gpu/drm/bridge/analogix/analogix_dp_core.c | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-index b7d2e4449cfa..7fe19c56f792 100644
---- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-+++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-@@ -1698,8 +1698,10 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 
- 	dp->reg_base = devm_ioremap_resource(&pdev->dev, res);
--	if (IS_ERR(dp->reg_base))
--		return ERR_CAST(dp->reg_base);
-+	if (IS_ERR(dp->reg_base)) {
-+		ret = PTR_ERR(dp->reg_base);
-+		goto err_disable_clk;
-+	}
- 
- 	dp->force_hpd = of_property_read_bool(dev->of_node, "force-hpd");
- 
-@@ -1711,7 +1713,8 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
- 	if (IS_ERR(dp->hpd_gpiod)) {
- 		dev_err(dev, "error getting HDP GPIO: %ld\n",
- 			PTR_ERR(dp->hpd_gpiod));
--		return ERR_CAST(dp->hpd_gpiod);
-+		ret = PTR_ERR(dp->hpd_gpiod);
-+		goto err_disable_clk;
- 	}
- 
- 	if (dp->hpd_gpiod) {
-@@ -1731,7 +1734,8 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
- 
- 	if (dp->irq == -ENXIO) {
- 		dev_err(&pdev->dev, "failed to get irq\n");
--		return ERR_PTR(-ENODEV);
-+		ret = -ENODEV;
-+		goto err_disable_clk;
- 	}
- 
- 	ret = devm_request_threaded_irq(&pdev->dev, dp->irq,
-@@ -1740,11 +1744,15 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
- 					irq_flags, "analogix-dp", dp);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to request irq\n");
--		return ERR_PTR(ret);
-+		goto err_disable_clk;
- 	}
- 	disable_irq(dp->irq);
- 
- 	return dp;
-+
-+err_disable_clk:
-+	clk_disable_unprepare(dp->clock);
-+	return ERR_PTR(ret);
- }
- EXPORT_SYMBOL_GPL(analogix_dp_probe);
- 
--- 
-2.35.1
-
-
-
+On 6/7/22 00:40, Amadeusz Sławiński wrote:
+> On 6/3/2022 10:14 PM, Dean Gehnert wrote:
+>> Don't deference card in comp->card->snd_card before checking for NULL card.
+>>
+>> During the unloading of ASoC kernel modules, there is a kernel oops in
+>> snd_soc_tplg_component_remove() that happens because comp->card is set to
+>> NULL in soc_cleanup_component().
+>>
+>> Cc: Liam Girdwood <lgirdwood@gmail.com>
+>> Cc: Mark Brown <broonie@kernel.org>
+>> Cc: Jaroslav Kysela <perex@perex.cz>
+>> Cc: Takashi Iwai <tiwai@suse.com>
+>> Cc: alsa-devel@alsa-project.org
+>> Cc: linux-kernel@vger.kernel.org
+>> Cc: stable@vger.kernel.org
+>> Fixes: 7e567b5ae063 ("ASoC: topology: Add missing rwsem around snd_ctl_remove() calls")
+>> Signed-off-by: Dean Gehnert <deang@tpi.com>
+>> ---
+>>   sound/soc/soc-topology.c | 10 +++++++---
+>>   1 file changed, 7 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/sound/soc/soc-topology.c b/sound/soc/soc-topology.c
+>> index 3f9d314fba16..cf0efe1147c2 100644
+>> --- a/sound/soc/soc-topology.c
+>> +++ b/sound/soc/soc-topology.c
+>> @@ -2613,15 +2613,18 @@ EXPORT_SYMBOL_GPL(snd_soc_tplg_component_load);
+>>   /* remove dynamic controls from the component driver */
+>>   int snd_soc_tplg_component_remove(struct snd_soc_component *comp)
+>>   {
+>> -    struct snd_card *card = comp->card->snd_card;
+>> +    struct snd_card *card;
+>>       struct snd_soc_dobj *dobj, *next_dobj;
+>>       int pass;
+>>         /* process the header types from end to start */
+>>       for (pass = SOC_TPLG_PASS_END; pass >= SOC_TPLG_PASS_START; pass--) {
+>>   +        card = (comp->card) ? comp->card->snd_card : NULL;
+>> +
+>>           /* remove mixer controls */
+>> -        down_write(&card->controls_rwsem);
+>> +        if (card)
+>> +            down_write(&card->controls_rwsem);
+>>           list_for_each_entry_safe(dobj, next_dobj, &comp->dobj_list,
+>>               list) {
+>
+> I'm pretty sure that quite a lot of operations in this list_for_each_entry_safe() loop require existing card...
+I get your point... Many of the cases in the loop, the functions are also dereferencing 'comp->card->', so this patch may not be the actual root cause fix... It worked for us since the kernel oops no longer happens, but looks like there are many more dereferences that could still cause problems.
+>
+> And trying to investigate more closely, there is no soc_cleanup_component() mentioned in commit message, for quite a few kernel versions - seems to have been removed during v5.5-rc1.
+Ah yes! You are correct. soc_cleanup_component() functionality has been moved to soc_remove_component() in later kernels.
+>
+> I would say to not merge this, unless problem can be reproduced with latest kernel and even then would consider if it is a correct fix.
+Agreed... This patch made our our kernel oops go away, however, we are going to dig deeper into the kernel oops call stack to see if I can find the root cause problem. There is something going on with the sound cleanup since this happens during rmmod... We just need to dig deeper and see if we can find what is really causing the problems.
+>
+>>   @@ -2660,7 +2663,8 @@ int snd_soc_tplg_component_remove(struct snd_soc_component *comp)
+>>                   break;
+>>               }
+>>           }
+>> -        up_write(&card->controls_rwsem);
+>> +        if (card)
+>> +            up_write(&card->controls_rwsem);
+>>       }
+>>         /* let caller know if FW can be freed when no objects are left */
+>
