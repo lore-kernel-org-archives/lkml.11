@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6651ACCA47E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F743CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351097AbiFGSPk (ORCPT
+        id S1351038AbiFGSP0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47750 "EHLO
+        Tue, 7 Jun 2022 14:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348710AbiFGRyh (ORCPT
+        with ESMTP id S1348835AbiFGRyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:54:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051161447B7;
-        Tue,  7 Jun 2022 10:39:56 -0700 (PDT)
+        Tue, 7 Jun 2022 13:54:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59443144FEE;
+        Tue,  7 Jun 2022 10:39:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89640B822B3;
-        Tue,  7 Jun 2022 17:39:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 042BEC385A5;
-        Tue,  7 Jun 2022 17:39:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9145660BC6;
+        Tue,  7 Jun 2022 17:39:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BCF5C385A5;
+        Tue,  7 Jun 2022 17:39:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623593;
-        bh=EDfiEudIZu9zvUw34ntLxy+KuAi9Pz0BPsPElTT9fvI=;
+        s=korg; t=1654623588;
+        bh=c8rwA1Oweo9bfbt0j50bLlPx4QGY8fStSX1TOc23Wtw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AeVJfrYFH39sLcRK7tNZy3Aa0qHJ0gjMScbpUeo5jtLTXDUuxVnd/BWfPXqiYQLbk
-         UQOdL8BdhrbRPq/6Yn70FUcGj59grsYvAA853XNfUZCHSfCb9Bdc0Mdo8ByA54Jfbt
-         udmOSUpKd3q7QDKFVS9G6UckF6rzRoqOZlwciYW0=
+        b=yadvwo8TL15jsYX4lsfNUp5CzsPPfHj1PeEar1tycyQ0mTiyTLFAT6jmu5e84+FQQ
+         HHgMye+gJksnV2qO8QEiT9XcMYHMU+wJI3KHu114uIe9YduN8gpt3M0iXDGnoW8hRB
+         +w8m6HLQqd2tq1c+JzPzG509aXRe85X7EgztAvnM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.15 021/667] fs/ntfs3: Fix fiemap + fix shrink file size (to remove preallocated space)
-Date:   Tue,  7 Jun 2022 18:54:46 +0200
-Message-Id: <20220607164935.431857829@linuxfoundation.org>
+        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Kees Cook <keescook@chromium.org>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH 5.15 002/667] binfmt_flat: do not stop relocating GOT entries prematurely on riscv
+Date:   Tue,  7 Jun 2022 18:54:27 +0200
+Message-Id: <20220607164934.848413601@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,70 +51,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+From: Niklas Cassel <niklas.cassel@wdc.com>
 
-commit 3880f2b816a7e4ca889b7e8a42e6c62c5706ed36 upstream.
+commit 6045ab5fea4c849153ebeb0acb532da5f29d69c4 upstream.
 
-Two problems:
-1. ntfs3_setattr can't truncate preallocated space;
-2. if allocated fragment "cross" valid size, then fragment splits into two parts:
-- normal part;
-- unwritten part (here we must return FIEMAP_EXTENT_LAST).
-Before this commit we returned FIEMAP_EXTENT_LAST for whole fragment.
-Fixes xfstest generic/092
-Fixes: 4342306f0f0d ("fs/ntfs3: Add file operations and implementation")
+bFLT binaries are usually created using elf2flt.
 
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+The linker script used by elf2flt has defined the .data section like the
+following for the last 19 years:
+
+.data : {
+	_sdata = . ;
+	__data_start = . ;
+	data_start = . ;
+	*(.got.plt)
+	*(.got)
+	FILL(0) ;
+	. = ALIGN(0x20) ;
+	LONG(-1)
+	. = ALIGN(0x20) ;
+	...
+}
+
+It places the .got.plt input section before the .got input section.
+The same is true for the default linker script (ld --verbose) on most
+architectures except x86/x86-64.
+
+The binfmt_flat loader should relocate all GOT entries until it encounters
+a -1 (the LONG(-1) in the linker script).
+
+The problem is that the .got.plt input section starts with a GOTPLT header
+(which has size 16 bytes on elf64-riscv and 8 bytes on elf32-riscv), where
+the first word is set to -1. See the binutils implementation for riscv [1].
+
+This causes the binfmt_flat loader to stop relocating GOT entries
+prematurely and thus causes the application to crash when running.
+
+Fix this by skipping the whole GOTPLT header, since the whole GOTPLT header
+is reserved for the dynamic linker.
+
+The GOTPLT header will only be skipped for bFLT binaries with flag
+FLAT_FLAG_GOTPIC set. This flag is unconditionally set by elf2flt if the
+supplied ELF binary has the symbol _GLOBAL_OFFSET_TABLE_ defined.
+ELF binaries without a .got input section should thus remain unaffected.
+
+Tested on RISC-V Canaan Kendryte K210 and RISC-V QEMU nommu_virt_defconfig.
+
+[1] https://sourceware.org/git/?p=binutils-gdb.git;a=blob;f=bfd/elfnn-riscv.c;hb=binutils-2_38#l3275
+
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Link: https://lore.kernel.org/r/20220414091018.896737-1-niklas.cassel@wdc.com
+Fixed-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/lkml/202204182333.OIUOotK8-lkp@intel.com
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/file.c    |    2 +-
- fs/ntfs3/frecord.c |   10 +++++++---
- 2 files changed, 8 insertions(+), 4 deletions(-)
+ fs/binfmt_flat.c |   27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
---- a/fs/ntfs3/file.c
-+++ b/fs/ntfs3/file.c
-@@ -761,7 +761,7 @@ int ntfs3_setattr(struct user_namespace
- 		}
- 		inode_dio_wait(inode);
+--- a/fs/binfmt_flat.c
++++ b/fs/binfmt_flat.c
+@@ -433,6 +433,30 @@ static void old_reloc(unsigned long rl)
  
--		if (attr->ia_size < oldsize)
-+		if (attr->ia_size <= oldsize)
- 			err = ntfs_truncate(inode, attr->ia_size);
- 		else if (attr->ia_size > oldsize)
- 			err = ntfs_extend(inode, attr->ia_size, 0, NULL);
---- a/fs/ntfs3/frecord.c
-+++ b/fs/ntfs3/frecord.c
-@@ -1964,10 +1964,8 @@ int ni_fiemap(struct ntfs_inode *ni, str
+ /****************************************************************************/
  
- 		vcn += clen;
- 
--		if (vbo + bytes >= end) {
-+		if (vbo + bytes >= end)
- 			bytes = end - vbo;
--			flags |= FIEMAP_EXTENT_LAST;
--		}
- 
- 		if (vbo + bytes <= valid) {
- 			;
-@@ -1977,6 +1975,9 @@ int ni_fiemap(struct ntfs_inode *ni, str
- 			/* vbo < valid && valid < vbo + bytes */
- 			u64 dlen = valid - vbo;
- 
-+			if (vbo + dlen >= end)
-+				flags |= FIEMAP_EXTENT_LAST;
++static inline u32 __user *skip_got_header(u32 __user *rp)
++{
++	if (IS_ENABLED(CONFIG_RISCV)) {
++		/*
++		 * RISC-V has a 16 byte GOT PLT header for elf64-riscv
++		 * and 8 byte GOT PLT header for elf32-riscv.
++		 * Skip the whole GOT PLT header, since it is reserved
++		 * for the dynamic linker (ld.so).
++		 */
++		u32 rp_val0, rp_val1;
 +
- 			err = fiemap_fill_next_extent(fieinfo, vbo, lbo, dlen,
- 						      flags);
- 			if (err < 0)
-@@ -1995,6 +1996,9 @@ int ni_fiemap(struct ntfs_inode *ni, str
- 			flags |= FIEMAP_EXTENT_UNWRITTEN;
- 		}
- 
-+		if (vbo + bytes >= end)
-+			flags |= FIEMAP_EXTENT_LAST;
++		if (get_user(rp_val0, rp))
++			return rp;
++		if (get_user(rp_val1, rp + 1))
++			return rp;
 +
- 		err = fiemap_fill_next_extent(fieinfo, vbo, lbo, bytes, flags);
- 		if (err < 0)
- 			break;
++		if (rp_val0 == 0xffffffff && rp_val1 == 0xffffffff)
++			rp += 4;
++		else if (rp_val0 == 0xffffffff)
++			rp += 2;
++	}
++	return rp;
++}
++
+ static int load_flat_file(struct linux_binprm *bprm,
+ 		struct lib_info *libinfo, int id, unsigned long *extra_stack)
+ {
+@@ -782,7 +806,8 @@ static int load_flat_file(struct linux_b
+ 	 * image.
+ 	 */
+ 	if (flags & FLAT_FLAG_GOTPIC) {
+-		for (rp = (u32 __user *)datapos; ; rp++) {
++		rp = skip_got_header((u32 __user *) datapos);
++		for (; ; rp++) {
+ 			u32 addr, rp_val;
+ 			if (get_user(rp_val, rp))
+ 				return -EFAULT;
 
 
