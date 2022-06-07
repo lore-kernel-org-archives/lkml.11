@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE6F0CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F41AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378756AbiFGVcb (ORCPT
+        id S1379284AbiFGVcm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:32:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42326 "EHLO
+        Tue, 7 Jun 2022 17:32:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378175AbiFGUez (ORCPT
+        with ESMTP id S1377901AbiFGUej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF3CE1EA86E;
-        Tue,  7 Jun 2022 11:37:41 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A56F598;
+        Tue,  7 Jun 2022 11:36:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A364BCE23F1;
-        Tue,  7 Jun 2022 18:37:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90629C385A2;
-        Tue,  7 Jun 2022 18:37:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C14F612EC;
+        Tue,  7 Jun 2022 18:36:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21E0AC385A5;
+        Tue,  7 Jun 2022 18:36:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627057;
-        bh=wXIZJawWrOCnO9b2OaTQyjOEM/LeOCNedPaXi6O7/l4=;
+        s=korg; t=1654626997;
+        bh=Bua9aLZZH7SUoVf9SCFW+Tiuh87eEEB4dY13YHj6wVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nWU2mNZvGmk2KNPVqh+Us33cd+CnVdvyaoV4Oh1dE9kC6p9eStoIFiKgC6J7tpoLW
-         8QdaKoP0lZN9Y5Fw7kH5ptDGhvxpdFltuVLwGJJVCYvQgju+q4dGViggdiRG+POfaM
-         SW26ij2GANbevqanSajsz+1nwgUDL3iIhmW1xZQQ=
+        b=R3taOkwQDj6wcu9oDpCdM3t2Un1s1Sn3EgEyxx3BSPkuBKB1csMSmPoUnFDc1sGN0
+         HskcVJk/PI/qxdv68roXY4Z4TUn0sBc+oFiNIEaXOAXqOT/pVj7dWM5MTrwrObO4Sh
+         aZiup+0P7ZVpLvVsue760h5kYUjdE7j0clupJm7M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Daniel Bristot de Oliveria <bristot@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        John Kacur <jkacur@redhat.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 600/772] rtla: Dont overwrite existing directory mode
-Date:   Tue,  7 Jun 2022 19:03:12 +0200
-Message-Id: <20220607165006.622107220@linuxfoundation.org>
+Subject: [PATCH 5.17 580/772] NFS: Do not report EINTR/ERESTARTSYS as mapping errors
+Date:   Tue,  7 Jun 2022 19:02:52 +0200
+Message-Id: <20220607165006.040465532@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,50 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Kacur <jkacur@redhat.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 39c3d84cb5b52792a7323a338334d8d65b2dbe3f ]
+[ Upstream commit cea9ba7239dcc84175041174304c6cdeae3226e5 ]
 
-The mode on /usr/bin is often 555 these days,
-but make install on rtla overwrites this with 755
+If the attempt to flush data was interrupted due to a local signal, then
+just requeue the writes back for I/O.
 
-Fix this by preserving the current directory if it exists.
-
-Link: https://lkml.kernel.org/r/8c294a6961080a1970fd8b73f7bcf1e3984579e2.1651247710.git.bristot@kernel.org
-Link: https://lore.kernel.org/r/20220402043939.6962-1-jkacur@redhat.com
-
-Cc: Daniel Bristot de Oliveria <bristot@redhat.com>
-Fixes: 79ce8f43ac5a ("rtla: Real-Time Linux Analysis tool")
-Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: John Kacur <jkacur@redhat.com>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: 6fbda89b257f ("NFS: Replace custom error reporting mechanism with generic one")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/tracing/rtla/Makefile | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/nfs/write.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
-index 5a1eda617992..4b635d4de018 100644
---- a/tools/tracing/rtla/Makefile
-+++ b/tools/tracing/rtla/Makefile
-@@ -23,6 +23,7 @@ $(call allow-override,LD_SO_CONF_PATH,/etc/ld.so.conf.d/)
- $(call allow-override,LDCONFIG,ldconfig)
- 
- INSTALL	=	install
-+MKDIR	=	mkdir
- FOPTS	:=	-flto=auto -ffat-lto-objects -fexceptions -fstack-protector-strong \
- 		-fasynchronous-unwind-tables -fstack-clash-protection
- WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -Wno-maybe-uninitialized
-@@ -68,7 +69,7 @@ static: $(OBJ)
- 
- .PHONY: install
- install: doc_install
--	$(INSTALL) -d -m 755 $(DESTDIR)$(BINDIR)
-+	$(MKDIR) -p $(DESTDIR)$(BINDIR)
- 	$(INSTALL) rtla -m 755 $(DESTDIR)$(BINDIR)
- 	$(STRIP) $(DESTDIR)$(BINDIR)/rtla
- 	@test ! -f $(DESTDIR)$(BINDIR)/osnoise || rm $(DESTDIR)$(BINDIR)/osnoise
+diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+index 938850303099..3cb948f13902 100644
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -1436,7 +1436,7 @@ static void nfs_async_write_error(struct list_head *head, int error)
+ 	while (!list_empty(head)) {
+ 		req = nfs_list_entry(head->next);
+ 		nfs_list_remove_request(req);
+-		if (nfs_error_is_fatal(error))
++		if (nfs_error_is_fatal_on_server(error))
+ 			nfs_write_error(req, error);
+ 		else
+ 			nfs_redirty_request(req);
 -- 
 2.35.1
 
