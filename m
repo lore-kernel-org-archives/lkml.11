@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3542C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B12ACCA490
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351137AbiFGSBo (ORCPT
+        id S1351060AbiFGSBi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:01:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40454 "EHLO
+        Tue, 7 Jun 2022 14:01:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347692AbiFGRl5 (ORCPT
+        with ESMTP id S1347662AbiFGRl5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:41:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688A5127183;
-        Tue,  7 Jun 2022 10:34:39 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6A4312816A;
+        Tue,  7 Jun 2022 10:34:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1788F60DB5;
-        Tue,  7 Jun 2022 17:34:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D498C36B01;
-        Tue,  7 Jun 2022 17:34:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D3C4B822B4;
+        Tue,  7 Jun 2022 17:34:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0769C385A5;
+        Tue,  7 Jun 2022 17:34:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623249;
-        bh=iAhzv6COI/nHTO6HlQRmz2H0BLgcxPcMNLfg+h3M7+s=;
+        s=korg; t=1654623252;
+        bh=FWkQWp40lBmrHdjQ/7RZ8RaE0IoDNQ3yi2JVKYsklJ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wV2Nhrgu4jCI+97HaYdu3vkIgGSNDPn/7VUerFx9Jjs624hD1puUi6E2QWMD3B838
-         TRwUFR4jr77LscvD9kHKKrx9Mm141W6NL83JHcNkS2sKvqNmTrQC1T5pgSepk9UIuI
-         wfVA3v7kctbtTmgL3vXVecM4xTb4OG74gFbAj3AE=
+        b=iLvaE6ky78SUTWsYXKd0JIZ0uKmcwRRyeUxPHzntGrlXCNMNNErzOwwrUYwZAMvIs
+         BV9zauM8p1dMfvhmRXpNU4rCOmysuPi+mJhqeDWDbBFcm8bR609aP6jDHD2yjSVHZf
+         RA7MK7cFxDCB8qPYVat0qHtedNEyxlqUri16Ayt8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.10 350/452] f2fs: fix fallocate to use file_modified to update permissions consistently
-Date:   Tue,  7 Jun 2022 19:03:27 +0200
-Message-Id: <20220607164918.988203056@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 333/452] video: fbdev: clcdfb: Fix refcount leak in clcdfb_of_vram_setup
+Date:   Tue,  7 Jun 2022 19:03:10 +0200
+Message-Id: <20220607164918.483003245@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,44 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 958ed92922028ec67f504dcdc72bfdfd0f43936a upstream.
+[ Upstream commit b23789a59fa6f00e98a319291819f91fbba0deb8 ]
 
-This patch tries to fix permission consistency issue as all other
-mainline filesystems.
+of_parse_phandle() returns a node pointer with refcount incremented, we should
+use of_node_put() on it when not need anymore.  Add missing of_node_put() to
+avoid refcount leak.
 
-Since the initial introduction of (posix) fallocate back at the turn of
-the century, it has been possible to use this syscall to change the
-user-visible contents of files.  This can happen by extending the file
-size during a preallocation, or through any of the newer modes (punch,
-zero, collapse, insert range).  Because the call can be used to change
-file contents, we should treat it like we do any other modification to a
-file -- update the mtime, and drop set[ug]id privileges/capabilities.
-
-The VFS function file_modified() does all this for us if pass it a
-locked inode, so let's make fallocate drop permissions correctly.
-
-Cc: stable@kernel.org
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d10715be03bd ("video: ARM CLCD: Add DT support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/file.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/video/fbdev/amba-clcd.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -1744,6 +1744,10 @@ static long f2fs_fallocate(struct file *
+diff --git a/drivers/video/fbdev/amba-clcd.c b/drivers/video/fbdev/amba-clcd.c
+index 33595cc4778e..79efefd224f4 100644
+--- a/drivers/video/fbdev/amba-clcd.c
++++ b/drivers/video/fbdev/amba-clcd.c
+@@ -771,12 +771,15 @@ static int clcdfb_of_vram_setup(struct clcd_fb *fb)
+ 		return -ENODEV;
  
- 	inode_lock(inode);
+ 	fb->fb.screen_base = of_iomap(memory, 0);
+-	if (!fb->fb.screen_base)
++	if (!fb->fb.screen_base) {
++		of_node_put(memory);
+ 		return -ENOMEM;
++	}
  
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out;
-+
- 	if (mode & FALLOC_FL_PUNCH_HOLE) {
- 		if (offset >= inode->i_size)
- 			goto out;
+ 	fb->fb.fix.smem_start = of_translate_address(memory,
+ 			of_get_address(memory, 0, &size, NULL));
+ 	fb->fb.fix.smem_len = size;
++	of_node_put(memory);
+ 
+ 	return 0;
+ }
+-- 
+2.35.1
+
 
 
