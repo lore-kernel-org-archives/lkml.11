@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F71CCCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF6DCCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384279AbiFGWKp (ORCPT
+        id S1384313AbiFGWKw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:10:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53630 "EHLO
+        Tue, 7 Jun 2022 18:10:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378969AbiFGVIC (ORCPT
+        with ESMTP id S1378972AbiFGVIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:08:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFBC212CBE;
-        Tue,  7 Jun 2022 11:50:55 -0700 (PDT)
+        Tue, 7 Jun 2022 17:08:01 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC3B212C9C;
+        Tue,  7 Jun 2022 11:50:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81D00B82018;
-        Tue,  7 Jun 2022 18:50:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0423C385A5;
-        Tue,  7 Jun 2022 18:50:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2085FCE2425;
+        Tue,  7 Jun 2022 18:50:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37872C385A2;
+        Tue,  7 Jun 2022 18:50:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627852;
-        bh=4Ka0zqH5BPXKlynHTbbm9h1V2CMI319SCy/R6j+8HWI=;
+        s=korg; t=1654627846;
+        bh=wB+eyMgg/Fjs26R7DtFWaZpsqYjiQcyeIh3vo3CFVwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zXrWOx3yXpuCpFb4wwKbHEHRevCsW72Bf2uMq6wwKFxp4o3TPlNGbsb/m8KWFxX5A
-         o2XBcmLqacBwxVte5O09eyvrDBi1+XOnFdWecwc1rqV50J8ZPr0cWEQlcYh1t3omdh
-         LkEoier+KGwRZWIneZtUtYIdJjR2sPcn09nP8ftk=
+        b=T8dgnHJXG9BSyC23mVW6ynHmxacys7s9+dDL257xATTzF+XCCFs7IYU4aXC3wA6cj
+         EXvdy85rNz7mqaGOrG58ZakHcq7UGPQDexKY8Gmh9UMsiioW40eBcQoCI+0pMxQ8vi
+         sgUYgN4irtOa09X9IgZ1nUApUgD0Dvx2h2vOmJLc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Evan Quan <evan.quan@amd.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 117/879] drm/amd/pm: fix the compile warning
-Date:   Tue,  7 Jun 2022 18:53:55 +0200
-Message-Id: <20220607165006.097552034@linuxfoundation.org>
+        stable@vger.kernel.org, Po Hao Huang <phhuang@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 064/879] rtw89: fix misconfiguration on hw_scan channel time
+Date:   Tue,  7 Jun 2022 18:53:02 +0200
+Message-Id: <20220607165004.550739513@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,49 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Quan <evan.quan@amd.com>
+From: Po Hao Huang <phhuang@realtek.com>
 
-[ Upstream commit 555238d92ac32dbad2d77ad2bafc48d17391990c ]
+[ Upstream commit 65ee4971a262a024e239e5d2b7f4dee1b3dff40e ]
 
-Fix the compile warning below:
-drivers/gpu/drm/amd/amdgpu/../pm/legacy-dpm/kv_dpm.c:1641
-kv_get_acp_boot_level() warn: always true condition '(table->entries[i]->clk >= 0) => (0-u32max >= 0)'
+Without this patch, hw scan won't stay long enough on DFS/passive
+channels. Found previous logic error and fix it.
 
-Reported-by: kernel test robot <lkp@intel.com>
-CC: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Po Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220401055043.12512-5-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c | 14 +-------------
- 1 file changed, 1 insertion(+), 13 deletions(-)
+ drivers/net/wireless/realtek/rtw89/fw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c b/drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c
-index 8b23cc9f098a..8fd0782a2b20 100644
---- a/drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c
-+++ b/drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c
-@@ -1623,19 +1623,7 @@ static int kv_update_samu_dpm(struct amdgpu_device *adev, bool gate)
- 
- static u8 kv_get_acp_boot_level(struct amdgpu_device *adev)
- {
--	u8 i;
--	struct amdgpu_clock_voltage_dependency_table *table =
--		&adev->pm.dpm.dyn_state.acp_clock_voltage_dependency_table;
--
--	for (i = 0; i < table->count; i++) {
--		if (table->entries[i].clk >= 0) /* XXX */
--			break;
--	}
--
--	if (i >= table->count)
--		i = table->count - 1;
--
--	return i;
-+	return 0;
- }
- 
- static void kv_update_acp_boot_level(struct amdgpu_device *adev)
+diff --git a/drivers/net/wireless/realtek/rtw89/fw.c b/drivers/net/wireless/realtek/rtw89/fw.c
+index 6deaf8eec6b4..a9b5315a517e 100644
+--- a/drivers/net/wireless/realtek/rtw89/fw.c
++++ b/drivers/net/wireless/realtek/rtw89/fw.c
+@@ -2065,7 +2065,7 @@ static void rtw89_hw_scan_add_chan(struct rtw89_dev *rtwdev, int chan_type,
+ 		ch_info->num_pkt = 0;
+ 		break;
+ 	case RTW89_CHAN_DFS:
+-		ch_info->period = min_t(u8, ch_info->period,
++		ch_info->period = max_t(u8, ch_info->period,
+ 					RTW89_DFS_CHAN_TIME);
+ 		ch_info->dwell_time = RTW89_DWELL_TIME;
+ 		break;
 -- 
 2.35.1
 
