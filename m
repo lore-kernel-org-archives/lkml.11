@@ -2,139 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2978ACCA490
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0094C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443474AbiFHCCc (ORCPT
+        id S1443413AbiFHCCY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47740 "EHLO
+        Tue, 7 Jun 2022 22:02:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1841758AbiFHAIO (ORCPT
+        with ESMTP id S1588471AbiFGXyl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:08:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D28C2534CD;
-        Tue,  7 Jun 2022 12:18:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E21C2B823DC;
-        Tue,  7 Jun 2022 19:18:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 571C6C36B0B;
-        Tue,  7 Jun 2022 19:18:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629496;
-        bh=ibFWBZNYf96bTV+pa3KOvrMz/s+3mgQ+XsQOvLGXtoY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b6vvhIwyUI45QjjsH5EVcvWXUGIWuCcUOk2fyD+7XgOIL/DFj58/UjE0Nw1dVTgnB
-         06AZA1iRsPc2RHFFAOwG4ZKpx9QLjNQ1zMkR4jtoi008MQ51nytFwNqacrjB7Nfe2c
-         zlpZyBrVX+KjIMad9lpAdjRM0TS50J2fp4twPxhY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.18 711/879] f2fs: fix deadloop in foreground GC
-Date:   Tue,  7 Jun 2022 19:03:49 +0200
-Message-Id: <20220607165023.491299256@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 19:54:41 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9954DEAB87;
+        Tue,  7 Jun 2022 16:09:57 -0700 (PDT)
+Date:   Tue, 07 Jun 2022 23:09:53 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1654643395;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=31knJ3QXB3grtazMt+b9bY3U/ZDckeFhNjGn1EuvTFE=;
+        b=MJl5K8k3SMYaWkE2ICZFiDKbyUZBhahVnqp8FEBFA6di3TbE7fD/a4SnWV9ApTYPUJFP54
+        zRVLyR2ao8emN+QzJWwhVPo506TqscDDCAexUiVGC9TcAkPrExJ037JOhMycGB2EVh++Yl
+        v+SL6c/1Az5w3dSEH09U4cj7w184tsSQaIfC45WFQgyv+13YUgZ7EeX9jeXyjLh+fFEvlZ
+        cKXzW30wKK8m5FxwjQIhnqAKGTzDKEk+d4McQa3FgIiJjBZqCAxjGnkW3b6SneXpm//ElP
+        Qcsl4NKs47N6Hp0BpFEiyXj8REFihViFgDY9LMgFo5Y3+LM7JxR/nebANOx40A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1654643395;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=31knJ3QXB3grtazMt+b9bY3U/ZDckeFhNjGn1EuvTFE=;
+        b=HjKXp4gN6EUcqfASdXpyxbNTMkYrFFF/GNXtIJ2YNPgW76mBis3OVoy0Jh7VVMJTpICXPO
+        UuoY4aA9fIvGneBQ==
+From:   "tip-bot2 for Ira Weiny" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/mm] Documentation/protection-keys: Clean up documentation
+ for User Space pkeys
+Cc:     Ira Weiny <ira.weiny@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220419170649.1022246-2-ira.weiny@intel.com>
+References: <20220419170649.1022246-2-ira.weiny@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <165464339351.4207.13791430848488231130.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+The following commit has been merged into the x86/mm branch of tip:
 
-commit cfd66bb715fd11fde3338d0660cffa1396adc27d upstream.
+Commit-ID:     f8c1d4ca55177326adad1fdc6bf602423a507542
+Gitweb:        https://git.kernel.org/tip/f8c1d4ca55177326adad1fdc6bf602423a507542
+Author:        Ira Weiny <ira.weiny@intel.com>
+AuthorDate:    Tue, 19 Apr 2022 10:06:06 -07:00
+Committer:     Dave Hansen <dave.hansen@linux.intel.com>
+CommitterDate: Tue, 07 Jun 2022 16:06:22 -07:00
 
-As Yanming reported in bugzilla:
+Documentation/protection-keys: Clean up documentation for User Space pkeys
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215914
+The documentation for user space pkeys was a bit dated including things
+such as Amazon and distribution testing information which is irrelevant
+now.
 
-The root cause is: in a very small sized image, it's very easy to
-exceed threshold of foreground GC, if we calculate free space and
-dirty data based on section granularity, in corner case,
-has_not_enough_free_secs() will always return true, result in
-deadloop in f2fs_gc().
+Update the documentation.  This also streamlines adding the Supervisor
+pkey documentation later on.
 
-So this patch refactors has_not_enough_free_secs() as below to fix
-this issue:
-1. calculate needed space based on block granularity, and separate
-all blocks to two parts, section part, and block part, comparing
-section part to free section, and comparing block part to free space
-in openned log.
-2. account F2FS_DIRTY_NODES, F2FS_DIRTY_IMETA and F2FS_DIRTY_DENTS
-as node block consumer;
-3. account F2FS_DIRTY_DENTS as data block consumer;
-
-Cc: stable@vger.kernel.org
-Reported-by: Ming Yan <yanming@tju.edu.cn>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220419170649.1022246-2-ira.weiny@intel.com
 ---
- fs/f2fs/segment.h |   32 ++++++++++++++++++++------------
- 1 file changed, 20 insertions(+), 12 deletions(-)
+ Documentation/core-api/protection-keys.rst | 44 ++++++++++-----------
+ 1 file changed, 21 insertions(+), 23 deletions(-)
 
---- a/fs/f2fs/segment.h
-+++ b/fs/f2fs/segment.h
-@@ -572,11 +572,10 @@ static inline int reserved_sections(stru
- 	return GET_SEC_FROM_SEG(sbi, reserved_segments(sbi));
- }
+diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
+index ec575e7..bf28ac0 100644
+--- a/Documentation/core-api/protection-keys.rst
++++ b/Documentation/core-api/protection-keys.rst
+@@ -4,31 +4,29 @@
+ Memory Protection Keys
+ ======================
  
--static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
-+static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi,
-+			unsigned int node_blocks, unsigned int dent_blocks)
- {
--	unsigned int node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
--					get_pages(sbi, F2FS_DIRTY_DENTS);
--	unsigned int dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
+-Memory Protection Keys for Userspace (PKU aka PKEYs) is a feature
+-which is found on Intel's Skylake (and later) "Scalable Processor"
+-Server CPUs. It will be available in future non-server Intel parts
+-and future AMD processors.
+-
+-For anyone wishing to test or use this feature, it is available in
+-Amazon's EC2 C5 instances and is known to work there using an Ubuntu
+-17.04 image.
+-
+-Memory Protection Keys provides a mechanism for enforcing page-based
+-protections, but without requiring modification of the page tables
+-when an application changes protection domains.  It works by
+-dedicating 4 previously ignored bits in each page table entry to a
+-"protection key", giving 16 possible keys.
+-
+-There is also a new user-accessible register (PKRU) with two separate
+-bits (Access Disable and Write Disable) for each key.  Being a CPU
+-register, PKRU is inherently thread-local, potentially giving each
++Memory Protection Keys provide a mechanism for enforcing page-based
++protections, but without requiring modification of the page tables when an
++application changes protection domains.
 +
- 	unsigned int segno, left_blocks;
- 	int i;
- 
-@@ -602,19 +601,28 @@ static inline bool has_curseg_enough_spa
- static inline bool has_not_enough_free_secs(struct f2fs_sb_info *sbi,
- 					int freed, int needed)
- {
--	int node_secs = get_blocktype_secs(sbi, F2FS_DIRTY_NODES);
--	int dent_secs = get_blocktype_secs(sbi, F2FS_DIRTY_DENTS);
--	int imeta_secs = get_blocktype_secs(sbi, F2FS_DIRTY_IMETA);
-+	unsigned int total_node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
-+					get_pages(sbi, F2FS_DIRTY_DENTS) +
-+					get_pages(sbi, F2FS_DIRTY_IMETA);
-+	unsigned int total_dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
-+	unsigned int node_secs = total_node_blocks / BLKS_PER_SEC(sbi);
-+	unsigned int dent_secs = total_dent_blocks / BLKS_PER_SEC(sbi);
-+	unsigned int node_blocks = total_node_blocks % BLKS_PER_SEC(sbi);
-+	unsigned int dent_blocks = total_dent_blocks % BLKS_PER_SEC(sbi);
-+	unsigned int free, need_lower, need_upper;
- 
- 	if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING)))
- 		return false;
- 
--	if (free_sections(sbi) + freed == reserved_sections(sbi) + needed &&
--			has_curseg_enough_space(sbi))
-+	free = free_sections(sbi) + freed;
-+	need_lower = node_secs + dent_secs + reserved_sections(sbi) + needed;
-+	need_upper = need_lower + (node_blocks ? 1 : 0) + (dent_blocks ? 1 : 0);
++Pkeys Userspace (PKU) is a feature which can be found on:
++        * Intel server CPUs, Skylake and later
++        * Intel client CPUs, Tiger Lake (11th Gen Core) and later
++        * Future AMD CPUs
 +
-+	if (free > need_upper)
- 		return false;
--	return (free_sections(sbi) + freed) <=
--		(node_secs + 2 * dent_secs + imeta_secs +
--		reserved_sections(sbi) + needed);
-+	else if (free <= need_lower)
-+		return true;
-+	return !has_curseg_enough_space(sbi, node_blocks, dent_blocks);
- }
++Pkeys work by dedicating 4 previously Reserved bits in each page table entry to
++a "protection key", giving 16 possible keys.
++
++Protections for each key are defined with a per-CPU user-accessible register
++(PKRU).  Each of these is a 32-bit register storing two bits (Access Disable
++and Write Disable) for each of 16 keys.
++
++Being a CPU register, PKRU is inherently thread-local, potentially giving each
+ thread a different set of protections from every other thread.
  
- static inline bool f2fs_is_checkpoint_ready(struct f2fs_sb_info *sbi)
-
-
+-There are two new instructions (RDPKRU/WRPKRU) for reading and writing
+-to the new register.  The feature is only available in 64-bit mode,
+-even though there is theoretically space in the PAE PTEs.  These
+-permissions are enforced on data access only and have no effect on
+-instruction fetches.
++There are two instructions (RDPKRU/WRPKRU) for reading and writing to the
++register.  The feature is only available in 64-bit mode, even though there is
++theoretically space in the PAE PTEs.  These permissions are enforced on data
++access only and have no effect on instruction fetches.
+ 
+ Syscalls
+ ========
