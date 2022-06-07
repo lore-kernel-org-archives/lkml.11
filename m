@@ -2,91 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3353C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:34:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9277BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381311AbiFGWeF (ORCPT
+        id S1380370AbiFGWeQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:34:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39118 "EHLO
+        Tue, 7 Jun 2022 18:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378213AbiFGVWN (ORCPT
+        with ESMTP id S1378406AbiFGVWP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:22:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA974133269;
-        Tue,  7 Jun 2022 12:00:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 939E1617DA;
-        Tue,  7 Jun 2022 19:00:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3658C385A5;
-        Tue,  7 Jun 2022 19:00:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628402;
-        bh=58lJsLP5IalNjhnV2OFb+wisSpm/oUI8y24iln421mA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g51XDyPCOASv1tUZNxx1sSRp3BtWiBq/kMEXGUKZvoiauNajvdPzC0wiCstLtinsO
-         j0I4dTexYmsXddEPRjqaiLhOn0Ve5OdyEecQ6GUKhiCShGideNJcoXKowSIzvn9cAG
-         7Bzv5IuCPxoTE5o01DqFIys+twAJjDM3t4juJxKg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ansuel Smith <ansuelsmth@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 315/879] net: dsa: qca8k: correctly handle mdio read error
-Date:   Tue,  7 Jun 2022 18:57:13 +0200
-Message-Id: <20220607165011.991520585@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:22:15 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340B51660AC;
+        Tue,  7 Jun 2022 12:00:08 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id f7so14933859ilr.5;
+        Tue, 07 Jun 2022 12:00:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=gmFsGC5asBOsMwTokySfFmYzyb+MMlB/ax36UF7roRM=;
+        b=KRprMFMJQ8BOYYCx4BfqQEDBD1M4TY98wxdYru5+suebV78nXfhlLKrGnc8GaVErSP
+         cjwIYbFU0/mGYM7apRJck5JB2BYQ6/ubIr49yDDlC2WBbGksnuJdw6dxc8K5QQ9NJ8FJ
+         LB0gqVLUHL332MSl+0Ggup1JJ9BBGATmQcUsE1L91zB727xv6cHXfEryOy1UPzae8mHq
+         lO2544zOWTuhEeJE6bv/A3JYhM2l6pHKhj9R1IZNatNsW08RpBcsS84yGLi5gskQ/zCT
+         ebhawZivg1kJjrGwcIhAnVqhXya9oaFlDhC/SBBNHi9cibNN7nYHnHlTLybvCHF4N4qe
+         1RVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=gmFsGC5asBOsMwTokySfFmYzyb+MMlB/ax36UF7roRM=;
+        b=vL3vWZSDMALOxknYlh+UZiiNtJUyylmi6iXVU/Yam53SqCcOoalR45jz10IH3E+nvW
+         Uo7+lke2+kxdZnG2UcxvT1Vrew57Gj1JhERmx1MvyA0SY9qF8NQv6bUPtK12ItMs0SBT
+         P4FpOMAVORH6w9zcE2xuE1mJ3PsIefoqg4F+8/CGhJvGi2WL4ooZwnkUX/dsLwHjQGQx
+         hlUwUD4o8tPry1DhvYJEt+BdV8iSXgeS2+V+pPOFWZRwSv66gZF77KoS3uYacfDLtGdn
+         BTDvppplE67W6C5ehkLRW3j99JLGAxKtOs6R5AaCkST3FGL72MHEB+pL5SgXgrwwit1W
+         bVvA==
+X-Gm-Message-State: AOAM532BFuXk334mmb7Zmq4qCh25wFCMh0EJK0Vwt52wD4cSTk9QB2eM
+        atDx9ZUP8pg9IHZ14omJ712lvq2oTZdkxTKpBZcHb4Rbdml4tQ==
+X-Google-Smtp-Source: ABdhPJxwLclFuAiiWhqiQoKXWYkJmP0Ngrn9iwSDQKmH+bDO8rFtb0bRQAPa6wYRnhdIUYRQyM1vNCrbUMeS0Q2A0LA=
+X-Received: by 2002:a92:cc8b:0:b0:2d6:5389:e7f4 with SMTP id
+ x11-20020a92cc8b000000b002d65389e7f4mr1465481ilo.245.1654628407330; Tue, 07
+ Jun 2022 12:00:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220607000851.39798-1-irogers@google.com>
+In-Reply-To: <20220607000851.39798-1-irogers@google.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Tue, 7 Jun 2022 20:59:31 +0200
+Message-ID: <CA+icZUWpSF6ge76JVp1qBC5QhC1AwNacs5Di=e1QSbAD+SVKUA@mail.gmail.com>
+Subject: [Linux v5.19-rc1] tools/perf/a.out remains after make -C tools/perf clean
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>
+Cc:     linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ansuel Smith <ansuelsmth@gmail.com>
+Hi,
 
-[ Upstream commit 6cfc03b602200c5cbbd8d906fd905547814e83df ]
+I observed this some time ago - so this is not only Linux v5.19-rc1 related.
 
-Restore original way to handle mdio read error by returning 0xffff.
-This was wrongly changed when the internal_mdio_read was introduced,
-now that both legacy and internal use the same function, make sure that
-they behave the same way.
+$ LC_ALL=C make -C tools/perf clean 2>&1 | tee ../make-log_perf-clean.txt
+make: Entering directory '/home/dileks/src/linux-kernel/git/tools/perf'
+ CLEAN   x86
+ CLEAN   libtraceevent
+ CLEAN   libapi
+ CLEAN   libbpf
+ CLEAN   libsubcmd
+ CLEAN   libperf
+ CLEAN   fixdep
+ CLEAN   feature-detect
+ CLEAN   python
+ CLEAN   bpf-skel
+ CLEAN   core-objs
+ CLEAN   core-progs
+ CLEAN   core-gen
+ CLEAN   Documentation
+make: Leaving directory '/home/dileks/src/linux-kernel/git/tools/perf'
 
-Fixes: ce062a0adbfe ("net: dsa: qca8k: fix kernel panic with legacy mdio mapping")
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/dsa/qca8k.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+$ git status -s
+M tools/perf/util/unwind-libunwind-local.c
+?? tools/perf/a.out
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index d3ed0a7f8077..22b328bd7cd5 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -1287,7 +1287,12 @@ qca8k_internal_mdio_read(struct mii_bus *slave_bus, int phy, int regnum)
- 	if (ret >= 0)
- 		return ret;
- 
--	return qca8k_mdio_read(priv, phy, regnum);
-+	ret = qca8k_mdio_read(priv, phy, regnum);
-+
-+	if (ret < 0)
-+		return 0xffff;
-+
-+	return ret;
- }
- 
- static int
--- 
-2.35.1
+$ rm -v tools/perf/a.out
+'tools/perf/a.out' deleted
 
+$ git checkout -- tools/perf/util/unwind-libunwind-local.c
 
+$ git status -s
+[ empty ]
 
+Thanks.
+
+Regards,
+-Sedat-
