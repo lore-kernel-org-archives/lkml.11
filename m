@@ -2,140 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E93F1CCA488
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:07:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241101AbiFHCHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:07:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36086 "EHLO
+        id S231757AbiFHCHv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1586166AbiFGXuu (ORCPT
+        with ESMTP id S1388331AbiFHAlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:50:50 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924B64B09A6
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:39:13 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id a10so17049525ioe.9
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 15:39:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PZjTnNBEFjMERm/zBB1Q5SKIoGAjovs1DRR0WKNL5cQ=;
-        b=C0tlUMN7jBA6dqEdpuV1EemFXOL4FZvtkee+TxrlYMNuA4qDyrxgjkxmjPFo1/Y4Xb
-         J0ZLjxtF+RAVa02b7ykgDbxzqYXJSxKY0dpqxRPLC3YqnJYc92MGM1pAV1t8jZpNiy9g
-         ieUFVjN6Qn7KTyN7UeW3VOKpjffDayidprqpvfbsaRF8AIsUe/JX0UjYHJicstH+7Isp
-         1bX+gu6LZS9E9dEdBVbu4u6goqW2uWh8ED8DNlVgDUPQ0jB5cLBazWlvL5gnFOr1xlsv
-         DPj7+FKgX3rrT08F3c+onVN63c7duPAls+X7xTgvcfRDL4rELIAccWwjHVEf1DBIsRDI
-         meTg==
+        Tue, 7 Jun 2022 20:41:00 -0400
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456C1C1A;
+        Tue,  7 Jun 2022 17:00:03 -0700 (PDT)
+Received: by mail-yb1-f182.google.com with SMTP id p13so33764910ybm.1;
+        Tue, 07 Jun 2022 17:00:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=PZjTnNBEFjMERm/zBB1Q5SKIoGAjovs1DRR0WKNL5cQ=;
-        b=NztEBjEWyTk1iuw2Z5b/vYK0cXMHzuDCgosJlUIkD8LhtoskRpcXku3KWEUQ5md7gi
-         Usa2aIqp4S8C2DQAfiG6NGUGZHLX/Xt4pn3Qjj7D6tMIRBk4uc4DBMJN9w4nZeL9l4kn
-         ngRqhf8LZEHMMEwEBxE+YMyiUndIcUATaM4gdd5h72RDnN5paF/1Ng0Kd1PDIQQXqxek
-         /tQTfAyn46VQZoOFd/qCKwlolXgeCzANhYUWgodoTjeaz2KyD6N3qUQSbyE/gWznI1UV
-         yZG/bZ+pqzNppXm5q4zUWFn1ncd5pqjfiiexX6yDZsl4aYGzfaLsFLYtqiy1hXdUn9oJ
-         ja3A==
-X-Gm-Message-State: AOAM531EJf7Muwgfje0GYoAyo9qqqXb2gKBLSnQLAru1r7YPkIG+19YR
-        cvaYW/NsJSHDZMwEboHEd1OgMeu+JgMnkYvMmg9vInCdgY4=
-X-Google-Smtp-Source: ABdhPJzzr1lRHONyU3kpmNxcrVHf49STF99H32Yq72ipH19LqeUpU7SoZ1xC0Blsv7ZJepEu+YtMbPjBDM/lhgq6k/k=
-X-Received: by 2002:a05:6638:12d5:b0:32e:c4fd:d794 with SMTP id
- v21-20020a05663812d500b0032ec4fdd794mr15750996jas.265.1654641550419; Tue, 07
- Jun 2022 15:39:10 -0700 (PDT)
+        bh=djM9qxIv8WYqj0AGoYFkLyyQF5ybi28fwJWBEEtW3bs=;
+        b=Do2AmXMGrLMH1zLONKYe3r6uZqjrYt4qmWQBwrZqa1tnBgPrfWz71vlYeBpi62Ri2o
+         0HU4+rzWTXqTklR8sDKo+q7aeikMPseCA25KP1+T0abcqTu+ec6mbEXlM7dga8T7he+J
+         cIKLWG6P6o/Z5U+6JIm/2UK8Qyweozlumuo//MR5S5Gbxn7P9YtDTAziGH6phhzFO0ni
+         z3xKJO6M4ZonaUWAaLPD7z4dewnqyfqZq11ge/GtF8Gufvg2nrkdopYJ0OITdrZcLF1q
+         1VkeqF1dnITmXrgmKVSGpNMjfHFnVr7R324aq3tSqpAzXM512dkabVxCrNjstm+YJoto
+         dQ1w==
+X-Gm-Message-State: AOAM5330Ox5iyM5EM2EXVkIkiDzkWWwGtLpBWcr44eHG07wQ2NfCrAj0
+        WcTWlYd1WqmZbrYKZiCr63KSSzorrj7ovnNKMZvC8Q78kpKixA==
+X-Google-Smtp-Source: ABdhPJz9g+8g0g0him4k8ulgm6ajYFAMb7TCbj1rvWSak+qkPb6HsK2dH1sUp5yR5pUwL2qYrNvSvCPXWdy80Dd524I=
+X-Received: by 2002:a25:6588:0:b0:65d:57b9:c470 with SMTP id
+ z130-20020a256588000000b0065d57b9c470mr33194296ybb.142.1654646402496; Tue, 07
+ Jun 2022 17:00:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220607013844.213446-1-jmaxwell37@gmail.com> <165458990767.3884.13816861537144030058@kwain>
-In-Reply-To: <165458990767.3884.13816861537144030058@kwain>
-From:   Jonathan Maxwell <jmaxwell37@gmail.com>
-Date:   Wed, 8 Jun 2022 08:38:34 +1000
-Message-ID: <CAGHK07BPXD-qu-ufSL6dfVkSEzyk9p+_hL7AhmkZhu4eF11kKA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: bpf: fix request_sock leak in filter.c
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, cjebpub@gmail.com
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220604163000.211077-1-mailhol.vincent@wanadoo.fr> <2e8666f3-1bd9-8610-6b72-e56e669d3484@hartkopp.net>
+ <CAMZ6RqKWUyf6dZmxG809-yvjg5wbLwPSLtEfv-MgPpJ5ra=iGQ@mail.gmail.com>
+ <f161fdd0-415a-8ea1-0aad-3a3a19f1bfa8@hartkopp.net> <20220607202706.7fbongzs3ixzpydm@pengutronix.de>
+ <44670e69-6d67-c6c7-160c-1ae6e740aabb@hartkopp.net>
+In-Reply-To: <44670e69-6d67-c6c7-160c-1ae6e740aabb@hartkopp.net>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Wed, 8 Jun 2022 08:59:51 +0900
+Message-ID: <CAMZ6RqJq70qv97oNbNXL6z+52b3pyg9rBNNd4BKmpO4-6Xg=Gw@mail.gmail.com>
+Subject: Re: [PATCH v5 0/7] can: refactoring of can-dev module and of Kbuild
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can <linux-can@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Max Staudt <max@enpas.org>, netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 6:18 PM Antoine Tenart <atenart@kernel.org> wrote:
->
-> Hi Jon,
->
-> This patch is targeted at the networking subsystem, as such (see the
-> "NETWORKING [GENERAL]" section in MAINTAINERS), you should send it to
-> netdev@vger.kernel.org and to the networking maintainers (David, Jakub,
-> Paolo & Eric).
->
-> This also fixes an issue and should be targeted at [net] instead of
-> [net-next]. Because of this you'll also need a Fixes: tag.
->
-> Quoting Jon Maxwell (2022-06-07 03:38:44)
-> > A customer reported a request_socket leak in a Calico cloud environment. We
-> > found that a BPF program was doing a socket lookup with takes a refcnt on
-> > the socket and that it was finding the request_socket but returning the parent
-> > LISTEN socket via sk_to_full_sk() without decrementing the child request socket
-> > 1st, resulting in request_sock slab object leak. This patch retains the
-> > existing behaviour of returning full socks to the caller but it also decrements
-> > the child request_socket if one is present before doing so to prevent the leak.
-> >
-> > Thanks to Curtis Taylor for all the help in diagnosing and testing this. And
-> > thanks to Antoine Tenart for the reproducer and patch input.
-> >
-> > Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
-> > Tested-by: Curtis Taylor <cjebpub@gmail.com>
-> > Co-developed-by: Antoine Tenart <atenart@kernel.org>
->
-> You need to put my SoB here when using the above tag. You'll also need
-> to put your SoB at the end of all the above tags instead of the top.
->
-> > @@ -6514,13 +6514,14 @@ __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
-> >  {
-> >         struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
-> >                                            ifindex, proto, netns_id, flags);
-> > +       struct sock *sk1 = sk;
-> >
-> >         if (sk) {
-> >                 sk = sk_to_full_sk(sk);
-> > -               if (!sk_fullsock(sk)) {
-> > -                       sock_gen_put(sk);
->
-> I'd suggest to add a comment here to explain why sock_gen_put is called
-> on the original sk.
->
-> > +               if (!sk_fullsock(sk1))
-> > +                       sock_gen_put(sk1);
-> > +               if (!sk_fullsock(sk))
-> >                         return NULL;
-> > -               }
-> >         }
-> >
-> >         return sk;
-> > @@ -6551,13 +6552,14 @@ bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
-> >  {
-> >         struct sock *sk = bpf_skc_lookup(skb, tuple, len, proto, netns_id,
-> >                                          flags);
-> > +       struct sock *sk1 = sk;
-> >
-> >         if (sk) {
-> >                 sk = sk_to_full_sk(sk);
-> > -               if (!sk_fullsock(sk)) {
-> > -                       sock_gen_put(sk);
->
-> Ditto.
->
-> > +               if (!sk_fullsock(sk1))
-> > +                       sock_gen_put(sk1);
-> > +               if (!sk_fullsock(sk))
-> >                         return NULL;
-> > -               }
-> >         }
-> >
-> >         return sk;
->
-> Thanks!
-> Antoine
+On Wed. 8 Jun 2022 at 05:51, Oliver Hartkopp <socketcan@hartkopp.net> wrote:
+> On 07.06.22 22:27, Marc Kleine-Budde wrote:
+> > On 07.06.2022 22:12:46, Oliver Hartkopp wrote:
+> >> So what about:
+> >>
+> >>    symbol: CONFIG_NETDEVICES
+> >>    |
+> >>    +-> CAN Device Drivers
+> >>        symbol: CONFIG_CAN_DEV
+> >>        |
+> >>        +-> software/virtual CAN device drivers
+> >>        |   (at time of writing: slcan, vcan, vxcan)
+> >>        |
+> >>        +-> hardware CAN device drivers with Netlink support
+> >>            symbol: CONFIG_CAN_NETLINK (matches previous CONFIG_CAN_DEV)
+> >>            |
+> >>            +-> CAN bit-timing calculation (optional for all drivers)
+> >>            |   symbol: CONFIG_CAN_BITTIMING
+> >>            |
+> >>            +-> CAN rx offload (optional but selected by some drivers)
+> >>            |   symbol: CONFIG_CAN_RX_OFFLOAD
+> >>            |
+> >>            +-> CAN devices drivers
+> >>                (some may select CONFIG_CAN_RX_OFFLOAD)
 
-Thanks Antoine, ack I'll do that and resubmit.
+OK, this does not follow the definition I set for the "x --> y" arrow,
+but it is easy to read. I am OK with your suggestion. I will also
+remove the definition of the "x --> y" arrow because your diagram is
+self explanatory.
+
+> >> (I also added 'hardware' to CAN device drivers with Netlink support) to have
+> >> a distinction to 'software/virtual' CAN device drivers)
+
+This line you modified is the verbatim copy of the title in
+menuconfig. So you are suggesting adding "hardware" to the menuconfig
+as well? It did not have this word in the title before this series.
+I was hesitating on this. If we name the symbol CAN_NETLINK, then I do
+not see the need to also add "hardware" in the title. If you look at
+the help menu, you will see: "This is required by all platform and
+hardware CAN drivers." Mentioning it in the help menu is enough for
+me.
+
+And because of the blur line between slcan (c.f. Marc's comment
+below), I am not convinced to add this.
+
+> > The line between hardware and software/virtual devices ist blurry, the
+> > new can327 driver uses netlink and the slcan is currently being
+> > converted....
+>
+> Right, which could mean that slcan and can327 should be located in the
+> 'usual' CAN device driver section and not in the sw/virtual device section.
+
+ACK, but as discussed with Marc, I will just focus on the series
+itself and ignore (for the moment) that slcan will probably be moved
+within CAN_NETLINK scope in the future.
+https://lore.kernel.org/linux-can/20220607103923.5m6j4rykvitofsv4@pengutronix.de/
+
+> The slcan and can327 need some kind of hardware - while vcan and vxcan
+> don't.
+
+
+Yours sincerely,
+Vincent Mailhol
