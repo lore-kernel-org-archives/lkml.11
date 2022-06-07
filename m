@@ -2,61 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F06CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:34:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379527AbiFGVe3 (ORCPT
+        id S1380134AbiFGVef (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44706 "EHLO
+        Tue, 7 Jun 2022 17:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377358AbiFGUdM (ORCPT
+        with ESMTP id S1377279AbiFGUdF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:33:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33CC17F820;
-        Tue,  7 Jun 2022 11:34:58 -0700 (PDT)
+        Tue, 7 Jun 2022 16:33:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A4D14781D;
+        Tue,  7 Jun 2022 11:34:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34562B8233E;
-        Tue,  7 Jun 2022 18:34:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5333EC36AFF;
-        Tue,  7 Jun 2022 18:34:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A60726157B;
+        Tue,  7 Jun 2022 18:34:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1557C385A2;
+        Tue,  7 Jun 2022 18:34:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626892;
-        bh=Jx1t5XAPdUTEUwodH2UHljSHn1Z8270s0i71CEmpdIk=;
+        s=korg; t=1654626882;
+        bh=BUUyuJwqsmQ8ppwNkzVju8FLysHPnnjZRg/0W7ctp2w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=12YKT2E/36HcNH8PdHmOaCLxyXJRvGQrJME32TG0/2h4Q9xEuOvfSfnq0A3cuZxBV
-         e1RTxUjBS9qqI8Ud/hMuT96hf/u/5GEUoRg5rkV011XEo1O71KLFuAjdyQqyX8ldMW
-         wh64UxDjS2sPby5QGYH2tmtaxpJ3dhchBPjrHGeA=
+        b=y78Z3kvcJKv0TJznatRB2DzaEmmOYa5Ko7OCPuZqCTk0MRyDrrsK/EhQAtMPX2C1/
+         dUEFv5hqQvhJ2SSq0oGeT2qU4wT/i/8hGR/xAizhl/6pra4xZsLBt8InsE3utzYNra
+         GFTnImjVdIbiA7+yX14wfnhKIGHGBf255gL3H/xc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Florian Fischer <florian.fischer@muhq.space>,
-        Ingo Molnar <mingo@redhat.com>,
-        James Clark <james.clark@arm.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Madhavan Srinivasan <maddy@linux.ibm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
-        Stephane Eranian <eranian@google.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Eric Badger <ebadger@purestorage.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Ashok Raj <ashok.raj@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 542/772] perf evlist: Keep topdown counters in weak group
-Date:   Tue,  7 Jun 2022 19:02:14 +0200
-Message-Id: <20220607165004.934114625@linuxfoundation.org>
+Subject: [PATCH 5.17 538/772] PCI/AER: Clear MULTI_ERR_COR/UNCOR_RCV bits
+Date:   Tue,  7 Jun 2022 19:02:10 +0200
+Message-Id: <20220607165004.819665862@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -68,189 +53,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ian Rogers <irogers@google.com>
+From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-[ Upstream commit d98079c05b5a5411c6030c47b6256cbeeeff77d0 ]
+[ Upstream commit 203926da2bff8e172200a2f11c758987af112d4a ]
 
-On Intel Icelake, topdown events must always be grouped with a slots
-event as leader. When a metric is parsed a weak group is formed and
-retried if perf_event_open fails. The retried events aren't grouped
-breaking the slots leader requirement. This change modifies the weak
-group "reset" behavior so that topdown events aren't broken from the
-group for the retry.
+When a Root Port or Root Complex Event Collector receives an error Message
+e.g., ERR_COR, it sets PCI_ERR_ROOT_COR_RCV in the Root Error Status
+register and logs the Requester ID in the Error Source Identification
+register.  If it receives a second ERR_COR Message before software clears
+PCI_ERR_ROOT_COR_RCV, hardware sets PCI_ERR_ROOT_MULTI_COR_RCV and the
+Requester ID is lost.
 
-  $ perf stat -e '{slots,topdown-bad-spec,topdown-be-bound,topdown-fe-bound,topdown-retiring,branch-instructions,branch-misses,bus-cycles,cache-misses,cache-references,cpu-cycles,instructions,mem-loads,mem-stores,ref-cycles,baclears.any,ARITH.DIVIDER_ACTIVE}:W' -a sleep 1
+In the following scenario, PCI_ERR_ROOT_MULTI_COR_RCV was never cleared:
 
-   Performance counter stats for 'system wide':
+  - hardware receives ERR_COR message
+  - hardware sets PCI_ERR_ROOT_COR_RCV
+  - aer_irq() entered
+  - aer_irq(): status = pci_read_config_dword(PCI_ERR_ROOT_STATUS)
+  - aer_irq(): now status == PCI_ERR_ROOT_COR_RCV
+  - hardware receives second ERR_COR message
+  - hardware sets PCI_ERR_ROOT_MULTI_COR_RCV
+  - aer_irq(): pci_write_config_dword(PCI_ERR_ROOT_STATUS, status)
+  - PCI_ERR_ROOT_COR_RCV is cleared; PCI_ERR_ROOT_MULTI_COR_RCV is set
+  - aer_irq() entered again
+  - aer_irq(): status = pci_read_config_dword(PCI_ERR_ROOT_STATUS)
+  - aer_irq(): now status == PCI_ERR_ROOT_MULTI_COR_RCV
+  - aer_irq() exits because PCI_ERR_ROOT_COR_RCV not set
+  - PCI_ERR_ROOT_MULTI_COR_RCV is still set
 
-    47,867,188,483      slots                                                         (92.27%)
-   <not supported>      topdown-bad-spec
-   <not supported>      topdown-be-bound
-   <not supported>      topdown-fe-bound
-   <not supported>      topdown-retiring
-     2,173,346,937      branch-instructions                                           (92.27%)
-        10,540,253      branch-misses             #    0.48% of all branches          (92.29%)
-        96,291,140      bus-cycles                                                    (92.29%)
-         6,214,202      cache-misses              #   20.120 % of all cache refs      (92.29%)
-        30,886,082      cache-references                                              (76.91%)
-    11,773,726,641      cpu-cycles                                                    (84.62%)
-    11,807,585,307      instructions              #    1.00  insn per cycle           (92.31%)
-                 0      mem-loads                                                     (92.32%)
-     2,212,928,573      mem-stores                                                    (84.69%)
-    10,024,403,118      ref-cycles                                                    (92.35%)
-        16,232,978      baclears.any                                                  (92.35%)
-        23,832,633      ARITH.DIVIDER_ACTIVE                                          (84.59%)
+The same problem occurred with ERR_NONFATAL/ERR_FATAL Messages and
+PCI_ERR_ROOT_UNCOR_RCV and PCI_ERR_ROOT_MULTI_UNCOR_RCV.
 
-       0.981070734 seconds time elapsed
+Fix the problem by queueing an AER event and clearing the Root Error Status
+bits when any of these bits are set:
 
-After:
+  PCI_ERR_ROOT_COR_RCV
+  PCI_ERR_ROOT_UNCOR_RCV
+  PCI_ERR_ROOT_MULTI_COR_RCV
+  PCI_ERR_ROOT_MULTI_UNCOR_RCV
 
-  $ perf stat -e '{slots,topdown-bad-spec,topdown-be-bound,topdown-fe-bound,topdown-retiring,branch-instructions,branch-misses,bus-cycles,cache-misses,cache-references,cpu-cycles,instructions,mem-loads,mem-stores,ref-cycles,baclears.any,ARITH.DIVIDER_ACTIVE}:W' -a sleep 1
+See the bugzilla link for details from Eric about how to reproduce this
+problem.
 
-   Performance counter stats for 'system wide':
-
-       31040189283      slots                                                         (92.27%)
-        8997514811      topdown-bad-spec          #     28.2% bad speculation         (92.27%)
-       10997536028      topdown-be-bound          #     34.5% backend bound           (92.27%)
-        4778060526      topdown-fe-bound          #     15.0% frontend bound          (92.27%)
-        7086628768      topdown-retiring          #     22.2% retiring                (92.27%)
-        1417611942      branch-instructions                                           (92.26%)
-           5285529      branch-misses             #    0.37% of all branches          (92.28%)
-          62922469      bus-cycles                                                    (92.29%)
-           1440708      cache-misses              #    8.292 % of all cache refs      (92.30%)
-          17374098      cache-references                                              (76.94%)
-        8040889520      cpu-cycles                                                    (84.63%)
-        7709992319      instructions              #    0.96  insn per cycle           (92.32%)
-                 0      mem-loads                                                     (92.32%)
-        1515669558      mem-stores                                                    (84.68%)
-        6542411177      ref-cycles                                                    (92.35%)
-           4154149      baclears.any                                                  (92.35%)
-          20556152      ARITH.DIVIDER_ACTIVE                                          (84.59%)
-
-       1.010799593 seconds time elapsed
-
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Ian Rogers <irogers@google.com>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Florian Fischer <florian.fischer@muhq.space>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: James Clark <james.clark@arm.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Garry <john.garry@huawei.com>
-Cc: Kim Phillips <kim.phillips@amd.com>
-Cc: Madhavan Srinivasan <maddy@linux.ibm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Riccardo Mancini <rickyman7@gmail.com>
-Cc: Shunsuke Nakamura <nakamura.shun@fujitsu.com>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: Xing Zhengjun <zhengjun.xing@linux.intel.com>
-Link: https://lore.kernel.org/r/20220517052724.283874-2-irogers@google.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+[bhelgaas: commit log, move repro details to bugzilla]
+Fixes: e167bfcaa4cd ("PCI: aerdrv: remove magical ROOT_ERR_STATUS_MASKS")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215992
+Link: https://lore.kernel.org/r/20220418150237.1021519-1-sathyanarayanan.kuppuswamy@linux.intel.com
+Reported-by: Eric Badger <ebadger@purestorage.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Ashok Raj <ashok.raj@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/arch/x86/util/evsel.c | 12 ++++++++++++
- tools/perf/util/evlist.c         | 16 ++++++++++++++--
- tools/perf/util/evsel.c          | 10 ++++++++++
- tools/perf/util/evsel.h          |  3 +++
- 4 files changed, 39 insertions(+), 2 deletions(-)
+ drivers/pci/pcie/aer.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/tools/perf/arch/x86/util/evsel.c b/tools/perf/arch/x86/util/evsel.c
-index ac2899a25b7a..00cb4466b4ca 100644
---- a/tools/perf/arch/x86/util/evsel.c
-+++ b/tools/perf/arch/x86/util/evsel.c
-@@ -3,6 +3,7 @@
- #include <stdlib.h>
- #include "util/evsel.h"
- #include "util/env.h"
-+#include "util/pmu.h"
- #include "linux/string.h"
+diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
+index 9fa1f97e5b27..7952e5efd6cf 100644
+--- a/drivers/pci/pcie/aer.c
++++ b/drivers/pci/pcie/aer.c
+@@ -101,6 +101,11 @@ struct aer_stats {
+ #define ERR_COR_ID(d)			(d & 0xffff)
+ #define ERR_UNCOR_ID(d)			(d >> 16)
  
- void arch_evsel__set_sample_weight(struct evsel *evsel)
-@@ -29,3 +30,14 @@ void arch_evsel__fixup_new_cycles(struct perf_event_attr *attr)
++#define AER_ERR_STATUS_MASK		(PCI_ERR_ROOT_UNCOR_RCV |	\
++					PCI_ERR_ROOT_COR_RCV |		\
++					PCI_ERR_ROOT_MULTI_COR_RCV |	\
++					PCI_ERR_ROOT_MULTI_UNCOR_RCV)
++
+ static int pcie_aer_disable;
+ static pci_ers_result_t aer_root_reset(struct pci_dev *dev);
  
- 	free(env.cpuid);
- }
-+
-+bool arch_evsel__must_be_in_group(const struct evsel *evsel)
-+{
-+	if ((evsel->pmu_name && strcmp(evsel->pmu_name, "cpu")) ||
-+	    !pmu_have_event("cpu", "slots"))
-+		return false;
-+
-+	return evsel->name &&
-+		(!strcasecmp(evsel->name, "slots") ||
-+		 strcasestr(evsel->name, "topdown"));
-+}
-diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
-index 41a66a48cbdf..3ff0de0b6710 100644
---- a/tools/perf/util/evlist.c
-+++ b/tools/perf/util/evlist.c
-@@ -1790,8 +1790,17 @@ struct evsel *evlist__reset_weak_group(struct evlist *evsel_list, struct evsel *
- 		if (evsel__has_leader(c2, leader)) {
- 			if (is_open && close)
- 				perf_evsel__close(&c2->core);
--			evsel__set_leader(c2, c2);
--			c2->core.nr_members = 0;
-+			/*
-+			 * We want to close all members of the group and reopen
-+			 * them. Some events, like Intel topdown, require being
-+			 * in a group and so keep these in the group.
-+			 */
-+			if (!evsel__must_be_in_group(c2) && c2 != leader) {
-+				evsel__set_leader(c2, c2);
-+				c2->core.nr_members = 0;
-+				leader->core.nr_members--;
-+			}
-+
- 			/*
- 			 * Set this for all former members of the group
- 			 * to indicate they get reopened.
-@@ -1799,6 +1808,9 @@ struct evsel *evlist__reset_weak_group(struct evlist *evsel_list, struct evsel *
- 			c2->reset_group = true;
- 		}
- 	}
-+	/* Reset the leader count if all entries were removed. */
-+	if (leader->core.nr_members == 1)
-+		leader->core.nr_members = 0;
- 	return leader;
- }
+@@ -1196,7 +1201,7 @@ static irqreturn_t aer_irq(int irq, void *context)
+ 	struct aer_err_source e_src = {};
  
-diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-index 22d3267ce294..6fb3cf924dd2 100644
---- a/tools/perf/util/evsel.c
-+++ b/tools/perf/util/evsel.c
-@@ -3048,3 +3048,13 @@ int evsel__source_count(const struct evsel *evsel)
- 	}
- 	return count;
- }
-+
-+bool __weak arch_evsel__must_be_in_group(const struct evsel *evsel __maybe_unused)
-+{
-+	return false;
-+}
-+
-+bool evsel__must_be_in_group(const struct evsel *evsel)
-+{
-+	return arch_evsel__must_be_in_group(evsel);
-+}
-diff --git a/tools/perf/util/evsel.h b/tools/perf/util/evsel.h
-index 041b42d33bf5..a36172ed4cf6 100644
---- a/tools/perf/util/evsel.h
-+++ b/tools/perf/util/evsel.h
-@@ -483,6 +483,9 @@ bool evsel__has_leader(struct evsel *evsel, struct evsel *leader);
- bool evsel__is_leader(struct evsel *evsel);
- void evsel__set_leader(struct evsel *evsel, struct evsel *leader);
- int evsel__source_count(const struct evsel *evsel);
-+bool evsel__must_be_in_group(const struct evsel *evsel);
-+
-+bool arch_evsel__must_be_in_group(const struct evsel *evsel);
+ 	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_STATUS, &e_src.status);
+-	if (!(e_src.status & (PCI_ERR_ROOT_UNCOR_RCV|PCI_ERR_ROOT_COR_RCV)))
++	if (!(e_src.status & AER_ERR_STATUS_MASK))
+ 		return IRQ_NONE;
  
- /*
-  * Macro to swap the bit-field postition and size.
+ 	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_ERR_SRC, &e_src.id);
 -- 
 2.35.1
 
