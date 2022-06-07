@@ -2,75 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:55:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:55:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244272AbiFGMyt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:54:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54216 "EHLO
+        id S244270AbiFGMzK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244255AbiFGMym (ORCPT
+        with ESMTP id S244264AbiFGMzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:54:42 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BCC6F48F;
-        Tue,  7 Jun 2022 05:54:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654606481; x=1686142481;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=AuKX2dSKfHj6UrzbicC0l/d9bTqLUEAbVOs1DM+WGTk=;
-  b=cakTLInNOtI4KEgulj59HsApQYTm8W/cn90fcFmmTyA5vAL/jl2k/kmA
-   3ozkWxRmDCdRrXUJRiXy0Gh2pNQt0EfzgC6+04zhl6mI9kB98BKz8TWA5
-   0jtkIoKJsm9izJQAIrlYUkSSp0fv9badtX5TRSdOMuuQo39bzi73A4RHQ
-   nsbd8E5vDzEYG/QNt5bZ6pGy0TKa3Uat90/aznFPOtJk6tKu4j4acsK6u
-   E0jkXvqvhsASrzFrNMdIluxzNE5EO1Mzo9qzbQJGXwu3FQxjRIwuWm2yT
-   etPVtlPzO2nGK/isbHeLlXn8wUR8Q4GuUFZnfP1q+SEmvC6LNzZSSWXZq
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="265125934"
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="265125934"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 05:54:40 -0700
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="636112135"
-Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 05:54:39 -0700
-Date:   Tue, 7 Jun 2022 15:54:36 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 04/36] tty/vt: consolemap: decrypt inverse_translate()
-In-Reply-To: <20220607104946.18710-4-jslaby@suse.cz>
-Message-ID: <e7db78b-99a0-d996-f23e-d1ee8811e951@linux.intel.com>
-References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-4-jslaby@suse.cz>
+        Tue, 7 Jun 2022 08:55:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4E8C7891F
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:55:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654606501;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PikFI8IuFGilq0ztM72f7JxwavOO8rV8L+cu0/Iu4x8=;
+        b=EtyB1LWhWNfL63MlIGdNjX7xkKZh6WdCCsqcT1FhR6nbBrzqwI7jA/wQ061S55QEmUqJlM
+        ME6XiAPavt1U6eQjEnVpklA1DWoy/tSmKkiFA89EsdtrPhPvhpcE4GaFt1QynKfhlENZA/
+        /vLDx8E8zee/wo7xHV8+De7ZrsLyAsU=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-631-eC6JHXFYOyezfyOzDqmr_g-1; Tue, 07 Jun 2022 08:54:21 -0400
+X-MC-Unique: eC6JHXFYOyezfyOzDqmr_g-1
+Received: by mail-wm1-f70.google.com with SMTP id n18-20020a05600c3b9200b00397335edc7dso12730224wms.7
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 05:54:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PikFI8IuFGilq0ztM72f7JxwavOO8rV8L+cu0/Iu4x8=;
+        b=FtklVp74+x7iBVZkyUiBzu+7y3ucHsiWQOhjyemnWuuU80k0sEC6B7mPgLXs5lZyUF
+         WMt4L4tgXEpZ+k9V9P31noUCyM8ngwEaLH6XC5z3TFEBZioR/ZkAyQRyGvWvjdSuhSyu
+         SLGlUpR/CQVLaPdfrgAFCiQlfVzlT3QoHS+HHQReM8GRtBCPo2q/pBSYkyeESeWZmwh+
+         2QbYmxVGlBmxicIzzc799gZ3LxnD9PlxqPzBcvLh7XusTw57guSuC3ofj8bWWYP71ZNe
+         jn7Fys6SFADadJy77Cj+yJeYmQIJuE1ypoqVGl96LaeTJg7ihsiw1DShsDlX/kfUCkiC
+         dLRg==
+X-Gm-Message-State: AOAM532MoY06ntSGMNdEomNk6dsx99ci6b+MT4mtpSKh7x3Hip14dMaT
+        77o7LX4fNKOcZSXAVLOSQnnaBgwdZr8GTBbeWa5B8n/aoKhvFhDijzzxqAHXdQWh7zuzFXcAAEK
+        RN+l6dOlseSldqZDx0xEfJjIz
+X-Received: by 2002:a7b:c401:0:b0:397:26fb:ebf7 with SMTP id k1-20020a7bc401000000b0039726fbebf7mr29011209wmi.90.1654606459915;
+        Tue, 07 Jun 2022 05:54:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwJa9Ztgs/feNXwUUZcblGX2ZWB3NuTx5Hif1QltOBA4EuHQl1hdGlGjZxUtoDL/Nv8LMki0A==
+X-Received: by 2002:a7b:c401:0:b0:397:26fb:ebf7 with SMTP id k1-20020a7bc401000000b0039726fbebf7mr29011177wmi.90.1654606459567;
+        Tue, 07 Jun 2022 05:54:19 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id g6-20020a056000118600b002183fabc53csm5233442wrx.17.2022.06.07.05.54.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 05:54:18 -0700 (PDT)
+Message-ID: <9d336622-6964-454a-605f-1ca90b902836@redhat.com>
+Date:   Tue, 7 Jun 2022 14:54:14 +0200
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-2147149149-1654606480=:1622"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH AUTOSEL 5.16 07/28] x86/kvm/fpu: Limit guest
+ user_xfeatures to supported bits of XCR0
+Content-Language: en-US
+To:     Peter Xu <peterx@redhat.com>
+Cc:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Leonardo Bras <leobras@redhat.com>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org,
+        chang.seok.bae@intel.com, luto@kernel.org, kvm@vger.kernel.org,
+        Sean Christopherson <seanjc@google.com>
+References: <20220301201344.18191-1-sashal@kernel.org>
+ <20220301201344.18191-7-sashal@kernel.org>
+ <5f2b7b93-d4c9-1d59-14df-6e8b2366ca8a@redhat.com>
+ <YppVupW+IWsm7Osr@xz-m1.local>
+ <2d9ba70b-ac18-a461-7a57-22df2c0165c6@redhat.com>
+ <Yp5xSi6P3q187+A+@xz-m1.local>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <Yp5xSi6P3q187+A+@xz-m1.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-2147149149-1654606480=:1622
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 7 Jun 2022, Jiri Slaby wrote:
-
-> Fix invalid indentation and demystify the code by removing superfluous
-> "else"s. The "else"s are unneeded as they always follow an "if"-true
-> branch containing a "return". The code is now way more readable.
+On 6/6/22 23:27, Peter Xu wrote:
+> On Mon, Jun 06, 2022 at 06:18:12PM +0200, Paolo Bonzini wrote:
+>>> However there seems to be something missing at least to me, on why it'll
+>>> fail a migration from 5.15 (without this patch) to 5.18 (with this patch).
+>>> In my test case, user_xfeatures will be 0x7 (FP|SSE|YMM) if without this
+>>> patch, but 0x0 if with it.
+>>
+>> What CPU model are you using for the VM?
 > 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> I didn't specify it, assuming it's qemu64 with no extra parameters.
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Ok, so indeed it lacks AVX and this patch can have an effect.
 
--- 
- i.
+>> For example, if the source lacks this patch but the destination has it,
+>> the source will transmit YMM registers, but the destination will fail to
+>> set them if they are not available for the selected CPU model.
+>>
+>> See the commit message: "As a bonus, it will also fail if userspace tries to
+>> set fpu features (with the KVM_SET_XSAVE ioctl) that are not compatible to
+>> the guest configuration.  Such features will never be returned by
+>> KVM_GET_XSAVE or KVM_GET_XSAVE2."
+> 
+> IIUC you meant we should have failed KVM_SET_XSAVE when they're not aligned
+> (probably by failing validate_user_xstate_header when checking against the
+> user_xfeatures on dest host). But that's probably not my case, because here
+> KVM_SET_XSAVE succeeded, it's just that the guest gets a double fault after
+> the precopy migration completes (or for postcopy when the switchover is
+> done).
 
---8323329-2147149149-1654606480=:1622--
+Difficult to say what's happening without seeing at least the guest code 
+around the double fault (above you said "fail a migration" and I thought 
+that was a different scenario than the double fault), and possibly which 
+was the first exception that contributed to the double fault.
+
+Paolo
+
