@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96580CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81253CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358706AbiFGUFL (ORCPT
+        id S1358596AbiFGUFG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:05:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58692 "EHLO
+        Tue, 7 Jun 2022 16:05:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351439AbiFGTIe (ORCPT
+        with ESMTP id S1354372AbiFGTIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:08:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC5D326C1;
-        Tue,  7 Jun 2022 11:05:59 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88EA1912D0;
+        Tue,  7 Jun 2022 11:05:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67738B82182;
-        Tue,  7 Jun 2022 18:05:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3137C385A5;
-        Tue,  7 Jun 2022 18:05:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A5626171C;
+        Tue,  7 Jun 2022 18:05:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AC7AC385A5;
+        Tue,  7 Jun 2022 18:05:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625157;
-        bh=Lq/jRnzkyNONRUKmF97mm3qk9+VbxEssjuIM6/KLqFE=;
+        s=korg; t=1654625154;
+        bh=JResAk/B+hthY8xeZahQu9QuVQDbRBIYLvFy6476UII=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GI0Tdtmqv729jxSR7RSGULGxZ0RzonKcCHm5H7xWyJN67BJwkFWlnlbn33nyDEtdT
-         OSUQNp1ZA1VfqK9DOtKhmW+apwBREVjY9uF6Gi2lSyyU9Auur0KvYk8QYtpnMx7oSh
-         GqRvScSUv9e65Eo9UuL9liYNQu1qaJ3PiAYu5VcI=
+        b=pPXapdlNjQ4XWZtHPYFoQdLy0VM36Cf2ehv9LyyqTPyIIEJPBgx0iSx8LtcCw/knn
+         xh39mvvMV1D30Oh6x5OUXLAYiyTiNB6S1RbdMmJEXb8MI92/p2wWou1bOjdgHMqvUk
+         /vN0uGe2DbbtHPOhvgIGHg5OsVRtRAbKdW6zt9PY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Paul Moore <paul@paul-moore.com>,
         =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.15 569/667] selftests/landlock: Add clang-format exceptions
-Date:   Tue,  7 Jun 2022 19:03:54 +0200
-Message-Id: <20220607164951.759727258@linuxfoundation.org>
+Subject: [PATCH 5.15 586/667] landlock: Create find_rule() from unmask_layers()
+Date:   Tue,  7 Jun 2022 19:04:11 +0200
+Message-Id: <20220607164952.257711705@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,211 +51,90 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mickaël Salaün <mic@digikod.net>
 
-commit 4598d9abf4215e1e371a35683350d50122793c80 upstream.
+commit 2cd7cd6eed88b8383cfddce589afe9c0ae1d19b4 upstream.
 
-In preparation to a following commit, add clang-format on and
-clang-format off stanzas around constant definitions and the TEST_F_FORK
-macro.  This enables to keep aligned values, which is much more readable
-than packed definitions.
+This refactoring will be useful in a following commit.
 
-Add other clang-format exceptions for FIXTURE() and
-FIXTURE_VARIANT_ADD() declarations to force space before open brace,
-which is reported by checkpatch.pl .
-
-Link: https://lore.kernel.org/r/20220506160513.523257-4-mic@digikod.net
+Reviewed-by: Paul Moore <paul@paul-moore.com>
+Link: https://lore.kernel.org/r/20220506161102.525323-4-mic@digikod.net
 Cc: stable@vger.kernel.org
 Signed-off-by: Mickaël Salaün <mic@digikod.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/landlock/common.h      |    2 ++
- tools/testing/selftests/landlock/fs_test.c     |   23 +++++++++++++++++------
- tools/testing/selftests/landlock/ptrace_test.c |   20 +++++++++++++++++++-
- 3 files changed, 38 insertions(+), 7 deletions(-)
+ security/landlock/fs.c |   41 ++++++++++++++++++++++++++++-------------
+ 1 file changed, 28 insertions(+), 13 deletions(-)
 
---- a/tools/testing/selftests/landlock/common.h
-+++ b/tools/testing/selftests/landlock/common.h
-@@ -29,6 +29,7 @@
-  * this to be possible, we must not call abort() but instead exit smoothly
-  * (hence the step print).
-  */
-+/* clang-format off */
- #define TEST_F_FORK(fixture_name, test_name) \
- 	static void fixture_name##_##test_name##_child( \
- 		struct __test_metadata *_metadata, \
-@@ -75,6 +76,7 @@
- 		FIXTURE_DATA(fixture_name) __attribute__((unused)) *self, \
- 		const FIXTURE_VARIANT(fixture_name) \
- 			__attribute__((unused)) *variant)
-+/* clang-format on */
+--- a/security/landlock/fs.c
++++ b/security/landlock/fs.c
+@@ -183,23 +183,36 @@ int landlock_append_fs_rule(struct landl
  
- #ifndef landlock_create_ruleset
- static inline int landlock_create_ruleset(
---- a/tools/testing/selftests/landlock/fs_test.c
-+++ b/tools/testing/selftests/landlock/fs_test.c
-@@ -221,8 +221,9 @@ static void remove_layout1(struct __test
- 	EXPECT_EQ(0, remove_path(dir_s3d2));
- }
+ /* Access-control management */
  
--FIXTURE(layout1) {
--};
-+/* clang-format off */
-+FIXTURE(layout1) {};
-+/* clang-format on */
- 
- FIXTURE_SETUP(layout1)
+-static inline layer_mask_t
+-unmask_layers(const struct landlock_ruleset *const domain,
+-	      const struct path *const path, const access_mask_t access_request,
+-	      layer_mask_t layer_mask)
++/*
++ * The lifetime of the returned rule is tied to @domain.
++ *
++ * Returns NULL if no rule is found or if @dentry is negative.
++ */
++static inline const struct landlock_rule *
++find_rule(const struct landlock_ruleset *const domain,
++	  const struct dentry *const dentry)
  {
-@@ -376,6 +377,8 @@ TEST_F_FORK(layout1, inval)
- 	ASSERT_EQ(0, close(ruleset_fd));
- }
+ 	const struct landlock_rule *rule;
+ 	const struct inode *inode;
+-	size_t i;
  
-+/* clang-format off */
+-	if (d_is_negative(path->dentry))
+-		/* Ignore nonexistent leafs. */
+-		return layer_mask;
+-	inode = d_backing_inode(path->dentry);
++	/* Ignores nonexistent leafs. */
++	if (d_is_negative(dentry))
++		return NULL;
 +
- #define ACCESS_FILE ( \
- 	LANDLOCK_ACCESS_FS_EXECUTE | \
- 	LANDLOCK_ACCESS_FS_WRITE_FILE | \
-@@ -396,6 +399,8 @@ TEST_F_FORK(layout1, inval)
- 	LANDLOCK_ACCESS_FS_MAKE_BLOCK | \
- 	ACCESS_LAST)
- 
-+/* clang-format on */
++	inode = d_backing_inode(dentry);
+ 	rcu_read_lock();
+ 	rule = landlock_find_rule(
+ 		domain, rcu_dereference(landlock_inode(inode)->object));
+ 	rcu_read_unlock();
++	return rule;
++}
 +
- TEST_F_FORK(layout1, file_access_rights)
- {
- 	__u64 access;
-@@ -452,6 +457,8 @@ struct rule {
- 	__u64 access;
- };
- 
-+/* clang-format off */
++static inline layer_mask_t unmask_layers(const struct landlock_rule *const rule,
++					 const access_mask_t access_request,
++					 layer_mask_t layer_mask)
++{
++	size_t layer_level;
 +
- #define ACCESS_RO ( \
- 	LANDLOCK_ACCESS_FS_READ_FILE | \
- 	LANDLOCK_ACCESS_FS_READ_DIR)
-@@ -460,6 +467,8 @@ struct rule {
- 	ACCESS_RO | \
- 	LANDLOCK_ACCESS_FS_WRITE_FILE)
+ 	if (!rule)
+ 		return layer_mask;
  
-+/* clang-format on */
-+
- static int create_ruleset(struct __test_metadata *const _metadata,
- 		const __u64 handled_access_fs, const struct rule rules[])
- {
-@@ -2070,8 +2079,9 @@ TEST_F_FORK(layout1, proc_pipe)
- 	ASSERT_EQ(0, close(pipe_fds[1]));
- }
+@@ -210,8 +223,9 @@ unmask_layers(const struct landlock_rule
+ 	 * the remaining layers for each inode, from the first added layer to
+ 	 * the last one.
+ 	 */
+-	for (i = 0; i < rule->num_layers; i++) {
+-		const struct landlock_layer *const layer = &rule->layers[i];
++	for (layer_level = 0; layer_level < rule->num_layers; layer_level++) {
++		const struct landlock_layer *const layer =
++			&rule->layers[layer_level];
+ 		const layer_mask_t layer_bit = BIT_ULL(layer->level - 1);
  
--FIXTURE(layout1_bind) {
--};
-+/* clang-format off */
-+FIXTURE(layout1_bind) {};
-+/* clang-format on */
+ 		/* Checks that the layer grants access to the full request. */
+@@ -269,8 +283,9 @@ static int check_access_path(const struc
+ 	while (true) {
+ 		struct dentry *parent_dentry;
  
- FIXTURE_SETUP(layout1_bind)
- {
-@@ -2411,8 +2421,9 @@ static const char (*merge_sub_files[])[]
-  *         └── work
-  */
- 
--FIXTURE(layout2_overlay) {
--};
-+/* clang-format off */
-+FIXTURE(layout2_overlay) {};
-+/* clang-format on */
- 
- FIXTURE_SETUP(layout2_overlay)
- {
---- a/tools/testing/selftests/landlock/ptrace_test.c
-+++ b/tools/testing/selftests/landlock/ptrace_test.c
-@@ -59,7 +59,9 @@ static int test_ptrace_read(const pid_t
- 	return 0;
- }
- 
--FIXTURE(hierarchy) { };
-+/* clang-format off */
-+FIXTURE(hierarchy) {};
-+/* clang-format on */
- 
- FIXTURE_VARIANT(hierarchy) {
- 	const bool domain_both;
-@@ -83,7 +85,9 @@ FIXTURE_VARIANT(hierarchy) {
-  *       \              P2 -> P1 : allow
-  *        'P2
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, allow_without_domain) {
-+	/* clang-format on */
- 	.domain_both = false,
- 	.domain_parent = false,
- 	.domain_child = false,
-@@ -98,7 +102,9 @@ FIXTURE_VARIANT_ADD(hierarchy, allow_wit
-  *        |  P2  |
-  *        '------'
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, allow_with_one_domain) {
-+	/* clang-format on */
- 	.domain_both = false,
- 	.domain_parent = false,
- 	.domain_child = true,
-@@ -112,7 +118,9 @@ FIXTURE_VARIANT_ADD(hierarchy, allow_wit
-  *            '
-  *            P2
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, deny_with_parent_domain) {
-+	/* clang-format on */
- 	.domain_both = false,
- 	.domain_parent = true,
- 	.domain_child = false,
-@@ -127,7 +135,9 @@ FIXTURE_VARIANT_ADD(hierarchy, deny_with
-  *         |  P2  |
-  *         '------'
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, deny_with_sibling_domain) {
-+	/* clang-format on */
- 	.domain_both = false,
- 	.domain_parent = true,
- 	.domain_child = true,
-@@ -142,7 +152,9 @@ FIXTURE_VARIANT_ADD(hierarchy, deny_with
-  * |         P2  |
-  * '-------------'
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, allow_sibling_domain) {
-+	/* clang-format on */
- 	.domain_both = true,
- 	.domain_parent = false,
- 	.domain_child = false,
-@@ -158,7 +170,9 @@ FIXTURE_VARIANT_ADD(hierarchy, allow_sib
-  * |        '------' |
-  * '-----------------'
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, allow_with_nested_domain) {
-+	/* clang-format on */
- 	.domain_both = true,
- 	.domain_parent = false,
- 	.domain_child = true,
-@@ -174,7 +188,9 @@ FIXTURE_VARIANT_ADD(hierarchy, allow_wit
-  * |             P2  |
-  * '-----------------'
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, deny_with_nested_and_parent_domain) {
-+	/* clang-format on */
- 	.domain_both = true,
- 	.domain_parent = true,
- 	.domain_child = false,
-@@ -192,7 +208,9 @@ FIXTURE_VARIANT_ADD(hierarchy, deny_with
-  * |        '------' |
-  * '-----------------'
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, deny_with_forked_domain) {
-+	/* clang-format on */
- 	.domain_both = true,
- 	.domain_parent = true,
- 	.domain_child = true,
+-		layer_mask = unmask_layers(domain, &walker_path, access_request,
+-					   layer_mask);
++		layer_mask =
++			unmask_layers(find_rule(domain, walker_path.dentry),
++				      access_request, layer_mask);
+ 		if (layer_mask == 0) {
+ 			/* Stops when a rule from each layer grants access. */
+ 			allowed = true;
 
 
