@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4994C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D05CCC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381366AbiFGVsD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51502 "EHLO
+        id S243000AbiFGVsJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 17:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377948AbiFGUvO (ORCPT
+        with ESMTP id S1377221AbiFGUxo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:51:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB911FDE82;
-        Tue,  7 Jun 2022 11:41:00 -0700 (PDT)
+        Tue, 7 Jun 2022 16:53:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6441211CA3F;
+        Tue,  7 Jun 2022 11:43:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B45361295;
-        Tue,  7 Jun 2022 18:41:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38FBFC385A2;
-        Tue,  7 Jun 2022 18:40:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3EC18B82018;
+        Tue,  7 Jun 2022 18:43:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94D26C3411C;
+        Tue,  7 Jun 2022 18:43:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627259;
-        bh=a4eiVjuiMdl5Kk9U/T8ygeO3MRd4Li27yrcvZKUmnlo=;
+        s=korg; t=1654627425;
+        bh=HplrpNmY7M+tguF3+6EkcKSnhuhXimBvQS/rGeEEEww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N85sAU8AfSmx0jc4Ac2fD8ag6wuf8CSBeg0zQMjBe4L8BeW/krzTiOEFVUJJCnVKM
-         p6tPKNqEs6kGvIIzHWS5tufkTwyKqJgVf2xaD6mgcNrsaztPLuzPayPB+7CDrrGHN+
-         akhUyT7P/NEEs/GV4fIW/7UycEv7Z7kcTnFq2L4A=
+        b=LpI4ivdO/YszIZKdSMG+PeweCpYnrjDdhtvJLKOFclYEYlyZWyZAFPglnErHhoz5c
+         F+UErf9PXLj1ck6bVNPszxsXVw21IIlp0eU6qicEbDTj8XAUMXYGcPg6Wr6up/0fea
+         QdeRbEIPrz67w0ksK72Ta6VIBoVUYxlnCi1JShlk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.17 674/772] samples/landlock: Format with clang-format
-Date:   Tue,  7 Jun 2022 19:04:26 +0200
-Message-Id: <20220607165008.921243984@linuxfoundation.org>
+        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: [PATCH 5.17 694/772] drm/bridge: analogix_dp: Grab runtime PM reference for DP-AUX
+Date:   Tue,  7 Jun 2022 19:04:46 +0200
+Message-Id: <20220607165009.502303900@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,205 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+From: Brian Norris <briannorris@chromium.org>
 
-commit 81709f3dccacf4104a4bc2daa80bdd767a9c4c54 upstream.
+commit 8fb6c44fe8468f92ac7b8bbfcca4404a4e88645f upstream.
 
-Let's follow a consistent and documented coding style.  Everything may
-not be to our liking but it is better than tacit knowledge.  Moreover,
-this will help maintain style consistency between different developers.
+If the display is not enable()d, then we aren't holding a runtime PM
+reference here. Thus, it's easy to accidentally cause a hang, if user
+space is poking around at /dev/drm_dp_aux0 at the "wrong" time.
 
-This contains only whitespace changes.
+Let's get a runtime PM reference, and check that we "see" the panel.
+Don't force any panel power-up, etc., because that can be intrusive, and
+that's not what other drivers do (see
+drivers/gpu/drm/bridge/ti-sn65dsi86.c and
+drivers/gpu/drm/bridge/parade-ps8640.c.)
 
-Automatically formatted with:
-clang-format-14 -i samples/landlock/*.[ch]
-
-Link: https://lore.kernel.org/r/20220506160513.523257-8-mic@digikod.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Fixes: 0d97ad03f422 ("drm/bridge: analogix_dp: Remove duplicated code")
+Cc: <stable@vger.kernel.org>
+Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220301181107.v4.1.I773a08785666ebb236917b0c8e6c05e3de471e75@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- samples/landlock/sandboxer.c |   96 +++++++++++++++++++++++--------------------
- 1 file changed, 52 insertions(+), 44 deletions(-)
+ drivers/gpu/drm/bridge/analogix/analogix_dp_core.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
---- a/samples/landlock/sandboxer.c
-+++ b/samples/landlock/sandboxer.c
-@@ -22,9 +22,9 @@
- #include <unistd.h>
- 
- #ifndef landlock_create_ruleset
--static inline int landlock_create_ruleset(
--		const struct landlock_ruleset_attr *const attr,
--		const size_t size, const __u32 flags)
-+static inline int
-+landlock_create_ruleset(const struct landlock_ruleset_attr *const attr,
-+			const size_t size, const __u32 flags)
+--- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
++++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
+@@ -1632,8 +1632,19 @@ static ssize_t analogix_dpaux_transfer(s
+ 				       struct drm_dp_aux_msg *msg)
  {
- 	return syscall(__NR_landlock_create_ruleset, attr, size, flags);
+ 	struct analogix_dp_device *dp = to_dp(aux);
++	int ret;
+ 
+-	return analogix_dp_transfer(dp, msg);
++	pm_runtime_get_sync(dp->dev);
++
++	ret = analogix_dp_detect_hpd(dp);
++	if (ret)
++		goto out;
++
++	ret = analogix_dp_transfer(dp, msg);
++out:
++	pm_runtime_put(dp->dev);
++
++	return ret;
  }
-@@ -32,17 +32,18 @@ static inline int landlock_create_rulese
  
- #ifndef landlock_add_rule
- static inline int landlock_add_rule(const int ruleset_fd,
--		const enum landlock_rule_type rule_type,
--		const void *const rule_attr, const __u32 flags)
-+				    const enum landlock_rule_type rule_type,
-+				    const void *const rule_attr,
-+				    const __u32 flags)
- {
--	return syscall(__NR_landlock_add_rule, ruleset_fd, rule_type,
--			rule_attr, flags);
-+	return syscall(__NR_landlock_add_rule, ruleset_fd, rule_type, rule_attr,
-+		       flags);
- }
- #endif
- 
- #ifndef landlock_restrict_self
- static inline int landlock_restrict_self(const int ruleset_fd,
--		const __u32 flags)
-+					 const __u32 flags)
- {
- 	return syscall(__NR_landlock_restrict_self, ruleset_fd, flags);
- }
-@@ -79,9 +80,8 @@ static int parse_path(char *env_path, co
- 
- /* clang-format on */
- 
--static int populate_ruleset(
--		const char *const env_var, const int ruleset_fd,
--		const __u64 allowed_access)
-+static int populate_ruleset(const char *const env_var, const int ruleset_fd,
-+			    const __u64 allowed_access)
- {
- 	int num_paths, i, ret = 1;
- 	char *env_path_name;
-@@ -111,12 +111,10 @@ static int populate_ruleset(
- 	for (i = 0; i < num_paths; i++) {
- 		struct stat statbuf;
- 
--		path_beneath.parent_fd = open(path_list[i], O_PATH |
--				O_CLOEXEC);
-+		path_beneath.parent_fd = open(path_list[i], O_PATH | O_CLOEXEC);
- 		if (path_beneath.parent_fd < 0) {
- 			fprintf(stderr, "Failed to open \"%s\": %s\n",
--					path_list[i],
--					strerror(errno));
-+				path_list[i], strerror(errno));
- 			goto out_free_name;
- 		}
- 		if (fstat(path_beneath.parent_fd, &statbuf)) {
-@@ -127,9 +125,10 @@ static int populate_ruleset(
- 		if (!S_ISDIR(statbuf.st_mode))
- 			path_beneath.allowed_access &= ACCESS_FILE;
- 		if (landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
--					&path_beneath, 0)) {
--			fprintf(stderr, "Failed to update the ruleset with \"%s\": %s\n",
--					path_list[i], strerror(errno));
-+				      &path_beneath, 0)) {
-+			fprintf(stderr,
-+				"Failed to update the ruleset with \"%s\": %s\n",
-+				path_list[i], strerror(errno));
- 			close(path_beneath.parent_fd);
- 			goto out_free_name;
- 		}
-@@ -171,55 +170,64 @@ int main(const int argc, char *const arg
- 	int ruleset_fd;
- 	struct landlock_ruleset_attr ruleset_attr = {
- 		.handled_access_fs = ACCESS_FS_ROUGHLY_READ |
--			ACCESS_FS_ROUGHLY_WRITE,
-+				     ACCESS_FS_ROUGHLY_WRITE,
- 	};
- 
- 	if (argc < 2) {
--		fprintf(stderr, "usage: %s=\"...\" %s=\"...\" %s <cmd> [args]...\n\n",
--				ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
--		fprintf(stderr, "Launch a command in a restricted environment.\n\n");
-+		fprintf(stderr,
-+			"usage: %s=\"...\" %s=\"...\" %s <cmd> [args]...\n\n",
-+			ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
-+		fprintf(stderr,
-+			"Launch a command in a restricted environment.\n\n");
- 		fprintf(stderr, "Environment variables containing paths, "
- 				"each separated by a colon:\n");
--		fprintf(stderr, "* %s: list of paths allowed to be used in a read-only way.\n",
--				ENV_FS_RO_NAME);
--		fprintf(stderr, "* %s: list of paths allowed to be used in a read-write way.\n",
--				ENV_FS_RW_NAME);
--		fprintf(stderr, "\nexample:\n"
--				"%s=\"/bin:/lib:/usr:/proc:/etc:/dev/urandom\" "
--				"%s=\"/dev/null:/dev/full:/dev/zero:/dev/pts:/tmp\" "
--				"%s bash -i\n",
--				ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
-+		fprintf(stderr,
-+			"* %s: list of paths allowed to be used in a read-only way.\n",
-+			ENV_FS_RO_NAME);
-+		fprintf(stderr,
-+			"* %s: list of paths allowed to be used in a read-write way.\n",
-+			ENV_FS_RW_NAME);
-+		fprintf(stderr,
-+			"\nexample:\n"
-+			"%s=\"/bin:/lib:/usr:/proc:/etc:/dev/urandom\" "
-+			"%s=\"/dev/null:/dev/full:/dev/zero:/dev/pts:/tmp\" "
-+			"%s bash -i\n",
-+			ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
- 		return 1;
- 	}
- 
--	ruleset_fd = landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
-+	ruleset_fd =
-+		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
- 	if (ruleset_fd < 0) {
- 		const int err = errno;
- 
- 		perror("Failed to create a ruleset");
- 		switch (err) {
- 		case ENOSYS:
--			fprintf(stderr, "Hint: Landlock is not supported by the current kernel. "
--					"To support it, build the kernel with "
--					"CONFIG_SECURITY_LANDLOCK=y and prepend "
--					"\"landlock,\" to the content of CONFIG_LSM.\n");
-+			fprintf(stderr,
-+				"Hint: Landlock is not supported by the current kernel. "
-+				"To support it, build the kernel with "
-+				"CONFIG_SECURITY_LANDLOCK=y and prepend "
-+				"\"landlock,\" to the content of CONFIG_LSM.\n");
- 			break;
- 		case EOPNOTSUPP:
--			fprintf(stderr, "Hint: Landlock is currently disabled. "
--					"It can be enabled in the kernel configuration by "
--					"prepending \"landlock,\" to the content of CONFIG_LSM, "
--					"or at boot time by setting the same content to the "
--					"\"lsm\" kernel parameter.\n");
-+			fprintf(stderr,
-+				"Hint: Landlock is currently disabled. "
-+				"It can be enabled in the kernel configuration by "
-+				"prepending \"landlock,\" to the content of CONFIG_LSM, "
-+				"or at boot time by setting the same content to the "
-+				"\"lsm\" kernel parameter.\n");
- 			break;
- 		}
- 		return 1;
- 	}
- 	if (populate_ruleset(ENV_FS_RO_NAME, ruleset_fd,
--				ACCESS_FS_ROUGHLY_READ)) {
-+			     ACCESS_FS_ROUGHLY_READ)) {
- 		goto err_close_ruleset;
- 	}
- 	if (populate_ruleset(ENV_FS_RW_NAME, ruleset_fd,
--				ACCESS_FS_ROUGHLY_READ | ACCESS_FS_ROUGHLY_WRITE)) {
-+			     ACCESS_FS_ROUGHLY_READ |
-+				     ACCESS_FS_ROUGHLY_WRITE)) {
- 		goto err_close_ruleset;
- 	}
- 	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) {
-@@ -236,7 +244,7 @@ int main(const int argc, char *const arg
- 	cmd_argv = argv + 1;
- 	execvpe(cmd_path, cmd_argv, envp);
- 	fprintf(stderr, "Failed to execute \"%s\": %s\n", cmd_path,
--			strerror(errno));
-+		strerror(errno));
- 	fprintf(stderr, "Hint: access to the binary, the interpreter or "
- 			"shared libraries may be denied.\n");
- 	return 1;
+ struct analogix_dp_device *
 
 
