@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE950C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:44:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFEB3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:44:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359813AbiFGUok (ORCPT
+        id S1376483AbiFGUop (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:44:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43630 "EHLO
+        Tue, 7 Jun 2022 16:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357190AbiFGTlZ (ORCPT
+        with ESMTP id S1357943AbiFGTmf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:41:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD421B1F46;
-        Tue,  7 Jun 2022 11:14:50 -0700 (PDT)
+        Tue, 7 Jun 2022 15:42:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183C01116D;
+        Tue,  7 Jun 2022 11:17:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1597160B25;
-        Tue,  7 Jun 2022 18:14:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 224A7C34115;
-        Tue,  7 Jun 2022 18:14:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D2C160AD9;
+        Tue,  7 Jun 2022 18:17:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B7B2C385A2;
+        Tue,  7 Jun 2022 18:17:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625689;
-        bh=crdPjxXsbeSThDJ71pyFQjdLwv3x7InzqF9AGJuyQbo=;
+        s=korg; t=1654625843;
+        bh=goT196KiQfwpElqIN5celghRGMAp8wKph89erWgkuJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UON/QWPvY3uONVuEMzsEtfTrenv3WtQlVDS98J/CtoXq0TicMfIG0pikbjlmQInuM
-         S3Ww0Nbo9UzhOsKZ3mz2cRd4SsiQDyv0ZZ10qSD4g4iPneGokdGNAu4kI+H7UhNkiC
-         LqRpxwjMcCgLaXR6gV6BLgz/JbYID1IDVpd5PVYg=
+        b=r+4YKREyhCjuymIEHZso5mfYjAsWGpGZ2/wq/wOAx9/I8rFVLRbwJXl05v+UrxVWp
+         hXITrWJVq1lG7QXe9bj2N8biTwjbFqTT+TgDok7cocu/zBfC3IoyO2EZF8k7Sj+zgd
+         gx4IG5nsGoSxqEkV+yYedBfuoFx088FChU7i3U5w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 107/772] xtensa: move trace_hardirqs_off call back to entry.S
-Date:   Tue,  7 Jun 2022 18:54:59 +0200
-Message-Id: <20220607164952.199691616@linuxfoundation.org>
+        stable@vger.kernel.org, Ross Burton <ross.burton@arm.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 162/772] of/fdt: Ignore disabled memory nodes
+Date:   Tue,  7 Jun 2022 18:55:54 +0200
+Message-Id: <20220607164953.815342455@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,99 +50,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Andre Przywara <andre.przywara@arm.com>
 
-[ Upstream commit de4415d0bac91192ee9c74e849bc61429efa9b42 ]
+[ Upstream commit df5cd369876114f91f9ae60658fea80acfb15890 ]
 
-Context tracking call must be done after hardirq tracking call,
-otherwise lockdep_assert_irqs_disabled called from rcu_eqs_exit gives
-a warning. To avoid context tracking logic duplication for IRQ/exception
-entry paths move trace_hardirqs_off call back to common entry code.
+When we boot a machine using a devicetree, the generic DT code goes
+through all nodes with a 'device_type = "memory"' property, and collects
+all memory banks mentioned there. However it does not check for the
+status property, so any nodes which are explicitly "disabled" will still
+be added as a memblock.
+This ends up badly for QEMU, when booting with secure firmware on
+arm/arm64 machines, because QEMU adds a node describing secure-only
+memory:
+===================
+	secram@e000000 {
+		secure-status = "okay";
+		status = "disabled";
+		reg = <0x00 0xe000000 0x00 0x1000000>;
+		device_type = "memory";
+	};
+===================
 
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+The kernel will eventually use that memory block (which is located below
+the main DRAM bank), but accesses to that will be answered with an
+SError:
+===================
+[    0.000000] Internal error: synchronous external abort: 96000050 [#1] PREEMPT SMP
+[    0.000000] Modules linked in:
+[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 5.18.0-rc6-00014-g10c8acb8b679 #524
+[    0.000000] Hardware name: linux,dummy-virt (DT)
+[    0.000000] pstate: 200000c5 (nzCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    0.000000] pc : new_slab+0x190/0x340
+[    0.000000] lr : new_slab+0x184/0x340
+[    0.000000] sp : ffff80000a4b3d10
+....
+==================
+The actual crash location and call stack will be somewhat random, and
+depend on the specific allocation of that physical memory range.
+
+As the DT spec[1] explicitly mentions standard properties, add a simple
+check to skip over disabled memory nodes, so that we only use memory
+that is meant for non-secure code to use.
+
+That fixes booting a QEMU arm64 VM with EL3 enabled ("secure=on"), when
+not using UEFI. In this case the QEMU generated DT will be handed on
+to the kernel, which will see the secram node.
+This issue is reproducible when using TF-A together with U-Boot as
+firmware, then booting with the "booti" command.
+
+When using U-Boot as an UEFI provider, the code there [2] explicitly
+filters for disabled nodes when generating the UEFI memory map, so we
+are safe.
+EDK/2 only reads the first bank of the first DT memory node [3] to learn
+about memory, so we got lucky there.
+
+[1] https://github.com/devicetree-org/devicetree-specification/blob/main/source/chapter3-devicenodes.rst#memory-node (after the table)
+[2] https://source.denx.de/u-boot/u-boot/-/blob/master/lib/fdtdec.c#L1061-1063
+[3] https://github.com/tianocore/edk2/blob/master/ArmVirtPkg/PrePi/FdtParser.c
+
+Reported-by: Ross Burton <ross.burton@arm.com>
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220517101410.3493781-1-andre.przywara@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/kernel/entry.S | 19 +++++++++++++------
- arch/xtensa/kernel/traps.c | 11 ++---------
- 2 files changed, 15 insertions(+), 15 deletions(-)
+ drivers/of/fdt.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/xtensa/kernel/entry.S b/arch/xtensa/kernel/entry.S
-index a1029a5b6a1d..ee08238099f4 100644
---- a/arch/xtensa/kernel/entry.S
-+++ b/arch/xtensa/kernel/entry.S
-@@ -442,7 +442,6 @@ KABI_W	or	a3, a3, a0
- 	moveqz	a3, a0, a2		# a3 = LOCKLEVEL iff interrupt
- KABI_W	movi	a2, PS_WOE_MASK
- KABI_W	or	a3, a3, a2
--	rsr	a2, exccause
- #endif
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index ec315b060cd5..0f30496ce80b 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -1105,6 +1105,9 @@ int __init early_init_dt_scan_memory(void)
+ 		if (type == NULL || strcmp(type, "memory") != 0)
+ 			continue;
  
- 	/* restore return address (or 0 if return to userspace) */
-@@ -469,19 +468,27 @@ KABI_W	or	a3, a3, a2
- 
- 	save_xtregs_opt a1 a3 a4 a5 a6 a7 PT_XTREGS_OPT
- 	
-+#ifdef CONFIG_TRACE_IRQFLAGS
-+	rsr		abi_tmp0, ps
-+	extui		abi_tmp0, abi_tmp0, PS_INTLEVEL_SHIFT, PS_INTLEVEL_WIDTH
-+	beqz		abi_tmp0, 1f
-+	abi_call	trace_hardirqs_off
-+1:
-+#endif
++		if (!of_fdt_device_is_available(fdt, node))
++			continue;
 +
- 	/* Go to second-level dispatcher. Set up parameters to pass to the
- 	 * exception handler and call the exception handler.
- 	 */
- 
--	rsr	a4, excsave1
--	addx4	a4, a2, a4
--	l32i	a4, a4, EXC_TABLE_DEFAULT		# load handler
--	mov	abi_arg1, a2			# pass EXCCAUSE
-+	l32i	abi_arg1, a1, PT_EXCCAUSE	# pass EXCCAUSE
-+	rsr	abi_tmp0, excsave1
-+	addx4	abi_tmp0, abi_arg1, abi_tmp0
-+	l32i	abi_tmp0, abi_tmp0, EXC_TABLE_DEFAULT	# load handler
- 	mov	abi_arg0, a1			# pass stack frame
- 
- 	/* Call the second-level handler */
- 
--	abi_callx	a4
-+	abi_callx	abi_tmp0
- 
- 	/* Jump here for exception exit */
- 	.global common_exception_return
-diff --git a/arch/xtensa/kernel/traps.c b/arch/xtensa/kernel/traps.c
-index 9345007d474d..5f86208c67c8 100644
---- a/arch/xtensa/kernel/traps.c
-+++ b/arch/xtensa/kernel/traps.c
-@@ -242,12 +242,8 @@ DEFINE_PER_CPU(unsigned long, nmi_count);
- 
- void do_nmi(struct pt_regs *regs)
- {
--	struct pt_regs *old_regs;
-+	struct pt_regs *old_regs = set_irq_regs(regs);
- 
--	if ((regs->ps & PS_INTLEVEL_MASK) < LOCKLEVEL)
--		trace_hardirqs_off();
--
--	old_regs = set_irq_regs(regs);
- 	nmi_enter();
- 	++*this_cpu_ptr(&nmi_count);
- 	check_valid_nmi();
-@@ -269,12 +265,9 @@ void do_interrupt(struct pt_regs *regs)
- 		XCHAL_INTLEVEL6_MASK,
- 		XCHAL_INTLEVEL7_MASK,
- 	};
--	struct pt_regs *old_regs;
-+	struct pt_regs *old_regs = set_irq_regs(regs);
- 	unsigned unhandled = ~0u;
- 
--	trace_hardirqs_off();
--
--	old_regs = set_irq_regs(regs);
- 	irq_enter();
- 
- 	for (;;) {
+ 		reg = of_get_flat_dt_prop(node, "linux,usable-memory", &l);
+ 		if (reg == NULL)
+ 			reg = of_get_flat_dt_prop(node, "reg", &l);
 -- 
 2.35.1
 
