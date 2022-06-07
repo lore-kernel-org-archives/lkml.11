@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD25BCCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7094CCA487
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386712AbiFHAWa (ORCPT
+        id S1386540AbiFHAWZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:22:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59856 "EHLO
+        Tue, 7 Jun 2022 20:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381972AbiFGVpz (ORCPT
+        with ESMTP id S1382920AbiFGVwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:45:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4AEB235252;
-        Tue,  7 Jun 2022 12:07:36 -0700 (PDT)
+        Tue, 7 Jun 2022 17:52:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6AC023F7F6;
+        Tue,  7 Jun 2022 12:10:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6241EB823B2;
-        Tue,  7 Jun 2022 19:07:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3764C385A2;
-        Tue,  7 Jun 2022 19:07:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24722B823B1;
+        Tue,  7 Jun 2022 19:10:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AABFC385A5;
+        Tue,  7 Jun 2022 19:10:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628855;
-        bh=p/vWRLsXaxn69jFFiFCh3tIbEqu+F8JroeQeTdsr9i0=;
+        s=korg; t=1654629000;
+        bh=MUUEaXe42oEIFdsTF9pziCgPfvLKsA9Oo5uJ3FOrQY4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NttA6XJRqA7iWrcCM2eTtwyNY6NZSa9N0C/Hf7FMf+4rux+7c4nfohjkMrNGlSUyP
-         mXeQH+avgnW0cp1pbhGuj2QYBTGhh5cHOwmTxwabSeRQkfmZwoXExRj4vUiq/fZjBw
-         HvbhszrCDrFo7LTao4mCz0uJA98LMJ/CUFNFZqnU=
+        b=PrV7EgEi6jACndLdjFSuzYVQeKl7J9/czNtPpdNcnFkOC1HE9kwKsKQwwKVbvfTg1
+         ZS4sVm2gOzc9/yc4Pmhym6Er1Rgr43XN0bOiCjr15UyboPBZQuLE+83XjqcmbV0Q/D
+         z7/JTUZ6+H6I1S8zTAKnc5Tt1X9Lffj6ZKUc0pcA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yue Hu <huyue2@coolpad.com>,
-        Chao Yu <chao@kernel.org>,
-        Gao Xiang <hsiangkao@linux.alibaba.com>,
+        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sean Young <sean@mess.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 480/879] erofs: fix buffer copy overflow of ztailpacking feature
-Date:   Tue,  7 Jun 2022 18:59:58 +0200
-Message-Id: <20220607165016.809309386@linuxfoundation.org>
+Subject: [PATCH 5.18 532/879] media: lirc: revert removal of unused feature flags
+Date:   Tue,  7 Jun 2022 19:00:50 +0200
+Message-Id: <20220607165018.315716427@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,68 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gao Xiang <hsiangkao@linux.alibaba.com>
+From: Sean Young <sean@mess.org>
 
-[ Upstream commit dcbe6803fffd387f72b48c2373b5f5ed12a5804b ]
+[ Upstream commit e5499dd7253c8382d03f687f19a854adcc688357 ]
 
-I got some KASAN report as below:
+Commit b2a90f4fcb14 ("media: lirc: remove unused lirc features") removed
+feature flags which were never implemented, but they are still used by
+the lirc daemon went built from source.
 
-[   46.959738] ==================================================================
-[   46.960430] BUG: KASAN: use-after-free in z_erofs_shifted_transform+0x2bd/0x370
-[   46.960430] Read of size 4074 at addr ffff8880300c2f8e by task fssum/188
-...
-[   46.960430] Call Trace:
-[   46.960430]  <TASK>
-[   46.960430]  dump_stack_lvl+0x41/0x5e
-[   46.960430]  print_report.cold+0xb2/0x6b7
-[   46.960430]  ? z_erofs_shifted_transform+0x2bd/0x370
-[   46.960430]  kasan_report+0x8a/0x140
-[   46.960430]  ? z_erofs_shifted_transform+0x2bd/0x370
-[   46.960430]  kasan_check_range+0x14d/0x1d0
-[   46.960430]  memcpy+0x20/0x60
-[   46.960430]  z_erofs_shifted_transform+0x2bd/0x370
-[   46.960430]  z_erofs_decompress_pcluster+0xaae/0x1080
+Reinstate these symbols in order not to break the lirc build.
 
-The root cause is that the tail pcluster won't be a complete filesystem
-block anymore. So if ztailpacking is used, the second part of an
-uncompressed tail pcluster may not be ``rq->pageofs_out``.
-
-Fixes: ab749badf9f4 ("erofs: support unaligned data decompression")
-Fixes: cecf864d3d76 ("erofs: support inline data decompression")
-Reviewed-by: Yue Hu <huyue2@coolpad.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Link: https://lore.kernel.org/r/20220512115833.24175-1-hsiangkao@linux.alibaba.com
-Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Fixes: b2a90f4fcb14 ("media: lirc: remove unused lirc features")
+Link: https://lore.kernel.org/all/a0470450-ecfd-2918-e04a-7b57c1fd7694@kernel.org/
+Reported-by: Jiri Slaby <jirislaby@kernel.org>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sean Young <sean@mess.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/erofs/decompressor.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ include/uapi/linux/lirc.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/fs/erofs/decompressor.c b/fs/erofs/decompressor.c
-index 3efa686c7644..0e0d1fc0f130 100644
---- a/fs/erofs/decompressor.c
-+++ b/fs/erofs/decompressor.c
-@@ -322,6 +322,7 @@ static int z_erofs_shifted_transform(struct z_erofs_decompress_req *rq,
- 		PAGE_ALIGN(rq->pageofs_out + rq->outputsize) >> PAGE_SHIFT;
- 	const unsigned int righthalf = min_t(unsigned int, rq->outputsize,
- 					     PAGE_SIZE - rq->pageofs_out);
-+	const unsigned int lefthalf = rq->outputsize - righthalf;
- 	unsigned char *src, *dst;
+diff --git a/include/uapi/linux/lirc.h b/include/uapi/linux/lirc.h
+index 23b0f2c8ba81..8d7ca7c6af42 100644
+--- a/include/uapi/linux/lirc.h
++++ b/include/uapi/linux/lirc.h
+@@ -84,6 +84,13 @@
+ #define LIRC_CAN_SEND(x) ((x)&LIRC_CAN_SEND_MASK)
+ #define LIRC_CAN_REC(x) ((x)&LIRC_CAN_REC_MASK)
  
- 	if (nrpages_out > 2) {
-@@ -344,10 +345,10 @@ static int z_erofs_shifted_transform(struct z_erofs_decompress_req *rq,
- 	if (nrpages_out == 2) {
- 		DBG_BUGON(!rq->out[1]);
- 		if (rq->out[1] == *rq->in) {
--			memmove(src, src + righthalf, rq->pageofs_out);
-+			memmove(src, src + righthalf, lefthalf);
- 		} else {
- 			dst = kmap_atomic(rq->out[1]);
--			memcpy(dst, src + righthalf, rq->pageofs_out);
-+			memcpy(dst, src + righthalf, lefthalf);
- 			kunmap_atomic(dst);
- 		}
- 	}
++/*
++ * Unused features. These features were never implemented, in tree or
++ * out of tree. These definitions are here so not to break the lircd build.
++ */
++#define LIRC_CAN_SET_REC_FILTER		0
++#define LIRC_CAN_NOTIFY_DECODE		0
++
+ /*** IOCTL commands for lirc driver ***/
+ 
+ #define LIRC_GET_FEATURES              _IOR('i', 0x00000000, __u32)
 -- 
 2.35.1
 
