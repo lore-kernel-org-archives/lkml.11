@@ -2,78 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:11:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80263C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:11:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344882AbiFGQLO (ORCPT
+        id S1344907AbiFGQLS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50372 "EHLO
+        Tue, 7 Jun 2022 12:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344854AbiFGQLH (ORCPT
+        with ESMTP id S1344867AbiFGQLJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:11:07 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEE3100503;
-        Tue,  7 Jun 2022 09:11:05 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id g201so4104318ybf.12;
-        Tue, 07 Jun 2022 09:11:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2Gf/LMdzQibmA3CQFIu++5apIgfZQUBK5B+qLCJdcj4=;
-        b=UlIOhhRMP5WcJQ/zc/OiuB+lJTkLdYOOC2sp32tUMTA/O3i/rkc1ZAr+Jnb1VYWskV
-         u05p+kDGel0dChhHcNMQJ3nWK9QM/AusSmrLoilAGAMq8P1Cg/bOJoeexeiBsy2GTk2F
-         xVz0A6K871QbrFfNY0huAGfUWcdkRyXdofetnbhEzKFP4IxOMyQ0BEUlVV/2c2qB5QcA
-         555PBTn0EZRhixi/yvufl6vbsxbyCY9hXpoiDGn8etsqPoI/JAhbz7JMw04rLSzr9ZHj
-         Urd+yKShZEUZEf3WOAkzCDqqZ597u7goZccNJETiU8vkNdpHhHzGB9Qr5r5SMSwm00qh
-         DfTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2Gf/LMdzQibmA3CQFIu++5apIgfZQUBK5B+qLCJdcj4=;
-        b=qFZ2ooXcW2n6+jnCHMRHnI4GKZii9HlvGI15t+YyS3hy0+1HHkb+dmgXyae6MFwzJt
-         dbV1BN/GGMKkjhVs0YMXLLmwk5TVD9tUaYb36t8kelZv+rsl8WVh8TjYrAStoNCBqMdo
-         iYnLOaVItWzIZ5LbMcrPe4zVZ0P87T7zZY8MwK5hPpAU8gpptzc9VSBCl4U/PgjNLfD0
-         5rRktsv5KxN5/d/jbk3oTSNNJpVkv4uSkTo4sS6yKGt06ukbhcWxRRIPp9Wh2akd0CiT
-         iIovyckpqZY5bhLFeTXZ86bqCEbjsl5WwI5Y4E4wS5dCJWNykCP/QNFPahMcatIsG56h
-         mCHg==
-X-Gm-Message-State: AOAM532n/nDyGvu5VWlhWZOgkn6iFpR0JiNlsj6q1XOWYqai+cQw50qM
-        RrmbQ71L/SpNAZKCq8NGxU6RBc6zpCACQt1d8bAo7LT0
-X-Google-Smtp-Source: ABdhPJynkdTX/fp35vm2swA2RdeGUwkUNt87eYdVaLp+FtHRWgq9QR33twmE++ce1Xf4CBz4Rw1N2NcwHcYZ321gzr0=
-X-Received: by 2002:a05:6902:1509:b0:663:3a8b:4fac with SMTP id
- q9-20020a056902150900b006633a8b4facmr18522009ybu.545.1654618264815; Tue, 07
- Jun 2022 09:11:04 -0700 (PDT)
+        Tue, 7 Jun 2022 12:11:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5245CF5068;
+        Tue,  7 Jun 2022 09:11:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0669617AC;
+        Tue,  7 Jun 2022 16:11:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BEC1C385A5;
+        Tue,  7 Jun 2022 16:11:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654618267;
+        bh=qtc/embRhXHPiGp25zYBFWJdV1Ybg67cCQgLPhgAAmk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Djq+uw1XLpfVGayus11RDJXercv/w7NBIVHDvJddJb0wH7s1rBHaJ30RN8F+H0yZK
+         46ial4A6sq4mN0PJYGh0kX3RMJzDxFp8KqSDbBQEm6jaakkH9u+S/N5HkEPi+UrTI8
+         mzHx3QDr62uq+rg5T8wxdx/H7ZeKk3i/LjpLxuonz18HXi/bZoRydHugLaaY4rpXip
+         iSCQNQwVilySL9O1XwjZKdNzbw+KoVVls4U+8IRKppf+YhnnJbcL4TOMTz+15DaPeU
+         f53KUa5F5wRAHZ1glKJC3LK3Ynw7GvN9cFZUl5lj28AGL1fuQrdEEyvr8bmd177sy3
+         7calfSg7D3tvQ==
+From:   "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf v2 1/2] fprobe: samples: Add use_trace option and show hit/missed counter
+Date:   Wed,  8 Jun 2022 01:11:02 +0900
+Message-Id: <165461826247.280167.11939123218334322352.stgit@devnote2>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <165461825202.280167.12903689442217921817.stgit@devnote2>
+References: <165461825202.280167.12903689442217921817.stgit@devnote2>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-References: <20220605193854.2371230-1-willy@infradead.org> <20220605193854.2371230-8-willy@infradead.org>
-In-Reply-To: <20220605193854.2371230-8-willy@infradead.org>
-From:   Ryusuke Konishi <konishi.ryusuke@gmail.com>
-Date:   Wed, 8 Jun 2022 01:10:53 +0900
-Message-ID: <CAKFNMonLF+nEs7xi0t=Wy4tf7fttLZCL4v+AZGjDWvSYqmZiaw@mail.gmail.com>
-Subject: Re: [PATCH 07/10] nilfs2: Convert nilfs_copy_back_pages() to use filemap_get_folios()
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        Linux MM <linux-mm@kvack.org>,
-        linux-nilfs <linux-nilfs@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 1:00 PM Matthew Wilcox (Oracle) wrote:
->
-> Use folios throughout.
->
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> ---
->  fs/nilfs2/page.c | 60 ++++++++++++++++++++++++------------------------
->  1 file changed, 30 insertions(+), 30 deletions(-)
+From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 
-Throughout, looks good to me.   Thank you so much for your great work.
+Add use_trace option to use trace_printk() instead of pr_info()
+so that the handler doesn't involve the RCU operations.
+And show the hit and missed counter so that the user can check
+how many times the probe handler hit and missed.
 
-Acked-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+---
+ samples/fprobe/fprobe_example.c |   21 +++++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
-Ryusuke Konishi
+diff --git a/samples/fprobe/fprobe_example.c b/samples/fprobe/fprobe_example.c
+index 24d3cf109140..aad5af0278f4 100644
+--- a/samples/fprobe/fprobe_example.c
++++ b/samples/fprobe/fprobe_example.c
+@@ -21,6 +21,7 @@
+ #define BACKTRACE_DEPTH 16
+ #define MAX_SYMBOL_LEN 4096
+ struct fprobe sample_probe;
++static unsigned long nhit;
+ 
+ static char symbol[MAX_SYMBOL_LEN] = "kernel_clone";
+ module_param_string(symbol, symbol, sizeof(symbol), 0644);
+@@ -28,6 +29,8 @@ static char nosymbol[MAX_SYMBOL_LEN] = "";
+ module_param_string(nosymbol, nosymbol, sizeof(nosymbol), 0644);
+ static bool stackdump = true;
+ module_param(stackdump, bool, 0644);
++static bool use_trace = false;
++module_param(use_trace, bool, 0644);
+ 
+ static void show_backtrace(void)
+ {
+@@ -40,7 +43,11 @@ static void show_backtrace(void)
+ 
+ static void sample_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
+ {
+-	pr_info("Enter <%pS> ip = 0x%p\n", (void *)ip, (void *)ip);
++	if (use_trace)
++		trace_printk("Enter <%pS> ip = 0x%p\n", (void *)ip, (void *)ip);
++	else
++		pr_info("Enter <%pS> ip = 0x%p\n", (void *)ip, (void *)ip);
++	nhit++;
+ 	if (stackdump)
+ 		show_backtrace();
+ }
+@@ -49,8 +56,13 @@ static void sample_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_r
+ {
+ 	unsigned long rip = instruction_pointer(regs);
+ 
+-	pr_info("Return from <%pS> ip = 0x%p to rip = 0x%p (%pS)\n",
+-		(void *)ip, (void *)ip, (void *)rip, (void *)rip);
++	if (use_trace)
++		trace_printk("Return from <%pS> ip = 0x%p to rip = 0x%p (%pS)\n",
++			(void *)ip, (void *)ip, (void *)rip, (void *)rip);
++	else
++		pr_info("Return from <%pS> ip = 0x%p to rip = 0x%p (%pS)\n",
++			(void *)ip, (void *)ip, (void *)rip, (void *)rip);
++	nhit++;
+ 	if (stackdump)
+ 		show_backtrace();
+ }
+@@ -112,7 +124,8 @@ static void __exit fprobe_exit(void)
+ {
+ 	unregister_fprobe(&sample_probe);
+ 
+-	pr_info("fprobe at %s unregistered\n", symbol);
++	pr_info("fprobe at %s unregistered. %ld times hit, %ld times missed\n",
++		symbol, nhit, sample_probe.nmissed);
+ }
+ 
+ module_init(fprobe_init)
+
