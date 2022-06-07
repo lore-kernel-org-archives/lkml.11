@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D84B5CCA49B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 405CACCA497
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382636AbiFGVvl (ORCPT
+        id S1384145AbiFGVyK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34376 "EHLO
+        Tue, 7 Jun 2022 17:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377260AbiFGU5J (ORCPT
+        with ESMTP id S1379037AbiFGVB7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:57:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0C92010FF;
-        Tue,  7 Jun 2022 11:44:19 -0700 (PDT)
+        Tue, 7 Jun 2022 17:01:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D085188E5D;
+        Tue,  7 Jun 2022 11:46:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8AE76160D;
-        Tue,  7 Jun 2022 18:44:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0E06C385A5;
-        Tue,  7 Jun 2022 18:44:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16688B82018;
+        Tue,  7 Jun 2022 18:46:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E413C385A2;
+        Tue,  7 Jun 2022 18:46:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627458;
-        bh=fjh0DjFNqa4PrftEH5DvKhHI7w1fRCD7pD5OezHZF+E=;
+        s=korg; t=1654627573;
+        bh=K8cwRLy74nAcCeG16MeX91VwfthlBiQKw/yx2Lx2yrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ce3VGHjmOEWq/nJ8GNSkk5UfDbO0lM+MQ/GINzze+kia92iwbBydgcSbX0FC3SiIR
-         Aw1vRB814MXRnZZ0pL+aMGNhJB8oRNNLLK8mmAMMRne/o1pqH2LAX/oeb+/bXJiW2e
-         6IFoxT0Uh+aPjLWRLsXofyq0a3b7GY53rH8pIvBQ=
+        b=PSdp7ax7dD5jHf7UdMMb/VP+niYer8Q357UeAGPb+Ru5JlVBY376lVlIvx2LTLg9I
+         2WAD4wpRHK2fGNnPWkAULKaVMuwqW1NAR5KC3s6qIXBjWoE1ynP0U3T7DPsoidjjZS
+         Ev0Tph7oqE6QP/80ADikbgysZdE6EqABZROM3nh0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH 5.17 748/772] docs/conf.py: Cope with removal of language=None in Sphinx 5.0.0
-Date:   Tue,  7 Jun 2022 19:05:40 +0200
-Message-Id: <20220607165011.070683016@linuxfoundation.org>
+        stable@vger.kernel.org, Monish Kumar R <monish.kumar.r@intel.com>
+Subject: [PATCH 5.18 017/879] USB: new quirk for Dell Gen 2 devices
+Date:   Tue,  7 Jun 2022 18:52:15 +0200
+Message-Id: <20220607165003.172540432@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,48 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Akira Yokosawa <akiyks@gmail.com>
+From: Monish Kumar R <monish.kumar.r@intel.com>
 
-commit 627f01eab93d8671d4e4afee9b148f9998d20e7c upstream.
+commit 97fa5887cf283bb75ffff5f6b2c0e71794c02400 upstream.
 
-One of the changes in Sphinx 5.0.0 [1] says [sic]:
+Add USB_QUIRK_NO_LPM and USB_QUIRK_RESET_RESUME quirks for Dell usb gen
+2 device to not fail during enumeration.
 
-    5.0.0 final
+Found this bug on own testing
 
-     - #10474: language does not accept None as it value.
-       The default value of language becomes to 'en' now.
-
-[1]: https://www.sphinx-doc.org/en/master/changes.html#release-5-0-0-released-may-30-2022
-
-It results in a new warning from Sphinx 5.0.0 [sic]:
-
-    WARNING: Invalid configuration value found: 'language = None'.
-    Update your configuration to a valid langauge code. Falling
-    back to 'en' (English).
-
-Silence the warning by using 'en'.
-It works with all the Sphinx versions required for building
-kernel documentation (1.7.9 or later).
-
-Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-Link: https://lore.kernel.org/r/bd0c2ddc-2401-03cb-4526-79ca664e1cbe@gmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220520130044.17303-1-monish.kumar.r@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/conf.py |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/core/quirks.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/Documentation/conf.py
-+++ b/Documentation/conf.py
-@@ -161,7 +161,7 @@ finally:
- #
- # This is also used if you do content translation via gettext catalogs.
- # Usually you set "language" from the command line for these cases.
--language = None
-+language = 'en'
+--- a/drivers/usb/core/quirks.c
++++ b/drivers/usb/core/quirks.c
+@@ -510,6 +510,9 @@ static const struct usb_device_id usb_qu
+ 	/* DJI CineSSD */
+ 	{ USB_DEVICE(0x2ca3, 0x0031), .driver_info = USB_QUIRK_NO_LPM },
  
- # There are two options for replacing |today|: either, you set today to some
- # non-false value, then it is used:
++	/* DELL USB GEN2 */
++	{ USB_DEVICE(0x413c, 0xb062), .driver_info = USB_QUIRK_NO_LPM | USB_QUIRK_RESET_RESUME },
++
+ 	/* VCOM device */
+ 	{ USB_DEVICE(0x4296, 0x7570), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
+ 
 
 
