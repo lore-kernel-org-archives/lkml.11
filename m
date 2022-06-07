@@ -2,86 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 513E4CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:37:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356021AbiFGTfH (ORCPT
+        id S1356047AbiFGTfQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:35:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57714 "EHLO
+        Tue, 7 Jun 2022 15:35:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353644AbiFGSpv (ORCPT
+        with ESMTP id S1353647AbiFGSpw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:45:51 -0400
+        Tue, 7 Jun 2022 14:45:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2B3188E90;
-        Tue,  7 Jun 2022 10:59:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99394188E6D;
+        Tue,  7 Jun 2022 10:59:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA8B0B82377;
-        Tue,  7 Jun 2022 17:59:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18467C385A5;
-        Tue,  7 Jun 2022 17:59:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624758;
-        bh=VRLCUASR/oqI+cloDdoQkBQ9S5qby/dpYc3z8FpKMW4=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DD6FB82368;
+        Tue,  7 Jun 2022 17:59:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 283E3C3411F;
+        Tue,  7 Jun 2022 17:59:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624754;
+        bh=u7IYr3xHt6zjUsYbe5rv2BB9TYgoCtrosryJQ3AJNdM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KlV12NJ6WhAj+dwj1mvxTMDXFrnAC5m6gIvRxTojCEcaqUr8+rqaB+j1UTMNaDqan
-         wQ5Sod0+vqnvNO3+i9FoHpkOTe/Jlx+j1wOMPqE9yOFhadbw29rb9YERRlqauYj3PA
-         85uwNW5LP8rz0jum0RrA64JoQ4A8y87hIVCMGae0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 436/667] firmware: arm_ffa: Remove incorrect assignment of driver_data
-Date:   Tue,  7 Jun 2022 19:01:41 +0200
-Message-Id: <20220607164947.799664840@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=Tpxp4xALG6NQUXhF7XSl3IlENwLdmtdt8TbEX7J2yKA6LJQZ8js9g+Xky9GtdxkE8
+         5ZLQ0hVtCidh8yv5EsbPKobEollwyDbekbsYLoCDPPKi8ix1mrdtw+BsPVeVjNMqED
+         rFKuVTyIy6mYb7AYZfMcIcd2dv2gckQGLMV57LgEEaWDr4SYROQbh4aDzvGHD30NJs
+         6RK6uX9n3iR/idPbVbGL/3ig66OSwY3q0XHO52dYfkIZU25Nzm5ogqgFHKQ4OYr1AE
+         5n/hsVfK2xitWx390Lo3JJUGgkY0jpsfH30K5hXk/qMz+JNUwJlIwyvqvB0ihYTDVg
+         XTbpJ36X3Ad4g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, mailhol.vincent@wanadoo.fr,
+        chi.minghao@zte.com.cn, cai.huoqing@linux.dev,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 11/38] drivers: usb: host: Fix deadlock in oxu_bus_suspend()
+Date:   Tue,  7 Jun 2022 13:58:06 -0400
+Message-Id: <20220607175835.480735-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
+References: <20220607175835.480735-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudeep Holla <sudeep.holla@arm.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 00512d2930b338fdd42bd90bbd1793fe212c2d31 ]
+[ Upstream commit 4d378f2ae58138d4c55684e1d274e7dd94aa6524 ]
 
-The ffa core driver currently assigns its own driver information
-to individual ffa device driver_data which is wrong. Firstly, it leaks
-this core driver information to individual ffa_device and hence to
-ffa_driver. Secondly the ffa_device driver_data is for use by individual
-ffa_driver and not for this core driver managing all those devices.
+There is a deadlock in oxu_bus_suspend(), which is shown below:
 
-Link: https://lore.kernel.org/r/20220429113946.2087145-2-sudeep.holla@arm.com
-Fixes: d0c0bce83122 ("firmware: arm_ffa: Setup in-kernel users of FFA partitions")
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+   (Thread 1)              |      (Thread 2)
+                           | timer_action()
+oxu_bus_suspend()          |  mod_timer()
+ spin_lock_irq() //(1)     |  (wait a time)
+ ...                       | oxu_watchdog()
+ del_timer_sync()          |  spin_lock_irq() //(2)
+ (wait timer to stop)      |  ...
+
+We hold oxu->lock in position (1) of thread 1, and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need oxu->lock in position (2) of thread 2. As a result,
+oxu_bus_suspend() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irq(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417120305.64577-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/arm_ffa/driver.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/usb/host/oxu210hp-hcd.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/firmware/arm_ffa/driver.c b/drivers/firmware/arm_ffa/driver.c
-index 891d7ecf8759..814d3bf32489 100644
---- a/drivers/firmware/arm_ffa/driver.c
-+++ b/drivers/firmware/arm_ffa/driver.c
-@@ -645,8 +645,6 @@ static void ffa_setup_partitions(void)
- 			       __func__, tpbuf->id);
- 			continue;
+diff --git a/drivers/usb/host/oxu210hp-hcd.c b/drivers/usb/host/oxu210hp-hcd.c
+index e832909a924f..6df2881cd7b9 100644
+--- a/drivers/usb/host/oxu210hp-hcd.c
++++ b/drivers/usb/host/oxu210hp-hcd.c
+@@ -3908,8 +3908,10 @@ static int oxu_bus_suspend(struct usb_hcd *hcd)
  		}
--
--		ffa_dev_set_drvdata(ffa_dev, drv_info);
  	}
- 	kfree(pbuf);
- }
+ 
++	spin_unlock_irq(&oxu->lock);
+ 	/* turn off now-idle HC */
+ 	del_timer_sync(&oxu->watchdog);
++	spin_lock_irq(&oxu->lock);
+ 	ehci_halt(oxu);
+ 	hcd->state = HC_STATE_SUSPENDED;
+ 
 -- 
 2.35.1
-
-
 
