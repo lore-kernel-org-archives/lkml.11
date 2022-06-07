@@ -2,99 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB744C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:17:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B02ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357084AbiFHAQ6 (ORCPT
+        id S1380325AbiFHARo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37846 "EHLO
+        Tue, 7 Jun 2022 20:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381770AbiFGWSk (ORCPT
+        with ESMTP id S1391411AbiFGW40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:18:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE35C2629C6;
-        Tue,  7 Jun 2022 12:20:24 -0700 (PDT)
+        Tue, 7 Jun 2022 18:56:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C33B030C9FA
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:58:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0834B82182;
-        Tue,  7 Jun 2022 19:20:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4CBC385A2;
-        Tue,  7 Jun 2022 19:20:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629621;
-        bh=qbauNjF61MCv+D9NJt4OXenPxXHOClS2n7guB7XxnK0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WVTdz6GNZDwismMNVSVJCMwenkQF4auIMjFA7gotlSZZD/RvnSBWTaj0g+chnUHP1
-         mSjRCos7ufp133/QVksJvC5mTtJ69K5DbwT/FZRkJEHtK1aT9KkNaxaozKKwqHPqlb
-         v4tOYoLAyxDUm+7mGSs9iY50bjPl55XQELo3vOn8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH 5.18 756/879] PCI: qcom: Fix runtime PM imbalance on probe errors
-Date:   Tue,  7 Jun 2022 19:04:34 +0200
-Message-Id: <20220607165024.806157230@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B3ED0616A8
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:58:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44582C385A2;
+        Tue,  7 Jun 2022 19:58:00 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="P3yIR3c3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1654631878;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=UkQJjvZ5xCdBwiht+8tu2AP0BLnypsD3C8jDx5YCgmc=;
+        b=P3yIR3c3DtR/RhcoMlwU4sIlFUoCPUUImnF0ckmOipgBY1DMO0Mr7snbuEmvcVropUQvY+
+        1+phCFG5vWnyOj2zdcr06D8eVgM1LzYv7wfljGWl2x/n8RrmYu9w+z90FdjamBIDjW/kyK
+        /93Sjs9SFfqRUWrygIZrwCI5ylBXVf8=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 5d384389 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 7 Jun 2022 19:57:57 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Phil Elwell <phil@raspberrypi.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Russel King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>
+Subject: [PATCH] riscv: initialize jump labels before early_init_dt_scan()
+Date:   Tue,  7 Jun 2022 21:57:52 +0200
+Message-Id: <20220607195752.1146431-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+Stephen reported that a static key warning splat appears during early
+boot on arm64 systems that credit randomness from device trees that
+contain an "rng-seed" property, because the dtb is parsed is called
+before jump_label_init() during setup_arch(), which was fixed by
+73e2d827a501 ("arm64: Initialize jump labels before
+setup_machine_fdt()").
 
-commit 87d83b96c8d6c6c2d2096bd0bdba73bcf42b8ef0 upstream.
+The same basic issue applies to RISC-V as well. So this commit moves the
+call to jump_label_init() just before early_init_dt_scan().
+jump_label_init() actually requires sbi_init() to be called first for
+proper functioning, so it also moves that to the right place.
 
-Drop the leftover pm_runtime_disable() calls from the late probe error
-paths that would, for example, prevent runtime PM from being reenabled
-after a probe deferral.
-
-Link: https://lore.kernel.org/r/20220401133854.10421-2-johan+linaro@kernel.org
-Fixes: 6e5da6f7d824 ("PCI: qcom: Fix error handling in runtime PM support")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc: stable@vger.kernel.org      # 4.20
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Stephen Boyd <swboyd@chromium.org>
+Reported-by: Phil Elwell <phil@raspberrypi.com>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Russel King <linux@armlinux.org.uk>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Fixes: f5bda35fba61 ("random: use static branch for crng_ready()")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- drivers/pci/controller/dwc/pcie-qcom.c |    5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ arch/riscv/kernel/setup.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1621,17 +1621,14 @@ static int qcom_pcie_probe(struct platfo
- 	pp->ops = &qcom_pcie_dw_ops;
+diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
+index f0f36a4a0e9b..c44c81b1cfb3 100644
+--- a/arch/riscv/kernel/setup.c
++++ b/arch/riscv/kernel/setup.c
+@@ -263,13 +263,15 @@ static void __init parse_dtb(void)
  
- 	ret = phy_init(pcie->phy);
--	if (ret) {
--		pm_runtime_disable(&pdev->dev);
-+	if (ret)
- 		goto err_pm_runtime_put;
--	}
+ void __init setup_arch(char **cmdline_p)
+ {
++	early_ioremap_setup();
++	sbi_init();
++	jump_label_init();
++
+ 	parse_dtb();
+ 	setup_initial_init_mm(_stext, _etext, _edata, _end);
  
- 	platform_set_drvdata(pdev, pcie);
+ 	*cmdline_p = boot_command_line;
  
- 	ret = dw_pcie_host_init(pp);
- 	if (ret) {
- 		dev_err(dev, "cannot initialize host\n");
--		pm_runtime_disable(&pdev->dev);
- 		goto err_pm_runtime_put;
- 	}
+-	early_ioremap_setup();
+-	jump_label_init();
+ 	parse_early_param();
  
-
+ 	efi_init();
+@@ -285,7 +287,6 @@ void __init setup_arch(char **cmdline_p)
+ 	misc_mem_init();
+ 
+ 	init_resources();
+-	sbi_init();
+ 
+ #ifdef CONFIG_KASAN
+ 	kasan_init();
+-- 
+2.35.1
 
