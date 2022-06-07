@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA71CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C15ACCA481
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:13:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358407AbiFGUMi (ORCPT
+        id S1359398AbiFGUM6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53938 "EHLO
+        Tue, 7 Jun 2022 16:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355924AbiFGTRq (ORCPT
+        with ESMTP id S1356063AbiFGTRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:17:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C9C3E5F6;
-        Tue,  7 Jun 2022 11:08:01 -0700 (PDT)
+        Tue, 7 Jun 2022 15:17:55 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 110212B19B;
+        Tue,  7 Jun 2022 11:08:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4BC5B82340;
-        Tue,  7 Jun 2022 18:07:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E753C385A5;
-        Tue,  7 Jun 2022 18:07:49 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id F4160CE240B;
+        Tue,  7 Jun 2022 18:08:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BF64C385A5;
+        Tue,  7 Jun 2022 18:08:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625269;
-        bh=0S9p/Qfh+P5mPbXnyjJNMevBaHDXD81NAZ26hH/OqEc=;
+        s=korg; t=1654625283;
+        bh=wEN67JUF7h90gFRJYEPgOYbXPQQrDcNRic4aTK3LJmM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a7W/gxSQq65Mc5gCsTE33ZAhitGvLsHQVPaEiAWKUeEt5OB0MJLMpBhbXwzXBmrTE
-         sveyfb7DtMAFBtvBjZyblAm/xs3aC0HiAaqsgzC7oRozaMygt/nSDf7D017T6r3cYb
-         +Otil8EXGhjpE6xi/S+Z5QqzE60gndn4r/oZraAs=
+        b=muGAnfOqPhCVNMAZ1Utg+JK0a4sr/V6sohjV3AuA9GMnSomeDGYGnRuisuLmo166o
+         +QTlYicamGN0Jc4oy73E/PKEgYaOw0piE+ZFtQxV90NnPGV739TB9RMFENnFbOgbmn
+         UwkITDlc1WOIQshHdnA6VSWyJ9ojIhgiHrJKcf3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Christian Lamparter <chunkeey@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [PATCH 5.15 627/667] carl9170: tx: fix an incorrect use of list iterator
-Date:   Tue,  7 Jun 2022 19:04:52 +0200
-Message-Id: <20220607164953.473568751@linuxfoundation.org>
+        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 631/667] bcache: remove incremental dirty sector counting for bch_sectors_dirty_init()
+Date:   Tue,  7 Jun 2022 19:04:56 +0200
+Message-Id: <20220607164953.591587744@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,44 +49,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Coly Li <colyli@suse.de>
 
-commit 54a6f29522da3c914da30e50721dedf51046449a upstream.
+commit 80db4e4707e78cb22287da7d058d7274bd4cb370 upstream.
 
-If the previous list_for_each_entry_continue_rcu() don't exit early
-(no goto hit inside the loop), the iterator 'cvif' after the loop
-will be a bogus pointer to an invalid structure object containing
-the HEAD (&ar->vif_list). As a result, the use of 'cvif' after that
-will lead to a invalid memory access (i.e., 'cvif->id': the invalid
-pointer dereference when return back to/after the callsite in the
-carl9170_update_beacon()).
+After making bch_sectors_dirty_init() being multithreaded, the existing
+incremental dirty sector counting in bch_root_node_dirty_init() doesn't
+release btree occupation after iterating 500000 (INIT_KEYS_EACH_TIME)
+bkeys. Because a read lock is added on btree root node to prevent the
+btree to be split during the dirty sectors counting, other I/O requester
+has no chance to gain the write lock even restart bcache_btree().
 
-The original intention should have been to return the valid 'cvif'
-when found in list, NULL otherwise. So just return NULL when no
-entry found, to fix this bug.
+That is to say, the incremental dirty sectors counting is incompatible
+to the multhreaded bch_sectors_dirty_init(). We have to choose one and
+drop another one.
 
+In my testing, with 512 bytes random writes, I generate 1.2T dirty data
+and a btree with 400K nodes. With single thread and incremental dirty
+sectors counting, it takes 30+ minites to register the backing device.
+And with multithreaded dirty sectors counting, the backing device
+registration can be accomplished within 2 minutes.
+
+The 30+ minutes V.S. 2- minutes difference makes me decide to keep
+multithreaded bch_sectors_dirty_init() and drop the incremental dirty
+sectors counting. This is what this patch does.
+
+But INIT_KEYS_EACH_TIME is kept, in sectors_dirty_init_fn() the CPU
+will be released by cond_resched() after every INIT_KEYS_EACH_TIME keys
+iterated. This is to avoid the watchdog reports a bogus soft lockup
+warning.
+
+Fixes: b144e45fc576 ("bcache: make bch_sectors_dirty_init() to be multithreaded")
+Signed-off-by: Coly Li <colyli@suse.de>
 Cc: stable@vger.kernel.org
-Fixes: 1f1d9654e183c ("carl9170: refactor carl9170_update_beacon")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Acked-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220328122820.1004-1-xiam0nd.tong@gmail.com
+Link: https://lore.kernel.org/r/20220524102336.10684-4-colyli@suse.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/carl9170/tx.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/md/bcache/writeback.c |   39 ++++++++++++---------------------------
+ 1 file changed, 12 insertions(+), 27 deletions(-)
 
---- a/drivers/net/wireless/ath/carl9170/tx.c
-+++ b/drivers/net/wireless/ath/carl9170/tx.c
-@@ -1558,6 +1558,9 @@ static struct carl9170_vif_info *carl917
- 					goto out;
+--- a/drivers/md/bcache/writeback.c
++++ b/drivers/md/bcache/writeback.c
+@@ -802,13 +802,11 @@ static int bch_writeback_thread(void *ar
+ 
+ /* Init */
+ #define INIT_KEYS_EACH_TIME	500000
+-#define INIT_KEYS_SLEEP_MS	100
+ 
+ struct sectors_dirty_init {
+ 	struct btree_op	op;
+ 	unsigned int	inode;
+ 	size_t		count;
+-	struct bkey	start;
+ };
+ 
+ static int sectors_dirty_init_fn(struct btree_op *_op, struct btree *b,
+@@ -824,11 +822,8 @@ static int sectors_dirty_init_fn(struct
+ 					     KEY_START(k), KEY_SIZE(k));
+ 
+ 	op->count++;
+-	if (atomic_read(&b->c->search_inflight) &&
+-	    !(op->count % INIT_KEYS_EACH_TIME)) {
+-		bkey_copy_key(&op->start, k);
+-		return -EAGAIN;
+-	}
++	if (!(op->count % INIT_KEYS_EACH_TIME))
++		cond_resched();
+ 
+ 	return MAP_CONTINUE;
+ }
+@@ -843,24 +838,16 @@ static int bch_root_node_dirty_init(stru
+ 	bch_btree_op_init(&op.op, -1);
+ 	op.inode = d->id;
+ 	op.count = 0;
+-	op.start = KEY(op.inode, 0, 0);
+ 
+-	do {
+-		ret = bcache_btree(map_keys_recurse,
+-				   k,
+-				   c->root,
+-				   &op.op,
+-				   &op.start,
+-				   sectors_dirty_init_fn,
+-				   0);
+-		if (ret == -EAGAIN)
+-			schedule_timeout_interruptible(
+-				msecs_to_jiffies(INIT_KEYS_SLEEP_MS));
+-		else if (ret < 0) {
+-			pr_warn("sectors dirty init failed, ret=%d!\n", ret);
+-			break;
+-		}
+-	} while (ret == -EAGAIN);
++	ret = bcache_btree(map_keys_recurse,
++			   k,
++			   c->root,
++			   &op.op,
++			   &KEY(op.inode, 0, 0),
++			   sectors_dirty_init_fn,
++			   0);
++	if (ret < 0)
++		pr_warn("sectors dirty init failed, ret=%d!\n", ret);
+ 
+ 	return ret;
+ }
+@@ -904,7 +891,6 @@ static int bch_dirty_init_thread(void *a
+ 				goto out;
  			}
- 		} while (ar->beacon_enabled && i--);
-+
-+		/* no entry found in list */
-+		return NULL;
+ 			skip_nr--;
+-			cond_resched();
+ 		}
+ 
+ 		if (p) {
+@@ -914,7 +900,6 @@ static int bch_dirty_init_thread(void *a
+ 
+ 		p = NULL;
+ 		prev_idx = cur_idx;
+-		cond_resched();
  	}
  
  out:
+@@ -953,11 +938,11 @@ void bch_sectors_dirty_init(struct bcach
+ 		bch_btree_op_init(&op.op, -1);
+ 		op.inode = d->id;
+ 		op.count = 0;
+-		op.start = KEY(op.inode, 0, 0);
+ 
+ 		for_each_key_filter(&c->root->keys,
+ 				    k, &iter, bch_ptr_invalid)
+ 			sectors_dirty_init_fn(&op.op, c->root, k);
++
+ 		rw_unlock(0, c->root);
+ 		return;
+ 	}
 
 
