@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B348C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:38:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90BB4CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380229AbiFGViy (ORCPT
+        id S1380663AbiFGVjB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:38:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39234 "EHLO
+        Tue, 7 Jun 2022 17:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376610AbiFGUpr (ORCPT
+        with ESMTP id S1376859AbiFGUrb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:45:47 -0400
+        Tue, 7 Jun 2022 16:47:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 680771F589C;
-        Tue,  7 Jun 2022 11:39:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5DF21F5ADD;
+        Tue,  7 Jun 2022 11:39:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CDAB6159D;
-        Tue,  7 Jun 2022 18:39:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97DA9C385A5;
-        Tue,  7 Jun 2022 18:39:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A11F615D3;
+        Tue,  7 Jun 2022 18:39:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9F2EC385A5;
+        Tue,  7 Jun 2022 18:39:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627160;
-        bh=pJleXnQAqwEM7iZbJoC8qGeIQitwSn577DxdbRHysLE=;
+        s=korg; t=1654627171;
+        bh=I/AxesGm+UuH/LfTjxhIW+yj0CyrQKwGuT/W633gWPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g3jxhMhZ3Z25g4KwKmUHem3g4s1iq0dOWFEfdnUtQVb9TXh15Kes3q/fb5wdulVL2
-         iof9LV9flZkNlrs+3jCP6ON1a4j46d1pbIYKVcAUec9FYGtWpBK202yoD1xO4XBM5n
-         T6zobqBMsQOrBVNi8XVxXhxe56oTBeLjB9HvE/LE=
+        b=HTfFoNo1Or9OYmI9aoe438Ba9zhk5R+q0Q7F+bXVtUr5YwGVmFiav2/09D55b/mCC
+         fI+mc4X8PI8+zoOIpWkF4Fnf+Ut33LBkiuw/XLRThruYZZlhZWFxR4ve1t+10s7wRx
+         /PcE2RK/tQpEDJ3nAfmNS0r969As+45j1p/G6GAI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ojaswin Mujoo <ojaswin@linux.ibm.com>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.17 638/772] ext4: fix journal_ioprio mount option handling
-Date:   Tue,  7 Jun 2022 19:03:50 +0200
-Message-Id: <20220607165007.734891467@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.17 641/772] ext4: fix memory leak in parse_apply_sb_mount_options()
+Date:   Tue,  7 Jun 2022 19:03:53 +0200
+Message-Id: <20220607165007.957508534@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,75 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ojaswin Mujoo <ojaswin@linux.ibm.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit e4e58e5df309d695799c494958962100a4c25039 upstream.
+commit c069db76ed7b681c69159f44be96d2137e9ca989 upstream.
 
-In __ext4_super() we always overwrote the user specified journal_ioprio
-value with a default value, expecting parse_apply_sb_mount_options() to
-later correctly set ctx->journal_ioprio to the user specified value.
-However, if parse_apply_sb_mount_options() returned early because of
-empty sbi->es_s->s_mount_opts, the correct journal_ioprio value was
-never set.
+If processing the on-disk mount options fails after any memory was
+allocated in the ext4_fs_context, e.g. s_qf_names, then this memory is
+leaked.  Fix this by calling ext4_fc_free() instead of kfree() directly.
 
-This patch fixes __ext4_super() to only use the default value if the
-user has not specified any value for journal_ioprio.
+Reproducer:
 
-Similarly, the remount behavior was to either use journal_ioprio
-value specified during initial mount, or use the default value
-irrespective of the journal_ioprio value specified during remount.
-This patch modifies this to first check if a new value for ioprio
-has been passed during remount and apply it.  If no new value is
-passed, use the value specified during initial mount.
+    mkfs.ext4 -F /dev/vdc
+    tune2fs /dev/vdc -E mount_opts=usrjquota=file
+    echo clear > /sys/kernel/debug/kmemleak
+    mount /dev/vdc /vdc
+    echo scan > /sys/kernel/debug/kmemleak
+    sleep 5
+    echo scan > /sys/kernel/debug/kmemleak
+    cat /sys/kernel/debug/kmemleak
 
-Signed-off-by: Ojaswin Mujoo <ojaswin@linux.ibm.com>
-Reviewed-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Tested-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220418083545.45778-1-ojaswin@linux.ibm.com
+Fixes: 7edfd85b1ffd ("ext4: Completely separate options parsing and sb setup")
+Cc: stable@vger.kernel.org
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Tested-by: Ritesh Harjani <ritesh.list@gmail.com>
+Link: https://lore.kernel.org/r/20220513231605.175121-2-ebiggers@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/super.c |   15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ fs/ext4/super.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -4394,7 +4394,8 @@ static int __ext4_fill_super(struct fs_c
- 	int silent = fc->sb_flags & SB_SILENT;
+@@ -2626,8 +2626,10 @@ parse_failed:
+ 	ret = ext4_apply_options(fc, sb);
  
- 	/* Set defaults for the variables that will be set during parsing */
--	ctx->journal_ioprio = DEFAULT_JOURNAL_IOPRIO;
-+	if (!(ctx->spec & EXT4_SPEC_JOURNAL_IOPRIO))
-+		ctx->journal_ioprio = DEFAULT_JOURNAL_IOPRIO;
- 
- 	sbi->s_inode_readahead_blks = EXT4_DEF_INODE_READAHEAD_BLKS;
- 	sbi->s_sectors_written_start =
-@@ -6261,7 +6262,6 @@ static int __ext4_remount(struct fs_cont
- 	char *to_free[EXT4_MAXQUOTAS];
- #endif
- 
--	ctx->journal_ioprio = DEFAULT_JOURNAL_IOPRIO;
- 
- 	/* Store the original options */
- 	old_sb_flags = sb->s_flags;
-@@ -6287,9 +6287,14 @@ static int __ext4_remount(struct fs_cont
- 		} else
- 			old_opts.s_qf_names[i] = NULL;
- #endif
--	if (sbi->s_journal && sbi->s_journal->j_task->io_context)
--		ctx->journal_ioprio =
--			sbi->s_journal->j_task->io_context->ioprio;
-+	if (!(ctx->spec & EXT4_SPEC_JOURNAL_IOPRIO)) {
-+		if (sbi->s_journal && sbi->s_journal->j_task->io_context)
-+			ctx->journal_ioprio =
-+				sbi->s_journal->j_task->io_context->ioprio;
-+		else
-+			ctx->journal_ioprio = DEFAULT_JOURNAL_IOPRIO;
-+
+ out_free:
+-	kfree(s_ctx);
+-	kfree(fc);
++	if (fc) {
++		ext4_fc_free(fc);
++		kfree(fc);
 +	}
- 
- 	ext4_apply_options(fc, sb);
- 
+ 	kfree(s_mount_opts);
+ 	return ret;
+ }
 
 
