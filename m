@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8467C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:29:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AFF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379871AbiFGV3Y (ORCPT
+        id S1352295AbiFGV3h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:29:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46204 "EHLO
+        Tue, 7 Jun 2022 17:29:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377911AbiFGUej (ORCPT
+        with ESMTP id S1377964AbiFGUem (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51FA31357;
-        Tue,  7 Jun 2022 11:36:46 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BF41E7BEC;
+        Tue,  7 Jun 2022 11:36:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B4D960B3D;
-        Tue,  7 Jun 2022 18:36:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ACD8C385A2;
-        Tue,  7 Jun 2022 18:36:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20DC96156D;
+        Tue,  7 Jun 2022 18:36:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F92FC385A5;
+        Tue,  7 Jun 2022 18:36:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627005;
-        bh=Isrj50lc5Yauj65VBJPnPgB3lYaeuB5jS9/qIuUOzVY=;
+        s=korg; t=1654627016;
+        bh=Ok82NdQlu5FkySxI5+3ZGfOpXbcVehWXEJPOChoCMOA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xXp+pUcs6dD4uwlqG1Eldq009M6UPOo0kX360AlEXYLdYhNEP3rp0ZXhMygsAiU7H
-         Wbb9MVpF3i8uNQac/ufZFORM7agyv/Q3uCjZkf/OmqTUOPP6NXm1+qRWvNT60TB/uX
-         wQpMjRX/X8Z0rs7fB3ItA7fwHBreE08QfAdA6308=
+        b=0NjxCZRds+jo03YNixxLNiGLO5LQR2WJmqEOHHZTBP+wUA5Q1JGgDxj/cIuVzDs4n
+         t3FchtEu9tOK2twZ8soa+oBw2GjuLw/msdWLhpxmBPLIBBl58TTNGrWl4ZaXZSNPXn
+         lYPEqydVipa3qSLjhtiIIq6KRckEbFN2aL44zY24=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 583/772] NFS: Do not report flush errors in nfs_write_end()
-Date:   Tue,  7 Jun 2022 19:02:55 +0200
-Message-Id: <20220607165006.127442996@linuxfoundation.org>
+Subject: [PATCH 5.17 560/772] pinctrl: apple: Use a raw spinlock for the regmap
+Date:   Tue,  7 Jun 2022 19:02:32 +0200
+Message-Id: <20220607165005.460613670@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,41 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit d95b26650e86175e4a97698d89bc1626cd1df0c6 ]
+[ Upstream commit 83969805cc716a7dc6b296c3fb1bc7e5cd7ca321 ]
 
-If we do flush cached writebacks in nfs_write_end() due to the imminent
-expiration of an RPCSEC_GSS session, then we should defer reporting any
-resulting errors until the calls to file_check_and_advance_wb_err() in
-nfs_file_write() and nfs_file_fsync().
+The irqchip ops are called with a raw spinlock held, so the subsequent
+regmap usage cannot use a plain spinlock.
 
-Fixes: 6fbda89b257f ("NFS: Replace custom error reporting mechanism with generic one")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+spi-hid-apple-of spi0.0: spihid_apple_of_probe:74
+
+=============================
+[ BUG: Invalid wait context ]
+5.18.0-asahi-00176-g0fa3ab03bdea #1337 Not tainted
+-----------------------------
+kworker/u20:3/86 is trying to lock:
+ffff8000166b5018 (pinctrl_apple_gpio:462:(&regmap_config)->lock){....}-{3:3}, at: regmap_lock_spinlock+0x18/0x30
+other info that might help us debug this:
+context-{5:5}
+7 locks held by kworker/u20:3/86:
+ #0: ffff800017725d48 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_one_work+0x1c8/0x670
+ #1: ffff80001e33bdd0 (deferred_probe_work){+.+.}-{0:0}, at: process_one_work+0x1c8/0x670
+ #2: ffff800017d629a0 (&dev->mutex){....}-{4:4}, at: __device_attach+0x30/0x17c
+ #3: ffff80002414e618 (&ctlr->add_lock){+.+.}-{4:4}, at: spi_add_device+0x40/0x80
+ #4: ffff800024116990 (&dev->mutex){....}-{4:4}, at: __device_attach+0x30/0x17c
+ #5: ffff800022d4be58 (request_class){+.+.}-{4:4}, at: __setup_irq+0xa8/0x720
+ #6: ffff800022d4bcc8 (lock_class){....}-{2:2}, at: __setup_irq+0xcc/0x720
+
+Fixes: a0f160ffcb83 ("pinctrl: add pinctrl/GPIO driver for Apple SoCs")
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Link: https://lore.kernel.org/r/20220524142206.18833-1-marcan@marcan.st
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/file.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/pinctrl/pinctrl-apple-gpio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index 7e0ce50e04f6..832a97ed2165 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -391,11 +391,8 @@ static int nfs_write_end(struct file *file, struct address_space *mapping,
- 		return status;
- 	NFS_I(mapping->host)->write_io += copied;
+diff --git a/drivers/pinctrl/pinctrl-apple-gpio.c b/drivers/pinctrl/pinctrl-apple-gpio.c
+index 72f4dd2466e1..6d1bff9588d9 100644
+--- a/drivers/pinctrl/pinctrl-apple-gpio.c
++++ b/drivers/pinctrl/pinctrl-apple-gpio.c
+@@ -72,6 +72,7 @@ struct regmap_config regmap_config = {
+ 	.max_register = 512 * sizeof(u32),
+ 	.num_reg_defaults_raw = 512,
+ 	.use_relaxed_mmio = true,
++	.use_raw_spinlock = true,
+ };
  
--	if (nfs_ctx_key_to_expire(ctx, mapping->host)) {
--		status = nfs_wb_all(mapping->host);
--		if (status < 0)
--			return status;
--	}
-+	if (nfs_ctx_key_to_expire(ctx, mapping->host))
-+		nfs_wb_all(mapping->host);
- 
- 	return copied;
- }
+ /* No locking needed to mask/unmask IRQs as the interrupt mode is per pin-register. */
 -- 
 2.35.1
 
