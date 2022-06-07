@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF6DCCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA38C43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384313AbiFGWKw (ORCPT
+        id S1384333AbiFGWK7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33642 "EHLO
+        Tue, 7 Jun 2022 18:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378972AbiFGVIB (ORCPT
+        with ESMTP id S1379044AbiFGVIn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:08:01 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC3B212C9C;
-        Tue,  7 Jun 2022 11:50:49 -0700 (PDT)
+        Tue, 7 Jun 2022 17:08:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C80213295;
+        Tue,  7 Jun 2022 11:50:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2085FCE2425;
-        Tue,  7 Jun 2022 18:50:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37872C385A2;
-        Tue,  7 Jun 2022 18:50:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38B85616AF;
+        Tue,  7 Jun 2022 18:50:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47D90C385A2;
+        Tue,  7 Jun 2022 18:50:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627846;
-        bh=wB+eyMgg/Fjs26R7DtFWaZpsqYjiQcyeIh3vo3CFVwU=;
+        s=korg; t=1654627857;
+        bh=vCRnmPPAkAz3/aZj4ABaUxpyCMnNCPoQsR3C6GEciKE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T8dgnHJXG9BSyC23mVW6ynHmxacys7s9+dDL257xATTzF+XCCFs7IYU4aXC3wA6cj
-         EXvdy85rNz7mqaGOrG58ZakHcq7UGPQDexKY8Gmh9UMsiioW40eBcQoCI+0pMxQ8vi
-         sgUYgN4irtOa09X9IgZ1nUApUgD0Dvx2h2vOmJLc=
+        b=1oGaZmh5+HOZP+0AOFO2VQ7RRCvPRQ7xn+uQCslgFJ+XLKEpcIH0WjqQz0e7WBFzj
+         xMi50PxMsHng/5XnlXtO51Lw7lmP5D0NPlYKdKERC/+z9DhaoA57yOIbbbHX7MWdUn
+         56ZAnxVsxT094PPEcqqidZ+QnJ1ebPjP9NP6FVUo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Po Hao Huang <phhuang@realtek.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 064/879] rtw89: fix misconfiguration on hw_scan channel time
-Date:   Tue,  7 Jun 2022 18:53:02 +0200
-Message-Id: <20220607165004.550739513@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 119/879] arm64: compat: Do not treat syscall number as ESR_ELx for a bad syscall
+Date:   Tue,  7 Jun 2022 18:53:57 +0200
+Message-Id: <20220607165006.156133667@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,35 +52,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Po Hao Huang <phhuang@realtek.com>
+From: Alexandru Elisei <alexandru.elisei@arm.com>
 
-[ Upstream commit 65ee4971a262a024e239e5d2b7f4dee1b3dff40e ]
+[ Upstream commit 3fed9e551417b84038b15117732ea4505eee386b ]
 
-Without this patch, hw scan won't stay long enough on DFS/passive
-channels. Found previous logic error and fix it.
+If a compat process tries to execute an unknown system call above the
+__ARM_NR_COMPAT_END number, the kernel sends a SIGILL signal to the
+offending process. Information about the error is printed to dmesg in
+compat_arm_syscall() -> arm64_notify_die() -> arm64_force_sig_fault() ->
+arm64_show_signal().
 
-Signed-off-by: Po Hao Huang <phhuang@realtek.com>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220401055043.12512-5-pkshih@realtek.com
+arm64_show_signal() interprets a non-zero value for
+current->thread.fault_code as an exception syndrome and displays the
+message associated with the ESR_ELx.EC field (bits 31:26).
+current->thread.fault_code is set in compat_arm_syscall() ->
+arm64_notify_die() with the bad syscall number instead of a valid ESR_ELx
+value. This means that the ESR_ELx.EC field has the value that the user set
+for the syscall number and the kernel can end up printing bogus exception
+messages*. For example, for the syscall number 0x68000000, which evaluates
+to ESR_ELx.EC value of 0x1A (ESR_ELx_EC_FPAC) the kernel prints this error:
+
+[   18.349161] syscall[300]: unhandled exception: ERET/ERETAA/ERETAB, ESR 0x68000000, Oops - bad compat syscall(2) in syscall[10000+50000]
+[   18.350639] CPU: 2 PID: 300 Comm: syscall Not tainted 5.18.0-rc1 #79
+[   18.351249] Hardware name: Pine64 RockPro64 v2.0 (DT)
+[..]
+
+which is misleading, as the bad compat syscall has nothing to do with
+pointer authentication.
+
+Stop arm64_show_signal() from printing exception syndrome information by
+having compat_arm_syscall() set the ESR_ELx value to 0, as it has no
+meaning for an invalid system call number. The example above now becomes:
+
+[   19.935275] syscall[301]: unhandled exception: Oops - bad compat syscall(2) in syscall[10000+50000]
+[   19.936124] CPU: 1 PID: 301 Comm: syscall Not tainted 5.18.0-rc1-00005-g7e08006d4102 #80
+[   19.936894] Hardware name: Pine64 RockPro64 v2.0 (DT)
+[..]
+
+which although shows less information because the syscall number,
+wrongfully advertised as the ESR value, is missing, it is better than
+showing plainly wrong information. The syscall number can be easily
+obtained with strace.
+
+*A 32-bit value above or equal to 0x8000_0000 is interpreted as a negative
+integer in compat_arm_syscal() and the condition scno < __ARM_NR_COMPAT_END
+evaluates to true; the syscall will exit to userspace in this case with the
+ENOSYS error code instead of arm64_notify_die() being called.
+
+Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
+Reviewed-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220425114444.368693-3-alexandru.elisei@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw89/fw.c | 2 +-
+ arch/arm64/kernel/sys_compat.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw89/fw.c b/drivers/net/wireless/realtek/rtw89/fw.c
-index 6deaf8eec6b4..a9b5315a517e 100644
---- a/drivers/net/wireless/realtek/rtw89/fw.c
-+++ b/drivers/net/wireless/realtek/rtw89/fw.c
-@@ -2065,7 +2065,7 @@ static void rtw89_hw_scan_add_chan(struct rtw89_dev *rtwdev, int chan_type,
- 		ch_info->num_pkt = 0;
- 		break;
- 	case RTW89_CHAN_DFS:
--		ch_info->period = min_t(u8, ch_info->period,
-+		ch_info->period = max_t(u8, ch_info->period,
- 					RTW89_DFS_CHAN_TIME);
- 		ch_info->dwell_time = RTW89_DWELL_TIME;
- 		break;
+diff --git a/arch/arm64/kernel/sys_compat.c b/arch/arm64/kernel/sys_compat.c
+index 12c6864e51e1..df14336c3a29 100644
+--- a/arch/arm64/kernel/sys_compat.c
++++ b/arch/arm64/kernel/sys_compat.c
+@@ -113,6 +113,6 @@ long compat_arm_syscall(struct pt_regs *regs, int scno)
+ 	addr = instruction_pointer(regs) - (compat_thumb_mode(regs) ? 2 : 4);
+ 
+ 	arm64_notify_die("Oops - bad compat syscall(2)", regs,
+-			 SIGILL, ILL_ILLTRP, addr, scno);
++			 SIGILL, ILL_ILLTRP, addr, 0);
+ 	return 0;
+ }
 -- 
 2.35.1
 
