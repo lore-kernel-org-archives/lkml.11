@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E92EFCCA485
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1248DCCA483
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383455AbiFGWkn (ORCPT
+        id S1383530AbiFGWkr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39234 "EHLO
+        Tue, 7 Jun 2022 18:40:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376901AbiFGV1J (ORCPT
+        with ESMTP id S1378037AbiFGV1K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:27:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A298E152412;
-        Tue,  7 Jun 2022 12:02:01 -0700 (PDT)
+        Tue, 7 Jun 2022 17:27:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D66228F58;
+        Tue,  7 Jun 2022 12:02:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34C2C6179F;
-        Tue,  7 Jun 2022 19:02:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41C54C385A5;
-        Tue,  7 Jun 2022 19:02:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCD1961787;
+        Tue,  7 Jun 2022 19:02:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E59FBC385A2;
+        Tue,  7 Jun 2022 19:02:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628520;
-        bh=dbWiRrbUEdq/jShUoMSStxSROdj/mfEgDgb1SJh4nPY=;
+        s=korg; t=1654628526;
+        bh=YmN4V4yALByetjoXbl5eqlLA/g/d1ZKfNiLnROwqz3k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mc3JKcJcjQbJ4wS8ZQaRlI01OPU6RQmOlnkTPVF11ieq3wzCH3TMgqRy9qWkLjXlX
-         oGPi49+kDu7QEBCHZOd4lJJPlPcOEQHg5Ij02HmfeZ8mmyIPeS039SSToK7X7Ve9+F
-         RzwMqZGcNuvHNx+1HSSHH+EjzWYxmJdVTZf7EymI=
+        b=nTh64IONyhJyhQABu0u5fViMtdx550FSXrU4IeY0V3s3XCpJrFym2SIgUDUi/6rbM
+         xj6E4nBZ8yqRM4QqXuNeM/hGpVA5IW5kwViteKMQCOTP39jvVxld8MXN0bRt8p6YpG
+         nOZ1gFNOa6S7INUsPM829z+Er9yqrx6mAhoCeO9U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
-        "Juan A. Suarez" <jasuarez@igalia.com>,
-        Melissa Wen <melissa.srw@gmail.com>,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 358/879] drm/v3d: Fix null pointer dereference of pointer perfmon
-Date:   Tue,  7 Jun 2022 18:57:56 +0200
-Message-Id: <20220607165013.255708953@linuxfoundation.org>
+Subject: [PATCH 5.18 360/879] libbpf: Fix logic for finding matching program for CO-RE relocation
+Date:   Tue,  7 Jun 2022 18:57:58 +0200
+Message-Id: <20220607165013.313188641@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,42 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.i.king@gmail.com>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit ce7a1ecf3f9f1fccaf67295307614511d8e11b13 ]
+[ Upstream commit 966a7509325395c51c5f6d89e7352b0585e4804b ]
 
-In the unlikely event that pointer perfmon is null the WARN_ON return path
-occurs after the pointer has already been deferenced. Fix this by only
-dereferencing perfmon after it has been null checked.
+Fix the bug in bpf_object__relocate_core() which can lead to finding
+invalid matching BPF program when processing CO-RE relocation. IF
+matching program is not found, last encountered program will be assumed
+to be correct program and thus error detection won't detect the problem.
 
-Fixes: 26a4dc29b74a ("drm/v3d: Expose performance counters to userspace")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-Reviewed-by: Juan A. Suarez <jasuarez@igalia.com>
-Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220424183512.1365683-1-colin.i.king@gmail.com
+Fixes: 9c82a63cf370 ("libbpf: Fix CO-RE relocs against .text section")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20220426004511.2691730-4-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/v3d/v3d_perfmon.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/lib/bpf/libbpf.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/v3d/v3d_perfmon.c b/drivers/gpu/drm/v3d/v3d_perfmon.c
-index 0288ef063513..f6a88abccc7d 100644
---- a/drivers/gpu/drm/v3d/v3d_perfmon.c
-+++ b/drivers/gpu/drm/v3d/v3d_perfmon.c
-@@ -25,11 +25,12 @@ void v3d_perfmon_start(struct v3d_dev *v3d, struct v3d_perfmon *perfmon)
- {
- 	unsigned int i;
- 	u32 mask;
--	u8 ncounters = perfmon->ncounters;
-+	u8 ncounters;
- 
- 	if (WARN_ON_ONCE(!perfmon || v3d->active_perfmon))
- 		return;
- 
-+	ncounters = perfmon->ncounters;
- 	mask = GENMASK(ncounters - 1, 0);
- 
- 	for (i = 0; i < ncounters; i++) {
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 7af6805a863d..881ea905ca81 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -5646,9 +5646,10 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
+ 		 */
+ 		prog = NULL;
+ 		for (i = 0; i < obj->nr_programs; i++) {
+-			prog = &obj->programs[i];
+-			if (strcmp(prog->sec_name, sec_name) == 0)
++			if (strcmp(obj->programs[i].sec_name, sec_name) == 0) {
++				prog = &obj->programs[i];
+ 				break;
++			}
+ 		}
+ 		if (!prog) {
+ 			pr_warn("sec '%s': failed to find a BPF program\n", sec_name);
 -- 
 2.35.1
 
