@@ -2,70 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FECAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237210AbiFGGji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 02:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41118 "EHLO
+        id S237187AbiFGGjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 02:39:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237108AbiFGGjU (ORCPT
+        with ESMTP id S237148AbiFGGjY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 02:39:20 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3F6B043E
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:39:18 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id m20so33081842ejj.10
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 23:39:18 -0700 (PDT)
+        Tue, 7 Jun 2022 02:39:24 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC24CC160
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:39:22 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id er5so21609596edb.12
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 23:39:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=30/swRoGI7lxOeK/JCZOMenofIQ2Qnwy381c+smb4TA=;
-        b=hRvd0fRQ06nsWwDyDjPYxTGsvqvXXrNQMbjT1Em4UrrOfqMzAG5qNorVycW89lVPlM
-         /4d395QujBeRwU1UilsC99/3sC3wup/EJDNh4LKuI0DvkhJoZ9tAvIa6Uve607PoFRme
-         2i09ToSIIxI+Tdx4TAk40sq2HIPtM52oEOsZwHI3qQtcUe0eBRno4BS+DdEYJGOExBx7
-         LqplQKH0pLizRr1ziLYe5MBWbS4swqfviGOjwvMfj5PCWdxXRHy9XXu09/LjaUcphHwV
-         9LaZSxuXkKdBAW5a3zSBLlkw/IJjmQEsdUMQxuH6RqPvrDbcc46SxLtUnE6GIRLLH0gq
-         6eoQ==
+        bh=Ulqlg3tFKXQzo70gesTAVjXKgLruTq1ckDi/Pv7dpT4=;
+        b=Ht3vPgFyF0AmzIe3GS/gDvubliIhqCQZYJh+Y0OfPYn8ui2CJGevyKjOogUP8Jm1do
+         mf4QR/fQO4pHIgCEkrsNm3Bn1eon1+94XFdHMF0tav/qiU4SuAGjycWqvWajq+yqvlq/
+         ZHLZ9VpMy42ruK9Aby5VolQN/S2ey262+7DkZX14/stnnV/31HQxRol7TfGRqoN8aMHF
+         393ruP7L94qp/n3Kda/YpK5I9yAkU5aUDyLHwGl6BPVLCQ/vrzKA5IvRFi4LSvthn7IB
+         N60tZaCaKtVuHNEht97ne5A8PHv9ET47f7BTyjKSfc1kkXz70e99twpi1OW82Uph1z9T
+         FLCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=30/swRoGI7lxOeK/JCZOMenofIQ2Qnwy381c+smb4TA=;
-        b=YWIJZtakRjzUftC5+ivr2xT2eaF7V8dJ1YrnEW95Ps0ekXtYeU4STqwpe3fgmFXpyf
-         DkowWXhTpM76pb4miPIE+7FflehFNminmHCQQm4YJbFHr8mhOntHgI9iYqWSJTQAtsyj
-         WyAoAJIqb2Y2z7rTK1P9YQrE8HPv5xB8IXD1OsnOY04btcnF+DTp63D8gxAaMoyvk9SH
-         RnU1xXB6+JhuylE/DXJyIe+klaGycPo1SRrTsWDnKXFRlc0SAFTmNEfhM+6fyfOOBqA5
-         WKZCYltFWygN8petmPWlFtrSI1dXCD4POu2TPm69bcw2hA6zAC4Urb2nhyhq3sE0P6zj
-         pYvw==
-X-Gm-Message-State: AOAM530w4jWB0o3Ud7nfCdTWkBGJJCtMin6wDqIckJ+itiAKrAAGxq1x
-        hCZGttKp8JAhUE9J+/7pAvwrtg==
-X-Google-Smtp-Source: ABdhPJxPb4B1+kYdlB7X2PcS4f0mWtob9442OqwnUgNprAost6mEYGoTJP2LBYDLNSUfIEVPMRgI3Q==
-X-Received: by 2002:a17:906:b816:b0:708:2e56:97d7 with SMTP id dv22-20020a170906b81600b007082e5697d7mr24712545ejb.502.1654583957338;
-        Mon, 06 Jun 2022 23:39:17 -0700 (PDT)
+        bh=Ulqlg3tFKXQzo70gesTAVjXKgLruTq1ckDi/Pv7dpT4=;
+        b=K+l+yfmwj3tIVJzu/S7BVYa+9tLbFULrngrLoB5Mr7NFDutlrj1ujjhhg+UH58vBpS
+         ft+LUIuzMd/25kwX3yc9rt4ZuoyttgMIGXnD29FQBFQRrTKnXfQQ6LaeZCcVtOrsOwX5
+         VZMxKJJKPEzI4SaKDdV4VDZc9gH2Xm/AVGlNwiBYKiBKlSVKumEQlnVlr5HD/AvJEsL6
+         qWRJn4qZWwBsAvTRu3chFY2Zma6cCz3T5naP4qtqZb9FHS85moytKqZ84EwPpgWNRg9X
+         KfC5E17Bp5EoIrVaVX3i7Gmi7zpyxMmZJoEtA/xpQSOB9MoJGMLPWkIVNV/jAvDHRsGV
+         /E5g==
+X-Gm-Message-State: AOAM530mVZbQhestVN9/2ntFQNvoJtG9/6Gn02ZI/Y0CnjYbdAY3WO0R
+        pmVTj/VdmFJ37/LXha/9mkX2/Q==
+X-Google-Smtp-Source: ABdhPJzQ4ZJjwBGr2W7SIz025hWycxtvQyJI0L+vtD3wMN88bRJeumtqg/7GJ9BgRLAu40dLMd3SgA==
+X-Received: by 2002:a05:6402:40c6:b0:42f:9ff8:62f8 with SMTP id z6-20020a05640240c600b0042f9ff862f8mr21360359edb.95.1654583960595;
+        Mon, 06 Jun 2022 23:39:20 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id jo13-20020a170906f6cd00b006febc86b8besm7016888ejb.117.2022.06.06.23.39.16
+        by smtp.gmail.com with ESMTPSA id jo13-20020a170906f6cd00b006febc86b8besm7016888ejb.117.2022.06.06.23.39.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 23:39:16 -0700 (PDT)
+        Mon, 06 Jun 2022 23:39:20 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
         linux-arm-kernel@lists.infradead.org,
         Rob Herring <robh+dt@kernel.org>,
         Tomasz Figa <tomasz.figa@gmail.com>,
         linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Linus Walleij <linus.walleij@linaro.org>,
         linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
         Alim Akhtar <alim.akhtar@samsung.com>
 Cc:     Chanho Park <chanho61.park@samsung.com>
-Subject: Re: (subset) [PATCH v3 2/8] ARM: dts: s3c64xx: use local header for pinctrl register values
-Date:   Tue,  7 Jun 2022 08:39:10 +0200
-Message-Id: <165458395109.7886.7299681625638246723.b4-ty@linaro.org>
+Subject: Re: (subset) [PATCH v3 5/8] arm64: dts: exynos: use local header for pinctrl register values
+Date:   Tue,  7 Jun 2022 08:39:13 +0200
+Message-Id: <165458395109.7886.4832981947595366957.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220605160508.134075-3-krzysztof.kozlowski@linaro.org>
-References: <20220605160508.134075-1-krzysztof.kozlowski@linaro.org> <20220605160508.134075-3-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220605160508.134075-6-krzysztof.kozlowski@linaro.org>
+References: <20220605160508.134075-1-krzysztof.kozlowski@linaro.org> <20220605160508.134075-6-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -73,23 +73,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 5 Jun 2022 18:05:02 +0200, Krzysztof Kozlowski wrote:
+On Sun, 5 Jun 2022 18:05:05 +0200, Krzysztof Kozlowski wrote:
 > The DTS uses hardware register values directly in pin controller pin
 > configuration.  These are not some IDs or other abstraction layer but
 > raw numbers used in the registers.
 > 
 > These numbers were previously put in the bindings header to avoid code
 > duplication and to provide some context meaning (name), but they do not
-> fit the purpose of bindings.  It is also quite confusing to use
-> constants prefixed with Exynos for other SoC, because there is actually
-> nothing here in common, except the actual value.
+> fit the purpose of bindings.
 > 
 > [...]
 
 Applied, thanks!
 
-[2/8] ARM: dts: s3c64xx: use local header for pinctrl register values
-      https://git.kernel.org/krzk/linux/c/468fff18c3776ced9bb466ae4fb2e30fdf671bef
+[5/8] arm64: dts: exynos: use local header for pinctrl register values
+      https://git.kernel.org/krzk/linux/c/304e65b691ce115eedd43bae191f5757dca4d5ca
 
 Best regards,
 -- 
