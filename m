@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D350EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352632AbiFGSjD (ORCPT
+        id S1346253AbiFGSjN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:39:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43362 "EHLO
+        Tue, 7 Jun 2022 14:39:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349351AbiFGR7n (ORCPT
+        with ESMTP id S1347428AbiFGSIw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:59:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B42149174;
-        Tue,  7 Jun 2022 10:41:48 -0700 (PDT)
+        Tue, 7 Jun 2022 14:08:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0BF6B035;
+        Tue,  7 Jun 2022 10:48:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41A2561480;
-        Tue,  7 Jun 2022 17:41:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A493C34119;
-        Tue,  7 Jun 2022 17:41:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F3886171A;
+        Tue,  7 Jun 2022 17:48:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A7B7C385A5;
+        Tue,  7 Jun 2022 17:48:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623706;
-        bh=GTHiEG6Fbnv6d3nL/QXh9DsjWVX96eO95njhrpvwukM=;
+        s=korg; t=1654624082;
+        bh=r7jRCbeD7ibDVQb0i+qLhsqpb8a+4ZpDIGUZQA4nKpA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1cS61Ej4NczuiClLedwBabXk8uPoqanW+6nQVjrd9mM3ZB0XQ4952wM43dvVN6Fpx
-         cvpzX86jnP8E+jzP2rKo/crLch8ZYdJwf6mzdDdJW3+g1N3tI8lHCbB+6c+BSTy4Lt
-         9bXbwJ8B6db8EVJPwi4CZrGzLSFVP0gwBNml/Np0=
+        b=adrAcfhRA6VE7o8qa33YbsoStWwj1KCuqznYoeJKZ3AdSblif42nfB1A6fPYghV+Z
+         x/ugooDDUlplXkszc8sgv3tesT4iOQ1HLcjrC3dyfDYMD7U3Qz40npimlF1BqtBWq+
+         G2o9I5xKNKXd9SFiIKxN2qGvQBDXPlP7EMAiDDzo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 062/667] ALSA: jack: Access input_dev under mutex
-Date:   Tue,  7 Jun 2022 18:55:27 +0200
-Message-Id: <20220607164936.673381631@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 198/667] drm/vc4: hvs: Fix frame count register readout
+Date:   Tue,  7 Jun 2022 18:57:43 +0200
+Message-Id: <20220607164940.738693291@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,152 +50,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 1b6a6fc5280e97559287b61eade2d4b363e836f2 ]
+[ Upstream commit b51cd7ad143d2eb31a6df81c2183128920e47c2b ]
 
-It is possible when using ASoC that input_dev is unregistered while
-calling snd_jack_report, which causes NULL pointer dereference.
-In order to prevent this serialize access to input_dev using mutex lock.
+In order to get the field currently being output, the driver has been
+using the display FIFO frame count in the HVS, reading a 6-bit field at
+the offset 12 in the DISPSTATx register.
 
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Link: https://lore.kernel.org/r/20220412091628.3056922-1-amadeuszx.slawinski@linux.intel.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+While that field is indeed at that location for the FIFO 1 and 2, the
+one for the FIFO0 is actually in the DISPSTAT1 register, at the offset
+18.
+
+Fixes: e538092cb15c ("drm/vc4: Enable precise vblank timestamping for interlaced modes.")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://lore.kernel.org/r/20220331143744.777652-3-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/sound/jack.h |  1 +
- sound/core/jack.c    | 34 +++++++++++++++++++++++++++-------
- 2 files changed, 28 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/vc4/vc4_crtc.c |  2 +-
+ drivers/gpu/drm/vc4/vc4_drv.h  |  1 +
+ drivers/gpu/drm/vc4/vc4_hvs.c  | 23 +++++++++++++++++++++++
+ drivers/gpu/drm/vc4/vc4_regs.h | 12 ++++++++++--
+ 4 files changed, 35 insertions(+), 3 deletions(-)
 
-diff --git a/include/sound/jack.h b/include/sound/jack.h
-index 1181f536557e..1ed90e2109e9 100644
---- a/include/sound/jack.h
-+++ b/include/sound/jack.h
-@@ -62,6 +62,7 @@ struct snd_jack {
- 	const char *id;
- #ifdef CONFIG_SND_JACK_INPUT_DEV
- 	struct input_dev *input_dev;
-+	struct mutex input_dev_lock;
- 	int registered;
- 	int type;
- 	char name[100];
-diff --git a/sound/core/jack.c b/sound/core/jack.c
-index d1e3055f2b6a..88493cc31914 100644
---- a/sound/core/jack.c
-+++ b/sound/core/jack.c
-@@ -42,8 +42,11 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
- #ifdef CONFIG_SND_JACK_INPUT_DEV
- 	struct snd_jack *jack = device->device_data;
+diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
+index 3e61184e194c..88dbb282d15c 100644
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -123,7 +123,7 @@ static bool vc4_crtc_get_scanout_position(struct drm_crtc *crtc,
+ 		*vpos /= 2;
  
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return 0;
-+	}
- 
- 	/* If the input device is registered with the input subsystem
- 	 * then we need to use a different deallocator. */
-@@ -52,6 +55,7 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
- 	else
- 		input_free_device(jack->input_dev);
- 	jack->input_dev = NULL;
-+	mutex_unlock(&jack->input_dev_lock);
- #endif /* CONFIG_SND_JACK_INPUT_DEV */
- 	return 0;
- }
-@@ -90,8 +94,11 @@ static int snd_jack_dev_register(struct snd_device *device)
- 	snprintf(jack->name, sizeof(jack->name), "%s %s",
- 		 card->shortname, jack->id);
- 
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return 0;
-+	}
- 
- 	jack->input_dev->name = jack->name;
- 
-@@ -116,6 +123,7 @@ static int snd_jack_dev_register(struct snd_device *device)
- 	if (err == 0)
- 		jack->registered = 1;
- 
-+	mutex_unlock(&jack->input_dev_lock);
- 	return err;
- }
- #endif /* CONFIG_SND_JACK_INPUT_DEV */
-@@ -517,9 +525,11 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
- 		return -ENOMEM;
+ 		/* Use hpos to correct for field offset in interlaced mode. */
+-		if (VC4_GET_FIELD(val, SCALER_DISPSTATX_FRAME_COUNT) % 2)
++		if (vc4_hvs_get_fifo_frame_count(dev, vc4_crtc_state->assigned_channel) % 2)
+ 			*hpos += mode->crtc_htotal / 2;
  	}
  
--	/* don't creat input device for phantom jack */
--	if (!phantom_jack) {
- #ifdef CONFIG_SND_JACK_INPUT_DEV
-+	mutex_init(&jack->input_dev_lock);
+diff --git a/drivers/gpu/drm/vc4/vc4_drv.h b/drivers/gpu/drm/vc4/vc4_drv.h
+index 4b550ebd9572..94c178738fc1 100644
+--- a/drivers/gpu/drm/vc4/vc4_drv.h
++++ b/drivers/gpu/drm/vc4/vc4_drv.h
+@@ -933,6 +933,7 @@ void vc4_irq_reset(struct drm_device *dev);
+ extern struct platform_driver vc4_hvs_driver;
+ void vc4_hvs_stop_channel(struct drm_device *dev, unsigned int output);
+ int vc4_hvs_get_fifo_from_output(struct drm_device *dev, unsigned int output);
++u8 vc4_hvs_get_fifo_frame_count(struct drm_device *dev, unsigned int fifo);
+ int vc4_hvs_atomic_check(struct drm_crtc *crtc, struct drm_atomic_state *state);
+ void vc4_hvs_atomic_begin(struct drm_crtc *crtc, struct drm_atomic_state *state);
+ void vc4_hvs_atomic_enable(struct drm_crtc *crtc, struct drm_atomic_state *state);
+diff --git a/drivers/gpu/drm/vc4/vc4_hvs.c b/drivers/gpu/drm/vc4/vc4_hvs.c
+index 604933e20e6a..c8cae10500b9 100644
+--- a/drivers/gpu/drm/vc4/vc4_hvs.c
++++ b/drivers/gpu/drm/vc4/vc4_hvs.c
+@@ -197,6 +197,29 @@ static void vc4_hvs_update_gamma_lut(struct drm_crtc *crtc)
+ 	vc4_hvs_lut_load(crtc);
+ }
+ 
++u8 vc4_hvs_get_fifo_frame_count(struct drm_device *dev, unsigned int fifo)
++{
++	struct vc4_dev *vc4 = to_vc4_dev(dev);
++	u8 field = 0;
 +
-+	/* don't create input device for phantom jack */
-+	if (!phantom_jack) {
- 		int i;
- 
- 		jack->input_dev = input_allocate_device();
-@@ -537,8 +547,8 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
- 				input_set_capability(jack->input_dev, EV_SW,
- 						     jack_switch_types[i]);
- 
--#endif /* CONFIG_SND_JACK_INPUT_DEV */
- 	}
-+#endif /* CONFIG_SND_JACK_INPUT_DEV */
- 
- 	err = snd_device_new(card, SNDRV_DEV_JACK, jack, &ops);
- 	if (err < 0)
-@@ -578,10 +588,14 @@ EXPORT_SYMBOL(snd_jack_new);
- void snd_jack_set_parent(struct snd_jack *jack, struct device *parent)
++	switch (fifo) {
++	case 0:
++		field = VC4_GET_FIELD(HVS_READ(SCALER_DISPSTAT1),
++				      SCALER_DISPSTAT1_FRCNT0);
++		break;
++	case 1:
++		field = VC4_GET_FIELD(HVS_READ(SCALER_DISPSTAT1),
++				      SCALER_DISPSTAT1_FRCNT1);
++		break;
++	case 2:
++		field = VC4_GET_FIELD(HVS_READ(SCALER_DISPSTAT2),
++				      SCALER_DISPSTAT2_FRCNT2);
++		break;
++	}
++
++	return field;
++}
++
+ int vc4_hvs_get_fifo_from_output(struct drm_device *dev, unsigned int output)
  {
- 	WARN_ON(jack->registered);
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return;
-+	}
+ 	struct vc4_dev *vc4 = to_vc4_dev(dev);
+diff --git a/drivers/gpu/drm/vc4/vc4_regs.h b/drivers/gpu/drm/vc4/vc4_regs.h
+index 489f921ef44d..8ac2f088106a 100644
+--- a/drivers/gpu/drm/vc4/vc4_regs.h
++++ b/drivers/gpu/drm/vc4/vc4_regs.h
+@@ -379,8 +379,6 @@
+ # define SCALER_DISPSTATX_MODE_EOF		3
+ # define SCALER_DISPSTATX_FULL			BIT(29)
+ # define SCALER_DISPSTATX_EMPTY			BIT(28)
+-# define SCALER_DISPSTATX_FRAME_COUNT_MASK	VC4_MASK(17, 12)
+-# define SCALER_DISPSTATX_FRAME_COUNT_SHIFT	12
+ # define SCALER_DISPSTATX_LINE_MASK		VC4_MASK(11, 0)
+ # define SCALER_DISPSTATX_LINE_SHIFT		0
  
- 	jack->input_dev->dev.parent = parent;
-+	mutex_unlock(&jack->input_dev_lock);
- }
- EXPORT_SYMBOL(snd_jack_set_parent);
- 
-@@ -629,6 +643,8 @@ EXPORT_SYMBOL(snd_jack_set_key);
- 
- /**
-  * snd_jack_report - Report the current status of a jack
-+ * Note: This function uses mutexes and should be called from a
-+ * context which can sleep (such as a workqueue).
-  *
-  * @jack:   The jack to report status for
-  * @status: The current status of the jack
-@@ -654,8 +670,11 @@ void snd_jack_report(struct snd_jack *jack, int status)
- 					     status & jack_kctl->mask_bits);
- 
- #ifdef CONFIG_SND_JACK_INPUT_DEV
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return;
-+	}
- 
- 	for (i = 0; i < ARRAY_SIZE(jack->key); i++) {
- 		int testbit = ((SND_JACK_BTN_0 >> i) & ~mask_bits);
-@@ -675,6 +694,7 @@ void snd_jack_report(struct snd_jack *jack, int status)
- 	}
- 
- 	input_sync(jack->input_dev);
-+	mutex_unlock(&jack->input_dev_lock);
- #endif /* CONFIG_SND_JACK_INPUT_DEV */
- }
- EXPORT_SYMBOL(snd_jack_report);
+@@ -403,9 +401,15 @@
+ 						 (x) * (SCALER_DISPBKGND1 - \
+ 							SCALER_DISPBKGND0))
+ #define SCALER_DISPSTAT1                        0x00000058
++# define SCALER_DISPSTAT1_FRCNT0_MASK		VC4_MASK(23, 18)
++# define SCALER_DISPSTAT1_FRCNT0_SHIFT		18
++# define SCALER_DISPSTAT1_FRCNT1_MASK		VC4_MASK(17, 12)
++# define SCALER_DISPSTAT1_FRCNT1_SHIFT		12
++
+ #define SCALER_DISPSTATX(x)			(SCALER_DISPSTAT0 +        \
+ 						 (x) * (SCALER_DISPSTAT1 - \
+ 							SCALER_DISPSTAT0))
++
+ #define SCALER_DISPBASE1                        0x0000005c
+ #define SCALER_DISPBASEX(x)			(SCALER_DISPBASE0 +        \
+ 						 (x) * (SCALER_DISPBASE1 - \
+@@ -415,7 +419,11 @@
+ 						 (x) * (SCALER_DISPCTRL1 - \
+ 							SCALER_DISPCTRL0))
+ #define SCALER_DISPBKGND2                       0x00000064
++
+ #define SCALER_DISPSTAT2                        0x00000068
++# define SCALER_DISPSTAT2_FRCNT2_MASK		VC4_MASK(17, 12)
++# define SCALER_DISPSTAT2_FRCNT2_SHIFT		12
++
+ #define SCALER_DISPBASE2                        0x0000006c
+ #define SCALER_DISPALPHA2                       0x00000070
+ #define SCALER_GAMADDR                          0x00000078
 -- 
 2.35.1
 
