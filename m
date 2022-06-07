@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5A89C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26146C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381941AbiFGWYX (ORCPT
+        id S1351739AbiFGWYe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:24:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54912 "EHLO
+        Tue, 7 Jun 2022 18:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380884AbiFGVRH (ORCPT
+        with ESMTP id S1380991AbiFGVRN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:17:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC2114CA11;
-        Tue,  7 Jun 2022 11:58:01 -0700 (PDT)
+        Tue, 7 Jun 2022 17:17:13 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EEAA14C740;
+        Tue,  7 Jun 2022 11:58:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9EE08B82391;
-        Tue,  7 Jun 2022 18:57:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7161C36AFF;
-        Tue,  7 Jun 2022 18:57:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A7652CE244E;
+        Tue,  7 Jun 2022 18:58:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA4FAC36B0F;
+        Tue,  7 Jun 2022 18:58:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628278;
-        bh=TXdYIlv8GMbuy2kPzeKAPO0DMYcaGZuJN0ZRyUD6OrQ=;
+        s=korg; t=1654628289;
+        bh=/4xJbKpGBjGBVK3DsRpkwmnlySQCxQNQYds2CMdFL9Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jp+DuAfGuwW/HhNQSD2l1V24hRiWqAQdEH0ecNroun20UofwnJDFweLPlJYz30CKb
-         9x6mFErSOWXbzDYF/6NKCdZbOz+29QgZhaylR8QkXXLV2nprLLGu8NYeCcYxgNTCKG
-         AjuA4tJEcmZ48ER2FAEaY2uO+ZlboKQZSe1abDls=
+        b=jB+UyYKBmPe+iCfOatBIe/cyAirPI5G5Aml647n6zzZ/OrmNAz9dIZznC3YMTegdm
+         uuzO+IkL/wyNAjt6iUcRrrJ7Fw80N17U88OkcmJROENnIVSjOaxE3eWdRfWAQzEjib
+         /MV/xExhfKkT1/rsjoW74qZ6hk4WcMoRcafd6XrM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>,
+        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
         Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 270/879] drm/bridge: it6505: Fix build error
-Date:   Tue,  7 Jun 2022 18:56:28 +0200
-Message-Id: <20220607165010.687320222@linuxfoundation.org>
+Subject: [PATCH 5.18 274/879] drm/bridge: adv7511: clean up CEC adapter when probe fails
+Date:   Tue,  7 Jun 2022 18:56:32 +0200
+Message-Id: <20220607165010.803130153@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,45 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-[ Upstream commit 3dd4834a6efe4eb3c086526e1870bb768776d86a ]
+[ Upstream commit 7ed2b0dabf7a22874cb30f8878df239ef638eb53 ]
 
-If DRM_ITE_IT6505 is y but DRM_DP_HELPER is m, building failed:
+When the probe routine fails we also need to clean up the
+CEC adapter registered in adv7511_cec_init().
 
-drivers/gpu/drm/bridge/ite-it6505.o: In function `it6505_i2c_remove':
-ite-it6505.c:(.text+0x35c): undefined reference to `drm_dp_aux_unregister'
-drivers/gpu/drm/bridge/ite-it6505.o: In function `it6505_dpcd_read':
-ite-it6505.c:(.text+0x420): undefined reference to `drm_dp_dpcd_read'
-drivers/gpu/drm/bridge/ite-it6505.o: In function `it6505_get_dpcd':
-ite-it6505.c:(.text+0x4a4): undefined reference to `drm_dp_dpcd_read'
-drivers/gpu/drm/bridge/ite-it6505.o: In function `it6505_dpcd_write':
-ite-it6505.c:(.text+0x52c): undefined reference to `drm_dp_dpcd_write'
-
-Select DRM_DP_HELPER for DRM_ITE_IT6505 to fix this.
-
-Fixes: b5c84a9edcd4 ("drm/bridge: add it6505 driver")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Fixes: 3b1b975003e4 ("drm: adv7511/33: add HDMI CEC support")
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
 Reviewed-by: Robert Foss <robert.foss@linaro.org>
 Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220317094724.25972-1-yuehaibing@huawei.com
+Link: https://patchwork.freedesktop.org/patch/msgid/20220321104705.2804423-1-l.stach@pengutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/Kconfig | 1 +
+ drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/bridge/Kconfig b/drivers/gpu/drm/bridge/Kconfig
-index 2145b08f9534..becd9867f3a0 100644
---- a/drivers/gpu/drm/bridge/Kconfig
-+++ b/drivers/gpu/drm/bridge/Kconfig
-@@ -77,6 +77,7 @@ config DRM_DISPLAY_CONNECTOR
- config DRM_ITE_IT6505
-         tristate "ITE IT6505 DisplayPort bridge"
-         depends on OF
-+	select DRM_DP_HELPER
-         select DRM_KMS_HELPER
-         select DRM_DP_HELPER
-         select EXTCON
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+index 005bf18682ff..668dcefbae17 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+@@ -1313,6 +1313,7 @@ static int adv7511_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
+ 	adv7511_audio_exit(adv7511);
+ 	drm_bridge_remove(&adv7511->bridge);
+ err_unregister_cec:
++	cec_unregister_adapter(adv7511->cec_adap);
+ 	i2c_unregister_device(adv7511->i2c_cec);
+ 	clk_disable_unprepare(adv7511->cec_clk);
+ err_i2c_unregister_packet:
 -- 
 2.35.1
 
