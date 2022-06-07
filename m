@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE6EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:03:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8522C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:03:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356076AbiFGUC7 (ORCPT
+        id S1358132AbiFGUDL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34414 "EHLO
+        Tue, 7 Jun 2022 16:03:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353440AbiFGTCu (ORCPT
+        with ESMTP id S1353759AbiFGTDF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:02:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8838D157E9E;
-        Tue,  7 Jun 2022 11:05:09 -0700 (PDT)
+        Tue, 7 Jun 2022 15:03:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCB1158F23;
+        Tue,  7 Jun 2022 11:05:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1454161804;
-        Tue,  7 Jun 2022 18:04:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D508C385A5;
-        Tue,  7 Jun 2022 18:04:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C211617A5;
+        Tue,  7 Jun 2022 18:05:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16AF7C385A5;
+        Tue,  7 Jun 2022 18:05:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625097;
-        bh=aSa0SYQQmIJoAcUp/KPB7tSfEcW5sKv3qHZSZ/MUdGI=;
+        s=korg; t=1654625117;
+        bh=yj/Ml6jb/VyjxhYDwDi7OwOl8HHnQ0Jn+d0s9xCWTnA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gRdAVxb/VrdPlb0avnjUdsEqaUz08K/h4KfRoiKGYm2LD8cwEo68K/++LCj2K27RV
-         ltQsdu7m//uqitDA7uOY3VO2RmWHBQunccK7wAvxZFIpZS6TsRSCtXjviU6sKknARG
-         fu2A9+6G3G6s7sZxvw5UPWg06LiAAGz3ZKYzvmTk=
+        b=aUYTGXQKPZZB/HgxgoXaJFre4yG3BrKufPGU6SVAQ5h8H13JBZ9ECDjusAGcESyTg
+         VIsoS8wTl0IpgtC+xnHMZMTo2tUqn4YlgQ529W1P+/1XEBYDsy8k1pJzYIBuF/s+iE
+         z7+iVM6hS5Cyq0qSlEPhtm8KjUY7/krx+urLWyp8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>
-Subject: [PATCH 5.15 563/667] dlm: fix missing lkb refcount handling
-Date:   Tue,  7 Jun 2022 19:03:48 +0200
-Message-Id: <20220607164951.581883999@linuxfoundation.org>
+        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 531/667] bfq: Avoid false marking of bic as stably merged
+Date:   Tue,  7 Jun 2022 19:03:16 +0200
+Message-Id: <20220607164950.628242842@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,74 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: Jan Kara <jack@suse.cz>
 
-commit 1689c169134f4b5a39156122d799b7dca76d8ddb upstream.
+commit 70456e5210f40ffdb8f6d905acfdcec5bd5fad9e upstream.
 
-We always call hold_lkb(lkb) if we increment lkb->lkb_wait_count.
-So, we always need to call unhold_lkb(lkb) if we decrement
-lkb->lkb_wait_count. This patch will add missing unhold_lkb(lkb) if we
-decrement lkb->lkb_wait_count. In case of setting lkb->lkb_wait_count to
-zero we need to countdown until reaching zero and call unhold_lkb(lkb).
-The waiters list unhold_lkb(lkb) can be removed because it's done for
-the last lkb_wait_count decrement iteration as it's done in
-_remove_from_waiters().
+bfq_setup_cooperator() can mark bic as stably merged even though it
+decides to not merge its bfqqs (when bfq_setup_merge() returns NULL).
+Make sure to mark bic as stably merged only if we are really going to
+merge bfqqs.
 
-This issue was discovered by a dlm gfs2 test case which use excessively
-dlm_unlock(LKF_CANCEL) feature. Probably the lkb->lkb_wait_count value
-never reached above 1 if this feature isn't used and so it was not
-discovered before.
-
-The testcase ended in a rsb on the rsb keep data structure with a
-refcount of 1 but no lkb was associated with it, which is itself
-an invalid behaviour. A side effect of that was a condition in which
-the dlm was sending remove messages in a looping behaviour. With this
-patch that has not been reproduced.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
+CC: stable@vger.kernel.org
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Fixes: 430a67f9d616 ("block, bfq: merge bursts of newly-created queues")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-1-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/dlm/lock.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ block/bfq-iosched.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/fs/dlm/lock.c
-+++ b/fs/dlm/lock.c
-@@ -1551,6 +1551,7 @@ static int _remove_from_waiters(struct d
- 		lkb->lkb_wait_type = 0;
- 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
- 		lkb->lkb_wait_count--;
-+		unhold_lkb(lkb);
- 		goto out_del;
- 	}
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2773,9 +2773,12 @@ bfq_setup_cooperator(struct bfq_data *bf
+ 				struct bfq_queue *new_bfqq =
+ 					bfq_setup_merge(bfqq, stable_merge_bfqq);
  
-@@ -1577,6 +1578,7 @@ static int _remove_from_waiters(struct d
- 		log_error(ls, "remwait error %x reply %d wait_type %d overlap",
- 			  lkb->lkb_id, mstype, lkb->lkb_wait_type);
- 		lkb->lkb_wait_count--;
-+		unhold_lkb(lkb);
- 		lkb->lkb_wait_type = 0;
- 	}
- 
-@@ -5310,11 +5312,16 @@ int dlm_recover_waiters_post(struct dlm_
- 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_UNLOCK;
- 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
- 		lkb->lkb_wait_type = 0;
--		lkb->lkb_wait_count = 0;
-+		/* drop all wait_count references we still
-+		 * hold a reference for this iteration.
-+		 */
-+		while (lkb->lkb_wait_count) {
-+			lkb->lkb_wait_count--;
-+			unhold_lkb(lkb);
-+		}
- 		mutex_lock(&ls->ls_waiters_mutex);
- 		list_del_init(&lkb->lkb_wait_reply);
- 		mutex_unlock(&ls->ls_waiters_mutex);
--		unhold_lkb(lkb); /* for waiters list */
- 
- 		if (oc || ou) {
- 			/* do an unlock or cancel instead of resending */
+-				bic->stably_merged = true;
+-				if (new_bfqq && new_bfqq->bic)
+-					new_bfqq->bic->stably_merged = true;
++				if (new_bfqq) {
++					bic->stably_merged = true;
++					if (new_bfqq->bic)
++						new_bfqq->bic->stably_merged =
++									true;
++				}
+ 				return new_bfqq;
+ 			} else
+ 				return NULL;
 
 
