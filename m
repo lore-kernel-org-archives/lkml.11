@@ -2,150 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62323CCA483
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:10:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D33A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:11:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232636AbiFHBKO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
+        id S241268AbiFHBLE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387109AbiFGWt5 (ORCPT
+        with ESMTP id S1382810AbiFGVv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:49:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68FF92AA01B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:38:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654630697;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q9eWmoOn0yL2VJR9/laRBaD5nmIdVd5BpZuXu5q4cqg=;
-        b=Q/+XQw98k6jVVvef9SKN5He6V+UhGJrKk3KaIhoUoFwPP/8GhgNgKl9YJSvVsxWJIN8MPs
-        IPkeKJInp5Xa9N2hYZ39jB3HoBPxC7YybtmQGmTZ7FRz3BX5wUfhfR5UIJEkvyceCiYyyA
-        aTEof1dedV5NlWtFj9zxgdczc6K+Jm0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-590-3ShpK352MveEqI_lMl0uVg-1; Tue, 07 Jun 2022 15:38:14 -0400
-X-MC-Unique: 3ShpK352MveEqI_lMl0uVg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 7 Jun 2022 17:51:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E11323E820;
+        Tue,  7 Jun 2022 12:09:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8130C81B549;
-        Tue,  7 Jun 2022 19:36:48 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.9.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CA4192C0D161;
-        Tue,  7 Jun 2022 19:36:19 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [RESEND RFC 14/18] drm/display/dp_mst: Drop all ports from topology on CSNs before queueing link address work
-Date:   Tue,  7 Jun 2022 15:29:29 -0400
-Message-Id: <20220607192933.1333228-15-lyude@redhat.com>
-In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
-References: <20220607192933.1333228-1-lyude@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B49FB823AF;
+        Tue,  7 Jun 2022 19:09:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A37AC385A5;
+        Tue,  7 Jun 2022 19:09:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628975;
+        bh=VT+orIzbW0yg3j05zWzFaQ7qL2FfDI5uldUGWuWUFPw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LqRb2mY85dbcEQiM6L3b+GfefJb4QfmRsdjWtAMUzCkGGmGTnofosu2PM+4xafP5O
+         UGKp+9bUYlECplpAWi6jKJZt9MMQAie7Sv7QAOoOIEFpVJ3b0O/09jMljvZrbYX0K2
+         Wup+bONnV8zUF3AuHlQ1z26L/YaAD5DE14yA7aJw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 524/879] dpaa2-eth: use the correct software annotation field
+Date:   Tue,  7 Jun 2022 19:00:42 +0200
+Message-Id: <20220607165018.085635379@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We want to start cutting down on all of the places that we use port
-validation, so that ports may be removed from the topology as quickly as
-possible to minimize the number of errors we run into as a result of being
-out of sync with the current topology status. This isn't a very typical
-scenario and I don't think I've ever even run into it - but since the next
-commit is going to make some changes to payload updates depending on their
-hotplug status I think it's a probably good idea to take precautions.
+From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-Let's do this with CSNs by moving some code around so that we only queue
-link address probing work at the end of handling all CSNs - allowing us to
-make sure we drop as many topology references as we can beforehand.
+[ Upstream commit d5f4e19a85670b4e5697654f4a4e086e064f8a47 ]
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: Wayne Lin <Wayne.Lin@amd.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Imre Deak <imre.deak@intel.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sean Paul <sean@poorly.run>
+The incorrect software annotation field was being used, swa->sg.sgt_size
+instead of swa->tso.sgt_size, which meant that the SGT buffer was
+unmapped with a wrong size.
+This is also confirmed by the DMA API debug prints which showed the
+following:
+
+[   38.962434] DMA-API: fsl_dpaa2_eth dpni.2: device driver frees DMA memory with different size [device address=0x0000fffffafba740] [map size=224 bytes] [unmap size=0 bytes]
+[   38.980496] WARNING: CPU: 11 PID: 1131 at kernel/dma/debug.c:973 check_unmap+0x58c/0x9b0
+[   38.988586] Modules linked in:
+[   38.991631] CPU: 11 PID: 1131 Comm: iperf3 Not tainted 5.18.0-rc7-00117-g59130eeb2b8f #1972
+[   38.999970] Hardware name: NXP Layerscape LX2160ARDB (DT)
+
+Fixes: 3dc709e0cd47 ("dpaa2-eth: add support for software TSO")
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/display/drm_dp_mst_topology.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-index a775f9437868..dd314586bac3 100644
---- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-@@ -2508,7 +2508,7 @@ drm_dp_mst_handle_link_address_port(struct drm_dp_mst_branch *mstb,
- 	return ret;
- }
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 766391310d1b..f1f140277184 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -1148,7 +1148,7 @@ static void dpaa2_eth_free_tx_fd(struct dpaa2_eth_priv *priv,
+ 						 dpaa2_sg_get_len(&sgt[i]), DMA_TO_DEVICE);
  
--static void
-+static int
- drm_dp_mst_handle_conn_stat(struct drm_dp_mst_branch *mstb,
- 			    struct drm_dp_connection_status_notify *conn_stat)
- {
-@@ -2521,7 +2521,7 @@ drm_dp_mst_handle_conn_stat(struct drm_dp_mst_branch *mstb,
+ 			/* Unmap the SGT buffer */
+-			dma_unmap_single(dev, fd_addr, swa->sg.sgt_size,
++			dma_unmap_single(dev, fd_addr, swa->tso.sgt_size,
+ 					 DMA_BIDIRECTIONAL);
  
- 	port = drm_dp_get_port(mstb, conn_stat->port_number);
- 	if (!port)
--		return;
-+		return 0;
- 
- 	if (port->connector) {
- 		if (!port->input && conn_stat->input_port) {
-@@ -2574,8 +2574,7 @@ drm_dp_mst_handle_conn_stat(struct drm_dp_mst_branch *mstb,
- 
- out:
- 	drm_dp_mst_topology_put_port(port);
--	if (dowork)
--		queue_work(system_long_wq, &mstb->mgr->work);
-+	return dowork;
- }
- 
- static struct drm_dp_mst_branch *drm_dp_get_mst_branch_device(struct drm_dp_mst_topology_mgr *mgr,
-@@ -4071,7 +4070,7 @@ drm_dp_mst_process_up_req(struct drm_dp_mst_topology_mgr *mgr,
- 	struct drm_dp_mst_branch *mstb = NULL;
- 	struct drm_dp_sideband_msg_req_body *msg = &up_req->msg;
- 	struct drm_dp_sideband_msg_hdr *hdr = &up_req->hdr;
--	bool hotplug = false;
-+	bool hotplug = false, dowork = false;
- 
- 	if (hdr->broadcast) {
- 		const u8 *guid = NULL;
-@@ -4094,11 +4093,14 @@ drm_dp_mst_process_up_req(struct drm_dp_mst_topology_mgr *mgr,
- 
- 	/* TODO: Add missing handler for DP_RESOURCE_STATUS_NOTIFY events */
- 	if (msg->req_type == DP_CONNECTION_STATUS_NOTIFY) {
--		drm_dp_mst_handle_conn_stat(mstb, &msg->u.conn_stat);
-+		dowork = drm_dp_mst_handle_conn_stat(mstb, &msg->u.conn_stat);
- 		hotplug = true;
- 	}
- 
- 	drm_dp_mst_topology_put_mstb(mstb);
-+
-+	if (dowork)
-+		queue_work(system_long_wq, &mgr->work);
- 	return hotplug;
- }
- 
+ 			if (!swa->tso.is_last_fd)
 -- 
-2.35.3
+2.35.1
+
+
 
