@@ -2,85 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F1DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:19:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51244C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:20:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343972AbiFGPTq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:19:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53784 "EHLO
+        id S238659AbiFGPUM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 11:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231551AbiFGPTo (ORCPT
+        with ESMTP id S230093AbiFGPUG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:19:44 -0400
-Received: from smtp.ruc.edu.cn (m177126.mail.qiye.163.com [123.58.177.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4745B205EA
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:19:43 -0700 (PDT)
-Received: from localhost.localdomain (unknown [202.112.113.212])
-        by smtp.ruc.edu.cn (Hmail) with ESMTPSA id 79D2D80053;
-        Tue,  7 Jun 2022 23:19:39 +0800 (CST)
-From:   Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] drm/radeon: Initialize fences array entries in radeon_sa_bo_next_hole
-Date:   Tue,  7 Jun 2022 23:19:33 +0800
-Message-Id: <20220607151933.32850-1-xiaohuizhang@ruc.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWRoZGB5WSkpPGU4fSR5IGk
-        MaVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MhA6Nio4Qj01ORcoSjAzDTQa
-        PRgaCg9VSlVKTU5PTUpOSkNLSk5JVTMWGhIXVQMSGhQTDhIBExoVHDsJDhhVHh8OVRgVRVlXWRIL
-        WUFZSUtJVUpKSVVKSkhVSUpJWVdZCAFZQUlOTEs3Bg++
-X-HM-Tid: 0a813ec0021e2c20kusn79d2d80053
+        Tue, 7 Jun 2022 11:20:06 -0400
+Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727FF66ADE;
+        Tue,  7 Jun 2022 08:20:05 -0700 (PDT)
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-08.nifty.com with ESMTP id 257FIhb0015394;
+        Wed, 8 Jun 2022 00:18:44 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 257FIhb0015394
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1654615124;
+        bh=LIQRolKJUy5EgtlTCuYPI57ux74QTIvAUnxIqYWqrlc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CaLs/kJ01/rgCoCm8BVFkd73Mc6d4vewxfkABOPm6hyicQVsd3ke2P1wGZCPm7f22
+         Me1tksnhDPZprP3M5P6ATB8HbiO3LBwsje7N3NecSpjtNHucl1d5+ntZesivQ9l9pN
+         Xp4kA2B6I79IBo2uGYQIe3Ez50/GhLBhIvFaEonaO6m2eIxorRl+FHrsAWlwkExR80
+         Q88dk2b1+3KzdpG+mt4lrp3vBofWNaUyssqvkNsCvMkTY4U+3BWERcN86Ab8Z5LD7R
+         tYPc7LMsX/XRduLrR6MnvI1IeLsUPFMqu8VDfO1N8YjlJo9SOR7dKQsDjoyhABFIdD
+         75+iEOsQFPgHw==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Matthias Maennich <maennich@google.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] scripts/nsdeps: adjust to the format change of *.mod files
+Date:   Wed,  8 Jun 2022 00:18:40 +0900
+Message-Id: <20220607151840.437500-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Similar to the handling of amdgpu_sa_bo_next_hole in commit 6a15f3ff19a8
-("drm/amdgpu: Initialize fences array entries in amdgpu_sa_bo_next_hole"),
-we thought a patch might be needed here as well.
+Commit 22f26f21774f ("kbuild: get rid of duplication in *.mod files")
+changed the format of *.mod files to put one object per line, but missed
+to adjust scripts/nsdeps.
 
-The entries were only initialized once in radeon_sa_bo_new. If a fence
-wasn't signalled yet in the first radeon_sa_bo_next_hole call, but then
-got signalled before a later radeon_sa_bo_next_hole call, it could
-destroy the fence but leave its pointer in the array, resulting in
-use-after-free in radeon_sa_bo_new.
-
-Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+Fixes: 22f26f21774f ("kbuild: get rid of duplication in *.mod files")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
- drivers/gpu/drm/radeon/radeon_sa.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_sa.c b/drivers/gpu/drm/radeon/radeon_sa.c
-index 310c322c7112..0981948bd9ed 100644
---- a/drivers/gpu/drm/radeon/radeon_sa.c
-+++ b/drivers/gpu/drm/radeon/radeon_sa.c
-@@ -267,6 +267,8 @@ static bool radeon_sa_bo_next_hole(struct radeon_sa_manager *sa_manager,
- 	for (i = 0; i < RADEON_NUM_RINGS; ++i) {
- 		struct radeon_sa_bo *sa_bo;
- 
-+		fences[i] = NULL;
+ scripts/nsdeps | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/scripts/nsdeps b/scripts/nsdeps
+index 04c4b96e95ec..f1718cc0d700 100644
+--- a/scripts/nsdeps
++++ b/scripts/nsdeps
+@@ -34,9 +34,8 @@ generate_deps() {
+ 	local mod=${1%.ko:}
+ 	shift
+ 	local namespaces="$*"
+-	local mod_source_files="`cat $mod.mod | sed -n 1p                      \
+-					      | sed -e 's/\.o/\.c/g'           \
+-					      | sed "s|[^ ]* *|${src_prefix}&|g"`"
++	local mod_source_files=$(sed "s|^\(.*\)\.o$|${src_prefix}\1.c|" $mod.mod)
 +
- 		if (list_empty(&sa_manager->flist[i])) {
- 			continue;
- 		}
-@@ -332,10 +334,8 @@ int radeon_sa_bo_new(struct radeon_device *rdev,
- 
- 	spin_lock(&sa_manager->wq.lock);
- 	do {
--		for (i = 0; i < RADEON_NUM_RINGS; ++i) {
--			fences[i] = NULL;
-+		for (i = 0; i < RADEON_NUM_RINGS; ++i)
- 			tries[i] = 0;
--		}
- 
- 		do {
- 			radeon_sa_bo_try_free(sa_manager);
+ 	for ns in $namespaces; do
+ 		echo "Adding namespace $ns to module $mod.ko."
+ 		generate_deps_for_ns $ns "$mod_source_files"
 -- 
-2.17.1
+2.32.0
 
