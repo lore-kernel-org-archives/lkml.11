@@ -2,109 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 172C7CCA49C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E1ECCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442372AbiFHCAY (ORCPT
+        id S1442655AbiFHCAr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32870 "EHLO
+        Tue, 7 Jun 2022 22:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1837532AbiFHAAJ (ORCPT
+        with ESMTP id S1838719AbiFHACE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:00:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F1119C3A9;
-        Tue,  7 Jun 2022 12:23:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1AD52B823CC;
-        Tue,  7 Jun 2022 19:22:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CF32C385A5;
-        Tue,  7 Jun 2022 19:22:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629774;
-        bh=RgCuTiD3kozF3mlD2ezwdETxBXaIcFW+5/2P0Urfp64=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vl9tpxgVZi6sCC8n6bVPLDKKSJMDAOVfGKlJJ6Ed4oM24LrF+D5tofHCJZBrGDkfg
-         0jsxa6wfun+113XwL8sgKuPMFqP9pZ3081gkZsi6momcerJAZoVw+094foQ8dKlodT
-         0BmwJhH96VQ+IiCEcn+R5/lFLc5JiOJBrTAwhnc0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.18 805/879] Kconfig: Add option for asm goto w/ tied outputs to workaround clang-13 bug
-Date:   Tue,  7 Jun 2022 19:05:23 +0200
-Message-Id: <20220607165026.224872138@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 20:02:04 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC926471
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:42:14 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-3135519f95fso21191047b3.6
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 15:42:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y+9mkaC5FXCdiilP0sDFa95pXGDowopI6qZcmfpOFwY=;
+        b=THGdgTWpz2L5yBciJ+3Rp6qRkwa3YV8CzDaERGa1QNRKVT/VWtYXuaZ/4qrV3XRG2e
+         BVFuV4GtFjklye2XPemT4GhsO9WNT3UtZOgV/U3GrscQINoitVv6tdr3qP0lDaedcFkF
+         1XuXJIyca7cvFEiDuKDSpJGA0QblfBT/DaMngv4vQxtESApf00rw13BQBJQSNcukywRF
+         uxy8nJ5UwX7wk/VwYQi80pvbOvkWFhXnl0OXANctXKeqYSGap9JRubfD4NxcIGzkuf1T
+         +PgqYeVTs2wSCe7WMwG+684FgQc0Cc3hQYmDzPDQ3+sCrGim9mKX+TmzimLYU1mF+Caj
+         mKeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y+9mkaC5FXCdiilP0sDFa95pXGDowopI6qZcmfpOFwY=;
+        b=nc8LbhM+QPAVdyDiiwoiJ9UgmNE4S7miOwjlgIwHDHuV//BN8fPEb4Dto/f3SMtghO
+         q+gRDKK8G1YaPDc3rfqvuodE2NcNkIQjEeiRGeZHZywlvVjt+9Mxxg1DBT0JPAJ7XnEk
+         cdMuHnTiA9agplae+7e/lpaaXychGT4FuIRLaI3SuSPdZNM9VgCk8Qn7+QDCk3WxNWpb
+         5F3MPIqrGTXo/rjDEbGytVHemfKdcY1LmXblSMqc1j5bL4tSZjMbvnoDWUUxEu1q7BCX
+         3UYyjdrJgCIZJGIWpweSvT4IiFT4e9WrHdQWLiUIkBnoeGJvGT0GgEPf+bg3ByuRjoGL
+         El9A==
+X-Gm-Message-State: AOAM530JIsPFeb1nh2OOkUA/CQj/d0OTj41T/rFVRZ/aERzsTVLOI40y
+        RcNWUAF5HLgF/19ctCFH4cj71c/oDISpw3dan/vMdg==
+X-Google-Smtp-Source: ABdhPJzl1Nbb7E5Gb8nax2J8oOG9hgoViYBNrjUIWKyk/TT1bG7pSkuwyr5KQvYdLoD6HBAKGfxEyFAcUZqCfHuqjpg=
+X-Received: by 2002:a0d:ca44:0:b0:30f:a4fd:2ae7 with SMTP id
+ m65-20020a0dca44000000b0030fa4fd2ae7mr35214191ywd.151.1654641733433; Tue, 07
+ Jun 2022 15:42:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <cover.1654529011.git.mchehab@kernel.org> <d27b5d508fb757147b720bf573ce5a2e3fc5920e.1654529011.git.mchehab@kernel.org>
+In-Reply-To: <d27b5d508fb757147b720bf573ce5a2e3fc5920e.1654529011.git.mchehab@kernel.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 8 Jun 2022 00:42:02 +0200
+Message-ID: <CACRpkdYas3jHvigeHPGBVHuEtqvQvAKvnuKwBMXPOgdUV6d7DA@mail.gmail.com>
+Subject: Re: [PATCH 17/23] MAINTAINERS: update cortina,gemini-ethernet.yaml reference
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Corentin Labbe <clabbe@baylibre.com>,
+        Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+On Mon, Jun 6, 2022 at 5:25 PM Mauro Carvalho Chehab <mchehab@kernel.org> wrote:
 
-commit 1aa0e8b144b6474c4914439d232d15bfe883636b upstream.
+> Changeset 208b65f7b5cc ("dt-bindings: net: convert net/cortina,gemini-ethernet to yaml")
+> renamed: Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt
+> to: Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml.
+>
+> Update its cross-reference accordingly.
+>
+> Fixes: 208b65f7b5cc ("dt-bindings: net: convert net/cortina,gemini-ethernet to yaml")
+> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-Add a config option to guard (future) usage of asm_volatile_goto() that
-includes "tied outputs", i.e. "+" constraints that specify both an input
-and output parameter.  clang-13 has a bug[1] that causes compilation of
-such inline asm to fail, and KVM wants to use a "+m" constraint to
-implement a uaccess form of CMPXCHG[2].  E.g. the test code fails with
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-  <stdin>:1:29: error: invalid operand in inline asm: '.long (${1:l}) - .'
-  int foo(int *x) { asm goto (".long (%l[bar]) - .\n": "+m"(*x) ::: bar); return *x; bar: return 0; }
-                            ^
-  <stdin>:1:29: error: unknown token in expression
-  <inline asm>:1:9: note: instantiated into assembly here
-          .long () - .
-                 ^
-  2 errors generated.
-
-on clang-13, but passes on gcc (with appropriate asm goto support).  The
-bug is fixed in clang-14, but won't be backported to clang-13 as the
-changes are too invasive/risky.
-
-gcc also had a similar bug[3], fixed in gcc-11, where gcc failed to
-account for its behavior of assigning two numbers to tied outputs (one
-for input, one for output) when evaluating symbolic references.
-
-[1] https://github.com/ClangBuiltLinux/linux/issues/1512
-[2] https://lore.kernel.org/all/YfMruK8%2F1izZ2VHS@google.com
-[3] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=98096
-
-Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220202004945.2540433-2-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- init/Kconfig |    5 +++++
- 1 file changed, 5 insertions(+)
-
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -77,6 +77,11 @@ config CC_HAS_ASM_GOTO_OUTPUT
- 	depends on CC_HAS_ASM_GOTO
- 	def_bool $(success,echo 'int foo(int x) { asm goto ("": "=r"(x) ::: bar); return x; bar: return 0; }' | $(CC) -x c - -c -o /dev/null)
- 
-+config CC_HAS_ASM_GOTO_TIED_OUTPUT
-+	depends on CC_HAS_ASM_GOTO_OUTPUT
-+	# Detect buggy gcc and clang, fixed in gcc-11 clang-14.
-+	def_bool $(success,echo 'int foo(int *x) { asm goto (".long (%l[bar]) - .\n": "+m"(*x) ::: bar); return *x; bar: return 0; }' | $CC -x c - -c -o /dev/null)
-+
- config TOOLS_SUPPORT_RELR
- 	def_bool $(success,env "CC=$(CC)" "LD=$(LD)" "NM=$(NM)" "OBJCOPY=$(OBJCOPY)" $(srctree)/scripts/tools-support-relr.sh)
- 
-
-
+Yours,
+Linus Walleij
