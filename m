@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC134CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63BA3CCA498
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355861AbiFGTRk (ORCPT
+        id S1355813AbiFGTR2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57722 "EHLO
+        Tue, 7 Jun 2022 15:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351218AbiFGS3o (ORCPT
+        with ESMTP id S1351528AbiFGS3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:29:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F39917A880;
-        Tue,  7 Jun 2022 10:55:27 -0700 (PDT)
+        Tue, 7 Jun 2022 14:29:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94ACE179955;
+        Tue,  7 Jun 2022 10:55:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9056617A8;
-        Tue,  7 Jun 2022 17:55:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01C4CC34119;
-        Tue,  7 Jun 2022 17:55:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BC3161825;
+        Tue,  7 Jun 2022 17:55:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76368C34119;
+        Tue,  7 Jun 2022 17:55:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624526;
-        bh=oTUD0gfXlCXXBTlNhj7YdtZdcBIDAMIgu5/THuULMSc=;
+        s=korg; t=1654624520;
+        bh=5gp+eWBQzQzxOlVDyPcIvuFGDZEuXQfPgvDwlxkfPjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YbBzIZwfUBTy9WxiVYKWyPGzXG+a91lfowiF++zDbkjMkbX+LeSwnN32elAFodhNh
-         Z+iYxX8xsIomFeGQHmeJzgtH1BwXjJ1JqRLofzHVLyUTvZ8GcGq8tTVj/C2rVQUqGX
-         mIKKlnKM2M6tGl4h8rM5p7cknypWbCjK0VdfGCk8=
+        b=TRE0aEBPffsPkHflOv6WCjlWlA+0qR/LGLfvRsjKwYM0wWrS+zP7I/7GjzMUvzHcp
+         uL56aIR8pMMBQYw9q1u6SYSlIqfG9RmnIWYUNM9naocHthEut0mdoR6AkAlQCLWmbm
+         qbOBjaJJDVQrAnbZwNtG6v/rDPI9adBmQKZP5Z/Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 360/667] PM: domains: Fix initialization of genpds next_wakeup
-Date:   Tue,  7 Jun 2022 19:00:25 +0200
-Message-Id: <20220607164945.552195634@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 358/667] bfq: Allow current waker to defend against a tentative one
+Date:   Tue,  7 Jun 2022 19:00:23 +0200
+Message-Id: <20220607164945.492612985@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,36 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 622d9b5577f19a6472db21df042fea8f5fefe244 ]
+[ Upstream commit c5ac56bb6110e42e79d3106866658376b2e48ab9 ]
 
-In the genpd governor we walk the list of child-domains to take into
-account their next_wakeup. If the child-domain itself, doesn't have a
-governor assigned to it, we can end up using the next_wakeup value before
-it has been properly initialized. To prevent a possible incorrect behaviour
-in the governor, let's initialize next_wakeup to KTIME_MAX.
+The code in bfq_check_waker() ignores wake up events from the current
+waker. This makes it more likely we select a new tentative waker
+although the current one is generating more wake up events. Treat
+current waker the same way as any other process and allow it to reset
+the waker detection logic.
 
-Fixes: c79aa080fb0f ("PM: domains: use device's next wakeup to determine domain idle state")
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 71217df39dc6 ("block, bfq: make waker-queue detection more robust")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220519105235.31397-2-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/power/domain.c | 1 +
- 1 file changed, 1 insertion(+)
+ block/bfq-iosched.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-index 7e8039d1884c..0f2e42f36851 100644
---- a/drivers/base/power/domain.c
-+++ b/drivers/base/power/domain.c
-@@ -1978,6 +1978,7 @@ int pm_genpd_init(struct generic_pm_domain *genpd,
- 	genpd->device_count = 0;
- 	genpd->max_off_time_ns = -1;
- 	genpd->max_off_time_changed = true;
-+	genpd->next_wakeup = KTIME_MAX;
- 	genpd->provider = NULL;
- 	genpd->has_provider = false;
- 	genpd->accounting_time = ktime_get();
+diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+index a2aefb4a1e2e..343ca559ab8a 100644
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2022,8 +2022,7 @@ static void bfq_check_waker(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ 	if (!bfqd->last_completed_rq_bfqq ||
+ 	    bfqd->last_completed_rq_bfqq == bfqq ||
+ 	    bfq_bfqq_has_short_ttime(bfqq) ||
+-	    now_ns - bfqd->last_completion >= 4 * NSEC_PER_MSEC ||
+-	    bfqd->last_completed_rq_bfqq == bfqq->waker_bfqq)
++	    now_ns - bfqd->last_completion >= 4 * NSEC_PER_MSEC)
+ 		return;
+ 
+ 	if (bfqd->last_completed_rq_bfqq !=
 -- 
 2.35.1
 
