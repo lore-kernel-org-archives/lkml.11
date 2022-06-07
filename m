@@ -2,175 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63CD6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4283BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354745AbiFGTX4 (ORCPT
+        id S1354402AbiFGTYE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:23:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35224 "EHLO
+        Tue, 7 Jun 2022 15:24:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352491AbiFGSbC (ORCPT
+        with ESMTP id S1352489AbiFGSbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:31:02 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E408B1451CE;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E1AF1451CD;
         Tue,  7 Jun 2022 10:56:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5AADECE242A;
-        Tue,  7 Jun 2022 17:56:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F38A2C3411C;
-        Tue,  7 Jun 2022 17:56:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624571;
-        bh=PD9e8Q2ln03IrdWmHwh9Oq+TnF2LvQdLrZsDfZ77aVg=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA27FB8234A;
+        Tue,  7 Jun 2022 17:56:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF889C3411F;
+        Tue,  7 Jun 2022 17:56:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624571;
+        bh=SIjLdiZEQvxzZ/OkoXP2cni+kJBnPY++4VsCx3A22Lk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DIrwbPlkhf7fGuf82dX7nQH+eoon/Lvq04+hjzM191nTPcqOFL2yPFufTwI0EhCv6
-         IdwOBQRERqPapRKwE2osnY94l+T5zG3+loQWNGAR7Flk1ZIvtZSPULvoqGAH2erT5A
-         LwmT6c4uyyThE8sRZudGWL6O63Y3SEZEP4XXQCvpOCEaU8Lazous1ghQ8f16aECBQ8
-         mIFXDq9OL+hcclU94er4x0tK8gMHJdHH/kZUsnNgcZ/IMNgDW1kinMOcbU87MY16cq
-         dpNJO6U4YVs5/WZb6wObrmLVuXVDNMHUg6I1VzDGhpjXbo5+GU4WKgJiGHRKamlBB4
-         at3EmwJTGZp+g==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Denis Ciocca <denis.ciocca@st.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
-        lars@metafoo.de, aardelean@deviqon.com, cai.huoqing@linux.dev,
-        andy.shevchenko@gmail.com, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 03/51] iio: st_sensors: Add a local lock for protecting odr
-Date:   Tue,  7 Jun 2022 13:55:02 -0400
-Message-Id: <20220607175552.479948-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+        b=DdsJZiZ7Oz8iWVASdRbNxoy9dLQB4oxpYYQa1YzWQ5iFJ/mKh4/2UU43vQqZEJb2i
+         EAjkvooMSkxEwiJrlm1kUpTFi3UsfEdotB1uhlM5COT4fj7B/NppfXoQsujGje+vZv
+         uP6gsoih/mJd2eQxHeDvZvp/wd1FBZSrADoOYqjM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Juergen Borleis <jbe@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mans Rullgard <mans@mansr.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 375/667] net: dsa: restrict SMSC_LAN9303_I2C kconfig
+Date:   Tue,  7 Jun 2022 19:00:40 +0200
+Message-Id: <20220607164945.996818189@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 474010127e2505fc463236470908e1ff5ddb3578 ]
+[ Upstream commit 0a3ad7d323686fbaae8688326cc5ea0d185c6fca ]
 
-Right now the (framework) mlock lock is (ab)used for multiple purposes:
-1- protecting concurrent accesses over the odr local cache
-2- avoid changing samplig frequency whilst buffer is running
+Since kconfig 'select' does not follow dependency chains, if symbol KSA
+selects KSB, then KSA should also depend on the same symbols that KSB
+depends on, in order to prevent Kconfig warnings and possible build
+errors.
 
-Let's start by handling situation #1 with a local lock.
+Change NET_DSA_SMSC_LAN9303_I2C and NET_DSA_SMSC_LAN9303_MDIO so that
+they are limited to VLAN_8021Q if the latter is enabled. This prevents
+the Kconfig warning:
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/r/20220207143840.707510-7-miquel.raynal@bootlin.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+WARNING: unmet direct dependencies detected for NET_DSA_SMSC_LAN9303
+  Depends on [m]: NETDEVICES [=y] && NET_DSA [=y] && (VLAN_8021Q [=m] || VLAN_8021Q [=m]=n)
+  Selected by [y]:
+  - NET_DSA_SMSC_LAN9303_I2C [=y] && NETDEVICES [=y] && NET_DSA [=y] && I2C [=y]
+
+Fixes: 430065e26719 ("net: dsa: lan9303: add VLAN IDs to master device")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Vivien Didelot <vivien.didelot@gmail.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Vladimir Oltean <olteanv@gmail.com>
+Cc: Juergen Borleis <jbe@pengutronix.de>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Mans Rullgard <mans@mansr.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../iio/common/st_sensors/st_sensors_core.c   | 24 ++++++++++++++-----
- include/linux/iio/common/st_sensors.h         |  3 +++
- 2 files changed, 21 insertions(+), 6 deletions(-)
+ drivers/net/dsa/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 0bbb090b108c..aff981551617 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -71,16 +71,18 @@ static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
+diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+index 9428aac4a686..6117d4537f88 100644
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -81,7 +81,6 @@ config NET_DSA_REALTEK_SMI
  
- int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
- {
--	int err;
-+	int err = 0;
- 	struct st_sensor_odr_avl odr_out = {0, 0};
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
- 
-+	mutex_lock(&sdata->odr_lock);
-+
- 	if (!sdata->sensor_settings->odr.mask)
--		return 0;
-+		goto unlock_mutex;
- 
- 	err = st_sensors_match_odr(sdata->sensor_settings, odr, &odr_out);
- 	if (err < 0)
--		goto st_sensors_match_odr_error;
-+		goto unlock_mutex;
- 
- 	if ((sdata->sensor_settings->odr.addr ==
- 					sdata->sensor_settings->pw.addr) &&
-@@ -103,7 +105,9 @@ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
- 	if (err >= 0)
- 		sdata->odr = odr_out.hz;
- 
--st_sensors_match_odr_error:
-+unlock_mutex:
-+	mutex_unlock(&sdata->odr_lock);
-+
- 	return err;
- }
- EXPORT_SYMBOL(st_sensors_set_odr);
-@@ -365,6 +369,8 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
- 	struct st_sensors_platform_data *of_pdata;
- 	int err = 0;
- 
-+	mutex_init(&sdata->odr_lock);
-+
- 	/* If OF/DT pdata exists, it will take precedence of anything else */
- 	of_pdata = st_sensors_dev_probe(indio_dev->dev.parent, pdata);
- 	if (IS_ERR(of_pdata))
-@@ -558,18 +564,24 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
- 		err = -EBUSY;
- 		goto out;
- 	} else {
-+		mutex_lock(&sdata->odr_lock);
- 		err = st_sensors_set_enable(indio_dev, true);
--		if (err < 0)
-+		if (err < 0) {
-+			mutex_unlock(&sdata->odr_lock);
- 			goto out;
-+		}
- 
- 		msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
- 		err = st_sensors_read_axis_data(indio_dev, ch, val);
--		if (err < 0)
-+		if (err < 0) {
-+			mutex_unlock(&sdata->odr_lock);
- 			goto out;
-+		}
- 
- 		*val = *val >> ch->scan_type.shift;
- 
- 		err = st_sensors_set_enable(indio_dev, false);
-+		mutex_unlock(&sdata->odr_lock);
- 	}
- out:
- 	mutex_unlock(&indio_dev->mlock);
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 8bdbaf3f3796..69f4a1f6b536 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -238,6 +238,7 @@ struct st_sensor_settings {
-  * @hw_irq_trigger: if we're using the hardware interrupt on the sensor.
-  * @hw_timestamp: Latest timestamp from the interrupt handler, when in use.
-  * @buffer_data: Data used by buffer part.
-+ * @odr_lock: Local lock for preventing concurrent ODR accesses/changes
-  */
- struct st_sensor_data {
- 	struct device *dev;
-@@ -263,6 +264,8 @@ struct st_sensor_data {
- 	s64 hw_timestamp;
- 
- 	char buffer_data[ST_SENSORS_MAX_BUFFER_SIZE] ____cacheline_aligned;
-+
-+	struct mutex odr_lock;
- };
- 
- #ifdef CONFIG_IIO_BUFFER
+ config NET_DSA_SMSC_LAN9303
+ 	tristate
+-	depends on VLAN_8021Q || VLAN_8021Q=n
+ 	select NET_DSA_TAG_LAN9303
+ 	select REGMAP
+ 	help
+@@ -91,6 +90,7 @@ config NET_DSA_SMSC_LAN9303
+ config NET_DSA_SMSC_LAN9303_I2C
+ 	tristate "SMSC/Microchip LAN9303 3-ports 10/100 ethernet switch in I2C managed mode"
+ 	depends on I2C
++	depends on VLAN_8021Q || VLAN_8021Q=n
+ 	select NET_DSA_SMSC_LAN9303
+ 	select REGMAP_I2C
+ 	help
+@@ -100,6 +100,7 @@ config NET_DSA_SMSC_LAN9303_I2C
+ config NET_DSA_SMSC_LAN9303_MDIO
+ 	tristate "SMSC/Microchip LAN9303 3-ports 10/100 ethernet switch in MDIO managed mode"
+ 	select NET_DSA_SMSC_LAN9303
++	depends on VLAN_8021Q || VLAN_8021Q=n
+ 	help
+ 	  Enable access functions if the SMSC/Microchip LAN9303 is configured
+ 	  for MDIO managed mode.
 -- 
 2.35.1
+
+
 
