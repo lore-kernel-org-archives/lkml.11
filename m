@@ -2,151 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6229CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1DBCCCA47C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443509AbiFHA6M (ORCPT
+        id S1443337AbiFHA54 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50782 "EHLO
+        Tue, 7 Jun 2022 20:57:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384352AbiFGWZZ (ORCPT
+        with ESMTP id S1578040AbiFGXb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:25:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B1227040A;
-        Tue,  7 Jun 2022 12:23:03 -0700 (PDT)
+        Tue, 7 Jun 2022 19:31:27 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF5414351A2
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:00:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B176DB823D5;
-        Tue,  7 Jun 2022 19:23:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18FE7C385A2;
-        Tue,  7 Jun 2022 19:22:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629780;
-        bh=Cg3ArwRd1oLn1Qcn5mD0py4uevjjvn1SuGSAybqOjzM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QXIqRFvhjg25lLT3KYnqxeqC9pssAxrCWrV1DzK4AooZsjgw3kM5uNMtZombpdL4Y
-         4JN2hQ4m5Bv+f2YzBC2vnNfUmGU1C+tWUfUuJUe/OXm5Xk/Br4HxBcTyahhQSbfI7x
-         YoYNvttfy1aIbbCExRDoB9XcaS4mHNZhYSmxDXp0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catrinel Catrinescu <cc@80211.de>,
-        Felix Fietkau <nbd@nbd.name>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.18 815/879] mac80211: upgrade passive scan to active scan on DFS channels after beacon rx
-Date:   Tue,  7 Jun 2022 19:05:33 +0200
-Message-Id: <20220607165026.513040981@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
+        by sin.source.kernel.org (Postfix) with ESMTPS id 22E9ACE2018
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 22:00:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21CD3C385A2;
+        Tue,  7 Jun 2022 22:00:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1654639200;
+        bh=8sL/rpVGiBwSPrjgFyVx4IBH9TqPDfomNd6mM8hy9kU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YyEmDOruYF7lVaZO4mPnA3SXKSgcKPOjb3an5AivFk4EHvhDPF0FP5i78f89hDw42
+         WQh31V72ZEffZrfbpmy7yrLeeHt/26dVf29QXB0juYr2UiuWp/21DT4UlVdrOdeaEl
+         xdHSPld+OLAEZ6A0kLMws3s6L7gq0297zHXhPM5w=
+Date:   Tue, 7 Jun 2022 14:59:59 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     HORIGUCHI =?UTF-8?B?TkFPWUE=?= (=?UTF-8?B?5aCA5Y+jIOebtOS5nw==?=) 
+        <naoya.horiguchi@nec.com>, zhenwei pi <pizhenwei@bytedance.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Wu Fengguang <fengguang.wu@intel.com>
+Subject: Re: [PATCH] mm/memory-failure: don't allow to unpoison hw corrupted
+ page
+Message-Id: <20220607145959.785e54c752f373bcc283732b@linux-foundation.org>
+In-Reply-To: <5e7abb3f-56e7-0343-a678-749b6f5238a2@redhat.com>
+References: <20220604103229.3378591-1-pizhenwei@bytedance.com>
+        <20220604115616.b7d5912ac5a37db608f67b78@linux-foundation.org>
+        <584eedd3-9369-9df1-39e2-62e331abdcc0@bytedance.com>
+        <20220606043202.GA1328953@hori.linux.bs1.fc.nec.co.jp>
+        <3b58adbf-a8b2-8dba-71a7-123ba3850c10@bytedance.com>
+        <20220606091503.GA1337789@hori.linux.bs1.fc.nec.co.jp>
+        <5e7abb3f-56e7-0343-a678-749b6f5238a2@redhat.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+On Tue, 7 Jun 2022 14:36:00 +0200 David Hildenbrand <david@redhat.com> wrote:
 
-commit b041b7b9de6e1d4362de855ab90f9d03ef323edd upstream.
+> On 06.06.22 11:15, HORIGUCHI NAOYA(堀口 直也) wrote:
+> >>>    [  917.864266]  <TASK>
+> >>>    [  917.864961]  clear_huge_page+0x147/0x270
+> >>>    [  917.866236]  hugetlb_fault+0x440/0xad0
+> >>>    [  917.867366]  handle_mm_fault+0x270/0x290
+> >>>    [  917.868532]  do_user_addr_fault+0x1c3/0x680
+> >>>    [  917.869768]  exc_page_fault+0x6c/0x160
+> >>>    [  917.870912]  ? asm_exc_page_fault+0x8/0x30
+> >>>    [  917.872082]  asm_exc_page_fault+0x1e/0x30
+> >>>    [  917.873220] RIP: 0033:0x7f2aeb8ba367
+> >>>
+> >>> I don't think of a workaround for this now ...
+> >>>
+> >>
+> >> Could you please tell me how to reproduce this issue?
+> > 
+> > You are familiar with qemu-monitor-command, so the following procedure
+> > should work for you:
+> > 
+> >   - run a process using hugepages on your VM,
+> >   - check the guest physical address of the hugepage (page-types.c is helpful for this),
+> >   - inject a MCE with virsh qemu-monitor-command on the guest physical address, then
+> >   - unpoison the injected physical address.
+> 
+> That's triggered via debugfs / HWPOISON_INJECT, right?
+> 
+> That's a DEBUG_KERNEL option, so I'm not 100% sure if we really want to
+> cc stable.
 
-In client mode, we can't connect to hidden SSID APs or SSIDs not advertised
-in beacons on DFS channels, since we're forced to passive scan. Fix this by
-sending out a probe request immediately after the first beacon, if active
-scan was requested by the user.
+Sure, it's hardly a must-have.  But let's also take the patch
+complexity&risk into account.  This is one dang simple patch.
 
-Cc: stable@vger.kernel.org
-Reported-by: Catrinel Catrinescu <cc@80211.de>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Link: https://lore.kernel.org/r/20220420104907.36275-1-nbd@nbd.name
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/mac80211/ieee80211_i.h |    5 +++++
- net/mac80211/scan.c        |   20 ++++++++++++++++++++
- 2 files changed, 25 insertions(+)
-
---- a/net/mac80211/ieee80211_i.h
-+++ b/net/mac80211/ieee80211_i.h
-@@ -1148,6 +1148,9 @@ struct tpt_led_trigger {
-  *	a scan complete for an aborted scan.
-  * @SCAN_HW_CANCELLED: Set for our scan work function when the scan is being
-  *	cancelled.
-+ * @SCAN_BEACON_WAIT: Set whenever we're passive scanning because of radar/no-IR
-+ *	and could send a probe request after receiving a beacon.
-+ * @SCAN_BEACON_DONE: Beacon received, we can now send a probe request
-  */
- enum {
- 	SCAN_SW_SCANNING,
-@@ -1156,6 +1159,8 @@ enum {
- 	SCAN_COMPLETED,
- 	SCAN_ABORTED,
- 	SCAN_HW_CANCELLED,
-+	SCAN_BEACON_WAIT,
-+	SCAN_BEACON_DONE,
- };
- 
- /**
---- a/net/mac80211/scan.c
-+++ b/net/mac80211/scan.c
-@@ -281,6 +281,16 @@ void ieee80211_scan_rx(struct ieee80211_
- 	if (likely(!sdata1 && !sdata2))
- 		return;
- 
-+	if (test_and_clear_bit(SCAN_BEACON_WAIT, &local->scanning)) {
-+		/*
-+		 * we were passive scanning because of radar/no-IR, but
-+		 * the beacon/proberesp rx gives us an opportunity to upgrade
-+		 * to active scan
-+		 */
-+		 set_bit(SCAN_BEACON_DONE, &local->scanning);
-+		 ieee80211_queue_delayed_work(&local->hw, &local->scan_work, 0);
-+	}
-+
- 	if (ieee80211_is_probe_resp(mgmt->frame_control)) {
- 		struct cfg80211_scan_request *scan_req;
- 		struct cfg80211_sched_scan_request *sched_scan_req;
-@@ -787,6 +797,8 @@ static int __ieee80211_start_scan(struct
- 						IEEE80211_CHAN_RADAR)) ||
- 		    !req->n_ssids) {
- 			next_delay = IEEE80211_PASSIVE_CHANNEL_TIME;
-+			if (req->n_ssids)
-+				set_bit(SCAN_BEACON_WAIT, &local->scanning);
- 		} else {
- 			ieee80211_scan_state_send_probe(local, &next_delay);
- 			next_delay = IEEE80211_CHANNEL_TIME;
-@@ -998,6 +1010,8 @@ set_channel:
- 	    !scan_req->n_ssids) {
- 		*next_delay = IEEE80211_PASSIVE_CHANNEL_TIME;
- 		local->next_scan_state = SCAN_DECISION;
-+		if (scan_req->n_ssids)
-+			set_bit(SCAN_BEACON_WAIT, &local->scanning);
- 		return;
- 	}
- 
-@@ -1090,6 +1104,8 @@ void ieee80211_scan_work(struct work_str
- 			goto out;
- 	}
- 
-+	clear_bit(SCAN_BEACON_WAIT, &local->scanning);
-+
- 	/*
- 	 * as long as no delay is required advance immediately
- 	 * without scheduling a new work
-@@ -1100,6 +1116,10 @@ void ieee80211_scan_work(struct work_str
- 			goto out_complete;
- 		}
- 
-+		if (test_and_clear_bit(SCAN_BEACON_DONE, &local->scanning) &&
-+		    local->next_scan_state == SCAN_DECISION)
-+			local->next_scan_state = SCAN_SEND_PROBE;
-+
- 		switch (local->next_scan_state) {
- 		case SCAN_DECISION:
- 			/* if no more bands/channels left, complete scan */
-
-
+Or is it.  Should these things be happening outside mf_mutex?  What the
+heck is the role of mf_mutex anyway?
