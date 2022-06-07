@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1879FCCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CE9CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349848AbiFGSAd (ORCPT
+        id S1349565AbiFGSAP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:00:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
+        Tue, 7 Jun 2022 14:00:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348560AbiFGRlK (ORCPT
+        with ESMTP id S1348559AbiFGRlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:41:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B3B120890;
-        Tue,  7 Jun 2022 10:34:22 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1819912088B;
+        Tue,  7 Jun 2022 10:34:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5226961543;
-        Tue,  7 Jun 2022 17:33:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58D1CC385A5;
-        Tue,  7 Jun 2022 17:33:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C8CC61480;
+        Tue,  7 Jun 2022 17:33:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A653C3411C;
+        Tue,  7 Jun 2022 17:33:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623208;
-        bh=5nof6Jt2ksDAMb5Ln0YlWKqlrv9Jw3OM28OWQlEtXTE=;
+        s=korg; t=1654623216;
+        bh=eaLkmUmdG/Xo6u8ERxj5u85vYOJwe/jt0YfOMpJMybE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SVk8bJNpXyKctqTipWE1xcDgv2VeVQ5Bva0UonvtcbZFOecFvQLwSfIckBcH2blnk
-         tKr7Nto7LH99/3GdklCpJ/WVs98sOKuVdh905/i6bmnZFN66p+T6oXEtx/e35SBs2e
-         GHoy+hohh0eFQ+/Yy/xczjSoGg1+UMnptH50WkQo=
+        b=PIdPsHeo84U7AX8Reh5ISGZuQe//Gr34jaNvh9T7RmTk+dEKINoXY2G9oxo3t+Tqw
+         jq7eVrOxXNCIXP4oxLmBf6b5HxNapkk+/5DDCwWiblw+k8qMC6nwH62gE0RF8dmj46
+         FC+gXSHNN6vjJX38MrVWqi70zow2mvGepEWYxLeM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Michal Hocko <mhocko@suse.com>,
-        David Hildenbrand <david@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Scott Cheloha <cheloha@linux.vnet.ibm.com>,
-        Nathan Lynch <nathanl@linux.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Igor Zhbanov <izh1979@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 293/452] drivers/base/memory: fix an unlikely reference counting issue in __add_memory_block()
-Date:   Tue,  7 Jun 2022 19:02:30 +0200
-Message-Id: <20220607164917.284771638@linuxfoundation.org>
+Subject: [PATCH 5.10 296/452] powerpc/idle: Fix return value of __setup() handler
+Date:   Tue,  7 Jun 2022 19:02:33 +0200
+Message-Id: <20220607164917.376665570@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -56,49 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit f47f758cff59c68015d6b9b9c077110df7c2c828 ]
+[ Upstream commit b793a01000122d2bd133ba451a76cc135b5e162c ]
 
-__add_memory_block() calls both put_device() and device_unregister() when
-storing the memory block into the xarray.  This is incorrect because
-xarray doesn't take an additional reference and device_unregister()
-already calls put_device().
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
 
-Triggering the issue looks really unlikely and its only effect should be
-to log a spurious warning about a ref counted issue.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) argument or environment
+strings.
 
-Link: https://lkml.kernel.org/r/d44c63d78affe844f020dc02ad6af29abc448fc4.1650611702.git.christophe.jaillet@wanadoo.fr
-Fixes: 4fb6eabf1037 ("drivers/base/memory.c: cache memory blocks in xarray to accelerate lookup")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Reviewed-by: David Hildenbrand <david@redhat.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Scott Cheloha <cheloha@linux.vnet.ibm.com>
-Cc: Nathan Lynch <nathanl@linux.ibm.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Also, error return codes don't mean anything to obsolete_checksetup() --
+only non-zero (usually 1) or zero. So return 1 from powersave_off().
+
+Fixes: 302eca184fb8 ("[POWERPC] cell: use ppc_md->power_save instead of cbe_idle_loop")
+Reported-by: Igor Zhbanov <izh1979@gmail.com>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220502192925.19954-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/memory.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/powerpc/kernel/idle.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/base/memory.c b/drivers/base/memory.c
-index de058d15b33e..49eb14271f28 100644
---- a/drivers/base/memory.c
-+++ b/drivers/base/memory.c
-@@ -560,10 +560,9 @@ int register_memory(struct memory_block *memory)
- 	}
- 	ret = xa_err(xa_store(&memory_blocks, memory->dev.id, memory,
- 			      GFP_KERNEL));
--	if (ret) {
--		put_device(&memory->dev);
-+	if (ret)
- 		device_unregister(&memory->dev);
--	}
-+
- 	return ret;
+diff --git a/arch/powerpc/kernel/idle.c b/arch/powerpc/kernel/idle.c
+index 1f835539fda4..f0271daa8f6a 100644
+--- a/arch/powerpc/kernel/idle.c
++++ b/arch/powerpc/kernel/idle.c
+@@ -37,7 +37,7 @@ static int __init powersave_off(char *arg)
+ {
+ 	ppc_md.power_save = NULL;
+ 	cpuidle_disable = IDLE_POWERSAVE_OFF;
+-	return 0;
++	return 1;
  }
+ __setup("powersave=off", powersave_off);
  
 -- 
 2.35.1
