@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4231CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C10CCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351547AbiFHA4V (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:56:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38128 "EHLO
+        id S230264AbiFHAz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:55:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379276AbiFGWG4 (ORCPT
+        with ESMTP id S1384286AbiFGVyZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:06:56 -0400
+        Tue, 7 Jun 2022 17:54:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB50252C3E;
-        Tue,  7 Jun 2022 12:16:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C893824A1F9;
+        Tue,  7 Jun 2022 12:13:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9A4B61846;
-        Tue,  7 Jun 2022 19:15:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFA9EC385A2;
-        Tue,  7 Jun 2022 19:15:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E951617DA;
+        Tue,  7 Jun 2022 19:13:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90978C385A2;
+        Tue,  7 Jun 2022 19:13:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629359;
-        bh=yUA+1PtCRM+RBKp1Y/Q9h+SLDKv6zQr75eH5WKIP9g4=;
+        s=korg; t=1654629199;
+        bh=f0qjRxAqq3MPhGvkFvgfXxFOd3nQx8XC80gGPqBDDeU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zQsVyM6UZF5zOexMPX61cZR1cCa1eU3Ocn91wzS6eNOAcMMT9XGkHHU+sviL6ODGO
-         949vCKN48PDhB4SfX/V5zoZn1bfrCXZMxio+JWYQnDfZo0QfRG1PFUSB/ckSUMlS2g
-         mkU0VCaOg52ESE3SbWtRC26llQE32pkCo78QXBpY=
+        b=iyQ2D6Pv+gv2IzmR9jNPtk9tt1Jp4f8JwZR5WWO/1N6iC/jMTPMlxScAF7LYt9w0N
+         WqCASFje6zdOK5zHnoslKaIVIOUZSX9sA3lgwZB4zKwJjkBJixQW6DeCKRoKFwLObi
+         D8QNxE0JkglMwv17z4gmLsvuP/9eR3if6hF/RUXc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>, Joerg Roedel <jroedel@suse.de>,
+        stable@vger.kernel.org,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 662/879] iommu/amd: Enable swiotlb in all cases
-Date:   Tue,  7 Jun 2022 19:03:00 +0200
-Message-Id: <20220607165022.062346337@linuxfoundation.org>
+Subject: [PATCH 5.18 588/879] ASoC: sh: rz-ssi: Propagate error codes returned from platform_get_irq_byname()
+Date:   Tue,  7 Jun 2022 19:01:46 +0200
+Message-Id: <20220607165019.920778468@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,64 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit 121660bba631104154b7c15e88f208c48c8c3297 ]
+[ Upstream commit 91686a3984f34df0ab844cdbaa7e4d9621129f5d ]
 
-Previously the AMD IOMMU would only enable SWIOTLB in certain
-circumstances:
- * IOMMU in passthrough mode
- * SME enabled
+Propagate error codes returned from platform_get_irq_byname() instead of
+returning -ENODEV. platform_get_irq_byname() may return -EPROBE_DEFER, to
+handle such cases propagate the error codes.
 
-This logic however doesn't work when an untrusted device is plugged in
-that doesn't do page aligned DMA transactions.  The expectation is
-that a bounce buffer is used for those transactions.
+While at it drop the dev_err_probe() messages as platform_get_irq_byname()
+already does this for us in case of error.
 
-This fails like this:
-
-swiotlb buffer is full (sz: 4096 bytes), total 0 (slots), used 0 (slots)
-
-That happens because the bounce buffers have been allocated, followed by
-freed during startup but the bounce buffering code expects that all IOMMUs
-have left it enabled.
-
-Remove the criteria to set up bounce buffers on AMD systems to ensure
-they're always available for supporting untrusted devices.
-
-Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
-Suggested-by: Christoph Hellwig <hch@infradead.org>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220404204723.9767-2-mario.limonciello@amd.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Link: https://lore.kernel.org/r/20220426074922.13319-3-prabhakar.mahadev-lad.rj@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/amd/iommu.c | 7 -------
- 1 file changed, 7 deletions(-)
+ sound/soc/sh/rz-ssi.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index a1ada7bff44e..079694f894b8 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1838,17 +1838,10 @@ void amd_iommu_domain_update(struct protection_domain *domain)
- 	amd_iommu_domain_flush_complete(domain);
- }
+diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
+index e8edaed05d4c..8bbcebbe7e73 100644
+--- a/sound/soc/sh/rz-ssi.c
++++ b/sound/soc/sh/rz-ssi.c
+@@ -979,8 +979,7 @@ static int rz_ssi_probe(struct platform_device *pdev)
+ 	/* Error Interrupt */
+ 	ssi->irq_int = platform_get_irq_byname(pdev, "int_req");
+ 	if (ssi->irq_int < 0)
+-		return dev_err_probe(&pdev->dev, -ENODEV,
+-				     "Unable to get SSI int_req IRQ\n");
++		return ssi->irq_int;
  
--static void __init amd_iommu_init_dma_ops(void)
--{
--	swiotlb = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
--}
--
- int __init amd_iommu_init_api(void)
- {
- 	int err;
+ 	ret = devm_request_irq(&pdev->dev, ssi->irq_int, &rz_ssi_interrupt,
+ 			       0, dev_name(&pdev->dev), ssi);
+@@ -992,8 +991,7 @@ static int rz_ssi_probe(struct platform_device *pdev)
+ 		/* Tx and Rx interrupts (pio only) */
+ 		ssi->irq_tx = platform_get_irq_byname(pdev, "dma_tx");
+ 		if (ssi->irq_tx < 0)
+-			return dev_err_probe(&pdev->dev, -ENODEV,
+-					     "Unable to get SSI dma_tx IRQ\n");
++			return ssi->irq_tx;
  
--	amd_iommu_init_dma_ops();
--
- 	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
- 	if (err)
- 		return err;
+ 		ret = devm_request_irq(&pdev->dev, ssi->irq_tx,
+ 				       &rz_ssi_interrupt, 0,
+@@ -1004,8 +1002,7 @@ static int rz_ssi_probe(struct platform_device *pdev)
+ 
+ 		ssi->irq_rx = platform_get_irq_byname(pdev, "dma_rx");
+ 		if (ssi->irq_rx < 0)
+-			return dev_err_probe(&pdev->dev, -ENODEV,
+-					     "Unable to get SSI dma_rx IRQ\n");
++			return ssi->irq_rx;
+ 
+ 		ret = devm_request_irq(&pdev->dev, ssi->irq_rx,
+ 				       &rz_ssi_interrupt, 0,
 -- 
 2.35.1
 
