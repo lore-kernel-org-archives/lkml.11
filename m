@@ -2,23 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8DE4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:16:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F52C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344837AbiFGQQm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40412 "EHLO
+        id S244455AbiFGQQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 12:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344928AbiFGQQg (ORCPT
+        with ESMTP id S1344806AbiFGQQi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:16:36 -0400
+        Tue, 7 Jun 2022 12:16:38 -0400
 Received: from smtp.ruc.edu.cn (m177126.mail.qiye.163.com [123.58.177.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A333101738;
-        Tue,  7 Jun 2022 09:16:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D923A101708;
+        Tue,  7 Jun 2022 09:16:37 -0700 (PDT)
 Received: from localhost.localdomain (unknown [202.112.113.212])
-        by smtp.ruc.edu.cn (Hmail) with ESMTPSA id 334D280053;
-        Wed,  8 Jun 2022 00:16:19 +0800 (CST)
+        by smtp.ruc.edu.cn (Hmail) with ESMTPSA id 470C1800A4;
+        Wed,  8 Jun 2022 00:16:34 +0800 (CST)
 From:   Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
 To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
         "David S . Miller" <davem@davemloft.net>,
@@ -30,17 +29,17 @@ To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
         Xin Xiong <xiongx18@fudan.edu.cn>,
         Tom Parkin <tparkin@katalix.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] l2tp: fix possible use-after-free
-Date:   Wed,  8 Jun 2022 00:16:13 +0800
-Message-Id: <20220607161613.24988-1-xiaohuizhang@ruc.edu.cn>
+Subject: [PATCH 2/2] l2tp: fix possible use-after-free
+Date:   Wed,  8 Jun 2022 00:16:27 +0800
+Message-Id: <20220607161627.25035-1-xiaohuizhang@ruc.edu.cn>
 X-Mailer: git-send-email 2.17.1
 X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUMYThpWHhgeHUNMGB8fQk
-        MYVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OEk6OAw4Mj0#MRdRFTJIDTUJ
-        DiMaFBxVSlVKTU5PTUpDTkNLTUhLVTMWGhIXVQMSGhQTDhIBExoVHDsJDhhVHh8OVRgVRVlXWRIL
-        WUFZSUtJVUpKSVVKSkhVSUpJWVdZCAFZQUlJTUk3Bg++
-X-HM-Tid: 0a813ef3e4782c20kusn334d280053
+        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWRpNTR5WGUsYSx1KTBgfHU
+        NNVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Pxg6MDo4Ej0xORceMzcpDTUJ
+        DCwwCTFVSlVKTU5PTUpDTkJOSUNPVTMWGhIXVQMSGhQTDhIBExoVHDsJDhhVHh8OVRgVRVlXWRIL
+        WUFZSUtJVUpKSVVKSkhVSUpJWVdZCAFZQUlJTEg3Bg++
+X-HM-Tid: 0a813ef41e4c2c20kusn470c1800a4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -60,13 +59,13 @@ Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index 7499c51b1850..b759fbd09b65 100644
+index b759fbd09b65..c5de6d4e0818 100644
 --- a/net/l2tp/l2tp_core.c
 +++ b/net/l2tp/l2tp_core.c
-@@ -252,8 +252,8 @@ struct l2tp_session *l2tp_tunnel_get_session(struct l2tp_tunnel *tunnel,
+@@ -273,8 +273,8 @@ struct l2tp_session *l2tp_session_get(const struct net *net, u32 session_id)
  
  	rcu_read_lock_bh();
- 	hlist_for_each_entry_rcu(session, session_list, hlist)
+ 	hlist_for_each_entry_rcu(session, session_list, global_hlist)
 -		if (session->session_id == session_id) {
 -			l2tp_session_inc_refcount(session);
 +		if (session->session_id == session_id &&
