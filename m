@@ -2,407 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B64CCA487
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:16:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 550F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446564AbiFHCPs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:15:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41834 "EHLO
+        id S231704AbiFHCQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388816AbiFHB1v (ORCPT
+        with ESMTP id S1388957AbiFHBpm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 21:27:51 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB912E4C9C
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:27:26 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id c14so16901078pgu.13
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 13:27:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=j27EHIwOEZpdjdZt1orSQhJJK2bvizdq9Ka0SmrZI4Q=;
-        b=hQf5Dy9yqX3mprTJis2olItBeAkyWP1W9wINFpQVDe+whNumJ75iKuYwP8sI/xUmVJ
-         Z1isX03/wLlM4k+hm8AzpRMAbJZZckVMAt/e4wLjwSRq1lIcGR8OzPBG+/b6mMhKI4PN
-         9Ok3z3eMDfXSg9WylrbTvjVbP6sFgkRFNxuv127EdhuIkQY8wcRsk1tstoxIHHeMgLqb
-         XRu1Lv2RQdB/OgqDHN6cJ94v4UMVdlLBrXUA6KfQYXPhVSo7IkNoZLRlvZEBHWX9qIpq
-         uP/GgQP6DcSR5CH37KT2JVHU/st0XHJ+gXssH6Cqu1vvkorN5mGR3eCVZh3hFpm+QuyA
-         gglA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=j27EHIwOEZpdjdZt1orSQhJJK2bvizdq9Ka0SmrZI4Q=;
-        b=LcOfx/01Shjjp/ypyVfPg5QF6o22orIZNiS+nYmqQFCYGS+G8e9EtaQzamAFovLgyR
-         e10i3Q5077o1IkfUnx4lnj1kO4e+LIchalTz5i3fFw8S0knNClPMTwuOVsG+zC3cVI+8
-         LDlWy6pKsZHL0OnIq6mMT5RcpCDPQcVVj7+BpLO58MgQfI/4JljLZ1B7YsaW+hmngw0m
-         r6FTGHrHN3hd0AcJxXe0N/vqnWbu7CFKbXMR3FE3d9LPfZrdxwrJJfgBJlTzm7twtDra
-         CMVYf0CMiCN3iMKlZnSu/04RhMNRAIbXCAoXnx3q/fvXECrbZCyiFhVpA9yu4WNFV0q5
-         7oEg==
-X-Gm-Message-State: AOAM533NSiyITCR5gi9vkNvtxKX+9bOHm6BhLc6fYcisdpvj1nmsEmt5
-        lN6l74wp6xo8r6SDbSdp7uTTBQ==
-X-Google-Smtp-Source: ABdhPJybOCTb9BNeIHO6FLkY7MBbmIvLCGGz2rXM5pqFufidx10D79tpsUoWtH3DcW3MWKcCf6lEUQ==
-X-Received: by 2002:a63:2447:0:b0:3fd:b97e:7f0f with SMTP id k68-20020a632447000000b003fdb97e7f0fmr11021810pgk.516.1654633645692;
-        Tue, 07 Jun 2022 13:27:25 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id bg13-20020a17090b0d8d00b001e08461ceaesm14986246pjb.37.2022.06.07.13.27.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 13:27:25 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 20:27:21 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Andrew Jones <drjones@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Oliver Upton <oupton@google.com>, linux-kernel@vger.kernel.org,
-        Marc Zyngier <Marc.Zyngier@arm.com>,
-        "anup@brainfault.org" <anup@brainfault.org>,
-        Raghavendra Rao Ananta <rananta@google.com>
-Subject: Re: [PATCH v2 000/144] KVM: selftests: Overhaul APIs, purge VCPU_ID
-Message-ID: <Yp+0qQqpokj7RSKL@google.com>
-References: <20220603004331.1523888-1-seanjc@google.com>
- <21570ac1-e684-7983-be00-ba8b3f43a9ee@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <21570ac1-e684-7983-be00-ba8b3f43a9ee@redhat.com>
+        Tue, 7 Jun 2022 21:45:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4F3E48C596
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:27:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B80BB82464
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 22:27:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADA80C3411C;
+        Tue,  7 Jun 2022 22:27:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1654640864;
+        bh=5S/z21z92weYsEvQ8sPPs+ir8hNQ+/Ya3+hZvDiMy5c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cKxKBVi5rytKhSUhsR1sqCXCIPzwkOTvcLJ8meC4RfrPuYgz0kOcW6FLaTsn9gAsw
+         kjk7YBdIUHrogGL/Dmwl/6mCUF9e9kG4DwbeSFZRM3cOBE915bq7MpGq+iXo0YFhjC
+         HxFo+7C7nQZE2NaMqwQoSBIupxQ/cbLiNi+Glvgo=
+Date:   Tue, 7 Jun 2022 15:27:44 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Justin Stitt <jstitt007@gmail.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] include/uapi/linux/swab.h: add __u16 cast to __swab16
+ conditional
+Message-Id: <20220607152744.d7c801d092529309500ac9a6@linux-foundation.org>
+In-Reply-To: <20220607222006.22719-1-jstitt007@gmail.com>
+References: <20220607222006.22719-1-jstitt007@gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Raghu
+On Tue,  7 Jun 2022 15:20:06 -0700 Justin Stitt <jstitt007@gmail.com> wrote:
 
-On Tue, Jun 07, 2022, Paolo Bonzini wrote:
-> Marc, Christian, Anup, can you please give this a go?
-
-Raghu is going to run on arm64, I'll work with him to iron out any bugs (I should
-have done this before posting).  I.e. Marc is mostly off the hook unless there's
-tests we can't run.
-
-
+> if __HAVE_BUILTIN_BSWAP16__ is defined then __swab16 utilizes a __u16 cast.
+> This same cast should be used if __HAVE_BUILTIN_BSWAP16__ is not defined as
+> well. This should fix loads (at least a few) clang -Wformat warnings
+> specifically with `ntohs()`
 > 
-> Paolo
-> 
-> On 6/3/22 02:41, Sean Christopherson wrote:
-> > Overhaul KVM's selftest APIs to get selftests to a state where adding new
-> > features and writing tests is less painful/disgusting.
-> > 
-> > Patches 1 fixes a goof in kvm/queue and should be squashed.
-> > 
-> > I would really, really, really like to get this queued up sooner than
-> > later, or maybe just thrown into a separate selftests-specific branch that
-> > folks can develop against.  Rebasing is tedious, frustrating, and time
-> > consuming.  And spoiler alert, there's another 42 x86-centric patches
-> > inbound that builds on this series to clean up CPUID related crud...
-> > 
-> > The primary theme is to stop treating tests like second class citizens.
-> > Stop hiding vcpu, kvm_vm, etc...  There's no sensitive data/constructs, and
-> > the encapsulation has led to really, really bad and difficult to maintain
-> > code.  E.g. having to pass around the VM just to call a vCPU ioctl(),
-> > arbitrary non-zero vCPU IDs, tests having to care about the vCPU ID in the
-> > first place, etc...
-> > 
-> > The other theme in the rework is to deduplicate code and try to set us
-> > up for success in the future.  E.g. provide macros/helpers instead of
-> > spamming CTRL-C => CTRL-V (see the -1k LoC), structure the VM creation
-> > APIs to build on one another, etc...
-> > 
-> > The absurd patch count (as opposed to just ridiculous) is due to converting
-> > each test away from using hardcoded vCPU IDs in a separate patch.  The vast
-> > majority of those patches probably aren't worth reviewing in depth, the
-> > changes are mostly mechanical in nature.
-> > 
-> > However, _running_ non-x86 tests (or tests that have unique non-x86
-> > behavior) would be extremely valuable.  All patches have been compile tested
-> > on x86, arm, risc-v, and s390, but I've only run the tests on x86.  Based on
-> > my track record for the x86+common tests, I will be very, very surprised if
-> > I didn't break any of the non-x86 tests, e.g. pthread_create()'s 'void *'
-> > param tripped me up multiple times.
-> > 
-> > I have not run x86's amx_test due to lack of hardware.  I also haven't run
-> > sev_migration; something is wonky in either the upstream support for INIT_EX
-> > or in our test machines and I can't get SEV to initialize.
-> > 
-> > v2:
-> >    - Drop the forced -Werror patch. [Vitaly]
-> >    - Add TEST_REQUIRE to reduce KSFT_SKIP boilerplate.
-> >    - Rebase to kvm/queue, commit 55371f1d0c01.
-> >    - Clean up even more bad copy+paste code (x86 was hiding a lot of crud).
-> >    - Assert that the input to an ioctl() is (likely) the correct struct.
-> > 
-> > v1: https://lore.kernel.org/all/20220504224914.1654036-1-seanjc@google.com
-> > 
-> > Sean Christopherson (144):
-> >    KVM: Fix references to non-existent KVM_CAP_TRIPLE_FAULT_EVENT
-> >    KVM: selftests: Fix buggy-but-benign check in
-> >      test_v3_new_redist_regions()
-> >    KVM: selftests: Fix typo in vgic_init test
-> >    KVM: selftests: Drop stale declarations from kvm_util_base.h
-> >    KVM: selftests: Always open VM file descriptors with O_RDWR
-> >    KVM: selftests: Add another underscore to inner ioctl() helpers
-> >    KVM: selftests: Make vcpu_ioctl() a wrapper to pretty print ioctl name
-> >    KVM: selftests: Drop @mode from common vm_create() helper
-> >    KVM: selftests: Split vcpu_set_nested_state() into two helpers
-> >    KVM: sefltests: Use vcpu_ioctl() and __vcpu_ioctl() helpers
-> >    KVM: selftests: Add __vcpu_run() helper
-> >    KVM: selftests: Use vcpu_access_device_attr() in arm64 code
-> >    KVM: selftests: Remove vcpu_get_fd()
-> >    KVM: selftests: Add vcpu_get() to retrieve and assert on vCPU
-> >      existence
-> >    KVM: selftests: Make vm_ioctl() a wrapper to pretty print ioctl name
-> >    KVM: sefltests: Use vm_ioctl() and __vm_ioctl() helpers
-> >    KVM: selftests: Make kvm_ioctl() a wrapper to pretty print ioctl name
-> >    KVM: selftests: Use kvm_ioctl() helpers
-> >    KVM: selftests: Use __KVM_SYSCALL_ERROR() to handle non-KVM syscall
-> >      errors
-> >    KVM: selftests: Make x86-64's register dump helpers static
-> >    KVM: selftests: Get rid of kvm_util_internal.h
-> >    KVM: selftests: Use KVM_IOCTL_ERROR() for one-off arm64 ioctls
-> >    KVM: selftests: Drop @test param from kvm_create_device()
-> >    KVM: selftests: Move KVM_CREATE_DEVICE_TEST code to separate helper
-> >    KVM: selftests: Multiplex return code and fd in __kvm_create_device()
-> >    KVM: selftests: Rename KVM_HAS_DEVICE_ATTR helpers for consistency
-> >    KVM: selftests: Drop 'int' return from asserting *_has_device_attr()
-> >    KVM: selftests: Split get/set device_attr helpers
-> >    KVM: selftests: Add a VM backpointer to 'struct vcpu'
-> >    KVM: selftests: Consolidate KVM_ENABLE_CAP usage
-> >    KVM: selftests: Simplify KVM_ENABLE_CAP helper APIs
-> >    KVM: selftests: Cache list of MSRs to save/restore
-> >    KVM: selftests: Harden and comment XSS / KVM_SET_MSRS interaction
-> >    KVM: selftests: Dedup MSR index list helpers, simplify dedicated test
-> >    KVM: selftests: Rename MP_STATE and GUEST_DEBUG helpers for
-> >      consistency
-> >    KVM: selftest: Add proper helpers for x86-specific save/restore ioctls
-> >    KVM: selftests: Add vm_create_*() variants to expose/return 'struct
-> >      vcpu'
-> >    KVM: selftests: Push vm_adjust_num_guest_pages() into "w/o vCPUs"
-> >      helper
-> >    KVM: selftests: Use vm_create_without_vcpus() in set_boot_cpu_id
-> >    KVM: selftests: Use vm_create_without_vcpus() in dirty_log_test
-> >    KVM: selftests: Use vm_create_without_vcpus() in hardware_disable_test
-> >    KVM: selftests: Use vm_create_without_vcpus() in psci_test
-> >    KVM: selftests: Rename vm_create() => vm_create_barebones(), drop
-> >      param
-> >    KVM: selftests: Rename vm_create_without_vcpus() => vm_create()
-> >    KVM: selftests: Make vm_create() a wrapper that specifies
-> >      VM_MODE_DEFAULT
-> >    KVM: selftests: Rename xAPIC state test's vcpu struct
-> >    KVM: selftests: Rename vcpu.state => vcpu.run
-> >    KVM: selftests: Rename 'struct vcpu' to 'struct kvm_vcpu'
-> >    KVM: selftests: Return the created vCPU from vm_vcpu_add()
-> >    KVM: selftests: Convert memslot_perf_test away from VCPU_ID
-> >    KVM: selftests: Convert rseq_test away from VCPU_ID
-> >    KVM: selftests: Convert xss_msr_test away from VCPU_ID
-> >    KVM: selftests: Convert vmx_preemption_timer_test away from VCPU_ID
-> >    KVM: selftests: Convert vmx_pmu_msrs_test away from VCPU_ID
-> >    KVM: selftests: Convert vmx_set_nested_state_test away from VCPU_ID
-> >    KVM: selftests: Convert vmx_tsc_adjust_test away from VCPU_ID
-> >    KVM: selftests: Convert mmu_role_test away from VCPU_ID
-> >    KVM: selftests: Convert pmu_event_filter_test away from VCPU_ID
-> >    KVM: selftests: Convert smm_test away from VCPU_ID
-> >    KVM: selftests: Convert state_test away from VCPU_ID
-> >    KVM: selftests: Convert svm_int_ctl_test away from VCPU_ID
-> >    KVM: selftests: Convert svm_vmcall_test away from VCPU_ID
-> >    KVM: selftests: Convert sync_regs_test away from VCPU_ID
-> >    KVM: selftests: Convert hyperv_cpuid away from VCPU_ID
-> >    KVM: selftests: Convert kvm_pv_test away from VCPU_ID
-> >    KVM: selftests: Convert platform_info_test away from VCPU_ID
-> >    KVM: selftests: Convert vmx_nested_tsc_scaling_test away from VCPU_ID
-> >    KVM: selftests: Convert set_sregs_test away from VCPU_ID
-> >    KVM: selftests: Convert vmx_dirty_log_test away from VCPU_ID
-> >    KVM: selftests: Convert vmx_close_while_nested_test away from VCPU_ID
-> >    KVM: selftests: Convert vmx_apic_access_test away from VCPU_ID
-> >    KVM: selftests: Convert userspace_msr_exit_test away from VCPU_ID
-> >    KVM: selftests: Convert vmx_exception_with_invalid_guest_state away
-> >      from VCPU_ID
-> >    KVM: selftests: Convert tsc_msrs_test away from VCPU_ID
-> >    KVM: selftests: Convert kvm_clock_test away from VCPU_ID
-> >    KVM: selftests: Convert hyperv_svm_test away from VCPU_ID
-> >    KVM: selftests: Convert hyperv_features away from VCPU_ID
-> >    KVM: selftests: Convert hyperv_clock away from VCPU_ID
-> >    KVM: selftests: Convert evmcs_test away from VCPU_ID
-> >    KVM: selftests: Convert emulator_error_test away from VCPU_ID
-> >    KVM: selftests: Convert debug_regs away from VCPU_ID
-> >    KVM: selftests: Add proper helper for advancing RIP in debug_regs
-> >    KVM: selftests: Convert amx_test away from VCPU_ID
-> >    KVM: selftests: Convert cr4_cpuid_sync_test away from VCPU_ID
-> >    KVM: selftests: Convert cpuid_test away from VCPU_ID
-> >    KVM: selftests: Convert userspace_io_test away from VCPU_ID
-> >    KVM: selftests: Convert vmx_invalid_nested_guest_state away from
-> >      VCPU_ID
-> >    KVM: selftests: Convert xen_vmcall_test away from VCPU_ID
-> >    KVM: selftests: Convert xen_shinfo_test away from VCPU_ID
-> >    KVM: selftests: Convert dirty_log_test away from VCPU_ID
-> >    KVM: selftests: Convert set_memory_region_test away from VCPU_ID
-> >    KVM: selftests: Convert system_counter_offset_test away from VCPU_ID
-> >    KVM: selftests: Track kvm_vcpu object in tsc_scaling_sync
-> >    KVM: selftests: Convert xapic_state_test away from hardcoded vCPU ID
-> >    KVM: selftests: Convert debug-exceptions away from VCPU_ID
-> >    KVM: selftests: Convert fix_hypercall_test away from VCPU_ID
-> >    KVM: selftests: Convert vgic_irq away from VCPU_ID
-> >    KVM: selftests: Make arm64's guest_get_vcpuid() declaration arm64-only
-> >    KVM: selftests: Move vm_is_unrestricted_guest() to x86-64
-> >    KVM: selftests: Add "arch" to common utils that have arch
-> >      implementations
-> >    KVM: selftests: Return created vcpu from vm_vcpu_add_default()
-> >    KVM: selftests: Rename vm_vcpu_add* helpers to better show
-> >      relationships
-> >    KVM: selftests: Convert set_boot_cpu_id away from global VCPU_IDs
-> >    KVM: selftests: Convert psci_test away from VCPU_ID
-> >    KVM: selftests: Convert hardware_disable_test to pass around vCPU
-> >      objects
-> >    KVM: selftests: Add VM creation helper that "returns" vCPUs
-> >    KVM: selftests: Convert steal_time away from VCPU_ID
-> >    KVM: selftests: Convert arch_timer away from VCPU_ID
-> >    KVM: selftests: Convert svm_nested_soft_inject_test away from VCPU_ID
-> >    KVM: selftests: Convert triple_fault_event_test away from VCPU_ID
-> >    KVM: selftests: Convert vgic_init away from
-> >      vm_create_default_with_vcpus()
-> >    KVM: selftests: Consolidate KVM_{G,S}ET_ONE_REG helpers
-> >    KVM: selftests: Sync stage before VM is freed in hypercalls test
-> >    KVM: selftests: Convert hypercalls test away from vm_create_default()
-> >    KVM: selftests: Convert xapic_ipi_test away from *_VCPU_ID
-> >    KVM: selftests: Convert sync_regs_test away from VCPU_ID
-> >    KVM: selftests: Convert s390's "resets" test away from VCPU_ID
-> >    KVM: selftests: Convert memop away from VCPU_ID
-> >    KVM: selftests: Convert s390x/diag318_test_handler away from VCPU_ID
-> >    KVM: selftests: Convert tprot away from VCPU_ID
-> >    KVM: selftests: Use vm_create() in tsc_scaling_sync
-> >    KVM: selftests: Use vm_create_with_vcpus() in max_guest_memory_test
-> >    KVM: selftests: Drop vm_create_default* helpers
-> >    KVM: selftests: Drop @vcpuids param from VM creators
-> >    KVM: selftests: Convert kvm_page_table_test away from reliance on
-> >      vcpu_id
-> >    KVM: selftests: Convert kvm_binary_stats_test away from vCPU IDs
-> >    KVM: selftests: Convert get-reg-list away from its "VCPU_ID"
-> >    KVM: selftests: Stop hardcoding vCPU IDs in vcpu_width_config
-> >    KVM: selftests: Stop conflating vCPU index and ID in perf tests
-> >    KVM: selftests: Remove vcpu_get() usage from dirty_log_test
-> >    KVM: selftests: Require vCPU output array when creating VM with vCPUs
-> >    KVM: selftests: Purge vm+vcpu_id == vcpu silliness
-> >    KVM: selftests: Drop vcpu_get(), rename vcpu_find() => vcpu_exists()
-> >    KVM: selftests: Remove vcpu_state() helper
-> >    KVM: selftests: Open code and drop 'struct kvm_vm' accessors
-> >    KVM: selftests: Drop @slot0_mem_pages from __vm_create_with_vcpus()
-> >    KVM: selftests: Drop @num_percpu_pages from __vm_create_with_vcpus()
-> >    KVM: selftests: Move per-VM/per-vCPU nr pages calculation to
-> >      __vm_create()
-> >    KVM: selftests: Trust that MAXPHYADDR > memslot0 in
-> >      vmx_apic_access_test
-> >    KVM: selftests: Drop DEFAULT_GUEST_PHY_PAGES, open code the magic
-> >      number
-> >    KVM: selftests: Return an 'unsigned int' from kvm_check_cap()
-> >    KVM: selftests: Add kvm_has_cap() to provide syntactic sugar
-> >    KVM: selftests: Add TEST_REQUIRE macros to reduce skipping copy+paste
-> >    KVM: selftests: Sanity check input to ioctls() at build time
-> > 
-> >   Documentation/virt/kvm/api.rst                |    4 +-
-> >   .../selftests/kvm/aarch64/arch_timer.c        |   79 +-
-> >   .../selftests/kvm/aarch64/debug-exceptions.c  |   22 +-
-> >   .../selftests/kvm/aarch64/get-reg-list.c      |   29 +-
-> >   .../selftests/kvm/aarch64/hypercalls.c        |   90 +-
-> >   .../testing/selftests/kvm/aarch64/psci_test.c |   69 +-
-> >   .../selftests/kvm/aarch64/vcpu_width_config.c |   71 +-
-> >   .../testing/selftests/kvm/aarch64/vgic_init.c |  379 +++---
-> >   .../testing/selftests/kvm/aarch64/vgic_irq.c  |   40 +-
-> >   .../selftests/kvm/access_tracking_perf_test.c |   92 +-
-> >   .../selftests/kvm/demand_paging_test.c        |   49 +-
-> >   .../selftests/kvm/dirty_log_perf_test.c       |   51 +-
-> >   tools/testing/selftests/kvm/dirty_log_test.c  |   95 +-
-> >   .../selftests/kvm/hardware_disable_test.c     |   29 +-
-> >   .../selftests/kvm/include/aarch64/processor.h |   28 +-
-> >   .../selftests/kvm/include/aarch64/vgic.h      |    6 +-
-> >   .../selftests/kvm/include/kvm_util_base.h     |  743 ++++++++---
-> >   .../selftests/kvm/include/perf_test_util.h    |    5 +-
-> >   .../selftests/kvm/include/riscv/processor.h   |   20 -
-> >   .../testing/selftests/kvm/include/test_util.h |    9 +
-> >   .../selftests/kvm/include/ucall_common.h      |    2 +-
-> >   .../selftests/kvm/include/x86_64/evmcs.h      |    2 +-
-> >   .../selftests/kvm/include/x86_64/processor.h  |  109 +-
-> >   .../selftests/kvm/kvm_binary_stats_test.c     |   31 +-
-> >   .../selftests/kvm/kvm_create_max_vcpus.c      |   10 +-
-> >   .../selftests/kvm/kvm_page_table_test.c       |   66 +-
-> >   .../selftests/kvm/lib/aarch64/processor.c     |   81 +-
-> >   .../testing/selftests/kvm/lib/aarch64/ucall.c |    9 +-
-> >   .../testing/selftests/kvm/lib/aarch64/vgic.c  |   54 +-
-> >   tools/testing/selftests/kvm/lib/elf.c         |    1 -
-> >   tools/testing/selftests/kvm/lib/guest_modes.c |    6 +-
-> >   tools/testing/selftests/kvm/lib/kvm_util.c    | 1104 +++--------------
-> >   .../selftests/kvm/lib/kvm_util_internal.h     |  128 --
-> >   .../selftests/kvm/lib/perf_test_util.c        |   84 +-
-> >   .../selftests/kvm/lib/riscv/processor.c       |  111 +-
-> >   tools/testing/selftests/kvm/lib/riscv/ucall.c |   14 +-
-> >   .../kvm/lib/s390x/diag318_test_handler.c      |   11 +-
-> >   .../selftests/kvm/lib/s390x/processor.c       |   44 +-
-> >   tools/testing/selftests/kvm/lib/s390x/ucall.c |    8 +-
-> >   .../selftests/kvm/lib/x86_64/processor.c      |  533 +++-----
-> >   tools/testing/selftests/kvm/lib/x86_64/svm.c  |    6 +-
-> >   .../testing/selftests/kvm/lib/x86_64/ucall.c  |   10 +-
-> >   tools/testing/selftests/kvm/lib/x86_64/vmx.c  |   16 +-
-> >   .../selftests/kvm/max_guest_memory_test.c     |   53 +-
-> >   .../kvm/memslot_modification_stress_test.c    |   13 +-
-> >   .../testing/selftests/kvm/memslot_perf_test.c |   28 +-
-> >   tools/testing/selftests/kvm/rseq_test.c       |   22 +-
-> >   tools/testing/selftests/kvm/s390x/memop.c     |   93 +-
-> >   tools/testing/selftests/kvm/s390x/resets.c    |  140 ++-
-> >   .../selftests/kvm/s390x/sync_regs_test.c      |   45 +-
-> >   tools/testing/selftests/kvm/s390x/tprot.c     |   25 +-
-> >   .../selftests/kvm/set_memory_region_test.c    |   43 +-
-> >   tools/testing/selftests/kvm/steal_time.c      |  120 +-
-> >   .../kvm/system_counter_offset_test.c          |   35 +-
-> >   tools/testing/selftests/kvm/x86_64/amx_test.c |   56 +-
-> >   .../testing/selftests/kvm/x86_64/cpuid_test.c |   29 +-
-> >   .../kvm/x86_64/cr4_cpuid_sync_test.c          |   22 +-
-> >   .../testing/selftests/kvm/x86_64/debug_regs.c |   77 +-
-> >   .../kvm/x86_64/emulator_error_test.c          |   74 +-
-> >   .../testing/selftests/kvm/x86_64/evmcs_test.c |   61 +-
-> >   .../selftests/kvm/x86_64/fix_hypercall_test.c |   45 +-
-> >   .../kvm/x86_64/get_msr_index_features.c       |  117 +-
-> >   .../selftests/kvm/x86_64/hyperv_clock.c       |   25 +-
-> >   .../selftests/kvm/x86_64/hyperv_cpuid.c       |   34 +-
-> >   .../selftests/kvm/x86_64/hyperv_features.c    |   61 +-
-> >   .../selftests/kvm/x86_64/hyperv_svm_test.c    |   20 +-
-> >   .../selftests/kvm/x86_64/kvm_clock_test.c     |   29 +-
-> >   .../selftests/kvm/x86_64/kvm_pv_test.c        |   33 +-
-> >   .../kvm/x86_64/max_vcpuid_cap_test.c          |   28 +-
-> >   .../selftests/kvm/x86_64/mmio_warning_test.c  |   16 +-
-> >   .../selftests/kvm/x86_64/mmu_role_test.c      |   30 +-
-> >   .../selftests/kvm/x86_64/platform_info_test.c |   51 +-
-> >   .../kvm/x86_64/pmu_event_filter_test.c        |   97 +-
-> >   .../selftests/kvm/x86_64/set_boot_cpu_id.c    |   91 +-
-> >   .../selftests/kvm/x86_64/set_sregs_test.c     |   47 +-
-> >   .../selftests/kvm/x86_64/sev_migrate_tests.c  |  120 +-
-> >   tools/testing/selftests/kvm/x86_64/smm_test.c |   37 +-
-> >   .../testing/selftests/kvm/x86_64/state_test.c |   29 +-
-> >   .../selftests/kvm/x86_64/svm_int_ctl_test.c   |   21 +-
-> >   .../kvm/x86_64/svm_nested_soft_inject_test.c  |   17 +-
-> >   .../selftests/kvm/x86_64/svm_vmcall_test.c    |   16 +-
-> >   .../selftests/kvm/x86_64/sync_regs_test.c     |   62 +-
-> >   .../kvm/x86_64/triple_fault_event_test.c      |   39 +-
-> >   .../selftests/kvm/x86_64/tsc_msrs_test.c      |   35 +-
-> >   .../selftests/kvm/x86_64/tsc_scaling_sync.c   |   25 +-
-> >   .../selftests/kvm/x86_64/userspace_io_test.c  |   18 +-
-> >   .../kvm/x86_64/userspace_msr_exit_test.c      |  187 ++-
-> >   .../kvm/x86_64/vmx_apic_access_test.c         |   27 +-
-> >   .../kvm/x86_64/vmx_close_while_nested_test.c  |   17 +-
-> >   .../selftests/kvm/x86_64/vmx_dirty_log_test.c |   13 +-
-> >   .../vmx_exception_with_invalid_guest_state.c  |   68 +-
-> >   .../x86_64/vmx_invalid_nested_guest_state.c   |   18 +-
-> >   .../kvm/x86_64/vmx_nested_tsc_scaling_test.c  |   29 +-
-> >   .../selftests/kvm/x86_64/vmx_pmu_caps_test.c  |   48 +-
-> >   .../kvm/x86_64/vmx_preemption_timer_test.c    |   35 +-
-> >   .../kvm/x86_64/vmx_set_nested_state_test.c    |   91 +-
-> >   .../kvm/x86_64/vmx_tsc_adjust_test.c          |   13 +-
-> >   .../selftests/kvm/x86_64/xapic_ipi_test.c     |   48 +-
-> >   .../selftests/kvm/x86_64/xapic_state_test.c   |   60 +-
-> >   .../selftests/kvm/x86_64/xen_shinfo_test.c    |   73 +-
-> >   .../selftests/kvm/x86_64/xen_vmcall_test.c    |   25 +-
-> >   .../selftests/kvm/x86_64/xss_msr_test.c       |   56 +-
-> >   102 files changed, 3059 insertions(+), 4178 deletions(-)
-> >   delete mode 100644 tools/testing/selftests/kvm/lib/kvm_util_internal.h
-> > 
-> > 
-> > base-commit: 55371f1d0c01357f29da613f7525c3f252320bbf
-> 
+> ...
+>
+> --- a/include/uapi/linux/swab.h
+> +++ b/include/uapi/linux/swab.h
+> @@ -102,7 +102,7 @@ static inline __attribute_const__ __u32 __fswahb32(__u32 val)
+>  #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+>  #else
+>  #define __swab16(x)				\
+> -	(__builtin_constant_p((__u16)(x)) ?	\
+> +	(__u16)(__builtin_constant_p((__u16)(x)) ?	\
+>  	___constant_swab16(x) :			\
+>  	__fswab16(x))
+>  #endif
+
+More explanation, please?  Both ___constant_swab16() and __fswab16()
+return __u16, so why does this patch have any effect?
+
