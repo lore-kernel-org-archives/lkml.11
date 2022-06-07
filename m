@@ -2,104 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A1DCCA496
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 111E5CCA49C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387636AbiFHBFW (ORCPT
+        id S1390221AbiFHBGH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:05:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36148 "EHLO
+        Tue, 7 Jun 2022 21:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381831AbiFGWnn (ORCPT
+        with ESMTP id S1449430AbiFGXJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:43:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 874D8295671
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:34:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654630448;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8PKbb/kNEHwMbrLFgS7c+rz5+fFiqO5VtrkEPhcXyas=;
-        b=dcCS9yq2cyK+nCEsjpJ9n+HLeHaoxfc/21UG2yhOnPqc78F0AOSA6LlnS4O2uaiRRn1mxV
-        q5knIgMOrfyzlp1By9c6+ZAENsS22gOYUS0VCg21ftPCS0YFKEHDqJiOjxKFLM38anbOxk
-        ZxOBQUQNqX/v7uDOY9VSEGwRGTxcdUE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-210-030H7GMpPe2RsCwIeRuufg-1; Tue, 07 Jun 2022 15:34:05 -0400
-X-MC-Unique: 030H7GMpPe2RsCwIeRuufg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 23B20106657E;
-        Tue,  7 Jun 2022 19:32:39 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.9.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 415FE26AF43C;
-        Tue,  7 Jun 2022 19:32:10 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [RESEND RFC 05/18] drm/display/dp_mst: Fix confusing docs for drm_dp_atomic_release_time_slots()
-Date:   Tue,  7 Jun 2022 15:29:20 -0400
-Message-Id: <20220607192933.1333228-6-lyude@redhat.com>
-In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
-References: <20220607192933.1333228-1-lyude@redhat.com>
+        Tue, 7 Jun 2022 19:09:48 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD2D1F5C5B;
+        Tue,  7 Jun 2022 13:46:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1654634754;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=5EXmhbBINWAX1iJ92pS7nRFv8qfOOWqr79b/Dpdp51E=;
+    b=RqreEK8DAmvUJvJ+ZocucZMHU5ApuzIv6BBlLrDYNCq2tol28Ufq+0FCXsxOi8hROq
+    u2P9DJcs5VvkzDl484gXs708gmuPH9TOKrNAktktNEGSe4YMoBeFUetV3Uwh6cSpbkgS
+    W6qOxhaiGU59jA7TaPCbzHolCR9YwrCjWR0CAo2SLEQjkk2FCvXD4+YC/SnvfafiR9NJ
+    IBgxLOnC+giORLI2KzB9xqpyJCEhk52LUuMnfJKYI5lb9zkwv1uhpBaAv3isxjBmCBvl
+    Bu7q171l+S59nA6AhvsoKSazrV1dsPrMD0R11wGZAKNDsilF/oFl282SDgevJogt3dBC
+    sZxQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1q3DbdV+Ofo7wY7W6Qxgy"
+X-RZG-CLASS-ID: mo00
+Received: from [172.20.10.8]
+    by smtp.strato.de (RZmta 47.45.0 DYNA|AUTH)
+    with ESMTPSA id R0691fy57Kjq8cw
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 7 Jun 2022 22:45:52 +0200 (CEST)
+Subject: Re: [RFC PATCH 05/13] can: slcan: simplify the device de-allocation
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
+ <20220607094752.1029295-6-dario.binacchi@amarulasolutions.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <f03bf100-c53e-75e4-55f6-47db7c5a37c2@hartkopp.net>
+Date:   Tue, 7 Jun 2022 22:45:52 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+In-Reply-To: <20220607094752.1029295-6-dario.binacchi@amarulasolutions.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For some reason we mention returning 0 if "slots have been added back to
-drm_dp_mst_topology_state->avail_slots". This is totally misleading,
-avail_slots is simply for figuring out the total number of slots available
-in total on the topology and has no relation to the current payload
-allocations.
+On 07.06.22 11:47, Dario Binacchi wrote:
+> Since slcan_devs array contains the addresses of the created devices, I
+> think it is more natural to use its address to remove it from the list.
+> It is not necessary to store the index of the array that points to the
+> device in the driver's private data.
 
-So, let's get rid of that comment.
+IMO this patch should not be part of the slcan enhancement series.
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: Wayne Lin <Wayne.Lin@amd.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Imre Deak <imre.deak@intel.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sean Paul <sean@poorly.run>
----
- drivers/gpu/drm/display/drm_dp_mst_topology.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+I can see the "miss-use" of dev->base_addr but when we change this code 
+we should also take care of a similar handling in drivers/net/slip/slip.c
 
-diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-index 702ff5d9ecc7..ec52f91b1f0e 100644
---- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-@@ -4467,8 +4467,7 @@ EXPORT_SYMBOL(drm_dp_atomic_find_time_slots);
-  * drm_dp_mst_atomic_check()
-  *
-  * Returns:
-- * 0 if all slots for this port were added back to
-- * &drm_dp_mst_topology_state.avail_slots or negative error code
-+ * 0 on success, negative error code otherwise
-  */
- int drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
- 				     struct drm_dp_mst_topology_mgr *mgr,
--- 
-2.35.3
+Therefore a change like this should be done in slcan.c and slip.c 
+simultaneously with a single patch.
 
+Best regards,
+Oliver
+
+> 
+> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+> ---
+> 
+>   drivers/net/can/slcan.c | 15 ++++++++++-----
+>   1 file changed, 10 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
+> index 956b47bd40a7..4df0455e11a2 100644
+> --- a/drivers/net/can/slcan.c
+> +++ b/drivers/net/can/slcan.c
+> @@ -428,11 +428,17 @@ static int slc_open(struct net_device *dev)
+>   
+>   static void slc_dealloc(struct slcan *sl)
+>   {
+> -	int i = sl->dev->base_addr;
+> +	unsigned int i;
+>   
+> -	free_candev(sl->dev);
+> -	if (slcan_devs)
+> -		slcan_devs[i] = NULL;
+> +	for (i = 0; i < maxdev; i++) {
+> +		if (sl->dev == slcan_devs[i]) {
+> +			free_candev(sl->dev);
+> +			slcan_devs[i] = NULL;
+> +			return;
+> +		}
+> +	}
+> +
+> +	pr_err("slcan: can't free %s resources\n",  sl->dev->name);
+>   }
+>   
+>   static int slcan_change_mtu(struct net_device *dev, int new_mtu)
+> @@ -529,7 +535,6 @@ static struct slcan *slc_alloc(void)
+>   
+>   	snprintf(dev->name, sizeof(dev->name), "slcan%d", i);
+>   	dev->netdev_ops = &slc_netdev_ops;
+> -	dev->base_addr  = i;
+>   	sl = netdev_priv(dev);
+>   
+>   	/* Initialize channel control data */
+> 
