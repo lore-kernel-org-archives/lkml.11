@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0E4CCA494
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:28:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0CBCCA492
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376878AbiFGU2M (ORCPT
+        id S1376720AbiFGU1x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:28:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41032 "EHLO
+        Tue, 7 Jun 2022 16:27:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356081AbiFGTiL (ORCPT
+        with ESMTP id S1355788AbiFGTh1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:38:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDE536B41;
-        Tue,  7 Jun 2022 11:13:46 -0700 (PDT)
+        Tue, 7 Jun 2022 15:37:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6AE1ACE59;
+        Tue,  7 Jun 2022 11:13:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52823B8233E;
-        Tue,  7 Jun 2022 18:13:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA9C0C385A2;
-        Tue,  7 Jun 2022 18:13:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4541A60B40;
+        Tue,  7 Jun 2022 18:13:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A5CDC385A5;
+        Tue,  7 Jun 2022 18:13:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625623;
-        bh=RBHz7ZF803gdhje7BfbRLZ/t4QWWO44yiiVcusiMfKc=;
+        s=korg; t=1654625614;
+        bh=TnwKBiTsdywjWBvo4etmkA3PVCDA8nmjb3JIB7ssesM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TL0l+30vNG0w0chT0Xfi0uoblNd/koIzJp2icW0++y6LGfhak6rm/4d6rVkBZ+Sqo
-         o9Uxqx5YgtcZkerv3i5LP3rqcAqnSu7HwU8M+v1W1tFJI4KbOLrKjBiQgKpvWZjgtp
-         DorllSATjIXZddZvHsDpj4ixEeZBBojMbiOE1Ag4=
+        b=WWU9uhgAxqO5Sg227jhRmA6RqYCA2zeTj89H/PG+xcwR8vkBH5gUtYCT2Z9rpSYdA
+         MkP08N9OVu1472sW/3v12w1TAEYUi4HBwyvmyOnhzXHVhLdo6jQN7nmNVjPc494U56
+         vIOH/nCyzur2o99Ye1AFcqDUIG2jVO9fopBIevfs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Len Brown <len.brown@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 077/772] tools/power turbostat: fix ICX DRAM power numbers
-Date:   Tue,  7 Jun 2022 18:54:29 +0200
-Message-Id: <20220607164951.309194275@linuxfoundation.org>
+        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.17 040/772] ptrace/xtensa: Replace PT_SINGLESTEP with TIF_SINGLESTEP
+Date:   Tue,  7 Jun 2022 18:53:52 +0200
+Message-Id: <20220607164950.206348898@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,34 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Len Brown <len.brown@intel.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-[ Upstream commit 6397b6418935773a34b533b3348b03f4ce3d7050 ]
+commit 4a3d2717d140401df7501a95e454180831a0c5af upstream.
 
-ICX (and its duplicates) require special hard-coded DRAM RAPL units,
-rather than using the generic RAPL energy units.
+xtensa is the last user of the PT_SINGLESTEP flag.  Changing tsk->ptrace in
+user_enable_single_step and user_disable_single_step without locking could
+potentiallly cause problems.
 
-Reported-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Signed-off-by: Len Brown <len.brown@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+So use a thread info flag instead of a flag in tsk->ptrace.  Use TIF_SINGLESTEP
+that xtensa already had defined but unused.
+
+Remove the definitions of PT_SINGLESTEP and PT_BLOCKSTEP as they have no more users.
+
+Cc: stable@vger.kernel.org
+Acked-by: Max Filippov <jcmvbkbc@gmail.com>
+Tested-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Oleg Nesterov <oleg@redhat.com>
+Link: https://lkml.kernel.org/r/20220505182645.497868-4-ebiederm@xmission.com
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/power/x86/turbostat/turbostat.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/xtensa/kernel/ptrace.c |    4 ++--
+ arch/xtensa/kernel/signal.c |    4 ++--
+ include/linux/ptrace.h      |    6 ------
+ 3 files changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
-index 47d3ba895d6d..4f176bbf29f4 100644
---- a/tools/power/x86/turbostat/turbostat.c
-+++ b/tools/power/x86/turbostat/turbostat.c
-@@ -4376,6 +4376,7 @@ static double rapl_dram_energy_units_probe(int model, double rapl_energy_units)
- 	case INTEL_FAM6_BROADWELL_X:	/* BDX */
- 	case INTEL_FAM6_SKYLAKE_X:	/* SKX */
- 	case INTEL_FAM6_XEON_PHI_KNL:	/* KNL */
-+	case INTEL_FAM6_ICELAKE_X:	/* ICX */
- 		return (rapl_dram_energy_units = 15.3 / 1000000);
- 	default:
- 		return (rapl_energy_units);
--- 
-2.35.1
-
+--- a/arch/xtensa/kernel/ptrace.c
++++ b/arch/xtensa/kernel/ptrace.c
+@@ -226,12 +226,12 @@ const struct user_regset_view *task_user
+ 
+ void user_enable_single_step(struct task_struct *child)
+ {
+-	child->ptrace |= PT_SINGLESTEP;
++	set_tsk_thread_flag(child, TIF_SINGLESTEP);
+ }
+ 
+ void user_disable_single_step(struct task_struct *child)
+ {
+-	child->ptrace &= ~PT_SINGLESTEP;
++	clear_tsk_thread_flag(child, TIF_SINGLESTEP);
+ }
+ 
+ /*
+--- a/arch/xtensa/kernel/signal.c
++++ b/arch/xtensa/kernel/signal.c
+@@ -473,7 +473,7 @@ static void do_signal(struct pt_regs *re
+ 		/* Set up the stack frame */
+ 		ret = setup_frame(&ksig, sigmask_to_save(), regs);
+ 		signal_setup_done(ret, &ksig, 0);
+-		if (current->ptrace & PT_SINGLESTEP)
++		if (test_thread_flag(TIF_SINGLESTEP))
+ 			task_pt_regs(current)->icountlevel = 1;
+ 
+ 		return;
+@@ -499,7 +499,7 @@ static void do_signal(struct pt_regs *re
+ 	/* If there's no signal to deliver, we just restore the saved mask.  */
+ 	restore_saved_sigmask();
+ 
+-	if (current->ptrace & PT_SINGLESTEP)
++	if (test_thread_flag(TIF_SINGLESTEP))
+ 		task_pt_regs(current)->icountlevel = 1;
+ 	return;
+ }
+--- a/include/linux/ptrace.h
++++ b/include/linux/ptrace.h
+@@ -46,12 +46,6 @@ extern int ptrace_access_vm(struct task_
+ #define PT_EXITKILL		(PTRACE_O_EXITKILL << PT_OPT_FLAG_SHIFT)
+ #define PT_SUSPEND_SECCOMP	(PTRACE_O_SUSPEND_SECCOMP << PT_OPT_FLAG_SHIFT)
+ 
+-/* single stepping state bits (used on ARM and PA-RISC) */
+-#define PT_SINGLESTEP_BIT	31
+-#define PT_SINGLESTEP		(1<<PT_SINGLESTEP_BIT)
+-#define PT_BLOCKSTEP_BIT	30
+-#define PT_BLOCKSTEP		(1<<PT_BLOCKSTEP_BIT)
+-
+ extern long arch_ptrace(struct task_struct *child, long request,
+ 			unsigned long addr, unsigned long data);
+ extern int ptrace_readdata(struct task_struct *tsk, unsigned long src, char __user *dst, int len);
 
 
