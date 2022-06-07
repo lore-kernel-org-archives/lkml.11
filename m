@@ -2,199 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7483CCA49B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95EADCCA497
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389464AbiFHAfw (ORCPT
+        id S1389211AbiFHAfZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:35:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56568 "EHLO
+        Tue, 7 Jun 2022 20:35:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453997AbiFGXQP (ORCPT
+        with ESMTP id S1382104AbiFGWVt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:16:15 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64307212C88;
-        Tue,  7 Jun 2022 14:08:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654636138; x=1686172138;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9huLQR7ICWOJUddFIOk14WmEoo8MBEsiYlRTIituFZg=;
-  b=LGlvfpO0zn629aNvXDvf0h8HTmu1cwCRCP3KAJCZbCmIv4ILCJwDV/tm
-   aRbTu8XMchu7/8d7jQMSFDHDyqDfL4dVDMRAJaOzEa0Sqk5EclMwbevxs
-   ICYDUGE+CtloxgljOSBQy02jY+DUL2Prlf70yEq4rnnWgq9C4B74BZZ4d
-   C7q7x2K6yA81W5FDP0CUb4mPFsF4hJO7EVmPBl7x7PUg2T53HID4ZLtNF
-   DAXoWVsXTexN3SAbhyu5+/33kErwNSpvhTiyW4tASz0Y+Nj66Xd7I3i6c
-   Bu2E2bCUlY7ihZIX9c+59YykYOiPFXwBQx5+/u/3Eh5A4cOTmihbPccaL
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="274284824"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="274284824"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 14:08:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="682952350"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga002.fm.intel.com with ESMTP; 07 Jun 2022 14:08:55 -0700
-Received: from rjingar-desk5.amr.corp.intel.com (unknown [10.209.92.238])
-        by linux.intel.com (Postfix) with ESMTP id BACD2580A8B;
-        Tue,  7 Jun 2022 14:08:54 -0700 (PDT)
-From:   Rajvi Jingar <rajvi.jingar@linux.intel.com>
-To:     rafael.j.wysocki@intel.com, bhelgaas@google.com
-Cc:     rajvi.jingar@linux.intel.com, david.e.box@linux.intel.com,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH v6 2/2] PCI/PM: disable PTM on all devices
-Date:   Tue,  7 Jun 2022 14:08:52 -0700
-Message-Id: <20220607210852.475863-2-rajvi.jingar@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220607210852.475863-1-rajvi.jingar@linux.intel.com>
-References: <20220607210852.475863-1-rajvi.jingar@linux.intel.com>
+        Tue, 7 Jun 2022 18:21:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD79C26ACAF;
+        Tue,  7 Jun 2022 12:22:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABE5660906;
+        Tue,  7 Jun 2022 19:22:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2ED3C385A2;
+        Tue,  7 Jun 2022 19:22:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629725;
+        bh=wROjKPocEJBbittAMQhxhJUUWC4+PmUgeUKiA0tkmOE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=t0w4zFangu9AY/4utoyv1AKEx/QgHTAlCKYxUqX+Vxyiz7iOOMPQCJEdutYrux/Dh
+         nBtP857psSbBgHUtKx2taykubmg98WmT5wQjsQ42DURH8Bhw9PVORNH1h7WCVSzlQW
+         +yancJFOZMQlYu8sKl1zHFSW11v5BRHywLyJcjp8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
+Subject: [PATCH 5.18 793/879] drm/etnaviv: check for reaped mapping in etnaviv_iommu_unmap_gem
+Date:   Tue,  7 Jun 2022 19:05:11 +0200
+Message-Id: <20220607165025.881262493@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On receiving a PTM Request from a downstream device, if PTM is disabled
-on the root port, as per PCIe specification, such request would cause
-an Unsupported Request error. So disable PTM for any downstream devices.
-PTM state needs to be saved before disabling it to be restored later.
+From: Lucas Stach <l.stach@pengutronix.de>
 
-set ptm_enabled from 'struct pci_dev' to 0 in pci_ptm_disable() and
-it is used in pci_save_state() before saving PTM state to avoid
-double save.
+commit e168c25526cd0368af098095c2ded4a008007e1b upstream.
 
-Fixes: a697f072f5da ("PCI: Disable PTM during suspend to save power")
-Signed-off-by: Rajvi Jingar <rajvi.jingar@linux.intel.com>
-Suggested-by: David E. Box <david.e.box@linux.intel.com>
+When the mapping is already reaped the unmap must be a no-op, as we
+would otherwise try to remove the mapping twice, corrupting the involved
+data structures.
+
+Cc: stable@vger.kernel.org # 5.4
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Tested-by: Guido Günther <agx@sigxcpu.org>
+Acked-by: Guido Günther <agx@sigxcpu.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- v1 -> v2: add Fixes tag in commit message
- v2 -> v3: move changelog after "---" marker
- v3 -> v4: add "---" marker after changelog
- v4 -> v5: move pci_disable_ptm() out of the pci_dev->state_saved check.
-	   disable PTM for all devices, not just root ports.
- v5 -> v6: move pci_disable_ptm() to pci_pm_suspend()
-	   set pci_dev->ptm_enabled to 0 in pci_ptm_disable() and it is
-	   used in pci_save_state() before saving PTM state to avoid
-	   double save.
----
- drivers/pci/pci-driver.c | 21 ++++++++++++++++++++-
- drivers/pci/pci.c        | 26 +++++++++++---------------
- drivers/pci/pcie/ptm.c   |  1 +
- 3 files changed, 32 insertions(+), 16 deletions(-)
+ drivers/gpu/drm/etnaviv/etnaviv_mmu.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 1f64de3e5280..db4d7835d7ae 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -803,14 +803,33 @@ static int pci_pm_suspend(struct device *dev)
- 		pci_dev_adjust_pme(pci_dev);
- 	}
+--- a/drivers/gpu/drm/etnaviv/etnaviv_mmu.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_mmu.c
+@@ -286,6 +286,12 @@ void etnaviv_iommu_unmap_gem(struct etna
  
-+	/*
-+	 * If a PTM Requester is put in a low-power state, a PTM Responder
-+	 * upstream from it may also be put in a low-power state. Putting a
-+	 * Port in D1, D2, or D3hot does not prohibit it from sending or
-+	 * responding to PTM Requests. We want to disable PTM on Responders
-+	 * when they are in a low-power state. Per 6.21.3, a PTM Requester
-+	 * must not be enabled when the upstream PTM Responder is disabled.
-+	 * Therefore, we must disable all PTM on all downstream PTM
-+	 * Requesters before disabling it on the PTM Responder, e.g., a Root
-+	 * Port.
-+	 *
-+	 * Also, to restore the PTM state, it needs to be saved before
-+	 * disabling it for all devices.
-+	 */
-+	pci_save_ptm_state(pci_dev);
-+	pci_disable_ptm(pci_dev);
-+
- 	if (pm->suspend) {
- 		pci_power_t prev = pci_dev->current_state;
- 		int error;
+ 	mutex_lock(&context->lock);
  
- 		error = pm->suspend(dev);
- 		suspend_report_result(dev, pm->suspend, error);
--		if (error)
-+		if (error) {
-+			pci_restore_ptm_state(pci_dev);
- 			return error;
-+		}
- 
- 		if (!pci_dev->state_saved && pci_dev->current_state != PCI_D0
- 		    && pci_dev->current_state != PCI_UNKNOWN) {
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index cfaf40a540a8..0df9b783621e 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -1669,7 +1669,13 @@ int pci_save_state(struct pci_dev *dev)
- 	pci_save_ltr_state(dev);
- 	pci_save_dpc_state(dev);
- 	pci_save_aer_state(dev);
--	pci_save_ptm_state(dev);
-+	/*
-+	 * PCI PM core disables PTM during suspend and saves PTM state before
-+	 * that to be able to restore the ptm state restored later. So PCI core
-+	 * needs this check to avoid double save.
-+	 */
-+	if (dev->ptm_enabled)
-+		pci_save_ptm_state(dev);
- 	return pci_save_vc_state(dev);
- }
- EXPORT_SYMBOL(pci_save_state);
-@@ -2710,24 +2716,12 @@ int pci_prepare_to_sleep(struct pci_dev *dev)
- 	if (target_state == PCI_POWER_ERROR)
- 		return -EIO;
- 
--	/*
--	 * There are systems (for example, Intel mobile chips since Coffee
--	 * Lake) where the power drawn while suspended can be significantly
--	 * reduced by disabling PTM on PCIe root ports as this allows the
--	 * port to enter a lower-power PM state and the SoC to reach a
--	 * lower-power idle state as a whole.
--	 */
--	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
--		pci_disable_ptm(dev);
--
- 	pci_enable_wake(dev, target_state, wakeup);
- 
- 	error = pci_set_power_state(dev, target_state);
- 
--	if (error) {
-+	if (error)
- 		pci_enable_wake(dev, target_state, false);
--		pci_restore_ptm_state(dev);
--	}
- 
- 	return error;
- }
-@@ -2775,8 +2769,10 @@ int pci_finish_runtime_suspend(struct pci_dev *dev)
- 	 * port to enter a lower-power PM state and the SoC to reach a
- 	 * lower-power idle state as a whole.
- 	 */
--	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
-+	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT) {
-+		pci_save_ptm_state(dev);
- 		pci_disable_ptm(dev);
++	/* Bail if the mapping has been reaped by another thread */
++	if (!mapping->context) {
++		mutex_unlock(&context->lock);
++		return;
 +	}
- 
- 	__pci_enable_wake(dev, target_state, pci_dev_run_wake(dev));
- 
-diff --git a/drivers/pci/pcie/ptm.c b/drivers/pci/pcie/ptm.c
-index 368a254e3124..746e29779c27 100644
---- a/drivers/pci/pcie/ptm.c
-+++ b/drivers/pci/pcie/ptm.c
-@@ -44,6 +44,7 @@ void pci_disable_ptm(struct pci_dev *dev)
- 	pci_read_config_word(dev, ptm + PCI_PTM_CTRL, &ctrl);
- 	ctrl &= ~(PCI_PTM_CTRL_ENABLE | PCI_PTM_CTRL_ROOT);
- 	pci_write_config_word(dev, ptm + PCI_PTM_CTRL, ctrl);
-+	dev->ptm_enabled = 0;
- }
- 
- void pci_save_ptm_state(struct pci_dev *dev)
--- 
-2.25.1
++
+ 	/* If the vram node is on the mm, unmap and remove the node */
+ 	if (mapping->vram_node.mm == &context->mm)
+ 		etnaviv_iommu_remove_mapping(context, mapping);
+
 
