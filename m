@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEFA1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A342C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:54:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348780AbiFGRy2 (ORCPT
+        id S1348409AbiFGRyf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:54:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
+        Tue, 7 Jun 2022 13:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348409AbiFGRgU (ORCPT
+        with ESMTP id S1348415AbiFGRgU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:36:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA4C41C11C;
-        Tue,  7 Jun 2022 10:32:38 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A971EAD8;
+        Tue,  7 Jun 2022 10:32:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C029661534;
-        Tue,  7 Jun 2022 17:32:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2504C385A5;
-        Tue,  7 Jun 2022 17:32:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 49999B820C3;
+        Tue,  7 Jun 2022 17:32:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B08FDC385A5;
+        Tue,  7 Jun 2022 17:32:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623150;
-        bh=1QLzhrmPaBDasbV1MuyL7akoWZqN/JmMdcgAMgH4qjM=;
+        s=korg; t=1654623139;
+        bh=ezIWh8hccCcDbpXP8PsD5HOqPX41+iBX/icva8GXBPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IL/bBZ9lo1u/HGNvVpzvWDd8el/wP6ngKAPHx5oB1h1iOJLfFjgUVvlUWhU1ApuyI
-         SY5JFGOtfqcNBLVy7M270ee2E+khHUJz7Y2cFT8MY7uWWeJbtdayitvnFqYVEKU8+8
-         EIE3izxVuLVBtXId5YctvMh/AMreIZMHjzANT1co=
+        b=pdAr95Dkw7senLiesz/DBaETks1cShn7FrBOYG2cv5Zjh5NIfyA+ko5U7gQIVPgWq
+         iZVeE13cmQNAsBtYhA+/dR1fxxg32F+JDSLGZ8Wg8Pk1WO8lwQots04mT/EDIzr/Rv
+         SpP6hwPBe4L3NBlvHxJmdxWUi2VjJrmkuvipHpUg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 313/452] powerpc/fsl_rio: Fix refcount leak in fsl_rio_setup
-Date:   Tue,  7 Jun 2022 19:02:50 +0200
-Message-Id: <20220607164917.887571378@linuxfoundation.org>
+Subject: [PATCH 5.10 309/452] hwrng: omap3-rom - fix using wrong clk_disable() in omap_rom_rng_runtime_resume()
+Date:   Tue,  7 Jun 2022 19:02:46 +0200
+Message-Id: <20220607164917.766282515@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,38 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit fcee96924ba1596ca80a6770b2567ca546f9a482 ]
+[ Upstream commit e4e62bbc6aba49a5edb3156ec65f6698ff37d228 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+'ddata->clk' is enabled by clk_prepare_enable(), it should be disabled
+by clk_disable_unprepare().
 
-Fixes: abc3aeae3aaa ("fsl-rio: Add two ports and rapidio message units support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220512123724.62931-1-linmq006@gmail.com
+Fixes: 8d9d4bdc495f ("hwrng: omap3-rom - Use runtime PM instead of custom functions")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/fsl_rio.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/char/hw_random/omap3-rom-rng.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/sysdev/fsl_rio.c b/arch/powerpc/sysdev/fsl_rio.c
-index 07c164f7f8cf..3f9f78621cf3 100644
---- a/arch/powerpc/sysdev/fsl_rio.c
-+++ b/arch/powerpc/sysdev/fsl_rio.c
-@@ -505,8 +505,10 @@ int fsl_rio_setup(struct platform_device *dev)
- 	if (rc) {
- 		dev_err(&dev->dev, "Can't get %pOF property 'reg'\n",
- 				rmu_node);
-+		of_node_put(rmu_node);
- 		goto err_rmu;
- 	}
-+	of_node_put(rmu_node);
- 	rmu_regs_win = ioremap(rmu_regs.start, resource_size(&rmu_regs));
- 	if (!rmu_regs_win) {
- 		dev_err(&dev->dev, "Unable to map rmu register window\n");
+diff --git a/drivers/char/hw_random/omap3-rom-rng.c b/drivers/char/hw_random/omap3-rom-rng.c
+index e0d77fa048fb..f06e4f95114f 100644
+--- a/drivers/char/hw_random/omap3-rom-rng.c
++++ b/drivers/char/hw_random/omap3-rom-rng.c
+@@ -92,7 +92,7 @@ static int __maybe_unused omap_rom_rng_runtime_resume(struct device *dev)
+ 
+ 	r = ddata->rom_rng_call(0, 0, RNG_GEN_PRNG_HW_INIT);
+ 	if (r != 0) {
+-		clk_disable(ddata->clk);
++		clk_disable_unprepare(ddata->clk);
+ 		dev_err(dev, "HW init failed: %d\n", r);
+ 
+ 		return -EIO;
 -- 
 2.35.1
 
