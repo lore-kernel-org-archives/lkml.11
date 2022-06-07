@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 789C0CCA49A
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6DE2CCA489
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356658AbiFGT2D (ORCPT
+        id S1356371AbiFGT1k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60248 "EHLO
+        Tue, 7 Jun 2022 15:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351721AbiFGSd4 (ORCPT
+        with ESMTP id S1352228AbiFGSdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:33:56 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25E81483C2;
-        Tue,  7 Jun 2022 10:57:37 -0700 (PDT)
+        Tue, 7 Jun 2022 14:33:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001F2147693;
+        Tue,  7 Jun 2022 10:57:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 030A5CE2424;
-        Tue,  7 Jun 2022 17:57:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0A95C34119;
-        Tue,  7 Jun 2022 17:57:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E7A2B80B66;
+        Tue,  7 Jun 2022 17:57:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95357C385A5;
+        Tue,  7 Jun 2022 17:57:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624654;
-        bh=tXpFV1oq8s2qSwjMPFj5GjP5i35kucSjkrQzFXm++X0=;
+        s=korg; t=1654624646;
+        bh=THnhl6EqQFhS3geuRLyG54hpkwuwb34QL3RX6SGZLlM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eGxNaFes9WWENbjjaHskWx6IUxUES1FK6lHfsV4OHrv3fS9Fb6BrypvhNgN+1TEEm
-         LUrPTvGhWp6+EgmjULAkpjI/oZHug+hDKk4YcaMVgQ4jlfUsJe/zOrYiDmciFg0e+k
-         yQ1ljstf1LFrZjAfKw57URxEN8CstU+BxpLno67A=
+        b=BcAbyai9HxYjl88gtFW7NRYGxy/c562OFVlC2rPsUin7Z2HvDkNkFlMhzJ4MnFvtT
+         arCc7abFEcwF5r3c/mpsLVusrc1GB4OSoH+DZxND1c96uDZMW59YwRA3ap/5XydUSh
+         83cOn1GRRWuXdNRJmgWSLHWxtIj1qEA7dL5lUT+o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Patrick Delaunay <patrick.delaunay@foss.st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
+        stable@vger.kernel.org,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 406/667] ARM: dts: stm32: Fix PHY post-reset delay on Avenger96
-Date:   Tue,  7 Jun 2022 19:01:11 +0200
-Message-Id: <20220607164946.918592920@linuxfoundation.org>
+Subject: [PATCH 5.15 403/667] ARM: dts: imx6dl-colibri: Fix I2C pinmuxing
+Date:   Tue,  7 Jun 2022 19:01:08 +0200
+Message-Id: <20220607164946.830864356@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -53,41 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Max Krummenacher <max.krummenacher@toradex.com>
 
-[ Upstream commit ef2d90708883f4025a801feb0ba8411a7a4387e1 ]
+[ Upstream commit 5f5c579a34a87117c20b411df583ae816c1ec84f ]
 
-Per KSZ9031RNX PHY datasheet FIGURE 7-5: POWER-UP/POWER-DOWN/RESET TIMING
-Note 2: After the de-assertion of reset, wait a minimum of 100 μs before
-starting programming on the MIIM (MDC/MDIO) interface.
+Fix names of extra pingroup node and property for gpio bus recovery.
+Without the change i2c2 is not functional.
 
-Add 1ms post-reset delay to guarantee this figure.
-
-Fixes: 010ca9fe500bf ("ARM: dts: stm32: Add missing ethernet PHY reset on AV96")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Patrice Chotard <patrice.chotard@foss.st.com>
-Cc: Patrick Delaunay <patrick.delaunay@foss.st.com>
-Cc: linux-stm32@st-md-mailman.stormreply.com
-To: linux-arm-kernel@lists.infradead.org
-Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Fixes: 56f0df6b6b58 ("ARM: dts: imx*(colibri|apalis): add missing recovery modes to i2c")
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/imx6qdl-colibri.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
-index 6885948f3024..8eb51d84b698 100644
---- a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
-+++ b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
-@@ -141,6 +141,7 @@
- 		compatible = "snps,dwmac-mdio";
- 		reset-gpios = <&gpioz 2 GPIO_ACTIVE_LOW>;
- 		reset-delay-us = <1000>;
-+		reset-post-delay-us = <1000>;
+diff --git a/arch/arm/boot/dts/imx6qdl-colibri.dtsi b/arch/arm/boot/dts/imx6qdl-colibri.dtsi
+index 4e2a309c93fa..1e86b3814708 100644
+--- a/arch/arm/boot/dts/imx6qdl-colibri.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-colibri.dtsi
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0+ OR MIT
+ /*
+- * Copyright 2014-2020 Toradex
++ * Copyright 2014-2022 Toradex
+  * Copyright 2012 Freescale Semiconductor, Inc.
+  * Copyright 2011 Linaro Ltd.
+  */
+@@ -132,7 +132,7 @@
+ 	clock-frequency = <100000>;
+ 	pinctrl-names = "default", "gpio";
+ 	pinctrl-0 = <&pinctrl_i2c2>;
+-	pinctrl-0 = <&pinctrl_i2c2_gpio>;
++	pinctrl-1 = <&pinctrl_i2c2_gpio>;
+ 	scl-gpios = <&gpio2 30 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 	sda-gpios = <&gpio3 16 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 	status = "okay";
+@@ -488,7 +488,7 @@
+ 		>;
+ 	};
  
- 		phy0: ethernet-phy@7 {
- 			reg = <7>;
+-	pinctrl_i2c2_gpio: i2c2grp {
++	pinctrl_i2c2_gpio: i2c2gpiogrp {
+ 		fsl,pins = <
+ 			MX6QDL_PAD_EIM_EB2__GPIO2_IO30 0x4001b8b1
+ 			MX6QDL_PAD_EIM_D16__GPIO3_IO16 0x4001b8b1
 -- 
 2.35.1
 
