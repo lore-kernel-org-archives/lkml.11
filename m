@@ -2,55 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82429CCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6438CCA48C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350399AbiFGSBA (ORCPT
+        id S1350688AbiFGSBW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45606 "EHLO
+        Tue, 7 Jun 2022 14:01:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348505AbiFGRk7 (ORCPT
+        with ESMTP id S1347924AbiFGRk1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:40:59 -0400
+        Tue, 7 Jun 2022 13:40:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DF31203D0;
-        Tue,  7 Jun 2022 10:34:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7964251E4E;
+        Tue,  7 Jun 2022 10:33:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 712F66146F;
-        Tue,  7 Jun 2022 17:33:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53325C385A5;
-        Tue,  7 Jun 2022 17:33:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 631A96157E;
+        Tue,  7 Jun 2022 17:33:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65E68C385A5;
+        Tue,  7 Jun 2022 17:33:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623205;
-        bh=JCm1b5N3/b9pAm8ZufeikkbDqu9hOtf7zipRZfAqLTk=;
+        s=korg; t=1654623194;
+        bh=KavjZZV0bIj4DVUZb0ZsmOdEv1CW+hkrMyeN9GTAGUA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LuFNdH21E/m1FQFE9IHlzPz0yKCRToqu2wkx3bfd3j2OGZi39OyPTEqw81Hr0Yqae
-         CvBk0AFzrBksSLVSsl8DaQ/XG6xOyhb4eOO0zay0/esumJv7pVNWKBBSVwhp+SIgmz
-         GVMtyY7Gd3eZ6BY5GpJwdhffyHHtIco7Hui3/Qtk=
+        b=tiEiW3IdCCH+YFNu0RInEQxeXnzXJdYix9PnZreUoGroCuh2Mr9yDniJty5th9S4I
+         lXDTwZPRwqm3c7tXMkoB1t5P70hfDvGztSrOBowz6gLTXqq5H2xcUlIvThf1p0/7Tx
+         COLtA1sanVw+hbXCFwnU4Co9pKGd0j49N1YhHFkI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Alistair Popple <apopple@nvidia.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Ross Zwisler <zwisler@kernel.org>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Yang Shi <shy828301@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 292/452] dax: fix cache flush on PMD-mapped pages
-Date:   Tue,  7 Jun 2022 19:02:29 +0200
-Message-Id: <20220607164917.253007588@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 327/452] dmaengine: idxd: Fix the error handling path in idxd_cdev_register()
+Date:   Tue,  7 Jun 2022 19:03:04 +0200
+Message-Id: <20220607164918.305423046@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -62,56 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit e583b5c472bd23d450e06f148dc1f37be74f7666 ]
+[ Upstream commit aab08c1aac01097815fbcf10fce7021d2396a31f ]
 
-The flush_cache_page() only remove a PAGE_SIZE sized range from the cache.
-However, it does not cover the full pages in a THP except a head page.
-Replace it with flush_cache_range() to fix this issue.  This is just a
-documentation issue with the respect to properly documenting the expected
-usage of cache flushing before modifying the pmd.  However, in practice
-this is not a problem due to the fact that DAX is not available on
-architectures with virtually indexed caches per:
+If a call to alloc_chrdev_region() fails, the already allocated resources
+are leaking.
 
-  commit d92576f1167c ("dax: does not work correctly with virtual aliasing caches")
+Add the needed error handling path to fix the leak.
 
-Link: https://lkml.kernel.org/r/20220403053957.10770-3-songmuchun@bytedance.com
-Fixes: f729c8c9b24f ("dax: wrprotect pmd_t in dax_mapping_entry_mkclean")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Cc: Alistair Popple <apopple@nvidia.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: Jan Kara <jack@suse.cz>
-Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Ralph Campbell <rcampbell@nvidia.com>
-Cc: Ross Zwisler <zwisler@kernel.org>
-Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
-Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Cc: Yang Shi <shy828301@gmail.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 42d279f9137a ("dmaengine: idxd: add char driver to expose submission portal to userland")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: Dave Jiang <dave.jiang@intel.com>
+Link: https://lore.kernel.org/r/1b5033dcc87b5f2a953c413f0306e883e6114542.1650521591.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dax.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/dma/idxd/cdev.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/fs/dax.c b/fs/dax.c
-index d5d7b9393bca..3e7e9a57fd28 100644
---- a/fs/dax.c
-+++ b/fs/dax.c
-@@ -846,7 +846,8 @@ static void dax_entry_mkclean(struct address_space *mapping, pgoff_t index,
- 			if (!pmd_dirty(*pmdp) && !pmd_write(*pmdp))
- 				goto unlock_pmd;
+diff --git a/drivers/dma/idxd/cdev.c b/drivers/dma/idxd/cdev.c
+index 4da88578ed64..ae65eb90afab 100644
+--- a/drivers/dma/idxd/cdev.c
++++ b/drivers/dma/idxd/cdev.c
+@@ -266,10 +266,16 @@ int idxd_cdev_register(void)
+ 		rc = alloc_chrdev_region(&ictx[i].devt, 0, MINORMASK,
+ 					 ictx[i].name);
+ 		if (rc)
+-			return rc;
++			goto err_free_chrdev_region;
+ 	}
  
--			flush_cache_page(vma, address, pfn);
-+			flush_cache_range(vma, address,
-+					  address + HPAGE_PMD_SIZE);
- 			pmd = pmdp_invalidate(vma, address, pmdp);
- 			pmd = pmd_wrprotect(pmd);
- 			pmd = pmd_mkclean(pmd);
+ 	return 0;
++
++err_free_chrdev_region:
++	for (i--; i >= 0; i--)
++		unregister_chrdev_region(ictx[i].devt, MINORMASK);
++
++	return rc;
+ }
+ 
+ void idxd_cdev_remove(void)
 -- 
 2.35.1
 
