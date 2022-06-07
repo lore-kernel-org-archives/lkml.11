@@ -2,91 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F83C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:49:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70DCBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:49:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344101AbiFGRt1 (ORCPT
+        id S1348253AbiFGRti (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:49:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45008 "EHLO
+        Tue, 7 Jun 2022 13:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348345AbiFGRbs (ORCPT
+        with ESMTP id S1347875AbiFGRbU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D20118D36;
-        Tue,  7 Jun 2022 10:29:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAA966141D;
-        Tue,  7 Jun 2022 17:29:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4D63C385A5;
-        Tue,  7 Jun 2022 17:29:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622994;
-        bh=BO7AsIkzuJq/LyBQnxRVARJMcVC87NSfKdu5qmRPUSs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2fuX3YtGtaiBa2X/bClZTqyHbEpjP1NHVkBRSjfWY/u8vsNPFx3WeZK9BCOtXJ7fg
-         AZMuDW8//0M9tv57owymDu3smhCkFIjTmhOFON//8woqQ/8WUcHrAME1LyP3D2rB3l
-         3mRvQZHlReUQWP4vFoDBpkj5zghFpLT+X6oVPy8g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shawn Lin <shawn.lin@rock-chips.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 258/452] arm64: dts: rockchip: Move drive-impedance-ohm to emmc phy on rk3399
-Date:   Tue,  7 Jun 2022 19:01:55 +0200
-Message-Id: <20220607164916.244509210@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
-References: <20220607164908.521895282@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 13:31:20 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B95A11469E
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:28:40 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-31332df12a6so35579037b3.4
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:28:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7rYLYDe80leH68JeXvH0gMR/2Fmm2d87F6uzTt2pDIM=;
+        b=HYlFKKTCVa93BZYhT6TxJ+x/USTpqJ/7Br94kTb9fWRan1dSpVoztuo1fRWt1T2KCH
+         1nU2eNJzrBr2D5nnRP28LbTPlSCUw9H6nzMwsDGoQALupB1swupdNFxFltBegYWSVQrC
+         qlOJ+aUvtGgyT7oz2n+nfdLhkcbWCfI0X7G4ib83LbaRm+figmlx8wymkW1JkBDFSxMJ
+         4afp6SCGn/O69V2UEoPnZoh98FXuOhYb658C/8ZWF4HMnO2aOt0YvDW4flgHbW3m2vyR
+         Zzyf8lCPIof03dKksgOZadwpduhXQWXQ1gcLQkHofbMIrkFytzc7+/mjhel3KMJdnds3
+         ZexA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7rYLYDe80leH68JeXvH0gMR/2Fmm2d87F6uzTt2pDIM=;
+        b=jeulMvdOlEp6eaYkxvXJxRCRHkfGUJT+zY3UhhQhFdpGbSYVYcZETBkJ2GMEOTF26R
+         8Vl0JJQeW+Hjj/n1kwBxLTnOUSRlhBDhmGsP8zAewKO+SYnXBzrkONIqlNw9l5B3fDyX
+         6y1X6HHWWGdxssZdMSe+xKE73oB8brSN5BqSH+quWn2qhUXGND0MCFTZyckjdxwFn2Ec
+         Wvp4ZOjYt+SFz+JezIDBBsWOLVMi/VRsmwD+gW7G6L2UprJNSKuzQLpOZ5jvTN3pVQla
+         l6AxIEgxVTn6Ue7bfS7+7GC4iKrCknhq7ZzvPlxVaBEDbHKZJMUuwuo6RKLLhHrjAgFj
+         7J2Q==
+X-Gm-Message-State: AOAM532mDpLRxVB3jLj7ZQsGSRe6bKJhYAoBr7DrnN8cS7vO19Dni9oY
+        E3y+irI6hyv55cJe64GtXaIEvG2+C/Cx4ZVssYPpYg==
+X-Google-Smtp-Source: ABdhPJwhe6eTXmsaYuozzlw5/bcPNSakjdg8PilLKL1XuLwlc3FBrHJdRi2+PAGvz5p/+mSNyQPuI/0hQmwPHWTyxiY=
+X-Received: by 2002:a81:b401:0:b0:300:2e86:e7e5 with SMTP id
+ h1-20020a81b401000000b003002e86e7e5mr31623346ywi.467.1654622919171; Tue, 07
+ Jun 2022 10:28:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220607161627.25035-1-xiaohuizhang@ruc.edu.cn>
+In-Reply-To: <20220607161627.25035-1-xiaohuizhang@ruc.edu.cn>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 7 Jun 2022 10:28:27 -0700
+Message-ID: <CANn89iLwEFrb7q2ifqRxc2nvi_-YOwQpdFf0X1N5AH_wSSZ48Q@mail.gmail.com>
+Subject: Re: [PATCH 2/2] l2tp: fix possible use-after-free
+To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Xin Xiong <xiongx18@fudan.edu.cn>,
+        Tom Parkin <tparkin@katalix.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shawn Lin <shawn.lin@rock-chips.com>
+On Tue, Jun 7, 2022 at 9:16 AM Xiaohui Zhang <xiaohuizhang@ruc.edu.cn> wrote:
+>
+> We detected a suspected bug with our code clone detection tool.
+>
+> Similar to the handling of l2tp_tunnel_get in commit a622b40035d1
+> ("l2ip: fix possible use-after-free"), we thought a patch might
+> be needed here as well.
+>
+> Before taking a refcount on a rcu protected structure,
+> we need to make sure the refcount is not zero.
+>
+> Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+> ---
+>  net/l2tp/l2tp_core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+> index b759fbd09b65..c5de6d4e0818 100644
+> --- a/net/l2tp/l2tp_core.c
+> +++ b/net/l2tp/l2tp_core.c
+> @@ -273,8 +273,8 @@ struct l2tp_session *l2tp_session_get(const struct net *net, u32 session_id)
+>
+>         rcu_read_lock_bh();
+>         hlist_for_each_entry_rcu(session, session_list, global_hlist)
+> -               if (session->session_id == session_id) {
+> -                       l2tp_session_inc_refcount(session);
+> +               if (session->session_id == session_id &&
+> +                   refcount_inc_not_zero(&session->ref_count)) {
+>                         rcu_read_unlock_bh();
+>
+>                         return session;
+> --
+> 2.17.1
+>
 
-[ Upstream commit 4246d0bab2a8685e3d4aec2cb0ef8c526689ce96 ]
+Please fix all bugs in a single patch.
 
-drive-impedance-ohm is introduced for emmc phy instead of pcie phy.
-
-Fixes: fb8b7460c995 ("arm64: dts: rockchip: Define drive-impedance-ohm for RK3399's emmc-phy.")
-Signed-off-by: Shawn Lin <shawn.lin@rock-chips.com>
-Link: https://lore.kernel.org/r/1647336426-154797-1-git-send-email-shawn.lin@rock-chips.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm64/boot/dts/rockchip/rk3399.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 52ba4d07e771..c5f3d4f8f4d2 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1471,6 +1471,7 @@
- 			reg = <0xf780 0x24>;
- 			clocks = <&sdhci>;
- 			clock-names = "emmcclk";
-+			drive-impedance-ohm = <50>;
- 			#phy-cells = <0>;
- 			status = "disabled";
- 		};
-@@ -1481,7 +1482,6 @@
- 			clock-names = "refclk";
- 			#phy-cells = <1>;
- 			resets = <&cru SRST_PCIEPHY>;
--			drive-impedance-ohm = <50>;
- 			reset-names = "phy";
- 			status = "disabled";
- 		};
--- 
-2.35.1
-
-
-
+net/l2tp/l2tp_core.c contains four suspect calls to l2tp_session_inc_refcount()
