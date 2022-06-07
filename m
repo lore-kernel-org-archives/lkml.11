@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92646CCA488
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3542C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350443AbiFGSBN (ORCPT
+        id S1351137AbiFGSBo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:01:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56532 "EHLO
+        Tue, 7 Jun 2022 14:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348449AbiFGRku (ORCPT
+        with ESMTP id S1347692AbiFGRl5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:40:50 -0400
+        Tue, 7 Jun 2022 13:41:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C757B11E1F9;
-        Tue,  7 Jun 2022 10:34:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688A5127183;
+        Tue,  7 Jun 2022 10:34:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B505761529;
-        Tue,  7 Jun 2022 17:33:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5395C34115;
-        Tue,  7 Jun 2022 17:33:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1788F60DB5;
+        Tue,  7 Jun 2022 17:34:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D498C36B01;
+        Tue,  7 Jun 2022 17:34:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623233;
-        bh=vnwChNBOdh6tUryNRu/r5Jb4hlIvjwDrBDcGwOI4arg=;
+        s=korg; t=1654623249;
+        bh=iAhzv6COI/nHTO6HlQRmz2H0BLgcxPcMNLfg+h3M7+s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0RIG0H6w16Znh74AHSoW1tChc0ap2nr7rmPYtUY7hEk9lzB0aQ+6m21tNWkOtC2AX
-         6ROIQNKRnSi4XffC+o0MUeO5Wz5ugqW1JY+pMba6P2REWyOMLKs49AlyvDQSgBQo9i
-         s0M4oOVd7pjxN3pJQcTLoNuBhYhm8o0YwzCcbeh0=
+        b=wV2Nhrgu4jCI+97HaYdu3vkIgGSNDPn/7VUerFx9Jjs624hD1puUi6E2QWMD3B838
+         TRwUFR4jr77LscvD9kHKKrx9Mm141W6NL83JHcNkS2sKvqNmTrQC1T5pgSepk9UIuI
+         wfVA3v7kctbtTmgL3vXVecM4xTb4OG74gFbAj3AE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        stable@vger.kernel.org, stable@kernel.org,
         Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.10 344/452] f2fs: fix to avoid f2fs_bug_on() in dec_valid_node_count()
-Date:   Tue,  7 Jun 2022 19:03:21 +0200
-Message-Id: <20220607164918.808580445@linuxfoundation.org>
+Subject: [PATCH 5.10 350/452] f2fs: fix fallocate to use file_modified to update permissions consistently
+Date:   Tue,  7 Jun 2022 19:03:27 +0200
+Message-Id: <20220607164918.988203056@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,66 +51,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Chao Yu <chao@kernel.org>
 
-commit 4d17e6fe9293d57081ffdc11e1cf313e25e8fd9e upstream.
+commit 958ed92922028ec67f504dcdc72bfdfd0f43936a upstream.
 
-As Yanming reported in bugzilla:
+This patch tries to fix permission consistency issue as all other
+mainline filesystems.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215897
+Since the initial introduction of (posix) fallocate back at the turn of
+the century, it has been possible to use this syscall to change the
+user-visible contents of files.  This can happen by extending the file
+size during a preallocation, or through any of the newer modes (punch,
+zero, collapse, insert range).  Because the call can be used to change
+file contents, we should treat it like we do any other modification to a
+file -- update the mtime, and drop set[ug]id privileges/capabilities.
 
-I have encountered a bug in F2FS file system in kernel v5.17.
+The VFS function file_modified() does all this for us if pass it a
+locked inode, so let's make fallocate drop permissions correctly.
 
-The kernel should enable CONFIG_KASAN=y and CONFIG_KASAN_INLINE=y. You can
-reproduce the bug by running the following commands:
-
-The kernel message is shown below:
-
-kernel BUG at fs/f2fs/f2fs.h:2511!
-Call Trace:
- f2fs_remove_inode_page+0x2a2/0x830
- f2fs_evict_inode+0x9b7/0x1510
- evict+0x282/0x4e0
- do_unlinkat+0x33a/0x540
- __x64_sys_unlinkat+0x8e/0xd0
- do_syscall_64+0x3b/0x90
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The root cause is: .total_valid_block_count or .total_valid_node_count
-could fuzzed to zero, then once dec_valid_node_count() was called, it
-will cause BUG_ON(), this patch fixes to print warning info and set
-SBI_NEED_FSCK into CP instead of panic.
-
-Cc: stable@vger.kernel.org
-Reported-by: Ming Yan <yanming@tju.edu.cn>
+Cc: stable@kernel.org
 Signed-off-by: Chao Yu <chao.yu@oppo.com>
 Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/f2fs.h |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ fs/f2fs/file.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -2284,11 +2284,17 @@ static inline void dec_valid_node_count(
- {
- 	spin_lock(&sbi->stat_lock);
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -1744,6 +1744,10 @@ static long f2fs_fallocate(struct file *
  
--	f2fs_bug_on(sbi, !sbi->total_valid_block_count);
--	f2fs_bug_on(sbi, !sbi->total_valid_node_count);
-+	if (unlikely(!sbi->total_valid_block_count ||
-+			!sbi->total_valid_node_count)) {
-+		f2fs_warn(sbi, "dec_valid_node_count: inconsistent block counts, total_valid_block:%u, total_valid_node:%u",
-+			  sbi->total_valid_block_count,
-+			  sbi->total_valid_node_count);
-+		set_sbi_flag(sbi, SBI_NEED_FSCK);
-+	} else {
-+		sbi->total_valid_block_count--;
-+		sbi->total_valid_node_count--;
-+	}
+ 	inode_lock(inode);
  
--	sbi->total_valid_node_count--;
--	sbi->total_valid_block_count--;
- 	if (sbi->reserved_blocks &&
- 		sbi->current_reserved_blocks < sbi->reserved_blocks)
- 		sbi->current_reserved_blocks++;
++	ret = file_modified(file);
++	if (ret)
++		goto out;
++
+ 	if (mode & FALLOC_FL_PUNCH_HOLE) {
+ 		if (offset >= inode->i_size)
+ 			goto out;
 
 
