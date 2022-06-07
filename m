@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF77C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:38:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F5C2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359454AbiFGUis (ORCPT
+        id S1359682AbiFGUjF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:38:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
+        Tue, 7 Jun 2022 16:39:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357526AbiFGTmE (ORCPT
+        with ESMTP id S1357608AbiFGTmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:04 -0400
+        Tue, 7 Jun 2022 15:42:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5101B436A;
-        Tue,  7 Jun 2022 11:15:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00B71B5872;
+        Tue,  7 Jun 2022 11:15:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF5DE6062B;
-        Tue,  7 Jun 2022 18:15:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC066C385A2;
-        Tue,  7 Jun 2022 18:15:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7D7D608CD;
+        Tue,  7 Jun 2022 18:15:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D210DC385A2;
+        Tue,  7 Jun 2022 18:15:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625720;
-        bh=cB/zmou4JNBatz0EsRvy0e6Im6lxkG/oKJCnqFwoMfc=;
+        s=korg; t=1654625728;
+        bh=6c21A1kbnXmKe8tly4EAnWS1CNBZxBOYlSwgTiYeW1Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yHfonhojr2isCHQaLvu+Hhvan+UyhNpEPaU7oSae69E8SJkyMO7rl/3v4fqWPo0cr
-         2HjYbnDaGy2oGh+6Rq9o9EXmu8EqlmN4cYMZwyLiT9tM9aosH2ckTtDh/TUkKlp/C2
-         uOe/KYqjSzkW+iUk5CoMsMuYWY09y13dh4up9KI0=
+        b=l7QvaqvLc5Ll97Eej0ModQi5kxTR2VytK8P18OqaTfmK5nR4tJwfGilOAARhCzi99
+         7UJwDR7U/vOlmDoIKIDi0ikD/Jw16vpmYFuHd/9macuZF3XIBNt/VeGLQH0zdZ1K8B
+         iREIk5jOdvhE/R0DBnXuJapOAHgmsU08AhOAcEbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>, Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 117/772] regulator: mt6315: Enforce regulator-compatible, not name
-Date:   Tue,  7 Jun 2022 18:55:09 +0200
-Message-Id: <20220607164952.497157138@linuxfoundation.org>
+Subject: [PATCH 5.17 081/772] scsi: lpfc: Fix call trace observed during I/O with CMF enabled
+Date:   Tue,  7 Jun 2022 18:54:33 +0200
+Message-Id: <20220607164951.428465700@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,39 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 6d435a94ba5bb4f2ad381c0828fbae89c66b50fe ]
+[ Upstream commit d6d45f67a11136cb88a70a29ab22ea6db8ae6bd5 ]
 
-The MT6315 PMIC dt-binding should enforce that one of the valid
-regulator-compatible is set in each regulator node. However it was
-mistakenly matching against regulator-name instead.
+The following was seen with CMF enabled:
 
-Fix the typo. This not only fixes the compatible verification, but also
-lifts the regulator-name restriction, so that more meaningful names can
-be set for each platform.
+BUG: using smp_processor_id() in preemptible
+code: systemd-udevd/31711
+kernel: caller is lpfc_update_cmf_cmd+0x214/0x420  [lpfc]
+kernel: CPU: 12 PID: 31711 Comm: systemd-udevd
+kernel: Call Trace:
+kernel: <TASK>
+kernel: dump_stack_lvl+0x44/0x57
+kernel: check_preemption_disabled+0xbf/0xe0
+kernel: lpfc_update_cmf_cmd+0x214/0x420 [lpfc]
+kernel: lpfc_nvme_fcp_io_submit+0x23b4/0x4df0 [lpfc]
 
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Link: https://lore.kernel.org/r/20220429201325.2205799-1-nfraprado@collabora.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+this_cpu_ptr() calls smp_processor_id() in a preemptible context.
+
+Fix by using per_cpu_ptr() with raw_smp_processor_id() instead.
+
+Link: https://lore.kernel.org/r/20220412222008.126521-16-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../devicetree/bindings/regulator/mt6315-regulator.yaml         | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/lpfc/lpfc_scsi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-index 61dd5af80db6..5d2d989de893 100644
---- a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-@@ -31,7 +31,7 @@ properties:
-         $ref: "regulator.yaml#"
+diff --git a/drivers/scsi/lpfc/lpfc_scsi.c b/drivers/scsi/lpfc/lpfc_scsi.c
+index 6cc94fae01b8..d9a8e3a59d94 100644
+--- a/drivers/scsi/lpfc/lpfc_scsi.c
++++ b/drivers/scsi/lpfc/lpfc_scsi.c
+@@ -3936,7 +3936,7 @@ lpfc_update_cmf_cmpl(struct lpfc_hba *phba,
+ 		else
+ 			time = div_u64(time + 500, 1000); /* round it */
  
-         properties:
--          regulator-name:
-+          regulator-compatible:
-             pattern: "^vbuck[1-4]$"
+-		cgs = this_cpu_ptr(phba->cmf_stat);
++		cgs = per_cpu_ptr(phba->cmf_stat, raw_smp_processor_id());
+ 		atomic64_add(size, &cgs->rcv_bytes);
+ 		atomic64_add(time, &cgs->rx_latency);
+ 		atomic_inc(&cgs->rx_io_cnt);
+@@ -3980,7 +3980,7 @@ lpfc_update_cmf_cmd(struct lpfc_hba *phba, uint32_t size)
+ 			atomic_set(&phba->rx_max_read_cnt, size);
+ 	}
  
-     additionalProperties: false
+-	cgs = this_cpu_ptr(phba->cmf_stat);
++	cgs = per_cpu_ptr(phba->cmf_stat, raw_smp_processor_id());
+ 	atomic64_add(size, &cgs->total_bytes);
+ 	return 0;
+ }
 -- 
 2.35.1
 
