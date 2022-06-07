@@ -2,123 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5078DCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DA3ACCA481
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351515AbiFGTSY (ORCPT
+        id S1352095AbiFGTS1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46162 "EHLO
+        Tue, 7 Jun 2022 15:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351772AbiFGSaX (ORCPT
+        with ESMTP id S1351764AbiFGSaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:30:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D3C34B8C;
-        Tue,  7 Jun 2022 10:55:48 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DD22CE30;
+        Tue,  7 Jun 2022 10:55:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A10BA617A6;
-        Tue,  7 Jun 2022 17:55:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1471C34119;
-        Tue,  7 Jun 2022 17:55:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624547;
-        bh=NXa1J+I2sAkxDWNmDYdzt2EPtQnTfLbT30iET12VL7w=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8D4E617A8;
+        Tue,  7 Jun 2022 17:55:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F16ECC385A5;
+        Tue,  7 Jun 2022 17:55:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624546;
+        bh=d6PRW2L/i7S3njKFXoCdPxI1YSkETLyxZT/LUdwxwUA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RBWLVvRs8aL1NYIgUlBsNw22dHkznxEEvNus5xohNSOhBVggaVQuVOVjKPPCntxBp
-         DwThHQmXJbOT5hcLNUJoDM5SCWPV2lL9M/g1oszb/08cTHwZQoGZojtFHQ9UTm2Spx
-         kmsK6cHsjDcxv8xGeu80Scn1U8vAl4EzQlWacAhjNjKkIMynknPuoIhEAU4X13FM7a
-         ffYJXTip9scG6mJZB322aure0XtNWjDG8/vhBruuLKpT2jfQmmgsM6I5bdeepLT4Vc
-         rzUJwgbZh/6+3yi0dxvUDOfnf+7yLdt8pyJwt33+v1l7E0JL5TFevEOmEueVPA94+N
-         K4yhFOq9N0wuA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
-        alexander.deucher@amd.com, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        lijo.lazar@amd.com, guchun.chen@amd.com, Jack.Gui@amd.com,
-        darren.powell@amd.com, Hawking.Zhang@amd.com,
-        mario.limonciello@amd.com, kenneth.feng@amd.com, tim.huang@amd.com,
-        kevin1.wang@amd.com, Xiaomeng.Hou@amd.com, tao.zhou1@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 59/60] drm/amd/pm: use bitmap_{from,to}_arr32 where appropriate
-Date:   Tue,  7 Jun 2022 13:52:56 -0400
-Message-Id: <20220607175259.478835-59-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+        b=NztU1rKEA1+Fzknha7UaNrDPu08B6TayKEYgZwPy6IDszezkXnknDnBah/KOfz3rX
+         cicHDFN0ZPmOhZrmab9eCrBZofXsjIG/K8xToxRhTU80utl0eT1vu+AVP+mlnD/c7N
+         N83o4xT2bUVD6v1ko/jcgRMd8yGgHTYAR6dX8wIE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Adam Wujek <dev_public@wujek.eu>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 367/667] hwmon: (pmbus) Check PEC support before reading other registers
+Date:   Tue,  7 Jun 2022 19:00:32 +0200
+Message-Id: <20220607164945.758697261@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yury Norov <yury.norov@gmail.com>
+From: Adam Wujek <dev_public@wujek.eu>
 
-[ Upstream commit 525d6515604eb1373ce5e6372a6b6640953b2d6a ]
+[ Upstream commit d1baf7a3a3177d46a7149858beddb88a9eca7a54 ]
 
-The smu_v1X_0_set_allowed_mask() uses bitmap_copy() to convert
-bitmap to 32-bit array. This may be wrong due to endiannes issues.
-Fix it by switching to bitmap_{from,to}_arr32.
+Make sure that the support of PEC is determined before the read of other
+registers. Otherwise the validation of PEC can trigger an error on the read
+of STATUS_BYTE or STATUS_WORD registers.
 
-CC: Alexander Gordeev <agordeev@linux.ibm.com>
-CC: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC: Christian Borntraeger <borntraeger@linux.ibm.com>
-CC: Claudio Imbrenda <imbrenda@linux.ibm.com>
-CC: David Hildenbrand <david@redhat.com>
-CC: Heiko Carstens <hca@linux.ibm.com>
-CC: Janosch Frank <frankja@linux.ibm.com>
-CC: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-CC: Sven Schnelle <svens@linux.ibm.com>
-CC: Vasily Gorbik <gor@linux.ibm.com>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+The problematic scenario is the following. A device with enabled PEC
+support is up and running and a kernel driver is loaded.
+Then the driver is unloaded (or device unbound), the HW device
+is reconfigured externally (e.g. by i2cset) to advertise itself as not
+supporting PEC. Without the move of the code, at the second load of
+the driver (or bind) the STATUS_BYTE or STATUS_WORD register is always
+read with PEC enabled, which is likely to cause a read error resulting
+with fail of a driver load (or bind).
+
+Signed-off-by: Adam Wujek <dev_public@wujek.eu>
+Link: https://lore.kernel.org/r/20220519233334.438621-1-dev_public@wujek.eu
+Fixes: 75d2b2b06bd84 ("hwmon: (pmbus) disable PEC if not enabled")
+Fixes: 4e5418f787ec5 ("hwmon: (pmbus_core) Check adapter PEC support")
+[groeck: Added Fixes: tags, dropped continuation line]
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c | 2 +-
- drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/hwmon/pmbus/pmbus_core.c | 28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
-index 4e9e2cf39859..5fcbec9dd45d 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
-@@ -777,7 +777,7 @@ int smu_v11_0_set_allowed_mask(struct smu_context *smu)
- 		goto failed;
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index 5f8f824d997f..63b616ce3a6e 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -2308,6 +2308,21 @@ static int pmbus_init_common(struct i2c_client *client, struct pmbus_data *data,
+ 	struct device *dev = &client->dev;
+ 	int page, ret;
+ 
++	/*
++	 * Figure out if PEC is enabled before accessing any other register.
++	 * Make sure PEC is disabled, will be enabled later if needed.
++	 */
++	client->flags &= ~I2C_CLIENT_PEC;
++
++	/* Enable PEC if the controller and bus supports it */
++	if (!(data->flags & PMBUS_NO_CAPABILITY)) {
++		ret = i2c_smbus_read_byte_data(client, PMBUS_CAPABILITY);
++		if (ret >= 0 && (ret & PB_CAPABILITY_ERROR_CHECK)) {
++			if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_PEC))
++				client->flags |= I2C_CLIENT_PEC;
++		}
++	}
++
+ 	/*
+ 	 * Some PMBus chips don't support PMBUS_STATUS_WORD, so try
+ 	 * to use PMBUS_STATUS_BYTE instead if that is the case.
+@@ -2326,19 +2341,6 @@ static int pmbus_init_common(struct i2c_client *client, struct pmbus_data *data,
+ 		data->has_status_word = true;
  	}
  
--	bitmap_copy((unsigned long *)feature_mask, feature->allowed, 64);
-+	bitmap_to_arr32(feature_mask, feature->allowed, 64);
- 
- 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetAllowedFeaturesMaskHigh,
- 					  feature_mask[1], NULL);
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
-index b54790d3483e..4a5e91b59f0c 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
-@@ -726,7 +726,7 @@ int smu_v13_0_set_allowed_mask(struct smu_context *smu)
- 	if (bitmap_empty(feature->allowed, SMU_FEATURE_MAX) || feature->feature_num < 64)
- 		goto failed;
- 
--	bitmap_copy((unsigned long *)feature_mask, feature->allowed, 64);
-+	bitmap_to_arr32(feature_mask, feature->allowed, 64);
- 
- 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetAllowedFeaturesMaskHigh,
- 					      feature_mask[1], NULL);
+-	/* Make sure PEC is disabled, will be enabled later if needed */
+-	client->flags &= ~I2C_CLIENT_PEC;
+-
+-	/* Enable PEC if the controller and bus supports it */
+-	if (!(data->flags & PMBUS_NO_CAPABILITY)) {
+-		ret = i2c_smbus_read_byte_data(client, PMBUS_CAPABILITY);
+-		if (ret >= 0 && (ret & PB_CAPABILITY_ERROR_CHECK)) {
+-			if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_PEC)) {
+-				client->flags |= I2C_CLIENT_PEC;
+-			}
+-		}
+-	}
+-
+ 	/*
+ 	 * Check if the chip is write protected. If it is, we can not clear
+ 	 * faults, and we should not try it. Also, in that case, writes into
 -- 
 2.35.1
+
+
 
