@@ -2,129 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60B6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244219AbiFGMuy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43400 "EHLO
+        id S244228AbiFGMyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240944AbiFGMux (ORCPT
+        with ESMTP id S242548AbiFGMyH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:50:53 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37C420F7B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:50:51 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LHVYQ6QQ1zjXMJ;
-        Tue,  7 Jun 2022 20:49:30 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 7 Jun 2022 20:50:49 +0800
-Subject: Re: [PATCH v1 2/5] mm,hwpoison: set PG_hwpoison for busy hugetlb
- pages
-To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Liu Shixin <liushixin2@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        <linux-kernel@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
-References: <20220602050631.771414-1-naoya.horiguchi@linux.dev>
- <20220602050631.771414-3-naoya.horiguchi@linux.dev>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <86cdcaa8-a079-f443-2166-723af6c4c9ac@huawei.com>
-Date:   Tue, 7 Jun 2022 20:50:49 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Tue, 7 Jun 2022 08:54:07 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82F56CA85
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:54:05 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id o7so1708284eja.1
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 05:54:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7NOMlCyOOzxhbCbuwq3ZJ0vTGpi3XnqAoh4xLB3lmQU=;
+        b=kO99fIKDL7qtIqBbuxvxvhMhbQfe59GBQb1vhmNeL0sEIa99mujKCOsr9wfhhngxXv
+         OwjoGk/cCLVGGGPWCNUqHoWNBrhfExW6eb/6ixYRX82RWuCvN8/aeqZpjw/aKMJLfBG8
+         /LNoym75s/DLbaBpkLawwx0ocrnQjQjjdfrdSHH14TaPRLCq8f8kCvfwWweQjycRwZ5h
+         R+IimHKKAXKXvpJUo0F7a7MyWaB/SmS+MxherhonEQ0ODXyZWSXTTQBxPZ4dK1plHcBO
+         vlkhd3/x5qVaAIu5/Ch6v9vKGffn2DSpz0z2WkSKNtPpgeJ5olRYkhxINBsO3vBBiV4q
+         Vv/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7NOMlCyOOzxhbCbuwq3ZJ0vTGpi3XnqAoh4xLB3lmQU=;
+        b=ioa0DxnPQX7W70En7UdWUXgrgk4WhiptLw5K/zrzx+FJa+EOPMbIfIeDIceQiNf7V7
+         ZEgS6I9jLnZeVHUQJRNJ7BXeGzh8XoGCK+C36FX2gzJGG5GsSWOpfxzs/EcvYrjAOpCa
+         jxzsL2D7cA5i6lwazlf188qao+o9HH8PQ2lW/4DWHmuYX7JBesNh4qjS75KL7mDx2y40
+         JMYQJUn6vKbugMFfYQLa+AwdvbveIHX+1v2EiQTbQlP+Ab6LLi+iFNRolwk0lPrLENzN
+         xRoBytYD9yqj1gET6mxJLjP4Stc6KRAx3f6yle3DyBRF2iSWGdtlGrKCDOSOgS+hcCuD
+         2nYw==
+X-Gm-Message-State: AOAM533fU8xcD78XCYTx63nBlSNJF7n1ESUekPZfsWoBuCCrR10uHfoz
+        zjf6XYeJF54Ybs5wGFjgFlMRZThxorTFo0VEyKs=
+X-Google-Smtp-Source: ABdhPJxQN01lGZphXqLlwP/JB31yWjBQPvrSqFT6IzA0+0422NzSBqsqEmeaZGhOtCNCUoWk4FLXTBxtPL+uUtKCw6I=
+X-Received: by 2002:a17:906:74b:b0:710:e677:1383 with SMTP id
+ z11-20020a170906074b00b00710e6771383mr15248400ejb.444.1654606444227; Tue, 07
+ Jun 2022 05:54:04 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220602050631.771414-3-naoya.horiguchi@linux.dev>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+References: <20220607105958.382076-1-bhe@redhat.com> <20220607105958.382076-2-bhe@redhat.com>
+In-Reply-To: <20220607105958.382076-2-bhe@redhat.com>
+From:   Uladzislau Rezki <urezki@gmail.com>
+Date:   Tue, 7 Jun 2022 14:53:52 +0200
+Message-ID: <CA+KHdyVMh-yWJaWc+9o0DhP8TG9Nvua6EywRAwEJjqfTgDXAJQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/4] mm/vmalloc: invoke classify_va_fit_type() in adjust_va_to_fit_type()
+To:     Baoquan He <bhe@redhat.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/2 13:06, Naoya Horiguchi wrote:
-> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
-> 
-> If memory_failure() fails to grab page refcount on a hugetlb page
-> because it's busy, it returns without setting PG_hwpoison on it.
-> This not only loses a chance of error containment, but breaks the rule
-> that action_result() should be called only when memory_failure() do
-> any of handling work (even if that's just setting PG_hwpoison).
-> This inconsistency could harm code maintainability.
-
-Yes, this patch will make the code more maintainable. But as discussed previously,
-this page might be under the migration, this patch can't save more.
-
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-
-Thanks!
-
-> 
-> So set PG_hwpoison and call hugetlb_set_page_hwpoison() for such a case.
-> 
-> Fixes: 405ce051236c ("mm/hwpoison: fix race between hugetlb free/demotion and memory_failure_hugetlb()")
-> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+>
+> In function adjust_va_to_fit_type(), it checks all values of passed
+> in fit type, including NOTHING_FIT in the else branch. However, the
+> check of NOTHING_FIT has been done inside adjust_va_to_fit_type() and
+> before it's called in all call sites.
+>
+> In fact, both of these two functions are coupled tightly, since
+> classify_va_fit_type() is doing the preparation work for
+> adjust_va_to_fit_type(). So putting invocation of classify_va_fit_type()
+> inside adjust_va_to_fit_type() can simplify code logic and the redundant
+> check of NOTHING_FIT issue will go away.
+>
+> Suggested-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+> Signed-off-by: Baoquan He <bhe@redhat.com>
 > ---
->  include/linux/mm.h  | 1 +
->  mm/memory-failure.c | 8 ++++----
->  2 files changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index d446e834a3e5..04de0c3e4f9f 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -3187,6 +3187,7 @@ enum mf_flags {
->  	MF_MUST_KILL = 1 << 2,
->  	MF_SOFT_OFFLINE = 1 << 3,
->  	MF_UNPOISON = 1 << 4,
-> +	MF_NO_RETRY = 1 << 5,
->  };
->  extern int memory_failure(unsigned long pfn, int flags);
->  extern void memory_failure_queue(unsigned long pfn, int flags);
-> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-> index 056dbb2050f8..fe6a7961dc66 100644
-> --- a/mm/memory-failure.c
-> +++ b/mm/memory-failure.c
-> @@ -1526,7 +1526,8 @@ int __get_huge_page_for_hwpoison(unsigned long pfn, int flags)
->  			count_increased = true;
->  	} else {
->  		ret = -EBUSY;
-> -		goto out;
-> +		if (!(flags & MF_NO_RETRY))
-> +			goto out;
->  	}
->  
->  	if (TestSetPageHWPoison(head)) {
-> @@ -1556,7 +1557,6 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
->  	struct page *p = pfn_to_page(pfn);
->  	struct page *head;
->  	unsigned long page_flags;
-> -	bool retry = true;
->  
->  	*hugetlb = 1;
->  retry:
-> @@ -1572,8 +1572,8 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
->  		}
->  		return res;
->  	} else if (res == -EBUSY) {
-> -		if (retry) {
-> -			retry = false;
-> +		if (!(flags & MF_NO_RETRY)) {
-> +			flags |= MF_NO_RETRY;
->  			goto retry;
->  		}
->  		action_result(pfn, MF_MSG_UNKNOWN, MF_IGNORED);
-> 
+>  mm/vmalloc.c | 23 ++++++-----------------
+>  1 file changed, 6 insertions(+), 17 deletions(-)
+>
+> diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+> index 07db42455dd4..f9d45aa90b7c 100644
+> --- a/mm/vmalloc.c
+> +++ b/mm/vmalloc.c
+> @@ -1335,10 +1335,10 @@ classify_va_fit_type(struct vmap_area *va,
+>
+>  static __always_inline int
+>  adjust_va_to_fit_type(struct vmap_area *va,
+> -       unsigned long nva_start_addr, unsigned long size,
+> -       enum fit_type type)
+> +       unsigned long nva_start_addr, unsigned long size)
+>  {
+>         struct vmap_area *lva = NULL;
+> +       enum fit_type type = classify_va_fit_type(va, nva_start_addr, size);
+>
+>         if (type == FL_FIT_TYPE) {
+>                 /*
+> @@ -1444,7 +1444,6 @@ __alloc_vmap_area(unsigned long size, unsigned long align,
+>         bool adjust_search_size = true;
+>         unsigned long nva_start_addr;
+>         struct vmap_area *va;
+> -       enum fit_type type;
+>         int ret;
+>
+>         /*
+> @@ -1472,14 +1471,9 @@ __alloc_vmap_area(unsigned long size, unsigned long align,
+>         if (nva_start_addr + size > vend)
+>                 return vend;
+>
+> -       /* Classify what we have found. */
+> -       type = classify_va_fit_type(va, nva_start_addr, size);
+> -       if (WARN_ON_ONCE(type == NOTHING_FIT))
+> -               return vend;
+> -
+>         /* Update the free vmap_area. */
+> -       ret = adjust_va_to_fit_type(va, nva_start_addr, size, type);
+> -       if (ret)
+> +       ret = adjust_va_to_fit_type(va, nva_start_addr, size);
+> +       if (WARN_ON_ONCE(ret))
+>                 return vend;
+>
+>  #if DEBUG_AUGMENT_LOWEST_MATCH_CHECK
+> @@ -3735,7 +3729,6 @@ struct vm_struct **pcpu_get_vm_areas(const unsigned long *offsets,
+>         int area, area2, last_area, term_area;
+>         unsigned long base, start, size, end, last_end, orig_start, orig_end;
+>         bool purged = false;
+> -       enum fit_type type;
+>
+>         /* verify parameters and allocate data structures */
+>         BUG_ON(offset_in_page(align) || !is_power_of_2(align));
+> @@ -3846,15 +3839,11 @@ struct vm_struct **pcpu_get_vm_areas(const unsigned long *offsets,
+>                         /* It is a BUG(), but trigger recovery instead. */
+>                         goto recovery;
+>
+> -               type = classify_va_fit_type(va, start, size);
+> -               if (WARN_ON_ONCE(type == NOTHING_FIT))
+> +               ret = adjust_va_to_fit_type(va, start, size);
+> +               if (WARN_ON_ONCE(unlikely(ret)))
+>                         /* It is a BUG(), but trigger recovery instead. */
+>                         goto recovery;
+>
+> -               ret = adjust_va_to_fit_type(va, start, size, type);
+> -               if (unlikely(ret))
+> -                       goto recovery;
+> -
+>                 /* Allocated area. */
+>                 va = vas[area];
+>                 va->va_start = start;
+> --
+> 2.34.1
+>
+Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
 
+-- 
+Uladzislau Rezki
