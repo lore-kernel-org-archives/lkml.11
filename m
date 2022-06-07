@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B083CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC0BCCA482
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379497AbiFGVZk (ORCPT
+        id S1379418AbiFGVZg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:25:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34138 "EHLO
+        Tue, 7 Jun 2022 17:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356496AbiFGU2t (ORCPT
+        with ESMTP id S1376485AbiFGUa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:28:49 -0400
+        Tue, 7 Jun 2022 16:30:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4CD1DC861;
-        Tue,  7 Jun 2022 11:34:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B551DF137;
+        Tue,  7 Jun 2022 11:34:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4808B8237E;
-        Tue,  7 Jun 2022 18:34:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30AF9C34115;
-        Tue,  7 Jun 2022 18:34:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6BDBB8237D;
+        Tue,  7 Jun 2022 18:34:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42AD5C385A5;
+        Tue,  7 Jun 2022 18:34:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626840;
-        bh=htkbwkPIRIy5SN5SxyQMMjOYd5cT/CIrw8TOhfxFuBI=;
+        s=korg; t=1654626854;
+        bh=yhkFxIityw8ZimP6Eb+PxG7OS7+EztpNKvsgiyHhzhQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FDhree3APxi6cSZYZ/sdhKuB7EfkNkLFBMedyWfFZExpLGvadCIhrYdP+S9opvXck
-         Xt/bizO3KLy0eU4nJGH0j7EW6n8SnH6V5hV/TscSfGBrzmqN60WFVkm1ft4xXTGEqz
-         6GUnz4EklJyKk/2E04GRtn9uYZtlbN26S384gy80=
+        b=N66VVGZ9OdfxoCLBhUUKXRRvAS+RURCWVhvF4Ip4/AoVJgc6IxDm5LEkp7rzxDdYl
+         1flOb21E2wjoSdtSS+GtrDRgd8YOMv/NmsMdpFKn4o3kfUjX+SeyDv1/aKcL9IqoVQ
+         2m1xI6xK1KgVLwX+BfR1wfwRSTaRxBMeixFL96bU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        David Howells <dhowells@redhat.com>,
-        Manfred Spraul <manfred@colorfullife.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
+        stable@vger.kernel.org, Qi Zheng <zhengqi.arch@bytedance.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 524/772] ipc/mqueue: use get_tree_nodev() in mqueue_get_tree()
-Date:   Tue,  7 Jun 2022 19:01:56 +0200
-Message-Id: <20220607165004.416711627@linuxfoundation.org>
+Subject: [PATCH 5.17 529/772] tty: fix deadlock caused by calling printk() under tty_port->lock
+Date:   Tue,  7 Jun 2022 19:02:01 +0200
+Message-Id: <20220607165004.561859196@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -54,119 +54,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Qi Zheng <zhengqi.arch@bytedance.com>
 
-[ Upstream commit d60c4d01a98bc1942dba6e3adc02031f5519f94b ]
+[ Upstream commit 6b9dbedbe3499fef862c4dff5217cf91f34e43b3 ]
 
-When running the stress-ng clone benchmark with multiple testing threads,
-it was found that there were significant spinlock contention in sget_fc().
-The contended spinlock was the sb_lock.  It is under heavy contention
-because the following code in the critcal section of sget_fc():
+pty_write() invokes kmalloc() which may invoke a normal printk() to print
+failure message.  This can cause a deadlock in the scenario reported by
+syz-bot below:
 
-  hlist_for_each_entry(old, &fc->fs_type->fs_supers, s_instances) {
-      if (test(old, fc))
-          goto share_extant_sb;
-  }
+       CPU0              CPU1                    CPU2
+       ----              ----                    ----
+                         lock(console_owner);
+                                                 lock(&port_lock_key);
+  lock(&port->lock);
+                         lock(&port_lock_key);
+                                                 lock(&port->lock);
+  lock(console_owner);
 
-After testing with added instrumentation code, it was found that the
-benchmark could generate thousands of ipc namespaces with the
-corresponding number of entries in the mqueue's fs_supers list where the
-namespaces are the key for the search.  This leads to excessive time in
-scanning the list for a match.
+As commit dbdda842fe96 ("printk: Add console owner and waiter logic to
+load balance console writes") said, such deadlock can be prevented by
+using printk_deferred() in kmalloc() (which is invoked in the section
+guarded by the port->lock).  But there are too many printk() on the
+kmalloc() path, and kmalloc() can be called from anywhere, so changing
+printk() to printk_deferred() is too complicated and inelegant.
 
-Looking back at the mqueue calling sequence leading to sget_fc():
+Therefore, this patch chooses to specify __GFP_NOWARN to kmalloc(), so
+that printk() will not be called, and this deadlock problem can be
+avoided.
 
-  mq_init_ns()
-  => mq_create_mount()
-  => fc_mount()
-  => vfs_get_tree()
-  => mqueue_get_tree()
-  => get_tree_keyed()
-  => vfs_get_super()
-  => sget_fc()
+Syzbot reported the following lockdep error:
 
-Currently, mq_init_ns() is the only mqueue function that will indirectly
-call mqueue_get_tree() with a newly allocated ipc namespace as the key for
-searching.  As a result, there will never be a match with the exising ipc
-namespaces stored in the mqueue's fs_supers list.
+======================================================
+WARNING: possible circular locking dependency detected
+5.4.143-00237-g08ccc19a-dirty #10 Not tainted
+------------------------------------------------------
+syz-executor.4/29420 is trying to acquire lock:
+ffffffff8aedb2a0 (console_owner){....}-{0:0}, at: console_trylock_spinning kernel/printk/printk.c:1752 [inline]
+ffffffff8aedb2a0 (console_owner){....}-{0:0}, at: vprintk_emit+0x2ca/0x470 kernel/printk/printk.c:2023
 
-So using get_tree_keyed() to do an existing ipc namespace search is just a
-waste of time.  Instead, we could use get_tree_nodev() to eliminate the
-useless search.  By doing so, we can greatly reduce the sb_lock hold time
-and avoid the spinlock contention problem in case a large number of ipc
-namespaces are present.
+but task is already holding lock:
+ffff8880119c9158 (&port->lock){-.-.}-{2:2}, at: pty_write+0xf4/0x1f0 drivers/tty/pty.c:120
 
-Of course, if the code is modified in the future to allow
-mqueue_get_tree() to be called with an existing ipc namespace instead of a
-new one, we will have to use get_tree_keyed() in this case.
+which lock already depends on the new lock.
 
-The following stress-ng clone benchmark command was run on a 2-socket
-48-core Intel system:
+the existing dependency chain (in reverse order) is:
 
-./stress-ng --clone 32 --verbose --oomable --metrics-brief -t 20
+-> #2 (&port->lock){-.-.}-{2:2}:
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+       _raw_spin_lock_irqsave+0x35/0x50 kernel/locking/spinlock.c:159
+       tty_port_tty_get drivers/tty/tty_port.c:288 [inline]          		<-- lock(&port->lock);
+       tty_port_default_wakeup+0x1d/0xb0 drivers/tty/tty_port.c:47
+       serial8250_tx_chars+0x530/0xa80 drivers/tty/serial/8250/8250_port.c:1767
+       serial8250_handle_irq.part.0+0x31f/0x3d0 drivers/tty/serial/8250/8250_port.c:1854
+       serial8250_handle_irq drivers/tty/serial/8250/8250_port.c:1827 [inline] 	<-- lock(&port_lock_key);
+       serial8250_default_handle_irq+0xb2/0x220 drivers/tty/serial/8250/8250_port.c:1870
+       serial8250_interrupt+0xfd/0x200 drivers/tty/serial/8250/8250_core.c:126
+       __handle_irq_event_percpu+0x109/0xa50 kernel/irq/handle.c:156
+       [...]
 
-The "bogo ops/s" increased from 5948.45 before patch to 9137.06 after
-patch. This is an increase of 54% in performance.
+-> #1 (&port_lock_key){-.-.}-{2:2}:
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+       _raw_spin_lock_irqsave+0x35/0x50 kernel/locking/spinlock.c:159
+       serial8250_console_write+0x184/0xa40 drivers/tty/serial/8250/8250_port.c:3198
+										<-- lock(&port_lock_key);
+       call_console_drivers kernel/printk/printk.c:1819 [inline]
+       console_unlock+0x8cb/0xd00 kernel/printk/printk.c:2504
+       vprintk_emit+0x1b5/0x470 kernel/printk/printk.c:2024			<-- lock(console_owner);
+       vprintk_func+0x8d/0x250 kernel/printk/printk_safe.c:394
+       printk+0xba/0xed kernel/printk/printk.c:2084
+       register_console+0x8b3/0xc10 kernel/printk/printk.c:2829
+       univ8250_console_init+0x3a/0x46 drivers/tty/serial/8250/8250_core.c:681
+       console_init+0x49d/0x6d3 kernel/printk/printk.c:2915
+       start_kernel+0x5e9/0x879 init/main.c:713
+       secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:241
 
-Link: https://lkml.kernel.org/r/20220121172315.19652-1-longman@redhat.com
-Fixes: 935c6912b198 ("ipc: Convert mqueue fs to fs_context")
-Signed-off-by: Waiman Long <longman@redhat.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: David Howells <dhowells@redhat.com>
-Cc: Manfred Spraul <manfred@colorfullife.com>
-Cc: Davidlohr Bueso <dave@stgolabs.net>
+-> #0 (console_owner){....}-{0:0}:
+       [...]
+       lock_acquire+0x127/0x340 kernel/locking/lockdep.c:4734
+       console_trylock_spinning kernel/printk/printk.c:1773 [inline]		<-- lock(console_owner);
+       vprintk_emit+0x307/0x470 kernel/printk/printk.c:2023
+       vprintk_func+0x8d/0x250 kernel/printk/printk_safe.c:394
+       printk+0xba/0xed kernel/printk/printk.c:2084
+       fail_dump lib/fault-inject.c:45 [inline]
+       should_fail+0x67b/0x7c0 lib/fault-inject.c:144
+       __should_failslab+0x152/0x1c0 mm/failslab.c:33
+       should_failslab+0x5/0x10 mm/slab_common.c:1224
+       slab_pre_alloc_hook mm/slab.h:468 [inline]
+       slab_alloc_node mm/slub.c:2723 [inline]
+       slab_alloc mm/slub.c:2807 [inline]
+       __kmalloc+0x72/0x300 mm/slub.c:3871
+       kmalloc include/linux/slab.h:582 [inline]
+       tty_buffer_alloc+0x23f/0x2a0 drivers/tty/tty_buffer.c:175
+       __tty_buffer_request_room+0x156/0x2a0 drivers/tty/tty_buffer.c:273
+       tty_insert_flip_string_fixed_flag+0x93/0x250 drivers/tty/tty_buffer.c:318
+       tty_insert_flip_string include/linux/tty_flip.h:37 [inline]
+       pty_write+0x126/0x1f0 drivers/tty/pty.c:122				<-- lock(&port->lock);
+       n_tty_write+0xa7a/0xfc0 drivers/tty/n_tty.c:2356
+       do_tty_write drivers/tty/tty_io.c:961 [inline]
+       tty_write+0x512/0x930 drivers/tty/tty_io.c:1045
+       __vfs_write+0x76/0x100 fs/read_write.c:494
+       [...]
+
+other info that might help us debug this:
+
+Chain exists of:
+  console_owner --> &port_lock_key --> &port->lock
+
+Link: https://lkml.kernel.org/r/20220511061951.1114-2-zhengqi.arch@bytedance.com
+Link: https://lkml.kernel.org/r/20220510113809.80626-2-zhengqi.arch@bytedance.com
+Fixes: b6da31b2c07c ("tty: Fix data race in tty_insert_flip_string_fixed_flag")
+Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
+Acked-by: Jiri Slaby <jirislaby@kernel.org>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Akinobu Mita <akinobu.mita@gmail.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- ipc/mqueue.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/tty/tty_buffer.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/ipc/mqueue.c b/ipc/mqueue.c
-index 5becca9be867..089c34d0732c 100644
---- a/ipc/mqueue.c
-+++ b/ipc/mqueue.c
-@@ -45,6 +45,7 @@
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 646510476c30..bfa431a8e690 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -175,7 +175,8 @@ static struct tty_buffer *tty_buffer_alloc(struct tty_port *port, size_t size)
+ 	 */
+ 	if (atomic_read(&port->buf.mem_used) > port->buf.mem_limit)
+ 		return NULL;
+-	p = kmalloc(sizeof(struct tty_buffer) + 2 * size, GFP_ATOMIC);
++	p = kmalloc(sizeof(struct tty_buffer) + 2 * size,
++		    GFP_ATOMIC | __GFP_NOWARN);
+ 	if (p == NULL)
+ 		return NULL;
  
- struct mqueue_fs_context {
- 	struct ipc_namespace	*ipc_ns;
-+	bool			 newns;	/* Set if newly created ipc namespace */
- };
- 
- #define MQUEUE_MAGIC	0x19800202
-@@ -427,6 +428,14 @@ static int mqueue_get_tree(struct fs_context *fc)
- {
- 	struct mqueue_fs_context *ctx = fc->fs_private;
- 
-+	/*
-+	 * With a newly created ipc namespace, we don't need to do a search
-+	 * for an ipc namespace match, but we still need to set s_fs_info.
-+	 */
-+	if (ctx->newns) {
-+		fc->s_fs_info = ctx->ipc_ns;
-+		return get_tree_nodev(fc, mqueue_fill_super);
-+	}
- 	return get_tree_keyed(fc, mqueue_fill_super, ctx->ipc_ns);
- }
- 
-@@ -454,6 +463,10 @@ static int mqueue_init_fs_context(struct fs_context *fc)
- 	return 0;
- }
- 
-+/*
-+ * mq_init_ns() is currently the only caller of mq_create_mount().
-+ * So the ns parameter is always a newly created ipc namespace.
-+ */
- static struct vfsmount *mq_create_mount(struct ipc_namespace *ns)
- {
- 	struct mqueue_fs_context *ctx;
-@@ -465,6 +478,7 @@ static struct vfsmount *mq_create_mount(struct ipc_namespace *ns)
- 		return ERR_CAST(fc);
- 
- 	ctx = fc->fs_private;
-+	ctx->newns = true;
- 	put_ipc_ns(ctx->ipc_ns);
- 	ctx->ipc_ns = get_ipc_ns(ns);
- 	put_user_ns(fc->user_ns);
 -- 
 2.35.1
 
