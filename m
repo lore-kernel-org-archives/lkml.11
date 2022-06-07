@@ -2,144 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0094C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B867CCA496
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443413AbiFHCCY (ORCPT
+        id S1443566AbiFHCCt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:02:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48492 "EHLO
+        Tue, 7 Jun 2022 22:02:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588471AbiFGXyl (ORCPT
+        with ESMTP id S1842829AbiFHAKL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:54:41 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9954DEAB87;
-        Tue,  7 Jun 2022 16:09:57 -0700 (PDT)
-Date:   Tue, 07 Jun 2022 23:09:53 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1654643395;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=31knJ3QXB3grtazMt+b9bY3U/ZDckeFhNjGn1EuvTFE=;
-        b=MJl5K8k3SMYaWkE2ICZFiDKbyUZBhahVnqp8FEBFA6di3TbE7fD/a4SnWV9ApTYPUJFP54
-        zRVLyR2ao8emN+QzJWwhVPo506TqscDDCAexUiVGC9TcAkPrExJ037JOhMycGB2EVh++Yl
-        v+SL6c/1Az5w3dSEH09U4cj7w184tsSQaIfC45WFQgyv+13YUgZ7EeX9jeXyjLh+fFEvlZ
-        cKXzW30wKK8m5FxwjQIhnqAKGTzDKEk+d4McQa3FgIiJjBZqCAxjGnkW3b6SneXpm//ElP
-        Qcsl4NKs47N6Hp0BpFEiyXj8REFihViFgDY9LMgFo5Y3+LM7JxR/nebANOx40A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1654643395;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=31knJ3QXB3grtazMt+b9bY3U/ZDckeFhNjGn1EuvTFE=;
-        b=HjKXp4gN6EUcqfASdXpyxbNTMkYrFFF/GNXtIJ2YNPgW76mBis3OVoy0Jh7VVMJTpICXPO
-        UuoY4aA9fIvGneBQ==
-From:   "tip-bot2 for Ira Weiny" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/mm] Documentation/protection-keys: Clean up documentation
- for User Space pkeys
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220419170649.1022246-2-ira.weiny@intel.com>
-References: <20220419170649.1022246-2-ira.weiny@intel.com>
+        Tue, 7 Jun 2022 20:10:11 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64301210F85
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:07:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654636028; x=1686172028;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=37mmixr31+JpMckV2p6utumpOl/5/0swYmKvvppfkoA=;
+  b=KmuwPnZibKAR4/S1dYXPAXaz9d4K+TmO+DwcwnKmigIEajH7le4Mppyy
+   d1rAoJufn+lwmf8tXF1xmnin3fQDhfCn+dMDRgojZh8lHJpdb5BlHZzBa
+   3WlW9jJLnp5Jw8xqQHidbzYFg+JECt4EjeD0dwxW2Fp2FoRXt1XDgMzFr
+   MHVcGYjBxQwCWxKzQfe5QtClaFvLDel/g3RW2AWxI+g3864T7Ca7hCFgI
+   ICfGTC6QUwd+VEYC7jO0MTDxkpnygqHGx2I3dV7ujnf3maTGGvEWvPeG7
+   zeKla2trEtHEmN/3J1YPTntMvu8jL6VJWj2UfY/jlCKMb1D+LIqqjk/+N
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="340708978"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="340708978"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 14:06:46 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="609368562"
+Received: from fyu1.sc.intel.com ([172.25.103.126])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 14:06:46 -0700
+Date:   Tue, 7 Jun 2022 14:07:15 -0700
+From:   Fenghua Yu <fenghua.yu@intel.com>
+To:     James Morse <james.morse@arm.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
+        baolin.wang@linux.alibaba.com
+Subject: Re: [PATCH v4 16/21] x86/resctrl: Pass the required parameters into
+ resctrl_arch_rmid_read()
+Message-ID: <Yp++A0tuEqAN7eHo@fyu1.sc.intel.com>
+References: <20220412124419.30689-1-james.morse@arm.com>
+ <20220412124419.30689-17-james.morse@arm.com>
 MIME-Version: 1.0
-Message-ID: <165464339351.4207.13791430848488231130.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412124419.30689-17-james.morse@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/mm branch of tip:
+Hi, James,
 
-Commit-ID:     f8c1d4ca55177326adad1fdc6bf602423a507542
-Gitweb:        https://git.kernel.org/tip/f8c1d4ca55177326adad1fdc6bf602423a507542
-Author:        Ira Weiny <ira.weiny@intel.com>
-AuthorDate:    Tue, 19 Apr 2022 10:06:06 -07:00
-Committer:     Dave Hansen <dave.hansen@linux.intel.com>
-CommitterDate: Tue, 07 Jun 2022 16:06:22 -07:00
+On Tue, Apr 12, 2022 at 12:44:14PM +0000, James Morse wrote:
+> resctrl_arch_rmid_read() is intended as the function that an
+> architecture agnostic resctrl filesystem driver can use to
+> read a value in bytes from a hardware register. Currently the function
+> returns the MBM values in chunks directly from hardware.
+> 
+> To convert this to bytes, some correction and overflow calculations
+> are needed. These depend on the resource and domain structures.
+> Overflow detection requires the old chunks value. None of this
+> is available to resctrl_arch_rmid_read(). MPAM requires the
+> resource and domain structures to find the MMIO device that holds
+> the registers.
+> 
+> Pass the resource and domain to resctrl_arch_rmid_read(). This makes
+> rmid_dirty() too big.
 
-Documentation/protection-keys: Clean up documentation for User Space pkeys
+rmid_dirty() is not called by resctrl_arch_rmid_read(). Why does parring r and d
+make rmid_dirty() too big?
 
-The documentation for user space pkeys was a bit dated including things
-such as Amazon and distribution testing information which is irrelevant
-now.
+> Instead merge it with its only caller, and the
+> name is kept as a local variable.
+> 
+> Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
+> Tested-by: Xin Hao <xhao@linux.alibaba.com>
+> Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+> Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+> Tested-by: Cristian Marussi <cristian.marussi@arm.com>
+> Signed-off-by: James Morse <james.morse@arm.com>
+> ---
+> Changes since v3:
+>  * Added comment about where resctrl_arch_rmid_read() can be called from.
+> 
+> Changes since v2:
+>  * Typos.
+>  * Kerneldoc fixes.
+> 
+> This is all a little noisy for __mon_event_count(), as the switch
+> statement work is now before the resctrl_arch_rmid_read() call.
+> ---
+>  arch/x86/kernel/cpu/resctrl/monitor.c | 31 +++++++++++++++------------
+>  include/linux/resctrl.h               | 18 +++++++++++++++-
+>  2 files changed, 34 insertions(+), 15 deletions(-)
+> 
+> diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
+> index 20c54cbadc0c..81cc7587b598 100644
+> --- a/arch/x86/kernel/cpu/resctrl/monitor.c
+> +++ b/arch/x86/kernel/cpu/resctrl/monitor.c
+> @@ -167,10 +167,14 @@ void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
+>  		memset(am, 0, sizeof(*am));
+>  }
+>  
+> -int resctrl_arch_rmid_read(u32 rmid, enum resctrl_event_id eventid, u64 *val)
+> +int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
+> +			   u32 rmid, enum resctrl_event_id eventid, u64 *val)
 
-Update the documentation.  This also streamlines adding the Supervisor
-pkey documentation later on.
+Can this be a concise interface by just adding one more parameter "rr"?
 
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Link: https://lkml.kernel.org/r/20220419170649.1022246-2-ira.weiny@intel.com
----
- Documentation/core-api/protection-keys.rst | 44 ++++++++++-----------
- 1 file changed, 21 insertions(+), 23 deletions(-)
+int resctrl_arch_rmid_read(struct rmid_read *rr, u32 rmid, u64 *val);
+>  {
+>  	u64 msr_val;
 
-diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
-index ec575e7..bf28ac0 100644
---- a/Documentation/core-api/protection-keys.rst
-+++ b/Documentation/core-api/protection-keys.rst
-@@ -4,31 +4,29 @@
- Memory Protection Keys
- ======================
- 
--Memory Protection Keys for Userspace (PKU aka PKEYs) is a feature
--which is found on Intel's Skylake (and later) "Scalable Processor"
--Server CPUs. It will be available in future non-server Intel parts
--and future AMD processors.
--
--For anyone wishing to test or use this feature, it is available in
--Amazon's EC2 C5 instances and is known to work there using an Ubuntu
--17.04 image.
--
--Memory Protection Keys provides a mechanism for enforcing page-based
--protections, but without requiring modification of the page tables
--when an application changes protection domains.  It works by
--dedicating 4 previously ignored bits in each page table entry to a
--"protection key", giving 16 possible keys.
--
--There is also a new user-accessible register (PKRU) with two separate
--bits (Access Disable and Write Disable) for each key.  Being a CPU
--register, PKRU is inherently thread-local, potentially giving each
-+Memory Protection Keys provide a mechanism for enforcing page-based
-+protections, but without requiring modification of the page tables when an
-+application changes protection domains.
-+
-+Pkeys Userspace (PKU) is a feature which can be found on:
-+        * Intel server CPUs, Skylake and later
-+        * Intel client CPUs, Tiger Lake (11th Gen Core) and later
-+        * Future AMD CPUs
-+
-+Pkeys work by dedicating 4 previously Reserved bits in each page table entry to
-+a "protection key", giving 16 possible keys.
-+
-+Protections for each key are defined with a per-CPU user-accessible register
-+(PKRU).  Each of these is a 32-bit register storing two bits (Access Disable
-+and Write Disable) for each of 16 keys.
-+
-+Being a CPU register, PKRU is inherently thread-local, potentially giving each
- thread a different set of protections from every other thread.
- 
--There are two new instructions (RDPKRU/WRPKRU) for reading and writing
--to the new register.  The feature is only available in 64-bit mode,
--even though there is theoretically space in the PAE PTEs.  These
--permissions are enforced on data access only and have no effect on
--instruction fetches.
-+There are two instructions (RDPKRU/WRPKRU) for reading and writing to the
-+register.  The feature is only available in 64-bit mode, even though there is
-+theoretically space in the PAE PTEs.  These permissions are enforced on data
-+access only and have no effect on instruction fetches.
- 
- Syscalls
- ========
+Then inside the API, add:
+	struct rdt_resource *r = rr->r;
+	struct rdt_domain *d = rr->d;
+	struct rdt_resource r = rr->r;
+	enum resctrl_event_id evtid = rr->evtid;
+
+>  
+> +	if (!cpumask_test_cpu(smp_processor_id(), &d->cpu_mask))
+> +		return -EINVAL;
+> +
+>  	/*
+>  	 * As per the SDM, when IA32_QM_EVTSEL.EvtID (bits 7:0) is configured
+>  	 * with a valid event code for supported resource type and the bits
+> @@ -192,16 +196,6 @@ int resctrl_arch_rmid_read(u32 rmid, enum resctrl_event_id eventid, u64 *val)
+>  	return 0;
+>  }
+>  
+> -static bool rmid_dirty(struct rmid_entry *entry)
+> -{
+> -	u64 val = 0;
+> -
+> -	if (resctrl_arch_rmid_read(entry->rmid, QOS_L3_OCCUP_EVENT_ID, &val))
+> -		return true;
+> -
+> -	return val >= resctrl_cqm_threshold;
+> -}
+> -
+>  /*
+>   * Check the RMIDs that are marked as busy for this domain. If the
+>   * reported LLC occupancy is below the threshold clear the busy bit and
+> @@ -213,6 +207,8 @@ void __check_limbo(struct rdt_domain *d, bool force_free)
+>  	struct rmid_entry *entry;
+>  	struct rdt_resource *r;
+>  	u32 crmid = 1, nrmid;
+> +	bool rmid_dirty;
+> +	u64 val = 0;
+>  
+>  	r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
+>  
+> @@ -228,7 +224,14 @@ void __check_limbo(struct rdt_domain *d, bool force_free)
+>  			break;
+>  
+>  		entry = __rmid_entry(nrmid);
+> -		if (force_free || !rmid_dirty(entry)) {
+> +
+> +		if (resctrl_arch_rmid_read(r, d, entry->rmid,
+> +					   QOS_L3_OCCUP_EVENT_ID, &val))
+> +			rmid_dirty = true;
+> +		else
+> +			rmid_dirty = (val >= resctrl_cqm_threshold);
+> +
+> +		if (force_free || !rmid_dirty) {
+>  			clear_bit(entry->rmid, d->rmid_busy_llc);
+>  			if (!--entry->busy) {
+>  				rmid_limbo_count--;
+> @@ -278,7 +281,7 @@ static void add_rmid_to_limbo(struct rmid_entry *entry)
+>  	cpu = get_cpu();
+>  	list_for_each_entry(d, &r->domains, list) {
+>  		if (cpumask_test_cpu(cpu, &d->cpu_mask)) {
+> -			err = resctrl_arch_rmid_read(entry->rmid,
+> +			err = resctrl_arch_rmid_read(r, d, entry->rmid,
+>  						     QOS_L3_OCCUP_EVENT_ID,
+>  						     &val);
+>  			if (err || val <= resctrl_cqm_threshold)
+> @@ -336,7 +339,7 @@ static int __mon_event_count(u32 rmid, struct rmid_read *rr)
+>  	if (rr->first)
+>  		resctrl_arch_reset_rmid(rr->r, rr->d, rmid, rr->evtid);
+>  
+> -	rr->err = resctrl_arch_rmid_read(rmid, rr->evtid, &tval);
+> +	rr->err = resctrl_arch_rmid_read(rr->r, rr->d, rmid, rr->evtid, &tval);
+
+Is resctrl_arch_rmid_read(rr, rmid, &tval) concise and better?
+
+>  	if (rr->err)
+>  		return rr->err;
+>  
+> diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
+> index 70112dbfa128..cc6311a40582 100644
+> --- a/include/linux/resctrl.h
+> +++ b/include/linux/resctrl.h
+> @@ -219,7 +219,23 @@ u32 resctrl_arch_get_config(struct rdt_resource *r, struct rdt_domain *d,
+>  			    u32 closid, enum resctrl_conf_type type);
+>  int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d);
+>  void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d);
+> -int resctrl_arch_rmid_read(u32 rmid, enum resctrl_event_id eventid, u64 *res);
+> +
+> +/**
+> + * resctrl_arch_rmid_read() - Read the eventid counter corresponding to rmid
+> + *			      for this resource and domain.
+> + * @r:			resource that the counter should be read from.
+> + * @d:			domain that the counter should be read from.
+> + * @rmid:		rmid of the counter to read.
+> + * @eventid:		eventid to read, e.g. L3 occupancy.
+> + * @val:		result of the counter read in chunks.
+> + *
+> + * Call from process context on a CPU that belongs to domain @d.
+> + *
+> + * Return:
+> + * 0 on success, or -EIO, -EINVAL etc on error.
+> + */
+> +int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
+> +			   u32 rmid, enum resctrl_event_id eventid, u64 *val);
+
+Then it's a concise API:
+
+int resctrl_arch_rmid_read(struct rmid_read *rr, u32 rmid, u64 *val);
+
+r, d and eventid can be easily retrieved from rr inside the API implementation.
+
+>  
+>  /**
+>   * resctrl_arch_reset_rmid() - Reset any private state associated with rmid
+> -- 
+> 2.30.2
+> 
+
+Thanks. 
+
+-Fenghua
