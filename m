@@ -2,163 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F040DCCA48E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B45C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378542AbiFGVBb (ORCPT
+        id S1378819AbiFGVBv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34274 "EHLO
+        Tue, 7 Jun 2022 17:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357614AbiFGT6Z (ORCPT
+        with ESMTP id S1357659AbiFGT6Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:58:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DDB5B1B780C
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:24:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654626231;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UVERor1pDjv50JOPQD6dbA5hWF6IpXrW4mZT/xer28A=;
-        b=StC4cluhx0W7Rllbrgc/pueXaApx6GQrB2WlIMVpuw8PQ5KGWRGmw++iJA19cskdMd8SuJ
-        zVYdnSzhCBP7/VCRhTnT5+1JO6DZqKsao/VuTBHTA8y1qrFxNBGXUCfBMTV0VMhmUJHry8
-        wPX2AyPy0rOlWA7W025iZ2w6claPzrs=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-650-YgoQLJA-P_Kq7VdEt-lKpQ-1; Tue, 07 Jun 2022 14:23:50 -0400
-X-MC-Unique: YgoQLJA-P_Kq7VdEt-lKpQ-1
-Received: by mail-wm1-f70.google.com with SMTP id e19-20020a05600c4e5300b0039c4b6acd83so4585459wmq.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:23:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UVERor1pDjv50JOPQD6dbA5hWF6IpXrW4mZT/xer28A=;
-        b=QlFfjSMHo3QYF9PT2dTuURjIlnh03tMFX6ssVc8X4k6k8cbWNP+HSAjvGQu/sdZxH0
-         FrolyafohOcuX/GdJZ75d35tJc04NuuCiD21rWhoxSaiFMsbr8F9uLyuPef/tgfskv1G
-         xu2AfPqbH/vmqqjJTIN39wl0Xf5wGbpZ8CxEXsQoDP/298cOjDbx0w6yBImkZrNHhDbz
-         qyUNaBwC6h35Eo/SRUlqliaN6rgEB2QLknhzXTAZz/w3/90AXYMrOGXlIZYQnsqSSt9g
-         WYnuHGIxZIath5OiZ+Nz3xiONKqPWCX27ggWHm+BoR29xlEO6t2IDwVWTFrqLQ308YfW
-         u3eA==
-X-Gm-Message-State: AOAM530ASUckIX8OiNM2jw5qb5Z38F2Ot/m7kOy2kMIqbMrUstuvV+l3
-        IUA6YeXr0QUJEgj3qpjQalAhfWJtfLpzk9S35qwOloEl5okkaI/cHvjdK1DLg0ryE/KbRnogFyt
-        uw76B0rUpbXhkJ7WjsUCqXK0Flxnw79w4u9eNQ58ezj86EbrJgDTIp934OSGXhsoKkdo+ASk1Y3
-        k=
-X-Received: by 2002:a05:6000:1b03:b0:216:43b4:82f1 with SMTP id f3-20020a0560001b0300b0021643b482f1mr18992426wrz.232.1654626229070;
-        Tue, 07 Jun 2022 11:23:49 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwIJ2ZaSX69tcbwGyt9OTbAcEXndsJiDIZKc+WEe5sBYC0UmDo7XaAT1uT5eNOYdA7eP4tzzQ==
-X-Received: by 2002:a05:6000:1b03:b0:216:43b4:82f1 with SMTP id f3-20020a0560001b0300b0021643b482f1mr18992391wrz.232.1654626228799;
-        Tue, 07 Jun 2022 11:23:48 -0700 (PDT)
-Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id m8-20020a05600c4f4800b003942a244f51sm28267502wmq.42.2022.06.07.11.23.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 11:23:48 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0421B8290;
+        Tue,  7 Jun 2022 11:24:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE84A61252;
+        Tue,  7 Jun 2022 18:24:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C22EAC385A5;
+        Tue,  7 Jun 2022 18:24:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654626254;
+        bh=AJpDc4CRCDEYezNwJ7xnI6htH0qAKgCFMdxiiCckPkE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Oa7ir1re19NByAy9hGda8u0eFczNep+ZPN2Ro04ByrRpAYHGwPsBuGm2E0OcuDyLH
+         77E5K59zmDSrMP6BKlOpA2G8lNgDzGq+Zn75nolEdkMeDoM0R32KIzY2zNwGuqjrh/
+         YJNJZpP5pJO4Hb/HFX3xgmHtztZ95mzsPxkcTECk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     dri-devel@lists.freedesktop.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Laszlo Ersek <lersek@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Gerd Hoffmann <kraxel@redhat.com>, kvm@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
-        linux-fbdev@vger.kernel.org
-Subject: [PATCH v6 3/5] fbdev: Disable sysfb device registration when removing conflicting FBs
-Date:   Tue,  7 Jun 2022 20:23:36 +0200
-Message-Id: <20220607182338.344270-4-javierm@redhat.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yang Jihong <yangjihong1@huawei.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 313/772] perf tools: Add missing headers needed by util/data.h
+Date:   Tue,  7 Jun 2022 18:58:25 +0200
+Message-Id: <20220607164958.250902071@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607182338.344270-1-javierm@redhat.com>
-References: <20220607182338.344270-1-javierm@redhat.com>
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The platform devices registered by sysfb match with firmware-based DRM or
-fbdev drivers, that are used to have early graphics using a framebuffer
-provided by the system firmware.
+From: Yang Jihong <yangjihong1@huawei.com>
 
-DRM or fbdev drivers later are probed and remove all conflicting framebuffers,
-leading to these platform devices for generic drivers to be unregistered.
+[ Upstream commit 4d27cf1d9de5becfa4d1efb2ea54dba1b9fc962a ]
 
-But the current solution has a race, since the sysfb_init() function could
-be called after a DRM or fbdev driver is probed and request to unregister
-the devices for drivers with conflicting framebuffes.
+'struct perf_data' in util/data.h uses the "u64" data type, which is
+defined in "linux/types.h".
 
-To prevent this, disable any future sysfb platform device registration by
-calling sysfb_disable(), if a driver requests to remove the conflicting
-framebuffers.
+If we only include util/data.h, the following compilation error occurs:
 
-Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+  util/data.h:38:3: error: unknown type name ‘u64’
+     u64    version;
+     ^~~
+
+Solution: include "linux/types.h." to add the needed type definitions.
+
+Fixes: 258031c017c353e8 ("perf header: Add DIR_FORMAT feature to describe directory data")
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220429090539.212448-1-yangjihong1@huawei.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ tools/perf/util/data.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changes in v6:
-- Move the sysfb_disable() before the remove conflicting framebuffers
-  loop (Daniel Vetter).
-
-Changes in v5:
-- Move the sysfb_disable() call at conflicting framebuffers again to
-  avoid the need of a DRIVER_FIRMWARE capability flag.
-- Add Daniel Vetter's Reviewed-by tag again since reverted to the old
-  patch that he already reviewed in v2.
-
-Changes in v3:
-- Call sysfb_disable() when a DRM dev and a fbdev are registered rather
-  than when conflicting framebuffers are removed (Thomas Zimmermann).
-- Call sysfb_disable() when a fbdev framebuffer is registered rather
-  than when conflicting framebuffers are removed (Thomas Zimmermann).
-- Drop Daniel Vetter's Reviewed-by tag since patch changed a lot.
-
-Changes in v2:
-- Explain in the commit message that fbmem has to unregister the device
-  as fallback if a driver registered the device itself (Daniel Vetter).
-- Also explain that fallback in a comment in the code (Daniel Vetter).
-- Don't encode in fbmem the assumption that sysfb will always register
-  platform devices (Daniel Vetter).
-- Add a FIXME comment about drivers registering devices (Daniel Vetter).
-
- drivers/video/fbdev/core/fbmem.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
-index 2fda5917c212..e0720fef0ee6 100644
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -19,6 +19,7 @@
- #include <linux/kernel.h>
- #include <linux/major.h>
- #include <linux/slab.h>
-+#include <linux/sysfb.h>
- #include <linux/mm.h>
- #include <linux/mman.h>
- #include <linux/vt.h>
-@@ -1764,6 +1765,17 @@ int remove_conflicting_framebuffers(struct apertures_struct *a,
- 		do_free = true;
- 	}
+diff --git a/tools/perf/util/data.h b/tools/perf/util/data.h
+index c9de82af5584..1402d9657ef2 100644
+--- a/tools/perf/util/data.h
++++ b/tools/perf/util/data.h
+@@ -4,6 +4,7 @@
  
-+	/*
-+	 * If a driver asked to unregister a platform device registered by
-+	 * sysfb, then can be assumed that this is a driver for a display
-+	 * that is set up by the system firmware and has a generic driver.
-+	 *
-+	 * Drivers for devices that don't have a generic driver will never
-+	 * ask for this, so let's assume that a real driver for the display
-+	 * was already probed and prevent sysfb to register devices later.
-+	 */
-+	sysfb_disable();
-+
- 	mutex_lock(&registration_lock);
- 	do_remove_conflicting_framebuffers(a, name, primary);
- 	mutex_unlock(&registration_lock);
+ #include <stdio.h>
+ #include <stdbool.h>
++#include <linux/types.h>
+ 
+ enum perf_data_mode {
+ 	PERF_DATA_MODE_WRITE,
 -- 
-2.36.1
+2.35.1
+
+
 
