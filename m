@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0BCCCCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C46C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386829AbiFHAaH (ORCPT
+        id S1387196AbiFHAaO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:30:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
+        Tue, 7 Jun 2022 20:30:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382809AbiFGWD7 (ORCPT
+        with ESMTP id S1380035AbiFGWOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:03:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1CA195792;
-        Tue,  7 Jun 2022 12:14:57 -0700 (PDT)
+        Tue, 7 Jun 2022 18:14:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0757E260CCD;
+        Tue,  7 Jun 2022 12:19:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DCF36192C;
-        Tue,  7 Jun 2022 19:14:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E621C385A2;
-        Tue,  7 Jun 2022 19:14:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C058618EC;
+        Tue,  7 Jun 2022 19:19:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93E9DC385A2;
+        Tue,  7 Jun 2022 19:19:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629293;
-        bh=W+FTR3kkajvWd2nZMl638Zr2vjMDmiXlj6AHR6X5zLQ=;
+        s=korg; t=1654629591;
+        bh=wVbbGLDEgiHbwO+8ceB4LaEgkGTDRdVe8SWyZV+ln8w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kYmZZLxNCP+vJALt1oCgoRSwVPNPOL9L5eBEqPuAZoiBh5YQNFhCUbjFvelwTbRZB
-         PcsUp1GyG5iI9PYseSSAN8XJeFQrHOgRTFfGSl3388P3Ma9sVzBIrfe5Pms5zCqua0
-         5DqMGrSfiZDCFOMtdvgHjiphT78LCntdyUwHVOQY=
+        b=vqCr29h/FLXpTniX3UGtcQ/VrKVZXVS7j21OYJF5KOZu3VDNbdtlNBfH+sUMdmuaI
+         e6xpsofLJnDwdxgC0/tGjczF6abE7r2fXPZSOo4ZZkXP3PEy080SE+Cf/pckG02OJv
+         47W1XCYaoYV0IHeTJI23Ren7M5B8O6dWVLU07+wk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
-        Russell Currey <ruscur@russell.cc>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 640/879] powerpc/powernv: Get STF barrier requirements from device-tree
-Date:   Tue,  7 Jun 2022 19:02:38 +0200
-Message-Id: <20220607165021.423783578@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.18 746/879] ext4: avoid cycles in directory h-tree
+Date:   Tue,  7 Jun 2022 19:04:24 +0200
+Message-Id: <20220607165024.509940881@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,45 +49,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell Currey <ruscur@russell.cc>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit d2a3c131981d4498571908df95c3c9393a00adf5 ]
+commit 3ba733f879c2a88910744647e41edeefbc0d92b2 upstream.
 
-The device-tree property no-need-store-drain-on-priv-state-switch is
-equivalent to H_CPU_BEHAV_NO_STF_BARRIER from the
-H_CPU_GET_CHARACTERISTICS hcall on pseries.
+A maliciously corrupted filesystem can contain cycles in the h-tree
+stored inside a directory. That can easily lead to the kernel corrupting
+tree nodes that were already verified under its hands while doing a node
+split and consequently accessing unallocated memory. Fix the problem by
+verifying traversed block numbers are unique.
 
-Since commit 84ed26fd00c5 ("powerpc/security: Add a security feature for
-STF barrier") powernv systems with this device-tree property have been
-enabling the STF barrier when they have no need for it.  This patch
-fixes this by clearing the STF barrier feature on those systems.
-
-Fixes: 84ed26fd00c5 ("powerpc/security: Add a security feature for STF barrier")
-Reported-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Russell Currey <ruscur@russell.cc>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220404101536.104794-2-ruscur@russell.cc
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220518093332.13986-2-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/platforms/powernv/setup.c | 3 +++
- 1 file changed, 3 insertions(+)
+ fs/ext4/namei.c |   22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/platforms/powernv/setup.c b/arch/powerpc/platforms/powernv/setup.c
-index 378f7e5f18d2..824c3ad7a0fa 100644
---- a/arch/powerpc/platforms/powernv/setup.c
-+++ b/arch/powerpc/platforms/powernv/setup.c
-@@ -102,6 +102,9 @@ static void __init init_fw_feat_flags(struct device_node *np)
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -777,12 +777,14 @@ static struct dx_frame *
+ dx_probe(struct ext4_filename *fname, struct inode *dir,
+ 	 struct dx_hash_info *hinfo, struct dx_frame *frame_in)
+ {
+-	unsigned count, indirect;
++	unsigned count, indirect, level, i;
+ 	struct dx_entry *at, *entries, *p, *q, *m;
+ 	struct dx_root *root;
+ 	struct dx_frame *frame = frame_in;
+ 	struct dx_frame *ret_err = ERR_PTR(ERR_BAD_DX_DIR);
+ 	u32 hash;
++	ext4_lblk_t block;
++	ext4_lblk_t blocks[EXT4_HTREE_LEVEL];
  
- 	if (fw_feature_is("enabled", "no-need-l1d-flush-kernel-on-user-access", np))
- 		security_ftr_clear(SEC_FTR_L1D_FLUSH_UACCESS);
+ 	memset(frame_in, 0, EXT4_HTREE_LEVEL * sizeof(frame_in[0]));
+ 	frame->bh = ext4_read_dirblock(dir, 0, INDEX);
+@@ -854,6 +856,8 @@ dx_probe(struct ext4_filename *fname, st
+ 	}
+ 
+ 	dxtrace(printk("Look up %x", hash));
++	level = 0;
++	blocks[0] = 0;
+ 	while (1) {
+ 		count = dx_get_count(entries);
+ 		if (!count || count > dx_get_limit(entries)) {
+@@ -882,15 +886,27 @@ dx_probe(struct ext4_filename *fname, st
+ 			       dx_get_block(at)));
+ 		frame->entries = entries;
+ 		frame->at = at;
+-		if (!indirect--)
 +
-+	if (fw_feature_is("enabled", "no-need-store-drain-on-priv-state-switch", np))
-+		security_ftr_clear(SEC_FTR_STF_BARRIER);
- }
++		block = dx_get_block(at);
++		for (i = 0; i <= level; i++) {
++			if (blocks[i] == block) {
++				ext4_warning_inode(dir,
++					"dx entry: tree cycle block %u points back to block %u",
++					blocks[level], block);
++				goto fail;
++			}
++		}
++		if (++level > indirect)
+ 			return frame;
++		blocks[level] = block;
+ 		frame++;
+-		frame->bh = ext4_read_dirblock(dir, dx_get_block(at), INDEX);
++		frame->bh = ext4_read_dirblock(dir, block, INDEX);
+ 		if (IS_ERR(frame->bh)) {
+ 			ret_err = (struct dx_frame *) frame->bh;
+ 			frame->bh = NULL;
+ 			goto fail;
+ 		}
++
+ 		entries = ((struct dx_node *) frame->bh->b_data)->entries;
  
- static void __init pnv_setup_security_mitigations(void)
--- 
-2.35.1
-
+ 		if (dx_get_limit(entries) != dx_node_limit(dir)) {
 
 
