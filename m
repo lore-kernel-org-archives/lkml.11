@@ -2,106 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C4EEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345046AbiFGRno (ORCPT
+        id S1347938AbiFGRnw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:43:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39744 "EHLO
+        Tue, 7 Jun 2022 13:43:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347890AbiFGRbV (ORCPT
+        with ESMTP id S1347929AbiFGRbX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8309411CA10;
-        Tue,  7 Jun 2022 10:28:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E1996136A;
-        Tue,  7 Jun 2022 17:28:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A25FC36AFE;
-        Tue,  7 Jun 2022 17:28:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622922;
-        bh=s94htJ+M2rQ9fz/7PNsv5MdmwHrUarKl5BJQXtRmP80=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lPMGI/YwZk0o5cHDOeIMUdebUW30j2pG9eqeelT4FI6+y4YBUoVRXhW+OnBuuPqak
-         ImLUbJtNPs3KgG+5v5AZFulzKztJ8LDjny/9/u9T54Y+HyQM0ZvuQOiARCBO9f2J5c
-         F0a5xeVsn2Y0m/GdN5Qr7CLaL68GNlKTOqfblMyg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 230/452] media: rkvdec: Stop overclocking the decoder
-Date:   Tue,  7 Jun 2022 19:01:27 +0200
-Message-Id: <20220607164915.416375047@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
-References: <20220607164908.521895282@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 13:31:23 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DBAD11CA39
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:28:50 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id a30so13527487ybj.3
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:28:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l5Ny4vgpruxYpshg53Ln1+iWeupUNnsukjnUC5UYdOM=;
+        b=BBJq9HytOh8xqxG1MIN1sKtwK93Z7XU0MrDJECq3md+sm3yv1Xd5ltQXskFQhI9cME
+         iqcZ9LmhLZmyYaUghSjx79Y3A9LnqA8BoWAQaDvZPU2hEkMar5IWHpM6xzZg/BYj/SOO
+         pKQokFSBBVEHE1fF81pZ9o0aayaFRGoalN4PoaGghXIx66v8ke+Qu8TkXYoVgIg1Whi6
+         Y41JGO1oBbH2l//UapjVIss2VHKyFlwqVipz08haTjCsWor+ebXOuLOQN1ZFmGxHwTzk
+         8Ls8CmFF+wACLiX04kX8dUmr+Drp1mnOCz/GLvyFC6jMMGeARI1pnpk6sT2ZJ5OBPKPU
+         4Sxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l5Ny4vgpruxYpshg53Ln1+iWeupUNnsukjnUC5UYdOM=;
+        b=pzc8sGNvKh+QQg9KzzJBBlXPr36VAz/f6w59Xf/Fb9WKi2/ppxrfm5yqbNWg1O/kSv
+         EP3Qm7upYXmskwmdtLT+27yHZGJIdBBDXIDZB70TE6tmBftpB5tYglcFV4ZkFN/Q95Hz
+         vrP2ouEMKb5V7C8tz0rk8s684CFuOeTgqJ1UgU6tiRkx2Q2+fJn+KZdklYBbFDyhKycs
+         8CXV0aorbzl+esNf3St+JfGccvkSxCRnAadlwpev/+IPqwt0GlpuypniuAyf8cCvmkRM
+         GD0Edfm0oPq5t6lk6EmhGzUKEdtMfjtzcVDJBODAyND7CkHJRVVBf+VW9be+Hoho0/nW
+         C/QQ==
+X-Gm-Message-State: AOAM531IE2sCLmaZhZzz6zWdxgqw4LNo2bY1pI8EH6YnMRI62YD9/ztN
+        PQ8OADMU1zPY+kWtfTNzGCjvvFLZDzq1U/8O0qB+9w==
+X-Google-Smtp-Source: ABdhPJyCEAFCNtMQmhR5UYxtFrfEzTiCy9SVm2wDE9nWaR1to3z/P80hc9CgpRNlzwlULqatodrIZhEznz2u+MaX8VE=
+X-Received: by 2002:a05:6902:2d1:b0:64d:de34:b776 with SMTP id
+ w17-20020a05690202d100b0064dde34b776mr30363589ybh.215.1654622929315; Tue, 07
+ Jun 2022 10:28:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220425033934.68551-1-kirill.shutemov@linux.intel.com>
+ <20220425033934.68551-7-kirill.shutemov@linux.intel.com> <YnE4ZzzVrxUnr3Uv@zn.tnic>
+ <20220506153013.e6v4q2qhuhqumfiu@box.shutemov.name> <YnpGnMoviGoK4Ucq@zn.tnic>
+ <CAAH4kHYRxgUNnGRUO473q02q3akLzgiTvbA2qKEP5jq6jFV-uA@mail.gmail.com>
+ <Yn4ed1gupKmNz2jn@zn.tnic> <20220513144515.fx2cvo3rjued3vy5@black.fi.intel.com>
+ <PH0PR11MB5064B561086BE6350CC1DCDCC5CF9@PH0PR11MB5064.namprd11.prod.outlook.com>
+ <CAAH4kHbU4FJ=veYQxncdpYD837M90vq2o2saVaUCJ6=pfuNRpA@mail.gmail.com>
+ <0c545c5f-3540-1441-7a7d-359b6795f43a@amd.com> <CAAH4kHYj9WOKngeXYL=KnNb1fXa-MaFGTBGZcBX726Od858Q3A@mail.gmail.com>
+ <19ac7bbc-82f1-8350-8638-163303d682b1@amd.com> <CAAH4kHbPyCAxwQgqPpgDQ3bEioHZ+WboUMGTHazxC9f9jEEwWg@mail.gmail.com>
+In-Reply-To: <CAAH4kHbPyCAxwQgqPpgDQ3bEioHZ+WboUMGTHazxC9f9jEEwWg@mail.gmail.com>
+From:   Dionna Amalie Glaze <dionnaglaze@google.com>
+Date:   Tue, 7 Jun 2022 10:28:37 -0700
+Message-ID: <CAAH4kHYn=pyFC8ZZ08hY0rBDL9g4XBnxbMVXtwdju4qCLMetuA@mail.gmail.com>
+Subject: Re: [PATCHv5 06/12] x86/boot/compressed: Handle unaccepted memory
+To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
+Cc:     "Xu, Min M" <min.m.xu@intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        "Gao, Jiaqi" <jiaqi.gao@intel.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Rodel, Jorg" <jroedel@suse.de>, Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        "Hansen, Dave" <dave.hansen@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+> free -k parses /proc/meminfo for MemFree and SwapFree in
+> /proc/meminfo, so it sounds like it should also add in UnacceptedMem.
+> We'll try that. Thanks.
+>
 
-[ Upstream commit 9998943f6dfc5d5472bfab2e38527fb6ba5e9da7 ]
+Testing error on my part. Was using an adaptation of an old patch set.
+With Brijesh's SEV-SNP support adapted to this version on top of
+SEV-SNP guest patch series v12, I have no trouble with passing our
+memtouch test.
 
-While this overclock hack seems to work on some implementations
-(some ChromeBooks, RockPi4) it also causes instability on other
-implementations (notably LibreComputer Renegade, but there were more
-reports in the LibreELEC project, where this has been removed). While
-performance is indeed affected (tested with GStreamer), 4K playback
-still works as long as you don't operate in lock step and keep at
-least 1 frame ahead of time in the decode queue.
+Reference: https://github.com/deeglaze/amdese-linux/tree/v12unaccepted-v5
 
-After discussion with ChromeOS members, it would seem that their
-implementation indeed used to synchronously decode each frame, so
-this hack was simply compensating for their code being less
-efficient. In my opinion, this hack should not have been included
-upstream.
-
-Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/staging/media/rkvdec/rkvdec.c | 6 ------
- 1 file changed, 6 deletions(-)
-
-diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index e384ea8d7280..617d06b8f597 100644
---- a/drivers/staging/media/rkvdec/rkvdec.c
-+++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -1025,12 +1025,6 @@ static int rkvdec_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	/*
--	 * Bump ACLK to max. possible freq. (500 MHz) to improve performance
--	 * When 4k video playback.
--	 */
--	clk_set_rate(rkvdec->clocks[0].clk, 500 * 1000 * 1000);
--
- 	rkvdec->regs = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(rkvdec->regs))
- 		return PTR_ERR(rkvdec->regs);
 -- 
-2.35.1
-
-
-
+-Dionna Glaze, PhD (she/her)
