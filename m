@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 419BCCCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:09:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B896BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230090AbiFHBIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:08:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46052 "EHLO
+        id S1344736AbiFHBJP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383706AbiFGVxb (ORCPT
+        with ESMTP id S1382820AbiFGVv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:31 -0400
+        Tue, 7 Jun 2022 17:51:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21348216286;
-        Tue,  7 Jun 2022 12:12:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2202223EFA1;
+        Tue,  7 Jun 2022 12:09:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ECED6618DF;
-        Tue,  7 Jun 2022 19:11:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 014F9C385A2;
-        Tue,  7 Jun 2022 19:11:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1C77617D0;
+        Tue,  7 Jun 2022 19:09:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9805C385A2;
+        Tue,  7 Jun 2022 19:09:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629119;
-        bh=wppAPTYZacra8jvjOGCwiUf7y78jF2kYF71m4qcN1Bo=;
+        s=korg; t=1654628984;
+        bh=DnFAkqsw38ueMjMLEGksplQdPl/DtdAFVCmpTN10CRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oVHmiAslLOAMyzxxzVpLkJLg8JOIVQZie4M3Jro7ANVT3ZupzYfMQDCL3w4ccZYOu
-         bmm266/dHLrf3y9uS8Q8DLbXaki8j5LNK1M9YY4jF696kR2M2Zx1IKHYRI1pNJwWB6
-         aU5cNk64M3Q19lm1iiW9CKxkD4+qvKMJ5jo+4daQ=
+        b=QXVu2wUIPZwk/bAFcysM9qaXxv/evR1FIxOt6+dna//KqEqyoECuWu+HODiutgssr
+         bbaCcFJMV062UIlnYFPwXsshrxEqZ1U/VfYaOShGzHkMYgZf4z89Rq+tM9xpn3FE1A
+         2xfOzKma9G5noi+WTjC4HMbcHfJ0QUWvxtO/VIdY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 575/879] pinctrl: bcm2835: implement hook for missing gpio-ranges
-Date:   Tue,  7 Jun 2022 19:01:33 +0200
-Message-Id: <20220607165019.545531859@linuxfoundation.org>
+Subject: [PATCH 5.18 527/879] net/smc: postpone sk_refcnt increment in connect()
+Date:   Tue,  7 Jun 2022 19:00:45 +0200
+Message-Id: <20220607165018.171731326@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,72 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@i2se.com>
+From: liuyacan <liuyacan@corp.netease.com>
 
-[ Upstream commit d2b67744fd99b06555b7e4d67302ede6c7c6a638 ]
+[ Upstream commit 75c1edf23b95a9c66923d9269d8e86e4dbde151f ]
 
-The commit c8013355ead6 ("ARM: dts: gpio-ranges property is now required")
-fixed the GPIO probing issues caused by "pinctrl: bcm2835: Change init
-order for gpio hogs". This changed only the kernel DTS files. Unfortunately
-it isn't guaranteed that these files are shipped to all users.
+Same trigger condition as commit 86434744. When setsockopt runs
+in parallel to a connect(), and switch the socket into fallback
+mode. Then the sk_refcnt is incremented in smc_connect(), but
+its state stay in SMC_INIT (NOT SMC_ACTIVE). This cause the
+corresponding sk_refcnt decrement in __smc_release() will not be
+performed.
 
-So implement the necessary backward compatibility for BCM2835 and
-BCM2711 platform.
-
-Fixes: 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio hogs")
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220409095129.45786-3-stefan.wahren@i2se.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 86434744fedf ("net/smc: add fallback check to connect()")
+Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/bcm/pinctrl-bcm2835.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ net/smc/af_smc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/bcm/pinctrl-bcm2835.c b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
-index 47e433e09c5c..dad453054776 100644
---- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
-+++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
-@@ -358,6 +358,22 @@ static int bcm2835_gpio_direction_output(struct gpio_chip *chip,
- 	return 0;
- }
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index fce16b9d6e1a..45a24d24210f 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -1564,9 +1564,9 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
+ 	if (rc && rc != -EINPROGRESS)
+ 		goto out;
  
-+static int bcm2835_of_gpio_ranges_fallback(struct gpio_chip *gc,
-+					   struct device_node *np)
-+{
-+	struct pinctrl_dev *pctldev = of_pinctrl_get(np);
-+
-+	of_node_put(np);
-+
-+	if (!pctldev)
-+		return 0;
-+
-+	gpiochip_add_pin_range(gc, pinctrl_dev_get_devname(pctldev), 0, 0,
-+			       gc->ngpio);
-+
-+	return 0;
-+}
-+
- static const struct gpio_chip bcm2835_gpio_chip = {
- 	.label = MODULE_NAME,
- 	.owner = THIS_MODULE,
-@@ -372,6 +388,7 @@ static const struct gpio_chip bcm2835_gpio_chip = {
- 	.base = -1,
- 	.ngpio = BCM2835_NUM_GPIOS,
- 	.can_sleep = false,
-+	.of_gpio_ranges_fallback = bcm2835_of_gpio_ranges_fallback,
- };
- 
- static const struct gpio_chip bcm2711_gpio_chip = {
-@@ -388,6 +405,7 @@ static const struct gpio_chip bcm2711_gpio_chip = {
- 	.base = -1,
- 	.ngpio = BCM2711_NUM_GPIOS,
- 	.can_sleep = false,
-+	.of_gpio_ranges_fallback = bcm2835_of_gpio_ranges_fallback,
- };
- 
- static void bcm2835_gpio_irq_handle_bank(struct bcm2835_pinctrl *pc,
+-	sock_hold(&smc->sk); /* sock put in passive closing */
+ 	if (smc->use_fallback)
+ 		goto out;
++	sock_hold(&smc->sk); /* sock put in passive closing */
+ 	if (flags & O_NONBLOCK) {
+ 		if (queue_work(smc_hs_wq, &smc->connect_work))
+ 			smc->connect_nonblock = 1;
 -- 
 2.35.1
 
