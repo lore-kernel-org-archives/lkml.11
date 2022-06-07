@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F3DFCCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71629CCA491
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383854AbiFGWGk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50220 "EHLO
+        id S242746AbiFGWGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 18:06:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379842AbiFGVGa (ORCPT
+        with ESMTP id S1379863AbiFGVGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:06:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97AE3211AB2;
-        Tue,  7 Jun 2022 11:50:27 -0700 (PDT)
+        Tue, 7 Jun 2022 17:06:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F2621228F;
+        Tue,  7 Jun 2022 11:50:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A6F16176D;
-        Tue,  7 Jun 2022 18:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9135AC385A2;
-        Tue,  7 Jun 2022 18:50:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3485B8239B;
+        Tue,  7 Jun 2022 18:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 205AAC385A2;
+        Tue,  7 Jun 2022 18:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627819;
-        bh=MoPv6OhQx7EiRN060osT8VM3jcVMoppKxNbkWMOY8cI=;
+        s=korg; t=1654627813;
+        bh=cnzevXgz+waa72ojOU4KwgyU+p6nulyrqLCnlw984fs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wyg3jEV5kVEdbhqLgwaquNYfchqfXC7a8uKuqtTlB0V8uGO6f6GP/RQlYi6868iL8
-         h0KGmTWQzOuNTR4nwSfzHMI1Gk4k4umnXNoVfb2ZzjevAOm4c7Ij3CEuHjQHx38QF3
-         XZV5p0i2T5YnKNIQ7RsNt0G0ZVKwRPpOxtdfxPYI=
+        b=HgJDhKOwT8mjef0djt+BaLNz76ovYO6By4Lovbwl6aDEXalx0BQqt/hfY1laBQvYf
+         UEcXRYBCctPyYEQIqD0lzgpjS02gjJibGV8ZitoanBjyWkQejgd8mPJiAyC1V3jDVm
+         WykEInfDWT6GkXm3sMdtSuCzQq4TP2XmSLJNqgw8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vikash Garodia <quic_vgarodia@quicinc.com>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 103/879] media: venus: do not queue internal buffers from previous sequence
-Date:   Tue,  7 Jun 2022 18:53:41 +0200
-Message-Id: <20220607165005.685049958@linuxfoundation.org>
+Subject: [PATCH 5.18 101/879] media: i2c: dw9714: Disable the regulator when the driver fails to probe
+Date:   Tue,  7 Jun 2022 18:53:39 +0200
+Message-Id: <20220607165005.628589270@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,89 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vikash Garodia <quic_vgarodia@quicinc.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 73664f107c0fafb59cd91e576b81c986adb74610 ]
+[ Upstream commit 02276e18defa2fccf16413b44440277d98c2b1ea ]
 
-During reconfig (DRC) event from firmware, it is not guaranteed that
-all the DPB(internal) buffers would be released by the firmware. Some
-buffers might be released gradually while processing frames from the
-new sequence. These buffers now stay idle in the dpblist.
-In subsequent call to queue the DPBs to firmware, these idle buffers
-should not be queued. The fix identifies those buffers and free them.
+When the driver fails to probe, we will get the following splat:
 
-Signed-off-by: Vikash Garodia <quic_vgarodia@quicinc.com>
-Tested-by: Fritz Koenig <frkoenig@chromium.org>
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+[   59.305988] ------------[ cut here ]------------
+[   59.306417] WARNING: CPU: 2 PID: 395 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+[   59.310345] RIP: 0010:_regulator_put+0x3ec/0x4e0
+[   59.318362] Call Trace:
+[   59.318582]  <TASK>
+[   59.318765]  regulator_put+0x1f/0x30
+[   59.319058]  devres_release_group+0x319/0x3d0
+[   59.319420]  i2c_device_probe+0x766/0x940
+
+Fix this by disabling the regulator in error handling.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/qcom/venus/helpers.c | 34 +++++++++++++++------
- 1 file changed, 25 insertions(+), 9 deletions(-)
+ drivers/media/i2c/dw9714.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/platform/qcom/venus/helpers.c b/drivers/media/platform/qcom/venus/helpers.c
-index 0bca95d01650..fa01edd54c03 100644
---- a/drivers/media/platform/qcom/venus/helpers.c
-+++ b/drivers/media/platform/qcom/venus/helpers.c
-@@ -90,12 +90,28 @@ bool venus_helper_check_codec(struct venus_inst *inst, u32 v4l2_pixfmt)
- }
- EXPORT_SYMBOL_GPL(venus_helper_check_codec);
+diff --git a/drivers/media/i2c/dw9714.c b/drivers/media/i2c/dw9714.c
+index cd7008ad8f2f..8c5797ba57d4 100644
+--- a/drivers/media/i2c/dw9714.c
++++ b/drivers/media/i2c/dw9714.c
+@@ -183,6 +183,7 @@ static int dw9714_probe(struct i2c_client *client)
+ 	return 0;
  
-+static void free_dpb_buf(struct venus_inst *inst, struct intbuf *buf)
-+{
-+	ida_free(&inst->dpb_ids, buf->dpb_out_tag);
-+
-+	list_del_init(&buf->list);
-+	dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
-+		       buf->attrs);
-+	kfree(buf);
-+}
-+
- int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
- {
--	struct intbuf *buf;
-+	struct intbuf *buf, *next;
-+	unsigned int dpb_size = 0;
- 	int ret = 0;
+ err_cleanup:
++	regulator_disable(dw9714_dev->vcc);
+ 	v4l2_ctrl_handler_free(&dw9714_dev->ctrls_vcm);
+ 	media_entity_cleanup(&dw9714_dev->sd.entity);
  
--	list_for_each_entry(buf, &inst->dpbbufs, list) {
-+	if (inst->dpb_buftype == HFI_BUFFER_OUTPUT)
-+		dpb_size = inst->output_buf_size;
-+	else if (inst->dpb_buftype == HFI_BUFFER_OUTPUT2)
-+		dpb_size = inst->output2_buf_size;
-+
-+	list_for_each_entry_safe(buf, next, &inst->dpbbufs, list) {
- 		struct hfi_frame_data fdata;
- 
- 		memset(&fdata, 0, sizeof(fdata));
-@@ -106,6 +122,12 @@ int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
- 		if (buf->owned_by == FIRMWARE)
- 			continue;
- 
-+		/* free buffer from previous sequence which was released later */
-+		if (dpb_size > buf->size) {
-+			free_dpb_buf(inst, buf);
-+			continue;
-+		}
-+
- 		fdata.clnt_data = buf->dpb_out_tag;
- 
- 		ret = hfi_session_process_buf(inst, &fdata);
-@@ -127,13 +149,7 @@ int venus_helper_free_dpb_bufs(struct venus_inst *inst)
- 	list_for_each_entry_safe(buf, n, &inst->dpbbufs, list) {
- 		if (buf->owned_by == FIRMWARE)
- 			continue;
--
--		ida_free(&inst->dpb_ids, buf->dpb_out_tag);
--
--		list_del_init(&buf->list);
--		dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
--			       buf->attrs);
--		kfree(buf);
-+		free_dpb_buf(inst, buf);
- 	}
- 
- 	if (list_empty(&inst->dpbbufs))
 -- 
 2.35.1
 
