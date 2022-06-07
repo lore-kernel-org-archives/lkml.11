@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E04C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE3DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353430AbiFGTEo (ORCPT
+        id S1353818AbiFGTE5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:04:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
+        Tue, 7 Jun 2022 15:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351752AbiFGSQj (ORCPT
+        with ESMTP id S1351439AbiFGSQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:39 -0400
+        Tue, 7 Jun 2022 14:16:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19098169E2C;
-        Tue,  7 Jun 2022 10:49:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256ED15FE26;
+        Tue,  7 Jun 2022 10:49:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD6F5616B6;
-        Tue,  7 Jun 2022 17:49:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6739C385A5;
-        Tue,  7 Jun 2022 17:49:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E57EC616B6;
+        Tue,  7 Jun 2022 17:49:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 050A5C3411C;
+        Tue,  7 Jun 2022 17:49:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624195;
-        bh=ZriJAMo6HEnlrwh17n0Xm0vSWiOmfgRMxPmxCShc9H0=;
+        s=korg; t=1654624170;
+        bh=uKzbAHhniBxqNfOLHN7fXBq8UX3CxpbNw564zyvnrWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FMTYqalbOc9dv/3IhQlZyJeQSUnncptvCyQNM1QILJLbR036U2rFtzoleh6PIc8FZ
-         v4tTAM1B1EX4Od9cg/nNEskmjWo13uhUnaZ/esdXeQdDO307yayscK1RBBe/eYbB51
-         Rl+52H14Tj36wYJ3tg1ps8RQBEkn6s9lO/nas5Vs=
+        b=tpdXCPlm4CQPBSAG/m8P3OL94qDAh2Gt4tECyLBP886+CHT0dJLAIeNRa7PH9STHL
+         5cnFMyx0MDPMsK9dd0Ly55b5MWEhZSiAmdwQY1kWtijFE6eiCR+rpbE7eevFCqb8g0
+         BC9jKsKHHiJsHn82nOksQJdtt+gAcrVtZzsJDI+E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 239/667] drm/panel: simple: Add missing bus flags for Innolux G070Y2-L01
-Date:   Tue,  7 Jun 2022 18:58:24 +0200
-Message-Id: <20220607164941.952416491@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        John Ogness <john.ogness@linutronix.de>,
+        Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 231/667] printk: use atomic updates for klogd work
+Date:   Tue,  7 Jun 2022 18:58:16 +0200
+Message-Id: <20220607164941.716619893@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -54,39 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit 0f73a559f916b618c0c05186bd644c90cc9e9695 ]
+[ Upstream commit 2ba3673d70178bf07fb75ff25c54bc478add4021 ]
 
-The DE signal is active high on this display, fill in the missing bus_flags.
-This aligns panel_desc with its display_timing .
+The per-cpu @printk_pending variable can be updated from
+sleepable contexts, such as:
 
-Fixes: a5d2ade627dca ("drm/panel: simple: Add support for Innolux G070Y2-L01")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Christoph Fritz <chf.fritz@googlemail.com>
-Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-Cc: Maxime Ripard <maxime@cerno.tech>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220406093627.18011-1-marex@denx.de
+  get_random_bytes()
+    warn_unseeded_randomness()
+      printk_deferred()
+        defer_console_output()
+
+and can be updated from interrupt contexts, such as:
+
+  handle_irq_event_percpu()
+    __irq_wake_thread()
+      wake_up_process()
+        try_to_wake_up()
+          select_task_rq()
+            select_fallback_rq()
+              printk_deferred()
+                defer_console_output()
+
+and can be updated from NMI contexts, such as:
+
+  vprintk()
+    if (in_nmi()) defer_console_output()
+
+Therefore the atomic variant of the updating functions must be used.
+
+Replace __this_cpu_xchg() with this_cpu_xchg().
+Replace __this_cpu_or() with this_cpu_or().
+
+Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/87iltld4ue.fsf@jogness.linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/panel-simple.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/printk/printk.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
-index f9242c19b458..93a1d6b41117 100644
---- a/drivers/gpu/drm/panel/panel-simple.c
-+++ b/drivers/gpu/drm/panel/panel-simple.c
-@@ -2522,6 +2522,7 @@ static const struct panel_desc innolux_g070y2_l01 = {
- 		.unprepare = 800,
- 	},
- 	.bus_format = MEDIA_BUS_FMT_RGB888_1X7X4_SPWG,
-+	.bus_flags = DRM_BUS_FLAG_DE_HIGH,
- 	.connector_type = DRM_MODE_CONNECTOR_LVDS,
- };
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 7aeb13542ce7..e6a815a1cd76 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3215,7 +3215,7 @@ static DEFINE_PER_CPU(int, printk_pending);
  
+ static void wake_up_klogd_work_func(struct irq_work *irq_work)
+ {
+-	int pending = __this_cpu_xchg(printk_pending, 0);
++	int pending = this_cpu_xchg(printk_pending, 0);
+ 
+ 	if (pending & PRINTK_PENDING_OUTPUT) {
+ 		/* If trylock fails, someone else is doing the printing */
+@@ -3249,7 +3249,7 @@ void defer_console_output(void)
+ 		return;
+ 
+ 	preempt_disable();
+-	__this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
++	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
+ 	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
+ 	preempt_enable();
+ }
 -- 
 2.35.1
 
