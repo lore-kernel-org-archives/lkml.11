@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5388AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:14:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D09C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358237AbiFGUOT (ORCPT
+        id S1358993AbiFGUO1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39714 "EHLO
+        Tue, 7 Jun 2022 16:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355501AbiFGTUm (ORCPT
+        with ESMTP id S1355434AbiFGTUc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:20:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33BFC19B6A2;
-        Tue,  7 Jun 2022 11:08:44 -0700 (PDT)
+        Tue, 7 Jun 2022 15:20:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C8019A726;
+        Tue,  7 Jun 2022 11:08:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05945B82349;
-        Tue,  7 Jun 2022 18:08:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73273C385A5;
-        Tue,  7 Jun 2022 18:08:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5DF50B81F38;
+        Tue,  7 Jun 2022 18:08:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B69E0C385A5;
+        Tue,  7 Jun 2022 18:08:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625321;
-        bh=dCeVzC/jF/iTDOn+inmUhCo29O8Nt84UucMF/ifylBA=;
+        s=korg; t=1654625319;
+        bh=fjh0DjFNqa4PrftEH5DvKhHI7w1fRCD7pD5OezHZF+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cjbSV9jqyItMamlWkqaPjBEh6Zm85sG7IAE7az1sFboaBlh59IqyYl+/ZQ6eXCGYJ
-         7fLaXNBcRglBs7s1xuKsg501AElGoiiJa0IL42w7RX/Smec/1biam84ig9Jz0ObL/U
-         0Bc9AVBDtN5owTaSlAfokUgBfxMOQ8WlSc+hQ22o=
+        b=XKmh+Y1ZbB8ryHcYwnpfW3B+rR86tu7nJ9rqDrDxJ9jR18+/UJJxYDEoFk3pFbd+/
+         V2gfofj6ZfXAY2HILQN5vxeChIwD0USFsaB7zeljmtDbAJTU5CNg4wSmHsc5SXmXey
+         Jw5mbJeGP9Z1h9PlIy3LGBQDoCik6/t1LwciORp0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.15 644/667] dt-bindings: gpio: altera: correct interrupt-cells
-Date:   Tue,  7 Jun 2022 19:05:09 +0200
-Message-Id: <20220607164953.970633780@linuxfoundation.org>
+        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Subject: [PATCH 5.15 643/667] docs/conf.py: Cope with removal of language=None in Sphinx 5.0.0
+Date:   Tue,  7 Jun 2022 19:05:08 +0200
+Message-Id: <20220607164953.941789520@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -48,40 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dinh Nguyen <dinguyen@kernel.org>
+From: Akira Yokosawa <akiyks@gmail.com>
 
-commit 3a21c3ac93aff7b4522b152399df8f6a041df56d upstream.
+commit 627f01eab93d8671d4e4afee9b148f9998d20e7c upstream.
 
-update documentation to correctly state the interrupt-cells to be 2.
+One of the changes in Sphinx 5.0.0 [1] says [sic]:
 
+    5.0.0 final
+
+     - #10474: language does not accept None as it value.
+       The default value of language becomes to 'en' now.
+
+[1]: https://www.sphinx-doc.org/en/master/changes.html#release-5-0-0-released-may-30-2022
+
+It results in a new warning from Sphinx 5.0.0 [sic]:
+
+    WARNING: Invalid configuration value found: 'language = None'.
+    Update your configuration to a valid langauge code. Falling
+    back to 'en' (English).
+
+Silence the warning by using 'en'.
+It works with all the Sphinx versions required for building
+kernel documentation (1.7.9 or later).
+
+Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+Link: https://lore.kernel.org/r/bd0c2ddc-2401-03cb-4526-79ca664e1cbe@gmail.com
 Cc: stable@vger.kernel.org
-Fixes: 4fd9bbc6e071 ("drivers/gpio: Altera soft IP GPIO driver devicetree binding")
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/gpio/gpio-altera.txt |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ Documentation/conf.py |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Documentation/devicetree/bindings/gpio/gpio-altera.txt
-+++ b/Documentation/devicetree/bindings/gpio/gpio-altera.txt
-@@ -9,8 +9,9 @@ Required properties:
-   - The second cell is reserved and is currently unused.
- - gpio-controller : Marks the device node as a GPIO controller.
- - interrupt-controller: Mark the device node as an interrupt controller
--- #interrupt-cells : Should be 1. The interrupt type is fixed in the hardware.
-+- #interrupt-cells : Should be 2. The interrupt type is fixed in the hardware.
-   - The first cell is the GPIO offset number within the GPIO controller.
-+  - The second cell is the interrupt trigger type and level flags.
- - interrupts: Specify the interrupt.
- - altr,interrupt-type: Specifies the interrupt trigger type the GPIO
-   hardware is synthesized. This field is required if the Altera GPIO controller
-@@ -38,6 +39,6 @@ gpio_altr: gpio@ff200000 {
- 	altr,interrupt-type = <IRQ_TYPE_EDGE_RISING>;
- 	#gpio-cells = <2>;
- 	gpio-controller;
--	#interrupt-cells = <1>;
-+	#interrupt-cells = <2>;
- 	interrupt-controller;
- };
+--- a/Documentation/conf.py
++++ b/Documentation/conf.py
+@@ -161,7 +161,7 @@ finally:
+ #
+ # This is also used if you do content translation via gettext catalogs.
+ # Usually you set "language" from the command line for these cases.
+-language = None
++language = 'en'
+ 
+ # There are two options for replacing |today|: either, you set today to some
+ # non-false value, then it is used:
 
 
