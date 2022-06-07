@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5910CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D91CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:03:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357763AbiFGVDM (ORCPT
+        id S1378654AbiFGVDS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34242 "EHLO
+        Tue, 7 Jun 2022 17:03:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358515AbiFGUBa (ORCPT
+        with ESMTP id S1358524AbiFGUBa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:01:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 312EE1BFEE5;
-        Tue,  7 Jun 2022 11:25:08 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2BE1BFEE8;
+        Tue,  7 Jun 2022 11:25:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 324B46127C;
-        Tue,  7 Jun 2022 18:25:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E4C1C385A2;
-        Tue,  7 Jun 2022 18:25:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BA63611F3;
+        Tue,  7 Jun 2022 18:24:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 156EFC34115;
+        Tue,  7 Jun 2022 18:24:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626306;
-        bh=E5gEfAVwafdnSrkfLZUGm24EulVo8k7DNIIOMIY8yuc=;
+        s=korg; t=1654626273;
+        bh=y8K22HlUZzFY2D++dPIwaw10yzNWRo2Ms21xUoJuNjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L2R3L1l+xOUIDKiFdiu+jzlNg29dnlF8KOuZ+TLH6uUVAZPmU18bEDrbbaDNerC9s
-         e0SDIllL1c+RvzGlZKWyXhaFam881uE4zneK+fFbcMMiGR2TCYG6DrBwMMWGbTnnWp
-         YCV7mzywvAs25S/skx9lZS/Lr0xlOqJAUJ9GWtvs=
+        b=dgavX+49QDWFWTfKpyJE2TR3Omqvh8J8BXJ+PBuptkpjb1w+R9zlTf+tMLtEJgfr8
+         3sFU0UZ9+/+BAL7yXC+aNoMTFgCHOqb4mU7GsTgQdOxrwVK12uFhV0mejaX8A+68Vr
+         nimvgfQbfiac7uM62Aw/mN2zCUMfSryLbXtZthRk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 330/772] x86: Fix return value of __setup handlers
-Date:   Tue,  7 Jun 2022 18:58:42 +0200
-Message-Id: <20220607164958.746823361@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 319/772] drm/msm/dsi: fix error checks and return values for DSI xmit functions
+Date:   Tue,  7 Jun 2022 18:58:31 +0200
+Message-Id: <20220607164958.425058543@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,102 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit 12441ccdf5e2f5a01a46e344976cbbd3d46845c9 ]
+[ Upstream commit f0e7e9ed379c012c4d6b09a09b868accc426223c ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled. A return
-of 0 causes the boot option/value to be listed as an Unknown kernel
-parameter and added to init's (limited) argument (no '=') or environment
-(with '=') strings. So return 1 from these x86 __setup handlers.
+As noticed by Dan ([1] an the followup thread) there are multiple issues
+with the return values for MSM DSI command transmission callback. In
+the error case it can easily return a positive value when it should
+have returned a proper error code.
 
-Examples:
+This commits attempts to fix these issues both in TX and in RX paths.
 
-  Unknown kernel command line parameters "apicpmtimer
-    BOOT_IMAGE=/boot/bzImage-517rc8 vdso=1 ring3mwait=disable", will be
-    passed to user space.
+[1]: https://lore.kernel.org/linux-arm-msm/20211001123617.GH2283@kili/
 
-  Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-     apicpmtimer
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc8
-     vdso=1
-     ring3mwait=disable
-
-Fixes: 2aae950b21e4 ("x86_64: Add vDSO for x86-64 with gettimeofday/clock_gettime/getcpu")
-Fixes: 77b52b4c5c66 ("x86: add "debugpat" boot option")
-Fixes: e16fd002afe2 ("x86/cpufeature: Enable RING3MWAIT for Knights Landing")
-Fixes: b8ce33590687 ("x86_64: convert to clock events")
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Link: https://lore.kernel.org/r/20220314012725.26661-1-rdunlap@infradead.org
+Fixes: a689554ba6ed ("drm/msm: Initial add DSI connector support")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Tested-by: Marijn Suijten <marijn.suijten@somainline.org>
+Patchwork: https://patchwork.freedesktop.org/patch/480501/
+Link: https://lore.kernel.org/r/20220401231104.967193-1-dmitry.baryshkov@linaro.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/entry/vdso/vma.c   | 2 +-
- arch/x86/kernel/apic/apic.c | 2 +-
- arch/x86/kernel/cpu/intel.c | 2 +-
- arch/x86/mm/pat/memtype.c   | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/msm/dsi/dsi_host.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/entry/vdso/vma.c b/arch/x86/entry/vdso/vma.c
-index 235a5794296a..1000d457c332 100644
---- a/arch/x86/entry/vdso/vma.c
-+++ b/arch/x86/entry/vdso/vma.c
-@@ -438,7 +438,7 @@ bool arch_syscall_is_vdso_sigreturn(struct pt_regs *regs)
- static __init int vdso_setup(char *s)
- {
- 	vdso64_enabled = simple_strtoul(s, NULL, 0);
--	return 0;
-+	return 1;
- }
- __setup("vdso=", vdso_setup);
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
+index 3a3f53f0c8ae..9ea07bd541c4 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_host.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
+@@ -1337,10 +1337,10 @@ static int dsi_cmds2buf_tx(struct msm_dsi_host *msm_host,
+ 			dsi_get_bpp(msm_host->format) / 8;
  
-diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index b70344bf6600..ed7d9cf71f68 100644
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -170,7 +170,7 @@ static __init int setup_apicpmtimer(char *s)
- {
- 	apic_calibrate_pmtmr = 1;
- 	notsc_setup(NULL);
--	return 0;
-+	return 1;
- }
- __setup("apicpmtimer", setup_apicpmtimer);
- #endif
-diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
-index f7a5370a9b3b..2c87d62f191e 100644
---- a/arch/x86/kernel/cpu/intel.c
-+++ b/arch/x86/kernel/cpu/intel.c
-@@ -91,7 +91,7 @@ static bool ring3mwait_disabled __read_mostly;
- static int __init ring3mwait_disable(char *__unused)
- {
- 	ring3mwait_disabled = true;
--	return 0;
-+	return 1;
- }
- __setup("ring3mwait=disable", ring3mwait_disable);
+ 	len = dsi_cmd_dma_add(msm_host, msg);
+-	if (!len) {
++	if (len < 0) {
+ 		pr_err("%s: failed to add cmd type = 0x%x\n",
+ 			__func__,  msg->type);
+-		return -EINVAL;
++		return len;
+ 	}
  
-diff --git a/arch/x86/mm/pat/memtype.c b/arch/x86/mm/pat/memtype.c
-index 4ba2a3ee4bce..d5ef64ddd35e 100644
---- a/arch/x86/mm/pat/memtype.c
-+++ b/arch/x86/mm/pat/memtype.c
-@@ -101,7 +101,7 @@ int pat_debug_enable;
- static int __init pat_debug_setup(char *str)
- {
- 	pat_debug_enable = 1;
--	return 0;
-+	return 1;
- }
- __setup("debugpat", pat_debug_setup);
+ 	/* for video mode, do not send cmds more than
+@@ -1359,10 +1359,14 @@ static int dsi_cmds2buf_tx(struct msm_dsi_host *msm_host,
+ 	}
  
+ 	ret = dsi_cmd_dma_tx(msm_host, len);
+-	if (ret < len) {
+-		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, len=%d\n",
+-			__func__, msg->type, (*(u8 *)(msg->tx_buf)), len);
+-		return -ECOMM;
++	if (ret < 0) {
++		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, len=%d, ret=%d\n",
++			__func__, msg->type, (*(u8 *)(msg->tx_buf)), len, ret);
++		return ret;
++	} else if (ret < len) {
++		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, ret=%d len=%d\n",
++			__func__, msg->type, (*(u8 *)(msg->tx_buf)), ret, len);
++		return -EIO;
+ 	}
+ 
+ 	return len;
+@@ -2088,9 +2092,12 @@ int msm_dsi_host_cmd_rx(struct mipi_dsi_host *host,
+ 		}
+ 
+ 		ret = dsi_cmds2buf_tx(msm_host, msg);
+-		if (ret < msg->tx_len) {
++		if (ret < 0) {
+ 			pr_err("%s: Read cmd Tx failed, %d\n", __func__, ret);
+ 			return ret;
++		} else if (ret < msg->tx_len) {
++			pr_err("%s: Read cmd Tx failed, too short: %d\n", __func__, ret);
++			return -ECOMM;
+ 		}
+ 
+ 		/*
 -- 
 2.35.1
 
