@@ -2,54 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51E95CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 695E0CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355105AbiFGTLC (ORCPT
+        id S1355119AbiFGTLJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:11:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35198 "EHLO
+        Tue, 7 Jun 2022 15:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235219AbiFGSXX (ORCPT
+        with ESMTP id S1350623AbiFGSXm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:23:23 -0400
+        Tue, 7 Jun 2022 14:23:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D98C9EC0;
-        Tue,  7 Jun 2022 10:54:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E94CC16B;
+        Tue,  7 Jun 2022 10:54:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39E3961840;
-        Tue,  7 Jun 2022 17:54:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 759CCC36AFE;
-        Tue,  7 Jun 2022 17:54:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624459;
-        bh=b0y7kcZVJHUzbw5GlGaRG2weKRKicsuh66ywd8v6S5I=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E37060DBA;
+        Tue,  7 Jun 2022 17:54:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E199C3411C;
+        Tue,  7 Jun 2022 17:54:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624462;
+        bh=Q224vtITk0d/tz032JMgEBEMMV9rpIBeSBHpFkpXEq8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CBz0cknnyKL68jO+jmyHwTwSUl+UVUtmjCivpY2zHW4l5wMMj2lZePTFgiS5bb2Ya
-         TSwYYqsNs9Wyc45UBs7NiBCTrkQer1C1uM48AsVMwLi+6z3+qPW71pOcD7axIpjmH9
-         HDdzgGBNkshWByqQStErHtSpjwS7vc/1BVOIKzinx7fn9McvPfiYJP+wuZ5IQxdY/R
-         c4prgWdL6WBP003+stsxrp4GFH6oFhhS5QdoLVxf7+2+l72dfqk2WoojumefvEHQtI
-         e1NgT/5ZlPRYknDpBvQz1e/mhjaLZkVZ5u79R/XE3BiHjatYiQQqk22AFERvGLFRjC
-         s2gDTLz9A0l7g==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheng Bin <zhengbin13@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, w.d.hubbs@gmail.com,
-        chris@the-brannons.com, kirk@reisers.ca,
-        samuel.thibault@ens-lyon.org, salah.triki@gmail.com,
-        trix@redhat.com, speakup@linux-speakup.org
-Subject: [PATCH AUTOSEL 5.17 29/60] accessiblity: speakup: Add missing misc_deregister in softsynth_probe
-Date:   Tue,  7 Jun 2022 13:52:26 -0400
-Message-Id: <20220607175259.478835-29-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+        b=XJUl3P78iCUh92pwv1atzSpiJzyZQMSLqX4rzqAYayhzOaUDcGLn0s8bkiaMmF/KW
+         jbazQzpYtvSQvRLbkQaEPuVXcTFNmzWV2299gKyUNlQhu3GVrPMP//yZVqPpPTwKDu
+         G5qVUkbjKPA5lILSYuIENcXKuz+KPAxjDpexEeIY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zheng Bin <zhengbin13@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 335/667] net: hinic: add missing destroy_workqueue in hinic_pf_to_mgmt_init
+Date:   Tue,  7 Jun 2022 19:00:00 +0200
+Message-Id: <20220607164944.814152952@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -57,31 +52,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Zheng Bin <zhengbin13@huawei.com>
 
-[ Upstream commit 106101303eda8f93c65158e5d72b2cc6088ed034 ]
+[ Upstream commit 382d917bfc1e92339dae3c8a636b2730e8bb5132 ]
 
-softsynth_probe misses a call misc_deregister() in an error path, this
-patch fixes that.
+hinic_pf_to_mgmt_init misses destroy_workqueue in error path,
+this patch fixes that.
 
+Fixes: 6dbb89014dc3 ("hinic: fix sending mailbox timeout in aeq event work")
 Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-Link: https://lore.kernel.org/r/20220511032937.2736738-1-zhengbin13@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/accessibility/speakup/speakup_soft.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/accessibility/speakup/speakup_soft.c b/drivers/accessibility/speakup/speakup_soft.c
-index 19824e7006fe..786dc5d080f3 100644
---- a/drivers/accessibility/speakup/speakup_soft.c
-+++ b/drivers/accessibility/speakup/speakup_soft.c
-@@ -397,6 +397,7 @@ static int softsynth_probe(struct spk_synth *synth)
- 	synthu_device.name = "softsynthu";
- 	synthu_device.fops = &softsynthu_fops;
- 	if (misc_register(&synthu_device)) {
-+		misc_deregister(&synth_device);
- 		pr_warn("Couldn't initialize miscdevice /dev/softsynthu.\n");
- 		return -ENODEV;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
+index ebc77771f5da..4aa1f433ed24 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
+@@ -643,6 +643,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
+ 	err = alloc_msg_buf(pf_to_mgmt);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "Failed to allocate msg buffers\n");
++		destroy_workqueue(pf_to_mgmt->workq);
+ 		hinic_health_reporters_destroy(hwdev->devlink_dev);
+ 		return err;
+ 	}
+@@ -650,6 +651,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
+ 	err = hinic_api_cmd_init(pf_to_mgmt->cmd_chain, hwif);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "Failed to initialize cmd chains\n");
++		destroy_workqueue(pf_to_mgmt->workq);
+ 		hinic_health_reporters_destroy(hwdev->devlink_dev);
+ 		return err;
  	}
 -- 
 2.35.1
+
+
 
