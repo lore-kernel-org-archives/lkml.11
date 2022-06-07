@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC9FCCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D3B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:34:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243728AbiFGRd4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:33:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45432 "EHLO
+        id S1346571AbiFGReD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:34:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347023AbiFGRZi (ORCPT
+        with ESMTP id S1346365AbiFGRYO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:25:38 -0400
+        Tue, 7 Jun 2022 13:24:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E65113A18;
-        Tue,  7 Jun 2022 10:23:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 315E63C492;
+        Tue,  7 Jun 2022 10:22:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E28A60DB7;
-        Tue,  7 Jun 2022 17:23:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 821DFC385A5;
-        Tue,  7 Jun 2022 17:23:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A69C860AE5;
+        Tue,  7 Jun 2022 17:22:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0E2FC385A5;
+        Tue,  7 Jun 2022 17:22:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622638;
-        bh=a8W1Xyi5UJaRH3cOEV6KFlvHU+44TiyfFTT5jZ3JfqY=;
+        s=korg; t=1654622542;
+        bh=ozh1G02jBvU/LggvUu4u7Djg4oaIrmGMdGp9z3bVmYs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JsdUg888WuWasYehweHYFr9Q9a01UKX6YKCjDoYHcbPGeza4pVCrhHD3xPJ/uyIo+
-         k1uLC4IGirNSgB9jwxmuXsn3vgSsDFyuqx5UwnTH21+DAfuNdtL5Ldo7TAGAZ5gjSb
-         peF2mK3Ypy8WvECai83yDknjsGSYzK0SK4xMzdz8=
+        b=EH0GSzosyqXYY3yONcsSsRzvY8eUHIvPH9d33hvCCILod2rujWuDZOolsXmRVbynD
+         0HCwTOSwSV8cF6hWTY4tsAkP4CleZgXwRMBjGVE0VXQiZvm81TayXVi/7kl5EJVUMu
+         MRx5U7gNBz50sk38q5EXCyIY/jlbEm6B4MhUCRpQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miles Chen <miles.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Zhiqiang Lin <zhiqiang.lin@mediatek.com>,
-        CK Hu <ck.hu@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        stable@vger.kernel.org, Bob Peterson <rpeterso@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 131/452] drm/mediatek: Fix mtk_cec_mask()
-Date:   Tue,  7 Jun 2022 18:59:48 +0200
-Message-Id: <20220607164912.462816952@linuxfoundation.org>
+Subject: [PATCH 5.10 096/452] gfs2: use i_lock spin_lock for inode qadata
+Date:   Tue,  7 Jun 2022 18:59:13 +0200
+Message-Id: <20220607164911.419523793@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -54,43 +50,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miles Chen <miles.chen@mediatek.com>
+From: Bob Peterson <rpeterso@redhat.com>
 
-[ Upstream commit 2c5d69b0a141e1e98febe3111e6f4fd8420493a5 ]
+[ Upstream commit 5fcff61eea9efd1f4b60e89d2d686b5feaea100f ]
 
-In current implementation, mtk_cec_mask() writes val into target register
-and ignores the mask. After talking to our hdmi experts, mtk_cec_mask()
-should read a register, clean only mask bits, and update (val | mask) bits
-to the register.
+Before this patch, functions gfs2_qa_get and _put used the i_rw_mutex to
+prevent simultaneous access to its i_qadata. But i_rw_mutex is now used
+for many other things, including iomap_begin and end, which causes a
+conflict according to lockdep. We cannot just remove the lock since
+simultaneous opens (gfs2_open -> gfs2_open_common -> gfs2_qa_get) can
+then stomp on each others values for i_qadata.
 
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220315232301.2434-1-miles.chen@mediatek.com/
-Fixes: 8f83f26891e1 ("drm/mediatek: Add HDMI support")
-Signed-off-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Zhiqiang Lin <zhiqiang.lin@mediatek.com>
-Cc: CK Hu <ck.hu@mediatek.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+This patch solves the conflict by using the i_lock spin_lock in the inode
+to prevent simultaneous access.
+
+Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_cec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/gfs2/quota.c | 32 ++++++++++++++++++++------------
+ 1 file changed, 20 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_cec.c b/drivers/gpu/drm/mediatek/mtk_cec.c
-index cb29b649fcdb..12bf93769497 100644
---- a/drivers/gpu/drm/mediatek/mtk_cec.c
-+++ b/drivers/gpu/drm/mediatek/mtk_cec.c
-@@ -84,7 +84,7 @@ static void mtk_cec_mask(struct mtk_cec *cec, unsigned int offset,
- 	u32 tmp = readl(cec->regs + offset) & ~mask;
+diff --git a/fs/gfs2/quota.c b/fs/gfs2/quota.c
+index 6e173ae378c4..ad953ecb5853 100644
+--- a/fs/gfs2/quota.c
++++ b/fs/gfs2/quota.c
+@@ -531,34 +531,42 @@ static void qdsb_put(struct gfs2_quota_data *qd)
+  */
+ int gfs2_qa_get(struct gfs2_inode *ip)
+ {
+-	int error = 0;
+ 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
++	struct inode *inode = &ip->i_inode;
  
- 	tmp |= val & mask;
--	writel(val, cec->regs + offset);
-+	writel(tmp, cec->regs + offset);
+ 	if (sdp->sd_args.ar_quota == GFS2_QUOTA_OFF)
+ 		return 0;
+ 
+-	down_write(&ip->i_rw_mutex);
++	spin_lock(&inode->i_lock);
+ 	if (ip->i_qadata == NULL) {
+-		ip->i_qadata = kmem_cache_zalloc(gfs2_qadata_cachep, GFP_NOFS);
+-		if (!ip->i_qadata) {
+-			error = -ENOMEM;
+-			goto out;
+-		}
++		struct gfs2_qadata *tmp;
++
++		spin_unlock(&inode->i_lock);
++		tmp = kmem_cache_zalloc(gfs2_qadata_cachep, GFP_NOFS);
++		if (!tmp)
++			return -ENOMEM;
++
++		spin_lock(&inode->i_lock);
++		if (ip->i_qadata == NULL)
++			ip->i_qadata = tmp;
++		else
++			kmem_cache_free(gfs2_qadata_cachep, tmp);
+ 	}
+ 	ip->i_qadata->qa_ref++;
+-out:
+-	up_write(&ip->i_rw_mutex);
+-	return error;
++	spin_unlock(&inode->i_lock);
++	return 0;
  }
  
- void mtk_cec_set_hpd_event(struct device *dev,
+ void gfs2_qa_put(struct gfs2_inode *ip)
+ {
+-	down_write(&ip->i_rw_mutex);
++	struct inode *inode = &ip->i_inode;
++
++	spin_lock(&inode->i_lock);
+ 	if (ip->i_qadata && --ip->i_qadata->qa_ref == 0) {
+ 		kmem_cache_free(gfs2_qadata_cachep, ip->i_qadata);
+ 		ip->i_qadata = NULL;
+ 	}
+-	up_write(&ip->i_rw_mutex);
++	spin_unlock(&inode->i_lock);
+ }
+ 
+ int gfs2_quota_hold(struct gfs2_inode *ip, kuid_t uid, kgid_t gid)
 -- 
 2.35.1
 
