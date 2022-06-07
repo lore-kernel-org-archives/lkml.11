@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D2DBCCA497
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE28EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358264AbiFGTwS (ORCPT
+        id S1358159AbiFGTv4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:52:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53896 "EHLO
+        Tue, 7 Jun 2022 15:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352187AbiFGStK (ORCPT
+        with ESMTP id S1354265AbiFGSqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:49:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D18D6206;
-        Tue,  7 Jun 2022 11:03:11 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB2D118020;
+        Tue,  7 Jun 2022 11:00:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCF73B81F38;
-        Tue,  7 Jun 2022 18:03:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C59ECC36AFF;
-        Tue,  7 Jun 2022 18:03:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2530B61866;
+        Tue,  7 Jun 2022 18:00:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59FD9C34115;
+        Tue,  7 Jun 2022 18:00:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624988;
-        bh=TJBhf9cCZntuUry2rBduhUC/L6MPgWTTHuECFdctN7Q=;
+        s=k20201202; t=1654624829;
+        bh=AFtAHfC/KbuuNV46TdvKwid6qZzeWaijsvBa9IoGvxk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lZ38ncLXEiPODxm029Q+gRe2wlfmU5gapmMzjsz/K/8DbKe7p7YioliVq++C33KWm
-         hIBCZCwAFVLhqN+ZOw4WmJkVYA2Z9L/FPDb4Ynajlo1HHn/sNQzxGQdxyS5+XGPe9z
-         2KtB0WRcAF+0FJ17qQODV28jKCiLAsAHl7/zXYgYD/myGkpf4pFwIxnwpLLJ0+v8RN
-         13BZ/gtdhdrVg6sRSFlGCeG9YjY2MYTEaxVnlzL3t+SVE1303U78J0NMyrRSHnwkoJ
-         q0naj9dQNyJnyAC0ogtvMp9Q5FLYIHtCWMKFVMjr98t+v1aVi0JNLk47FnUYP3dpI1
-         O2mpJzw+GX4CA==
+        b=O8/QWVjUDKuiuAk+GxsrGkLZKrdbswi6dQyxShfIR6pCMskvaFCJMw68zfW/pm9kg
+         ASxQC73XQ58Ome2Z+gpTy3HuOrd5dxAVNoZCvEjUL+QSSIHbjm9mfbviBPgauvbKkc
+         9njE4CvrCMHeJBBi3cgj2LcwhVHLvY9t44cnL+TWzhNdb8GMP2tkWilIek14U0Ho+/
+         elLbn0AyTAId0Kw3UfrLpLihJ1ftGXxRSltrFGMeilL5Uk2sE+X7jM7Kqio6+lU1T+
+         8IxOjuE50YxC1KGZWUM6U4ePBWV54jUN44M5P5yhzcQget9PkfIcKHVatW8CGMVLb8
+         FlalKNa8pTmrg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sasha Levin <sashal@kernel.org>, michal.lkml@markovi.net,
-        linux-kbuild@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 21/25] modpost: fix undefined behavior of is_arm_mapping_symbol()
-Date:   Tue,  7 Jun 2022 14:02:22 -0400
-Message-Id: <20220607180229.482040-21-sashal@kernel.org>
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, baihaowen@meizu.com,
+        dave@stgolabs.net, wangborong@cdjrlc.com, len.baker@gmx.com,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.4 06/34] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
+Date:   Tue,  7 Jun 2022 13:59:41 -0400
+Message-Id: <20220607180011.481266-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180229.482040-1-sashal@kernel.org>
-References: <20220607180229.482040-1-sashal@kernel.org>
+In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
+References: <20220607180011.481266-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,61 +54,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit d6b732666a1bae0df3c3ae06925043bba34502b1 ]
+[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
 
-The return value of is_arm_mapping_symbol() is unpredictable when "$"
-is passed in.
+There is a deadlock in ieee80211_beacons_stop(), which is shown below:
 
-strchr(3) says:
-  The strchr() and strrchr() functions return a pointer to the matched
-  character or NULL if the character is not found. The terminating null
-  byte is considered part of the string, so that if c is specified as
-  '\0', these functions return a pointer to the terminator.
+   (Thread 1)              |      (Thread 2)
+                           | ieee80211_send_beacon()
+ieee80211_beacons_stop()   |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | ieee80211_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-When str[1] is '\0', strchr("axtd", str[1]) is not NULL, and str[2] is
-referenced (i.e. buffer overrun).
+We hold ieee->beacon_lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, ieee80211_beacons_stop() will block forever.
 
-Test code
----------
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
 
-  char str1[] = "abc";
-  char str2[] = "ab";
-
-  strcpy(str1, "$");
-  strcpy(str2, "$");
-
-  printf("test1: %d\n", is_arm_mapping_symbol(str1));
-  printf("test2: %d\n", is_arm_mapping_symbol(str2));
-
-Result
-------
-
-  test1: 0
-  test2: 1
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/mod/modpost.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index b6eb929899c5..eaf82042f31c 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1229,7 +1229,8 @@ static int secref_whitelist(const struct sectioncheck *mismatch,
+diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+index 33a6af7aad22..a869694337f7 100644
+--- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
++++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+@@ -528,9 +528,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
  
- static inline int is_arm_mapping_symbol(const char *str)
- {
--	return str[0] == '$' && strchr("axtd", str[1])
-+	return str[0] == '$' &&
-+	       (str[1] == 'a' || str[1] == 'd' || str[1] == 't' || str[1] == 'x')
- 	       && (str[2] == '\0' || str[2] == '.');
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
+ 
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
  }
  
+ void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
 -- 
 2.35.1
 
