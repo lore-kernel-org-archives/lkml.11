@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A11DCCCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21397CCA487
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384496AbiFGWUd (ORCPT
+        id S1385113AbiFGWVB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47286 "EHLO
+        Tue, 7 Jun 2022 18:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380242AbiFGVP4 (ORCPT
+        with ESMTP id S1380455AbiFGVQU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:15:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF8D158757;
-        Tue,  7 Jun 2022 11:54:49 -0700 (PDT)
+        Tue, 7 Jun 2022 17:16:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8927F21CBE3;
+        Tue,  7 Jun 2022 11:55:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D685617A0;
-        Tue,  7 Jun 2022 18:54:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 499C9C385A2;
-        Tue,  7 Jun 2022 18:54:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBF83612F2;
+        Tue,  7 Jun 2022 18:55:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06A10C385A2;
+        Tue,  7 Jun 2022 18:55:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628088;
-        bh=Kp8VJzKJlpWZkHGsD8IDe+JQQwNyAiTWjYeGgo66Je0=;
+        s=korg; t=1654628102;
+        bh=tO43DjKucU72pP0RHq0rgcL4dGdhO7HahM+k57aUjI0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vNMCLshvimHvtI4NzsoRR/euyfOaUvsZ3YbFY5BFfOBJiq90fQ7pPqNFkuR+bcfwo
-         GU+2Qx5ToTgHnUrxbo0gPsoikhGJVMGlftQvRvSCDtWEHOF8H6rWUSeLoMhEeWLjcu
-         f63icdywshcO3ELde8GPkRK1TgYiq505ozyERxw0=
+        b=05YYQWxlMZdE/e51i1W7QvRYMTIy4XPv8B6BBQQ+61nCuKqgext0e96Dlj8EtYuvX
+         jc460Fsr8T9SlYaR9AGjJaTazkJGULiZ7isCvj54DYEtFti/yA9vE9waiTRSuxZv67
+         7t9wTzDA4F8bK8rMfn8pJuQbRWGhcvsxNCKXl6cQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Daniel Latypov <dlatypov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 195/879] net: ipa: ignore endianness if there is no header
-Date:   Tue,  7 Jun 2022 18:55:13 +0200
-Message-Id: <20220607165008.504526030@linuxfoundation.org>
+Subject: [PATCH 5.18 208/879] kunit: fix executor OOM error handling logic on non-UML
+Date:   Tue,  7 Jun 2022 18:55:26 +0200
+Message-Id: <20220607165008.887415960@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,81 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Daniel Latypov <dlatypov@google.com>
 
-[ Upstream commit 332ef7c814bdd60f08d0d9013d0e1104798b2d23 ]
+[ Upstream commit 1b11063d32d7e11366e48be64215ff517ce32217 ]
 
-If we program an RX endpoint to have no header (header length is 0),
-header-related endpoint configuration values are meaningless and are
-ignored.
+The existing logic happens to work fine on UML, but is not correct when
+running on other arches.
 
-The only case we support that defines a header is QMAP endpoints.
-In ipa_endpoint_init_hdr_ext() we set the endianness mask value
-unconditionally, but it should not be done if there is no header
-(meaning it is not configured for QMAP).
+1. We didn't initialize `int err`, and kunit_filter_suites() doesn't
+   explicitly set it to 0 on success. So we had false "failures".
+   Note: it doesn't happen on UML, causing this to get overlooked.
+2. If we error out, we do not call kunit_handle_shutdown().
+   This makes kunit.py timeout when using a non-UML arch, since the QEMU
+   process doesn't ever exit.
 
-Set the endianness conditionally, and rearrange the logic in that
-function slightly to avoid testing the qmap flag twice.
-
-Delete an incorrect comment in ipa_endpoint_init_aggr().
-
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: a02353f49162 ("kunit: bail out of test filtering logic quicker if OOM")
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 32 +++++++++++++++++---------------
- 1 file changed, 17 insertions(+), 15 deletions(-)
+ lib/kunit/executor.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 53764f3c0c7e..55322800ba58 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -587,19 +587,23 @@ static void ipa_endpoint_init_hdr_ext(struct ipa_endpoint *endpoint)
- 	struct ipa *ipa = endpoint->ipa;
- 	u32 val = 0;
+diff --git a/lib/kunit/executor.c b/lib/kunit/executor.c
+index 2f73a6a35a7e..96f96e42ce06 100644
+--- a/lib/kunit/executor.c
++++ b/lib/kunit/executor.c
+@@ -247,13 +247,13 @@ int kunit_run_all_tests(void)
+ 		.start = __kunit_suites_start,
+ 		.end = __kunit_suites_end,
+ 	};
+-	int err;
++	int err = 0;
  
--	val |= HDR_ENDIANNESS_FMASK;		/* big endian */
--
--	/* A QMAP header contains a 6 bit pad field at offset 0.  The RMNet
--	 * driver assumes this field is meaningful in packets it receives,
--	 * and assumes the header's payload length includes that padding.
--	 * The RMNet driver does *not* pad packets it sends, however, so
--	 * the pad field (although 0) should be ignored.
--	 */
--	if (endpoint->data->qmap && !endpoint->toward_ipa) {
--		val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
--		/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
--		val |= HDR_PAYLOAD_LEN_INC_PADDING_FMASK;
--		/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
-+	if (endpoint->data->qmap) {
-+		/* We have a header, so we must specify its endianness */
-+		val |= HDR_ENDIANNESS_FMASK;	/* big endian */
-+
-+		/* A QMAP header contains a 6 bit pad field at offset 0.
-+		 * The RMNet driver assumes this field is meaningful in
-+		 * packets it receives, and assumes the header's payload
-+		 * length includes that padding.  The RMNet driver does
-+		 * *not* pad packets it sends, however, so the pad field
-+		 * (although 0) should be ignored.
-+		 */
-+		if (!endpoint->toward_ipa) {
-+			val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
-+			/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
-+			val |= HDR_PAYLOAD_LEN_INC_PADDING_FMASK;
-+			/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
-+		}
+ 	if (filter_glob_param) {
+ 		suite_set = kunit_filter_suites(&suite_set, filter_glob_param, &err);
+ 		if (err) {
+ 			pr_err("kunit executor: error filtering suites: %d\n", err);
+-			return err;
++			goto out;
+ 		}
  	}
  
- 	/* HDR_PAYLOAD_LEN_INC_PADDING is 0 */
-@@ -759,8 +763,6 @@ static void ipa_endpoint_init_aggr(struct ipa_endpoint *endpoint)
+@@ -268,9 +268,10 @@ int kunit_run_all_tests(void)
+ 		kunit_free_suite_set(suite_set);
+ 	}
  
- 			close_eof = rx_data->aggr_close_eof;
- 			val |= aggr_sw_eof_active_encoded(version, close_eof);
--
--			/* AGGR_HARD_BYTE_LIMIT_ENABLE is 0 */
- 		} else {
- 			val |= u32_encode_bits(IPA_ENABLE_DEAGGR,
- 					       AGGR_EN_FMASK);
+-	kunit_handle_shutdown();
+ 
+-	return 0;
++out:
++	kunit_handle_shutdown();
++	return err;
+ }
+ 
+ #if IS_BUILTIN(CONFIG_KUNIT_TEST)
 -- 
 2.35.1
 
