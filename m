@@ -2,97 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23EDCCCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FE10CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379117AbiFGVF0 (ORCPT
+        id S1379088AbiFGVFM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:05:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43028 "EHLO
+        Tue, 7 Jun 2022 17:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358400AbiFGUDw (ORCPT
+        with ESMTP id S1358204AbiFGUDU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:03:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550881C2862;
-        Tue,  7 Jun 2022 11:25:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96F31B82382;
-        Tue,  7 Jun 2022 18:25:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE64EC385A5;
-        Tue,  7 Jun 2022 18:25:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626340;
-        bh=JWTIJFWiqfSGhkWCPv05MlHJfy4rHDE1r2J2LU54idY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r+DDJrtJcEGp0k6bWCVtkUMhzTD61qiitrPvqpVRUP4yHmJERIY+cl+5hcSHSVe8u
-         at7vzisEEOv9eUNcg6gC9Ox5xM/mrqbRqze8k5sjaBIoFQNpP39GfVH6ZJygTb8zlx
-         Jg70QFuESaozicYTV0h0/mS0KdxVvHe9WZGncMZw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 302/772] scsi: ufs: qcom: Fix ufs_qcom_resume()
-Date:   Tue,  7 Jun 2022 18:58:14 +0200
-Message-Id: <20220607164957.924196049@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 16:03:20 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1091C285B
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:25:41 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id l10-20020a6b3e0a000000b006694bc5a982so3642773ioa.0
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:25:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=k1e8Tc/bhXaKPbvd4ORPtFyg8YT3uAhzDyuaK7uM+Js=;
+        b=qttQh9jMsL/Y/JBgTkMaZiztdmNoZEGuky4l7LR1HmG02ib9ddtNrWZSh/6nBn9IpQ
+         965k6WODDGJ8wUixquC6PcK26BH0FW/FAatGGOAo6TfDPAnEvlYzVtEH7QUkzduWPZkG
+         C3laBM7Cn0IoMjgIFSEugwhcQFSfZKVq7NENrNflZ7KhhmLovvgSUgPvJf0yQXJH1y0X
+         sTndGUE541UVI/xnNZ0PVIIoChUCyCjTDx1Zf8XAJ6UYYHsvX+lbdgjANecxPSJd171y
+         FxC1HPMmIJUH/xniZQ0EdcWah/gRRwjh7srv6kSwyd5qU5nx7jv9tJLOtm2d7+Sb/6We
+         +xUA==
+X-Gm-Message-State: AOAM533lzi/fuKOdGDDqzG6ITYEYC6/SyWAqIVggWGylNX0U748DvPFR
+        w7nREeltk0k34B5l0oat71T9HrVJAhenE1HgW+3AKZeQM0Pt
+X-Google-Smtp-Source: ABdhPJz1VGU8BKz+izWU7o5gCU8RmLnE5bPfn5dnUbUENVntlYs7SI1MIryy7TOVwCfxPjNN7UPXo4ky6Bwv6B+DmLmIj+Waeo+f
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6e02:1a83:b0:2d1:bb9a:bade with SMTP id
+ k3-20020a056e021a8300b002d1bb9abademr17126640ilv.189.1654626321631; Tue, 07
+ Jun 2022 11:25:21 -0700 (PDT)
+Date:   Tue, 07 Jun 2022 11:25:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000023102605e0dfb6c0@google.com>
+Subject: [syzbot] general protection fault in reset_interrupt (2)
+From:   syzbot <syzbot+682e25dfa0255204491a@syzkaller.appspotmail.com>
+To:     axboe@kernel.dk, efremov@linux.com, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+Hello,
 
-[ Upstream commit bee40dc167da159ea5b939c074e1da258610a3d6 ]
+syzbot found the following issue on:
 
-Clearing hba->is_sys_suspended if ufs_qcom_resume() succeeds is wrong. That
-variable must only be cleared if all actions involved in a resume succeed.
-Hence remove the statement that clears hba->is_sys_suspended from
-ufs_qcom_resume().
+HEAD commit:    50fd82b3a9a9 Merge tag 'docs-5.19-2' of git://git.lwn.net/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=17b08fbdf00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=bb7e6d86633f6f71
+dashboard link: https://syzkaller.appspot.com/bug?extid=682e25dfa0255204491a
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=165f5277f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=171403aff00000
 
-Link: https://lore.kernel.org/r/20220419225811.4127248-23-bvanassche@acm.org
-Fixes: 81c0fc51b7a7 ("ufs-qcom: add support for Qualcomm Technologies Inc platforms")
-Tested-by: Bean Huo <beanhuo@micron.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Bean Huo <beanhuo@micron.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+682e25dfa0255204491a@syzkaller.appspotmail.com
+
+c1 00                                            ..
+status=d0
+fdc_busy=0
+cont=0000000000000000
+current_req=0000000000000000
+command_status=-1
+general protection fault, probably for non-canonical address 0xdffffc0000000002: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
+CPU: 3 PID: 3441 Comm: kworker/u16:2 Not tainted 5.18.0-syzkaller-12234-g50fd82b3a9a9 #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Workqueue: floppy floppy_work_workfn
+RIP: 0010:reset_interrupt.cold+0x3d/0x88 drivers/block/floppy.c:1789
+Code: e8 da f0 ff ff e9 89 61 52 fb e8 e1 39 33 f8 48 8b 1d 8a 3b dd 07 b8 ff ff 37 00 48 c1 e0 2a 48 8d 7b 10 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 3e 48 8b 73 10 48 c7 c7 40 51 42 8a e8 5c 28 eb ff
+RSP: 0018:ffffc90002d2fd08 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000002 RSI: ffffffff89467b8f RDI: 0000000000000010
+RBP: ffffffff8c8e71e0 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000001
+R13: ffffc90002d2fda8 R14: ffff888014ba4100 R15: ffff888011875800
+FS:  0000000000000000(0000) GS:ffff88802cb00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f751b73001d CR3: 000000001f1bf000 CR4: 0000000000150ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:reset_interrupt.cold+0x3d/0x88 drivers/block/floppy.c:1789
+Code: e8 da f0 ff ff e9 89 61 52 fb e8 e1 39 33 f8 48 8b 1d 8a 3b dd 07 b8 ff ff 37 00 48 c1 e0 2a 48 8d 7b 10 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 3e 48 8b 73 10 48 c7 c7 40 51 42 8a e8 5c 28 eb ff
+RSP: 0018:ffffc90002d2fd08 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000002 RSI: ffffffff89467b8f RDI: 0000000000000010
+RBP: ffffffff8c8e71e0 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000001
+R13: ffffc90002d2fda8 R14: ffff888014ba4100 R15: ffff888011875800
+FS:  0000000000000000(0000) GS:ffff88802cb00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f751b73001d CR3: 000000001f1bf000 CR4: 0000000000150ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	e8 da f0 ff ff       	callq  0xfffff0df
+   5:	e9 89 61 52 fb       	jmpq   0xfb526193
+   a:	e8 e1 39 33 f8       	callq  0xf83339f0
+   f:	48 8b 1d 8a 3b dd 07 	mov    0x7dd3b8a(%rip),%rbx        # 0x7dd3ba0
+  16:	b8 ff ff 37 00       	mov    $0x37ffff,%eax
+  1b:	48 c1 e0 2a          	shl    $0x2a,%rax
+  1f:	48 8d 7b 10          	lea    0x10(%rbx),%rdi
+  23:	48 89 fa             	mov    %rdi,%rdx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
+  2e:	75 3e                	jne    0x6e
+  30:	48 8b 73 10          	mov    0x10(%rbx),%rsi
+  34:	48 c7 c7 40 51 42 8a 	mov    $0xffffffff8a425140,%rdi
+  3b:	e8 5c 28 eb ff       	callq  0xffeb289c
+
+
 ---
- drivers/scsi/ufs/ufs-qcom.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/scsi/ufs/ufs-qcom.c b/drivers/scsi/ufs/ufs-qcom.c
-index 0d2e950d0865..2f3183b8e936 100644
---- a/drivers/scsi/ufs/ufs-qcom.c
-+++ b/drivers/scsi/ufs/ufs-qcom.c
-@@ -641,12 +641,7 @@ static int ufs_qcom_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
- 			return err;
- 	}
- 
--	err = ufs_qcom_ice_resume(host);
--	if (err)
--		return err;
--
--	hba->is_sys_suspended = false;
--	return 0;
-+	return ufs_qcom_ice_resume(host);
- }
- 
- static void ufs_qcom_dev_ref_clk_ctrl(struct ufs_qcom_host *host, bool enable)
--- 
-2.35.1
-
-
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
