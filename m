@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD3BCCA487
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:21:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B011CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:21:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379605AbiFGVUV (ORCPT
+        id S1379948AbiFGVUr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:20:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51106 "EHLO
+        Tue, 7 Jun 2022 17:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359354AbiFGUWL (ORCPT
+        with ESMTP id S1359485AbiFGUW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:22:11 -0400
+        Tue, 7 Jun 2022 16:22:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCC314640A;
-        Tue,  7 Jun 2022 11:31:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA101D503A;
+        Tue,  7 Jun 2022 11:32:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A418611B9;
-        Tue,  7 Jun 2022 18:31:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E2B4C385A2;
-        Tue,  7 Jun 2022 18:31:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B269761295;
+        Tue,  7 Jun 2022 18:32:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAFF0C385A2;
+        Tue,  7 Jun 2022 18:32:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626693;
-        bh=8yedqsOLfQOkKI3LlACac8hOS/l2lcCrAkfT0hiMeDs=;
+        s=korg; t=1654626721;
+        bh=BVS30Ri3Nw0GyaQoY80jOTh/+gVIBSzugnPkzKzAh24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UEsvyaICuOr8LBTatZ8/zu3917bQl8mnM8qt6L986gnO5Heoz1DfQ5/ZQZJ+Z4XB7
-         cTP1gj/dTyS8Mbtn2PpIaEmdF0+ttweco6SQauqB7dMB1HeoHHKUl1rh009tLFRtdz
-         gh/lCeBAKH6i2uyHlXneGQdxIluyY3nxx5PPmWZw=
+        b=lkmpbNJUXtdCkSiJZjyR5PhL+vXmt4y5tBByPUvULo6fwCrMiW4z7BdM6U2t6QJ6U
+         fhAljiDMbxc1w49qMtly3OSaPrzNWeT6iY/t2GNZvzfHf3CBV2Wo3SjeVEI8IWs24W
+         cLBUuabDII80rm3nbqmH4rqbWKj/C2h2wuhhx2dA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Marco Chiappero <marco.chiappero@intel.com>,
+        stable@vger.kernel.org, Vladis Dronov <vdronov@redhat.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 468/772] crypto: qat - set COMPRESSION capability for DH895XCC
-Date:   Tue,  7 Jun 2022 19:01:00 +0200
-Message-Id: <20220607165002.788155706@linuxfoundation.org>
+Subject: [PATCH 5.17 481/772] hwrng: cn10k - Optimize cn10k_rng_read()
+Date:   Tue,  7 Jun 2022 19:01:13 +0200
+Message-Id: <20220607165003.164126671@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,41 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+From: Vladis Dronov <vdronov@redhat.com>
 
-[ Upstream commit 0eaa51543273fd0f4ba9bea83638f7033436e5eb ]
+[ Upstream commit 753d6770879894de10d74b437ab99ea380f1cad7 ]
 
-The capability detection logic clears bits for the features that are
-disabled in a certain SKU. For example, if the bit associate to
-compression is not present in the LEGFUSE register, the correspondent
-bit is cleared in the capability mask.
-This change adds the compression capability to the mask as this was
-missing in the commit that enhanced the capability detection logic.
+This function assumes that sizeof(void) is 1 and arithmetic works for
+void pointers. This is a GNU C extention and may not work with other
+compilers. Change this by using an u8 pointer.
 
-Fixes: cfe4894eccdc ("crypto: qat - set COMPRESSION capability for QAT GEN2")
-Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
-Reviewed-by: Marco Chiappero <marco.chiappero@intel.com>
+Also move cn10k_read_trng() out of a loop thus saving some cycles.
+
+Fixes: 38e9791a0209 ("hwrng: cn10k - Add random number generator support")
+Signed-off-by: Vladis Dronov <vdronov@redhat.com>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/char/hw_random/cn10k-rng.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c b/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
-index ff13047772e3..61d5467e0d92 100644
---- a/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
-+++ b/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
-@@ -59,7 +59,8 @@ static u32 get_accel_cap(struct adf_accel_dev *accel_dev)
- 	capabilities = ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC |
- 		       ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC |
- 		       ICP_ACCEL_CAPABILITIES_AUTHENTICATION |
--		       ICP_ACCEL_CAPABILITIES_CIPHER;
-+		       ICP_ACCEL_CAPABILITIES_CIPHER |
-+		       ICP_ACCEL_CAPABILITIES_COMPRESSION;
+diff --git a/drivers/char/hw_random/cn10k-rng.c b/drivers/char/hw_random/cn10k-rng.c
+index 35001c63648b..dd226630b67d 100644
+--- a/drivers/char/hw_random/cn10k-rng.c
++++ b/drivers/char/hw_random/cn10k-rng.c
+@@ -90,6 +90,7 @@ static int cn10k_rng_read(struct hwrng *hwrng, void *data,
+ {
+ 	struct cn10k_rng *rng = (struct cn10k_rng *)hwrng->priv;
+ 	unsigned int size;
++	u8 *pos = data;
+ 	int err = 0;
+ 	u64 value;
  
- 	/* Read accelerator capabilities mask */
- 	pci_read_config_dword(pdev, ADF_DEVICE_LEGFUSE_OFFSET, &legfuses);
+@@ -102,17 +103,20 @@ static int cn10k_rng_read(struct hwrng *hwrng, void *data,
+ 	while (size >= 8) {
+ 		cn10k_read_trng(rng, &value);
+ 
+-		*((u64 *)data) = (u64)value;
++		*((u64 *)pos) = value;
+ 		size -= 8;
+-		data += 8;
++		pos += 8;
+ 	}
+ 
+-	while (size > 0) {
++	if (size > 0) {
+ 		cn10k_read_trng(rng, &value);
+ 
+-		*((u8 *)data) = (u8)value;
+-		size--;
+-		data++;
++		while (size > 0) {
++			*pos = (u8)value;
++			value >>= 8;
++			size--;
++			pos++;
++		}
+ 	}
+ 
+ 	return max - size;
 -- 
 2.35.1
 
