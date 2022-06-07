@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9C0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C11ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:48:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349357AbiFGUsp (ORCPT
+        id S1376613AbiFGUsu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37294 "EHLO
+        Tue, 7 Jun 2022 16:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356974AbiFGTq2 (ORCPT
+        with ESMTP id S1357824AbiFGTrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:46:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B6B689BB;
-        Tue,  7 Jun 2022 11:18:54 -0700 (PDT)
+        Tue, 7 Jun 2022 15:47:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678B76CF4A;
+        Tue,  7 Jun 2022 11:19:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C06D660DE2;
-        Tue,  7 Jun 2022 18:18:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0827C3411F;
-        Tue,  7 Jun 2022 18:18:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2299EB8237D;
+        Tue,  7 Jun 2022 18:19:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8740FC34115;
+        Tue,  7 Jun 2022 18:19:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625931;
-        bh=FfPhJu8v9WFm9WF85DjB2S/mhUA3fz0JzrI1FkCPw8E=;
+        s=korg; t=1654625944;
+        bh=FTiI156Bl/R9a/IH+dywYgcf8JKm5MuzE4oQ6KL5C9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UoHLJMmbAyvCtQEKbVOjiV+hiTFhqZESwJWSq9TYJLa9aclveSsXzncR22ZlyTl4A
-         T1Puvw31mQxS5f8N3ztnoMV3yKRp6FGv1TVB36/b81+GpDmN3P1bt9r7EZIxtkZvDS
-         ajOsZjRa0nwWZrc2ujwZS3xNnW3G4mgmlut2Zp04=
+        b=E8BebtxgKfO5bpGBEtk7kyB5cd7miYgXQbaQllxV6lqMY6ybH4gq4+SFcdnniifHs
+         mwuTuqHMRgVQZoZa8TEAlIgtHdd9dITKiOwYAyQ7RjHnYcuVf8Y2PFNho83U3oQ/Ld
+         S6KuIj/5SjT4aEVyeMLvFIxu1MxU3g9p8QxQxJvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joel Selvaraj <jo@jsfamily.in>,
-        Caleb Connolly <caleb@connolly.tech>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org,
+        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        qianfan <qianfanguijin@163.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 195/772] arm64: dts: qcom: sdm845-xiaomi-beryllium: fix typo in panels vddio-supply property
-Date:   Tue,  7 Jun 2022 18:56:27 +0200
-Message-Id: <20220607164954.780534251@linuxfoundation.org>
+Subject: [PATCH 5.17 200/772] fat: add ratelimit to fat*_ent_bread()
+Date:   Tue,  7 Jun 2022 18:56:32 +0200
+Message-Id: <20220607164954.926327161@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,34 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joel Selvaraj <jo@jsfamily.in>
+From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
 
-[ Upstream commit 1f1c494082a1f10d03ce4ee1485ee96d212e22ff ]
+[ Upstream commit 183c3237c928109d2008c0456dff508baf692b20 ]
 
-vddio is misspelled with a "0" instead of "o". Fix it.
+fat*_ent_bread() can be the cause of too many report on I/O error path.
+So use fat_msg_ratelimit() instead.
 
-Signed-off-by: Joel Selvaraj <jo@jsfamily.in>
-Reviewed-by: Caleb Connolly <caleb@connolly.tech>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/BY5PR02MB7009901651E6A8D5ACB0425ED91F9@BY5PR02MB7009.namprd02.prod.outlook.com
+Link: https://lkml.kernel.org/r/87bkxogfeq.fsf@mail.parknet.co.jp
+Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Reported-by: qianfan <qianfanguijin@163.com>
+Tested-by: qianfan <qianfanguijin@163.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/fat/fatent.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-index 367389526b41..a97f5e89e1d0 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-@@ -218,7 +218,7 @@
- 	panel@0 {
- 		compatible = "tianma,fhd-video";
- 		reg = <0>;
--		vddi0-supply = <&vreg_l14a_1p8>;
-+		vddio-supply = <&vreg_l14a_1p8>;
- 		vddpos-supply = <&lab>;
- 		vddneg-supply = <&ibb>;
+diff --git a/fs/fat/fatent.c b/fs/fat/fatent.c
+index 978ac6751aeb..1db348f8f887 100644
+--- a/fs/fat/fatent.c
++++ b/fs/fat/fatent.c
+@@ -94,7 +94,8 @@ static int fat12_ent_bread(struct super_block *sb, struct fat_entry *fatent,
+ err_brelse:
+ 	brelse(bhs[0]);
+ err:
+-	fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)", (llu)blocknr);
++	fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
++			  (llu)blocknr);
+ 	return -EIO;
+ }
  
+@@ -107,8 +108,8 @@ static int fat_ent_bread(struct super_block *sb, struct fat_entry *fatent,
+ 	fatent->fat_inode = MSDOS_SB(sb)->fat_inode;
+ 	fatent->bhs[0] = sb_bread(sb, blocknr);
+ 	if (!fatent->bhs[0]) {
+-		fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
+-		       (llu)blocknr);
++		fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
++				  (llu)blocknr);
+ 		return -EIO;
+ 	}
+ 	fatent->nr_bhs = 1;
 -- 
 2.35.1
 
