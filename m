@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D1AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:19:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9CC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358675AbiFGUTu (ORCPT
+        id S1359085AbiFGUUJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48102 "EHLO
+        Tue, 7 Jun 2022 16:20:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356895AbiFGT2U (ORCPT
+        with ESMTP id S1356819AbiFGT2N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:28:20 -0400
+        Tue, 7 Jun 2022 15:28:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931761A29DC;
-        Tue,  7 Jun 2022 11:11:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F48C84A1E;
+        Tue,  7 Jun 2022 11:10:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D072617B3;
-        Tue,  7 Jun 2022 18:11:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21AD3C385A2;
-        Tue,  7 Jun 2022 18:11:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F40FC617B3;
+        Tue,  7 Jun 2022 18:10:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BB53C385A2;
+        Tue,  7 Jun 2022 18:10:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625493;
-        bh=KidPKL7CSKLt/gRwD34Zy5/VxtuEN1OY6TljW2bDPrg=;
+        s=korg; t=1654625455;
+        bh=YONjxaeXJNfdjI6X1ZBJqFnOHU4P3dRFG2L57MY6MtM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZR13fW8Y9x8Qjwsak3ugjMr/0v56HThD7sHwBmbrZ0KotTBXcnd5Rk6cMCcDEBacR
-         V+Cwo61avKEaPKYeHdXbP7ayzA4fVpPrlXFJgB0hlyVCenrfmKmX+96LFiA2qfxzBr
-         0huxwq2uIVjEC0sWPZIXz1fAh7cm9dOsh6bTwQ0c=
+        b=t5Au3Lfrz3LxaQqkE4ajfJoirFP0Es2rRXoA6XsZUQtmSHq00RaemJG9rq54Y9HxF
+         1sY2xymsvDoRMqcAyUh9iNlSKRDz9qUT4GEoqU+EmEje4tfAACA1KT5BSfzgqgnylA
+         bUUPwsPZxrwWow+CEKuc0FSm0ySEHZMKn1LyRWbo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.17 009/772] riscv: Move alternative length validation into subsection
-Date:   Tue,  7 Jun 2022 18:53:21 +0200
-Message-Id: <20220607164949.272942597@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.17 025/772] fs/ntfs3: Fix some memory leaks in an error handling path of log_replay()
+Date:   Tue,  7 Jun 2022 18:53:37 +0200
+Message-Id: <20220607164949.757148802@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,92 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 61114e734ccb804bc12561ab4020745e02c468c2 upstream.
+commit e589f9b7078e1c0191613cd736f598e81d2390de upstream.
 
-After commit 49b290e430d3 ("riscv: prevent compressed instructions in
-alternatives"), builds with LLVM's integrated assembler fail:
+All error handling paths lead to 'out' where many resources are freed.
 
-  In file included from arch/riscv/mm/init.c:10:
-  In file included from ./include/linux/mm.h:29:
-  In file included from ./include/linux/pgtable.h:6:
-  In file included from ./arch/riscv/include/asm/pgtable.h:108:
-  ./arch/riscv/include/asm/tlbflush.h:23:2: error: expected assembly-time absolute expression
-          ALT_FLUSH_TLB_PAGE(__asm__ __volatile__ ("sfence.vma %0" : : "r" (addr) : "memory"));
-          ^
-  ./arch/riscv/include/asm/errata_list.h:33:5: note: expanded from macro 'ALT_FLUSH_TLB_PAGE'
-  asm(ALTERNATIVE("sfence.vma %0", "sfence.vma", SIFIVE_VENDOR_ID,        \
-      ^
-  ./arch/riscv/include/asm/alternative-macros.h:187:2: note: expanded from macro 'ALTERNATIVE'
-          _ALTERNATIVE_CFG(old_content, new_content, vendor_id, errata_id, CONFIG_k)
-          ^
-  ./arch/riscv/include/asm/alternative-macros.h:113:2: note: expanded from macro '_ALTERNATIVE_CFG'
-          __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, IS_ENABLED(CONFIG_k))
-          ^
-  ./arch/riscv/include/asm/alternative-macros.h:110:2: note: expanded from macro '__ALTERNATIVE_CFG'
-          ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
-          ^
-  ./arch/riscv/include/asm/alternative-macros.h:99:3: note: expanded from macro 'ALT_NEW_CONTENT'
-          ".org   . - (889b - 888b) + (887b - 886b)\n"                    \
-           ^
-  <inline asm>:26:6: note: instantiated into assembly here
-  .org    . - (889b - 888b) + (887b - 886b)
-          ^
+Do it as well here instead of a direct return, otherwise 'log', 'ra' and
+'log->one_page_buf' (at least) will leak.
 
-This error happens because LLVM's integrated assembler has a one-pass
-design, which means it cannot figure out the instruction lengths when
-the .org directive is outside of the subsection that contains the
-instructions, which was changed by the .option directives added by the
-above change.
-
-Move the .org directives before the .previous directive so that these
-directives are always within the same subsection, which resolves the
-failures and does not introduce any new issues with GNU as. This was
-done for arm64 in commit 966a0acce2fc ("arm64/alternatives: move length
-validation inside the subsection") and commit 22315a2296f4 ("arm64:
-alternatives: Move length validation in alternative_{insn, endif}").
-
-While there is no error from the assembly versions of the macro, they
-appear to have the same problem so just make the same change there as
-well so that there are no problems in the future.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1640
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Tested-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://lore.kernel.org/r/20220516214520.3252074-1-nathan@kernel.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fixes: b46acd6a6a62 ("fs/ntfs3: Add NTFS journal")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/include/asm/alternative-macros.h |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/ntfs3/fslog.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/arch/riscv/include/asm/alternative-macros.h
-+++ b/arch/riscv/include/asm/alternative-macros.h
-@@ -23,9 +23,9 @@
- 888 :
- 	\new_c
- 889 :
--	.previous
- 	.org    . - (889b - 888b) + (887b - 886b)
- 	.org    . - (887b - 886b) + (889b - 888b)
-+	.previous
- 	.endif
- .endm
+--- a/fs/ntfs3/fslog.c
++++ b/fs/ntfs3/fslog.c
+@@ -4085,8 +4085,10 @@ process_log:
+ 		if (client == LFS_NO_CLIENT_LE) {
+ 			/* Insert "NTFS" client LogFile. */
+ 			client = ra->client_idx[0];
+-			if (client == LFS_NO_CLIENT_LE)
+-				return -EINVAL;
++			if (client == LFS_NO_CLIENT_LE) {
++				err = -EINVAL;
++				goto out;
++			}
  
-@@ -60,9 +60,9 @@
- 	"888 :\n"							\
- 	new_c "\n"							\
- 	"889 :\n"							\
--	".previous\n"							\
- 	".org	. - (887b - 886b) + (889b - 888b)\n"			\
- 	".org	. - (889b - 888b) + (887b - 886b)\n"			\
-+	".previous\n"							\
- 	".endif\n"
- 
- #define __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, enable) \
+ 			t16 = le16_to_cpu(client);
+ 			cr = ca + t16;
 
 
