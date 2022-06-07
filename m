@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC5DCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9360CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245724AbiFGSXb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:23:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39612 "EHLO
+        id S229884AbiFGSXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:23:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349802AbiFGSA2 (ORCPT
+        with ESMTP id S1349914AbiFGSAg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:00:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1761214A26D;
-        Tue,  7 Jun 2022 10:42:25 -0700 (PDT)
+        Tue, 7 Jun 2022 14:00:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7268D12DBF2;
+        Tue,  7 Jun 2022 10:42:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ED2D6159B;
-        Tue,  7 Jun 2022 17:42:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30158C34115;
-        Tue,  7 Jun 2022 17:42:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01F6DB81F38;
+        Tue,  7 Jun 2022 17:42:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63A07C385A5;
+        Tue,  7 Jun 2022 17:42:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623728;
-        bh=rI18oA6qhndYMny5iUkbpR/eOZ4ra3Mw8ozCRn651iM=;
+        s=korg; t=1654623736;
+        bh=z4wDMbAV2RS1G7aP/5ULZccvzCp/6WBnP3rMRzqLcME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ANBRmYJZ+mnK3MWM+ClxdqPn7mgGV0ZJIycLksR1TqP5F6kxQi//xmcdM9eqIEmTI
-         CYmylz0ahmWlCmJmfTg8YQJ0JInb8Okw0PHTm7qY23SxvhCPFSfjml0A3rfq7cTW33
-         Uv9VKAhdxdDn8hE6TZBihcoezoB38n4qq0sUuorM=
+        b=myN/mnAEGpdareJ5gU8HXbLF7iGte/wjelPZ8vANZ06f4ezCd5AwwyiETY3fz6mFd
+         c/TtRoXgVA3Tvd3pHoMVJThcqRBZVBFmYwyiNKPJnuWwE0bYxTZD25IvVCm6y0HKpw
+         wGkQvjKmi3ye7PezXs+ltufftSjSRqW7v9SNXBCI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Raviteja Goud Talla <ravitejax.goud.talla@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 043/667] iommu/vt-d: Add RPLS to quirk list to skip TE disabling
-Date:   Tue,  7 Jun 2022 18:55:08 +0200
-Message-Id: <20220607164936.096096843@linuxfoundation.org>
+Subject: [PATCH 5.15 072/667] ASoC: rsnd: care return value from rsnd_node_fixed_index()
+Date:   Tue,  7 Jun 2022 18:55:37 +0200
+Message-Id: <20220607164936.977537803@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,53 +51,209 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
+From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 
-[ Upstream commit 0a967f5bfd9134b89681cae58deb222e20840e76 ]
+[ Upstream commit d09a7db431c65aaa8303eb456439d1831ca2e6b4 ]
 
-The VT-d spec requires (10.4.4 Global Command Register, TE
-field) that:
+Renesas Sound is very complex, and thus it needs to use
+rsnd_node_fixed_index() to know enabled pin index.
 
-Hardware implementations supporting DMA draining must drain
-any in-flight DMA read/write requests queued within the
-Root-Complex before completing the translation enable
-command and reflecting the status of the command through
-the TES field in the Global Status register.
+It returns error if strange pin was selected,
+but some codes didn't check it.
 
-Unfortunately, some integrated graphic devices fail to do
-so after some kind of power state transition. As the
-result, the system might stuck in iommu_disable_translati
-on(), waiting for the completion of TE transition.
+This patch 1) indicates error message, 2) check return
+value.
 
-This adds RPLS to a quirk list for those devices and skips
-TE disabling if the qurik hits.
-
-Link: https://gitlab.freedesktop.org/drm/intel/-/issues/4898
-Tested-by: Raviteja Goud Talla <ravitejax.goud.talla@intel.com>
-Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
-Reviewed-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220302043256.191529-1-tejaskumarx.surendrakumar.upadhyay@intel.com
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+Link: https://lore.kernel.org/r/87pmlbgn5t.wl-kuninori.morimoto.gx@renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/sh/rcar/core.c | 15 ++++++++++-----
+ sound/soc/sh/rcar/dma.c  |  9 ++++++++-
+ sound/soc/sh/rcar/rsnd.h |  2 +-
+ sound/soc/sh/rcar/src.c  |  7 ++++++-
+ sound/soc/sh/rcar/ssi.c  | 14 ++++++++++++--
+ sound/soc/sh/rcar/ssiu.c |  7 ++++++-
+ 6 files changed, 43 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 91a5c75966f3..a1ffb3d6d901 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -5728,7 +5728,7 @@ static void quirk_igfx_skip_te_disable(struct pci_dev *dev)
- 	ver = (dev->device >> 8) & 0xff;
- 	if (ver != 0x45 && ver != 0x46 && ver != 0x4c &&
- 	    ver != 0x4e && ver != 0x8a && ver != 0x98 &&
--	    ver != 0x9a)
-+	    ver != 0x9a && ver != 0xa7)
- 		return;
+diff --git a/sound/soc/sh/rcar/core.c b/sound/soc/sh/rcar/core.c
+index 6a8fe0da7670..af8ef2a27d34 100644
+--- a/sound/soc/sh/rcar/core.c
++++ b/sound/soc/sh/rcar/core.c
+@@ -1159,6 +1159,7 @@ void rsnd_parse_connect_common(struct rsnd_dai *rdai, char *name,
+ 		struct device_node *capture)
+ {
+ 	struct rsnd_priv *priv = rsnd_rdai_to_priv(rdai);
++	struct device *dev = rsnd_priv_to_dev(priv);
+ 	struct device_node *np;
+ 	int i;
  
- 	if (risky_device(dev))
+@@ -1169,7 +1170,11 @@ void rsnd_parse_connect_common(struct rsnd_dai *rdai, char *name,
+ 	for_each_child_of_node(node, np) {
+ 		struct rsnd_mod *mod;
+ 
+-		i = rsnd_node_fixed_index(np, name, i);
++		i = rsnd_node_fixed_index(dev, np, name, i);
++		if (i < 0) {
++			of_node_put(np);
++			break;
++		}
+ 
+ 		mod = mod_get(priv, i);
+ 
+@@ -1183,7 +1188,7 @@ void rsnd_parse_connect_common(struct rsnd_dai *rdai, char *name,
+ 	of_node_put(node);
+ }
+ 
+-int rsnd_node_fixed_index(struct device_node *node, char *name, int idx)
++int rsnd_node_fixed_index(struct device *dev, struct device_node *node, char *name, int idx)
+ {
+ 	char node_name[16];
+ 
+@@ -1210,6 +1215,8 @@ int rsnd_node_fixed_index(struct device_node *node, char *name, int idx)
+ 			return idx;
+ 	}
+ 
++	dev_err(dev, "strange node numbering (%s)",
++		of_node_full_name(node));
+ 	return -EINVAL;
+ }
+ 
+@@ -1221,10 +1228,8 @@ int rsnd_node_count(struct rsnd_priv *priv, struct device_node *node, char *name
+ 
+ 	i = 0;
+ 	for_each_child_of_node(node, np) {
+-		i = rsnd_node_fixed_index(np, name, i);
++		i = rsnd_node_fixed_index(dev, np, name, i);
+ 		if (i < 0) {
+-			dev_err(dev, "strange node numbering (%s)",
+-				of_node_full_name(node));
+ 			of_node_put(np);
+ 			return 0;
+ 		}
+diff --git a/sound/soc/sh/rcar/dma.c b/sound/soc/sh/rcar/dma.c
+index 03e0d4eca781..463ab237d7bd 100644
+--- a/sound/soc/sh/rcar/dma.c
++++ b/sound/soc/sh/rcar/dma.c
+@@ -240,12 +240,19 @@ static int rsnd_dmaen_start(struct rsnd_mod *mod,
+ struct dma_chan *rsnd_dma_request_channel(struct device_node *of_node, char *name,
+ 					  struct rsnd_mod *mod, char *x)
+ {
++	struct rsnd_priv *priv = rsnd_mod_to_priv(mod);
++	struct device *dev = rsnd_priv_to_dev(priv);
+ 	struct dma_chan *chan = NULL;
+ 	struct device_node *np;
+ 	int i = 0;
+ 
+ 	for_each_child_of_node(of_node, np) {
+-		i = rsnd_node_fixed_index(np, name, i);
++		i = rsnd_node_fixed_index(dev, np, name, i);
++		if (i < 0) {
++			chan = NULL;
++			of_node_put(np);
++			break;
++		}
+ 
+ 		if (i == rsnd_mod_id_raw(mod) && (!chan))
+ 			chan = of_dma_request_slave_channel(np, x);
+diff --git a/sound/soc/sh/rcar/rsnd.h b/sound/soc/sh/rcar/rsnd.h
+index 6580bab0e229..d9cd190d7e19 100644
+--- a/sound/soc/sh/rcar/rsnd.h
++++ b/sound/soc/sh/rcar/rsnd.h
+@@ -460,7 +460,7 @@ void rsnd_parse_connect_common(struct rsnd_dai *rdai, char *name,
+ 		struct device_node *playback,
+ 		struct device_node *capture);
+ int rsnd_node_count(struct rsnd_priv *priv, struct device_node *node, char *name);
+-int rsnd_node_fixed_index(struct device_node *node, char *name, int idx);
++int rsnd_node_fixed_index(struct device *dev, struct device_node *node, char *name, int idx);
+ 
+ int rsnd_channel_normalization(int chan);
+ #define rsnd_runtime_channel_original(io) \
+diff --git a/sound/soc/sh/rcar/src.c b/sound/soc/sh/rcar/src.c
+index 42a100c6303d..0ea84ae57c6a 100644
+--- a/sound/soc/sh/rcar/src.c
++++ b/sound/soc/sh/rcar/src.c
+@@ -676,7 +676,12 @@ int rsnd_src_probe(struct rsnd_priv *priv)
+ 		if (!of_device_is_available(np))
+ 			goto skip;
+ 
+-		i = rsnd_node_fixed_index(np, SRC_NAME, i);
++		i = rsnd_node_fixed_index(dev, np, SRC_NAME, i);
++		if (i < 0) {
++			ret = -EINVAL;
++			of_node_put(np);
++			goto rsnd_src_probe_done;
++		}
+ 
+ 		src = rsnd_src_get(priv, i);
+ 
+diff --git a/sound/soc/sh/rcar/ssi.c b/sound/soc/sh/rcar/ssi.c
+index 87e606f688d3..43c5e27dc5c8 100644
+--- a/sound/soc/sh/rcar/ssi.c
++++ b/sound/soc/sh/rcar/ssi.c
+@@ -1105,6 +1105,7 @@ void rsnd_parse_connect_ssi(struct rsnd_dai *rdai,
+ 			    struct device_node *capture)
+ {
+ 	struct rsnd_priv *priv = rsnd_rdai_to_priv(rdai);
++	struct device *dev = rsnd_priv_to_dev(priv);
+ 	struct device_node *node;
+ 	struct device_node *np;
+ 	int i;
+@@ -1117,7 +1118,11 @@ void rsnd_parse_connect_ssi(struct rsnd_dai *rdai,
+ 	for_each_child_of_node(node, np) {
+ 		struct rsnd_mod *mod;
+ 
+-		i = rsnd_node_fixed_index(np, SSI_NAME, i);
++		i = rsnd_node_fixed_index(dev, np, SSI_NAME, i);
++		if (i < 0) {
++			of_node_put(np);
++			break;
++		}
+ 
+ 		mod = rsnd_ssi_mod_get(priv, i);
+ 
+@@ -1182,7 +1187,12 @@ int rsnd_ssi_probe(struct rsnd_priv *priv)
+ 		if (!of_device_is_available(np))
+ 			goto skip;
+ 
+-		i = rsnd_node_fixed_index(np, SSI_NAME, i);
++		i = rsnd_node_fixed_index(dev, np, SSI_NAME, i);
++		if (i < 0) {
++			ret = -EINVAL;
++			of_node_put(np);
++			goto rsnd_ssi_probe_done;
++		}
+ 
+ 		ssi = rsnd_ssi_get(priv, i);
+ 
+diff --git a/sound/soc/sh/rcar/ssiu.c b/sound/soc/sh/rcar/ssiu.c
+index 138f95dd9f4a..4b8a63e336c7 100644
+--- a/sound/soc/sh/rcar/ssiu.c
++++ b/sound/soc/sh/rcar/ssiu.c
+@@ -462,6 +462,7 @@ void rsnd_parse_connect_ssiu(struct rsnd_dai *rdai,
+ 			     struct device_node *capture)
+ {
+ 	struct rsnd_priv *priv = rsnd_rdai_to_priv(rdai);
++	struct device *dev = rsnd_priv_to_dev(priv);
+ 	struct device_node *node = rsnd_ssiu_of_node(priv);
+ 	struct rsnd_dai_stream *io_p = &rdai->playback;
+ 	struct rsnd_dai_stream *io_c = &rdai->capture;
+@@ -474,7 +475,11 @@ void rsnd_parse_connect_ssiu(struct rsnd_dai *rdai,
+ 		for_each_child_of_node(node, np) {
+ 			struct rsnd_mod *mod;
+ 
+-			i = rsnd_node_fixed_index(np, SSIU_NAME, i);
++			i = rsnd_node_fixed_index(dev, np, SSIU_NAME, i);
++			if (i < 0) {
++				of_node_put(np);
++				break;
++			}
+ 
+ 			mod = rsnd_ssiu_mod_get(priv, i);
+ 
 -- 
 2.35.1
 
