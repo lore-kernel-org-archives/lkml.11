@@ -2,126 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2FECCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDABECCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391697AbiFHB51 (ORCPT
+        id S1392366AbiFHB5i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:57:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49182 "EHLO
+        Tue, 7 Jun 2022 21:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588470AbiFGXyl (ORCPT
+        with ESMTP id S1588482AbiFGXym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:54:41 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D14E96FF;
-        Tue,  7 Jun 2022 16:09:55 -0700 (PDT)
-Date:   Tue, 07 Jun 2022 23:09:52 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1654643394;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dPtbavvWbpS7D7tQA2mHOL1BkRlP5Uv7lAoc3YHVg04=;
-        b=nxJI3qMF2EzpyqqTD8K6BZxPqOoAptV7F3Jrbt+1JxEWQYfZQfrrJGBN3M4z5Lwge7Mdam
-        UF0oCKTcFl8nJ9duQNV8D+s0ggs4YH8O5TBqBlTtNoMa0i4Nx9pNhVKgbHM2ikTt5R7SzB
-        pEpL1o2INu7OaCRPBILjvIqOpJZmsMGmhsJYQnIF4Fg537RZabMMwq9OcAuTOXUCDoIIc9
-        MizjeurkocdCLuxQJnphtZJvyow9TNfuhc0hxeZIfPD3nr00asR/4fpEDMnFiJFKviTlkf
-        fkWHkhQJoIspFzzKQNQqbir6vWFd4bEKcqdIZzGMDKjdOGlknRp0xMe5GhcJtg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1654643394;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dPtbavvWbpS7D7tQA2mHOL1BkRlP5Uv7lAoc3YHVg04=;
-        b=Wo3Sp00UT3ZpFCyVn+uwJxxrggurJSA46NHn9T9gIG2lDUpnh1T+0+4IBmiGzy2+ASyyHZ
-        BpL2qfI4DRSULbAA==
-From:   "tip-bot2 for Ira Weiny" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/mm] x86/pkeys: Clarify PKRU_AD_KEY macro
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Ira Weiny <ira.weiny@intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220419170649.1022246-3-ira.weiny@intel.com>
-References: <20220419170649.1022246-3-ira.weiny@intel.com>
+        Tue, 7 Jun 2022 19:54:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88BCEF045;
+        Tue,  7 Jun 2022 16:11:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41DA96164B;
+        Tue,  7 Jun 2022 23:11:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10924C3411C;
+        Tue,  7 Jun 2022 23:11:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654643482;
+        bh=q/o80BpaLgRq9iVSp9QC1eQiLILACxZY1sBOydVH6c4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YSdiaQ8MPODZjy5tDCOevIDkXOoy9Rr3/RmUG+ckiC5TfPZsA1nM06aziSbFsTNRs
+         jiczumAUXXeAqcsQUKVCqrNEiTOzLsAxvVlaofM0VxH86Mk0rncLhIjSpRjVaOA8pV
+         yBgMr53BFgdhKNzguNpDfTAt/XgQ4ggsAlzKmN7WzwC+EIF6+rUJ1WDYsL4w0b/7oX
+         3zS16NTTje4k6E60swxizXIxmNAmlj5otazvKI8Ll3RxrDKTAwZtueLgqgMcUl1owK
+         QaplqBmQsZGJuh6XDxembUwbwKeh391b2pG1oj0ENjoN9Lg9pjqvdYCHFV0YlPuytd
+         CNin5j+D8q3cQ==
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Helge Deller <deller@gmx.de>
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-pm@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 2/2] video: fbdev: skeletonfb: Convert to generic power management
+Date:   Tue,  7 Jun 2022 18:11:12 -0500
+Message-Id: <20220607231112.354165-3-helgaas@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220607231112.354165-1-helgaas@kernel.org>
+References: <20220607231112.354165-1-helgaas@kernel.org>
 MIME-Version: 1.0
-Message-ID: <165464339203.4207.2085449999144025922.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/mm branch of tip:
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-Commit-ID:     54ee1844047c1df015ab2679a4f55564a3aa1fa1
-Gitweb:        https://git.kernel.org/tip/54ee1844047c1df015ab2679a4f55564a3aa1fa1
-Author:        Ira Weiny <ira.weiny@intel.com>
-AuthorDate:    Tue, 19 Apr 2022 10:06:07 -07:00
-Committer:     Dave Hansen <dave.hansen@linux.intel.com>
-CommitterDate: Tue, 07 Jun 2022 16:06:33 -07:00
+PCI-specific power management (pci_driver.suspend and pci_driver.resume) is
+deprecated.  If drivers implement power management, they should use the
+generic power management framework, not the PCI-specific hooks.
 
-x86/pkeys: Clarify PKRU_AD_KEY macro
+Convert the sample code to use the generic power management framework.
 
-When changing the PKRU_AD_KEY macro to be used for PKS the name came
-into question.[1]
-
-The intent of PKRU_AD_KEY is to set an initial value for the PKRU
-register but that is just a mask value.
-
-Clarify this by changing the name to PKRU_AD_MASK().
-
-NOTE the checkpatch errors are ignored for the init_pkru_value to align
-the values in the code.
-
-[1] https://lore.kernel.org/lkml/eff862e2-bfaa-9e12-42b5-a12467d72a22@intel.com/
-
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Link: https://lkml.kernel.org/r/20220419170649.1022246-3-ira.weiny@intel.com
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- arch/x86/mm/pkeys.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/video/fbdev/skeletonfb.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index e44e938..7418c36 100644
---- a/arch/x86/mm/pkeys.c
-+++ b/arch/x86/mm/pkeys.c
-@@ -110,7 +110,7 @@ int __arch_override_mprotect_pkey(struct vm_area_struct *vma, int prot, int pkey
- 	return vma_pkey(vma);
- }
- 
--#define PKRU_AD_KEY(pkey)	(PKRU_AD_BIT << ((pkey) * PKRU_BITS_PER_PKEY))
-+#define PKRU_AD_MASK(pkey)	(PKRU_AD_BIT << ((pkey) * PKRU_BITS_PER_PKEY))
- 
- /*
-  * Make the default PKRU value (at execve() time) as restrictive
-@@ -118,11 +118,14 @@ int __arch_override_mprotect_pkey(struct vm_area_struct *vma, int prot, int pkey
-  * in the process's lifetime will not accidentally get access
-  * to data which is pkey-protected later on.
+diff --git a/drivers/video/fbdev/skeletonfb.c b/drivers/video/fbdev/skeletonfb.c
+index bcacfb6934fa..70ba78450837 100644
+--- a/drivers/video/fbdev/skeletonfb.c
++++ b/drivers/video/fbdev/skeletonfb.c
+@@ -838,9 +838,9 @@ static void xxxfb_remove(struct pci_dev *dev)
+  *
+  *      See Documentation/driver-api/pm/devices.rst for more information
   */
--u32 init_pkru_value = PKRU_AD_KEY( 1) | PKRU_AD_KEY( 2) | PKRU_AD_KEY( 3) |
--		      PKRU_AD_KEY( 4) | PKRU_AD_KEY( 5) | PKRU_AD_KEY( 6) |
--		      PKRU_AD_KEY( 7) | PKRU_AD_KEY( 8) | PKRU_AD_KEY( 9) |
--		      PKRU_AD_KEY(10) | PKRU_AD_KEY(11) | PKRU_AD_KEY(12) |
--		      PKRU_AD_KEY(13) | PKRU_AD_KEY(14) | PKRU_AD_KEY(15);
-+u32 init_pkru_value = PKRU_AD_MASK( 1) | PKRU_AD_MASK( 2) |
-+		      PKRU_AD_MASK( 3) | PKRU_AD_MASK( 4) |
-+		      PKRU_AD_MASK( 5) | PKRU_AD_MASK( 6) |
-+		      PKRU_AD_MASK( 7) | PKRU_AD_MASK( 8) |
-+		      PKRU_AD_MASK( 9) | PKRU_AD_MASK(10) |
-+		      PKRU_AD_MASK(11) | PKRU_AD_MASK(12) |
-+		      PKRU_AD_MASK(13) | PKRU_AD_MASK(14) |
-+		      PKRU_AD_MASK(15);
+-static int xxxfb_suspend(struct pci_dev *dev, pm_message_t msg)
++static int xxxfb_suspend(struct device *dev)
+ {
+-	struct fb_info *info = pci_get_drvdata(dev);
++	struct fb_info *info = dev_get_drvdata(dev);
+ 	struct xxxfb_par *par = info->par;
  
- static ssize_t init_pkru_read_file(struct file *file, char __user *user_buf,
- 			     size_t count, loff_t *ppos)
+ 	/* suspend here */
+@@ -853,9 +853,9 @@ static int xxxfb_suspend(struct pci_dev *dev, pm_message_t msg)
+  *
+  *      See Documentation/driver-api/pm/devices.rst for more information
+  */
+-static int xxxfb_resume(struct pci_dev *dev)
++static int xxxfb_resume(struct device *dev)
+ {
+-	struct fb_info *info = pci_get_drvdata(dev);
++	struct fb_info *info = dev_get_drvdata(dev);
+ 	struct xxxfb_par *par = info->par;
+ 
+ 	/* resume here */
+@@ -873,14 +873,15 @@ static const struct pci_device_id xxxfb_id_table[] = {
+ 	{ 0, }
+ };
+ 
++static SIMPLE_DEV_PM_OPS(xxxfb_pm_ops, xxxfb_suspend, xxxfb_resume);
++
+ /* For PCI drivers */
+ static struct pci_driver xxxfb_driver = {
+ 	.name =		"xxxfb",
+ 	.id_table =	xxxfb_id_table,
+ 	.probe =	xxxfb_probe,
+ 	.remove =	xxxfb_remove,
+-	.suspend =      xxxfb_suspend, /* optional but recommended */
+-	.resume =       xxxfb_resume,  /* optional but recommended */
++	.driver.pm =	xxxfb_pm_ops, /* optional but recommended */
+ };
+ 
+ MODULE_DEVICE_TABLE(pci, xxxfb_id_table);
+-- 
+2.25.1
+
