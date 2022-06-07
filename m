@@ -2,212 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 209DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384067AbiFGWov (ORCPT
+        id S1386754AbiFGWtY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:44:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
+        Tue, 7 Jun 2022 18:49:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381195AbiFGVbo (ORCPT
+        with ESMTP id S1381303AbiFGVk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:31:44 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7246922CECC;
-        Tue,  7 Jun 2022 12:04:05 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (95-210-23-39.ip.skylogicnet.com [95.210.23.39])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 4DF526CF;
-        Tue,  7 Jun 2022 21:04:02 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1654628643;
-        bh=OG6smnxmAp0FKgxIUoojm3yPcY4WHf6kWZxQVC95w84=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JYQDBmNvWsK8h+uHR0hrPbXa4Rp/cWpPH4ee6+1pnAK5U/ozlwSOXCL+cl9aWyou2
-         YMX/p3m85oZZ7j63TxHxzUyxs539qL/0Knf40lUQwAJPo4tpOFZM2gkyCEalYWKCxJ
-         +Izxmi4+05PufFPJvqoHL6A3XIxu3OuWS3so80kE=
-Date:   Tue, 7 Jun 2022 22:03:51 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Ricardo Ribalda <ribalda@chromium.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tomasz Figa <tfiga@chromium.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Yunke Cao <yunkec@google.com>
-Subject: Re: [PATCH v3 1/7] media: uvcvideo: Add missing value for
- power_line_frequency
-Message-ID: <Yp+hF+HcZUIqC/Pm@pendragon.ideasonboard.com>
-References: <20220607134405.166704-1-ribalda@chromium.org>
- <20220607134405.166704-2-ribalda@chromium.org>
+        Tue, 7 Jun 2022 17:40:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19C4921F9BB;
+        Tue,  7 Jun 2022 12:06:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B974CB822C0;
+        Tue,  7 Jun 2022 19:06:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 367C3C385A2;
+        Tue,  7 Jun 2022 19:06:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628785;
+        bh=fBS2BidZn5RqdMjmAq72Xd9LzbXKHWPaJR3JL95dGIc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=e6XRoCzmLP9oje7NrAFt7lNmfSWPLDVgp1Ozgfpzay3PbNCx0IabrvRXk//yvnwdB
+         V/9DV4wLVE35Rk1eUX6GdCtqAcbZroIUTh2xw7Zvv2u1CuYnI1A1o13ibAdWdv/ERM
+         LHgw/aEWnzedshj5TGjBosstkfpiisHIaqrP4eFw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 453/879] Bluetooth: use hdev lock in activate_scan for hci_is_adv_monitoring
+Date:   Tue,  7 Jun 2022 18:59:31 +0200
+Message-Id: <20220607165016.018255763@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220607134405.166704-2-ribalda@chromium.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ricardo,
+From: Niels Dossche <dossche.niels@gmail.com>
 
-Thank you for the patch.
+[ Upstream commit 50a3633ae5e98cf1b80ef5b73c9e341aee9ad896 ]
 
-On Tue, Jun 07, 2022 at 03:43:58PM +0200, Ricardo Ribalda wrote:
-> UVC 1.5 class defines 4 values for this control on:
-> 4.2.2.3.6 Power Line Frequency Control
-> 
-> Add the missing value when the uvc version is 1.5.
-> 
-> Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
-> ---
->  drivers/media/usb/uvc/uvc_ctrl.c | 67 ++++++++++++++++++++++++++------
->  1 file changed, 55 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/media/usb/uvc/uvc_ctrl.c b/drivers/media/usb/uvc/uvc_ctrl.c
-> index 0e78233fc8a0..f9d4ac81e62f 100644
-> --- a/drivers/media/usb/uvc/uvc_ctrl.c
-> +++ b/drivers/media/usb/uvc/uvc_ctrl.c
-> @@ -362,12 +362,19 @@ static const u32 uvc_control_classes[] = {
->  	V4L2_CID_USER_CLASS,
->  };
->  
-> -static const struct uvc_menu_info power_line_frequency_controls[] = {
-> +static const struct uvc_menu_info power_line_frequency_controls_uvc11[] = {
->  	{ 0, "Disabled" },
->  	{ 1, "50 Hz" },
->  	{ 2, "60 Hz" },
->  };
+hci_is_adv_monitoring's function documentation states that it must be
+called under the hdev lock. Paths that leads to an unlocked call are:
+discov_update => start_discovery => interleaved_discov => active_scan
+and: discov_update => start_discovery => active_scan
 
-Let's drop this, and ...
+The solution is to take the lock in active_scan during the duration of
+the call to hci_is_adv_monitoring.
 
->  
-> +static const struct uvc_menu_info power_line_frequency_controls_uvc15[] = {
+Fixes: c32d624640fd ("Bluetooth: disable filter dup when scan for adv monitor")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/bluetooth/hci_request.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-... rename this to power_line_frequency_controls, and ...
-
-> +	{ 0, "Disabled" },
-> +	{ 1, "50 Hz" },
-> +	{ 2, "60 Hz" },
-> +	{ 3, "Auto" },
-> +};
-> +
->  static const struct uvc_menu_info exposure_auto_controls[] = {
->  	{ 2, "Auto Mode" },
->  	{ 1, "Manual Mode" },
-> @@ -504,17 +511,6 @@ static const struct uvc_control_mapping uvc_ctrl_mappings[] = {
->  		.v4l2_type	= V4L2_CTRL_TYPE_INTEGER,
->  		.data_type	= UVC_CTRL_DATA_TYPE_UNSIGNED,
->  	},
-> -	{
-> -		.id		= V4L2_CID_POWER_LINE_FREQUENCY,
-> -		.entity		= UVC_GUID_UVC_PROCESSING,
-> -		.selector	= UVC_PU_POWER_LINE_FREQUENCY_CONTROL,
-> -		.size		= 2,
-> -		.offset		= 0,
-> -		.v4l2_type	= V4L2_CTRL_TYPE_MENU,
-> -		.data_type	= UVC_CTRL_DATA_TYPE_ENUM,
-> -		.menu_info	= power_line_frequency_controls,
-> -		.menu_count	= ARRAY_SIZE(power_line_frequency_controls),
-> -	},
->  	{
->  		.id		= V4L2_CID_HUE_AUTO,
->  		.entity		= UVC_GUID_UVC_PROCESSING,
-> @@ -730,6 +726,32 @@ static const struct uvc_control_mapping uvc_ctrl_mappings[] = {
->  	},
->  };
->  
-> +static const
-> +struct uvc_control_mapping power_line_mapping_uvc11 = {
-> +	.id		= V4L2_CID_POWER_LINE_FREQUENCY,
-> +	.entity		= UVC_GUID_UVC_PROCESSING,
-> +	.selector	= UVC_PU_POWER_LINE_FREQUENCY_CONTROL,
-> +	.size		= 2,
-> +	.offset		= 0,
-> +	.v4l2_type	= V4L2_CTRL_TYPE_MENU,
-> +	.data_type	= UVC_CTRL_DATA_TYPE_ENUM,
-> +	.menu_info	= power_line_frequency_controls_uvc11,
-> +	.menu_count	= ARRAY_SIZE(power_line_frequency_controls_uvc11),
-
-... use
-
-	.menu_count	= ARRAY_SIZE(power_line_frequency_controls) - 1,
-
-here. It will avoid duplicating the common menu items.
-
-> +};
-> +
-> +static const
-> +struct uvc_control_mapping power_line_mapping_uvc15 = {
-
-This holds on a single line (and same for uvc11).
-
-> +	.id		= V4L2_CID_POWER_LINE_FREQUENCY,
-> +	.entity		= UVC_GUID_UVC_PROCESSING,
-> +	.selector	= UVC_PU_POWER_LINE_FREQUENCY_CONTROL,
-> +	.size		= 2,
-> +	.offset		= 0,
-> +	.v4l2_type	= V4L2_CTRL_TYPE_MENU,
-> +	.data_type	= UVC_CTRL_DATA_TYPE_ENUM,
-> +	.menu_info	= power_line_frequency_controls_uvc15,
-> +	.menu_count	= ARRAY_SIZE(power_line_frequency_controls_uvc15),
-> +};
-
-How about turning those two into arrays (named uvc_ctrl_mappings_uvc11
-and uvc_ctrl_mappings_uvc15) ? uvc_ctrl_init_ctrl() would first loop
-over uvc_ctrl_mappings, and then over the version-specific arrays. This
-would ease support of further version-specific controls.
-
-> +
->  /* ------------------------------------------------------------------------
->   * Utility functions
->   */
-> @@ -2376,6 +2398,22 @@ static void uvc_ctrl_prune_entity(struct uvc_device *dev,
->  	}
->  }
->  
-> +/*
-> + * The powerline control has different valid values depending on the
-> + * uvc version.
-> + */
-> +static void uvc_ctrl_init_powerline(struct uvc_video_chain *chain,
-> +				    struct uvc_control *ctrl)
-> +{
-> +	if (chain->dev->uvc_version < 0x0150) {
-> +		__uvc_ctrl_add_mapping(chain, ctrl,
-> +				       &power_line_mapping_uvc11);
-> +		return;
-> +	}
-> +
-> +	__uvc_ctrl_add_mapping(chain, ctrl, &power_line_mapping_uvc15);
-> +}
-> +
->  /*
->   * Add control information and hardcoded stock control mappings to the given
->   * device.
-> @@ -2385,6 +2423,7 @@ static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
->  {
->  	const struct uvc_control_info *info = uvc_ctrls;
->  	const struct uvc_control_info *iend = info + ARRAY_SIZE(uvc_ctrls);
-> +	static const u8 uvc_processing_guid[16] = UVC_GUID_UVC_PROCESSING;
-
-Please move this first, the driver declares static variables before the
-non-static ones.
-
->  	const struct uvc_control_mapping *mapping = uvc_ctrl_mappings;
->  	const struct uvc_control_mapping *mend =
->  		mapping + ARRAY_SIZE(uvc_ctrl_mappings);
-> @@ -2415,6 +2454,10 @@ static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
->  	if (!ctrl->initialized)
->  		return;
->  
-> +	if (uvc_entity_match_guid(ctrl->entity, uvc_processing_guid) &&
-> +	    ctrl->info.selector == UVC_PU_POWER_LINE_FREQUENCY_CONTROL)
-> +		return uvc_ctrl_init_powerline(chain, ctrl);
-> +
->  	for (; mapping < mend; ++mapping) {
->  		if (uvc_entity_match_guid(ctrl->entity, mapping->entity) &&
->  		    ctrl->info.selector == mapping->selector)
-
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index 42c8047a9897..f4afe482e300 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -2260,6 +2260,7 @@ static int active_scan(struct hci_request *req, unsigned long opt)
+ 	if (err < 0)
+ 		own_addr_type = ADDR_LE_DEV_PUBLIC;
+ 
++	hci_dev_lock(hdev);
+ 	if (hci_is_adv_monitoring(hdev)) {
+ 		/* Duplicate filter should be disabled when some advertisement
+ 		 * monitor is activated, otherwise AdvMon can only receive one
+@@ -2276,6 +2277,7 @@ static int active_scan(struct hci_request *req, unsigned long opt)
+ 		 */
+ 		filter_dup = LE_SCAN_FILTER_DUP_DISABLE;
+ 	}
++	hci_dev_unlock(hdev);
+ 
+ 	hci_req_start_scan(req, LE_SCAN_ACTIVE, interval,
+ 			   hdev->le_scan_window_discovery, own_addr_type,
 -- 
-Regards,
+2.35.1
 
-Laurent Pinchart
+
+
