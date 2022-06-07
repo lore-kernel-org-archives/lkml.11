@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 155DDCCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82A04CCA490
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353852AbiFGSqN (ORCPT
+        id S1354201AbiFGSqn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:46:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42168 "EHLO
+        Tue, 7 Jun 2022 14:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352010AbiFGSQu (ORCPT
+        with ESMTP id S1352155AbiFGSQ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:50 -0400
+        Tue, 7 Jun 2022 14:16:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236EF1339F2;
-        Tue,  7 Jun 2022 10:50:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E02DF41;
+        Tue,  7 Jun 2022 10:50:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E8B96146F;
-        Tue,  7 Jun 2022 17:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99995C34119;
-        Tue,  7 Jun 2022 17:50:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3EAC61744;
+        Tue,  7 Jun 2022 17:50:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDB13C385A5;
+        Tue,  7 Jun 2022 17:50:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624217;
-        bh=fnG+UK/GdWNYtSgoQqZ5bqzvkDaVX9q79kRygAvrBt8=;
+        s=korg; t=1654624244;
+        bh=seCFZk7YL+TVjD/DOD0zsxuIbf6/QXBn7zKIHdKSTeo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cVP5FXk4kZcEE+Qp7ig64F2eZXXQHTU+809tpZDQFylmPu8LU9mdYYhUZy9JHhJVs
-         BArOvboqFl7lk3TqUlsPzheaeZ0JGKVPP1jM1ORURbrbvvWwUKsFmGM8mRSTIalBhM
-         u31V5iK0j12N6AnIUe4dml8xlk3TEBYzNTOKFDao=
+        b=aRDM0QNkNPpvManB8LI1w0wB90m5HQXu/+oibgc4Ei/6/2zTCRoGn8KWQq1Qnl1Ry
+         6SaXG6zN0P4ffAnJg4BhmZYtOdEVLXU2AM+q2oEI6eXZZWW48slSn3QxEE9/uhGk3p
+         n827qmIaScZu6NgV/W1bXhGG2DAaLkGw+QRflFB0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Ceresoli <luca.ceresoli@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 246/667] spi: rockchip: fix missing error on unsupported SPI_CS_HIGH
-Date:   Tue,  7 Jun 2022 18:58:31 +0200
-Message-Id: <20220607164942.162365016@linuxfoundation.org>
+Subject: [PATCH 5.15 220/667] mtd: rawnand: denali: Use managed device resources
+Date:   Tue,  7 Jun 2022 18:58:05 +0200
+Message-Id: <20220607164941.389925151@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,68 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Ceresoli <luca.ceresoli@bootlin.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit d5d933f09ac326aebad85bfb787cc786ad477711 ]
+[ Upstream commit 3a745b51cddafade99aaea1b93aad31e9614e230 ]
 
-The hardware (except for the ROCKCHIP_SPI_VER2_TYPE2 version) does not
-support active-high native chip selects. However if such a CS is configured
-the core does not error as it normally should, because the
-'ctlr->use_gpio_descriptors = true' line in rockchip_spi_probe() makes the
-core set SPI_CS_HIGH in ctlr->mode_bits.
+All of the resources used by this driver has managed interfaces, so use
+them. Otherwise we will get the following splat:
 
-In such a case the spi-rockchip driver operates normally but produces an
-active-low chip select signal without notice.
+[    4.472703] denali-nand-pci 0000:00:05.0: timeout while waiting for irq 0x1000
+[    4.474071] denali-nand-pci: probe of 0000:00:05.0 failed with error -5
+[    4.473538] nand: No NAND device found
+[    4.474068] BUG: unable to handle page fault for address: ffffc90005000410
+[    4.475169] #PF: supervisor write access in kernel mode
+[    4.475579] #PF: error_code(0x0002) - not-present page
+[    4.478362] RIP: 0010:iowrite32+0x9/0x50
+[    4.486068] Call Trace:
+[    4.486269]  <IRQ>
+[    4.486443]  denali_isr+0x15b/0x300 [denali]
+[    4.486788]  ? denali_direct_write+0x50/0x50 [denali]
+[    4.487189]  __handle_irq_event_percpu+0x161/0x3b0
+[    4.487571]  handle_irq_event+0x7d/0x1b0
+[    4.487884]  handle_fasteoi_irq+0x2b0/0x770
+[    4.488219]  __common_interrupt+0xc8/0x1b0
+[    4.488549]  common_interrupt+0x9a/0xc0
 
-There is no provision in the current core code to handle this
-situation. Fix by adding a check in the ctlr->setup function (similarly to
-what spi-atmel.c does).
-
-This cannot be done reading the SPI_CS_HIGH but in ctlr->mode_bits because
-that bit gets always set by the core for master mode (see above).
-
-Fixes: eb1262e3cc8b ("spi: spi-rockchip: use num-cs property and ctlr->enable_gpiods")
-Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
-Link: https://lore.kernel.org/r/20220421213251.1077899-1-luca.ceresoli@bootlin.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 93db446a424c ("mtd: nand: move raw NAND related code to the raw/ subdir")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220411125808.958276-1-zheyuma97@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-rockchip.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/mtd/nand/raw/denali_pci.c | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
-index 83da8fdb3c02..b721b62118e1 100644
---- a/drivers/spi/spi-rockchip.c
-+++ b/drivers/spi/spi-rockchip.c
-@@ -196,6 +196,8 @@ struct rockchip_spi {
+diff --git a/drivers/mtd/nand/raw/denali_pci.c b/drivers/mtd/nand/raw/denali_pci.c
+index 20c085a30adc..de7e722d3826 100644
+--- a/drivers/mtd/nand/raw/denali_pci.c
++++ b/drivers/mtd/nand/raw/denali_pci.c
+@@ -74,22 +74,21 @@ static int denali_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ 		return ret;
+ 	}
  
- 	bool slave_abort;
- 	bool cs_inactive; /* spi slave tansmition stop when cs inactive */
-+	bool cs_high_supported; /* native CS supports active-high polarity */
-+
- 	struct spi_transfer *xfer; /* Store xfer temporarily */
- };
+-	denali->reg = ioremap(csr_base, csr_len);
++	denali->reg = devm_ioremap(denali->dev, csr_base, csr_len);
+ 	if (!denali->reg) {
+ 		dev_err(&dev->dev, "Spectra: Unable to remap memory region\n");
+ 		return -ENOMEM;
+ 	}
  
-@@ -718,6 +720,11 @@ static int rockchip_spi_setup(struct spi_device *spi)
- 	struct rockchip_spi *rs = spi_controller_get_devdata(spi->controller);
- 	u32 cr0;
+-	denali->host = ioremap(mem_base, mem_len);
++	denali->host = devm_ioremap(denali->dev, mem_base, mem_len);
+ 	if (!denali->host) {
+ 		dev_err(&dev->dev, "Spectra: ioremap failed!");
+-		ret = -ENOMEM;
+-		goto out_unmap_reg;
++		return -ENOMEM;
+ 	}
  
-+	if (!spi->cs_gpiod && (spi->mode & SPI_CS_HIGH) && !rs->cs_high_supported) {
-+		dev_warn(&spi->dev, "setup: non GPIO CS can't be active-high\n");
-+		return -EINVAL;
-+	}
-+
- 	pm_runtime_get_sync(rs->dev);
+ 	ret = denali_init(denali);
+ 	if (ret)
+-		goto out_unmap_host;
++		return ret;
  
- 	cr0 = readl_relaxed(rs->regs + ROCKCHIP_SPI_CTRLR0);
-@@ -898,6 +905,7 @@ static int rockchip_spi_probe(struct platform_device *pdev)
+ 	nsels = denali->nbanks;
  
- 	switch (readl_relaxed(rs->regs + ROCKCHIP_SPI_VERSION)) {
- 	case ROCKCHIP_SPI_VER2_TYPE2:
-+		rs->cs_high_supported = true;
- 		ctlr->mode_bits |= SPI_CS_HIGH;
- 		if (ctlr->can_dma && slave_mode)
- 			rs->cs_inactive = true;
+@@ -117,10 +116,6 @@ static int denali_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ 
+ out_remove_denali:
+ 	denali_remove(denali);
+-out_unmap_host:
+-	iounmap(denali->host);
+-out_unmap_reg:
+-	iounmap(denali->reg);
+ 	return ret;
+ }
+ 
+@@ -129,8 +124,6 @@ static void denali_pci_remove(struct pci_dev *dev)
+ 	struct denali_controller *denali = pci_get_drvdata(dev);
+ 
+ 	denali_remove(denali);
+-	iounmap(denali->reg);
+-	iounmap(denali->host);
+ }
+ 
+ static struct pci_driver denali_pci_driver = {
 -- 
 2.35.1
 
