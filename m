@@ -2,106 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16EB0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:15:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D96B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240718AbiFGKPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45252 "EHLO
+        id S240795AbiFGKQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240714AbiFGKPr (ORCPT
+        with ESMTP id S240741AbiFGKQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:15:47 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2A6C9EE2;
-        Tue,  7 Jun 2022 03:15:46 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id b8so5644331edj.11;
-        Tue, 07 Jun 2022 03:15:46 -0700 (PDT)
+        Tue, 7 Jun 2022 06:16:09 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0897CC9641
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:16:08 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id l18so11318573lje.13
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 03:16:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=U+awy/jtO8AUSyEBXiUnjG28q5KgwJhjAtwiUMCK/4w=;
-        b=L3g0r5og4iLcJkkaEnjJHC/fhgX0jgWCgjdPwNSjvuL4JmDM2PWcq+cK6d7tvMwngt
-         rk4aq2qJmnK6TrGT6S3H5o+TSva2V00FG4u6C09YxTViVZMaP/mXJpeI4hFUjdX3AMTD
-         BZXZQeJA5f2MF1rFLU3FqEyOof9t+9zhtl88KuxHRQr9+WwSKSYTv6i2RL3epictTjND
-         SSIwrFpntInEwrtWc+5RW1ry6f0lI9fAHDzt2J0LHugPhrdxaKu++qyiccv+C2Q5Z1Wk
-         3r/gxSK2dBPaHhzxasbLsBbsvvaYCLsJAZAZmDYEK6LY+sbv6f0U9X0G9mAoucthsmvj
-         qktA==
+        bh=PcEyyMlJfykdOpuC3TlPMiNqAStBbX+CfCQFA4cy1R8=;
+        b=seACZl5dLPvbzxFh6cIMyazIeyZ0sfO9TL9F5jYxrpz08R3HmcH+r/vYPIi/zOERBs
+         380A92wbewdw1MWkqa8OFe3bQYhVFHEBHGRUhPDtzfKPuz9njbjVsbXFAnyS10IX1uaW
+         iB+vHIBTgrxrduejBdjmSrR7bz1R6kB8tayNGZFEjiaAJoVaPE3+og2PWVti+1a2I54D
+         PODrI+AN0kNENDYUzWgEouK37qxCEOXDf1tftf4MQH6H2fMb+Go/ZJnYCGg1nmB+4V00
+         ukADvRYyvi0Ic5N1gx72biDHaE/6Dzk4/TnoIZy//9qI+7ih/ihtQ0wRmkMIpcMw+K60
+         w4ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=U+awy/jtO8AUSyEBXiUnjG28q5KgwJhjAtwiUMCK/4w=;
-        b=qmoX0/ClmkAA5IsjSiw9aS6SSspUcEXlTZqlE0FU/q9lhC4+YTWQEDAQmWA9fZOOOf
-         8IhiwbCdDvM+b5nZeJq4C+JYl0TB42ZaNARcWQhS+ie1Mr9xVyYJijoAkLk+yz/tuBke
-         ZH1p7/+fEgpwvFr51Ba0QM1X5RpTLuhvtxOe77zkz5Ue5FmlRUKWRqTf/E+GV+8mURLK
-         g39b/Fv8kBvrFEjyUafF5HQf/9MUVtd38mJHZL6IsvLe7FlZ4bnj8NszSJ0QWo9vooDl
-         FqubAK/DoV1dnTmk3CR9Cpo1394ibq/y/1ZM8RadBmSKNuN5LS8Yb0zPs2jmDH+PFsl6
-         japA==
-X-Gm-Message-State: AOAM532K4Zr6ufOU/hGTKOWkX5oXApeU6RidyygdSYnbBiAIdNu3RUP/
-        mOx00+O/v/1FpxtQXTnxUqkr++hpXosUxYx5JCV2XdFTSK+4bQ==
-X-Google-Smtp-Source: ABdhPJyHYBcSP5L+e+/lCSODW1yjbbo+X5QJlKf3rSU0nvX/kDIYub8oTpUy0R8kwHX6UVI3UHMZpAE4KZY3EUJ7Iio=
-X-Received: by 2002:a05:6402:4390:b0:42e:b7e:e9ac with SMTP id
- o16-20020a056402439000b0042e0b7ee9acmr31240221edc.97.1654596944770; Tue, 07
- Jun 2022 03:15:44 -0700 (PDT)
+        bh=PcEyyMlJfykdOpuC3TlPMiNqAStBbX+CfCQFA4cy1R8=;
+        b=HqSz8STXM67XfZSyx17/5bOAGhl4eALb8QuZ4QaRYf8Hy1xUX55kGWLDRiLC+CTnfo
+         7mboI9C0MiO+d4Qv7S2Ik5jszgE8U9ZEP48vgvK/bsbDcO5F8YNYO/XB7o6gsuxVAEf5
+         Fp69Lzo0oz3wa9HszLkWL9d7hN3fCKRuP/NUdUMTSI7sJtWcHnIOM5fsNA7L6oEYpdsN
+         xDZHbxGGMJNm5hDz4XBLGZJdGzywBasU6GHKbsIVmcYnbqmpXRFmFRDdsjtfLnBt17ug
+         tjVoaYAseA+Vjtb+JKoFWXK2rZpiur4AsXXwmTGSCDFt/UZhoCKRDbm0dyMDgV+ipBgl
+         P3vQ==
+X-Gm-Message-State: AOAM5309qQgVp8LCUhOwLi5jZ5+vnrlpuRnVcwESiWywGvmSq8F7sxPj
+        i4CH4tOkytfweAj3sdawHV9caxPgE3nM/Z3f02MDVw==
+X-Google-Smtp-Source: ABdhPJyWEusK4UZhjXTmidO4luRdcIWwJh6lgoyQCFbu/+tEPZcsXYlH1/BTXgEqXNxHX1XY1N24DRiVFekjR7liMGc=
+X-Received: by 2002:a05:651c:158e:b0:253:d4c5:86f3 with SMTP id
+ h14-20020a05651c158e00b00253d4c586f3mr51877448ljq.273.1654596966310; Tue, 07
+ Jun 2022 03:16:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220529134605.12881-1-trix@redhat.com>
-In-Reply-To: <20220529134605.12881-1-trix@redhat.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 7 Jun 2022 12:15:08 +0200
-Message-ID: <CAHp75VeZSU5i1k6W1dgE4kOW5wfRM-jJvmPvi8wCdqQeFVtRbQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: core: check if uart_get_info succeeds before using
-To:     Tom Rix <trix@redhat.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
+References: <1654170291-29910-1-git-send-email-quic_c_sbhanu@quicinc.com> <20220602143405.GA2261501-robh@kernel.org>
+In-Reply-To: <20220602143405.GA2261501-robh@kernel.org>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Tue, 7 Jun 2022 12:15:30 +0200
+Message-ID: <CAPDyKFqpPcWwTyShOUZeJ+1KY1BZU5YMW8+3vamHaSikNyuEag@mail.gmail.com>
+Subject: Re: [PATCH V5] dt-bindings: mmc: sdhci-msm: Add gcc resets strings
+To:     Rob Herring <robh@kernel.org>
+Cc:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
+        krzysztof.kozlowski+dt@linaro.org, bhupesh.sharma@linaro.org,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rampraka@quicinc.com,
+        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
+        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 29, 2022 at 4:09 PM Tom Rix <trix@redhat.com> wrote:
+On Thu, 2 Jun 2022 at 16:34, Rob Herring <robh@kernel.org> wrote:
 >
-> clang static analysis reports this representative issue
-> drivers/tty/serial/serial_core.c:2818:9: warning: 3rd function call argument is an uninitialized value [core.CallAndMessage]
->         return sprintf(buf, "%d\n", tmp.iomem_reg_shift);
->                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> On Thu, Jun 02, 2022 at 05:14:51PM +0530, Shaik Sajida Bhanu wrote:
+> > Add gcc hardware reset supported strings for qcom-sdhci controller
+> >
+> > Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+> > Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> > ---
+> > Changes since V4:
+> >       - Updated Dt bindings changes YAML format as suggested by
+> >         Ulf Hansson.
+> >
+> > Changes since V3:
+> >       - Removed reset-names from DT bindings as suggested by
+> >         Stephen Boyd.
+> > ---
+> >  Documentation/devicetree/bindings/mmc/sdhci-msm.yaml | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml b/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml
+> > index e423633..5548c35 100644
+> > --- a/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml
+> > +++ b/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml
+> > @@ -121,6 +121,9 @@ properties:
+> >      description: A phandle to sdhci power domain node
+> >      maxItems: 1
+> >
+> > +  resets:
+> > +    description: Phandle and reset specifier for the device's reset.
 >
-> uart_get_info() is used the *show() functions.  When uart_get_info() fails, what is reported
+> Don't need generic descriptions for common properties. What you do need
+> is how many entries and what each entry is if more than one.
 
-in the ?
+I guess we should also specify whether the reset is optional or required. Right?
 
-> is garbage.  So check if uart_get_info() succeeded.
-
-...
-
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-
-I don't think this is correct. If something fails we need to inform the caller.
-
-I think more about
-
-int ret;
-
-ret = uart_get_info(...);
-if (ret)
-  return ret;
-
-But I haven't looked at the uart_get_info() implementation, so the
-above might be wrong.
-
->         return sprintf(buf, "%d\n", tmp.baud_base * 16);
-
-Ditto for the rest.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Kind regards
+Uffe
