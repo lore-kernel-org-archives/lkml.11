@@ -2,99 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36C90C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4539C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356568AbiFGTt7 (ORCPT
+        id S1357325AbiFGTuJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
+        Tue, 7 Jun 2022 15:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354552AbiFGSrH (ORCPT
+        with ESMTP id S1354526AbiFGSrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:07 -0400
+        Tue, 7 Jun 2022 14:47:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12B01059E4;
-        Tue,  7 Jun 2022 11:02:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCE991545;
+        Tue,  7 Jun 2022 11:01:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2958B82354;
-        Tue,  7 Jun 2022 18:02:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15674C34119;
-        Tue,  7 Jun 2022 18:02:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624925;
-        bh=j8g1fC2SvB8HTpopjhzaHA0uFzpnlYf/Da3qzX0eHW4=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 003D4B82349;
+        Tue,  7 Jun 2022 18:01:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 558E1C34119;
+        Tue,  7 Jun 2022 18:01:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624907;
+        bh=xJ+H+2CaxHlku3k8gqS+qjfVUzDXWJAwtE4JnyZwM6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wfqWX/riPMzoRnd8pUbuQkMZxNBu5nR4o2wHjzCB1Ba84JRy0cMfJaJLJbhWiiBDF
-         QuaEr09aBoxprMbAqdjfq48U3DQls2C3ggKl9txLXt7/kQiI0qKm9P8hQlnhrKCxTK
-         Cdo6pV9uXKyeMo96mStsjI9s5+ZAXI/N1c7ewbtg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "D. Ziegfeld" <dzigg@posteo.de>,
-        =?UTF-8?q?J=C3=B6rg-Volker=20Peetz?= <jvpeetz@web.de>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 503/667] iommu/amd: Increase timeout waiting for GA log enablement
-Date:   Tue,  7 Jun 2022 19:02:48 +0200
-Message-Id: <20220607164949.787828200@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=IDvlZZQ6QYRIWSn28FAl2PJZDTXZvO2qCngQlrDpyE2RUSiwH1P4OSbnbYwt3zdhL
+         Eedihr2AVuWNS3fXxCo37kaFii/yEmhhybWeerhIYyayld5hhRbrTkryWjps7hlmBy
+         8cIOH55U7XYcY7pzmaImJQRrmpQi2i3+tTiQ5/Nd+t5MlKYr8w/D3FEHYuy+g527dN
+         WB5OFgBwnjAjlr3No58IPo7OYeAwhujT0tWfST1/5NPMBBODCI6aOHBS4m1sh3SgqB
+         t6EMwysGAKUI/hlxdbUj4CV0GhNkd3igeNlWoTXumqbfaUU4P3p16ReA7WTMxBsY96
+         sFvPKl49JOj8A==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, baihaowen@meizu.com,
+        dan.carpenter@oracle.com, paskripkin@gmail.com, wjsota@gmail.com,
+        dave@stgolabs.net, edumazet@google.com, yangyingliang@huawei.com,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 4.19 06/27] drivers: staging: rtl8192e: Fix deadlock in rtllib_beacons_stop()
+Date:   Tue,  7 Jun 2022 14:01:10 -0400
+Message-Id: <20220607180133.481701-6-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
+References: <20220607180133.481701-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 42bb5aa043382f09bef2cc33b8431be867c70f8e ]
+[ Upstream commit 9b6bdbd9337de3917945847bde262a34a87a6303 ]
 
-On some systems it can take a long time for the hardware to enable the
-GA log of the AMD IOMMU. The current wait time is only 0.1ms, but
-testing showed that it can take up to 14ms for the GA log to enter
-running state after it has been enabled.
+There is a deadlock in rtllib_beacons_stop(), which is shown
+below:
 
-Sometimes the long delay happens when booting the system, sometimes
-only on resume. Adjust the timeout accordingly to not print a warning
-when hardware takes a longer than usual.
+   (Thread 1)              |      (Thread 2)
+                           | rtllib_send_beacon()
+rtllib_beacons_stop()      |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | rtllib_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-There has already been an attempt to fix this with commit
+We hold ieee->beacon_lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, rtllib_beacons_stop() will block forever.
 
-	9b45a7738eec ("iommu/amd: Fix loop timeout issue in iommu_ga_log_enable()")
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
 
-But that commit was based on some wrong math and did not fix the issue
-in all cases.
-
-Cc: "D. Ziegfeld" <dzigg@posteo.de>
-Cc: Jörg-Volker Peetz <jvpeetz@web.de>
-Fixes: 8bda0cfbdc1a ("iommu/amd: Detect and initialize guest vAPIC log")
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Link: https://lore.kernel.org/r/20220520102214.12563-1-joro@8bytes.org
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417141641.124388-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/amd/init.c | 2 +-
+ drivers/staging/rtl8192e/rtllib_softmac.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 204ed33c56dc..9a7742732d73 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -84,7 +84,7 @@
- #define ACPI_DEVFLAG_LINT1              0x80
- #define ACPI_DEVFLAG_ATSDIS             0x10000000
+diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
+index 919231fec09c..5f1dd4e2d12e 100644
+--- a/drivers/staging/rtl8192e/rtllib_softmac.c
++++ b/drivers/staging/rtl8192e/rtllib_softmac.c
+@@ -654,9 +654,9 @@ static void rtllib_beacons_stop(struct rtllib_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
  
--#define LOOP_TIMEOUT	100000
-+#define LOOP_TIMEOUT	2000000
- /*
-  * ACPI table definitions
-  *
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
+ 
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
+ 
+ }
+ 
 -- 
 2.35.1
-
-
 
