@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC651C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D341C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:42:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348075AbiFGRmG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:42:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
+        id S240702AbiFGRmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347545AbiFGRau (ORCPT
+        with ESMTP id S1347596AbiFGRaw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A941D0DB;
-        Tue,  7 Jun 2022 10:27:15 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF6D4FF5AE;
+        Tue,  7 Jun 2022 10:27:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47AECB822B8;
-        Tue,  7 Jun 2022 17:27:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7D74C36B0C;
-        Tue,  7 Jun 2022 17:27:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78EC9B822B0;
+        Tue,  7 Jun 2022 17:27:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE9BBC385A5;
+        Tue,  7 Jun 2022 17:27:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622833;
-        bh=h52zxNpYYU8WCZXmj5zjTKIXV+j+MQqMSEZmLGWkZrc=;
+        s=korg; t=1654622855;
+        bh=f15wNlRoY4rStJEgJPLKlAn0P6gzOzR/k90BBXc8Atk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1gaU6SbO/M+vb6KsgP4fl7dZ9PbsVC3Hb96ZIVfWxBS3FRWC5FyrwEaZhYLaOdXsu
-         o2Ql1cd9MbEwvT2nkp8pEvVOBHmPbZBuEZIccx9V3tnassWXpl2pWiPIYl8PAb40/X
-         1zq66/JRiPjF1yqOiLLGVPp2/qFZgTUQRD/st5XA=
+        b=kRNTOM63kj/fkrmDxCpK7gnXZjmu1wlIF2atS2UJpxL16CrQClTFh8G+0aDAiaHkS
+         i6FhHC/iyoVubKnv9J6uxFSXF1gEHzZIiYqOKjGwIURJTVWIdEDLtdiqs2MW4vKzHy
+         Lo6iGDHyPyxa5XQAB7vSMDhrahDzj905PMp+TkO4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 197/452] spi: spi-fsl-qspi: check return value after calling platform_get_resource_byname()
-Date:   Tue,  7 Jun 2022 19:00:54 +0200
-Message-Id: <20220607164914.435376679@linuxfoundation.org>
+Subject: [PATCH 5.10 200/452] perf/amd/ibs: Use interrupt regs ip for stack unwinding
+Date:   Tue,  7 Jun 2022 19:00:57 +0200
+Message-Id: <20220607164914.523627774@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,37 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Ravi Bangoria <ravi.bangoria@amd.com>
 
-[ Upstream commit a2b331ac11e1cac56f5b7d367e9f3c5796deaaed ]
+[ Upstream commit 3d47083b9ff46863e8374ad3bb5edb5e464c75f8 ]
 
-It will cause null-ptr-deref if platform_get_resource_byname() returns NULL,
-we need check the return value.
+IbsOpRip is recorded when IBS interrupt is triggered. But there is
+a skid from the time IBS interrupt gets triggered to the time the
+interrupt is presented to the core. Meanwhile processor would have
+moved ahead and thus IbsOpRip will be inconsistent with rsp and rbp
+recorded as part of the interrupt regs. This causes issues while
+unwinding stack using the ORC unwinder as it needs consistent rip,
+rsp and rbp. Fix this by using rip from interrupt regs instead of
+IbsOpRip for stack unwinding.
 
-Fixes: 858e26a515c2 ("spi: spi-fsl-qspi: Reduce devm_ioremap size to 4 times AHB buffer size")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220505093954.1285615-1-yangyingliang@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: ee9f8fce99640 ("x86/unwind: Add the ORC unwinder")
+Reported-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220429051441.14251-1-ravi.bangoria@amd.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-fsl-qspi.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/x86/events/amd/ibs.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/drivers/spi/spi-fsl-qspi.c b/drivers/spi/spi-fsl-qspi.c
-index 9851551ebbe0..46ae46a944c5 100644
---- a/drivers/spi/spi-fsl-qspi.c
-+++ b/drivers/spi/spi-fsl-qspi.c
-@@ -876,6 +876,10 @@ static int fsl_qspi_probe(struct platform_device *pdev)
+diff --git a/arch/x86/events/amd/ibs.c b/arch/x86/events/amd/ibs.c
+index 780d89d2ae32..8a85658a24cc 100644
+--- a/arch/x86/events/amd/ibs.c
++++ b/arch/x86/events/amd/ibs.c
+@@ -312,6 +312,16 @@ static int perf_ibs_init(struct perf_event *event)
+ 	hwc->config_base = perf_ibs->msr;
+ 	hwc->config = config;
  
- 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
- 					"QuadSPI-memory");
-+	if (!res) {
-+		ret = -EINVAL;
-+		goto err_put_ctrl;
-+	}
- 	q->memmap_phy = res->start;
- 	/* Since there are 4 cs, map size required is 4 times ahb_buf_size */
- 	q->ahb_addr = devm_ioremap(dev, q->memmap_phy,
++	/*
++	 * rip recorded by IbsOpRip will not be consistent with rsp and rbp
++	 * recorded as part of interrupt regs. Thus we need to use rip from
++	 * interrupt regs while unwinding call stack. Setting _EARLY flag
++	 * makes sure we unwind call-stack before perf sample rip is set to
++	 * IbsOpRip.
++	 */
++	if (event->attr.sample_type & PERF_SAMPLE_CALLCHAIN)
++		event->attr.sample_type |= __PERF_SAMPLE_CALLCHAIN_EARLY;
++
+ 	return 0;
+ }
+ 
+@@ -692,6 +702,14 @@ static int perf_ibs_handle_irq(struct perf_ibs *perf_ibs, struct pt_regs *iregs)
+ 		data.raw = &raw;
+ 	}
+ 
++	/*
++	 * rip recorded by IbsOpRip will not be consistent with rsp and rbp
++	 * recorded as part of interrupt regs. Thus we need to use rip from
++	 * interrupt regs while unwinding call stack.
++	 */
++	if (event->attr.sample_type & PERF_SAMPLE_CALLCHAIN)
++		data.callchain = perf_callchain(event, iregs);
++
+ 	throttle = perf_event_overflow(event, &data, &regs);
+ out:
+ 	if (throttle) {
 -- 
 2.35.1
 
