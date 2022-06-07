@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0268C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F921C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:42:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347719AbiFGRmh (ORCPT
+        id S1347601AbiFGRmo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44884 "EHLO
+        Tue, 7 Jun 2022 13:42:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347739AbiFGRbC (ORCPT
+        with ESMTP id S1347801AbiFGRbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:02 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44AF11B691;
-        Tue,  7 Jun 2022 10:28:14 -0700 (PDT)
+        Tue, 7 Jun 2022 13:31:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA7D10A615;
+        Tue,  7 Jun 2022 10:28:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 08BB1CE0E13;
-        Tue,  7 Jun 2022 17:28:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E905CC385A5;
-        Tue,  7 Jun 2022 17:28:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5588A6145D;
+        Tue,  7 Jun 2022 17:28:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3689CC385A5;
+        Tue,  7 Jun 2022 17:28:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622891;
-        bh=dCAvIXWKjBh4isllWcsRZ2hqf50goYLV8q7VKvNwqIk=;
+        s=korg; t=1654622902;
+        bh=pX+XxAV/5P8I/zNmELhsar2vBeaiyDjGIExCjoxaGXk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FqOvWYiUD3b6a53zV5BwTNWldUY9U23BI140E+Z+vFlstYvUJYspyc3L1mgkIaMRm
-         zYUtYx9WGOuMwfaRD8xfmIf/fLQrAidWPadrS2htLxNDYwWfGCBmZsEFTiDz3Wtoe6
-         D0Y6xvVoLCsNHO5CFDEpuinhB2gEhY2PzCYawQdY=
+        b=ikZGwYESthzOYZitG/Ucn8GWQ/jrc9rV0rN+gI8ybBfMG4lhmC2LcxrcgNa56nKVV
+         dzDeNB4YlbZxdHYR5z0GSINaOaPDIK8ql4itaJ4kNH17QL7OBRR+xx9WMsNCjKMQR0
+         KHopIkLJWlCSKpC4oPdGrS0abnPHLQ0aKkLtnOXo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Archie Pusaka <apusaka@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
+        James Morris <jamorris@linux.microsoft.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 220/452] Bluetooth: use inclusive language when filtering devices
-Date:   Tue,  7 Jun 2022 19:01:17 +0200
-Message-Id: <20220607164915.117692733@linuxfoundation.org>
+Subject: [PATCH 5.10 224/452] lsm,selinux: pass flowi_common instead of flowi to the LSM hooks
+Date:   Tue,  7 Jun 2022 19:01:21 +0200
+Message-Id: <20220607164915.239659300@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,818 +51,748 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
+From: Paul Moore <paul@paul-moore.com>
 
-[ Upstream commit 3d4f9c00492b4e21641e5140a5e78cb50b58d60b ]
+[ Upstream commit 3df98d79215ace13d1e91ddfc5a67a0f5acbd83f ]
 
-This patch replaces some non-inclusive terms based on the appropriate
-language mapping table compiled by the Bluetooth SIG:
-https://specificationrefs.bluetooth.com/language-mapping/Appropriate_Language_Mapping_Table.pdf
+As pointed out by Herbert in a recent related patch, the LSM hooks do
+not have the necessary address family information to use the flowi
+struct safely.  As none of the LSMs currently use any of the protocol
+specific flowi information, replace the flowi pointers with pointers
+to the address family independent flowi_common struct.
 
-Specifically, these terms are replaced:
-blacklist -> reject list
-whitelist -> accept list
-
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Reported-by: Herbert Xu <herbert@gondor.apana.org.au>
+Acked-by: James Morris <jamorris@linux.microsoft.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/bluetooth/hci.h      | 16 +++---
- include/net/bluetooth/hci_core.h |  8 +--
- net/bluetooth/hci_core.c         | 24 ++++-----
- net/bluetooth/hci_debugfs.c      |  8 +--
- net/bluetooth/hci_event.c        | 70 ++++++++++++-------------
- net/bluetooth/hci_request.c      | 89 ++++++++++++++++----------------
- net/bluetooth/hci_sock.c         | 12 ++---
- net/bluetooth/l2cap_core.c       |  4 +-
- net/bluetooth/mgmt.c             | 14 ++---
- 9 files changed, 123 insertions(+), 122 deletions(-)
+ .../chelsio/inline_crypto/chtls/chtls_cm.c    |  2 +-
+ drivers/net/wireguard/socket.c                |  4 ++--
+ include/linux/lsm_hook_defs.h                 |  4 ++--
+ include/linux/lsm_hooks.h                     |  2 +-
+ include/linux/security.h                      | 23 +++++++++++--------
+ include/net/flow.h                            | 10 ++++++++
+ include/net/route.h                           |  6 ++---
+ net/dccp/ipv4.c                               |  2 +-
+ net/dccp/ipv6.c                               |  6 ++---
+ net/ipv4/icmp.c                               |  4 ++--
+ net/ipv4/inet_connection_sock.c               |  4 ++--
+ net/ipv4/ip_output.c                          |  2 +-
+ net/ipv4/ping.c                               |  2 +-
+ net/ipv4/raw.c                                |  2 +-
+ net/ipv4/syncookies.c                         |  2 +-
+ net/ipv4/udp.c                                |  2 +-
+ net/ipv6/af_inet6.c                           |  2 +-
+ net/ipv6/datagram.c                           |  2 +-
+ net/ipv6/icmp.c                               |  6 ++---
+ net/ipv6/inet6_connection_sock.c              |  4 ++--
+ net/ipv6/netfilter/nf_reject_ipv6.c           |  2 +-
+ net/ipv6/ping.c                               |  2 +-
+ net/ipv6/raw.c                                |  2 +-
+ net/ipv6/syncookies.c                         |  2 +-
+ net/ipv6/tcp_ipv6.c                           |  4 ++--
+ net/ipv6/udp.c                                |  2 +-
+ net/l2tp/l2tp_ip6.c                           |  2 +-
+ net/netfilter/nf_synproxy_core.c              |  2 +-
+ net/xfrm/xfrm_state.c                         |  6 +++--
+ security/security.c                           | 17 +++++++-------
+ security/selinux/hooks.c                      |  4 ++--
+ security/selinux/include/xfrm.h               |  2 +-
+ security/selinux/xfrm.c                       | 13 ++++++-----
+ 33 files changed, 85 insertions(+), 66 deletions(-)
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index 243de74e118e..ede7a153c69a 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -1503,7 +1503,7 @@ struct hci_cp_le_set_scan_enable {
- } __packed;
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+index d6b6ebb3f1ec..51e071c20e39 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+@@ -1150,7 +1150,7 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
+ 		fl6.daddr = ip6h->saddr;
+ 		fl6.fl6_dport = inet_rsk(oreq)->ir_rmt_port;
+ 		fl6.fl6_sport = htons(inet_rsk(oreq)->ir_num);
+-		security_req_classify_flow(oreq, flowi6_to_flowi(&fl6));
++		security_req_classify_flow(oreq, flowi6_to_flowi_common(&fl6));
+ 		dst = ip6_dst_lookup_flow(sock_net(lsk), lsk, &fl6, NULL);
+ 		if (IS_ERR(dst))
+ 			goto free_sk;
+diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
+index 473221aa2236..eef5911fa210 100644
+--- a/drivers/net/wireguard/socket.c
++++ b/drivers/net/wireguard/socket.c
+@@ -49,7 +49,7 @@ static int send4(struct wg_device *wg, struct sk_buff *skb,
+ 		rt = dst_cache_get_ip4(cache, &fl.saddr);
  
- #define HCI_LE_USE_PEER_ADDR		0x00
--#define HCI_LE_USE_WHITELIST		0x01
-+#define HCI_LE_USE_ACCEPT_LIST		0x01
+ 	if (!rt) {
+-		security_sk_classify_flow(sock, flowi4_to_flowi(&fl));
++		security_sk_classify_flow(sock, flowi4_to_flowi_common(&fl));
+ 		if (unlikely(!inet_confirm_addr(sock_net(sock), NULL, 0,
+ 						fl.saddr, RT_SCOPE_HOST))) {
+ 			endpoint->src4.s_addr = 0;
+@@ -129,7 +129,7 @@ static int send6(struct wg_device *wg, struct sk_buff *skb,
+ 		dst = dst_cache_get_ip6(cache, &fl.saddr);
  
- #define HCI_OP_LE_CREATE_CONN		0x200d
- struct hci_cp_le_create_conn {
-@@ -1523,22 +1523,22 @@ struct hci_cp_le_create_conn {
- 
- #define HCI_OP_LE_CREATE_CONN_CANCEL	0x200e
- 
--#define HCI_OP_LE_READ_WHITE_LIST_SIZE	0x200f
--struct hci_rp_le_read_white_list_size {
-+#define HCI_OP_LE_READ_ACCEPT_LIST_SIZE	0x200f
-+struct hci_rp_le_read_accept_list_size {
- 	__u8	status;
- 	__u8	size;
- } __packed;
- 
--#define HCI_OP_LE_CLEAR_WHITE_LIST	0x2010
-+#define HCI_OP_LE_CLEAR_ACCEPT_LIST	0x2010
- 
--#define HCI_OP_LE_ADD_TO_WHITE_LIST	0x2011
--struct hci_cp_le_add_to_white_list {
-+#define HCI_OP_LE_ADD_TO_ACCEPT_LIST	0x2011
-+struct hci_cp_le_add_to_accept_list {
- 	__u8     bdaddr_type;
- 	bdaddr_t bdaddr;
- } __packed;
- 
--#define HCI_OP_LE_DEL_FROM_WHITE_LIST	0x2012
--struct hci_cp_le_del_from_white_list {
-+#define HCI_OP_LE_DEL_FROM_ACCEPT_LIST	0x2012
-+struct hci_cp_le_del_from_accept_list {
- 	__u8     bdaddr_type;
- 	bdaddr_t bdaddr;
- } __packed;
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 0520c550086e..11a92bb4d7a9 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -308,7 +308,7 @@ struct hci_dev {
- 	__u8		max_page;
- 	__u8		features[HCI_MAX_PAGES][8];
- 	__u8		le_features[8];
--	__u8		le_white_list_size;
-+	__u8		le_accept_list_size;
- 	__u8		le_resolv_list_size;
- 	__u8		le_num_of_adv_sets;
- 	__u8		le_states[8];
-@@ -499,14 +499,14 @@ struct hci_dev {
- 	struct hci_conn_hash	conn_hash;
- 
- 	struct list_head	mgmt_pending;
--	struct list_head	blacklist;
--	struct list_head	whitelist;
-+	struct list_head	reject_list;
-+	struct list_head	accept_list;
- 	struct list_head	uuids;
- 	struct list_head	link_keys;
- 	struct list_head	long_term_keys;
- 	struct list_head	identity_resolving_keys;
- 	struct list_head	remote_oob_data;
--	struct list_head	le_white_list;
-+	struct list_head	le_accept_list;
- 	struct list_head	le_resolv_list;
- 	struct list_head	le_conn_params;
- 	struct list_head	pend_le_conns;
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 99657c1e66ba..2cb0cf035476 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -742,14 +742,14 @@ static int hci_init3_req(struct hci_request *req, unsigned long opt)
- 		}
- 
- 		if (hdev->commands[26] & 0x40) {
--			/* Read LE White List Size */
--			hci_req_add(req, HCI_OP_LE_READ_WHITE_LIST_SIZE,
-+			/* Read LE Accept List Size */
-+			hci_req_add(req, HCI_OP_LE_READ_ACCEPT_LIST_SIZE,
- 				    0, NULL);
- 		}
- 
- 		if (hdev->commands[26] & 0x80) {
--			/* Clear LE White List */
--			hci_req_add(req, HCI_OP_LE_CLEAR_WHITE_LIST, 0, NULL);
-+			/* Clear LE Accept List */
-+			hci_req_add(req, HCI_OP_LE_CLEAR_ACCEPT_LIST, 0, NULL);
- 		}
- 
- 		if (hdev->commands[34] & 0x40) {
-@@ -3548,13 +3548,13 @@ static int hci_suspend_notifier(struct notifier_block *nb, unsigned long action,
- 		/* Suspend consists of two actions:
- 		 *  - First, disconnect everything and make the controller not
- 		 *    connectable (disabling scanning)
--		 *  - Second, program event filter/whitelist and enable scan
-+		 *  - Second, program event filter/accept list and enable scan
- 		 */
- 		ret = hci_change_suspend_state(hdev, BT_SUSPEND_DISCONNECT);
- 		if (!ret)
- 			state = BT_SUSPEND_DISCONNECT;
- 
--		/* Only configure whitelist if disconnect succeeded and wake
-+		/* Only configure accept list if disconnect succeeded and wake
- 		 * isn't being prevented.
- 		 */
- 		if (!ret && !(hdev->prevent_wake && hdev->prevent_wake(hdev))) {
-@@ -3657,14 +3657,14 @@ struct hci_dev *hci_alloc_dev(void)
- 	mutex_init(&hdev->req_lock);
- 
- 	INIT_LIST_HEAD(&hdev->mgmt_pending);
--	INIT_LIST_HEAD(&hdev->blacklist);
--	INIT_LIST_HEAD(&hdev->whitelist);
-+	INIT_LIST_HEAD(&hdev->reject_list);
-+	INIT_LIST_HEAD(&hdev->accept_list);
- 	INIT_LIST_HEAD(&hdev->uuids);
- 	INIT_LIST_HEAD(&hdev->link_keys);
- 	INIT_LIST_HEAD(&hdev->long_term_keys);
- 	INIT_LIST_HEAD(&hdev->identity_resolving_keys);
- 	INIT_LIST_HEAD(&hdev->remote_oob_data);
--	INIT_LIST_HEAD(&hdev->le_white_list);
-+	INIT_LIST_HEAD(&hdev->le_accept_list);
- 	INIT_LIST_HEAD(&hdev->le_resolv_list);
- 	INIT_LIST_HEAD(&hdev->le_conn_params);
- 	INIT_LIST_HEAD(&hdev->pend_le_conns);
-@@ -3880,8 +3880,8 @@ void hci_cleanup_dev(struct hci_dev *hdev)
- 	destroy_workqueue(hdev->req_workqueue);
- 
- 	hci_dev_lock(hdev);
--	hci_bdaddr_list_clear(&hdev->blacklist);
--	hci_bdaddr_list_clear(&hdev->whitelist);
-+	hci_bdaddr_list_clear(&hdev->reject_list);
-+	hci_bdaddr_list_clear(&hdev->accept_list);
- 	hci_uuids_clear(hdev);
- 	hci_link_keys_clear(hdev);
- 	hci_smp_ltks_clear(hdev);
-@@ -3889,7 +3889,7 @@ void hci_cleanup_dev(struct hci_dev *hdev)
- 	hci_remote_oob_data_clear(hdev);
- 	hci_adv_instances_clear(hdev);
- 	hci_adv_monitors_clear(hdev);
--	hci_bdaddr_list_clear(&hdev->le_white_list);
-+	hci_bdaddr_list_clear(&hdev->le_accept_list);
- 	hci_bdaddr_list_clear(&hdev->le_resolv_list);
- 	hci_conn_params_clear_all(hdev);
- 	hci_discovery_filter_clear(hdev);
-diff --git a/net/bluetooth/hci_debugfs.c b/net/bluetooth/hci_debugfs.c
-index 5e8af2658e44..338833f12365 100644
---- a/net/bluetooth/hci_debugfs.c
-+++ b/net/bluetooth/hci_debugfs.c
-@@ -125,7 +125,7 @@ static int device_list_show(struct seq_file *f, void *ptr)
- 	struct bdaddr_list *b;
- 
- 	hci_dev_lock(hdev);
--	list_for_each_entry(b, &hdev->whitelist, list)
-+	list_for_each_entry(b, &hdev->accept_list, list)
- 		seq_printf(f, "%pMR (type %u)\n", &b->bdaddr, b->bdaddr_type);
- 	list_for_each_entry(p, &hdev->le_conn_params, list) {
- 		seq_printf(f, "%pMR (type %u) %u\n", &p->addr, p->addr_type,
-@@ -144,7 +144,7 @@ static int blacklist_show(struct seq_file *f, void *p)
- 	struct bdaddr_list *b;
- 
- 	hci_dev_lock(hdev);
--	list_for_each_entry(b, &hdev->blacklist, list)
-+	list_for_each_entry(b, &hdev->reject_list, list)
- 		seq_printf(f, "%pMR (type %u)\n", &b->bdaddr, b->bdaddr_type);
- 	hci_dev_unlock(hdev);
- 
-@@ -734,7 +734,7 @@ static int white_list_show(struct seq_file *f, void *ptr)
- 	struct bdaddr_list *b;
- 
- 	hci_dev_lock(hdev);
--	list_for_each_entry(b, &hdev->le_white_list, list)
-+	list_for_each_entry(b, &hdev->le_accept_list, list)
- 		seq_printf(f, "%pMR (type %u)\n", &b->bdaddr, b->bdaddr_type);
- 	hci_dev_unlock(hdev);
- 
-@@ -1145,7 +1145,7 @@ void hci_debugfs_create_le(struct hci_dev *hdev)
- 				    &force_static_address_fops);
- 
- 	debugfs_create_u8("white_list_size", 0444, hdev->debugfs,
--			  &hdev->le_white_list_size);
-+			  &hdev->le_accept_list_size);
- 	debugfs_create_file("white_list", 0444, hdev->debugfs, hdev,
- 			    &white_list_fops);
- 	debugfs_create_u8("resolv_list_size", 0444, hdev->debugfs,
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 061ef20e135e..f75869835e3e 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -236,7 +236,7 @@ static void hci_cc_reset(struct hci_dev *hdev, struct sk_buff *skb)
- 
- 	hdev->ssp_debug_mode = 0;
- 
--	hci_bdaddr_list_clear(&hdev->le_white_list);
-+	hci_bdaddr_list_clear(&hdev->le_accept_list);
- 	hci_bdaddr_list_clear(&hdev->le_resolv_list);
- }
- 
-@@ -1456,21 +1456,21 @@ static void hci_cc_le_read_num_adv_sets(struct hci_dev *hdev,
- 	hdev->le_num_of_adv_sets = rp->num_of_sets;
- }
- 
--static void hci_cc_le_read_white_list_size(struct hci_dev *hdev,
--					   struct sk_buff *skb)
-+static void hci_cc_le_read_accept_list_size(struct hci_dev *hdev,
-+					    struct sk_buff *skb)
+ 	if (!dst) {
+-		security_sk_classify_flow(sock, flowi6_to_flowi(&fl));
++		security_sk_classify_flow(sock, flowi6_to_flowi_common(&fl));
+ 		if (unlikely(!ipv6_addr_any(&fl.saddr) &&
+ 			     !ipv6_chk_addr(sock_net(sock), &fl.saddr, NULL, 0))) {
+ 			endpoint->src6 = fl.saddr = in6addr_any;
+diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
+index a6a3d4ddfc2d..d13631a5e908 100644
+--- a/include/linux/lsm_hook_defs.h
++++ b/include/linux/lsm_hook_defs.h
+@@ -311,7 +311,7 @@ LSM_HOOK(int, 0, secmark_relabel_packet, u32 secid)
+ LSM_HOOK(void, LSM_RET_VOID, secmark_refcount_inc, void)
+ LSM_HOOK(void, LSM_RET_VOID, secmark_refcount_dec, void)
+ LSM_HOOK(void, LSM_RET_VOID, req_classify_flow, const struct request_sock *req,
+-	 struct flowi *fl)
++	 struct flowi_common *flic)
+ LSM_HOOK(int, 0, tun_dev_alloc_security, void **security)
+ LSM_HOOK(void, LSM_RET_VOID, tun_dev_free_security, void *security)
+ LSM_HOOK(int, 0, tun_dev_create, void)
+@@ -351,7 +351,7 @@ LSM_HOOK(int, 0, xfrm_state_delete_security, struct xfrm_state *x)
+ LSM_HOOK(int, 0, xfrm_policy_lookup, struct xfrm_sec_ctx *ctx, u32 fl_secid,
+ 	 u8 dir)
+ LSM_HOOK(int, 1, xfrm_state_pol_flow_match, struct xfrm_state *x,
+-	 struct xfrm_policy *xp, const struct flowi *fl)
++	 struct xfrm_policy *xp, const struct flowi_common *flic)
+ LSM_HOOK(int, 0, xfrm_decode_session, struct sk_buff *skb, u32 *secid,
+ 	 int ckall)
+ #endif /* CONFIG_SECURITY_NETWORK_XFRM */
+diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
+index a8531b37e6f5..64cdf4d7bfb3 100644
+--- a/include/linux/lsm_hooks.h
++++ b/include/linux/lsm_hooks.h
+@@ -1105,7 +1105,7 @@
+  * @xfrm_state_pol_flow_match:
+  *	@x contains the state to match.
+  *	@xp contains the policy to check for a match.
+- *	@fl contains the flow to check for a match.
++ *	@flic contains the flowi_common struct to check for a match.
+  *	Return 1 if there is a match.
+  * @xfrm_decode_session:
+  *	@skb points to skb to decode.
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 330029ef7e89..e9b4b5410614 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -170,7 +170,7 @@ struct sk_buff;
+ struct sock;
+ struct sockaddr;
+ struct socket;
+-struct flowi;
++struct flowi_common;
+ struct dst_entry;
+ struct xfrm_selector;
+ struct xfrm_policy;
+@@ -1363,8 +1363,9 @@ int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u
+ int security_sk_alloc(struct sock *sk, int family, gfp_t priority);
+ void security_sk_free(struct sock *sk);
+ void security_sk_clone(const struct sock *sk, struct sock *newsk);
+-void security_sk_classify_flow(struct sock *sk, struct flowi *fl);
+-void security_req_classify_flow(const struct request_sock *req, struct flowi *fl);
++void security_sk_classify_flow(struct sock *sk, struct flowi_common *flic);
++void security_req_classify_flow(const struct request_sock *req,
++				struct flowi_common *flic);
+ void security_sock_graft(struct sock*sk, struct socket *parent);
+ int security_inet_conn_request(struct sock *sk,
+ 			struct sk_buff *skb, struct request_sock *req);
+@@ -1515,11 +1516,13 @@ static inline void security_sk_clone(const struct sock *sk, struct sock *newsk)
  {
--	struct hci_rp_le_read_white_list_size *rp = (void *) skb->data;
-+	struct hci_rp_le_read_accept_list_size *rp = (void *)skb->data;
- 
- 	BT_DBG("%s status 0x%2.2x size %u", hdev->name, rp->status, rp->size);
- 
- 	if (rp->status)
- 		return;
- 
--	hdev->le_white_list_size = rp->size;
-+	hdev->le_accept_list_size = rp->size;
  }
  
--static void hci_cc_le_clear_white_list(struct hci_dev *hdev,
--				       struct sk_buff *skb)
-+static void hci_cc_le_clear_accept_list(struct hci_dev *hdev,
-+					struct sk_buff *skb)
+-static inline void security_sk_classify_flow(struct sock *sk, struct flowi *fl)
++static inline void security_sk_classify_flow(struct sock *sk,
++					     struct flowi_common *flic)
  {
- 	__u8 status = *((__u8 *) skb->data);
- 
-@@ -1479,13 +1479,13 @@ static void hci_cc_le_clear_white_list(struct hci_dev *hdev,
- 	if (status)
- 		return;
- 
--	hci_bdaddr_list_clear(&hdev->le_white_list);
-+	hci_bdaddr_list_clear(&hdev->le_accept_list);
  }
  
--static void hci_cc_le_add_to_white_list(struct hci_dev *hdev,
--					struct sk_buff *skb)
-+static void hci_cc_le_add_to_accept_list(struct hci_dev *hdev,
-+					 struct sk_buff *skb)
+-static inline void security_req_classify_flow(const struct request_sock *req, struct flowi *fl)
++static inline void security_req_classify_flow(const struct request_sock *req,
++					      struct flowi_common *flic)
  {
--	struct hci_cp_le_add_to_white_list *sent;
-+	struct hci_cp_le_add_to_accept_list *sent;
- 	__u8 status = *((__u8 *) skb->data);
- 
- 	BT_DBG("%s status 0x%2.2x", hdev->name, status);
-@@ -1493,18 +1493,18 @@ static void hci_cc_le_add_to_white_list(struct hci_dev *hdev,
- 	if (status)
- 		return;
- 
--	sent = hci_sent_cmd_data(hdev, HCI_OP_LE_ADD_TO_WHITE_LIST);
-+	sent = hci_sent_cmd_data(hdev, HCI_OP_LE_ADD_TO_ACCEPT_LIST);
- 	if (!sent)
- 		return;
- 
--	hci_bdaddr_list_add(&hdev->le_white_list, &sent->bdaddr,
--			   sent->bdaddr_type);
-+	hci_bdaddr_list_add(&hdev->le_accept_list, &sent->bdaddr,
-+			    sent->bdaddr_type);
  }
  
--static void hci_cc_le_del_from_white_list(struct hci_dev *hdev,
--					  struct sk_buff *skb)
-+static void hci_cc_le_del_from_accept_list(struct hci_dev *hdev,
-+					   struct sk_buff *skb)
+@@ -1646,9 +1649,9 @@ void security_xfrm_state_free(struct xfrm_state *x);
+ int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir);
+ int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
+ 				       struct xfrm_policy *xp,
+-				       const struct flowi *fl);
++				       const struct flowi_common *flic);
+ int security_xfrm_decode_session(struct sk_buff *skb, u32 *secid);
+-void security_skb_classify_flow(struct sk_buff *skb, struct flowi *fl);
++void security_skb_classify_flow(struct sk_buff *skb, struct flowi_common *flic);
+ 
+ #else	/* CONFIG_SECURITY_NETWORK_XFRM */
+ 
+@@ -1700,7 +1703,8 @@ static inline int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_s
+ }
+ 
+ static inline int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
+-			struct xfrm_policy *xp, const struct flowi *fl)
++						     struct xfrm_policy *xp,
++						     const struct flowi_common *flic)
  {
--	struct hci_cp_le_del_from_white_list *sent;
-+	struct hci_cp_le_del_from_accept_list *sent;
- 	__u8 status = *((__u8 *) skb->data);
- 
- 	BT_DBG("%s status 0x%2.2x", hdev->name, status);
-@@ -1512,11 +1512,11 @@ static void hci_cc_le_del_from_white_list(struct hci_dev *hdev,
- 	if (status)
- 		return;
- 
--	sent = hci_sent_cmd_data(hdev, HCI_OP_LE_DEL_FROM_WHITE_LIST);
-+	sent = hci_sent_cmd_data(hdev, HCI_OP_LE_DEL_FROM_ACCEPT_LIST);
- 	if (!sent)
- 		return;
- 
--	hci_bdaddr_list_del(&hdev->le_white_list, &sent->bdaddr,
-+	hci_bdaddr_list_del(&hdev->le_accept_list, &sent->bdaddr,
- 			    sent->bdaddr_type);
+ 	return 1;
+ }
+@@ -1710,7 +1714,8 @@ static inline int security_xfrm_decode_session(struct sk_buff *skb, u32 *secid)
+ 	return 0;
  }
  
-@@ -2331,7 +2331,7 @@ static void cs_le_create_conn(struct hci_dev *hdev, bdaddr_t *peer_addr,
- 	/* We don't want the connection attempt to stick around
- 	 * indefinitely since LE doesn't have a page timeout concept
- 	 * like BR/EDR. Set a timer for any connection that doesn't use
--	 * the white list for connecting.
-+	 * the accept list for connecting.
+-static inline void security_skb_classify_flow(struct sk_buff *skb, struct flowi *fl)
++static inline void security_skb_classify_flow(struct sk_buff *skb,
++					      struct flowi_common *flic)
+ {
+ }
+ 
+diff --git a/include/net/flow.h b/include/net/flow.h
+index b2531df3f65f..39d0cedcddee 100644
+--- a/include/net/flow.h
++++ b/include/net/flow.h
+@@ -195,11 +195,21 @@ static inline struct flowi *flowi4_to_flowi(struct flowi4 *fl4)
+ 	return container_of(fl4, struct flowi, u.ip4);
+ }
+ 
++static inline struct flowi_common *flowi4_to_flowi_common(struct flowi4 *fl4)
++{
++	return &(flowi4_to_flowi(fl4)->u.__fl_common);
++}
++
+ static inline struct flowi *flowi6_to_flowi(struct flowi6 *fl6)
+ {
+ 	return container_of(fl6, struct flowi, u.ip6);
+ }
+ 
++static inline struct flowi_common *flowi6_to_flowi_common(struct flowi6 *fl6)
++{
++	return &(flowi6_to_flowi(fl6)->u.__fl_common);
++}
++
+ static inline struct flowi *flowidn_to_flowi(struct flowidn *fldn)
+ {
+ 	return container_of(fldn, struct flowi, u.dn);
+diff --git a/include/net/route.h b/include/net/route.h
+index a07c277cd33e..2551f3f03b37 100644
+--- a/include/net/route.h
++++ b/include/net/route.h
+@@ -165,7 +165,7 @@ static inline struct rtable *ip_route_output_ports(struct net *net, struct flowi
+ 			   sk ? inet_sk_flowi_flags(sk) : 0,
+ 			   daddr, saddr, dport, sport, sock_net_uid(net, sk));
+ 	if (sk)
+-		security_sk_classify_flow(sk, flowi4_to_flowi(fl4));
++		security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
+ 	return ip_route_output_flow(net, fl4, sk);
+ }
+ 
+@@ -322,7 +322,7 @@ static inline struct rtable *ip_route_connect(struct flowi4 *fl4,
+ 		ip_rt_put(rt);
+ 		flowi4_update_output(fl4, oif, tos, fl4->daddr, fl4->saddr);
+ 	}
+-	security_sk_classify_flow(sk, flowi4_to_flowi(fl4));
++	security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
+ 	return ip_route_output_flow(net, fl4, sk);
+ }
+ 
+@@ -338,7 +338,7 @@ static inline struct rtable *ip_route_newports(struct flowi4 *fl4, struct rtable
+ 		flowi4_update_output(fl4, sk->sk_bound_dev_if,
+ 				     RT_CONN_FLAGS(sk), fl4->daddr,
+ 				     fl4->saddr);
+-		security_sk_classify_flow(sk, flowi4_to_flowi(fl4));
++		security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
+ 		return ip_route_output_flow(sock_net(sk), fl4, sk);
+ 	}
+ 	return rt;
+diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
+index b0b6e6a4784e..2455b0c0e486 100644
+--- a/net/dccp/ipv4.c
++++ b/net/dccp/ipv4.c
+@@ -464,7 +464,7 @@ static struct dst_entry* dccp_v4_route_skb(struct net *net, struct sock *sk,
+ 		.fl4_dport = dccp_hdr(skb)->dccph_sport,
+ 	};
+ 
+-	security_skb_classify_flow(skb, flowi4_to_flowi(&fl4));
++	security_skb_classify_flow(skb, flowi4_to_flowi_common(&fl4));
+ 	rt = ip_route_output_flow(net, &fl4, sk);
+ 	if (IS_ERR(rt)) {
+ 		IP_INC_STATS(net, IPSTATS_MIB_OUTNOROUTES);
+diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+index 49f4034bf126..2be5c69824f9 100644
+--- a/net/dccp/ipv6.c
++++ b/net/dccp/ipv6.c
+@@ -203,7 +203,7 @@ static int dccp_v6_send_response(const struct sock *sk, struct request_sock *req
+ 	fl6.flowi6_oif = ireq->ir_iif;
+ 	fl6.fl6_dport = ireq->ir_rmt_port;
+ 	fl6.fl6_sport = htons(ireq->ir_num);
+-	security_req_classify_flow(req, flowi6_to_flowi(&fl6));
++	security_req_classify_flow(req, flowi6_to_flowi_common(&fl6));
+ 
+ 
+ 	rcu_read_lock();
+@@ -279,7 +279,7 @@ static void dccp_v6_ctl_send_reset(const struct sock *sk, struct sk_buff *rxskb)
+ 	fl6.flowi6_oif = inet6_iif(rxskb);
+ 	fl6.fl6_dport = dccp_hdr(skb)->dccph_dport;
+ 	fl6.fl6_sport = dccp_hdr(skb)->dccph_sport;
+-	security_skb_classify_flow(rxskb, flowi6_to_flowi(&fl6));
++	security_skb_classify_flow(rxskb, flowi6_to_flowi_common(&fl6));
+ 
+ 	/* sk = NULL, but it is safe for now. RST socket required. */
+ 	dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
+@@ -912,7 +912,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+ 	fl6.flowi6_oif = sk->sk_bound_dev_if;
+ 	fl6.fl6_dport = usin->sin6_port;
+ 	fl6.fl6_sport = inet->inet_sport;
+-	security_sk_classify_flow(sk, flowi6_to_flowi(&fl6));
++	security_sk_classify_flow(sk, flowi6_to_flowi_common(&fl6));
+ 
+ 	opt = rcu_dereference_protected(np->opt, lockdep_sock_is_held(sk));
+ 	final_p = fl6_update_dst(&fl6, opt, &final);
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index b71b836cc7d1..cd65d3146c30 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -447,7 +447,7 @@ static void icmp_reply(struct icmp_bxm *icmp_param, struct sk_buff *skb)
+ 	fl4.flowi4_tos = RT_TOS(ip_hdr(skb)->tos);
+ 	fl4.flowi4_proto = IPPROTO_ICMP;
+ 	fl4.flowi4_oif = l3mdev_master_ifindex(skb->dev);
+-	security_skb_classify_flow(skb, flowi4_to_flowi(&fl4));
++	security_skb_classify_flow(skb, flowi4_to_flowi_common(&fl4));
+ 	rt = ip_route_output_key(net, &fl4);
+ 	if (IS_ERR(rt))
+ 		goto out_unlock;
+@@ -503,7 +503,7 @@ static struct rtable *icmp_route_lookup(struct net *net,
+ 	route_lookup_dev = icmp_get_route_lookup_dev(skb_in);
+ 	fl4->flowi4_oif = l3mdev_master_ifindex(route_lookup_dev);
+ 
+-	security_skb_classify_flow(skb_in, flowi4_to_flowi(fl4));
++	security_skb_classify_flow(skb_in, flowi4_to_flowi_common(fl4));
+ 	rt = ip_route_output_key_hash(net, fl4, skb_in);
+ 	if (IS_ERR(rt))
+ 		return rt;
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index addd595bb3fe..7785a4775e58 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -602,7 +602,7 @@ struct dst_entry *inet_csk_route_req(const struct sock *sk,
+ 			   (opt && opt->opt.srr) ? opt->opt.faddr : ireq->ir_rmt_addr,
+ 			   ireq->ir_loc_addr, ireq->ir_rmt_port,
+ 			   htons(ireq->ir_num), sk->sk_uid);
+-	security_req_classify_flow(req, flowi4_to_flowi(fl4));
++	security_req_classify_flow(req, flowi4_to_flowi_common(fl4));
+ 	rt = ip_route_output_flow(net, fl4, sk);
+ 	if (IS_ERR(rt))
+ 		goto no_route;
+@@ -640,7 +640,7 @@ struct dst_entry *inet_csk_route_child_sock(const struct sock *sk,
+ 			   (opt && opt->opt.srr) ? opt->opt.faddr : ireq->ir_rmt_addr,
+ 			   ireq->ir_loc_addr, ireq->ir_rmt_port,
+ 			   htons(ireq->ir_num), sk->sk_uid);
+-	security_req_classify_flow(req, flowi4_to_flowi(fl4));
++	security_req_classify_flow(req, flowi4_to_flowi_common(fl4));
+ 	rt = ip_route_output_flow(net, fl4, sk);
+ 	if (IS_ERR(rt))
+ 		goto no_route;
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 5e48b3d3a00d..f77b0af3cb65 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1712,7 +1712,7 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
+ 			   daddr, saddr,
+ 			   tcp_hdr(skb)->source, tcp_hdr(skb)->dest,
+ 			   arg->uid);
+-	security_skb_classify_flow(skb, flowi4_to_flowi(&fl4));
++	security_skb_classify_flow(skb, flowi4_to_flowi_common(&fl4));
+ 	rt = ip_route_output_key(net, &fl4);
+ 	if (IS_ERR(rt))
+ 		return;
+diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+index 2853a3f0fc63..1bad851b3fc3 100644
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -796,7 +796,7 @@ static int ping_v4_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	fl4.fl4_icmp_type = user_icmph.type;
+ 	fl4.fl4_icmp_code = user_icmph.code;
+ 
+-	security_sk_classify_flow(sk, flowi4_to_flowi(&fl4));
++	security_sk_classify_flow(sk, flowi4_to_flowi_common(&fl4));
+ 	rt = ip_route_output_flow(net, &fl4, sk);
+ 	if (IS_ERR(rt)) {
+ 		err = PTR_ERR(rt);
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index 5d95f80314f9..4899ebe569eb 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -640,7 +640,7 @@ static int raw_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 			goto done;
+ 	}
+ 
+-	security_sk_classify_flow(sk, flowi4_to_flowi(&fl4));
++	security_sk_classify_flow(sk, flowi4_to_flowi_common(&fl4));
+ 	rt = ip_route_output_flow(net, &fl4, sk);
+ 	if (IS_ERR(rt)) {
+ 		err = PTR_ERR(rt);
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index 0b616094e794..10b469aee492 100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -424,7 +424,7 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
+ 			   inet_sk_flowi_flags(sk),
+ 			   opt->srr ? opt->faddr : ireq->ir_rmt_addr,
+ 			   ireq->ir_loc_addr, th->source, th->dest, sk->sk_uid);
+-	security_req_classify_flow(req, flowi4_to_flowi(&fl4));
++	security_req_classify_flow(req, flowi4_to_flowi_common(&fl4));
+ 	rt = ip_route_output_key(sock_net(sk), &fl4);
+ 	if (IS_ERR(rt)) {
+ 		reqsk_free(req);
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index e97a2dd206e1..6056d5609167 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1204,7 +1204,7 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 				   faddr, saddr, dport, inet->inet_sport,
+ 				   sk->sk_uid);
+ 
+-		security_sk_classify_flow(sk, flowi4_to_flowi(fl4));
++		security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
+ 		rt = ip_route_output_flow(net, fl4, sk);
+ 		if (IS_ERR(rt)) {
+ 			err = PTR_ERR(rt);
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index 090575346daf..890a9cfc6ce2 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -819,7 +819,7 @@ int inet6_sk_rebuild_header(struct sock *sk)
+ 		fl6.fl6_dport = inet->inet_dport;
+ 		fl6.fl6_sport = inet->inet_sport;
+ 		fl6.flowi6_uid = sk->sk_uid;
+-		security_sk_classify_flow(sk, flowi6_to_flowi(&fl6));
++		security_sk_classify_flow(sk, flowi6_to_flowi_common(&fl6));
+ 
+ 		rcu_read_lock();
+ 		final_p = fl6_update_dst(&fl6, rcu_dereference(np->opt),
+diff --git a/net/ipv6/datagram.c b/net/ipv6/datagram.c
+index cc8ad7ddecda..206f66310a88 100644
+--- a/net/ipv6/datagram.c
++++ b/net/ipv6/datagram.c
+@@ -60,7 +60,7 @@ static void ip6_datagram_flow_key_init(struct flowi6 *fl6, struct sock *sk)
+ 	if (!fl6->flowi6_oif && ipv6_addr_is_multicast(&fl6->daddr))
+ 		fl6->flowi6_oif = np->mcast_oif;
+ 
+-	security_sk_classify_flow(sk, flowi6_to_flowi(fl6));
++	security_sk_classify_flow(sk, flowi6_to_flowi_common(fl6));
+ }
+ 
+ int ip6_datagram_dst_update(struct sock *sk, bool fix_sk_saddr)
+diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
+index cbab41d557b2..fd1f896115c1 100644
+--- a/net/ipv6/icmp.c
++++ b/net/ipv6/icmp.c
+@@ -573,7 +573,7 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+ 	fl6.fl6_icmp_code = code;
+ 	fl6.flowi6_uid = sock_net_uid(net, NULL);
+ 	fl6.mp_hash = rt6_multipath_hash(net, &fl6, skb, NULL);
+-	security_skb_classify_flow(skb, flowi6_to_flowi(&fl6));
++	security_skb_classify_flow(skb, flowi6_to_flowi_common(&fl6));
+ 
+ 	np = inet6_sk(sk);
+ 
+@@ -755,7 +755,7 @@ static void icmpv6_echo_reply(struct sk_buff *skb)
+ 	fl6.fl6_icmp_type = ICMPV6_ECHO_REPLY;
+ 	fl6.flowi6_mark = mark;
+ 	fl6.flowi6_uid = sock_net_uid(net, NULL);
+-	security_skb_classify_flow(skb, flowi6_to_flowi(&fl6));
++	security_skb_classify_flow(skb, flowi6_to_flowi_common(&fl6));
+ 
+ 	local_bh_disable();
+ 	sk = icmpv6_xmit_lock(net);
+@@ -1008,7 +1008,7 @@ void icmpv6_flow_init(struct sock *sk, struct flowi6 *fl6,
+ 	fl6->fl6_icmp_type	= type;
+ 	fl6->fl6_icmp_code	= 0;
+ 	fl6->flowi6_oif		= oif;
+-	security_sk_classify_flow(sk, flowi6_to_flowi(fl6));
++	security_sk_classify_flow(sk, flowi6_to_flowi_common(fl6));
+ }
+ 
+ static void __net_exit icmpv6_sk_exit(struct net *net)
+diff --git a/net/ipv6/inet6_connection_sock.c b/net/ipv6/inet6_connection_sock.c
+index e315526fa244..5a9f4d722f35 100644
+--- a/net/ipv6/inet6_connection_sock.c
++++ b/net/ipv6/inet6_connection_sock.c
+@@ -46,7 +46,7 @@ struct dst_entry *inet6_csk_route_req(const struct sock *sk,
+ 	fl6->fl6_dport = ireq->ir_rmt_port;
+ 	fl6->fl6_sport = htons(ireq->ir_num);
+ 	fl6->flowi6_uid = sk->sk_uid;
+-	security_req_classify_flow(req, flowi6_to_flowi(fl6));
++	security_req_classify_flow(req, flowi6_to_flowi_common(fl6));
+ 
+ 	dst = ip6_dst_lookup_flow(sock_net(sk), sk, fl6, final_p);
+ 	if (IS_ERR(dst))
+@@ -95,7 +95,7 @@ static struct dst_entry *inet6_csk_route_socket(struct sock *sk,
+ 	fl6->fl6_sport = inet->inet_sport;
+ 	fl6->fl6_dport = inet->inet_dport;
+ 	fl6->flowi6_uid = sk->sk_uid;
+-	security_sk_classify_flow(sk, flowi6_to_flowi(fl6));
++	security_sk_classify_flow(sk, flowi6_to_flowi_common(fl6));
+ 
+ 	rcu_read_lock();
+ 	final_p = fl6_update_dst(fl6, rcu_dereference(np->opt), &final);
+diff --git a/net/ipv6/netfilter/nf_reject_ipv6.c b/net/ipv6/netfilter/nf_reject_ipv6.c
+index 4aef6baaa55e..bf95513736c9 100644
+--- a/net/ipv6/netfilter/nf_reject_ipv6.c
++++ b/net/ipv6/netfilter/nf_reject_ipv6.c
+@@ -179,7 +179,7 @@ void nf_send_reset6(struct net *net, struct sk_buff *oldskb, int hook)
+ 
+ 	fl6.flowi6_oif = l3mdev_master_ifindex(skb_dst(oldskb)->dev);
+ 	fl6.flowi6_mark = IP6_REPLY_MARK(net, oldskb->mark);
+-	security_skb_classify_flow(oldskb, flowi6_to_flowi(&fl6));
++	security_skb_classify_flow(oldskb, flowi6_to_flowi_common(&fl6));
+ 	dst = ip6_route_output(net, NULL, &fl6);
+ 	if (dst->error) {
+ 		dst_release(dst);
+diff --git a/net/ipv6/ping.c b/net/ipv6/ping.c
+index 6caa062f68e7..6ac88fe24a8e 100644
+--- a/net/ipv6/ping.c
++++ b/net/ipv6/ping.c
+@@ -111,7 +111,7 @@ static int ping_v6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	fl6.flowi6_uid = sk->sk_uid;
+ 	fl6.fl6_icmp_type = user_icmph.icmp6_type;
+ 	fl6.fl6_icmp_code = user_icmph.icmp6_code;
+-	security_sk_classify_flow(sk, flowi6_to_flowi(&fl6));
++	security_sk_classify_flow(sk, flowi6_to_flowi_common(&fl6));
+ 
+ 	ipcm6_init_sk(&ipc6, np);
+ 	ipc6.sockc.mark = sk->sk_mark;
+diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
+index 38349054e361..31eb54e92b3f 100644
+--- a/net/ipv6/raw.c
++++ b/net/ipv6/raw.c
+@@ -915,7 +915,7 @@ static int rawv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		fl6.flowi6_oif = np->mcast_oif;
+ 	else if (!fl6.flowi6_oif)
+ 		fl6.flowi6_oif = np->ucast_oif;
+-	security_sk_classify_flow(sk, flowi6_to_flowi(&fl6));
++	security_sk_classify_flow(sk, flowi6_to_flowi_common(&fl6));
+ 
+ 	if (hdrincl)
+ 		fl6.flowi6_flags |= FLOWI_FLAG_KNOWN_NH;
+diff --git a/net/ipv6/syncookies.c b/net/ipv6/syncookies.c
+index 5fa791cf39ca..ca92dd6981de 100644
+--- a/net/ipv6/syncookies.c
++++ b/net/ipv6/syncookies.c
+@@ -234,7 +234,7 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
+ 		fl6.fl6_dport = ireq->ir_rmt_port;
+ 		fl6.fl6_sport = inet_sk(sk)->inet_sport;
+ 		fl6.flowi6_uid = sk->sk_uid;
+-		security_req_classify_flow(req, flowi6_to_flowi(&fl6));
++		security_req_classify_flow(req, flowi6_to_flowi_common(&fl6));
+ 
+ 		dst = ip6_dst_lookup_flow(sock_net(sk), sk, &fl6, final_p);
+ 		if (IS_ERR(dst))
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index df33145b876c..303b54414a6c 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -278,7 +278,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+ 	opt = rcu_dereference_protected(np->opt, lockdep_sock_is_held(sk));
+ 	final_p = fl6_update_dst(&fl6, opt, &final);
+ 
+-	security_sk_classify_flow(sk, flowi6_to_flowi(&fl6));
++	security_sk_classify_flow(sk, flowi6_to_flowi_common(&fl6));
+ 
+ 	dst = ip6_dst_lookup_flow(sock_net(sk), sk, &fl6, final_p);
+ 	if (IS_ERR(dst)) {
+@@ -975,7 +975,7 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
+ 	fl6.fl6_dport = t1->dest;
+ 	fl6.fl6_sport = t1->source;
+ 	fl6.flowi6_uid = sock_net_uid(net, sk && sk_fullsock(sk) ? sk : NULL);
+-	security_skb_classify_flow(skb, flowi6_to_flowi(&fl6));
++	security_skb_classify_flow(skb, flowi6_to_flowi_common(&fl6));
+ 
+ 	/* Pass a socket to ip6_dst_lookup either it is for RST
+ 	 * Underlying function will use this to retrieve the network
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 10760164a80f..7745d8a40209 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -1497,7 +1497,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	} else if (!fl6.flowi6_oif)
+ 		fl6.flowi6_oif = np->ucast_oif;
+ 
+-	security_sk_classify_flow(sk, flowi6_to_flowi(&fl6));
++	security_sk_classify_flow(sk, flowi6_to_flowi_common(&fl6));
+ 
+ 	if (ipc6.tclass < 0)
+ 		ipc6.tclass = np->tclass;
+diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+index e5e5036257b0..96f975777438 100644
+--- a/net/l2tp/l2tp_ip6.c
++++ b/net/l2tp/l2tp_ip6.c
+@@ -606,7 +606,7 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	else if (!fl6.flowi6_oif)
+ 		fl6.flowi6_oif = np->ucast_oif;
+ 
+-	security_sk_classify_flow(sk, flowi6_to_flowi(&fl6));
++	security_sk_classify_flow(sk, flowi6_to_flowi_common(&fl6));
+ 
+ 	if (ipc6.tclass < 0)
+ 		ipc6.tclass = np->tclass;
+diff --git a/net/netfilter/nf_synproxy_core.c b/net/netfilter/nf_synproxy_core.c
+index 2fc4ae960769..3d6d49420db8 100644
+--- a/net/netfilter/nf_synproxy_core.c
++++ b/net/netfilter/nf_synproxy_core.c
+@@ -854,7 +854,7 @@ synproxy_send_tcp_ipv6(struct net *net,
+ 	fl6.fl6_sport = nth->source;
+ 	fl6.fl6_dport = nth->dest;
+ 	security_skb_classify_flow((struct sk_buff *)skb,
+-				   flowi6_to_flowi(&fl6));
++				   flowi6_to_flowi_common(&fl6));
+ 	err = nf_ip6_route(net, &dst, flowi6_to_flowi(&fl6), false);
+ 	if (err) {
+ 		goto free_nskb;
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 1befc6db723b..717db5ecd0bd 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -1020,7 +1020,8 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
+ 		if ((x->sel.family &&
+ 		     (x->sel.family != family ||
+ 		      !xfrm_selector_match(&x->sel, fl, family))) ||
+-		    !security_xfrm_state_pol_flow_match(x, pol, fl))
++		    !security_xfrm_state_pol_flow_match(x, pol,
++							&fl->u.__fl_common))
+ 			return;
+ 
+ 		if (!*best ||
+@@ -1035,7 +1036,8 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
+ 		if ((!x->sel.family ||
+ 		     (x->sel.family == family &&
+ 		      xfrm_selector_match(&x->sel, fl, family))) &&
+-		    security_xfrm_state_pol_flow_match(x, pol, fl))
++		    security_xfrm_state_pol_flow_match(x, pol,
++						       &fl->u.__fl_common))
+ 			*error = -ESRCH;
+ 	}
+ }
+diff --git a/security/security.c b/security/security.c
+index 360706cdabab..8ea826ea6167 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -2223,15 +2223,16 @@ void security_sk_clone(const struct sock *sk, struct sock *newsk)
+ }
+ EXPORT_SYMBOL(security_sk_clone);
+ 
+-void security_sk_classify_flow(struct sock *sk, struct flowi *fl)
++void security_sk_classify_flow(struct sock *sk, struct flowi_common *flic)
+ {
+-	call_void_hook(sk_getsecid, sk, &fl->flowi_secid);
++	call_void_hook(sk_getsecid, sk, &flic->flowic_secid);
+ }
+ EXPORT_SYMBOL(security_sk_classify_flow);
+ 
+-void security_req_classify_flow(const struct request_sock *req, struct flowi *fl)
++void security_req_classify_flow(const struct request_sock *req,
++				struct flowi_common *flic)
+ {
+-	call_void_hook(req_classify_flow, req, fl);
++	call_void_hook(req_classify_flow, req, flic);
+ }
+ EXPORT_SYMBOL(security_req_classify_flow);
+ 
+@@ -2423,7 +2424,7 @@ int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
+ 
+ int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
+ 				       struct xfrm_policy *xp,
+-				       const struct flowi *fl)
++				       const struct flowi_common *flic)
+ {
+ 	struct security_hook_list *hp;
+ 	int rc = LSM_RET_DEFAULT(xfrm_state_pol_flow_match);
+@@ -2439,7 +2440,7 @@ int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
  	 */
- 	if (filter_policy == HCI_LE_USE_PEER_ADDR)
- 		queue_delayed_work(conn->hdev->workqueue,
-@@ -2587,7 +2587,7 @@ static void hci_conn_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		 * only used during suspend.
- 		 */
- 		if (ev->link_type == ACL_LINK &&
--		    hci_bdaddr_list_lookup_with_flags(&hdev->whitelist,
-+		    hci_bdaddr_list_lookup_with_flags(&hdev->accept_list,
- 						      &ev->bdaddr,
- 						      BDADDR_BREDR)) {
- 			conn = hci_conn_add(hdev, ev->link_type, &ev->bdaddr,
-@@ -2709,19 +2709,19 @@ static void hci_conn_request_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		return;
+ 	hlist_for_each_entry(hp, &security_hook_heads.xfrm_state_pol_flow_match,
+ 				list) {
+-		rc = hp->hook.xfrm_state_pol_flow_match(x, xp, fl);
++		rc = hp->hook.xfrm_state_pol_flow_match(x, xp, flic);
+ 		break;
  	}
- 
--	if (hci_bdaddr_list_lookup(&hdev->blacklist, &ev->bdaddr,
-+	if (hci_bdaddr_list_lookup(&hdev->reject_list, &ev->bdaddr,
- 				   BDADDR_BREDR)) {
- 		hci_reject_conn(hdev, &ev->bdaddr);
- 		return;
- 	}
- 
--	/* Require HCI_CONNECTABLE or a whitelist entry to accept the
-+	/* Require HCI_CONNECTABLE or an accept list entry to accept the
- 	 * connection. These features are only touched through mgmt so
- 	 * only do the checks if HCI_MGMT is set.
- 	 */
- 	if (hci_dev_test_flag(hdev, HCI_MGMT) &&
- 	    !hci_dev_test_flag(hdev, HCI_CONNECTABLE) &&
--	    !hci_bdaddr_list_lookup_with_flags(&hdev->whitelist, &ev->bdaddr,
-+	    !hci_bdaddr_list_lookup_with_flags(&hdev->accept_list, &ev->bdaddr,
- 					       BDADDR_BREDR)) {
- 		hci_reject_conn(hdev, &ev->bdaddr);
- 		return;
-@@ -3481,20 +3481,20 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, struct sk_buff *skb,
- 		hci_cc_le_set_scan_enable(hdev, skb);
- 		break;
- 
--	case HCI_OP_LE_READ_WHITE_LIST_SIZE:
--		hci_cc_le_read_white_list_size(hdev, skb);
-+	case HCI_OP_LE_READ_ACCEPT_LIST_SIZE:
-+		hci_cc_le_read_accept_list_size(hdev, skb);
- 		break;
- 
--	case HCI_OP_LE_CLEAR_WHITE_LIST:
--		hci_cc_le_clear_white_list(hdev, skb);
-+	case HCI_OP_LE_CLEAR_ACCEPT_LIST:
-+		hci_cc_le_clear_accept_list(hdev, skb);
- 		break;
- 
--	case HCI_OP_LE_ADD_TO_WHITE_LIST:
--		hci_cc_le_add_to_white_list(hdev, skb);
-+	case HCI_OP_LE_ADD_TO_ACCEPT_LIST:
-+		hci_cc_le_add_to_accept_list(hdev, skb);
- 		break;
- 
--	case HCI_OP_LE_DEL_FROM_WHITE_LIST:
--		hci_cc_le_del_from_white_list(hdev, skb);
-+	case HCI_OP_LE_DEL_FROM_ACCEPT_LIST:
-+		hci_cc_le_del_from_accept_list(hdev, skb);
- 		break;
- 
- 	case HCI_OP_LE_READ_SUPPORTED_STATES:
-@@ -5154,7 +5154,7 @@ static void le_conn_complete_evt(struct hci_dev *hdev, u8 status,
- 
- 		/* If we didn't have a hci_conn object previously
- 		 * but we're in central role this must be something
--		 * initiated using a white list. Since white list based
-+		 * initiated using an accept list. Since accept list based
- 		 * connections are not "first class citizens" we don't
- 		 * have full tracking of them. Therefore, we go ahead
- 		 * with a "best effort" approach of determining the
-@@ -5204,7 +5204,7 @@ static void le_conn_complete_evt(struct hci_dev *hdev, u8 status,
- 		addr_type = BDADDR_LE_RANDOM;
- 
- 	/* Drop the connection if the device is blocked */
--	if (hci_bdaddr_list_lookup(&hdev->blacklist, &conn->dst, addr_type)) {
-+	if (hci_bdaddr_list_lookup(&hdev->reject_list, &conn->dst, addr_type)) {
- 		hci_conn_drop(conn);
- 		goto unlock;
- 	}
-@@ -5372,7 +5372,7 @@ static struct hci_conn *check_pending_le_conn(struct hci_dev *hdev,
- 		return NULL;
- 
- 	/* Ignore if the device is blocked */
--	if (hci_bdaddr_list_lookup(&hdev->blacklist, addr, addr_type))
-+	if (hci_bdaddr_list_lookup(&hdev->reject_list, addr, addr_type))
- 		return NULL;
- 
- 	/* Most controller will fail if we try to create new connections
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index eb4c1c18eb01..a0f980e61505 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -736,17 +736,17 @@ void hci_req_add_le_scan_disable(struct hci_request *req, bool rpa_le_conn)
- 	}
+ 	return rc;
+@@ -2450,9 +2451,9 @@ int security_xfrm_decode_session(struct sk_buff *skb, u32 *secid)
+ 	return call_int_hook(xfrm_decode_session, 0, skb, secid, 1);
  }
  
--static void del_from_white_list(struct hci_request *req, bdaddr_t *bdaddr,
--				u8 bdaddr_type)
-+static void del_from_accept_list(struct hci_request *req, bdaddr_t *bdaddr,
-+				 u8 bdaddr_type)
+-void security_skb_classify_flow(struct sk_buff *skb, struct flowi *fl)
++void security_skb_classify_flow(struct sk_buff *skb, struct flowi_common *flic)
  {
--	struct hci_cp_le_del_from_white_list cp;
-+	struct hci_cp_le_del_from_accept_list cp;
+-	int rc = call_int_hook(xfrm_decode_session, 0, skb, &fl->flowi_secid,
++	int rc = call_int_hook(xfrm_decode_session, 0, skb, &flic->flowic_secid,
+ 				0);
  
- 	cp.bdaddr_type = bdaddr_type;
- 	bacpy(&cp.bdaddr, bdaddr);
- 
--	bt_dev_dbg(req->hdev, "Remove %pMR (0x%x) from whitelist", &cp.bdaddr,
-+	bt_dev_dbg(req->hdev, "Remove %pMR (0x%x) from accept list", &cp.bdaddr,
- 		   cp.bdaddr_type);
--	hci_req_add(req, HCI_OP_LE_DEL_FROM_WHITE_LIST, sizeof(cp), &cp);
-+	hci_req_add(req, HCI_OP_LE_DEL_FROM_ACCEPT_LIST, sizeof(cp), &cp);
- 
- 	if (use_ll_privacy(req->hdev) &&
- 	    hci_dev_test_flag(req->hdev, HCI_ENABLE_LL_PRIVACY)) {
-@@ -765,31 +765,31 @@ static void del_from_white_list(struct hci_request *req, bdaddr_t *bdaddr,
- 	}
+ 	BUG_ON(rc);
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index 8c901ae05dd8..ee37ce2e2619 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -5448,9 +5448,9 @@ static void selinux_secmark_refcount_dec(void)
  }
  
--/* Adds connection to white list if needed. On error, returns -1. */
--static int add_to_white_list(struct hci_request *req,
--			     struct hci_conn_params *params, u8 *num_entries,
--			     bool allow_rpa)
-+/* Adds connection to accept list if needed. On error, returns -1. */
-+static int add_to_accept_list(struct hci_request *req,
-+			      struct hci_conn_params *params, u8 *num_entries,
-+			      bool allow_rpa)
+ static void selinux_req_classify_flow(const struct request_sock *req,
+-				      struct flowi *fl)
++				      struct flowi_common *flic)
  {
--	struct hci_cp_le_add_to_white_list cp;
-+	struct hci_cp_le_add_to_accept_list cp;
- 	struct hci_dev *hdev = req->hdev;
+-	fl->flowi_secid = req->secid;
++	flic->flowic_secid = req->secid;
+ }
  
--	/* Already in white list */
--	if (hci_bdaddr_list_lookup(&hdev->le_white_list, &params->addr,
-+	/* Already in accept list */
-+	if (hci_bdaddr_list_lookup(&hdev->le_accept_list, &params->addr,
- 				   params->addr_type))
+ static int selinux_tun_dev_alloc_security(void **security)
+diff --git a/security/selinux/include/xfrm.h b/security/selinux/include/xfrm.h
+index a0b465316292..0a6f34a7a971 100644
+--- a/security/selinux/include/xfrm.h
++++ b/security/selinux/include/xfrm.h
+@@ -26,7 +26,7 @@ int selinux_xfrm_state_delete(struct xfrm_state *x);
+ int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir);
+ int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
+ 				      struct xfrm_policy *xp,
+-				      const struct flowi *fl);
++				      const struct flowi_common *flic);
+ 
+ #ifdef CONFIG_SECURITY_NETWORK_XFRM
+ extern atomic_t selinux_xfrm_refcount;
+diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
+index 00e95f8bd7c7..114245b6f7c7 100644
+--- a/security/selinux/xfrm.c
++++ b/security/selinux/xfrm.c
+@@ -175,9 +175,10 @@ int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
+  */
+ int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
+ 				      struct xfrm_policy *xp,
+-				      const struct flowi *fl)
++				      const struct flowi_common *flic)
+ {
+ 	u32 state_sid;
++	u32 flic_sid;
+ 
+ 	if (!xp->security)
+ 		if (x->security)
+@@ -196,17 +197,17 @@ int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
+ 				return 0;
+ 
+ 	state_sid = x->security->ctx_sid;
++	flic_sid = flic->flowic_secid;
+ 
+-	if (fl->flowi_secid != state_sid)
++	if (flic_sid != state_sid)
  		return 0;
  
- 	/* Select filter policy to accept all advertising */
--	if (*num_entries >= hdev->le_white_list_size)
-+	if (*num_entries >= hdev->le_accept_list_size)
- 		return -1;
- 
--	/* White list can not be used with RPAs */
-+	/* Accept list can not be used with RPAs */
- 	if (!allow_rpa &&
- 	    !hci_dev_test_flag(hdev, HCI_ENABLE_LL_PRIVACY) &&
- 	    hci_find_irk_by_addr(hdev, &params->addr, params->addr_type)) {
- 		return -1;
- 	}
- 
--	/* During suspend, only wakeable devices can be in whitelist */
-+	/* During suspend, only wakeable devices can be in accept list */
- 	if (hdev->suspended && !hci_conn_test_flag(HCI_CONN_FLAG_REMOTE_WAKEUP,
- 						   params->current_flags))
- 		return 0;
-@@ -798,9 +798,9 @@ static int add_to_white_list(struct hci_request *req,
- 	cp.bdaddr_type = params->addr_type;
- 	bacpy(&cp.bdaddr, &params->addr);
- 
--	bt_dev_dbg(hdev, "Add %pMR (0x%x) to whitelist", &cp.bdaddr,
-+	bt_dev_dbg(hdev, "Add %pMR (0x%x) to accept list", &cp.bdaddr,
- 		   cp.bdaddr_type);
--	hci_req_add(req, HCI_OP_LE_ADD_TO_WHITE_LIST, sizeof(cp), &cp);
-+	hci_req_add(req, HCI_OP_LE_ADD_TO_ACCEPT_LIST, sizeof(cp), &cp);
- 
- 	if (use_ll_privacy(hdev) &&
- 	    hci_dev_test_flag(hdev, HCI_ENABLE_LL_PRIVACY)) {
-@@ -828,15 +828,15 @@ static int add_to_white_list(struct hci_request *req,
- 	return 0;
+ 	/* We don't need a separate SA Vs. policy polmatch check since the SA
+ 	 * is now of the same label as the flow and a flow Vs. policy polmatch
+ 	 * check had already happened in selinux_xfrm_policy_lookup() above. */
+-	return (avc_has_perm(&selinux_state,
+-			     fl->flowi_secid, state_sid,
+-			    SECCLASS_ASSOCIATION, ASSOCIATION__SENDTO,
+-			    NULL) ? 0 : 1);
++	return (avc_has_perm(&selinux_state, flic_sid, state_sid,
++			     SECCLASS_ASSOCIATION, ASSOCIATION__SENDTO,
++			     NULL) ? 0 : 1);
  }
  
--static u8 update_white_list(struct hci_request *req)
-+static u8 update_accept_list(struct hci_request *req)
- {
- 	struct hci_dev *hdev = req->hdev;
- 	struct hci_conn_params *params;
- 	struct bdaddr_list *b;
- 	u8 num_entries = 0;
- 	bool pend_conn, pend_report;
--	/* We allow whitelisting even with RPAs in suspend. In the worst case,
--	 * we won't be able to wake from devices that use the privacy1.2
-+	/* We allow usage of accept list even with RPAs in suspend. In the worst
-+	 * case, we won't be able to wake from devices that use the privacy1.2
- 	 * features. Additionally, once we support privacy1.2 and IRK
- 	 * offloading, we can update this to also check for those conditions.
- 	 */
-@@ -846,13 +846,13 @@ static u8 update_white_list(struct hci_request *req)
- 	    hci_dev_test_flag(hdev, HCI_ENABLE_LL_PRIVACY))
- 		allow_rpa = true;
- 
--	/* Go through the current white list programmed into the
-+	/* Go through the current accept list programmed into the
- 	 * controller one by one and check if that address is still
- 	 * in the list of pending connections or list of devices to
- 	 * report. If not present in either list, then queue the
- 	 * command to remove it from the controller.
- 	 */
--	list_for_each_entry(b, &hdev->le_white_list, list) {
-+	list_for_each_entry(b, &hdev->le_accept_list, list) {
- 		pend_conn = hci_pend_le_action_lookup(&hdev->pend_le_conns,
- 						      &b->bdaddr,
- 						      b->bdaddr_type);
-@@ -861,14 +861,14 @@ static u8 update_white_list(struct hci_request *req)
- 							b->bdaddr_type);
- 
- 		/* If the device is not likely to connect or report,
--		 * remove it from the whitelist.
-+		 * remove it from the accept list.
- 		 */
- 		if (!pend_conn && !pend_report) {
--			del_from_white_list(req, &b->bdaddr, b->bdaddr_type);
-+			del_from_accept_list(req, &b->bdaddr, b->bdaddr_type);
- 			continue;
- 		}
- 
--		/* White list can not be used with RPAs */
-+		/* Accept list can not be used with RPAs */
- 		if (!allow_rpa &&
- 		    !hci_dev_test_flag(hdev, HCI_ENABLE_LL_PRIVACY) &&
- 		    hci_find_irk_by_addr(hdev, &b->bdaddr, b->bdaddr_type)) {
-@@ -878,27 +878,27 @@ static u8 update_white_list(struct hci_request *req)
- 		num_entries++;
- 	}
- 
--	/* Since all no longer valid white list entries have been
-+	/* Since all no longer valid accept list entries have been
- 	 * removed, walk through the list of pending connections
- 	 * and ensure that any new device gets programmed into
- 	 * the controller.
- 	 *
- 	 * If the list of the devices is larger than the list of
--	 * available white list entries in the controller, then
-+	 * available accept list entries in the controller, then
- 	 * just abort and return filer policy value to not use the
--	 * white list.
-+	 * accept list.
- 	 */
- 	list_for_each_entry(params, &hdev->pend_le_conns, action) {
--		if (add_to_white_list(req, params, &num_entries, allow_rpa))
-+		if (add_to_accept_list(req, params, &num_entries, allow_rpa))
- 			return 0x00;
- 	}
- 
- 	/* After adding all new pending connections, walk through
- 	 * the list of pending reports and also add these to the
--	 * white list if there is still space. Abort if space runs out.
-+	 * accept list if there is still space. Abort if space runs out.
- 	 */
- 	list_for_each_entry(params, &hdev->pend_le_reports, action) {
--		if (add_to_white_list(req, params, &num_entries, allow_rpa))
-+		if (add_to_accept_list(req, params, &num_entries, allow_rpa))
- 			return 0x00;
- 	}
- 
-@@ -915,7 +915,7 @@ static u8 update_white_list(struct hci_request *req)
- 	    hdev->interleave_scan_state != INTERLEAVE_SCAN_ALLOWLIST)
- 		return 0x00;
- 
--	/* Select filter policy to use white list */
-+	/* Select filter policy to use accept list */
- 	return 0x01;
- }
- 
-@@ -1069,20 +1069,20 @@ void hci_req_add_le_passive_scan(struct hci_request *req)
- 		return;
- 
- 	bt_dev_dbg(hdev, "interleave state %d", hdev->interleave_scan_state);
--	/* Adding or removing entries from the white list must
-+	/* Adding or removing entries from the accept list must
- 	 * happen before enabling scanning. The controller does
--	 * not allow white list modification while scanning.
-+	 * not allow accept list modification while scanning.
- 	 */
--	filter_policy = update_white_list(req);
-+	filter_policy = update_accept_list(req);
- 
- 	/* When the controller is using random resolvable addresses and
- 	 * with that having LE privacy enabled, then controllers with
- 	 * Extended Scanner Filter Policies support can now enable support
- 	 * for handling directed advertising.
- 	 *
--	 * So instead of using filter polices 0x00 (no whitelist)
--	 * and 0x01 (whitelist enabled) use the new filter policies
--	 * 0x02 (no whitelist) and 0x03 (whitelist enabled).
-+	 * So instead of using filter polices 0x00 (no accept list)
-+	 * and 0x01 (accept list enabled) use the new filter policies
-+	 * 0x02 (no accept list) and 0x03 (accept list enabled).
- 	 */
- 	if (hci_dev_test_flag(hdev, HCI_PRIVACY) &&
- 	    (hdev->le_features[0] & HCI_LE_EXT_SCAN_POLICY))
-@@ -1102,7 +1102,8 @@ void hci_req_add_le_passive_scan(struct hci_request *req)
- 		interval = hdev->le_scan_interval;
- 	}
- 
--	bt_dev_dbg(hdev, "LE passive scan with whitelist = %d", filter_policy);
-+	bt_dev_dbg(hdev, "LE passive scan with accept list = %d",
-+		   filter_policy);
- 	hci_req_start_scan(req, LE_SCAN_PASSIVE, interval, window,
- 			   own_addr_type, filter_policy, addr_resolv);
- }
-@@ -1150,7 +1151,7 @@ static void hci_req_set_event_filter(struct hci_request *req)
- 	/* Always clear event filter when starting */
- 	hci_req_clear_event_filter(req);
- 
--	list_for_each_entry(b, &hdev->whitelist, list) {
-+	list_for_each_entry(b, &hdev->accept_list, list) {
- 		if (!hci_conn_test_flag(HCI_CONN_FLAG_REMOTE_WAKEUP,
- 					b->current_flags))
- 			continue;
-@@ -2562,11 +2563,11 @@ int hci_update_random_address(struct hci_request *req, bool require_privacy,
- 	return 0;
- }
- 
--static bool disconnected_whitelist_entries(struct hci_dev *hdev)
-+static bool disconnected_accept_list_entries(struct hci_dev *hdev)
- {
- 	struct bdaddr_list *b;
- 
--	list_for_each_entry(b, &hdev->whitelist, list) {
-+	list_for_each_entry(b, &hdev->accept_list, list) {
- 		struct hci_conn *conn;
- 
- 		conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &b->bdaddr);
-@@ -2598,7 +2599,7 @@ void __hci_req_update_scan(struct hci_request *req)
- 		return;
- 
- 	if (hci_dev_test_flag(hdev, HCI_CONNECTABLE) ||
--	    disconnected_whitelist_entries(hdev))
-+	    disconnected_accept_list_entries(hdev))
- 		scan = SCAN_PAGE;
- 	else
- 		scan = SCAN_DISABLED;
-@@ -3087,7 +3088,7 @@ static int active_scan(struct hci_request *req, unsigned long opt)
- 	uint16_t interval = opt;
- 	struct hci_dev *hdev = req->hdev;
- 	u8 own_addr_type;
--	/* White list is not used for discovery */
-+	/* Accept list is not used for discovery */
- 	u8 filter_policy = 0x00;
- 	/* Discovery doesn't require controller address resolution */
- 	bool addr_resolv = false;
-diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
-index 53f85d7c5f9e..71d18d3295f5 100644
---- a/net/bluetooth/hci_sock.c
-+++ b/net/bluetooth/hci_sock.c
-@@ -897,7 +897,7 @@ static int hci_sock_release(struct socket *sock)
- 	return 0;
- }
- 
--static int hci_sock_blacklist_add(struct hci_dev *hdev, void __user *arg)
-+static int hci_sock_reject_list_add(struct hci_dev *hdev, void __user *arg)
- {
- 	bdaddr_t bdaddr;
- 	int err;
-@@ -907,14 +907,14 @@ static int hci_sock_blacklist_add(struct hci_dev *hdev, void __user *arg)
- 
- 	hci_dev_lock(hdev);
- 
--	err = hci_bdaddr_list_add(&hdev->blacklist, &bdaddr, BDADDR_BREDR);
-+	err = hci_bdaddr_list_add(&hdev->reject_list, &bdaddr, BDADDR_BREDR);
- 
- 	hci_dev_unlock(hdev);
- 
- 	return err;
- }
- 
--static int hci_sock_blacklist_del(struct hci_dev *hdev, void __user *arg)
-+static int hci_sock_reject_list_del(struct hci_dev *hdev, void __user *arg)
- {
- 	bdaddr_t bdaddr;
- 	int err;
-@@ -924,7 +924,7 @@ static int hci_sock_blacklist_del(struct hci_dev *hdev, void __user *arg)
- 
- 	hci_dev_lock(hdev);
- 
--	err = hci_bdaddr_list_del(&hdev->blacklist, &bdaddr, BDADDR_BREDR);
-+	err = hci_bdaddr_list_del(&hdev->reject_list, &bdaddr, BDADDR_BREDR);
- 
- 	hci_dev_unlock(hdev);
- 
-@@ -964,12 +964,12 @@ static int hci_sock_bound_ioctl(struct sock *sk, unsigned int cmd,
- 	case HCIBLOCKADDR:
- 		if (!capable(CAP_NET_ADMIN))
- 			return -EPERM;
--		return hci_sock_blacklist_add(hdev, (void __user *)arg);
-+		return hci_sock_reject_list_add(hdev, (void __user *)arg);
- 
- 	case HCIUNBLOCKADDR:
- 		if (!capable(CAP_NET_ADMIN))
- 			return -EPERM;
--		return hci_sock_blacklist_del(hdev, (void __user *)arg);
-+		return hci_sock_reject_list_del(hdev, (void __user *)arg);
- 	}
- 
- 	return -ENOIOCTLCMD;
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 6c80e62cea0c..2557cd917f5e 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -7652,7 +7652,7 @@ static void l2cap_recv_frame(struct l2cap_conn *conn, struct sk_buff *skb)
- 	 * at least ensure that we ignore incoming data from them.
- 	 */
- 	if (hcon->type == LE_LINK &&
--	    hci_bdaddr_list_lookup(&hcon->hdev->blacklist, &hcon->dst,
-+	    hci_bdaddr_list_lookup(&hcon->hdev->reject_list, &hcon->dst,
- 				   bdaddr_dst_type(hcon))) {
- 		kfree_skb(skb);
- 		return;
-@@ -8108,7 +8108,7 @@ static void l2cap_connect_cfm(struct hci_conn *hcon, u8 status)
- 	dst_type = bdaddr_dst_type(hcon);
- 
- 	/* If device is blocked, do not create channels for it */
--	if (hci_bdaddr_list_lookup(&hdev->blacklist, &hcon->dst, dst_type))
-+	if (hci_bdaddr_list_lookup(&hdev->reject_list, &hcon->dst, dst_type))
- 		return;
- 
- 	/* Find fixed channels and notify them of the new connection. We
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 08f67f91d427..878bf7382244 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -4041,7 +4041,7 @@ static int get_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
- 	memset(&rp, 0, sizeof(rp));
- 
- 	if (cp->addr.type == BDADDR_BREDR) {
--		br_params = hci_bdaddr_list_lookup_with_flags(&hdev->whitelist,
-+		br_params = hci_bdaddr_list_lookup_with_flags(&hdev->accept_list,
- 							      &cp->addr.bdaddr,
- 							      cp->addr.type);
- 		if (!br_params)
-@@ -4109,7 +4109,7 @@ static int set_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
- 	hci_dev_lock(hdev);
- 
- 	if (cp->addr.type == BDADDR_BREDR) {
--		br_params = hci_bdaddr_list_lookup_with_flags(&hdev->whitelist,
-+		br_params = hci_bdaddr_list_lookup_with_flags(&hdev->accept_list,
- 							      &cp->addr.bdaddr,
- 							      cp->addr.type);
- 
-@@ -4979,7 +4979,7 @@ static int block_device(struct sock *sk, struct hci_dev *hdev, void *data,
- 
- 	hci_dev_lock(hdev);
- 
--	err = hci_bdaddr_list_add(&hdev->blacklist, &cp->addr.bdaddr,
-+	err = hci_bdaddr_list_add(&hdev->reject_list, &cp->addr.bdaddr,
- 				  cp->addr.type);
- 	if (err < 0) {
- 		status = MGMT_STATUS_FAILED;
-@@ -5015,7 +5015,7 @@ static int unblock_device(struct sock *sk, struct hci_dev *hdev, void *data,
- 
- 	hci_dev_lock(hdev);
- 
--	err = hci_bdaddr_list_del(&hdev->blacklist, &cp->addr.bdaddr,
-+	err = hci_bdaddr_list_del(&hdev->reject_list, &cp->addr.bdaddr,
- 				  cp->addr.type);
- 	if (err < 0) {
- 		status = MGMT_STATUS_INVALID_PARAMS;
-@@ -6506,7 +6506,7 @@ static int add_device(struct sock *sk, struct hci_dev *hdev,
- 			goto unlock;
- 		}
- 
--		err = hci_bdaddr_list_add_with_flags(&hdev->whitelist,
-+		err = hci_bdaddr_list_add_with_flags(&hdev->accept_list,
- 						     &cp->addr.bdaddr,
- 						     cp->addr.type, 0);
- 		if (err)
-@@ -6604,7 +6604,7 @@ static int remove_device(struct sock *sk, struct hci_dev *hdev,
- 		}
- 
- 		if (cp->addr.type == BDADDR_BREDR) {
--			err = hci_bdaddr_list_del(&hdev->whitelist,
-+			err = hci_bdaddr_list_del(&hdev->accept_list,
- 						  &cp->addr.bdaddr,
- 						  cp->addr.type);
- 			if (err) {
-@@ -6675,7 +6675,7 @@ static int remove_device(struct sock *sk, struct hci_dev *hdev,
- 			goto unlock;
- 		}
- 
--		list_for_each_entry_safe(b, btmp, &hdev->whitelist, list) {
-+		list_for_each_entry_safe(b, btmp, &hdev->accept_list, list) {
- 			device_removed(sk, hdev, &b->bdaddr, b->bdaddr_type);
- 			list_del(&b->list);
- 			kfree(b);
+ static u32 selinux_xfrm_skb_sid_egress(struct sk_buff *skb)
 -- 
 2.35.1
 
