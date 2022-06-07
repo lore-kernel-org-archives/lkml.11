@@ -2,134 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D324DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AB2FCCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:19:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359489AbiFHBSO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:18:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50360 "EHLO
+        id S231298AbiFHBSv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390694AbiFGWzK (ORCPT
+        with ESMTP id S1381451AbiFGVou (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:55:10 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7902FCB48;
-        Tue,  7 Jun 2022 12:56:02 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id n10so37357004ejk.5;
-        Tue, 07 Jun 2022 12:56:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AzG944M7Q+QdZRVrg3uoX9H8fss9xlzIVhvRVcj+Xxk=;
-        b=qCdJLf0gqFOVWjVnO8oDc3EOsx2BPC/bihsg/OyUd2KQS4jOTfaPb8xU99cRETstKT
-         hGPDO78M9DqKlNlKA5oivoZGj7FkgiIua7m7moHiIYp2qudjKPD4KpgwYde/OGXs1YKj
-         hzYEbbebe1tlRf1F55bZc9ceDc97W19sSXHgV43Jy2lVk05PfnCQxqGb2ht9So+5nZPJ
-         Txnt8W0kYDnEidiKjV4AP1R4BhDaLQkWtloPowW4S1+c5UfdPgK4lJoGn/CRAlEeFuEG
-         vMJGpYsq3kdowizns7xYdkCACj0J6Hxv8Q8aonGz35/iA/C9axz8qmuzivFjRY7ImMJ/
-         dYQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AzG944M7Q+QdZRVrg3uoX9H8fss9xlzIVhvRVcj+Xxk=;
-        b=bD6lfEPceOJQeL3JcMK4ejFnrHPbazFzjVPCjwyche3TeXTTltXc2Obq2sCaexOIrx
-         m/99Ko3gsyCO2CamWoF2ejOCcig9ajgH9YcPiplMascroz951jePAQEM6RtX+mU4GwkA
-         zuONv/Ph6lIFhMosUw96xrBE1o3euX/VUf4679DWcxwNWwhfF3hyggSk3zBe0IyguuWv
-         0XC9lfVKFJj+62O0qhaSvVfuRiBubCO0biDaOK27Tj3Orw5dV0e2qZF0TBj12Ft8xl6H
-         G8GLWuCLOg3ncWBT0Gv1M83dkC7wbrKtsA4ad9JSBuptpqAv2EIWnHZQSf/s0HUlkB0H
-         WJbA==
-X-Gm-Message-State: AOAM531mbC6WiKxeHGhikA1EOx9VwnUm1H97ZZ7/LKyg81W/2r1mNc93
-        b5jy/5ve3AB+eXHjqABE0eY=
-X-Google-Smtp-Source: ABdhPJxLB07Hd+oSB65fjGf3cd4TpJKDXbD7y52i3IOIXwqAKUeDpW6fl+UDsMFPzoG+hpPZK78p2Q==
-X-Received: by 2002:a17:907:162c:b0:6fe:d93d:21a3 with SMTP id hb44-20020a170907162c00b006fed93d21a3mr28316492ejc.596.1654631760907;
-        Tue, 07 Jun 2022 12:56:00 -0700 (PDT)
-Received: from krava ([83.240.60.46])
-        by smtp.gmail.com with ESMTPSA id f27-20020a17090624db00b006f3ef214dcdsm8177827ejb.51.2022.06.07.12.55.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 12:56:00 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Tue, 7 Jun 2022 21:55:58 +0200
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: Re: [PATCHv2 bpf 3/3] bpf: Force cookies array to follow symbols
- sorting
-Message-ID: <Yp+tTsqPOuVdjpba@krava>
-References: <20220606184731.437300-1-jolsa@kernel.org>
- <20220606184731.437300-4-jolsa@kernel.org>
- <CAADnVQJA54Ra8+tV0e0KwSXAg93JRoiefDXWR-Lqatya5YWKpg@mail.gmail.com>
+        Tue, 7 Jun 2022 17:44:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4437D2346B0;
+        Tue,  7 Jun 2022 12:07:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97B9C617CC;
+        Tue,  7 Jun 2022 19:07:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4B0DC385A2;
+        Tue,  7 Jun 2022 19:07:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628844;
+        bh=rFUmO2eCpiuWmXjiSQBqGcHExDGAR+qKjNun3mFwazE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Q+2Y30evSAIzJTq/udeX+/7P2CjBfUqGGxpDhyKsFI7BNoyYa8aplAvP4ZwaOVLw7
+         qKJkgt9PP9+UBUDbdvYZzYn7qmFQVhEdnRCrAYipCZbH/Pvc9AkhbQK3wwC4QmVL9z
+         LgQzHFoVO1fvNjURzFvf1XEFZSwjSAMQwIDwxcJw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 476/879] media: rkvdec: h264: Fix dpb_valid implementation
+Date:   Tue,  7 Jun 2022 18:59:54 +0200
+Message-Id: <20220607165016.695511903@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQJA54Ra8+tV0e0KwSXAg93JRoiefDXWR-Lqatya5YWKpg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 11:40:47AM -0700, Alexei Starovoitov wrote:
-> On Mon, Jun 6, 2022 at 11:48 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > When user specifies symbols and cookies for kprobe_multi link
-> > interface it's very likely the cookies will be misplaced and
-> > returned to wrong functions (via get_attach_cookie helper).
-> >
-> > The reason is that to resolve the provided functions we sort
-> > them before passing them to ftrace_lookup_symbols, but we do
-> > not do the same sort on the cookie values.
-> >
-> > Fixing this by using sort_r function with custom swap callback
-> > that swaps cookie values as well.
-> >
-> > Fixes: 0236fec57a15 ("bpf: Resolve symbols with ftrace_lookup_symbols for kprobe multi link")
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> 
-> It looks good, but something in this patch is causing a regression:
-> ./test_progs -t kprobe_multi
-> test_kprobe_multi_test:PASS:load_kallsyms 0 nsec
-> #80/1    kprobe_multi_test/skel_api:OK
-> #80/2    kprobe_multi_test/link_api_addrs:OK
-> #80/3    kprobe_multi_test/link_api_syms:OK
-> #80/4    kprobe_multi_test/attach_api_pattern:OK
-> #80/5    kprobe_multi_test/attach_api_addrs:OK
-> #80/6    kprobe_multi_test/attach_api_syms:OK
-> #80/7    kprobe_multi_test/attach_api_fails:OK
-> test_bench_attach:PASS:get_syms 0 nsec
-> test_bench_attach:PASS:kprobe_multi_empty__open_and_load 0 nsec
-> libbpf: prog 'test_kprobe_empty': failed to attach: No such process
-> test_bench_attach:FAIL:bpf_program__attach_kprobe_multi_opts
-> unexpected error: -3
-> #80/8    kprobe_multi_test/bench_attach:FAIL
-> #80      kprobe_multi_test:FAIL
+From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 
-looks like kallsyms search failed to find some symbol,
-but I can't reproduce with:
+[ Upstream commit 7ab889f09dfa70e8097ec1b9186fd228124112cb ]
 
-  ./vmtest.sh -- ./test_progs -t kprobe_multi
+The ref builder only provided references that are marked as valid in the
+dpb. Thus the current implementation of dpb_valid would always set the
+flag to 1. This is not representing missing frames (this is called
+'non-existing' pictures in the spec). In some context, these non-existing
+pictures still need to occupy a slot in the reference list according to
+the spec.
 
-can you share .config you used?
+Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/staging/media/rkvdec/rkvdec-h264.c | 33 ++++++++++++++++------
+ 1 file changed, 24 insertions(+), 9 deletions(-)
 
-thanks,
-jirka
+diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
+index 951e19231da2..f5d8c6cb740b 100644
+--- a/drivers/staging/media/rkvdec/rkvdec-h264.c
++++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
+@@ -112,6 +112,7 @@ struct rkvdec_h264_run {
+ 	const struct v4l2_ctrl_h264_sps *sps;
+ 	const struct v4l2_ctrl_h264_pps *pps;
+ 	const struct v4l2_ctrl_h264_scaling_matrix *scaling_matrix;
++	int ref_buf_idx[V4L2_H264_NUM_DPB_ENTRIES];
+ };
+ 
+ struct rkvdec_h264_ctx {
+@@ -725,6 +726,26 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
+ 	}
+ }
+ 
++static void lookup_ref_buf_idx(struct rkvdec_ctx *ctx,
++			       struct rkvdec_h264_run *run)
++{
++	const struct v4l2_ctrl_h264_decode_params *dec_params = run->decode_params;
++	u32 i;
++
++	for (i = 0; i < ARRAY_SIZE(dec_params->dpb); i++) {
++		struct v4l2_m2m_ctx *m2m_ctx = ctx->fh.m2m_ctx;
++		const struct v4l2_h264_dpb_entry *dpb = run->decode_params->dpb;
++		struct vb2_queue *cap_q = &m2m_ctx->cap_q_ctx.q;
++		int buf_idx = -1;
++
++		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
++			buf_idx = vb2_find_timestamp(cap_q,
++						     dpb[i].reference_ts, 0);
++
++		run->ref_buf_idx[i] = buf_idx;
++	}
++}
++
+ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
+ 			    struct rkvdec_h264_run *run)
+ {
+@@ -762,7 +783,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
+ 
+ 	for (j = 0; j < RKVDEC_NUM_REFLIST; j++) {
+ 		for (i = 0; i < h264_ctx->reflists.num_valid; i++) {
+-			u8 dpb_valid = 0;
++			bool dpb_valid = run->ref_buf_idx[i] >= 0;
+ 			u8 idx = 0;
+ 
+ 			switch (j) {
+@@ -779,8 +800,6 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
+ 
+ 			if (idx >= ARRAY_SIZE(dec_params->dpb))
+ 				continue;
+-			dpb_valid = !!(dpb[idx].flags &
+-				       V4L2_H264_DPB_ENTRY_FLAG_ACTIVE);
+ 
+ 			set_ps_field(hw_rps, DPB_INFO(i, j),
+ 				     idx | dpb_valid << 4);
+@@ -859,13 +878,8 @@ get_ref_buf(struct rkvdec_ctx *ctx, struct rkvdec_h264_run *run,
+ 	    unsigned int dpb_idx)
+ {
+ 	struct v4l2_m2m_ctx *m2m_ctx = ctx->fh.m2m_ctx;
+-	const struct v4l2_h264_dpb_entry *dpb = run->decode_params->dpb;
+ 	struct vb2_queue *cap_q = &m2m_ctx->cap_q_ctx.q;
+-	int buf_idx = -1;
+-
+-	if (dpb[dpb_idx].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
+-		buf_idx = vb2_find_timestamp(cap_q,
+-					     dpb[dpb_idx].reference_ts, 0);
++	int buf_idx = run->ref_buf_idx[dpb_idx];
+ 
+ 	/*
+ 	 * If a DPB entry is unused or invalid, address of current destination
+@@ -1102,6 +1116,7 @@ static int rkvdec_h264_run(struct rkvdec_ctx *ctx)
+ 
+ 	assemble_hw_scaling_list(ctx, &run);
+ 	assemble_hw_pps(ctx, &run);
++	lookup_ref_buf_idx(ctx, &run);
+ 	assemble_hw_rps(ctx, &run);
+ 	config_registers(ctx, &run);
+ 
+-- 
+2.35.1
 
-> 
-> CI is unfortunately green, because we don't run it there:
-> #80/1 kprobe_multi_test/skel_api:OK
-> #80/2 kprobe_multi_test/link_api_addrs:OK
-> #80/3 kprobe_multi_test/link_api_syms:OK
-> #80/4 kprobe_multi_test/attach_api_pattern:OK
-> #80/5 kprobe_multi_test/attach_api_addrs:OK
-> #80/6 kprobe_multi_test/attach_api_syms:OK
-> #80/7 kprobe_multi_test/attach_api_fails:OK
-> #80 kprobe_multi_test:OK
+
+
