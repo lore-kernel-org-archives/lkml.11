@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE8EDCCA491
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE3FFCCA490
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376466AbiFGUQs (ORCPT
+        id S1376558AbiFGUQx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51944 "EHLO
+        Tue, 7 Jun 2022 16:16:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356167AbiFGT0r (ORCPT
+        with ESMTP id S1356398AbiFGT1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:26:47 -0400
+        Tue, 7 Jun 2022 15:27:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0764A19FF4B;
-        Tue,  7 Jun 2022 11:09:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604E219FD7A;
+        Tue,  7 Jun 2022 11:09:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 274DB6191F;
-        Tue,  7 Jun 2022 18:09:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34180C385A2;
-        Tue,  7 Jun 2022 18:09:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D51986193C;
+        Tue,  7 Jun 2022 18:09:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E59AAC385A2;
+        Tue,  7 Jun 2022 18:09:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625383;
-        bh=qewUsOd+zR9pD4CwTK2yUgE2uCsGhLzD/qKdKnBcm90=;
+        s=korg; t=1654625386;
+        bh=bcdIFeJXlB+GJWVD5AtTpUmtkilRANrSvoajawvCIEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hQaJ2Bh3vKyXHpF1g+7pBFKz9lbk9euuie3rI4Y5SYKuLqjSjTD2pWEQOjSQFEOW5
-         nfsq86CxDE+pMPfjRi+dSmGkOv0XFpBWhTKz4f3wuhUJYpZkbm55GXEqNi1VRKbXJi
-         eNtVqJc91QUGmisBSmOnL0wFbR85GiOZ7eEclUpk=
+        b=rIbzZg7YWrXZkXjxabIG9dYBcfmppAzt+CvLrYrwbu0YqV4OB6bmbV6zMDRg4AiFD
+         2+gf4TbH940NKMl23mHdoML80xC6K/Jk4BHrK6noDWUG5RMRb87t9ZqHTv+2ZHft1v
+         ySfbcihS94vaBogFKeQ2HbxK0UIivB+zL6heeMNg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiao Yang <yangx.jy@fujitsu.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.15 656/667] RDMA/rxe: Generate a completion for unsupported/invalid opcode
-Date:   Tue,  7 Jun 2022 19:05:21 +0200
-Message-Id: <20220607164954.321795938@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Stephen Zhang <starzhangzsd@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 5.15 657/667] MIPS: IP27: Remove incorrect `cpu_has_fpu override
+Date:   Tue,  7 Jun 2022 19:05:22 +0200
+Message-Id: <20220607164954.351623082@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,35 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiao Yang <yangx.jy@fujitsu.com>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-commit 2f917af777011c88e977b9b9a5d00b280d3a59ce upstream.
+commit 424c3781dd1cb401857585331eaaa425a13f2429 upstream.
 
-Current rxe_requester() doesn't generate a completion when processing an
-unsupported/invalid opcode. If rxe driver doesn't support a new opcode
-(e.g. RDMA Atomic Write) and RDMA library supports it, an application
-using the new opcode can reproduce this issue. Fix the issue by calling
-"goto err;".
+Remove unsupported forcing of `cpu_has_fpu' to 1, which makes the `nofpu'
+kernel parameter non-functional, and also causes a link error:
 
-Fixes: 8700e3e7c485 ("Soft RoCE driver")
-Link: https://lore.kernel.org/r/20220410113513.27537-1-yangx.jy@fujitsu.com
-Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+ld: arch/mips/kernel/traps.o: in function `trap_init':
+./arch/mips/include/asm/msa.h:(.init.text+0x348): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x354): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x360): undefined reference to `handle_fpe'
+
+where the CONFIG_MIPS_FP_SUPPORT configuration option has been disabled.
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Reported-by: Stephen Zhang <starzhangzsd@gmail.com>
+Fixes: 0ebb2f4159af ("MIPS: IP27: Update/restructure CPU overrides")
+Cc: stable@vger.kernel.org # v4.2+
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/sw/rxe/rxe_req.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/infiniband/sw/rxe/rxe_req.c
-+++ b/drivers/infiniband/sw/rxe/rxe_req.c
-@@ -683,7 +683,7 @@ next_wqe:
- 	opcode = next_opcode(qp, wqe, wqe->wr.opcode);
- 	if (unlikely(opcode < 0)) {
- 		wqe->status = IB_WC_LOC_QP_OP_ERR;
--		goto exit;
-+		goto err;
- 	}
- 
- 	mask = rxe_opcode[opcode].mask;
+--- a/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
++++ b/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
+@@ -26,7 +26,6 @@
+ #define cpu_has_3k_cache		0
+ #define cpu_has_4k_cache		1
+ #define cpu_has_tx39_cache		0
+-#define cpu_has_fpu			1
+ #define cpu_has_nofpuex			0
+ #define cpu_has_32fpr			1
+ #define cpu_has_counter			1
 
 
