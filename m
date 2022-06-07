@@ -2,97 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE082CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE1ACCA49E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353697AbiFGTmj (ORCPT
+        id S1357430AbiFGTl7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:42:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
+        Tue, 7 Jun 2022 15:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354421AbiFGSrB (ORCPT
+        with ESMTP id S1354495AbiFGSrF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0890E3BA52;
-        Tue,  7 Jun 2022 11:01:09 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C12E6EC44;
+        Tue,  7 Jun 2022 11:01:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD3F6B82239;
-        Tue,  7 Jun 2022 18:01:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF42AC34119;
-        Tue,  7 Jun 2022 18:01:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624866;
-        bh=Qr/a7JxWet4zrfzFhaoHyLcEpfD+S1KNXH/SrrqH+gw=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC151B82368;
+        Tue,  7 Jun 2022 18:01:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68D8FC34115;
+        Tue,  7 Jun 2022 18:01:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624889;
+        bh=M6FS/lCEmvw7N1uBROVZHZ6Aqu6ichPOYpC36essZ+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jyhZ5Uduqj4LQsKkXqSSkWzNJxVlSVJ3xLxGJOLN0CXPP9w2LXaO1QbEsvyg89o/N
-         oSmJge2w+4b1xMFEm6fLXEdtPX5jJXseVLLasB/0bpLcdB8sdQsO6m6EvwenvZi9Sa
-         QyVZKjzSo7zCHe9LOkAJStlIn39d2PG+7Z1jNSyjF7uMbXDiT/gM0PONRWO/5LTCOW
-         vOi4IVerF7L83NnMKz80Ay6iYy2h8eushnaJ7r3xPdd7ktAGaAKMSlpC/RMkHtJAfR
-         s5cX7zRaaDoSXuCrYVmkHlb019S8lUYj70LwpsW+GfzgpMUoludpfulEJzRci/vyTE
-         Diw/sjNmmtWRQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liu Xinpeng <liuxp11@chinatelecom.cn>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Sasha Levin <sashal@kernel.org>, linux-watchdog@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 20/34] watchdog: wdat_wdt: Stop watchdog when rebooting the system
-Date:   Tue,  7 Jun 2022 13:59:55 -0400
-Message-Id: <20220607180011.481266-20-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
-References: <20220607180011.481266-1-sashal@kernel.org>
+        b=XS6XNC7nRM1gGzSy5pa1BvjmbKUXv9OLHJ9ZDTtwVE1JCyKkuKWEITwjaeuoFoj2Z
+         MeVxu/Z6b5wUryZQph+qIbbI1rfEpx19PABXCe9tFuqRbzWx7NrgKuKBUFmj8LfUHV
+         AqI7imtNUqU4ec4T0tvWrXMO1raab/99u5rqBlt0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 491/667] i2c: at91: Initialize dma_buf in at91_twi_xfer()
+Date:   Tue,  7 Jun 2022 19:02:36 +0200
+Message-Id: <20220607164949.425297994@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Xinpeng <liuxp11@chinatelecom.cn>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit 27fdf84510a1374748904db43f6755f912736d92 ]
+[ Upstream commit 6977262c2eee111645668fe9e235ef2f5694abf7 ]
 
-Executing reboot command several times on the machine "Dell
-PowerEdge R740", UEFI security detection stopped machine
-with the following prompt:
+Clang warns:
 
-UEFI0082: The system was reset due to a timeout from the watchdog
-timer. Check the System Event Log (SEL) or crash dumps from
-Operating Sysstem to identify the source that triggered the
-watchdog timer reset. Update the firmware or driver for the
-identified device.
+  drivers/i2c/busses/i2c-at91-master.c:707:6: warning: variable 'dma_buf' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+          if (dev->use_dma) {
+              ^~~~~~~~~~~~
+  drivers/i2c/busses/i2c-at91-master.c:717:27: note: uninitialized use occurs here
+          i2c_put_dma_safe_msg_buf(dma_buf, m_start, !ret);
+                                   ^~~~~~~
 
-iDRAC has warning event: "The watchdog timer reset the system".
+Initialize dma_buf to NULL, as i2c_put_dma_safe_msg_buf() is a no-op
+when the first argument is NULL, which will work for the !dev->use_dma
+case.
 
-This patch fixes this issue by adding the reboot notifier.
-
-Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/1650984810-6247-3-git-send-email-liuxp11@chinatelecom.cn
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+Fixes: 03fbb903c8bf ("i2c: at91: use dma safe buffers")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1629
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/watchdog/wdat_wdt.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/i2c/busses/i2c-at91-master.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
-index 88c5e6361aa0..fddbb39433be 100644
---- a/drivers/watchdog/wdat_wdt.c
-+++ b/drivers/watchdog/wdat_wdt.c
-@@ -462,6 +462,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
- 		return ret;
+diff --git a/drivers/i2c/busses/i2c-at91-master.c b/drivers/i2c/busses/i2c-at91-master.c
+index 5eca3b3bb609..c0c35785a0dc 100644
+--- a/drivers/i2c/busses/i2c-at91-master.c
++++ b/drivers/i2c/busses/i2c-at91-master.c
+@@ -656,7 +656,7 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
+ 	unsigned int_addr_flag = 0;
+ 	struct i2c_msg *m_start = msg;
+ 	bool is_read;
+-	u8 *dma_buf;
++	u8 *dma_buf = NULL;
  
- 	watchdog_set_nowayout(&wdat->wdd, nowayout);
-+	watchdog_stop_on_reboot(&wdat->wdd);
- 	return devm_watchdog_register_device(dev, &wdat->wdd);
- }
+ 	dev_dbg(&adap->dev, "at91_xfer: processing %d messages:\n", num);
  
 -- 
 2.35.1
+
+
 
