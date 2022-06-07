@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AE59CCA49D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80559C04E85
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352332AbiFGSZ7 (ORCPT
+        id S1352443AbiFGS0L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
+        Tue, 7 Jun 2022 14:26:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351155AbiFGSBo (ORCPT
+        with ESMTP id S1351288AbiFGSB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:01:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C878212E32A;
-        Tue,  7 Jun 2022 10:44:04 -0700 (PDT)
+        Tue, 7 Jun 2022 14:01:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A44151FC5;
+        Tue,  7 Jun 2022 10:44:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DCCB4615B8;
-        Tue,  7 Jun 2022 17:44:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDA1BC385A5;
-        Tue,  7 Jun 2022 17:44:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F212AB822B8;
+        Tue,  7 Jun 2022 17:44:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63FF0C385A5;
+        Tue,  7 Jun 2022 17:44:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623843;
-        bh=91YafTY4rpyJMzqIXxTsoWBBfWiA6zSqMttXHOP6uKo=;
+        s=korg; t=1654623851;
+        bh=Poz0P3FU8oei4d2vEBfJHhiPc/hGrkpoKT1vFnt42T4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VZh0ocllS93Y4/Fe2PDOSdqVod9VJue9qnwPd1+HvLbHX1OfbbOh7hKnC6FHdiRy5
-         lz8pOLmvu48ruFdpVM45MHN79hsgrEsl8W4Y78F96c9wWYFqypgNC64XGK8hFH1977
-         UFY1Q4Cws8TM6tSHW/1hKbTa2vFsLA2Q+PSgq91g=
+        b=XX6zviO+GoaUc17P0P/HO/usVE9K0yzaBiXx1oVxIQIeTxjwlxYBzpoDpJN+3GsFs
+         hfkfsj6r7V5ScPYxuVrDN2CKJu3yvWQmXed25XLskx/BbtSeGqb60goznTmhTr2KNY
+         Ti5QLutwQP+AAgyPaGPuI8I8WyGB7MkGTqjqKHwE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Corey Minyard <cminyard@mvista.com>,
+        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 112/667] ipmi: Fix pr_fmt to avoid compilation issues
-Date:   Tue,  7 Jun 2022 18:56:17 +0200
-Message-Id: <20220607164938.179875428@linuxfoundation.org>
+Subject: [PATCH 5.15 114/667] mt76: mt7921: accept rx frames with non-standard VHT MCS10-11
+Date:   Tue,  7 Jun 2022 18:56:19 +0200
+Message-Id: <20220607164938.242310109@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,35 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corey Minyard <cminyard@mvista.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 2ebaf18a0b7fb764bba6c806af99fe868cee93de ]
+[ Upstream commit 3128ea016965ce9f91ddf4e1dd944724462d1698 ]
 
-The was it was wouldn't work in some situations, simplify it.  What was
-there was unnecessary complexity.
+The hardware receives them properly, they should not be dropped
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Corey Minyard <cminyard@mvista.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/ipmi/ipmi_msghandler.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index fe91090e04a4..2badf36d4816 100644
---- a/drivers/char/ipmi/ipmi_msghandler.c
-+++ b/drivers/char/ipmi/ipmi_msghandler.c
-@@ -11,8 +11,8 @@
-  * Copyright 2002 MontaVista Software Inc.
-  */
- 
--#define pr_fmt(fmt) "%s" fmt, "IPMI message handler: "
--#define dev_fmt pr_fmt
-+#define pr_fmt(fmt) "IPMI message handler: " fmt
-+#define dev_fmt(fmt) pr_fmt(fmt)
- 
- #include <linux/module.h>
- #include <linux/errno.h>
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
+index c093920a597d..5024ddf07cbc 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
+@@ -563,7 +563,7 @@ int mt7921_mac_fill_rx(struct mt7921_dev *dev, struct sk_buff *skb)
+ 			status->nss =
+ 				FIELD_GET(MT_PRXV_NSTS, v0) + 1;
+ 			status->encoding = RX_ENC_VHT;
+-			if (i > 9)
++			if (i > 11)
+ 				return -EINVAL;
+ 			break;
+ 		case MT_PHY_TYPE_HE_MU:
 -- 
 2.35.1
 
