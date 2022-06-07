@@ -2,97 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8B2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:59:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28316C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:59:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353297AbiFGS70 (ORCPT
+        id S1353371AbiFGS7e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55666 "EHLO
+        Tue, 7 Jun 2022 14:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350790AbiFGSTw (ORCPT
+        with ESMTP id S1350349AbiFGSTr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:19:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E17E36FA21;
-        Tue,  7 Jun 2022 10:53:41 -0700 (PDT)
+        Tue, 7 Jun 2022 14:19:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 030E1BE175;
+        Tue,  7 Jun 2022 10:53:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DAEC615B1;
-        Tue,  7 Jun 2022 17:53:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9A0FC36B01;
-        Tue,  7 Jun 2022 17:53:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624421;
-        bh=QZsirAHLXyzJVrTkY/suxsZZZSl9IHSAJLFc0FhppEk=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3B8FB8234A;
+        Tue,  7 Jun 2022 17:53:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22E3DC34115;
+        Tue,  7 Jun 2022 17:53:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624415;
+        bh=iBHXIOeiRVVBCYsNK7bbGrVtLssRBgvab2AS9555VOM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r0SX4ubd7xEcXQAwwqKGK6pb/q1qytmY/AzoND14ezTRCPu6e9aSQBxHLcMrErHlm
-         6MBPHxsJB3uM623mNo4mSqmzgKupng0K4Mf6vzcrqyGe8artOajDwILxVumg1ENzT5
-         BX8sh3DNRkBJkIQ4FguHhDjKxGsYBOE1//O+Zlgc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 322/667] media: atmel: atmel-isc: Fix PM disable depth imbalance in atmel_isc_probe
-Date:   Tue,  7 Jun 2022 18:59:47 +0200
-Message-Id: <20220607164944.428422300@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=Fi8edBvqk33KSdm7Pc9tkji8oh6OrclmIJUB/djPT8hHhaAtLM+6ynqInF+9hReMj
+         yrEiuDCcqk5A28Ri+/E8K5StfgQK3DK8AIGIt73DFgJ6E642hOD55FCrHGTxT8/GGE
+         ZAVFlVePYdzICMDgpeU1m8iW71HCvCKuCb/8+IQlvUWr57pxbk35SzR7ydaKGex9RM
+         sLrSBxzEVX4c2ieK1+gokzILTxMYmUxwyRmESyHreFBYPO+pxeFAqCar6Ewi1X5K5R
+         8zB3Nl3IOZtC1R4v0JlFhc/pz4ztj6+zPp1WPGXkDidBOu5agOEiZTXPSDgbAn1quO
+         kSodWxbcGt70Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, dan.carpenter@oracle.com,
+        baihaowen@meizu.com, dave@stgolabs.net, yangyingliang@huawei.com,
+        wjsota@gmail.com, edumazet@google.com, len.baker@gmx.com,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.17 11/60] drivers: staging: rtl8192e: Fix deadlock in rtllib_beacons_stop()
+Date:   Tue,  7 Jun 2022 13:52:08 -0400
+Message-Id: <20220607175259.478835-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 395829c61a196a0821a703a49c4db3ac51daff73 ]
+[ Upstream commit 9b6bdbd9337de3917945847bde262a34a87a6303 ]
 
-The pm_runtime_enable will decrease power disable depth.
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
+There is a deadlock in rtllib_beacons_stop(), which is shown
+below:
 
-Fixes: 0a0e265515db ("media: atmel: atmel-isc: split driver into driver base and isc")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+   (Thread 1)              |      (Thread 2)
+                           | rtllib_send_beacon()
+rtllib_beacons_stop()      |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | rtllib_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
+
+We hold ieee->beacon_lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, rtllib_beacons_stop() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417141641.124388-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/atmel/atmel-sama5d2-isc.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/staging/rtl8192e/rtllib_softmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/atmel/atmel-sama5d2-isc.c b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-index e29a9193bac8..c8ed9315ef31 100644
---- a/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-+++ b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-@@ -537,7 +537,7 @@ static int atmel_isc_probe(struct platform_device *pdev)
- 	ret = clk_prepare_enable(isc->ispck);
- 	if (ret) {
- 		dev_err(dev, "failed to enable ispck: %d\n", ret);
--		goto cleanup_subdev;
-+		goto disable_pm;
- 	}
+diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
+index 4b6c2295a3cf..b5a38f0a8d79 100644
+--- a/drivers/staging/rtl8192e/rtllib_softmac.c
++++ b/drivers/staging/rtl8192e/rtllib_softmac.c
+@@ -651,9 +651,9 @@ static void rtllib_beacons_stop(struct rtllib_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
  
- 	/* ispck should be greater or equal to hclock */
-@@ -555,6 +555,9 @@ static int atmel_isc_probe(struct platform_device *pdev)
- unprepare_clk:
- 	clk_disable_unprepare(isc->ispck);
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
  
-+disable_pm:
-+	pm_runtime_disable(dev);
-+
- cleanup_subdev:
- 	isc_subdev_cleanup(isc);
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
+ 
+ }
  
 -- 
 2.35.1
-
-
 
