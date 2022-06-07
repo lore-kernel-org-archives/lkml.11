@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 292E0CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C7ECCA481
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356843AbiFGTkO (ORCPT
+        id S1356863AbiFGTkU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57870 "EHLO
+        Tue, 7 Jun 2022 15:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354433AbiFGSrC (ORCPT
+        with ESMTP id S1354444AbiFGSrC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A037E35A96;
-        Tue,  7 Jun 2022 11:01:13 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F8D5133F;
+        Tue,  7 Jun 2022 11:01:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DDFB618E1;
-        Tue,  7 Jun 2022 18:01:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 280DFC3411F;
-        Tue,  7 Jun 2022 18:01:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60ECD618BF;
+        Tue,  7 Jun 2022 18:01:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F896C34119;
+        Tue,  7 Jun 2022 18:01:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624872;
-        bh=eaLkmUmdG/Xo6u8ERxj5u85vYOJwe/jt0YfOMpJMybE=;
+        s=korg; t=1654624875;
+        bh=zeFraWsJc3yTSgQb3pzJ/B6qVY2pED3bey0qvc0sm3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fzFHY+eNPmc9zDY2+A9NYAJBQebdhDRw7Cc7DmwnrLoBjHdIFJW2j2E4YMdtRv9hx
-         wH1mmex5OOXU+zZkGs5IEW14aJ/02KlltcocbEjfet2twez95hw3q5/RZ9XWIAvfg+
-         yJCrg4APqJtatf+739k8/6Vetnu0moJbE6/1ERbI=
+        b=Am3fl24yfx6zsSPQCf1TdzreaZUZUK9J0UiNGE99rzG9/zNVe2WldVvwI6En4DPo9
+         L/67XDzy+zgdcnEfVhbswV93Olik+uSKS9h9ytdYurBgoDpAuqtcHCY4zH15okmOyY
+         KdfipedXLSC0iQIHhvKIxhLDbPil50Kd55LbXmTc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Randy Dunlap <rdunlap@infradead.org>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 443/667] powerpc/idle: Fix return value of __setup() handler
-Date:   Tue,  7 Jun 2022 19:01:48 +0200
-Message-Id: <20220607164948.006264774@linuxfoundation.org>
+Subject: [PATCH 5.15 444/667] powerpc/4xx/cpm: Fix return value of __setup() handler
+Date:   Tue,  7 Jun 2022 19:01:49 +0200
+Message-Id: <20220607164948.036553735@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -53,7 +53,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit b793a01000122d2bd133ba451a76cc135b5e162c ]
+[ Upstream commit 5bb99fd4090fe1acfdb90a97993fcda7f8f5a3d6 ]
 
 __setup() handlers should return 1 to obsolete_checksetup() in
 init/main.c to indicate that the boot option has been handled.
@@ -63,31 +63,30 @@ kernel parameter and added to init's (limited) argument or environment
 strings.
 
 Also, error return codes don't mean anything to obsolete_checksetup() --
-only non-zero (usually 1) or zero. So return 1 from powersave_off().
+only non-zero (usually 1) or zero. So return 1 from cpm_powersave_off().
 
-Fixes: 302eca184fb8 ("[POWERPC] cell: use ppc_md->power_save instead of cbe_idle_loop")
+Fixes: d164f6d4f910 ("powerpc/4xx: Add suspend and idle support")
 Reported-by: Igor Zhbanov <izh1979@gmail.com>
 Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220502192925.19954-1-rdunlap@infradead.org
+Link: https://lore.kernel.org/r/20220502192941.20955-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/idle.c | 2 +-
+ arch/powerpc/platforms/4xx/cpm.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/idle.c b/arch/powerpc/kernel/idle.c
-index 1f835539fda4..f0271daa8f6a 100644
---- a/arch/powerpc/kernel/idle.c
-+++ b/arch/powerpc/kernel/idle.c
-@@ -37,7 +37,7 @@ static int __init powersave_off(char *arg)
+diff --git a/arch/powerpc/platforms/4xx/cpm.c b/arch/powerpc/platforms/4xx/cpm.c
+index ae8b812c9202..2481e78c0423 100644
+--- a/arch/powerpc/platforms/4xx/cpm.c
++++ b/arch/powerpc/platforms/4xx/cpm.c
+@@ -327,6 +327,6 @@ late_initcall(cpm_init);
+ static int __init cpm_powersave_off(char *arg)
  {
- 	ppc_md.power_save = NULL;
- 	cpuidle_disable = IDLE_POWERSAVE_OFF;
+ 	cpm.powersave_off = 1;
 -	return 0;
 +	return 1;
  }
- __setup("powersave=off", powersave_off);
- 
+ __setup("powersave=off", cpm_powersave_off);
 -- 
 2.35.1
 
