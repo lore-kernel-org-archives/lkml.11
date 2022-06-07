@@ -2,92 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB2CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52697C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380684AbiFGWjO (ORCPT
+        id S1381602AbiFGWj2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38714 "EHLO
+        Tue, 7 Jun 2022 18:39:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379367AbiFGVZ2 (ORCPT
+        with ESMTP id S1379397AbiFGVZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:25:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B608C228709;
-        Tue,  7 Jun 2022 12:01:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 274C8B8239A;
-        Tue,  7 Jun 2022 19:01:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F116C385A2;
-        Tue,  7 Jun 2022 19:01:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628506;
-        bh=JGu5/sJQWhxYWpYIMKgqESsrp3SFHjGVwap1IYN4MQY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yvJm6m/PQCrF1wAl65EkTqPcAQdzOcjhjv0AB8U8FDZUsO1JHKGNK6aVaDb9b6jEA
-         F0oilhnDGn63Ij+SmakavoSGv6bFOouyc40LeKpDVrEcfjdZn1auJ3DF5Tz8D4GN7A
-         6dEJOw+Vpf45l3EC2HvkqqLr4GVU1g5KAEEHY7rM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 354/879] drm/msm/dpu: adjust display_v_end for eDP and DP
-Date:   Tue,  7 Jun 2022 18:57:52 +0200
-Message-Id: <20220607165013.137106772@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:25:33 -0400
+Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B62228713;
+        Tue,  7 Jun 2022 12:01:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1654628511; x=1686164511;
+  h=references:from:to:cc:subject:date:in-reply-to:
+   message-id:mime-version;
+  bh=pniHEHRrB59YTtTNBTHlm1oMkttAh1nN6oBL1H5yKWM=;
+  b=ANVUJX2nD5MBjE4xE8mXlELzhYCcWe/+Jjk6Fn2gQX00oNSvIIJlolKa
+   tVCbgKKGTkwO9bX1MTdvsYvgG2skpgojt3B9HwlKWco+VxO9zz7BSj3DT
+   rBt20It5InNCsLFmj91Vo9HOkGE5fVr0veBOhmgCifeK6q6FGRdyKjOsL
+   4=;
+X-IronPort-AV: E=Sophos;i="5.91,284,1647302400"; 
+   d="scan'208";a="200518085"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-2d7489a4.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 07 Jun 2022 19:01:36 +0000
+Received: from EX13D28EUC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1a-2d7489a4.us-east-1.amazon.com (Postfix) with ESMTPS id 9C7E4A2532;
+        Tue,  7 Jun 2022 19:01:33 +0000 (UTC)
+Received: from u570694869fb251.ant.amazon.com.amazon.com (10.43.160.26) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Tue, 7 Jun 2022 19:01:27 +0000
+References: <20220607122831.32738-1-xiaohuizhang@ruc.edu.cn>
+User-agent: mu4e 1.6.10; emacs 28.0.91
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+CC:     Arthur Kiyanovski <akiyano@amazon.com>,
+        David Arinzon <darinzon@amazon.com>,
+        Noam Dagan <ndagan@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sameeh Jubran <sameehj@amazon.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1] net: ena_netdev: fix resource leak
+Date:   Tue, 7 Jun 2022 21:57:43 +0300
+In-Reply-To: <20220607122831.32738-1-xiaohuizhang@ruc.edu.cn>
+Message-ID: <pj41zly1y8pabi.fsf@u570694869fb251.ant.amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.160.26]
+X-ClientProxiedBy: EX13D32UWB003.ant.amazon.com (10.43.161.220) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit e18aeea7f5efb9508722c8c7fd4d32e6f8cdfe50 ]
+Xiaohui Zhang <xiaohuizhang@ruc.edu.cn> writes:
 
-The “DP timing” requires the active region to be defined in the
-bottom-right corner of the frame dimensions which is different
-with DSI. Therefore both display_h_end and display_v_end need
-to be adjusted accordingly. However current implementation has
-only display_h_end adjusted.
+> Similar to the handling of u132_hcd_init in commit f276e002793c
+> ("usb: u132-hcd: fix resource leak"), we thought a patch might 
+> be
+> needed here as well.
+>
+> If platform_driver_register fails, cleanup the allocated 
+> resource
+> gracefully.
+>
+> Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+> ---
+>  drivers/net/ethernet/amazon/ena/ena_netdev.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
+> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> index 6a356a6cee15..c0624ee8d867 100644
+> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> @@ -4545,13 +4545,17 @@ static struct pci_driver ena_pci_driver 
+> = {
+>  
+>  static int __init ena_init(void)
+>  {
+> +	int retval;
+>  	ena_wq = create_singlethread_workqueue(DRV_MODULE_NAME);
+>  	if (!ena_wq) {
+>  		pr_err("Failed to create workqueue\n");
+>  		return -ENOMEM;
+>  	}
+> +	retval = pci_register_driver(&ena_pci_driver);
+> +	if (retval)
+> +		destroy_workqueue(ena_wq);
+>  
+> -	return pci_register_driver(&ena_pci_driver);
+> +	return retval;
+>  }
+>  
+>  static void __exit ena_cleanup(void)
 
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Hi,
+thanks a lot for this patch. I made a few small changes in it to 
+make it more consistent with the rest of driver's code
+(sorry don't really know how to insert an inline diff)
 
-Fixes: fc3a69ec68d3 ("drm/msm/dpu: intf timing path for displayport")
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/476277/
-Link: https://lore.kernel.org/r/1645824192-29670-2-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+thanks,
+Shay
+
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-index 116e2b5b1a90..284f5610dc35 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-@@ -148,6 +148,7 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
- 		active_v_end = active_v_start + (p->yres * hsync_period) - 1;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
+b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 6a356a6cee15..be8d3c26c9bb 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -4545,13 +4545,19 @@ static struct pci_driver ena_pci_driver = 
+{
  
- 		display_v_start += p->hsync_pulse_width + p->h_back_porch;
-+		display_v_end   -= p->h_front_porch; 
+ static int __init ena_init(void)
+ {
++	int rc;
++
+ 	ena_wq = create_singlethread_workqueue(DRV_MODULE_NAME);
+ 	if (!ena_wq) {
+ 		pr_err("Failed to create workqueue\n");
+ 		return -ENOMEM;
+ 	}
  
- 		active_hctl = (active_h_end << 16) | active_h_start;
- 		display_hctl = active_hctl;
--- 
-2.35.1
-
+-	return pci_register_driver(&ena_pci_driver);
++	rc = pci_register_driver(&ena_pci_driver);
++	if (rc)
++		destroy_workqueue(ena_wq);
++
++	return rc;
+ }
+ 
+ static void __exit ena_cleanup(void)
 
 
