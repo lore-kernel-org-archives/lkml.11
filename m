@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FE0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE36C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:49:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348621AbiFGRts (ORCPT
+        id S1348629AbiFGRtw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39636 "EHLO
+        Tue, 7 Jun 2022 13:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347464AbiFGRap (ORCPT
+        with ESMTP id S1347463AbiFGRap (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:30:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913231116FD;
-        Tue,  7 Jun 2022 10:26:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658DC111B89;
+        Tue,  7 Jun 2022 10:26:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D478613F8;
-        Tue,  7 Jun 2022 17:26:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BABDC385A5;
-        Tue,  7 Jun 2022 17:26:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0A1060DE0;
+        Tue,  7 Jun 2022 17:26:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B855C385A5;
+        Tue,  7 Jun 2022 17:26:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622810;
-        bh=Ne7KVx6tMWNa+nAq3BGWlIAOefOfu5GOIIKzDMxoiXE=;
+        s=korg; t=1654622813;
+        bh=jPH97mOQ/vhneuAL1PtOJd++20+ovSawJ5KDI9CKecs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K97OtODj6fJlS/p0eaNS3+e2LGycDLVhKV60DbulbA2Qb4ej32FEUxyanBSpHzhkT
-         2VJzGA6GLhApVwrNSLJhdlqc6K7cxK2XzX/8lTiToW/kP/SFT7paslkbf6jEybsYrA
-         D3ngVSN8tIWZVIUqr5HWYniKrdnlwoG1sLBGu6fo=
+        b=mWEla15LuEirsM/oHrQXV5miJE28tYpmvWSg3gNc4Gol14cIh1iW1DM6oiDFBoI0n
+         y3qT1DTiMr6/bkuu71Q2r41EGh2EIZwwvS9SA7i0ak1oXC364V0GnI0KBAp3wWx1Rb
+         6otwn2SEPQCH+NC979q+yZs29rvGv84/bzOeESzI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zev Weiss <zev@bewilderbeest.net>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 190/452] regulator: core: Fix enable_count imbalance with EXCLUSIVE_GET
-Date:   Tue,  7 Jun 2022 19:00:47 +0200
-Message-Id: <20220607164914.224384055@linuxfoundation.org>
+Subject: [PATCH 5.10 191/452] drm/msm/dp: fix event thread stuck in wait_event after kthread_stop()
+Date:   Tue,  7 Jun 2022 19:00:48 +0200
+Message-Id: <20220607164914.254880956@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,50 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zev Weiss <zev@bewilderbeest.net>
+From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit c3e3ca05dae37f8f74bb80358efd540911cbc2c8 ]
+[ Upstream commit 2f9b5b3ae2eb625b75a898212a76f3b8c6d0d2b0 ]
 
-Since the introduction of regulator->enable_count, a driver that did
-an exclusive get on an already-enabled regulator would end up with
-enable_count initialized to 0 but rdev->use_count initialized to 1.
-With that starting point the regulator is effectively stuck enabled,
-because if the driver attempted to disable it it would fail the
-enable_count underflow check in _regulator_handle_consumer_disable().
+Event thread supposed to exit from its while loop after kthread_stop().
+However there may has possibility that event thread is pending in the
+middle of wait_event due to condition checking never become true.
+To make sure event thread exit its loop after kthread_stop(), this
+patch OR kthread_should_stop() into wait_event's condition checking
+so that event thread will exit its loop after kernal_stop().
 
-The EXCLUSIVE_GET path in _regulator_get() now initializes
-enable_count along with rdev->use_count so that the regulator can be
-disabled without underflowing the former.
+Changes in v2:
+--  correct spelling error at commit title
 
-Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
-Fixes: 5451781dadf85 ("regulator: core: Only count load for enabled consumers")
-Link: https://lore.kernel.org/r/20220505043152.12933-1-zev@bewilderbeest.net
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Changes in v3:
+-- remove unnecessary parenthesis
+-- while(1) to replace while (!kthread_should_stop())
+
+Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: 570d3e5d28db ("drm/msm/dp: stop event kernel thread when DP unbind")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/484576/
+Link: https://lore.kernel.org/r/1651595136-24312-1-git-send-email-quic_khsieh@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/core.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/dp/dp_display.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index 2c48e55c4104..6e3f3511e7dd 100644
---- a/drivers/regulator/core.c
-+++ b/drivers/regulator/core.c
-@@ -2027,10 +2027,13 @@ struct regulator *_regulator_get(struct device *dev, const char *id,
- 		rdev->exclusive = 1;
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index 09c8e50da68d..ebd05678a27b 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -998,15 +998,20 @@ static int hpd_event_thread(void *data)
  
- 		ret = _regulator_is_enabled(rdev);
--		if (ret > 0)
-+		if (ret > 0) {
- 			rdev->use_count = 1;
--		else
-+			regulator->enable_count = 1;
-+		} else {
- 			rdev->use_count = 0;
-+			regulator->enable_count = 0;
-+		}
- 	}
+ 	dp_priv = (struct dp_display_private *)data;
  
- 	link = device_link_add(dev, &rdev->dev, DL_FLAG_STATELESS);
+-	while (!kthread_should_stop()) {
++	while (1) {
+ 		if (timeout_mode) {
+ 			wait_event_timeout(dp_priv->event_q,
+-				(dp_priv->event_pndx == dp_priv->event_gndx),
+-						EVENT_TIMEOUT);
++				(dp_priv->event_pndx == dp_priv->event_gndx) ||
++					kthread_should_stop(), EVENT_TIMEOUT);
+ 		} else {
+ 			wait_event_interruptible(dp_priv->event_q,
+-				(dp_priv->event_pndx != dp_priv->event_gndx));
++				(dp_priv->event_pndx != dp_priv->event_gndx) ||
++					kthread_should_stop());
+ 		}
++
++		if (kthread_should_stop())
++			break;
++
+ 		spin_lock_irqsave(&dp_priv->event_lock, flag);
+ 		todo = &dp_priv->event_list[dp_priv->event_gndx];
+ 		if (todo->delay) {
 -- 
 2.35.1
 
