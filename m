@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C64C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:19:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84CB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:19:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351454AbiFGSTK (ORCPT
+        id S1349842AbiFGSTZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:19:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40152 "EHLO
+        Tue, 7 Jun 2022 14:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243651AbiFGR57 (ORCPT
+        with ESMTP id S1348900AbiFGR6S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:57:59 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B109442A3A;
-        Tue,  7 Jun 2022 10:40:57 -0700 (PDT)
+        Tue, 7 Jun 2022 13:58:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83DCA6620F;
+        Tue,  7 Jun 2022 10:41:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1E6FDCE1D50;
-        Tue,  7 Jun 2022 17:40:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC500C385A5;
-        Tue,  7 Jun 2022 17:40:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA37661529;
+        Tue,  7 Jun 2022 17:41:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 057D4C385A5;
+        Tue,  7 Jun 2022 17:41:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623654;
-        bh=XYvzDQSro47q34wmugnuYCrxRYaXOTvHwRemBSiXqeM=;
+        s=korg; t=1654623676;
+        bh=LPSSCwqGaNrNkqp/n9QTqw04SGRP8OwOqgtrF6QVz+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xa90Plit1Mzy32A4ZrEkCihibPQ0Ysl9nMVJbQQvFz7mjmHv2bG36neM7C3jHE6UX
-         ZRgRK8AuPaFArktSsW9aXsTePfmfhygdRNzFeqdujRpwcuVLMzahPMs7lVMLjYyOvi
-         rS5NscmKTRCBaeU34sttMGzKUZ7w6orgpN0zbSTM=
+        b=IeW29NSGp7+qZhaWuJb16kLKTVLANS4jmbK5hsyA7q0VDCIXNaS4xxzosWKQwbNM9
+         /l7aktagnwOzQGUUOCB5OFcf1KcxEM/uj0l3VHghqtf0BRuannacM9OSeAn3FCXlPQ
+         0V1aSY/AcZQDQeSfaY7T8cI6IlRKsVA9OadrxsGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.15 006/667] riscv: Initialize thread pointer before calling C functions
-Date:   Tue,  7 Jun 2022 18:54:31 +0200
-Message-Id: <20220607164934.970498954@linuxfoundation.org>
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Niels Dossche <dossche.niels@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 052/667] ipv6: fix locking issues with loops over idev->addr_list
+Date:   Tue,  7 Jun 2022 18:55:17 +0200
+Message-Id: <20220607164936.369585786@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,35 +51,149 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-commit 35d33c76d68dfacc330a8eb477b51cc647c5a847 upstream.
+[ Upstream commit 51454ea42c1ab4e0c2828bb0d4d53957976980de ]
 
-Because of the stack canary feature that reads from the current task
-structure the stack canary value, the thread pointer register "tp" must
-be set before calling any C function from head.S: by chance, setup_vm
-and all the functions that it calls does not seem to be part of the
-functions where the canary check is done, but in the following commits,
-some functions will.
+idev->addr_list needs to be protected by idev->lock. However, it is not
+always possible to do so while iterating and performing actions on
+inet6_ifaddr instances. For example, multiple functions (like
+addrconf_{join,leave}_anycast) eventually call down to other functions
+that acquire the idev->lock. The current code temporarily unlocked the
+idev->lock during the loops, which can cause race conditions. Moving the
+locks up is also not an appropriate solution as the ordering of lock
+acquisition will be inconsistent with for example mc_lock.
 
-Fixes: f2c9699f65557a31 ("riscv: Add STACKPROTECTOR supported")
-Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This solution adds an additional field to inet6_ifaddr that is used
+to temporarily add the instances to a temporary list while holding
+idev->lock. The temporary list can then be traversed without holding
+idev->lock. This change was done in two places. In addrconf_ifdown, the
+list_for_each_entry_safe variant of the list loop is also no longer
+necessary as there is no deletion within that specific loop.
+
+Suggested-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Link: https://lore.kernel.org/r/20220403231523.45843-1-dossche.niels@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/kernel/head.S |    1 +
- 1 file changed, 1 insertion(+)
+ include/net/if_inet6.h |  8 ++++++++
+ net/ipv6/addrconf.c    | 30 ++++++++++++++++++++++++------
+ 2 files changed, 32 insertions(+), 6 deletions(-)
 
---- a/arch/riscv/kernel/head.S
-+++ b/arch/riscv/kernel/head.S
-@@ -301,6 +301,7 @@ clear_bss_done:
- 	REG_S a0, (a2)
+diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
+index 653e7d0f65cb..8ec0878a90a7 100644
+--- a/include/net/if_inet6.h
++++ b/include/net/if_inet6.h
+@@ -64,6 +64,14 @@ struct inet6_ifaddr {
  
- 	/* Initialize page tables and relocate to virtual addresses */
-+	la tp, init_task
- 	la sp, init_thread_union + THREAD_SIZE
- 	XIP_FIXUP_OFFSET sp
- #ifdef CONFIG_BUILTIN_DTB
+ 	struct hlist_node	addr_lst;
+ 	struct list_head	if_list;
++	/*
++	 * Used to safely traverse idev->addr_list in process context
++	 * if the idev->lock needed to protect idev->addr_list cannot be held.
++	 * In that case, add the items to this list temporarily and iterate
++	 * without holding idev->lock.
++	 * See addrconf_ifdown and dev_forward_change.
++	 */
++	struct list_head	if_list_aux;
+ 
+ 	struct list_head	tmp_list;
+ 	struct inet6_ifaddr	*ifpub;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 3a8838b79bb6..1ba5ff21412c 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -798,6 +798,7 @@ static void dev_forward_change(struct inet6_dev *idev)
+ {
+ 	struct net_device *dev;
+ 	struct inet6_ifaddr *ifa;
++	LIST_HEAD(tmp_addr_list);
+ 
+ 	if (!idev)
+ 		return;
+@@ -816,14 +817,24 @@ static void dev_forward_change(struct inet6_dev *idev)
+ 		}
+ 	}
+ 
++	read_lock_bh(&idev->lock);
+ 	list_for_each_entry(ifa, &idev->addr_list, if_list) {
+ 		if (ifa->flags&IFA_F_TENTATIVE)
+ 			continue;
++		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
++	}
++	read_unlock_bh(&idev->lock);
++
++	while (!list_empty(&tmp_addr_list)) {
++		ifa = list_first_entry(&tmp_addr_list,
++				       struct inet6_ifaddr, if_list_aux);
++		list_del(&ifa->if_list_aux);
+ 		if (idev->cnf.forwarding)
+ 			addrconf_join_anycast(ifa);
+ 		else
+ 			addrconf_leave_anycast(ifa);
+ 	}
++
+ 	inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
+ 				     NETCONFA_FORWARDING,
+ 				     dev->ifindex, &idev->cnf);
+@@ -3728,7 +3739,8 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
+ 	unsigned long event = unregister ? NETDEV_UNREGISTER : NETDEV_DOWN;
+ 	struct net *net = dev_net(dev);
+ 	struct inet6_dev *idev;
+-	struct inet6_ifaddr *ifa, *tmp;
++	struct inet6_ifaddr *ifa;
++	LIST_HEAD(tmp_addr_list);
+ 	bool keep_addr = false;
+ 	bool was_ready;
+ 	int state, i;
+@@ -3820,16 +3832,23 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
+ 		write_lock_bh(&idev->lock);
+ 	}
+ 
+-	list_for_each_entry_safe(ifa, tmp, &idev->addr_list, if_list) {
++	list_for_each_entry(ifa, &idev->addr_list, if_list)
++		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
++	write_unlock_bh(&idev->lock);
++
++	while (!list_empty(&tmp_addr_list)) {
+ 		struct fib6_info *rt = NULL;
+ 		bool keep;
+ 
++		ifa = list_first_entry(&tmp_addr_list,
++				       struct inet6_ifaddr, if_list_aux);
++		list_del(&ifa->if_list_aux);
++
+ 		addrconf_del_dad_work(ifa);
+ 
+ 		keep = keep_addr && (ifa->flags & IFA_F_PERMANENT) &&
+ 			!addr_is_local(&ifa->addr);
+ 
+-		write_unlock_bh(&idev->lock);
+ 		spin_lock_bh(&ifa->lock);
+ 
+ 		if (keep) {
+@@ -3860,15 +3879,14 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
+ 			addrconf_leave_solict(ifa->idev, &ifa->addr);
+ 		}
+ 
+-		write_lock_bh(&idev->lock);
+ 		if (!keep) {
++			write_lock_bh(&idev->lock);
+ 			list_del_rcu(&ifa->if_list);
++			write_unlock_bh(&idev->lock);
+ 			in6_ifa_put(ifa);
+ 		}
+ 	}
+ 
+-	write_unlock_bh(&idev->lock);
+-
+ 	/* Step 5: Discard anycast and multicast list */
+ 	if (unregister) {
+ 		ipv6_ac_destroy_dev(idev);
+-- 
+2.35.1
+
 
 
