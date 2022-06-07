@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A63C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:37:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10360CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380426AbiFGVhu (ORCPT
+        id S1380711AbiFGVh5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:37:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34470 "EHLO
+        Tue, 7 Jun 2022 17:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357573AbiFGUnU (ORCPT
+        with ESMTP id S1376275AbiFGUnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:43:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C631F2F25;
-        Tue,  7 Jun 2022 11:39:00 -0700 (PDT)
+        Tue, 7 Jun 2022 16:43:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12BF31F1BEA;
+        Tue,  7 Jun 2022 11:38:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 368FC60B3D;
-        Tue,  7 Jun 2022 18:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B58FC385A2;
-        Tue,  7 Jun 2022 18:38:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A0B7B82182;
+        Tue,  7 Jun 2022 18:38:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3A5BC385A2;
+        Tue,  7 Jun 2022 18:38:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627113;
-        bh=z16glOCFgiD3g2TkfWOUF6DAFKVA0fXskdcPq/Fr26U=;
+        s=korg; t=1654627119;
+        bh=wgKRNI73T2zZGmaV8LU9D8Jm69k2YDtN51rVD4phD80=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yyR4xq9eOeLPJ/Aq5iZsAAvdPmNnmLfbBz2nTHSAdVZt1unfJnhvKIaFpSmesSle0
-         uhMQjnpclipKIabfkghkzRi9hxXZspUCSIwBDgv6rlIpuTbQoJq8OtTtZ5QurjbppT
-         kLQma1PRBSOwaWMH3adqPyF0nONIqoXcx7WBNpf8=
+        b=eJ43Y8DizaRUh9SXNdRbZwokRNJ5b/tVF4on/sVQcxdBIEdYQcUArC+hVPLZaMBbH
+         3Ab4INGmV9PnEduPhxdh7O4xoi+tVDktcqvv9IcPgWs6xO6W9v36j0naUDLQLaowb3
+         laLeIIKdJVCBriVlXz7iE6pcntCtmf864dYmknlk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.17 622/772] iwlwifi: mvm: fix assert 1F04 upon reconfig
-Date:   Tue,  7 Jun 2022 19:03:34 +0200
-Message-Id: <20220607165007.263895548@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Gregory Greenman <gregory.greenman@intel.com>
+Subject: [PATCH 5.17 624/772] iwlwifi: mei: fix potential NULL-ptr deref
+Date:   Tue,  7 Jun 2022 19:03:36 +0200
+Message-Id: <20220607165007.323818841@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,36 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit 9d096e3d3061dbf4ee10e2b59fc2c06e05bdb997 upstream.
+commit 78488a64aea94a3336ee97f345c1496e9bc5ebdf upstream.
 
-When we reconfig we must not send the MAC_POWER command that relates to
-a MAC that was not yet added to the firmware.
+If SKB allocation fails, continue rather than using the NULL
+pointer.
 
-Ignore those in the iterator.
+Coverity CID: 1497650
 
 Cc: stable@vger.kernel.org
-Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Fixes: 2da4366f9e2c ("iwlwifi: mei: add the driver to allow cooperation with CSME")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
-Link: https://lore.kernel.org/r/20220517120044.ed2ffc8ce732.If786e19512d0da4334a6382ea6148703422c7d7b@changeid
+Link: https://lore.kernel.org/r/20220517120045.90c1b1fd534e.Ibb42463e74d0ec7d36ec81df22e171ae1f6268b0@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/power.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mei/main.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/wireless/intel/iwlwifi/mvm/power.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/power.c
-@@ -563,6 +563,9 @@ static void iwl_mvm_power_get_vifs_itera
- 	struct iwl_power_vifs *power_iterator = _data;
- 	bool active = mvmvif->phy_ctxt && mvmvif->phy_ctxt->id < NUM_PHY_CTX;
+--- a/drivers/net/wireless/intel/iwlwifi/mei/main.c
++++ b/drivers/net/wireless/intel/iwlwifi/mei/main.c
+@@ -1020,6 +1020,8 @@ static void iwl_mei_handle_sap_data(stru
  
-+	if (!mvmvif->uploaded)
-+		return;
-+
- 	switch (ieee80211_vif_type_p2p(vif)) {
- 	case NL80211_IFTYPE_P2P_DEVICE:
- 		break;
+ 		/* We need enough room for the WiFi header + SNAP + IV */
+ 		skb = netdev_alloc_skb(netdev, len + QOS_HDR_IV_SNAP_LEN);
++		if (!skb)
++			continue;
+ 
+ 		skb_reserve(skb, QOS_HDR_IV_SNAP_LEN);
+ 		ethhdr = skb_push(skb, sizeof(*ethhdr));
 
 
