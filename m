@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EFF6CCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02161C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348647AbiFGRgj (ORCPT
+        id S1348393AbiFGRgT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:36:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42956 "EHLO
+        Tue, 7 Jun 2022 13:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347067AbiFGRaD (ORCPT
+        with ESMTP id S1346711AbiFGR3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6460DA7E01;
-        Tue,  7 Jun 2022 10:25:33 -0700 (PDT)
+        Tue, 7 Jun 2022 13:29:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B02311803A;
+        Tue,  7 Jun 2022 10:24:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 013F260DE0;
-        Tue,  7 Jun 2022 17:25:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA0E3C385A5;
-        Tue,  7 Jun 2022 17:25:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89D1660906;
+        Tue,  7 Jun 2022 17:24:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97DADC34119;
+        Tue,  7 Jun 2022 17:24:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622732;
-        bh=0y0FFTGDXWZJ7H/rNAVtgt3RCKaImJ3PuVIoA5Yd0qA=;
+        s=korg; t=1654622695;
+        bh=T4cvfR4WHCduCcFXKo/nqm80YevLxO60ECFJam+FNdw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fv6WGP/rXv1i1HpXFyV9+4YIOD0DNOkx0V9kzn0uQgRUMu5OYrmV1c6gQlqymUIQ5
-         LjJQ8SRcWz+mskdjzS2fAz54oIiGqd4xRKLBG7tCIy8ZutMvU+NM6ExqzeypehJQZM
-         MYj71X6H2plQlnv1IDXy3HGB3ULgbbeXzvC+/UXM=
+        b=v7rszaoOVFl0Nq+5h9t0aUpRbZ9OjA9aYRvf5YAv2AQJnAvZT+Mz+WioWWOfx3W7f
+         DyTq9t5fDkMrKJ7ld6eAS2g+WdZH57RemL8n2u3sQN/LnebTOzxQU+vPLILAASQ9Jb
+         etWO5yd+Ah+oA+X1Z4PLRAo5Ut6jkOH+Vazxgh2w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 156/452] media: hantro: Empty encoder capture buffers by default
-Date:   Tue,  7 Jun 2022 19:00:13 +0200
-Message-Id: <20220607164913.208046040@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 150/452] HID: elan: Fix potential double free in elan_input_configured
+Date:   Tue,  7 Jun 2022 19:00:07 +0200
+Message-Id: <20220607164913.027375559@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,50 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 309373a3571ef7175bd9da0c9b13476a718e8478 ]
+[ Upstream commit 1af20714fedad238362571620be0bd690ded05b6 ]
 
-The payload size for encoder capture buffers is set by the driver upon
-finishing encoding each frame, based on the encoded length returned from
-hardware, and whatever header and padding length used. Setting a
-non-zero default serves no real purpose, and also causes issues if the
-capture buffer is returned to userspace unused, confusing the
-application.
+'input' is a managed resource allocated with devm_input_allocate_device(),
+so there is no need to call input_free_device() explicitly or
+there will be a double free.
 
-Instead, always set the payload size to 0 for encoder capture buffers
-when preparing them.
+According to the doc of devm_input_allocate_device():
+ * Managed input devices do not need to be explicitly unregistered or
+ * freed as it will be done automatically when owner device unbinds from
+ * its driver (or binding fails).
 
-Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
-Fixes: 082aaecff35f ("media: hantro: Fix .buf_prepare")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: b7429ea53d6c ("HID: elan: Fix memleak in elan_input_configured")
+Fixes: 9a6a4193d65b ("HID: Add driver for USB ELAN Touchpad")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_v4l2.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/hid/hid-elan.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
-index 5c2ca61add8e..b65f2f3ef357 100644
---- a/drivers/staging/media/hantro/hantro_v4l2.c
-+++ b/drivers/staging/media/hantro/hantro_v4l2.c
-@@ -644,8 +644,12 @@ static int hantro_buf_prepare(struct vb2_buffer *vb)
- 	 * (for OUTPUT buffers, if userspace passes 0 bytesused, v4l2-core sets
- 	 * it to buffer length).
- 	 */
--	if (V4L2_TYPE_IS_CAPTURE(vq->type))
--		vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
-+	if (V4L2_TYPE_IS_CAPTURE(vq->type)) {
-+		if (ctx->is_encoder)
-+			vb2_set_plane_payload(vb, 0, 0);
-+		else
-+			vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
-+	}
+diff --git a/drivers/hid/hid-elan.c b/drivers/hid/hid-elan.c
+index 0e8f424025fe..838673303f77 100644
+--- a/drivers/hid/hid-elan.c
++++ b/drivers/hid/hid-elan.c
+@@ -188,7 +188,6 @@ static int elan_input_configured(struct hid_device *hdev, struct hid_input *hi)
+ 	ret = input_mt_init_slots(input, ELAN_MAX_FINGERS, INPUT_MT_POINTER);
+ 	if (ret) {
+ 		hid_err(hdev, "Failed to init elan MT slots: %d\n", ret);
+-		input_free_device(input);
+ 		return ret;
+ 	}
  
- 	return 0;
- }
+@@ -200,7 +199,6 @@ static int elan_input_configured(struct hid_device *hdev, struct hid_input *hi)
+ 		hid_err(hdev, "Failed to register elan input device: %d\n",
+ 			ret);
+ 		input_mt_destroy_slots(input);
+-		input_free_device(input);
+ 		return ret;
+ 	}
+ 
 -- 
 2.35.1
 
