@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D283FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:22:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37193CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:22:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377654AbiFGVW0 (ORCPT
+        id S1378045AbiFGVWh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:22:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60206 "EHLO
+        Tue, 7 Jun 2022 17:22:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376587AbiFGU1C (ORCPT
+        with ESMTP id S1376644AbiFGU1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:27:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8D71B7832;
-        Tue,  7 Jun 2022 11:32:55 -0700 (PDT)
+        Tue, 7 Jun 2022 16:27:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9A3113A07;
+        Tue,  7 Jun 2022 11:33:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABCE4612EC;
-        Tue,  7 Jun 2022 18:32:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0DBCC34115;
-        Tue,  7 Jun 2022 18:32:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7239B82188;
+        Tue,  7 Jun 2022 18:33:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3838DC385A2;
+        Tue,  7 Jun 2022 18:32:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626774;
-        bh=eRb1IsnbktKayJ3HyDwY3GnvB4R+VD34n1nZmYxBRWE=;
+        s=korg; t=1654626779;
+        bh=Kw55ogd+UksAEvHHk1V0dss2Rjc0d6qyG+RxuJsUNVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IJzlMOMRyQrCdSCfVxJhJGimsK1eZPJMRjKs20Khq/bZi7I6Ra4eB+XFOfejIURYR
-         ngWVFX9F4mK+71pKxHgtgk8/WtHnWwb6khxVQPVhfw3cF3chIjya+YTL9IxYy96tKU
-         ojq5oID3umh8ZOsce4WP86OfLeA3RkwZ68NSMk/E=
+        b=CzhAnysWMV42aJFvqgsT5SZVXEwnTRFcCkU4i+a+17FiYOr4XRsV+FJ7qi/eL+Pcr
+         LVpWCCja7OZsH2rQmiX/BvHArNsjEzy2Nda4KnHriQ6bufI26z/bmA40cxJE2s+AkK
+         GlMYx8xcwXhYtPK6w6YXqdpLAec78hJC738G1idI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 472/772] can: xilinx_can: mark bit timing constants as const
-Date:   Tue,  7 Jun 2022 19:01:04 +0200
-Message-Id: <20220607165002.904756885@linuxfoundation.org>
+Subject: [PATCH 5.17 500/772] firmware: arm_scmi: Fix list protocols enumeration in the base protocol
+Date:   Tue,  7 Jun 2022 19:01:32 +0200
+Message-Id: <20220607165003.715302037@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,44 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Cristian Marussi <cristian.marussi@arm.com>
 
-[ Upstream commit ae38fda02996d43d9fb09f16e81e0008704dd524 ]
+[ Upstream commit 8009120e0354a67068e920eb10dce532391361d0 ]
 
-This patch marks the bit timing constants as const.
+While enumerating protocols implemented by the SCMI platform using
+BASE_DISCOVER_LIST_PROTOCOLS, the number of returned protocols is
+currently validated in an improper way since the check employs a sum
+between unsigned integers that could overflow and cause the check itself
+to be silently bypassed if the returned value 'loop_num_ret' is big
+enough.
 
-Fixes: c223da689324 ("can: xilinx_can: Add support for CANFD FD frames")
-Link: https://lore.kernel.org/all/20220317203119.792552-1-mkl@pengutronix.de
-Cc: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-Cc: Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fix the validation avoiding the addition.
+
+Link: https://lore.kernel.org/r/20220330150551.2573938-4-cristian.marussi@arm.com
+Fixes: b6f20ff8bd94 ("firmware: arm_scmi: add common infrastructure and support for base protocol")
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/xilinx_can.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/firmware/arm_scmi/base.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index 1674b561c9a2..f3b149b60465 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -239,7 +239,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd = {
- };
+diff --git a/drivers/firmware/arm_scmi/base.c b/drivers/firmware/arm_scmi/base.c
+index f5219334fd3a..3fe172c03c24 100644
+--- a/drivers/firmware/arm_scmi/base.c
++++ b/drivers/firmware/arm_scmi/base.c
+@@ -197,7 +197,7 @@ scmi_base_implementation_list_get(const struct scmi_protocol_handle *ph,
+ 			break;
  
- /* AXI CANFD Data Bittiming constants as per AXI CANFD 1.0 specs */
--static struct can_bittiming_const xcan_data_bittiming_const_canfd = {
-+static const struct can_bittiming_const xcan_data_bittiming_const_canfd = {
- 	.name = DRIVER_NAME,
- 	.tseg1_min = 1,
- 	.tseg1_max = 16,
-@@ -265,7 +265,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd2 = {
- };
- 
- /* AXI CANFD 2.0 Data Bittiming constants as per AXI CANFD 2.0 spec */
--static struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
-+static const struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
- 	.name = DRIVER_NAME,
- 	.tseg1_min = 1,
- 	.tseg1_max = 32,
+ 		loop_num_ret = le32_to_cpu(*num_ret);
+-		if (tot_num_ret + loop_num_ret > MAX_PROTOCOLS_IMP) {
++		if (loop_num_ret > MAX_PROTOCOLS_IMP - tot_num_ret) {
+ 			dev_err(dev, "No. of Protocol > MAX_PROTOCOLS_IMP");
+ 			break;
+ 		}
 -- 
 2.35.1
 
