@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F4ACCA492
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D92CCCA497
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384914AbiFGWQs (ORCPT
+        id S1384961AbiFGWQ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44516 "EHLO
+        Tue, 7 Jun 2022 18:16:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380264AbiFGVLo (ORCPT
+        with ESMTP id S1380291AbiFGVLr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10F621911E;
-        Tue,  7 Jun 2022 11:53:43 -0700 (PDT)
+        Tue, 7 Jun 2022 17:11:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1885821913C;
+        Tue,  7 Jun 2022 11:53:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 427C7616A9;
-        Tue,  7 Jun 2022 18:53:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EDD4C385A2;
-        Tue,  7 Jun 2022 18:53:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BE2E616C2;
+        Tue,  7 Jun 2022 18:53:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97A6AC385A2;
+        Tue,  7 Jun 2022 18:53:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628022;
-        bh=iJOWEQeEya++FDpv90BhXob+T4+XbmP5vzMKKkYsioE=;
+        s=korg; t=1654628031;
+        bh=j8BlhbMW32GkhbU+NCT33qF/jy4hbgqTlQH7X9esMYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qqtTiNAXRYBUHUpCN55h3QaabqfdRu5daE6eEc/NhbLu9NxSS8+3JJtXxq9ew93ol
-         99RiyIlZRiL3Bc8GIpfmA2sFlmvoDfCWChLDZ2Kg2obxopVmINEeNDG4rH71YxslGE
-         y8cCS0xlEuro+GGNHQpu0GT0P6ankrML4QHaJwIM=
+        b=1xXLzIq3MFpWYDnerzzpLpJonZA6BVupZ1CQM1egOx+4PBK88mr3tkdcAc6fetmVU
+         g5URghORgCrQj7iUBrG/TzBH274MHvAPYCXR/q10mked2iYupwt84WXCGyIQojfGWf
+         0Y6+bw9Wv3fDyAVk66ksA0iYot7drogZFXK3tuJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sathishkumar S <sathishkumar.sundararaju@amd.com>,
-        Lijo Lazar <lijo.lazar@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
+        Corey Minyard <cminyard@mvista.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 178/879] drm/amd/pm: update smartshift powerboost calc for smu12
-Date:   Tue,  7 Jun 2022 18:54:56 +0200
-Message-Id: <20220607165008.008052023@linuxfoundation.org>
+Subject: [PATCH 5.18 154/879] ipmi:ssif: Check for NULL msg when handling events and messages
+Date:   Tue,  7 Jun 2022 18:54:32 +0200
+Message-Id: <20220607165007.176324279@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,111 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sathishkumar S <sathishkumar.sundararaju@amd.com>
+From: Corey Minyard <cminyard@mvista.com>
 
-[ Upstream commit 138292f1dc00e7e0724f44769f9da39cf2f3bf0b ]
+[ Upstream commit 7602b957e2404e5f98d9a40b68f1fd27f0028712 ]
 
-smartshift apu and dgpu power boost are reported as percentage with
-respect to their power limits. This value[0-100] reflects the boost
-for the respective device.
+Even though it's not possible to get into the SSIF_GETTING_MESSAGES and
+SSIF_GETTING_EVENTS states without a valid message in the msg field,
+it's probably best to be defensive here and check and print a log, since
+that means something else went wrong.
 
-Signed-off-by: Sathishkumar S <sathishkumar.sundararaju@amd.com>
-Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Also add a default clause to that switch statement to release the lock
+and print a log, in case the state variable gets messed up somehow.
+
+Reported-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c   | 60 ++++++++++++++-----
- 1 file changed, 44 insertions(+), 16 deletions(-)
+ drivers/char/ipmi/ipmi_ssif.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
-index fd6c44ece168..012e3bd99cc2 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
-@@ -1119,6 +1119,39 @@ static int renoir_get_power_profile_mode(struct smu_context *smu,
- 	return size;
- }
- 
-+static void renoir_get_ss_power_percent(SmuMetrics_t *metrics,
-+					uint32_t *apu_percent, uint32_t *dgpu_percent)
-+{
-+	uint32_t apu_boost = 0;
-+	uint32_t dgpu_boost = 0;
-+	uint16_t apu_limit = 0;
-+	uint16_t dgpu_limit = 0;
-+	uint16_t apu_power = 0;
-+	uint16_t dgpu_power = 0;
-+
-+	apu_power = metrics->ApuPower;
-+	apu_limit = metrics->StapmOriginalLimit;
-+	if (apu_power > apu_limit && apu_limit != 0)
-+		apu_boost =  ((apu_power - apu_limit) * 100) / apu_limit;
-+	apu_boost = (apu_boost > 100) ? 100 : apu_boost;
-+
-+	dgpu_power = metrics->dGpuPower;
-+	if (metrics->StapmCurrentLimit > metrics->StapmOriginalLimit)
-+		dgpu_limit = metrics->StapmCurrentLimit - metrics->StapmOriginalLimit;
-+	if (dgpu_power > dgpu_limit && dgpu_limit != 0)
-+		dgpu_boost = ((dgpu_power - dgpu_limit) * 100) / dgpu_limit;
-+	dgpu_boost = (dgpu_boost > 100) ? 100 : dgpu_boost;
-+
-+	if (dgpu_boost >= apu_boost)
-+		apu_boost = 0;
-+	else
-+		dgpu_boost = 0;
-+
-+	*apu_percent = apu_boost;
-+	*dgpu_percent = dgpu_boost;
-+}
-+
-+
- static int renoir_get_smu_metrics_data(struct smu_context *smu,
- 				       MetricsMember_t member,
- 				       uint32_t *value)
-@@ -1127,6 +1160,9 @@ static int renoir_get_smu_metrics_data(struct smu_context *smu,
- 
- 	SmuMetrics_t *metrics = (SmuMetrics_t *)smu_table->metrics_table;
- 	int ret = 0;
-+	uint32_t apu_percent = 0;
-+	uint32_t dgpu_percent = 0;
-+
- 
- 	ret = smu_cmn_get_metrics_table(smu,
- 					NULL,
-@@ -1171,26 +1207,18 @@ static int renoir_get_smu_metrics_data(struct smu_context *smu,
- 		*value = metrics->Voltage[1];
+diff --git a/drivers/char/ipmi/ipmi_ssif.c b/drivers/char/ipmi/ipmi_ssif.c
+index f199cc194844..64c73ea9c915 100644
+--- a/drivers/char/ipmi/ipmi_ssif.c
++++ b/drivers/char/ipmi/ipmi_ssif.c
+@@ -814,6 +814,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
  		break;
- 	case METRICS_SS_APU_SHARE:
--		/* return the percentage of APU power with respect to APU's power limit.
--		 * percentage is reported, this isn't boost value. Smartshift power
--		 * boost/shift is only when the percentage is more than 100.
-+		/* return the percentage of APU power boost
-+		 * with respect to APU's power limit.
- 		 */
--		if (metrics->StapmOriginalLimit > 0)
--			*value =  (metrics->ApuPower * 100) / metrics->StapmOriginalLimit;
--		else
--			*value = 0;
-+		renoir_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
-+		*value = apu_percent;
+ 
+ 	case SSIF_GETTING_EVENTS:
++		if (!msg) {
++			/* Should never happen, but just in case. */
++			dev_warn(&ssif_info->client->dev,
++				 "No message set while getting events\n");
++			ipmi_ssif_unlock_cond(ssif_info, flags);
++			break;
++		}
++
+ 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
+ 			/* Error getting event, probably done. */
+ 			msg->done(msg);
+@@ -838,6 +846,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
  		break;
- 	case METRICS_SS_DGPU_SHARE:
--		/* return the percentage of dGPU power with respect to dGPU's power limit.
--		 * percentage is reported, this isn't boost value. Smartshift power
--		 * boost/shift is only when the percentage is more than 100.
-+		/* return the percentage of dGPU power boost
-+		 * with respect to dGPU's power limit.
- 		 */
--		if ((metrics->dGpuPower > 0) &&
--		    (metrics->StapmCurrentLimit > metrics->StapmOriginalLimit))
--			*value = (metrics->dGpuPower * 100) /
--				  (metrics->StapmCurrentLimit - metrics->StapmOriginalLimit);
--		else
--			*value = 0;
-+		renoir_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
-+		*value = dgpu_percent;
+ 
+ 	case SSIF_GETTING_MESSAGES:
++		if (!msg) {
++			/* Should never happen, but just in case. */
++			dev_warn(&ssif_info->client->dev,
++				 "No message set while getting messages\n");
++			ipmi_ssif_unlock_cond(ssif_info, flags);
++			break;
++		}
++
+ 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
+ 			/* Error getting event, probably done. */
+ 			msg->done(msg);
+@@ -861,6 +877,13 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
+ 			deliver_recv_msg(ssif_info, msg);
+ 		}
  		break;
- 	default:
- 		*value = UINT_MAX;
++
++	default:
++		/* Should never happen, but just in case. */
++		dev_warn(&ssif_info->client->dev,
++			 "Invalid state in message done handling: %d\n",
++			 ssif_info->ssif_state);
++		ipmi_ssif_unlock_cond(ssif_info, flags);
+ 	}
+ 
+ 	flags = ipmi_ssif_lock_cond(ssif_info, &oflags);
 -- 
 2.35.1
 
