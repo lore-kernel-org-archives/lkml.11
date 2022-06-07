@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD456CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEF6CCA486
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446503AbiFHCPA (ORCPT
+        id S1446518AbiFHCPD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:15:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37790 "EHLO
+        Tue, 7 Jun 2022 22:15:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234866AbiFHBXT (ORCPT
+        with ESMTP id S242760AbiFHBX2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 21:23:19 -0400
+        Tue, 7 Jun 2022 21:23:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B66258713;
-        Tue,  7 Jun 2022 12:20:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF99B26F366;
+        Tue,  7 Jun 2022 12:22:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95990608CD;
-        Tue,  7 Jun 2022 19:20:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E8E0C385A2;
-        Tue,  7 Jun 2022 19:20:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B4DD60B01;
+        Tue,  7 Jun 2022 19:22:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3479BC3411C;
+        Tue,  7 Jun 2022 19:22:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629616;
-        bh=7MXVjTOkzkp0cqe05piXDI6xTc6wj6lQz9zsbLMEO/I=;
+        s=korg; t=1654629777;
+        bh=FfadC9C66rH2lacYrTMtOrPQ5n/QT/RHFNMsY8y2TuA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wYrc81imlqJpBhQQBFVbaEUtbEadlZ6ZJQy8kOyOtfST+2bpqgGHrS65s9CzXtCUp
-         w9tLXrWar3tl4roN7/SENypWmzrodqUp9wnRIzDnWlfo0oX/moQ1Uo+UnZzKQI2gL/
-         X+rCYutjLYGISjNCd0iVTqvqfIpQv58TMfqh+mCU=
+        b=bMgvY5NcS8eAmpjOgOJDh0coi7s5FLSWqaEFe/n/i1TIaT9qS4uW6QSTdqQRBombf
+         FRzbn6xsSYu97/Lw4IJGTROv6TxHKgOz7w+mMb99d4HY4yceQL8rQOKm5+1AASxRi1
+         XdM4qPu4tcrFy9neec49FiXSHXed3P0sT/ykHvhg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH 5.18 754/879] PCI/PM: Fix bridge_d3_blacklist[] Elo i2 overwrite of Gigabyte X299
-Date:   Tue,  7 Jun 2022 19:04:32 +0200
-Message-Id: <20220607165024.745784224@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dimitri John Ledkov <dimitri.ledkov@canonical.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.18 814/879] cfg80211: declare MODULE_FIRMWARE for regulatory.db
+Date:   Tue,  7 Jun 2022 19:05:32 +0200
+Message-Id: <20220607165026.485151127@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -48,41 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
 
-commit 12068bb346db5776d0ec9bb4cd073f8427a1ac92 upstream.
+commit 7bc7981eeebe1b8e603ad2ffc5e84f4df76920dd upstream.
 
-92597f97a40b ("PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold") omitted
-braces around the new Elo i2 entry, so it overwrote the existing Gigabyte
-X299 entry.  Add the appropriate braces.
+Add MODULE_FIRMWARE declarations for regulatory.db and
+regulatory.db.p7s such that userspace tooling can discover and include
+these files.
 
-Found by:
-
-  $ make W=1 drivers/pci/pci.o
-    CC      drivers/pci/pci.o
-  drivers/pci/pci.c:2974:12: error: initialized field overwritten [-Werror=override-init]
-   2974 |   .ident = "Elo i2",
-        |            ^~~~~~~~
-
-Link: https://lore.kernel.org/r/20220526221258.GA409855@bhelgaas
-Fixes: 92597f97a40b ("PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold")
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: stable@vger.kernel.org  # v5.15+
+Cc: stable@vger.kernel.org
+Signed-off-by: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
+Link: https://lore.kernel.org/r/20220414125004.267819-1-dimitri.ledkov@canonical.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/pci.c |    2 ++
- 1 file changed, 2 insertions(+)
+ net/wireless/reg.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -2920,6 +2920,8 @@ static const struct dmi_system_id bridge
- 			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
- 			DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
- 		},
-+	},
-+	{
- 		/*
- 		 * Downstream device is not accessible after putting a root port
- 		 * into D3cold and back into D0 on Elo i2.
+--- a/net/wireless/reg.c
++++ b/net/wireless/reg.c
+@@ -807,6 +807,8 @@ static int __init load_builtin_regdb_key
+ 	return 0;
+ }
+ 
++MODULE_FIRMWARE("regulatory.db.p7s");
++
+ static bool regdb_has_valid_signature(const u8 *data, unsigned int size)
+ {
+ 	const struct firmware *sig;
+@@ -1078,6 +1080,8 @@ static void regdb_fw_cb(const struct fir
+ 	release_firmware(fw);
+ }
+ 
++MODULE_FIRMWARE("regulatory.db");
++
+ static int query_regdb_file(const char *alpha2)
+ {
+ 	ASSERT_RTNL();
 
 
