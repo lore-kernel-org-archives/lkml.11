@@ -2,121 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70196CCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C84CCA492
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355626AbiFGTQi (ORCPT
+        id S1355641AbiFGTQp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:16:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43912 "EHLO
+        Tue, 7 Jun 2022 15:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350843AbiFGS2S (ORCPT
+        with ESMTP id S1350164AbiFGS3I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:28:18 -0400
+        Tue, 7 Jun 2022 14:29:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B670B172C05;
-        Tue,  7 Jun 2022 10:55:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB8E176D6A;
+        Tue,  7 Jun 2022 10:55:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25DC8B8234A;
-        Tue,  7 Jun 2022 17:55:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82AA8C34115;
-        Tue,  7 Jun 2022 17:55:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624503;
-        bh=pmnwGLGte3qP88JParZVFtU9tGvsrvRb24tKPoVDvlc=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3D32B8236F;
+        Tue,  7 Jun 2022 17:55:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5D15C385A5;
+        Tue,  7 Jun 2022 17:55:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624512;
+        bh=Tosl0sFoHUFGYGLPVrAc1k/YOMdC+7rWigSw3hphFMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qo/Sv23vvCIztVzgnoqwCUCia5geB6h3emYonPeSgu3+T1v6ZGXjLU+p9JXJmZTQK
-         9bgFikC7n0KYj9icxQ8zZ9gNb4Pww0nrnQtoRms8QdiqzAP24p8RdTyvc5Cnjc6ayN
-         gAcGjME+BDAgCDqOFxXTS2j+0EMcJCMLOuCs9W84=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        David Rientjes <rientjes@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 310/667] dma-direct: factor out a helper for DMA_ATTR_NO_KERNEL_MAPPING allocations
-Date:   Tue,  7 Jun 2022 18:59:35 +0200
-Message-Id: <20220607164944.071964936@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=JWzaLDfB4bqDi1aX+YtnzsP7pM/Hog6BEnSy8LGjkEyyju7xGsOlVvURX43aMKBsS
+         4sy+EMFluT319CvdlXxEez8+nzAkLcSPiVc+a9QrgBmBDV5CbYAeBnfkWCZWwbgMTu
+         ofW2dJD45Yj37EcUM5EyRUX5IlfTSsi/fw/obYASnP845ybc7uK1gxjQdU84xFRG4z
+         aVGbT48LthCP/UtlgdrExB+sxeqElfWLvFA3/f1pzZ1CYaOLxDXOjFMFWy2zVQ7tCR
+         Fn0JEKyKUZWNyfl5kH38SNm3PWRitVlOE5Ty24f+w81xQ6jiDVWQmiEDOd6prbwZul
+         OTnGVr2W2bOHg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sasha Levin <sashal@kernel.org>, michal.lkml@markovi.net,
+        linux-kbuild@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 46/60] modpost: fix undefined behavior of is_arm_mapping_symbol()
+Date:   Tue,  7 Jun 2022 13:52:43 -0400
+Message-Id: <20220607175259.478835-46-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit d541ae55d538265861ef729a64d2d816d34ef1e2 ]
+[ Upstream commit d6b732666a1bae0df3c3ae06925043bba34502b1 ]
 
-Split the code for DMA_ATTR_NO_KERNEL_MAPPING allocations into a separate
-helper to make dma_direct_alloc a little more readable.
+The return value of is_arm_mapping_symbol() is unpredictable when "$"
+is passed in.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Acked-by: David Rientjes <rientjes@google.com>
+strchr(3) says:
+  The strchr() and strrchr() functions return a pointer to the matched
+  character or NULL if the character is not found. The terminating null
+  byte is considered part of the string, so that if c is specified as
+  '\0', these functions return a pointer to the terminator.
+
+When str[1] is '\0', strchr("axtd", str[1]) is not NULL, and str[2] is
+referenced (i.e. buffer overrun).
+
+Test code
+---------
+
+  char str1[] = "abc";
+  char str2[] = "ab";
+
+  strcpy(str1, "$");
+  strcpy(str2, "$");
+
+  printf("test1: %d\n", is_arm_mapping_symbol(str1));
+  printf("test2: %d\n", is_arm_mapping_symbol(str2));
+
+Result
+------
+
+  test1: 0
+  test2: 1
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/direct.c | 31 ++++++++++++++++++++-----------
- 1 file changed, 20 insertions(+), 11 deletions(-)
+ scripts/mod/modpost.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 4c6c5e0635e3..ddaac01f2cba 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -149,6 +149,24 @@ static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
- 	return ret;
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index e04ae56931e2..c212a1a31530 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1260,7 +1260,8 @@ static int secref_whitelist(const struct sectioncheck *mismatch,
+ 
+ static inline int is_arm_mapping_symbol(const char *str)
+ {
+-	return str[0] == '$' && strchr("axtd", str[1])
++	return str[0] == '$' &&
++	       (str[1] == 'a' || str[1] == 'd' || str[1] == 't' || str[1] == 'x')
+ 	       && (str[2] == '\0' || str[2] == '.');
  }
  
-+static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
-+		dma_addr_t *dma_handle, gfp_t gfp)
-+{
-+	struct page *page;
-+
-+	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO);
-+	if (!page)
-+		return NULL;
-+
-+	/* remove any dirty cache lines on the kernel alias */
-+	if (!PageHighMem(page))
-+		arch_dma_prep_coherent(page, size);
-+
-+	/* return the page pointer as the opaque cookie */
-+	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
-+	return page;
-+}
-+
- void *dma_direct_alloc(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
- {
-@@ -161,17 +179,8 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 		gfp |= __GFP_NOWARN;
- 
- 	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
--	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev)) {
--		page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO);
--		if (!page)
--			return NULL;
--		/* remove any dirty cache lines on the kernel alias */
--		if (!PageHighMem(page))
--			arch_dma_prep_coherent(page, size);
--		*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
--		/* return the page pointer as the opaque cookie */
--		return page;
--	}
-+	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev))
-+		return dma_direct_alloc_no_mapping(dev, size, dma_handle, gfp);
- 
- 	if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
- 	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
 -- 
 2.35.1
-
-
 
