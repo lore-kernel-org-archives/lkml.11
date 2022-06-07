@@ -2,99 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43B1FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 802ADCCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354191AbiFGTF2 (ORCPT
+        id S1354333AbiFGTFt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44902 "EHLO
+        Tue, 7 Jun 2022 15:05:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351280AbiFGSSs (ORCPT
+        with ESMTP id S1352426AbiFGSRJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:18:48 -0400
+        Tue, 7 Jun 2022 14:17:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7595C509A;
-        Tue,  7 Jun 2022 10:53:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7317D10D934;
+        Tue,  7 Jun 2022 10:52:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9C36617A6;
-        Tue,  7 Jun 2022 17:53:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC0CDC385A5;
-        Tue,  7 Jun 2022 17:53:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624410;
-        bh=sQXuJwoXwKhHrCNYb8Yinm9Ja3LysUM379OcmxSH9k8=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C520761782;
+        Tue,  7 Jun 2022 17:52:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 632D6C385A5;
+        Tue,  7 Jun 2022 17:52:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624325;
+        bh=gXYvlZnPFUNaM7G9ja0Y0pLazVMlcUftyKWO1ibNkxM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bcg7uPTv2Wxpv4oHEoddaEgNzrN2E+a79BqsGAwBEdQofy6M6NiIu7ZcPpLYp+O1n
-         R96S1NGUA05/MCpHsW0FtaStoy+W1LwofRIr9YvDmYC+XwxKrzEb0TtFrUqf4iHuL1
-         Z2sTQzb9AirSe82a3pvFvd3MlZUYc66WNxiZOIoU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 318/667] media: exynos4-is: Fix PM disable depth imbalance in fimc_is_probe
-Date:   Tue,  7 Jun 2022 18:59:43 +0200
-Message-Id: <20220607164944.309167032@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=HNzoz0NKuUwVkcr4002XwwyJNPQS1c9/ZsQlYU3bbxdOPsjbOpWuooGCMXU3wzVwa
+         AWLSRLuKVpFjfbNHweI0GnluxE+sBF9nvSzUeHuaWnDn+oPQUxrHNmhpx7NikG5CVM
+         Sdc2Fx1FopCaRKMAkunhA79DkXrbQ58YeVZGWcOVxNMGSs/lbinSX3/oBjpLY6Bu1G
+         hfvM1DEvdq1YzjIW2gLO2V1X2k3zWFeeEw+S0PsdxQ2ck71DMxqWpHi4dR6PQ2x59l
+         hHe/N/THGrPI45AO9DYPhQALmhe4Oly3OF8JYcKs8RykSN2JzCIpjX10FrY6ifayV4
+         oSfc2Gq1HgycA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        lijo.lazar@amd.com, luben.tuikov@amd.com,
+        andrey.grodzovsky@amd.com, sathishkumar.sundararaju@amd.com,
+        danijel.slivka@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 50/68] drm/amd/pm: correct the metrics version for SMU 11.0.11/12/13
+Date:   Tue,  7 Jun 2022 13:48:16 -0400
+Message-Id: <20220607174846.477972-50-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Evan Quan <evan.quan@amd.com>
 
-[ Upstream commit 5c0db68ce0faeb000c3540d095eb272d671a6e03 ]
+[ Upstream commit 396beb91a9eb86cbfa404e4220cca8f3ada70777 ]
 
-If probe fails then we need to call pm_runtime_disable() to balance
-out the previous pm_runtime_enable() call.
+Correct the metrics version used for SMU 11.0.11/12/13.
+Fixes misreported GPU metrics (e.g., fan speed, etc.) depending
+on which version of SMU firmware is loaded.
 
-Fixes: 9a761e436843 ("[media] exynos4-is: Add Exynos4x12 FIMC-IS driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1925
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/exynos4-is/fimc-is.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ .../amd/pm/swsmu/smu11/sienna_cichlid_ppt.c   | 57 ++++++++++++++-----
+ 1 file changed, 44 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/media/platform/exynos4-is/fimc-is.c b/drivers/media/platform/exynos4-is/fimc-is.c
-index e55e411038f4..81b290dace3a 100644
---- a/drivers/media/platform/exynos4-is/fimc-is.c
-+++ b/drivers/media/platform/exynos4-is/fimc-is.c
-@@ -830,7 +830,7 @@ static int fimc_is_probe(struct platform_device *pdev)
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
+index 38f04836c82f..7a1e225fb823 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
+@@ -586,12 +586,28 @@ static int sienna_cichlid_get_smu_metrics_data(struct smu_context *smu,
+ 	uint16_t average_gfx_activity;
+ 	int ret = 0;
  
- 	ret = pm_runtime_resume_and_get(dev);
- 	if (ret < 0)
--		goto err_irq;
-+		goto err_pm_disable;
+-	if ((smu->adev->ip_versions[MP1_HWIP][0] == IP_VERSION(11, 0, 7)) &&
+-		(smu->smc_fw_version >= 0x3A4900))
+-		use_metrics_v3 = true;
+-	else if ((smu->adev->ip_versions[MP1_HWIP][0] == IP_VERSION(11, 0, 7)) &&
+-		(smu->smc_fw_version >= 0x3A4300))
+-		use_metrics_v2 =  true;
++	switch (smu->adev->ip_versions[MP1_HWIP][0]) {
++	case IP_VERSION(11, 0, 7):
++		if (smu->smc_fw_version >= 0x3A4900)
++			use_metrics_v3 = true;
++		else if (smu->smc_fw_version >= 0x3A4300)
++			use_metrics_v2 = true;
++		break;
++	case IP_VERSION(11, 0, 11):
++		if (smu->smc_fw_version >= 0x412D00)
++			use_metrics_v2 = true;
++		break;
++	case IP_VERSION(11, 0, 12):
++		if (smu->smc_fw_version >= 0x3B2300)
++			use_metrics_v2 = true;
++		break;
++	case IP_VERSION(11, 0, 13):
++		if (smu->smc_fw_version >= 0x491100)
++			use_metrics_v2 = true;
++		break;
++	default:
++		break;
++	}
  
- 	vb2_dma_contig_set_max_seg_size(dev, DMA_BIT_MASK(32));
+ 	ret = smu_cmn_get_metrics_table(smu,
+ 					NULL,
+@@ -3701,13 +3717,28 @@ static ssize_t sienna_cichlid_get_gpu_metrics(struct smu_context *smu,
+ 	uint16_t average_gfx_activity;
+ 	int ret = 0;
  
-@@ -864,6 +864,8 @@ static int fimc_is_probe(struct platform_device *pdev)
- 	pm_runtime_put_noidle(dev);
- 	if (!pm_runtime_enabled(dev))
- 		fimc_is_runtime_suspend(dev);
-+err_pm_disable:
-+	pm_runtime_disable(dev);
- err_irq:
- 	free_irq(is->irq, is);
- err_clk:
+-	if ((adev->ip_versions[MP1_HWIP][0] == IP_VERSION(11, 0, 7)) &&
+-		(smu->smc_fw_version >= 0x3A4900))
+-		use_metrics_v3 = true;
+-	else if ((adev->ip_versions[MP1_HWIP][0] == IP_VERSION(11, 0, 7)) &&
+-		(smu->smc_fw_version >= 0x3A4300))
+-		use_metrics_v2 = true;
+-
++	switch (smu->adev->ip_versions[MP1_HWIP][0]) {
++	case IP_VERSION(11, 0, 7):
++		if (smu->smc_fw_version >= 0x3A4900)
++			use_metrics_v3 = true;
++		else if (smu->smc_fw_version >= 0x3A4300)
++			use_metrics_v2 = true;
++		break;
++	case IP_VERSION(11, 0, 11):
++		if (smu->smc_fw_version >= 0x412D00)
++			use_metrics_v2 = true;
++		break;
++	case IP_VERSION(11, 0, 12):
++		if (smu->smc_fw_version >= 0x3B2300)
++			use_metrics_v2 = true;
++		break;
++	case IP_VERSION(11, 0, 13):
++		if (smu->smc_fw_version >= 0x491100)
++			use_metrics_v2 = true;
++		break;
++	default:
++		break;
++	}
+ 
+ 	ret = smu_cmn_get_metrics_table(smu,
+ 					&metrics_external,
 -- 
 2.35.1
-
-
 
