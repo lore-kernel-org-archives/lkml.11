@@ -2,188 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F441CCA48F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:56:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71BC3CCA491
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357411AbiFGTzO (ORCPT
+        id S1357463AbiFGTzX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:55:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38372 "EHLO
+        Tue, 7 Jun 2022 15:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353959AbiFGSqU (ORCPT
+        with ESMTP id S1353897AbiFGSqP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 951D818DACC;
-        Tue,  7 Jun 2022 10:59:50 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F13E18CE02;
+        Tue,  7 Jun 2022 10:59:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4778617B0;
-        Tue,  7 Jun 2022 17:59:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB302C385A5;
-        Tue,  7 Jun 2022 17:59:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624789;
-        bh=hSWpuQNgtfGxMK0qxriGWEo5+jxTx1f5mPVJZ7Rbkxk=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A21E617A7;
+        Tue,  7 Jun 2022 17:59:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 991F6C34119;
+        Tue,  7 Jun 2022 17:59:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624778;
+        bh=vtKWyOoQaRMqiRfNd1NHO7HzFxwuPjrXjpQnKder8Dw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TqhBJq8qF1WDFQp3MEFPNcJApLH+Nh9G3Btt/tN5x4RMV7zwuY5yG5nYZYDjNmsNa
-         qPGyeLwhp+bSsvI/B+EEs0dDsNpwVxWqG9lVld+IpTHmBowwg4scujuBvqh2TjosYh
-         Xn/Aj+3Q/IA1Sf1UCgj2ldNqe78Um6bnDdigRPcs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 437/667] list: introduce list_is_head() helper and re-use it in list.h
-Date:   Tue,  7 Jun 2022 19:01:42 +0200
-Message-Id: <20220607164947.829070767@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=gunOpj1ESwYrEnrseXx/LoMizFAC4DLoBfL0XZabP9goXiZE7pAh964mpX2YdzAqx
+         +ON3bs3QF6ANnBVQEPq625jJRSmIuRpQ+FWIAxcwV3bQc+JR3DMSXEGvlSoaSD8+pC
+         fA7wF3+CUQDNqMkQWczdxXTWjW1iwQvn3arVJk/i1/4WRWP2YjWQl8IdhCyruf39gk
+         EzGqxhYiuUnfofd0mhl7i0BbkAM47I/pAD7MytSMtIy9HMCNDgRzKh4vtu74CJgCM2
+         dHqNPJG5u0oqiaAWcX54M5RqKB7bpKTgTxRVINLO80Pu9COCsohnjZB3k68dhRTFvq
+         Kw1/WdtgzYXKg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        bjorn.andersson@linaro.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 20/38] serial: msm_serial: disable interrupts in __msm_console_write()
+Date:   Tue,  7 Jun 2022 13:58:15 -0400
+Message-Id: <20220607175835.480735-20-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
+References: <20220607175835.480735-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit 0425473037db40d9e322631f2d4dc6ef51f97e88 ]
+[ Upstream commit aabdbb1b7a5819e18c403334a31fb0cc2c06ad41 ]
 
-Introduce list_is_head() in the similar (*) way as it's done for
-list_entry_is_head().  Make use of it in the list.h.
+__msm_console_write() assumes that interrupts are disabled, but
+with threaded console printers it is possible that the write()
+callback of the console is called with interrupts enabled.
 
-*) it's done as inliner and not a macro to be aligned with other
-   list_is_*() APIs; while at it, make all three to have the same
-   style.
+Explicitly disable interrupts using local_irq_save() to preserve
+the assumed context.
 
-Link: https://lkml.kernel.org/r/20211201141824.81400-1-andriy.shevchenko@linux.intel.com
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20220506213324.470461-1-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/list.h | 36 ++++++++++++++++++++++--------------
- 1 file changed, 22 insertions(+), 14 deletions(-)
+ drivers/tty/serial/msm_serial.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/include/linux/list.h b/include/linux/list.h
-index f2af4b4aa4e9..a5709c9955e4 100644
---- a/include/linux/list.h
-+++ b/include/linux/list.h
-@@ -256,8 +256,7 @@ static inline void list_bulk_move_tail(struct list_head *head,
-  * @list: the entry to test
-  * @head: the head of the list
-  */
--static inline int list_is_first(const struct list_head *list,
--					const struct list_head *head)
-+static inline int list_is_first(const struct list_head *list, const struct list_head *head)
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 26bcbec5422e..27023a56f3ac 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -1593,6 +1593,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
+ static void __msm_console_write(struct uart_port *port, const char *s,
+ 				unsigned int count, bool is_uartdm)
  {
- 	return list->prev == head;
- }
-@@ -267,12 +266,21 @@ static inline int list_is_first(const struct list_head *list,
-  * @list: the entry to test
-  * @head: the head of the list
-  */
--static inline int list_is_last(const struct list_head *list,
--				const struct list_head *head)
-+static inline int list_is_last(const struct list_head *list, const struct list_head *head)
- {
- 	return list->next == head;
- }
++	unsigned long flags;
+ 	int i;
+ 	int num_newlines = 0;
+ 	bool replaced = false;
+@@ -1610,6 +1611,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+ 			num_newlines++;
+ 	count += num_newlines;
  
-+/**
-+ * list_is_head - tests whether @list is the list @head
-+ * @list: the entry to test
-+ * @head: the head of the list
-+ */
-+static inline int list_is_head(const struct list_head *list, const struct list_head *head)
-+{
-+	return list == head;
-+}
++	local_irq_save(flags);
 +
- /**
-  * list_empty - tests whether a list is empty
-  * @head: the list to test.
-@@ -316,7 +324,7 @@ static inline void list_del_init_careful(struct list_head *entry)
- static inline int list_empty_careful(const struct list_head *head)
- {
- 	struct list_head *next = smp_load_acquire(&head->next);
--	return (next == head) && (next == head->prev);
-+	return list_is_head(next, head) && (next == head->prev);
+ 	if (port->sysrq)
+ 		locked = 0;
+ 	else if (oops_in_progress)
+@@ -1655,6 +1658,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+ 
+ 	if (locked)
+ 		spin_unlock(&port->lock);
++
++	local_irq_restore(flags);
  }
  
- /**
-@@ -391,10 +399,9 @@ static inline void list_cut_position(struct list_head *list,
- {
- 	if (list_empty(head))
- 		return;
--	if (list_is_singular(head) &&
--		(head->next != entry && head != entry))
-+	if (list_is_singular(head) && !list_is_head(entry, head) && (entry != head->next))
- 		return;
--	if (entry == head)
-+	if (list_is_head(entry, head))
- 		INIT_LIST_HEAD(list);
- 	else
- 		__list_cut_position(list, head, entry);
-@@ -568,7 +575,7 @@ static inline void list_splice_tail_init(struct list_head *list,
-  * @head:	the head for your list.
-  */
- #define list_for_each(pos, head) \
--	for (pos = (head)->next; pos != (head); pos = pos->next)
-+	for (pos = (head)->next; !list_is_head(pos, (head)); pos = pos->next)
- 
- /**
-  * list_for_each_continue - continue iteration over a list
-@@ -578,7 +585,7 @@ static inline void list_splice_tail_init(struct list_head *list,
-  * Continue to iterate over a list, continuing after the current position.
-  */
- #define list_for_each_continue(pos, head) \
--	for (pos = pos->next; pos != (head); pos = pos->next)
-+	for (pos = pos->next; !list_is_head(pos, (head)); pos = pos->next)
- 
- /**
-  * list_for_each_prev	-	iterate over a list backwards
-@@ -586,7 +593,7 @@ static inline void list_splice_tail_init(struct list_head *list,
-  * @head:	the head for your list.
-  */
- #define list_for_each_prev(pos, head) \
--	for (pos = (head)->prev; pos != (head); pos = pos->prev)
-+	for (pos = (head)->prev; !list_is_head(pos, (head)); pos = pos->prev)
- 
- /**
-  * list_for_each_safe - iterate over a list safe against removal of list entry
-@@ -595,8 +602,9 @@ static inline void list_splice_tail_init(struct list_head *list,
-  * @head:	the head for your list.
-  */
- #define list_for_each_safe(pos, n, head) \
--	for (pos = (head)->next, n = pos->next; pos != (head); \
--		pos = n, n = pos->next)
-+	for (pos = (head)->next, n = pos->next; \
-+	     !list_is_head(pos, (head)); \
-+	     pos = n, n = pos->next)
- 
- /**
-  * list_for_each_prev_safe - iterate over a list backwards safe against removal of list entry
-@@ -606,7 +614,7 @@ static inline void list_splice_tail_init(struct list_head *list,
-  */
- #define list_for_each_prev_safe(pos, n, head) \
- 	for (pos = (head)->prev, n = pos->prev; \
--	     pos != (head); \
-+	     !list_is_head(pos, (head)); \
- 	     pos = n, n = pos->prev)
- 
- /**
+ static void msm_console_write(struct console *co, const char *s,
 -- 
 2.35.1
-
-
 
