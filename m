@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:14:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C442C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378311AbiFGVO1 (ORCPT
+        id S1352483AbiFGVOd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:14:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37748 "EHLO
+        Tue, 7 Jun 2022 17:14:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376597AbiFGUQ4 (ORCPT
+        with ESMTP id S1376580AbiFGUQz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:16:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430BF172C13;
-        Tue,  7 Jun 2022 11:29:33 -0700 (PDT)
+        Tue, 7 Jun 2022 16:16:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD3C1737FE;
+        Tue,  7 Jun 2022 11:29:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3A41B82380;
-        Tue,  7 Jun 2022 18:29:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CE44C385A2;
-        Tue,  7 Jun 2022 18:29:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78ABBB82340;
+        Tue,  7 Jun 2022 18:29:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0644C385A5;
+        Tue,  7 Jun 2022 18:29:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626556;
-        bh=UuQZ3aoQiDfMsk594do238/iZ/yCyfLgx4h9ODokf6k=;
+        s=korg; t=1654626568;
+        bh=67f+pJyqDPpIlqJNnInLUFS6+P7eNqKYGVkAXursKgc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yp/VJ2cJno6xUfGAhsKYMl8qi/ty9AO2UAQBqPG3ggb/kBQTh08xmcihqmOPZAZQs
-         vMP1JH4kCZBAAsqhMOc4inffwY8EmFtPhi1Di916Jfb8Z9RRw5wgVjNF+rzbQAi5++
-         0s5F9wfRb/MUs1OYIqSOXTxF/O8+Bxfz0SNbGhjA=
+        b=kpZj6nxE/k1SQuzRCjkMinzQmaNxCpbqyDXYPyyR0wozjdfZrFe9Bm0mz29CFZbHW
+         3x1fRBEvtFbqyFjPT/0Qt9KnMqsgorFmK9gux+hgwZNCp/mUSKjR47VlNy64vZgIBm
+         YNBV4iUUqkbVOGlmgYm/aRldhtvV6Eic1F0yNZoQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 420/772] thermal/core: Fix memory leak in __thermal_cooling_device_register()
-Date:   Tue,  7 Jun 2022 19:00:12 +0200
-Message-Id: <20220607165001.382322139@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 423/772] bfq: Allow current waker to defend against a tentative one
+Date:   Tue,  7 Jun 2022 19:00:15 +0200
+Message-Id: <20220607165001.469079205@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,51 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 98a160e898c0f4a979af9de3ab48b4b1d42d1dbb ]
+[ Upstream commit c5ac56bb6110e42e79d3106866658376b2e48ab9 ]
 
-I got memory leak as follows when doing fault injection test:
+The code in bfq_check_waker() ignores wake up events from the current
+waker. This makes it more likely we select a new tentative waker
+although the current one is generating more wake up events. Treat
+current waker the same way as any other process and allow it to reset
+the waker detection logic.
 
-unreferenced object 0xffff888010080000 (size 264312):
-  comm "182", pid 102533, jiffies 4296434960 (age 10.100s)
-  hex dump (first 32 bytes):
-    00 00 00 00 ad 4e ad de ff ff ff ff 00 00 00 00  .....N..........
-    ff ff ff ff ff ff ff ff 40 7f 1f b9 ff ff ff ff  ........@.......
-  backtrace:
-    [<0000000038b2f4fc>] kmalloc_order_trace+0x1d/0x110 mm/slab_common.c:969
-    [<00000000ebcb8da5>] __kmalloc+0x373/0x420 include/linux/slab.h:510
-    [<0000000084137f13>] thermal_cooling_device_setup_sysfs+0x15d/0x2d0 include/linux/slab.h:586
-    [<00000000352b8755>] __thermal_cooling_device_register+0x332/0xa60 drivers/thermal/thermal_core.c:927
-    [<00000000fb9f331b>] devm_thermal_of_cooling_device_register+0x6b/0xf0 drivers/thermal/thermal_core.c:1041
-    [<000000009b8012d2>] max6650_probe.cold+0x557/0x6aa drivers/hwmon/max6650.c:211
-    [<00000000da0b7e04>] i2c_device_probe+0x472/0xac0 drivers/i2c/i2c-core-base.c:561
-
-If device_register() fails, thermal_cooling_device_destroy_sysfs() need be called
-to free the memory allocated in thermal_cooling_device_setup_sysfs().
-
-Fixes: 8ea229511e06 ("thermal: Add cooling device's statistics in sysfs")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220511020605.3096734-1-yangyingliang@huawei.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Fixes: 71217df39dc6 ("block, bfq: make waker-queue detection more robust")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220519105235.31397-2-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/thermal/thermal_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ block/bfq-iosched.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-index 82654dc8382b..cdc0552e8c42 100644
---- a/drivers/thermal/thermal_core.c
-+++ b/drivers/thermal/thermal_core.c
-@@ -947,6 +947,7 @@ __thermal_cooling_device_register(struct device_node *np,
- 	return cdev;
+diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+index 047368c23984..31f430d9023d 100644
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2133,8 +2133,7 @@ static void bfq_check_waker(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ 	if (!bfqd->last_completed_rq_bfqq ||
+ 	    bfqd->last_completed_rq_bfqq == bfqq ||
+ 	    bfq_bfqq_has_short_ttime(bfqq) ||
+-	    now_ns - bfqd->last_completion >= 4 * NSEC_PER_MSEC ||
+-	    bfqd->last_completed_rq_bfqq == bfqq->waker_bfqq)
++	    now_ns - bfqd->last_completion >= 4 * NSEC_PER_MSEC)
+ 		return;
  
- out_kfree_type:
-+	thermal_cooling_device_destroy_sysfs(cdev);
- 	kfree(cdev->type);
- 	put_device(&cdev->device);
- 	cdev = NULL;
+ 	/*
 -- 
 2.35.1
 
