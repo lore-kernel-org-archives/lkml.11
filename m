@@ -2,275 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2819CCA498
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A21DC19F55
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442239AbiFHB7z (ORCPT
+        id S1443092AbiFHCBu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:59:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48826 "EHLO
+        Tue, 7 Jun 2022 22:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835794AbiFGX5A (ORCPT
+        with ESMTP id S1588847AbiFGXzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:57:00 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66E8FC83B;
-        Tue,  7 Jun 2022 16:21:42 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id c30so4283500ljr.9;
-        Tue, 07 Jun 2022 16:21:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=COK9bRpwazgqXOIrafjqYsXHBImgiEMg19CQNox6XRo=;
-        b=MUGtXYPSB3HMe/81ChjyP87+0Eq5slZuNe6SAFcuXYMFN8lqKw3Wk399s+f6oqiO5b
-         YcPiplVGM8H0pUtMsdH7HSvMrDT7jMgiDir/VBGvOft8XPAn88r5yXgubrZhJIgYaCJA
-         UtYlfUrSH0lYwk2V0tWvdRiP0Z2Tiv3/Vxh1FWpxvXaqczmd090LGvTEuxJKvtD3wiCG
-         oZQfHNC2ObA2M5Z6LLr43qESzCIT3x/KnMYxBJZCPlZzU448UK08mVBc0LvZy+6GIDTi
-         9/joaK39f/o/SpoDz574P1lK9tdf9HIWPLty3Ao8p01JXkz7kkBUi4eh48UJ2ovsHaR3
-         KCjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=COK9bRpwazgqXOIrafjqYsXHBImgiEMg19CQNox6XRo=;
-        b=l8qFOp6i2S1XpIyHeqPfMlKk8k/SnliYIvHvAzgAIE/gWhb/t26kknvK6olsMtCo2a
-         a99FvhdrsUh+djU/oK3ahEQCvEPk9hF/0qor17u852ktBnFzQ2iVqCFcoTELejwDDjzq
-         WOKvwK/r9PnUZVn6PUjedtvLlM3zMjVBPZSKDO8AFH8XhiqGWXajRQLD/s5es6XT8Zmq
-         6OHb0w5MvHKhpX60xlyyi0opGjdYLDXK9yn+lX82aeEv1xoxDDWbNMwkkNi117SpjWlm
-         qQiwB+h+yH+LCBX4mGJbffNAKa5wx/3vxxhhpT8gSmso/gHMQMl9Vx8jd8wKjgI1d8cj
-         mywQ==
-X-Gm-Message-State: AOAM531q7qMlfnPRPvM2P/IUSuRHI4zHvYli+lPhooK/rFNi0HKlQ6aV
-        LFIPj588y9kPLy5FVfWqhsUt/nbt1PPjLrCmKdo=
-X-Google-Smtp-Source: ABdhPJwpQUarPlQrNTRrbDSKLAsQf4gXqUxsnLWfPloSNMURSjnD1qLQS5EXDHZOWOv3zEfg0d9KstiDIWd5eQe9DmE=
-X-Received: by 2002:a2e:9bc1:0:b0:253:e20a:7a79 with SMTP id
- w1-20020a2e9bc1000000b00253e20a7a79mr49293774ljj.445.1654644101075; Tue, 07
- Jun 2022 16:21:41 -0700 (PDT)
+        Tue, 7 Jun 2022 19:55:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05E632509F7
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:01:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654639264;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bMoHrYtckfc4pwaLoUCwp8YR9pNNBcpYBih/HMrWY2U=;
+        b=WoaJ3nuOliRY6bl+dXdNOuaSFgE6jE7NLallflqX+iY3C+l0mXYGN+yUbfWmdGFys+B8tf
+        KBOmmetJ1U0GMTPHKsNqVtGRH1EWqOcm6FzHrac4oVC2BgqYBE16S4CTqYKv4IKI7V8VzM
+        bQnll1YuE4O/FmZMrzXVUFT9XsiLfRA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-116-V_ZYYpPZOn6FNOhZnUMt-g-1; Tue, 07 Jun 2022 18:01:01 -0400
+X-MC-Unique: V_ZYYpPZOn6FNOhZnUMt-g-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1B28A1C161AF;
+        Tue,  7 Jun 2022 22:01:01 +0000 (UTC)
+Received: from horse.redhat.com (unknown [10.22.9.106])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 04CF11415100;
+        Tue,  7 Jun 2022 22:01:01 +0000 (UTC)
+Received: by horse.redhat.com (Postfix, from userid 10451)
+        id BB16D220882; Tue,  7 Jun 2022 18:01:00 -0400 (EDT)
+Date:   Tue, 7 Jun 2022 18:01:00 -0400
+From:   Vivek Goyal <vgoyal@redhat.com>
+To:     Bernd Schubert <bschubert@ddn.com>
+Cc:     Dharmendra Singh <dharamhans87@gmail.com>, miklos@szeredi.hu,
+        linux-fsdevel@vger.kernel.org, fuse-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Dharmendra Singh <dsingh@ddn.com>
+Subject: Re: [PATCH v4 1/1] Allow non-extending parallel direct writes on the
+ same file.
+Message-ID: <Yp/KnF0oSIsk0SYd@redhat.com>
+References: <20220605072201.9237-1-dharamhans87@gmail.com>
+ <20220605072201.9237-2-dharamhans87@gmail.com>
+ <Yp/CYjONZHoekSVA@redhat.com>
+ <34dd96b3-e253-de4e-d5d3-a49bc1990e6f@ddn.com>
 MIME-Version: 1.0
-References: <20220606132741.3462925-1-james.hilliard1@gmail.com>
- <CAEf4BzZ8eTqVnsLqc52=AyHeAsuVB3Nv7uBW19t2pcb9h7p2hQ@mail.gmail.com> <CADvTj4o2cbCpC40487=rgzSJZ8i94U4RR3=_s8ANE=phPQA6VQ@mail.gmail.com>
-In-Reply-To: <CADvTj4o2cbCpC40487=rgzSJZ8i94U4RR3=_s8ANE=phPQA6VQ@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 7 Jun 2022 16:21:29 -0700
-Message-ID: <CAEf4BzaH0ZzEabjq43eZ4pZ7=SufYswffHwi1POn93Ty9SPJ6Q@mail.gmail.com>
-Subject: Re: [PATCH 1/1] libbpf: fix broken gcc pragma macros in bpf_helpers.h/bpf_tracing.h
-To:     James Hilliard <james.hilliard1@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <34dd96b3-e253-de4e-d5d3-a49bc1990e6f@ddn.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 2:20 PM James Hilliard <james.hilliard1@gmail.com> wrote:
->
-> On Mon, Jun 6, 2022 at 12:02 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Mon, Jun 6, 2022 at 6:28 AM James Hilliard <james.hilliard1@gmail.com> wrote:
-> > >
-> > > It seems the gcc preprocessor breaks unless pragmas are wrapped
-> > > individually inside macros.
-> > >
-> > > Fixes errors like:
-> > > error: expected identifier or '(' before '#pragma'
-> > >   106 | SEC("cgroup/bind6")
-> > >       | ^~~
-> > >
-> > > error: expected '=', ',', ';', 'asm' or '__attribute__' before '#pragma'
-> > >   114 | char _license[] SEC("license") = "GPL";
-> > >       | ^~~
-> > >
-> >
-> > We've been using this macro in this form for a while with no errors.
-> > How do you get these errors in the first place?
->
-> I was attempting to compile the systemd bpf programs using gcc 12.1.
-> https://github.com/systemd/systemd/tree/main/src/core/bpf
+On Tue, Jun 07, 2022 at 11:42:16PM +0200, Bernd Schubert wrote:
+> 
+> 
+> On 6/7/22 23:25, Vivek Goyal wrote:
+> > On Sun, Jun 05, 2022 at 12:52:00PM +0530, Dharmendra Singh wrote:
+> > > From: Dharmendra Singh <dsingh@ddn.com>
+> > > 
+> > > In general, as of now, in FUSE, direct writes on the same file are
+> > > serialized over inode lock i.e we hold inode lock for the full duration
+> > > of the write request. I could not found in fuse code a comment which
+> > > clearly explains why this exclusive lock is taken for direct writes.
+> > > 
+> > > Following might be the reasons for acquiring exclusive lock but not
+> > > limited to
+> > > 1) Our guess is some USER space fuse implementations might be relying
+> > >     on this lock for seralization.
+> > 
+> > Hi Dharmendra,
+> > 
+> > I will just try to be devil's advocate. So if this is server side
+> > limitation, then it is possible that fuse client's isize data in
+> > cache is stale. For example, filesystem is shared between two
+> > clients.
+> > 
+> > - File size is 4G as seen by client A.
+> > - Client B truncates the file to 2G.
+> > - Two processes in client A, try to do parallel direct writes and will
+> >    be able to proceed and server will get two parallel writes both
+> >    extending file size.
+> > 
+> > I can see that this can happen with virtiofs with cache=auto policy.
+> > 
+> > IOW, if this is a fuse server side limitation, then how do you ensure
+> > that fuse kernel's i_size definition is not stale.
+> 
+> Hi Vivek,
+> 
+> I'm sorry, to be sure, can you explain where exactly a client is located for
+> you? For us these are multiple daemons linked to libufse - which you seem to
+> call 'server' Typically these clients are on different machines. And servers
+> are for us on the other side of the network - like an NFS server.
 
-It would be great to be able to repro it as part of selftests. Can you
-try gcc 12 with selftests/bpf and see if you get the same problem?
+Hi Bernd,
 
->
-> > _Pragma is supposed to
-> > be a full equivalent of #pragma specifically to be able to be used in
-> > macros, so these work-arounds shouldn't be necessary.
->
-> I did try and style this like the nested macro example here:
-> https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Pragmas.html
+Agreed, terminology is little confusing. I am calling "fuse kernel" as
+client and fuse daemon (user space) as server. This server in turn might
+be the client to another network filesystem and real files might be
+served by that server on network.
 
+So for simple virtiofs case, There can be two fuse daemons (virtiofsd
+instances) sharing same directory (either on local filesystem or on
+a network filesystem).
 
-If you are referring to DO_PRAGMA example? That example is done that
-way to do argument stringification, but not because _Pragma can't be
-used as is in macros.
+> 
+> So now while I'm not sure what you mean with 'client', I'm wondering about
+> two generic questions
+> 
+> a) I need to double check, but we were under the assumption the code in
+> question is a direct-io code path. I assume cache=auto would use the page
+> cache and should not be effected?
 
->
-> > Let's first try
-> > to root cause this.
->
-> I was looking around and it seems there's a bunch of gcc preprocessor
-> pragma issues in general, restyling this seemed to be the best option
-> at the moment since a lot looked to be unfixed:
-> https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53431
-> https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
-> https://gcc.gnu.org/bugzilla/show_bug.cgi?id=89718
-> https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91669
->
+By default cache=auto use page cache but if application initiates a
+direct I/O, it should use direct I/O path.
 
-I don't like the obscurity of the changes in this patch and don't see
-how it fundamentally changes anything. So I'd like to actually try to
-be able to repro it and see what other solutions there are before
-committing to this.
+> 
+> b) How would the current lock help for distributed clients? Or multiple fuse
+> daemons (what you seem to call server) per local machine?
 
-I also suspect that it's only the SEC() macro that's problematic and
-we shouldn't touch any other macro at all. But again, I'd like to get
-a repro first.
+I thought that current lock is trying to protect fuse kernel side and
+assumed fuse server (daemon linked to libfuse) can handle multiple
+parallel writes. Atleast that's how I thought about the things. I might
+be wrong. I am not sure.
 
-> >
-> > > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-> > > ---
-> > >  tools/lib/bpf/bpf_helpers.h | 26 ++++++++++++++------------
-> > >  tools/lib/bpf/bpf_tracing.h | 26 ++++++++++++++------------
-> > >  2 files changed, 28 insertions(+), 24 deletions(-)
-> > >
-> > > diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> > > index fb04eaf367f1..6d159082727d 100644
-> > > --- a/tools/lib/bpf/bpf_helpers.h
-> > > +++ b/tools/lib/bpf/bpf_helpers.h
-> > > @@ -22,11 +22,13 @@
-> > >   * To allow use of SEC() with externs (e.g., for extern .maps declarations),
-> > >   * make sure __attribute__((unused)) doesn't trigger compilation warning.
-> > >   */
-> > > +#define __gcc_helpers_pragma(x) _Pragma(#x)
-> > > +#define __gcc_helpers_diag_pragma(x) __gcc_helpers_pragma("GCC diagnostic " #x)
-> > >  #define SEC(name) \
-> > > -       _Pragma("GCC diagnostic push")                                      \
-> > > -       _Pragma("GCC diagnostic ignored \"-Wignored-attributes\"")          \
-> > > +       __gcc_helpers_diag_pragma(push)                                     \
-> > > +       __gcc_helpers_diag_pragma(ignored "-Wignored-attributes")           \
-> > >         __attribute__((section(name), used))                                \
-> > > -       _Pragma("GCC diagnostic pop")                                       \
-> > > +       __gcc_helpers_diag_pragma(pop)
-> > >
-> > >  /* Avoid 'linux/stddef.h' definition of '__always_inline'. */
-> > >  #undef __always_inline
-> > > @@ -215,10 +217,10 @@ enum libbpf_tristate {
-> > >         static const char ___fmt[] = fmt;                       \
-> > >         unsigned long long ___param[___bpf_narg(args)];         \
-> > >                                                                 \
-> > > -       _Pragma("GCC diagnostic push")                          \
-> > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")  \
-> > > +       __gcc_helpers_diag_pragma(push)                         \
-> > > +       __gcc_helpers_diag_pragma(ignored "-Wint-conversion")   \
-> > >         ___bpf_fill(___param, args);                            \
-> > > -       _Pragma("GCC diagnostic pop")                           \
-> > > +       __gcc_helpers_diag_pragma(pop)                          \
-> > >                                                                 \
-> > >         bpf_seq_printf(seq, ___fmt, sizeof(___fmt),             \
-> > >                        ___param, sizeof(___param));             \
-> > > @@ -233,10 +235,10 @@ enum libbpf_tristate {
-> > >         static const char ___fmt[] = fmt;                       \
-> > >         unsigned long long ___param[___bpf_narg(args)];         \
-> > >                                                                 \
-> > > -       _Pragma("GCC diagnostic push")                          \
-> > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")  \
-> > > +       __gcc_helpers_diag_pragma(push)                         \
-> > > +       __gcc_helpers_diag_pragma(ignored "-Wint-conversion")   \
-> > >         ___bpf_fill(___param, args);                            \
-> > > -       _Pragma("GCC diagnostic pop")                           \
-> > > +       __gcc_helpers_diag_pragma(pop)                          \
-> > >                                                                 \
-> > >         bpf_snprintf(out, out_size, ___fmt,                     \
-> > >                      ___param, sizeof(___param));               \
-> > > @@ -264,10 +266,10 @@ enum libbpf_tristate {
-> > >         static const char ___fmt[] = fmt;                       \
-> > >         unsigned long long ___param[___bpf_narg(args)];         \
-> > >                                                                 \
-> > > -       _Pragma("GCC diagnostic push")                          \
-> > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")  \
-> > > +       __gcc_helpers_diag_pragma(push)                         \
-> > > +       __gcc_helpers_diag_pragma(ignored "-Wint-conversion")   \
-> > >         ___bpf_fill(___param, args);                            \
-> > > -       _Pragma("GCC diagnostic pop")                           \
-> > > +       __gcc_helpers_diag_pragma(pop)                          \
-> > >                                                                 \
-> > >         bpf_trace_vprintk(___fmt, sizeof(___fmt),               \
-> > >                           ___param, sizeof(___param));          \
-> > > diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
-> > > index 01ce121c302d..e08ffc290b3e 100644
-> > > --- a/tools/lib/bpf/bpf_tracing.h
-> > > +++ b/tools/lib/bpf/bpf_tracing.h
-> > > @@ -422,16 +422,18 @@ struct pt_regs;
-> > >   * This is useful when using BPF helpers that expect original context
-> > >   * as one of the parameters (e.g., for bpf_perf_event_output()).
-> > >   */
-> > > +#define __gcc_tracing_pragma(x) _Pragma(#x)
-> > > +#define __gcc_tracing_diag_pragma(x) __gcc_tracing_pragma("GCC diagnostic " #x)
-> > >  #define BPF_PROG(name, args...)                                                    \
-> > >  name(unsigned long long *ctx);                                             \
-> > >  static __attribute__((always_inline)) typeof(name(0))                      \
-> > >  ____##name(unsigned long long *ctx, ##args);                               \
-> > >  typeof(name(0)) name(unsigned long long *ctx)                              \
-> > >  {                                                                          \
-> > > -       _Pragma("GCC diagnostic push")                                      \
-> > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")              \
-> > > +       __gcc_tracing_diag_pragma(push)                                     \
-> > > +       __gcc_tracing_diag_pragma(ignored "-Wint-conversion")               \
-> > >         return ____##name(___bpf_ctx_cast(args));                           \
-> > > -       _Pragma("GCC diagnostic pop")                                       \
-> > > +       __gcc_tracing_diag_pragma(pop)                                      \
-> > >  }                                                                          \
-> > >  static __attribute__((always_inline)) typeof(name(0))                      \
-> > >  ____##name(unsigned long long *ctx, ##args)
-> > > @@ -462,10 +464,10 @@ static __attribute__((always_inline)) typeof(name(0))                         \
-> > >  ____##name(struct pt_regs *ctx, ##args);                                   \
-> > >  typeof(name(0)) name(struct pt_regs *ctx)                                  \
-> > >  {                                                                          \
-> > > -       _Pragma("GCC diagnostic push")                                      \
-> > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")              \
-> > > +       __gcc_tracing_diag_pragma(push)                                     \
-> > > +       __gcc_tracing_diag_pragma(ignored "-Wint-conversion")               \
-> > >         return ____##name(___bpf_kprobe_args(args));                        \
-> > > -       _Pragma("GCC diagnostic pop")                                       \
-> > > +       __gcc_tracing_diag_pragma(pop)                                      \
-> > >  }                                                                          \
-> > >  static __attribute__((always_inline)) typeof(name(0))                      \
-> > >  ____##name(struct pt_regs *ctx, ##args)
-> > > @@ -486,10 +488,10 @@ static __attribute__((always_inline)) typeof(name(0))                         \
-> > >  ____##name(struct pt_regs *ctx, ##args);                                   \
-> > >  typeof(name(0)) name(struct pt_regs *ctx)                                  \
-> > >  {                                                                          \
-> > > -       _Pragma("GCC diagnostic push")                                      \
-> > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")              \
-> > > +       __gcc_tracing_diag_pragma(push)                                     \
-> > > +       __gcc_tracing_diag_pragma(ignored "-Wint-conversion")               \
-> > >         return ____##name(___bpf_kretprobe_args(args));                     \
-> > > -       _Pragma("GCC diagnostic pop")                                       \
-> > > +       __gcc_tracing_diag_pragma(pop)                                      \
-> > >  }                                                                          \
-> > >  static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args)
-> > >
-> > > @@ -520,10 +522,10 @@ ____##name(struct pt_regs *ctx, ##args);                              \
-> > >  typeof(name(0)) name(struct pt_regs *ctx)                                  \
-> > >  {                                                                          \
-> > >         struct pt_regs *regs = PT_REGS_SYSCALL_REGS(ctx);                   \
-> > > -       _Pragma("GCC diagnostic push")                                      \
-> > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")              \
-> > > +       __gcc_tracing_diag_pragma(push)             \
-> > > +       __gcc_tracing_diag_pragma(ignored "-Wint-conversion")               \
-> > >         return ____##name(___bpf_syscall_args(args));                       \
-> > > -       _Pragma("GCC diagnostic pop")                                       \
-> > > +       __gcc_tracing_diag_pragma(pop)                                      \
-> > >  }                                                                          \
-> > >  static __attribute__((always_inline)) typeof(name(0))                      \
-> > >  ____##name(struct pt_regs *ctx, ##args)
-> > > --
-> > > 2.25.1
-> > >
+> 
+> For a single vfs mount point served by fuse, truncate should take the
+> exclusive lock and parallel writes the shared lock - I don't see a problem
+> here either.
+
+Agreed that this does not seem like a problem from fuse kernel side. I was
+just questioning that where parallel direct writes become a problem. And
+answer I heard was that it probably is fuse server (daemon linked with
+libfuse) which is expecting the locking. And if that's the case, this
+patch is not fool proof. It is possible that file got truncated from
+a different client (from a different fuse daemon linked with libfuse).
+
+So say A is first fuse daemon and B is another fuse daemon. Both are
+clients to some network file system as NFS.
+
+- Fuse kernel for A, sees file size as 4G.
+- fuse daemon B truncates the file to size 2G.
+- Fuse kernel for A, has stale cache, and can send two parallel writes
+  say at 3G and 3.5G offset.
+- Fuser daemon A might not like it.(Assuming this is fuse daemon/user
+  space side limitation).
+
+I hope I am able to explain my concern. I am not saying that this patch
+is not good. All I am saying that fuse daemon (user space) can not rely
+on that it will never get two parallel direct writes which can be beyond
+the file size. If fuse kernel cache is stale, it can happen. Just trying
+to set the expectations right.
+
+Thanks
+Vivek
+
