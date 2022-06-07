@@ -2,63 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD14C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:22:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F79FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343994AbiFGPWs (ORCPT
+        id S1343999AbiFGPXO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58080 "EHLO
+        Tue, 7 Jun 2022 11:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230093AbiFGPWo (ORCPT
+        with ESMTP id S1343998AbiFGPXL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:22:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 191F439142
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:22:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654615363;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
-        b=VXPV+99u9K+ADvxxp+Ay9L+bRQvrJZazxbS5j5qDhtFZAet/O144u9LQKG/BsY7QhgaL6X
-        SO2dzMEzUSPAG9IY8nsI2H5gEfVP/GT8GVXhvERoFm7JEFI2qr9zNFukNiZsf8kwRyZHGj
-        IkMt65foFWWp8OK6fhyEXYu2inejA2I=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-235-hzmjbzQHN0mFPNnEvDOkAw-1; Tue, 07 Jun 2022 11:22:40 -0400
-X-MC-Unique: hzmjbzQHN0mFPNnEvDOkAw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 83FA5101E988;
-        Tue,  7 Jun 2022 15:22:39 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1E27B2166B26;
-        Tue,  7 Jun 2022 15:22:39 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     kvm@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: selftests: Make hyperv_clock selftest more stable
-Date:   Tue,  7 Jun 2022 11:22:20 -0400
-Message-Id: <20220607152220.754919-1-pbonzini@redhat.com>
-In-Reply-To: <20220601144322.1968742-1-vkuznets@redhat.com>
-References: 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+        Tue, 7 Jun 2022 11:23:11 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB2EA3B57E
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:23:09 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 257FFidN003178;
+        Tue, 7 Jun 2022 10:15:44 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 257FFfLo003176;
+        Tue, 7 Jun 2022 10:15:41 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Tue, 7 Jun 2022 10:15:41 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     "'Michael Ellerman'" <mpe@ellerman.id.au>,
+        Bagas Sanjaya <bagasdotme@gmail.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Yang Li <yang.lee@linux.alibaba.com>
+Subject: Re: outside array bounds error on ppc64_defconfig, GCC 12.1.0
+Message-ID: <20220607151541.GG25951@gate.crashing.org>
+References: <YpbUcPrm61RLIiZF@debian.me> <87mtepns81.fsf@mpe.ellerman.id.au> <d38aeb0d6f2040369256ee640b44fafe@AcuMS.aculab.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d38aeb0d6f2040369256ee640b44fafe@AcuMS.aculab.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Queued, thanks.
+On Tue, Jun 07, 2022 at 02:23:25PM +0000, David Laight wrote:
+> > I don't see a really simple fix. I tried clamping the size parameter to
+> > do_byte_reverse() with max(), but that didn't work :/
+> 
+> I had a quick look at the code - it is somewhat horrid!
+> Not really surprising the compiler is confused.
+> Although it shouldn't be outputting that error message
+> unless it is certain.
 
-Paolo
+No.  It is a warning message, and the compiler should output it for all
+code it finds suspicious.  The conditions for this could be improved for
+sure, but it is and will remain a heuristic affair, so using -Werror
+with is is akin to self-flagellation.
+
+It is not an error, it is a warning.  The correct response to it when
+you determine it is not an error, or even you do not want to deal with
+it now, is to ignore it.  Which -Werror prevents, one of the ways that
+that warning flag is counterproductive to use.
+
+> Could it be re-written to read the data into an __u128
+> (or whatever the compiler type is).
+> Optionally byteswap the entire thing (swap the words and
+> then byteswap each word).
+> The do a put_user_8/16/32/64() to write out the value.
+> 
+> I think that would remove all the memory accesses and make
+> it a lot faster as well.
+
+Yes, the warning sometimes fires for correct code that is "merely" next
+to impossible to read.  It may well improve even the performance of the
+code if the code is rewritten.
+
+But it also may introduce new bugs, or anything else detrimental.  It
+is yakshaving extraordinaire to do this every time a compiler warning
+points out something doesn't smell quite right :-)
 
 
+Segher
