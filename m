@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9F0CCCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4B6CCA48C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383626AbiFGWGD (ORCPT
+        id S1383710AbiFGWGM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
+        Tue, 7 Jun 2022 18:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379414AbiFGVFz (ORCPT
+        with ESMTP id S1379550AbiFGVGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:05:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9306918DAE3;
-        Tue,  7 Jun 2022 11:49:29 -0700 (PDT)
+        Tue, 7 Jun 2022 17:06:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A5801F5743;
+        Tue,  7 Jun 2022 11:49:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FBC1616AF;
-        Tue,  7 Jun 2022 18:49:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D7ECC385A5;
-        Tue,  7 Jun 2022 18:49:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A383B81FE1;
+        Tue,  7 Jun 2022 18:49:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0434C385A2;
+        Tue,  7 Jun 2022 18:49:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627768;
-        bh=G8Lr5tC7exO+P44JmMYxw/QCR5EsrdoyP32XeHj5qcw=;
+        s=korg; t=1654627788;
+        bh=NZOjF323UZNafxUxjZt3FD7HpP5qouR5J6a9gRbV+4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2j834ykmfjyEZuhvzBCt+gpXKGZer9sT6onNE3NZGOtBx5Azg/BWork7XklboLOI2
-         rvnn+wh6DsiZII+ZDY0KFldOqhmR2VeLeBZDWSUWq5/OQl7YQ0r/i4EEnyfsueAQNz
-         +lFD9AbjsMrENmS2An2r47OnyOypKlR7M4uzg0hU=
+        b=PjTC3V0nyUhmHdOcfgMSoR0dJmGpbP1L9UspIckf7X7DwwvmXvT/7VdJ9+KtoSt+R
+         MfMc3hMyUgCiVrox7hzz+vLFMftQgRL2sFAdokT/dau9RMrwf6o1hacI6u2VEjHpW/
+         9RWxyZZHObvVRw/+yw2gWrJU0iI1taQ0qSE9n3c0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Maulik Shah <quic_mkshah@quicinc.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 086/879] tcp: consume incoming skb leading to a reset
-Date:   Tue,  7 Jun 2022 18:53:24 +0200
-Message-Id: <20220607165005.189550617@linuxfoundation.org>
+Subject: [PATCH 5.18 093/879] cpuidle: PSCI: Improve support for suspend-to-RAM for PSCI OSI mode
+Date:   Tue,  7 Jun 2022 18:53:31 +0200
+Message-Id: <20220607165005.391570201@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,76 +51,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit d9d024f96609016628d750ebc8ee4a6f0d80e6e1 ]
+[ Upstream commit 171b66e2e2e9d80b93c8cff799e6175074b22297 ]
 
-Whenever tcp_validate_incoming() handles a valid RST packet,
-we should not pretend the packet was dropped.
+When PSCI OSI mode is supported the syscore flag is set for the CPU devices
+that becomes attached to their PM domains (genpds). In the suspend-to-idle
+case, we call dev_pm_genpd_suspend|resume() to allow genpd to properly
+manage the power-off/on operations (pick an idlestate and manage the on/off
+notifications).
 
-Create a special section at the end of tcp_validate_incoming()
-to handle this case.
+For suspend-to-ram, dev_pm_genpd_suspend|resume() is currently not being
+called, which causes a problem that the genpd on/off notifiers do not get
+sent as expected. This prevents the platform-specific operations from being
+executed, typically needed just before/after the boot CPU is being turned
+off/on.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+To deal with this problem, let's register a syscore ops for cpuidle-psci
+when PSCI OSI mode is being used and call dev_pm_genpd_suspend|resume()
+from them. In this way, genpd regains control of the PM domain topology and
+then sends the on/off notifications when it's appropriate.
+
+Reported-by: Maulik Shah <quic_mkshah@quicinc.com>
+Suggested-by: Maulik Shah <quic_mkshah@quicinc.com>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Tested-by: Maulik Shah <quic_mkshah@quicinc.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_input.c | 28 ++++++++++++++++------------
- 1 file changed, 16 insertions(+), 12 deletions(-)
+ drivers/cpuidle/cpuidle-psci.c | 46 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 60f99e9fb6d1..1f3ce7aea716 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -5711,7 +5711,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- 						  &tp->last_oow_ack_time))
- 				tcp_send_dupack(sk, skb);
- 		} else if (tcp_reset_check(sk, skb)) {
--			tcp_reset(sk, skb);
-+			goto reset;
- 		}
- 		goto discard;
- 	}
-@@ -5747,17 +5747,16 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- 		}
+diff --git a/drivers/cpuidle/cpuidle-psci.c b/drivers/cpuidle/cpuidle-psci.c
+index b51b5df08450..540105ca0781 100644
+--- a/drivers/cpuidle/cpuidle-psci.c
++++ b/drivers/cpuidle/cpuidle-psci.c
+@@ -23,6 +23,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
++#include <linux/syscore_ops.h>
  
- 		if (rst_seq_match)
--			tcp_reset(sk, skb);
--		else {
--			/* Disable TFO if RST is out-of-order
--			 * and no data has been received
--			 * for current active TFO socket
--			 */
--			if (tp->syn_fastopen && !tp->data_segs_in &&
--			    sk->sk_state == TCP_ESTABLISHED)
--				tcp_fastopen_active_disable(sk);
--			tcp_send_challenge_ack(sk);
--		}
-+			goto reset;
-+
-+		/* Disable TFO if RST is out-of-order
-+		 * and no data has been received
-+		 * for current active TFO socket
-+		 */
-+		if (tp->syn_fastopen && !tp->data_segs_in &&
-+		    sk->sk_state == TCP_ESTABLISHED)
-+			tcp_fastopen_active_disable(sk);
-+		tcp_send_challenge_ack(sk);
- 		goto discard;
- 	}
+ #include <asm/cpuidle.h>
  
-@@ -5782,6 +5781,11 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- discard:
- 	tcp_drop(sk, skb);
- 	return false;
-+
-+reset:
-+	tcp_reset(sk, skb);
-+	__kfree_skb(skb);
-+	return false;
+@@ -131,6 +132,49 @@ static int psci_idle_cpuhp_down(unsigned int cpu)
+ 	return 0;
  }
  
- /*
++static void psci_idle_syscore_switch(bool suspend)
++{
++	bool cleared = false;
++	struct device *dev;
++	int cpu;
++
++	for_each_possible_cpu(cpu) {
++		dev = per_cpu_ptr(&psci_cpuidle_data, cpu)->dev;
++
++		if (dev && suspend) {
++			dev_pm_genpd_suspend(dev);
++		} else if (dev) {
++			dev_pm_genpd_resume(dev);
++
++			/* Account for userspace having offlined a CPU. */
++			if (pm_runtime_status_suspended(dev))
++				pm_runtime_set_active(dev);
++
++			/* Clear domain state to re-start fresh. */
++			if (!cleared) {
++				psci_set_domain_state(0);
++				cleared = true;
++			}
++		}
++	}
++}
++
++static int psci_idle_syscore_suspend(void)
++{
++	psci_idle_syscore_switch(true);
++	return 0;
++}
++
++static void psci_idle_syscore_resume(void)
++{
++	psci_idle_syscore_switch(false);
++}
++
++static struct syscore_ops psci_idle_syscore_ops = {
++	.suspend = psci_idle_syscore_suspend,
++	.resume = psci_idle_syscore_resume,
++};
++
+ static void psci_idle_init_cpuhp(void)
+ {
+ 	int err;
+@@ -138,6 +182,8 @@ static void psci_idle_init_cpuhp(void)
+ 	if (!psci_cpuidle_use_cpuhp)
+ 		return;
+ 
++	register_syscore_ops(&psci_idle_syscore_ops);
++
+ 	err = cpuhp_setup_state_nocalls(CPUHP_AP_CPU_PM_STARTING,
+ 					"cpuidle/psci:online",
+ 					psci_idle_cpuhp_up,
 -- 
 2.35.1
 
