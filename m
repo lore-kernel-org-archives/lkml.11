@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6154CCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0777CCA48D
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376692AbiFGU13 (ORCPT
+        id S1376582AbiFGU1B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:27:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43486 "EHLO
+        Tue, 7 Jun 2022 16:27:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355674AbiFGTh0 (ORCPT
+        with ESMTP id S1356522AbiFGTgj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:37:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C1B147838;
-        Tue,  7 Jun 2022 11:13:38 -0700 (PDT)
+        Tue, 7 Jun 2022 15:36:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12371AD584;
+        Tue,  7 Jun 2022 11:13:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 046316062B;
-        Tue,  7 Jun 2022 18:13:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EC0FC385A2;
-        Tue,  7 Jun 2022 18:13:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2DFFEB82374;
+        Tue,  7 Jun 2022 18:13:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CAC4C385A2;
+        Tue,  7 Jun 2022 18:13:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625617;
-        bh=1j72S5O2DBHhhGxv0HK6Aui7WmFeAYDl4SZ8qVhieTk=;
+        s=korg; t=1654625603;
+        bh=luIxqVVGy6lWaKnmOLArsz/o5m0B6J0ryt0y5w3fJJ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P1urLTZHkiTTy0HpXAwkWdD+79UnEIp81ikvyyyaMYfEfBwvdoltO7K1jViYz9V/f
-         zdYmCJ73RP9jNa8LMXXXcJDTd0LxmmBI5xXX5WfStNuXIcdl6qmcUcACDvHDzr0z0C
-         cmMK31d1+GDJ4lSoYZ4VkcLE1CGV5iWeRccrDxYE=
+        b=w02EoofbZNZXxXKObcyrJjFaCFA2yK1KAwTGQU7gFB8zQ7CzWx5yTZmMPqKcOYSo5
+         6NYJEH+/aI1Yk6Ax3h/ZUefc2eGcnbf0Ics4Jy5uZjI3W6rt9qWj2/cQwaR/moVsMA
+         DKLFP8BZMbBBku7ye7GFGUGXym7JDOL4L27CtkiU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.17 041/772] ptrace: Reimplement PTRACE_KILL by always sending SIGKILL
-Date:   Tue,  7 Jun 2022 18:53:53 +0200
-Message-Id: <20220607164950.235607096@linuxfoundation.org>
+        stable@vger.kernel.org, Po-Hao Huang <phhuang@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 075/772] rtw88: 8821c: fix debugfs rssi value
+Date:   Tue,  7 Jun 2022 18:54:27 +0200
+Message-Id: <20220607164951.251078586@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,71 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Po-Hao Huang <phhuang@realtek.com>
 
-commit 6a2d90ba027adba528509ffa27097cffd3879257 upstream.
+[ Upstream commit ece31c93d4d68f7eb8eea4431b052aacdb678de2 ]
 
-The current implementation of PTRACE_KILL is buggy and has been for
-many years as it assumes it's target has stopped in ptrace_stop.  At a
-quick skim it looks like this assumption has existed since ptrace
-support was added in linux v1.0.
+RSSI value per frame is reported to mac80211 but not maintained in
+our own statistics, add it back to help us debug.
 
-While PTRACE_KILL has been deprecated we can not remove it as
-a quick search with google code search reveals many existing
-programs calling it.
-
-When the ptracee is not stopped at ptrace_stop some fields would be
-set that are ignored except in ptrace_stop.  Making the userspace
-visible behavior of PTRACE_KILL a noop in those case.
-
-As the usual rules are not obeyed it is not clear what the
-consequences are of calling PTRACE_KILL on a running process.
-Presumably userspace does not do this as it achieves nothing.
-
-Replace the implementation of PTRACE_KILL with a simple
-send_sig_info(SIGKILL) followed by a return 0.  This changes the
-observable user space behavior only in that PTRACE_KILL on a process
-not stopped in ptrace_stop will also kill it.  As that has always
-been the intent of the code this seems like a reasonable change.
-
-Cc: stable@vger.kernel.org
-Reported-by: Al Viro <viro@zeniv.linux.org.uk>
-Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
-Tested-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Oleg Nesterov <oleg@redhat.com>
-Link: https://lkml.kernel.org/r/20220505182645.497868-7-ebiederm@xmission.com
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220407095858.46807-7-pkshih@realtek.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/step.c |    3 +--
- kernel/ptrace.c        |    5 ++---
- 2 files changed, 3 insertions(+), 5 deletions(-)
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/arch/x86/kernel/step.c
-+++ b/arch/x86/kernel/step.c
-@@ -180,8 +180,7 @@ void set_task_blockstep(struct task_stru
- 	 *
- 	 * NOTE: this means that set/clear TIF_BLOCKSTEP is only safe if
- 	 * task is current or it can't be running, otherwise we can race
--	 * with __switch_to_xtra(). We rely on ptrace_freeze_traced() but
--	 * PTRACE_KILL is not safe.
-+	 * with __switch_to_xtra(). We rely on ptrace_freeze_traced().
- 	 */
- 	local_irq_disable();
- 	debugctl = get_debugctlmsr();
---- a/kernel/ptrace.c
-+++ b/kernel/ptrace.c
-@@ -1236,9 +1236,8 @@ int ptrace_request(struct task_struct *c
- 		return ptrace_resume(child, request, data);
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+index 80d4761796b1..0f16f649e03f 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+@@ -512,6 +512,7 @@ static s8 get_cck_rx_pwr(struct rtw_dev *rtwdev, u8 lna_idx, u8 vga_idx)
+ static void query_phy_status_page0(struct rtw_dev *rtwdev, u8 *phy_status,
+ 				   struct rtw_rx_pkt_stat *pkt_stat)
+ {
++	struct rtw_dm_info *dm_info = &rtwdev->dm_info;
+ 	s8 rx_power;
+ 	u8 lna_idx = 0;
+ 	u8 vga_idx = 0;
+@@ -523,6 +524,7 @@ static void query_phy_status_page0(struct rtw_dev *rtwdev, u8 *phy_status,
  
- 	case PTRACE_KILL:
--		if (child->exit_state)	/* already dead */
--			return 0;
--		return ptrace_resume(child, request, SIGKILL);
-+		send_sig_info(SIGKILL, SEND_SIG_NOINFO, child);
-+		return 0;
+ 	pkt_stat->rx_power[RF_PATH_A] = rx_power;
+ 	pkt_stat->rssi = rtw_phy_rf_power_2_rssi(pkt_stat->rx_power, 1);
++	dm_info->rssi[RF_PATH_A] = pkt_stat->rssi;
+ 	pkt_stat->bw = RTW_CHANNEL_WIDTH_20;
+ 	pkt_stat->signal_power = rx_power;
+ }
+@@ -530,6 +532,7 @@ static void query_phy_status_page0(struct rtw_dev *rtwdev, u8 *phy_status,
+ static void query_phy_status_page1(struct rtw_dev *rtwdev, u8 *phy_status,
+ 				   struct rtw_rx_pkt_stat *pkt_stat)
+ {
++	struct rtw_dm_info *dm_info = &rtwdev->dm_info;
+ 	u8 rxsc, bw;
+ 	s8 min_rx_power = -120;
  
- #ifdef CONFIG_HAVE_ARCH_TRACEHOOK
- 	case PTRACE_GETREGSET:
+@@ -549,6 +552,7 @@ static void query_phy_status_page1(struct rtw_dev *rtwdev, u8 *phy_status,
+ 
+ 	pkt_stat->rx_power[RF_PATH_A] = GET_PHY_STAT_P1_PWDB_A(phy_status) - 110;
+ 	pkt_stat->rssi = rtw_phy_rf_power_2_rssi(pkt_stat->rx_power, 1);
++	dm_info->rssi[RF_PATH_A] = pkt_stat->rssi;
+ 	pkt_stat->bw = bw;
+ 	pkt_stat->signal_power = max(pkt_stat->rx_power[RF_PATH_A],
+ 				     min_rx_power);
+-- 
+2.35.1
+
 
 
