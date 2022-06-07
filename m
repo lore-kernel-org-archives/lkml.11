@@ -2,101 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8E6BCCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A08E0CCA48D
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384897AbiFGWQl (ORCPT
+        id S1384831AbiFGWQ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44712 "EHLO
+        Tue, 7 Jun 2022 18:16:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380243AbiFGVLm (ORCPT
+        with ESMTP id S1380167AbiFGVLf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA0B14AA51;
-        Tue,  7 Jun 2022 11:53:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A23BF616A9;
-        Tue,  7 Jun 2022 18:53:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AED3CC385A2;
-        Tue,  7 Jun 2022 18:53:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628017;
-        bh=exPGkkNvsUk+zn+DuPTfeI/LZZeoAt13rijdsRPZbco=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y8V9OfzYCwrCiosZQNm9HlsPLIy1MF8FVa5vFZ/FXLe0yrF+PaKyUmhqUHjCWNaEo
-         gA5hxENCvihs2nal5KYdguEsQoNTbEroHKQM8LivflPnJQIcuZiNnBqcQMDBH1G/wS
-         2CAFvsLI7K9JhuqIiuH6lUoKiu1D6vJ9khKeCBB0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 176/879] ASoC: rt5645: Fix errorenous cleanup order
-Date:   Tue,  7 Jun 2022 18:54:54 +0200
-Message-Id: <20220607165007.950520523@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:11:35 -0400
+Received: from 19.mo582.mail-out.ovh.net (19.mo582.mail-out.ovh.net [188.165.56.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B93149D8B
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:53:21 -0700 (PDT)
+Received: from player796.ha.ovh.net (unknown [10.108.4.24])
+        by mo582.mail-out.ovh.net (Postfix) with ESMTP id B517E2478D
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:47:02 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player796.ha.ovh.net (Postfix) with ESMTPSA id 7B42B2B43739F;
+        Tue,  7 Jun 2022 18:46:54 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-100R003e100f37a-472c-4ee8-8084-671dd768fd49,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     "Lee, Chun-Yi" <jlee@suse.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Cezary Jackiewicz <cezary.jackiewicz@gmail.com>,
+        Henrique de Moraes Holschuh <hmh@hmh.eng.br>
+Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 0/4] platform/x86: Use backlight helpers
+Date:   Tue,  7 Jun 2022 20:46:31 +0200
+Message-Id: <20220607184635.1127913-1-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11323738314411247238
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvlecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekvd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+backlight_properties.fb_blank is deprecated. The states it represents
+are handled by other properties; but instead of accessing those
+properties directly, drivers should use the helpers provided by
+backlight.h.
 
-[ Upstream commit 2def44d3aec59e38d2701c568d65540783f90f2f ]
+This will ultimately allow fb_blank to be removed.
 
-There is a logic error when removing rt5645 device as the function
-rt5645_i2c_remove() first cancel the &rt5645->jack_detect_work and
-delete the &rt5645->btn_check_timer latter. However, since the timer
-handler rt5645_btn_check_callback() will re-queue the jack_detect_work,
-this cleanup order is buggy.
+Stephen Kitt (4):
+  platform/x86: acer-wmi: Use backlight helper
+  platform/x86: apple-gmux: Use backlight helper
+  platform/x86: compal-laptop: Use backlight helper
+  platform/x86: thinkpad_acpi: Use backlight helper
 
-That is, once the del_timer_sync in rt5645_i2c_remove is concurrently
-run with the rt5645_btn_check_callback, the canceled jack_detect_work
-will be rescheduled again, leading to possible use-after-free.
+ drivers/platform/x86/acer-wmi.c      | 7 +------
+ drivers/platform/x86/apple-gmux.c    | 5 +----
+ drivers/platform/x86/compal-laptop.c | 4 +---
+ drivers/platform/x86/thinkpad_acpi.c | 5 +----
+ 4 files changed, 4 insertions(+), 17 deletions(-)
 
-This patch fix the issue by placing the del_timer_sync function before
-the cancel_delayed_work_sync.
 
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220516092035.28283-1-linma@zju.edu.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/codecs/rt5645.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/sound/soc/codecs/rt5645.c b/sound/soc/codecs/rt5645.c
-index 197c56047947..4b2e027c1033 100644
---- a/sound/soc/codecs/rt5645.c
-+++ b/sound/soc/codecs/rt5645.c
-@@ -4154,9 +4154,14 @@ static int rt5645_i2c_remove(struct i2c_client *i2c)
- 	if (i2c->irq)
- 		free_irq(i2c->irq, rt5645);
- 
-+	/*
-+	 * Since the rt5645_btn_check_callback() can queue jack_detect_work,
-+	 * the timer need to be delted first
-+	 */
-+	del_timer_sync(&rt5645->btn_check_timer);
-+
- 	cancel_delayed_work_sync(&rt5645->jack_detect_work);
- 	cancel_delayed_work_sync(&rt5645->rcclock_work);
--	del_timer_sync(&rt5645->btn_check_timer);
- 
- 	regulator_bulk_disable(ARRAY_SIZE(rt5645->supplies), rt5645->supplies);
- 
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
 -- 
-2.35.1
-
-
+2.30.2
 
