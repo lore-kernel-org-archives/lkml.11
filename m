@@ -2,89 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C01C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:05:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2974C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:05:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242639AbiFGLFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52760 "EHLO
+        id S235810AbiFGLFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242828AbiFGLAx (ORCPT
+        with ESMTP id S242235AbiFGLBh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 07:00:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 24FC060D2
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 04:00:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654599616;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9uBpnVqgcJOFWLuohPGx+SoAF7D/2Ubnp34dnbaPDjs=;
-        b=PnMlfzlGnkgLsZsaBFallyH37LgmJM0OTOlk7T/UFhUnHwKYzpgiVgZSmtrp2jNNxOEJpk
-        pfpvdxGgKhW+d3JbpfsO6+yG5nAFqjPa6Yz4uqZyoUgoZgVkD8bzx8XOHBwHcTZMJwGIZR
-        uEp/7CEiFZFgzDGPNpcZZDIC6E6dISo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-661-3cDmdNlANbKZTPkErSmrAA-1; Tue, 07 Jun 2022 07:00:13 -0400
-X-MC-Unique: 3cDmdNlANbKZTPkErSmrAA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 7 Jun 2022 07:01:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCB4B482
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 04:01:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 764328027EE;
-        Tue,  7 Jun 2022 11:00:12 +0000 (UTC)
-Received: from MiWiFi-R3L-srv.redhat.com (ovpn-13-113.pek2.redhat.com [10.72.13.113])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9EB921121314;
-        Tue,  7 Jun 2022 11:00:09 +0000 (UTC)
-From:   Baoquan He <bhe@redhat.com>
-To:     akpm@linux-foundation.org, urezki@gmail.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        hch@infradead.org, Baoquan He <bhe@redhat.com>
-Subject: [PATCH v2 2/4] mm/vmalloc: remove the redundant boundary check
-Date:   Tue,  7 Jun 2022 18:59:56 +0800
-Message-Id: <20220607105958.382076-3-bhe@redhat.com>
-In-Reply-To: <20220607105958.382076-1-bhe@redhat.com>
-References: <20220607105958.382076-1-bhe@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18CAE6156A
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:01:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ED93C34115;
+        Tue,  7 Jun 2022 11:01:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654599693;
+        bh=D+6gnkjQuTp/gT1kk2TY3BFGoRR4S4mcAsiWxpLdG2g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=yu2gyUxFwJrx6gWlqtUlxYiXkJg+NrVJ5zSq4Xm5uTof1R1kd2bPRaVoCJa0iS95B
+         i1ef7reb9rxUO/WVQV+9LfSU9SosySoVqH6YtD+sWJo8nTq0DpdglQtRPGFrsZUIOZ
+         zSFUFjASwBNzTBV+Mm4lc6Qy2xgYx++l+AckcEJ4=
+Date:   Tue, 7 Jun 2022 13:01:26 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     duoming@zju.edu.cn
+Cc:     linux-staging@lists.linux.dev, davem@davemloft.net,
+        kuba@kernel.org, alexander.deucher@amd.com, broonie@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: rtl8192u: Fix sleep in atomic context bug in
+ dm_fsync_timer_callback
+Message-ID: <Yp8wBoXH+k9k7Jg+@kroah.com>
+References: <20220520061541.14785-1-duoming@zju.edu.cn>
+ <Yp2T7xSM8YX7lX0/@kroah.com>
+ <6c014f68.52c9b.18137daddd9.Coremail.duoming@zju.edu.cn>
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6c014f68.52c9b.18137daddd9.Coremail.duoming@zju.edu.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In function find_va_links(), when traversing the vmap_area tree, the
-comparing to check if the passed in 'va' is above or below 'tmp_va'
-is redundant, assuming both 'va' and 'tmp_va' has ->va_start <= ->va_end.
+On Mon, Jun 06, 2022 at 03:11:39PM +0800, duoming@zju.edu.cn wrote:
+> Hello,
+> 
+> On Mon, 6 Jun 2022 07:43:11 +0200 greg k-h wrote:
+> 
+> > On Fri, May 20, 2022 at 02:15:41PM +0800, Duoming Zhou wrote:
+> > > There are sleep in atomic context bugs when dm_fsync_timer_callback is
+> > > executing. The root cause is that the memory allocation functions with
+> > > GFP_KERNEL parameter are called in dm_fsync_timer_callback which is a
+> > > timer handler. The call paths that could trigger bugs are shown below:
+> > > 
+> > >     (interrupt context)
+> > > dm_fsync_timer_callback
+> > >   write_nic_byte
+> > >     kzalloc(sizeof(data), GFP_KERNEL); //may sleep
+> > >   write_nic_dword
+> > >     kzalloc(sizeof(data), GFP_KERNEL); //may sleep
+> > > 
+> > > This patch changes allocation mode from GFP_KERNEL to GFP_ATOMIC
+> > > in order to prevent atomic context sleeping. The GFP_ATOMIC flag
+> > > makes memory allocation operation could be used in atomic context.
+> > > 
+> > > Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> > 
+> > What commit id does this fix?
+> 
+> Thanks for your time and reply! 
+> The commit id this patch fix is 8fc8598e61f6 ("Staging: Added Realtek rtl8192u driver to staging").
+>  
+> > And how did you find this issue?  Did you run the code to verify it
+> > still works properly?
+> 
+> I find this issue by writing codeql query. I am trying to use usb raw-gadget to simulate
+> rtl8192u card in order to test this code.
+> 
+> What`s more, I found the usb_control_msg() with GFP_NOIO parameter in write_nic_byte() 
+> and write_nic_dword() may also sleep. So I think use the delayed queue to replace timer
+> is better. 
 
-Here, to simplify the checking as code change.
+Please explain all of this in the changelog text when you resend this.
 
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
----
- mm/vmalloc.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+thanks,
 
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index f9d45aa90b7c..b711bf82fd5d 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -874,11 +874,9 @@ find_va_links(struct vmap_area *va,
- 		 * Trigger the BUG() if there are sides(left/right)
- 		 * or full overlaps.
- 		 */
--		if (va->va_start < tmp_va->va_end &&
--				va->va_end <= tmp_va->va_start)
-+		if (va->va_end <= tmp_va->va_start)
- 			link = &(*link)->rb_left;
--		else if (va->va_end > tmp_va->va_start &&
--				va->va_start >= tmp_va->va_end)
-+		else if (va->va_start >= tmp_va->va_end)
- 			link = &(*link)->rb_right;
- 		else {
- 			WARN(1, "vmalloc bug: 0x%lx-0x%lx overlaps with 0x%lx-0x%lx\n",
--- 
-2.34.1
-
+greg k-h
