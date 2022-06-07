@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C0E9C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88136CCA481
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347989AbiFGRk3 (ORCPT
+        id S1348342AbiFGRkr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39720 "EHLO
+        Tue, 7 Jun 2022 13:40:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347511AbiFGRat (ORCPT
+        with ESMTP id S1347561AbiFGRav (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DBF1F5502;
-        Tue,  7 Jun 2022 10:27:11 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E9CB0A4C;
+        Tue,  7 Jun 2022 10:27:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE50060906;
-        Tue,  7 Jun 2022 17:27:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1DB6C385A5;
-        Tue,  7 Jun 2022 17:27:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F0E66141D;
+        Tue,  7 Jun 2022 17:27:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F67DC385A5;
+        Tue,  7 Jun 2022 17:27:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622830;
-        bh=gQN9moGRLrnOzCRzusZ5LSPrgH65OK3ea7YSNgedsgk=;
+        s=korg; t=1654622849;
+        bh=wbPLNB7i+1qRZZ5B3n4nz+LdfvHLayxTrkUR/2OUnQo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VvNUVoiJWzW32rT37w31ckle6hcdfdFEMMA9EOw8BG4wpJZtCuCpztWTT92wkwTVz
-         kNd/ktZcFG/RRUbGlJ/MfglgF6p133katTyTsAFaCWfUtYGrGKCg2jMSGKYpCsulsi
-         jJcg+XXTdPaIbzBQGBT2TLztHbgyI1xbs8YgCg7I=
+        b=v7Lb/cUgWlH1w9LCgcGqjtxIuIEhY89za3Lnsr+aqkVZGowGy5W+H50CT61XJ1PIB
+         a/pab3FCGf/Gp7HoxtJzE2qz+ZO78KsFXgSCylFGFNjxVPv81ddfFx4f1TSFweGUNE
+         QBCcZ29X81O2C3eX70lu/9djtaV/Lsy+G3qBmGYE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
+        stable@vger.kernel.org, Kiwoong Kim <kwmad.kim@samsung.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 196/452] iomap: iomap_write_failed fix
-Date:   Tue,  7 Jun 2022 19:00:53 +0200
-Message-Id: <20220607164914.405791789@linuxfoundation.org>
+Subject: [PATCH 5.10 164/452] scsi: ufs: core: Exclude UECxx from SFR dump list
+Date:   Tue,  7 Jun 2022 19:00:21 +0200
+Message-Id: <20220607164913.450305829@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,36 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Kiwoong Kim <kwmad.kim@samsung.com>
 
-[ Upstream commit b71450e2cc4b3c79f33c5bd276d152af9bd54f79 ]
+[ Upstream commit ef60031022eb6d972aac86ca26c98c33e1289436 ]
 
-The @lend parameter of truncate_pagecache_range() should be the offset
-of the last byte of the hole, not the first byte beyond it.
+Some devices may return invalid or zeroed data during an UIC error
+condition. In addition, reading these SFRs will clear them. This means the
+subsequent error handling will not be able to see them and therefore no
+error handling will be scheduled.
 
-Fixes: ae259a9c8593 ("fs: introduce iomap infrastructure")
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Skip reading these SFRs in ufshcd_dump_regs().
+
+Link: https://lore.kernel.org/r/1648689845-33521-1-git-send-email-kwmad.kim@samsung.com
+Fixes: d67247566450 ("scsi: ufs: Use explicit access size in ufshcd_dump_regs")
+Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/iomap/buffered-io.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/scsi/ufs/ufshcd.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/fs/iomap/buffered-io.c b/fs/iomap/buffered-io.c
-index cd9f7baa5bb7..dd33b31b0a82 100644
---- a/fs/iomap/buffered-io.c
-+++ b/fs/iomap/buffered-io.c
-@@ -528,7 +528,8 @@ iomap_write_failed(struct inode *inode, loff_t pos, unsigned len)
- 	 * write started inside the existing inode size.
- 	 */
- 	if (pos + len > i_size)
--		truncate_pagecache_range(inode, max(pos, i_size), pos + len);
-+		truncate_pagecache_range(inode, max(pos, i_size),
-+					 pos + len - 1);
- }
+diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+index bf302776340c..ea6ceab1a1b2 100644
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -107,8 +107,13 @@ int ufshcd_dump_regs(struct ufs_hba *hba, size_t offset, size_t len,
+ 	if (!regs)
+ 		return -ENOMEM;
  
- static int
+-	for (pos = 0; pos < len; pos += 4)
++	for (pos = 0; pos < len; pos += 4) {
++		if (offset == 0 &&
++		    pos >= REG_UIC_ERROR_CODE_PHY_ADAPTER_LAYER &&
++		    pos <= REG_UIC_ERROR_CODE_DME)
++			continue;
+ 		regs[pos / 4] = ufshcd_readl(hba, offset + pos);
++	}
+ 
+ 	ufshcd_hex_dump(prefix, regs, len);
+ 	kfree(regs);
 -- 
 2.35.1
 
