@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9FE0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8659CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357645AbiFGUCj (ORCPT
+        id S1357990AbiFGUCn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49226 "EHLO
+        Tue, 7 Jun 2022 16:02:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354867AbiFGTBa (ORCPT
+        with ESMTP id S1353067AbiFGTB7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:01:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281E4152BAA;
-        Tue,  7 Jun 2022 11:04:52 -0700 (PDT)
+        Tue, 7 Jun 2022 15:01:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2A915350B;
+        Tue,  7 Jun 2022 11:04:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D900F616B6;
-        Tue,  7 Jun 2022 18:04:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2349C385A5;
-        Tue,  7 Jun 2022 18:04:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAE5DB82340;
+        Tue,  7 Jun 2022 18:04:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47256C341C4;
+        Tue,  7 Jun 2022 18:04:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625086;
-        bh=hmOnrUcH7670N2tE92uyQ8lRAcXD4hwB3zS1oR7mbno=;
+        s=korg; t=1654625094;
+        bh=tXA80zgeHvd3RQs/l+A4Go4Qc+Cp8g/84RUiCzl4Tm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G0bDaBpkxyivGZl46bDR6tWQk40KaV49YxU6Sns6NzZV9Cz8yMxkuX6X+eSrOa+J0
-         edxvTejNtzyLrVHJx6otwncxfw8WhW5qWDNKBQsQ0SfJ0xLN7m+PHavMTpShLnvGii
-         7y8LvnuJto1rtersr4v20VuuiCxGyTPs4DmmwR3c=
+        b=XQY9lnpvPLU9t1v89S4UdeswNsfAzl9Lkl0si1SNZU3SaXCC+4vBJo0wJv+pMl7hT
+         M+vkDS1U3PgfQ+IVeZMXGTvC2AsuSNUeft7VfNzFfH0p8Haev1hSUlyla2bBcut6Ug
+         BhhyT+PsPtF3RcqG0fv7Tke35NGFAtIcJBDdrXw4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Schnelle <svens@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>
-Subject: [PATCH 5.15 560/667] s390/stp: clock_delta should be signed
-Date:   Tue,  7 Jun 2022 19:03:45 +0200
-Message-Id: <20220607164951.493923337@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.15 527/667] wifi: mac80211: fix use-after-free in chanctx code
+Date:   Tue,  7 Jun 2022 19:03:12 +0200
+Message-Id: <20220607164950.509956260@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,94 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schnelle <svens@linux.ibm.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit 5ace65ebb5ce9fe1cc8fdbdd97079fb566ef0ea4 upstream.
+commit 2965c4cdf7ad9ce0796fac5e57debb9519ea721e upstream.
 
-clock_delta is declared as unsigned long in various places. However,
-the clock sync delta can be negative. This would add a huge positive
-offset in clock_sync_global where clock_delta is added to clk.eitod
-which is a 72 bit integer. Declare it as signed long to fix this.
+In ieee80211_vif_use_reserved_context(), when we have an
+old context and the new context's replace_state is set to
+IEEE80211_CHANCTX_REPLACE_NONE, we free the old context
+in ieee80211_vif_use_reserved_reassign(). Therefore, we
+cannot check the old_ctx anymore, so we should set it to
+NULL after this point.
+
+However, since the new_ctx replace state is clearly not
+IEEE80211_CHANCTX_REPLACES_OTHER, we're not going to do
+anything else in this function and can just return to
+avoid accessing the freed old_ctx.
 
 Cc: stable@vger.kernel.org
-Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Fixes: 5bcae31d9cb1 ("mac80211: implement multi-vif in-place reservations")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220601091926.df419d91b165.I17a9b3894ff0b8323ce2afdb153b101124c821e5@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/include/asm/cio.h |    2 +-
- arch/s390/kernel/time.c     |    8 ++++----
- drivers/s390/cio/chsc.c     |    4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ net/mac80211/chan.c |    7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
---- a/arch/s390/include/asm/cio.h
-+++ b/arch/s390/include/asm/cio.h
-@@ -369,7 +369,7 @@ void cio_gp_dma_destroy(struct gen_pool
- struct gen_pool *cio_gp_dma_create(struct device *dma_dev, int nr_pages);
+--- a/net/mac80211/chan.c
++++ b/net/mac80211/chan.c
+@@ -1746,12 +1746,9 @@ int ieee80211_vif_use_reserved_context(s
  
- /* Function from drivers/s390/cio/chsc.c */
--int chsc_sstpc(void *page, unsigned int op, u16 ctrl, u64 *clock_delta);
-+int chsc_sstpc(void *page, unsigned int op, u16 ctrl, long *clock_delta);
- int chsc_sstpi(void *page, void *result, size_t size);
- int chsc_stzi(void *page, void *result, size_t size);
- int chsc_sgib(u32 origin);
---- a/arch/s390/kernel/time.c
-+++ b/arch/s390/kernel/time.c
-@@ -364,7 +364,7 @@ static inline int check_sync_clock(void)
-  * Apply clock delta to the global data structures.
-  * This is called once on the CPU that performed the clock sync.
-  */
--static void clock_sync_global(unsigned long delta)
-+static void clock_sync_global(long delta)
- {
- 	unsigned long now, adj;
- 	struct ptff_qto qto;
-@@ -400,7 +400,7 @@ static void clock_sync_global(unsigned l
-  * Apply clock delta to the per-CPU data structures of this CPU.
-  * This is called for each online CPU after the call to clock_sync_global.
-  */
--static void clock_sync_local(unsigned long delta)
-+static void clock_sync_local(long delta)
- {
- 	/* Add the delta to the clock comparator. */
- 	if (S390_lowcore.clock_comparator != clock_comparator_max) {
-@@ -424,7 +424,7 @@ static void __init time_init_wq(void)
- struct clock_sync_data {
- 	atomic_t cpus;
- 	int in_sync;
--	unsigned long clock_delta;
-+	long clock_delta;
- };
+ 	if (new_ctx->replace_state == IEEE80211_CHANCTX_REPLACE_NONE) {
+ 		if (old_ctx)
+-			err = ieee80211_vif_use_reserved_reassign(sdata);
+-		else
+-			err = ieee80211_vif_use_reserved_assign(sdata);
++			return ieee80211_vif_use_reserved_reassign(sdata);
  
- /*
-@@ -544,7 +544,7 @@ static int stpinfo_valid(void)
- static int stp_sync_clock(void *data)
- {
- 	struct clock_sync_data *sync = data;
--	u64 clock_delta, flags;
-+	long clock_delta, flags;
- 	static int first;
- 	int rc;
+-		if (err)
+-			return err;
++		return ieee80211_vif_use_reserved_assign(sdata);
+ 	}
  
---- a/drivers/s390/cio/chsc.c
-+++ b/drivers/s390/cio/chsc.c
-@@ -1255,7 +1255,7 @@ exit:
- EXPORT_SYMBOL_GPL(css_general_characteristics);
- EXPORT_SYMBOL_GPL(css_chsc_characteristics);
- 
--int chsc_sstpc(void *page, unsigned int op, u16 ctrl, u64 *clock_delta)
-+int chsc_sstpc(void *page, unsigned int op, u16 ctrl, long *clock_delta)
- {
- 	struct {
- 		struct chsc_header request;
-@@ -1266,7 +1266,7 @@ int chsc_sstpc(void *page, unsigned int
- 		unsigned int rsvd2[5];
- 		struct chsc_header response;
- 		unsigned int rsvd3[3];
--		u64 clock_delta;
-+		s64 clock_delta;
- 		unsigned int rsvd4[2];
- 	} *rr;
- 	int rc;
+ 	/*
 
 
