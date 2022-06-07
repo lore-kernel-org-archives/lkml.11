@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E152FCCA496
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B46BCCA49A
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348334AbiFGRgN (ORCPT
+        id S1348692AbiFGRgl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:36:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42266 "EHLO
+        Tue, 7 Jun 2022 13:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346847AbiFGR30 (ORCPT
+        with ESMTP id S1347128AbiFGRaF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:29:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04DF10C339;
-        Tue,  7 Jun 2022 10:24:46 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B6461059F8;
+        Tue,  7 Jun 2022 10:25:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30E33B81F38;
-        Tue,  7 Jun 2022 17:24:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88D64C34115;
-        Tue,  7 Jun 2022 17:24:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8909F60C7C;
+        Tue,  7 Jun 2022 17:25:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99927C3411C;
+        Tue,  7 Jun 2022 17:25:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622683;
-        bh=kxHHrE51XaHpmRPHLt53zkot9Ymqh8JybVNZ/Bwxiww=;
+        s=korg; t=1654622752;
+        bh=p0mKdJIcev35d5O3zQ9pHkKJ9Fx9jtlnQMK8XtBBd9s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NX63KTYJt4EOQWZe/hy09N5yUH7kSCNGcrVpeFN2z9WZF/4DPBM7MfdxH+oqdwC9L
-         KheziKBcbyNWMNTsJrN0WdXC4Na1/SvM+f4UDDyqDTCaIm7jqGvGviC46HLpq7ED9M
-         MUTl/HzcXoB8Yi2R/1Sn7Vi/UKnJ4Tgvz2OUg6qo=
+        b=oyU80sw5b/qXETna7BsBwzL+Jx81TlcQfRS4dBPP1HRhelaVYy0rE2CGOIUHWVm8P
+         9RrxmEVc7wdew8SuRuSwoobDrVqrgNPGgvn8O/oc68W+kEjVVQacAIMkeTXAcoK8bH
+         f19zg2KZJUEmlSIxYiVUNVWiFqu7cuw+1l8JNiGs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 146/452] drbd: fix duplicate array initializer
-Date:   Tue,  7 Jun 2022 19:00:03 +0200
-Message-Id: <20220607164912.910756523@linuxfoundation.org>
+Subject: [PATCH 5.10 171/452] ASoC: rk3328: fix disabling mclk on pclk probe failure
+Date:   Tue,  7 Jun 2022 19:00:28 +0200
+Message-Id: <20220607164913.657533718@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,89 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
 
-[ Upstream commit 33cb0917bbe241dd17a2b87ead63514c1b7e5615 ]
+[ Upstream commit dd508e324cdde1c06ace08a8143fa50333a90703 ]
 
-There are two initializers for P_RETRY_WRITE:
+If preparing/enabling the pclk fails, the probe function should
+unprepare and disable the previously prepared and enabled mclk,
+which it doesn't do. This commit rectifies this.
 
-drivers/block/drbd/drbd_main.c:3676:22: warning: initialized field overwritten [-Woverride-init]
-
-Remove the first one since it was already ignored by the compiler
-and reorder the list to match the enum definition. As P_ZEROES had
-no entry, add that one instead.
-
-Fixes: 036b17eaab93 ("drbd: Receiving part for the PROTOCOL_UPDATE packet")
-Fixes: f31e583aa2c2 ("drbd: introduce P_ZEROES (REQ_OP_WRITE_ZEROES on the "wire")")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
-Link: https://lore.kernel.org/r/20220406190715.1938174-2-christoph.boehmwalder@linbit.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: c32759035ad2 ("ASoC: rockchip: support ACODEC for rk3328")
+Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Reviewed-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
+Link: https://lore.kernel.org/r/20220427172310.138638-1-frattaroli.nicolas@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/drbd/drbd_main.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ sound/soc/codecs/rk3328_codec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index 3cdbd81f983f..407527ff6b1f 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -3631,9 +3631,8 @@ const char *cmdname(enum drbd_packet cmd)
- 	 * when we want to support more than
- 	 * one PRO_VERSION */
- 	static const char *cmdnames[] = {
-+
- 		[P_DATA]	        = "Data",
--		[P_WSAME]	        = "WriteSame",
--		[P_TRIM]	        = "Trim",
- 		[P_DATA_REPLY]	        = "DataReply",
- 		[P_RS_DATA_REPLY]	= "RSDataReply",
- 		[P_BARRIER]	        = "Barrier",
-@@ -3644,7 +3643,6 @@ const char *cmdname(enum drbd_packet cmd)
- 		[P_DATA_REQUEST]	= "DataRequest",
- 		[P_RS_DATA_REQUEST]     = "RSDataRequest",
- 		[P_SYNC_PARAM]	        = "SyncParam",
--		[P_SYNC_PARAM89]	= "SyncParam89",
- 		[P_PROTOCOL]            = "ReportProtocol",
- 		[P_UUIDS]	        = "ReportUUIDs",
- 		[P_SIZES]	        = "ReportSizes",
-@@ -3652,6 +3650,7 @@ const char *cmdname(enum drbd_packet cmd)
- 		[P_SYNC_UUID]           = "ReportSyncUUID",
- 		[P_AUTH_CHALLENGE]      = "AuthChallenge",
- 		[P_AUTH_RESPONSE]	= "AuthResponse",
-+		[P_STATE_CHG_REQ]       = "StateChgRequest",
- 		[P_PING]		= "Ping",
- 		[P_PING_ACK]	        = "PingAck",
- 		[P_RECV_ACK]	        = "RecvAck",
-@@ -3662,24 +3661,26 @@ const char *cmdname(enum drbd_packet cmd)
- 		[P_NEG_DREPLY]	        = "NegDReply",
- 		[P_NEG_RS_DREPLY]	= "NegRSDReply",
- 		[P_BARRIER_ACK]	        = "BarrierAck",
--		[P_STATE_CHG_REQ]       = "StateChgRequest",
- 		[P_STATE_CHG_REPLY]     = "StateChgReply",
- 		[P_OV_REQUEST]          = "OVRequest",
- 		[P_OV_REPLY]            = "OVReply",
- 		[P_OV_RESULT]           = "OVResult",
- 		[P_CSUM_RS_REQUEST]     = "CsumRSRequest",
- 		[P_RS_IS_IN_SYNC]	= "CsumRSIsInSync",
-+		[P_SYNC_PARAM89]	= "SyncParam89",
- 		[P_COMPRESSED_BITMAP]   = "CBitmap",
- 		[P_DELAY_PROBE]         = "DelayProbe",
- 		[P_OUT_OF_SYNC]		= "OutOfSync",
--		[P_RETRY_WRITE]		= "RetryWrite",
- 		[P_RS_CANCEL]		= "RSCancel",
- 		[P_CONN_ST_CHG_REQ]	= "conn_st_chg_req",
- 		[P_CONN_ST_CHG_REPLY]	= "conn_st_chg_reply",
- 		[P_RETRY_WRITE]		= "retry_write",
- 		[P_PROTOCOL_UPDATE]	= "protocol_update",
-+		[P_TRIM]	        = "Trim",
- 		[P_RS_THIN_REQ]         = "rs_thin_req",
- 		[P_RS_DEALLOCATED]      = "rs_deallocated",
-+		[P_WSAME]	        = "WriteSame",
-+		[P_ZEROES]		= "Zeroes",
+diff --git a/sound/soc/codecs/rk3328_codec.c b/sound/soc/codecs/rk3328_codec.c
+index aed18cbb9f68..e40b97929f6c 100644
+--- a/sound/soc/codecs/rk3328_codec.c
++++ b/sound/soc/codecs/rk3328_codec.c
+@@ -481,7 +481,7 @@ static int rk3328_platform_probe(struct platform_device *pdev)
+ 	ret = clk_prepare_enable(rk3328->pclk);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to enable acodec pclk\n");
+-		return ret;
++		goto err_unprepare_mclk;
+ 	}
  
- 		/* enum drbd_packet, but not commands - obsoleted flags:
- 		 *	P_MAY_IGNORE
+ 	base = devm_platform_ioremap_resource(pdev, 0);
 -- 
 2.35.1
 
