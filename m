@@ -2,154 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADEBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:38:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A597EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237735AbiFGHh5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 03:37:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49646 "EHLO
+        id S237740AbiFGHii (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 03:38:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237718AbiFGHhw (ORCPT
+        with ESMTP id S231752AbiFGHid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 03:37:52 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B892211814
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 00:37:49 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LHMbh3fGCz1KDRp;
-        Tue,  7 Jun 2022 15:36:00 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 7 Jun 2022 15:37:22 +0800
-Received: from [10.174.177.243] (10.174.177.243) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 7 Jun 2022 15:37:11 +0800
-Message-ID: <134e7578-cfd5-2cc0-e878-5c403e9c21b0@huawei.com>
-Date:   Tue, 7 Jun 2022 15:37:10 +0800
+        Tue, 7 Jun 2022 03:38:33 -0400
+Received: from mail-0201.mail-europe.com (mail-0201.mail-europe.com [51.77.79.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A81E7CB7D;
+        Tue,  7 Jun 2022 00:38:32 -0700 (PDT)
+Date:   Tue, 07 Jun 2022 07:38:20 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+        s=protonmail3; t=1654587507; x=1654846707;
+        bh=D9FtRQsL64UZzeNlDSZGhV3sxAUQRz/jzb9A2KCTcNc=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:Feedback-ID:From:To:
+         Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID;
+        b=lprYmJZmwMJvTYN0JJVzs8F7A0ZlKvZQjbW63QrWTgcjshwNqOYQ/cxsJQk/rm3zq
+         6y8S6HvRriarbwUhAO01eym7shmHUYNgq/q0FRm4HKmuhi4Dbcj5+PnKTb3QzIL35x
+         /JoZk/vUka8VsfNL5bH0brICZepJ4wNHuRQVwSI8LNFdRPj/3e/JKVvXtHLLDs07r1
+         f0BUwG2VU8ePeu2ojyE2Rg/Ryu3e1EEF1YSnnowar60Epx9iQTy1QYBSpRE/B6h367
+         8JRyvo4KVZB8lt900CqQr6qe18iNeH9Jz/EjlH7E9v7ke39eY/de6U/sy4jEtLx0lA
+         9j6OsaTM/hkAw==
+To:     linux-kernel@vger.kernel.org
+From:   "Lin, Meng-Bo" <linmengbo0689@protonmail.com>
+Cc:     dmitry.torokhov@gmail.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, rydberg@bitmath.org,
+        zhengyongjun3@huawei.com, linux-input@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        ~postmarketos/upstreaming@lists.sr.ht, andi.shyti@samsung.com,
+        stephan@gerhold.net, nikita@trvn.ru
+Reply-To: "Lin, Meng-Bo" <linmengbo0689@protonmail.com>
+Subject: [PATCH] input: stmfts: Add #define STMFTS_RETRY_COUNT 3
+Message-ID: <20220607073809.21458-1-linmengbo0689@protonmail.com>
+Feedback-ID: 40467236:user:proton
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v4 4/6] mm: ioremap: Add ioremap/iounmap_allowed()
-Content-Language: en-US
-To:     Baoquan He <bhe@redhat.com>
-CC:     <catalin.marinas@arm.com>, <will@kernel.org>,
-        <akpm@linux-foundation.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        <hch@infradead.org>, <arnd@arndb.de>, <anshuman.khandual@arm.com>
-References: <20220606074815.139265-1-wangkefeng.wang@huawei.com>
- <20220606074815.139265-5-wangkefeng.wang@huawei.com>
- <Yp4Zyt/WJjy3Mj4Y@MiWiFi-R3L-srv>
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-In-Reply-To: <Yp4Zyt/WJjy3Mj4Y@MiWiFi-R3L-srv>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.243]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add #define STMFTS_RETRY_COUNT 3 to retry stmfts_command() 3 times.
+Without it, STMFTS_SYSTEM_RESET or STMFTS_SLEEP_OUT may return -ETIMEDOUT
+to failed attempt due to no event received for the completion.
 
-On 2022/6/6 23:14, Baoquan He wrote:
-> On 06/06/22 at 03:48pm, Kefeng Wang wrote:
->> Add special hook for architecture to verify addr, size or prot
->> when ioremap() or iounmap(), which will make the generic ioremap
->> more useful.
->>
->>    ioremap_allowed() return an int,
->>      - NULL means continue to remap
->>      - error code means skip remap and return directly
->>    iounmap_allowed() return an int,
->>      - 0 means continue to vunmap
->>      - error code means skip vunmap and return directly
-> Aren't they bool type function and better return bool value?
+Signed-off-by: Lin, Meng-Bo <linmengbo0689@protonmail.com>
+---
+ drivers/input/touchscreen/stmfts.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-Ok, let's keep it simple, back to v1's version , use bool, if we want to 
-extend
+diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen=
+/stmfts.c
+index c175d44c52f3..730035f5c62c 100644
+--- a/drivers/input/touchscreen/stmfts.c
++++ b/drivers/input/touchscreen/stmfts.c
+@@ -68,6 +68,7 @@
+ #define STMFTS_DATA_MAX_SIZE=09(STMFTS_EVENT_SIZE * STMFTS_STACK_DEPTH)
+ #define STMFTS_MAX_FINGERS=0910
+ #define STMFTS_DEV_NAME=09=09"stmfts"
++#define STMFTS_RETRY_COUNT=093
+=20
+ enum stmfts_regulators {
+ =09STMFTS_REGULATOR_VDD,
+@@ -317,19 +318,20 @@ static irqreturn_t stmfts_irq_handler(int irq, void *=
+dev)
+=20
+ static int stmfts_command(struct stmfts_data *sdata, const u8 cmd)
+ {
+-=09int err;
++=09int err, retry;
+=20
+ =09reinit_completion(&sdata->cmd_done);
+=20
+-=09err =3D i2c_smbus_write_byte(sdata->client, cmd);
+-=09if (err)
+-=09=09return err;
+-
+-=09if (!wait_for_completion_timeout(&sdata->cmd_done,
+-=09=09=09=09=09 msecs_to_jiffies(1000)))
+-=09=09return -ETIMEDOUT;
++=09for (retry =3D 0; retry < STMFTS_RETRY_COUNT; retry++) {
++=09=09err =3D i2c_smbus_write_byte(sdata->client, cmd);
++=09=09if (err)
++=09=09=09return err;
+=20
+-=09return 0;
++=09=09if (wait_for_completion_timeout(&sdata->cmd_done,
++=09=09=09=09=09=09msecs_to_jiffies(1000)))
++=09=09=09return 0;
++=09}
++=09return -ETIMEDOUT;
+ }
+=20
+ static int stmfts_input_open(struct input_dev *dev)
+--=20
+2.30.2
 
-them,  do it later.
 
->
->> Acked-by: Andrew Morton <akpm@linux-foundation.org>
->> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
->> ---
->>   include/asm-generic/io.h | 25 +++++++++++++++++++++++++
->>   mm/ioremap.c             | 13 ++++++++++---
->>   2 files changed, 35 insertions(+), 3 deletions(-)
->>
->> diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
->> index e6ffa2519f08..9429387a3e65 100644
->> --- a/include/asm-generic/io.h
->> +++ b/include/asm-generic/io.h
->> @@ -964,6 +964,31 @@ static inline void iounmap(volatile void __iomem *addr)
->>   #elif defined(CONFIG_GENERIC_IOREMAP)
->>   #include <linux/pgtable.h>
->>   
->> +/*
->> + * Arch code can implement the following two special hooks when using GENERIC_IOREMAP
->> + * ioremap_allowed() return an int,
->> + *   - 0 means continue to remap
->> + *   - error code means skip remap and return directly
->> + * iounmap_allowed() return an int,
->> + *   - 0 means continue to vunmap
->> + *   - error code means skip vunmap and return directly
->> + */
->> +#ifndef ioremap_allowed
->> +#define ioremap_allowed ioremap_allowed
->> +static inline int ioremap_allowed(phys_addr_t phys_addr, size_t size, unsigned long prot)
->> +{
->> +	return 0;
->> +}
->> +#endif
->> +
->> +#ifndef iounmap_allowed
->> +#define iounmap_allowed iounmap_allowed
->> +static inline int iounmap_allowed(void __iomem *addr)
->> +{
->> +	return 0;
->> +}
->> +#endif
->> +
->>   void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long prot);
->>   void iounmap(volatile void __iomem *addr);
->>   
->> diff --git a/mm/ioremap.c b/mm/ioremap.c
->> index 7cb9996b0c12..196c93c0beb8 100644
->> --- a/mm/ioremap.c
->> +++ b/mm/ioremap.c
->> @@ -27,8 +27,10 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long pro
->>   	phys_addr -= offset;
->>   	size = PAGE_ALIGN(size + offset);
->>   
->> -	area = get_vm_area_caller(size, VM_IOREMAP,
->> -			__builtin_return_address(0));
->> +	if (ioremap_allowed(phys_addr, size, prot))
->> +		return NULL;
->> +
->> +	area = get_vm_area_caller(size, VM_IOREMAP, __builtin_return_address(0));
->>   	if (!area)
->>   		return NULL;
->>   	vaddr = (unsigned long)area->addr;
->> @@ -45,6 +47,11 @@ EXPORT_SYMBOL(ioremap_prot);
->>   
->>   void iounmap(volatile void __iomem *addr)
->>   {
->> -	vunmap((void *)((unsigned long)addr & PAGE_MASK));
->> +	void __iomem *vaddr = (void __iomem *)((unsigned long)addr & PAGE_MASK);
->> +
->> +	if (iounmap_allowed(vaddr))
->> +		return;
->> +
->> +	vunmap((void __force *)vaddr);
->>   }
->>   EXPORT_SYMBOL(iounmap);
->> -- 
->> 2.35.3
->>
->>
-> .
