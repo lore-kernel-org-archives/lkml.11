@@ -2,111 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 808C4CCA495
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A1DCCA496
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386261AbiFHBFA (ORCPT
+        id S1387636AbiFHBFW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47592 "EHLO
+        Tue, 7 Jun 2022 21:05:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382627AbiFGVz5 (ORCPT
+        with ESMTP id S1381831AbiFGWnn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:55:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8772524CC86;
-        Tue,  7 Jun 2022 12:13:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 7 Jun 2022 18:43:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 874D8295671
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:34:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654630448;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8PKbb/kNEHwMbrLFgS7c+rz5+fFiqO5VtrkEPhcXyas=;
+        b=dcCS9yq2cyK+nCEsjpJ9n+HLeHaoxfc/21UG2yhOnPqc78F0AOSA6LlnS4O2uaiRRn1mxV
+        q5knIgMOrfyzlp1By9c6+ZAENsS22gOYUS0VCg21ftPCS0YFKEHDqJiOjxKFLM38anbOxk
+        ZxOBQUQNqX/v7uDOY9VSEGwRGTxcdUE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-210-030H7GMpPe2RsCwIeRuufg-1; Tue, 07 Jun 2022 15:34:05 -0400
+X-MC-Unique: 030H7GMpPe2RsCwIeRuufg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09916B8233E;
-        Tue,  7 Jun 2022 19:13:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BACDC385A2;
-        Tue,  7 Jun 2022 19:13:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629224;
-        bh=TW1TVHmJIGoy6nezueTSKh5wbrNGBopgYLaRDfqALbg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iCWviPm4wvS8/WFxS79uFNePmUqArOPMC2LcAUnUYRoVYSqz+yWxsS5G69lklOxef
-         HWKoVCE7po1cq14tONJcU8hKZidehOS0y0yGbW877IIx0G9JWzsA4Poe3HQBzdVGta
-         XmWY+CqUbFaFWHuRoKE9/2xCtWw5rIlirbGvqEv8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
-        hui li <juanfengpy@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 614/879] proc: fix dentry/inode overinstantiating under /proc/${pid}/net
-Date:   Tue,  7 Jun 2022 19:02:12 +0200
-Message-Id: <20220607165020.670979168@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 23B20106657E;
+        Tue,  7 Jun 2022 19:32:39 +0000 (UTC)
+Received: from emerald.redhat.com (unknown [10.22.9.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 415FE26AF43C;
+        Tue,  7 Jun 2022 19:32:10 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org
+Cc:     Wayne Lin <Wayne.Lin@amd.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RESEND RFC 05/18] drm/display/dp_mst: Fix confusing docs for drm_dp_atomic_release_time_slots()
+Date:   Tue,  7 Jun 2022 15:29:20 -0400
+Message-Id: <20220607192933.1333228-6-lyude@redhat.com>
+In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
+References: <20220607192933.1333228-1-lyude@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Dobriyan <adobriyan@gmail.com>
+For some reason we mention returning 0 if "slots have been added back to
+drm_dp_mst_topology_state->avail_slots". This is totally misleading,
+avail_slots is simply for figuring out the total number of slots available
+in total on the topology and has no relation to the current payload
+allocations.
 
-[ Upstream commit 7055197705709c59b8ab77e6a5c7d46d61edd96e ]
+So, let's get rid of that comment.
 
-When a process exits, /proc/${pid}, and /proc/${pid}/net dentries are
-flushed.  However some leaf dentries like /proc/${pid}/net/arp_cache
-aren't.  That's because respective PDEs have proc_misc_d_revalidate() hook
-which returns 1 and leaves dentries/inodes in the LRU.
-
-Force revalidation/lookup on everything under /proc/${pid}/net by
-inheriting proc_net_dentry_ops.
-
-[akpm@linux-foundation.org: coding-style cleanups]
-Link: https://lkml.kernel.org/r/YjdVHgildbWO7diJ@localhost.localdomain
-Fixes: c6c75deda813 ("proc: fix lookup in /proc/net subdirectories after setns(2)")
-Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
-Reported-by: hui li <juanfengpy@gmail.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Imre Deak <imre.deak@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sean Paul <sean@poorly.run>
 ---
- fs/proc/generic.c  | 3 +++
- fs/proc/proc_net.c | 3 +++
- 2 files changed, 6 insertions(+)
+ drivers/gpu/drm/display/drm_dp_mst_topology.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/fs/proc/generic.c b/fs/proc/generic.c
-index f2132407e133..587b91d9d998 100644
---- a/fs/proc/generic.c
-+++ b/fs/proc/generic.c
-@@ -448,6 +448,9 @@ static struct proc_dir_entry *__proc_create(struct proc_dir_entry **parent,
- 	proc_set_user(ent, (*parent)->uid, (*parent)->gid);
- 
- 	ent->proc_dops = &proc_misc_dentry_ops;
-+	/* Revalidate everything under /proc/${pid}/net */
-+	if ((*parent)->proc_dops == &proc_net_dentry_ops)
-+		pde_force_lookup(ent);
- 
- out:
- 	return ent;
-diff --git a/fs/proc/proc_net.c b/fs/proc/proc_net.c
-index e1cfeda397f3..913e5acefbb6 100644
---- a/fs/proc/proc_net.c
-+++ b/fs/proc/proc_net.c
-@@ -376,6 +376,9 @@ static __net_init int proc_net_ns_init(struct net *net)
- 
- 	proc_set_user(netd, uid, gid);
- 
-+	/* Seed dentry revalidation for /proc/${pid}/net */
-+	pde_force_lookup(netd);
-+
- 	err = -EEXIST;
- 	net_statd = proc_net_mkdir(net, "stat", netd);
- 	if (!net_statd)
+diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+index 702ff5d9ecc7..ec52f91b1f0e 100644
+--- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
++++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+@@ -4467,8 +4467,7 @@ EXPORT_SYMBOL(drm_dp_atomic_find_time_slots);
+  * drm_dp_mst_atomic_check()
+  *
+  * Returns:
+- * 0 if all slots for this port were added back to
+- * &drm_dp_mst_topology_state.avail_slots or negative error code
++ * 0 on success, negative error code otherwise
+  */
+ int drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
+ 				     struct drm_dp_mst_topology_mgr *mgr,
 -- 
-2.35.1
-
-
+2.35.3
 
