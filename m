@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36CB0C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 185A9C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442007AbiFHCGM (ORCPT
+        id S1392580AbiFHCGE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46984 "EHLO
+        Tue, 7 Jun 2022 22:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1841781AbiFHAIO (ORCPT
+        with ESMTP id S1841792AbiFHAIP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:08:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674E2267CE4;
-        Tue,  7 Jun 2022 12:21:37 -0700 (PDT)
+        Tue, 7 Jun 2022 20:08:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6355E277F99;
+        Tue,  7 Jun 2022 12:24:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 789FAB823CC;
-        Tue,  7 Jun 2022 19:21:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEA7AC385A5;
-        Tue,  7 Jun 2022 19:21:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB029B8220B;
+        Tue,  7 Jun 2022 19:24:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C95C385A2;
+        Tue,  7 Jun 2022 19:24:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629694;
-        bh=GmrMzbqcZ2nl6Mbbuu93Fv32BUR3uWJx+cJ6lsJTsWU=;
+        s=korg; t=1654629857;
+        bh=vpSNYfIzcxUQoPILJ0ylefa5STRl67qyKm19jCNCdZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gQL19/RCxBR47po3oG7o7UK7viVmjQS+zR/PO0AbinNyLLX/i36rehHQJI6q1zmn7
-         TnCRgJJQQg0jBWMLSsLT+uT+ygsxImofP26Phc8XAHXSqIkZj70nxENiST0VjQS/Ho
-         RbZn6N2Xk6Ron9mzw7qu782ijQANcxdUPbmX7E+s=
+        b=kCo4P1OgK74SPF2W2mKM5/J5k25ge9WDwlia7+IgYe1+XKvd5edbaBGz4VDt21yhO
+         OnDG0CTdeexKceMuzQQfSCL3SOdD4tisntgMPMQFxLGoDE3NGlH032nUELQ8lvLkMx
+         YzFT4Xr/+iCtJ07i6W4IiAn/AAxmgqBa4cWcvVg8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.18 783/879] selftests/landlock: Add tests for O_PATH
-Date:   Tue,  7 Jun 2022 19:05:01 +0200
-Message-Id: <20220607165025.597516138@linuxfoundation.org>
+        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.18 841/879] bcache: remove incremental dirty sector counting for bch_sectors_dirty_init()
+Date:   Tue,  7 Jun 2022 19:05:59 +0200
+Message-Id: <20220607165027.262912637@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,49 +49,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+From: Coly Li <colyli@suse.de>
 
-commit d1788ad990874734341b05ab8ccb6448c09c6422 upstream.
+commit 80db4e4707e78cb22287da7d058d7274bd4cb370 upstream.
 
-The O_PATH flag is currently not handled by Landlock.  Let's make sure
-this behavior will remain consistent with the same ruleset over time.
+After making bch_sectors_dirty_init() being multithreaded, the existing
+incremental dirty sector counting in bch_root_node_dirty_init() doesn't
+release btree occupation after iterating 500000 (INIT_KEYS_EACH_TIME)
+bkeys. Because a read lock is added on btree root node to prevent the
+btree to be split during the dirty sectors counting, other I/O requester
+has no chance to gain the write lock even restart bcache_btree().
 
-Cc: Shuah Khan <shuah@kernel.org>
-Link: https://lore.kernel.org/r/20220506160820.524344-8-mic@digikod.net
+That is to say, the incremental dirty sectors counting is incompatible
+to the multhreaded bch_sectors_dirty_init(). We have to choose one and
+drop another one.
+
+In my testing, with 512 bytes random writes, I generate 1.2T dirty data
+and a btree with 400K nodes. With single thread and incremental dirty
+sectors counting, it takes 30+ minites to register the backing device.
+And with multithreaded dirty sectors counting, the backing device
+registration can be accomplished within 2 minutes.
+
+The 30+ minutes V.S. 2- minutes difference makes me decide to keep
+multithreaded bch_sectors_dirty_init() and drop the incremental dirty
+sectors counting. This is what this patch does.
+
+But INIT_KEYS_EACH_TIME is kept, in sectors_dirty_init_fn() the CPU
+will be released by cond_resched() after every INIT_KEYS_EACH_TIME keys
+iterated. This is to avoid the watchdog reports a bogus soft lockup
+warning.
+
+Fixes: b144e45fc576 ("bcache: make bch_sectors_dirty_init() to be multithreaded")
+Signed-off-by: Coly Li <colyli@suse.de>
 Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Link: https://lore.kernel.org/r/20220524102336.10684-4-colyli@suse.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/landlock/fs_test.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/md/bcache/writeback.c |   39 ++++++++++++---------------------------
+ 1 file changed, 12 insertions(+), 27 deletions(-)
 
---- a/tools/testing/selftests/landlock/fs_test.c
-+++ b/tools/testing/selftests/landlock/fs_test.c
-@@ -654,17 +654,23 @@ TEST_F_FORK(layout1, effective_access)
- 	enforce_ruleset(_metadata, ruleset_fd);
- 	ASSERT_EQ(0, close(ruleset_fd));
+--- a/drivers/md/bcache/writeback.c
++++ b/drivers/md/bcache/writeback.c
+@@ -805,13 +805,11 @@ static int bch_writeback_thread(void *ar
  
--	/* Tests on a directory. */
-+	/* Tests on a directory (with or without O_PATH). */
- 	ASSERT_EQ(EACCES, test_open("/", O_RDONLY));
-+	ASSERT_EQ(0, test_open("/", O_RDONLY | O_PATH));
- 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY));
-+	ASSERT_EQ(0, test_open(dir_s1d1, O_RDONLY | O_PATH));
- 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDONLY));
-+	ASSERT_EQ(0, test_open(file1_s1d1, O_RDONLY | O_PATH));
+ /* Init */
+ #define INIT_KEYS_EACH_TIME	500000
+-#define INIT_KEYS_SLEEP_MS	100
+ 
+ struct sectors_dirty_init {
+ 	struct btree_op	op;
+ 	unsigned int	inode;
+ 	size_t		count;
+-	struct bkey	start;
+ };
+ 
+ static int sectors_dirty_init_fn(struct btree_op *_op, struct btree *b,
+@@ -827,11 +825,8 @@ static int sectors_dirty_init_fn(struct
+ 					     KEY_START(k), KEY_SIZE(k));
+ 
+ 	op->count++;
+-	if (atomic_read(&b->c->search_inflight) &&
+-	    !(op->count % INIT_KEYS_EACH_TIME)) {
+-		bkey_copy_key(&op->start, k);
+-		return -EAGAIN;
+-	}
++	if (!(op->count % INIT_KEYS_EACH_TIME))
++		cond_resched();
+ 
+ 	return MAP_CONTINUE;
+ }
+@@ -846,24 +841,16 @@ static int bch_root_node_dirty_init(stru
+ 	bch_btree_op_init(&op.op, -1);
+ 	op.inode = d->id;
+ 	op.count = 0;
+-	op.start = KEY(op.inode, 0, 0);
+ 
+-	do {
+-		ret = bcache_btree(map_keys_recurse,
+-				   k,
+-				   c->root,
+-				   &op.op,
+-				   &op.start,
+-				   sectors_dirty_init_fn,
+-				   0);
+-		if (ret == -EAGAIN)
+-			schedule_timeout_interruptible(
+-				msecs_to_jiffies(INIT_KEYS_SLEEP_MS));
+-		else if (ret < 0) {
+-			pr_warn("sectors dirty init failed, ret=%d!\n", ret);
+-			break;
+-		}
+-	} while (ret == -EAGAIN);
++	ret = bcache_btree(map_keys_recurse,
++			   k,
++			   c->root,
++			   &op.op,
++			   &KEY(op.inode, 0, 0),
++			   sectors_dirty_init_fn,
++			   0);
++	if (ret < 0)
++		pr_warn("sectors dirty init failed, ret=%d!\n", ret);
+ 
+ 	return ret;
+ }
+@@ -907,7 +894,6 @@ static int bch_dirty_init_thread(void *a
+ 				goto out;
+ 			}
+ 			skip_nr--;
+-			cond_resched();
+ 		}
+ 
+ 		if (p) {
+@@ -917,7 +903,6 @@ static int bch_dirty_init_thread(void *a
+ 
+ 		p = NULL;
+ 		prev_idx = cur_idx;
+-		cond_resched();
+ 	}
+ 
+ out:
+@@ -956,11 +941,11 @@ void bch_sectors_dirty_init(struct bcach
+ 		bch_btree_op_init(&op.op, -1);
+ 		op.inode = d->id;
+ 		op.count = 0;
+-		op.start = KEY(op.inode, 0, 0);
+ 
+ 		for_each_key_filter(&c->root->keys,
+ 				    k, &iter, bch_ptr_invalid)
+ 			sectors_dirty_init_fn(&op.op, c->root, k);
 +
- 	ASSERT_EQ(0, test_open(dir_s1d2, O_RDONLY));
- 	ASSERT_EQ(0, test_open(file1_s1d2, O_RDONLY));
- 	ASSERT_EQ(0, test_open(dir_s1d3, O_RDONLY));
- 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDONLY));
- 
--	/* Tests on a file. */
-+	/* Tests on a file (with or without O_PATH). */
- 	ASSERT_EQ(EACCES, test_open(dir_s2d2, O_RDONLY));
-+	ASSERT_EQ(0, test_open(dir_s2d2, O_RDONLY | O_PATH));
-+
- 	ASSERT_EQ(0, test_open(file1_s2d2, O_RDONLY));
- 
- 	/* Checks effective read and write actions. */
+ 		rw_unlock(0, c->root);
+ 		return;
+ 	}
 
 
