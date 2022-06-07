@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C2B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:39:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C6CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:41:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352458AbiFGSjn (ORCPT
+        id S1352503AbiFGSjx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52786 "EHLO
+        Tue, 7 Jun 2022 14:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350398AbiFGSK5 (ORCPT
+        with ESMTP id S1350462AbiFGSLA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:10:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76DA85EE4;
-        Tue,  7 Jun 2022 10:48:38 -0700 (PDT)
+        Tue, 7 Jun 2022 14:11:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D426EC67;
+        Tue,  7 Jun 2022 10:48:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1F7E6170B;
-        Tue,  7 Jun 2022 17:48:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0D01C385A5;
-        Tue,  7 Jun 2022 17:48:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7DB5B82239;
+        Tue,  7 Jun 2022 17:48:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A7ADC34115;
+        Tue,  7 Jun 2022 17:48:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624115;
-        bh=1vuZle/aJdf8IXFfMGotKYrT8HQrM8syeDFZeWAjPJM=;
+        s=korg; t=1654624084;
+        bh=JqfzZlWXzIpjCYyfXxBmymB6QuLGjqABK8mina/XokU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JE/s9n8ku4iH2M2l4FoDRbSNvnr0rHdOsQYvpI2b2rbKjcf2AMFqZHDGpIDAb87fh
-         NgXnsEVjg/TceGDMAkp0G3dcrR/jwflJVe06gkuiyN7F274VgaIeQZO9Dp2/uf+7Ej
-         ZQUR8pfyTZvtN0cKUQLedcZl5pvgon9AeOfZDlK4=
+        b=IlP4gP6Fg0NqhI7zAHyPJJPMIw7dt5alKnfJXvXK/3Y0Z53mTomjKPv7vfOODW0Mv
+         zOdowAXmgpQe3gobrIjTRhxnsFA0TNYoZq6ktz48c+6/Dk7Y0KqbY5J8EyptJekHN1
+         VJtWxqRjYHpg5w15iXJb/Wzx+noFD1cjwQ0waa1U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Miles Chen <miles.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Zhiqiang Lin <zhiqiang.lin@mediatek.com>,
+        CK Hu <ck.hu@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 209/667] spi: spi-ti-qspi: Fix return value handling of wait_for_completion_timeout
-Date:   Tue,  7 Jun 2022 18:57:54 +0200
-Message-Id: <20220607164941.066387237@linuxfoundation.org>
+Subject: [PATCH 5.15 199/667] drm/mediatek: Fix mtk_cec_mask()
+Date:   Tue,  7 Jun 2022 18:57:44 +0200
+Message-Id: <20220607164940.768509075@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,48 +55,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Miles Chen <miles.chen@mediatek.com>
 
-[ Upstream commit 8b1ea69a63eb62f97cef63e6d816b64ed84e8760 ]
+[ Upstream commit 2c5d69b0a141e1e98febe3111e6f4fd8420493a5 ]
 
-wait_for_completion_timeout() returns unsigned long not int.
-It returns 0 if timed out, and positive if completed.
-The check for <= 0 is ambiguous and should be == 0 here
-indicating timeout which is the only error case.
+In current implementation, mtk_cec_mask() writes val into target register
+and ignores the mask. After talking to our hdmi experts, mtk_cec_mask()
+should read a register, clean only mask bits, and update (val | mask) bits
+to the register.
 
-Fixes: 5720ec0a6d26 ("spi: spi-ti-qspi: Add DMA support for QSPI mmap read")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220411111034.24447-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220315232301.2434-1-miles.chen@mediatek.com/
+Fixes: 8f83f26891e1 ("drm/mediatek: Add HDMI support")
+Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Zhiqiang Lin <zhiqiang.lin@mediatek.com>
+Cc: CK Hu <ck.hu@mediatek.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-ti-qspi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_cec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-ti-qspi.c b/drivers/spi/spi-ti-qspi.c
-index e06aafe169e0..081da1fd3fd7 100644
---- a/drivers/spi/spi-ti-qspi.c
-+++ b/drivers/spi/spi-ti-qspi.c
-@@ -448,6 +448,7 @@ static int ti_qspi_dma_xfer(struct ti_qspi *qspi, dma_addr_t dma_dst,
- 	enum dma_ctrl_flags flags = DMA_CTRL_ACK | DMA_PREP_INTERRUPT;
- 	struct dma_async_tx_descriptor *tx;
- 	int ret;
-+	unsigned long time_left;
+diff --git a/drivers/gpu/drm/mediatek/mtk_cec.c b/drivers/gpu/drm/mediatek/mtk_cec.c
+index e9cef5c0c8f7..cdfa648910b2 100644
+--- a/drivers/gpu/drm/mediatek/mtk_cec.c
++++ b/drivers/gpu/drm/mediatek/mtk_cec.c
+@@ -85,7 +85,7 @@ static void mtk_cec_mask(struct mtk_cec *cec, unsigned int offset,
+ 	u32 tmp = readl(cec->regs + offset) & ~mask;
  
- 	tx = dmaengine_prep_dma_memcpy(chan, dma_dst, dma_src, len, flags);
- 	if (!tx) {
-@@ -467,9 +468,9 @@ static int ti_qspi_dma_xfer(struct ti_qspi *qspi, dma_addr_t dma_dst,
- 	}
+ 	tmp |= val & mask;
+-	writel(val, cec->regs + offset);
++	writel(tmp, cec->regs + offset);
+ }
  
- 	dma_async_issue_pending(chan);
--	ret = wait_for_completion_timeout(&qspi->transfer_complete,
-+	time_left = wait_for_completion_timeout(&qspi->transfer_complete,
- 					  msecs_to_jiffies(len));
--	if (ret <= 0) {
-+	if (time_left == 0) {
- 		dmaengine_terminate_sync(chan);
- 		dev_err(qspi->dev, "DMA wait_for_completion_timeout\n");
- 		return -ETIMEDOUT;
+ void mtk_cec_set_hpd_event(struct device *dev,
 -- 
 2.35.1
 
