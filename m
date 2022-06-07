@@ -2,87 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BB45CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C8F8CCA47C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443880AbiFHCGx (ORCPT
+        id S1443823AbiFHCGk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48770 "EHLO
+        Tue, 7 Jun 2022 22:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1587938AbiFGXxv (ORCPT
+        with ESMTP id S1588068AbiFGXyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:53:51 -0400
-Received: from 18.mo583.mail-out.ovh.net (18.mo583.mail-out.ovh.net [178.33.45.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E194F62CCE
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:53:05 -0700 (PDT)
-Received: from player797.ha.ovh.net (unknown [10.109.143.238])
-        by mo583.mail-out.ovh.net (Postfix) with ESMTP id 0D06523597
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:04:41 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player797.ha.ovh.net (Postfix) with ESMTPSA id 6430E273D7B8A;
-        Tue,  7 Jun 2022 18:04:37 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-96R00165aeb14a-16f3-42df-8eb1-6353de198ae7,
-                    2B697642B4708974A8072F1FAB3368C632332CFF) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Robin van der Gracht <robin@protonic.nl>,
-        Miguel Ojeda <ojeda@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
-Subject: [PATCH] auxdisplay: ht16k33: Use backlight helper
-Date:   Tue,  7 Jun 2022 20:04:06 +0200
-Message-Id: <20220607180406.1116277-1-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
+        Tue, 7 Jun 2022 19:54:04 -0400
+Received: from todd.t-8ch.de (todd.t-8ch.de [159.69.126.157])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5019F6EC6E
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:55:54 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 00:55:48 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=weissschuh.net;
+        s=mail; t=1654642548;
+        bh=GKmspcdBAWIOqR/3BljCxm3zwnJIjgIflR7y21vWpks=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CgIjeww94QAkYJqcJd8V0NONcKTg2eSKdj8Km8wlj2XIm3HhwZjhvGB6Jhs0wrTlT
+         kx1VGh9lfaALmdiDdJkxxy35Mc0R7bMjwYNGNCJ725ll1UqXG37I+0Zm7XeKzvWOgX
+         ZveuXD2IozmQoV5qSTGebeKEIDxXFp0VeJh/5kxg=
+From:   Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <linux@weissschuh.net>
+To:     Keith Busch <kbusch@kernel.org>
+Cc:     Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] nvme: add device name to warning in uuid_show()
+Message-ID: <169e1083-3d0a-42e0-a600-c41b275623ee@t-8ch.de>
+References: <20220607155555.8623-1-linux@weissschuh.net>
+ <Yp94yTFrrkbBYqsj@kbusch-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 10608228924775761542
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvudcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleejrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekfe
+In-Reply-To: <Yp94yTFrrkbBYqsj@kbusch-mbp.dhcp.thefacebook.com>
+Jabber-ID: thomas@t-8ch.de
+X-Accept: text/plain, text/html;q=0.2, text/*;q=0.1
+X-Accept-Language: en-us, en;q=0.8, de-de;q=0.7, de;q=0.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-backlight_properties.fb_blank is deprecated. The states it represents
-are handled by other properties; but instead of accessing those
-properties directly, drivers should use the helpers provided by
-backlight.h.
+On 2022-06-07 10:11-0600, Keith Busch wrote:
+> On Tue, Jun 07, 2022 at 05:55:55PM +0200, Thomas Weißschuh wrote:
+> >  	if (uuid_is_null(&ids->uuid)) {
+> > -		printk_ratelimited(KERN_WARNING
+> > -				   "No UUID available providing old NGUID\n");
+> > +		dev_warn_ratelimited(dev, "No UUID available providing old NGUID\n");
+> >  		return sysfs_emit(buf, "%pU\n", ids->nguid);
+> 
+> The line split was correct to prevent this overly long line. But otherwise,
+> this looks good, though I'm wondering why this needs to be printed every time
+> someone reads the attribute.
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+Sorry about the long line, thought it looks nicer on one line and other
+(similar) lines in the file are also using up to 100 characters per line.
+Do you want me to resend it?
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Robin van der Gracht <robin@protonic.nl>
-Cc: Miguel Ojeda <ojeda@kernel.org>
----
- drivers/auxdisplay/ht16k33.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
-
-diff --git a/drivers/auxdisplay/ht16k33.c b/drivers/auxdisplay/ht16k33.c
-index 4fab3b2c7023..dbadff38999a 100644
---- a/drivers/auxdisplay/ht16k33.c
-+++ b/drivers/auxdisplay/ht16k33.c
-@@ -314,14 +314,9 @@ static int ht16k33_initialize(struct ht16k33_priv *priv)
- 
- static int ht16k33_bl_update_status(struct backlight_device *bl)
- {
--	int brightness = bl->props.brightness;
-+	int brightness = backlight_get_brightness(bl);
- 	struct ht16k33_priv *priv = bl_get_data(bl);
- 
--	if (bl->props.power != FB_BLANK_UNBLANK ||
--	    bl->props.fb_blank != FB_BLANK_UNBLANK ||
--	    bl->props.state & BL_CORE_FBBLANK)
--		brightness = 0;
--
- 	return ht16k33_brightness_set(priv, brightness);
- }
- 
-
-base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
--- 
-2.30.2
-
+No idea why has to be printed every time. A dev_warn_once() would be less
+spammy.
