@@ -2,54 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34BC8CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E63DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349666AbiFGSNC (ORCPT
+        id S1349833AbiFGSNI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:13:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33358 "EHLO
+        Tue, 7 Jun 2022 14:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350107AbiFGRvx (ORCPT
+        with ESMTP id S1350108AbiFGRvx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:51:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F29F1406D4;
-        Tue,  7 Jun 2022 10:39:29 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E92FC1406C2;
+        Tue,  7 Jun 2022 10:39:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 491DF6165E;
-        Tue,  7 Jun 2022 17:39:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52301C3411C;
-        Tue,  7 Jun 2022 17:39:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80440614BC;
+        Tue,  7 Jun 2022 17:38:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EDACC385A5;
+        Tue,  7 Jun 2022 17:38:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623557;
-        bh=y8J39zvDj6oVtSM9Ow0943daABhJNC5DsWV4hHHQdMw=;
+        s=korg; t=1654623529;
+        bh=P93cyAbJAwdWUFf2HFYq9K7w37mCzMvtd/q/MFN3/kw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NLF/nIVNRrhTPkyARBR4Fp6Ho7Z8BP/5zfAv0m8KcizrLhwiJ+QQ8+d+FUwSkM8+T
-         K2xqlIzYmXEm3UysZAOyNnnWn0UcVecxvqNysbqv2nXgvP1D/heoK1uGcP2zq3Q9d1
-         xhosdIpWuBAg5V7UDg9sz058XYOYE4AGE5asA9C4=
+        b=S9eCgzDKslaA2qQyeO1rEgGl/K/yI3SlIKqvWwbXGHWygeyN2IFlZrmUUreOAou+i
+         ye4pYLHi6b3ckZfPvbimDm5d/hoS8MwN5uWHJ0sPqyzlreUAkYOF8gP4wWllEdKF/X
+         jtjbQaGRYzaVcVBwyy411G3gNBNYFu26Ncv59OKk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 5.15 001/667] arm64: Initialize jump labels before setup_machine_fdt()
-Date:   Tue,  7 Jun 2022 18:54:26 +0200
-Message-Id: <20220607164934.818059668@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Stephen Zhang <starzhangzsd@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 5.10 450/452] MIPS: IP30: Remove incorrect `cpu_has_fpu override
+Date:   Tue,  7 Jun 2022 19:05:07 +0200
+Message-Id: <20220607164921.979767863@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
+In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
+References: <20220607164908.521895282@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -57,89 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-commit 73e2d827a501d48dceeb5b9b267a4cd283d6b1ae upstream.
+commit f44b3e74c33fe04defeff24ebcae98c3bcc5b285 upstream.
 
-A static key warning splat appears during early boot on arm64 systems
-that credit randomness from devicetrees that contain an "rng-seed"
-property. This is because setup_machine_fdt() is called before
-jump_label_init() during setup_arch(). Let's swap the order of these two
-calls so that jump labels are initialized before the devicetree is
-unflattened and the rng seed is credited.
+Remove unsupported forcing of `cpu_has_fpu' to 1, which makes the `nofpu'
+kernel parameter non-functional, and also causes a link error:
 
- static_key_enable_cpuslocked(): static key '0xffffffe51c6fcfc0' used before call to jump_label_init()
- WARNING: CPU: 0 PID: 0 at kernel/jump_label.c:166 static_key_enable_cpuslocked+0xb0/0xb8
- Modules linked in:
- CPU: 0 PID: 0 Comm: swapper Not tainted 5.18.0+ #224 44b43e377bfc84bc99bb5ab885ff694984ee09ff
- pstate: 600001c9 (nZCv dAIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
- pc : static_key_enable_cpuslocked+0xb0/0xb8
- lr : static_key_enable_cpuslocked+0xb0/0xb8
- sp : ffffffe51c393cf0
- x29: ffffffe51c393cf0 x28: 000000008185054c x27: 00000000f1042f10
- x26: 0000000000000000 x25: 00000000f10302b2 x24: 0000002513200000
- x23: 0000002513200000 x22: ffffffe51c1c9000 x21: fffffffdfdc00000
- x20: ffffffe51c2f0831 x19: ffffffe51c6fcfc0 x18: 00000000ffff1020
- x17: 00000000e1e2ac90 x16: 00000000000000e0 x15: ffffffe51b710708
- x14: 0000000000000066 x13: 0000000000000018 x12: 0000000000000000
- x11: 0000000000000000 x10: 00000000ffffffff x9 : 0000000000000000
- x8 : 0000000000000000 x7 : 61632065726f6665 x6 : 6220646573752027
- x5 : ffffffe51c641d25 x4 : ffffffe51c13142c x3 : ffff0a00ffffff05
- x2 : 40000000ffffe003 x1 : 00000000000001c0 x0 : 0000000000000065
- Call trace:
-  static_key_enable_cpuslocked+0xb0/0xb8
-  static_key_enable+0x2c/0x40
-  crng_set_ready+0x24/0x30
-  execute_in_process_context+0x80/0x90
-  _credit_init_bits+0x100/0x154
-  add_bootloader_randomness+0x64/0x78
-  early_init_dt_scan_chosen+0x140/0x184
-  early_init_dt_scan_nodes+0x28/0x4c
-  early_init_dt_scan+0x40/0x44
-  setup_machine_fdt+0x7c/0x120
-  setup_arch+0x74/0x1d8
-  start_kernel+0x84/0x44c
-  __primary_switched+0xc0/0xc8
- ---[ end trace 0000000000000000 ]---
- random: crng init done
- Machine model: Google Lazor (rev1 - 2) with LTE
+ld: arch/mips/kernel/traps.o: in function `trap_init':
+./arch/mips/include/asm/msa.h:(.init.text+0x348): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x354): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x360): undefined reference to `handle_fpe'
 
-Cc: Hsin-Yi Wang <hsinyi@chromium.org>
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Fixes: f5bda35fba61 ("random: use static branch for crng_ready()")
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Link: https://lore.kernel.org/r/20220602022109.780348-1-swboyd@chromium.org
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+where the CONFIG_MIPS_FP_SUPPORT configuration option has been disabled.
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Reported-by: Stephen Zhang <starzhangzsd@gmail.com>
+Fixes: 7505576d1c1a ("MIPS: add support for SGI Octane (IP30)")
+Cc: stable@vger.kernel.org # v5.5+
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/setup.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/mips/include/asm/mach-ip30/cpu-feature-overrides.h |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/arch/arm64/kernel/setup.c
-+++ b/arch/arm64/kernel/setup.c
-@@ -307,13 +307,14 @@ void __init __no_sanitize_address setup_
- 	early_fixmap_init();
- 	early_ioremap_init();
- 
--	setup_machine_fdt(__fdt_pointer);
--
- 	/*
- 	 * Initialise the static keys early as they may be enabled by the
--	 * cpufeature code and early parameters.
-+	 * cpufeature code, early parameters, and DT setup.
- 	 */
- 	jump_label_init();
-+
-+	setup_machine_fdt(__fdt_pointer);
-+
- 	parse_early_param();
- 
- 	/*
+--- a/arch/mips/include/asm/mach-ip30/cpu-feature-overrides.h
++++ b/arch/mips/include/asm/mach-ip30/cpu-feature-overrides.h
+@@ -29,7 +29,6 @@
+ #define cpu_has_3k_cache		0
+ #define cpu_has_4k_cache		1
+ #define cpu_has_tx39_cache		0
+-#define cpu_has_fpu			1
+ #define cpu_has_nofpuex			0
+ #define cpu_has_32fpr			1
+ #define cpu_has_counter			1
 
 
