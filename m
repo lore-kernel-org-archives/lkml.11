@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B90E1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECE0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241954AbiFGKw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55354 "EHLO
+        id S242052AbiFGKwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242340AbiFGKuN (ORCPT
+        with ESMTP id S242318AbiFGKuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:50:13 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AD8F688D;
-        Tue,  7 Jun 2022 03:49:56 -0700 (PDT)
+        Tue, 7 Jun 2022 06:50:10 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C94F5D37;
+        Tue,  7 Jun 2022 03:49:54 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 82AD61F920;
-        Tue,  7 Jun 2022 10:49:54 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id A28E921AE4;
+        Tue,  7 Jun 2022 10:49:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654598994; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1654598992; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KN17otLLjbmzRJPKwWD60VkplKJ5RSo6F6tvRibcLnE=;
-        b=Zw9jPq8OlYJgDXk9SvjrORkD9B5CluTSYxUD4IYhYe+qIzw+cQyvctU4J3DVttXPbuU8oF
-        9V/71+Xa7qpFOzQGCpQuaLYREIP8e+HlB9Ce6aD9IYyNswJOIRGm0E1d+nm+9QZr672BEP
-        MgEivPQvlnXCc2hOZVF1YZulHAg3Rq8=
+        bh=y6rYC/CnQIfkHcFZ5s1nOOIXYEtc5snTgHSN/9EO6X8=;
+        b=MlDWf9xx+1voFmpNAyLZFNYscerqOGUkUUZWVGG5ikkpe+aBHmCAwerktW4LZ8Gi/ovTZm
+        jngLY3CJ8qwbco5HbGFaO1SEV15c0izvMKucGIa8KNFBzWazOfoYf9ewnVbUjcDZkCSLHJ
+        18zGgEbUcMFdVRk8Jeoe56rsKdl28dE=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654598994;
+        s=susede2_ed25519; t=1654598992;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KN17otLLjbmzRJPKwWD60VkplKJ5RSo6F6tvRibcLnE=;
-        b=vM2NrsQBjPYjslEnSIf3bv0mLGhI815c4DMJD5r83yU7hJa4t7f87L5lXgVdXd/m4r8ulg
-        U+swfLAmaeb6DrDg==
+        bh=y6rYC/CnQIfkHcFZ5s1nOOIXYEtc5snTgHSN/9EO6X8=;
+        b=KQHyuMVzSQB1ubNYs/Icy/HFPpdig+T1oRG4Hy559MBvNvzCXvELPDPzR9nOfLOmWsYGFR
+        mpTC0rTKeoyBRACg==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 5AE832C141;
-        Tue,  7 Jun 2022 10:49:54 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 7B1E82C141;
+        Tue,  7 Jun 2022 10:49:52 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 24/36] tty/vt: consolemap: saner variable names in con_do_clear_unimap()
-Date:   Tue,  7 Jun 2022 12:49:34 +0200
-Message-Id: <20220607104946.18710-24-jslaby@suse.cz>
+Subject: [PATCH 15/36] tty/vt: consolemap: make p1 increment less confusing in con_get_unimap()
+Date:   Tue,  7 Jun 2022 12:49:25 +0200
+Message-Id: <20220607104946.18710-15-jslaby@suse.cz>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607104946.18710-1-jslaby@suse.cz>
 References: <20220607104946.18710-1-jslaby@suse.cz>
@@ -57,64 +57,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function uses too vague variable names like i, j, k for iterators, p,
-q, p1, p2 for pointers etc.
-
-Rename all these, so that it is clear what is going on:
-- dict: for dictionaries.
-- d, r, g: for dir, row, glyph iterators -- these are unsigned now.
-- dir, row: for directory and row pointers.
-- glyph: for the glyph.
-- and so on...
-
-This is a lot of shuffling, but the result pays off, IMO.
+p2 is already incremented like this few lines below, so do the same for
+p1. This makes the code easier to follow.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/consolemap.c | 25 ++++++++++++-------------
- 1 file changed, 12 insertions(+), 13 deletions(-)
+ drivers/tty/vt/consolemap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index cbdc73605148..456aed3f717c 100644
+index 84c8043a36d0..831450f2bfd1 100644
 --- a/drivers/tty/vt/consolemap.c
 +++ b/drivers/tty/vt/consolemap.c
-@@ -531,24 +531,23 @@ con_insert_unipair(struct uni_pagedict *p, u_short unicode, u_short fontpos)
- /* Caller must hold the lock */
- static int con_do_clear_unimap(struct vc_data *vc)
- {
--	struct uni_pagedict *p, *q;
-+	struct uni_pagedict *old = *vc->vc_uni_pagedir_loc;
+@@ -793,8 +793,8 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct,
+ 		if (!p1)
+ 			continue;
  
--	p = *vc->vc_uni_pagedir_loc;
--	if (!p || --p->refcount) {
--		q = kzalloc(sizeof(*p), GFP_KERNEL);
--		if (!q) {
--			if (p)
--				p->refcount++;
-+	if (!old || --old->refcount) {
-+		struct uni_pagedict *new = kzalloc(sizeof(*new), GFP_KERNEL);
-+		if (!new) {
-+			if (old)
-+				old->refcount++;
- 			return -ENOMEM;
- 		}
--		q->refcount=1;
--		*vc->vc_uni_pagedir_loc = q;
-+		new->refcount = 1;
-+		*vc->vc_uni_pagedir_loc = new;
- 	} else {
--		if (p == dflt)
-+		if (old == dflt)
- 			dflt = NULL;
--		p->refcount++;
--		p->sum = 0;
--		con_release_unimap(p);
-+		old->refcount++;
-+		old->sum = 0;
-+		con_release_unimap(old);
- 	}
- 	return 0;
- }
+-		for (j = 0; j < UNI_DIR_ROWS; j++) {
+-			p2 = *(p1++);
++		for (j = 0; j < UNI_DIR_ROWS; j++, p1++) {
++			p2 = *p1;
+ 			if (!p2)
+ 				continue;
+ 
 -- 
 2.36.1
 
