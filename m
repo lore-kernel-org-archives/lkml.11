@@ -2,99 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BB84C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:58:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB1CCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356648AbiFGT6b (ORCPT
+        id S1357018AbiFGT6l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:58:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50288 "EHLO
+        Tue, 7 Jun 2022 15:58:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352855AbiFGSvg (ORCPT
+        with ESMTP id S1348242AbiFGSvy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:51:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B9D149D89;
+        Tue, 7 Jun 2022 14:51:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17739149D8D;
         Tue,  7 Jun 2022 11:03:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B828EB82368;
-        Tue,  7 Jun 2022 18:03:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3591CC34115;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E2D9617B4;
+        Tue,  7 Jun 2022 18:03:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7D4CC3411C;
         Tue,  7 Jun 2022 18:03:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625008;
-        bh=A4LxXTI158BhWcvZYzhEsqBOc17JZjK70Ha38Xgs+PQ=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654625009;
+        bh=lWmHQhIlKE3b0pTV4xUP99UGuC7uf0M6GoZ2g+qfm/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CX5YKxXHzuv1+Xt9co2+uDvbXptL4ev5fjAaXxYonADHdngZ+uETjrVjeU0FoLo5P
-         P+4pDSRDbI7cjbENuGSPh1QouFmL733fznyQ7z13ujN1bw7oAaiYVHIDSK9dKH6E6J
-         /Lvz5NlD2vkQWAKR8puhawLTEjRijTsfGndE6hg4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 534/667] bfq: Update cgroup information before merging bio
-Date:   Tue,  7 Jun 2022 19:03:19 +0200
-Message-Id: <20220607164950.717619615@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=LPgNqxl6TeBr/N8mnA9cM36lWuQ8knHzWU0Eyfd18bj+ZfmVYZQ/LutSazMwKTcmN
+         O5bEQfPKCkEewNoIVIsoxrH7i0cbxy5ZRvezezFtzXGjxbBiGF2hvynIEuLYQ7xQX6
+         ZIjQg075Dj/9K3PdHpEnOc093vHLZhfDFq4yjsK7Aop48XX1WaB1qNV/ftOvxBYweP
+         MM8ZjEbLjE0YhfRENdY6ovHA0gInBJ2nj9NKZmCJg/rwPzMJipPVtw8tuFps5/0+XB
+         8BFaAxrFmienrYOOYGb7cdO8sorRVhnSnu07F4C9fD74FDi9/D0N8uXtpGpHtt5YOP
+         S03ulAGAlI5NQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zhen Ni <nizhen@uniontech.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, ok@artecdesign.ee,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 06/19] USB: host: isp116x: check return value after calling platform_get_resource()
+Date:   Tue,  7 Jun 2022 14:03:01 -0400
+Message-Id: <20220607180317.482354-6-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180317.482354-1-sashal@kernel.org>
+References: <20220607180317.482354-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Zhen Ni <nizhen@uniontech.com>
 
-commit ea591cd4eb270393810e7be01feb8fde6a34fbbe upstream.
+[ Upstream commit 134a3408c2d3f7e23eb0e4556e0a2d9f36c2614e ]
 
-When the process is migrated to a different cgroup (or in case of
-writeback just starts submitting bios associated with a different
-cgroup) bfq_merge_bio() can operate with stale cgroup information in
-bic. Thus the bio can be merged to a request from a different cgroup or
-it can result in merging of bfqqs for different cgroups or bfqqs of
-already dead cgroups and causing possible use-after-free issues. Fix the
-problem by updating cgroup information in bfq_merge_bio().
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-CC: stable@vger.kernel.org
-Fixes: e21b7a0b9887 ("block, bfq: add full hierarchical scheduling and cgroups support")
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-4-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Zhen Ni <nizhen@uniontech.com>
+Link: https://lore.kernel.org/r/20220302033716.31272-1-nizhen@uniontech.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-iosched.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/usb/host/isp116x-hcd.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2335,10 +2335,17 @@ static bool bfq_bio_merge(struct request
+diff --git a/drivers/usb/host/isp116x-hcd.c b/drivers/usb/host/isp116x-hcd.c
+index d089b3fb7a13..c32145e63aea 100644
+--- a/drivers/usb/host/isp116x-hcd.c
++++ b/drivers/usb/host/isp116x-hcd.c
+@@ -1551,10 +1551,12 @@ static int isp116x_remove(struct platform_device *pdev)
  
- 	spin_lock_irq(&bfqd->lock);
+ 	iounmap(isp116x->data_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
+ 	iounmap(isp116x->addr_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
  
--	if (bic)
-+	if (bic) {
-+		/*
-+		 * Make sure cgroup info is uptodate for current process before
-+		 * considering the merge.
-+		 */
-+		bfq_bic_update_cgroup(bic, bio);
-+
- 		bfqd->bio_bfqq = bic_to_bfqq(bic, op_is_sync(bio->bi_opf));
--	else
-+	} else {
- 		bfqd->bio_bfqq = NULL;
-+	}
- 	bfqd->bio_bic = bic;
- 
- 	ret = blk_mq_sched_try_merge(q, bio, nr_segs, &free);
-
+ 	usb_put_hcd(hcd);
+ 	return 0;
+-- 
+2.35.1
 
