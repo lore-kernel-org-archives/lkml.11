@@ -2,99 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A64CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B75ABC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:21:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345949AbiFGRVa (ORCPT
+        id S1346038AbiFGRVd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38672 "EHLO
+        Tue, 7 Jun 2022 13:21:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345561AbiFGRTD (ORCPT
+        with ESMTP id S1345750AbiFGRTN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:19:03 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CE71053F0
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:18:59 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id n10so36593174ejk.5
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:18:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dkxGKqfjlk2BseBFR/4rpL2eqUgP+7L5CxVKR6PZDHY=;
-        b=jWjQn4yiof6z1wOf4VVqd3sJCsADu0ZkWQWoYH0kyxK0F/zYWpWqecY6/eNv/pHRcl
-         9v66ISeM4TY7zIRNTjX3CvR/Mdq6CrwMAgtErEbS1t9qzOeSnlckxG2NypIYOLTfkxVA
-         7tmfaMituYRQsf9F51jWJCtHhk98nZ+5pD42ToFN11jW/VrWZPA7jgck/yNqDoq8p3jG
-         huMKxoaJyUZb1haqDcqBwEn8HJj0mNkN1qXj+6OGtgdh7iYgIqnfUy4gA9HvCWbU/di8
-         2LHkBh0Q8YhLsHzsyGDH3jWmiwu+4tsclhTo7W0VpRPnEstPIodPDiQ/JXqYEqNJRJx5
-         7I1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dkxGKqfjlk2BseBFR/4rpL2eqUgP+7L5CxVKR6PZDHY=;
-        b=0FEaXjaEBSQf7uLqTCoES5BvCLihM4gdhdRUG1ANwNi9f9MYDcI9OG8c0EG2U8azib
-         3+2Tdfue2uEkEBw40/7VNeoUZDRfoEmDzGy0oiaWyWuaZ/xJaQktVRAUcC5tp+mW/+oV
-         xnuDqlh2uemRPBuM/ARQyjkznRe3kKD0dSrHnFvkDCdV1EsqOC4grXX7DO2zZpzX0S+G
-         SZzpbvn0vyCNjTbWdfNemSnT9X+xyghyxKGzDHCiTP+hRIfVBC/x/uwfK70L2JOJ5VZ4
-         ODZI6e5hi1x2ILAh7DtSnne0qrcNhgQh7CZetMhWWBCIZcgPr54CAp4QC4kw7fKnfn3G
-         C5xw==
-X-Gm-Message-State: AOAM530CxH6dj/PiIX7OxKu0NohVcs5+hNXeP1Sj/1xbzHFExdeA7jRQ
-        AHDxYDemCgKyhCZb2VaS9OW3Kju+mBmX0w==
-X-Google-Smtp-Source: ABdhPJwvVpI5kUxoZUY5o27MdTOXLLE+WxNK8SL79kihah8urA6NRTQcJkTareJ4XD6xl4j9eOMKFQ==
-X-Received: by 2002:a17:906:2a86:b0:711:d8a5:cb0c with SMTP id l6-20020a1709062a8600b00711d8a5cb0cmr7919603eje.426.1654622338378;
-        Tue, 07 Jun 2022 10:18:58 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i7-20020a170906444700b0070e238ff66fsm5876540ejp.96.2022.06.07.10.18.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 10:18:58 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Brian Masney <masneyb@onstation.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 07/14] ARM: dts: qcom: msm8974: add required ranges to OCMEM
-Date:   Tue,  7 Jun 2022 19:18:41 +0200
-Message-Id: <20220607171848.535128-7-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
-References: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
+        Tue, 7 Jun 2022 13:19:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5AD104CB2;
+        Tue,  7 Jun 2022 10:19:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 882DCB82239;
+        Tue,  7 Jun 2022 17:19:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0ACAC385A5;
+        Tue,  7 Jun 2022 17:19:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654622349;
+        bh=zpv29um/dWI23YVZluNHBcHbfAfuGpB5TvtabHfD68o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dN8/yTJ1lE/GrUAAVUJ1/FrDo1weKSVl7OWIEVfjHPHlIyur0XOuP1kKic/A+bkxE
+         HiuDPa8LZZwkS1kcVnjlM3AI8qfBeI3KOAnV/fEMsgarr3unuqd6UzUjrTvCP03F9q
+         ZCGYguG+OoXf9Vdw6bhy9N4/q2tPKH3g3/dO9eWk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Rik van der Kemp <rik@upto11.nl>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 006/452] ALSA: hda/realtek: Enable 4-speaker output for Dell XPS 15 9520 laptop
+Date:   Tue,  7 Jun 2022 18:57:43 +0200
+Message-Id: <20220607164908.721449000@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
+References: <20220607164908.521895282@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The OCMEM bindings require ranges property.
+From: Rik van der Kemp <rik@upto11.nl>
 
-Fixes: a2cc991ed634 ("ARM: dts: qcom: msm8974: add ocmem node")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+commit 15dad62f4bdb5dc0f0efde8181d680db9963544c upstream.
 
+The 2022-model XPS 15 appears to use the same 4-speakers-on-ALC289
+audio setup as the Dell XPS 15 9510, so requires the same quirk to
+enable woofer output. Tested on my own 9520.
+
+[ Move the entry to the right position in the SSID order -- tiwai ]
+
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216035
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Rik van der Kemp <rik@upto11.nl>
+Link: https://lore.kernel.org/r/181056a137b.d14baf90133058.8425453735588429828@upto11.nl
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-
-Not tested on HW. Testing might be useful.
----
- arch/arm/boot/dts/qcom-msm8974.dtsi | 1 +
+ sound/pci/hda/patch_realtek.c |    1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index 5e6b2ae72e62..add03309b3b4 100644
---- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -1608,6 +1608,7 @@ sram@fdd00000 {
- 			reg = <0xfdd00000 0x2000>,
- 			      <0xfec00000 0x180000>;
- 			reg-names = "ctrl", "mem";
-+			ranges = <0 0xfec00000 0x180000>;
- 			clocks = <&rpmcc RPM_SMD_OCMEMGX_CLK>,
- 				 <&mmcc OCMEMCX_OCMEMNOC_CLK>;
- 			clock-names = "core", "iface";
--- 
-2.34.1
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8651,6 +8651,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1028, 0x0a62, "Dell Precision 5560", ALC289_FIXUP_DUAL_SPK),
+ 	SND_PCI_QUIRK(0x1028, 0x0a9d, "Dell Latitude 5430", ALC269_FIXUP_DELL4_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1028, 0x0a9e, "Dell Latitude 5430", ALC269_FIXUP_DELL4_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x1028, 0x0b19, "Dell XPS 15 9520", ALC289_FIXUP_DUAL_SPK),
+ 	SND_PCI_QUIRK(0x1028, 0x164a, "Dell", ALC293_FIXUP_DELL1_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1028, 0x164b, "Dell", ALC293_FIXUP_DELL1_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x103c, 0x1586, "HP", ALC269_FIXUP_HP_MUTE_LED_MIC2),
+
 
