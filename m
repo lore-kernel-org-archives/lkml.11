@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB7ECCA489
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B61FCCA48A
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383620AbiFHBZu (ORCPT
+        id S1385466AbiFHB0I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37544 "EHLO
+        Tue, 7 Jun 2022 21:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382713AbiFGWDu (ORCPT
+        with ESMTP id S1385471AbiFGWVk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:03:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E691C252C14;
-        Tue,  7 Jun 2022 12:15:32 -0700 (PDT)
+        Tue, 7 Jun 2022 18:21:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECBC26A926;
+        Tue,  7 Jun 2022 12:22:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4625261846;
-        Tue,  7 Jun 2022 19:15:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54046C385A2;
-        Tue,  7 Jun 2022 19:15:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C16ABB823CA;
+        Tue,  7 Jun 2022 19:22:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22479C385A2;
+        Tue,  7 Jun 2022 19:21:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629331;
-        bh=kEmGo7t2daCBSG2zdvMnZrbXfia1pM6bSCOpiyyNHU8=;
+        s=korg; t=1654629719;
+        bh=x6EuUqDNh7SEL7kLHqktvV2++iUW4vSZ/+v9sEZkDX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mfQifV+femTaYKApmxOA+UXUl9LUVuQdSHF2Krsg/9gwtpJWfYlqO1P6lkgJLaRTf
-         DLzOZ7TGcWsfv1cxsqBfG0NJEEQqdTNqsc6qQAZst4lUGeMGuShI/qThikSlKw9Vpr
-         0prhrXJQBhO8/iCblmoBkOE1Ji20Zeut2ehQgoC8=
+        b=L7FXam3rt2W0uSmq+TVgOaKx8elTLUICPqJNJxTdupCFIIo80TkKeOUTlnIXiKEZz
+         bDv6Um+Dmtd8+xK2fm+4wshR1xqYZklcxfFMXgouGToIXbuIPHK4MLx20OEJpIThAa
+         YxuimkWkyfL5TmQ9UXbwatrvIelsUA0Outu162nQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Douglas Miller <doug.miller@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 653/879] RDMA/hfi1: Prevent use of lock before it is initialized
-Date:   Tue,  7 Jun 2022 19:02:51 +0200
-Message-Id: <20220607165021.801034621@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Airlie <airlied@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.18 791/879] drm/amdgpu/cs: make commands with 0 chunks illegal behaviour.
+Date:   Tue,  7 Jun 2022 19:05:09 +0200
+Message-Id: <20220607165025.823343771@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,72 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Douglas Miller <doug.miller@cornelisnetworks.com>
+From: Dave Airlie <airlied@redhat.com>
 
-[ Upstream commit 05c03dfd09c069c4ffd783b47b2da5dcc9421f2c ]
+commit 31ab27b14daaa75541a415c6794d6f3567fea44a upstream.
 
-If there is a failure during probe of hfi1 before the sdma_map_lock is
-initialized, the call to hfi1_free_devdata() will attempt to use a lock
-that has not been initialized. If the locking correctness validator is on
-then an INFO message and stack trace resembling the following may be seen:
+Submitting a cs with 0 chunks, causes an oops later, found trying
+to execute the wrong userspace driver.
 
-  INFO: trying to register non-static key.
-  The code is fine but needs lockdep annotation, or maybe
-  you didn't initialize this object before use?
-  turning off the locking correctness validator.
-  Call Trace:
-  register_lock_class+0x11b/0x880
-  __lock_acquire+0xf3/0x7930
-  lock_acquire+0xff/0x2d0
-  _raw_spin_lock_irq+0x46/0x60
-  sdma_clean+0x42a/0x660 [hfi1]
-  hfi1_free_devdata+0x3a7/0x420 [hfi1]
-  init_one+0x867/0x11a0 [hfi1]
-  pci_device_probe+0x40e/0x8d0
+MESA_LOADER_DRIVER_OVERRIDE=v3d glxinfo
 
-The use of sdma_map_lock in sdma_clean() is for freeing the sdma_map
-memory, and sdma_map is not allocated/initialized until after
-sdma_map_lock has been initialized. This code only needs to be run if
-sdma_map is not NULL, and so checking for that condition will avoid trying
-to use the lock before it is initialized.
+[172536.665184] BUG: kernel NULL pointer dereference, address: 00000000000001d8
+[172536.665188] #PF: supervisor read access in kernel mode
+[172536.665189] #PF: error_code(0x0000) - not-present page
+[172536.665191] PGD 6712a0067 P4D 6712a0067 PUD 5af9ff067 PMD 0
+[172536.665195] Oops: 0000 [#1] SMP NOPTI
+[172536.665197] CPU: 7 PID: 2769838 Comm: glxinfo Tainted: P           O      5.10.81 #1-NixOS
+[172536.665199] Hardware name: To be filled by O.E.M. To be filled by O.E.M./CROSSHAIR V FORMULA-Z, BIOS 2201 03/23/2015
+[172536.665272] RIP: 0010:amdgpu_cs_ioctl+0x96/0x1ce0 [amdgpu]
+[172536.665274] Code: 75 18 00 00 4c 8b b2 88 00 00 00 8b 46 08 48 89 54 24 68 49 89 f7 4c 89 5c 24 60 31 d2 4c 89 74 24 30 85 c0 0f 85 c0 01 00 00 <48> 83 ba d8 01 00 00 00 48 8b b4 24 90 00 00 00 74 16 48 8b 46 10
+[172536.665276] RSP: 0018:ffffb47c0e81bbe0 EFLAGS: 00010246
+[172536.665277] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+[172536.665278] RDX: 0000000000000000 RSI: ffffb47c0e81be28 RDI: ffffb47c0e81bd68
+[172536.665279] RBP: ffff936524080010 R08: 0000000000000000 R09: ffffb47c0e81be38
+[172536.665281] R10: ffff936524080010 R11: ffff936524080000 R12: ffffb47c0e81bc40
+[172536.665282] R13: ffffb47c0e81be28 R14: ffff9367bc410000 R15: ffffb47c0e81be28
+[172536.665283] FS:  00007fe35e05d740(0000) GS:ffff936c1edc0000(0000) knlGS:0000000000000000
+[172536.665284] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[172536.665286] CR2: 00000000000001d8 CR3: 0000000532e46000 CR4: 00000000000406e0
+[172536.665287] Call Trace:
+[172536.665322]  ? amdgpu_cs_find_mapping+0x110/0x110 [amdgpu]
+[172536.665332]  drm_ioctl_kernel+0xaa/0xf0 [drm]
+[172536.665338]  drm_ioctl+0x201/0x3b0 [drm]
+[172536.665369]  ? amdgpu_cs_find_mapping+0x110/0x110 [amdgpu]
+[172536.665372]  ? selinux_file_ioctl+0x135/0x230
+[172536.665399]  amdgpu_drm_ioctl+0x49/0x80 [amdgpu]
+[172536.665403]  __x64_sys_ioctl+0x83/0xb0
+[172536.665406]  do_syscall_64+0x33/0x40
+[172536.665409]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Fixes: 473291b3ea0e ("IB/hfi1: Fix for early release of sdma context")
-Fixes: 7724105686e7 ("IB/hfi1: add driver files")
-Link: https://lore.kernel.org/r/20220520183701.48973.72434.stgit@awfm-01.cornelisnetworks.com
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
-Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2018
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Cc: stable@vger.kernel.org
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/hfi1/sdma.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/hfi1/sdma.c b/drivers/infiniband/hw/hfi1/sdma.c
-index f07d328689d3..a95b654f5254 100644
---- a/drivers/infiniband/hw/hfi1/sdma.c
-+++ b/drivers/infiniband/hw/hfi1/sdma.c
-@@ -1288,11 +1288,13 @@ void sdma_clean(struct hfi1_devdata *dd, size_t num_engines)
- 		kvfree(sde->tx_ring);
- 		sde->tx_ring = NULL;
- 	}
--	spin_lock_irq(&dd->sde_map_lock);
--	sdma_map_free(rcu_access_pointer(dd->sdma_map));
--	RCU_INIT_POINTER(dd->sdma_map, NULL);
--	spin_unlock_irq(&dd->sde_map_lock);
--	synchronize_rcu();
-+	if (rcu_access_pointer(dd->sdma_map)) {
-+		spin_lock_irq(&dd->sde_map_lock);
-+		sdma_map_free(rcu_access_pointer(dd->sdma_map));
-+		RCU_INIT_POINTER(dd->sdma_map, NULL);
-+		spin_unlock_irq(&dd->sde_map_lock);
-+		synchronize_rcu();
-+	}
- 	kfree(dd->per_sdma);
- 	dd->per_sdma = NULL;
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+@@ -116,7 +116,7 @@ static int amdgpu_cs_parser_init(struct
+ 	int ret;
  
--- 
-2.35.1
-
+ 	if (cs->in.num_chunks == 0)
+-		return 0;
++		return -EINVAL;
+ 
+ 	chunk_array = kvmalloc_array(cs->in.num_chunks, sizeof(uint64_t), GFP_KERNEL);
+ 	if (!chunk_array)
 
 
