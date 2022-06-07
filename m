@@ -2,142 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D26DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C14C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355310AbiFGT33 (ORCPT
+        id S1355355AbiFGT3k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:29:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
+        Tue, 7 Jun 2022 15:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346039AbiFGSdS (ORCPT
+        with ESMTP id S1353084AbiFGSgE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:33:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB2414768F;
-        Tue,  7 Jun 2022 10:57:19 -0700 (PDT)
+        Tue, 7 Jun 2022 14:36:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF7213393F;
+        Tue,  7 Jun 2022 10:57:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41C2861856;
-        Tue,  7 Jun 2022 17:57:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBDF6C34119;
-        Tue,  7 Jun 2022 17:57:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624638;
-        bh=ZGTc8NAbbTjfxFouD80Ckbaghw1HwQote5WRz/Lbuus=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5934EB80B66;
+        Tue,  7 Jun 2022 17:57:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFD22C385A5;
+        Tue,  7 Jun 2022 17:57:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624676;
+        bh=VqWfpwdOOyupoMZnyZZL5JiohEcrHs2ahwGV56umNiE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pu5yktFG2lEZp3dXOuJYgLAj+ywuIuT49H1/6iOTMFt+3JwQBqV/Gl7rz53IqgtIk
-         MH1JiO0J1H9sn5JBGrGBwiuQVzam2dh2/kwGEicVMFtAV8f8NZ3pFm71jqxQ3uHxGK
-         J6KDAMgeFwE6B2VRtdpn2ErKkrdkp1S+3arbjxn1CMGQoLFwJT7bIE9W6zC1bhsCeP
-         Hev+xN8wkuhxfMrIBZ1fXCozMg/VT5h9bqoDApq4QkyVcIxPrLl0BiMCKRiZuH/ksB
-         zOQpjqT4d1wcoOw/h7BjLx6wne9MBekyl9QaTmFrZWv0u/4gIGbGCTfRJJHrUb0mLz
-         IP+BhQJyPnuNQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wang Cheng <wanngchenng@gmail.com>,
-        syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, Larry.Finger@lwfinger.net,
-        florian.c.schilhabel@googlemail.com, paskripkin@gmail.com,
-        fmdefrancesco@gmail.com, xkernel.wang@foxmail.com,
-        skumark1902@gmail.com, kuba@kernel.org,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 26/51] staging: rtl8712: fix uninit-value in r871xu_drv_init()
-Date:   Tue,  7 Jun 2022 13:55:25 -0400
-Message-Id: <20220607175552.479948-26-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+        b=GfCyVD41ahZPr+QGSKj1I+ODjCnIYb5NFZMe/Tis9BeA2A90C3OaLyUqyAlqX51ib
+         aHw6ixj017ltgSUQBEa51n+TMHMeX66qL1LIbi/0PcoUEna8EhOlu0SYnLBqXcuq+O
+         qYbmrnsIu9QTjWYRW4Z4aBwGqZHxr1Ooxa2IjTA4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 413/667] gpiolib: of: Introduce hook for missing gpio-ranges
+Date:   Tue,  7 Jun 2022 19:01:18 +0200
+Message-Id: <20220607164947.126929253@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Cheng <wanngchenng@gmail.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-[ Upstream commit 0458e5428e5e959d201a40ffe71d762a79ecedc4 ]
+[ Upstream commit 3550bba25d5587a701e6edf20e20984d2ee72c78 ]
 
-When 'tmpU1b' returns from r8712_read8(padapter, EE_9346CR) is 0,
-'mac[6]' will not be initialized.
+Since commit 2ab73c6d8323 ("gpio: Support GPIO controllers without pin-ranges")
+the device tree nodes of GPIO controller need the gpio-ranges property to
+handle gpio-hogs. Unfortunately it's impossible to guarantee that every new
+kernel is shipped with an updated device tree binary.
 
-BUG: KMSAN: uninit-value in r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
- r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
- usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
- really_probe+0x653/0x14b0 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
- driver_probe_device drivers/base/dd.c:782 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:970
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1fff/0x26e0 drivers/base/core.c:3405
- usb_set_configuration+0x37e9/0x3ed0 drivers/usb/core/message.c:2170
- usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238
- usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293
- really_probe+0x653/0x14b0 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
- driver_probe_device drivers/base/dd.c:782 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:970
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1fff/0x26e0 drivers/base/core.c:3405
- usb_new_device+0x1b8e/0x2950 drivers/usb/core/hub.c:2566
- hub_port_connect drivers/usb/core/hub.c:5358 [inline]
- hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
- port_event drivers/usb/core/hub.c:5660 [inline]
- hub_event+0x58e3/0x89e0 drivers/usb/core/hub.c:5742
- process_one_work+0xdb6/0x1820 kernel/workqueue.c:2307
- worker_thread+0x10b3/0x21e0 kernel/workqueue.c:2454
- kthread+0x3c7/0x500 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30
+In order to provide backward compatibility with those older DTB, we need a
+callback within of_gpiochip_add_pin_range() so the relevant platform driver
+can handle this case.
 
-Local variable mac created at:
- r871xu_drv_init+0x1771/0x3070 drivers/staging/rtl8712/usb_intf.c:394
- usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
-
-KMSAN: uninit-value in r871xu_drv_init
-https://syzkaller.appspot.com/bug?id=3cd92b1d85428b128503bfa7a250294c9ae00bd8
-
-Reported-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
-Tested-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Wang Cheng <wanngchenng@gmail.com>
-Link: https://lore.kernel.org/r/14c3886173dfa4597f0704547c414cfdbcd11d16.1652618244.git.wanngchenng@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2ab73c6d8323 ("gpio: Support GPIO controllers without pin-ranges")
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Link: https://lore.kernel.org/r/20220409095129.45786-2-stefan.wahren@i2se.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8712/usb_intf.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpio/gpiolib-of.c   |  5 +++++
+ include/linux/gpio/driver.h | 12 ++++++++++++
+ 2 files changed, 17 insertions(+)
 
-diff --git a/drivers/staging/rtl8712/usb_intf.c b/drivers/staging/rtl8712/usb_intf.c
-index a61dd96ab2a4..6db2493e6d3a 100644
---- a/drivers/staging/rtl8712/usb_intf.c
-+++ b/drivers/staging/rtl8712/usb_intf.c
-@@ -536,13 +536,13 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
- 		} else {
- 			AutoloadFail = false;
- 		}
--		if (((mac[0] == 0xff) && (mac[1] == 0xff) &&
-+		if ((!AutoloadFail) ||
-+		    ((mac[0] == 0xff) && (mac[1] == 0xff) &&
- 		     (mac[2] == 0xff) && (mac[3] == 0xff) &&
- 		     (mac[4] == 0xff) && (mac[5] == 0xff)) ||
- 		    ((mac[0] == 0x00) && (mac[1] == 0x00) &&
- 		     (mac[2] == 0x00) && (mac[3] == 0x00) &&
--		     (mac[4] == 0x00) && (mac[5] == 0x00)) ||
--		     (!AutoloadFail)) {
-+		     (mac[4] == 0x00) && (mac[5] == 0x00))) {
- 			mac[0] = 0x00;
- 			mac[1] = 0xe0;
- 			mac[2] = 0x4c;
+diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
+index a5b34c248767..66e434f59f60 100644
+--- a/drivers/gpio/gpiolib-of.c
++++ b/drivers/gpio/gpiolib-of.c
+@@ -933,6 +933,11 @@ static int of_gpiochip_add_pin_range(struct gpio_chip *chip)
+ 	if (!np)
+ 		return 0;
+ 
++	if (!of_property_read_bool(np, "gpio-ranges") &&
++	    chip->of_gpio_ranges_fallback) {
++		return chip->of_gpio_ranges_fallback(chip, np);
++	}
++
+ 	group_names = of_find_property(np, group_names_propname, NULL);
+ 
+ 	for (;; index++) {
+diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
+index e3c29d2e6826..ad479db8f0aa 100644
+--- a/include/linux/gpio/driver.h
++++ b/include/linux/gpio/driver.h
+@@ -481,6 +481,18 @@ struct gpio_chip {
+ 	 */
+ 	int (*of_xlate)(struct gpio_chip *gc,
+ 			const struct of_phandle_args *gpiospec, u32 *flags);
++
++	/**
++	 * @of_gpio_ranges_fallback:
++	 *
++	 * Optional hook for the case that no gpio-ranges property is defined
++	 * within the device tree node "np" (usually DT before introduction
++	 * of gpio-ranges). So this callback is helpful to provide the
++	 * necessary backward compatibility for the pin ranges.
++	 */
++	int (*of_gpio_ranges_fallback)(struct gpio_chip *gc,
++				       struct device_node *np);
++
+ #endif /* CONFIG_OF_GPIO */
+ };
+ 
 -- 
 2.35.1
+
+
 
