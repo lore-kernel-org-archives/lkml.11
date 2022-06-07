@@ -2,121 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C572CCA49B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE082CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357950AbiFGTmg (ORCPT
+        id S1353697AbiFGTmj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:42:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58034 "EHLO
+        Tue, 7 Jun 2022 15:42:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354422AbiFGSrB (ORCPT
+        with ESMTP id S1354421AbiFGSrB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DB53B57E;
-        Tue,  7 Jun 2022 11:01:08 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0890E3BA52;
+        Tue,  7 Jun 2022 11:01:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 919DA617B0;
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD3F6B82239;
         Tue,  7 Jun 2022 18:01:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A185CC3411F;
-        Tue,  7 Jun 2022 18:01:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624867;
-        bh=F2RdKYiF/AIZNtD8234nKlfRDhSvmQLoGb3m3d+9j6c=;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF42AC34119;
+        Tue,  7 Jun 2022 18:01:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624866;
+        bh=Qr/a7JxWet4zrfzFhaoHyLcEpfD+S1KNXH/SrrqH+gw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yt3cM2FCQvbJf+VYob7yiIOW7zcHSjbVzOrpZH8EWaOhxOpUdnGKwfSvAKH/p3oBi
-         TnWzEj0ycMc0qlhCGcWK5fZwyORw0/WAkjyu8UHrEqoIm5E5bqt6f9pUzt1WuHDa5f
-         ohXlydVEazkQp2H4u2HXRvvHJ5UDH+QjYvAU3gPY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 441/667] pinctrl: renesas: r8a779a0: Fix GPIO function on I2C-capable pins
-Date:   Tue,  7 Jun 2022 19:01:46 +0200
-Message-Id: <20220607164947.947530740@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=jyhZ5Uduqj4LQsKkXqSSkWzNJxVlSVJ3xLxGJOLN0CXPP9w2LXaO1QbEsvyg89o/N
+         oSmJge2w+4b1xMFEm6fLXEdtPX5jJXseVLLasB/0bpLcdB8sdQsO6m6EvwenvZi9Sa
+         QyVZKjzSo7zCHe9LOkAJStlIn39d2PG+7Z1jNSyjF7uMbXDiT/gM0PONRWO/5LTCOW
+         vOi4IVerF7L83NnMKz80Ay6iYy2h8eushnaJ7r3xPdd7ktAGaAKMSlpC/RMkHtJAfR
+         s5cX7zRaaDoSXuCrYVmkHlb019S8lUYj70LwpsW+GfzgpMUoludpfulEJzRci/vyTE
+         Diw/sjNmmtWRQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Liu Xinpeng <liuxp11@chinatelecom.cn>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Sasha Levin <sashal@kernel.org>, linux-watchdog@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 20/34] watchdog: wdat_wdt: Stop watchdog when rebooting the system
+Date:   Tue,  7 Jun 2022 13:59:55 -0400
+Message-Id: <20220607180011.481266-20-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
+References: <20220607180011.481266-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Liu Xinpeng <liuxp11@chinatelecom.cn>
 
-[ Upstream commit 4288caed9a6319b766dc0adf605c7b401180db34 ]
+[ Upstream commit 27fdf84510a1374748904db43f6755f912736d92 ]
 
-Unlike on R-Car Gen3 SoCs, setting a bit to zero in a GPIO / Peripheral
-Function Select Register (GPSRn) on R-Car V3U is not always sufficient
-to configure a pin for GPIO.  For I2C-capable pins, the I2C function
-must also be explicitly disabled in the corresponding Module Select
-Register (MODSELn).
+Executing reboot command several times on the machine "Dell
+PowerEdge R740", UEFI security detection stopped machine
+with the following prompt:
 
-Add the missing FN_SEL_I2Ci_0 function enums to the pinmux_data[] array
-by temporarily overriding the GP_2_j_FN function enum to expand to two
-enums: the original GP_2_j_FN enum to configure the GSPR register bits,
-and the missing FN_SEL_I2Ci_0 enum to configure the MODSEL register
-bits.
+UEFI0082: The system was reset due to a timeout from the watchdog
+timer. Check the System Event Log (SEL) or crash dumps from
+Operating Sysstem to identify the source that triggered the
+watchdog timer reset. Update the firmware or driver for the
+identified device.
 
-Fixes: 741a7370fc3b8b54 ("pinctrl: renesas: Initial R8A779A0 (V3U) PFC support")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/4611e29e7b105513883084c1d6dc39c3ac8b525c.1650610471.git.geert+renesas@glider.be
+iDRAC has warning event: "The watchdog timer reset the system".
+
+This patch fixes this issue by adding the reboot notifier.
+
+Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/1650984810-6247-3-git-send-email-liuxp11@chinatelecom.cn
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/renesas/pfc-r8a779a0.c | 29 ++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ drivers/watchdog/wdat_wdt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pinctrl/renesas/pfc-r8a779a0.c b/drivers/pinctrl/renesas/pfc-r8a779a0.c
-index ad6532443a78..a480677dd03d 100644
---- a/drivers/pinctrl/renesas/pfc-r8a779a0.c
-+++ b/drivers/pinctrl/renesas/pfc-r8a779a0.c
-@@ -629,7 +629,36 @@ enum {
- };
+diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
+index 88c5e6361aa0..fddbb39433be 100644
+--- a/drivers/watchdog/wdat_wdt.c
++++ b/drivers/watchdog/wdat_wdt.c
+@@ -462,6 +462,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
+ 		return ret;
  
- static const u16 pinmux_data[] = {
-+/* Using GP_2_[2-15] requires disabling I2C in MOD_SEL2 */
-+#define GP_2_2_FN	GP_2_2_FN,	FN_SEL_I2C0_0
-+#define GP_2_3_FN	GP_2_3_FN,	FN_SEL_I2C0_0
-+#define GP_2_4_FN	GP_2_4_FN,	FN_SEL_I2C1_0
-+#define GP_2_5_FN	GP_2_5_FN,	FN_SEL_I2C1_0
-+#define GP_2_6_FN	GP_2_6_FN,	FN_SEL_I2C2_0
-+#define GP_2_7_FN	GP_2_7_FN,	FN_SEL_I2C2_0
-+#define GP_2_8_FN	GP_2_8_FN,	FN_SEL_I2C3_0
-+#define GP_2_9_FN	GP_2_9_FN,	FN_SEL_I2C3_0
-+#define GP_2_10_FN	GP_2_10_FN,	FN_SEL_I2C4_0
-+#define GP_2_11_FN	GP_2_11_FN,	FN_SEL_I2C4_0
-+#define GP_2_12_FN	GP_2_12_FN,	FN_SEL_I2C5_0
-+#define GP_2_13_FN	GP_2_13_FN,	FN_SEL_I2C5_0
-+#define GP_2_14_FN	GP_2_14_FN,	FN_SEL_I2C6_0
-+#define GP_2_15_FN	GP_2_15_FN,	FN_SEL_I2C6_0
- 	PINMUX_DATA_GP_ALL(),
-+#undef GP_2_2_FN
-+#undef GP_2_3_FN
-+#undef GP_2_4_FN
-+#undef GP_2_5_FN
-+#undef GP_2_6_FN
-+#undef GP_2_7_FN
-+#undef GP_2_8_FN
-+#undef GP_2_9_FN
-+#undef GP_2_10_FN
-+#undef GP_2_11_FN
-+#undef GP_2_12_FN
-+#undef GP_2_13_FN
-+#undef GP_2_14_FN
-+#undef GP_2_15_FN
+ 	watchdog_set_nowayout(&wdat->wdd, nowayout);
++	watchdog_stop_on_reboot(&wdat->wdd);
+ 	return devm_watchdog_register_device(dev, &wdat->wdd);
+ }
  
- 	PINMUX_SINGLE(MMC_D7),
- 	PINMUX_SINGLE(MMC_D6),
 -- 
 2.35.1
-
-
 
