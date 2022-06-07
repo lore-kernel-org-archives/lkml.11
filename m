@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B2ACCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AE99CCA486
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387716AbiFHApm (ORCPT
+        id S1388603AbiFHApr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38084 "EHLO
+        Tue, 7 Jun 2022 20:45:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378993AbiFGWGz (ORCPT
+        with ESMTP id S1385235AbiFGW0p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:06:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D616252C34;
-        Tue,  7 Jun 2022 12:15:53 -0700 (PDT)
+        Tue, 7 Jun 2022 18:26:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C40270420;
+        Tue,  7 Jun 2022 12:23:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25F3EB82368;
-        Tue,  7 Jun 2022 19:15:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C41EC385A2;
-        Tue,  7 Jun 2022 19:15:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D503B823CE;
+        Tue,  7 Jun 2022 19:23:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA7ACC385A5;
+        Tue,  7 Jun 2022 19:23:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629350;
-        bh=01He/KFgvD4tNb1M5YjiCDrEOHhj2tr2PdBfy8O1o2U=;
+        s=korg; t=1654629783;
+        bh=5W7m88KiTZvHvoWjyOt0GpGQuUxzdpHJkRGENQfNYDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uJBdxVLlHKjJPtsjcT7/nCGrRUodXg+r2TNgjU6Wvjz/X5eRPRd6OKKOq9tFAfZbl
-         ks98MwZ6LY3NKDzaJ4B0oyUi5CXD9A8SCTmTxnZmmUA82IQaKtGBSVpc/4n4v7s46P
-         JYsVcOZhwpLl2A6LtV3Gq+MHcPV7+dt3oSSc7gks=
+        b=zNQtHpAr8KmEAjbZbq5JxN2s6Oe/6N01j7Zie8vBAIcnfonqGlazhhXvgpXtjuGFW
+         OnJAzdm6V2kq6W6I4L4aO3si75HrstoMUpW5uf0C7TF1XqLY7VlbdMzX9tCFGyLU1E
+         IYLouH/v34mL9qJ8cqql7DiByl9pEip1HbF2RWoU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 633/879] cxl/mem: Drop mem_enabled check from wait_for_media()
-Date:   Tue,  7 Jun 2022 19:02:31 +0200
-Message-Id: <20220607165021.221735935@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.18 816/879] um: virtio_uml: Fix broken device handling in time-travel
+Date:   Tue,  7 Jun 2022 19:05:34 +0200
+Message-Id: <20220607165026.541253242@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,43 +49,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 2bcf3bbd348fc10260aa6243ff6a22a1882b5b35 ]
+commit af9fb41ed315ce95f659f0b10b4d59a71975381d upstream.
 
-Media ready is asserted by the device independent of whether mem_enabled
-was ever set. Drop this check to allow for dropping wait_for_media() in
-favor of ->wait_media_ready().
+If a device implementation crashes, virtio_uml will mark it
+as dead by calling virtio_break_device() and scheduling the
+work that will remove it.
 
-Fixes: 8dd2bc0f8e02 ("cxl/mem: Add the cxl_mem driver")
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Link: https://lore.kernel.org/r/165291685501.1426646.10372821863672431074.stgit@dwillia2-xfh
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This still seems like the right thing to do, but it's done
+directly while reading the message, and if time-travel is
+used, this is in the time-travel handler, outside of the
+normal Linux machinery. Therefore, we cannot acquire locks
+or do normal "linux-y" things because e.g. lockdep will be
+confused about the context.
+
+Move handling this situation out of the read function and
+into the actual IRQ handler and response handling instead,
+so that in the case of time-travel we don't call it in the
+wrong context.
+
+Chances are the system will still crash immediately, since
+the device implementation crashing may also cause the time-
+travel controller to go down, but at least all of that now
+happens without strange warnings from lockdep.
+
+Fixes: c8177aba37ca ("um: time-travel: rework interrupt handling in ext mode")
+Cc: stable@vger.kernel.org
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/cxl/mem.c | 4 ----
- 1 file changed, 4 deletions(-)
+ arch/um/drivers/virtio_uml.c |   33 +++++++++++++++++++++++----------
+ 1 file changed, 23 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/cxl/mem.c b/drivers/cxl/mem.c
-index 49a4b1c47299..44e899f06094 100644
---- a/drivers/cxl/mem.c
-+++ b/drivers/cxl/mem.c
-@@ -27,12 +27,8 @@
- static int wait_for_media(struct cxl_memdev *cxlmd)
- {
- 	struct cxl_dev_state *cxlds = cxlmd->cxlds;
--	struct cxl_endpoint_dvsec_info *info = &cxlds->info;
- 	int rc;
+--- a/arch/um/drivers/virtio_uml.c
++++ b/arch/um/drivers/virtio_uml.c
+@@ -63,6 +63,7 @@ struct virtio_uml_device {
  
--	if (!info->mem_enabled)
--		return -EBUSY;
+ 	u8 config_changed_irq:1;
+ 	uint64_t vq_irq_vq_map;
++	int recv_rc;
+ };
+ 
+ struct virtio_uml_vq_info {
+@@ -148,14 +149,6 @@ static int vhost_user_recv(struct virtio
+ 
+ 	rc = vhost_user_recv_header(fd, msg);
+ 
+-	if (rc == -ECONNRESET && vu_dev->registered) {
+-		struct virtio_uml_platform_data *pdata;
 -
- 	rc = cxlds->wait_media_ready(cxlds);
+-		pdata = vu_dev->pdata;
+-
+-		virtio_break_device(&vu_dev->vdev);
+-		schedule_work(&pdata->conn_broken_wk);
+-	}
  	if (rc)
  		return rc;
--- 
-2.35.1
-
+ 	size = msg->header.size;
+@@ -164,6 +157,21 @@ static int vhost_user_recv(struct virtio
+ 	return full_read(fd, &msg->payload, size, false);
+ }
+ 
++static void vhost_user_check_reset(struct virtio_uml_device *vu_dev,
++				   int rc)
++{
++	struct virtio_uml_platform_data *pdata = vu_dev->pdata;
++
++	if (rc != -ECONNRESET)
++		return;
++
++	if (!vu_dev->registered)
++		return;
++
++	virtio_break_device(&vu_dev->vdev);
++	schedule_work(&pdata->conn_broken_wk);
++}
++
+ static int vhost_user_recv_resp(struct virtio_uml_device *vu_dev,
+ 				struct vhost_user_msg *msg,
+ 				size_t max_payload_size)
+@@ -171,8 +179,10 @@ static int vhost_user_recv_resp(struct v
+ 	int rc = vhost_user_recv(vu_dev, vu_dev->sock, msg,
+ 				 max_payload_size, true);
+ 
+-	if (rc)
++	if (rc) {
++		vhost_user_check_reset(vu_dev, rc);
+ 		return rc;
++	}
+ 
+ 	if (msg->header.flags != (VHOST_USER_FLAG_REPLY | VHOST_USER_VERSION))
+ 		return -EPROTO;
+@@ -369,6 +379,7 @@ static irqreturn_t vu_req_read_message(s
+ 				 sizeof(msg.msg.payload) +
+ 				 sizeof(msg.extra_payload));
+ 
++	vu_dev->recv_rc = rc;
+ 	if (rc)
+ 		return IRQ_NONE;
+ 
+@@ -412,7 +423,9 @@ static irqreturn_t vu_req_interrupt(int
+ 	if (!um_irq_timetravel_handler_used())
+ 		ret = vu_req_read_message(vu_dev, NULL);
+ 
+-	if (vu_dev->vq_irq_vq_map) {
++	if (vu_dev->recv_rc) {
++		vhost_user_check_reset(vu_dev, vu_dev->recv_rc);
++	} else if (vu_dev->vq_irq_vq_map) {
+ 		struct virtqueue *vq;
+ 
+ 		virtio_device_for_each_vq((&vu_dev->vdev), vq) {
 
 
