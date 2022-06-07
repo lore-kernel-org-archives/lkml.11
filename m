@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2653CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:47:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D28A3CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:48:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232889AbiFHArm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40384 "EHLO
+        id S243539AbiFHAsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383692AbiFGWGJ (ORCPT
+        with ESMTP id S1382142AbiFGVqh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:06:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C3525225A;
-        Tue,  7 Jun 2022 12:17:03 -0700 (PDT)
+        Tue, 7 Jun 2022 17:46:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B61235B2B;
+        Tue,  7 Jun 2022 12:07:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2731761931;
-        Tue,  7 Jun 2022 19:17:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC60DC385A2;
-        Tue,  7 Jun 2022 19:17:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D2D4B823AF;
+        Tue,  7 Jun 2022 19:07:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EBF0C385A5;
+        Tue,  7 Jun 2022 19:07:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629422;
-        bh=ohP/jfSBL/ExsqgGs2Zkp69wvFadcqfktgMHUYKIiCM=;
+        s=korg; t=1654628868;
+        bh=83AZfT2oaqVByY9h8y63qPN/ORkZeBhxHxDtVV7kixs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uqdgGuu2TlQY9720tfQC+SnkqohPRixSxft0amQ2aLaA23zaeqY6WwlCfDIRcm3ul
-         qUWRRS2MZ/dYfw6OEUQAB1U8i9T/VI/MO2u3WOU8thGBRtxd4ic8cwdaijeAeAD0T9
-         JVGnynBvAEmxKdct+IGCOPpMjWlCIC6xY/TZmCWM=
+        b=zHM9IOL7lcmd0OFuD2iWD+rI1bliEfH1YKu5aTquzz/FWWsrPEYrBMNdfMSUKKws/
+         Y1Yo/CjL4KkWzVf1gb6qwWL/XvsGtwVkcfWnYCKOCw2GVoyZDzkOJsDTaaheQ2nV4g
+         +7Au7qpxY+Z4TRGua+UA+plDz6dLw1JYZYIZPM2U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 686/879] dmaengine: stm32-mdma: fix chan initialization in stm32_mdma_irq_handler()
-Date:   Tue,  7 Jun 2022 19:03:24 +0200
-Message-Id: <20220607165022.757319089@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 485/879] drm: msm: fix possible memory leak in mdp5_crtc_cursor_set()
+Date:   Tue,  7 Jun 2022 19:00:03 +0200
+Message-Id: <20220607165016.950805606@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,38 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit da3b8ddb464bd49b6248d00ca888ad751c9e44fd ]
+[ Upstream commit 947a844bb3ebff0f4736d244d792ce129f6700d7 ]
 
-The parameter to pass back to the handler function when irq has been
-requested is a struct stm32_mdma_device pointer, not a struct
-stm32_mdma_chan pointer.
-Even if chan is reinit later in the function, remove this wrong
-initialization.
+drm_gem_object_lookup will call drm_gem_object_get inside. So cursor_bo
+needs to be put when msm_gem_get_and_pin_iova fails.
 
-Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20220504155322.121431-3-amelie.delaunay@foss.st.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: e172d10a9c4a ("drm/msm/mdp5: Add hardware cursor support")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220509061125.18585-1-hbh25y@gmail.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/stm32-mdma.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/dma/stm32-mdma.c b/drivers/dma/stm32-mdma.c
-index 1e6bc22ddae9..f8c8b9d76aad 100644
---- a/drivers/dma/stm32-mdma.c
-+++ b/drivers/dma/stm32-mdma.c
-@@ -1316,7 +1316,7 @@ static void stm32_mdma_xfer_end(struct stm32_mdma_chan *chan)
- static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
- {
- 	struct stm32_mdma_device *dmadev = devid;
--	struct stm32_mdma_chan *chan = devid;
-+	struct stm32_mdma_chan *chan;
- 	u32 reg, id, ccr, ien, status;
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
+index fe2922c8d21b..31447da0af25 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
+@@ -997,8 +997,10 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
  
- 	/* Find out which channel generates the interrupt */
+ 	ret = msm_gem_get_and_pin_iova(cursor_bo, kms->aspace,
+ 			&mdp5_crtc->cursor.iova);
+-	if (ret)
++	if (ret) {
++		drm_gem_object_put(cursor_bo);
+ 		return -EINVAL;
++	}
+ 
+ 	pm_runtime_get_sync(&pdev->dev);
+ 
 -- 
 2.35.1
 
