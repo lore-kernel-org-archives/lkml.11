@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2504CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:07:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E008ECCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378651AbiFGVHI (ORCPT
+        id S1378706AbiFGVHS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:07:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52132 "EHLO
+        Tue, 7 Jun 2022 17:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359150AbiFGUJB (ORCPT
+        with ESMTP id S1358610AbiFGUJB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:09:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 666F7ED7B3;
-        Tue,  7 Jun 2022 11:26:22 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9ECCED8D5;
+        Tue,  7 Jun 2022 11:26:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23960B82340;
-        Tue,  7 Jun 2022 18:26:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 791ACC385A2;
-        Tue,  7 Jun 2022 18:26:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 767F0B822C0;
+        Tue,  7 Jun 2022 18:26:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E41B9C385A2;
+        Tue,  7 Jun 2022 18:26:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626379;
-        bh=AJaiys9ckCie9lZEC/QRZHz/ZvZSHdU8XpgmwbTxEus=;
+        s=korg; t=1654626385;
+        bh=Wv8LqfiVahQyHFgoG9Vecq8fraqBk8Ym4cTjhUqnw5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uFOkiXZWLqyliuvHCwOLjVjXo9hiPBnAj9lgQDjNAUZnH5hJJyN6Lsdhli6XPWey1
-         ae+fAMWpnMe0KxHy+TIUFr0A3znhsQXR9E5SGPP6ZyAS+WMYj9QgXtgH5m4H3YVOm/
-         +BOxHz8Qv+UIJNMGZw09rooemINjsobnqDIyIKdQ=
+        b=mxiIfdkEw2+YSh/S21jkm4UKZdffpKcasgiDxSYOFb2+znpXE17J4Q/Ty0gcmBChp
+         OWMfdXkXJIXVNL09iiiJnBm4WTpKD0VCOhCSJpEPQox8WktGJtEJArr7Dncrn/pM+t
+         DIeEThofMPs6lzbfTZGNdx6WNyCaJEvD6CWd/evw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Jessica Zhang <quic_jesszhan@quicinc.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 340/772] drm/msm/mdp5: Return error code in mdp5_pipe_release when deadlock is detected
-Date:   Tue,  7 Jun 2022 18:58:52 +0200
-Message-Id: <20220607164959.042879376@linuxfoundation.org>
+Subject: [PATCH 5.17 359/772] regulator: pfuze100: Fix refcount leak in pfuze_parse_regulators_dt
+Date:   Tue,  7 Jun 2022 18:59:11 +0200
+Message-Id: <20220607164959.596112475@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,131 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jessica Zhang <quic_jesszhan@quicinc.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit d59be579fa932c46b908f37509f319cbd4ca9a68 ]
+[ Upstream commit afaa7b933ef00a2d3262f4d1252087613fb5c06d ]
 
-mdp5_get_global_state runs the risk of hitting a -EDEADLK when acquiring
-the modeset lock, but currently mdp5_pipe_release doesn't check for if
-an error is returned. Because of this, there is a possibility of
-mdp5_pipe_release hitting a NULL dereference error.
+of_node_get() returns a node with refcount incremented.
+Calling of_node_put() to drop the reference when not needed anymore.
 
-To avoid this, let's have mdp5_pipe_release check if
-mdp5_get_global_state returns an error and propogate that error.
-
-Changes since v1:
-- Separated declaration and initialization of *new_state to avoid
-  compiler warning
-- Fixed some spelling mistakes in commit message
-
-Changes since v2:
-- Return 0 in case where hwpipe is NULL as this is considered normal
-  behavior
-- Added 2nd patch in series to fix a similar NULL dereference issue in
-  mdp5_mixer_release
-
-Reported-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
-Fixes: 7907a0d77cb4 ("drm/msm/mdp5: Use the new private_obj state")
-Reviewed-by: Rob Clark <robdclark@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/485179/
-Link: https://lore.kernel.org/r/20220505214051.155-1-quic_jesszhan@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: 3784b6d64dc5 ("regulator: pfuze100: add pfuze100 regulator driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220511113506.45185-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c  | 15 +++++++++++----
- drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h  |  2 +-
- drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c | 20 ++++++++++++++++----
- 3 files changed, 28 insertions(+), 9 deletions(-)
+ drivers/regulator/pfuze100-regulator.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
-index ba6695963aa6..a4f5cb90f3e8 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
-@@ -119,18 +119,23 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
- 	return 0;
- }
- 
--void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
-+int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
- {
- 	struct msm_drm_private *priv = s->dev->dev_private;
- 	struct mdp5_kms *mdp5_kms = to_mdp5_kms(to_mdp_kms(priv->kms));
- 	struct mdp5_global_state *state = mdp5_get_global_state(s);
--	struct mdp5_hw_pipe_state *new_state = &state->hwpipe;
-+	struct mdp5_hw_pipe_state *new_state;
- 
- 	if (!hwpipe)
--		return;
-+		return 0;
-+
-+	if (IS_ERR(state))
-+		return PTR_ERR(state);
-+
-+	new_state = &state->hwpipe;
- 
- 	if (WARN_ON(!new_state->hwpipe_to_plane[hwpipe->idx]))
--		return;
-+		return -EINVAL;
- 
- 	DBG("%s: release from plane %s", hwpipe->name,
- 		new_state->hwpipe_to_plane[hwpipe->idx]->name);
-@@ -141,6 +146,8 @@ void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
+diff --git a/drivers/regulator/pfuze100-regulator.c b/drivers/regulator/pfuze100-regulator.c
+index d60d7d1b7fa2..aa55cfca9e40 100644
+--- a/drivers/regulator/pfuze100-regulator.c
++++ b/drivers/regulator/pfuze100-regulator.c
+@@ -521,6 +521,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
+ 	parent = of_get_child_by_name(np, "regulators");
+ 	if (!parent) {
+ 		dev_err(dev, "regulators node not found\n");
++		of_node_put(np);
+ 		return -EINVAL;
  	}
  
- 	new_state->hwpipe_to_plane[hwpipe->idx] = NULL;
-+
-+	return 0;
- }
- 
- void mdp5_pipe_destroy(struct mdp5_hw_pipe *hwpipe)
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
-index 9b26d0761bd4..cca67938cab2 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
-@@ -37,7 +37,7 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
- 		     uint32_t caps, uint32_t blkcfg,
- 		     struct mdp5_hw_pipe **hwpipe,
- 		     struct mdp5_hw_pipe **r_hwpipe);
--void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe);
-+int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe);
- 
- struct mdp5_hw_pipe *mdp5_pipe_init(enum mdp5_pipe pipe,
- 		uint32_t reg_offset, uint32_t caps);
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-index 50e854207c70..c0d947bce9e9 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-@@ -297,12 +297,24 @@ static int mdp5_plane_atomic_check_with_state(struct drm_crtc_state *crtc_state,
- 				mdp5_state->r_hwpipe = NULL;
- 
- 
--			mdp5_pipe_release(state->state, old_hwpipe);
--			mdp5_pipe_release(state->state, old_right_hwpipe);
-+			ret = mdp5_pipe_release(state->state, old_hwpipe);
-+			if (ret)
-+				return ret;
-+
-+			ret = mdp5_pipe_release(state->state, old_right_hwpipe);
-+			if (ret)
-+				return ret;
-+
- 		}
- 	} else {
--		mdp5_pipe_release(state->state, mdp5_state->hwpipe);
--		mdp5_pipe_release(state->state, mdp5_state->r_hwpipe);
-+		ret = mdp5_pipe_release(state->state, mdp5_state->hwpipe);
-+		if (ret)
-+			return ret;
-+
-+		ret = mdp5_pipe_release(state->state, mdp5_state->r_hwpipe);
-+		if (ret)
-+			return ret;
-+
- 		mdp5_state->hwpipe = mdp5_state->r_hwpipe = NULL;
+@@ -550,6 +551,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
  	}
  
+ 	of_node_put(parent);
++	of_node_put(np);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Error parsing regulator init data: %d\n",
+ 			ret);
 -- 
 2.35.1
 
