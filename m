@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF096CCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E61CCA48D
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384426AbiFGWLb (ORCPT
+        id S1384139AbiFGWKV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:11:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33208 "EHLO
+        Tue, 7 Jun 2022 18:10:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379238AbiFGVJY (ORCPT
+        with ESMTP id S1379944AbiFGVGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:09:24 -0400
+        Tue, 7 Jun 2022 17:06:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80BDF213E56;
-        Tue,  7 Jun 2022 11:51:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F10212560;
+        Tue,  7 Jun 2022 11:50:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 149D5616A9;
-        Tue,  7 Jun 2022 18:51:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F4BEC385A2;
-        Tue,  7 Jun 2022 18:51:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5071961772;
+        Tue,  7 Jun 2022 18:50:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B9B5C385A2;
+        Tue,  7 Jun 2022 18:50:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627868;
-        bh=MQrjqXErBDcH5v3vhgMjiO1PsCtlzbFiX1PZbys4/vo=;
+        s=korg; t=1654627832;
+        bh=xCNAFf0u7cNDjeIALTJWkSUBwi3rQPoajxPJWvRR0CU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hv9qn/4tI5TQnohFqI1DYvgC5EeehWHd35yiJh6SXP6WMM3PZSaOCq7Tjczr7h4hI
-         4kAiwciptH7MMyQjTdyVxLsQPe467Iboj6t6EKp1pEzzS9NC0Ea/UlRs10hEvJM6tJ
-         ZHITIMj3uaYjh1DmMqNnmYYWVNCq4FUl7KIoErHY=
+        b=MvYxvGmmDmJmKgyY8UfEJpj9UuKHFZ1fFA4QkpxrWCVQuDyl9N2COLtJh3/ee9WJM
+         FEi65ZdyHMNFbKjbNZKsszR73pbvazvhNVW9IQbTgAaH3pHxF3UQewOZdYFrXp1PlF
+         hVkpv0/r7qoK+nijLjN89Gre7rUhG2o3PgFPZOEo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Niels Dossche <dossche.niels@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 123/879] ath11k: fix warning of not found station for bssid in message
-Date:   Tue,  7 Jun 2022 18:54:01 +0200
-Message-Id: <20220607165006.271462013@linuxfoundation.org>
+Subject: [PATCH 5.18 069/879] ipv6: fix locking issues with loops over idev->addr_list
+Date:   Tue,  7 Jun 2022 18:53:07 +0200
+Message-Id: <20220607165004.695610455@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,98 +51,147 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gong <quic_wgong@quicinc.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 7330e1ec9748948177830c6e1a13379835d577f9 ]
+[ Upstream commit 51454ea42c1ab4e0c2828bb0d4d53957976980de ]
 
-When test connect/disconnect to an AP frequently with WCN6855, sometimes
-it show below log.
+idev->addr_list needs to be protected by idev->lock. However, it is not
+always possible to do so while iterating and performing actions on
+inet6_ifaddr instances. For example, multiple functions (like
+addrconf_{join,leave}_anycast) eventually call down to other functions
+that acquire the idev->lock. The current code temporarily unlocked the
+idev->lock during the loops, which can cause race conditions. Moving the
+locks up is also not an appropriate solution as the ordering of lock
+acquisition will be inconsistent with for example mc_lock.
 
-[  277.040121] wls1: deauthenticating from 8c:21:0a:b3:5a:64 by local choice (Reason: 3=DEAUTH_LEAVING)
-[  277.050906] ath11k_pci 0000:05:00.0: wmi stats vdev id 0 mac 00:03:7f:29:61:11
-[  277.050944] ath11k_pci 0000:05:00.0: wmi stats bssid 8c:21:0a:b3:5a:64 vif         pK-error
-[  277.050954] ath11k_pci 0000:05:00.0: not found station for bssid 8c:21:0a:b3:5a:64
-[  277.050961] ath11k_pci 0000:05:00.0: failed to parse rssi chain -71
-[  277.050967] ath11k_pci 0000:05:00.0: failed to pull fw stats: -71
-[  277.050976] ath11k_pci 0000:05:00.0: wmi stats vdev id 0 mac 00:03:7f:29:61:11
-[  277.050983] ath11k_pci 0000:05:00.0: wmi stats bssid 8c:21:0a:b3:5a:64 vif         pK-error
-[  277.050989] ath11k_pci 0000:05:00.0: not found station for bssid 8c:21:0a:b3:5a:64
-[  277.050995] ath11k_pci 0000:05:00.0: failed to parse rssi chain -71
-[  277.051000] ath11k_pci 0000:05:00.0: failed to pull fw stats: -71
-[  278.064050] ath11k_pci 0000:05:00.0: failed to request fw stats: -110
+This solution adds an additional field to inet6_ifaddr that is used
+to temporarily add the instances to a temporary list while holding
+idev->lock. The temporary list can then be traversed without holding
+idev->lock. This change was done in two places. In addrconf_ifdown, the
+list_for_each_entry_safe variant of the list loop is also no longer
+necessary as there is no deletion within that specific loop.
 
-Reason is:
-When running disconnect operation, sta_info removed from local->sta_hash
-by __sta_info_destroy_part1() from __sta_info_flush(), after this,
-ieee80211_find_sta_by_ifaddr() which called by
-ath11k_wmi_tlv_fw_stats_data_parse() and ath11k_wmi_tlv_rssi_chain_parse()
-cannot find this station, then failed log printed.
-
-steps are like this:
-1. when disconnect from AP, __sta_info_destroy() called __sta_info_destroy_part1()
-and __sta_info_destroy_part2().
-
-2. in __sta_info_destroy_part1(),  it has "sta_info_hash_del(local, sta)"
-and "list_del_rcu(&sta->list)", it will remove the ieee80211_sta from the
-list of ieee80211_hw.
-
-3. in __sta_info_destroy_part2(), it called drv_sta_state()->ath11k_mac_op_sta_state(),
-then peer->sta is clear at this moment.
-
-4. in __sta_info_destroy_part2(), it then called sta_set_sinfo()->drv_sta_statistics()
-->ath11k_mac_op_sta_statistics(), then WMI_REQUEST_STATS_CMDID sent to firmware.
-
-5. WMI_UPDATE_STATS_EVENTID reported from firmware, at this moment, the
-ieee80211_sta can not be found again because it has remove from list in
-step2 and also peer->sta is clear in step3.
-
-6. in __sta_info_destroy_part2(), it then called cleanup_single_sta()->
-sta_info_free()->kfree(sta), at this moment, the ieee80211_sta is freed
-in memory, then the failed log will not happen because function
-ath11k_mac_op_sta_state() will not be called.
-
-Actually this print log is not a real error, it is only to skip parse the
-info, so change to skip print by default debug setting.
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
-
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220428022426.2927-1-quic_wgong@quicinc.com
+Suggested-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Link: https://lore.kernel.org/r/20220403231523.45843-1-dossche.niels@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/wmi.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ include/net/if_inet6.h |  8 ++++++++
+ net/ipv6/addrconf.c    | 30 ++++++++++++++++++++++++------
+ 2 files changed, 32 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index 2751fe8814df..0900f75eef20 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.c
-+++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -5789,9 +5789,9 @@ static int ath11k_wmi_tlv_rssi_chain_parse(struct ath11k_base *ab,
- 					   arvif->bssid,
- 					   NULL);
- 	if (!sta) {
--		ath11k_warn(ab, "not found station for bssid %pM\n",
--			    arvif->bssid);
--		ret = -EPROTO;
-+		ath11k_dbg(ab, ATH11K_DBG_WMI,
-+			   "not found station of bssid %pM for rssi chain\n",
-+			   arvif->bssid);
- 		goto exit;
+diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
+index 4cfdef6ca4f6..c8490729b4ae 100644
+--- a/include/net/if_inet6.h
++++ b/include/net/if_inet6.h
+@@ -64,6 +64,14 @@ struct inet6_ifaddr {
+ 
+ 	struct hlist_node	addr_lst;
+ 	struct list_head	if_list;
++	/*
++	 * Used to safely traverse idev->addr_list in process context
++	 * if the idev->lock needed to protect idev->addr_list cannot be held.
++	 * In that case, add the items to this list temporarily and iterate
++	 * without holding idev->lock.
++	 * See addrconf_ifdown and dev_forward_change.
++	 */
++	struct list_head	if_list_aux;
+ 
+ 	struct list_head	tmp_list;
+ 	struct inet6_ifaddr	*ifpub;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index b22504176588..1afc4c024981 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -797,6 +797,7 @@ static void dev_forward_change(struct inet6_dev *idev)
+ {
+ 	struct net_device *dev;
+ 	struct inet6_ifaddr *ifa;
++	LIST_HEAD(tmp_addr_list);
+ 
+ 	if (!idev)
+ 		return;
+@@ -815,14 +816,24 @@ static void dev_forward_change(struct inet6_dev *idev)
+ 		}
  	}
  
-@@ -5889,8 +5889,9 @@ static int ath11k_wmi_tlv_fw_stats_data_parse(struct ath11k_base *ab,
- 					   "wmi stats vdev id %d snr %d\n",
- 					   src->vdev_id, src->beacon_snr);
- 			} else {
--				ath11k_warn(ab, "not found station for bssid %pM\n",
--					    arvif->bssid);
-+				ath11k_dbg(ab, ATH11K_DBG_WMI,
-+					   "not found station of bssid %pM for vdev stat\n",
-+					   arvif->bssid);
- 			}
++	read_lock_bh(&idev->lock);
+ 	list_for_each_entry(ifa, &idev->addr_list, if_list) {
+ 		if (ifa->flags&IFA_F_TENTATIVE)
+ 			continue;
++		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
++	}
++	read_unlock_bh(&idev->lock);
++
++	while (!list_empty(&tmp_addr_list)) {
++		ifa = list_first_entry(&tmp_addr_list,
++				       struct inet6_ifaddr, if_list_aux);
++		list_del(&ifa->if_list_aux);
+ 		if (idev->cnf.forwarding)
+ 			addrconf_join_anycast(ifa);
+ 		else
+ 			addrconf_leave_anycast(ifa);
+ 	}
++
+ 	inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
+ 				     NETCONFA_FORWARDING,
+ 				     dev->ifindex, &idev->cnf);
+@@ -3728,7 +3739,8 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
+ 	unsigned long event = unregister ? NETDEV_UNREGISTER : NETDEV_DOWN;
+ 	struct net *net = dev_net(dev);
+ 	struct inet6_dev *idev;
+-	struct inet6_ifaddr *ifa, *tmp;
++	struct inet6_ifaddr *ifa;
++	LIST_HEAD(tmp_addr_list);
+ 	bool keep_addr = false;
+ 	bool was_ready;
+ 	int state, i;
+@@ -3820,16 +3832,23 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
+ 		write_lock_bh(&idev->lock);
+ 	}
+ 
+-	list_for_each_entry_safe(ifa, tmp, &idev->addr_list, if_list) {
++	list_for_each_entry(ifa, &idev->addr_list, if_list)
++		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
++	write_unlock_bh(&idev->lock);
++
++	while (!list_empty(&tmp_addr_list)) {
+ 		struct fib6_info *rt = NULL;
+ 		bool keep;
+ 
++		ifa = list_first_entry(&tmp_addr_list,
++				       struct inet6_ifaddr, if_list_aux);
++		list_del(&ifa->if_list_aux);
++
+ 		addrconf_del_dad_work(ifa);
+ 
+ 		keep = keep_addr && (ifa->flags & IFA_F_PERMANENT) &&
+ 			!addr_is_local(&ifa->addr);
+ 
+-		write_unlock_bh(&idev->lock);
+ 		spin_lock_bh(&ifa->lock);
+ 
+ 		if (keep) {
+@@ -3860,15 +3879,14 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
+ 			addrconf_leave_solict(ifa->idev, &ifa->addr);
  		}
  
+-		write_lock_bh(&idev->lock);
+ 		if (!keep) {
++			write_lock_bh(&idev->lock);
+ 			list_del_rcu(&ifa->if_list);
++			write_unlock_bh(&idev->lock);
+ 			in6_ifa_put(ifa);
+ 		}
+ 	}
+ 
+-	write_unlock_bh(&idev->lock);
+-
+ 	/* Step 5: Discard anycast and multicast list */
+ 	if (unregister) {
+ 		ipv6_ac_destroy_dev(idev);
 -- 
 2.35.1
 
