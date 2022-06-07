@@ -2,73 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A08E0CCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DEBCCA490
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384831AbiFGWQ2 (ORCPT
+        id S1384882AbiFGWQh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:16:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
+        Tue, 7 Jun 2022 18:16:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380167AbiFGVLf (ORCPT
+        with ESMTP id S1380237AbiFGVLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:35 -0400
-Received: from 19.mo582.mail-out.ovh.net (19.mo582.mail-out.ovh.net [188.165.56.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B93149D8B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:53:21 -0700 (PDT)
-Received: from player796.ha.ovh.net (unknown [10.108.4.24])
-        by mo582.mail-out.ovh.net (Postfix) with ESMTP id B517E2478D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:47:02 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player796.ha.ovh.net (Postfix) with ESMTPSA id 7B42B2B43739F;
-        Tue,  7 Jun 2022 18:46:54 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-100R003e100f37a-472c-4ee8-8084-671dd768fd49,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     "Lee, Chun-Yi" <jlee@suse.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Cezary Jackiewicz <cezary.jackiewicz@gmail.com>,
-        Henrique de Moraes Holschuh <hmh@hmh.eng.br>
-Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 0/4] platform/x86: Use backlight helpers
-Date:   Tue,  7 Jun 2022 20:46:31 +0200
-Message-Id: <20220607184635.1127913-1-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
+        Tue, 7 Jun 2022 17:11:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A004218ABF;
+        Tue,  7 Jun 2022 11:53:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76C8AB81FE1;
+        Tue,  7 Jun 2022 18:53:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0B12C385A2;
+        Tue,  7 Jun 2022 18:53:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628014;
+        bh=pVUNEsiwiqNBZBI/yNccmCzF3JEyW8mOd+NKkwpJvhc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=t6phl+6lcMWZCurZbo/KvzCUGofqbF13XEPGhATsPgBfekAkqbEMORz4Pv19/JNhb
+         DqM5E5FAce0DYz0yyQk64uLVoEt0uucp6ppcplzpDVsA2f/FQ/x4BBnJG8ELHukTth
+         kkMBx4ev6jsY0bQcLAGmoQBGqBNWE85d3WGS0fVE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kyle Smith <kyles@hpe.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 175/879] nvme-pci: fix a NULL pointer dereference in nvme_alloc_admin_tags
+Date:   Tue,  7 Jun 2022 18:54:53 +0200
+Message-Id: <20220607165007.921805103@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11323738314411247238
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvlecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekvd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-backlight_properties.fb_blank is deprecated. The states it represents
-are handled by other properties; but instead of accessing those
-properties directly, drivers should use the helpers provided by
-backlight.h.
+From: Smith, Kyle Miller (Nimble Kernel) <kyles@hpe.com>
 
-This will ultimately allow fb_blank to be removed.
+[ Upstream commit da42761181627e9bdc37d18368b827948a583929 ]
 
-Stephen Kitt (4):
-  platform/x86: acer-wmi: Use backlight helper
-  platform/x86: apple-gmux: Use backlight helper
-  platform/x86: compal-laptop: Use backlight helper
-  platform/x86: thinkpad_acpi: Use backlight helper
+In nvme_alloc_admin_tags, the admin_q can be set to an error (typically
+-ENOMEM) if the blk_mq_init_queue call fails to set up the queue, which
+is checked immediately after the call. However, when we return the error
+message up the stack, to nvme_reset_work the error takes us to
+nvme_remove_dead_ctrl()
+  nvme_dev_disable()
+   nvme_suspend_queue(&dev->queues[0]).
 
- drivers/platform/x86/acer-wmi.c      | 7 +------
- drivers/platform/x86/apple-gmux.c    | 5 +----
- drivers/platform/x86/compal-laptop.c | 4 +---
- drivers/platform/x86/thinkpad_acpi.c | 5 +----
- 4 files changed, 4 insertions(+), 17 deletions(-)
+Here, we only check that the admin_q is non-NULL, rather than not
+an error or NULL, and begin quiescing a queue that never existed, leading
+to bad / NULL pointer dereference.
 
+Signed-off-by: Kyle Smith <kyles@hpe.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/nvme/host/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 3aacf1c0d5a5..17aeb7d5c485 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -1775,6 +1775,7 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
+ 		dev->ctrl.admin_q = blk_mq_init_queue(&dev->admin_tagset);
+ 		if (IS_ERR(dev->ctrl.admin_q)) {
+ 			blk_mq_free_tag_set(&dev->admin_tagset);
++			dev->ctrl.admin_q = NULL;
+ 			return -ENOMEM;
+ 		}
+ 		if (!blk_get_queue(dev->ctrl.admin_q)) {
 -- 
-2.30.2
+2.35.1
+
+
 
