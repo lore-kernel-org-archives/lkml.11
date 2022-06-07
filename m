@@ -2,260 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:07:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 583A9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243409AbiFGMHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50390 "EHLO
+        id S243451AbiFGMH5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243379AbiFGMHa (ORCPT
+        with ESMTP id S243421AbiFGMHj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:07:30 -0400
-Received: from esa10.hc1455-7.c3s2.iphmx.com (esa10.hc1455-7.c3s2.iphmx.com [139.138.36.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 061971FA76
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:07:24 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="63351129"
-X-IronPort-AV: E=Sophos;i="5.91,283,1647270000"; 
-   d="scan'208";a="63351129"
-Received: from unknown (HELO yto-r4.gw.nic.fujitsu.com) ([218.44.52.220])
-  by esa10.hc1455-7.c3s2.iphmx.com with ESMTP; 07 Jun 2022 21:07:22 +0900
-Received: from yto-m4.gw.nic.fujitsu.com (yto-nat-yto-m4.gw.nic.fujitsu.com [192.168.83.67])
-        by yto-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id 8C1ADD3EB0;
-        Tue,  7 Jun 2022 21:07:21 +0900 (JST)
-Received: from oym-om4.fujitsu.com (oym-om4.o.css.fujitsu.com [10.85.58.164])
-        by yto-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 9C17CF89E;
-        Tue,  7 Jun 2022 21:07:20 +0900 (JST)
-Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by oym-om4.fujitsu.com (Postfix) with ESMTP id 36B3D4007A996;
-        Tue,  7 Jun 2022 21:07:20 +0900 (JST)
-From:   Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
-To:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, rafael@kernel.org, lenb@kernel.org,
-        gregkh@linuxfoundation.org, mchehab+huawei@kernel.org,
-        eugenis@google.com, tony.luck@intel.com, pcc@google.com,
-        peterz@infradead.org, marcos@orca.pet, marcan@marcan.st,
-        linus.walleij@linaro.org, nicolas.ferre@microchip.com,
-        conor.dooley@microchip.com, arnd@arndb.de, ast@kernel.org,
-        peter.chen@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-acpi@vger.kernel.org
-Cc:     tarumizu.kohei@fujitsu.com
-Subject: [PATCH v5 0/6] Add hardware prefetch control driver for A64FX and x86
-Date:   Tue,  7 Jun 2022 21:05:24 +0900
-Message-Id: <20220607120530.2447112-1-tarumizu.kohei@fujitsu.com>
-X-Mailer: git-send-email 2.27.0
+        Tue, 7 Jun 2022 08:07:39 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1CFE037A31
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:07:39 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D054B143D;
+        Tue,  7 Jun 2022 05:07:38 -0700 (PDT)
+Received: from [10.1.196.218] (eglon.cambridge.arm.com [10.1.196.218])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6AD773F85F;
+        Tue,  7 Jun 2022 05:07:34 -0700 (PDT)
+Subject: Re: [PATCH v4 07/21] x86/resctrl: Create mba_sc configuration in the
+ rdt_domain
+To:     Reinette Chatre <reinette.chatre@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
+        baolin.wang@linux.alibaba.com
+References: <20220412124419.30689-1-james.morse@arm.com>
+ <20220412124419.30689-8-james.morse@arm.com>
+ <7f1c23cd-486d-9bbd-2bcc-c2db0fa1e5c2@intel.com>
+From:   James Morse <james.morse@arm.com>
+Message-ID: <ce78e593-545f-0c27-cc3d-c6ec3193da36@arm.com>
+Date:   Tue, 7 Jun 2022 13:07:19 +0100
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+In-Reply-To: <7f1c23cd-486d-9bbd-2bcc-c2db0fa1e5c2@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series add sysfs interface to control CPU's hardware
-prefetch behavior for performance tuning from userspace for the
-processor A64FX and x86 (on supported CPU).
+Hi Reinette,
 
-Changes from v4:
-  - remove core driver
-  - fix to use attribute_group instead of attribute (patch 1, 4)
-  - fix to store a pointer of CPU number in driver_data when the
-    initialization of sysfs (patch 1, 4)
-  - move #if in .c file to .h file (patch 3)
-  - fix drivers to be loaded automatically (patch 1, 4)
-    - for x86, it is tied to the discovery of a specific CPU model
-    - for A64FX, it is tied to the discovery of a specific ACPI device
-  - add Kconfig description (patch 2, 5)
-https://lore.kernel.org/lkml/20220518063032.2377351-1-tarumizu.kohei@fujitsu.com/
+On 17/05/2022 17:18, Reinette Chatre wrote:
+> On 4/12/2022 5:44 AM, James Morse wrote:
+>> @@ -3263,6 +3295,7 @@ void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d)
+>>  		cancel_delayed_work(&d->cqm_limbo);
+>>  	}
+>>  
+>> +	mba_sc_domain_destroy(r, d);
+>>  	domain_destroy_mon_state(d);
+>>  }
+> 
+> It is not clear to me how rdt_domain->mbps_val will be released via the above call.
+> 
+> After patch 3/21 and the hunk below resctrl_online_domain() would look like:
 
-[Background]
-============
-A64FX and some Intel processors have implementation-dependent register
-for controlling CPU's hardware prefetch behavior. A64FX has
-IMP_PF_STREAM_DETECT_CTRL_EL0[1], and Intel processors have MSR 0x1a4
-(MSR_MISC_FEATURE_CONTROL)[2]. These registers cannot be accessed from
-userspace.
+[..]
 
-[1]https://github.com/fujitsu/A64FX/tree/master/doc/
-   A64FX_Specification_HPC_Extension_v1_EN.pdf
+> If I understand the above correctly, if MBM is enabled then all domains
+> of resource RDT_RESOURCE_MBA will have rdt_domain->mbps_val allocated via
+> resctrl_online_domain().
+> 
+> RDT_RESOURCE_MBA is not mon_capable,
 
-[2]https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
-    Volume 4
+Bother - this is part of the mistake I made with v3.
+(in MPAM, all resources can be alloc_capable or mon_capable - this trips me up every time)
 
-The advantage of using these is improved performance. As an example of
-performance improvements, the results of running the Stream benchmark
-on the A64FX are described in section [Merit].
 
-For MSR 0x1a4, it is also possible to change the value from userspace
-via the MSR driver. However, using MSR driver is not recommended, so
-it needs a proper kernel interface[3].
+> so at the time its domains go
+> offline, the freeing of rdt_domain->mbps_val will be skipped because	
+> after patch 5/21 resctrl_offline_domain() would look like below so
+> I do not see how the hunk added above will ever end up cleaning up
+> allocated memory:
 
-[3]https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/about/
+Yup, I missed this when fixing the mistake you pointed out in v3.
 
-For these reasons, we provide a new proper kernel interface to control
-both IMP_PF_STREAM_DETECT_CTRL_EL0 and MSR 0x1a4.
+I've changes this to have:
+|	if (supports_mba_mbps() && r->rid == RDT_RESOURCE_MBA)
+|		mba_sc_domain_destroy(r, d);
 
-[Overall design]
-================
-This driver creates "prefetch_control" directory and some attributes
-in every CPU's cache/indexX directory, if CPU supports hardware
-prefetch control behavior.
+in resctrl_offline_domain().
 
-Detailed description of this sysfs interface is in
-Documentation/ABI/testing/sysfs-devices-system-cpu (patch6).
 
-This driver needs cache sysfs directory and cache level/type
-information. In ARM processor, these information can be obtained
-from registers even without ACPI PPTT.
-We add processing to create a cache/index directory using only the
-information from the register if the machine does not support ACPI
-PPTT and CONFIG_ALLOW_INCOMPLETE_CACHE_SYSFS is true in patch3.
-This action caused a problem and is described in [Known problem].
 
-[Examples]
-==========
-This section provides an example of using this sysfs interface at the
-x86's model of INTEL_FAM6_BROADWELL_X.
+>> @@ -3302,12 +3335,20 @@ int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d)
+>>  
+>>  	lockdep_assert_held(&rdtgroup_mutex);
+>>  
+>> +	if (is_mbm_enabled() && r->rid == RDT_RESOURCE_MBA) {
+> 
+> This introduces only half of the checks that are later replaced in
+> patch 10 "x86/resctrl: Abstract and use supports_mba_mbps()". Could the
+> full check be used here for that patch to be cleaner or perhaps patch 10
+> could be moved to be before this patch?
 
-This model has the following register specifications:
+Great idea.
 
-[0]    L2 Hardware Prefetcher Disable (R/W)
-[1]    L2 Adjacent Cache Line Prefetcher Disable (R/W)
-[2]    DCU Hardware Prefetcher Disable (R/W)
-[3]    DCU IP Prefetcher Disable (R/W)
-[63:4] Reserved
 
-In this case, index0 (L1d cache) corresponds to bit[2,3] and index2
-(L2 cache) corresponds to bit [0,1]. A list of attribute files of
-index0 and index2 in CPU1 at BROADWELL_X is following:
+>> +		err = mba_sc_domain_allocate(r, d);
+>> +		if (err)
+>> +			return err;
+>> +	}
+>> +
+>>  	if (!r->mon_capable)
+>>  		return 0;
+>>  
+>>  	err = domain_setup_mon_state(r, d);
+>> -	if (err)
+>> +	if (err) {
+>> +		mba_sc_domain_destroy(r, d);
+>>  		return err;
+>> +	}
+> 
+> Cleaning up after the error is reasonable but this allocation would only
+> ever happen if the resource is RDT_RESOURCE_MBA and it is not mon_capable.
+> Something would thus have gone really wrong if this cleanup is necessary.
+> Considering that only mon_capable resources are initialized at this point,
+> why not just exit right after calling mba_sc_domain_allocate()?
 
-```
-# ls /sys/devices/system/cpu/cpu1/cache/index0/prefetch_control/
+I'm a little uncomfortable adding more places that hardcode "this resources is never
+mon_capable", its something that has to be bodged around by MPAM where any resource can
+have monitors.
 
-hardware_prefetcher_enable
-ip_prefetcher_enable
+But sure, this just needs looking at in more detail in the future.
 
-# ls /sys/devices/system/cpu/cpu1/cache/index2/prefetch_control/
 
-adjacent_cache_line_prefetcher_enable
-hardware_prefetcher_enable
-```
+Thanks,
 
-If user would like to disable the setting of "L2 Adjacent Cache Line
-Prefetcher Disable (R/W)" in CPU1, do the following:
-
-```
-# echo 0 >
-# /sys/devices/system/cpu/cpu1/cache/index2/prefetch_control/adjacent_cache_line_prefetcher_enable
-```
-
-In another example, a list of index0 at A64FX is following:
-
-```
-# ls /sys/devices/system/cpu/cpu1/cache/index0/prefetch_control/
-
-stream_detect_prefetcher_dist
-stream_detect_prefetcher_enable
-stream_detect_prefetcher_strength
-stream_detect_prefetcher_strength_available
-```
-
-[Patch organizations]
-=====================
-This patch series add hardware prefetch control driver for A64FX
-and x86.
-
-- patch1: Add hardware prefetch control driver for A64FX
-
-  Adds module init/exit code to create sysfs attributes for A64FX with
-  "stream_detect_prefetcher_enable", "stream_detect_prefetcher_strong"
-  and "stream_detect_prefetcher_dist".
-
-- patch2: Add Kconfig/Makefile to build driver for A64FX
-
-- patch3: Create cache sysfs directory without ACPI PPTT for hardware
-  prefetch control
-
-  Hardware Prefetch control driver needs cache sysfs directory and cache
-  level/type information. In ARM processor, these information can be
-  obtained from register(CLIDR_EL1) even without PPTT. Therefore, we
-  set the cpu_map_populated to true to create cache sysfs directory, if
-  the machine doesn't have PPTT.
-
-- patch4: Add hardware prefetch control driver for x86
-
-  Adds module init/exit code to create sysfs attributes for x86 with
-  "hardware_prefetcher_enable", "ip_prefetcher_enable" and
-  "adjacent_cache_line_prefetcher_enable".
-
-- patch5: Add Kconfig/Makefile to build driver for x86
-
-- patch6: Add documentation for the new sysfs interface
-
-[Known problem]
-===============
-- `lscpu` command terminates with -ENOENT because cache/index directory
-  is exists but shared_cpu_map file does not exist. This is due to
-  patch5, which creates a cache/index directory containing only level
-  and type without ACPI PPTT.
-
-[Merit]
-=======
-For reference, here is the result of STREAM Triad when tuning with
-the "s file in L1 and L2 cache on A64FX.
-
-| dist combination  | Pattern A   | Pattern B   |
-|-------------------|-------------|-------------|
-| L1:256,  L2:1024  | 234505.2144 | 114600.0801 |
-| L1:1536, L2:1024  | 279172.8742 | 118979.4542 |
-| L1:256,  L2:10240 | 247716.7757 | 127364.1533 |
-| L1:1536, L2:10240 | 283675.6625 | 125950.6847 |
-
-In pattern A, we set the size of the array to 174720, which is about
-half the size of the L1d cache. In pattern B, we set the size of the
-array to 10485120, which is about twice the size of the L2 cache.
-
-In pattern A, a change of dist at L1 has a larger effect. On the other
-hand, in pattern B, the change of dist at L2 has a larger effect.
-As described above, the optimal dist combination depends on the
-characteristics of the application. Therefore, such a sysfs interface
-is useful for performance tuning.
-
-Best regards,
-Kohei Tarumizu
-
-Kohei Tarumizu (6):
-  soc: fujitsu: Add hardware prefetch control driver for A64FX
-  soc: fujitsu: Add Kconfig/Makefile to build hardware prefetch control
-    driver
-  arm64: Create cache sysfs directory without ACPI PPTT for hardware
-    prefetch control
-  x86: Add hardware prefetch control driver for x86
-  x86: Add Kconfig/Makefile to build hardware prefetch control driver
-  docs: ABI: Add sysfs documentation interface of hardware prefetch
-    control driver
-
- .../ABI/testing/sysfs-devices-system-cpu      |  98 ++++
- MAINTAINERS                                   |   6 +
- arch/arm64/kernel/cacheinfo.c                 |  27 +
- arch/x86/Kconfig                              |  17 +
- arch/x86/kernel/cpu/Makefile                  |   2 +
- arch/x86/kernel/cpu/x86-pfctl.c               | 363 +++++++++++++
- drivers/acpi/pptt.c                           |  18 +
- drivers/soc/Kconfig                           |   1 +
- drivers/soc/Makefile                          |   1 +
- drivers/soc/fujitsu/Kconfig                   |  26 +
- drivers/soc/fujitsu/Makefile                  |   2 +
- drivers/soc/fujitsu/a64fx-pfctl.c             | 484 ++++++++++++++++++
- include/linux/acpi.h                          |   5 +
- include/linux/cacheinfo.h                     |  10 +
- 14 files changed, 1060 insertions(+)
- create mode 100644 arch/x86/kernel/cpu/x86-pfctl.c
- create mode 100644 drivers/soc/fujitsu/Kconfig
- create mode 100644 drivers/soc/fujitsu/Makefile
- create mode 100644 drivers/soc/fujitsu/a64fx-pfctl.c
-
--- 
-2.27.0
-
+James
