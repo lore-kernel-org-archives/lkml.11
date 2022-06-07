@@ -2,148 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E1FCCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C67C43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:11:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379523AbiFGVKO (ORCPT
+        id S1379547AbiFGVKV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53456 "EHLO
+        Tue, 7 Jun 2022 17:10:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359588AbiFGUMQ (ORCPT
+        with ESMTP id S1359589AbiFGUMQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:12:16 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13AC2396BA;
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C6B68980;
         Tue,  7 Jun 2022 11:27:40 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id C19CE5C00E0;
-        Tue,  7 Jun 2022 14:27:39 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Tue, 07 Jun 2022 14:27:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1654626459; x=
-        1654712859; bh=ie1VBpDc60mNPyKhPTfEMsPzeVNv6xxlIjutSd/3wxk=; b=J
-        8mQBcAXvI2l0rIAtmrCwCQ6uidHm9+7l1mbxzaWA16v8+mvBtUB/Tqibs4l4iGTH
-        zr5Hpa9NoZohYtwM7gBFwI8L4RRD0DsMNAlrSP9osm3o70k8L7KtbSdgZPYqyGIg
-        +n7V8tuKJhTPCktZhpNAMLjoGqsW4CTycp4Fc77HTn3wEx5iogMJXRhtaxUdr3TW
-        3V3hSPlogNirpnrZzFiin1zUjY5cAxETwtv6hByYrzZ15zVa3xggXaEq6SCUeKsQ
-        cVoGhHbbzTyxVe1IxfTXIlBbzNZO4n/dIeEqjICzclrF8bEcci8SOTHUu9wDog4J
-        vuDr7CN7iM/JP406J8Lrg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1654626459; x=
-        1654712859; bh=ie1VBpDc60mNPyKhPTfEMsPzeVNv6xxlIjutSd/3wxk=; b=k
-        XfZqI/UMtKkFJGhhpkg2gLlB56uW8wdx1tuj7LWZRl9rHNSTle1o299/ZRsPSXXJ
-        ERmZmkX7mc3m/629vqpXSye1MbjWMsnCPx5xuvnx7T0qGSdx7cageVlbIaG7dPki
-        DtqnfCzwlqtX9vMiLgh0WCcfiwcMhLCZiKR6IPe0QjbCc1ekBnDLIrQtr5yJjQCa
-        Ps/As+c0cIbB9dxKaahs1RMVXPrs4NVIwK1UCbpXPhbkv9LdT5z4l4rmsePvm+rf
-        A5U/LWGzXaE8CUE8pfcj5nTaKDYkvUu/uAs4Zz+VY0ItSnZNwKmpYirbVzDVMmAV
-        EJrSbemszC3CJvQMMb9lw==
-X-ME-Sender: <xms:m5ifYm8Oa0BYTvKyLxcQgjpEPkhPfBJuwsNOQc2vho0EY1WItPs5zA>
-    <xme:m5ifYmv71nSaQ9hxvmik4cJSWCppWOwYlidKCFYKnBE-9Ej19MWGXDSrmXLvc8ysT
-    z6mnzA6qvbGIvYSFlE>
-X-ME-Received: <xmr:m5ifYsCGb22Ke9qjuc56Wz6iaTMj3iGSy3TNcz2oeHeZYwdO0bS0IUbUqzHzBgiqoPA-o9gMc4wPWps_3P1mUPJtRtaN0sIoNWx4_zfAd0E>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvhecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefkffggfgfuvfevfhfhjggtgfesthekredttdefjeenucfhrhhomheplfhi
-    rgiguhhnucgjrghnghcuoehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhmqe
-    enucggtffrrghtthgvrhhnpeduhfekvedvtdeukeeffefgteelgfeugeeuledttdeijeeg
-    ieehvefghefgvdefgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
-    hlfhhrohhmpehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhm
-X-ME-Proxy: <xmx:m5ifYudLcMkbSMiwtoboKt241o5TBFWnwbl2FAmCSTfGh84WlnDrmw>
-    <xmx:m5ifYrOfOTCP-4pYQRCXTxUyZrZT8LGHBPHrnd99D33rlOxAwdaghA>
-    <xmx:m5ifYolt7kFLPEWI3CPL-zdwSS_LrfWJ3oIUe17mdI0O5_KAfNFe_A>
-    <xmx:m5ifYikTPgaZd1bqNHXE3ueJ9gQCt8TN-SW3k3G2c_x_2hKGi9aAJw>
-Feedback-ID: ifd894703:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 7 Jun 2022 14:27:37 -0400 (EDT)
-Message-ID: <bf97d10b-d5c9-46d6-c440-fc7de09c3abf@flygoat.com>
-Date:   Tue, 7 Jun 2022 19:27:36 +0100
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5C7FDCE2439;
+        Tue,  7 Jun 2022 18:27:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48BD5C385A5;
+        Tue,  7 Jun 2022 18:27:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654626456;
+        bh=xvnPzd7p3dkcQe0+8eVBEm4lb5PYT/kW+xLJjqZJrms=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BBHy9hlA8k6k2IAshhMM+BEh3R5D4PzdZfv7EOtPw6cCByQaWYHcFog5bAG6GF56R
+         H8f5A+OG7XUk1OnSMk5pAD0ULA8Yq+hqsXVaqTDS5wsHJ+E7Y4I9zBnGAa9FFWgRbE
+         GsTbWr2LromEFGxg6SpwX2k4zdGj9npviyJrYzSI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Alexander Popov <alex.popov@linux.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Kees Cook <keescook@chromium.org>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 344/772] arm64: stackleak: fix current_top_of_stack()
+Date:   Tue,  7 Jun 2022 18:58:56 +0200
+Message-Id: <20220607164959.160169672@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 11/12] MIPS: Report cluster in /proc/cpuinfo
-Content-Language: en-GB
-To:     Marc Zyngier <maz@kernel.org>,
-        Dragan Mladjenovic <Dragan.Mladjenovic@syrmia.com>
-Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Chao-ying Fu <cfu@wavecomp.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Ungerer <gerg@kernel.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        Paul Burton <paulburton@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>
-References: <20220525121030.16054-1-Dragan.Mladjenovic@syrmia.com>
- <20220525121030.16054-12-Dragan.Mladjenovic@syrmia.com>
- <87sfoi3pek.wl-maz@kernel.org>
-From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
-In-Reply-To: <87sfoi3pek.wl-maz@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Mark Rutland <mark.rutland@arm.com>
+
+[ Upstream commit e85094c31ddb794ac41c299a5a7a68243148f829 ]
+
+Due to some historical confusion, arm64's current_top_of_stack() isn't
+what the stackleak code expects. This could in theory result in a number
+of problems, and practically results in an unnecessary performance hit.
+We can avoid this by aligning the arm64 implementation with the x86
+implementation.
+
+The arm64 implementation of current_top_of_stack() was added
+specifically for stackleak in commit:
+
+  0b3e336601b82c6a ("arm64: Add support for STACKLEAK gcc plugin")
+
+This was intended to be equivalent to the x86 implementation, but the
+implementation, semantics, and performance characteristics differ
+wildly:
+
+* On x86, current_top_of_stack() returns the top of the current task's
+  task stack, regardless of which stack is in active use.
+
+  The implementation accesses a percpu variable which the x86 entry code
+  maintains, and returns the location immediately above the pt_regs on
+  the task stack (above which x86 has some padding).
+
+* On arm64 current_top_of_stack() returns the top of the stack in active
+  use (i.e. the one which is currently being used).
+
+  The implementation checks the SP against a number of
+  potentially-accessible stacks, and will BUG() if no stack is found.
+
+The core stackleak_erase() code determines the upper bound of stack to
+erase with:
+
+| if (on_thread_stack())
+|         boundary = current_stack_pointer;
+| else
+|         boundary = current_top_of_stack();
+
+On arm64 stackleak_erase() is always called on a task stack, and
+on_thread_stack() should always be true. On x86, stackleak_erase() is
+mostly called on a trampoline stack, and is sometimes called on a task
+stack.
+
+Currently, this results in a lot of unnecessary code being generated for
+arm64 for the impossible !on_thread_stack() case. Some of this is
+inlined, bloating stackleak_erase(), while portions of this are left
+out-of-line and permitted to be instrumented (which would be a
+functional problem if that code were reachable).
+
+As a first step towards improving this, this patch aligns arm64's
+implementation of current_top_of_stack() with x86's, always returning
+the top of the current task's stack. With GCC 11.1.0 this results in the
+bulk of the unnecessary code being removed, including all of the
+out-of-line instrumentable code.
+
+While I don't believe there's a functional problem in practice I've
+marked this as a fix since the semantic was clearly wrong, the fix
+itself is simple, and other code might rely upon this in future.
+
+Fixes: 0b3e336601b82c6a ("arm64: Add support for STACKLEAK gcc plugin")
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Alexander Popov <alex.popov@linux.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Will Deacon <will@kernel.org>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220427173128.2603085-2-mark.rutland@arm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/include/asm/processor.h | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
+index 6f41b65f9962..25c0bb5b8faa 100644
+--- a/arch/arm64/include/asm/processor.h
++++ b/arch/arm64/include/asm/processor.h
+@@ -380,12 +380,10 @@ long get_tagged_addr_ctrl(struct task_struct *task);
+  * of header definitions for the use of task_stack_page.
+  */
+ 
+-#define current_top_of_stack()								\
+-({											\
+-	struct stack_info _info;							\
+-	BUG_ON(!on_accessible_stack(current, current_stack_pointer, 1, &_info));	\
+-	_info.high;									\
+-})
++/*
++ * The top of the current task's task stack
++ */
++#define current_top_of_stack()	((unsigned long)current->stack + THREAD_SIZE)
+ #define on_thread_stack()	(on_task_stack(current, current_stack_pointer, 1, NULL))
+ 
+ #endif /* __ASSEMBLY__ */
+-- 
+2.35.1
 
 
-在 2022/6/6 14:14, Marc Zyngier 写道:
-> On Wed, 25 May 2022 13:10:29 +0100,
-> Dragan Mladjenovic <Dragan.Mladjenovic@syrmia.com> wrote:
->> From: Paul Burton <paulburton@kernel.org>
->>
->> When >= CM3.5 output cluster number.
->>
->> Signed-off-by: Paul Burton <paulburton@kernel.org>
->> Signed-off-by: Dragan Mladjenovic <dragan.mladjenovic@syrmia.com>
->>
->> diff --git a/arch/mips/kernel/proc.c b/arch/mips/kernel/proc.c
->> index bb43bf850314..a66e7705315d 100644
->> --- a/arch/mips/kernel/proc.c
->> +++ b/arch/mips/kernel/proc.c
->> @@ -12,6 +12,7 @@
->>   #include <asm/cpu.h>
->>   #include <asm/cpu-features.h>
->>   #include <asm/idle.h>
->> +#include <asm/mips-cps.h>
->>   #include <asm/mipsregs.h>
->>   #include <asm/processor.h>
->>   #include <asm/prom.h>
->> @@ -282,6 +283,8 @@ static int show_cpuinfo(struct seq_file *m, void *v)
->>   	seq_printf(m, "kscratch registers\t: %d\n",
->>   		      hweight8(cpu_data[n].kscratch_mask));
->>   	seq_printf(m, "package\t\t\t: %d\n", cpu_data[n].package);
->> +	if (mips_cm_revision() >= CM_REV_CM3_5)
->> +		seq_printf(m, "cluster\t\t\t: %d\n", cpu_cluster(&cpu_data[n]));
->>   	seq_printf(m, "core\t\t\t: %d\n", cpu_core(&cpu_data[n]));
->>   
->>   #if defined(CONFIG_MIPS_MT_SMP) || defined(CONFIG_CPU_MIPSR6)
-> This will break userspace. Please don't do that.
-Hmm, userspace always parse cpuinfo line by line so I guess it won't be
-a problem if we add a new line here.
-
-We accumulated some new additions to cpuinfo in past years and there
-was never a single complain for that.
-
-Though I don't like the idea of using CM version to switch on the cluster
-display....
-
-Thanks
-- Jiaxun
-
->
-> 	M.
->
 
