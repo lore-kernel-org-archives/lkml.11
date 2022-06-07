@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D931CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29FDECCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380001AbiFGVPG (ORCPT
+        id S1380059AbiFGVPL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37196 "EHLO
+        Tue, 7 Jun 2022 17:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376463AbiFGUQs (ORCPT
+        with ESMTP id S1376424AbiFGUQq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:16:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2EB1CE7B8;
-        Tue,  7 Jun 2022 11:29:14 -0700 (PDT)
+        Tue, 7 Jun 2022 16:16:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34C71CE796;
+        Tue,  7 Jun 2022 11:29:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E9F4B822C0;
-        Tue,  7 Jun 2022 18:29:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA758C385A2;
-        Tue,  7 Jun 2022 18:29:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2372C61481;
+        Tue,  7 Jun 2022 18:29:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FBCEC385A2;
+        Tue,  7 Jun 2022 18:29:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626551;
-        bh=InK2P2719+ucxNiXUq5akHXves7w4RjNdOe6zfMyDME=;
+        s=korg; t=1654626545;
+        bh=8E0BnoU9Kquo9eN4N25XA/aH9OKrsoQnWkajsrplp68=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zLqxQ0RUa5Zkzjm+qzHbbRWExW/fm6otGb91Y2yA8L0XsiKS1ZgEaJHj5ZcjTkTf6
-         pr/Yt0EWtW0giZQlgPoAMctyEZKuZAafEZBVQB3DGW+UHnRyt9VQflsGm2t03uXdws
-         Fvjgoi1ppzrn8yzHxkOjcoftttBBYbJVLPjh/bLo=
+        b=Y/ICAhzsFaqRfHMNcl2LdvZeTUbScbRQmdbcKOWuWaTKm99gKvtyEIHYNCwzXbWpY
+         aT+PwN8+BPY9QvQ33QfVgCB5uq/ozylJVF1UDa2BPaDkiSksREyiLQ1bNngsf6eOyy
+         WVOPquPH4VoEvb6A2Ae0YuuFacDmvNbWtU9HM0As=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        stable@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 418/772] thermal/drivers/bcm2711: Dont clamp temperature at zero
-Date:   Tue,  7 Jun 2022 19:00:10 +0200
-Message-Id: <20220607165001.324177732@linuxfoundation.org>
+Subject: [PATCH 5.17 416/772] drm/msm/dpu: handle pm_runtime_get_sync() errors in bind path
+Date:   Tue,  7 Jun 2022 19:00:08 +0200
+Message-Id: <20220607165001.266000117@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,49 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@i2se.com>
+From: Abhinav Kumar <quic_abhinavk@quicinc.com>
 
-[ Upstream commit 106e0121e243de4da7d634338089a68a8da2abe9 ]
+[ Upstream commit 64b22a0da12adb571c01edd671ee43634ebd7e41 ]
 
-The thermal sensor on BCM2711 is capable of negative temperatures, so don't
-clamp the measurements at zero. Since this was the only use for variable t,
-drop it.
+If there are errors while trying to enable the pm in the
+bind path, it will lead to unclocked access of hw revision
+register thereby crashing the device.
 
-This change based on a patch by Dom Cobley, who also tested the fix.
+This will not address why the pm_runtime_get_sync() fails
+but at the very least we should be able to prevent the
+crash by handling the error and bailing out earlier.
 
-Fixes: 59b781352dc4 ("thermal: Add BCM2711 thermal driver")
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220412195423.104511-1-stefan.wahren@i2se.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+changes in v2:
+	- use pm_runtime_resume_and_get() instead of
+	  pm_runtime_get_sync()
+
+Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
+Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Reviewed-by: Rob Clark <robdclark@gmail.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/486721/
+Link: https://lore.kernel.org/r/20220518223407.26147-1-quic_abhinavk@quicinc.com
+Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/thermal/broadcom/bcm2711_thermal.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/thermal/broadcom/bcm2711_thermal.c b/drivers/thermal/broadcom/bcm2711_thermal.c
-index 1ec57d9ecf53..e9bef5c3414b 100644
---- a/drivers/thermal/broadcom/bcm2711_thermal.c
-+++ b/drivers/thermal/broadcom/bcm2711_thermal.c
-@@ -38,7 +38,6 @@ static int bcm2711_get_temp(void *data, int *temp)
- 	int offset = thermal_zone_get_offset(priv->thermal);
- 	u32 val;
- 	int ret;
--	long t;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index 4a8cf33594c3..ddb76fe46948 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -1075,7 +1075,9 @@ static int dpu_kms_hw_init(struct msm_kms *kms)
  
- 	ret = regmap_read(priv->regmap, AVS_RO_TEMP_STATUS, &val);
- 	if (ret)
-@@ -50,9 +49,7 @@ static int bcm2711_get_temp(void *data, int *temp)
- 	val &= AVS_RO_TEMP_STATUS_DATA_MSK;
+ 	dpu_kms_parse_data_bus_icc_path(dpu_kms);
  
- 	/* Convert a HW code to a temperature reading (millidegree celsius) */
--	t = slope * val + offset;
--
--	*temp = t < 0 ? 0 : t;
-+	*temp = slope * val + offset;
+-	pm_runtime_get_sync(&dpu_kms->pdev->dev);
++	rc = pm_runtime_resume_and_get(&dpu_kms->pdev->dev);
++	if (rc < 0)
++		goto error;
  
- 	return 0;
- }
+ 	dpu_kms->core_rev = readl_relaxed(dpu_kms->mmio + 0x0);
+ 
 -- 
 2.35.1
 
