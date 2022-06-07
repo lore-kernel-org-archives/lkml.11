@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7F8CCA493
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A9A8CCA498
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349461AbiFGRut (ORCPT
+        id S1350101AbiFGRvx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:50:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60866 "EHLO
+        Tue, 7 Jun 2022 13:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347108AbiFGRd0 (ORCPT
+        with ESMTP id S1347610AbiFGRf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:33:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009EBFF589;
-        Tue,  7 Jun 2022 10:30:20 -0700 (PDT)
+        Tue, 7 Jun 2022 13:35:27 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6D2DED4;
+        Tue,  7 Jun 2022 10:30:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0530AB822B1;
-        Tue,  7 Jun 2022 17:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57649C385A5;
-        Tue,  7 Jun 2022 17:30:13 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2FF53CE23D0;
+        Tue,  7 Jun 2022 17:30:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FBE3C385A5;
+        Tue,  7 Jun 2022 17:30:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623013;
-        bh=cpjPFx3YXi+7fDXbtxcOmua1TOAOV77x3Tp9AjUhaRU=;
+        s=korg; t=1654623041;
+        bh=G+VmD+Gd+6D+I0VXQN+nuqorCTGsJh90QPeQSS1lKOo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mEGHg7PWlMq2PMiRnYrH7/NfvsSPRfzMBMSEmxdRieFXnjZ6N1KUie+bxV4RdPT+x
-         TdzIwrYpzZ1LD4NpkKnYtYKXj5/UgJQ236rzyB/gn6fhFsjWeFs4luTzeuEypda4wD
-         7a3xnIMmGjcGkOdgtWx5FfA+O/SuV0+tIQC2rPjw=
+        b=t/JS70GK3Ar+KTYVye2sQPWN2kd8LXbdvSu3mECJ11EoRs4HgcAKUVLF+Qm/mz7fx
+         smoz6SkxJ/qtU5YQ6K/0B82eTQzz7VNO3IX6PgyLyuXJqFoR3fq1RNSr/VuV8YP8kh
+         2Y2MZo/Ia4UvyMxOiaYIPilvAeDXABCBIpsWkvvY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        stable@vger.kernel.org,
+        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
+        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 264/452] PCI: rockchip: Fix find_first_zero_bit() limit
-Date:   Tue,  7 Jun 2022 19:02:01 +0200
-Message-Id: <20220607164916.419843850@linuxfoundation.org>
+Subject: [PATCH 5.10 273/452] can: xilinx_can: mark bit timing constants as const
+Date:   Tue,  7 Jun 2022 19:02:10 +0200
+Message-Id: <20220607164916.685878302@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,35 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-[ Upstream commit 096950e230b8d83645c7cf408b9f399f58c08b96 ]
+[ Upstream commit ae38fda02996d43d9fb09f16e81e0008704dd524 ]
 
-The ep->ob_region_map bitmap is a long and it has BITS_PER_LONG bits.
+This patch marks the bit timing constants as const.
 
-Link: https://lore.kernel.org/r/20220315065944.GB13572@kili
-Fixes: cf590b078391 ("PCI: rockchip: Add EP driver for Rockchip PCIe controller")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Fixes: c223da689324 ("can: xilinx_can: Add support for CANFD FD frames")
+Link: https://lore.kernel.org/all/20220317203119.792552-1-mkl@pengutronix.de
+Cc: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+Cc: Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-rockchip-ep.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/can/xilinx_can.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/controller/pcie-rockchip-ep.c b/drivers/pci/controller/pcie-rockchip-ep.c
-index 7631dc3961c1..379cde59988c 100644
---- a/drivers/pci/controller/pcie-rockchip-ep.c
-+++ b/drivers/pci/controller/pcie-rockchip-ep.c
-@@ -264,8 +264,7 @@ static int rockchip_pcie_ep_map_addr(struct pci_epc *epc, u8 fn,
- 	struct rockchip_pcie *pcie = &ep->rockchip;
- 	u32 r;
+diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+index 375998263af7..1c42417810fc 100644
+--- a/drivers/net/can/xilinx_can.c
++++ b/drivers/net/can/xilinx_can.c
+@@ -239,7 +239,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd = {
+ };
  
--	r = find_first_zero_bit(&ep->ob_region_map,
--				sizeof(ep->ob_region_map) * BITS_PER_LONG);
-+	r = find_first_zero_bit(&ep->ob_region_map, BITS_PER_LONG);
- 	/*
- 	 * Region 0 is reserved for configuration space and shouldn't
- 	 * be used elsewhere per TRM, so leave it out.
+ /* AXI CANFD Data Bittiming constants as per AXI CANFD 1.0 specs */
+-static struct can_bittiming_const xcan_data_bittiming_const_canfd = {
++static const struct can_bittiming_const xcan_data_bittiming_const_canfd = {
+ 	.name = DRIVER_NAME,
+ 	.tseg1_min = 1,
+ 	.tseg1_max = 16,
+@@ -265,7 +265,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd2 = {
+ };
+ 
+ /* AXI CANFD 2.0 Data Bittiming constants as per AXI CANFD 2.0 spec */
+-static struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
++static const struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
+ 	.name = DRIVER_NAME,
+ 	.tseg1_min = 1,
+ 	.tseg1_max = 32,
 -- 
 2.35.1
 
