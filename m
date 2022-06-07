@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 496DACCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:58:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C12C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:58:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377349AbiFGU6I (ORCPT
+        id S1377378AbiFGU6U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:58:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
+        Tue, 7 Jun 2022 16:58:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358703AbiFGTxF (ORCPT
+        with ESMTP id S1358715AbiFGTxG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:53:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFED26554;
-        Tue,  7 Jun 2022 11:22:10 -0700 (PDT)
+        Tue, 7 Jun 2022 15:53:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED54EDEB6;
+        Tue,  7 Jun 2022 11:22:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE72A60DDF;
-        Tue,  7 Jun 2022 18:22:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBA59C385A2;
-        Tue,  7 Jun 2022 18:22:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8358660DB7;
+        Tue,  7 Jun 2022 18:22:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EB17C385A2;
+        Tue,  7 Jun 2022 18:22:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626129;
-        bh=7QQ5grX8R7fbK834V+H9zWsoK0HdlbCrvTqdcW37FDI=;
+        s=korg; t=1654626131;
+        bh=l3IeLQWJmXD1c4kbwl4mQlW04SePitIAJdcnKbrrRVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NCNYoc1A6dH/JTx8AS0Y4W+qLj5XGMrFzV0csTqRTQKA936HFpD+Vyd5QX0ptSsb6
-         1qyXbiXigVegEM3p6f4Z8vAPBuNLBq9kY1fkV7xAHi3VGPNUPNI+mNYX+mwDPE9Wag
-         3tJtzc8bioYoDMkxf11+bwsniy9vFft6h/0uZgkY=
+        b=GcnfYyo07ZrwK9XvPo48kbc3R8a/JxMy5WKjYKTkpBhfPzWsWOmOfqYX3GFDWikl+
+         7MKFfBiTe52I1Fe/gQFfSg1VKMp/FUJQmAaTJSUzomCEMImwAZMsvbCPnFn6jbfbDf
+         9M2oP7uRj9571g0r9GTOvaVvd2/3RrEjgjNCZfBU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sinan Kaya <okaya@kernel.org>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 269/772] EDAC/dmc520: Dont print an error for each unconfigured interrupt line
-Date:   Tue,  7 Jun 2022 18:57:41 +0200
-Message-Id: <20220607164956.951769630@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 270/772] drm/bridge: anx7625: Use uint8 for lane-swing arrays
+Date:   Tue,  7 Jun 2022 18:57:42 +0200
+Message-Id: <20220607164956.980847268@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,55 +54,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyler Hicks <tyhicks@linux.microsoft.com>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit ad2df24732e8956a45a00894d2163c4ee8fb0e1f ]
+[ Upstream commit fb8da7f3111ab500606960bef1bb32450c664750 ]
 
-The dmc520 driver requires that at least one interrupt line, out of the
-ten possible, is configured. The driver prints an error and returns
--EINVAL from its .probe function if there are no interrupt lines
-configured.
+As defined in the anx7625 dt-binding, the analogix,lane0-swing and
+analogix,lane1-swing properties are uint8 arrays. Yet, the driver was
+reading the array as if it were of uint32 and masking to 8-bit before
+writing to the registers. This means that a devicetree written in
+accordance to the dt-binding would have its values incorrectly parsed.
 
-Don't print a KERN_ERR level message for each interrupt line that's
-unconfigured as that can confuse users into thinking that there is an
-error condition.
+Fix the issue by reading the array as uint8 and storing them as uint8
+internally, so that we can also drop the masking when writing the
+registers.
 
-Before this change, the following KERN_ERR level messages would be
-reported if only dram_ecc_errc and dram_ecc_errd were configured in the
-device tree:
-
-  dmc520 68000000.dmc: IRQ ram_ecc_errc not found
-  dmc520 68000000.dmc: IRQ ram_ecc_errd not found
-  dmc520 68000000.dmc: IRQ failed_access not found
-  dmc520 68000000.dmc: IRQ failed_prog not found
-  dmc520 68000000.dmc: IRQ link_err not
-  dmc520 68000000.dmc: IRQ temperature_event not found
-  dmc520 68000000.dmc: IRQ arch_fsm not found
-  dmc520 68000000.dmc: IRQ phy_request not found
-
-Fixes: 1088750d7839 ("EDAC: Add EDAC driver for DMC520")
-Reported-by: Sinan Kaya <okaya@kernel.org>
-Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220111163800.22362-1-tyhicks@linux.microsoft.com
+Fixes: fd0310b6fe7d ("drm/bridge: anx7625: add MIPI DPI input feature")
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220408013034.673418-1-nfraprado@collabora.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/edac/dmc520_edac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/bridge/analogix/anx7625.c | 12 ++++++------
+ drivers/gpu/drm/bridge/analogix/anx7625.h |  4 ++--
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/edac/dmc520_edac.c b/drivers/edac/dmc520_edac.c
-index b8a7d9594afd..1fa5ca57e9ec 100644
---- a/drivers/edac/dmc520_edac.c
-+++ b/drivers/edac/dmc520_edac.c
-@@ -489,7 +489,7 @@ static int dmc520_edac_probe(struct platform_device *pdev)
- 	dev = &pdev->dev;
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+index e596cacce9e3..ce04b17c0d3a 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.c
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+@@ -1201,12 +1201,12 @@ static void anx7625_dp_adjust_swing(struct anx7625_data *ctx)
+ 	for (i = 0; i < ctx->pdata.dp_lane0_swing_reg_cnt; i++)
+ 		anx7625_reg_write(ctx, ctx->i2c.tx_p1_client,
+ 				  DP_TX_LANE0_SWING_REG0 + i,
+-				  ctx->pdata.lane0_reg_data[i] & 0xFF);
++				  ctx->pdata.lane0_reg_data[i]);
  
- 	for (idx = 0; idx < NUMBER_OF_IRQS; idx++) {
--		irq = platform_get_irq_byname(pdev, dmc520_irq_configs[idx].name);
-+		irq = platform_get_irq_byname_optional(pdev, dmc520_irq_configs[idx].name);
- 		irqs[idx] = irq;
- 		masks[idx] = dmc520_irq_configs[idx].mask;
- 		if (irq >= 0) {
+ 	for (i = 0; i < ctx->pdata.dp_lane1_swing_reg_cnt; i++)
+ 		anx7625_reg_write(ctx, ctx->i2c.tx_p1_client,
+ 				  DP_TX_LANE1_SWING_REG0 + i,
+-				  ctx->pdata.lane1_reg_data[i] & 0xFF);
++				  ctx->pdata.lane1_reg_data[i]);
+ }
+ 
+ static void dp_hpd_change_handler(struct anx7625_data *ctx, bool on)
+@@ -1313,8 +1313,8 @@ static int anx7625_get_swing_setting(struct device *dev,
+ 			num_regs = DP_TX_SWING_REG_CNT;
+ 
+ 		pdata->dp_lane0_swing_reg_cnt = num_regs;
+-		of_property_read_u32_array(dev->of_node, "analogix,lane0-swing",
+-					   pdata->lane0_reg_data, num_regs);
++		of_property_read_u8_array(dev->of_node, "analogix,lane0-swing",
++					  pdata->lane0_reg_data, num_regs);
+ 	}
+ 
+ 	if (of_get_property(dev->of_node,
+@@ -1323,8 +1323,8 @@ static int anx7625_get_swing_setting(struct device *dev,
+ 			num_regs = DP_TX_SWING_REG_CNT;
+ 
+ 		pdata->dp_lane1_swing_reg_cnt = num_regs;
+-		of_property_read_u32_array(dev->of_node, "analogix,lane1-swing",
+-					   pdata->lane1_reg_data, num_regs);
++		of_property_read_u8_array(dev->of_node, "analogix,lane1-swing",
++					  pdata->lane1_reg_data, num_regs);
+ 	}
+ 
+ 	return 0;
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
+index 3d79b6fb13c8..8759d9441f4e 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.h
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
+@@ -370,9 +370,9 @@ struct anx7625_platform_data {
+ 	int mipi_lanes;
+ 	int audio_en;
+ 	int dp_lane0_swing_reg_cnt;
+-	int lane0_reg_data[DP_TX_SWING_REG_CNT];
++	u8 lane0_reg_data[DP_TX_SWING_REG_CNT];
+ 	int dp_lane1_swing_reg_cnt;
+-	int lane1_reg_data[DP_TX_SWING_REG_CNT];
++	u8 lane1_reg_data[DP_TX_SWING_REG_CNT];
+ 	u32 low_power_mode;
+ 	struct device_node *mipi_host_node;
+ };
 -- 
 2.35.1
 
