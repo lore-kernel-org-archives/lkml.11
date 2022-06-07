@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C501AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB1D3CCA481
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:07:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359076AbiFGUGc (ORCPT
+        id S1358124AbiFGUGy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:06:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49652 "EHLO
+        Tue, 7 Jun 2022 16:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354879AbiFGTJQ (ORCPT
+        with ESMTP id S1354827AbiFGTJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:09:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141A3192C5D;
-        Tue,  7 Jun 2022 11:06:27 -0700 (PDT)
+        Tue, 7 Jun 2022 15:09:55 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3944B1C8;
+        Tue,  7 Jun 2022 11:06:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2F51617A7;
-        Tue,  7 Jun 2022 18:06:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AECDEC385A5;
-        Tue,  7 Jun 2022 18:06:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BEC23CE240C;
+        Tue,  7 Jun 2022 18:06:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C94DAC34115;
+        Tue,  7 Jun 2022 18:06:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625186;
-        bh=vcUCmQfmB8i+r9RY4X/Iya9RAP/6ZqDRhwhTLZlQgEU=;
+        s=korg; t=1654625200;
+        bh=1xc5jQNM+I3y7deb0EDoqbJ/IAyCQaB0nMgiegaJRZs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2EaSMVjOKsy3Sm1wC8unp8rLvgCVADnDY1iP84z5W7EYYTZfa1GoFDrX6QU1MEzDi
-         nSgHtd+NXiex95Jzocc80k6XQ3yGimwdVARvkg4tTcr8IpoQZ0I4EDSGOvNzB5ygaz
-         2f2raqMtkTrm+EEAo1BOJcAdPHpzB3YnAja5rF3k=
+        b=s0MZtDjzgagAoj7EOLyDUnlACux4L9q/D0unD202jjrkoL0iBXD8zyXYkHRHRNad7
+         mTWwbpLpLJJm0vmaKDOaQNCZaChm/I3ER6J4W59SGcOtMByqrBNSo53bY6/XtpCc/w
+         Jjr2YzdtxbLm4DcJhUIhVfVcwE68iLWhVlsKGsbc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 5.15 596/667] md: fix an incorrect NULL check in md_reload_sb
-Date:   Tue,  7 Jun 2022 19:04:21 +0200
-Message-Id: <20220607164952.556841585@linuxfoundation.org>
+        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Ezequiel Garcia <ezequiel@collabora.com>,
+        Fabio Estevam <festevam@denx.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.15 600/667] media: coda: Add more H264 levels for CODA960
+Date:   Tue,  7 Jun 2022 19:04:25 +0200
+Message-Id: <20220607164952.675759242@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,57 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 
-commit 64c54d9244a4efe9bc6e9c98e13c4bbb8bb39083 upstream.
+commit eb2fd187abc878a2dfad46902becb74963473c7d upstream.
 
-The bug is here:
-	if (!rdev || rdev->desc_nr != nr) {
+Add H264 level 1.0, 4.1, 4.2 to the list of supported formats.
+While the hardware does not fully support these levels, it does support
+most of them. The constraints on frame size and pixel formats already
+cover the limitation.
 
-The list iterator value 'rdev' will *always* be set and non-NULL
-by rdev_for_each_rcu(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty or no element
-found (In fact, it will be a bogus pointer to an invalid struct
-object containing the HEAD). Otherwise it will bypass the check
-and lead to invalid memory access passing the check.
-
-To fix the bug, use a new variable 'iter' as the list iterator,
-while using the original variable 'pdev' as a dedicated pointer to
-point to the found element.
+This fixes negotiation of level on GStreamer 1.17.1.
 
 Cc: stable@vger.kernel.org
-Fixes: 70bcecdb1534 ("md-cluster: Improve md_reload_sb to be less error prone")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Signed-off-by: Song Liu <song@kernel.org>
+Fixes: 42a68012e67c2 ("media: coda: add read-only h.264 decoder profile/level controls")
+Suggested-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/md.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/media/platform/coda/coda-common.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -9774,16 +9774,18 @@ static int read_rdev(struct mddev *mddev
- 
- void md_reload_sb(struct mddev *mddev, int nr)
- {
--	struct md_rdev *rdev;
-+	struct md_rdev *rdev = NULL, *iter;
- 	int err;
- 
- 	/* Find the rdev */
--	rdev_for_each_rcu(rdev, mddev) {
--		if (rdev->desc_nr == nr)
-+	rdev_for_each_rcu(iter, mddev) {
-+		if (iter->desc_nr == nr) {
-+			rdev = iter;
- 			break;
-+		}
+--- a/drivers/media/platform/coda/coda-common.c
++++ b/drivers/media/platform/coda/coda-common.c
+@@ -2361,12 +2361,15 @@ static void coda_encode_ctrls(struct cod
+ 	if (ctx->dev->devtype->product == CODA_960) {
+ 		v4l2_ctrl_new_std_menu(&ctx->ctrls, &coda_ctrl_ops,
+ 			V4L2_CID_MPEG_VIDEO_H264_LEVEL,
+-			V4L2_MPEG_VIDEO_H264_LEVEL_4_0,
+-			~((1 << V4L2_MPEG_VIDEO_H264_LEVEL_2_0) |
++			V4L2_MPEG_VIDEO_H264_LEVEL_4_2,
++			~((1 << V4L2_MPEG_VIDEO_H264_LEVEL_1_0) |
++			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_2_0) |
+ 			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_3_0) |
+ 			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_3_1) |
+ 			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_3_2) |
+-			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_4_0)),
++			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_4_0) |
++			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_4_1) |
++			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_4_2)),
+ 			V4L2_MPEG_VIDEO_H264_LEVEL_4_0);
  	}
- 
--	if (!rdev || rdev->desc_nr != nr) {
-+	if (!rdev) {
- 		pr_warn("%s: %d Could not find rdev with nr %d\n", __func__, __LINE__, nr);
- 		return;
- 	}
+ 	v4l2_ctrl_new_std(&ctx->ctrls, &coda_ctrl_ops,
 
 
