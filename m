@@ -2,99 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 599A2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:42:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 144D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244044AbiFGMmW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47064 "EHLO
+        id S244062AbiFGMmn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237899AbiFGMmR (ORCPT
+        with ESMTP id S237899AbiFGMml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:42:17 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75390F594;
-        Tue,  7 Jun 2022 05:42:15 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id h23so23865028ejj.12;
-        Tue, 07 Jun 2022 05:42:15 -0700 (PDT)
+        Tue, 7 Jun 2022 08:42:41 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F077B1C12E;
+        Tue,  7 Jun 2022 05:42:38 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id y69so9902168oia.7;
+        Tue, 07 Jun 2022 05:42:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=QWGQ/jFwQVG1lQvfacyHok6y1NHoHQn3XY+5974NmFs=;
-        b=WoKL+2b/ZHvv5g/XRuHkEc5DNuSGDQSccTXGcBhxG8C8aSmgB7gfDCN7CK/H7kqxZG
-         y0NRBmY/MwqhYZeH4kNPBG3DYIfKWvmWpaK6DaDaPQi4aABaZ6UFvPwIi+W70szvHv1/
-         uWdTPf2JYSg0w93u5h8GSj8oD9csDFEPuK60r996gCFiNceUTK2HnivfZFLw2F0u1idU
-         W6optP5n0M1QNFu0a1puha4ZK0ZdcQLoU+yKILJX/dh949Nq8jKJ5YarMrBn0W0al73l
-         8UnoCxvzC/Va796Umo6Qt0CWdULTTDC96+0d5MZEkbqlcdr7jef3Y6us5dd4x//rU9Dw
-         lUYw==
+        bh=wGvCXSf2boVHG+SEDmAeJar4xtU6VDDoEHp+oz+UrKY=;
+        b=MD/oW6+ucoiKHpSVEyT14TPkSJozC33M7hmnsLn72ym3u6xreo+iVBPGBn1FCoiCf8
+         73FNykdBW953El5hU/NYefe2C/NtZuMo3sXu+5Z7l6P7Cr8h68dYQyJQAV6lSRUhAicb
+         HrWPtaAJRKa4u1Pzox/WvZCMJ94PgYuZjX7poAM9Vv9dDdxtayArqiHNF6gmrGpEEBjh
+         ZdI3mqk4fF8WOmOiH709OyibQTJuWzVHU1QL4RconJg+Dl9oJfHLK4iqbZW5WQtUIUzQ
+         yQh4ttFxQBk5Bz+OLZU+56Dbu8OuVndadjmPwjYX8R08IRmDUoKBnCMnf0DzX0Pk4SIc
+         5Enw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QWGQ/jFwQVG1lQvfacyHok6y1NHoHQn3XY+5974NmFs=;
-        b=6qlgKMuTbTjtOaPgQapKPcYNSZq2NNRx/RT0M2LkhudSF2hvvvDfpLP1DqthJRpXXk
-         EbOlzPmSgYjph4ekgtxISC2d3+ojvaDlpTnXIixbKBOmEsSqf7KNF/PwIDcg0ZwPe637
-         G59qiq3sQSApyRwGlZeBma7LJYZzrT8x08sbAbR8uGo8FKH6seueb/ztU8BttqMIbsRT
-         /Ee3n0j8pmEBB0TRHNnUoyOj3SqgxWmJjfcHa0W3Nmwa7S2gAB229VuBc4yLx6s/66pW
-         3Wvca0TI17ikZQ9XoWZ+5E7O8boH42REm8/19IhEb2NRciMjjeGnpkm+CYGd+LgjKAIc
-         18xg==
-X-Gm-Message-State: AOAM533Gj6q7Ha7Bwb2fQWbSQ1nW/Xo1VORp/wLn9TFtQVi2PaOZwBx5
-        Fll888xsWs08uj2FGcwr9l4=
-X-Google-Smtp-Source: ABdhPJwHCSLPDHEhZvuk8tB5tsfWFvZUKoY+PHHEMWVQWj/CA1NZDebYXA9DTcCIDC1JxQqhj5m8mQ==
-X-Received: by 2002:a17:907:94c8:b0:711:d864:fd84 with SMTP id dn8-20020a17090794c800b00711d864fd84mr6889221ejc.18.1654605733831;
-        Tue, 07 Jun 2022 05:42:13 -0700 (PDT)
-Received: from mail (239.125-180-91.adsl-dyn.isp.belgacom.be. [91.180.125.239])
-        by smtp.gmail.com with ESMTPSA id o5-20020aa7c7c5000000b0042ad421574esm10427934eds.33.2022.06.07.05.42.11
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=wGvCXSf2boVHG+SEDmAeJar4xtU6VDDoEHp+oz+UrKY=;
+        b=qqnEb+1gwox8OuatJsTThPtPw7y15UZ8VT649f7RU2wxdPGrMAKfLgiMvgIkoER4ff
+         I62zSePp50jDVbeLPjgkYvg+8GmPs/ulfNp753spu5byoE7YoqaHL3zVmnmlJk6sQfv6
+         BaPu2NeXVBe8nFVCebWpObgzPJ5/1LM4pQN9blb2CSQtkHV+vrO06Cz2v7uBQk5EtPvf
+         eOC6MKGlCmc81Lk+DSlfkOkxTNdRGOZPU46OoK70ga2GPHhGpgMLvl2ZOiLuX/L3cVTt
+         efhr89HqeyduxtcNj4065VG+7VVBXuhZzzwaBKW4rcLd9gh//XRUODqPvWfoW6ZzTFDk
+         2NJw==
+X-Gm-Message-State: AOAM5302IIiihshn/sp6v1bC71T1xQqTrMQpti8xw0mJg1llfPOg8waF
+        +m8TEICPF5m1vLt2xvBdpZI=
+X-Google-Smtp-Source: ABdhPJzxYfj1j+c7qg6iUV3UNtndtgMcW7lNLS4xxHJSTNY2BsFxiVnfrsba/LEb7KD4ncZJJAmBrw==
+X-Received: by 2002:a05:6808:1453:b0:32b:84a4:5a49 with SMTP id x19-20020a056808145300b0032b84a45a49mr34004235oiv.105.1654605757894;
+        Tue, 07 Jun 2022 05:42:37 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id n13-20020aca240d000000b00326d2cba5d3sm9592935oic.8.2022.06.07.05.42.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 05:42:12 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 14:42:09 +0200
-From:   Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        LKML <linux-kernel@vger.kernel.org>, yujie.liu@intel.com,
-        linux-sparse@vger.kernel.org
-Subject: Re: /bin/bash: line 1: 45878 Segmentation fault sparse -D__linux__
- -Dlinux -D__STDC__ -Dunix -D__unix__ -Wbitwise -Wno-return-void
- -Wno-unknown-attribute -fdiagnostic-prefix -D__CHECK_ENDIAN__ -D__NDS32_EL__
- --arch=nds32 -mlittle-endian -m32 -Wp,-MMD,ker...
-Message-ID: <20220607124209.ccibpwpjgh6kaqmj@mail>
-References: <202111131205.eni58iWQ-lkp@intel.com>
- <CALOAHbBQfK16aXUwT3znCwLBWcpLwgovS=kYBBR=eL4Eb62t3g@mail.gmail.com>
+        Tue, 07 Jun 2022 05:42:37 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 7 Jun 2022 05:42:36 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Jean Delvare <jdelvare@suse.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Camel Guo <camel.guo@axis.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: hwmon: ti,tmp401: Drop 'items' from
+ 'ti,n-factor' property
+Message-ID: <20220607124236.GA1786135@roeck-us.net>
+References: <20220606212223.1360395-1-robh@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CALOAHbBQfK16aXUwT3znCwLBWcpLwgovS=kYBBR=eL4Eb62t3g@mail.gmail.com>
+In-Reply-To: <20220606212223.1360395-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Nov 13, 2021 at 10:46:04PM +0800, Yafang Shao wrote:
-> On Sat, Nov 13, 2021 at 12:25 PM kernel test robot <lkp@intel.com> wrote:
-> >
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> > head:   66f4beaa6c1d28161f534471484b2daa2de1dce0
-> > commit: 60f2415e19d3948641149ac6aca137a7be1d1952 sched: Make schedstats helpers independent of fair sched class
-> > date:   6 weeks ago
-> > config: nds32-randconfig-s031-20211015 (attached as .config)
-> > compiler: nds32le-linux-gcc (GCC) 11.2.0
+On Mon, Jun 06, 2022 at 04:22:22PM -0500, Rob Herring wrote:
+> 'ti,n-factor' is a scalar type, so 'items' should not be used as that is
+> for arrays/matrix.
+> 
+> A pending meta-schema change will catch future cases.
+> 
+> Fixes: bd90c5b93950 ("dt-bindings: hwmon: Add TMP401, TMP411 and TMP43x")
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-...
+Applied.
 
-> > All errors (new ones prefixed by >>):
-> >
-> >    include/linux/rtmutex.h:68:58: sparse: sparse: got $
+Thanks,
+Guenter
 
-Hi,
-
-Apologies for this late reply.
-
-The error was caused by the line:
-	#define tsk $r25
-in arch/nds32/include/asm/current.h
-
-I suppose it was only meant for assembly files but was also included in
-(most) C files and the '$' character made sparse crash in some weird
-circumstances. Patch is on the way.
-
--- Luc
+> ---
+>  Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+> index fe0ac08faa1a..0e8ddf0ad789 100644
+> --- a/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+> +++ b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+> @@ -40,9 +40,8 @@ properties:
+>        value to be used for converting remote channel measurements to
+>        temperature.
+>      $ref: /schemas/types.yaml#/definitions/int32
+> -    items:
+> -      minimum: -128
+> -      maximum: 127
+> +    minimum: -128
+> +    maximum: 127
+>  
+>    ti,beta-compensation:
+>      description:
