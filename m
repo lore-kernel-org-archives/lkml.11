@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC29CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87763CCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357062AbiFGTk6 (ORCPT
+        id S1357147AbiFGTlV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:40:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57896 "EHLO
+        Tue, 7 Jun 2022 15:41:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354449AbiFGSrC (ORCPT
+        with ESMTP id S1354432AbiFGSrC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AB1522CD;
-        Tue,  7 Jun 2022 11:01:18 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7382044A24;
+        Tue,  7 Jun 2022 11:01:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33E29618BF;
-        Tue,  7 Jun 2022 18:01:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4537C3411F;
-        Tue,  7 Jun 2022 18:01:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 226FBB82239;
+        Tue,  7 Jun 2022 18:01:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9F99C385A5;
+        Tue,  7 Jun 2022 18:01:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624877;
-        bh=dDemp0i4bzuclYqaTNa4xzi6Eq8uHB7oCI5/N/iW0Mo=;
+        s=k20201202; t=1654624869;
+        bh=IdSUre7wjAX46gQRG26H7jmloFAMbUDPlBP85FdpWYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ji94AxaRglSrNkIFEPHTGFavuEXyh2owxUr6IS2cv88m2dt4JapVOfqpt77B772mi
-         EGWG0Rmh6+TKzwcbz03kxynWnCGq05hO3DPXqWjvKbbtzU30EUfvHX/plwQC79Yt4m
-         S25jVDHRE1cLRmslB/xlNOUMWhBDPuNsTOAhwi8Uo6524jWCcxw7KR7tLZa4xq9LT2
-         KyhiNbpMbeX1jqbwfLnB51b2OM1ZvwmgS3Wuu454vIhOvzfuMSqBKfqh7WaQL/jCOl
-         96/snj3MdOuDF/1+aoxUkvWBjJSlz0PNppdlq3AFVKueIG5NvxtP1ELXMhj1IFV/rR
-         ye36lvePaDtwA==
+        b=E5SRhMNxcuAuTfK2l/KA47Ulip72CR0GXTWnY2biXyW6+N7HH8MuoEzkt8DAaKgEJ
+         wf0NW4gEWGRLI/25Re6nATUqcPlNx8bFerzH/luzjz7B4Lxibk7FlSwYto6/GMK9kc
+         gxDKcTRcd7nC3fsX7H3DdH14h9wA5WSlZRMhv5tkoVync0djlhrqWDakgufiYxP9vV
+         C2mElKu2/qmjPxIAgIdiQMUTa0vZnzmPPh1v0P0COuMwZBisakBdwfHbXRqk6mX6b7
+         f7EwNpgKL5Rp+TxhQslIlJwk6PvST+9yX6Ow3nHmdJPtNWSGm7ZeaxPn7pTlcF2v3q
+         h1eItGwaKboVQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sasha Levin <sashal@kernel.org>, michal.lkml@markovi.net,
-        linux-kbuild@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 27/34] modpost: fix undefined behavior of is_arm_mapping_symbol()
-Date:   Tue,  7 Jun 2022 14:00:02 -0400
-Message-Id: <20220607180011.481266-27-sashal@kernel.org>
+Cc:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Donald Buczek <buczek@molgen.mpg.de>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        linux-raid@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 22/34] md: protect md_unregister_thread from reentrancy
+Date:   Tue,  7 Jun 2022 13:59:57 -0400
+Message-Id: <20220607180011.481266-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
 References: <20220607180011.481266-1-sashal@kernel.org>
@@ -53,61 +54,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
 
-[ Upstream commit d6b732666a1bae0df3c3ae06925043bba34502b1 ]
+[ Upstream commit 1e267742283a4b5a8ca65755c44166be27e9aa0f ]
 
-The return value of is_arm_mapping_symbol() is unpredictable when "$"
-is passed in.
+Generally, the md_unregister_thread is called with reconfig_mutex, but
+raid_message in dm-raid doesn't hold reconfig_mutex to unregister thread,
+so md_unregister_thread can be called simulitaneously from two call sites
+in theory.
 
-strchr(3) says:
-  The strchr() and strrchr() functions return a pointer to the matched
-  character or NULL if the character is not found. The terminating null
-  byte is considered part of the string, so that if c is specified as
-  '\0', these functions return a pointer to the terminator.
+Then after previous commit which remove the protection of reconfig_mutex
+for md_unregister_thread completely, the potential issue could be worse
+than before.
 
-When str[1] is '\0', strchr("axtd", str[1]) is not NULL, and str[2] is
-referenced (i.e. buffer overrun).
+Let's take pers_lock at the beginning of function to ensure reentrancy.
 
-Test code
----------
-
-  char str1[] = "abc";
-  char str2[] = "ab";
-
-  strcpy(str1, "$");
-  strcpy(str2, "$");
-
-  printf("test1: %d\n", is_arm_mapping_symbol(str1));
-  printf("test2: %d\n", is_arm_mapping_symbol(str2));
-
-Result
-------
-
-  test1: 0
-  test2: 1
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Reported-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/mod/modpost.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/md/md.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 13cda6aa2688..a878c79fe95a 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1283,7 +1283,8 @@ static int secref_whitelist(const struct sectioncheck *mismatch,
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 25c51746957f..29ed9b754d1d 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -7775,17 +7775,22 @@ EXPORT_SYMBOL(md_register_thread);
  
- static inline int is_arm_mapping_symbol(const char *str)
+ void md_unregister_thread(struct md_thread **threadp)
  {
--	return str[0] == '$' && strchr("axtd", str[1])
-+	return str[0] == '$' &&
-+	       (str[1] == 'a' || str[1] == 'd' || str[1] == 't' || str[1] == 'x')
- 	       && (str[2] == '\0' || str[2] == '.');
- }
+-	struct md_thread *thread = *threadp;
+-	if (!thread)
+-		return;
+-	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+-	/* Locking ensures that mddev_unlock does not wake_up a
++	struct md_thread *thread;
++
++	/*
++	 * Locking ensures that mddev_unlock does not wake_up a
+ 	 * non-existent thread
+ 	 */
+ 	spin_lock(&pers_lock);
++	thread = *threadp;
++	if (!thread) {
++		spin_unlock(&pers_lock);
++		return;
++	}
+ 	*threadp = NULL;
+ 	spin_unlock(&pers_lock);
  
++	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+ 	kthread_stop(thread->tsk);
+ 	kfree(thread);
+ }
 -- 
 2.35.1
 
