@@ -2,91 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84BB5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08465C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343912AbiFGPPW (ORCPT
+        id S1343919AbiFGPQ7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41830 "EHLO
+        Tue, 7 Jun 2022 11:16:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343980AbiFGPPL (ORCPT
+        with ESMTP id S245065AbiFGPQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:15:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F47419F90;
-        Tue,  7 Jun 2022 08:15:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA99BB82028;
-        Tue,  7 Jun 2022 15:15:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A88EC385A5;
-        Tue,  7 Jun 2022 15:15:06 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="neC6mfEh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1654614905;
+        Tue, 7 Jun 2022 11:16:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 40CA377F38
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:16:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654615015;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DZuHJPQiHP4rHVjD/qdEgYv2Fzx196BxBOjguVbVCcE=;
-        b=neC6mfEhGijcPrsAFaEp7MT1Tqxd3gNX3tzHAmZ72pv84FWPUjYU3mUlIn9f8lsZYtHLFU
-        DWnnl9jlkH8w8ueGWLB2r4jyfeNhTqWS0wUaq0JdCCJ+U0WpvzLnFjyxcqi4+0g0q3xS2T
-        rALUtAyqQT+0KDMitJ6ob08afivWcKE=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 6746b553 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 7 Jun 2022 15:15:04 +0000 (UTC)
-Date:   Tue, 7 Jun 2022 17:14:59 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Phil Elwell <phil@raspberrypi.com>
-Cc:     Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        stable <stable@vger.kernel.org>
-Subject: Re: [PATCH v2] ARM: initialize jump labels before setup_machine_fdt()
-Message-ID: <Yp9rc1G6xfTSSUjF@zx2c4.com>
-References: <8cc7ebe4-442b-a24b-9bb0-fce6e0425ee6@raspberrypi.com>
- <CAHmME9o6R2RRdwzB9f+464xH+Aw-9wx2dm=ZsQYFbTk_-66yJw@mail.gmail.com>
- <8c3fe744-0181-043a-3af9-dd00165a6356@raspberrypi.com>
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=R4Rt9+RaXRrx0q4tp9eJetSTPNClVuwlW698zPsAo+Y=;
+        b=N9TXVJC9IqHqoIZZ4UR3Jo65KRb4Qg9h57O1V/3SKyrs8xQ2ClOv0c5wWiZb39E/HcHA7n
+        IywskypmO8L+OgcUfudl8b7bBoIYLS0HzjZdKIoKyPQIF30tYz0+fcKR+nVklgmiksM/sg
+        NjdAaWy1rWXGMHsCsVGTMQ8MwDcVFsE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-360-ENqCJdRtMX6nuHmT3Aq6tA-1; Tue, 07 Jun 2022 11:16:52 -0400
+X-MC-Unique: ENqCJdRtMX6nuHmT3Aq6tA-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9BB2D1C1C1A4;
+        Tue,  7 Jun 2022 15:16:51 +0000 (UTC)
+Received: from amdlaptop.tlv.redhat.com (dhcp-4-238.tlv.redhat.com [10.35.4.238])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C0A2B4538A0;
+        Tue,  7 Jun 2022 15:16:48 +0000 (UTC)
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     kvm@vger.kernel.org
+Cc:     x86@kernel.org, Borislav Petkov <bp@alien8.de>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jim Mattson <jmattson@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH] KVM: x86: preserve interrupt shadow across SMM entries
+Date:   Tue,  7 Jun 2022 18:16:47 +0300
+Message-Id: <20220607151647.307157-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <8c3fe744-0181-043a-3af9-dd00165a6356@raspberrypi.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey again,
+If the #SMI happens while the vCPU is in the interrupt shadow,
+(after STI or MOV SS),
+we must both clear it to avoid VM entry failure on VMX,
+due to consistency check vs EFLAGS.IF which is cleared on SMM entries,
+and restore it on RSM so that #SMI is transparent to the non SMM code.
 
-On Tue, Jun 07, 2022 at 10:15:27AM +0100, Phil Elwell wrote:
-> On 07/06/2022 09:43, Jason A. Donenfeld wrote:
-> > Hi Phil,
-> > 
-> > On Tue, Jun 7, 2022 at 10:29 AM Phil Elwell <phil@raspberrypi.com> wrote:
-> >>
-> >> This patch is fatal for me in the downstream Raspberry Pi kernel - it locks up
-> >> on boot even before the earlycon output is available. Hacking jump_label_init to
-> >> skip the jump_entry for "crng_is_ready" allows it to boot, but is likely to have
-> >> consequences further down the line.
-> > 
-> > Also, reading this a few times, I'm not 100% sure I understand what
-> > you did to hack around this and why that works. Think you could paste
-> > your hackpatch just out of interest to the discussion (but obviously
-> > not to be applied)?
-> 
-> This is the minimal version of my workaround patch that at least allows the 
-> board to boot. Bear in mind that it was written with no previous knowledge of 
-> jump labels and was arrived at by iteratively bisecting the list of jump_labels 
-> until the first dangerous one was found, then later working out that there was 
-> only one.
+To support migration, reuse upper 4 bits of
+'kvm_vcpu_events.interrupt.shadow' to store the smm interrupt shadow.
 
-Looks like this patch fails due to CONFIG_STRICT_KERNEL_RWX.
-Investigating deeper now, but that for starters seems to be the
-differentiating factor between my prior test rig and one that reproduces
-the error. I assume your raspi also sets CONFIG_STRICT_KERNEL_RWX.
+This was lightly tested with a linux guest and smm load script,
+and a unit test will be soon developed to test this better.
 
-Jason
+For discussion: there are other ways to fix this issue:
+
+1. The SMM shadow can be stored in SMRAM at some unused
+offset, this will allow to avoid changes to kvm_vcpu_ioctl_x86_set_vcpu_events
+
+2. #SMI can instead be blocked while the interrupt shadow is active,
+which might even be what the real CPU does, however since neither VMX
+nor SVM support SMM window handling, this will involve single stepping
+the guest like it is currently done on SVM for the NMI window in some cases.
+
+What do you think?
+
+Also this might need a new KVM cap, I am not sure about it.
+
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+---
+ arch/x86/include/asm/kvm_host.h |  3 +++
+ arch/x86/kvm/x86.c              | 28 +++++++++++++++++++++++++---
+ 2 files changed, 28 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 6cf5d77d78969..4ee14dc79646f 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -939,6 +939,9 @@ struct kvm_vcpu_arch {
+ 	 */
+ 	bool pdptrs_from_userspace;
+ 
++	/* saved interrupt shadow on smm entry */
++	u8 smm_interrupt_shadow;
++
+ #if IS_ENABLED(CONFIG_HYPERV)
+ 	hpa_t hv_root_tdp;
+ #endif
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 2db6f0373fa3f..28d736b74eec6 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4915,6 +4915,8 @@ static void kvm_vcpu_ioctl_x86_get_vcpu_events(struct kvm_vcpu *vcpu,
+ 	events->interrupt.soft = 0;
+ 	events->interrupt.shadow = static_call(kvm_x86_get_interrupt_shadow)(vcpu);
+ 
++	events->interrupt.shadow |= vcpu->arch.smm_interrupt_shadow << 4;
++
+ 	events->nmi.injected = vcpu->arch.nmi_injected;
+ 	events->nmi.pending = vcpu->arch.nmi_pending != 0;
+ 	events->nmi.masked = static_call(kvm_x86_get_nmi_mask)(vcpu);
+@@ -4988,9 +4990,6 @@ static int kvm_vcpu_ioctl_x86_set_vcpu_events(struct kvm_vcpu *vcpu,
+ 	vcpu->arch.interrupt.injected = events->interrupt.injected;
+ 	vcpu->arch.interrupt.nr = events->interrupt.nr;
+ 	vcpu->arch.interrupt.soft = events->interrupt.soft;
+-	if (events->flags & KVM_VCPUEVENT_VALID_SHADOW)
+-		static_call(kvm_x86_set_interrupt_shadow)(vcpu,
+-						events->interrupt.shadow);
+ 
+ 	vcpu->arch.nmi_injected = events->nmi.injected;
+ 	if (events->flags & KVM_VCPUEVENT_VALID_NMI_PENDING)
+@@ -5024,6 +5023,14 @@ static int kvm_vcpu_ioctl_x86_set_vcpu_events(struct kvm_vcpu *vcpu,
+ 		}
+ 	}
+ 
++	if (events->flags & KVM_VCPUEVENT_VALID_SHADOW) {
++		static_call(kvm_x86_set_interrupt_shadow)(vcpu, events->interrupt.shadow & 0xF);
++		if (events->flags & KVM_VCPUEVENT_VALID_SMM)
++			vcpu->arch.smm_interrupt_shadow = events->interrupt.shadow >> 4;
++		else
++			vcpu->arch.smm_interrupt_shadow = 0;
++	}
++
+ 	if (events->flags & KVM_VCPUEVENT_VALID_TRIPLE_FAULT) {
+ 		if (!vcpu->kvm->arch.triple_fault_event)
+ 			return -EINVAL;
+@@ -8282,6 +8289,15 @@ static void kvm_smm_changed(struct kvm_vcpu *vcpu, bool entering_smm)
+ 
+ 	if (entering_smm) {
+ 		vcpu->arch.hflags |= HF_SMM_MASK;
++
++		/* Stash aside current value of the interrupt shadow
++		 * and reset it on the entry to the SMM
++		 */
++		vcpu->arch.smm_interrupt_shadow =
++				static_call(kvm_x86_get_interrupt_shadow)(vcpu);
++
++		static_call(kvm_x86_set_interrupt_shadow)(vcpu, 0);
++
+ 	} else {
+ 		vcpu->arch.hflags &= ~(HF_SMM_MASK | HF_SMM_INSIDE_NMI_MASK);
+ 
+@@ -8294,6 +8310,12 @@ static void kvm_smm_changed(struct kvm_vcpu *vcpu, bool entering_smm)
+ 		 * guest memory
+ 		 */
+ 		vcpu->arch.pdptrs_from_userspace = false;
++
++		/* Restore interrupt shadow to its pre-SMM value */
++		static_call(kvm_x86_set_interrupt_shadow)(vcpu,
++					vcpu->arch.smm_interrupt_shadow);
++
++		vcpu->arch.smm_interrupt_shadow = 0;
+ 	}
+ 
+ 	kvm_mmu_reset_context(vcpu);
+-- 
+2.31.1
+
