@@ -2,152 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C4F8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D3FCCA495
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354839AbiFGS5H (ORCPT
+        id S1352423AbiFGS6F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53166 "EHLO
+        Tue, 7 Jun 2022 14:58:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352400AbiFGSRG (ORCPT
+        with ESMTP id S1351554AbiFGSUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85ABA1928C;
-        Tue,  7 Jun 2022 10:51:42 -0700 (PDT)
+        Tue, 7 Jun 2022 14:20:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7285819B1;
+        Tue,  7 Jun 2022 10:53:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F14CB82354;
-        Tue,  7 Jun 2022 17:51:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C42CC385A5;
-        Tue,  7 Jun 2022 17:51:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624299;
-        bh=RVNCiTgrNrYESd/rZDsxx0nLrxVIdSA1WieB6mjc8Ek=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7453616A3;
+        Tue,  7 Jun 2022 17:53:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F8D0C36AFE;
+        Tue,  7 Jun 2022 17:53:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624422;
+        bh=FU9f0Sd5qgSs1RHVfcZvJuLbjW3ssxroWVzMd3IWU2c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iSErQ0vHuMI6/uXhCiP26xgrtTKhjNJ11i4EIu9HVdQng882GNNpSR7hNfmUhORrS
-         xxf52mHIdv1O6wmS2Q0CfAcOwcNJSpP0JHewFUorydIi6ka382Kb+uIOSoF7Zc2Emj
-         rwCx1MwS3+dcrzStQXHgWXJmduJfKDe/UzVjp7zM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 278/667] perf tools: Use Python devtools for version autodetection rather than runtime
-Date:   Tue,  7 Jun 2022 18:59:03 +0200
-Message-Id: <20220607164943.124319103@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=iuhd6+hDcmOXfgZocB4NKKmns+d9FDDmhPZFHBT+hMr+sL6bUL52fIdCv4rchfu2h
+         o421boahDETlud3OXYoIp15HHRiPb/BSfi2+jdonvbs7K59K51qCa9vuSVJpFmkVOP
+         UdpF7yj7/bGlduG8hLhioED5+8Pn9LBIODmshPczwdTzdVi4oCEVhGDQCSnQfVdAm7
+         Y/N1X6qRkL8fYX1U9/52PPzAwa2+F74OYBXYITQFWKmvJZClW21+DuR5X4kI25wwdN
+         waxzOJ0DHoUbQD6cd9YiRq3cXHDFBDUz2e5fYDV7sqJkAqQrnrR0eGuapy++E3wRfz
+         Xewct5mfcbuRQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, mailhol.vincent@wanadoo.fr,
+        cai.huoqing@linux.dev, chi.minghao@zte.com.cn,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 14/60] drivers: usb: host: Fix deadlock in oxu_bus_suspend()
+Date:   Tue,  7 Jun 2022 13:52:11 -0400
+Message-Id: <20220607175259.478835-14-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Clark <james.clark@arm.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 630af16eee495f583db5202c3613d1b191f10694 ]
+[ Upstream commit 4d378f2ae58138d4c55684e1d274e7dd94aa6524 ]
 
-This fixes the issue where the build will fail if only the Python2
-runtime is installed but the Python3 devtools are installed. Currently
-the workaround is 'make PYTHON=python3'.
+There is a deadlock in oxu_bus_suspend(), which is shown below:
 
-Fix it by autodetecting Python based on whether python[x]-config exists
-rather than just python[x] because both are needed for the build. Then
--config is stripped to find the Python runtime.
+   (Thread 1)              |      (Thread 2)
+                           | timer_action()
+oxu_bus_suspend()          |  mod_timer()
+ spin_lock_irq() //(1)     |  (wait a time)
+ ...                       | oxu_watchdog()
+ del_timer_sync()          |  spin_lock_irq() //(2)
+ (wait timer to stop)      |  ...
 
-Testing
-=======
+We hold oxu->lock in position (1) of thread 1, and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need oxu->lock in position (2) of thread 2. As a result,
+oxu_bus_suspend() will block forever.
 
- * Auto detect links with Python3 when the v3 devtools are installed
-   and only Python 2 runtime is installed
- * Auto detect links with Python2 when both devtools are installed
- * Sensible warning is printed if no Python devtools are installed
- * 'make PYTHON=x' still automatically sets PYTHON_CONFIG=x-config
- * 'make PYTHON=x' fails if x-config doesn't exist
- * 'make PYTHON=python3' overrides Python2 devtools
- * 'make PYTHON=python2' overrides Python3 devtools
- * 'make PYTHON_CONFIG=x-config' works
- * 'make PYTHON=x PYTHON_CONFIG=x' works
- * 'make PYTHON=missing' reports an error
- * 'make PYTHON_CONFIG=missing' reports an error
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irq(), which could let timer handler to obtain
+the needed lock.
 
-Fixes: 79373082fa9de8be ("perf python: Autodetect python3 binary")
-Signed-off-by: James Clark <james.clark@arm.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: James Clark <james.clark@arm.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Link: https://lore.kernel.org/r/20220309194313.3350126-2-james.clark@arm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417120305.64577-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/Makefile.config | 39 ++++++++++++++++++++++++++------------
- 1 file changed, 27 insertions(+), 12 deletions(-)
+ drivers/usb/host/oxu210hp-hcd.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
-index e0660bc76b7b..1afc67047420 100644
---- a/tools/perf/Makefile.config
-+++ b/tools/perf/Makefile.config
-@@ -237,18 +237,33 @@ ifdef PARSER_DEBUG
- endif
+diff --git a/drivers/usb/host/oxu210hp-hcd.c b/drivers/usb/host/oxu210hp-hcd.c
+index e82ff2a49672..4f5498521e1b 100644
+--- a/drivers/usb/host/oxu210hp-hcd.c
++++ b/drivers/usb/host/oxu210hp-hcd.c
+@@ -3909,8 +3909,10 @@ static int oxu_bus_suspend(struct usb_hcd *hcd)
+ 		}
+ 	}
  
- # Try different combinations to accommodate systems that only have
--# python[2][-config] in weird combinations but always preferring
--# python2 and python2-config as per pep-0394. If python2 or python
--# aren't found, then python3 is used.
--PYTHON_AUTO := python
--PYTHON_AUTO := $(if $(call get-executable,python3),python3,$(PYTHON_AUTO))
--PYTHON_AUTO := $(if $(call get-executable,python),python,$(PYTHON_AUTO))
--PYTHON_AUTO := $(if $(call get-executable,python2),python2,$(PYTHON_AUTO))
--override PYTHON := $(call get-executable-or-default,PYTHON,$(PYTHON_AUTO))
--PYTHON_AUTO_CONFIG := \
--  $(if $(call get-executable,$(PYTHON)-config),$(PYTHON)-config,python-config)
--override PYTHON_CONFIG := \
--  $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO_CONFIG))
-+# python[2][3]-config in weird combinations in the following order of
-+# priority from lowest to highest:
-+#   * python3-config
-+#   * python-config
-+#   * python2-config as per pep-0394.
-+#   * $(PYTHON)-config (If PYTHON is user supplied but PYTHON_CONFIG isn't)
-+#
-+PYTHON_AUTO := python-config
-+PYTHON_AUTO := $(if $(call get-executable,python3-config),python3-config,$(PYTHON_AUTO))
-+PYTHON_AUTO := $(if $(call get-executable,python-config),python-config,$(PYTHON_AUTO))
-+PYTHON_AUTO := $(if $(call get-executable,python2-config),python2-config,$(PYTHON_AUTO))
-+
-+# If PYTHON is defined but PYTHON_CONFIG isn't, then take $(PYTHON)-config as if it was the user
-+# supplied value for PYTHON_CONFIG. Because it's "user supplied", error out if it doesn't exist.
-+ifdef PYTHON
-+  ifndef PYTHON_CONFIG
-+    PYTHON_CONFIG_AUTO := $(call get-executable,$(PYTHON)-config)
-+    PYTHON_CONFIG := $(if $(PYTHON_CONFIG_AUTO),$(PYTHON_CONFIG_AUTO),\
-+                          $(call $(error $(PYTHON)-config not found)))
-+  endif
-+endif
-+
-+# Select either auto detected python and python-config or use user supplied values if they are
-+# defined. get-executable-or-default fails with an error if the first argument is supplied but
-+# doesn't exist.
-+override PYTHON_CONFIG := $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO))
-+override PYTHON := $(call get-executable-or-default,PYTHON,$(subst -config,,$(PYTHON_AUTO)))
++	spin_unlock_irq(&oxu->lock);
+ 	/* turn off now-idle HC */
+ 	del_timer_sync(&oxu->watchdog);
++	spin_lock_irq(&oxu->lock);
+ 	ehci_halt(oxu);
+ 	hcd->state = HC_STATE_SUSPENDED;
  
- grep-libs  = $(filter -l%,$(1))
- strip-libs  = $(filter-out -l%,$(1))
 -- 
 2.35.1
-
-
 
