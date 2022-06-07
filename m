@@ -2,92 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66347CCA488
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:32:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E4C4CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:32:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356546AbiFGTbr (ORCPT
+        id S1351953AbiFGTcI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:31:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47052 "EHLO
+        Tue, 7 Jun 2022 15:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353385AbiFGSlE (ORCPT
+        with ESMTP id S1353398AbiFGSlF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:41:04 -0400
+        Tue, 7 Jun 2022 14:41:05 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5FA5C671;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5CE49F32;
         Tue,  7 Jun 2022 10:58:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D9203CE2422;
-        Tue,  7 Jun 2022 17:58:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48B92C34119;
-        Tue,  7 Jun 2022 17:58:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624711;
-        bh=k32QWyel7cy6/Oa0d/HxzbKatPGuFjuCdFxAh7YF7Jo=;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 31A6DCE23D9;
+        Tue,  7 Jun 2022 17:58:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D386DC385A5;
+        Tue,  7 Jun 2022 17:58:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624710;
+        bh=9iiuiFCgsrm+sHgYub5Z3TgK2n+4XPqxCQptH1jhPjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zeb330liQ17SYstSFdXSzjvSGA1ROP7qvvLAzeGv0WA6DKnP95w1trTAwyh+tzlHV
-         6WNs6lBUSuxgOCzwLwFFb7fpMEMais1VJgSMH2NsFqmU2ZcdkDzPfOdpfIdQQRMDge
-         ogWaOC7YH45qe2n9E8sR6eCWZolr1hT5Ny6LOucc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 425/667] ASoC: sh: rz-ssi: Check return value of pm_runtime_resume_and_get()
-Date:   Tue,  7 Jun 2022 19:01:30 +0200
-Message-Id: <20220607164947.476379941@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=t7HIzojV9pbVj632EfADTafC+6gG6p/4HUEW1GSdAj31KOam4ZWPXmXMNnsbluXfp
+         8atyQUNqQ61eLb+92ffTf9Kno2hmBjLjS5HTV85ijPaDOKUfDPYromvWYvvLIghwdd
+         cuvMXwP+6OFczxz2lOT25UF+qnJp65Aq9GfsdNCq/RekvjPUcCPY4nMSuBx6NSm41I
+         HPUFTjAzpmPiH6C42y4GVogyNVYboVhWEkdKjU3e8ZQ/vNAt/S2ORTONn4WeJ5nhUH
+         QEPYTmS77pwG+2F4BgCVVUwvk2hPWhs1Hwp58w9/DhAmWTXXta4XpBOQ5hADYLaO08
+         Y2ZOd3JEZQLQw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
+        alexander.deucher@amd.com, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        lijo.lazar@amd.com, guchun.chen@amd.com, darren.powell@amd.com,
+        Jack.Gui@amd.com, Hawking.Zhang@amd.com, mario.limonciello@amd.com,
+        kenneth.feng@amd.com, tim.huang@amd.com, kevin1.wang@amd.com,
+        Xiaomeng.Hou@amd.com, tao.zhou1@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 50/51] drm/amd/pm: use bitmap_{from,to}_arr32 where appropriate
+Date:   Tue,  7 Jun 2022 13:55:49 -0400
+Message-Id: <20220607175552.479948-50-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
+References: <20220607175552.479948-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Yury Norov <yury.norov@gmail.com>
 
-[ Upstream commit f04b4fb47d83b110a5b007fb2eddea862cfeb151 ]
+[ Upstream commit 525d6515604eb1373ce5e6372a6b6640953b2d6a ]
 
-The return value of pm_runtime_resume_and_get() needs to be checked to
-avoid a usage count imbalance in the error case. This fix is basically
-the same as 92c959bae2e5 ("reset: renesas: Fix Runtime PM usage"),
-and the last step before pm_runtime_resume_and_get() can be annotated
-as __must_check.
+The smu_v1X_0_set_allowed_mask() uses bitmap_copy() to convert
+bitmap to 32-bit array. This may be wrong due to endiannes issues.
+Fix it by switching to bitmap_{from,to}_arr32.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Link: https://lore.kernel.org/r/9fed506d-b780-55cd-45a4-9bd2407c910f@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+CC: Alexander Gordeev <agordeev@linux.ibm.com>
+CC: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC: Christian Borntraeger <borntraeger@linux.ibm.com>
+CC: Claudio Imbrenda <imbrenda@linux.ibm.com>
+CC: David Hildenbrand <david@redhat.com>
+CC: Heiko Carstens <hca@linux.ibm.com>
+CC: Janosch Frank <frankja@linux.ibm.com>
+CC: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+CC: Sven Schnelle <svens@linux.ibm.com>
+CC: Vasily Gorbik <gor@linux.ibm.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rz-ssi.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c | 2 +-
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index 16de2633a873..7379b1489e35 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -1025,7 +1025,12 @@ static int rz_ssi_probe(struct platform_device *pdev)
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
+index 87b055466a33..e6c93396434f 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
+@@ -772,7 +772,7 @@ int smu_v11_0_set_allowed_mask(struct smu_context *smu)
+ 		goto failed;
+ 	}
  
- 	reset_control_deassert(ssi->rstc);
- 	pm_runtime_enable(&pdev->dev);
--	pm_runtime_resume_and_get(&pdev->dev);
-+	ret = pm_runtime_resume_and_get(&pdev->dev);
-+	if (ret < 0) {
-+		pm_runtime_disable(ssi->dev);
-+		reset_control_assert(ssi->rstc);
-+		return dev_err_probe(ssi->dev, ret, "pm_runtime_resume_and_get failed\n");
-+	}
+-	bitmap_copy((unsigned long *)feature_mask, feature->allowed, 64);
++	bitmap_to_arr32(feature_mask, feature->allowed, 64);
  
- 	ret = devm_snd_soc_register_component(&pdev->dev, &rz_ssi_soc_component,
- 					      rz_ssi_soc_dai,
+ 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetAllowedFeaturesMaskHigh,
+ 					  feature_mask[1], NULL);
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
+index 8d4aa16b2ae7..6211570fb64f 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
+@@ -721,7 +721,7 @@ int smu_v13_0_set_allowed_mask(struct smu_context *smu)
+ 	if (bitmap_empty(feature->allowed, SMU_FEATURE_MAX) || feature->feature_num < 64)
+ 		goto failed;
+ 
+-	bitmap_copy((unsigned long *)feature_mask, feature->allowed, 64);
++	bitmap_to_arr32(feature_mask, feature->allowed, 64);
+ 
+ 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetAllowedFeaturesMaskHigh,
+ 					      feature_mask[1], NULL);
 -- 
 2.35.1
-
-
 
