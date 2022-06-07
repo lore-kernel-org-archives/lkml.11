@@ -2,111 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF886C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:12:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE30BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:12:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355081AbiFGTMV (ORCPT
+        id S1353770AbiFGTMl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:12:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51520 "EHLO
+        Tue, 7 Jun 2022 15:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351207AbiFGSXO (ORCPT
+        with ESMTP id S1351682AbiFGSYz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:23:14 -0400
+        Tue, 7 Jun 2022 14:24:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 362D4C6866;
-        Tue,  7 Jun 2022 10:54:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8E7EBA94;
+        Tue,  7 Jun 2022 10:54:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BDE66182B;
-        Tue,  7 Jun 2022 17:54:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B66AEC36AFE;
-        Tue,  7 Jun 2022 17:54:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624456;
-        bh=KgLkVpm/eCq7pTrqhy/1TWHRr1bnRifLYUD1rkYJal0=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9695D61782;
+        Tue,  7 Jun 2022 17:54:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D65DC3411C;
+        Tue,  7 Jun 2022 17:54:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624471;
+        bh=z9mF0vJTOcJM8P1H/x/lKWNpzNoK2T2OoNZu9lJkCpw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LAq/azVIsgQb1sAmq2zDJ5wXOu2D34JmAbTKrmNGojicMzrEE7eSjGkujGPxBz58m
-         fNyaLy/jB9nvCDLiQp7FRexSmWzT6uFqU/vAWHEW0+5uNMEM821FnO3IUEPaK0e3r0
-         wOiIPr9as3vnJnKZbGLWVUak7oTBPC1IQbgwitHTye5eq6xy22L1gQs6iss5EyA7/i
-         nmR1NgSXXiBrVCQ51dg3P2nf4ZzFQtjXKLuuHLAhv+gfQlNw78hq3KDqYwqKMp+UxJ
-         a/Cniucsy+N38neoRTLLO2K/ieXEUWG0sE6i54L3QzbTi0fAOK2jBoBSguAZMAmn6u
-         34xJ5lE64CuXw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 28/60] serial: msm_serial: disable interrupts in __msm_console_write()
-Date:   Tue,  7 Jun 2022 13:52:25 -0400
-Message-Id: <20220607175259.478835-28-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+        b=obKFz0lOQcm/Vl3kTnZ0rVIkb1Fz4XkR6pGFrfNNwtrRDuSgiuwALUxsaszqHVo03
+         Qdo26+9AgQOZ3thebxZYCx0q/qV/eBuz2gJqVTxubexzffFiyS55Hu24xi4awE/WKD
+         lwzk1YoJqr1np6W3wpdu2o6GWZ/CuNZ/qqdn5jjg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 338/667] media: ov7670: remove ov7670_power_off from ov7670_remove
+Date:   Tue,  7 Jun 2022 19:00:03 +0200
+Message-Id: <20220607164944.902771201@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Ogness <john.ogness@linutronix.de>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit aabdbb1b7a5819e18c403334a31fb0cc2c06ad41 ]
+[ Upstream commit 5bf19572e31375368f19edd2dbb2e0789518bb99 ]
 
-__msm_console_write() assumes that interrupts are disabled, but
-with threaded console printers it is possible that the write()
-callback of the console is called with interrupts enabled.
+In ov7670_probe, it always invokes ov7670_power_off() no matter
+the execution is successful or failed. So we cannot invoke it
+agiain in ov7670_remove().
 
-Explicitly disable interrupts using local_irq_save() to preserve
-the assumed context.
+Fix this by removing ov7670_power_off from ov7670_remove.
 
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Link: https://lore.kernel.org/r/20220506213324.470461-1-john.ogness@linutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 030f9f682e66 ("media: ov7670: control clock along with power")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/msm_serial.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/media/i2c/ov7670.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 23c94b927776..e676ec761f18 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -1599,6 +1599,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
- static void __msm_console_write(struct uart_port *port, const char *s,
- 				unsigned int count, bool is_uartdm)
- {
-+	unsigned long flags;
- 	int i;
- 	int num_newlines = 0;
- 	bool replaced = false;
-@@ -1616,6 +1617,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
- 			num_newlines++;
- 	count += num_newlines;
- 
-+	local_irq_save(flags);
-+
- 	if (port->sysrq)
- 		locked = 0;
- 	else if (oops_in_progress)
-@@ -1661,6 +1664,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
- 
- 	if (locked)
- 		spin_unlock(&port->lock);
-+
-+	local_irq_restore(flags);
+diff --git a/drivers/media/i2c/ov7670.c b/drivers/media/i2c/ov7670.c
+index 196746423116..1be2c0e5bdc1 100644
+--- a/drivers/media/i2c/ov7670.c
++++ b/drivers/media/i2c/ov7670.c
+@@ -2017,7 +2017,6 @@ static int ov7670_remove(struct i2c_client *client)
+ 	v4l2_async_unregister_subdev(sd);
+ 	v4l2_ctrl_handler_free(&info->hdl);
+ 	media_entity_cleanup(&info->sd.entity);
+-	ov7670_power_off(sd);
+ 	return 0;
  }
  
- static void msm_console_write(struct console *co, const char *s,
 -- 
 2.35.1
+
+
 
