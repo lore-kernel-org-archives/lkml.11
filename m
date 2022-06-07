@@ -2,494 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF2DECCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C85C6CCA485
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388489AbiFHAcV (ORCPT
+        id S1388815AbiFHAc4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
+        Tue, 7 Jun 2022 20:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383388AbiFGVxJ (ORCPT
+        with ESMTP id S1384053AbiFGVyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:09 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDAB289B8
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:11:38 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id c2so24206205edf.5
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:11:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hV3xEmz3VLxIR9I3qG4yWszU0CvP4zSv4bB50jhgWQY=;
-        b=FsOTpaCNvMmctTnP+zSEnTxCEQrRXWsITIdWtaHz5VCwaCh5RKGXylUsssMJ85p6wQ
-         sb2Hjkscx9prhO++TxwhhysL4Z5n3qHt1c4c92Wc4qWs7HHu1pu6Z9V0Q2qU579iu5Lm
-         PlBvFDeoEfE/D6RQ4VyRR+Jrn5X+GjXT9PVR7o+1N0E/cyeosjHoDIb8TGiZ7kXDMY0r
-         aweTDpAuGXVX4QypEnIq90r0MYBiFO329pOeu5R73LKQj7eW4nw6x3UteyRo+UP3p7ux
-         WeYoL9A+hCUhumITWwg4yBG0VI5zmlgmk8nmXpe56osIMet5WGsOMQ5oTIeSbrsLGlUc
-         NLtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hV3xEmz3VLxIR9I3qG4yWszU0CvP4zSv4bB50jhgWQY=;
-        b=U8hAefEOwaqD8x9fm1U51LxAPJH3gmpL4BqTp/5CgPwkppcgFEQNON5BAn8nYbn7Gd
-         jHV0tHfr8jTNBUX4L49jidcJaM0biXvA+5e8xDiFlEdt3JqdloSX9gfP87Z30a5xyN1T
-         hHGeQS3zSj56RoKZfWi/VKo9auFsRU+yLP/4Xyos2L0lpNMXhA8LVuqqm3wEeOyC1LB3
-         UJAQwb9GauMHRxc3lVaIlwRyu2rhNL/QdSYiO+wadxSXACYNd0QHKJLyuIVj3wDyI4mt
-         lGGV5laKZPrD49ggH7l+nHp7wBtM3M0UX19/S63n9pAfdSQ/FU1dAhrR6gQ2W47X1CYO
-         Tz5g==
-X-Gm-Message-State: AOAM532bNLmGpROUBbvvZFm81umPeU2GqbpfvASmFN6mWy+sO49fakvr
-        KZUTfY4o5S4SOwfjbtXgCcAhvKYI9rbrmzrqfcg8nA==
-X-Google-Smtp-Source: ABdhPJyR7w9fy1LybVL5JIIyJDc27TBl5rRQHyNxOHpEx3LkHY5wY1AXTQ/vuTD24Ix9wW5/Jqy0z0KQXMq4BdQi7Gw=
-X-Received: by 2002:a05:6402:2405:b0:431:6ef1:e2a with SMTP id
- t5-20020a056402240500b004316ef10e2amr11282812eda.26.1654629095871; Tue, 07
- Jun 2022 12:11:35 -0700 (PDT)
+        Tue, 7 Jun 2022 17:54:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7AC24851F;
+        Tue,  7 Jun 2022 12:12:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A131B82375;
+        Tue,  7 Jun 2022 19:12:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D7D2C3411C;
+        Tue,  7 Jun 2022 19:12:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629161;
+        bh=idSTYfKqID3ycqU0J+RD3lPvbre/1DQacziwM3YLQwg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Eq9lXSCAsc8ZK1UDNFf9xI/MR8VlhGvdDsCh1lGHHkaDbvURjpb/kgxmgsZqY08VJ
+         wfs2dnIOeWvk8LtyFfEmU59FR9yvY7/kHuK62rCPtGjhKv/DblmSD5goMXoUodXWMw
+         f4UWindDtRxeAxq1zNcWWU6jeNVleBuv7bA+f8IY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Krzysztof Zach <krzysztof.zach@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 551/879] cxl/pci: Make cxl_dvsec_ranges() failure not fatal to cxl_pci
+Date:   Tue,  7 Jun 2022 19:01:09 +0200
+Message-Id: <20220607165018.860048093@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220607145639.2362750-1-tzungbi@kernel.org> <20220607145639.2362750-15-tzungbi@kernel.org>
-In-Reply-To: <20220607145639.2362750-15-tzungbi@kernel.org>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Tue, 7 Jun 2022 12:11:23 -0700
-Message-ID: <CABXOdTcBauEYxOokg3PHGwYfgjAHNPGzf9mHnNFTyhcucv+rzg@mail.gmail.com>
-Subject: Re: [PATCH v2 14/15] platform/chrome: cros_ec_proto: return 0 on
- getting version mask success
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     bleung@chromium.org, groeck@chromium.org,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 7:57 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
->
-> cros_ec_get_host_command_version_mask() used to return value from
-> send_command() which is number of bytes for input payload on success
-> (i.e. sizeof(struct ec_response_get_cmd_versions)).
->
-> However, the callers don't need to know how many bytes are available.
->
-> - Fix cros_ec_get_host_command_version_mask() to return 0 on success;
->   negative integers on error.
->
-> - Remove the unneeded `ver_mask` initialization as the callers should
->   take it only if cros_ec_get_host_command_version_mask() returns 0.
->
-> - Add a Kunit test: `ver_mask` has some garbage bytes from previous
->   EC_CMD_GET_NEXT_EVENT but there is no host sleep to make sure the
->   caller checks the return values correctly.
->
-This should be separate patches.
+From: Dan Williams <dan.j.williams@intel.com>
 
-Thanks,
-Guenter
+[ Upstream commit 36bfc6ad508af38f212cf5a38147d867fb3f80a8 ]
+
+cxl_dvsec_ranges(), the helper for enumerating the presence of an active
+legacy CXL.mem configuration on a CXL 2.0 Memory Expander, is not fatal
+for cxl_pci because there is still value to enable mailbox operations
+even if CXL.mem operation is disabled. Recall that the reason cxl_pci
+does this initialization and not cxl_mem is to preserve the useful
+property (for unit testing) that cxl_mem is cxl_memdev + mmio generic,
+and does not require access to a 'struct pci_dev' to issue config
+cycles.
+
+Update 'struct cxl_endpoint_dvsec_info' to carry either a positive
+number of non-zero size legacy CXL DVSEC ranges, or the negative error
+code from __cxl_dvsec_ranges() in its @ranges member.
+
+Reported-by: Krzysztof Zach <krzysztof.zach@intel.com>
+Fixes: 560f78559006 ("cxl/pci: Retrieve CXL DVSEC memory info")
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+Link: https://lore.kernel.org/r/164730735869.3806189.4032428192652531946.stgit@dwillia2-desk3.amr.corp.intel.com
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/cxl/pci.c | 27 ++++++++++++++++++---------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
+index c4941a3ca6a8..bb92853c3b93 100644
+--- a/drivers/cxl/pci.c
++++ b/drivers/cxl/pci.c
+@@ -462,13 +462,18 @@ static int wait_for_media_ready(struct cxl_dev_state *cxlds)
+ 	return 0;
+ }
+ 
+-static int cxl_dvsec_ranges(struct cxl_dev_state *cxlds)
++/*
++ * Return positive number of non-zero ranges on success and a negative
++ * error code on failure. The cxl_mem driver depends on ranges == 0 to
++ * init HDM operation.
++ */
++static int __cxl_dvsec_ranges(struct cxl_dev_state *cxlds,
++			      struct cxl_endpoint_dvsec_info *info)
+ {
+-	struct cxl_endpoint_dvsec_info *info = &cxlds->info;
+ 	struct pci_dev *pdev = to_pci_dev(cxlds->dev);
++	int hdm_count, rc, i, ranges = 0;
+ 	struct device *dev = &pdev->dev;
+ 	int d = cxlds->cxl_dvsec;
+-	int hdm_count, rc, i;
+ 	u16 cap, ctrl;
+ 
+ 	if (!d) {
+@@ -545,10 +550,17 @@ static int cxl_dvsec_ranges(struct cxl_dev_state *cxlds)
+ 		};
+ 
+ 		if (size)
+-			info->ranges++;
++			ranges++;
+ 	}
+ 
+-	return 0;
++	return ranges;
++}
++
++static void cxl_dvsec_ranges(struct cxl_dev_state *cxlds)
++{
++	struct cxl_endpoint_dvsec_info *info = &cxlds->info;
++
++	info->ranges = __cxl_dvsec_ranges(cxlds, info);
+ }
+ 
+ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+@@ -617,10 +629,7 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (rc)
+ 		return rc;
+ 
+-	rc = cxl_dvsec_ranges(cxlds);
+-	if (rc)
+-		dev_warn(&pdev->dev,
+-			 "Failed to get DVSEC range information (%d)\n", rc);
++	cxl_dvsec_ranges(cxlds);
+ 
+ 	cxlmd = devm_cxl_add_memdev(cxlds);
+ 	if (IS_ERR(cxlmd))
+-- 
+2.35.1
 
 
-> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
-> ---
-> Changes from v1:
-> - Return 0 on success; otherwise, negative intergers.
->
->  drivers/platform/chrome/cros_ec_proto.c      |  37 ++-
->  drivers/platform/chrome/cros_ec_proto_test.c | 286 +++++++++++++++++++
->  2 files changed, 308 insertions(+), 15 deletions(-)
->
-> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-> index ee15a73eee38..9d96ed16244f 100644
-> --- a/drivers/platform/chrome/cros_ec_proto.c
-> +++ b/drivers/platform/chrome/cros_ec_proto.c
-> @@ -428,13 +428,12 @@ static int cros_ec_get_proto_info_legacy(struct cros_ec_device *ec_dev)
->   * the caller has ec_dev->lock mutex or the caller knows there is
->   * no other command in progress.
->   */
-> -static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev,
-> -       u16 cmd, u32 *mask)
-> +static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev, u16 cmd, u32 *mask)
->  {
->         struct ec_params_get_cmd_versions *pver;
->         struct ec_response_get_cmd_versions *rver;
->         struct cros_ec_command *msg;
-> -       int ret;
-> +       int ret, mapped;
->
->         msg = kmalloc(sizeof(*msg) + max(sizeof(*rver), sizeof(*pver)),
->                       GFP_KERNEL);
-> @@ -450,13 +449,25 @@ static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev,
->         pver->cmd = cmd;
->
->         ret = send_command(ec_dev, msg);
-> -       if (ret > 0) {
-> -               rver = (struct ec_response_get_cmd_versions *)msg->data;
-> -               *mask = rver->version_mask;
-> +       if (ret < 0)
-> +               goto exit;
-> +
-> +       mapped = cros_ec_map_error(msg->result);
-> +       if (mapped) {
-> +               ret = mapped;
-> +               goto exit;
->         }
->
-> -       kfree(msg);
-> +       if (ret == 0) {
-> +               ret = -EPROTO;
-> +               goto exit;
-> +       }
->
-> +       rver = (struct ec_response_get_cmd_versions *)msg->data;
-> +       *mask = rver->version_mask;
-> +       ret = 0;
-> +exit:
-> +       kfree(msg);
->         return ret;
->  }
->
-> @@ -469,7 +480,7 @@ static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev,
->   */
->  int cros_ec_query_all(struct cros_ec_device *ec_dev)
->  {
-> -       u32 ver_mask = 0;
-> +       u32 ver_mask;
->         int ret;
->         u8 *din, *dout;
->
-> @@ -503,9 +514,7 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
->         ec_dev->dout = dout;
->
->         /* Probe if MKBP event is supported */
-> -       ret = cros_ec_get_host_command_version_mask(ec_dev,
-> -                                                   EC_CMD_GET_NEXT_EVENT,
-> -                                                   &ver_mask);
-> +       ret = cros_ec_get_host_command_version_mask(ec_dev, EC_CMD_GET_NEXT_EVENT, &ver_mask);
->         if (ret < 0 || ver_mask == 0) {
->                 ec_dev->mkbp_event_supported = 0;
->         } else {
-> @@ -515,10 +524,8 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
->         }
->
->         /* Probe if host sleep v1 is supported for S0ix failure detection. */
-> -       ret = cros_ec_get_host_command_version_mask(ec_dev,
-> -                                                   EC_CMD_HOST_SLEEP_EVENT,
-> -                                                   &ver_mask);
-> -       ec_dev->host_sleep_v1 = (ret >= 0 && (ver_mask & EC_VER_MASK(1)));
-> +       ret = cros_ec_get_host_command_version_mask(ec_dev, EC_CMD_HOST_SLEEP_EVENT, &ver_mask);
-> +       ec_dev->host_sleep_v1 = (ret == 0 && (ver_mask & EC_VER_MASK(1)));
->
->         /* Get host event wake mask. */
->         ret = cros_ec_get_host_event_wake_mask(ec_dev, &ec_dev->host_event_wake_mask);
-> diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
-> index 27b81a5a9880..af69410f2978 100644
-> --- a/drivers/platform/chrome/cros_ec_proto_test.c
-> +++ b/drivers/platform/chrome/cros_ec_proto_test.c
-> @@ -890,6 +890,182 @@ static void cros_ec_proto_test_query_all_no_mkbp(struct kunit *test)
->         }
->  }
->
-> +static void cros_ec_proto_test_query_all_no_mkbp_return_error(struct kunit *test)
-> +{
-> +       struct cros_ec_proto_test_priv *priv = test->priv;
-> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
-> +       struct ec_xfer_mock *mock;
-> +       int ret;
-> +
-> +       /* Set some garbage bytes. */
-> +       ec_dev->mkbp_event_supported = 0xbf;
-> +
-> +       /* For cros_ec_get_proto_info() without passthru. */
-> +       {
-> +               struct ec_response_get_protocol_info *data;
-> +
-> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +
-> +               /*
-> +                * Although it doesn't check the value, provides valid sizes so that
-> +                * cros_ec_query_all() allocates din and dout correctly.
-> +                */
-> +               data = (struct ec_response_get_protocol_info *)mock->o_data;
-> +               data->max_request_packet_size = 0xbe;
-> +               data->max_response_packet_size = 0xef;
-> +       }
-> +
-> +       /* For cros_ec_get_proto_info() with passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +       }
-> +
-> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +       }
-> +
-> +       cros_ec_proto_test_query_all_pretest(test);
-> +       ret = cros_ec_query_all(ec_dev);
-> +       KUNIT_EXPECT_EQ(test, ret, 0);
-> +
-> +       /* For cros_ec_get_proto_info() without passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
-> +                               sizeof(struct ec_response_get_protocol_info));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-> +       }
-> +
-> +       /* For cros_ec_get_proto_info() with passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command,
-> +                               EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
-> +                               EC_CMD_GET_PROTOCOL_INFO);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
-> +                               sizeof(struct ec_response_get_protocol_info));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-> +       }
-> +
-> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
-> +       {
-> +               struct ec_params_get_cmd_versions *data;
-> +
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
-> +                               sizeof(struct ec_response_get_cmd_versions));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(*data));
-> +
-> +               data = (struct ec_params_get_cmd_versions *)mock->i_data;
-> +               KUNIT_EXPECT_EQ(test, data->cmd, EC_CMD_GET_NEXT_EVENT);
-> +
-> +               KUNIT_EXPECT_EQ(test, ec_dev->mkbp_event_supported, 0);
-> +       }
-> +}
-> +
-> +static void cros_ec_proto_test_query_all_no_mkbp_return0(struct kunit *test)
-> +{
-> +       struct cros_ec_proto_test_priv *priv = test->priv;
-> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
-> +       struct ec_xfer_mock *mock;
-> +       int ret;
-> +
-> +       /* Set some garbage bytes. */
-> +       ec_dev->mkbp_event_supported = 0xbf;
-> +
-> +       /* For cros_ec_get_proto_info() without passthru. */
-> +       {
-> +               struct ec_response_get_protocol_info *data;
-> +
-> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +
-> +               /*
-> +                * Although it doesn't check the value, provides valid sizes so that
-> +                * cros_ec_query_all() allocates din and dout correctly.
-> +                */
-> +               data = (struct ec_response_get_protocol_info *)mock->o_data;
-> +               data->max_request_packet_size = 0xbe;
-> +               data->max_response_packet_size = 0xef;
-> +       }
-> +
-> +       /* For cros_ec_get_proto_info() with passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +       }
-> +
-> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +       }
-> +
-> +       cros_ec_proto_test_query_all_pretest(test);
-> +       ret = cros_ec_query_all(ec_dev);
-> +       KUNIT_EXPECT_EQ(test, ret, 0);
-> +
-> +       /* For cros_ec_get_proto_info() without passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
-> +                               sizeof(struct ec_response_get_protocol_info));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-> +       }
-> +
-> +       /* For cros_ec_get_proto_info() with passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command,
-> +                               EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
-> +                               EC_CMD_GET_PROTOCOL_INFO);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
-> +                               sizeof(struct ec_response_get_protocol_info));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-> +       }
-> +
-> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
-> +       {
-> +               struct ec_params_get_cmd_versions *data;
-> +
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
-> +                               sizeof(struct ec_response_get_cmd_versions));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(*data));
-> +
-> +               data = (struct ec_params_get_cmd_versions *)mock->i_data;
-> +               KUNIT_EXPECT_EQ(test, data->cmd, EC_CMD_GET_NEXT_EVENT);
-> +
-> +               KUNIT_EXPECT_EQ(test, ec_dev->mkbp_event_supported, 0);
-> +       }
-> +}
-> +
->  static void cros_ec_proto_test_query_all_no_host_sleep(struct kunit *test)
->  {
->         struct cros_ec_proto_test_priv *priv = test->priv;
-> @@ -996,6 +1172,113 @@ static void cros_ec_proto_test_query_all_no_host_sleep(struct kunit *test)
->         }
->  }
->
-> +static void cros_ec_proto_test_query_all_no_host_sleep_return0(struct kunit *test)
-> +{
-> +       struct cros_ec_proto_test_priv *priv = test->priv;
-> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
-> +       struct ec_xfer_mock *mock;
-> +       int ret;
-> +
-> +       /* Set some garbage bytes. */
-> +       ec_dev->host_sleep_v1 = true;
-> +
-> +       /* For cros_ec_get_proto_info() without passthru. */
-> +       {
-> +               struct ec_response_get_protocol_info *data;
-> +
-> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +
-> +               /*
-> +                * Although it doesn't check the value, provides valid sizes so that
-> +                * cros_ec_query_all() allocates din and dout correctly.
-> +                */
-> +               data = (struct ec_response_get_protocol_info *)mock->o_data;
-> +               data->max_request_packet_size = 0xbe;
-> +               data->max_response_packet_size = 0xef;
-> +       }
-> +
-> +       /* For cros_ec_get_proto_info() with passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +       }
-> +
-> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
-> +       {
-> +               struct ec_response_get_cmd_versions *data;
-> +
-> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +
-> +               /* In order to pollute next cros_ec_get_host_command_version_mask(). */
-> +               data = (struct ec_response_get_cmd_versions *)mock->o_data;
-> +               data->version_mask = 0xbeef;
-> +       }
-> +
-> +       /* For cros_ec_get_host_command_version_mask() for host sleep v1. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +       }
-> +
-> +       cros_ec_proto_test_query_all_pretest(test);
-> +       ret = cros_ec_query_all(ec_dev);
-> +       KUNIT_EXPECT_EQ(test, ret, 0);
-> +
-> +       /* For cros_ec_get_proto_info() without passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
-> +                               sizeof(struct ec_response_get_protocol_info));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-> +       }
-> +
-> +       /* For cros_ec_get_proto_info() with passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command,
-> +                               EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
-> +                               EC_CMD_GET_PROTOCOL_INFO);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
-> +                               sizeof(struct ec_response_get_protocol_info));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-> +       }
-> +
-> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
-> +                               sizeof(struct ec_response_get_cmd_versions));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
-> +       }
-> +
-> +       /* For cros_ec_get_host_command_version_mask() for host sleep v1. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
-> +                               sizeof(struct ec_response_get_cmd_versions));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
-> +
-> +               KUNIT_EXPECT_FALSE(test, ec_dev->host_sleep_v1);
-> +       }
-> +}
-> +
->  static void cros_ec_proto_test_query_all_default_wake_mask_return_error(struct kunit *test)
->  {
->         struct cros_ec_proto_test_priv *priv = test->priv;
-> @@ -1183,7 +1466,10 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
->         KUNIT_CASE(cros_ec_proto_test_query_all_legacy_data_error),
->         KUNIT_CASE(cros_ec_proto_test_query_all_legacy_return0),
->         KUNIT_CASE(cros_ec_proto_test_query_all_no_mkbp),
-> +       KUNIT_CASE(cros_ec_proto_test_query_all_no_mkbp_return_error),
-> +       KUNIT_CASE(cros_ec_proto_test_query_all_no_mkbp_return0),
->         KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep),
-> +       KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep_return0),
->         KUNIT_CASE(cros_ec_proto_test_query_all_default_wake_mask_return_error),
->         {}
->  };
-> --
-> 2.36.1.255.ge46751e96f-goog
->
+
