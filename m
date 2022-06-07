@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD601C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:31:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379194AbiFGVaA (ORCPT
+        id S1379887AbiFGVaE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43828 "EHLO
+        Tue, 7 Jun 2022 17:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378094AbiFGUeu (ORCPT
+        with ESMTP id S1377757AbiFGUeD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C533F1EA043;
-        Tue,  7 Jun 2022 11:37:26 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57661E737E;
+        Tue,  7 Jun 2022 11:35:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6367DB823A0;
-        Tue,  7 Jun 2022 18:37:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0517C385A5;
-        Tue,  7 Jun 2022 18:37:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C22D61564;
+        Tue,  7 Jun 2022 18:35:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FB74C385A2;
+        Tue,  7 Jun 2022 18:35:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627044;
-        bh=Oz+plO2iRurQYDPDw9ZV4i0l5/QPC6FIt06Lw0gRW90=;
+        s=korg; t=1654626953;
+        bh=q2WfSuGehAysC4oWHH5FcLye7l4l9jfwd2iIF05nmrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YVxl42hYaR8glijHHA8TyxtzrdCn/3rfATM0huE1v6NuUYm7Q2CKRGun2t2+Qy8nw
-         T4b8CMuX4tuP6dMQ4yRiQP9OCkbepRmPL6gmkCKKHh03BtfS9JsTXlsXaNyBGO/1U4
-         MeX9o8eoYG232Ps7F3QMHKlgiXrMipKh/QtoqOP4=
+        b=YHnidZLLVV/g8lK8/CTGsS4IU5RSL80ORqePyDTPUIj5NjulSbobXcpUMHlrkHDbA
+         vICwwMqLx0OEAm20i9L6QAqifFuP+u/GjNA20oH/4dBIqNCgY6WnQht/mm6ZPPRd+e
+         j7OQJeGuZhVI9LRfTAmZtFSCuxpTLAOpqqWrCF0w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 596/772] RISC-V: Fix the XIP build
-Date:   Tue,  7 Jun 2022 19:03:08 +0200
-Message-Id: <20220607165006.505285204@linuxfoundation.org>
+Subject: [PATCH 5.17 513/772] powerpc/8xx: export cpm_setbrg for modules
+Date:   Tue,  7 Jun 2022 19:01:45 +0200
+Message-Id: <20220607165004.096809323@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,36 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Palmer Dabbelt <palmer@rivosinc.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit d9e418d0ca1c464fe361468b772d4aa870d54e63 ]
+[ Upstream commit 22f8e625ebabd7ed3185b82b44b4f12fc0402113 ]
 
-A handful of functions unused functions were enabled during XIP builds,
-which themselves didn't build correctly.  This just disables the
-functions entirely.
+Fix missing export for a loadable module build:
 
-Fixes: e8a62cc26ddf ("riscv: Implement sv48 support")
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Link: https://lore.kernel.org/r/20220420184056.7886-5-palmer@rivosinc.com
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+ERROR: modpost: "cpm_setbrg" [drivers/tty/serial/cpm_uart/cpm_uart.ko] undefined!
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+[chleroy: Changed Fixes: tag]
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20210122010819.30986-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/mm/init.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/platforms/8xx/cpm1.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
-index 697a9aed4f77..e42c51196995 100644
---- a/arch/riscv/mm/init.c
-+++ b/arch/riscv/mm/init.c
-@@ -591,7 +591,7 @@ static __init pgprot_t pgprot_from_va(uintptr_t va)
+diff --git a/arch/powerpc/platforms/8xx/cpm1.c b/arch/powerpc/platforms/8xx/cpm1.c
+index c58b6f1c40e3..3ef5e9fd3a9b 100644
+--- a/arch/powerpc/platforms/8xx/cpm1.c
++++ b/arch/powerpc/platforms/8xx/cpm1.c
+@@ -280,6 +280,7 @@ cpm_setbrg(uint brg, uint rate)
+ 		out_be32(bp, (((BRG_UART_CLK_DIV16 / rate) - 1) << 1) |
+ 			      CPM_BRG_EN | CPM_BRG_DIV16);
  }
- #endif /* CONFIG_STRICT_KERNEL_RWX */
++EXPORT_SYMBOL(cpm_setbrg);
  
--#ifdef CONFIG_64BIT
-+#if defined(CONFIG_64BIT) && !defined(CONFIG_XIP_KERNEL)
- static void __init disable_pgtable_l4(void)
- {
- 	pgtable_l4_enabled = false;
+ struct cpm_ioport16 {
+ 	__be16 dir, par, odr_sor, dat, intr;
 -- 
 2.35.1
 
