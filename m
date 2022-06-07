@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 425D7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A3FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:36:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239749AbiFGJgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36394 "EHLO
+        id S239741AbiFGJgI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:36:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239683AbiFGJfI (ORCPT
+        with ESMTP id S239713AbiFGJfL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:35:08 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70F6166C88
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:35:04 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id u26so26655425lfd.8
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:35:04 -0700 (PDT)
+        Tue, 7 Jun 2022 05:35:11 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E878DE64DD
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:35:06 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id s13so18522067ljd.4
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:35:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=KoD0FJtvAYiro/wAlRb5zLOAm2ljSVphawX93yu7smo=;
-        b=lTqaQnN6yqJuFg22PrQ1ychCB7duFlShGXgJcYA3YXTZ23/6rCXn89SZzsVCCuXNwk
-         fAyAPiksl8n+YyODYbm60Hd4oRw3NqyoehccHyocO3M5pUWDoZJ+uOfLV7auvKjwedeG
-         pgJO752qd9Vvj9NdJGo0Iv9fCCIZg1NEkfTBLDMCry64TNpUFu0GvHHRUEcQpj4q2hIu
-         772fHfD/oM1dD0AFUusJoVNawrxrMrKudVN4B2argH2tKTHdVFCUco6bLGjusSs5xmfq
-         ZuVO0jNoebGgeiyb26jyQCnjn8c9ciStTmHRcqYLEfe/i01YDdaInFg+xEK4FUA09ZPU
-         Ad7Q==
+        bh=O9Luysd5PeLuzQcmOTrN0C4TCxyraTACP2lGutp0njA=;
+        b=OEFcGHiOWs02B1U8ZYucL+4EF4y74Ze4l8dk9hmWMK3FoD023sKgQyHBsewvH7pJJl
+         YvTh8LFtnuzqGOI9PLLplzSzXYJZFK1gYVHuzABkUbwQsoGxgOQgNEusCnjNcnFvnjkd
+         Yl9vUMntxnBPqg1POJJlwrG5civzSjESScL8j/tnlRVv2mn5cmcGkdIeLN7YA/CbyZav
+         2YVtDUw6X4+2rEN7OA2BrLqdkiZyumlkDfUd5zqAO5M+qMIjTDWVTlyAICItcGoGiyLT
+         YBlyritdBTzazGnA/7VDfcoiLM939ljQagYCiIs7486TAFH38GeJvgIxpjgwoKGRT33Y
+         +CYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=KoD0FJtvAYiro/wAlRb5zLOAm2ljSVphawX93yu7smo=;
-        b=Lm8p4Q310onLTnE0hs+Gj3rKlNMeSZKV4JzN2i1xI3UJX9kMVCwrXQ5r3IGB55i21l
-         LjpQXPUPu/qg/gfQMJ9QXBNWGw3STO314ZeMB+yOCj6sCemvj9wyiGrW3Tsvpt2MWlkD
-         JtpYIPcF4PhnoeSAuCuD0nVUBGemwQZ7yKbA7yS41jG6Hz7f/VJAtjoPG1dfhlfQPwNt
-         nggUzwnp3bxcHf7aV75JkbLJcv1XqAYVH7IGLwK1RpxlwTFDyD/QYIWiddHmR7xAqGc8
-         WwLmxFE3icqRfrt7toHXWFhfQzlMPjelW8lQGcnVGTdotY25uejw+NGHyBpdKbEaYQ6w
-         EB2Q==
-X-Gm-Message-State: AOAM532OKPMaKOz/daYA3VgtMc0OAhtrs6kxCTyLbTQd77ehyauL+pX7
-        KbpqnAMx7ZzsrJ/Nq73Qql4=
-X-Google-Smtp-Source: ABdhPJz+nEYe43ymsAQpZtJHQ1/MvaMOMA/s21VY0MJGYYJhjcHNnEvXn54O9Datx6yzWQULld4+1g==
-X-Received: by 2002:a05:6512:3502:b0:476:c68d:8b0d with SMTP id h2-20020a056512350200b00476c68d8b0dmr18657838lfs.113.1654594502769;
-        Tue, 07 Jun 2022 02:35:02 -0700 (PDT)
+        bh=O9Luysd5PeLuzQcmOTrN0C4TCxyraTACP2lGutp0njA=;
+        b=w+hLa00VThLlQcI7dKcKsFxLjH/lig5xsg9WG2TDqzkViXmxWqxPKktgyEWZEwap+0
+         GngUzPv3U19YBGlu7645wsMjafh7a98ih9iE8yWmoV6n9+9GtqerejhsrEYXr/CQqN3g
+         Bzk8uCYGiNeVQrA2cnFY8jTyQNE8P3wQ+1Ny69FX5r76TLRjGNPS2t4v2Y8pjVeqyY0b
+         FoRJSur2BVwParC4hOulHbOM73yzX6Wy4LDo52bn0Zb6T8MCcKVjS3TJ3bjNAhETBn4x
+         z8OxxHYt7HB3+JfSLfawRLlC4nuqtZEc64xYUFes/OgsOHnZjGBl7zP36LI8lnHVbWHp
+         /kzw==
+X-Gm-Message-State: AOAM530eAexaZz9T1loHpGaCxNL3RqbsYva1I7M6yBfUfZUtwBMYJJRn
+        7zhhx86P9ZW6GY0EOF9zfFo=
+X-Google-Smtp-Source: ABdhPJwUTjbgFpjRhKBjUdEBBKYoMmoQ2FYhd4s1qcIF4yVZY8JkiVy+ymXc7TQCD8Ki1L7N7af7eQ==
+X-Received: by 2002:a2e:946:0:b0:255:8750:dfeb with SMTP id 67-20020a2e0946000000b002558750dfebmr9193023ljj.421.1654594504568;
+        Tue, 07 Jun 2022 02:35:04 -0700 (PDT)
 Received: from pc638.lan ([155.137.26.201])
-        by smtp.gmail.com with ESMTPSA id r27-20020a2e575b000000b002554a4ebf5fsm2748043ljd.74.2022.06.07.02.35.01
+        by smtp.gmail.com with ESMTPSA id r27-20020a2e575b000000b002554a4ebf5fsm2748043ljd.74.2022.06.07.02.35.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 02:35:02 -0700 (PDT)
+        Tue, 07 Jun 2022 02:35:04 -0700 (PDT)
 From:   "Uladzislau Rezki (Sony)" <urezki@gmail.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
@@ -56,9 +56,9 @@ Cc:     linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
         Nicholas Piggin <npiggin@gmail.com>,
         Uladzislau Rezki <urezki@gmail.com>,
         Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
-Subject: [PATCH 3/5] mm/vmalloc: Initialize VA's list node after unlink
-Date:   Tue,  7 Jun 2022 11:34:47 +0200
-Message-Id: <20220607093449.3100-4-urezki@gmail.com>
+Subject: [PATCH 5/5] lib/test_vmalloc: Switch to prandom_u32()
+Date:   Tue,  7 Jun 2022 11:34:49 +0200
+Message-Id: <20220607093449.3100-6-urezki@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220607093449.3100-1-urezki@gmail.com>
 References: <20220607093449.3100-1-urezki@gmail.com>
@@ -68,32 +68,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A vmap_area can travel between different places. For example
-attached/detached to/from different rb-trees. In order to
-prevent fancy bugs, initialize a VA's list node after it is
-removed from the list, so it pairs with VA's rb_node which
-is also initialized.
+A get_random_bytes() function can cause a high contention if it is
+called across CPUs simultaneously. Because it shares one lock per
+all CPUs:
 
-There is no functional change as a result of this patch.
+<snip>
+   class name     con-bounces  contentions   waittime-min   waittime-max waittime-total   waittime-avg    acq-bounces   acquisitions   holdtime-min   holdtime-max holdtime-total   holdtime-avg
+   &crng->lock:   663145       665886        0.05           8.85         261966.66        0.39            7188152       13731279       0.04           11.89        2181582.30       0.16
+   -----------
+   &crng->lock    307835       [<00000000acba59cd>] _extract_crng+0x48/0x90
+   &crng->lock    358051       [<00000000f0075abc>] _crng_backtrack_protect+0x32/0x90
+   -----------
+   &crng->lock    234241       [<00000000f0075abc>] _crng_backtrack_protect+0x32/0x90
+   &crng->lock    431645       [<00000000acba59cd>] _extract_crng+0x48/0x90
+<snip>
+
+Switch from the get_random_bytes() to prandom_u32() that does not
+have any internal contention when a random value is needed for the
+tests.
+
+The reason is to minimize CPU cycles introduced by the test-suite
+itself from the vmalloc performance metrics.
 
 Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
 ---
- mm/vmalloc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/test_vmalloc.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index 745e89eb6ca1..82771e555273 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -978,7 +978,7 @@ __unlink_va(struct vmap_area *va, struct rb_root *root, bool augment)
- 	else
- 		rb_erase(&va->rb_node, root);
+diff --git a/lib/test_vmalloc.c b/lib/test_vmalloc.c
+index cf41fd6df42a..4f2f2d1bac56 100644
+--- a/lib/test_vmalloc.c
++++ b/lib/test_vmalloc.c
+@@ -74,12 +74,13 @@ test_report_one_done(void)
  
--	list_del(&va->list);
-+	list_del_init(&va->list);
- 	RB_CLEAR_NODE(&va->rb_node);
- }
+ static int random_size_align_alloc_test(void)
+ {
+-	unsigned long size, align, rnd;
++	unsigned long size, align;
++	unsigned int rnd;
+ 	void *ptr;
+ 	int i;
  
+ 	for (i = 0; i < test_loop_count; i++) {
+-		get_random_bytes(&rnd, sizeof(rnd));
++		rnd = prandom_u32();
+ 
+ 		/*
+ 		 * Maximum 1024 pages, if PAGE_SIZE is 4096.
+@@ -150,7 +151,7 @@ static int random_size_alloc_test(void)
+ 	int i;
+ 
+ 	for (i = 0; i < test_loop_count; i++) {
+-		get_random_bytes(&n, sizeof(i));
++		n = prandom_u32();
+ 		n = (n % 100) + 1;
+ 
+ 		p = vmalloc(n * PAGE_SIZE);
+@@ -294,14 +295,14 @@ pcpu_alloc_test(void)
+ 	for (i = 0; i < 35000; i++) {
+ 		unsigned int r;
+ 
+-		get_random_bytes(&r, sizeof(i));
++		r = prandom_u32();
+ 		size = (r % (PAGE_SIZE / 4)) + 1;
+ 
+ 		/*
+ 		 * Maximum PAGE_SIZE
+ 		 */
+-		get_random_bytes(&r, sizeof(i));
+-		align = 1 << ((i % 11) + 1);
++		r = prandom_u32();
++		align = 1 << ((r % 11) + 1);
+ 
+ 		pcpu[i] = __alloc_percpu(size, align);
+ 		if (!pcpu[i])
+@@ -396,7 +397,7 @@ static void shuffle_array(int *arr, int n)
+ 	int i, j;
+ 
+ 	for (i = n - 1; i > 0; i--)  {
+-		get_random_bytes(&rnd, sizeof(rnd));
++		rnd = prandom_u32();
+ 
+ 		/* Cut the range. */
+ 		j = rnd % i;
 -- 
 2.30.2
 
