@@ -2,148 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE06ACCA49A
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8782ACCA49F
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389091AbiFHBFw (ORCPT
+        id S1442635AbiFHBGz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32910 "EHLO
+        Tue, 7 Jun 2022 21:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382115AbiFGVqd (ORCPT
+        with ESMTP id S1382517AbiFGWDU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:46:33 -0400
-Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EA4235B15
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:07:48 -0700 (PDT)
-Received: by mail-ua1-x92a.google.com with SMTP id v19so500085uae.0
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:07:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s58JyYfxjJZK+xBks84yqht9lKqAP2iTqEYGVHfv2fA=;
-        b=UniKPp2fwri4mGTTugBIeQ1NZBedToPyxhulFcbp+XWVAnwR5PUv5ooePbH/zWikdq
-         6FaFxdOB4iEIsUrcTX9Qm4jCxkNTtmM6YKlPmKISkWBzbViQ2rTzilpDo+Iz9nowKLFJ
-         WmejIqLXPDwqBVm9B+sGT+TwXPzscXlYaRIvkFA7RNeTqNgz7kP6U+d+Mi1FDaQt+MrA
-         UiCKot2InqF/Xaqatw80AlYd7gtH10a85bDH2ZXIa0NKfAVKksTZaxf1/l+Yk1jbOveM
-         MIAHxHTJmYsEMuYg4W58T1eg1cbE513Klo79bfZpVLgYtgZuYtoWI37VAmFSLRKiTWYb
-         8MHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s58JyYfxjJZK+xBks84yqht9lKqAP2iTqEYGVHfv2fA=;
-        b=Yb+e1zPy6WnYS60dcR5dVcjHZRgb5Hy6rK7tdS9s99AMwM3lpA6hs1CoFdRBGgaNOg
-         DNZ+wn39ifx3op7rt9gQEALr/E+tlMk1H6BrV59qH0IrcTy/2CgnnracGjoCX6YJdie6
-         LmhDQdds1S7eX2hklESX8SkMn7gczoog5nhPzSWSUnf8+GPvEhzvuaj2vdJP0A8h7xqn
-         Pncv6N1NM0GxxznPtmrqf4v/LW/niqBFXL9uFxdLTY/02duBEa7dPT1BcfGVGU/JbbSR
-         e+GAN1/t/rx439fQogVORcoi/8hDeHQsV82Yp8fHeZ4G91NwLHXxEftWRp3JQGMzRXXE
-         Frmw==
-X-Gm-Message-State: AOAM5304KPlyL8LHLXjifa0DYyYpm5DcTbMK4iS//qmz28LNHKq0Yu4z
-        t+kFcJgfP8ynSYl22vj4sOtpeq9gJKxjl1eAgE65tQ==
-X-Google-Smtp-Source: ABdhPJzS0mtcx5OOOAWXsJb2eTSprTdFF5fKfwZ/5n8eY041PP99y8PgkVi5+GKdcmJEaZnwyH4Uqru8wQ1EJ+a7ziU=
-X-Received: by 2002:ab0:2008:0:b0:352:2b3a:6bce with SMTP id
- v8-20020ab02008000000b003522b3a6bcemr37171732uak.19.1654628867656; Tue, 07
- Jun 2022 12:07:47 -0700 (PDT)
+        Tue, 7 Jun 2022 18:03:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8A8252256;
+        Tue,  7 Jun 2022 12:15:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 549DDB8233E;
+        Tue,  7 Jun 2022 19:15:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFB8BC385A5;
+        Tue,  7 Jun 2022 19:15:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629318;
+        bh=7C4cWSV1faZyhZGcY7GBV07+JeoEX0fJB6r7GfbLyME=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nYN3m9gajBwX2/3j7v0AwF8xEszF4pNYcjh56LV98RYPJSmqNGF6Aha8eUTgl8F1K
+         jtTvUeHNDKxY+6sbQclxqvdk5oj0G0stRCe1XerEOwfFgIPrLrpKHLObFsOz6aafSJ
+         RLbFMFfv5AgGz3XivU0vR1EVGeSd4Ips/qgtKWdE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 649/879] mfd: davinci_voicecodec: Fix possible null-ptr-deref davinci_vc_probe()
+Date:   Tue,  7 Jun 2022 19:02:47 +0200
+Message-Id: <20220607165021.685648500@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220518014632.922072-1-yuzhao@google.com> <20220518014632.922072-8-yuzhao@google.com>
- <CAGsJ_4yboZEY9OfyujPxBa_AEuGM3OAq5y_L9gvzSMUv70BxeQ@mail.gmail.com> <CAGsJ_4w3S_8Kaw2GyB3hg7b4N_D+6yBO7D6qmgxD9Fqz3_dhAg@mail.gmail.com>
-In-Reply-To: <CAGsJ_4w3S_8Kaw2GyB3hg7b4N_D+6yBO7D6qmgxD9Fqz3_dhAg@mail.gmail.com>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Tue, 7 Jun 2022 13:07:11 -0600
-Message-ID: <CAOUHufbi7h6siHdnhsAEiXaCoNrUs9bUnEihYouE4CNMt-Zd_w@mail.gmail.com>
-Subject: Re: [PATCH v11 07/14] mm: multi-gen LRU: exploit locality in rmap
-To:     Barry Song <21cnbao@gmail.com>
-Cc:     Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@suse.cz>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, x86 <x86@kernel.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>, huzhanyuan@oppo.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 1:37 AM Barry Song <21cnbao@gmail.com> wrote:
->
-> On Mon, Jun 6, 2022 at 9:25 PM Barry Song <21cnbao@gmail.com> wrote:
-> >
-> > On Wed, May 18, 2022 at 4:49 PM Yu Zhao <yuzhao@google.com> wrote:
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-...
+[ Upstream commit 311242c7703df0da14c206260b7e855f69cb0264 ]
 
-> I can't really explain why we are getting a random app/java vm crash in monkey
-> test by using ptep_test_and_clear_young() only in lru_gen_look_around() on an
-> armv8-a machine without hardware PTE young support.
->
-> Moving to  ptep_clear_flush_young() in look_around can make the random
-> hang disappear according to zhanyuan(Cc-ed).
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-This sounds too familiar -- let me ask again: was the following commit
-included during the test?
+Fixes: b5e29aa880be ("mfd: davinci_voicecodec: Remove pointless #include")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20220426030857.3539336-1-yangyingliang@huawei.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/mfd/davinci_voicecodec.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-  07509e10dcc7 arm64: pgtable: Fix pte_accessible()
+diff --git a/drivers/mfd/davinci_voicecodec.c b/drivers/mfd/davinci_voicecodec.c
+index e5c8bc998eb4..965820481f1e 100644
+--- a/drivers/mfd/davinci_voicecodec.c
++++ b/drivers/mfd/davinci_voicecodec.c
+@@ -46,14 +46,12 @@ static int __init davinci_vc_probe(struct platform_device *pdev)
+ 	}
+ 	clk_enable(davinci_vc->clk);
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-
+-	fifo_base = (dma_addr_t)res->start;
+-	davinci_vc->base = devm_ioremap_resource(&pdev->dev, res);
++	davinci_vc->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(davinci_vc->base)) {
+ 		ret = PTR_ERR(davinci_vc->base);
+ 		goto fail;
+ 	}
++	fifo_base = (dma_addr_t)res->start;
+ 
+ 	davinci_vc->regmap = devm_regmap_init_mmio(&pdev->dev,
+ 						   davinci_vc->base,
+-- 
+2.35.1
 
-If not, it will cause exactly the problem you described. And what
-about this one?
 
-  e914d8f00391 mm: fix unexpected zeroed page mapping with zram swap
 
-Missing it also causes userspace memory corruption on Android, i.e.,
-random app crashes.
-
-> On x86, ptep_clear_flush_young() is exactly ptep_test_and_clear_young()
-> after
->  'commit b13b1d2d8692 ("x86/mm: In the PTE swapout page reclaim case clear
-> the accessed bit instead of flushing the TLB")'
->
-> But on arm64, they are different. according to Will's comments in this
-> thread which
-> tried to make arm64 same with x86,
-> https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1793881.html
->
-> "
-> This is blindly copied from x86 and isn't true for us: we don't invalidate
-> the TLB on context switch. That means our window for keeping the stale
-> entries around is potentially much bigger and might not be a great idea.
->
-> If we roll a TLB invalidation routine without the trailing DSB, what sort of
-> performance does that get you?
-> "
-> We shouldn't think ptep_clear_flush_young() is safe enough in LRU to
-> clear PTE young? Any comments from Will?
->
-> >
-> > btw, lru_gen_look_around() has already included 'address', are we doing
-> > pte check for 'address' twice here?
-
-Explained in the previous reply. Hope that clarifies things.
