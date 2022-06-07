@@ -2,55 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D5BCCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1963CCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379771AbiFGV0D (ORCPT
+        id S1379722AbiFGV0A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60206 "EHLO
+        Tue, 7 Jun 2022 17:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376822AbiFGU2K (ORCPT
+        with ESMTP id S1376813AbiFGU2L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:28:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBAD1D92E7;
-        Tue,  7 Jun 2022 11:33:18 -0700 (PDT)
+        Tue, 7 Jun 2022 16:28:11 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5D11D92CA;
+        Tue,  7 Jun 2022 11:33:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4188E612F2;
-        Tue,  7 Jun 2022 18:33:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20D63C385A2;
-        Tue,  7 Jun 2022 18:33:16 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A7F1DCE240B;
+        Tue,  7 Jun 2022 18:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F1FAC385A2;
+        Tue,  7 Jun 2022 18:33:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626796;
-        bh=qV2DruYLPwyZRDN9vck8Ib0tA9uqVGuc67Tk42gUhNY=;
+        s=korg; t=1654626791;
+        bh=Pm1sdPAeGW7S0pQyTrq8Rdh0/AYBc4BFWlu2G/4YV0M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fl8g7sEGGtOG/u/ftXW9ipOoqA8vTi5cHfxxEXLQfWP3kKbxUhDEZNxi5NUlzXj1G
-         M/k9fbGe+PmfrxSnfVJGD2divbTJ6nzp4TMU7K2rE5dCdrR7OSYwhA0o5OqdC8WBZY
-         yucfGVnPEn0BUvhwvXTyz+DMfzJ0l2Db6jJp4a/M=
+        b=T25DMwlFjKmsg3ot7bubjOSzselnbXcIqSZwq7H2Qm4EhN/6luxxQpQ08+hotAlKU
+         O+ik5k/xD8p59dpj82xyUhYlWA91XW6lVn65PcsfTQbpA72gTOcd169UVA/Xc3u6UO
+         et447AIGklN7jRwUZAupJFZ6YuvvWeSc17Ayepoo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Alistair Popple <apopple@nvidia.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Ross Zwisler <zwisler@kernel.org>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Yang Shi <shy828301@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Jacky Li <jackyli@google.com>,
+        Peter Gonda <pgonda@google.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 506/772] dax: fix cache flush on PMD-mapped pages
-Date:   Tue,  7 Jun 2022 19:01:38 +0200
-Message-Id: <20220607165003.889379506@linuxfoundation.org>
+Subject: [PATCH 5.17 504/772] crypto: ccp - Fix the INIT_EX data file open failure
+Date:   Tue,  7 Jun 2022 19:01:36 +0200
+Message-Id: <20220607165003.831479908@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -62,56 +52,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+From: Jacky Li <jackyli@google.com>
 
-[ Upstream commit e583b5c472bd23d450e06f148dc1f37be74f7666 ]
+[ Upstream commit 05def5cacfa0bd5ba380116046747da07ff5bd78 ]
 
-The flush_cache_page() only remove a PAGE_SIZE sized range from the cache.
-However, it does not cover the full pages in a THP except a head page.
-Replace it with flush_cache_range() to fix this issue.  This is just a
-documentation issue with the respect to properly documenting the expected
-usage of cache flushing before modifying the pmd.  However, in practice
-this is not a problem due to the fact that DAX is not available on
-architectures with virtually indexed caches per:
+There are 2 common cases when INIT_EX data file might not be
+opened successfully and fail the sev initialization:
 
-  commit d92576f1167c ("dax: does not work correctly with virtual aliasing caches")
+1. In user namespaces, normal user tasks (e.g. VMM) can change their
+   current->fs->root to point to arbitrary directories. While
+   init_ex_path is provided as a module param related to root file
+   system. Solution: use the root directory of init_task to avoid
+   accessing the wrong file.
 
-Link: https://lkml.kernel.org/r/20220403053957.10770-3-songmuchun@bytedance.com
-Fixes: f729c8c9b24f ("dax: wrprotect pmd_t in dax_mapping_entry_mkclean")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Cc: Alistair Popple <apopple@nvidia.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: Jan Kara <jack@suse.cz>
-Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Ralph Campbell <rcampbell@nvidia.com>
-Cc: Ross Zwisler <zwisler@kernel.org>
-Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
-Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Cc: Yang Shi <shy828301@gmail.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+2. Normal user tasks (e.g. VMM) don't have the privilege to access
+   the INIT_EX data file. Solution: open the file as root and
+   restore permissions immediately.
+
+Fixes: 3d725965f836 ("crypto: ccp - Add SEV_INIT_EX support")
+Signed-off-by: Jacky Li <jackyli@google.com>
+Reviewed-by: Peter Gonda <pgonda@google.com>
+Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dax.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/crypto/ccp/sev-dev.c | 30 ++++++++++++++++++++++++++++--
+ 1 file changed, 28 insertions(+), 2 deletions(-)
 
-diff --git a/fs/dax.c b/fs/dax.c
-index cd03485867a7..411ea6a0fe57 100644
---- a/fs/dax.c
-+++ b/fs/dax.c
-@@ -846,7 +846,8 @@ static void dax_entry_mkclean(struct address_space *mapping, pgoff_t index,
- 			if (!pmd_dirty(*pmdp) && !pmd_write(*pmdp))
- 				goto unlock_pmd;
+diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
+index 6ab93dfd478a..3aefb177715e 100644
+--- a/drivers/crypto/ccp/sev-dev.c
++++ b/drivers/crypto/ccp/sev-dev.c
+@@ -23,6 +23,7 @@
+ #include <linux/gfp.h>
+ #include <linux/cpufeature.h>
+ #include <linux/fs.h>
++#include <linux/fs_struct.h>
  
--			flush_cache_page(vma, address, pfn);
-+			flush_cache_range(vma, address,
-+					  address + HPAGE_PMD_SIZE);
- 			pmd = pmdp_invalidate(vma, address, pmdp);
- 			pmd = pmd_wrprotect(pmd);
- 			pmd = pmd_mkclean(pmd);
+ #include <asm/smp.h>
+ 
+@@ -170,6 +171,31 @@ static void *sev_fw_alloc(unsigned long len)
+ 	return page_address(page);
+ }
+ 
++static struct file *open_file_as_root(const char *filename, int flags, umode_t mode)
++{
++	struct file *fp;
++	struct path root;
++	struct cred *cred;
++	const struct cred *old_cred;
++
++	task_lock(&init_task);
++	get_fs_root(init_task.fs, &root);
++	task_unlock(&init_task);
++
++	cred = prepare_creds();
++	if (!cred)
++		return ERR_PTR(-ENOMEM);
++	cred->fsuid = GLOBAL_ROOT_UID;
++	old_cred = override_creds(cred);
++
++	fp = file_open_root(&root, filename, flags, mode);
++	path_put(&root);
++
++	revert_creds(old_cred);
++
++	return fp;
++}
++
+ static int sev_read_init_ex_file(void)
+ {
+ 	struct sev_device *sev = psp_master->sev_data;
+@@ -181,7 +207,7 @@ static int sev_read_init_ex_file(void)
+ 	if (!sev_init_ex_buffer)
+ 		return -EOPNOTSUPP;
+ 
+-	fp = filp_open(init_ex_path, O_RDONLY, 0);
++	fp = open_file_as_root(init_ex_path, O_RDONLY, 0);
+ 	if (IS_ERR(fp)) {
+ 		int ret = PTR_ERR(fp);
+ 
+@@ -217,7 +243,7 @@ static void sev_write_init_ex_file(void)
+ 	if (!sev_init_ex_buffer)
+ 		return;
+ 
+-	fp = filp_open(init_ex_path, O_CREAT | O_WRONLY, 0600);
++	fp = open_file_as_root(init_ex_path, O_CREAT | O_WRONLY, 0600);
+ 	if (IS_ERR(fp)) {
+ 		dev_err(sev->dev,
+ 			"SEV: could not open file for write, error %ld\n",
 -- 
 2.35.1
 
