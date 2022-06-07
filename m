@@ -2,137 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B500CCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B920DCCA490
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357164AbiFGTlY (ORCPT
+        id S1357253AbiFGTla (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:41:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53896 "EHLO
+        Tue, 7 Jun 2022 15:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354478AbiFGSrE (ORCPT
+        with ESMTP id S1354424AbiFGSrB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285DE6898D;
-        Tue,  7 Jun 2022 11:01:30 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8806403E4;
+        Tue,  7 Jun 2022 11:01:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC0F4B82239;
-        Tue,  7 Jun 2022 18:01:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34C27C34115;
-        Tue,  7 Jun 2022 18:01:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624887;
-        bh=WYtg6yUY6yiewaqifDNtJ9l3eq/l+7QgrMV3SgSnmtw=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B602618E1;
+        Tue,  7 Jun 2022 18:01:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68FACC3411F;
+        Tue,  7 Jun 2022 18:01:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624869;
+        bh=wHYFN9MuumJK9P6jgiI8aiyR/phLTziKEKbXcop84ZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BrcKxJLKAI3jXkFS13VL3Vb2rrFXudMZ1jFf2gy/kAIctNckzYa7G362dv54fi8fR
-         lKigeisufoY8TXfI+C1FcxY/GzRaI/IaOyB7f98WYKK24NxoBISoxq+cXX2b1XjCsU
-         w34KsOHZ7eg7DcoCzNMOx5yTNore0LWXWkPf/dVguz6QxF3uQwAt7V6YhovBQUi4IG
-         X4Ee7EQ3Ett7GAQD5BXtTdZdE+TXTVFihOM+uTXm85OKSxUrRakehJV6LSL2kAy3On
-         QLhR8595DMv08O5DOAoIQpS9HEznMnJs57LwRM7flxBFeWT0VR9/AwiQ4fPOSFCSG4
-         BxE6gD4FgbE5w==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, frankja@linux.ibm.com,
-        gor@linux.ibm.com, kvm@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 32/34] s390/gmap: voluntarily schedule during key setting
-Date:   Tue,  7 Jun 2022 14:00:07 -0400
-Message-Id: <20220607180011.481266-32-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
-References: <20220607180011.481266-1-sashal@kernel.org>
+        b=Mv7mbl3Ym+RbMiqi3lnHpwcTlfA4TXgX4EZ3H8pi5sX1aQS45ta2AxkhOdBWeOKGn
+         LoAMpEduztCgwyfPDBz1DBArC8W6w/HqibTYWKoGxP5hZy24ZepnKjijxv8l2yHYQj
+         QOrKIWZs2Zh847+qOgMxg0S+WqImqGeSEVD4mo1U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 442/667] pinctrl: renesas: core: Fix possible null-ptr-deref in sh_pfc_map_resources()
+Date:   Tue,  7 Jun 2022 19:01:47 +0200
+Message-Id: <20220607164947.976980687@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Borntraeger <borntraeger@linux.ibm.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 6d5946274df1fff539a7eece458a43be733d1db8 ]
+[ Upstream commit 5376e3d904532e657fd7ca1a9b1ff3d351527b90 ]
 
-With large and many guest with storage keys it is possible to create
-large latencies or stalls during initial key setting:
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-rcu: INFO: rcu_sched self-detected stall on CPU
-rcu:   18-....: (2099 ticks this GP) idle=54e/1/0x4000000000000002 softirq=35598716/35598716 fqs=998
-       (t=2100 jiffies g=155867385 q=20879)
-Task dump for CPU 18:
-CPU 1/KVM       R  running task        0 1030947 256019 0x06000004
-Call Trace:
-sched_show_task
-rcu_dump_cpu_stacks
-rcu_sched_clock_irq
-update_process_times
-tick_sched_handle
-tick_sched_timer
-__hrtimer_run_queues
-hrtimer_interrupt
-do_IRQ
-ext_int_handler
-ptep_zap_key
-
-The mmap lock is held during the page walking but since this is a
-semaphore scheduling is still possible. Same for the kvm srcu.
-To minimize overhead do this on every segment table entry or large page.
-
-Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Reviewed-by: Alexander Gordeev <agordeev@linux.ibm.com>
-Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220530092706.11637-2-borntraeger@linux.ibm.com
-Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Fixes: c7977ec4a336 ("pinctrl: sh-pfc: Convert to platform_get_*()")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220429082637.1308182-1-yangyingliang@huawei.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/mm/gmap.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/pinctrl/renesas/core.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
-index 5e5a4e1f0e6c..19ee8355b2a7 100644
---- a/arch/s390/mm/gmap.c
-+++ b/arch/s390/mm/gmap.c
-@@ -2579,6 +2579,18 @@ static int __s390_enable_skey_pte(pte_t *pte, unsigned long addr,
- 	return 0;
- }
+diff --git a/drivers/pinctrl/renesas/core.c b/drivers/pinctrl/renesas/core.c
+index bc17f3131de5..75fc420b6bdf 100644
+--- a/drivers/pinctrl/renesas/core.c
++++ b/drivers/pinctrl/renesas/core.c
+@@ -71,12 +71,11 @@ static int sh_pfc_map_resources(struct sh_pfc *pfc,
  
-+/*
-+ * Give a chance to schedule after setting a key to 256 pages.
-+ * We only hold the mm lock, which is a rwsem and the kvm srcu.
-+ * Both can sleep.
-+ */
-+static int __s390_enable_skey_pmd(pmd_t *pmd, unsigned long addr,
-+				  unsigned long next, struct mm_walk *walk)
-+{
-+	cond_resched();
-+	return 0;
-+}
-+
- static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
- 				      unsigned long hmask, unsigned long next,
- 				      struct mm_walk *walk)
-@@ -2601,12 +2613,14 @@ static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
- 	end = start + HPAGE_SIZE - 1;
- 	__storage_key_init_range(start, end);
- 	set_bit(PG_arch_1, &page->flags);
-+	cond_resched();
- 	return 0;
- }
- 
- static const struct mm_walk_ops enable_skey_walk_ops = {
- 	.hugetlb_entry		= __s390_enable_skey_hugetlb,
- 	.pte_entry		= __s390_enable_skey_pte,
-+	.pmd_entry		= __s390_enable_skey_pmd,
- };
- 
- int s390_enable_skey(void)
+ 	/* Fill them. */
+ 	for (i = 0; i < num_windows; i++) {
+-		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
+-		windows->phys = res->start;
+-		windows->size = resource_size(res);
+-		windows->virt = devm_ioremap_resource(pfc->dev, res);
++		windows->virt = devm_platform_get_and_ioremap_resource(pdev, i, &res);
+ 		if (IS_ERR(windows->virt))
+ 			return -ENOMEM;
++		windows->phys = res->start;
++		windows->size = resource_size(res);
+ 		windows++;
+ 	}
+ 	for (i = 0; i < num_irqs; i++)
 -- 
 2.35.1
+
+
 
