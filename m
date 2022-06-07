@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A78AFCCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 976DBCCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387491AbiFHA02 (ORCPT
+        id S1387430AbiFHA0P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:26:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38774 "EHLO
+        Tue, 7 Jun 2022 20:26:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384774AbiFGWQN (ORCPT
+        with ESMTP id S1382691AbiFGVvo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:16:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71B0261443;
-        Tue,  7 Jun 2022 12:20:04 -0700 (PDT)
+        Tue, 7 Jun 2022 17:51:44 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C808F1912E4;
+        Tue,  7 Jun 2022 12:09:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EFDC2B82182;
-        Tue,  7 Jun 2022 19:19:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CC12C385A2;
-        Tue,  7 Jun 2022 19:19:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AD0CECE247B;
+        Tue,  7 Jun 2022 19:09:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81F59C385A2;
+        Tue,  7 Jun 2022 19:09:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629565;
-        bh=Wze3HKbHNuksjw/5hi2S1t1HcnnFKexwrr/Pq0LX75k=;
+        s=korg; t=1654628950;
+        bh=CBdFuoxeJZf+Mm7bY+1RL0qKFMs9Tl3D/WttRZfSVUY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eTWupkKmUcscS01ObrGf85grTtJdnL8hJCBTjlqaclsmtO++p6RF+hKMIM7BkqVMg
-         DLIwRgIOjolQpydjqmqpXDl1DkvUczEiOYNoR8k5qtWRFvs4lpYTHMOjujzAiEdmg4
-         s+DMH7ALSJDTt6o2X5o0V7ITKgYow7m7vytKX2No=
+        b=ra7MJYdQZWoEF/CE2+LyKjFZlMxOnKP0uhLs4ndUScVqvSO1oJNKuFu9Oerz6Zepa
+         WeByReq5mpgWZ2DUWVU89p2Ye1a8qneuemBKFMLfJKFRqbeyKrC4WEluN22PU2f3hj
+         Y3d5py90GGl8nACc2h9j8j3W7Na1rFgmu0HSSO6A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org
-Subject: [PATCH 5.18 737/879] ext4: fix use-after-free in ext4_rename_dir_prepare
-Date:   Tue,  7 Jun 2022 19:04:15 +0200
-Message-Id: <20220607165024.248776526@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 516/879] rxrpc: Fix locking issue
+Date:   Tue,  7 Jun 2022 19:00:34 +0200
+Message-Id: <20220607165017.853491574@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,125 +52,278 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: David Howells <dhowells@redhat.com>
 
-commit 0be698ecbe4471fcad80e81ec6a05001421041b3 upstream.
+[ Upstream commit ad25f5cb39872ca14bcbe00816ae65c22fe04b89 ]
 
-We got issue as follows:
-EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
-ext4_get_first_dir_block: bh->b_data=0xffff88810bee6000 len=34478
-ext4_get_first_dir_block: *parent_de=0xffff88810beee6ae bh->b_data=0xffff88810bee6000
-ext4_rename_dir_prepare: [1] parent_de=0xffff88810beee6ae
-==================================================================
-BUG: KASAN: use-after-free in ext4_rename_dir_prepare+0x152/0x220
-Read of size 4 at addr ffff88810beee6ae by task rep/1895
+There's a locking issue with the per-netns list of calls in rxrpc.  The
+pieces of code that add and remove a call from the list use write_lock()
+and the calls procfile uses read_lock() to access it.  However, the timer
+callback function may trigger a removal by trying to queue a call for
+processing and finding that it's already queued - at which point it has a
+spare refcount that it has to do something with.  Unfortunately, if it puts
+the call and this reduces the refcount to 0, the call will be removed from
+the list.  Unfortunately, since the _bh variants of the locking functions
+aren't used, this can deadlock.
 
-CPU: 13 PID: 1895 Comm: rep Not tainted 5.10.0+ #241
-Call Trace:
- dump_stack+0xbe/0xf9
- print_address_description.constprop.0+0x1e/0x220
- kasan_report.cold+0x37/0x7f
- ext4_rename_dir_prepare+0x152/0x220
- ext4_rename+0xf44/0x1ad0
- ext4_rename2+0x11c/0x170
- vfs_rename+0xa84/0x1440
- do_renameat2+0x683/0x8f0
- __x64_sys_renameat+0x53/0x60
- do_syscall_64+0x33/0x40
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x7f45a6fc41c9
-RSP: 002b:00007ffc5a470218 EFLAGS: 00000246 ORIG_RAX: 0000000000000108
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f45a6fc41c9
-RDX: 0000000000000005 RSI: 0000000020000180 RDI: 0000000000000005
-RBP: 00007ffc5a470240 R08: 00007ffc5a470160 R09: 0000000020000080
-R10: 00000000200001c0 R11: 0000000000000246 R12: 0000000000400bb0
-R13: 00007ffc5a470320 R14: 0000000000000000 R15: 0000000000000000
+================================
+WARNING: inconsistent lock state
+5.18.0-rc3-build4+ #10 Not tainted
+--------------------------------
+inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+ksoftirqd/2/25 [HC0[0]:SC1[1]:HE1:SE0] takes:
+ffff888107ac4038 (&rxnet->call_lock){+.?.}-{2:2}, at: rxrpc_put_call+0x103/0x14b
+{SOFTIRQ-ON-W} state was registered at:
+...
+ Possible unsafe locking scenario:
 
-The buggy address belongs to the page:
-page:00000000440015ce refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x10beee
-flags: 0x200000000000000()
-raw: 0200000000000000 ffffea00043ff4c8 ffffea0004325608 0000000000000000
-raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
+       CPU0
+       ----
+  lock(&rxnet->call_lock);
+  <Interrupt>
+    lock(&rxnet->call_lock);
 
-Memory state around the buggy address:
- ffff88810beee580: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff88810beee600: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
->ffff88810beee680: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                                  ^
- ffff88810beee700: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff88810beee780: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
-Disabling lock debugging due to kernel taint
-ext4_rename_dir_prepare: [2] parent_de->inode=3537895424
-ext4_rename_dir_prepare: [3] dir=0xffff888124170140
-ext4_rename_dir_prepare: [4] ino=2
-ext4_rename_dir_prepare: ent->dir->i_ino=2 parent=-757071872
+ *** DEADLOCK ***
 
-Reason is first directory entry which 'rec_len' is 34478, then will get illegal
-parent entry. Now, we do not check directory entry after read directory block
-in 'ext4_get_first_dir_block'.
-To solve this issue, check directory entry in 'ext4_get_first_dir_block'.
+1 lock held by ksoftirqd/2/25:
+ #0: ffff8881008ffdb0 ((&call->timer)){+.-.}-{0:0}, at: call_timer_fn+0x5/0x23d
 
-[ Trigger an ext4_error() instead of just warning if the directory is
-  missing a '.' or '..' entry.   Also make sure we return an error code
-  if the file system is corrupted.  -TYT ]
+Changes
+=======
+ver #2)
+ - Changed to using list_next_rcu() rather than rcu_dereference() directly.
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220414025223.4113128-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/namei.c |   30 +++++++++++++++++++++++++++---
- 1 file changed, 27 insertions(+), 3 deletions(-)
+ fs/seq_file.c            | 32 ++++++++++++++++++++++++++++++++
+ include/linux/list.h     | 10 ++++++++++
+ include/linux/seq_file.h |  4 ++++
+ net/rxrpc/ar-internal.h  |  2 +-
+ net/rxrpc/call_accept.c  |  6 +++---
+ net/rxrpc/call_object.c  | 18 +++++++++---------
+ net/rxrpc/net_ns.c       |  2 +-
+ net/rxrpc/proc.c         | 10 ++--------
+ 8 files changed, 62 insertions(+), 22 deletions(-)
 
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -3455,6 +3455,9 @@ static struct buffer_head *ext4_get_firs
- 	struct buffer_head *bh;
+diff --git a/fs/seq_file.c b/fs/seq_file.c
+index 7ab8a58c29b6..9456a2032224 100644
+--- a/fs/seq_file.c
++++ b/fs/seq_file.c
+@@ -931,6 +931,38 @@ struct list_head *seq_list_next(void *v, struct list_head *head, loff_t *ppos)
+ }
+ EXPORT_SYMBOL(seq_list_next);
  
- 	if (!ext4_has_inline_data(inode)) {
-+		struct ext4_dir_entry_2 *de;
-+		unsigned int offset;
++struct list_head *seq_list_start_rcu(struct list_head *head, loff_t pos)
++{
++	struct list_head *lh;
 +
- 		/* The first directory block must not be a hole, so
- 		 * treat it as DIRENT_HTREE
- 		 */
-@@ -3463,9 +3466,30 @@ static struct buffer_head *ext4_get_firs
- 			*retval = PTR_ERR(bh);
- 			return NULL;
++	list_for_each_rcu(lh, head)
++		if (pos-- == 0)
++			return lh;
++
++	return NULL;
++}
++EXPORT_SYMBOL(seq_list_start_rcu);
++
++struct list_head *seq_list_start_head_rcu(struct list_head *head, loff_t pos)
++{
++	if (!pos)
++		return head;
++
++	return seq_list_start_rcu(head, pos - 1);
++}
++EXPORT_SYMBOL(seq_list_start_head_rcu);
++
++struct list_head *seq_list_next_rcu(void *v, struct list_head *head,
++				    loff_t *ppos)
++{
++	struct list_head *lh;
++
++	lh = list_next_rcu((struct list_head *)v);
++	++*ppos;
++	return lh == head ? NULL : lh;
++}
++EXPORT_SYMBOL(seq_list_next_rcu);
++
+ /**
+  * seq_hlist_start - start an iteration of a hlist
+  * @head: the head of the hlist
+diff --git a/include/linux/list.h b/include/linux/list.h
+index dd6c2041d09c..0f7d8ec5b4ed 100644
+--- a/include/linux/list.h
++++ b/include/linux/list.h
+@@ -579,6 +579,16 @@ static inline void list_splice_tail_init(struct list_head *list,
+ #define list_for_each(pos, head) \
+ 	for (pos = (head)->next; !list_is_head(pos, (head)); pos = pos->next)
+ 
++/**
++ * list_for_each_rcu - Iterate over a list in an RCU-safe fashion
++ * @pos:	the &struct list_head to use as a loop cursor.
++ * @head:	the head for your list.
++ */
++#define list_for_each_rcu(pos, head)		  \
++	for (pos = rcu_dereference((head)->next); \
++	     !list_is_head(pos, (head)); \
++	     pos = rcu_dereference(pos->next))
++
+ /**
+  * list_for_each_continue - continue iteration over a list
+  * @pos:	the &struct list_head to use as a loop cursor.
+diff --git a/include/linux/seq_file.h b/include/linux/seq_file.h
+index 60820ab511d2..bd023dd38ae6 100644
+--- a/include/linux/seq_file.h
++++ b/include/linux/seq_file.h
+@@ -277,6 +277,10 @@ extern struct list_head *seq_list_start_head(struct list_head *head,
+ extern struct list_head *seq_list_next(void *v, struct list_head *head,
+ 		loff_t *ppos);
+ 
++extern struct list_head *seq_list_start_rcu(struct list_head *head, loff_t pos);
++extern struct list_head *seq_list_start_head_rcu(struct list_head *head, loff_t pos);
++extern struct list_head *seq_list_next_rcu(void *v, struct list_head *head, loff_t *ppos);
++
+ /*
+  * Helpers for iteration over hlist_head-s in seq_files
+  */
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 969e532f77a9..422558d50571 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -68,7 +68,7 @@ struct rxrpc_net {
+ 	struct proc_dir_entry	*proc_net;	/* Subdir in /proc/net */
+ 	u32			epoch;		/* Local epoch for detecting local-end reset */
+ 	struct list_head	calls;		/* List of calls active in this namespace */
+-	rwlock_t		call_lock;	/* Lock for ->calls */
++	spinlock_t		call_lock;	/* Lock for ->calls */
+ 	atomic_t		nr_calls;	/* Count of allocated calls */
+ 
+ 	atomic_t		nr_conns;
+diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
+index 1ae90fb97936..8b24ffbc72ef 100644
+--- a/net/rxrpc/call_accept.c
++++ b/net/rxrpc/call_accept.c
+@@ -140,9 +140,9 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
+ 	write_unlock(&rx->call_lock);
+ 
+ 	rxnet = call->rxnet;
+-	write_lock(&rxnet->call_lock);
+-	list_add_tail(&call->link, &rxnet->calls);
+-	write_unlock(&rxnet->call_lock);
++	spin_lock_bh(&rxnet->call_lock);
++	list_add_tail_rcu(&call->link, &rxnet->calls);
++	spin_unlock_bh(&rxnet->call_lock);
+ 
+ 	b->call_backlog[call_head] = call;
+ 	smp_store_release(&b->call_backlog_head, (call_head + 1) & (size - 1));
+diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
+index 043508fd8d8a..25c9a2cbf048 100644
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -337,9 +337,9 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
+ 	write_unlock(&rx->call_lock);
+ 
+ 	rxnet = call->rxnet;
+-	write_lock(&rxnet->call_lock);
+-	list_add_tail(&call->link, &rxnet->calls);
+-	write_unlock(&rxnet->call_lock);
++	spin_lock_bh(&rxnet->call_lock);
++	list_add_tail_rcu(&call->link, &rxnet->calls);
++	spin_unlock_bh(&rxnet->call_lock);
+ 
+ 	/* From this point on, the call is protected by its own lock. */
+ 	release_sock(&rx->sk);
+@@ -631,9 +631,9 @@ void rxrpc_put_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
+ 		ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
+ 
+ 		if (!list_empty(&call->link)) {
+-			write_lock(&rxnet->call_lock);
++			spin_lock_bh(&rxnet->call_lock);
+ 			list_del_init(&call->link);
+-			write_unlock(&rxnet->call_lock);
++			spin_unlock_bh(&rxnet->call_lock);
  		}
--		*parent_de = ext4_next_entry(
--					(struct ext4_dir_entry_2 *)bh->b_data,
--					inode->i_sb->s_blocksize);
-+
-+		de = (struct ext4_dir_entry_2 *) bh->b_data;
-+		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
-+					 bh->b_size, 0) ||
-+		    le32_to_cpu(de->inode) != inode->i_ino ||
-+		    strcmp(".", de->name)) {
-+			EXT4_ERROR_INODE(inode, "directory missing '.'");
-+			brelse(bh);
-+			*retval = -EFSCORRUPTED;
-+			return NULL;
-+		}
-+		offset = ext4_rec_len_from_disk(de->rec_len,
-+						inode->i_sb->s_blocksize);
-+		de = ext4_next_entry(de, inode->i_sb->s_blocksize);
-+		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
-+					 bh->b_size, offset) ||
-+		    le32_to_cpu(de->inode) == 0 || strcmp("..", de->name)) {
-+			EXT4_ERROR_INODE(inode, "directory missing '..'");
-+			brelse(bh);
-+			*retval = -EFSCORRUPTED;
-+			return NULL;
-+		}
-+		*parent_de = de;
-+
- 		return bh;
+ 
+ 		rxrpc_cleanup_call(call);
+@@ -705,7 +705,7 @@ void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
+ 	_enter("");
+ 
+ 	if (!list_empty(&rxnet->calls)) {
+-		write_lock(&rxnet->call_lock);
++		spin_lock_bh(&rxnet->call_lock);
+ 
+ 		while (!list_empty(&rxnet->calls)) {
+ 			call = list_entry(rxnet->calls.next,
+@@ -720,12 +720,12 @@ void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
+ 			       rxrpc_call_states[call->state],
+ 			       call->flags, call->events);
+ 
+-			write_unlock(&rxnet->call_lock);
++			spin_unlock_bh(&rxnet->call_lock);
+ 			cond_resched();
+-			write_lock(&rxnet->call_lock);
++			spin_lock_bh(&rxnet->call_lock);
+ 		}
+ 
+-		write_unlock(&rxnet->call_lock);
++		spin_unlock_bh(&rxnet->call_lock);
  	}
  
+ 	atomic_dec(&rxnet->nr_calls);
+diff --git a/net/rxrpc/net_ns.c b/net/rxrpc/net_ns.c
+index cc7e30733feb..e4d6d432515b 100644
+--- a/net/rxrpc/net_ns.c
++++ b/net/rxrpc/net_ns.c
+@@ -50,7 +50,7 @@ static __net_init int rxrpc_init_net(struct net *net)
+ 	rxnet->epoch |= RXRPC_RANDOM_EPOCH;
+ 
+ 	INIT_LIST_HEAD(&rxnet->calls);
+-	rwlock_init(&rxnet->call_lock);
++	spin_lock_init(&rxnet->call_lock);
+ 	atomic_set(&rxnet->nr_calls, 1);
+ 
+ 	atomic_set(&rxnet->nr_conns, 1);
+diff --git a/net/rxrpc/proc.c b/net/rxrpc/proc.c
+index e2f990754f88..5a67955cc00f 100644
+--- a/net/rxrpc/proc.c
++++ b/net/rxrpc/proc.c
+@@ -26,29 +26,23 @@ static const char *const rxrpc_conn_states[RXRPC_CONN__NR_STATES] = {
+  */
+ static void *rxrpc_call_seq_start(struct seq_file *seq, loff_t *_pos)
+ 	__acquires(rcu)
+-	__acquires(rxnet->call_lock)
+ {
+ 	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
+ 
+ 	rcu_read_lock();
+-	read_lock(&rxnet->call_lock);
+-	return seq_list_start_head(&rxnet->calls, *_pos);
++	return seq_list_start_head_rcu(&rxnet->calls, *_pos);
+ }
+ 
+ static void *rxrpc_call_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+ {
+ 	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
+ 
+-	return seq_list_next(v, &rxnet->calls, pos);
++	return seq_list_next_rcu(v, &rxnet->calls, pos);
+ }
+ 
+ static void rxrpc_call_seq_stop(struct seq_file *seq, void *v)
+-	__releases(rxnet->call_lock)
+ 	__releases(rcu)
+ {
+-	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
+-
+-	read_unlock(&rxnet->call_lock);
+ 	rcu_read_unlock();
+ }
+ 
+-- 
+2.35.1
+
 
 
