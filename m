@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E44C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:44:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31984C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:44:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359770AbiFGUo0 (ORCPT
+        id S1376418AbiFGUod (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
+        Tue, 7 Jun 2022 16:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357228AbiFGTl1 (ORCPT
+        with ESMTP id S1357197AbiFGTl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:41:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41CC15906B;
-        Tue,  7 Jun 2022 11:14:59 -0700 (PDT)
+        Tue, 7 Jun 2022 15:41:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044EF1B1CD6;
+        Tue,  7 Jun 2022 11:14:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45E416062B;
-        Tue,  7 Jun 2022 18:14:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 551E2C385A2;
-        Tue,  7 Jun 2022 18:14:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAD2FB82349;
+        Tue,  7 Jun 2022 18:14:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6222BC385A5;
+        Tue,  7 Jun 2022 18:14:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625697;
-        bh=/1LaJeVU6Fz+nhVwdbzpAGAmcRb6UJPPoWBB3XrQNrM=;
+        s=korg; t=1654625686;
+        bh=4gfnBQ3XOz9VePixJCdNt32X4yT6vHAJVKBKYUU2f0w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c9Fvt+P4v0OYguRPdAo1qnlFlEnSrSLzKBIr61mOQCNDnrD6FnEQfjN4s5y3lGCjn
-         rNVjsoZ+yLf6PbY+O6lpG0npDGmvXnjp7H4mAt/14/aoeyGwb0dnz3rSgl+sTkAJVo
-         ja671EHnP52cR3Mq0Ac0sdGyzMwHUouy9VszB9mA=
+        b=MwAA3Y7FMnLGpW2JuNcwZe31SLlN93ULbgkCOU5dARvuXPk6+xJLCj+GHGT84qrr7
+         Hn2bY2sUk88wGXvBcyby56qWD8B+gqnx+DhhmoNpoiorff3gHdDMC0kp+dKKguF8Fu
+         rrcOArhAB7H7HrHkzXJeLPQyKaxDd+OMMJ72Q4EQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, jianghaoran <jianghaoran@kylinos.cn>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Jessica Zhang <quic_jesszhan@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 110/772] ipv6: Dont send rs packets to the interface of ARPHRD_TUNNEL
-Date:   Tue,  7 Jun 2022 18:55:02 +0200
-Message-Id: <20220607164952.290417358@linuxfoundation.org>
+Subject: [PATCH 5.17 106/772] drm/msm/dpu: Clean up CRC debug logs
+Date:   Tue,  7 Jun 2022 18:54:58 +0200
+Message-Id: <20220607164952.168575211@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,48 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: jianghaoran <jianghaoran@kylinos.cn>
+From: Jessica Zhang <quic_jesszhan@quicinc.com>
 
-[ Upstream commit b52e1cce31ca721e937d517411179f9196ee6135 ]
+[ Upstream commit 3ce8bdca394fc606b55e7c5ed779d171aaae5d09 ]
 
-ARPHRD_TUNNEL interface can't process rs packets
-and will generate TX errors
+Currently, dpu_hw_lm_collect_misr returns EINVAL if CRC is disabled.
+This causes a lot of spam in the DRM debug logs as it's called for every
+vblank.
 
-ex:
-ip tunnel add ethn mode ipip local 192.168.1.1 remote 192.168.1.2
-ifconfig ethn x.x.x.x
+Instead of returning EINVAL when CRC is disabled in
+dpu_hw_lm_collect_misr, let's return ENODATA and add an extra ENODATA check
+before the debug log in dpu_crtc_get_crc.
 
-ethn: flags=209<UP,POINTOPOINT,RUNNING,NOARP>  mtu 1480
-	inet x.x.x.x  netmask 255.255.255.255  destination x.x.x.x
-	inet6 fe80::5efe:ac1e:3cdb  prefixlen 64  scopeid 0x20<link>
-	tunnel   txqueuelen 1000  (IPIP Tunnel)
-	RX packets 0  bytes 0 (0.0 B)
-	RX errors 0  dropped 0  overruns 0  frame 0
-	TX packets 0  bytes 0 (0.0 B)
-	TX errors 3  dropped 0 overruns 0  carrier 0  collisions 0
+Changes since V1:
+- Added reported-by and suggested-by tags
 
-Signed-off-by: jianghaoran <jianghaoran@kylinos.cn>
-Link: https://lore.kernel.org/r/20220429053802.246681-1-jianghaoran@kylinos.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Suggested-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
+Tested-by: Jessica Zhang <quic_jesszhan@quicinc.com> # RB5  (qrb5165)
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/484274/
+Link: https://lore.kernel.org/r/20220430005210.339-1-quic_jesszhan@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/addrconf.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c  | 3 ++-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_lm.c | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 0a9e03465001..5ec289e0f2ac 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4221,7 +4221,8 @@ static void addrconf_dad_completed(struct inet6_ifaddr *ifp, bool bump_id,
- 	send_rs = send_mld &&
- 		  ipv6_accept_ra(ifp->idev) &&
- 		  ifp->idev->cnf.rtr_solicits != 0 &&
--		  (dev->flags&IFF_LOOPBACK) == 0;
-+		  (dev->flags & IFF_LOOPBACK) == 0 &&
-+		  (dev->type != ARPHRD_TUNNEL);
- 	read_unlock_bh(&ifp->idev->lock);
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+index e7c9fe1a250f..0a857f222982 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+@@ -204,7 +204,8 @@ static int dpu_crtc_get_crc(struct drm_crtc *crtc)
+ 		rc = m->hw_lm->ops.collect_misr(m->hw_lm, &crcs[i]);
  
- 	/* While dad is in progress mld report's source address is in6_addrany.
+ 		if (rc) {
+-			DRM_DEBUG_DRIVER("MISR read failed\n");
++			if (rc != -ENODATA)
++				DRM_DEBUG_DRIVER("MISR read failed\n");
+ 			return rc;
+ 		}
+ 	}
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_lm.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_lm.c
+index 86363c0ec834..462f5082099e 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_lm.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_lm.c
+@@ -138,7 +138,7 @@ static int dpu_hw_lm_collect_misr(struct dpu_hw_mixer *ctx, u32 *misr_value)
+ 	ctrl = DPU_REG_READ(c, LM_MISR_CTRL);
+ 
+ 	if (!(ctrl & LM_MISR_CTRL_ENABLE))
+-		return -EINVAL;
++		return -ENODATA;
+ 
+ 	if (!(ctrl & LM_MISR_CTRL_STATUS))
+ 		return -EINVAL;
 -- 
 2.35.1
 
