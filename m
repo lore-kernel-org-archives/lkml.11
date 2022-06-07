@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6AA7CCA491
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0903CCA492
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348874AbiFGRuU (ORCPT
+        id S1348636AbiFGRt4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
+        Tue, 7 Jun 2022 13:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346696AbiFGR3d (ORCPT
+        with ESMTP id S1346851AbiFGR3x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:29:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D27118D3B;
-        Tue,  7 Jun 2022 10:24:58 -0700 (PDT)
+        Tue, 7 Jun 2022 13:29:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C427911991A;
+        Tue,  7 Jun 2022 10:25:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48BF560906;
-        Tue,  7 Jun 2022 17:24:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52F04C385A5;
-        Tue,  7 Jun 2022 17:24:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79CF9B8220B;
+        Tue,  7 Jun 2022 17:25:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1EE5C385A5;
+        Tue,  7 Jun 2022 17:25:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622697;
-        bh=tiyZ3eOGweBf18A/dadGgQ0sLxVwdPM+W/Agj24C7+w=;
+        s=korg; t=1654622706;
+        bh=nlbDq5Qtba23p9Q/PwoqIirCVA439fgQBmugmYl66yw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J51Q6Zac4j4PPEY+PILYzAKzKf185xO4zsE80s8sMkQ4ANuqA5hck+1OZ/tk3Pv4o
-         fMuG7Pmi1AZzBAdA/64fSo/qWV/1WkW1ymvIZMOgq4YOjnBMfPvrgGEKHmiiBhA4Pv
-         OM+1SQn+otGAMMjaHXlh0LEMlU0WYDD2pt2QxNyY=
+        b=iVixPQchs/9ACJpZlfS69pswCDhUbevBY6tD1vWJP7SDbnsHBZzRvLtEY4/hS+X/J
+         JeFvKZBdF9ItHSlOX4uPzsN8T+4ps6hWzMFCgobHYXQlOapje1b9g2Ghbmsy+gZEYv
+         s1auFR6DceUmZHSgpYXYPrKSeIDTkNE80lz3Min0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 115/452] powerpc/xics: fix refcount leak in icp_opal_init()
-Date:   Tue,  7 Jun 2022 18:59:32 +0200
-Message-Id: <20220607164911.982184998@linuxfoundation.org>
+Subject: [PATCH 5.10 153/452] spi: img-spfi: Fix pm_runtime_get_sync() error checking
+Date:   Tue,  7 Jun 2022 19:00:10 +0200
+Message-Id: <20220607164913.118230890@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,34 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit 5dd9e27ea4a39f7edd4bf81e9e70208e7ac0b7c9 ]
+[ Upstream commit cc470d55343056d6b2a5c32e10e0aad06f324078 ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, use of_node_put() on it when done.
+If the device is already in a runtime PM enabled state
+pm_runtime_get_sync() will return 1, so a test for negative
+value should be used to check for errors.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220402013419.2410298-1-lv.ruyi@zte.com.cn
+Fixes: deba25800a12b ("spi: Add driver for IMG SPFI controller")
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Link: https://lore.kernel.org/r/20220422062641.10486-1-zhengyongjun3@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/xics/icp-opal.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/spi/spi-img-spfi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/sysdev/xics/icp-opal.c b/arch/powerpc/sysdev/xics/icp-opal.c
-index 68fd2540b093..7fa520efcefa 100644
---- a/arch/powerpc/sysdev/xics/icp-opal.c
-+++ b/arch/powerpc/sysdev/xics/icp-opal.c
-@@ -195,6 +195,7 @@ int icp_opal_init(void)
+diff --git a/drivers/spi/spi-img-spfi.c b/drivers/spi/spi-img-spfi.c
+index 5f05d519fbbd..71376b6df89d 100644
+--- a/drivers/spi/spi-img-spfi.c
++++ b/drivers/spi/spi-img-spfi.c
+@@ -731,7 +731,7 @@ static int img_spfi_resume(struct device *dev)
+ 	int ret;
  
- 	printk("XICS: Using OPAL ICP fallbacks\n");
- 
-+	of_node_put(np);
- 	return 0;
- }
- 
+ 	ret = pm_runtime_get_sync(dev);
+-	if (ret) {
++	if (ret < 0) {
+ 		pm_runtime_put_noidle(dev);
+ 		return ret;
+ 	}
 -- 
 2.35.1
 
