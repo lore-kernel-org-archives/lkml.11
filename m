@@ -2,130 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E130C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A618BCCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391234AbiFHBAK (ORCPT
+        id S1443866AbiFHBA4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:00:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34618 "EHLO
+        Tue, 7 Jun 2022 21:00:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444566AbiFGXCZ (ORCPT
+        with ESMTP id S1446739AbiFGXF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:02:25 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4684E326E7
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:16:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654633004; x=1686169004;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Oa7be7baBm0n3iWafiYaE07e1MExtPBJOGW0P5KwdXY=;
-  b=NZRY0VkMkU4hjAluTfXZueOenewEyMYuH3Otia7qX/tgOLA+GVp1jKFT
-   W+ffZ3gOjYiuJbJw5g9PdCTod2/bArtIUSCgSPIIvPpayurkuI/tXmr/d
-   ttXC4U1cqlUWhcN4RtQ+TznPtpeBUKzI2B43jDDK8/2NOz0J7CsSWQH0t
-   DXEtGgk5oNGa/Y4PFhMAePFxhf5SKsFDrchST1y0bvHcYHKHBnwtf3lMI
-   Gd8Znhh5yd5frTvdqArEi9ioHOxEYlru/hqx7bsk3SSvqKcm+yeJGFV8n
-   ktWhEMZHefUYqUeXkhpAkeezdpaJ7L9Lfr01691ZI2GYzHVd+wyHuzoyQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="338333000"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="338333000"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 12:25:44 -0700
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="648191587"
-Received: from schen9-mobl.amr.corp.intel.com ([10.251.8.166])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 12:25:43 -0700
-Message-ID: <d99836a86fea8a975ba207d1c874ee062836004d.camel@linux.intel.com>
-Subject: Re: RFC: Memory Tiering Kernel Interfaces (v3)
-From:   Tim Chen <tim.c.chen@linux.intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
-        Ying Huang <ying.huang@intel.com>
-Cc:     Wei Xu <weixugc@google.com>,
-        Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>, Linux MM <linux-mm@kvack.org>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-Date:   Tue, 07 Jun 2022 12:25:42 -0700
-In-Reply-To: <20220530135043.00001e88@Huawei.com>
-References: <CAAPL-u-dFp7PwPH6DfbYdnY8xaGsHz3tRQ0CPGVkiqURvdN8=A@mail.gmail.com>
-         <c453491b-6dc1-a008-d6f4-3c806eebd2ef@linux.ibm.com>
-         <CAAPL-u_NwJuxWe7Wfn3A1sut+QwEmoZh2QUBQKNPq4bU=NjybA@mail.gmail.com>
-         <1281d918c07b05ac82aee290018ad08d212e0aaa.camel@intel.com>
-         <20220530135043.00001e88@Huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+        Tue, 7 Jun 2022 19:05:56 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C94E368923
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:29:59 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id u26so29334689lfd.8
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 13:29:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UOYpSc7h6G6Mcnhor2e/NffZqKr7OZqCk2rdZZjgr2A=;
+        b=TlsXRljIGk9azzfB7KgTa0t3mP4ywgrVDoG/+pFDEZgb1hEMZ7e8NxJHUseFzaLuCS
+         63M24bNSRyHaRS+qPGJZYLgyxE6+RBHwFnJ2OzLr9DsC99KLD9hmsotHUWAx7d1wQbQy
+         BP5ugycFWWRS4QRHCgpuniS00B33qGZNz4/WNZ+NZfecqA0N/PPXhSZP+3fdPgPAT6Ra
+         CPeT7cGR1IyAsqxq7fAvIooQTz3W5aHKK2aheT3/8Y9E+9aAYMipsehx168LQjj/OtpD
+         SIv9Xp1fWqYJOWbxspFT82ZsyjCUX3ni3ARi3jrKiaGfzTl9+ocBWEetSJRiUBW7uk6J
+         ZIng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UOYpSc7h6G6Mcnhor2e/NffZqKr7OZqCk2rdZZjgr2A=;
+        b=KZawdAEctTPbChL3h9MZj5On0fC/qxatQaaiJOYTOUOPGG1/jXjnz77PMTvArm/7ED
+         HaP2Eu56BBZvBFhrPGCegKvcoP2J8vGkJUhufuVoEFDysDNW1q6DZHueWqq54UtmZO40
+         OEEm9FV/mjhfoNvnS18SQYg6jMquJ6JGzg0JHLOXsK65KLI27t9v6AjJdVHrtjAWZ0Ji
+         w/kdMdcMUsOoTivy97xKIq91IuTcjPAv01KQjFCHaX5AsN/i2fPZ4JCN8mzgOWLbQv8c
+         ESlVkdZWmO2+BwXGb5gFf2cGXo0706e5vD7XKnn+B7EO5PyIkC254/Q7Jsduj0vjUXrl
+         ymgg==
+X-Gm-Message-State: AOAM5317bpvfrGCIgUKqBfV6kYq+aktwaeMq6POtGMH0lNF2dwRC4a5p
+        kNGamLvxRy5E2NNLqc2RLSMHXr1D8eW4PyGUuAq/Y0Zyd2A=
+X-Google-Smtp-Source: ABdhPJz8e1qkF3YsPNqQ+CSoYj7aqtQOE0vae7btjfiKP9le+uXKwKIHwZDpfRB4B0gvYe988Q34Dn4thhR7sEsYWio=
+X-Received: by 2002:ac2:5c44:0:b0:479:11e1:36f7 with SMTP id
+ s4-20020ac25c44000000b0047911e136f7mr17801753lfp.432.1654633782547; Tue, 07
+ Jun 2022 13:29:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20220606212819.9548-1-jstitt007@gmail.com> <Yp9uRz40J24vWLSb@dev-arch.thelio-3990X>
+In-Reply-To: <Yp9uRz40J24vWLSb@dev-arch.thelio-3990X>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 7 Jun 2022 13:29:30 -0700
+Message-ID: <CAKwvOdmFCge4cpcyqL1gtqg2xdAgmeuaJZaSMvW=m+cTr8XaaQ@mail.gmail.com>
+Subject: Re: [PATCH] netfilter: conntrack: fix this -Wformat clang warning:
+To:     Nathan Chancellor <nathan@kernel.org>,
+        Justin Stitt <jstitt007@gmail.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, llvm@lists.linux.dev,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-30 at 13:50 +0100, Jonathan Cameron wrote:
-> 
-> > When discussed offline, Tim Chen pointed out that with the proposed
-> > interface, it's unconvenient to know the position of a given memory tier
-> > in all memory tiers.  We must sort "rank" of all memory tiers to know
-> > that.  "possible" file can be used for that.  Although "possible" file
-> > can be generated with a shell script, it's more convenient to show it
-> > directly.
-> > 
-> > Another way to address the issue is to add memtierN/pos for each memory
-> > tier as suggested by Tim.  It's readonly and will show position of
-> > "memtierN" in all memory tiers.  It's even better to show the relative
-> > postion to the default memory tier (DRAM with CPU). That is, the
-> > position of DRAM memory tier is 0.
-> > 
-> > Unlike memory tier device ID or rank, the position is relative and
-> > dynamic.
-> 
-> Hi,
-> 
-> I'm unconvinced.  This is better done with a shell script than
-> by adding ABI we'll have to live with for ever..
-> 
-> I'm no good at shell scripting but this does the job 
-> grep "" tier*/rank | sort -n -k 2 -t : 
-> 
-> tier2/rank:50
-> tier0/rank:100
-> tier1/rank:200
-> tier3/rank:240
-> 
-> I'm sure someone more knowledgeable will do it in a simpler fashion still.
-> 
-> 
+On Tue, Jun 7, 2022 at 8:27 AM Nathan Chancellor <nathan@kernel.org> wrote:
+>
+> Hi Justin,
+>
+> The subject might be a little more descriptive if if were something
+> like:
+>
+> netfilter: conntrack: Fix clang -Wformat in print_tuple()
+>
+> rather than saying "this warning", as subjects should be standalone from
+> the rest of the message. Minor nit but some maintainers have high
+> standards for commit messages.
+>
+> On Mon, Jun 06, 2022 at 02:28:19PM -0700, Justin Stitt wrote:
+>
+> It would be helpful to note here that this warning appears when building
+> arm64 with clang using -Wformat; the architecture is critical for
+> reproducing this warning.
+>
+> >  | net/netfilter/nf_conntrack_standalone.c:63:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->src.u.tcp.port),
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:64:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->dst.u.tcp.port));
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:69:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->src.u.udp.port),
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:70:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->dst.u.udp.port));
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:75:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->src.u.dccp.port),
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:76:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->dst.u.dccp.port));
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:80:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->src.u.sctp.port),
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:81:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->dst.u.sctp.port));
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >
+> > Variadic functions (printf-like) undergo default argument promotion.
+> > Documentation/core-api/printk-formats.rst specifically recommends
+> > using the promoted-to-type's format flag.
+> >
+> > Also, as per C11 6.3.1.1:
+> > (https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1548.pdf)
+> > `If an int can represent all values of the original type ..., the
+> > value is converted to an int; otherwise, it is converted to an
+> > unsigned int. These are called the integer promotions.`
+>
+> I think that it is probably worth noting that ntohs() has type 'int' in
+> this case because arm64 does not define CONFIG_ARCH_USE_BUILTIN_BSWAP to
+> use the version of __swab16() with a cast to __u16; rather, it uses the
+> one with the conditional operator, which per 6.5.15.5 means the type of
+> the result of the conditional operator is determined through these
+> promotion rules as well.
+>
+> I suspect that the conditional versions of __swab{16,32,64}() in
+> include/uapi/linux/swab.h want a cast on the outside of the conditional
+> operator with the specified type but I am not sure what other
+> repurcussions that might have so it is probably safer to just fix these
+> warnings up one by one.
 
-You can argue that 
+Yes, there's a subtly where for ternary's the resulting type is the
+largest of all operands. When the LHS of the ? is larger than either
+results, the result is STILL the larger type.
+https://godbolt.org/z/EGjW8sqzf
 
-$ cat /sys/devices/system/cpu/cpu1/topology/core_siblings
-f
-$ cat /sys/devices/system/cpu/cpu1/topology/core_siblings_list
-0-3
+That said, regardless of that change, unnamed parameters of variadic
+functions will still undergo default argument promotion, so the __u16
+would still be promoted to int.  So we still want this patch, too.
 
-provide exactly the same information and we should get rid of
-core_siblings_list.  I think core_siblings_list exists to make
-it easier for a human, so he/she doesn't have to parse the mask,
-or write a script to find out the ids of CPUs who are siblings.
+Justin, can you send a separate patch adding the explicit cast to to
+__u16 for the ternary expression in __swab16 when
+__HAVE_BUILTIN_BSWAP16__ is not defined?
+include/uapi/linux/swab.h
+Please include Nathan's suggested by tag; cc me and I'll provide review.
 
-I think in the same spirit, having an interface to allow a
-human to quickly see the hierachical relationship of tiers 
-relative to each other is helpful. 
+>
+> > Thus it makes sense to change %hu (as well as %u) to %d.
+>
+> Regardless of that, changing from '%hu' to '%d' is recommended so that
+> part of the change is fine. I am not sure that changing '%u' to '%d'
+> does anything other than add to the diff, as there was no warnings from
+> those, but consistency is key.
 
-Tim
+These types in the case of icmp are uint8_t; they also are
+default-argument-promoted to int. All possible values of uint8_t are
+representable by int, and so %d and %u will make no difference. It is
+"no functional change" and simply being consistent, as you say.
 
+
+>
+> > Signed-off-by: Justin Stitt <jstitt007@gmail.com>
+>
+> Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+>
+> > ---
+> >  net/netfilter/nf_conntrack_standalone.c | 10 +++++-----
+> >  1 file changed, 5 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
+> > index 6ad7bbc90d38..afbec8a12c5e 100644
+> > --- a/net/netfilter/nf_conntrack_standalone.c
+> > +++ b/net/netfilter/nf_conntrack_standalone.c
+> > @@ -53,30 +53,30 @@ print_tuple(struct seq_file *s, const struct nf_conntrack_tuple *tuple,
+> >
+> >       switch (l4proto->l4proto) {
+> >       case IPPROTO_ICMP:
+> > -             seq_printf(s, "type=%u code=%u id=%u ",
+> > +             seq_printf(s, "type=%d code=%d id=%d ",
+> >                          tuple->dst.u.icmp.type,
+> >                          tuple->dst.u.icmp.code,
+> >                          ntohs(tuple->src.u.icmp.id));
+> >               break;
+> >       case IPPROTO_TCP:
+> > -             seq_printf(s, "sport=%hu dport=%hu ",
+> > +             seq_printf(s, "sport=%d dport=%d ",
+> >                          ntohs(tuple->src.u.tcp.port),
+> >                          ntohs(tuple->dst.u.tcp.port));
+> >               break;
+> >       case IPPROTO_UDPLITE:
+> >       case IPPROTO_UDP:
+> > -             seq_printf(s, "sport=%hu dport=%hu ",
+> > +             seq_printf(s, "sport=%d dport=%d ",
+> >                          ntohs(tuple->src.u.udp.port),
+> >                          ntohs(tuple->dst.u.udp.port));
+> >
+> >               break;
+> >       case IPPROTO_DCCP:
+> > -             seq_printf(s, "sport=%hu dport=%hu ",
+> > +             seq_printf(s, "sport=%d dport=%d ",
+> >                          ntohs(tuple->src.u.dccp.port),
+> >                          ntohs(tuple->dst.u.dccp.port));
+> >               break;
+> >       case IPPROTO_SCTP:
+> > -             seq_printf(s, "sport=%hu dport=%hu ",
+> > +             seq_printf(s, "sport=%d dport=%d ",
+> >                          ntohs(tuple->src.u.sctp.port),
+> >                          ntohs(tuple->dst.u.sctp.port));
+> >               break;
+> > --
+> > 2.30.2
+> >
+> >
+
+
+
+--
+Thanks,
+~Nick Desaulniers
