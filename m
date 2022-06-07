@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF10ECCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7148CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380817AbiFGVm2 (ORCPT
+        id S1380936AbiFGVmd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:42:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
+        Tue, 7 Jun 2022 17:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378620AbiFGUwT (ORCPT
+        with ESMTP id S1378690AbiFGUwX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:19 -0400
+        Tue, 7 Jun 2022 16:52:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDCE11AFD0;
-        Tue,  7 Jun 2022 11:42:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90BF6146;
+        Tue,  7 Jun 2022 11:42:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BAA9B82018;
-        Tue,  7 Jun 2022 18:42:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2C02C385A2;
-        Tue,  7 Jun 2022 18:42:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8245AB82182;
+        Tue,  7 Jun 2022 18:42:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECDA5C385A2;
+        Tue,  7 Jun 2022 18:42:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627356;
-        bh=s88LYf1pFdDDcHZeXM4fiQIU0i0g0org+rLeRSkBlFg=;
+        s=korg; t=1654627367;
+        bh=5W7m88KiTZvHvoWjyOt0GpGQuUxzdpHJkRGENQfNYDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xCpHSEjhM1kTbsGLhCb190zxdXYhP7zBk3JMTccZ+sGcwIluFT5csXr3JuA6hBb8P
-         dW5V/f930dgTmeqx9rlfK8PH7WC63ur2bD7uO454pNbcTXi4ero76vPCM1QndHVU2w
-         jyiaslqEKc2d6Xs6OtOOfbWQzkIjsyvqhdXBjPAQ=
+        b=bNm5uATOucfBJ9wWIqyvwlEihts0v15j13QYm/aF4eQb0kMFqoQstA+NvXFRLidpT
+         qAGusUmZttG4xyJBrYSTBQUOH9/dCG5Cr7dMDQthtAw/62O5XON4KNfRtaCUKJapK6
+         GLOLneMm5QYmV7XJOlwPrO5lfoy/i6KnMKVjYcYc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kant Fan <kant@allwinnertech.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.17 710/772] thermal: devfreq_cooling: use local ops instead of global ops
-Date:   Tue,  7 Jun 2022 19:05:02 +0200
-Message-Id: <20220607165009.968371419@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.17 714/772] um: virtio_uml: Fix broken device handling in time-travel
+Date:   Tue,  7 Jun 2022 19:05:06 +0200
+Message-Id: <20220607165010.083869783@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,109 +49,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kant Fan <kant@allwinnertech.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit b947769b8f778db130aad834257fcaca25df2edc upstream.
+commit af9fb41ed315ce95f659f0b10b4d59a71975381d upstream.
 
-Fix access illegal address problem in following condition:
+If a device implementation crashes, virtio_uml will mark it
+as dead by calling virtio_break_device() and scheduling the
+work that will remove it.
 
-There are multiple devfreq cooling devices in system, some of them has
-EM model but others do not. Energy model ops such as state2power will
-append to global devfreq_cooling_ops when the cooling device with
-EM model is registered. It makes the cooling device without EM model
-also use devfreq_cooling_ops after appending when registered later by
-of_devfreq_cooling_register_power() or of_devfreq_cooling_register().
+This still seems like the right thing to do, but it's done
+directly while reading the message, and if time-travel is
+used, this is in the time-travel handler, outside of the
+normal Linux machinery. Therefore, we cannot acquire locks
+or do normal "linux-y" things because e.g. lockdep will be
+confused about the context.
 
-The IPA governor regards the cooling devices without EM model as a power
-actor, because they also have energy model ops, and will access illegal
-address at dfc->em_pd when execute cdev->ops->get_requested_power,
-cdev->ops->state2power or cdev->ops->power2state.
+Move handling this situation out of the read function and
+into the actual IRQ handler and response handling instead,
+so that in the case of time-travel we don't call it in the
+wrong context.
 
-Fixes: 615510fe13bd2 ("thermal: devfreq_cooling: remove old power model and use EM")
-Cc: 5.13+ <stable@vger.kernel.org> # 5.13+
-Signed-off-by: Kant Fan <kant@allwinnertech.com>
-Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Chances are the system will still crash immediately, since
+the device implementation crashing may also cause the time-
+travel controller to go down, but at least all of that now
+happens without strange warnings from lockdep.
+
+Fixes: c8177aba37ca ("um: time-travel: rework interrupt handling in ext mode")
+Cc: stable@vger.kernel.org
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/thermal/devfreq_cooling.c |   25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
+ arch/um/drivers/virtio_uml.c |   33 +++++++++++++++++++++++----------
+ 1 file changed, 23 insertions(+), 10 deletions(-)
 
---- a/drivers/thermal/devfreq_cooling.c
-+++ b/drivers/thermal/devfreq_cooling.c
-@@ -358,21 +358,28 @@ of_devfreq_cooling_register_power(struct
- 	struct thermal_cooling_device *cdev;
- 	struct device *dev = df->dev.parent;
- 	struct devfreq_cooling_device *dfc;
-+	struct thermal_cooling_device_ops *ops;
- 	char *name;
- 	int err, num_opps;
+--- a/arch/um/drivers/virtio_uml.c
++++ b/arch/um/drivers/virtio_uml.c
+@@ -63,6 +63,7 @@ struct virtio_uml_device {
  
--	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
--	if (!dfc)
-+	ops = kmemdup(&devfreq_cooling_ops, sizeof(*ops), GFP_KERNEL);
-+	if (!ops)
- 		return ERR_PTR(-ENOMEM);
+ 	u8 config_changed_irq:1;
+ 	uint64_t vq_irq_vq_map;
++	int recv_rc;
+ };
  
-+	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
-+	if (!dfc) {
-+		err = -ENOMEM;
-+		goto free_ops;
-+	}
+ struct virtio_uml_vq_info {
+@@ -148,14 +149,6 @@ static int vhost_user_recv(struct virtio
+ 
+ 	rc = vhost_user_recv_header(fd, msg);
+ 
+-	if (rc == -ECONNRESET && vu_dev->registered) {
+-		struct virtio_uml_platform_data *pdata;
+-
+-		pdata = vu_dev->pdata;
+-
+-		virtio_break_device(&vu_dev->vdev);
+-		schedule_work(&pdata->conn_broken_wk);
+-	}
+ 	if (rc)
+ 		return rc;
+ 	size = msg->header.size;
+@@ -164,6 +157,21 @@ static int vhost_user_recv(struct virtio
+ 	return full_read(fd, &msg->payload, size, false);
+ }
+ 
++static void vhost_user_check_reset(struct virtio_uml_device *vu_dev,
++				   int rc)
++{
++	struct virtio_uml_platform_data *pdata = vu_dev->pdata;
 +
- 	dfc->devfreq = df;
++	if (rc != -ECONNRESET)
++		return;
++
++	if (!vu_dev->registered)
++		return;
++
++	virtio_break_device(&vu_dev->vdev);
++	schedule_work(&pdata->conn_broken_wk);
++}
++
+ static int vhost_user_recv_resp(struct virtio_uml_device *vu_dev,
+ 				struct vhost_user_msg *msg,
+ 				size_t max_payload_size)
+@@ -171,8 +179,10 @@ static int vhost_user_recv_resp(struct v
+ 	int rc = vhost_user_recv(vu_dev, vu_dev->sock, msg,
+ 				 max_payload_size, true);
  
- 	dfc->em_pd = em_pd_get(dev);
- 	if (dfc->em_pd) {
--		devfreq_cooling_ops.get_requested_power =
-+		ops->get_requested_power =
- 			devfreq_cooling_get_requested_power;
--		devfreq_cooling_ops.state2power = devfreq_cooling_state2power;
--		devfreq_cooling_ops.power2state = devfreq_cooling_power2state;
-+		ops->state2power = devfreq_cooling_state2power;
-+		ops->power2state = devfreq_cooling_power2state;
+-	if (rc)
++	if (rc) {
++		vhost_user_check_reset(vu_dev, rc);
+ 		return rc;
++	}
  
- 		dfc->power_ops = dfc_power;
+ 	if (msg->header.flags != (VHOST_USER_FLAG_REPLY | VHOST_USER_VERSION))
+ 		return -EPROTO;
+@@ -369,6 +379,7 @@ static irqreturn_t vu_req_read_message(s
+ 				 sizeof(msg.msg.payload) +
+ 				 sizeof(msg.extra_payload));
  
-@@ -407,8 +414,7 @@ of_devfreq_cooling_register_power(struct
- 	if (!name)
- 		goto remove_qos_req;
++	vu_dev->recv_rc = rc;
+ 	if (rc)
+ 		return IRQ_NONE;
  
--	cdev = thermal_of_cooling_device_register(np, name, dfc,
--						  &devfreq_cooling_ops);
-+	cdev = thermal_of_cooling_device_register(np, name, dfc, ops);
- 	kfree(name);
+@@ -412,7 +423,9 @@ static irqreturn_t vu_req_interrupt(int
+ 	if (!um_irq_timetravel_handler_used())
+ 		ret = vu_req_read_message(vu_dev, NULL);
  
- 	if (IS_ERR(cdev)) {
-@@ -429,6 +435,8 @@ free_table:
- 	kfree(dfc->freq_table);
- free_dfc:
- 	kfree(dfc);
-+free_ops:
-+	kfree(ops);
+-	if (vu_dev->vq_irq_vq_map) {
++	if (vu_dev->recv_rc) {
++		vhost_user_check_reset(vu_dev, vu_dev->recv_rc);
++	} else if (vu_dev->vq_irq_vq_map) {
+ 		struct virtqueue *vq;
  
- 	return ERR_PTR(err);
- }
-@@ -510,11 +518,13 @@ EXPORT_SYMBOL_GPL(devfreq_cooling_em_reg
- void devfreq_cooling_unregister(struct thermal_cooling_device *cdev)
- {
- 	struct devfreq_cooling_device *dfc;
-+	const struct thermal_cooling_device_ops *ops;
- 	struct device *dev;
- 
- 	if (IS_ERR_OR_NULL(cdev))
- 		return;
- 
-+	ops = cdev->ops;
- 	dfc = cdev->devdata;
- 	dev = dfc->devfreq->dev.parent;
- 
-@@ -525,5 +535,6 @@ void devfreq_cooling_unregister(struct t
- 
- 	kfree(dfc->freq_table);
- 	kfree(dfc);
-+	kfree(ops);
- }
- EXPORT_SYMBOL_GPL(devfreq_cooling_unregister);
+ 		virtio_device_for_each_vq((&vu_dev->vdev), vq) {
 
 
