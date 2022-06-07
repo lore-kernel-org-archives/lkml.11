@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC571C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:46:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EADBBCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376668AbiFGUqu (ORCPT
+        id S1376691AbiFGUqx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:46:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55188 "EHLO
+        Tue, 7 Jun 2022 16:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356439AbiFGTnE (ORCPT
+        with ESMTP id S1356757AbiFGTn1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:43:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19AB8517D1;
-        Tue,  7 Jun 2022 11:18:10 -0700 (PDT)
+        Tue, 7 Jun 2022 15:43:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A1255360;
+        Tue,  7 Jun 2022 11:18:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C70BAB8237B;
-        Tue,  7 Jun 2022 18:18:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D575C385A2;
-        Tue,  7 Jun 2022 18:18:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A00CB8237C;
+        Tue,  7 Jun 2022 18:18:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6DDDC385A2;
+        Tue,  7 Jun 2022 18:18:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625887;
-        bh=tO43DjKucU72pP0RHq0rgcL4dGdhO7HahM+k57aUjI0=;
+        s=korg; t=1654625893;
+        bh=4c4aEuU/cvjom0M16ArwJiuqMUd3ut2aEY2KHB7piac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KSsoxN8fEcbd58MHTIrLO3dl3LSbbvByRqIlPlXJR1lxeMVrNjXcDfKcIjfeVapI/
-         TZTD1pv6VyyhM/U6XVEimLDKgQv9S987102tgfS71/j+iXmqW+D+Mg9CBtRWXAPg9U
-         ABAt4EhaJdwCW5z2612cDyenpCtO2AVFLfoDATSk=
+        b=QEjmt5JFzaawMzDGL2J9bQ8Fu/Pu09tHF9uTmt8cIMNK4CWc2DI2AfgRYV8sovqFa
+         U+K4AhR0pMyRh0uY0QGALlLnf8HItun9dz8Pf8j8dhkCWg2iv+u0eKNxEBoo2X9N2x
+         BYAR1VrZ5SM9UX7rp3ZaNeNmjgXzLNRufXkuJyUk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Latypov <dlatypov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <yujie.liu@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 181/772] kunit: fix executor OOM error handling logic on non-UML
-Date:   Tue,  7 Jun 2022 18:56:13 +0200
-Message-Id: <20220607164954.372828805@linuxfoundation.org>
+Subject: [PATCH 5.17 165/772] ASoC: rt1015p: remove dependency on GPIOLIB
+Date:   Tue,  7 Jun 2022 18:55:57 +0200
+Message-Id: <20220607164953.902807910@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,62 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Latypov <dlatypov@google.com>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit 1b11063d32d7e11366e48be64215ff517ce32217 ]
+[ Upstream commit b390c25c6757b9d56cecdfbf6d55f15fc89a6386 ]
 
-The existing logic happens to work fine on UML, but is not correct when
-running on other arches.
+commit dcc2c012c7691 ("ASoC: Fix gpiolib dependencies") removed a
+series of unnecessary dependencies on GPIOLIB when the gpio was
+optional.
 
-1. We didn't initialize `int err`, and kunit_filter_suites() doesn't
-   explicitly set it to 0 on success. So we had false "failures".
-   Note: it doesn't happen on UML, causing this to get overlooked.
-2. If we error out, we do not call kunit_handle_shutdown().
-   This makes kunit.py timeout when using a non-UML arch, since the QEMU
-   process doesn't ever exit.
+A similar simplification seems valid for rt1015p, so remove the
+dependency as well. This will avoid the following warning
 
-Fixes: a02353f49162 ("kunit: bail out of test filtering logic quicker if OOM")
-Signed-off-by: Daniel Latypov <dlatypov@google.com>
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+  WARNING: unmet direct dependencies detected for SND_SOC_RT1015P
+
+     Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] &&
+     GPIOLIB [=n]
+
+     Selected by [y]:
+
+     - SND_SOC_INTEL_SOF_RT5682_MACH [=y] && SOUND [=y] && !UML && SND
+       [=y] && SND_SOC [=y] && SND_SOC_INTEL_MACH [=y] &&
+       (SND_SOC_SOF_HDA_LINK [=y] || SND_SOC_SOF_BAYTRAIL [=n]) && I2C
+       [=y] && ACPI [=y] && (SND_HDA_CODEC_HDMI [=y] &&
+       SND_SOC_SOF_HDA_AUDIO_CODEC [=y] && (MFD_INTEL_LPSS [=y] ||
+       COMPILE_TEST [=y]) || SND_SOC_SOF_BAYTRAIL [=n] &&
+       (X86_INTEL_LPSS [=n] || COMPILE_TEST [=y]))
+
+Reported-by: kernel test robot <yujie.liu@intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220517172647.468244-3-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/kunit/executor.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ sound/soc/codecs/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/lib/kunit/executor.c b/lib/kunit/executor.c
-index 2f73a6a35a7e..96f96e42ce06 100644
---- a/lib/kunit/executor.c
-+++ b/lib/kunit/executor.c
-@@ -247,13 +247,13 @@ int kunit_run_all_tests(void)
- 		.start = __kunit_suites_start,
- 		.end = __kunit_suites_end,
- 	};
--	int err;
-+	int err = 0;
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index a8c6c2bfd5a7..3496403004ac 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -1202,7 +1202,6 @@ config SND_SOC_RT1015
  
- 	if (filter_glob_param) {
- 		suite_set = kunit_filter_suites(&suite_set, filter_glob_param, &err);
- 		if (err) {
- 			pr_err("kunit executor: error filtering suites: %d\n", err);
--			return err;
-+			goto out;
- 		}
- 	}
+ config SND_SOC_RT1015P
+ 	tristate
+-	depends on GPIOLIB
  
-@@ -268,9 +268,10 @@ int kunit_run_all_tests(void)
- 		kunit_free_suite_set(suite_set);
- 	}
- 
--	kunit_handle_shutdown();
- 
--	return 0;
-+out:
-+	kunit_handle_shutdown();
-+	return err;
- }
- 
- #if IS_BUILTIN(CONFIG_KUNIT_TEST)
+ config SND_SOC_RT1019
+ 	tristate
 -- 
 2.35.1
 
