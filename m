@@ -2,165 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C65F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B43C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242553AbiFGLEk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:04:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
+        id S242563AbiFGLEz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:04:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242827AbiFGLAx (ORCPT
+        with ESMTP id S242549AbiFGLAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 07:00:53 -0400
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-eopbgr150078.outbound.protection.outlook.com [40.107.15.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A75B1165;
-        Tue,  7 Jun 2022 04:00:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XdC0qQcJ3lElInxcWYdk2q0Wc6YGiLKI4Z+0FNeKztzP9aXSQZrM1YKKE2w8qD2u4xABA2dyt1OpkiH3CeRqkdDjN/tIj+J8LN4vXfAvNOpQGYgV7d4DBSuWAz6HtJWo8qr4eDnCmwtrkS3oxKFcdLLbSAogFnOIZVlc0F/fvn3X6RsJkmIqjU3mNUBpujVh1dEtIQFT0AGx8Rurmem5RnDq0fpXMq27kHohpAoB8n9UbGZrYZHwcXXCqx0j4pSRxYUoTYwlscoMwICTNTb7OPug0G0qmSYgtAoFl9jfAI4f0MuW2EkHKrI5M9v+XidoRPwGp3GeI5BQpYuzI1Nvcw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rHrLocszCbW49Q41oG93t2Dqog089ScB34vAHRvUEnU=;
- b=FKo3qayMfFyC3hoNP2FVUP72AqiGAItCdbZMUz1IyjGHfT/UOJuXHs0q40yO5d5CPzWJHfbE7A5DlNW4z7D/GuMYxKv71ibe2A1welS4s+PQX3HCcF6hqycyuXKD//tEmoXF9yg28tylyjcsGw7Pkkda8w6Ly1y00V2RgsrkVGd3sO30sqUvlFkTeDFKG9/l05OqVAkppKPNS8/x+eqsWcOylgBRSTXbzobqhmwWywTmk8rb+kXYR3V0xJb8tZqTZSkrKOBHEj1xhkWXuKqOh5BTc4QoqVe+JnUnNukCthOa4yJiyilkjJJBu6ddXRykRFoSjhQX7w+fhbN745nt7A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rHrLocszCbW49Q41oG93t2Dqog089ScB34vAHRvUEnU=;
- b=FdEDT2AmCd8DpE8XRm3IQN+acOQ4d6efG+wV0uirDO1J3Z29pkxX3t3vSTvSgaokYdKm52NfJ2pC+R2V5fFh0JuIb9pbXrNre5LS1O4nzmEaSaeWOgIty5SYkLuQXTmTk8jM4lp/B86kO8ErkWbPkCZN87gaGTSxxJ0CwqnnTRU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
- by VI1PR04MB3008.eurprd04.prod.outlook.com (2603:10a6:802:f::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.19; Tue, 7 Jun
- 2022 11:00:11 +0000
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::a541:25cd:666f:11b1]) by VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::a541:25cd:666f:11b1%5]) with mapi id 15.20.5314.019; Tue, 7 Jun 2022
- 11:00:11 +0000
-From:   Abel Vesa <abel.vesa@nxp.com>
-To:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: [PATCH 03/10] dt-bindings: arm: freescale: Add fsl,scu-iomux yaml file
-Date:   Tue,  7 Jun 2022 13:59:44 +0300
-Message-Id: <20220607105951.1821519-4-abel.vesa@nxp.com>
-X-Mailer: git-send-email 2.34.3
-In-Reply-To: <20220607105951.1821519-1-abel.vesa@nxp.com>
-References: <20220607105951.1821519-1-abel.vesa@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM5PR0602CA0007.eurprd06.prod.outlook.com
- (2603:10a6:203:a3::17) To VI1PR04MB4688.eurprd04.prod.outlook.com
- (2603:10a6:803:6a::30)
+        Tue, 7 Jun 2022 07:00:19 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F4D240AD;
+        Tue,  7 Jun 2022 03:57:45 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id b8so5781550edj.11;
+        Tue, 07 Jun 2022 03:57:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=references:from:to:cc:subject:date:in-reply-to:message-id
+         :mime-version;
+        bh=yPufLHAHmFZwiernSymaEB3w3KO3bi6vBnV8PeUhLxI=;
+        b=hnKKSGjrNlED/ZlKz+Mk3ptadzuBrA4J1vL8VD7NRqCFW31W644HRaVQWmcraWSz71
+         5dMMJhQ+BcrWbNn2bCO8fTqN5+WThdkCsK5+8qkojv9mzGUNfRJSpSKT+5aUzYU7AriE
+         N7h2CR0qwrfJOvOIgBnFh1Ojle66VSa4bdCOAgWpyASOVWzfksdaV8BbDK99daFoltnx
+         9sKL5RHXz4+K+NTOK/9S5RP0flCJurYELlgQNxb44NTX2PeREFNp8IFqImXVcc7UKaUX
+         41e5IN3X4u4zJ6l/4WTvjR7NZhLpY5SRHCdxpyg9Mzyz377bI/qPH89bq5szta5I48YR
+         Z6NQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=yPufLHAHmFZwiernSymaEB3w3KO3bi6vBnV8PeUhLxI=;
+        b=Gm/qfIlm1hviu7MYzhjE+rrnBeh601A0YerY2pCujipZ0abE1y1Swy3TE0vNNOgFCQ
+         AaSZRx4qn1ijiwSXHv2BhS40OsoylEaWAuG5PPoXUKhNTdG3tdnGjHA0jPqupFD/VH5C
+         K0mkxeaNlzHdM1b3P46c4NUjGlC6vHVC4CYpoLQ2qFcSCXBswNVZkPG9mE/U+105kbSp
+         19VGjvSqpamoDZsIpwIOROfA+608iF5RgLX3+SECq6SAS5hMnhGDpFN2F5M9f8RhSuIA
+         BFN4h5+WAWu7ePzIJwnzrUHYXK+tLwgUVa596lJGqBVZJ0e1RPfGDit8GjIUky0hgmml
+         wsxw==
+X-Gm-Message-State: AOAM532SuHrQTDBoIDzvmtT+yTPoesAb4fqNRiotBw41rHuejdG5pH+C
+        KSlCWgxwE/y0AwAoUjHZAjs=
+X-Google-Smtp-Source: ABdhPJyQ0oBf+aAihrAexYG8itdUihorYdbcNhw5dal9/wGkAvJYiJHkpOylC6RmzGwUA7Fxg7qaow==
+X-Received: by 2002:a05:6402:23a3:b0:42e:251a:c963 with SMTP id j35-20020a05640223a300b0042e251ac963mr27606354eda.173.1654599464256;
+        Tue, 07 Jun 2022 03:57:44 -0700 (PDT)
+Received: from localhost (92.40.203.141.threembb.co.uk. [92.40.203.141])
+        by smtp.gmail.com with ESMTPSA id gj12-20020a170906e10c00b006fed8dfcf78sm7396457ejb.225.2022.06.07.03.57.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 03:57:43 -0700 (PDT)
+References: <20220603135714.12007-1-aidanmacdonald.0x0@gmail.com>
+ <20220603135714.12007-9-aidanmacdonald.0x0@gmail.com>
+ <20220603174744.642157d8@jic23-huawei>
+ <e9ABtmBNzztlyRcJD5f36OmAYZW4i7KH@localhost>
+ <20220604152711.22268711@jic23-huawei>
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     lars@metafoo.de, linus.walleij@linaro.org, brgl@bgdev.pl,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        wens@csie.org, lee.jones@linaro.org, sre@kernel.org,
+        broonie@kernel.org, gregkh@linuxfoundation.org,
+        lgirdwood@gmail.com, rafael@kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 08/10] iio: adc: axp20x_adc: Add support for AXP192
+Date:   Tue, 07 Jun 2022 11:49:58 +0100
+In-reply-to: <20220604152711.22268711@jic23-huawei>
+Message-ID: <9Ju6ijQ68x8e8Es1zhzsVMZHprvKy16b@localhost>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e971e647-d404-4e6d-a1b3-08da4874e48e
-X-MS-TrafficTypeDiagnostic: VI1PR04MB3008:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB30089AAA62350B8E039C1A2DF6A59@VI1PR04MB3008.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dQb/SuKBoopiPjGDSS0NpOBRsxsllhe3OLeNY8vulqwUnr9EZkbcAvQdHiHhABBFiSe4C0izYzDMGJVhbuQF2B7aj0JakTodJk1WeYeEDXcATRzVgREMccgEdQ/GLnlh69Gpht4zYHBkaJr3rxNwRsGiRMqBX4Lq5TvV+K6gyRDX1cTDg/huliwHr9gXpGDOOuiEWZz2AEboVyfmjTE2hH0LTzWC01Q3Rmw449eoDa7wIv5ioYssl2BVcaEsELJELD6EvsFJYDRlE28XoqMVvtxkKg3mNC0zWjQ0RCa7c+2wqBLdPuD8xbApwqybNm1lFGgl6t63EwqDqBnLma87ovDrKUzFgkb2atM97zbbmzl0wEgjDLJ5xyrn+J3mvziH0D46RzBmKtZwIQu1gfx/Kx+8740pI7Bc47053aA7KNPd6660JH33PTn2iYLc8RNwSkBujuyCbepgG7CN1J2fqVa62oIhpGP8GVRnxYaDTYG9L0+1SqKANLiCrJ9rYTglDAR2qlF25Y7k0D5xO79rvDfmrQGvw1yCjtfTTRhE3pX8W0Vdu8XTty0WMxwtBeH+v9C1k1FVaVXZc8+8IsReXlAXZvAY93m4L0yiScsEhS1+JdogYjI13+j69/fMMjQhfQC27A+paZrq1ql0bbR4NvBVeZl0A7WsRcqbxAQR8gyvbFBDJmUOX8p8oRieqkNKeYG+njEJeiZbWlI0R70av5YZxK8Vmx/EpcxmhWHdSSYbZEX0FLM02uvN6e2qkC/fQhDA+IIvNJnDoKkJwaazwBrKQmFKQAuOihoisOr2tyOLX9NfcQ1FlyoaYTf6opezDbSGMVFLyFM+jFLdUyWzOw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(6506007)(36756003)(38350700002)(38100700002)(6666004)(966005)(52116002)(6486002)(86362001)(4326008)(66476007)(8676002)(2616005)(8936002)(186003)(5660300002)(2906002)(44832011)(508600001)(66556008)(1076003)(83380400001)(316002)(54906003)(110136005)(6512007)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ViCCqUOFlDNDnRuENebnRuKzrwoZRK0tgr1+7BnsNFET1zxRNGAD0vSkWVFU?=
- =?us-ascii?Q?o609nczPXsfaZKGzKVr9ITEjhowTN/vruyEXLnlbD7JUi3lVAK44KoBUXwim?=
- =?us-ascii?Q?b0nBfypkTGQVWlpam1cHXCPriAYK1RLMrGGvUfpUaSTUUzWKHARLM1AJrkjU?=
- =?us-ascii?Q?x0RX29QjbLo53Q+aSDDEhsXuVhqrl27ntY7sCCD0PY9+tS2vRhdmd3uHSVID?=
- =?us-ascii?Q?78XYLZVSDY88gKs16RvOAYtYFjntKp5ylLukBWHxZABzjM0AAa33o+YG7FDq?=
- =?us-ascii?Q?g16AkF4fUwaAfwfIOvgexAq6k2uvkgZeSZFfL1sFhVD0XUasGJTFh2J9A79g?=
- =?us-ascii?Q?I37s6kolotuj7G0lmw6oWKrWFunDKyGZBUf1HzfkWtwU6zhO4PunXPgd02vb?=
- =?us-ascii?Q?olOhTlcBQTsH8eh+Re6osZX1Ty73F/SlExW8itBtEpNBSCVS/hmwSErGuAJ0?=
- =?us-ascii?Q?48cvzMeBRfdxVstASaVOVQmStv0AS7DVBbe92oygs0wqZORRJ2zkekHqn1hu?=
- =?us-ascii?Q?iuhoBlO0FKRP4v/ZgBhxjo1fMJQmVIflszWiUX+M4tC7cpDVTHXQ4dn1jlt0?=
- =?us-ascii?Q?wyVoZWDKD9cC2VDoy9c/ksr/9YV5aX9SiWb35l9jt+pCRsYG/6ny88bBmQ7U?=
- =?us-ascii?Q?Mha8oWhtWta1FdEZXD4hNgmoQYuyqMHX7vb2W4Hrsw5WuFB3ucAoY3wYXrPU?=
- =?us-ascii?Q?VlEQYevoes/Hw4NxxK+HKxYx3nAq1XTp232Md14qDdS7TC11lhMo5tuFXGHk?=
- =?us-ascii?Q?qilrW01jpVbeC5sJDSTsm2hNlAnVOMO8n3IQUZ8g3xdQAgDkSRZspyOu2NcR?=
- =?us-ascii?Q?zWG2SSSsFNxeL6f3F/B+y22Z3YlaaZ9vridKSpWrghjQgJuxfbYfi5GkcGb+?=
- =?us-ascii?Q?7Ujsrjhv4LckrfRVI0Qtf8fhrDXyrs6EC787Jloyq7QjIL700mQeCvoFPPlu?=
- =?us-ascii?Q?kYgnLN0RldLqHsTE8zCjZxr1wAaUe/vGgh2H8lQcXIrpUtBGEtfRnTZmkIBv?=
- =?us-ascii?Q?BDKLd3lGJZ/9ttGOOyaeI81a4ut3v0DFqvfoowAHF83N3y88M43lNbBDqdGW?=
- =?us-ascii?Q?gsNqDDGu+MliRGCy0TDqT+QEdsWkuNwPatn8JC24z4SFaV95u9v761pu+PDM?=
- =?us-ascii?Q?BW2Qok3/lU5ekUmbzeHmqe64rV74+rnHleRmUkxqNUXA0H9mX9aJj77wFMUg?=
- =?us-ascii?Q?0OuBoyDjPAVmao7J2bWhaZHNtCieUFSvYW9QLqDjQSDoWKxcCMfzaFdHkdBz?=
- =?us-ascii?Q?G28dfZF2h0nWp+V/wypy97qs1sYfxyNXxXKxzrFgRlyGsmEJrb1JtvmyXNbV?=
- =?us-ascii?Q?vyZ8V7+o/dFD24xxoqA0AqWpfjoGnXNy5v1yWBqeqIcEuEfO3Dy22OQEvzgN?=
- =?us-ascii?Q?T6KnqkdpIyb2XqPGws6y1XzCZ4ungRI/qwDOat5pHT5dACw57+Fs+DINsmf1?=
- =?us-ascii?Q?UhOseI/Yi7kkE/PT8KuN2qwR2kywT9ioEttTLGA6Ws1Ym2ia6UlcF53a94M0?=
- =?us-ascii?Q?eTggjyJP5erUV3Kh9DEHQDeNYPtzArugS64b8ZMwUNJ/rsm/JVuYLA0KVg9T?=
- =?us-ascii?Q?F041WU3WwESEmh3PjKshgy9ehqAVrXlYLqnf7V57PqQL4P2YnDBbwVxGdxkk?=
- =?us-ascii?Q?b1/74jhdpH1hfeHMX/uuzoJj7162otOeTZaf6QLz5Z0s1GGlNOnqdLlvkYoN?=
- =?us-ascii?Q?FAHIMm0KX8cLzdj69w0HPHRqSNe9z9fCpKFteKa9TVVoLMswc85JxLvXtvi6?=
- =?us-ascii?Q?bWLmERlPHw=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e971e647-d404-4e6d-a1b3-08da4874e48e
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2022 11:00:11.6649
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Va4tsGa4z/d2BWdCqlkM/73KWiVySrgRFO/hDVfoVvBh0XB7nw3ns02f8Ax3AoNDvk9e+9ZuWQ7iw+VtdkDNHA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3008
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This documents separately the iomux child node of the SCU main node.
 
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
----
- .../bindings/arm/freescale/fsl,scu-iomux.yaml | 32 +++++++++++++++++++
- 1 file changed, 32 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/freescale/fsl,scu-iomux.yaml
+Jonathan Cameron <jic23@kernel.org> writes:
 
-diff --git a/Documentation/devicetree/bindings/arm/freescale/fsl,scu-iomux.yaml b/Documentation/devicetree/bindings/arm/freescale/fsl,scu-iomux.yaml
-new file mode 100644
-index 000000000000..ae13c68331ae
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/freescale/fsl,scu-iomux.yaml
-@@ -0,0 +1,32 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/freescale/fsl,scu-iomux.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: i.MX SCU Client Device Node - Pinctrl bindings based on SCU Message Protocol
-+
-+maintainers:
-+  - Shawn Guo <shawnguo@kernel.org>
-+
-+description: i.MX SCU Client Device Node
-+  Client nodes are maintained as children of the relevant IMX-SCU device node.
-+  This binding uses the i.MX common pinctrl binding.
-+  (Documentation/devicetree/bindings/pinctrl/fsl,imx-pinctrl.txt)
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - fsl,imx8qm-iomuxc
-+          - fsl,imx8qxp-iomuxc
-+          - fsl,imx8dxl-iomuxc
-+
-+patternProperties:
-+  "grp$":
-+    type: object
-+
-+additionalProperties: false
-+
-+required:
-+  - compatible
--- 
-2.34.3
+> On Sat, 04 Jun 2022 12:47:38 +0100
+> Aidan MacDonald <aidanmacdonald.0x0@gmail.com> wrote:
+>
+>> Jonathan Cameron <jic23@kernel.org> writes:
+>> 
+>> > On Fri,  3 Jun 2022 14:57:12 +0100
+>> > Aidan MacDonald <aidanmacdonald.0x0@gmail.com> wrote:
+>> >  
+>> >> The AXP192 is identical to the AXP20x, except for the addition of
+>> >> two more GPIO ADC channels.
+>> >> 
+>> >> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>  
+>> > Hi Aidan,
+>> >
+>> > A few minor questions and comments inline.
+>> >
+>> > Thanks,
+>> >
+>> > Jonathan
+>> >
+>> > Unless I missed a previous patch adding labels to the other devices supported,
+>> > this is the first driver to use these.  Why do they make sense here but not
+>> > to add to existing supported devices?
+>> >
+>> > I don't particularly mind this addition, just looking for an explanation.
+>> >  
+>> 
+>> That'd be because 1d4ef9b39ebecca8 ("iio: core: Add optional symbolic
+>> label to a device channel") added read_label in 2020, while the AXP
+>> driver was introduced in 2017. I could add read_label for the other
+>> chips while I'm here, for consistency.
+>
+> Thanks, I don't really mind either way on adding support for additional parts.
+>
+>> 
+>> One question I have is why read_label exists when the kernel already has
+>> unique names for IIO channels. Why not just expose the datasheet_name to
+>> userspace from the IIO core instead of making drivers do it?
+>
+> In general, datasheet_name refers to the name of the pin on a datasheet for this
+> device, whereas label can refer to how it is used.
+> There are dt bindings to allow a per channel label letting a driver (where it
+> makes sense) provide them for each individual ADC channel.
+> (e.g. the ad7768-1 driver does this).
+>
+> On other devices they come from entirely different sources such as the hardcoded
+> choices in hid-sensor-custom-intel-hinge.
+>
+> I vaguely recall that we've talked in the past about exposing datasheet name directly
+> but for many devices it's not that useful (the user doesn't care if a channel is
+> aux channel 1 or 7, but rather what it is wired up to).
+>
+> At the moment this driver just exposes all channels rather than having
+> per channel bindings, so we don't have the option to use labeling in the device
+> tree to assign the names.   If it's particularly useful to you to have labels
+> that are datasheet names that's fine.
+>
+> Jonathan
 
+Thanks for the explanation, makes sense that "gpio0_v" is probably not
+all that useful. I was thinking mainly of channels like battery charge
+current where the channel usage is fixed by hardware. The labels aren't
+terribly useful to me so I'll just leave them out, I'd rather not bother
+with adding dt labels.
+
+Regards,
+Aidan
