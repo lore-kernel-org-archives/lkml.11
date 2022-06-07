@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F81ECCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF66CCCA48F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384707AbiFGWo7 (ORCPT
+        id S1387019AbiFGWtl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57718 "EHLO
+        Tue, 7 Jun 2022 18:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381188AbiFGVbo (ORCPT
+        with ESMTP id S1381413AbiFGVkm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:31:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719D922CEC4;
-        Tue,  7 Jun 2022 12:04:06 -0700 (PDT)
+        Tue, 7 Jun 2022 17:40:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B8E23281B;
+        Tue,  7 Jun 2022 12:06:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0571D6184B;
-        Tue,  7 Jun 2022 19:04:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11BCEC385A2;
-        Tue,  7 Jun 2022 19:04:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BA9A6184D;
+        Tue,  7 Jun 2022 19:06:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 811E4C385A2;
+        Tue,  7 Jun 2022 19:06:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628645;
-        bh=mmgUOoWsvmyCloJOJysj77fpGdpLejOlNk4+m0u4eXA=;
+        s=korg; t=1654628810;
+        bh=WEl8kOHUEiPWdwBDQUAps0GyCtZmVnhXRwz9neMn+oc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NiNZ2ceDGGPtn6RU7znjtUkH1aU24+8evayYWB2ZVr+6k+fvRwxcxBd/OEvycqa3K
-         dm/pc0g5CyU1RYZLAtBNZ70N51ZOe6Ig81ldd4m/lYm+1pQc32C3GHMV7mdirC587b
-         YNc/9vafk0hfvB8Ko1aIi0eDtXWF3bFsrYhf+5ng=
+        b=ws5kc7DwCwjMiztbcTMwetGxL1v/Ez5RQ4z57KLarbf7mDC355H7Tfz8SDahrVmzD
+         m6Icd2UOmYfA01XjO0Nyuj0GVkakOIBKOlcAezyznbqaWtwqVCtH7cshbnTI7itIX2
+         BvnQLtPkQo3O8j6cMsZVV6jALcfaKiBUbQtOJYf0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Alexander Popov <alex.popov@linux.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Kees Cook <keescook@chromium.org>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 403/879] arm64: stackleak: fix current_top_of_stack()
-Date:   Tue,  7 Jun 2022 18:58:41 +0200
-Message-Id: <20220607165014.560134923@linuxfoundation.org>
+        stable@vger.kernel.org, Yake Yang <yake.yang@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 457/879] Bluetooth: btmtksdio: fix possible FW initialization failure
+Date:   Tue,  7 Jun 2022 18:59:35 +0200
+Message-Id: <20220607165016.136929533@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -54,104 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+From: Sean Wang <sean.wang@mediatek.com>
 
-[ Upstream commit e85094c31ddb794ac41c299a5a7a68243148f829 ]
+[ Upstream commit 7469720563e01f479ec5afe06bd6f440f965d523 ]
 
-Due to some historical confusion, arm64's current_top_of_stack() isn't
-what the stackleak code expects. This could in theory result in a number
-of problems, and practically results in an unnecessary performance hit.
-We can avoid this by aligning the arm64 implementation with the x86
-implementation.
+According to FW advised sequence, mt7921s need to re-acquire privilege
+immediately after the firmware download is complete before normal running.
+Otherwise, it is still possible the bus may be stuck in an abnormal status
+that causes FW initialization failure in the current driver.
 
-The arm64 implementation of current_top_of_stack() was added
-specifically for stackleak in commit:
-
-  0b3e336601b82c6a ("arm64: Add support for STACKLEAK gcc plugin")
-
-This was intended to be equivalent to the x86 implementation, but the
-implementation, semantics, and performance characteristics differ
-wildly:
-
-* On x86, current_top_of_stack() returns the top of the current task's
-  task stack, regardless of which stack is in active use.
-
-  The implementation accesses a percpu variable which the x86 entry code
-  maintains, and returns the location immediately above the pt_regs on
-  the task stack (above which x86 has some padding).
-
-* On arm64 current_top_of_stack() returns the top of the stack in active
-  use (i.e. the one which is currently being used).
-
-  The implementation checks the SP against a number of
-  potentially-accessible stacks, and will BUG() if no stack is found.
-
-The core stackleak_erase() code determines the upper bound of stack to
-erase with:
-
-| if (on_thread_stack())
-|         boundary = current_stack_pointer;
-| else
-|         boundary = current_top_of_stack();
-
-On arm64 stackleak_erase() is always called on a task stack, and
-on_thread_stack() should always be true. On x86, stackleak_erase() is
-mostly called on a trampoline stack, and is sometimes called on a task
-stack.
-
-Currently, this results in a lot of unnecessary code being generated for
-arm64 for the impossible !on_thread_stack() case. Some of this is
-inlined, bloating stackleak_erase(), while portions of this are left
-out-of-line and permitted to be instrumented (which would be a
-functional problem if that code were reachable).
-
-As a first step towards improving this, this patch aligns arm64's
-implementation of current_top_of_stack() with x86's, always returning
-the top of the current task's stack. With GCC 11.1.0 this results in the
-bulk of the unnecessary code being removed, including all of the
-out-of-line instrumentable code.
-
-While I don't believe there's a functional problem in practice I've
-marked this as a fix since the semantic was clearly wrong, the fix
-itself is simple, and other code might rely upon this in future.
-
-Fixes: 0b3e336601b82c6a ("arm64: Add support for STACKLEAK gcc plugin")
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Alexander Popov <alex.popov@linux.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Will Deacon <will@kernel.org>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220427173128.2603085-2-mark.rutland@arm.com
+Fixes: 752aea58489f ("Bluetooth: mt7921s: fix bus hang with wrong privilege")
+Co-developed-by: Yake Yang <yake.yang@mediatek.com>
+Signed-off-by: Yake Yang <yake.yang@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/processor.h | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/bluetooth/btmtksdio.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
-index 73e38d9a540c..6b1a12c23fe7 100644
---- a/arch/arm64/include/asm/processor.h
-+++ b/arch/arm64/include/asm/processor.h
-@@ -381,12 +381,10 @@ long get_tagged_addr_ctrl(struct task_struct *task);
-  * of header definitions for the use of task_stack_page.
-  */
+diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+index 4ae6631a7c29..5d13c1f61bd3 100644
+--- a/drivers/bluetooth/btmtksdio.c
++++ b/drivers/bluetooth/btmtksdio.c
+@@ -864,6 +864,14 @@ static int mt79xx_setup(struct hci_dev *hdev, const char *fwname)
+ 		return err;
+ 	}
  
--#define current_top_of_stack()								\
--({											\
--	struct stack_info _info;							\
--	BUG_ON(!on_accessible_stack(current, current_stack_pointer, 1, &_info));	\
--	_info.high;									\
--})
-+/*
-+ * The top of the current task's task stack
-+ */
-+#define current_top_of_stack()	((unsigned long)current->stack + THREAD_SIZE)
- #define on_thread_stack()	(on_task_stack(current, current_stack_pointer, 1, NULL))
++	err = btmtksdio_fw_pmctrl(bdev);
++	if (err < 0)
++		return err;
++
++	err = btmtksdio_drv_pmctrl(bdev);
++	if (err < 0)
++		return err;
++
+ 	/* Enable Bluetooth protocol */
+ 	wmt_params.op = BTMTK_WMT_FUNC_CTRL;
+ 	wmt_params.flag = 0;
+@@ -1109,14 +1117,6 @@ static int btmtksdio_setup(struct hci_dev *hdev)
+ 		if (err < 0)
+ 			return err;
  
- #endif /* __ASSEMBLY__ */
+-		err = btmtksdio_fw_pmctrl(bdev);
+-		if (err < 0)
+-			return err;
+-
+-		err = btmtksdio_drv_pmctrl(bdev);
+-		if (err < 0)
+-			return err;
+-
+ 		/* Enable SCO over I2S/PCM */
+ 		err = btmtksdio_sco_setting(hdev);
+ 		if (err < 0) {
 -- 
 2.35.1
 
