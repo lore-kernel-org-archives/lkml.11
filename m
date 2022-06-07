@@ -2,157 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E97CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DC1DCCA483
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388383AbiFHBiG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
+        id S232339AbiFHBiV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:38:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382041AbiFGVqK (ORCPT
+        with ESMTP id S1381446AbiFGVrR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:46:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F34235B04;
-        Tue,  7 Jun 2022 12:07:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B57DB823AF;
-        Tue,  7 Jun 2022 19:07:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01950C385A2;
-        Tue,  7 Jun 2022 19:07:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628863;
-        bh=CZ/vaZHm91i3CNrD5PGY++BahAhBDENwnCQ7zpnuHDE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YRAi32sJWZi96KFGoCpnAUvSloR6GyILZ82Yph0vXRJZCfI0woYuoeakRS1fg3Wzh
-         MFMTTty5cTs6Yx24CH6fP67KskuooV7FxFgNHw9BhhKn5RVzZD3+Aupy6hpo7xFOad
-         ZES2HaGfT+Sxkk/linYMYJz7/c7DWAVUCQwzC1Ss=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@gmail.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 483/879] drm/msm/dsi: dont powerup at modeset time for parade-ps8640
-Date:   Tue,  7 Jun 2022 19:00:01 +0200
-Message-Id: <20220607165016.893812695@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:47:17 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF302383D3
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:08:04 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id b5so15585687plx.10
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:08:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=sFse0rFSlJ0YYavNaa4y03OPGbaMuJtoNAgCQ6a6W8c=;
+        b=egqwCoKZqBXVLuKBc5pBZJMLx1Er/E5gqJBY0WIV+gpES8qbQTYV1aLLMoL19SXphc
+         lK8Gh8uUsJd8XfsnR+jIcEghA1Fey7gwOw5VGvdRT3NcD8yrHBZpl106Q8KajEC6vdqb
+         v4+28bPMXQbxefQML/1CAGdjIvco9R8BEzTQw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=sFse0rFSlJ0YYavNaa4y03OPGbaMuJtoNAgCQ6a6W8c=;
+        b=eHG2FHbTobOtpq27ZA7KFGQ0r3TgJ5WdiHFXBa70eFZiiinJG0WKmo6YuzSr6Vy+qt
+         HqOpc6QssjnHtIs98MLRzEUCYRKI3pCCsV8hHaUhNgbWzbpLadTnUlo2xNzjD85naSN4
+         3O72qNsOl1ag8zqqrjDlubnA24bk/bak4JLE1gfK95f0Sdv4rFQcOgQh1w2BoAh6iVa4
+         MXXfU7evXeoDwRVzmk0Lm4pCtdqsKHe1LHGx5SuwnLe6lxkS4a2dt33mGKC9fDdqEwPm
+         vrHVkSLD4jzJl4SgfRUwK1fNgMkVYnUtulRTrlMYwnpJBykgxyiQPdDq6fQA5N0g9QXB
+         UVQg==
+X-Gm-Message-State: AOAM530kvvzEESjr4QnYc+bV4EHjQELk386Z7Q64Q4ifFJy0ixeJBGlg
+        2hZ0sdyDlBLQ7eLvGoIJxR1rdCI9hGts/A==
+X-Google-Smtp-Source: ABdhPJxRnlpJtnHj8QUvVU0+Lwk4T4sd6PIecvJFEsj9C43AuOQ/lHFYgRv7vIv5lWTUWerChJvSkw==
+X-Received: by 2002:a17:90b:224e:b0:1e6:8ae1:8e1a with SMTP id hk14-20020a17090b224e00b001e68ae18e1amr30682456pjb.59.1654628882986;
+        Tue, 07 Jun 2022 12:08:02 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id g29-20020aa79ddd000000b0050dc762819esm13236084pfq.120.2022.06.07.12.08.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 12:08:02 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: [PATCH 4/7] dt-bindings: drm/bridge: anx7625: Add mode-switch support
+Date:   Tue,  7 Jun 2022 19:00:22 +0000
+Message-Id: <20220607190131.1647511-5-pmalani@chromium.org>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+In-Reply-To: <20220607190131.1647511-1-pmalani@chromium.org>
+References: <20220607190131.1647511-1-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Douglas Anderson <dianders@chromium.org>
+Analogix 7625 can be used in systems to switch USB Type-C DisplayPort
+alternate mode lane traffic between 2 Type-C ports.
 
-[ Upstream commit ec7981e6c614254937b37ce0af9eac09901c05c5 ]
+Update the binding to accommodate this usage by introducing a switch
+property.
 
-Commit 7d8e9a90509f ("drm/msm/dsi: move DSI host powerup to modeset
-time") caused sc7180 Chromebooks that use the parade-ps8640 bridge
-chip to fail to turn the display back on after it turns off.
-
-Unfortunately, it doesn't look easy to fix the parade-ps8640 driver to
-handle the new power sequence. The Linux driver has almost nothing in
-it and most of the logic for this bridge chip is in black-box firmware
-that the bridge chip uses.
-
-Also unfortunately, reverting the patch will break "tc358762".
-
-The long term solution here is probably Dave Stevenson's series [1]
-that would give more flexibility. However, that is likely not a quick
-fix.
-
-For the short term, we'll look at the compatible of the next bridge in
-the chain and go back to the old way for the Parade PS8640 bridge
-chip. If it's found that other bridge chips also need this workaround
-then we can add them to the list or consider inverting the
-condition. However, the hope is that the framework will not take too
-much longer to land and we won't have to add anything other than
-ps8640 here.
-
-[1] https://lore.kernel.org/r/cover.1646406653.git.dave.stevenson@raspberrypi.com
-
-Fixes: 7d8e9a90509f ("drm/msm/dsi: move DSI host powerup to modeset time")
-Suggested-by: Rob Clark <robdclark@gmail.com>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Link: https://lore.kernel.org/r/20220513131504.v5.1.Ia196e35ad985059e77b038a41662faae9e26f411@changeid
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
 ---
- drivers/gpu/drm/msm/dsi/dsi_manager.c | 32 ++++++++++++++++++++++++++-
- 1 file changed, 31 insertions(+), 1 deletion(-)
+ .../display/bridge/analogix,anx7625.yaml      | 56 +++++++++++++++++++
+ 1 file changed, 56 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
-index 1db93e562fe6..84f3b2ebf1b8 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
-@@ -34,6 +34,32 @@ static struct msm_dsi_manager msm_dsim_glb;
- #define IS_SYNC_NEEDED()	(msm_dsim_glb.is_sync_needed)
- #define IS_MASTER_DSI_LINK(id)	(msm_dsim_glb.master_dsi_link_id == id)
+diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+index 35a48515836e..7e1f655ddfcc 100644
+--- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
++++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+@@ -105,6 +105,26 @@ properties:
+       - port@0
+       - port@1
  
-+#ifdef CONFIG_OF
-+static bool dsi_mgr_power_on_early(struct drm_bridge *bridge)
-+{
-+	struct drm_bridge *next_bridge = drm_bridge_get_next_bridge(bridge);
++  switches:
++    type: object
++    description: Set of switches controlling DisplayPort traffic on
++      outgoing RX/TX lanes to Type C ports.
 +
-+	/*
-+	 * If the next bridge in the chain is the Parade ps8640 bridge chip
-+	 * then don't power on early since it seems to violate the expectations
-+	 * of the firmware that the bridge chip is running.
-+	 *
-+	 * NOTE: this is expected to be a temporary special case. It's expected
-+	 * that we'll eventually have a framework that allows the next level
-+	 * bridge to indicate whether it needs us to power on before it or
-+	 * after it. When that framework is in place then we'll use it and
-+	 * remove this special case.
-+	 */
-+	return !(next_bridge && next_bridge->of_node &&
-+		 of_device_is_compatible(next_bridge->of_node, "parade,ps8640"));
-+}
-+#else
-+static inline bool dsi_mgr_power_on_early(struct drm_bridge *bridge)
-+{
-+	return true;
-+}
-+#endif
++    properties:
++      switch:
++        $ref: /schemas/usb/typec-switch.yaml#
++        maxItems: 2
 +
- static inline struct msm_dsi *dsi_mgr_get_dsi(int id)
- {
- 	return msm_dsim_glb.dsi[id];
-@@ -389,6 +415,9 @@ static void dsi_mgr_bridge_pre_enable(struct drm_bridge *bridge)
- 	if (is_bonded_dsi && !IS_MASTER_DSI_LINK(id))
- 		return;
- 
-+	if (!dsi_mgr_power_on_early(bridge))
-+		dsi_mgr_bridge_power_on(bridge);
++        properties:
++          reg:
++            maxItems: 1
 +
- 	/* Always call panel functions once, because even for dual panels,
- 	 * there is only one drm_panel instance.
- 	 */
-@@ -570,7 +599,8 @@ static void dsi_mgr_bridge_mode_set(struct drm_bridge *bridge,
- 	if (is_bonded_dsi && other_dsi)
- 		msm_dsi_host_set_display_mode(other_dsi->host, adjusted_mode);
- 
--	dsi_mgr_bridge_power_on(bridge);
-+	if (dsi_mgr_power_on_early(bridge))
-+		dsi_mgr_bridge_power_on(bridge);
- }
- 
- static const struct drm_connector_funcs dsi_mgr_connector_funcs = {
++        required:
++          - reg
++
++    required:
++      - switch@0
++
+ required:
+   - compatible
+   - reg
+@@ -167,5 +187,41 @@ examples:
+                     };
+                 };
+             };
++            switches {
++                #address-cells = <1>;
++                #size-cells = <0>;
++                switch@0 {
++                    compatible = "typec-switch";
++                    reg = <0>;
++                    mode-switch;
++
++                    ports {
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++                        port@0 {
++                            reg = <0>;
++                            anx_typec0: endpoint {
++                              remote-endpoint = <&typec_port0>;
++                            };
++                        };
++                    };
++                };
++                switch@1 {
++                    compatible = "typec-switch";
++                    reg = <1>;
++                    mode-switch;
++
++                    ports {
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++                        port@0 {
++                            reg = <0>;
++                            anx_typec1: endpoint {
++                              remote-endpoint = <&typec_port1>;
++                            };
++                        };
++                    };
++                };
++            };
+         };
+     };
 -- 
-2.35.1
-
-
+2.36.1.255.ge46751e96f-goog
 
