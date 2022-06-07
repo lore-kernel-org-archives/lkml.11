@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26146C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:24:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F628C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351739AbiFGWYe (ORCPT
+        id S1382696AbiFGWYy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:24:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54756 "EHLO
+        Tue, 7 Jun 2022 18:24:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380991AbiFGVRN (ORCPT
+        with ESMTP id S1381065AbiFGVRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:17:13 -0400
+        Tue, 7 Jun 2022 17:17:18 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EEAA14C740;
-        Tue,  7 Jun 2022 11:58:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5749A22075C;
+        Tue,  7 Jun 2022 11:58:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A7652CE244E;
-        Tue,  7 Jun 2022 18:58:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA4FAC36B0F;
-        Tue,  7 Jun 2022 18:58:08 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 782F5CE2479;
+        Tue,  7 Jun 2022 18:58:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B58CC3411F;
+        Tue,  7 Jun 2022 18:58:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628289;
-        bh=/4xJbKpGBjGBVK3DsRpkwmnlySQCxQNQYds2CMdFL9Q=;
+        s=korg; t=1654628294;
+        bh=rSJoFAKAbJN9A028sj1eftbBDbtZOd33TOl4AR9bRpk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jB+UyYKBmPe+iCfOatBIe/cyAirPI5G5Aml647n6zzZ/OrmNAz9dIZznC3YMTegdm
-         uuzO+IkL/wyNAjt6iUcRrrJ7Fw80N17U88OkcmJROENnIVSjOaxE3eWdRfWAQzEjib
-         /MV/xExhfKkT1/rsjoW74qZ6hk4WcMoRcafd6XrM=
+        b=wSAG9sMAWahLC2C8PttzqXXzpOd3VJ5Aev2KO4QDVeO3Hg06eTA3Upuik7FlzMhX6
+         sW2slUMeBeFMPMmHTsOUc+9YwXxWT8AVtNQbSGrCkjlB2TJwCBt65Jjok8jYSGIg4Z
+         CC8Zzz7njXq2ndjQ+mDyCrp5XiyN7EgD4svH08/c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Marek Vasut <marex@denx.de>,
+        Jagan Teki <jagan@amarulasolutions.com>,
         Robert Foss <robert.foss@linaro.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 274/879] drm/bridge: adv7511: clean up CEC adapter when probe fails
-Date:   Tue,  7 Jun 2022 18:56:32 +0200
-Message-Id: <20220607165010.803130153@linuxfoundation.org>
+Subject: [PATCH 5.18 276/879] drm: bridge: icn6211: Fix HFP_HSW_HBP_HI and HFP_MIN handling
+Date:   Tue,  7 Jun 2022 18:56:34 +0200
+Message-Id: <20220607165010.860355224@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,35 +54,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 7ed2b0dabf7a22874cb30f8878df239ef638eb53 ]
+[ Upstream commit c0ff7a649d62105a9308cc3ac36e52a4669d9cb4 ]
 
-When the probe routine fails we also need to clean up the
-CEC adapter registered in adv7511_cec_init().
+The HFP_HSW_HBP_HI register must be programmed with 2 LSbits of each
+Horizontal Front Porch/Sync/Back Porch. Currently the driver programs
+this register to 0, which breaks displays with either value above 255.
 
-Fixes: 3b1b975003e4 ("drm: adv7511/33: add HDMI CEC support")
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
+The HFP_MIN register must be set to the same value as HFP_LI, otherwise
+there is visible image distortion, usually in the form of missing lines
+at the bottom of the panel.
+
+Fix this by correctly programming the HFP_HSW_HBP_HI and HFP_MIN registers.
+
+Acked-by: Maxime Ripard <maxime@cerno.tech>
+Fixes: ce517f18944e3 ("drm: bridge: Add Chipone ICN6211 MIPI-DSI to RGB bridge")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Jagan Teki <jagan@amarulasolutions.com>
+Cc: Maxime Ripard <maxime@cerno.tech>
+Cc: Robert Foss <robert.foss@linaro.org>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+To: dri-devel@lists.freedesktop.org
 Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220321104705.2804423-1-l.stach@pengutronix.de
+Link: https://patchwork.freedesktop.org/patch/msgid/20220331150509.9838-3-marex@denx.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/bridge/chipone-icn6211.c | 23 ++++++++++++++++-------
+ 1 file changed, 16 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-index 005bf18682ff..668dcefbae17 100644
---- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-+++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-@@ -1313,6 +1313,7 @@ static int adv7511_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
- 	adv7511_audio_exit(adv7511);
- 	drm_bridge_remove(&adv7511->bridge);
- err_unregister_cec:
-+	cec_unregister_adapter(adv7511->cec_adap);
- 	i2c_unregister_device(adv7511->i2c_cec);
- 	clk_disable_unprepare(adv7511->cec_clk);
- err_i2c_unregister_packet:
+diff --git a/drivers/gpu/drm/bridge/chipone-icn6211.c b/drivers/gpu/drm/bridge/chipone-icn6211.c
+index 376e0f80da5c..c871a90c0b8f 100644
+--- a/drivers/gpu/drm/bridge/chipone-icn6211.c
++++ b/drivers/gpu/drm/bridge/chipone-icn6211.c
+@@ -35,6 +35,9 @@
+ #define HSYNC_LI		0x24
+ #define HBP_LI			0x25
+ #define HFP_HSW_HBP_HI		0x26
++#define HFP_HSW_HBP_HI_HFP(n)		(((n) & 0x300) >> 4)
++#define HFP_HSW_HBP_HI_HS(n)		(((n) & 0x300) >> 6)
++#define HFP_HSW_HBP_HI_HBP(n)		(((n) & 0x300) >> 8)
+ #define VFP			0x27
+ #define VSYNC			0x28
+ #define VBP			0x29
+@@ -163,6 +166,7 @@ static void chipone_atomic_enable(struct drm_bridge *bridge,
+ {
+ 	struct chipone *icn = bridge_to_chipone(bridge);
+ 	struct drm_display_mode *mode = &icn->mode;
++	u16 hfp, hbp, hsync;
+ 
+ 	ICN6211_DSI(icn, MIPI_CFG_PW, MIPI_CFG_PW_CONFIG_DSI);
+ 
+@@ -178,13 +182,18 @@ static void chipone_atomic_enable(struct drm_bridge *bridge,
+ 		    ((mode->hdisplay >> 8) & 0xf) |
+ 		    (((mode->vdisplay >> 8) & 0xf) << 4));
+ 
+-	ICN6211_DSI(icn, HFP_LI, mode->hsync_start - mode->hdisplay);
++	hfp = mode->hsync_start - mode->hdisplay;
++	hsync = mode->hsync_end - mode->hsync_start;
++	hbp = mode->htotal - mode->hsync_end;
+ 
+-	ICN6211_DSI(icn, HSYNC_LI, mode->hsync_end - mode->hsync_start);
+-
+-	ICN6211_DSI(icn, HBP_LI, mode->htotal - mode->hsync_end);
+-
+-	ICN6211_DSI(icn, HFP_HSW_HBP_HI, 0x00);
++	ICN6211_DSI(icn, HFP_LI, hfp & 0xff);
++	ICN6211_DSI(icn, HSYNC_LI, hsync & 0xff);
++	ICN6211_DSI(icn, HBP_LI, hbp & 0xff);
++	/* Top two bits of Horizontal Front porch/Sync/Back porch */
++	ICN6211_DSI(icn, HFP_HSW_HBP_HI,
++		    HFP_HSW_HBP_HI_HFP(hfp) |
++		    HFP_HSW_HBP_HI_HS(hsync) |
++		    HFP_HSW_HBP_HI_HBP(hbp));
+ 
+ 	ICN6211_DSI(icn, VFP, mode->vsync_start - mode->vdisplay);
+ 
+@@ -194,7 +203,7 @@ static void chipone_atomic_enable(struct drm_bridge *bridge,
+ 
+ 	/* dsi specific sequence */
+ 	ICN6211_DSI(icn, SYNC_EVENT_DLY, 0x80);
+-	ICN6211_DSI(icn, HFP_MIN, 0x28);
++	ICN6211_DSI(icn, HFP_MIN, hfp & 0xff);
+ 	ICN6211_DSI(icn, MIPI_PD_CK_LANE, 0xa0);
+ 	ICN6211_DSI(icn, PLL_CTRL(12), 0xff);
+ 	ICN6211_DSI(icn, BIST_POL, BIST_POL_DE_POL);
 -- 
 2.35.1
 
