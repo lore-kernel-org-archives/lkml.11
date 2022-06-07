@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 704D0CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9A6CCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376870AbiFGUbn (ORCPT
+        id S1376990AbiFGUbv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41004 "EHLO
+        Tue, 7 Jun 2022 16:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356727AbiFGTjf (ORCPT
+        with ESMTP id S1356682AbiFGTjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:39:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC2BFC4DA;
-        Tue,  7 Jun 2022 11:14:20 -0700 (PDT)
+        Tue, 7 Jun 2022 15:39:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C768F99DE;
+        Tue,  7 Jun 2022 11:14:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE4FC60B25;
-        Tue,  7 Jun 2022 18:14:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE64DC385A2;
-        Tue,  7 Jun 2022 18:14:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 548BD6062B;
+        Tue,  7 Jun 2022 18:14:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C455C385A2;
+        Tue,  7 Jun 2022 18:14:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625659;
-        bh=8fyaHLfs66JSD8DWARG4Vmw9VaXoP4pQwZnrSrmzxME=;
+        s=korg; t=1654625653;
+        bh=Y5TfIR57pQIvdobT2yvCU/JqS/K7zygsgLVkFeCYq5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZlIQoSOdb1elOutsRmgBVSIgMJDte6H3WnaQRKZhsIcSOXyR8doOU04aFyZS5J9FQ
-         yeg85072GD9/OH6pmmR/8X8pV2Ret7Q+zpDDOX52IE/irYcUnb5XNdmIttPTziL26v
-         0Cv9TPAUx1+6lYOs2gTuyeD62AFb2bQoNXNlFIGk=
+        b=J9Vd/HDos00jfisKJEDEm0ywwSOgUwOj+hUEGlaRc9Dj9SI1PYCZIasx9kUFnKW+n
+         v8RRCtewtZs9NX/PMQONwffQAL/3Pefwy1fxwZNhJt5wDsnF+1If6+RZ5VGIchd3hV
+         7ZsaHLGww0aBXLc35o8eyCtODNmCw6m1QmRUXm08=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 097/772] scsi: ufs: Use pm_runtime_resume_and_get() instead of pm_runtime_get_sync()
-Date:   Tue,  7 Jun 2022 18:54:49 +0200
-Message-Id: <20220607164951.906934641@linuxfoundation.org>
+Subject: [PATCH 5.17 078/772] tcp: consume incoming skb leading to a reset
+Date:   Tue,  7 Jun 2022 18:54:30 +0200
+Message-Id: <20220607164951.337712968@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,41 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 75b8715e20a20bc7b4844835e4035543a2674200 ]
+[ Upstream commit d9d024f96609016628d750ebc8ee4a6f0d80e6e1 ]
 
-Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync() and
-pm_runtime_put_noidle(). This change is just to simplify the code, no
-actual functional changes.
+Whenever tcp_validate_incoming() handles a valid RST packet,
+we should not pretend the packet was dropped.
 
-Link: https://lore.kernel.org/r/20220420090353.2588804-1-chi.minghao@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Create a special section at the end of tcp_validate_incoming()
+to handle this case.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ti-j721e-ufs.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ net/ipv4/tcp_input.c | 28 ++++++++++++++++------------
+ 1 file changed, 16 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ti-j721e-ufs.c b/drivers/scsi/ufs/ti-j721e-ufs.c
-index eafe0db98d54..122d650d0810 100644
---- a/drivers/scsi/ufs/ti-j721e-ufs.c
-+++ b/drivers/scsi/ufs/ti-j721e-ufs.c
-@@ -29,11 +29,9 @@ static int ti_j721e_ufs_probe(struct platform_device *pdev)
- 		return PTR_ERR(regbase);
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 7bf84ce34d9e..96c25c97ee56 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5694,7 +5694,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+ 						  &tp->last_oow_ack_time))
+ 				tcp_send_dupack(sk, skb);
+ 		} else if (tcp_reset_check(sk, skb)) {
+-			tcp_reset(sk, skb);
++			goto reset;
+ 		}
+ 		goto discard;
+ 	}
+@@ -5730,17 +5730,16 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+ 		}
  
- 	pm_runtime_enable(dev);
--	ret = pm_runtime_get_sync(dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(dev);
-+	ret = pm_runtime_resume_and_get(dev);
-+	if (ret < 0)
- 		goto disable_pm;
--	}
+ 		if (rst_seq_match)
+-			tcp_reset(sk, skb);
+-		else {
+-			/* Disable TFO if RST is out-of-order
+-			 * and no data has been received
+-			 * for current active TFO socket
+-			 */
+-			if (tp->syn_fastopen && !tp->data_segs_in &&
+-			    sk->sk_state == TCP_ESTABLISHED)
+-				tcp_fastopen_active_disable(sk);
+-			tcp_send_challenge_ack(sk);
+-		}
++			goto reset;
++
++		/* Disable TFO if RST is out-of-order
++		 * and no data has been received
++		 * for current active TFO socket
++		 */
++		if (tp->syn_fastopen && !tp->data_segs_in &&
++		    sk->sk_state == TCP_ESTABLISHED)
++			tcp_fastopen_active_disable(sk);
++		tcp_send_challenge_ack(sk);
+ 		goto discard;
+ 	}
  
- 	/* Select MPHY refclk frequency */
- 	clk = devm_clk_get(dev, NULL);
+@@ -5765,6 +5764,11 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+ discard:
+ 	tcp_drop(sk, skb);
+ 	return false;
++
++reset:
++	tcp_reset(sk, skb);
++	__kfree_skb(skb);
++	return false;
+ }
+ 
+ /*
 -- 
 2.35.1
 
