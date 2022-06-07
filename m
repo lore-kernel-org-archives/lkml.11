@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1076FCCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E31BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352529AbiFGT2r (ORCPT
+        id S1354242AbiFGT2z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:28:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38320 "EHLO
+        Tue, 7 Jun 2022 15:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352579AbiFGSey (ORCPT
+        with ESMTP id S1352652AbiFGSe4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:34:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB96E147810;
+        Tue, 7 Jun 2022 14:34:56 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1C5147828;
         Tue,  7 Jun 2022 10:57:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CE6C6187F;
-        Tue,  7 Jun 2022 17:57:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4397DC385A5;
-        Tue,  7 Jun 2022 17:57:50 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8C751CE2424;
+        Tue,  7 Jun 2022 17:57:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79F1CC36AFE;
+        Tue,  7 Jun 2022 17:57:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624670;
-        bh=5RfgC+jXF8hHJVSRuyWvu7JfVcQ0gFgz8ApQ4Hn+XTQ=;
+        s=korg; t=1654624667;
+        bh=iXUiLRDFdy3+PETYbFLXAMdORBW0W2MfQCe4DsTIHdY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NTI/5dBgvE6J/GrRarP9fLPJURIwPcrCpE9bEXR5xVzhxcS4jEJ1si7ovIk3AkJ0T
-         4qa+DccLpUwdzg5vvRH0X7oZVqPZnUD2NNlW9drvCiwWHvdQ84dZTrOnVSkoDkNofw
-         rzINQhWZlWCsj6AAXnYFhvENazO8zdVm9ZVkAr30=
+        b=Ju9m4naQdYRfJNlnVLg7MG9Ydhzcq3Qwi9lQo8HAcamMd+QJ3OjnmwuHdySWpfrp+
+         kI6aLp8/c5UEcRufkcVl+A/f3LmRwybVA8epQyildNMQk5c35VpCXpog8HP8J5oBLm
+         0ZZxKhFBQU1VEXynx+T4VJBGM4TyMaOGgFUbP/DM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 411/667] misc: ocxl: fix possible double free in ocxl_file_register_afu
-Date:   Tue,  7 Jun 2022 19:01:16 +0200
-Message-Id: <20220607164947.067754481@linuxfoundation.org>
+        stable@vger.kernel.org, Jianrong Zhang <zhangjianrong5@huawei.com>,
+        Jiantao Zhang <water.zhangjiantao@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 393/667] PCI: dwc: Fix setting error return on MSI DMA mapping failure
+Date:   Tue,  7 Jun 2022 19:00:58 +0200
+Message-Id: <20220607164946.533043960@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,40 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Jiantao Zhang <water.zhangjiantao@huawei.com>
 
-[ Upstream commit 950cf957fe34d40d63dfa3bf3968210430b6491e ]
+[ Upstream commit 88557685cd72cf0db686a4ebff3fad4365cb6071 ]
 
-info_release() will be called in device_unregister() when info->dev's
-reference count is 0. So there is no need to call ocxl_afu_put() and
-kfree() again.
+When dma_mapping_error() returns error because of no enough memory,
+but dw_pcie_host_init() returns success, which will mislead the callers.
 
-Fix this by adding free_minor() and return to err_unregister error path.
-
-Fixes: 75ca758adbaf ("ocxl: Create a clear delineation between ocxl backend & frontend")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Acked-by: Frederic Barrat <fbarrat@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220418085758.38145-1-hbh25y@gmail.com
+Link: https://lore.kernel.org/r/30170911-0e2f-98ce-9266-70465b9073e5@huawei.com
+Fixes: 07940c369a6b ("PCI: dwc: Fix MSI page leakage in suspend/resume")
+Signed-off-by: Jianrong Zhang <zhangjianrong5@huawei.com>
+Signed-off-by: Jiantao Zhang <water.zhangjiantao@huawei.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/ocxl/file.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/pci/controller/dwc/pcie-designware-host.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/misc/ocxl/file.c b/drivers/misc/ocxl/file.c
-index e70525eedaae..d278f8ba2c76 100644
---- a/drivers/misc/ocxl/file.c
-+++ b/drivers/misc/ocxl/file.c
-@@ -558,7 +558,9 @@ int ocxl_file_register_afu(struct ocxl_afu *afu)
- 
- err_unregister:
- 	ocxl_sysfs_unregister_afu(info); // safe to call even if register failed
-+	free_minor(info);
- 	device_unregister(&info->dev);
-+	return rc;
- err_put:
- 	ocxl_afu_put(afu);
- 	free_minor(info);
+diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+index d1d9b8344ec9..bc0807fe3fc3 100644
+--- a/drivers/pci/controller/dwc/pcie-designware-host.c
++++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+@@ -380,7 +380,8 @@ int dw_pcie_host_init(struct pcie_port *pp)
+ 						      sizeof(pp->msi_msg),
+ 						      DMA_FROM_DEVICE,
+ 						      DMA_ATTR_SKIP_CPU_SYNC);
+-			if (dma_mapping_error(pci->dev, pp->msi_data)) {
++			ret = dma_mapping_error(pci->dev, pp->msi_data);
++			if (ret) {
+ 				dev_err(pci->dev, "Failed to map MSI data\n");
+ 				pp->msi_data = 0;
+ 				goto err_free_msi;
 -- 
 2.35.1
 
