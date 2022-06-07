@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04170CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 291BDCCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377884AbiFGUvI (ORCPT
+        id S1377949AbiFGUvO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:51:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50088 "EHLO
+        Tue, 7 Jun 2022 16:51:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358403AbiFGTw2 (ORCPT
+        with ESMTP id S1358435AbiFGTw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09517EF057;
-        Tue,  7 Jun 2022 11:20:22 -0700 (PDT)
+        Tue, 7 Jun 2022 15:52:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9BC3134E13;
+        Tue,  7 Jun 2022 11:20:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76294B82368;
-        Tue,  7 Jun 2022 18:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C65F0C385A2;
-        Tue,  7 Jun 2022 18:20:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1589460DB7;
+        Tue,  7 Jun 2022 18:20:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2562AC385A2;
+        Tue,  7 Jun 2022 18:20:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626019;
-        bh=XJ50Jb/dd9venn1pdAoNrEN6xPogM9j8x9SREus6Qzo=;
+        s=korg; t=1654626027;
+        bh=+8F/Tet6mZM8QNlTLNyZ2Z7lnuWP8SnBe/1jqtVQNrg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pRJMaUS03H/wEk1foQyutPrxOw6UE2WEsi/gedG0imytwtOY/CgBGusxz/TxvM+GD
-         Ot20ElRtny5yktE8SS+qtRnzlHrt6PF6JaP/vAGRd2/IvKXT+FLQvjqghaJC4uu1wv
-         gfop5LAfYjjwnnUgqAjxdTDQ310U1ib/YWKlq1GE=
+        b=yYWHu+bjwns2fhsilxal2je4gHh/HWaxyj4xmPSuIGk+Hz9a/2o5XlRFUrPHSbZLd
+         yvymbNckAQenS0upy/ufe+/15J2gWYZYJjugEMCYXPqRXl50/kvs8Rdf2J4XvdlnhU
+         1H4vA8W5EFAGcTJ93gKN2tnS9QTTyOuk/lov19ME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        David Lechner <david@lechnology.com>,
+        stable@vger.kernel.org, Nicolas Belin <nbelin@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 228/772] dt-bindings: display: sitronix, st7735r: Fix backlight in example
-Date:   Tue,  7 Jun 2022 18:57:00 +0200
-Message-Id: <20220607164955.750570450@linuxfoundation.org>
+Subject: [PATCH 5.17 231/772] drm: bridge: it66121: Fix the register page length
+Date:   Tue,  7 Jun 2022 18:57:03 +0200
+Message-Id: <20220607164955.839858002@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,36 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Noralf Trønnes <noralf@tronnes.org>
+From: Nicolas Belin <nbelin@baylibre.com>
 
-[ Upstream commit 471e201f543559e2cb19b182b680ebf04d80ee31 ]
+[ Upstream commit 003a1bd6a2a55c16cb2451153533dbedb12bebec ]
 
-The backlight property was lost during conversion to yaml in commit
-abdd9e3705c8 ("dt-bindings: display: sitronix,st7735r: Convert to DT schema").
-Put it back.
+Set the register page length or window length to
+0x100 according to the documentation.
 
-Fixes: abdd9e3705c8 ("dt-bindings: display: sitronix,st7735r: Convert to DT schema")
-Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: David Lechner <david@lechnology.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211124150757.17929-2-noralf@tronnes.org
+Fixes: 988156dc2fc9 ("drm: bridge: add it66121 driver")
+Signed-off-by: Nicolas Belin <nbelin@baylibre.com>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220316135733.173950-3-nbelin@baylibre.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/display/sitronix,st7735r.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/bridge/ite-it66121.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml b/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
-index 0cebaaefda03..419c3b2ac5a6 100644
---- a/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
-+++ b/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
-@@ -72,6 +72,7 @@ examples:
-                     dc-gpios = <&gpio 43 GPIO_ACTIVE_HIGH>;
-                     reset-gpios = <&gpio 80 GPIO_ACTIVE_HIGH>;
-                     rotation = <270>;
-+                    backlight = <&backlight>;
-             };
-     };
+diff --git a/drivers/gpu/drm/bridge/ite-it66121.c b/drivers/gpu/drm/bridge/ite-it66121.c
+index 06b59b422c69..64912b770086 100644
+--- a/drivers/gpu/drm/bridge/ite-it66121.c
++++ b/drivers/gpu/drm/bridge/ite-it66121.c
+@@ -227,7 +227,7 @@ static const struct regmap_range_cfg it66121_regmap_banks[] = {
+ 		.selector_mask = 0x1,
+ 		.selector_shift = 0,
+ 		.window_start = 0x00,
+-		.window_len = 0x130,
++		.window_len = 0x100,
+ 	},
+ };
  
 -- 
 2.35.1
