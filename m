@@ -2,117 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF81CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21988CCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381607AbiFGVlS (ORCPT
+        id S1381621AbiFGVlW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:41:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49012 "EHLO
+        Tue, 7 Jun 2022 17:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378042AbiFGUvW (ORCPT
+        with ESMTP id S1378036AbiFGUvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:51:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E35185C86;
-        Tue,  7 Jun 2022 11:41:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67A82B822C0;
-        Tue,  7 Jun 2022 18:41:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1E04C34115;
-        Tue,  7 Jun 2022 18:41:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627290;
-        bh=5eZbs3RUyx8krHHab6EXWvD9mRyJfw/nCvHv1W7UiA4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oLnaD/jdgWzC6Bu+uBLr+0IRQMFRxYMGuX1JfehmjZLyFPiWwW6m90SQTG3P7vC++
-         jemGmWuuWmPPS7PoD5dL7zWdCySbzba8+3GKme6o5dvaZRG3rEmOMUVWzeH10/zj5D
-         K8nGnkwbrf64zgqMY2O4PU/liV2gi5bgfSGwtwbQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.17 684/772] selftests/landlock: Test landlock_create_ruleset(2) argument check ordering
-Date:   Tue,  7 Jun 2022 19:04:36 +0200
-Message-Id: <20220607165009.212656492@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410D0184866
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:41:27 -0700 (PDT)
+X-ASG-Debug-ID: 1654627285-1cf43917f3396570001-xx1T2L
+Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id DDLvrFGSLFUxedt8; Tue, 07 Jun 2022 14:41:25 -0400 (EDT)
+X-Barracuda-Envelope-From: tonyb@cybernetics.com
+X-ASG-Whitelist: Client
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
+        bh=TzT+rsQP1dU+4gl9FedwnDXSnYdnIujwXRUJ3rWtVjY=;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
+        Content-Language:Subject:MIME-Version:Date:Message-ID; b=QobQ5f3Vw7/QICg5Lf52
+        wSTg0IRpHCrg41KSASEOHyfrsoeCDJHx7Lswmn08jk4qmskWB4B+joh+Vn6isYj0RlrIHUCO8AhM2
+        vPVcqWRgNXU7foh0YWIo9WPEl49krQojYiEe3yGDcotj+irgOpjXVMKlH3PAJG7mY6kDq1fYBw=
+Received: from [10.157.2.224] (HELO [192.168.200.1])
+  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
+  with ESMTPS id 11859414; Tue, 07 Jun 2022 14:41:25 -0400
+Message-ID: <d87183a5-6400-6687-de27-8c4b836e7e83@cybernetics.com>
+Date:   Tue, 7 Jun 2022 14:41:25 -0400
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: [PATCH v6 03/11] dmapool: cleanup integer types
+Content-Language: en-US
+X-ASG-Orig-Subj: [PATCH v6 03/11] dmapool: cleanup integer types
+From:   Tony Battersby <tonyb@cybernetics.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tony Lindgren <tony@atomide.com>
+References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
+In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Barracuda-Connect: UNKNOWN[10.10.4.126]
+X-Barracuda-Start-Time: 1654627285
+X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
+X-Barracuda-BRTS-Status: 1
+X-Virus-Scanned: by bsmtpd at cybernetics.com
+X-Barracuda-Scan-Msg-Size: 3538
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+To represent the size of a single allocation, dmapool currently uses
+'unsigned int' in some places and 'size_t' in other places.  Standardize
+on 'unsigned int' to reduce overhead, but use 'size_t' when counting all
+the blocks in the entire pool.
 
-commit 6533d0c3a86ee1cc74ff37ac92ca597deb87015c upstream.
-
-Add inval_create_ruleset_arguments, extension of
-inval_create_ruleset_flags, to also check error ordering for
-landlock_create_ruleset(2).
-
-This is similar to the previous commit checking landlock_add_rule(2).
-
-Test coverage for security/landlock is 94.4% of 504 lines accorging to
-gcc/gcov-11.
-
-Link: https://lore.kernel.org/r/20220506160820.524344-11-mic@digikod.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
 ---
- tools/testing/selftests/landlock/base_test.c |   21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/landlock/base_test.c
-+++ b/tools/testing/selftests/landlock/base_test.c
-@@ -97,14 +97,17 @@ TEST(abi_version)
- 	ASSERT_EQ(EINVAL, errno);
- }
+Changes since v5:
+moved 'size' down in struct dma_pool to be near the other 32-bit ints.
+blks_per_alloc will fill out the hole in a later patch.
+
+This puts an upper bound on 'size' of INT_MAX to avoid overflowing the
+following comparison in pool_initialise_page():
+
+unsigned int offset = 0;
+unsigned int next = offset + pool->size;
+if (unlikely((next + pool->size) > ...
+
+'boundary' is passed in as a size_t but gets stored as an unsigned int.
+'boundary' values >= 'allocation' do not have any effect, so clipping
+'boundary' to 'allocation' keeps it within the range of unsigned int
+without affecting anything else.  A few lines above (not in the diff)
+you can see that if 'boundary' is passed in as 0 then it is set to
+'allocation', so it is nothing new.  For reference, here is the
+relevant code after being patched:
+
+	if (!boundary)
+		boundary = allocation;
+	else if ((boundary < size) || (boundary & (boundary - 1)))
+		return NULL;
+
+	boundary = min(boundary, allocation);
+
+ mm/dmapool.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
+
+diff --git a/mm/dmapool.c b/mm/dmapool.c
+index 1829291f5d70..f85d6bde2205 100644
+--- a/mm/dmapool.c
++++ b/mm/dmapool.c
+@@ -43,10 +43,10 @@
+ struct dma_pool {		/* the pool */
+ 	struct list_head page_list;
+ 	spinlock_t lock;
+-	size_t size;
+ 	struct device *dev;
+-	size_t allocation;
+-	size_t boundary;
++	unsigned int size;
++	unsigned int allocation;
++	unsigned int boundary;
+ 	char name[32];
+ 	struct list_head pools;
+ };
+@@ -73,7 +73,7 @@ static ssize_t pools_show(struct device *dev, struct device_attribute *attr, cha
+ 	mutex_lock(&pools_lock);
+ 	list_for_each_entry(pool, &dev->dma_pools, pools) {
+ 		unsigned pages = 0;
+-		unsigned blocks = 0;
++		size_t blocks = 0;
  
--TEST(inval_create_ruleset_flags)
-+/* Tests ordering of syscall argument checks. */
-+TEST(create_ruleset_checks_ordering)
+ 		spin_lock_irq(&pool->lock);
+ 		list_for_each_entry(page, &pool->page_list, page_list) {
+@@ -83,9 +83,10 @@ static ssize_t pools_show(struct device *dev, struct device_attribute *attr, cha
+ 		spin_unlock_irq(&pool->lock);
+ 
+ 		/* per-pool info, no real statistics yet */
+-		size += sysfs_emit_at(buf, size, "%-16s %4u %4zu %4zu %2u\n",
++		size += sysfs_emit_at(buf, size, "%-16s %4zu %4zu %4u %2u\n",
+ 				      pool->name, blocks,
+-				      pages * (pool->allocation / pool->size),
++				      (size_t) pages *
++				      (pool->allocation / pool->size),
+ 				      pool->size, pages);
+ 	}
+ 	mutex_unlock(&pools_lock);
+@@ -130,7 +131,7 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
+ 	else if (align & (align - 1))
+ 		return NULL;
+ 
+-	if (size == 0)
++	if (size == 0 || size > INT_MAX)
+ 		return NULL;
+ 	else if (size < 4)
+ 		size = 4;
+@@ -143,6 +144,8 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
+ 	else if ((boundary < size) || (boundary & (boundary - 1)))
+ 		return NULL;
+ 
++	boundary = min(boundary, allocation);
++
+ 	retval = kmalloc(sizeof(*retval), GFP_KERNEL);
+ 	if (!retval)
+ 		return retval;
+@@ -303,7 +306,7 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
  {
- 	const int last_flag = LANDLOCK_CREATE_RULESET_VERSION;
- 	const int invalid_flag = last_flag << 1;
-+	int ruleset_fd;
- 	const struct landlock_ruleset_attr ruleset_attr = {
- 		.handled_access_fs = LANDLOCK_ACCESS_FS_READ_FILE,
- 	};
+ 	unsigned long flags;
+ 	struct dma_page *page;
+-	size_t offset;
++	unsigned int offset;
+ 	void *retval;
  
-+	/* Checks priority for invalid flags. */
- 	ASSERT_EQ(-1, landlock_create_ruleset(NULL, 0, invalid_flag));
- 	ASSERT_EQ(EINVAL, errno);
- 
-@@ -119,6 +122,22 @@ TEST(inval_create_ruleset_flags)
- 		  landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr),
- 					  invalid_flag));
- 	ASSERT_EQ(EINVAL, errno);
-+
-+	/* Checks too big ruleset_attr size. */
-+	ASSERT_EQ(-1, landlock_create_ruleset(&ruleset_attr, -1, 0));
-+	ASSERT_EQ(E2BIG, errno);
-+
-+	/* Checks too small ruleset_attr size. */
-+	ASSERT_EQ(-1, landlock_create_ruleset(&ruleset_attr, 0, 0));
-+	ASSERT_EQ(EINVAL, errno);
-+	ASSERT_EQ(-1, landlock_create_ruleset(&ruleset_attr, 1, 0));
-+	ASSERT_EQ(EINVAL, errno);
-+
-+	/* Checks valid call. */
-+	ruleset_fd =
-+		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
-+	ASSERT_LE(0, ruleset_fd);
-+	ASSERT_EQ(0, close(ruleset_fd));
- }
- 
- /* Tests ordering of syscall argument checks. */
-
+ 	might_alloc(mem_flags);
+-- 
+2.25.1
 
