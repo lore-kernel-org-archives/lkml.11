@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7141CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E61FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383384AbiFGWRo (ORCPT
+        id S1382272AbiFGWRt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33808 "EHLO
+        Tue, 7 Jun 2022 18:17:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379994AbiFGVLW (ORCPT
+        with ESMTP id S1379963AbiFGVLV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:22 -0400
+        Tue, 7 Jun 2022 17:11:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EF7217345;
-        Tue,  7 Jun 2022 11:52:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD9D216832;
+        Tue,  7 Jun 2022 11:52:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BCF961579;
-        Tue,  7 Jun 2022 18:52:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CF06C385A2;
-        Tue,  7 Jun 2022 18:52:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD9A261579;
+        Tue,  7 Jun 2022 18:52:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7F4DC385A2;
+        Tue,  7 Jun 2022 18:52:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627967;
-        bh=Dz8ai7iKPglweNQzZKbSzXedFDeTrb0db8t40QK1R4o=;
+        s=korg; t=1654627956;
+        bh=SrGB3I3yImzAPCnjAlFIOW+PK3rwCwo9unqbwzwEX88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rWyzZg+JzzhZiElCl3VS/dv4gDALHBPkAUW/q7jiaS+jFj7snTLzDwyaip44CzfWn
-         2YqeXRvRG+hWqTVHpEAnlXtoWi8hMifSLKRhWJ1V0+0JXp2SyOoNF3KX0iXHZRAkhV
-         7acVgui8b6kM8K2UP/ruTdGQgm+mWa/6I+XugYtY=
+        b=VdhY1JnQ/+InuNghmeFUBIYHXkPjOkiDAVDnFIvyxPvi6Y6XxwU8l5ah/oNVMullk
+         9J74U0E+BnqXi5eZQ9PcGxKMq74V50jFaoZolFnITmYFzQ/4WkF2otK7HcFJ3kPCsy
+         9TMz6cVxRHAoj2aEQc1lVy6sp/DmELFgXYIbEMLs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        Hari Chandrakanthan <quic_haric@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 107/879] mmc: jz4740: Apply DMA engine limits to maximum segment size
-Date:   Tue,  7 Jun 2022 18:53:45 +0200
-Message-Id: <20220607165005.800346734@linuxfoundation.org>
+Subject: [PATCH 5.18 113/879] ath11k: disable spectral scan during spectral deinit
+Date:   Tue,  7 Jun 2022 18:53:51 +0200
+Message-Id: <20220607165005.982314027@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,85 +51,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+From: Hari Chandrakanthan <quic_haric@quicinc.com>
 
-[ Upstream commit afadb04f1d6e74b18a253403f5274cde5e3fd7bd ]
+[ Upstream commit 161c64de239c7018e0295e7e0520a19f00aa32dc ]
 
-Do what is done in other DMA-enabled MMC host drivers (cf. host/mmci.c) and
-limit the maximum segment size based on the DMA engine's capabilities. This
-is needed to avoid warnings like the following with CONFIG_DMA_API_DEBUG=y.
+When ath11k modules are removed using rmmod with spectral scan enabled,
+crash is observed. Different crash trace is observed for each crash.
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 21 at kernel/dma/debug.c:1162 debug_dma_map_sg+0x2f4/0x39c
-DMA-API: jz4780-dma 13420000.dma-controller: mapping sg segment longer than device claims to support [len=98304] [max=65536]
-CPU: 0 PID: 21 Comm: kworker/0:1H Not tainted 5.18.0-rc1 #19
-Workqueue: kblockd blk_mq_run_work_fn
-Stack : 81575aec 00000004 80620000 80620000 80620000 805e7358 00000009 801537ac
-        814c832c 806276e3 806e34b4 80620000 81575aec 00000001 81575ab8 09291444
-        00000000 00000000 805e7358 81575958 ffffffea 8157596c 00000000 636f6c62
-        6220646b 80387a70 0000000f 6d5f6b6c 80620000 00000000 81575ba4 00000009
-        805e170c 80896640 00000001 00010000 00000000 00000000 00006098 806e0000
-        ...
-Call Trace:
-[<80107670>] show_stack+0x84/0x120
-[<80528cd8>] __warn+0xb8/0xec
-[<80528d78>] warn_slowpath_fmt+0x6c/0xb8
-[<8016f1d4>] debug_dma_map_sg+0x2f4/0x39c
-[<80169d4c>] __dma_map_sg_attrs+0xf0/0x118
-[<8016a27c>] dma_map_sg_attrs+0x14/0x28
-[<804f66b4>] jz4740_mmc_prepare_dma_data+0x74/0xa4
-[<804f6714>] jz4740_mmc_pre_request+0x30/0x54
-[<804f4ff4>] mmc_blk_mq_issue_rq+0x6e0/0x7bc
-[<804f5590>] mmc_mq_queue_rq+0x220/0x2d4
-[<8038b2c0>] blk_mq_dispatch_rq_list+0x480/0x664
-[<80391040>] blk_mq_do_dispatch_sched+0x2dc/0x370
-[<80391468>] __blk_mq_sched_dispatch_requests+0xec/0x164
-[<80391540>] blk_mq_sched_dispatch_requests+0x44/0x94
-[<80387900>] __blk_mq_run_hw_queue+0xb0/0xcc
-[<80134c14>] process_one_work+0x1b8/0x264
-[<80134ff8>] worker_thread+0x2ec/0x3b8
-[<8013b13c>] kthread+0x104/0x10c
-[<80101dcc>] ret_from_kernel_thread+0x14/0x1c
+Send spectral scan disable WMI command to firmware before cleaning
+the spectral dbring in the spectral_deinit API to avoid this crash.
 
----[ end trace 0000000000000000 ]---
+call trace from one of the crash observed:
+[ 1252.880802] Unable to handle kernel NULL pointer dereference at virtual address 00000008
+[ 1252.882722] pgd = 0f42e886
+[ 1252.890955] [00000008] *pgd=00000000
+[ 1252.893478] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+[ 1253.093035] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.89 #0
+[ 1253.115261] Hardware name: Generic DT based system
+[ 1253.121149] PC is at ath11k_spectral_process_data+0x434/0x574 [ath11k]
+[ 1253.125940] LR is at 0x88e31017
+[ 1253.132448] pc : [<7f9387b8>]    lr : [<88e31017>]    psr: a0000193
+[ 1253.135488] sp : 80d01bc8  ip : 00000001  fp : 970e0000
+[ 1253.141737] r10: 88e31000  r9 : 970ec000  r8 : 00000080
+[ 1253.146946] r7 : 94734040  r6 : a0000113  r5 : 00000057  r4 : 00000000
+[ 1253.152159] r3 : e18cb694  r2 : 00000217  r1 : 1df1f000  r0 : 00000001
+[ 1253.158755] Flags: NzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment user
+[ 1253.165266] Control: 10c0383d  Table: 5e71006a  DAC: 00000055
+[ 1253.172472] Process swapper/0 (pid: 0, stack limit = 0x60870141)
+[ 1253.458055] [<7f9387b8>] (ath11k_spectral_process_data [ath11k]) from [<7f917fdc>] (ath11k_dbring_buffer_release_event+0x214/0x2e4 [ath11k])
+[ 1253.466139] [<7f917fdc>] (ath11k_dbring_buffer_release_event [ath11k]) from [<7f8ea3c4>] (ath11k_wmi_tlv_op_rx+0x1840/0x29cc [ath11k])
+[ 1253.478807] [<7f8ea3c4>] (ath11k_wmi_tlv_op_rx [ath11k]) from [<7f8fe868>] (ath11k_htc_rx_completion_handler+0x180/0x4e0 [ath11k])
+[ 1253.490699] [<7f8fe868>] (ath11k_htc_rx_completion_handler [ath11k]) from [<7f91308c>] (ath11k_ce_per_engine_service+0x2c4/0x3b4 [ath11k])
+[ 1253.502386] [<7f91308c>] (ath11k_ce_per_engine_service [ath11k]) from [<7f9a4198>] (ath11k_pci_ce_tasklet+0x28/0x80 [ath11k_pci])
+[ 1253.514811] [<7f9a4198>] (ath11k_pci_ce_tasklet [ath11k_pci]) from [<8032227c>] (tasklet_action_common.constprop.2+0x64/0xe8)
+[ 1253.526476] [<8032227c>] (tasklet_action_common.constprop.2) from [<803021e8>] (__do_softirq+0x130/0x2d0)
+[ 1253.537756] [<803021e8>] (__do_softirq) from [<80322610>] (irq_exit+0xcc/0xe8)
+[ 1253.547304] [<80322610>] (irq_exit) from [<8036a4a4>] (__handle_domain_irq+0x60/0xb4)
+[ 1253.554428] [<8036a4a4>] (__handle_domain_irq) from [<805eb348>] (gic_handle_irq+0x4c/0x90)
+[ 1253.562321] [<805eb348>] (gic_handle_irq) from [<80301a78>] (__irq_svc+0x58/0x8c)
 
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Link: https://lore.kernel.org/r/20220411153753.50443-1-aidanmacdonald.0x0@gmail.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Tested-on: QCN6122 hw1.0 AHB WLAN.HK.2.6.0.1-00851-QCAHKSWPL_SILICONZ-1
+
+Signed-off-by: Hari Chandrakanthan <quic_haric@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/1649396345-349-1-git-send-email-quic_haric@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/jz4740_mmc.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/net/wireless/ath/ath11k/spectral.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/mmc/host/jz4740_mmc.c b/drivers/mmc/host/jz4740_mmc.c
-index 7ab1b38a7be5..b1d563b2ed1b 100644
---- a/drivers/mmc/host/jz4740_mmc.c
-+++ b/drivers/mmc/host/jz4740_mmc.c
-@@ -247,6 +247,26 @@ static int jz4740_mmc_acquire_dma_channels(struct jz4740_mmc_host *host)
- 		return PTR_ERR(host->dma_rx);
- 	}
+diff --git a/drivers/net/wireless/ath/ath11k/spectral.c b/drivers/net/wireless/ath/ath11k/spectral.c
+index 2b18871d5f7c..516a7b4cd180 100644
+--- a/drivers/net/wireless/ath/ath11k/spectral.c
++++ b/drivers/net/wireless/ath/ath11k/spectral.c
+@@ -212,7 +212,10 @@ static int ath11k_spectral_scan_config(struct ath11k *ar,
+ 		return -ENODEV;
  
-+	/*
-+	 * Limit the maximum segment size in any SG entry according to
-+	 * the parameters of the DMA engine device.
-+	 */
-+	if (host->dma_tx) {
-+		struct device *dev = host->dma_tx->device->dev;
-+		unsigned int max_seg_size = dma_get_max_seg_size(dev);
+ 	arvif->spectral_enabled = (mode != ATH11K_SPECTRAL_DISABLED);
 +
-+		if (max_seg_size < host->mmc->max_seg_size)
-+			host->mmc->max_seg_size = max_seg_size;
-+	}
++	spin_lock_bh(&ar->spectral.lock);
+ 	ar->spectral.mode = mode;
++	spin_unlock_bh(&ar->spectral.lock);
+ 
+ 	ret = ath11k_wmi_vdev_spectral_enable(ar, arvif->vdev_id,
+ 					      ATH11K_WMI_SPECTRAL_TRIGGER_CMD_CLEAR,
+@@ -843,9 +846,6 @@ static inline void ath11k_spectral_ring_free(struct ath11k *ar)
+ {
+ 	struct ath11k_spectral *sp = &ar->spectral;
+ 
+-	if (!sp->enabled)
+-		return;
+-
+ 	ath11k_dbring_srng_cleanup(ar, &sp->rx_ring);
+ 	ath11k_dbring_buf_cleanup(ar, &sp->rx_ring);
+ }
+@@ -897,15 +897,16 @@ void ath11k_spectral_deinit(struct ath11k_base *ab)
+ 		if (!sp->enabled)
+ 			continue;
+ 
+-		ath11k_spectral_debug_unregister(ar);
+-		ath11k_spectral_ring_free(ar);
++		mutex_lock(&ar->conf_mutex);
++		ath11k_spectral_scan_config(ar, ATH11K_SPECTRAL_DISABLED);
++		mutex_unlock(&ar->conf_mutex);
+ 
+ 		spin_lock_bh(&sp->lock);
+-
+-		sp->mode = ATH11K_SPECTRAL_DISABLED;
+ 		sp->enabled = false;
+-
+ 		spin_unlock_bh(&sp->lock);
 +
-+	if (host->dma_rx) {
-+		struct device *dev = host->dma_rx->device->dev;
-+		unsigned int max_seg_size = dma_get_max_seg_size(dev);
-+
-+		if (max_seg_size < host->mmc->max_seg_size)
-+			host->mmc->max_seg_size = max_seg_size;
-+	}
-+
- 	return 0;
++		ath11k_spectral_debug_unregister(ar);
++		ath11k_spectral_ring_free(ar);
+ 	}
  }
  
 -- 
