@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F42BCCA494
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E048CCA493
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442361AbiFHAyW (ORCPT
+        id S1442390AbiFHAy3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:54:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46196 "EHLO
+        Tue, 7 Jun 2022 20:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384223AbiFGVyV (ORCPT
+        with ESMTP id S1385037AbiFGWRN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:54:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7D837BD3;
-        Tue,  7 Jun 2022 12:13:11 -0700 (PDT)
+        Tue, 7 Jun 2022 18:17:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665CE262706;
+        Tue,  7 Jun 2022 12:20:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD2E0617D0;
-        Tue,  7 Jun 2022 19:12:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAAA0C385A2;
-        Tue,  7 Jun 2022 19:12:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E09E3B8233E;
+        Tue,  7 Jun 2022 19:19:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57601C385A5;
+        Tue,  7 Jun 2022 19:19:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629158;
-        bh=B/QuFEpq78xkrF1rplhhWqWNV0Fu2qI+glk260VWyvc=;
+        s=korg; t=1654629593;
+        bh=1xR0J75ZXSv9F3XwtXuUO8C7ILR4HML9B/tq5xySGAg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z6bzvGyP0Zwy/Qa6IAci3NZ6Zz+bBiygf675ZyvdaWwU8VSF9ndiq7tWs+9wzHW7N
-         GdZQoQt2/97LKjZNmUJXs+kz7zu6spWt5BUGHwzQGaR8t7e3Wq8NDX26YMp1cFvm5E
-         x6efrM2Kg7+21h5hdLdPXJLnvEri4dPExrsbwp60=
+        b=ev4CnCyW2zesNdcn8gvTabIncHOMAXpWIUikYPUAHboF4aeh9IBHpO6T3HrHv8yqH
+         PgQiPcNegbOqUeYrpc8WD8dfbtX3ZWIRR7tyyerA1TBo12t79OkNYjH1Q4ubQmYsTG
+         Bzna4iAvBDK74U95SSLYG0zoxwmekGs3JnL/2jj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 550/879] cxl/pci: Add debug for DVSEC range init failures
-Date:   Tue,  7 Jun 2022 19:01:08 +0200
-Message-Id: <20220607165018.830980067@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Gregory Greenman <gregory.greenman@intel.com>
+Subject: [PATCH 5.18 720/879] iwlwifi: fw: init SAR GEO table only if data is present
+Date:   Tue,  7 Jun 2022 19:03:58 +0200
+Message-Id: <20220607165023.753760422@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,75 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit e39f9be08d9dfe685c8a325ac1755c04f383effc ]
+commit d1f6530c3e373ddd7c76b05646052a27eead14ad upstream.
 
-In preparation for not treating DVSEC range initialization failures as
-fatal to cxl_pci_probe() add individual dev_dbg() statements for each of
-the major failure reasons in cxl_dvsec_ranges().
+When no table data was read from ACPI, then filling the data
+and returning success here will fill zero values, which means
+transmit power will be limited to 0 dBm. This is clearly not
+intended.
 
-The rationale for cxl_dvsec_ranges() failure not being fatal is that
-there is still value for cxl_pci to enable mailbox operations even if
-CXL.mem operation is disabled.
+Return an error from iwl_sar_geo_init() if there's no data to
+fill into the command structure.
 
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Reviewed-by: Ben Widawsky <ben.widawsky@intel.com>
-Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
-Link: https://lore.kernel.org/r/164730734812.3806189.2726330688692684104.stgit@dwillia2-desk3.amr.corp.intel.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: 78a19d5285d9 ("iwlwifi: mvm: Read the PPAG and SAR tables at INIT stage")
+Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
+Link: https://lore.kernel.org/r/20220517120044.bc45923b74e9.Id2b4362234b7f8ced82c591b95d4075dd2ec12f4@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/cxl/pci.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/fw/acpi.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
-index 3f2182d66829..c4941a3ca6a8 100644
---- a/drivers/cxl/pci.c
-+++ b/drivers/cxl/pci.c
-@@ -466,12 +466,15 @@ static int cxl_dvsec_ranges(struct cxl_dev_state *cxlds)
+--- a/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
++++ b/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
+@@ -937,6 +937,9 @@ int iwl_sar_geo_init(struct iwl_fw_runti
  {
- 	struct cxl_endpoint_dvsec_info *info = &cxlds->info;
- 	struct pci_dev *pdev = to_pci_dev(cxlds->dev);
-+	struct device *dev = &pdev->dev;
- 	int d = cxlds->cxl_dvsec;
- 	int hdm_count, rc, i;
- 	u16 cap, ctrl;
+ 	int i, j;
  
--	if (!d)
-+	if (!d) {
-+		dev_dbg(dev, "No DVSEC Capability\n");
- 		return -ENXIO;
-+	}
++	if (!fwrt->geo_enabled)
++		return -ENODATA;
++
+ 	if (!iwl_sar_geo_support(fwrt))
+ 		return -EOPNOTSUPP;
  
- 	rc = pci_read_config_word(pdev, d + CXL_DVSEC_CAP_OFFSET, &cap);
- 	if (rc)
-@@ -481,8 +484,10 @@ static int cxl_dvsec_ranges(struct cxl_dev_state *cxlds)
- 	if (rc)
- 		return rc;
- 
--	if (!(cap & CXL_DVSEC_MEM_CAPABLE))
-+	if (!(cap & CXL_DVSEC_MEM_CAPABLE)) {
-+		dev_dbg(dev, "Not MEM Capable\n");
- 		return -ENXIO;
-+	}
- 
- 	/*
- 	 * It is not allowed by spec for MEM.capable to be set and have 0 legacy
-@@ -495,8 +500,10 @@ static int cxl_dvsec_ranges(struct cxl_dev_state *cxlds)
- 		return -EINVAL;
- 
- 	rc = wait_for_valid(cxlds);
--	if (rc)
-+	if (rc) {
-+		dev_dbg(dev, "Failure awaiting MEM_INFO_VALID (%d)\n", rc);
- 		return rc;
-+	}
- 
- 	info->mem_enabled = FIELD_GET(CXL_DVSEC_MEM_ENABLE, ctrl);
- 
--- 
-2.35.1
-
 
 
