@@ -2,95 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1DBCCCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6468C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443337AbiFHA54 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:57:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51062 "EHLO
+        id S232229AbiFHA6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1578040AbiFGXb1 (ORCPT
+        with ESMTP id S1382914AbiFGWEC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:31:27 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF5414351A2
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:00:03 -0700 (PDT)
+        Tue, 7 Jun 2022 18:04:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA081957A3;
+        Tue,  7 Jun 2022 12:15:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 22E9ACE2018
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 22:00:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21CD3C385A2;
-        Tue,  7 Jun 2022 22:00:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1654639200;
-        bh=8sL/rpVGiBwSPrjgFyVx4IBH9TqPDfomNd6mM8hy9kU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YyEmDOruYF7lVaZO4mPnA3SXKSgcKPOjb3an5AivFk4EHvhDPF0FP5i78f89hDw42
-         WQh31V72ZEffZrfbpmy7yrLeeHt/26dVf29QXB0juYr2UiuWp/21DT4UlVdrOdeaEl
-         xdHSPld+OLAEZ6A0kLMws3s6L7gq0297zHXhPM5w=
-Date:   Tue, 7 Jun 2022 14:59:59 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     HORIGUCHI =?UTF-8?B?TkFPWUE=?= (=?UTF-8?B?5aCA5Y+jIOebtOS5nw==?=) 
-        <naoya.horiguchi@nec.com>, zhenwei pi <pizhenwei@bytedance.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Wu Fengguang <fengguang.wu@intel.com>
-Subject: Re: [PATCH] mm/memory-failure: don't allow to unpoison hw corrupted
- page
-Message-Id: <20220607145959.785e54c752f373bcc283732b@linux-foundation.org>
-In-Reply-To: <5e7abb3f-56e7-0343-a678-749b6f5238a2@redhat.com>
-References: <20220604103229.3378591-1-pizhenwei@bytedance.com>
-        <20220604115616.b7d5912ac5a37db608f67b78@linux-foundation.org>
-        <584eedd3-9369-9df1-39e2-62e331abdcc0@bytedance.com>
-        <20220606043202.GA1328953@hori.linux.bs1.fc.nec.co.jp>
-        <3b58adbf-a8b2-8dba-71a7-123ba3850c10@bytedance.com>
-        <20220606091503.GA1337789@hori.linux.bs1.fc.nec.co.jp>
-        <5e7abb3f-56e7-0343-a678-749b6f5238a2@redhat.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78065618DF;
+        Tue,  7 Jun 2022 19:15:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83820C385A5;
+        Tue,  7 Jun 2022 19:15:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629320;
+        bh=hY1OGFaYOAjKahsc3EgeshxdB0vb5pnbnAM/vdL5NOY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Zr+DgC+Iw2sgb8b1bzzUr2ujT3M+0L6H+jID69NkWNRAjq3SYDIyvW8DFKBhsE0G4
+         5a8QdnCEJJEvgV6NdZPRvKpDJaSmSt9kwg4On6z/VqAsEExW799mKquy8uPQPQpxIA
+         3ysxd40lfYUYs66N21q6tHUVg1ueMKdkAaFQxwH4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 632/879] PCI: microchip: Fix potential race in interrupt handling
+Date:   Tue,  7 Jun 2022 19:02:30 +0200
+Message-Id: <20220607165021.192548460@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022 14:36:00 +0200 David Hildenbrand <david@redhat.com> wrote:
+From: Daire McNamara <daire.mcnamara@microchip.com>
 
-> On 06.06.22 11:15, HORIGUCHI NAOYA(堀口 直也) wrote:
-> >>>    [  917.864266]  <TASK>
-> >>>    [  917.864961]  clear_huge_page+0x147/0x270
-> >>>    [  917.866236]  hugetlb_fault+0x440/0xad0
-> >>>    [  917.867366]  handle_mm_fault+0x270/0x290
-> >>>    [  917.868532]  do_user_addr_fault+0x1c3/0x680
-> >>>    [  917.869768]  exc_page_fault+0x6c/0x160
-> >>>    [  917.870912]  ? asm_exc_page_fault+0x8/0x30
-> >>>    [  917.872082]  asm_exc_page_fault+0x1e/0x30
-> >>>    [  917.873220] RIP: 0033:0x7f2aeb8ba367
-> >>>
-> >>> I don't think of a workaround for this now ...
-> >>>
-> >>
-> >> Could you please tell me how to reproduce this issue?
-> > 
-> > You are familiar with qemu-monitor-command, so the following procedure
-> > should work for you:
-> > 
-> >   - run a process using hugepages on your VM,
-> >   - check the guest physical address of the hugepage (page-types.c is helpful for this),
-> >   - inject a MCE with virsh qemu-monitor-command on the guest physical address, then
-> >   - unpoison the injected physical address.
-> 
-> That's triggered via debugfs / HWPOISON_INJECT, right?
-> 
-> That's a DEBUG_KERNEL option, so I'm not 100% sure if we really want to
-> cc stable.
+[ Upstream commit 7013654af694f6e1a2e699a6450ea50d309dd0e5 ]
 
-Sure, it's hardly a must-have.  But let's also take the patch
-complexity&risk into account.  This is one dang simple patch.
+Clear the MSI bit in ISTATUS_LOCAL register after reading it, but
+before reading and handling individual MSI bits from the ISTATUS_MSI
+register. This avoids a potential race where new MSI bits may be set
+on the ISTATUS_MSI register after it was read and be missed when the
+MSI bit in the ISTATUS_LOCAL register is cleared.
 
-Or is it.  Should these things be happening outside mf_mutex?  What the
-heck is the role of mf_mutex anyway?
+ISTATUS_LOCAL is a read/write/clear register; the register's bits
+are set when the corresponding interrupt source is activated. Each
+source is independent and thus multiple sources may be active
+simultaneously. The processor can monitor and clear status
+bits. If one or more ISTATUS_LOCAL interrupt sources are active,
+the RootPort issues an interrupt towards the processor (on
+the AXI domain). Bit 28 of this register reports an MSI has been
+received by the RootPort.
+
+ISTATUS_MSI is a read/write/clear register. Bits 31-0 are asserted
+when an MSI with message number 31-0 is received by the RootPort.
+The processor must monitor and clear these bits.
+
+Effectively, Bit 28 of ISTATUS_LOCAL informs the processor that
+an MSI has arrived at the RootPort and ISTATUS_MSI informs the
+processor which MSI (in the range 0 - 31) needs handling.
+
+Reported by: Bjorn Helgaas <bhelgaas@google.com>
+Link: https://lore.kernel.org/linux-pci/20220127202000.GA126335@bhelgaas/
+
+Link: https://lore.kernel.org/r/20220517141622.145581-1-daire.mcnamara@microchip.com
+Fixes: 6f15a9c9f941 ("PCI: microchip: Add Microchip PolarFire PCIe controller driver")
+Signed-off-by: Daire McNamara <daire.mcnamara@microchip.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pci/controller/pcie-microchip-host.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/drivers/pci/controller/pcie-microchip-host.c b/drivers/pci/controller/pcie-microchip-host.c
+index 8175abed0f05..2c52a8cef726 100644
+--- a/drivers/pci/controller/pcie-microchip-host.c
++++ b/drivers/pci/controller/pcie-microchip-host.c
+@@ -419,6 +419,7 @@ static void mc_handle_msi(struct irq_desc *desc)
+ 
+ 	status = readl_relaxed(bridge_base_addr + ISTATUS_LOCAL);
+ 	if (status & PM_MSI_INT_MSI_MASK) {
++		writel_relaxed(status & PM_MSI_INT_MSI_MASK, bridge_base_addr + ISTATUS_LOCAL);
+ 		status = readl_relaxed(bridge_base_addr + ISTATUS_MSI);
+ 		for_each_set_bit(bit, &status, msi->num_vectors) {
+ 			ret = generic_handle_domain_irq(msi->dev_domain, bit);
+@@ -437,13 +438,8 @@ static void mc_msi_bottom_irq_ack(struct irq_data *data)
+ 	void __iomem *bridge_base_addr =
+ 		port->axi_base_addr + MC_PCIE_BRIDGE_ADDR;
+ 	u32 bitpos = data->hwirq;
+-	unsigned long status;
+ 
+ 	writel_relaxed(BIT(bitpos), bridge_base_addr + ISTATUS_MSI);
+-	status = readl_relaxed(bridge_base_addr + ISTATUS_MSI);
+-	if (!status)
+-		writel_relaxed(BIT(PM_MSI_INT_MSI_SHIFT),
+-			       bridge_base_addr + ISTATUS_LOCAL);
+ }
+ 
+ static void mc_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+-- 
+2.35.1
+
+
+
