@@ -2,78 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A948BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A7EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:18:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345621AbiFGRSu (ORCPT
+        id S1345643AbiFGRSw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:18:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37836 "EHLO
+        Tue, 7 Jun 2022 13:18:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345560AbiFGRSf (ORCPT
+        with ESMTP id S1345548AbiFGRSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:18:35 -0400
-Received: from smtp64.ord1d.emailsrvr.com (smtp64.ord1d.emailsrvr.com [184.106.54.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D36104CA7
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:18:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mev.co.uk;
-        s=20190130-41we5z8j; t=1654622312;
-        bh=euZGxOd3pxjypj1/z7N1GUIu656v2zkFAT2vpmjc2/4=;
-        h=From:To:Subject:Date:From;
-        b=DWKTmyC2VbSDqDcc7W0E4JTsr1+mkuZ0NK7bWf3Yff14Hj0EGkBuZJWkLOMRjwehG
-         zZYcL5U0lNdWRAw8XwDY/F1qgrvrxUyrqgZ9nFuuXdUIVk3WwhW3i+DOhCJRo5tXNz
-         aSqNhN4DfqzQhW8BeVV4FU+siy/1CjOK2TW4VXhM=
-X-Auth-ID: abbotti@mev.co.uk
-Received: by smtp9.relay.ord1d.emailsrvr.com (Authenticated sender: abbotti-AT-mev.co.uk) with ESMTPSA id F400CC0A4E;
-        Tue,  7 Jun 2022 13:18:31 -0400 (EDT)
-From:   Ian Abbott <abbotti@mev.co.uk>
+        Tue, 7 Jun 2022 13:18:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3CAF1053C0;
+        Tue,  7 Jun 2022 10:18:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F599618D8;
+        Tue,  7 Jun 2022 17:18:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A937C34119;
+        Tue,  7 Jun 2022 17:18:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654622314;
+        bh=lIQbYf0TkVPgHqacQsbXEfI+WghXsnVMfGGAywaL/M8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cfLOcsJTr7JdCREgMsKOqygpAG0cpoJYcn20AFk6TJcrhpn+5uVfS8RBeNMJ1QKMb
+         wcifnREvS1hXu68OJNoIty9wAVrGw7ily18ti2+yZf1rjl8nlQuvRbg4j4GamcCLeT
+         +7wRDjdmeCLxUHTVxs+icFmpRGMaLnPD+1Av04AQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>,
-        Johan Hovold <johan@kernel.org>, stable@vger.kernel.org
-Subject: [PATCH v2] comedi: vmk80xx: fix expression for tx buffer size
-Date:   Tue,  7 Jun 2022 18:18:19 +0100
-Message-Id: <20220607171819.4121-1-abbotti@mev.co.uk>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <d2696256-639b-4b20-3612-6dcfe68313a1@mev.co.uk>
-References: <d2696256-639b-4b20-3612-6dcfe68313a1@mev.co.uk>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.10 016/452] parisc/stifb: Keep track of hardware path of graphics card
+Date:   Tue,  7 Jun 2022 18:57:53 +0200
+Message-Id: <20220607164909.024372425@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
+References: <20220607164908.521895282@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Classification-ID: 72dfd4e7-ea9b-46f6-9082-6bc6c9ba8098-1-1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The expression for setting the size of the allocated bulk TX buffer
-(`devpriv->usb_tx_buf`) is calling `usb_endpoint_maxp(devpriv->ep_rx)`,
-which is using the wrong endpoint (should be `devpriv->ep_tx`).  Fix it.
+From: Helge Deller <deller@gmx.de>
 
-Fixes: a23461c47482 ("comedi: vmk80xx: fix transfer-buffer overflow")
-Cc: Johan Hovold <johan@kernel.org>
-Cc: stable@vger.kernel.org # 4.9+
-Signed-off-by: Ian Abbott <abbotti@mev.co.uk>
-Reviewed-by: Johan Hovold <johan@kernel.org>
+commit b046f984814af7985f444150ec28716d42d00d9a upstream.
+
+Keep the pa_path (hardware path) of the graphics card in sti_struct and use
+this info to give more useful info which card is currently being used.
+
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: stable@vger.kernel.org   # v5.10+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-v2: Amended Cc: stable@vger.kernel.org line to apply to 4.9+.
-    Added Reviewed-by: Johan Hovold
+ drivers/video/console/sticon.c  |    5 ++++-
+ drivers/video/console/sticore.c |   15 +++++++--------
+ drivers/video/fbdev/sticore.h   |    3 +++
+ 3 files changed, 14 insertions(+), 9 deletions(-)
 
- drivers/comedi/drivers/vmk80xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/comedi/drivers/vmk80xx.c b/drivers/comedi/drivers/vmk80xx.c
-index 46023adc5395..4536ed43f65b 100644
---- a/drivers/comedi/drivers/vmk80xx.c
-+++ b/drivers/comedi/drivers/vmk80xx.c
-@@ -684,7 +684,7 @@ static int vmk80xx_alloc_usb_buffers(struct comedi_device *dev)
- 	if (!devpriv->usb_rx_buf)
- 		return -ENOMEM;
+--- a/drivers/video/console/sticon.c
++++ b/drivers/video/console/sticon.c
+@@ -46,6 +46,7 @@
+ #include <linux/slab.h>
+ #include <linux/font.h>
+ #include <linux/crc32.h>
++#include <linux/fb.h>
  
--	size = max(usb_endpoint_maxp(devpriv->ep_rx), MIN_BUF_SIZE);
-+	size = max(usb_endpoint_maxp(devpriv->ep_tx), MIN_BUF_SIZE);
- 	devpriv->usb_tx_buf = kzalloc(size, GFP_KERNEL);
- 	if (!devpriv->usb_tx_buf)
- 		return -ENOMEM;
--- 
-2.35.1
+ #include <asm/io.h>
+ 
+@@ -392,7 +393,9 @@ static int __init sticonsole_init(void)
+     for (i = 0; i < MAX_NR_CONSOLES; i++)
+ 	font_data[i] = STI_DEF_FONT;
+ 
+-    pr_info("sticon: Initializing STI text console.\n");
++    pr_info("sticon: Initializing STI text console on %s at [%s]\n",
++	sticon_sti->sti_data->inq_outptr.dev_name,
++	sticon_sti->pa_path);
+     console_lock();
+     err = do_take_over_console(&sti_con, 0, MAX_NR_CONSOLES - 1,
+ 		PAGE0->mem_cons.cl_class != CL_DUPLEX);
+--- a/drivers/video/console/sticore.c
++++ b/drivers/video/console/sticore.c
+@@ -34,7 +34,7 @@
+ 
+ #include "../fbdev/sticore.h"
+ 
+-#define STI_DRIVERVERSION "Version 0.9b"
++#define STI_DRIVERVERSION "Version 0.9c"
+ 
+ static struct sti_struct *default_sti __read_mostly;
+ 
+@@ -503,7 +503,7 @@ sti_select_fbfont(struct sti_cooked_rom
+ 	if (!fbfont)
+ 		return NULL;
+ 
+-	pr_info("STI selected %ux%u framebuffer font %s for sticon\n",
++	pr_info("    using %ux%u framebuffer font %s\n",
+ 			fbfont->width, fbfont->height, fbfont->name);
+ 			
+ 	bpc = ((fbfont->width+7)/8) * fbfont->height; 
+@@ -947,6 +947,7 @@ out_err:
+ 
+ static void sticore_check_for_default_sti(struct sti_struct *sti, char *path)
+ {
++	pr_info("    located at [%s]\n", sti->pa_path);
+ 	if (strcmp (path, default_sti_path) == 0)
+ 		default_sti = sti;
+ }
+@@ -958,7 +959,6 @@ static void sticore_check_for_default_st
+  */
+ static int __init sticore_pa_init(struct parisc_device *dev)
+ {
+-	char pa_path[21];
+ 	struct sti_struct *sti = NULL;
+ 	int hpa = dev->hpa.start;
+ 
+@@ -971,8 +971,8 @@ static int __init sticore_pa_init(struct
+ 	if (!sti)
+ 		return 1;
+ 
+-	print_pa_hwpath(dev, pa_path);
+-	sticore_check_for_default_sti(sti, pa_path);
++	print_pa_hwpath(dev, sti->pa_path);
++	sticore_check_for_default_sti(sti, sti->pa_path);
+ 	return 0;
+ }
+ 
+@@ -1008,9 +1008,8 @@ static int sticore_pci_init(struct pci_d
+ 
+ 	sti = sti_try_rom_generic(rom_base, fb_base, pd);
+ 	if (sti) {
+-		char pa_path[30];
+-		print_pci_hwpath(pd, pa_path);
+-		sticore_check_for_default_sti(sti, pa_path);
++		print_pci_hwpath(pd, sti->pa_path);
++		sticore_check_for_default_sti(sti, sti->pa_path);
+ 	}
+ 	
+ 	if (!sti) {
+--- a/drivers/video/fbdev/sticore.h
++++ b/drivers/video/fbdev/sticore.h
+@@ -370,6 +370,9 @@ struct sti_struct {
+ 
+ 	/* pointer to all internal data */
+ 	struct sti_all_data *sti_data;
++
++	/* pa_path of this device */
++	char pa_path[24];
+ };
+ 
+ 
+
 
