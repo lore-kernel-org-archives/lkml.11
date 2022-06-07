@@ -2,76 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D77CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD9DCCA488
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389144AbiFHAqD (ORCPT
+        id S1388855AbiFHApw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:46:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48732 "EHLO
+        Tue, 7 Jun 2022 20:45:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450073AbiFGXKt (ORCPT
+        with ESMTP id S1378985AbiFGVrM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:10:49 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BDA6184931
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:48:18 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id k4-20020a6b4004000000b006697f6074e6so1374371ioa.11
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 13:48:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=F4ALpda75nlB6V1TanWvj/lUfY62eLCUke6YTesSXU0=;
-        b=qlELnEwXomhX0ynfOc+3DGuIYzwRNmfjqbifFG0bXK2TFbkuPrJ7A0kwV3Lz/BF4Af
-         UJ61Hg2NbdBueSKtt+cYqPwXud5dzAHWTGX7kFOHV4/vALnOaRxh7N5JdCR1a56jLRgp
-         zfvrQiBVeFBp5CBJJnp9f9s7HqChqO73SxyX4pSHeBZpg3AsjbCMYauJeqMMnSHTkxC0
-         S2qc32j1VDPf5tQy5ZPgB1h2DTEKyYUTEE6FrwJiAepoRVyJtaHhYM3TsQnk3WY6GbuH
-         Xwtxo6z7S55kkL4kRIM8DiR9YVVkIXlDGiJ8Voh7hMkLeQJR1orNt64BXaMVtgm8zSi5
-         PELg==
-X-Gm-Message-State: AOAM531P3TIjwjaEidmUq15JODZWNWAOWJgX58sv5kCSglse331TbMTv
-        55q8H+HBHBMI4tnb6EdLRBGCU6n25ZbdX3wYdyCucak8Bl+y
-X-Google-Smtp-Source: ABdhPJywpIJI/Qsn0/0LRzPy3Pf1VaqXJDD6UFpb2QRZsRbu49CjVlxdTBPAJ6dZb0YOM4HDd8FvUd/5fgQzJJYwO+C47z4AW1dG
+        Tue, 7 Jun 2022 17:47:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE397237CA7;
+        Tue,  7 Jun 2022 12:07:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A13A2B8220B;
+        Tue,  7 Jun 2022 19:07:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00DE6C385A2;
+        Tue,  7 Jun 2022 19:07:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628874;
+        bh=DUDMVzjvFO77UfkyPnXyh1ew4WBBGr7dJc+/dBOGVXo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TFQKsHM+wSDCVnEAtM6f2J7szhWzQDK4x22Php3hW4moym2HMN68MzdGnIZuLMgWQ
+         ZcYMC9M/DhLG0cAqOcZ+jRRdkzirYSzbc6rWFDUkUdmgKIy4LIaWO3LYRZUcScMLio
+         crwhKHfUmZAv1NdN5cemnVVMAqh7FJHavdbTkvDo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 486/879] x86/sev: Annotate stack change in the #VC handler
+Date:   Tue,  7 Jun 2022 19:00:04 +0200
+Message-Id: <20220607165016.979145538@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1d8a:b0:2d3:cfe9:4d89 with SMTP id
- h10-20020a056e021d8a00b002d3cfe94d89mr18176040ila.322.1654634897458; Tue, 07
- Jun 2022 13:48:17 -0700 (PDT)
-Date:   Tue, 07 Jun 2022 13:48:17 -0700
-In-Reply-To: <0000000000003fc46005e0db5390@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004bcf6905e0e1b527@google.com>
-Subject: Re: [syzbot] KASAN: stack-out-of-bounds Write in check_move_unevictable_pages
-From:   syzbot <syzbot+8847ae8c7bc46bc9c10e@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, dhowells@redhat.com,
-        linmiaohe@huawei.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, surenb@google.com,
-        syzkaller-bugs@googlegroups.com, vbabka@suse.cz,
-        willy@infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has bisected this issue to:
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-commit 15603c238d1318c66c49df232fb2e2631a0062a0
-Author: Matthew Wilcox (Oracle) <willy@infradead.org>
-Date:   Sat Jun 4 21:39:09 2022 +0000
+[ Upstream commit c42b145181aafd59ed31ccd879493389e3ea5a08 ]
 
-    vmscan: Add check_move_unevictable_folios()
+In idtentry_vc(), vc_switch_off_ist() determines a safe stack to
+switch to, off of the IST stack. Annotate the new stack switch with
+ENCODE_FRAME_POINTER in case UNWINDER_FRAME_POINTER is used.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11ad0107f00000
-start commit:   73d0e32571a0 Add linux-next specific files for 20220607
-git tree:       linux-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=13ad0107f00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15ad0107f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=448ee2b64e828049
-dashboard link: https://syzkaller.appspot.com/bug?extid=8847ae8c7bc46bc9c10e
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14359627f00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=177d5f3ff00000
+A stack walk before looks like this:
 
-Reported-by: syzbot+8847ae8c7bc46bc9c10e@syzkaller.appspotmail.com
-Fixes: 15603c238d13 ("vmscan: Add check_move_unevictable_folios()")
+  CPU: 0 PID: 0 Comm: swapper Not tainted 5.18.0-rc7+ #2
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+  Call Trace:
+   <TASK>
+   dump_stack_lvl
+   dump_stack
+   kernel_exc_vmm_communication
+   asm_exc_vmm_communication
+   ? native_read_msr
+   ? __x2apic_disable.part.0
+   ? x2apic_setup
+   ? cpu_init
+   ? trap_init
+   ? start_kernel
+   ? x86_64_start_reservations
+   ? x86_64_start_kernel
+   ? secondary_startup_64_no_verify
+   </TASK>
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+and with the fix, the stack dump is exact:
+
+  CPU: 0 PID: 0 Comm: swapper Not tainted 5.18.0-rc7+ #3
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+  Call Trace:
+   <TASK>
+   dump_stack_lvl
+   dump_stack
+   kernel_exc_vmm_communication
+   asm_exc_vmm_communication
+  RIP: 0010:native_read_msr
+  Code: ...
+  < snipped regs >
+   ? __x2apic_disable.part.0
+   x2apic_setup
+   cpu_init
+   trap_init
+   start_kernel
+   x86_64_start_reservations
+   x86_64_start_kernel
+   secondary_startup_64_no_verify
+   </TASK>
+
+  [ bp: Test in a SEV-ES guest and rewrite the commit message to
+    explain what exactly this does. ]
+
+Fixes: a13644f3a53d ("x86/entry/64: Add entry code for #VC handler")
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lore.kernel.org/r/20220316041612.71357-1-jiangshanlai@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/entry/entry_64.S | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index 73d958522b6a..d8376e5fe1af 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -508,6 +508,7 @@ SYM_CODE_START(\asmsym)
+ 	call	vc_switch_off_ist
+ 	movq	%rax, %rsp		/* Switch to new stack */
+ 
++	ENCODE_FRAME_POINTER
+ 	UNWIND_HINT_REGS
+ 
+ 	/* Update pt_regs */
+-- 
+2.35.1
+
+
+
