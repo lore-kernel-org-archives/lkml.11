@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F20CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DCF5CCA488
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380968AbiFGVRM (ORCPT
+        id S1381250AbiFGVRb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:17:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39322 "EHLO
+        Tue, 7 Jun 2022 17:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359827AbiFGUVU (ORCPT
+        with ESMTP id S1359868AbiFGUVX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:21:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35DF179C14;
-        Tue,  7 Jun 2022 11:30:46 -0700 (PDT)
+        Tue, 7 Jun 2022 16:21:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B4A17A880;
+        Tue,  7 Jun 2022 11:30:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B07FB8237C;
-        Tue,  7 Jun 2022 18:30:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D8BBC385A2;
-        Tue,  7 Jun 2022 18:30:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A90F5B82340;
+        Tue,  7 Jun 2022 18:30:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 075FFC385A2;
+        Tue,  7 Jun 2022 18:30:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626643;
-        bh=l53PuloLp8snpYt+EpBaWYwIsGqjonPLm9LcERIFfJw=;
+        s=korg; t=1654626652;
+        bh=bFhZ957r2YH94rqSbhXVV4Hj1qf6FyXRtokEAkKhViw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q0iylEJhikylgfvDEMUnvTNGRqE7vZpTrZ75vcHXFZ5QI4eFM3/zA+ju7aozFvjWW
-         XvkvlGbdoEX1cv9/vogms3t3JCiHCDTYo9vyOMGZrnC+G3eq0VL0tTliTxCQGKZts6
-         5Wfg1aCocgVtnkaGt2OacFO2shBJgSAhAN91ImN0=
+        b=oYaZhX190OOJmP1fZfbn2eE97MlDRUDAgNS2xtxFFvsibYm2VttWZCGn1aKGyIRJ7
+         X6RJt/FaK3BCr7tDlgye1eUxkpb8VF2mbXWXwqMsVxLiAL3fTaGsRiksLIqvshluwg
+         obnws4Id8/wUcfapaJa5j1ZyD/ypc4vJ98hBYWeI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 452/772] arm64: dts: mt8192: Fix nor_flash status disable typo
-Date:   Tue,  7 Jun 2022 19:00:44 +0200
-Message-Id: <20220607165002.321644159@linuxfoundation.org>
+Subject: [PATCH 5.17 455/772] ARM: dts: BCM5301X: Update pin controller node name
+Date:   Tue,  7 Jun 2022 19:00:47 +0200
+Message-Id: <20220607165002.410240153@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -56,38 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+From: Rafał Miłecki <rafal@milecki.pl>
 
-[ Upstream commit 27f0eb16b0d417c155e96b5d3b89074699944e09 ]
+[ Upstream commit 130b5e32ba9d2d2313e39cf3f6d0729bff02b76a ]
 
-Correct nor_flash status disable typo of mt8192 SoC.
+This fixes:
+arch/arm/boot/dts/bcm4708-asus-rt-ac56u.dtb: cru-bus@100: 'pin-controller@1c0' does not match any of the regexes: '^clock-controller@[a-f0-9]+$', '^phy@[a-f0-9]+$', '^pinctrl@[a-f0-9]+$', '^syscon@[a-f0-9]+$', '^thermal@[a-f0-9]+$'
+        From schema: Documentation/devicetree/bindings/mfd/brcm,cru.yaml
+arch/arm/boot/dts/bcm4708-asus-rt-ac56u.dtb: pin-controller@1c0: $nodename:0: 'pin-controller@1c0' does not match '^(pinctrl|pinmux)(@[0-9a-f]+)?$'
+        From schema: Documentation/devicetree/bindings/pinctrl/brcm,ns-pinmux.yaml
 
-Fixes: d0a197a0d064a ("arm64: dts: mt8192: add nor_flash device node")
-
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Link: https://lore.kernel.org/r/20220318144534.17996-11-allen-kh.cheng@mediatek.com
-Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+Ref: e7391b021e3f ("dt-bindings: mfd: brcm,cru: Rename pinctrl node")
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 2 +-
+ arch/arm/boot/dts/bcm5301x.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index 53d790c335f9..cd010185753e 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -470,7 +470,7 @@
- 			clock-names = "spi", "sf", "axi";
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			status = "disable";
-+			status = "disabled";
- 		};
+diff --git a/arch/arm/boot/dts/bcm5301x.dtsi b/arch/arm/boot/dts/bcm5301x.dtsi
+index 603c700c706f..65f8a759f1e3 100644
+--- a/arch/arm/boot/dts/bcm5301x.dtsi
++++ b/arch/arm/boot/dts/bcm5301x.dtsi
+@@ -455,7 +455,7 @@
+ 				reg = <0x180 0x4>;
+ 			};
  
- 		audsys: clock-controller@11210000 {
+-			pinctrl: pin-controller@1c0 {
++			pinctrl: pinctrl@1c0 {
+ 				compatible = "brcm,bcm4708-pinmux";
+ 				reg = <0x1c0 0x24>;
+ 				reg-names = "cru_gpio_control";
 -- 
 2.35.1
 
