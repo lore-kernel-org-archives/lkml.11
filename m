@@ -2,87 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F759C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96637C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:59:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356406AbiFGT6p (ORCPT
+        id S1356806AbiFGT66 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51108 "EHLO
+        Tue, 7 Jun 2022 15:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353765AbiFGSwA (ORCPT
+        with ESMTP id S1353692AbiFGSwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:52:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C024314A27F;
-        Tue,  7 Jun 2022 11:03:36 -0700 (PDT)
+        Tue, 7 Jun 2022 14:52:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F83131F25;
+        Tue,  7 Jun 2022 11:03:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AB21B82374;
-        Tue,  7 Jun 2022 18:03:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01641C341C0;
-        Tue,  7 Jun 2022 18:03:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625011;
-        bh=WyFYvzgMPEg0c5Y+7we3M6eOFm8uX0BBTn4HhE+9UY4=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E262618D3;
+        Tue,  7 Jun 2022 18:03:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C48DCC385A5;
+        Tue,  7 Jun 2022 18:03:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654625014;
+        bh=hNbRKfVqo+5QFr9vKzpLdRTCK4YVbnY0OIVNBR0p+64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NRvlGAsX7LvZClpeMCwlNtwLsNx34OLfXop0WexyEE7bYN2q55X84oHPEcA97oLn2
-         qWdM9DBR+Nmf3c1zBkFEewKAwMLHJw24Oq4IUWHoezqhqfSLXYETt3kLRQtRt/fO/r
-         dG6AD0W89QcERT3/UPz7Hgz49fCgrWoDAkU31I2Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 535/667] bfq: Drop pointless unlock-lock pair
-Date:   Tue,  7 Jun 2022 19:03:20 +0200
-Message-Id: <20220607164950.747053551@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=DF5Tc2lwZTaerocK4ehyEQlwVCuHuuLQYJqa9YXtCZn/vgXsGPkzmU9GRMORdGX7X
+         IPgo8XHih8pVLodXjsUcqPLjFAcnyJaDU3sVQWkS9j3Q9Dvj/GiInIhekK2R9c4raH
+         NcysQuWfCFlpzz4dTUxSB0FzOum0+muDoFpi9AMVbB/u/VU9YYyTzilY548FDdSnxu
+         m/jtBe180VDNQPMusO9yuOzsEIQKqqKrbfuxkSWJLCAcTEuHKYxOqdIMDawqvepEu9
+         TM9zhl0DKdpXEPqhqLTsLkLow2seSXXwAav00RKkIzXLeIm0estRnCGqqFOa+56mpw
+         KNs8zfoVcVoEQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, mailhol.vincent@wanadoo.fr,
+        cai.huoqing@linux.dev, chi.minghao@zte.com.cn,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 08/19] drivers: usb: host: Fix deadlock in oxu_bus_suspend()
+Date:   Tue,  7 Jun 2022 14:03:03 -0400
+Message-Id: <20220607180317.482354-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180317.482354-1-sashal@kernel.org>
+References: <20220607180317.482354-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit fc84e1f941b91221092da5b3102ec82da24c5673 upstream.
+[ Upstream commit 4d378f2ae58138d4c55684e1d274e7dd94aa6524 ]
 
-In bfq_insert_request() we unlock bfqd->lock only to call
-trace_block_rq_insert() and then lock bfqd->lock again. This is really
-pointless since tracing is disabled if we really care about performance
-and even if the tracepoint is enabled, it is a quick call.
+There is a deadlock in oxu_bus_suspend(), which is shown below:
 
-CC: stable@vger.kernel.org
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-5-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+   (Thread 1)              |      (Thread 2)
+                           | timer_action()
+oxu_bus_suspend()          |  mod_timer()
+ spin_lock_irq() //(1)     |  (wait a time)
+ ...                       | oxu_watchdog()
+ del_timer_sync()          |  spin_lock_irq() //(2)
+ (wait timer to stop)      |  ...
+
+We hold oxu->lock in position (1) of thread 1, and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need oxu->lock in position (2) of thread 2. As a result,
+oxu_bus_suspend() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irq(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417120305.64577-1-duoming@zju.edu.cn
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-iosched.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/usb/host/oxu210hp-hcd.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -6012,11 +6012,8 @@ static void bfq_insert_request(struct bl
- 		return;
+diff --git a/drivers/usb/host/oxu210hp-hcd.c b/drivers/usb/host/oxu210hp-hcd.c
+index 2f48da0c0bb3..af5248f62c59 100644
+--- a/drivers/usb/host/oxu210hp-hcd.c
++++ b/drivers/usb/host/oxu210hp-hcd.c
+@@ -3491,8 +3491,10 @@ static int oxu_bus_suspend(struct usb_hcd *hcd)
+ 		}
  	}
  
--	spin_unlock_irq(&bfqd->lock);
--
- 	trace_block_rq_insert(rq);
++	spin_unlock_irq(&oxu->lock);
+ 	/* turn off now-idle HC */
+ 	del_timer_sync(&oxu->watchdog);
++	spin_lock_irq(&oxu->lock);
+ 	ehci_halt(oxu);
+ 	hcd->state = HC_STATE_SUSPENDED;
  
--	spin_lock_irq(&bfqd->lock);
- 	bfqq = bfq_init_rq(rq);
- 	if (!bfqq || at_head) {
- 		if (at_head)
-
+-- 
+2.35.1
 
