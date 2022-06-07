@@ -2,41 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44618C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F13CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350043AbiFGSAm (ORCPT
+        id S1350323AbiFGSAx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45542 "EHLO
+        Tue, 7 Jun 2022 14:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348638AbiFGRlN (ORCPT
+        with ESMTP id S1348512AbiFGRlD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:41:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39638122B7B;
-        Tue,  7 Jun 2022 10:34:30 -0700 (PDT)
+        Tue, 7 Jun 2022 13:41:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 741981203D2;
+        Tue,  7 Jun 2022 10:34:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB9FE61582;
-        Tue,  7 Jun 2022 17:34:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C369AC385A5;
-        Tue,  7 Jun 2022 17:34:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD154B820C3;
+        Tue,  7 Jun 2022 17:33:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2A26C385A5;
+        Tue,  7 Jun 2022 17:33:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623244;
-        bh=8MtkBhfFoEzjUtG7SMEOmQNgxmCT6+7cEhuUCQAMNt8=;
+        s=korg; t=1654623230;
+        bh=dyRX6GXQh42NPE/QvtqTAJqN+LWYb6ytbMwcZJZrj6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V2rUhfupnTmu1zgstzpuJv6eCf5u7byNBF/XLf5ewI6qSq7qaOqUmI53qT6h23GI4
-         jd6PMsxVef1/4LkFuaI9kQo1iW+nagiHe/I6WEpXmDLpKGfgH/MjF8Rej4Yfc9Ed51
-         D3cOSe+ydjfP3hvqPMG1egCbDAovsE7UOTwpQbIA=
+        b=FK/E5UEV2gznv9Ia7n3UeS7zOQJf51zJ/fwDvDPdlIgCDy/2DmE/9wNkUJNbOTKB0
+         ddx0lv96POcwcD7WjcdCfvWbWOlXgD1LhqEOy+5+uAKbgEd6zyhwnSpfT2A1Z98Cph
+         MdeBS0tYLncFU+o8b+Ecg4Omz5uECWbhXcAe9lLk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.10 348/452] f2fs: dont need inode lock for system hidden quota
-Date:   Tue,  7 Jun 2022 19:03:25 +0200
-Message-Id: <20220607164918.928442901@linuxfoundation.org>
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Shishkin <alexander.shishkin@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 343/452] perf jevents: Fix event syntax error caused by ExtSel
+Date:   Tue,  7 Jun 2022 19:03:20 +0200
+Message-Id: <20220607164918.778281311@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -48,90 +57,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jaegeuk Kim <jaegeuk@kernel.org>
+From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
 
-commit 6213f5d4d23c50d393a31dc8e351e63a1fd10dbe upstream.
+[ Upstream commit f4df0dbbe62ee8e4405a57b27ccd54393971c773 ]
 
-Let's avoid false-alarmed lockdep warning.
+In the origin code, when "ExtSel" is 1, the eventcode will change to
+"eventcode |= 1 << 21”. For event “UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS",
+its "ExtSel" is "1", its eventcode will change from 0x1E to 0x20001E,
+but in fact the eventcode should <=0x1FF, so this will cause the parse
+fail:
 
-[   58.914674] [T1501146] -> #2 (&sb->s_type->i_mutex_key#20){+.+.}-{3:3}:
-[   58.915975] [T1501146] system_server:        down_write+0x7c/0xe0
-[   58.916738] [T1501146] system_server:        f2fs_quota_sync+0x60/0x1a8
-[   58.917563] [T1501146] system_server:        block_operations+0x16c/0x43c
-[   58.918410] [T1501146] system_server:        f2fs_write_checkpoint+0x114/0x318
-[   58.919312] [T1501146] system_server:        f2fs_issue_checkpoint+0x178/0x21c
-[   58.920214] [T1501146] system_server:        f2fs_sync_fs+0x48/0x6c
-[   58.920999] [T1501146] system_server:        f2fs_do_sync_file+0x334/0x738
-[   58.921862] [T1501146] system_server:        f2fs_sync_file+0x30/0x48
-[   58.922667] [T1501146] system_server:        __arm64_sys_fsync+0x84/0xf8
-[   58.923506] [T1501146] system_server:        el0_svc_common.llvm.12821150825140585682+0xd8/0x20c
-[   58.924604] [T1501146] system_server:        do_el0_svc+0x28/0xa0
-[   58.925366] [T1501146] system_server:        el0_svc+0x24/0x38
-[   58.926094] [T1501146] system_server:        el0_sync_handler+0x88/0xec
-[   58.926920] [T1501146] system_server:        el0_sync+0x1b4/0x1c0
+  # perf stat -e "UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS" -a sleep 0.1
+  event syntax error: '.._RxL_CREDITS_CONSUMED_VN0.DRS'
+                                    \___ value too big for format, maximum is 511
 
-[   58.927681] [T1501146] -> #1 (&sbi->cp_global_sem){+.+.}-{3:3}:
-[   58.928889] [T1501146] system_server:        down_write+0x7c/0xe0
-[   58.929650] [T1501146] system_server:        f2fs_write_checkpoint+0xbc/0x318
-[   58.930541] [T1501146] system_server:        f2fs_issue_checkpoint+0x178/0x21c
-[   58.931443] [T1501146] system_server:        f2fs_sync_fs+0x48/0x6c
-[   58.932226] [T1501146] system_server:        sync_filesystem+0xac/0x130
-[   58.933053] [T1501146] system_server:        generic_shutdown_super+0x38/0x150
-[   58.933958] [T1501146] system_server:        kill_block_super+0x24/0x58
-[   58.934791] [T1501146] system_server:        kill_f2fs_super+0xcc/0x124
-[   58.935618] [T1501146] system_server:        deactivate_locked_super+0x90/0x120
-[   58.936529] [T1501146] system_server:        deactivate_super+0x74/0xac
-[   58.937356] [T1501146] system_server:        cleanup_mnt+0x128/0x168
-[   58.938150] [T1501146] system_server:        __cleanup_mnt+0x18/0x28
-[   58.938944] [T1501146] system_server:        task_work_run+0xb8/0x14c
-[   58.939749] [T1501146] system_server:        do_notify_resume+0x114/0x1e8
-[   58.940595] [T1501146] system_server:        work_pending+0xc/0x5f0
+On the perf kernel side, the kernel assumes the valid bits are continuous.
+It will adjust the 0x100 (bit 8 for perf tool) to bit 21 in HW.
 
-[   58.941375] [T1501146] -> #0 (&sbi->gc_lock){+.+.}-{3:3}:
-[   58.942519] [T1501146] system_server:        __lock_acquire+0x1270/0x2868
-[   58.943366] [T1501146] system_server:        lock_acquire+0x114/0x294
-[   58.944169] [T1501146] system_server:        down_write+0x7c/0xe0
-[   58.944930] [T1501146] system_server:        f2fs_issue_checkpoint+0x13c/0x21c
-[   58.945831] [T1501146] system_server:        f2fs_sync_fs+0x48/0x6c
-[   58.946614] [T1501146] system_server:        f2fs_do_sync_file+0x334/0x738
-[   58.947472] [T1501146] system_server:        f2fs_ioc_commit_atomic_write+0xc8/0x14c
-[   58.948439] [T1501146] system_server:        __f2fs_ioctl+0x674/0x154c
-[   58.949253] [T1501146] system_server:        f2fs_ioctl+0x54/0x88
-[   58.950018] [T1501146] system_server:        __arm64_sys_ioctl+0xa8/0x110
-[   58.950865] [T1501146] system_server:        el0_svc_common.llvm.12821150825140585682+0xd8/0x20c
-[   58.951965] [T1501146] system_server:        do_el0_svc+0x28/0xa0
-[   58.952727] [T1501146] system_server:        el0_svc+0x24/0x38
-[   58.953454] [T1501146] system_server:        el0_sync_handler+0x88/0xec
-[   58.954279] [T1501146] system_server:        el0_sync+0x1b4/0x1c0
+DEFINE_UNCORE_FORMAT_ATTR(event_ext, event, "config:0-7,21");
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+So the perf tool follows the kernel side and just set bit8 other than bit21.
+
+Fixes: fedb2b518239cbc0 ("perf jevents: Add support for parsing uncore json files")
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220525140410.1706851-1-zhengjun.xing@linux.intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/super.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ tools/perf/pmu-events/jevents.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/f2fs/super.c
-+++ b/fs/f2fs/super.c
-@@ -2292,7 +2292,8 @@ int f2fs_quota_sync(struct super_block *
- 		if (!sb_has_quota_active(sb, cnt))
- 			continue;
- 
--		inode_lock(dqopt->files[cnt]);
-+		if (!f2fs_sb_has_quota_ino(sbi))
-+			inode_lock(dqopt->files[cnt]);
- 
- 		/*
- 		 * do_quotactl
-@@ -2311,7 +2312,8 @@ int f2fs_quota_sync(struct super_block *
- 		up_read(&sbi->quota_sem);
- 		f2fs_unlock_op(sbi);
- 
--		inode_unlock(dqopt->files[cnt]);
-+		if (!f2fs_sb_has_quota_ino(sbi))
-+			inode_unlock(dqopt->files[cnt]);
- 
- 		if (ret)
- 			break;
+diff --git a/tools/perf/pmu-events/jevents.c b/tools/perf/pmu-events/jevents.c
+index c679a79aef51..1f20f587e053 100644
+--- a/tools/perf/pmu-events/jevents.c
++++ b/tools/perf/pmu-events/jevents.c
+@@ -579,7 +579,7 @@ static int json_events(const char *fn,
+ 			} else if (json_streq(map, field, "ExtSel")) {
+ 				char *code = NULL;
+ 				addfield(map, &code, "", "", val);
+-				eventcode |= strtoul(code, NULL, 0) << 21;
++				eventcode |= strtoul(code, NULL, 0) << 8;
+ 				free(code);
+ 			} else if (json_streq(map, field, "EventName")) {
+ 				addfield(map, &je.name, "", "", val);
+-- 
+2.35.1
+
 
 
