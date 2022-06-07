@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB38CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA6DCCA484
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348473AbiFGRp2 (ORCPT
+        id S1348556AbiFGRpi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40766 "EHLO
+        Tue, 7 Jun 2022 13:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348163AbiFGRbi (ORCPT
+        with ESMTP id S1348176AbiFGRbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:31:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0583510D915;
-        Tue,  7 Jun 2022 10:29:41 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879A911E48D;
+        Tue,  7 Jun 2022 10:29:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A6F40CE23D1;
-        Tue,  7 Jun 2022 17:29:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90F67C385A5;
-        Tue,  7 Jun 2022 17:29:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1B0EB80B66;
+        Tue,  7 Jun 2022 17:29:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 563F8C385A5;
+        Tue,  7 Jun 2022 17:29:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622978;
-        bh=CzrLO3e2CgEOzWZRssCzwztDRtE5eWvfjtuaGMykLwI=;
+        s=korg; t=1654622980;
+        bh=jAvgEEXR85e8NpvEaZfg8QBI9lEAwiM9PqabNo9ydrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IEeYxrdITAZ4E0feXxnVRAsQ40LCr5PysKutKTCvfR3SbfcsjLHcbk9woh7jytu0a
-         vkE+LeXaTguxrfoPDQhu9ComUp52FQeiDdH7HMaDMSGkGr6rBdaXhE8/4dIpHZaxlH
-         HA+VCAeaKpqcANd9xLDnbRS55f6greuZ0wcppGPs=
+        b=no4gzsrqGIRFoN4IOsBtThgx4QMat0Tw+4hFjX9Zv/ekLFm0Q0B0BZ/dMnySsUI0k
+         22mVOb4n2pU/tf0MvtiGI2WsIlQJmWnGca//TuBuZFs7nBRyYO86y1LZPMJg1SaKxt
+         eWpd2nGhLpbe0yS0dxeL492RemuHQXIBVKwuG0rs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 244/452] ASoC: wm2000: fix missing clk_disable_unprepare() on error in wm2000_anc_transition()
-Date:   Tue,  7 Jun 2022 19:01:41 +0200
-Message-Id: <20220607164915.830592378@linuxfoundation.org>
+Subject: [PATCH 5.10 253/452] rxrpc: Dont let ack.previousPacket regress
+Date:   Tue,  7 Jun 2022 19:01:50 +0200
+Message-Id: <20220607164916.097506482@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,52 +52,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit be2af740e2a9c7134f2d8ab4f104006e110b13de ]
+[ Upstream commit 81524b6312535897707f2942695da1d359a5e56b ]
 
-Fix the missing clk_disable_unprepare() before return
-from wm2000_anc_transition() in the error handling case.
+The previousPacket field in the rx ACK packet should never go backwards -
+it's now the highest DATA sequence number received, not the last on
+received (it used to be used for out of sequence detection).
 
-Fixes: 514cfd6dd725 ("ASoC: wm2000: Integrate with clock API")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220514091053.686416-1-yangyingliang@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 248f219cb8bc ("rxrpc: Rewrite the data and ack handling code")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm2000.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/rxrpc/ar-internal.h | 4 ++--
+ net/rxrpc/input.c       | 4 +++-
+ net/rxrpc/output.c      | 2 +-
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/codecs/wm2000.c b/sound/soc/codecs/wm2000.c
-index 72e165cc6443..97ece3114b3d 100644
---- a/sound/soc/codecs/wm2000.c
-+++ b/sound/soc/codecs/wm2000.c
-@@ -536,7 +536,7 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
- {
- 	struct i2c_client *i2c = wm2000->i2c;
- 	int i, j;
--	int ret;
-+	int ret = 0;
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 2fc93467780d..ed88552c237c 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -662,7 +662,7 @@ struct rxrpc_call {
+ 	/* Receive-phase ACK management (ACKs we send). */
+ 	u8			ackr_reason;	/* reason to ACK */
+ 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
+-	rxrpc_seq_t		ackr_prev_seq;	/* previous sequence number received */
++	rxrpc_seq_t		ackr_highest_seq; /* Higest sequence number received */
+ 	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
+ 	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
  
- 	if (wm2000->anc_mode == mode)
- 		return 0;
-@@ -566,13 +566,13 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
- 		ret = anc_transitions[i].step[j](i2c,
- 						 anc_transitions[i].analogue);
- 		if (ret != 0)
--			return ret;
-+			break;
- 	}
+@@ -677,7 +677,7 @@ struct rxrpc_call {
+ 	/* Transmission-phase ACK management (ACKs we've received). */
+ 	ktime_t			acks_latest_ts;	/* Timestamp of latest ACK received */
+ 	rxrpc_seq_t		acks_first_seq;	/* first sequence number received */
+-	rxrpc_seq_t		acks_prev_seq;	/* previous sequence number received */
++	rxrpc_seq_t		acks_prev_seq;	/* Highest previousPacket received */
+ 	rxrpc_seq_t		acks_lowest_nak; /* Lowest NACK in the buffer (or ==tx_hard_ack) */
+ 	rxrpc_seq_t		acks_lost_top;	/* tx_top at the time lost-ack ping sent */
+ 	rxrpc_serial_t		acks_lost_ping;	/* Serial number of probe ACK */
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index f11673cda217..2e61545ad8ca 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -453,7 +453,6 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 	    !rxrpc_receiving_reply(call))
+ 		goto unlock;
  
- 	if (anc_transitions[i].dest == ANC_OFF)
- 		clk_disable_unprepare(wm2000->mclk);
+-	call->ackr_prev_seq = seq0;
+ 	hard_ack = READ_ONCE(call->rx_hard_ack);
  
--	return 0;
-+	return ret;
- }
+ 	nr_subpackets = sp->nr_subpackets;
+@@ -534,6 +533,9 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 			ack_serial = serial;
+ 		}
  
- static int wm2000_anc_set_mode(struct wm2000_priv *wm2000)
++		if (after(seq0, call->ackr_highest_seq))
++			call->ackr_highest_seq = seq0;
++
+ 		/* Queue the packet.  We use a couple of memory barriers here as need
+ 		 * to make sure that rx_top is perceived to be set after the buffer
+ 		 * pointer and that the buffer pointer is set after the annotation and
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index a45c83f22236..46aae9b7006f 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -89,7 +89,7 @@ static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
+ 	pkt->ack.bufferSpace	= htons(8);
+ 	pkt->ack.maxSkew	= htons(0);
+ 	pkt->ack.firstPacket	= htonl(hard_ack + 1);
+-	pkt->ack.previousPacket	= htonl(call->ackr_prev_seq);
++	pkt->ack.previousPacket	= htonl(call->ackr_highest_seq);
+ 	pkt->ack.serial		= htonl(serial);
+ 	pkt->ack.reason		= reason;
+ 	pkt->ack.nAcks		= top - hard_ack;
 -- 
 2.35.1
 
