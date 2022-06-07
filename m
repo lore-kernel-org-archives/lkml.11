@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EF8CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:35:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97255C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:35:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239663AbiFGJfp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:35:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36374 "EHLO
+        id S239712AbiFGJfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:35:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239639AbiFGJfG (ORCPT
+        with ESMTP id S239644AbiFGJfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 05:35:06 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0E7E64DC
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:35:04 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id u26so26655248lfd.8
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C766E64D9
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:35:03 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id a2so21258126lfg.5
         for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:35:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1imnAi5xz7HqCapEhh8k4KqTLfM1rDshD69OorDTV3Q=;
-        b=FUe9hoC2gjsIGPJVEps761z94HHtbSP1LOQ6MOwoWAKATBaoen37ggvBdmhCO/1Dum
-         bbL9wrYkQmZn5AFVSvqe7rIa4w9PVKkiXXig9eo+xADy33IXOFhyk8i7zMef75DgfAtF
-         jWLLcPerKOjLVHT/t3gqLFTldCmrOvYRPaBzZMiNcUGk5R+FRdJy1YwX/KhRUom+U2/A
-         DsIG8C52yvsQbR5nK0UpenU11Tf/PharFyrCbvu2QYv3HpGWk6uE6m5Ofoq1vk+hAz1a
-         TsH4UPB9OMAyuBrQXofmV+miPQHfnsjtpErZBJ/kZrFD7q3l26g8RK0tKkPYDTKpM0px
-         U2XQ==
+        bh=/m93af/b5jfm9tZCfE4d8bYwXKExf/KtRK6sqDTZnX8=;
+        b=d1Bn/bBj18RiG2Wo96aBwJlqBTl0eZb5+qmlzXXE6bQ+j8QfHZ6T7KzicQVAnczhwv
+         gZu8VrkgcEUhaK5xIMDA4Y//j1RTSK5dRGhgw1DiaCnbgUkqsN6OdWJ+OxA2b0xx+utk
+         dBgTvwQWP9erRmmJFn2tug3I6XFqkTKy03Wa/lXo402QokGda0DaI/w+4lEn57lgfj1G
+         3mD8WFfvQXHZuH5WTBMGd+HiF60kOnZYpeXyvu7m0eMycc142U4fus5IJyzevNlp/0yH
+         D0jC/jxOGhyI8IGiBhw27bMaA5LtqMANjtCDqnUsi5G3MXWrWEItVhFN+qfpoSvw1UtE
+         ZY2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1imnAi5xz7HqCapEhh8k4KqTLfM1rDshD69OorDTV3Q=;
-        b=tBfkwYozdhQNbrP7hjiCVg9JiBXQQYG63ukq8GR2WVrbj20/XQhwlN5LkrRwgQdUjT
-         XwmqejEorz/7Pp/0Nx7XZpnHbpQTtJjx2p1iI3pUA0qXO1jcz5XT8Z+pMy/LRsYEaxxg
-         wGlSLSYEZfCLRuDG1iyT6TIlhOaeCr4zcMcSXCRf/V7CwcTPc5q874zvBKMO60BYIfDP
-         mYRQK4wvVYlqsYeVofFpu8f8lJvzWlSWXYqxEtTNixnzBZktv2w2k34RNfYn2OIioixH
-         IBb8N4oVvjmT7FY8zCEhgczUyVQR1D1MjhAVPKkIm6zC3eLqpSieEGUm1WcVvhH4X13s
-         scvw==
-X-Gm-Message-State: AOAM531w5E0zeExC/IB9zXKAbTl4k6RIwLK1a5SdM98MHmfnaBpCF1OZ
-        qtXKeB3ufoOC1mHaWGv/EFc=
-X-Google-Smtp-Source: ABdhPJwUtUjYWUsi2A0Gz+SKLSqewTZ8rOUEGsOboyqIoXV8szQIuSCZZkSiPZcSm6rDEt2nEkryUQ==
-X-Received: by 2002:a05:6512:2351:b0:479:6c3b:5d4 with SMTP id p17-20020a056512235100b004796c3b05d4mr526524lfu.87.1654594503595;
-        Tue, 07 Jun 2022 02:35:03 -0700 (PDT)
+        bh=/m93af/b5jfm9tZCfE4d8bYwXKExf/KtRK6sqDTZnX8=;
+        b=Zm1wdefOcoxjpBV2vasXoOnB9YvUajMgaIjKHrY2DCpb8av9i03E9YUymqSjogw6PA
+         rPL+ZlCpoUHu18LzXrhKqnvVWMBYqKctepaMoNtXggAw+bK56rBW5ZOUBkMHrBdEF4nq
+         fVGo9Z35PszgNy3m9FVgSE7klhxfgoTkXKS0uZH/Y4a4FKJ54JMcj4GkcxAnS455qbVR
+         L25EwCcnVV140zzp99wpF/OI8C2YrOyATf5xpTA3fIBwEaVw080c0/sppIekaBgl+97z
+         cmFLnxfe/YkBB6DJQoV/0J7qvmPo/myp3dLn7xaH3yQMlfZm558JgJKd5QJaAh8fxc5B
+         89hg==
+X-Gm-Message-State: AOAM533tOC3VieMnRQIbtAi3c6GTFXxzM5JEhAZ2FyysF8F4CknW0oMd
+        LyUXy6ZtUXyEzlp48LP4qRY=
+X-Google-Smtp-Source: ABdhPJyVkUcTCv4+l8aPtPwj+grbnTiZq6vPqAsaIkKbrR3qe7PRUtUNv/A07lVdkcB0uZl4/17oLA==
+X-Received: by 2002:a05:6512:2622:b0:478:f29d:8197 with SMTP id bt34-20020a056512262200b00478f29d8197mr23728997lfb.513.1654594500741;
+        Tue, 07 Jun 2022 02:35:00 -0700 (PDT)
 Received: from pc638.lan ([155.137.26.201])
-        by smtp.gmail.com with ESMTPSA id r27-20020a2e575b000000b002554a4ebf5fsm2748043ljd.74.2022.06.07.02.35.02
+        by smtp.gmail.com with ESMTPSA id r27-20020a2e575b000000b002554a4ebf5fsm2748043ljd.74.2022.06.07.02.34.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 02:35:03 -0700 (PDT)
+        Tue, 07 Jun 2022 02:35:00 -0700 (PDT)
 From:   "Uladzislau Rezki (Sony)" <urezki@gmail.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
@@ -56,9 +56,9 @@ Cc:     linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
         Nicholas Piggin <npiggin@gmail.com>,
         Uladzislau Rezki <urezki@gmail.com>,
         Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
-Subject: [PATCH 4/5] mm/vmalloc: Extend __find_vmap_area() with one more argument
-Date:   Tue,  7 Jun 2022 11:34:48 +0200
-Message-Id: <20220607093449.3100-5-urezki@gmail.com>
+Subject: [PATCH 1/5] mm/vmalloc: Make link_va()/unlink_va() common to different rb_root
+Date:   Tue,  7 Jun 2022 11:34:45 +0200
+Message-Id: <20220607093449.3100-2-urezki@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220607093449.3100-1-urezki@gmail.com>
 References: <20220607093449.3100-1-urezki@gmail.com>
@@ -68,52 +68,161 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__find_vmap_area() finds a "vmap_area" based on passed address.
-It scan the specific "vmap_area_root" rb-tree. Extend the function
-with one extra argument, so any tree can be specified where the
-search has to be done.
+Currently link_va() and unlik_va(), in order to figure out a tree
+type, compares a passed root value with a global free_vmap_area_root
+variable to distinguish the augmented rb-tree from a regular one. It
+is hard coded since such functions can manipulate only with specific
+"free_vmap_area_root" tree that represents a global free vmap space.
+
+Make it common by introducing "_augment" versions of both internal
+functions, so it is possible to deal with different trees.
 
 There is no functional change as a result of this patch.
 
 Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
 ---
- mm/vmalloc.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ mm/vmalloc.c | 60 +++++++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 48 insertions(+), 12 deletions(-)
 
 diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index 82771e555273..b60385101897 100644
+index be8ed06804a5..0102d6d5fcdf 100644
 --- a/mm/vmalloc.c
 +++ b/mm/vmalloc.c
-@@ -814,9 +814,9 @@ static struct vmap_area *find_vmap_area_exceed_addr(unsigned long addr)
+@@ -911,8 +911,9 @@ get_va_next_sibling(struct rb_node *parent, struct rb_node **link)
+ }
+ 
+ static __always_inline void
+-link_va(struct vmap_area *va, struct rb_root *root,
+-	struct rb_node *parent, struct rb_node **link, struct list_head *head)
++__link_va(struct vmap_area *va, struct rb_root *root,
++	struct rb_node *parent, struct rb_node **link,
++	struct list_head *head, bool augment)
+ {
+ 	/*
+ 	 * VA is still not in the list, but we can
+@@ -926,7 +927,7 @@ link_va(struct vmap_area *va, struct rb_root *root,
+ 
+ 	/* Insert to the rb-tree */
+ 	rb_link_node(&va->rb_node, parent, link);
+-	if (root == &free_vmap_area_root) {
++	if (augment) {
+ 		/*
+ 		 * Some explanation here. Just perform simple insertion
+ 		 * to the tree. We do not set va->subtree_max_size to
+@@ -950,12 +951,28 @@ link_va(struct vmap_area *va, struct rb_root *root,
+ }
+ 
+ static __always_inline void
+-unlink_va(struct vmap_area *va, struct rb_root *root)
++link_va(struct vmap_area *va, struct rb_root *root,
++	struct rb_node *parent, struct rb_node **link,
++	struct list_head *head)
++{
++	__link_va(va, root, parent, link, head, false);
++}
++
++static __always_inline void
++link_va_augment(struct vmap_area *va, struct rb_root *root,
++	struct rb_node *parent, struct rb_node **link,
++	struct list_head *head)
++{
++	__link_va(va, root, parent, link, head, true);
++}
++
++static __always_inline void
++__unlink_va(struct vmap_area *va, struct rb_root *root, bool augment)
+ {
+ 	if (WARN_ON(RB_EMPTY_NODE(&va->rb_node)))
+ 		return;
+ 
+-	if (root == &free_vmap_area_root)
++	if (augment)
+ 		rb_erase_augmented(&va->rb_node,
+ 			root, &free_vmap_area_rb_augment_cb);
+ 	else
+@@ -965,6 +982,18 @@ unlink_va(struct vmap_area *va, struct rb_root *root)
+ 	RB_CLEAR_NODE(&va->rb_node);
+ }
+ 
++static __always_inline void
++unlink_va(struct vmap_area *va, struct rb_root *root)
++{
++	__unlink_va(va, root, false);
++}
++
++static __always_inline void
++unlink_va_augment(struct vmap_area *va, struct rb_root *root)
++{
++	__unlink_va(va, root, true);
++}
++
+ #if DEBUG_AUGMENT_PROPAGATE_CHECK
+ /*
+  * Gets called when remove the node and rotate.
+@@ -1060,7 +1089,7 @@ insert_vmap_area_augment(struct vmap_area *va,
+ 		link = find_va_links(va, root, NULL, &parent);
+ 
+ 	if (link) {
+-		link_va(va, root, parent, link, head);
++		link_va_augment(va, root, parent, link, head);
+ 		augment_tree_propagate_from(va);
+ 	}
+ }
+@@ -1077,8 +1106,8 @@ insert_vmap_area_augment(struct vmap_area *va,
+  * ongoing.
+  */
+ static __always_inline struct vmap_area *
+-merge_or_add_vmap_area(struct vmap_area *va,
+-	struct rb_root *root, struct list_head *head)
++__merge_or_add_vmap_area(struct vmap_area *va,
++	struct rb_root *root, struct list_head *head, bool augment)
+ {
+ 	struct vmap_area *sibling;
+ 	struct list_head *next;
+@@ -1140,7 +1169,7 @@ merge_or_add_vmap_area(struct vmap_area *va,
+ 			 * "normalized" because of rotation operations.
+ 			 */
+ 			if (merged)
+-				unlink_va(va, root);
++				__unlink_va(va, root, augment);
+ 
+ 			sibling->va_end = va->va_end;
+ 
+@@ -1155,16 +1184,23 @@ merge_or_add_vmap_area(struct vmap_area *va,
+ 
+ insert:
+ 	if (!merged)
+-		link_va(va, root, parent, link, head);
++		__link_va(va, root, parent, link, head, augment);
+ 
  	return va;
  }
  
--static struct vmap_area *__find_vmap_area(unsigned long addr)
-+static struct vmap_area *__find_vmap_area(unsigned long addr, struct rb_root *root)
++static __always_inline struct vmap_area *
++merge_or_add_vmap_area(struct vmap_area *va,
++	struct rb_root *root, struct list_head *head)
++{
++	return __merge_or_add_vmap_area(va, root, head, false);
++}
++
+ static __always_inline struct vmap_area *
+ merge_or_add_vmap_area_augment(struct vmap_area *va,
+ 	struct rb_root *root, struct list_head *head)
  {
--	struct rb_node *n = vmap_area_root.rb_node;
-+	struct rb_node *n = root->rb_node;
+-	va = merge_or_add_vmap_area(va, root, head);
++	va = __merge_or_add_vmap_area(va, root, head, true);
+ 	if (va)
+ 		augment_tree_propagate_from(va);
  
- 	addr = (unsigned long)kasan_reset_tag((void *)addr);
- 
-@@ -1840,7 +1840,7 @@ static struct vmap_area *find_vmap_area(unsigned long addr)
- 	struct vmap_area *va;
- 
- 	spin_lock(&vmap_area_lock);
--	va = __find_vmap_area(addr);
-+	va = __find_vmap_area(addr, &vmap_area_root);
- 	spin_unlock(&vmap_area_lock);
- 
- 	return va;
-@@ -2582,7 +2582,7 @@ struct vm_struct *remove_vm_area(const void *addr)
- 	might_sleep();
- 
- 	spin_lock(&vmap_area_lock);
--	va = __find_vmap_area((unsigned long)addr);
-+	va = __find_vmap_area((unsigned long)addr, &vmap_area_root);
- 	if (va && va->vm) {
- 		struct vm_struct *vm = va->vm;
- 
+@@ -1348,7 +1384,7 @@ adjust_va_to_fit_type(struct vmap_area *va,
+ 		 * V      NVA      V
+ 		 * |---------------|
+ 		 */
+-		unlink_va(va, &free_vmap_area_root);
++		unlink_va_augment(va, &free_vmap_area_root);
+ 		kmem_cache_free(vmap_area_cachep, va);
+ 	} else if (type == LE_FIT_TYPE) {
+ 		/*
 -- 
 2.30.2
 
