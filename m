@@ -2,78 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE13C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 13:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 13:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244711AbiFGNa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 09:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32982 "EHLO
+        id S244722AbiFGNcK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 09:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243578AbiFGNaO (ORCPT
+        with ESMTP id S233803AbiFGNcJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 09:30:14 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7468D02B1;
-        Tue,  7 Jun 2022 06:30:11 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id D9553734;
-        Tue,  7 Jun 2022 13:30:10 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net D9553734
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1654608611; bh=W2u9aQQxO6SJYdrSFguVYAqIAT5m7QQHBXjd99OlvaM=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=XCwh4byadNPKxwGQ4Z72Xncd/IpBCxr6MbggoHG3k23a2wOk8ndNdQtD/hVLf+c7Y
-         BteHa4QzB2kO//6nORtmYqRMfzs5N/XA947IpwXe+uaxPDZnC+3tnJc5knLjf0s8WE
-         TCE9WVm5Qh9i9RF8Lrhpn/Krc/BbW4MCCR+LSET92B+ccebrjQOsf+lNzcI84p2/5H
-         RlKIvsU9b0tNXk9xARgYQmpm3Mbw9KK/beLlYrPbVZj2jlYhZBuXZhvUz+4cEmDN4+
-         +FU3VBLQhbKmtWxRWBlgD7f45nWy/qSK6CAlzZdP7XBS5SADahny2czjx5/1sk5qqf
-         I8sKF5qzpdfhQ==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Vegard Nossum <vegard.nossum@oracle.com>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Amit Shah <aams@amazon.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        David Woodhouse <dwmw@amazon.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Laura Abbott <labbott@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Solar Designer <solar@openwall.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thorsten Leemhuis <linux@leemhuis.info>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        Will Deacon <will@kernel.org>, Willy Tarreau <w@1wt.eu>
-Subject: Re: [PATCH v2] Documentation/security-bugs: overhaul
-In-Reply-To: <nycvar.YFH.7.76.2206062326230.10851@cbobk.fhfr.pm>
-References: <20220606194850.26122-1-vegard.nossum@oracle.com>
- <nycvar.YFH.7.76.2206062326230.10851@cbobk.fhfr.pm>
-Date:   Tue, 07 Jun 2022 07:30:10 -0600
-Message-ID: <87o7z4fvod.fsf@meer.lwn.net>
+        Tue, 7 Jun 2022 09:32:09 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69948D2460;
+        Tue,  7 Jun 2022 06:32:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654608728; x=1686144728;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=+RcZIolwNakk+0aUA2CQuTdiNoT9RDa+audk1teqQ/M=;
+  b=d29SqU5RsG/xIkGVICYbzu3phDiU/R3+ey7nUiwJKG34dMrEaxbPd1Q0
+   GlC8xC1MrFWwbmvNg1REC9G3VR0o+kOLSu43zDuFDSKJTcJFC4mNAwCRB
+   Fjg7q/YMbkXSZkH/M0WeEVoMtAj14wZOVnNLA2bLd2fBZWJGdRerDk69P
+   pMz9Kp9HPYkSZLxN8PmbWnZViGlBvS8AJrrW8yq9qtntZMUbyrhqFp/qs
+   oNmNlo1rR4aoIo8MuhZtjnQRWDcvnmymgbKEGPfxLbQ2/9qSOnbA+iQ3f
+   3R7OrRhaCPge+WUVdVefz0XVPKihMUdzOKYUf10a5hWFTWcuv/KYSHFPO
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="265142390"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="265142390"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 06:31:51 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="636126254"
+Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 06:31:49 -0700
+Date:   Tue, 7 Jun 2022 16:31:46 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 06/36] tty/vt: consolemap: convert macros to static
+ inlines
+In-Reply-To: <20220607104946.18710-6-jslaby@suse.cz>
+Message-ID: <f87334d7-5e7e-99c3-ec83-390eb6ccccd@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-6-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/mixed; boundary="8323329-221322822-1654608710=:1622"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jiri Kosina <jikos@kernel.org> writes:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-> - what sense does it make to have embargoed-hardware-issues.rst and 
->   security-bugs.rst live in different Documentation/ subdirectories 
->   (admin-guide/ vs process/)? It'd seem to make sense to me to have them 
->   in one common place?
+--8323329-221322822-1654608710=:1622
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-Yes, I think that would make sense...a lot of stuff got sorted out into
-the various guides quickly, and it didn't all land in the right place.
-I'd be in favor of moving this over to the process guide, and perhaps
-making a security-specific section there.
+On Tue, 7 Jun 2022, Jiri Slaby wrote:
 
-Thanks,
+> This commit changes !CONFIG_CONSOLE_TRANSLATIONS definitions to real
+> (inline) functions. So the commit:
+> * makes type checking much stronger,
+> * removes the need of many parentheses and casts, and
+> * makes the code more readable.
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 
-jon
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+
+-- 
+ i.
+
+--8323329-221322822-1654608710=:1622--
