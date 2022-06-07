@@ -2,106 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 752D5CCA490
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76100CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385420AbiFGW1N (ORCPT
+        id S1355602AbiFGW1W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:27:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
+        Tue, 7 Jun 2022 18:27:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381542AbiFGVRv (ORCPT
+        with ESMTP id S1381552AbiFGVRv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:17:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF8A14CDC4;
-        Tue,  7 Jun 2022 11:59:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B99FD61787;
-        Tue,  7 Jun 2022 18:59:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CADD9C385A2;
-        Tue,  7 Jun 2022 18:59:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628347;
-        bh=zHarHNHf1vwJOO2GNoR2a6HsIMrQOlbPbQSMOyTCg1E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AshWlgGPIUa22IAuXDmqaFYeF4v23+JpLsHRnKSpLqX9GBgVRdVavNky7C3+6bOMk
-         M/NnvWlZJdRLnEzM2bKkSzhZuWbWjsQ2ssk5FrxaCFsulOLCa0WT5q7bCGa0ewyNVw
-         suxUayMx3qW4rz4e/tDFiwoJnkOM8r4ubWmG7ZTo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 297/879] mptcp: optimize release_cb for the common case
-Date:   Tue,  7 Jun 2022 18:56:55 +0200
-Message-Id: <20220607165011.467418026@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+X-Greylist: delayed 1803 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 11:59:13 PDT
+Received: from 3.mo550.mail-out.ovh.net (3.mo550.mail-out.ovh.net [46.105.60.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F00F223BCB
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:59:12 -0700 (PDT)
+Received: from player728.ha.ovh.net (unknown [10.110.103.121])
+        by mo550.mail-out.ovh.net (Postfix) with ESMTP id 766B0247EF
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:21:03 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player728.ha.ovh.net (Postfix) with ESMTPSA id B1FF62B3FFB41;
+        Tue,  7 Jun 2022 18:20:55 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-103G0056567a39d-9727-4b83-b825-c40a253e5342,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 1/3] drm/panel: Use backlight helper
+Date:   Tue,  7 Jun 2022 20:20:24 +0200
+Message-Id: <20220607182026.1121992-2-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220607182026.1121992-1-steve@sk2.org>
+References: <20220607182026.1121992-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 10884918828013553286
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejvdekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheehtd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-[ Upstream commit 65a569b03ca832ebc93ce45a7466137e2bb62254 ]
-
-The mptcp release callback checks several flags in atomic
-context, but only MPTCP_CLEAN_UNA can be up frequently.
-
-Reorganize the code to avoid multiple conditionals in the
-most common scenarios.
-
-Additional clarify a related comment.
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: dri-devel@lists.freedesktop.org
 ---
- net/mptcp/protocol.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/panel/panel-asus-z00t-tm5p5-n35596.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 0cbea3b6d0a4..2a9335ce5df1 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -3092,15 +3092,17 @@ static void mptcp_release_cb(struct sock *sk)
- 		spin_lock_bh(&sk->sk_lock.slock);
- 	}
+diff --git a/drivers/gpu/drm/panel/panel-asus-z00t-tm5p5-n35596.c b/drivers/gpu/drm/panel/panel-asus-z00t-tm5p5-n35596.c
+index 44674ebedf59..174ff434bd71 100644
+--- a/drivers/gpu/drm/panel/panel-asus-z00t-tm5p5-n35596.c
++++ b/drivers/gpu/drm/panel/panel-asus-z00t-tm5p5-n35596.c
+@@ -215,14 +215,9 @@ static const struct drm_panel_funcs tm5p5_nt35596_panel_funcs = {
+ static int tm5p5_nt35596_bl_update_status(struct backlight_device *bl)
+ {
+ 	struct mipi_dsi_device *dsi = bl_get_data(bl);
+-	u16 brightness = bl->props.brightness;
++	u16 brightness = backlight_get_brightness(bl);
+ 	int ret;
  
--	/* be sure to set the current sk state before tacking actions
--	 * depending on sk_state
--	 */
--	if (__test_and_clear_bit(MPTCP_CONNECTED, &msk->cb_flags))
--		__mptcp_set_connected(sk);
- 	if (__test_and_clear_bit(MPTCP_CLEAN_UNA, &msk->cb_flags))
- 		__mptcp_clean_una_wakeup(sk);
--	if (__test_and_clear_bit(MPTCP_ERROR_REPORT, &msk->cb_flags))
--		__mptcp_error_report(sk);
-+	if (unlikely(&msk->cb_flags)) {
-+		/* be sure to set the current sk state before tacking actions
-+		 * depending on sk_state, that is processing MPTCP_ERROR_REPORT
-+		 */
-+		if (__test_and_clear_bit(MPTCP_CONNECTED, &msk->cb_flags))
-+			__mptcp_set_connected(sk);
-+		if (__test_and_clear_bit(MPTCP_ERROR_REPORT, &msk->cb_flags))
-+			__mptcp_error_report(sk);
-+	}
+-	if (bl->props.power != FB_BLANK_UNBLANK ||
+-	    bl->props.fb_blank != FB_BLANK_UNBLANK ||
+-	    bl->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK))
+-		brightness = 0;
+-
+ 	dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
  
- 	__mptcp_update_rmem(sk);
- }
+ 	ret = mipi_dsi_dcs_set_display_brightness(dsi, brightness);
 -- 
-2.35.1
-
-
+2.30.2
 
