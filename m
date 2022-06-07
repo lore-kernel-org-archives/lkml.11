@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 820D7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9C0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376887AbiFGUsk (ORCPT
+        id S1349357AbiFGUsp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:48:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55386 "EHLO
+        Tue, 7 Jun 2022 16:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356971AbiFGTq2 (ORCPT
+        with ESMTP id S1356974AbiFGTq2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:46:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946355EDCD;
-        Tue,  7 Jun 2022 11:18:44 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B6B689BB;
+        Tue,  7 Jun 2022 11:18:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC8A160DDE;
-        Tue,  7 Jun 2022 18:18:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C351AC385A5;
-        Tue,  7 Jun 2022 18:18:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C06D660DE2;
+        Tue,  7 Jun 2022 18:18:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0827C3411F;
+        Tue,  7 Jun 2022 18:18:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625923;
-        bh=dLL/mOAB4T3gsc0LMPrI/8vzxFAxEm2zNTvqPqGxrqA=;
+        s=korg; t=1654625931;
+        bh=FfPhJu8v9WFm9WF85DjB2S/mhUA3fz0JzrI1FkCPw8E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GO8VY6AZS921R1cA7EvIllibSHZz6me/wxUbDwNKpXAjTD4qpsKR9rA8G7wuDmU8+
-         kHkC2XgWdU8hZjojTk+1L3+KC4H82jd1Mjq89ccZg6RU4ghZAxw/RVCBAwmidqcvwW
-         dRlyI8OJpjtg8pjZ3KUDofsvOfx/TvHIKik+3xmc=
+        b=UoHLJMmbAyvCtQEKbVOjiV+hiTFhqZESwJWSq9TYJLa9aclveSsXzncR22ZlyTl4A
+         T1Puvw31mQxS5f8N3ztnoMV3yKRp6FGv1TVB36/b81+GpDmN3P1bt9r7EZIxtkZvDS
+         ajOsZjRa0nwWZrc2ujwZS3xNnW3G4mgmlut2Zp04=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pierre Gondois <pierre.gondois@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Joel Selvaraj <jo@jsfamily.in>,
+        Caleb Connolly <caleb@connolly.tech>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 166/772] ACPI: CPPC: Assume no transition latency if no PCCT
-Date:   Tue,  7 Jun 2022 18:55:58 +0200
-Message-Id: <20220607164953.932028578@linuxfoundation.org>
+Subject: [PATCH 5.17 195/772] arm64: dts: qcom: sdm845-xiaomi-beryllium: fix typo in panels vddio-supply property
+Date:   Tue,  7 Jun 2022 18:56:27 +0200
+Message-Id: <20220607164954.780534251@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,94 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre Gondois <Pierre.Gondois@arm.com>
+From: Joel Selvaraj <jo@jsfamily.in>
 
-[ Upstream commit 6380b7b2b29da9d9c5ab2d4a265901cd93ba3696 ]
+[ Upstream commit 1f1c494082a1f10d03ce4ee1485ee96d212e22ff ]
 
-The transition_delay_us (struct cpufreq_policy) is currently defined
-as:
-  Preferred average time interval between consecutive invocations of
-  the driver to set the frequency for this policy.  To be set by the
-  scaling driver (0, which is the default, means no preference).
-The transition_latency represents the amount of time necessary for a
-CPU to change its frequency.
+vddio is misspelled with a "0" instead of "o". Fix it.
 
-A PCCT table advertises mutliple values:
-- pcc_nominal: Expected latency to process a command, in microseconds
-- pcc_mpar: The maximum number of periodic requests that the subspace
-  channel can support, reported in commands per minute. 0 indicates no
-  limitation.
-- pcc_mrtt: The minimum amount of time that OSPM must wait after the
-  completion of a command before issuing the next command,
-  in microseconds.
-cppc_get_transition_latency() allows to get the max of them.
-
-commit d4f3388afd48 ("cpufreq / CPPC: Set platform specific
-transition_delay_us") allows to select transition_delay_us based on
-the platform, and fallbacks to cppc_get_transition_latency()
-otherwise.
-
-If _CPC objects are not using PCC channels (no PPCT table), the
-transition_delay_us is set to CPUFREQ_ETERNAL, leading to really long
-periods between frequency updates (~4s).
-
-If the desired_reg, where performance requests are written, is in
-SystemMemory or SystemIo ACPI address space, there is no delay
-in requests. So return 0 instead of CPUFREQ_ETERNAL, leading to
-transition_delay_us being set to LATENCY_MULTIPLIER us (1000 us).
-
-This patch also adds two macros to check the address spaces.
-
-Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Joel Selvaraj <jo@jsfamily.in>
+Reviewed-by: Caleb Connolly <caleb@connolly.tech>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/BY5PR02MB7009901651E6A8D5ACB0425ED91F9@BY5PR02MB7009.namprd02.prod.outlook.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/cppc_acpi.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
-index 123e98a765de..a7facd4b4ca8 100644
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -100,6 +100,16 @@ static DEFINE_PER_CPU(struct cpc_desc *, cpc_desc_ptr);
- 				(cpc)->cpc_entry.reg.space_id ==	\
- 				ACPI_ADR_SPACE_PLATFORM_COMM)
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
+index 367389526b41..a97f5e89e1d0 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
+@@ -218,7 +218,7 @@
+ 	panel@0 {
+ 		compatible = "tianma,fhd-video";
+ 		reg = <0>;
+-		vddi0-supply = <&vreg_l14a_1p8>;
++		vddio-supply = <&vreg_l14a_1p8>;
+ 		vddpos-supply = <&lab>;
+ 		vddneg-supply = <&ibb>;
  
-+/* Check if a CPC register is in SystemMemory */
-+#define CPC_IN_SYSTEM_MEMORY(cpc) ((cpc)->type == ACPI_TYPE_BUFFER &&	\
-+				(cpc)->cpc_entry.reg.space_id ==	\
-+				ACPI_ADR_SPACE_SYSTEM_MEMORY)
-+
-+/* Check if a CPC register is in SystemIo */
-+#define CPC_IN_SYSTEM_IO(cpc) ((cpc)->type == ACPI_TYPE_BUFFER &&	\
-+				(cpc)->cpc_entry.reg.space_id ==	\
-+				ACPI_ADR_SPACE_SYSTEM_IO)
-+
- /* Evaluates to True if reg is a NULL register descriptor */
- #define IS_NULL_REG(reg) ((reg)->space_id ==  ACPI_ADR_SPACE_SYSTEM_MEMORY && \
- 				(reg)->address == 0 &&			\
-@@ -1441,6 +1451,9 @@ EXPORT_SYMBOL_GPL(cppc_set_perf);
-  * transition latency for performance change requests. The closest we have
-  * is the timing information from the PCCT tables which provides the info
-  * on the number and frequency of PCC commands the platform can handle.
-+ *
-+ * If desired_reg is in the SystemMemory or SystemIo ACPI address space,
-+ * then assume there is no latency.
-  */
- unsigned int cppc_get_transition_latency(int cpu_num)
- {
-@@ -1466,7 +1479,9 @@ unsigned int cppc_get_transition_latency(int cpu_num)
- 		return CPUFREQ_ETERNAL;
- 
- 	desired_reg = &cpc_desc->cpc_regs[DESIRED_PERF];
--	if (!CPC_IN_PCC(desired_reg))
-+	if (CPC_IN_SYSTEM_MEMORY(desired_reg) || CPC_IN_SYSTEM_IO(desired_reg))
-+		return 0;
-+	else if (!CPC_IN_PCC(desired_reg))
- 		return CPUFREQ_ETERNAL;
- 
- 	if (pcc_ss_id < 0)
 -- 
 2.35.1
 
