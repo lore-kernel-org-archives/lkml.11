@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC8CBCCA499
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 536E7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357730AbiFGTmR (ORCPT
+        id S1354409AbiFGTmo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:42:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57828 "EHLO
+        Tue, 7 Jun 2022 15:42:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353974AbiFGSqW (ORCPT
+        with ESMTP id S1354528AbiFGSrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D01AE18DAE9;
-        Tue,  7 Jun 2022 10:59:52 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D949C2E5;
+        Tue,  7 Jun 2022 11:01:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ADEF618E5;
-        Tue,  7 Jun 2022 17:59:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D4FCC36B00;
-        Tue,  7 Jun 2022 17:59:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 134BCB82354;
+        Tue,  7 Jun 2022 18:01:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FCA0C385A5;
+        Tue,  7 Jun 2022 18:01:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624791;
-        bh=gdWMOUDKVAqi6yCejsLZGzwhdUsyVmA79NthQ2UU4Xs=;
+        s=korg; t=1654624908;
+        bh=Ga08/OLnyXNnL8sL9UQF+m5AArZ3XQ4eVArDlX0HBPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GLCpCRAQr421UQQiteHvU4tAE0VuPSV827F6a2mhuscFh+wikJ8ih+DKHOOqLZ+bR
-         w7McxenPan0lc3jkCJDK3LJA54FRLjfh8iUECfYwVagbJOKQZQagypOkmCMtEqUKPk
-         /z5K79p5JV6fZHmQrn94OoLp6AKN8ojwjFHA1SbY=
+        b=lQILqAfCSpVeOY3x4D76iLdaQefSKcikcTS9ba8wwm/Xv3eMMPChLPLFSKbDCYawb
+         ufA0VKDKPccVabi8+pDCsgmKLk94WAJcWjZoaTxCZn5hXNAd7D6D433/YDZK/ORNGD
+         Msc/Z3lEI8c1MudsyjybwmFHiWUGHRwFInEfv4Xo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 455/667] crypto: sun8i-ss - handle zero sized sg
-Date:   Tue,  7 Jun 2022 19:02:00 +0200
-Message-Id: <20220607164948.359558265@linuxfoundation.org>
+Subject: [PATCH 5.15 498/667] NFSv4/pNFS: Do not fail I/O when we fail to allocate the pNFS layout
+Date:   Tue,  7 Jun 2022 19:02:43 +0200
+Message-Id: <20220607164949.635381183@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,47 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit c149e4763d28bb4c0e5daae8a59f2c74e889f407 ]
+[ Upstream commit 3764a17e31d579cf9b4bd0a69894b577e8d75702 ]
 
-sun8i-ss does not handle well the possible zero sized sg.
+Commit 587f03deb69b caused pnfs_update_layout() to stop returning ENOMEM
+when the memory allocation fails, and hence causes it to fall back to
+trying to do I/O through the MDS. There is no guarantee that this will
+fare any better. If we're failing the pNFS layout allocation, then we
+should just redirty the page and retry later.
 
-Fixes: d9b45418a917 ("crypto: sun8i-ss - support hash algorithms")
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Reported-by: Olga Kornievskaia <aglo@umich.edu>
+Fixes: 587f03deb69b ("pnfs: refactor send_layoutget")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ fs/nfs/pnfs.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
-index 1a71ed49d233..ca4f280af35d 100644
---- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
-+++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
-@@ -380,13 +380,21 @@ int sun8i_ss_hash_run(struct crypto_engine *engine, void *breq)
- 	}
+diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
+index 7ddd003ab8b1..9203a17b3f09 100644
+--- a/fs/nfs/pnfs.c
++++ b/fs/nfs/pnfs.c
+@@ -2000,6 +2000,7 @@ pnfs_update_layout(struct inode *ino,
+ 	lo = pnfs_find_alloc_layout(ino, ctx, gfp_flags);
+ 	if (lo == NULL) {
+ 		spin_unlock(&ino->i_lock);
++		lseg = ERR_PTR(-ENOMEM);
+ 		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+ 				 PNFS_UPDATE_LAYOUT_NOMEM);
+ 		goto out;
+@@ -2128,6 +2129,7 @@ pnfs_update_layout(struct inode *ino,
  
- 	len = areq->nbytes;
--	for_each_sg(areq->src, sg, nr_sgs, i) {
-+	sg = areq->src;
-+	i = 0;
-+	while (len > 0 && sg) {
-+		if (sg_dma_len(sg) == 0) {
-+			sg = sg_next(sg);
-+			continue;
-+		}
- 		rctx->t_src[i].addr = sg_dma_address(sg);
- 		todo = min(len, sg_dma_len(sg));
- 		rctx->t_src[i].len = todo / 4;
- 		len -= todo;
- 		rctx->t_dst[i].addr = addr_res;
- 		rctx->t_dst[i].len = digestsize / 4;
-+		sg = sg_next(sg);
-+		i++;
- 	}
- 	if (len > 0) {
- 		dev_err(ss->dev, "remaining len %d\n", len);
+ 	lgp = pnfs_alloc_init_layoutget_args(ino, ctx, &stateid, &arg, gfp_flags);
+ 	if (!lgp) {
++		lseg = ERR_PTR(-ENOMEM);
+ 		trace_pnfs_update_layout(ino, pos, count, iomode, lo, NULL,
+ 					 PNFS_UPDATE_LAYOUT_NOMEM);
+ 		nfs_layoutget_end(lo);
 -- 
 2.35.1
 
