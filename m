@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90770C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 08:46:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06CFFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 08:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238449AbiFGIqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 04:46:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60130 "EHLO
+        id S237167AbiFGIqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 04:46:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238429AbiFGIpx (ORCPT
+        with ESMTP id S238493AbiFGIql (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 04:45:53 -0400
-Received: from EX-PRD-EDGE01.vmware.com (EX-PRD-EDGE01.vmware.com [208.91.3.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17D4D246B;
-        Tue,  7 Jun 2022 01:45:50 -0700 (PDT)
+        Tue, 7 Jun 2022 04:46:41 -0400
+Received: from EX-PRD-EDGE02.vmware.com (EX-PRD-EDGE02.vmware.com [208.91.3.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14868D246B;
+        Tue,  7 Jun 2022 01:46:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
     s=s1024; d=vmware.com;
     h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
       content-type;
-    bh=SV77H0OmyZG86LnB/951XAXqvbh/6VYp/F55lWugqXA=;
-    b=sjWXBWENm+RpC+tvRLQsmhYA5E8zhCtBqIF5nxhBFq1QUfXjIqPrT5wKe4zkzC
-      LnIgST/HDUOs05XfST9NVLaQsez0Sbhaxouo/5k4cJcCAUzUqMStxsPSikis9j
-      qFPf426bUlNGdSTfsEXs03manKuxGDtv8/HOWzbmMcL7tKY=
-Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
- EX-PRD-EDGE01.vmware.com (10.188.245.6) with Microsoft SMTP Server id
- 15.1.2308.20; Tue, 7 Jun 2022 01:45:30 -0700
+    bh=NNMVPO7g7f6Jkv3OjF+afguZ7MsAQZAz3wtqXiB2wJg=;
+    b=UxIxGevgg13TQpVWGqB2HSnZCechmAG0lamC0cpUOsM0A8j4DLULDK7WrkAUFw
+      /YSek3xffW3tTQqk5hUscQbzXfM83eE6fO9eS3S4DY62qWo4HDST6XZdpljYu+
+      DBFYzjmMeG2o5nQrfONiRKxUorPd3PgjoFedhekEFcIiSTo=
+Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
+ EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
+ 15.1.2308.14; Tue, 7 Jun 2022 01:45:33 -0700
 Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id 24652201BC;
-        Tue,  7 Jun 2022 01:45:45 -0700 (PDT)
+        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id 6EA0C2021D;
+        Tue,  7 Jun 2022 01:45:39 -0700 (PDT)
 Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 1FD2FAA2B0; Tue,  7 Jun 2022 01:45:45 -0700 (PDT)
+        id 62466AA2B0; Tue,  7 Jun 2022 01:45:39 -0700 (PDT)
 From:   Ronak Doshi <doshir@vmware.com>
 To:     <netdev@vger.kernel.org>
 CC:     Ronak Doshi <doshir@vmware.com>,
@@ -40,68 +40,199 @@ CC:     Ronak Doshi <doshir@vmware.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 net-next 8/8] vmxnet3: update to version 7
-Date:   Tue, 7 Jun 2022 01:45:18 -0700
-Message-ID: <20220607084518.30316-9-doshir@vmware.com>
+Subject: [PATCH v2 net-next 4/8] vmxnet3: add support for out of order rx completion
+Date:   Tue, 7 Jun 2022 01:45:14 -0700
+Message-ID: <20220607084518.30316-5-doshir@vmware.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20220607084518.30316-1-doshir@vmware.com>
 References: <20220607084518.30316-1-doshir@vmware.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-Received-SPF: None (EX-PRD-EDGE01.vmware.com: doshir@vmware.com does not
+Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
  designate permitted sender hosts)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With all vmxnet3 version 7 changes incorporated in the vmxnet3 driver,
-the driver can configure emulation to run at vmxnet3 version 7, provided
-the emulation advertises support for version 7.
+Currently, vmxnet3 processes rx completions in-order i.e. no
+out of order completion descriptor is expected. With UPT, if
+hardware supports LRO, then hardware can report out of order
+rx completions. This patch enhances vmxnet3 to add this support.
+This supports gets effective only when the corresponding feature
+bit is set.
+
+Also, minor enhancements are done for performance.
 
 Signed-off-by: Ronak Doshi <doshir@vmware.com>
 Acked-by: Guolin Yang <gyang@vmware.com>
 ---
- drivers/net/vmxnet3/vmxnet3_drv.c | 7 ++++++-
- drivers/net/vmxnet3/vmxnet3_int.h | 4 ++--
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ drivers/net/vmxnet3/vmxnet3_drv.c | 70 ++++++++++++++++++++++++++++++++-------
+ drivers/net/vmxnet3/vmxnet3_int.h |  5 +++
+ 2 files changed, 63 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index aa96441ea86c..e88c5459abd5 100644
+index 93f237db463d..94ca3bc1d540 100644
 --- a/drivers/net/vmxnet3/vmxnet3_drv.c
 +++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -3659,7 +3659,12 @@ vmxnet3_probe_device(struct pci_dev *pdev,
- 		goto err_alloc_pci;
+@@ -585,6 +585,7 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
  
- 	ver = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_VRRS);
--	if (ver & (1 << VMXNET3_REV_6)) {
-+	if (ver & (1 << VMXNET3_REV_7)) {
-+		VMXNET3_WRITE_BAR1_REG(adapter,
-+				       VMXNET3_REG_VRRS,
-+				       1 << VMXNET3_REV_7);
-+		adapter->version = VMXNET3_REV_7 + 1;
-+	} else if (ver & (1 << VMXNET3_REV_6)) {
- 		VMXNET3_WRITE_BAR1_REG(adapter,
- 				       VMXNET3_REG_VRRS,
- 				       1 << VMXNET3_REV_6);
+ 		rbi = rbi_base + ring->next2fill;
+ 		gd = ring->base + ring->next2fill;
++		rbi->comp_state = VMXNET3_RXD_COMP_PENDING;
+ 
+ 		if (rbi->buf_type == VMXNET3_RX_BUF_SKB) {
+ 			if (rbi->skb == NULL) {
+@@ -644,8 +645,10 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
+ 
+ 		/* Fill the last buffer but dont mark it ready, or else the
+ 		 * device will think that the queue is full */
+-		if (num_allocated == num_to_alloc)
++		if (num_allocated == num_to_alloc) {
++			rbi->comp_state = VMXNET3_RXD_COMP_DONE;
+ 			break;
++		}
+ 
+ 		gd->dword[2] |= cpu_to_le32(ring->gen << VMXNET3_RXD_GEN_SHIFT);
+ 		num_allocated++;
+@@ -1367,6 +1370,7 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 	struct Vmxnet3_RxCompDesc *rcd;
+ 	struct vmxnet3_rx_ctx *ctx = &rq->rx_ctx;
+ 	u16 segCnt = 0, mss = 0;
++	int comp_offset, fill_offset;
+ #ifdef __BIG_ENDIAN_BITFIELD
+ 	struct Vmxnet3_RxDesc rxCmdDesc;
+ 	struct Vmxnet3_RxCompDesc rxComp;
+@@ -1639,9 +1643,15 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 
+ rcd_done:
+ 		/* device may have skipped some rx descs */
+-		ring->next2comp = idx;
+-		num_to_alloc = vmxnet3_cmd_ring_desc_avail(ring);
+ 		ring = rq->rx_ring + ring_idx;
++		rbi->comp_state = VMXNET3_RXD_COMP_DONE;
++
++		comp_offset = vmxnet3_cmd_ring_desc_avail(ring);
++		fill_offset = (idx > ring->next2fill ? 0 : ring->size) +
++			      idx - ring->next2fill - 1;
++		if (!ring->isOutOfOrder || fill_offset >= comp_offset)
++			ring->next2comp = idx;
++		num_to_alloc = vmxnet3_cmd_ring_desc_avail(ring);
+ 
+ 		/* Ensure that the writes to rxd->gen bits will be observed
+ 		 * after all other writes to rxd objects.
+@@ -1649,18 +1659,38 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 		dma_wmb();
+ 
+ 		while (num_to_alloc) {
+-			vmxnet3_getRxDesc(rxd, &ring->base[ring->next2fill].rxd,
+-					  &rxCmdDesc);
+-			BUG_ON(!rxd->addr);
+-
+-			/* Recv desc is ready to be used by the device */
+-			rxd->gen = ring->gen;
+-			vmxnet3_cmd_ring_adv_next2fill(ring);
+-			num_to_alloc--;
++			rbi = rq->buf_info[ring_idx] + ring->next2fill;
++			if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_OOORX_COMP)))
++				goto refill_buf;
++			if (ring_idx == 0) {
++				/* ring0 Type1 buffers can get skipped; re-fill them */
++				if (rbi->buf_type != VMXNET3_RX_BUF_SKB)
++					goto refill_buf;
++			}
++			if (rbi->comp_state == VMXNET3_RXD_COMP_DONE) {
++refill_buf:
++				vmxnet3_getRxDesc(rxd, &ring->base[ring->next2fill].rxd,
++						  &rxCmdDesc);
++				WARN_ON(!rxd->addr);
++
++				/* Recv desc is ready to be used by the device */
++				rxd->gen = ring->gen;
++				vmxnet3_cmd_ring_adv_next2fill(ring);
++				rbi->comp_state = VMXNET3_RXD_COMP_PENDING;
++				num_to_alloc--;
++			} else {
++				/* rx completion hasn't occurred */
++				ring->isOutOfOrder = 1;
++				break;
++			}
++		}
++
++		if (num_to_alloc == 0) {
++			ring->isOutOfOrder = 0;
+ 		}
+ 
+ 		/* if needed, update the register */
+-		if (unlikely(rq->shared->updateRxProd)) {
++		if (unlikely(rq->shared->updateRxProd) && (ring->next2fill & 0xf) == 0) {
+ 			VMXNET3_WRITE_BAR0_REG(adapter,
+ 					       rxprod_reg[ring_idx] + rq->qid * 8,
+ 					       ring->next2fill);
+@@ -1824,6 +1854,7 @@ vmxnet3_rq_init(struct vmxnet3_rx_queue *rq,
+ 		memset(rq->rx_ring[i].base, 0, rq->rx_ring[i].size *
+ 		       sizeof(struct Vmxnet3_RxDesc));
+ 		rq->rx_ring[i].gen = VMXNET3_INIT_GEN;
++		rq->rx_ring[i].isOutOfOrder = 0;
+ 	}
+ 	if (vmxnet3_rq_alloc_rx_buf(rq, 0, rq->rx_ring[0].size - 1,
+ 				    adapter) == 0) {
+@@ -2014,8 +2045,17 @@ vmxnet3_poll_rx_only(struct napi_struct *napi, int budget)
+ 	rxd_done = vmxnet3_rq_rx_complete(rq, adapter, budget);
+ 
+ 	if (rxd_done < budget) {
++		struct Vmxnet3_RxCompDesc *rcd;
++#ifdef __BIG_ENDIAN_BITFIELD
++		struct Vmxnet3_RxCompDesc rxComp;
++#endif
+ 		napi_complete_done(napi, rxd_done);
+ 		vmxnet3_enable_intr(adapter, rq->comp_ring.intr_idx);
++		/* after unmasking the interrupt, check if any descriptors were completed */
++		vmxnet3_getRxComp(rcd, &rq->comp_ring.base[rq->comp_ring.next2proc].rcd,
++				  &rxComp);
++		if (rcd->gen == rq->comp_ring.gen && napi_reschedule(napi))
++			vmxnet3_disable_intr(adapter, rq->comp_ring.intr_idx);
+ 	}
+ 	return rxd_done;
+ }
+@@ -3612,6 +3652,12 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 			adapter->dev_caps[0] = adapter->devcap_supported[0] &
+ 							(1UL << VMXNET3_CAP_LARGE_BAR);
+ 		}
++		if (!(adapter->ptcap_supported[0] & (1UL << VMXNET3_DCR_ERROR)) &&
++		    adapter->ptcap_supported[0] & (1UL << VMXNET3_CAP_OOORX_COMP) &&
++		    adapter->devcap_supported[0] & (1UL << VMXNET3_CAP_OOORX_COMP)) {
++			adapter->dev_caps[0] |= adapter->devcap_supported[0] &
++						(1UL << VMXNET3_CAP_OOORX_COMP);
++		}
+ 		if (adapter->dev_caps[0])
+ 			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
+ 
 diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index cb87731f5f1c..3367db23aa13 100644
+index a4f832f0ad5b..5b495ef253e8 100644
 --- a/drivers/net/vmxnet3/vmxnet3_int.h
 +++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -69,12 +69,12 @@
- /*
-  * Version numbers
-  */
--#define VMXNET3_DRIVER_VERSION_STRING   "1.6.0.0-k"
-+#define VMXNET3_DRIVER_VERSION_STRING   "1.7.0.0-k"
+@@ -136,6 +136,7 @@ struct vmxnet3_cmd_ring {
+ 	u32		next2fill;
+ 	u32		next2comp;
+ 	u8		gen;
++	u8              isOutOfOrder;
+ 	dma_addr_t	basePA;
+ };
  
- /* Each byte of this 32-bit integer encodes a version number in
-  * VMXNET3_DRIVER_VERSION_STRING.
-  */
--#define VMXNET3_DRIVER_VERSION_NUM      0x01060000
-+#define VMXNET3_DRIVER_VERSION_NUM      0x01070000
+@@ -260,9 +261,13 @@ enum vmxnet3_rx_buf_type {
+ 	VMXNET3_RX_BUF_PAGE = 2
+ };
  
- #if defined(CONFIG_PCI_MSI)
- 	/* RSS only makes sense if MSI-X is supported. */
++#define VMXNET3_RXD_COMP_PENDING        0
++#define VMXNET3_RXD_COMP_DONE           1
++
+ struct vmxnet3_rx_buf_info {
+ 	enum vmxnet3_rx_buf_type buf_type;
+ 	u16     len;
++	u8      comp_state;
+ 	union {
+ 		struct sk_buff *skb;
+ 		struct page    *page;
 -- 
 2.11.0
 
