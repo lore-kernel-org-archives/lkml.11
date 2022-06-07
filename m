@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79128C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1902BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378908AbiFGVDk (ORCPT
+        id S1377794AbiFGVDt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:03:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41462 "EHLO
+        Tue, 7 Jun 2022 17:03:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358616AbiFGUBk (ORCPT
+        with ESMTP id S1352980AbiFGUCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:01:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94CA71C0CA6;
-        Tue,  7 Jun 2022 11:25:16 -0700 (PDT)
+        Tue, 7 Jun 2022 16:02:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4F71C14CC;
+        Tue,  7 Jun 2022 11:25:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D115D611B9;
-        Tue,  7 Jun 2022 18:24:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAB36C34115;
-        Tue,  7 Jun 2022 18:24:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 470EC60C1A;
+        Tue,  7 Jun 2022 18:25:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AE4EC385A2;
+        Tue,  7 Jun 2022 18:25:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626287;
-        bh=mDFz1Qi4GnqNJH6WQQ+Dvts8B4pXR9evP9/but+/NqM=;
+        s=korg; t=1654626317;
+        bh=NBSceq6uO3g8F5OgwQ3chol+ONy6+vsRb+EPZbZlLzM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RAce9DNjrQid+HrGsfPFyesoqyE3sXPeIcXTOm7wt4MF7MPUax3BUbQkULT6bKEw/
-         Ndk3zzP68LLDOm4/RpwxPj5rR4GAncJZzMsyrDcngR5GapY+m0ZnnaBn7xgyLd0gj7
-         E4hDDlpAWm8cq4PI/mxoNkZ8WepLKF+uqSdouwq8=
+        b=A4o0Nn0s7ETj6MTD0UiUdIPlzFb6oML5pE/EUSoulsxpRPDlyyYwjKXRlJW5uwyeb
+         TS4ElcQjqCIf3VnVfq5ZnlFuj1qJHnaWTh7CmIP+c+OmTfcEDvRrmVHR91B4/mSvmN
+         31iC5nAd90EdHHHHwUb0/omeiNpSSBJrst3tssgw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 297/772] of: overlay: do not break notify on NOTIFY_{OK|STOP}
-Date:   Tue,  7 Jun 2022 18:58:09 +0200
-Message-Id: <20220607164957.774199700@linuxfoundation.org>
+        stable@vger.kernel.org, SeongJae Park <sj@kernel.org>,
+        Yuanchu Xie <yuanchu@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 298/772] selftests/damon: add damon to selftests root Makefile
+Date:   Tue,  7 Jun 2022 18:58:10 +0200
+Message-Id: <20220607164957.805165705@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,38 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nuno Sá <nuno.sa@analog.com>
+From: Yuanchu Xie <yuanchu@google.com>
 
-[ Upstream commit 5f756a2eaa4436d7d3dc1e040147f5e992ae34b5 ]
+[ Upstream commit 678f0cdc572c5fda940cb038d70eebb8d818adc8 ]
 
-We should not break overlay notifications on NOTIFY_{OK|STOP}
-otherwise we might break on the first fragment. We should only stop
-notifications if a *real* errno is returned by one of the listeners.
+Currently the damon selftests are not built with the rest of the
+selftests. We add damon to the list of targets.
 
-Fixes: a1d19bd4cf1fe ("of: overlay: pr_err from return NOTIFY_OK to overlay apply/remove")
-Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220420130205.89435-1-nuno.sa@analog.com
+Fixes: b348eb7abd09 ("mm/damon: add user space selftests")
+Reviewed-by: SeongJae Park <sj@kernel.org>
+Signed-off-by: Yuanchu Xie <yuanchu@google.com>
+Acked-by: David Rientjes <rientjes@google.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/overlay.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ tools/testing/selftests/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/of/overlay.c b/drivers/of/overlay.c
-index d80160cf34bb..d1187123c4fc 100644
---- a/drivers/of/overlay.c
-+++ b/drivers/of/overlay.c
-@@ -170,9 +170,7 @@ static int overlay_notify(struct overlay_changeset *ovcs,
- 
- 		ret = blocking_notifier_call_chain(&overlay_notify_chain,
- 						   action, &nd);
--		if (ret == NOTIFY_OK || ret == NOTIFY_STOP)
--			return 0;
--		if (ret) {
-+		if (notifier_to_errno(ret)) {
- 			ret = notifier_to_errno(ret);
- 			pr_err("overlay changeset %s notifier error %d, target: %pOF\n",
- 			       of_overlay_action_name[action], ret, nd.target);
+diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+index d08fe4cfe811..ffe453760a12 100644
+--- a/tools/testing/selftests/Makefile
++++ b/tools/testing/selftests/Makefile
+@@ -9,6 +9,7 @@ TARGETS += clone3
+ TARGETS += core
+ TARGETS += cpufreq
+ TARGETS += cpu-hotplug
++TARGETS += damon
+ TARGETS += drivers/dma-buf
+ TARGETS += efivarfs
+ TARGETS += exec
 -- 
 2.35.1
 
