@@ -2,124 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 887F8C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5A7ACCA497
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442164AbiFHB7q (ORCPT
+        id S1442269AbiFHCAA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48030 "EHLO
+        Tue, 7 Jun 2022 22:00:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835824AbiFGX5C (ORCPT
+        with ESMTP id S1835760AbiFGX4w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:57:02 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A5C7E1F1
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:24:00 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id p123-20020a625b81000000b0051c31cc75dfso2165192pfb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:24:00 -0700 (PDT)
+        Tue, 7 Jun 2022 19:56:52 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DFC61F61D
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:20:31 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id u26so29866192lfd.8
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:20:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=HzWsVgdFm2oYqm1OPj6CBRtZTI++je2WpE9vsT9Q4dE=;
-        b=qfNZPl0DGpAwisczdNca9pITU2U9zMEzWm3BrXjbGd897plb5bXbxmk9W2/2Rvcw5k
-         yv28W4H+7VJu/PtlIgHIZsV47WgaPwW1qtt3M3gOa9pyxg8/sVDWna3mdIEK8WrIjPLf
-         Utgnt+Iy2tBPuYKAJ4WriOfIiJ27Ra12p+CcwljmCA0RcV6d/3WcWADFnwy21L3IOS05
-         c+ZNT425BSZ5rPfQZK7AvtaHBI3KS4HB8ZUBIp4vzhG8UEN8qU6qbdxnhFsQRriUP2J4
-         XLftzFfLaunpJp5g4sP5m4m1Cl6SAnJ4MCUNAXqNfkYYuGFR23mIZh1g4c0RrCBW4Qjf
-         LF5Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kJadlcijpEraHCzXfyi7dHvp0N+x8osaIwQlxh9G2bY=;
+        b=Z0ia+eLjj6yYhXvzoGPJY2ac0xIAPYnyriaetuCT3yoo9N/HOqP4XHzBGfMavxNlGQ
+         JLjlyCYB5YLQc1PwQqza+kuCemyXvU+6AdZYjKQaoHP7z2E8K8oFFC5L4Q6cnM5JlFId
+         EYJy6ZGMqU9k/lpBl+tq3yRhcdXnfg4GGxbc6IvuGEofwwTGWi2q0fFdCX4SSnO1btc4
+         LWirHSmpgUAOz3v+bCyo21FfstCG4S0rRaZ/7ZgdLn6nFlBpKLo+JOkIWk87m90vdBE5
+         1Wzkx4tFR26DuHShOoFlyOVaLcTGbfSc22D80wD2jfOVwvttkNKZ0ES6XCvZwi7/1i3F
+         ZvOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=HzWsVgdFm2oYqm1OPj6CBRtZTI++je2WpE9vsT9Q4dE=;
-        b=IKWMJ5TEr8EXUnnDwAaA275khOar9/LM8LvSMjN8K7+S8cZPD/8NsL4Wc9ceybXLdM
-         OXW+xEbiCRIH19khrFmtRuvEkXCg/eU/9UMzjdqYNaDwro3pskRVcd/JEQd1tmuSsYNp
-         4oeJg2T8fgVJ+W6Zh06YcZM021vWJgFKxUlCLfXMt3jXPCvPYUh0tHMVZCwTk8w4zWcy
-         I6S/kzDDucDy5/BBSiyIey8dQ77UF9d+KUo5lqRKYFMQqMbwdNQMPOVnBETTwbS0w6v7
-         gFUyIvOYNug9gDaKn3D+Ufg2xVFMCl/prv9EHqTGeZgjMxD++gvvVTLmh286r+bv+cE9
-         EtKA==
-X-Gm-Message-State: AOAM533RbdM5CiSrCkmjKKE/ekkC3NxikNYj4qmifi3EPEJiKBLwGsV+
-        vLy3vhKJQ+loqP0ddxpZ1kj/2CCdok4=
-X-Google-Smtp-Source: ABdhPJwW+RRDZoQq7Au7i9xNoeOWMcVvfwUqmH7KW55H9yWzXC5KnkE0nQyEfRlvmk0fFjuflWIQaM47J68=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1688:b0:517:cf7b:9293 with SMTP id
- k8-20020a056a00168800b00517cf7b9293mr99735795pfc.7.1654644239818; Tue, 07 Jun
- 2022 16:23:59 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  7 Jun 2022 23:23:52 +0000
-In-Reply-To: <20220607232353.3375324-1-seanjc@google.com>
-Message-Id: <20220607232353.3375324-3-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220607232353.3375324-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH 2/3] KVM: VMX: Move MSR_IA32_FEAT_CTL.LOCKED check into "is
- valid" helper
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kJadlcijpEraHCzXfyi7dHvp0N+x8osaIwQlxh9G2bY=;
+        b=DNXJeZ27rn0cZSdDpCvibIWEWDknd4elrfVf3+pfUfSbx+VXy7di1vm24VDiGl8gE/
+         Zvt/VMnxcU2URF0QbUd82Clfhf1+62Cws6mR/oT5dOCPhyMWg3dPQoSmrguvm2Uy/x1n
+         UVPbT5jqKL86dtc2Y79PTWM2dTlAWItDIVn5t2JztITWT48kJg6Ouigh6C48++GR3ejG
+         FAFiNVjh59qOt5sPh6E/A0cSCDQDG3MWO0ci6yOUVe8brpnEem9bbT4D86T+qP4wYBc9
+         dE48nn+lyi4AnERE+oFlUV/ON5BgHLkwyaLk/3K+0awZ+4AvDdWaWs2yknb0lLuxIRFl
+         D8bQ==
+X-Gm-Message-State: AOAM533n2LjGFPFBqDqs87D6Eqj7kCdvKNtmioHry/rDuubs9F5nyJzQ
+        0itWZ0jYcxDMCvNwitnzjGnz8D6/ulgqcR8Y5ZweKw==
+X-Google-Smtp-Source: ABdhPJxMM91AMDYynBTs5Q7XtkgbyiYpxCwW9+RLJVrUt/uZz2PBE4EVkez8NfMupZZuHvJ7gQ8aix+PQfB54ft4sBs=
+X-Received: by 2002:a05:6512:3f94:b0:478:7abe:de4a with SMTP id
+ x20-20020a0565123f9400b004787abede4amr54322287lfa.401.1654644029597; Tue, 07
+ Jun 2022 16:20:29 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220607222006.22719-1-jstitt007@gmail.com>
+In-Reply-To: <20220607222006.22719-1-jstitt007@gmail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 7 Jun 2022 16:20:17 -0700
+Message-ID: <CAKwvOd=-NXR5HoHwwEUZMsCt90oaADH6XHifje9n-8S8rj9SFw@mail.gmail.com>
+Subject: Re: [PATCH] include/uapi/linux/swab.h: add __u16 cast to __swab16 conditional
+To:     Justin Stitt <jstitt007@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Nathan Chancellor <nathan@kernel.org>, Tom Rix <trix@redhat.com>,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the check on IA32_FEATURE_CONTROL being locked, i.e. read-only from
-the guest, into the helper to check the overall validity of the incoming
-value.  Opportunistically rename the helper to make it clear that it
-returns a bool.
+On Tue, Jun 7, 2022 at 3:20 PM Justin Stitt <jstitt007@gmail.com> wrote:
+>
+> if __HAVE_BUILTIN_BSWAP16__ is defined then __swab16 utilizes a __u16 cast.
+> This same cast should be used if __HAVE_BUILTIN_BSWAP16__ is not defined as
+> well. This should fix loads (at least a few) clang -Wformat warnings
+> specifically with `ntohs()`
+>
+> Link: https://github.com/ClangBuiltLinux/linux/issues/378
+> Signed-off-by: Justin Stitt <jstitt007@gmail.com>
 
-No functional change intended.
+I wonder why there's a cast inside the __builtin_constant_p parameter
+list? Can't imagine that changing anything. I wonder if this should
+be:
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/vmx/vmx.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
-
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 8e83e12373c5..eb4cd66055f8 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -1755,8 +1755,8 @@ bool nested_vmx_allowed(struct kvm_vcpu *vcpu)
- 					FEAT_CTL_SGX_ENABLED		 | \
- 					FEAT_CTL_LMCE_ENABLED)
- 
--static inline bool vmx_feature_control_msr_valid(struct vcpu_vmx *vmx,
--						 struct msr_data *msr)
-+static inline bool is_vmx_feature_control_msr_valid(struct vcpu_vmx *vmx,
-+						    struct msr_data *msr)
- {
- 	uint64_t valid_bits;
- 
-@@ -1767,6 +1767,10 @@ static inline bool vmx_feature_control_msr_valid(struct vcpu_vmx *vmx,
- 	WARN_ON_ONCE(vmx->msr_ia32_feature_control_valid_bits &
- 		     ~KVM_SUPPORTED_FEATURE_CONTROL);
- 
-+	if (!msr->host_initiated &&
-+	    (vmx->msr_ia32_feature_control & FEAT_CTL_LOCKED))
-+		return false;
-+
- 	if (msr->host_initiated)
- 		valid_bits = KVM_SUPPORTED_FEATURE_CONTROL;
- 	else
-@@ -2165,10 +2169,9 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		vcpu->arch.mcg_ext_ctl = data;
- 		break;
- 	case MSR_IA32_FEAT_CTL:
--		if (!vmx_feature_control_msr_valid(vmx, msr_info) ||
--		    (to_vmx(vcpu)->msr_ia32_feature_control &
--		     FEAT_CTL_LOCKED && !msr_info->host_initiated))
-+		if (!is_vmx_feature_control_msr_valid(vmx, msr_info))
- 			return 1;
-+
- 		vmx->msr_ia32_feature_control = data;
- 		if (msr_info->host_initiated && data == 0)
- 			vmx_leave_nested(vcpu);
--- 
-2.36.1.255.ge46751e96f-goog
-
+diff --git a/include/uapi/linux/swab.h b/include/uapi/linux/swab.h
+index 7272f85d6d6a..0723a9cce747 100644
+--- a/include/uapi/linux/swab.h
++++ b/include/uapi/linux/swab.h
+@@ -102,7 +102,7 @@ static inline __attribute_const__ __u32
+__fswahb32(__u32 val)
+ #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+ #else
+ #define __swab16(x)                            \
+-       (__builtin_constant_p((__u16)(x)) ?     \
++       (__u16)(__builtin_constant_p(x) ?       \
+        ___constant_swab16(x) :                 \
+        __fswab16(x))
+ #endif
+@@ -115,7 +115,7 @@ static inline __attribute_const__ __u32
+__fswahb32(__u32 val)
+ #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+ #else
+ #define __swab32(x)                            \
+-       (__builtin_constant_p((__u32)(x)) ?     \
++       (__u32)(__builtin_constant_p(x) ?       \
+        ___constant_swab32(x) :                 \
+        __fswab32(x))
+ #endif
+@@ -128,7 +128,7 @@ static inline __attribute_const__ __u32
+__fswahb32(__u32 val)
+ #define __swab64(x) (__u64)__builtin_bswap64((__u64)(x))
+ #else
+ #define __swab64(x)                            \
+-       (__builtin_constant_p((__u64)(x)) ?     \
++       (__u64)(__builtin_constant_p(x) ?       \
+        ___constant_swab64(x) :                 \
+        __fswab64(x))
+ #endif
+--
+Thanks,
+~Nick Desaulniers
