@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3875FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E5F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381187AbiFGWd2 (ORCPT
+        id S1380538AbiFGWdj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
+        Tue, 7 Jun 2022 18:33:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380307AbiFGVQE (ORCPT
+        with ESMTP id S1379116AbiFGVUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:16:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D11157E8E;
-        Tue,  7 Jun 2022 11:55:00 -0700 (PDT)
+        Tue, 7 Jun 2022 17:20:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BBC5169DCB;
+        Tue,  7 Jun 2022 11:59:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9AC77CE1D50;
-        Tue,  7 Jun 2022 18:54:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83456C385A2;
-        Tue,  7 Jun 2022 18:54:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94710612F2;
+        Tue,  7 Jun 2022 18:59:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C246C385A2;
+        Tue,  7 Jun 2022 18:59:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628096;
-        bh=jAuNF6M+3PV9HonytzGTV1kYObV5ikBT2owp1pOQg1U=;
+        s=korg; t=1654628380;
+        bh=enDk63P51EW+pA7YZE3qadFlH+8bEQ6EbgSaATVfMHg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eEFjN7f2Lk9jTr5hQpBd/m3Qnjo5B6WsdGlhNosW9Vp+rePVmsBtN/hH6HOpklIpg
-         MVViYT/kgpGEt68Xw4FSCzpNHATWoZHoABXospJZSzZwa/lxjSc6grJI1Tdx8TFtcF
-         uM6sI0OIYH3bjVFc8LLPQd8KUim3vlf3ChNMacXU=
+        b=ZDDhnC4yijarkzbkFEx8Z9nSCl6EsePjdpi51V6RRfm57nSbq0VOEucs4ISuT1xQZ
+         eLgHvPYA+Zu5uQOVfzgVST7xkRt7r6peWS65W0jXTF9ONfZ7EKa26NtzR7pKfvp1cO
+         ETEJCNEqXNEd4YKH6kGMn37eDo3kmLjmNKwEaRrk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 206/879] linux/types.h: reinstate "__bitwise__" macro for user space use
-Date:   Tue,  7 Jun 2022 18:55:24 +0200
-Message-Id: <20220607165008.829694453@linuxfoundation.org>
+Subject: [PATCH 5.18 308/879] ixp4xx_eth: fix error check return value of platform_get_irq()
+Date:   Tue,  7 Jun 2022 18:57:06 +0200
+Message-Id: <20220607165011.788341254@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,44 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit caa28984163cb63ea0be4cb8dbf05defdc7303f9 ]
+[ Upstream commit f45ba67eb74ab4b775616af731bdf8944afce3f1 ]
 
-Commit c724c866bb70 ("linux/types.h: remove unnecessary __bitwise__")
-was right that there are no users of __bitwise__ in the kernel, but it
-turns out there are user space users of it that do expect it.
+platform_get_irq() return negative value on failure, so null check of
+return value is incorrect. Fix it by comparing whether it is less than
+zero.
 
-It is, after all, in the uapi directory, so user space usage is to be
-expected.
-
-Instead of reverting the commit completely, let's just clarify the
-situation so that it doesn't happen again, and have some in-code
-explanations for why that "__bitwise__" still exists.
-
-Reported-by: Jiri Slaby <jirislaby@kernel.org>
-Cc: Bjorn Helgaas <helgaas@kernel.org>
-Link: https://lore.kernel.org/all/b5c0a68d-8387-4909-beea-f70ab9e6e3d5@kernel.org/
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 9055a2f59162 ("ixp4xx_eth: make ptp support a platform driver")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20220412085126.2532924-1-lv.ruyi@zte.com.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/types.h | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/xscale/ptp_ixp46x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/types.h b/include/uapi/linux/types.h
-index c4dc597f3dcf..308433be33c2 100644
---- a/include/uapi/linux/types.h
-+++ b/include/uapi/linux/types.h
-@@ -26,6 +26,9 @@
- #define __bitwise
- #endif
+diff --git a/drivers/net/ethernet/xscale/ptp_ixp46x.c b/drivers/net/ethernet/xscale/ptp_ixp46x.c
+index 1f382777aa5a..9abbdb71e629 100644
+--- a/drivers/net/ethernet/xscale/ptp_ixp46x.c
++++ b/drivers/net/ethernet/xscale/ptp_ixp46x.c
+@@ -271,7 +271,7 @@ static int ptp_ixp_probe(struct platform_device *pdev)
+ 	ixp_clock.master_irq = platform_get_irq(pdev, 0);
+ 	ixp_clock.slave_irq = platform_get_irq(pdev, 1);
+ 	if (IS_ERR(ixp_clock.regs) ||
+-	    !ixp_clock.master_irq || !ixp_clock.slave_irq)
++	    ixp_clock.master_irq < 0 || ixp_clock.slave_irq < 0)
+ 		return -ENXIO;
  
-+/* The kernel doesn't use this legacy form, but user space does */
-+#define __bitwise__ __bitwise
-+
- typedef __u16 __bitwise __le16;
- typedef __u16 __bitwise __be16;
- typedef __u32 __bitwise __le32;
+ 	ixp_clock.caps = ptp_ixp_caps;
 -- 
 2.35.1
 
