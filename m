@@ -2,81 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F5A2CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E437CCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:53:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390357AbiFHBuR (ORCPT
+        id S1385672AbiFHBuK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
+        Tue, 7 Jun 2022 21:50:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450379AbiFGXLN (ORCPT
+        with ESMTP id S1383008AbiFGVwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:11:13 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DB0392134;
-        Tue,  7 Jun 2022 13:49:17 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id x18so10682587qtj.3;
-        Tue, 07 Jun 2022 13:49:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6OzJWnX7XOWLy09SsgShl0+AdUcp50QiZ/tYbextP4Q=;
-        b=i1FQpB4zMZY2BupvN4XD17bMMlxM4SkxRXOTS8rctLXeu4FHOSmZP53iCYomN0KUS8
-         n3HSSYbo6X6Sk1uiVfJqf6HQXbKSSAqi1t79N1EDcHuurJzYMxigwswntQKPaxx0EK6z
-         8yCc9JpDoSsKmC7fc/LSwquIInUEH3pH3EuKrJEYqWCkxMUAQa00osLr2ExZSaBqXbOd
-         lDlXitfjh7J3oYfX1JhgIaVGjErCHPIqW0XKAJR+phtWmHz6FMpHaJ+MYBF0tHmOpHEH
-         BJTN45YtUJvPFSvXl0N/rGCzJsRJnTn2Fep/1jogSm24ivyzzWEVzn8soIDXe+1ycML1
-         GR7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6OzJWnX7XOWLy09SsgShl0+AdUcp50QiZ/tYbextP4Q=;
-        b=jzkBTsJp1fgOgqvNmquB8C4pG51i0eHYDxS4RcRYuSmXVo6a0rqcXxQZOG1O15/yMl
-         2jPSKs0yqR62qboxYXD0rLA44UltwBbX14kPbX8ZGhoMVjcajNHWi6HjsK6UNrdItF3Q
-         0B7vNIegsmX0YbMOpBD0Y9eiW/JEC+fm5G3EyqbVPfRJPPKI0QByhS8J9zYPeA7rUnar
-         XKh/GsMyC8AGbXsouZFUk4YXjrl0MsGdy4ojre/8TgbF1LqPWx7XXcP083UlNAEbK8yp
-         NVImUHNacHxyn4UfetsfiBnLBcTiyFLpNgNMaDff256apbi8BKOneRcNlO64XnhLAlNS
-         2+Jg==
-X-Gm-Message-State: AOAM531plcj3kz5nF6hwjQvguisaOuGnKKWurtrF4zO0N8CktxJmpH8l
-        42wZHRNQCQmsAl/Gu+XWqpNaLxkfFkKw5boV9sgbc749
-X-Google-Smtp-Source: ABdhPJwE6QpALhwFKv2F6OUdVIHHsur41OqT3tW0FzBUtOfl6yfACS1sOYPrMnF2Eq0+1aMyXMWgGuGskF2YCDs9uk8=
-X-Received: by 2002:a05:622a:344:b0:304:eb0a:3901 with SMTP id
- r4-20020a05622a034400b00304eb0a3901mr11181434qtw.297.1654634956111; Tue, 07
- Jun 2022 13:49:16 -0700 (PDT)
+        Tue, 7 Jun 2022 17:52:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FDCD2408D7;
+        Tue,  7 Jun 2022 12:10:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2578618DE;
+        Tue,  7 Jun 2022 19:10:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A4C5C385A2;
+        Tue,  7 Jun 2022 19:10:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629014;
+        bh=bFhZ957r2YH94rqSbhXVV4Hj1qf6FyXRtokEAkKhViw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZQebZGhnUVDMkAt9e5gs6HB1CgFOcoLryK7CbWboiIKp8rmVyxdj3/SH30CSUCg3d
+         sh/YO/hRBLRKfAWnqEXySjj6mEh8OnCBTbvedFdsIEXgabzK784F7mYDfS8v4YqvIH
+         QGXtwm6UeD2oeKS2RZUVfjNX+d+BNv+UXlZPMbwU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 537/879] ARM: dts: BCM5301X: Update pin controller node name
+Date:   Tue,  7 Jun 2022 19:00:55 +0200
+Message-Id: <20220607165018.459131572@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220604193300.125758-1-robimarko@gmail.com> <20220604193300.125758-2-robimarko@gmail.com>
- <Yp+lMm66+imh1wvk@sirena.org.uk>
-In-Reply-To: <Yp+lMm66+imh1wvk@sirena.org.uk>
-From:   Robert Marko <robimarko@gmail.com>
-Date:   Tue, 7 Jun 2022 22:49:05 +0200
-Message-ID: <CAOX2RU7DefWU9jr09VOFsN7+9wWw5rbYGmvfyFA4HHHF9A8acQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] regulator: qcom_smd: correct MP5496 ranges
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        lgirdwood@gmail.com, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022 at 21:21, Mark Brown <broonie@kernel.org> wrote:
->
-> On Sat, Jun 04, 2022 at 09:33:00PM +0200, Robert Marko wrote:
-> > Currently set MP5496 Buck and LDO ranges dont match its datasheet[1].
-> > According to the datasheet:
-> > Buck range is 0.6-2.1875V with a 12.5mV step
-> > LDO range is 0.8-3.975V with a 25mV step.
->
-> Doesn't make much difference here but in general fixes like this should
-> come before new features in a series so they can be applied without
-> dependency issues.
+From: Rafał Miłecki <rafal@milecki.pl>
 
-Will do it next time, thanks for the heads up.
+[ Upstream commit 130b5e32ba9d2d2313e39cf3f6d0729bff02b76a ]
 
-Regards,
-Robert
+This fixes:
+arch/arm/boot/dts/bcm4708-asus-rt-ac56u.dtb: cru-bus@100: 'pin-controller@1c0' does not match any of the regexes: '^clock-controller@[a-f0-9]+$', '^phy@[a-f0-9]+$', '^pinctrl@[a-f0-9]+$', '^syscon@[a-f0-9]+$', '^thermal@[a-f0-9]+$'
+        From schema: Documentation/devicetree/bindings/mfd/brcm,cru.yaml
+arch/arm/boot/dts/bcm4708-asus-rt-ac56u.dtb: pin-controller@1c0: $nodename:0: 'pin-controller@1c0' does not match '^(pinctrl|pinmux)(@[0-9a-f]+)?$'
+        From schema: Documentation/devicetree/bindings/pinctrl/brcm,ns-pinmux.yaml
+
+Ref: e7391b021e3f ("dt-bindings: mfd: brcm,cru: Rename pinctrl node")
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm/boot/dts/bcm5301x.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/bcm5301x.dtsi b/arch/arm/boot/dts/bcm5301x.dtsi
+index 603c700c706f..65f8a759f1e3 100644
+--- a/arch/arm/boot/dts/bcm5301x.dtsi
++++ b/arch/arm/boot/dts/bcm5301x.dtsi
+@@ -455,7 +455,7 @@
+ 				reg = <0x180 0x4>;
+ 			};
+ 
+-			pinctrl: pin-controller@1c0 {
++			pinctrl: pinctrl@1c0 {
+ 				compatible = "brcm,bcm4708-pinmux";
+ 				reg = <0x1c0 0x24>;
+ 				reg-names = "cru_gpio_control";
+-- 
+2.35.1
+
+
+
