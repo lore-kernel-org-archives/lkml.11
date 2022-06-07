@@ -2,191 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE320C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 371DEC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:14:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229831AbiFHCIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34088 "EHLO
+        id S1358817AbiFHCI6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382341AbiFHAyp (ORCPT
+        with ESMTP id S1382765AbiFHAyp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 20:54:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D42277FA5;
-        Tue,  7 Jun 2022 12:24:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E7BB60BD6;
-        Tue,  7 Jun 2022 19:24:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B891C385A2;
-        Tue,  7 Jun 2022 19:24:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629860;
-        bh=MTG5KNlFNk6oneq1DmT2bckfHl8GsR8r97oVr9R4bjM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uY3ssSZtCgjNZ4UxVKaSQCVj5Q2FCMQbS84mXKEDEwQ0BQ8ctiS71STL/NqCcy8qA
-         P8uOXaJrnBvG92huZxUD7fira2xlJowsL4617BMiI+EhwvLPnRNItJoqtvyqRxCl9a
-         zlUbKiRa3hgsR4I7661KTVhS4xiOBIfLm1sdY1bo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikhil Kshirsagar <nkshirsagar@gmail.com>,
-        Coly Li <colyli@suse.de>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.18 842/879] bcache: avoid journal no-space deadlock by reserving 1 journal bucket
-Date:   Tue,  7 Jun 2022 19:06:00 +0200
-Message-Id: <20220607165027.292589069@linuxfoundation.org>
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9161627CCDA
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:26:02 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id h23so29833324lfe.4
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:26:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=COofM4p4XVL9HB7oV/hO48snBSXqaKhyKNYxseRZ7lY=;
+        b=G/nza0Fj5r13MS+16/+zxQ6N7QIcMnCbPyyB2FoNYT48p6k8Zbpu1sSpGFr0CJTfbH
+         VswbNromqseElL/xO/gEFqDm3627364XoAnLx5K2lu0/J9b/kf9t5ODKTW2oGdKSLLju
+         S6vrMJkkpzqHDTDRyl/QzUoRHtecUkDCtAbsXVFnuLKvCk5lEjdPWVKXQ9FTSuw3bIcJ
+         HpbdAAqn0XuwrQQEYTfeZO/Wc7HYpB4FVMMPAj4WVnKLPPF1al9SFXh7fXNKryst34EL
+         lmKC9VhAf6fnjCHU8jrap9sczA4sULSggG4fX0bL5FtJ5kkKgqS3cvAhbREmA2pwbP2a
+         6lug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=COofM4p4XVL9HB7oV/hO48snBSXqaKhyKNYxseRZ7lY=;
+        b=Ss7IAlBssrdm+Vo9KIfglgEtjy8F2++2IV/sIXpElPPVAdZ7KH431fBcI+TIA2ZJwI
+         O24KwgibvFgHFcCvgoOio7Evi0MaKxnSHVxobKPuEPydPexOcrPAFlz6azEulHAzrxQp
+         U5aElRH8ANjXSQxr1PQI7cf3IIf29LZyzmFXtlBwh0ol7mPgL6S8CWv0XLVbObQsWz3Q
+         ksSSxxFI7AUCRPH88J6BqKkrExZxEHAYLy8DTONyIOXexemyS69rPOdlHZjM1c4/G2gu
+         dJEPg5nNM0SOK6XtjbQYOjMySqJ245ISNhZqWrsOX9vA+o5N6iazhVqTJSkK+o1udB69
+         YHYQ==
+X-Gm-Message-State: AOAM531nBYt8oUj0Dp8la1cUDURjbOPjwk0GyGIj5iE7Hdf/Lbiq0KjP
+        NOK7cphWtXhkjBKrVbgMdtA=
+X-Google-Smtp-Source: ABdhPJyKEAxr9oRjbnZ6aJpkt4b5tPhflQzr57mAeLwVZjPfmS7fp/DaRCKqm8By83TLXeK8nIlIaw==
+X-Received: by 2002:a05:6512:53a:b0:479:1725:51f2 with SMTP id o26-20020a056512053a00b00479172551f2mr16188235lfc.688.1654629960872;
+        Tue, 07 Jun 2022 12:26:00 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.229.27])
+        by smtp.gmail.com with ESMTPSA id a27-20020a056512201b00b0047900ad3f90sm3401917lfb.29.2022.06.07.12.25.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 12:26:00 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     gregkh@linuxfoundation.org, Larry.Finger@lwfinger.net,
+        phil@philpotter.co.uk, straube.linux@gmail.com,
+        dan.carpenter@oracle.com
+Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        Pavel Skripkin <paskripkin@gmail.com>
+Subject: [PATCH v4 0/4] staging: r8188eu: add error handling of usb read errors 
+Date:   Tue,  7 Jun 2022 22:25:53 +0300
+Message-Id: <cover.1654629778.git.paskripkin@gmail.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Coly Li <colyli@suse.de>
+Hi,
 
-commit 32feee36c30ea06e38ccb8ae6e5c44c6eec790a6 upstream.
+it's reincarnation of my old series for adding sane error handling in
+r8818eu.
 
-The journal no-space deadlock was reported time to time. Such deadlock
-can happen in the following situation.
+*Problem*
 
-When all journal buckets are fully filled by active jset with heavy
-write I/O load, the cache set registration (after a reboot) will load
-all active jsets and inserting them into the btree again (which is
-called journal replay). If a journaled bkey is inserted into a btree
-node and results btree node split, new journal request might be
-triggered. For example, the btree grows one more level after the node
-split, then the root node record in cache device super block will be
-upgrade by bch_journal_meta() from bch_btree_set_root(). But there is no
-space in journal buckets, the journal replay has to wait for new journal
-bucket to be reclaimed after at least one journal bucket replayed. This
-is one example that how the journal no-space deadlock happens.
+Old code was returning just stack variable in case of read error. It's
+not the best approach, since passing around stack data might cause
+device misconfiguration or even kernel data leakage
 
-The solution to avoid the deadlock is to reserve 1 journal bucket in
-run time, and only permit the reserved journal bucket to be used during
-cache set registration procedure for things like journal replay. Then
-the journal space will never be fully filled, there is no chance for
-journal no-space deadlock to happen anymore.
+To solve this I've changed rtw_read{8,16,32} prototypes to return an error via
+return value and data via passed pointer. Some work should be done to
+propogate an error down to calltrace, but it's good way to at least
+start doing sane I/O error handling
 
-This patch adds a new member "bool do_reserve" in struct journal, it is
-inititalized to 0 (false) when struct journal is allocated, and set to
-1 (true) by bch_journal_space_reserve() when all initialization done in
-run_cache_set(). In the run time when journal_reclaim() tries to
-allocate a new journal bucket, free_journal_buckets() is called to check
-whether there are enough free journal buckets to use. If there is only
-1 free journal bucket and journal->do_reserve is 1 (true), the last
-bucket is reserved and free_journal_buckets() will return 0 to indicate
-no free journal bucket. Then journal_reclaim() will give up, and try
-next time to see whetheer there is free journal bucket to allocate. By
-this method, there is always 1 jouranl bucket reserved in run time.
+Tested locally on qemu with TP-Link TL-WN722N v2/v3 [Realtek RTL8188EUS]
+device. More testing is welcomed, of course :)
 
-During the cache set registration, journal->do_reserve is 0 (false), so
-the reserved journal bucket can be used to avoid the no-space deadlock.
+_NOTE_
+Series is based on top of staging-testing branch.
 
-Reported-by: Nikhil Kshirsagar <nkshirsagar@gmail.com>
-Signed-off-by: Coly Li <colyli@suse.de>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220524102336.10684-5-colyli@suse.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/md/bcache/journal.c |   31 ++++++++++++++++++++++++++-----
- drivers/md/bcache/journal.h |    2 ++
- drivers/md/bcache/super.c   |    1 +
- 3 files changed, 29 insertions(+), 5 deletions(-)
+Changes since v3:
+    fix build error in 1/4 caused by unused local variable
 
---- a/drivers/md/bcache/journal.c
-+++ b/drivers/md/bcache/journal.c
-@@ -405,6 +405,11 @@ err:
- 	return ret;
- }
- 
-+void bch_journal_space_reserve(struct journal *j)
-+{
-+	j->do_reserve = true;
-+}
-+
- /* Journalling */
- 
- static void btree_flush_write(struct cache_set *c)
-@@ -621,12 +626,30 @@ static void do_journal_discard(struct ca
- 	}
- }
- 
-+static unsigned int free_journal_buckets(struct cache_set *c)
-+{
-+	struct journal *j = &c->journal;
-+	struct cache *ca = c->cache;
-+	struct journal_device *ja = &c->cache->journal;
-+	unsigned int n;
-+
-+	/* In case njournal_buckets is not power of 2 */
-+	if (ja->cur_idx >= ja->discard_idx)
-+		n = ca->sb.njournal_buckets +  ja->discard_idx - ja->cur_idx;
-+	else
-+		n = ja->discard_idx - ja->cur_idx;
-+
-+	if (n > (1 + j->do_reserve))
-+		return n - (1 + j->do_reserve);
-+
-+	return 0;
-+}
-+
- static void journal_reclaim(struct cache_set *c)
- {
- 	struct bkey *k = &c->journal.key;
- 	struct cache *ca = c->cache;
- 	uint64_t last_seq;
--	unsigned int next;
- 	struct journal_device *ja = &ca->journal;
- 	atomic_t p __maybe_unused;
- 
-@@ -649,12 +672,10 @@ static void journal_reclaim(struct cache
- 	if (c->journal.blocks_free)
- 		goto out;
- 
--	next = (ja->cur_idx + 1) % ca->sb.njournal_buckets;
--	/* No space available on this device */
--	if (next == ja->discard_idx)
-+	if (!free_journal_buckets(c))
- 		goto out;
- 
--	ja->cur_idx = next;
-+	ja->cur_idx = (ja->cur_idx + 1) % ca->sb.njournal_buckets;
- 	k->ptr[0] = MAKE_PTR(0,
- 			     bucket_to_sector(c, ca->sb.d[ja->cur_idx]),
- 			     ca->sb.nr_this_dev);
---- a/drivers/md/bcache/journal.h
-+++ b/drivers/md/bcache/journal.h
-@@ -105,6 +105,7 @@ struct journal {
- 	spinlock_t		lock;
- 	spinlock_t		flush_write_lock;
- 	bool			btree_flushing;
-+	bool			do_reserve;
- 	/* used when waiting because the journal was full */
- 	struct closure_waitlist	wait;
- 	struct closure		io;
-@@ -182,5 +183,6 @@ int bch_journal_replay(struct cache_set
- 
- void bch_journal_free(struct cache_set *c);
- int bch_journal_alloc(struct cache_set *c);
-+void bch_journal_space_reserve(struct journal *j);
- 
- #endif /* _BCACHE_JOURNAL_H */
---- a/drivers/md/bcache/super.c
-+++ b/drivers/md/bcache/super.c
-@@ -2128,6 +2128,7 @@ static int run_cache_set(struct cache_se
- 
- 	flash_devs_run(c);
- 
-+	bch_journal_space_reserve(&c->journal);
- 	set_bit(CACHE_SET_RUNNING, &c->flags);
- 	return 0;
- err:
+Changes since v2:
+    get rid of `(void)res` and return an error from function instead of
+    hiding it
 
+Changes since v1:
+    addresses issues found by Dan and self review. Mostly related to returning
+    _FAIL instead of -errno, since callers expect _FAIL/_SUCCESS
+
+v1: https://lore.kernel.org/linux-staging/cover.1652911343.git.paskripkin@gmail.com/
+v2: https://lore.kernel.org/linux-staging/cover.1652994483.git.paskripkin@gmail.com/
+v3: https://lore.kernel.org/linux-staging/cover.1654543286.git.paskripkin@gmail.com/
+
+Pavel Skripkin (4):
+  staging: r8188eu: add error handling of rtw_read8
+  staging: r8188eu: add error handling of rtw_read16
+  staging: r8188eu: add error handling of rtw_read32
+  MAINTAINERS: add myself as r8188eu reviewer
+
+ MAINTAINERS                                   |   1 +
+ drivers/staging/r8188eu/core/rtw_cmd.c        |  15 +-
+ drivers/staging/r8188eu/core/rtw_efuse.c      |  33 ++-
+ drivers/staging/r8188eu/core/rtw_fw.c         |  72 +++--
+ drivers/staging/r8188eu/core/rtw_led.c        |  16 +-
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c   |  62 ++++-
+ drivers/staging/r8188eu/core/rtw_pwrctrl.c    |   9 +-
+ drivers/staging/r8188eu/core/rtw_wlan_util.c  |  20 +-
+ .../r8188eu/hal/Hal8188ERateAdaptive.c        |  21 +-
+ drivers/staging/r8188eu/hal/HalPhyRf_8188e.c  |  21 +-
+ drivers/staging/r8188eu/hal/HalPwrSeqCmd.c    |   9 +-
+ drivers/staging/r8188eu/hal/hal_com.c         |  27 +-
+ drivers/staging/r8188eu/hal/rtl8188e_cmd.c    |  37 ++-
+ drivers/staging/r8188eu/hal/rtl8188e_dm.c     |   6 +-
+ .../staging/r8188eu/hal/rtl8188e_hal_init.c   | 136 +++++++---
+ drivers/staging/r8188eu/hal/rtl8188e_phycfg.c |  30 ++-
+ drivers/staging/r8188eu/hal/usb_halinit.c     | 251 +++++++++++++++---
+ drivers/staging/r8188eu/hal/usb_ops_linux.c   |  33 ++-
+ drivers/staging/r8188eu/include/rtw_io.h      |   6 +-
+ drivers/staging/r8188eu/os_dep/ioctl_linux.c  |  47 +++-
+ drivers/staging/r8188eu/os_dep/os_intfs.c     |  19 +-
+ 21 files changed, 693 insertions(+), 178 deletions(-)
+
+-- 
+2.36.1
 
