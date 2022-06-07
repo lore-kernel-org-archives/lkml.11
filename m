@@ -2,163 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C08CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C0EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354794AbiFGTLs (ORCPT
+        id S1351101AbiFGTLv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:11:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37504 "EHLO
+        Tue, 7 Jun 2022 15:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351101AbiFGSYU (ORCPT
+        with ESMTP id S1350271AbiFGSYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:24:20 -0400
+        Tue, 7 Jun 2022 14:24:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F00CFE08;
-        Tue,  7 Jun 2022 10:54:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A37C4D4A36;
+        Tue,  7 Jun 2022 10:54:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C9BF61794;
-        Tue,  7 Jun 2022 17:54:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3043C385A5;
-        Tue,  7 Jun 2022 17:54:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624445;
-        bh=9Lp2n8TAUiczV7Wk1h+S5aJI43ikGeidpwIOf4ToTRI=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4229617A6;
+        Tue,  7 Jun 2022 17:54:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBF27C34115;
+        Tue,  7 Jun 2022 17:54:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624454;
+        bh=90Pwb1gFolXdYAzqnbg5nWM90mOc6mUXMhJrZxKLkLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sORthj8t5dSUSDrucIx9hIAyc4pwOtP7mwFVW5LXGLxZUxeKeMcKLOFVHcazVgVJw
-         3dKF/sMUIaTuzpvIRNwhmvJklV+AkznlRppqq3R58qb+kdBDgEJvnlGInVTldWXv2H
-         oSgvCYlv9cQvFzEaB+vLVg1sSRpP9KXhqwFRWdicjzhIjX4efTc6AFjo9MuCMiiFw1
-         Oa6FFrgujmxzLcrfAahqZ6GeyYzlxQZn5/zqUjtz9RHq9DQ2KWqXSNGAD9b9wTEJdS
-         pOoef2yB0RbYKdnch9wCPCmXno6Uwca8vSZZwZzyTy0p4VutyuKWgB6R0Kr5V3cwog
-         RPzwp8zcb6oVw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Soumya Negi <soumya.negi97@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, fabioaiuto83@gmail.com,
-        hdegoede@redhat.com, straube.linux@gmail.com, linux@roeck-us.net,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.17 25/60] staging: rtl8723bs: Fix alignment to match open parenthesis
-Date:   Tue,  7 Jun 2022 13:52:22 -0400
-Message-Id: <20220607175259.478835-25-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+        b=hU/NKmCpVzup5ITJtopT84WqbP9S/bD8qckb43aysUj6m/ImcEQKDxzJ9n5+JI1Pw
+         rbFblLHY+mCWv7cwQyMXhCb9no1iLRCAT2p3UEBUUbcuqL9TSPvQA1PVjavs+aLjlQ
+         Euorh+uploTu8eoJ2sn1v0nMXwOunJ/9/CfwoAdc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 333/667] m68k: math-emu: Fix dependencies of math emulation support
+Date:   Tue,  7 Jun 2022 18:59:58 +0200
+Message-Id: <20220607164944.755056159@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Soumya Negi <soumya.negi97@gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-[ Upstream commit f722d67fad290b0c960f27062adc8cf59488d0a7 ]
+[ Upstream commit ed6bc6bf0a7d75e80eb1df883c09975ebb74e590 ]
 
-Adhere to Linux coding style. Fixes checkpatch warnings:
-CHECK: Alignment should match open parenthesis
-CHECK: line length of 101 exceeds 100 columns
+If CONFIG_M54xx=y, CONFIG_MMU=y, and CONFIG_M68KFPU_EMU=y:
 
-Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
-Link: https://lore.kernel.org/r/20220513025553.13634-1-soumya.negi97@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    {standard input}:272: Error: invalid instruction for this architecture; needs 68000 or higher (68000 [68ec000, 68hc000, 68hc001, 68008, 68302, 68306, 68307, 68322, 68356], 68010, 68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060], cpu32 [68330, 68331, 68332, 68333, 68334, 68336, 68340, 68341, 68349, 68360], fidoa [fido]) -- statement `sub.b %d1,%d3' ignored
+    {standard input}:609: Error: invalid instruction for this architecture; needs 68020 or higher (68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060]) -- statement `bfextu 4(%a1){%d0,#8},%d0' ignored
+    {standard input}:752: Error: operands mismatch -- statement `mulu.l 4(%a0),%d3:%d0' ignored
+    {standard input}:1155: Error: operands mismatch -- statement `divu.l %d0,%d3:%d7' ignored
+
+The math emulation support code is intended for 68020 and higher, and
+uses several instructions or instruction modes not available on coldfire
+or 68000.
+
+Originally, the dependency of M68KFPU_EMU on MMU was fine, as MMU
+support was only available on 68020 or higher.  But this assumption
+was broken by the introduction of MMU support for M547x and M548x.
+
+Drop the dependency on MMU, as the code should work fine on 68020 and up
+without MMU (which are not yet supported by Linux, though).
+Add dependencies on M68KCLASSIC (to rule out Coldfire) and FPU (kernel
+has some type of floating-point support --- be it hardware or software
+emulated, to rule out anything below 68020).
+
+Fixes: 1f7034b9616e6f14 ("m68k: allow ColdFire 547x and 548x CPUs to be built with MMU enabled")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Greg Ungerer <gerg@linux-m68k.org>
+Link: https://lore.kernel.org/r/18c34695b7c95107f60ccca82a4ff252f3edf477.1652446117.git.geert@linux-m68k.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8723bs/core/rtw_ap.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
+ arch/m68k/Kconfig.cpu | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8723bs/core/rtw_ap.c b/drivers/staging/rtl8723bs/core/rtw_ap.c
-index 5478188be991..d30d6e6bcd07 100644
---- a/drivers/staging/rtl8723bs/core/rtw_ap.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_ap.c
-@@ -520,12 +520,12 @@ void update_sta_info_apmode(struct adapter *padapter, struct sta_info *psta)
+diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
+index 277d61a09463..29558055c71b 100644
+--- a/arch/m68k/Kconfig.cpu
++++ b/arch/m68k/Kconfig.cpu
+@@ -338,7 +338,7 @@ comment "Processor Specific Options"
  
- 		/*  B0 Config LDPC Coding Capability */
- 		if (TEST_FLAG(phtpriv_ap->ldpc_cap, LDPC_HT_ENABLE_TX) &&
--			      GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
-+		    GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
- 			SET_FLAG(cur_ldpc_cap, (LDPC_HT_ENABLE_TX | LDPC_HT_CAP_TX));
- 
- 		/*  B7 B8 B9 Config STBC setting */
- 		if (TEST_FLAG(phtpriv_ap->stbc_cap, STBC_HT_ENABLE_TX) &&
--			      GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
-+		    GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
- 			SET_FLAG(cur_stbc_cap, (STBC_HT_ENABLE_TX | STBC_HT_CAP_TX));
- 	} else {
- 		phtpriv_sta->ampdu_enable = false;
-@@ -1065,10 +1065,12 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
- 		);
- 
- 		if ((psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_CCMP) ||
--		     (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
--			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & (0x07 << 2));
-+		    (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
-+			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
-+						       (0x07 << 2));
- 		} else {
--			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & 0x00);
-+			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
-+						       0x00);
- 		}
- 
- 		rtw_hal_get_def_var(
-@@ -1116,7 +1118,7 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
- 	pmlmepriv->htpriv.ht_option = false;
- 
- 	if ((psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_TKIP) ||
--	     (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
-+	    (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
- 		/* todo: */
- 		/* ht_cap = false; */
- 	}
-@@ -1725,7 +1727,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
- 			pmlmepriv->num_sta_no_short_preamble--;
- 
- 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
--				(pmlmepriv->num_sta_no_short_preamble == 0)) {
-+			    (pmlmepriv->num_sta_no_short_preamble == 0)) {
- 				beacon_updated = true;
- 				update_beacon(padapter, 0xFF, NULL, true);
- 			}
-@@ -1763,7 +1765,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
- 			pmlmepriv->num_sta_no_short_slot_time++;
- 
- 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
--				 (pmlmepriv->num_sta_no_short_slot_time == 1)) {
-+			    (pmlmepriv->num_sta_no_short_slot_time == 1)) {
- 				beacon_updated = true;
- 				update_beacon(padapter, 0xFF, NULL, true);
- 			}
-@@ -1775,7 +1777,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
- 			pmlmepriv->num_sta_no_short_slot_time--;
- 
- 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
--				 (pmlmepriv->num_sta_no_short_slot_time == 0)) {
-+			    (pmlmepriv->num_sta_no_short_slot_time == 0)) {
- 				beacon_updated = true;
- 				update_beacon(padapter, 0xFF, NULL, true);
- 			}
-@@ -2024,7 +2026,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
- 	start_bss_network(padapter);
- 
- 	if ((padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_) ||
--		(padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
-+	    (padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
- 		/* restore group key, WEP keys is restored in ips_leave() */
- 		rtw_set_key(
- 			padapter,
-@@ -2062,7 +2064,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
- 			/* pairwise key */
- 			/* per sta pairwise key and settings */
- 			if ((psecuritypriv->dot11PrivacyAlgrthm == _TKIP_) ||
--				(psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
-+			    (psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
- 				rtw_setstakey_cmd(padapter, psta, true, false);
- 			}
- 		}
+ config M68KFPU_EMU
+ 	bool "Math emulation support"
+-	depends on MMU
++	depends on M68KCLASSIC && FPU
+ 	help
+ 	  At some point in the future, this will cause floating-point math
+ 	  instructions to be emulated by the kernel on machines that lack a
 -- 
 2.35.1
+
+
 
