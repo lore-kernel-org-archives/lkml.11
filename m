@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DC9DCCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61272C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380888AbiFGVRH (ORCPT
+        id S1352264AbiFGVRz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43704 "EHLO
+        Tue, 7 Jun 2022 17:17:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359819AbiFGUVU (ORCPT
+        with ESMTP id S1376316AbiFGUV0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:21:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215811D30E3;
-        Tue,  7 Jun 2022 11:30:44 -0700 (PDT)
+        Tue, 7 Jun 2022 16:21:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A89144FCE;
+        Tue,  7 Jun 2022 11:31:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 527B4B822C0;
-        Tue,  7 Jun 2022 18:30:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C075DC385A2;
-        Tue,  7 Jun 2022 18:30:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 369EE612E9;
+        Tue,  7 Jun 2022 18:31:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BD89C385A2;
+        Tue,  7 Jun 2022 18:31:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626641;
-        bh=Vbdwe/T0f5JOUSiNqbAGHbB+2pd0/m5eObuptyLOk7Q=;
+        s=korg; t=1654626668;
+        bh=RwPRQSyV833cnrScno/aj01YrPInxnibRG2Rvh6F6Ik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QUTHpMME7mvmEFH8vXgr8OztNTma7n+nesEPS3UQm3NtD4uVjbxhAYg1Jc2TyIlof
-         I5HE111+nriFCaa0R91MkHttpHf2/YS8IEIJoOjG9U4F5wxWQwgSicrdgQrgbtVQc7
-         D1L3jjqq0Ox0/NHd1lxNqrzoIIKhKVIdGE0emoVE=
+        b=ENmqCdN7Xcq9QhoQv6cyqQJO2jRD1CCLeWZL6H/gTn7jzOwe5RZwVtb5crsnkSkis
+         IscKu3u1Froma0ptS41WvUPyUX5mv5qRAmFNAWTyInbXVHojaqY0xTBizm64AdGAfV
+         0C1ptCRiaMuyy0ypWs+pKPWtzkwZYTXI2u1l/PpE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shawn Lin <shawn.lin@rock-chips.com>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 451/772] arm64: dts: rockchip: Move drive-impedance-ohm to emmc phy on rk3399
-Date:   Tue,  7 Jun 2022 19:00:43 +0200
-Message-Id: <20220607165002.291945466@linuxfoundation.org>
+Subject: [PATCH 5.17 460/772] PCI: rockchip: Fix find_first_zero_bit() limit
+Date:   Tue,  7 Jun 2022 19:00:52 +0200
+Message-Id: <20220607165002.556578976@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,41 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shawn Lin <shawn.lin@rock-chips.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 4246d0bab2a8685e3d4aec2cb0ef8c526689ce96 ]
+[ Upstream commit 096950e230b8d83645c7cf408b9f399f58c08b96 ]
 
-drive-impedance-ohm is introduced for emmc phy instead of pcie phy.
+The ep->ob_region_map bitmap is a long and it has BITS_PER_LONG bits.
 
-Fixes: fb8b7460c995 ("arm64: dts: rockchip: Define drive-impedance-ohm for RK3399's emmc-phy.")
-Signed-off-by: Shawn Lin <shawn.lin@rock-chips.com>
-Link: https://lore.kernel.org/r/1647336426-154797-1-git-send-email-shawn.lin@rock-chips.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://lore.kernel.org/r/20220315065944.GB13572@kili
+Fixes: cf590b078391 ("PCI: rockchip: Add EP driver for Rockchip PCIe controller")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/rockchip/rk3399.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/controller/pcie-rockchip-ep.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 080457a68e3c..88f26d89eea1 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1534,6 +1534,7 @@
- 			reg = <0xf780 0x24>;
- 			clocks = <&sdhci>;
- 			clock-names = "emmcclk";
-+			drive-impedance-ohm = <50>;
- 			#phy-cells = <0>;
- 			status = "disabled";
- 		};
-@@ -1544,7 +1545,6 @@
- 			clock-names = "refclk";
- 			#phy-cells = <1>;
- 			resets = <&cru SRST_PCIEPHY>;
--			drive-impedance-ohm = <50>;
- 			reset-names = "phy";
- 			status = "disabled";
- 		};
+diff --git a/drivers/pci/controller/pcie-rockchip-ep.c b/drivers/pci/controller/pcie-rockchip-ep.c
+index 5fb9ce6e536e..d1a200b93b2b 100644
+--- a/drivers/pci/controller/pcie-rockchip-ep.c
++++ b/drivers/pci/controller/pcie-rockchip-ep.c
+@@ -264,8 +264,7 @@ static int rockchip_pcie_ep_map_addr(struct pci_epc *epc, u8 fn, u8 vfn,
+ 	struct rockchip_pcie *pcie = &ep->rockchip;
+ 	u32 r;
+ 
+-	r = find_first_zero_bit(&ep->ob_region_map,
+-				sizeof(ep->ob_region_map) * BITS_PER_LONG);
++	r = find_first_zero_bit(&ep->ob_region_map, BITS_PER_LONG);
+ 	/*
+ 	 * Region 0 is reserved for configuration space and shouldn't
+ 	 * be used elsewhere per TRM, so leave it out.
 -- 
 2.35.1
 
