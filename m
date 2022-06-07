@@ -2,47 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F31DACCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E308ACCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:02:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383281AbiFGWBg (ORCPT
+        id S1383248AbiFGWBd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
+        Tue, 7 Jun 2022 18:01:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379136AbiFGVCG (ORCPT
+        with ESMTP id S1379167AbiFGVCI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D81188E89;
-        Tue,  7 Jun 2022 11:46:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65C72612F2;
-        Tue,  7 Jun 2022 18:46:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72DBAC385A2;
-        Tue,  7 Jun 2022 18:46:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627598;
-        bh=sN1Kk7yA6tgJ56jtZ7RfRBdgp59iuwFaAZOanZaTchg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D1n2MmkOlra/zgC56BapGP0nizZnltjB4odabtXZF2Uiati+ovNcfQLQOC5eMcsOE
-         D08GFMoEiOHxd0djJl4uGaoCQqTBA864r628Rvi4D8eBpepP+phzBSmSPlpfh3zeoW
-         iFn7fpVrRwHbhyHKDwHGZ6imuf9o2E00htrxuizc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.18 008/879] riscv: Fix irq_work when SMP is disabled
-Date:   Tue,  7 Jun 2022 18:52:06 +0200
-Message-Id: <20220607165002.913734663@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:02:08 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A69188EAB
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:46:44 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id kq6so23966550ejb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:46:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Hf1jc2du12TaQ+e4X7BuWjrmUs1aIjYSqtWkFD5qagY=;
+        b=g0RwDCzmZvnD1xCt3VnYuZhl/AWtldB3ALD6hW4OFq3z4SpjCZt5npFzx3rTDpgTot
+         qGdMrHlbN2eOawV4Xdr8qaH2EKlMnOCNc5YvTP/X8rADjPgMqAlKUlhtqSi3MFvjAtBJ
+         y7drJXyG191FFsXHCD8yGbaUoiW0XsGSDf6yw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Hf1jc2du12TaQ+e4X7BuWjrmUs1aIjYSqtWkFD5qagY=;
+        b=BiYwLWTcJrDBp/+crMiz6NHt6LLyYLTxsyXn0NaRo4G9o72gcGoRw47j38fNjeObbE
+         +utKWfCWeLNlY1MdTlbiXJX1et4OB5GIP6+cAI3J0/K66WhTqx7MheS52t17MzW1yivr
+         CovwDOH6amHtWhlzulzlWmrTsbob6FM10SkrURM1QdarDhU+E5tcLrE5ka1BUATh4Ijw
+         ehbbFvBM5YGBiQmSyw0HdxxZVRQLdn2QuAvJv87ixEcqHnZpeuqjg8qhILb/HKzWbtFc
+         YsIazaNEk6ADd6jPrgsNTQ+LBdVzJUxZVh8/K4nF6rx4g1hDYSk6/2gkRup44KfRFfw1
+         uTRA==
+X-Gm-Message-State: AOAM533BvBGqbMw8pXPQFOhc8n+Fd+DWi3ykO542VXP/5trRUdUks0dG
+        cWOwMzChKJGojzUobOAUSngVqQ==
+X-Google-Smtp-Source: ABdhPJw/Fqo3BTFZ8n5XfwbBfYdfWv6VxCDOxrThxU1K3gkqpN1R2DW+zWIQSpLq4S+H+Uv028ueHw==
+X-Received: by 2002:a17:907:7b86:b0:711:d2c8:ab18 with SMTP id ne6-20020a1709077b8600b00711d2c8ab18mr9788400ejc.580.1654627602945;
+        Tue, 07 Jun 2022 11:46:42 -0700 (PDT)
+Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id y18-20020a056402171200b0042dc0181307sm10839131edu.93.2022.06.07.11.46.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 11:46:42 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     luizluca@gmail.com, Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net v2] net: dsa: realtek: rtl8365mb: fix GMII caps for ports with internal PHY
+Date:   Tue,  7 Jun 2022 20:46:24 +0200
+Message-Id: <20220607184624.417641-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,36 +71,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-commit 2273272823db6f67d57761df8116ae32e7f05bed upstream.
+Since commit a18e6521a7d9 ("net: phylink: handle NA interface mode in
+phylink_fwnode_phy_connect()"), phylib defaults to GMII when no phy-mode
+or phy-connection-type property is specified in a DSA port node of the
+device tree. The same commit caused a regression in rtl8365mb whereby
+phylink would fail to connect, because the driver did not advertise
+support for GMII for ports with internal PHY.
 
-irq_work is triggered via an IPI, but the IPI infrastructure is not
-included in uniprocessor kernels. As a result, irq_work never runs.
-Fall back to the tick-based irq_work implementation on uniprocessor
-configurations.
+It should be noted that the aforementioned regression is not because the
+blamed commit was incorrect: on the contrary, the blamed commit is
+correcting the previous behaviour whereby unspecified phy-mode would
+cause the internal interface mode to be PHY_INTERFACE_MODE_NA. The
+rtl8365mb driver only worked by accident before because it _did_
+advertise support for PHY_INTERFACE_MODE_NA, despite NA being reserved
+for internal use by phylink. With one mistake fixed, the other was
+exposed.
 
-Fixes: 298447928bb1 ("riscv: Support irq_work via self IPIs")
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://lore.kernel.org/r/20220430030025.58405-1-samuel@sholland.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Commit a5dba0f207e5 ("net: dsa: rtl8365mb: add GMII as user port mode")
+then introduced implicit support for GMII mode on ports with internal
+PHY to allow a PHY connection for device trees where the phy-mode is not
+explicitly set to "internal". At this point everything was working OK
+again.
+
+Subsequently, commit 6ff6064605e9 ("net: dsa: realtek: convert to
+phylink_generic_validate()") broke this behaviour again by discarding
+the usage of rtl8365mb_phy_mode_supported() - where this GMII support
+was indicated - while switching to the new .phylink_get_caps API.
+
+With the new API, rtl8365mb_phy_mode_supported() is no longer needed.
+Remove it altogether and add back the GMII capability - this time to
+rtl8365mb_phylink_get_caps() - so that the above default behaviour works
+for ports with internal PHY again.
+
+Fixes: 6ff6064605e9 ("net: dsa: realtek: convert to phylink_generic_validate()")
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
 ---
- arch/riscv/include/asm/irq_work.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/riscv/include/asm/irq_work.h
-+++ b/arch/riscv/include/asm/irq_work.h
-@@ -4,7 +4,7 @@
- 
- static inline bool arch_irq_work_has_interrupt(void)
- {
--	return true;
-+	return IS_ENABLED(CONFIG_SMP);
+v1 -> v2:
+
+- no code changes
+- added more detail in the commit description after Luiz and Russel's
+  help finding commit a18e6521a7d9
+
+---
+ drivers/net/dsa/realtek/rtl8365mb.c | 38 +++++++----------------------
+ 1 file changed, 9 insertions(+), 29 deletions(-)
+
+diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+index 3bb42a9f236d..769f672e9128 100644
+--- a/drivers/net/dsa/realtek/rtl8365mb.c
++++ b/drivers/net/dsa/realtek/rtl8365mb.c
+@@ -955,35 +955,21 @@ static int rtl8365mb_ext_config_forcemode(struct realtek_priv *priv, int port,
+ 	return 0;
  }
- extern void arch_irq_work_raise(void);
- #endif /* _ASM_RISCV_IRQ_WORK_H */
-
+ 
+-static bool rtl8365mb_phy_mode_supported(struct dsa_switch *ds, int port,
+-					 phy_interface_t interface)
+-{
+-	int ext_int;
+-
+-	ext_int = rtl8365mb_extint_port_map[port];
+-
+-	if (ext_int < 0 &&
+-	    (interface == PHY_INTERFACE_MODE_NA ||
+-	     interface == PHY_INTERFACE_MODE_INTERNAL ||
+-	     interface == PHY_INTERFACE_MODE_GMII))
+-		/* Internal PHY */
+-		return true;
+-	else if ((ext_int >= 1) &&
+-		 phy_interface_mode_is_rgmii(interface))
+-		/* Extension MAC */
+-		return true;
+-
+-	return false;
+-}
+-
+ static void rtl8365mb_phylink_get_caps(struct dsa_switch *ds, int port,
+ 				       struct phylink_config *config)
+ {
+-	if (dsa_is_user_port(ds, port))
++	if (dsa_is_user_port(ds, port)) {
+ 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
+ 			  config->supported_interfaces);
+-	else if (dsa_is_cpu_port(ds, port))
++
++		/* GMII is the default interface mode for phylib, so
++		 * we have to support it for ports with integrated PHY.
++		 */
++		__set_bit(PHY_INTERFACE_MODE_GMII,
++			  config->supported_interfaces);
++	} else if (dsa_is_cpu_port(ds, port)) {
+ 		phy_interface_set_rgmii(config->supported_interfaces);
++	}
+ 
+ 	config->mac_capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
+ 				   MAC_10 | MAC_100 | MAC_1000FD;
+@@ -996,12 +982,6 @@ static void rtl8365mb_phylink_mac_config(struct dsa_switch *ds, int port,
+ 	struct realtek_priv *priv = ds->priv;
+ 	int ret;
+ 
+-	if (!rtl8365mb_phy_mode_supported(ds, port, state->interface)) {
+-		dev_err(priv->dev, "phy mode %s is unsupported on port %d\n",
+-			phy_modes(state->interface), port);
+-		return;
+-	}
+-
+ 	if (mode != MLO_AN_PHY && mode != MLO_AN_FIXED) {
+ 		dev_err(priv->dev,
+ 			"port %d supports only conventional PHY or fixed-link\n",
+-- 
+2.36.0
 
