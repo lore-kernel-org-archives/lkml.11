@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC224C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:13:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7394C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358798AbiFGWNw (ORCPT
+        id S1355454AbiFGWOB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:13:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40574 "EHLO
+        Tue, 7 Jun 2022 18:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379907AbiFGVLJ (ORCPT
+        with ESMTP id S1379951AbiFGVLU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DAE216802;
-        Tue,  7 Jun 2022 11:52:28 -0700 (PDT)
+        Tue, 7 Jun 2022 17:11:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C717521682F;
+        Tue,  7 Jun 2022 11:52:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49EF4612F2;
-        Tue,  7 Jun 2022 18:52:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FB26C385A2;
-        Tue,  7 Jun 2022 18:52:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76063B82018;
+        Tue,  7 Jun 2022 18:52:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8210C385A2;
+        Tue,  7 Jun 2022 18:52:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627947;
-        bh=63KEk9VLTggDHYa7uCWhw1ThCahBRf68liu0x9+Y4Q8=;
+        s=korg; t=1654627953;
+        bh=uBJsSL0dyV/euH9wSsRXymgQdHcQOPUzRb7f6NJVMeA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B2olAgxPCtAWpqnZ838c+7Z05LLh6+GM5Vcp/HD00hXs4tUu6bt76Zy6i/fjE7/xk
-         35cIra2dpcwLDqfGFbMCmyLhoFscfyldsI/lSgD+SACiU2Jw+9iE6sAFZGJil31Y75
-         qmOvWsuCf8/x0tQfu1BYZr9PspWV6HRC6Sg45hmA=
+        b=Tn8IMquUjPrnpP12iVQcejOIoiZrimE3RgUMTsRU9zW0UYw6yATsOWYJfsWwDtHXA
+         c6E1uTukmmkt3ar/gGqQlGULVGYJpQQDbCOtgbarlShNDUIBq4c7Rd9Eirje4EaEaE
+         iI+P8r5ckxTyrDzlcSuuZ+CSzZqlOA89Cl1l5cgM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        eberhard.stoll@kontron.de, Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 149/879] spi: stm32-qspi: Fix wait_cmd timeout in APM mode
-Date:   Tue,  7 Jun 2022 18:54:27 +0200
-Message-Id: <20220607165007.030694004@linuxfoundation.org>
+Subject: [PATCH 5.18 112/879] scsi: lpfc: Fix resource leak in lpfc_sli4_send_seq_to_ulp()
+Date:   Tue,  7 Jun 2022 18:53:50 +0200
+Message-Id: <20220607165005.949318007@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,36 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrice Chotard <patrice.chotard@foss.st.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit d83d89ea68b4726700fa87b22db075e4217e691c ]
+[ Upstream commit 646db1a560f44236b7278b822ca99a1d3b6ea72c ]
 
-In APM mode, TCF and TEF flags are not set. To avoid timeout in
-stm32_qspi_wait_cmd(), don't check if TCF/TEF are set.
+If no handler is found in lpfc_complete_unsol_iocb() to match the rctl of a
+received frame, the frame is dropped and resources are leaked.
 
-Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
-Reported-by: eberhard.stoll@kontron.de
-Link: https://lore.kernel.org/r/20220511074644.558874-2-patrice.chotard@foss.st.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fix by returning resources when discarding an unhandled frame type.  Update
+lpfc_fc_frame_check() handling of NOP basic link service.
+
+Link: https://lore.kernel.org/r/20220426181419.9154-1-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-stm32-qspi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/scsi/lpfc/lpfc_sli.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
-index ffdc55f87e82..dd38cb8ffbc2 100644
---- a/drivers/spi/spi-stm32-qspi.c
-+++ b/drivers/spi/spi-stm32-qspi.c
-@@ -308,7 +308,8 @@ static int stm32_qspi_wait_cmd(struct stm32_qspi *qspi,
- 	if (!op->data.nbytes)
- 		goto wait_nobusy;
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index 09a45f8ecf3f..a174e06bd96e 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -18124,7 +18124,6 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
+ 	case FC_RCTL_ELS_REP:	/* extended link services reply */
+ 	case FC_RCTL_ELS4_REQ:	/* FC-4 ELS request */
+ 	case FC_RCTL_ELS4_REP:	/* FC-4 ELS reply */
+-	case FC_RCTL_BA_NOP:  	/* basic link service NOP */
+ 	case FC_RCTL_BA_ABTS: 	/* basic link service abort */
+ 	case FC_RCTL_BA_RMC: 	/* remove connection */
+ 	case FC_RCTL_BA_ACC:	/* basic accept */
+@@ -18145,6 +18144,7 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
+ 		fc_vft_hdr = (struct fc_vft_header *)fc_hdr;
+ 		fc_hdr = &((struct fc_frame_header *)fc_vft_hdr)[1];
+ 		return lpfc_fc_frame_check(phba, fc_hdr);
++	case FC_RCTL_BA_NOP:	/* basic link service NOP */
+ 	default:
+ 		goto drop;
+ 	}
+@@ -18959,12 +18959,14 @@ lpfc_sli4_send_seq_to_ulp(struct lpfc_vport *vport,
+ 	if (!lpfc_complete_unsol_iocb(phba,
+ 				      phba->sli4_hba.els_wq->pring,
+ 				      iocbq, fc_hdr->fh_r_ctl,
+-				      fc_hdr->fh_type))
++				      fc_hdr->fh_type)) {
+ 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+ 				"2540 Ring %d handler: unexpected Rctl "
+ 				"x%x Type x%x received\n",
+ 				LPFC_ELS_RING,
+ 				fc_hdr->fh_r_ctl, fc_hdr->fh_type);
++		lpfc_in_buf_free(phba, &seq_dmabuf->dbuf);
++	}
  
--	if (readl_relaxed(qspi->io_base + QSPI_SR) & SR_TCF)
-+	if ((readl_relaxed(qspi->io_base + QSPI_SR) & SR_TCF) ||
-+	    qspi->fmode == CCR_FMODE_APM)
- 		goto out;
- 
- 	reinit_completion(&qspi->data_completion);
+ 	/* Free iocb created in lpfc_prep_seq */
+ 	list_for_each_entry_safe(curr_iocb, next_iocb,
 -- 
 2.35.1
 
