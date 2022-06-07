@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB499CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E44F3C04E88
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389607AbiFHAvK (ORCPT
+        id S1391677AbiFHAvb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38016 "EHLO
+        Tue, 7 Jun 2022 20:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382875AbiFGVwB (ORCPT
+        with ESMTP id S1383625AbiFGWGD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E12223F22D;
-        Tue,  7 Jun 2022 12:09:52 -0700 (PDT)
+        Tue, 7 Jun 2022 18:06:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C258195937;
+        Tue,  7 Jun 2022 12:16:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20B58B823AE;
-        Tue,  7 Jun 2022 19:09:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84890C385A2;
-        Tue,  7 Jun 2022 19:09:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 067AD61846;
+        Tue,  7 Jun 2022 19:16:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13502C385A2;
+        Tue,  7 Jun 2022 19:16:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628989;
-        bh=0Fo+vnLS+m2NgyDYTXErJyrh2tt8kExYo9NWHnEnXzo=;
+        s=korg; t=1654629370;
+        bh=zpIlo2dhr55SAn7L6nptZO8nID03IAKitfbd/IXs1qc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Srv2o0r9w4f2RIWaltIY1ofVM3XKfdCnM25uLFH7y4LabN8xJV+naZNbW276eBOru
-         iyRtVDwYm7pOZqenaXN6OY8QvcLjPjQjROvs4jPZOekC9rWsqLZBhy6X5O37kjOZtM
-         91lsyCPV4ItfY4n/bc7AOQAYFwF7XEsmuklLh18A=
+        b=bT8TX9JOqz6rCmCZwtCZwTsuwLlw2j27aWO2M03AYBR9HhPNCCWVPDw4Z6x0+0RbV
+         E4BnoMFuhfp7tuLt0ZxUyNqc6GYUZdVjK74iGHxT2OZlKfKcBMWUIPOVKhwqkjdmkJ
+         OfK7pmgc5drp0GZoyOQ2WZah/IIOPyDkpxnOZ4nU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 502/879] PM: domains: Fix initialization of genpds next_wakeup
-Date:   Tue,  7 Jun 2022 19:00:20 +0200
-Message-Id: <20220607165017.445605712@linuxfoundation.org>
+        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+        Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 666/879] iommu/mediatek: Remove clk_disable in mtk_iommu_remove
+Date:   Tue,  7 Jun 2022 19:03:04 +0200
+Message-Id: <20220607165022.177239560@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,36 +53,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit 622d9b5577f19a6472db21df042fea8f5fefe244 ]
+[ Upstream commit 98df772bdd1c4ce717a26289efea15cbbe4b64ed ]
 
-In the genpd governor we walk the list of child-domains to take into
-account their next_wakeup. If the child-domain itself, doesn't have a
-governor assigned to it, we can end up using the next_wakeup value before
-it has been properly initialized. To prevent a possible incorrect behaviour
-in the governor, let's initialize next_wakeup to KTIME_MAX.
+After the commit b34ea31fe013 ("iommu/mediatek: Always enable the clk on
+resume"), the iommu clock is controlled by the runtime callback.
+thus remove the clk control in the mtk_iommu_remove.
 
-Fixes: c79aa080fb0f ("PM: domains: use device's next wakeup to determine domain idle state")
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Otherwise, it will warning like:
+
+echo 14018000.iommu > /sys/bus/platform/drivers/mtk-iommu/unbind
+
+[   51.413044] ------------[ cut here ]------------
+[   51.413648] vpp0_smi_iommu already disabled
+[   51.414233] WARNING: CPU: 2 PID: 157 at */v5.15-rc1/kernel/mediatek/
+                          drivers/clk/clk.c:952 clk_core_disable+0xb0/0xb8
+[   51.417174] Hardware name: MT8195V/C(ENG) (DT)
+[   51.418635] pc : clk_core_disable+0xb0/0xb8
+[   51.419177] lr : clk_core_disable+0xb0/0xb8
+...
+[   51.429375] Call trace:
+[   51.429694]  clk_core_disable+0xb0/0xb8
+[   51.430193]  clk_core_disable_lock+0x24/0x40
+[   51.430745]  clk_disable+0x20/0x30
+[   51.431189]  mtk_iommu_remove+0x58/0x118
+[   51.431705]  platform_remove+0x28/0x60
+[   51.432197]  device_release_driver_internal+0x110/0x1f0
+[   51.432873]  device_driver_detach+0x18/0x28
+[   51.433418]  unbind_store+0xd4/0x108
+[   51.433886]  drv_attr_store+0x24/0x38
+[   51.434363]  sysfs_kf_write+0x40/0x58
+[   51.434843]  kernfs_fop_write_iter+0x164/0x1e0
+
+Fixes: b34ea31fe013 ("iommu/mediatek: Always enable the clk on resume")
+Reported-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Link: https://lore.kernel.org/r/20220503071427.2285-7-yong.wu@mediatek.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/power/domain.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/mtk_iommu.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-index 1ee878d126fd..f0e4b0ea93e8 100644
---- a/drivers/base/power/domain.c
-+++ b/drivers/base/power/domain.c
-@@ -1997,6 +1997,7 @@ int pm_genpd_init(struct generic_pm_domain *genpd,
- 	genpd->device_count = 0;
- 	genpd->max_off_time_ns = -1;
- 	genpd->max_off_time_changed = true;
-+	genpd->next_wakeup = KTIME_MAX;
- 	genpd->provider = NULL;
- 	genpd->has_provider = false;
- 	genpd->accounting_time = ktime_get();
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index e4b4ebbcb73f..81b8db450eac 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -957,7 +957,6 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ 
+ 	list_del(&data->list);
+ 
+-	clk_disable_unprepare(data->bclk);
+ 	device_link_remove(data->smicomm_dev, &pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
+ 	devm_free_irq(&pdev->dev, data->irq, data);
 -- 
 2.35.1
 
