@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51799CCA49F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA29CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442515AbiFHCAj (ORCPT
+        id S1442725AbiFHCBC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:00:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34268 "EHLO
+        Tue, 7 Jun 2022 22:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1837504AbiFHAAI (ORCPT
+        with ESMTP id S1838814AbiFHACL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:00:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335C35D1A8;
-        Tue,  7 Jun 2022 12:17:46 -0700 (PDT)
+        Tue, 7 Jun 2022 20:02:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4756C19D627;
+        Tue,  7 Jun 2022 12:25:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC44CB823CE;
-        Tue,  7 Jun 2022 19:17:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52706C385A5;
-        Tue,  7 Jun 2022 19:17:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF70560B09;
+        Tue,  7 Jun 2022 19:25:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD69DC385A5;
+        Tue,  7 Jun 2022 19:25:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629463;
-        bh=DIdJhrhMDzys4waQkH84mHqeyCx7EgI+hQjsMXPByAw=;
+        s=korg; t=1654629954;
+        bh=uKZth2wW7tJJ3m1gjlFlyDbnJUXr98WnLkj7u8W5GIg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1VX1dxPcNGZ1de7x/kphygEVOYu38fLCJnHwXSeI6qo/2uHkd+I07Jf1eyl98TewJ
-         pNjcK31E32IEi8wINbDxpR7LNlDXAX55o57FP8SiKpSDA7xTURt8xMRN83Yvr8k/as
-         vLcnbcNAG+U3fQwRpYEXGBtxVf/eWeAzMFGPEcUk=
+        b=Yg0tPphB+fdPzd/MI+On1+XKO7bBPpV8Z+G89wdtj9i8CT54gE65DvW9MamshmtU1
+         XoCjT2TH0XhuEOfXe/mzT6jojSUTLbi/hCxNmhN7qY2sVpYylkciXeVC/RUkH2kaYa
+         dXyfT3eXQ/7VuPUOW6V7UcYyfTtqoFA3sZXSYOTk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Daniel Bristot de Oliveria <bristot@kernel.org>,
-        John Kacur <jkacur@redhat.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 700/879] rtla: Minor grammar fix for rtla README
-Date:   Tue,  7 Jun 2022 19:03:38 +0200
-Message-Id: <20220607165023.166264139@linuxfoundation.org>
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>, Coly Li <colyli@suse.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.18 877/879] md: bcache: check the return value of kzalloc() in detached_dev_do_request()
+Date:   Tue,  7 Jun 2022 19:06:35 +0200
+Message-Id: <20220607165028.313237677@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,56 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Kacur <jkacur@redhat.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 22d146f7c1e97f4870e4497c0202939a031f740c ]
+commit 40f567bbb3b0639d2ec7d1c6ad4b1b018f80cf19 upstream.
 
-- Change to "The rtla meta-tool includes"
-- Remove an unnecessary "But, "
-- Adjust the formatting of the paragraph resulting from the changes.
-- Simplify the wording for the libraries and tools.
+The function kzalloc() in detached_dev_do_request() can fail, so its
+return value should be checked.
 
-Link: https://lkml.kernel.org/r/437f0accdde53713ab3cce46f3564be00487e031.1651247710.git.bristot@kernel.org
-Link: https://lore.kernel.org/r/20220408161012.10544-1-jkacur@redhat.com/
-
-Cc: Daniel Bristot de Oliveria <bristot@kernel.org>
-Fixes: 79ce8f43ac5a ("rtla: Real-Time Linux Analysis tool")
-Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: John Kacur <jkacur@redhat.com>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: bc082a55d25c ("bcache: fix inaccurate io state for detached bcache devices")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: Coly Li <colyli@suse.de>
+Link: https://lore.kernel.org/r/20220527152818.27545-4-colyli@suse.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/tracing/rtla/README.txt | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ drivers/md/bcache/request.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/tools/tracing/rtla/README.txt b/tools/tracing/rtla/README.txt
-index 6c88446f7e74..0fbad2640b8c 100644
---- a/tools/tracing/rtla/README.txt
-+++ b/tools/tracing/rtla/README.txt
-@@ -1,15 +1,13 @@
- RTLA: Real-Time Linux Analysis tools
- 
--The rtla is a meta-tool that includes a set of commands that
--aims to analyze the real-time properties of Linux. But, instead of
--testing Linux as a black box, rtla leverages kernel tracing
--capabilities to provide precise information about the properties
--and root causes of unexpected results.
-+The rtla meta-tool includes a set of commands that aims to analyze
-+the real-time properties of Linux. Instead of testing Linux as a black box,
-+rtla leverages kernel tracing capabilities to provide precise information
-+about the properties and root causes of unexpected results.
- 
- Installing RTLA
- 
--RTLA depends on some libraries and tools. More precisely, it depends on the
--following libraries:
-+RTLA depends on the following libraries and tools:
- 
-  - libtracefs
-  - libtraceevent
--- 
-2.35.1
-
+--- a/drivers/md/bcache/request.c
++++ b/drivers/md/bcache/request.c
+@@ -1105,6 +1105,12 @@ static void detached_dev_do_request(stru
+ 	 * which would call closure_get(&dc->disk.cl)
+ 	 */
+ 	ddip = kzalloc(sizeof(struct detached_dev_io_private), GFP_NOIO);
++	if (!ddip) {
++		bio->bi_status = BLK_STS_RESOURCE;
++		bio->bi_end_io(bio);
++		return;
++	}
++
+ 	ddip->d = d;
+ 	/* Count on the bcache device */
+ 	ddip->orig_bdev = orig_bdev;
 
 
