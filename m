@@ -2,275 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB99CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:56:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D942CCA48A
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:56:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378194AbiFGVzA (ORCPT
+        id S1379106AbiFGVzM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50220 "EHLO
+        Tue, 7 Jun 2022 17:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379201AbiFGVCL (ORCPT
+        with ESMTP id S1379233AbiFGVCN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF5D1203D4;
-        Tue,  7 Jun 2022 11:46:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D80F26156D;
-        Tue,  7 Jun 2022 18:46:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6FA5C385A2;
-        Tue,  7 Jun 2022 18:46:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627613;
-        bh=pXhqvl9Prhi+I+cIV2Zsg8ToLcJLpo51jTXHhnpd+Lo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VZqmskhmofU995+yuU7fzOQMC0ZaQaYXs3TSYX6A9j9lHnurLktq7aNacdmMofRJm
-         QAVRYEaKnpmHvY9J1BHPgwWOwRsgmkN+BtbnPf5koZ/xd/ISgnT0VbZDcyyIXjtVqS
-         9U6+m3tMYKvyIOwY7BHD9ThwP1pe2/TRv+j20v6E=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Byron Stanoszek <gandalf@winds.org>,
-        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.18 031/879] cifs: fix ntlmssp on old servers
-Date:   Tue,  7 Jun 2022 18:52:29 +0200
-Message-Id: <20220607165003.579512241@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:02:13 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F50634663
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:47:02 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id u12-20020a17090a1d4c00b001df78c7c209so21675286pju.1
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:47:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=ClvLn1v0KW5jcy2W1CElCvPJ8/3zjMIv2rSPG5d3wcg=;
+        b=tc1I+sdA0FwDJ/gsRcalhTdWIHb3oeBmUEKkK8g4OZEMjXtAlRTZvaNhHDSk/3+9Zf
+         ZCnTm71Ikwc9fj78Z6tJ+r+s3NKyZPGXQUM5GKc63uB2wcSoTM+yHLH1Ir/Fm51e9ot0
+         iPOjiMnofGcQT1I4z3zOljtH0zbFxSybwkGC8Uh8OTfQAgLL0VB/fu8yQm7VfTWTj1iK
+         ViabI4/ZPV3krTjB9RtlTrwxbRjkqxfKSGqc7GY05gqlqamDH4sYLLUCxRq+Tg2RE6e2
+         AQwMtPhyN/4yV7ZESuVPupvYQ3xLbWu98R4sqW9Vc3joiZka92axUvzIDfM/7JpyJlSZ
+         AErQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=ClvLn1v0KW5jcy2W1CElCvPJ8/3zjMIv2rSPG5d3wcg=;
+        b=VAuEQBXlz+iPxXloxC6vckhhAqn+895dhlMV+LpRax6tFXWb2Ib/qh+BszUZWCYfUs
+         dt9CP/CQ145JhSL31DRG9Jj9ukR7ZkdPKE4iV/E/4UZ5fu/uV4Bc6SzGVXdifjNcbSov
+         gaRFr4HKA22k1+4Wa2A+DKTJZHgT4NI4Paiy6ujrB9ycwjV1/zl3MrYuL0gtZ/dN2yG9
+         e3vDyAz326IAjzzdTVXvCmYtiJ5Y6VH76N0gGqFkIDyJ1JPHHCJSHMBM7tvJZ/D9hCuB
+         hkAx0jByWNi2YAGuNcbR9jQIv0EbFRRxkxE4M2uEm6YNtYs3OSLveXnVXreNXqBUMi8S
+         upjA==
+X-Gm-Message-State: AOAM531phgQu+e7UnEJdCUPaOtpSw1Sq8blTpSgV7ZVQZiwbUcNJimBo
+        UGNUSWRdqhSUrsrDPkIs0+Nh5g==
+X-Google-Smtp-Source: ABdhPJzC+jPXqON9HpNHUt08r2bqtxWHt/ITCvwKc/1nQ9S2LBfu4fKx7HHimoSJfCLrrW0kyL4vcg==
+X-Received: by 2002:a17:902:ec92:b0:166:3502:ecb1 with SMTP id x18-20020a170902ec9200b001663502ecb1mr30357875plg.62.1654627621789;
+        Tue, 07 Jun 2022 11:47:01 -0700 (PDT)
+Received: from [192.168.254.36] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id a2-20020a170902710200b0016141e6c5acsm13036791pll.296.2022.06.07.11.47.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 11:47:01 -0700 (PDT)
+Message-ID: <d079b7d4-c538-8a50-3375-fab0d3a0f0e6@linaro.org>
+Date:   Tue, 7 Jun 2022 11:47:00 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, cgroups@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
+References: <20220603173455.441537-1-tadeusz.struk@linaro.org>
+ <20220603181321.443716-1-tadeusz.struk@linaro.org>
+ <20220606123910.GF6928@blackbody.suse.cz>
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: Re: [PATCH v2] cgroup: serialize css kill and release paths
+In-Reply-To: <20220606123910.GF6928@blackbody.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paulo Alcantara <pc@cjr.nz>
+On 6/6/22 05:39, Michal Koutný wrote:
+> On Fri, Jun 03, 2022 at 11:13:21AM -0700, Tadeusz Struk<tadeusz.struk@linaro.org>  wrote:
+>> In such scenario the css_killed_work_fn will be en-queued via
+>> cgroup_apply_control_disable(cgrp)->kill_css(css), and bail out to
+>> cgroup_kn_unlock(). Then cgroup_kn_unlock() will call:
+>> cgroup_put(cgrp)->css_put(&cgrp->self), which will try to enqueue
+>> css_release_work_fn for the same css instance, causing a list_add
+>> corruption bug, as can be seen in the syzkaller report [1].
+> This hypothesis doesn't add up to me (I am sorry).
+> 
+> The kill_css(css) would be a css associated with a subsys (css.ss !=
+> NULL) whereas css_put(&cgrp->self) is a different css just for the
+> cgroup (css.ss == NULL).
 
-commit de3a9e943ddecba8d2ac1dde4cfff538e5c6a7b9 upstream.
+Yes, you are right. I couldn't figure it out where the extra css_put()
+is called from, and the only place that fitted into my theory was from
+the cgroup_kn_unlock() in cgroup_apply_control_disable().
+After some more debugging I can see that, as you said, the cgrp->self
+is a different css. The offending _put() is actually called by the
+percpu_ref_kill_and_confirm(), as it not only calls the passed confirm_kill
+percpu_ref_func_t, but also it puts the refcnt iself.
+Because the cgroup_apply_control_disable() will loop for_each_live_descendant,
+and call css_kill() on all css'es, and css_killed_work_fn() will also loop
+and call css_put() on all parents, the css_release() will be called on the
+first parent prematurely, causing the BUG(). What I think should be done
+to balance put/get is to call css_get() for all the parents in kill_css():
 
-Some older servers seem to require the workstation name during ntlmssp
-to be at most 15 chars (RFC1001 name length), so truncate it before
-sending when using insecure dialects.
-
-Link: https://lore.kernel.org/r/e6837098-15d9-acb6-7e34-1923cf8c6fe1@winds.org
-Reported-by: Byron Stanoszek <gandalf@winds.org>
-Tested-by: Byron Stanoszek <gandalf@winds.org>
-Fixes: 49bd49f983b5 ("cifs: send workstation name during ntlmssp session setup")
-Cc: stable@vger.kernel.org
-Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/cifs/cifsglob.h   |   15 ++++++++++++++-
- fs/cifs/connect.c    |   22 ++++------------------
- fs/cifs/fs_context.c |   29 ++++-------------------------
- fs/cifs/fs_context.h |    2 +-
- fs/cifs/misc.c       |    1 -
- fs/cifs/sess.c       |    6 +++---
- 6 files changed, 26 insertions(+), 49 deletions(-)
-
---- a/fs/cifs/cifsglob.h
-+++ b/fs/cifs/cifsglob.h
-@@ -944,7 +944,7 @@ struct cifs_ses {
- 				   and after mount option parsing we fill it */
- 	char *domainName;
- 	char *password;
--	char *workstation_name;
-+	char workstation_name[CIFS_MAX_WORKSTATION_LEN];
- 	struct session_key auth_key;
- 	struct ntlmssp_auth *ntlmssp; /* ciphertext, flags, server challenge */
- 	enum securityEnum sectype; /* what security flavor was specified? */
-@@ -1979,4 +1979,17 @@ static inline bool cifs_is_referral_serv
- 	return is_tcon_dfs(tcon) || (ref && (ref->flags & DFSREF_REFERRAL_SERVER));
- }
- 
-+static inline size_t ntlmssp_workstation_name_size(const struct cifs_ses *ses)
-+{
-+	if (WARN_ON_ONCE(!ses || !ses->server))
-+		return 0;
-+	/*
-+	 * Make workstation name no more than 15 chars when using insecure dialects as some legacy
-+	 * servers do require it during NTLMSSP.
-+	 */
-+	if (ses->server->dialect <= SMB20_PROT_ID)
-+		return min_t(size_t, sizeof(ses->workstation_name), RFC1001_NAME_LEN_WITH_NULL);
-+	return sizeof(ses->workstation_name);
-+}
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index c1e1a5c34e77..3ca61325bc4e 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -5527,6 +5527,8 @@ static void css_killed_ref_fn(struct percpu_ref *ref)
+   */
+  static void kill_css(struct cgroup_subsys_state *css)
+  {
++       struct cgroup_subsys_state *_css = css;
 +
- #endif	/* _CIFS_GLOB_H */
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -2037,18 +2037,7 @@ cifs_set_cifscreds(struct smb3_fs_contex
- 		}
- 	}
- 
--	ctx->workstation_name = kstrdup(ses->workstation_name, GFP_KERNEL);
--	if (!ctx->workstation_name) {
--		cifs_dbg(FYI, "Unable to allocate memory for workstation_name\n");
--		rc = -ENOMEM;
--		kfree(ctx->username);
--		ctx->username = NULL;
--		kfree_sensitive(ctx->password);
--		ctx->password = NULL;
--		kfree(ctx->domainname);
--		ctx->domainname = NULL;
--		goto out_key_put;
--	}
-+	strscpy(ctx->workstation_name, ses->workstation_name, sizeof(ctx->workstation_name));
- 
- out_key_put:
- 	up_read(&key->sem);
-@@ -2157,12 +2146,9 @@ cifs_get_smb_ses(struct TCP_Server_Info
- 		if (!ses->domainName)
- 			goto get_ses_fail;
- 	}
--	if (ctx->workstation_name) {
--		ses->workstation_name = kstrdup(ctx->workstation_name,
--						GFP_KERNEL);
--		if (!ses->workstation_name)
--			goto get_ses_fail;
--	}
-+
-+	strscpy(ses->workstation_name, ctx->workstation_name, sizeof(ses->workstation_name));
-+
- 	if (ctx->domainauto)
- 		ses->domainAuto = ctx->domainauto;
- 	ses->cred_uid = ctx->cred_uid;
---- a/fs/cifs/fs_context.c
-+++ b/fs/cifs/fs_context.c
-@@ -312,7 +312,6 @@ smb3_fs_context_dup(struct smb3_fs_conte
- 	new_ctx->password = NULL;
- 	new_ctx->server_hostname = NULL;
- 	new_ctx->domainname = NULL;
--	new_ctx->workstation_name = NULL;
- 	new_ctx->UNC = NULL;
- 	new_ctx->source = NULL;
- 	new_ctx->iocharset = NULL;
-@@ -327,7 +326,6 @@ smb3_fs_context_dup(struct smb3_fs_conte
- 	DUP_CTX_STR(UNC);
- 	DUP_CTX_STR(source);
- 	DUP_CTX_STR(domainname);
--	DUP_CTX_STR(workstation_name);
- 	DUP_CTX_STR(nodename);
- 	DUP_CTX_STR(iocharset);
- 
-@@ -766,8 +764,7 @@ static int smb3_verify_reconfigure_ctx(s
- 		cifs_errorf(fc, "can not change domainname during remount\n");
- 		return -EINVAL;
- 	}
--	if (new_ctx->workstation_name &&
--	    (!old_ctx->workstation_name || strcmp(new_ctx->workstation_name, old_ctx->workstation_name))) {
-+	if (strcmp(new_ctx->workstation_name, old_ctx->workstation_name)) {
- 		cifs_errorf(fc, "can not change workstation_name during remount\n");
- 		return -EINVAL;
- 	}
-@@ -814,7 +811,6 @@ static int smb3_reconfigure(struct fs_co
- 	STEAL_STRING(cifs_sb, ctx, username);
- 	STEAL_STRING(cifs_sb, ctx, password);
- 	STEAL_STRING(cifs_sb, ctx, domainname);
--	STEAL_STRING(cifs_sb, ctx, workstation_name);
- 	STEAL_STRING(cifs_sb, ctx, nodename);
- 	STEAL_STRING(cifs_sb, ctx, iocharset);
- 
-@@ -1467,22 +1463,15 @@ static int smb3_fs_context_parse_param(s
- 
- int smb3_init_fs_context(struct fs_context *fc)
- {
--	int rc;
- 	struct smb3_fs_context *ctx;
- 	char *nodename = utsname()->nodename;
- 	int i;
- 
- 	ctx = kzalloc(sizeof(struct smb3_fs_context), GFP_KERNEL);
--	if (unlikely(!ctx)) {
--		rc = -ENOMEM;
--		goto err_exit;
--	}
-+	if (unlikely(!ctx))
-+		return -ENOMEM;
- 
--	ctx->workstation_name = kstrdup(nodename, GFP_KERNEL);
--	if (unlikely(!ctx->workstation_name)) {
--		rc = -ENOMEM;
--		goto err_exit;
--	}
-+	strscpy(ctx->workstation_name, nodename, sizeof(ctx->workstation_name));
- 
- 	/*
- 	 * does not have to be perfect mapping since field is
-@@ -1555,14 +1544,6 @@ int smb3_init_fs_context(struct fs_conte
- 	fc->fs_private = ctx;
- 	fc->ops = &smb3_fs_context_ops;
- 	return 0;
--
--err_exit:
--	if (ctx) {
--		kfree(ctx->workstation_name);
--		kfree(ctx);
--	}
--
--	return rc;
- }
- 
- void
-@@ -1588,8 +1569,6 @@ smb3_cleanup_fs_context_contents(struct
- 	ctx->source = NULL;
- 	kfree(ctx->domainname);
- 	ctx->domainname = NULL;
--	kfree(ctx->workstation_name);
--	ctx->workstation_name = NULL;
- 	kfree(ctx->nodename);
- 	ctx->nodename = NULL;
- 	kfree(ctx->iocharset);
---- a/fs/cifs/fs_context.h
-+++ b/fs/cifs/fs_context.h
-@@ -170,7 +170,7 @@ struct smb3_fs_context {
- 	char *server_hostname;
- 	char *UNC;
- 	char *nodename;
--	char *workstation_name;
-+	char workstation_name[CIFS_MAX_WORKSTATION_LEN];
- 	char *iocharset;  /* local code page for mapping to and from Unicode */
- 	char source_rfc1001_name[RFC1001_NAME_LEN_WITH_NULL]; /* clnt nb name */
- 	char target_rfc1001_name[RFC1001_NAME_LEN_WITH_NULL]; /* srvr nb name */
---- a/fs/cifs/misc.c
-+++ b/fs/cifs/misc.c
-@@ -95,7 +95,6 @@ sesInfoFree(struct cifs_ses *buf_to_free
- 	kfree_sensitive(buf_to_free->password);
- 	kfree(buf_to_free->user_name);
- 	kfree(buf_to_free->domainName);
--	kfree(buf_to_free->workstation_name);
- 	kfree_sensitive(buf_to_free->auth_key.response);
- 	kfree(buf_to_free->iface_list);
- 	kfree_sensitive(buf_to_free);
---- a/fs/cifs/sess.c
-+++ b/fs/cifs/sess.c
-@@ -714,9 +714,9 @@ static int size_of_ntlmssp_blob(struct c
- 	else
- 		sz += sizeof(__le16);
- 
--	if (ses->workstation_name)
-+	if (ses->workstation_name[0])
- 		sz += sizeof(__le16) * strnlen(ses->workstation_name,
--			CIFS_MAX_WORKSTATION_LEN);
-+					       ntlmssp_workstation_name_size(ses));
- 	else
- 		sz += sizeof(__le16);
- 
-@@ -960,7 +960,7 @@ int build_ntlmssp_auth_blob(unsigned cha
- 
- 	cifs_security_buffer_from_str(&sec_blob->WorkstationName,
- 				      ses->workstation_name,
--				      CIFS_MAX_WORKSTATION_LEN,
-+				      ntlmssp_workstation_name_size(ses),
- 				      *pbuffer, &tmp,
- 				      nls_cp);
- 
+         lockdep_assert_held(&cgroup_mutex);
+  
+         if (css->flags & CSS_DYING)
+@@ -5541,10 +5543,13 @@ static void kill_css(struct cgroup_subsys_state *css)
+         css_clear_dir(css);
+  
+         /*
+-        * Killing would put the base ref, but we need to keep it alive
+-        * until after ->css_offline().
++        * Killing would put the base ref, but we need to keep it alive,
++        * and all its parents, until after ->css_offline().
+          */
+-       css_get(css);
++       do {
++               css_get(_css);
++               _css = _css->parent;
++       } while (_css && atomic_read(&_css->online_cnt));
+  
+         /*
+          * cgroup core guarantees that, by the time ->css_offline() is
 
+This will be then "reverted" in css_killed_work_fn()
+Please let me know if it makes sense to you.
+I'm still testing it, but syzbot is very slow today.
 
+-- 
+Thanks,
+Tadeusz
