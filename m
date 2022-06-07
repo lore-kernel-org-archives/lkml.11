@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C4E7CCA486
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE6F0CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354089AbiFGVcU (ORCPT
+        id S1378756AbiFGVcb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:32:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43740 "EHLO
+        Tue, 7 Jun 2022 17:32:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377937AbiFGUek (ORCPT
+        with ESMTP id S1378175AbiFGUez (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE63415A761;
-        Tue,  7 Jun 2022 11:36:53 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:55 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF3CE1EA86E;
+        Tue,  7 Jun 2022 11:37:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A674B82182;
-        Tue,  7 Jun 2022 18:36:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD650C385A5;
-        Tue,  7 Jun 2022 18:36:50 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A364BCE23F1;
+        Tue,  7 Jun 2022 18:37:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90629C385A2;
+        Tue,  7 Jun 2022 18:37:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627011;
-        bh=Ga08/OLnyXNnL8sL9UQF+m5AArZ3XQ4eVArDlX0HBPA=;
+        s=korg; t=1654627057;
+        bh=wXIZJawWrOCnO9b2OaTQyjOEM/LeOCNedPaXi6O7/l4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=leEK3YCbvs4AcVbxxL9ri5lhl00ENB81Tvvgaz0VYnoOFKSICN6nCJYYL0PL1Lg31
-         /fKxCKIISp+pXOZcqKAK4kv9Tw0K2xpDQodXflRIL6rvKAFthPICMyviRnDkBIfm3A
-         w+R9sDsD4/paHK1mVGXY8MG1AuplsY99+02x8SRA=
+        b=nWU2mNZvGmk2KNPVqh+Us33cd+CnVdvyaoV4Oh1dE9kC6p9eStoIFiKgC6J7tpoLW
+         8QdaKoP0lZN9Y5Fw7kH5ptDGhvxpdFltuVLwGJJVCYvQgju+q4dGViggdiRG+POfaM
+         SW26ij2GANbevqanSajsz+1nwgUDL3iIhmW1xZQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org,
+        Daniel Bristot de Oliveria <bristot@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        John Kacur <jkacur@redhat.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 585/772] NFSv4/pNFS: Do not fail I/O when we fail to allocate the pNFS layout
-Date:   Tue,  7 Jun 2022 19:02:57 +0200
-Message-Id: <20220607165006.185523312@linuxfoundation.org>
+Subject: [PATCH 5.17 600/772] rtla: Dont overwrite existing directory mode
+Date:   Tue,  7 Jun 2022 19:03:12 +0200
+Message-Id: <20220607165006.622107220@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,45 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: John Kacur <jkacur@redhat.com>
 
-[ Upstream commit 3764a17e31d579cf9b4bd0a69894b577e8d75702 ]
+[ Upstream commit 39c3d84cb5b52792a7323a338334d8d65b2dbe3f ]
 
-Commit 587f03deb69b caused pnfs_update_layout() to stop returning ENOMEM
-when the memory allocation fails, and hence causes it to fall back to
-trying to do I/O through the MDS. There is no guarantee that this will
-fare any better. If we're failing the pNFS layout allocation, then we
-should just redirty the page and retry later.
+The mode on /usr/bin is often 555 these days,
+but make install on rtla overwrites this with 755
 
-Reported-by: Olga Kornievskaia <aglo@umich.edu>
-Fixes: 587f03deb69b ("pnfs: refactor send_layoutget")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Fix this by preserving the current directory if it exists.
+
+Link: https://lkml.kernel.org/r/8c294a6961080a1970fd8b73f7bcf1e3984579e2.1651247710.git.bristot@kernel.org
+Link: https://lore.kernel.org/r/20220402043939.6962-1-jkacur@redhat.com
+
+Cc: Daniel Bristot de Oliveria <bristot@redhat.com>
+Fixes: 79ce8f43ac5a ("rtla: Real-Time Linux Analysis tool")
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: John Kacur <jkacur@redhat.com>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/pnfs.c | 2 ++
- 1 file changed, 2 insertions(+)
+ tools/tracing/rtla/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
-index 7ddd003ab8b1..9203a17b3f09 100644
---- a/fs/nfs/pnfs.c
-+++ b/fs/nfs/pnfs.c
-@@ -2000,6 +2000,7 @@ pnfs_update_layout(struct inode *ino,
- 	lo = pnfs_find_alloc_layout(ino, ctx, gfp_flags);
- 	if (lo == NULL) {
- 		spin_unlock(&ino->i_lock);
-+		lseg = ERR_PTR(-ENOMEM);
- 		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
- 				 PNFS_UPDATE_LAYOUT_NOMEM);
- 		goto out;
-@@ -2128,6 +2129,7 @@ pnfs_update_layout(struct inode *ino,
+diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+index 5a1eda617992..4b635d4de018 100644
+--- a/tools/tracing/rtla/Makefile
++++ b/tools/tracing/rtla/Makefile
+@@ -23,6 +23,7 @@ $(call allow-override,LD_SO_CONF_PATH,/etc/ld.so.conf.d/)
+ $(call allow-override,LDCONFIG,ldconfig)
  
- 	lgp = pnfs_alloc_init_layoutget_args(ino, ctx, &stateid, &arg, gfp_flags);
- 	if (!lgp) {
-+		lseg = ERR_PTR(-ENOMEM);
- 		trace_pnfs_update_layout(ino, pos, count, iomode, lo, NULL,
- 					 PNFS_UPDATE_LAYOUT_NOMEM);
- 		nfs_layoutget_end(lo);
+ INSTALL	=	install
++MKDIR	=	mkdir
+ FOPTS	:=	-flto=auto -ffat-lto-objects -fexceptions -fstack-protector-strong \
+ 		-fasynchronous-unwind-tables -fstack-clash-protection
+ WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -Wno-maybe-uninitialized
+@@ -68,7 +69,7 @@ static: $(OBJ)
+ 
+ .PHONY: install
+ install: doc_install
+-	$(INSTALL) -d -m 755 $(DESTDIR)$(BINDIR)
++	$(MKDIR) -p $(DESTDIR)$(BINDIR)
+ 	$(INSTALL) rtla -m 755 $(DESTDIR)$(BINDIR)
+ 	$(STRIP) $(DESTDIR)$(BINDIR)/rtla
+ 	@test ! -f $(DESTDIR)$(BINDIR)/osnoise || rm $(DESTDIR)$(BINDIR)/osnoise
 -- 
 2.35.1
 
