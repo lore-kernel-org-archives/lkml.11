@@ -2,104 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D53C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:48:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4A77C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240076AbiFGJsk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:48:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37672 "EHLO
+        id S240127AbiFGJsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240014AbiFGJsT (ORCPT
+        with ESMTP id S240020AbiFGJsT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 05:48:19 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FF5AE7323
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:48:15 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id k19so23330081wrd.8
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51A3AE732B
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:48:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654595295;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IFV6m742eJK5fjIllJH8j+SCBmQdPpQ1B+N/I8SMuIc=;
+        b=fsCHB+lvJvmuySj2batn5E2zz/9coofIfNjFTOKVsHuzQW208ZwlIqvGNauGjDZgF19suH
+        qb40Gk0M/+7GYhIBu0u4k2ywPvo1jg0gHecwfQCRwNGgok2RZLq9LkjxxwSo+w4Uq5K+Vk
+        WTwM1Tu9sJfHVP54c9hWGhMCquLMngI=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-398-rWl89KHAMSa0ZQn2OR3AJQ-1; Tue, 07 Jun 2022 05:48:14 -0400
+X-MC-Unique: rWl89KHAMSa0ZQn2OR3AJQ-1
+Received: by mail-qv1-f70.google.com with SMTP id v15-20020ad4554f000000b004646455c054so10494646qvy.10
         for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:48:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=tNUOqb45O/Ilv1mJP0lwEr7O4bll5ez6OZhdGeCnOYk=;
-        b=aSj7vDU7AbFC0EV4ObqejY5ilPc6PDl68qCalrtM9AmersGWrZkqOD8wsWwyrgx0Kl
-         aMFgab1d7o18753cuOu0YkvSNdpu3yt2QTmjSbwP/LYS6lRkNxaon38FkZGVtqFBMg51
-         CuSG3xaF9d+PVJKpPo8kSeiP/71ZGpwPNnjdA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=tNUOqb45O/Ilv1mJP0lwEr7O4bll5ez6OZhdGeCnOYk=;
-        b=l4muHwf3p+RvupuRDx2tevHbnaUqu+TcFXw8azHY9K5wIkiQ3Z2NtWvfPgOIliUPRw
-         zAwhhtzNR3MpVs+9/2qHT39eqHJK6cmNkMGdCH6YLN66SN8bLGytMEaaGeCrGDDzPFF0
-         cnxPENZMNm9y6hBpH0TVtd6kSL3zVKIQsu+PWmTXGJlL70DNVWNhu4RctQXKHAUczYbX
-         jh4URiIFDXjxwhiU6CFoX1NiL1y6sDqgwsZsyh9BYaywalVV1FndEzUUVbAHaeUQNKhD
-         6wswQYlAnKOeTunJFah6CaO2PXqTpbipt7KsFVueSc8rPpEeJGiJrwXDn1E2XoTmhfIk
-         aEcg==
-X-Gm-Message-State: AOAM532EaEFgIKNmlBIXj/GuHXnTK/i/T3FiFRWLqXmPhV6EwTwmMF3a
-        MSH2b2yMnSJPNcr157bR619yZUVCUXAPhw==
-X-Google-Smtp-Source: ABdhPJzxV76XCOBQmc7+Lj65tB9pSTfRlZHibJl7Uk43JIepJsgft9u0vd0PcfX2LWMukczoGmh+Hw==
-X-Received: by 2002:a05:6000:1acc:b0:20f:e35e:450 with SMTP id i12-20020a0560001acc00b0020fe35e0450mr25899806wry.531.1654595293242;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=IFV6m742eJK5fjIllJH8j+SCBmQdPpQ1B+N/I8SMuIc=;
+        b=Px0V9gr0a2Ewa9wPc6GPEypbt34jHHP70HXFtPw22sgTCe5+Jb188iWQD8SRvTc/ah
+         3+iqC1ec6g/XkTV8HKG4ZO55IlOuzcC1iKmiJqloUTnFX4cjg24GTn+LHxY5ZgmQoXbH
+         rtrtcfXElkPs0IPoTxcRSnFYUTluxrGvkSurwNEi2BvcDxdKtqZ/x+RfxZmM1AdpS6M0
+         Lc6DLrPvP7/fnQqRDZcUoQWYylJxM03YtLu3jIHz2urVBokV/NIW2rWJyZfnXCCwTZiQ
+         RFrJD0Gycj5TiQ/2PnOqSQKpWCZOc7h6KExptahhwhcGMjbSkk4yhPMuTBvPIrKmOpSs
+         fOXg==
+X-Gm-Message-State: AOAM5312BpjBPMfPszmUX8MjWhOvrX/PzKZh5DTBillPl0NHH1LsZqge
+        Atdp9mScmvVhbJ1XGoQOovP3zRHN5PoeGO1IUJSHAbdObDEJys0UCWxj4SScoHnQCUBM9uCX8Wp
+        LAmj/ZPFALayL0PD++35zJ46i
+X-Received: by 2002:a37:a0c1:0:b0:6a6:9647:3548 with SMTP id j184-20020a37a0c1000000b006a696473548mr14546091qke.155.1654595293851;
         Tue, 07 Jun 2022 02:48:13 -0700 (PDT)
-Received: from dario-ThinkPad-T14s-Gen-2i.pdxnet.pdxeng.ch (mob-5-90-137-51.net.vodafone.it. [5.90.137.51])
-        by smtp.gmail.com with ESMTPSA id o4-20020a05600c510400b0039748be12dbsm23200547wms.47.2022.06.07.02.48.11
+X-Google-Smtp-Source: ABdhPJwvMMVQxxX5Pf8YRgVde+mcpTypTBPlxZsx8/NMqJEuNU630kVMBm8gKxAIEY9Kf36NXraa7w==
+X-Received: by 2002:a37:a0c1:0:b0:6a6:9647:3548 with SMTP id j184-20020a37a0c1000000b006a696473548mr14546084qke.155.1654595293650;
+        Tue, 07 Jun 2022 02:48:13 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id d19-20020a05620a241300b006a6c230f5e0sm4256533qkn.31.2022.06.07.02.48.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 02:48:12 -0700 (PDT)
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [RFC PATCH 02/13] can: slcan: use netdev helpers to print out messages
-Date:   Tue,  7 Jun 2022 11:47:41 +0200
-Message-Id: <20220607094752.1029295-3-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
-References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
+        Tue, 07 Jun 2022 02:48:13 -0700 (PDT)
+Message-ID: <9df598de5072fdbc6606363f0a75f6f0bea6fd60.camel@redhat.com>
+Subject: Re: [PATCH v6 18/38] KVM: x86: hyper-v: Introduce fast
+ guest_hv_cpuid_has_l2_tlb_flush() check
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 07 Jun 2022 12:48:09 +0300
+In-Reply-To: <20220606083655.2014609-19-vkuznets@redhat.com>
+References: <20220606083655.2014609-1-vkuznets@redhat.com>
+         <20220606083655.2014609-19-vkuznets@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace printk() calls with corresponding netdev helpers.
+On Mon, 2022-06-06 at 10:36 +0200, Vitaly Kuznetsov wrote:
+> Introduce a helper to quickly check if KVM needs to handle VMCALL/VMMCALL
+> from L2 in L0 to process L2 TLB flush requests.
+> 
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
+>  arch/x86/include/asm/kvm_host.h | 1 +
+>  arch/x86/kvm/hyperv.c           | 6 ++++++
+>  arch/x86/kvm/hyperv.h           | 7 +++++++
+>  3 files changed, 14 insertions(+)
+> 
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index 5d60c66ee0de..f9a34af0a5cc 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -642,6 +642,7 @@ struct kvm_vcpu_hv {
+>                 u32 enlightenments_eax; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EAX */
+>                 u32 enlightenments_ebx; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EBX */
+>                 u32 syndbg_cap_eax; /* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
+> +               u32 nested_features_eax; /* HYPERV_CPUID_NESTED_FEATURES.EAX */
+>         } cpuid_cache;
+>  
+>         struct kvm_vcpu_hv_tlb_flush_fifo tlb_flush_fifo[HV_NR_TLB_FLUSH_FIFOS];
+> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+> index 740190917c1c..4396d75588d8 100644
+> --- a/arch/x86/kvm/hyperv.c
+> +++ b/arch/x86/kvm/hyperv.c
+> @@ -2229,6 +2229,12 @@ void kvm_hv_set_cpuid(struct kvm_vcpu *vcpu)
+>                 hv_vcpu->cpuid_cache.syndbg_cap_eax = entry->eax;
+>         else
+>                 hv_vcpu->cpuid_cache.syndbg_cap_eax = 0;
+> +
+> +       entry = kvm_find_cpuid_entry(vcpu, HYPERV_CPUID_NESTED_FEATURES, 0);
+> +       if (entry)
+> +               hv_vcpu->cpuid_cache.nested_features_eax = entry->eax;
+> +       else
+> +               hv_vcpu->cpuid_cache.nested_features_eax = 0;
+>  }
+>  
+>  int kvm_hv_set_enforce_cpuid(struct kvm_vcpu *vcpu, bool enforce)
+> diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
+> index 7778b3a5913c..2aa6fb7fc599 100644
+> --- a/arch/x86/kvm/hyperv.h
+> +++ b/arch/x86/kvm/hyperv.h
+> @@ -170,6 +170,13 @@ static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu, bool is_gu
+>         kfifo_reset_out(&tlb_flush_fifo->entries);
+>  }
+>  
+> +static inline bool guest_hv_cpuid_has_l2_tlb_flush(struct kvm_vcpu *vcpu)
+> +{
+> +       struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+> +
+> +       return hv_vcpu && (hv_vcpu->cpuid_cache.nested_features_eax & HV_X64_NESTED_DIRECT_FLUSH);
+> +}
+> +
+>  static inline bool kvm_hv_is_tlb_flush_hcall(struct kvm_vcpu *vcpu)
+>  {
+>         struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
 
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
----
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 
- drivers/net/can/slcan.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index b37d35c2a23a..6162a9c21672 100644
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -365,7 +365,7 @@ static netdev_tx_t slc_xmit(struct sk_buff *skb, struct net_device *dev)
- 	spin_lock(&sl->lock);
- 	if (!netif_running(dev))  {
- 		spin_unlock(&sl->lock);
--		printk(KERN_WARNING "%s: xmit: iface is down\n", dev->name);
-+		netdev_warn(dev, "xmit: iface is down\n");
- 		goto out;
- 	}
- 	if (sl->tty == NULL) {
-@@ -776,8 +776,7 @@ static void __exit slcan_exit(void)
- 
- 		sl = netdev_priv(dev);
- 		if (sl->tty) {
--			printk(KERN_ERR "%s: tty discipline still running\n",
--			       dev->name);
-+			netdev_err(dev, "tty discipline still running\n");
- 		}
- 
- 		unregister_netdev(dev);
--- 
-2.32.0
+Best regards,
+	Maxim Levitsky
 
