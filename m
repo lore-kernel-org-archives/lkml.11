@@ -2,82 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB1A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D94BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:54:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378794AbiFHBxm (ORCPT
+        id S1391042AbiFHBwM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51662 "EHLO
+        Tue, 7 Jun 2022 21:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583049AbiFGXqD (ORCPT
+        with ESMTP id S1449341AbiFGXJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:46:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DEB195941;
-        Tue,  7 Jun 2022 15:06:16 -0700 (PDT)
+        Tue, 7 Jun 2022 19:09:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB7E1F5741
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:46:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C06861944;
-        Tue,  7 Jun 2022 22:06:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68697C385A2;
-        Tue,  7 Jun 2022 22:06:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 417A7B823F3
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 20:46:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 895F4C385A5;
+        Tue,  7 Jun 2022 20:46:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654639575;
-        bh=YH+P3LYLx7Tm2PJ2F4edHaCG/gLgDOCPlgGr94QeaIg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JR+ziHpeN4WpMxBhyffqFam49asBgk7MouOL1vukNrcH+Jc0y9z6zNGDlNBV/qt5S
-         jNyi0Ic2txl+7f7lNUx3qpsm2rMq1NXeRlBxUCdHSdQDjJ+9yZq/QeZLJFGvs+Q4RW
-         Vx+L6IvhdxQ9h92F+5f+h7mpeaC05c9h3mVtSjt+VLn9ZLzaVRAekmsl+RJA7NPxV8
-         8ud99o86zF6OTm5nMLqM6vEttoqCRX5rHaYPm7GOSCpf50glg4DECmvIAeWzWRs5VJ
-         K6eY2Can6ndeT9AP8RqhnLtauzSAlIAfEzEL6OKnped28nkV7Wxq9TvLPd9ZceKEjZ
-         A8FWQ57Gss5fQ==
-Date:   Tue, 7 Jun 2022 15:06:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Max Staudt <max@enpas.org>
-Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH v5 4/7] can: Kconfig: add CONFIG_CAN_RX_OFFLOAD
-Message-ID: <20220607150614.6248c504@kernel.org>
-In-Reply-To: <20220607182216.5fb1084e.max@enpas.org>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
-        <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
-        <20220604163000.211077-5-mailhol.vincent@wanadoo.fr>
-        <CAMuHMdXkq7+yvD=ju-LY14yOPkiiHwL6H+9G-4KgX=GJjX=h9g@mail.gmail.com>
-        <CAMZ6RqLEEHOZjrMH+-GLC--jjfOaWYOPLf+PpefHwy=cLpWTYg@mail.gmail.com>
-        <20220607182216.5fb1084e.max@enpas.org>
+        s=k20201202; t=1654634769;
+        bh=ZjlX7o9AK/ffVeqZzZ5K4UUhk6vQnABK67ThoO275YU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SOIxLu13wVKoV2xBLBasWEyRxoaHDvHdOdJkJ3hcGSMnqiY7pZ4OSwzWbJ4QOwRMj
+         Hi5qA8rcylqPocnEC2UA+ePhLKsFECsJfu0uDLYTXVOD9nawHFmQtBRv/orfaezf9y
+         dOjC33JC63ObFelRd3cDa23fqrWjVO29LsIMMuP13ZdwKZdkAsgx4a/YPa4Vdw8k01
+         FGal4+vdAgC4KVrzoS/ozUBpCm7/qkc6DN6fJ1oGyWAm/v1ypiQge3sOdcqrW6NcsQ
+         UbshIOcb64NI1PfCCUsqvKGYb/03v/H+BCTVI//5bjlqXhMiP5XdFzuPH9PSOAV6gg
+         71qGlJdGCU8rw==
+Date:   Tue, 7 Jun 2022 13:46:06 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Justin Stitt <jstitt007@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, llvm@lists.linux.dev,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] netfilter: conntrack: fix this -Wformat clang warning:
+Message-ID: <Yp+5DqDrVJAS5T8I@dev-arch.thelio-3990X>
+References: <20220606212819.9548-1-jstitt007@gmail.com>
+ <Yp9uRz40J24vWLSb@dev-arch.thelio-3990X>
+ <CAKwvOdmFCge4cpcyqL1gtqg2xdAgmeuaJZaSMvW=m+cTr8XaaQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdmFCge4cpcyqL1gtqg2xdAgmeuaJZaSMvW=m+cTr8XaaQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022 18:22:16 +0200 Max Staudt wrote:
-> > Honestly, I am totally happy to have the "default y" tag, the "if
-> > unsure, say Y" comment and the "select CAN_RX_OFFLOAD" all together.
-> > 
-> > Unless I am violating some kind of best practices, I prefer to keep it
-> > as-is. Hope this makes sense.  
-
-AFAIU Linus likes for everything that results in code being added to
-the kernel to default to n. If the drivers hard-select that Kconfig
-why bother user with the question at all? My understanding is that
-Linus also likes to keep Kconfig as simple as possible.
-
-> I wholeheartedly agree with Vincent's decision.
+On Tue, Jun 07, 2022 at 01:29:30PM -0700, Nick Desaulniers wrote:
+> On Tue, Jun 7, 2022 at 8:27 AM Nathan Chancellor <nathan@kernel.org> wrote:
+> >
+> > Hi Justin,
+> >
+> > The subject might be a little more descriptive if if were something
+> > like:
+> >
+> > netfilter: conntrack: Fix clang -Wformat in print_tuple()
+> >
+> > rather than saying "this warning", as subjects should be standalone from
+> > the rest of the message. Minor nit but some maintainers have high
+> > standards for commit messages.
+> >
+> > On Mon, Jun 06, 2022 at 02:28:19PM -0700, Justin Stitt wrote:
+> >
+> > It would be helpful to note here that this warning appears when building
+> > arm64 with clang using -Wformat; the architecture is critical for
+> > reproducing this warning.
+> >
+> > >  | net/netfilter/nf_conntrack_standalone.c:63:7: warning: format specifies type
+> > >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> > >  |                            ntohs(tuple->src.u.tcp.port),
+> > >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > >  | net/netfilter/nf_conntrack_standalone.c:64:7: warning: format specifies type
+> > >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> > >  |                            ntohs(tuple->dst.u.tcp.port));
+> > >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > >  | net/netfilter/nf_conntrack_standalone.c:69:7: warning: format specifies type
+> > >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> > >  |                            ntohs(tuple->src.u.udp.port),
+> > >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > >  | net/netfilter/nf_conntrack_standalone.c:70:7: warning: format specifies type
+> > >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> > >  |                            ntohs(tuple->dst.u.udp.port));
+> > >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > >  | net/netfilter/nf_conntrack_standalone.c:75:7: warning: format specifies type
+> > >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> > >  |                            ntohs(tuple->src.u.dccp.port),
+> > >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > >  | net/netfilter/nf_conntrack_standalone.c:76:7: warning: format specifies type
+> > >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> > >  |                            ntohs(tuple->dst.u.dccp.port));
+> > >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > >  | net/netfilter/nf_conntrack_standalone.c:80:7: warning: format specifies type
+> > >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> > >  |                            ntohs(tuple->src.u.sctp.port),
+> > >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > >  | net/netfilter/nf_conntrack_standalone.c:81:7: warning: format specifies type
+> > >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> > >  |                            ntohs(tuple->dst.u.sctp.port));
+> > >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > >
+> > > Variadic functions (printf-like) undergo default argument promotion.
+> > > Documentation/core-api/printk-formats.rst specifically recommends
+> > > using the promoted-to-type's format flag.
+> > >
+> > > Also, as per C11 6.3.1.1:
+> > > (https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1548.pdf)
+> > > `If an int can represent all values of the original type ..., the
+> > > value is converted to an int; otherwise, it is converted to an
+> > > unsigned int. These are called the integer promotions.`
+> >
+> > I think that it is probably worth noting that ntohs() has type 'int' in
+> > this case because arm64 does not define CONFIG_ARCH_USE_BUILTIN_BSWAP to
+> > use the version of __swab16() with a cast to __u16; rather, it uses the
+> > one with the conditional operator, which per 6.5.15.5 means the type of
+> > the result of the conditional operator is determined through these
+> > promotion rules as well.
+> >
+> > I suspect that the conditional versions of __swab{16,32,64}() in
+> > include/uapi/linux/swab.h want a cast on the outside of the conditional
+> > operator with the specified type but I am not sure what other
+> > repurcussions that might have so it is probably safer to just fix these
+> > warnings up one by one.
 > 
-> One example case would be users of my can327 driver, as long as it is
-> not upstream yet. They need to have RX_OFFLOAD built into their
-> distribution's can_dev.ko, otherwise they will have no choice but to
-> build their own kernel.
+> Yes, there's a subtly where for ternary's the resulting type is the
+> largest of all operands. When the LHS of the ? is larger than either
+> results, the result is STILL the larger type.
+> https://godbolt.org/z/EGjW8sqzf
 
-Upstream mentioning out-of-tree modules may have the opposite effect 
-to what you intend :( Forgive my ignorance, what's the reason to keep
-the driver out of tree?
+Ha, I used the same test locally to make sure I was understanding things
+correctly :)
+
+> That said, regardless of that change, unnamed parameters of variadic
+> functions will still undergo default argument promotion, so the __u16
+> would still be promoted to int.  So we still want this patch, too.
+
+Ah right, I forgot about the default argument promotion rules. While the
+result of ntohs() would still be promoted to int (and we should use the
+wider specifier for that reason as you said), we wouldn't see a warning
+in the first place because the type of ntohs() would match the specifier
+in all cases, rather than !CONFIG_ARCH_USE_BUILTIN_BSWAP, which is the
+only reason I made that comment. I suspect adding that cast will clear
+up more warnings than just this one, depending on how many there are
+from ntohs() (and __swab16()).
+
+> Justin, can you send a separate patch adding the explicit cast to to
+> __u16 for the ternary expression in __swab16 when
+> __HAVE_BUILTIN_BSWAP16__ is not defined?
+> include/uapi/linux/swab.h
+> Please include Nathan's suggested by tag; cc me and I'll provide review.
+> 
+> >
+> > > Thus it makes sense to change %hu (as well as %u) to %d.
+> >
+> > Regardless of that, changing from '%hu' to '%d' is recommended so that
+> > part of the change is fine. I am not sure that changing '%u' to '%d'
+> > does anything other than add to the diff, as there was no warnings from
+> > those, but consistency is key.
+> 
+> These types in the case of icmp are uint8_t; they also are
+> default-argument-promoted to int. All possible values of uint8_t are
+> representable by int, and so %d and %u will make no difference. It is
+> "no functional change" and simply being consistent, as you say.
+
+Right, I should have made that more clear by adding ", so that part is
+fine as well", thanks for spelling it out!
+
+Cheers,
+Nathan
