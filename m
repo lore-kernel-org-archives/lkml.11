@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38567C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F2CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346081AbiFGRXi (ORCPT
+        id S1346066AbiFGRXs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41966 "EHLO
+        Tue, 7 Jun 2022 13:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345734AbiFGRTs (ORCPT
+        with ESMTP id S1345883AbiFGRTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:19:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903841059DC;
-        Tue,  7 Jun 2022 10:19:32 -0700 (PDT)
+        Tue, 7 Jun 2022 13:19:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B033F106349;
+        Tue,  7 Jun 2022 10:19:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 21379CE2017;
-        Tue,  7 Jun 2022 17:19:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD369C34115;
-        Tue,  7 Jun 2022 17:19:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4106A618D3;
+        Tue,  7 Jun 2022 17:19:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A5B2C385A5;
+        Tue,  7 Jun 2022 17:19:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622369;
-        bh=2LFwGuCsKCuYENEjOsRcLSDeb9bv9mIq1XjW2w4MUhI=;
+        s=korg; t=1654622374;
+        bh=0MZAfUeexvwHR11fTrdUlvUKXzZ4lP1jZX1ZpbIxp1g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qM3QWoTEGDBnskP0P2tuYXs6D1fRn6ef+MwDC3PWUUeBEm+xbl2jD5ClnWiFc/69S
-         V0xVIZ6GZOj0vS9Bp+v7vup46TUjRSh8Qh36jCNWza8/au1BE1GVYpUUD1KNgBxtr7
-         +ks8294dp+SasF7zAhoMvRk++rxhxA2eO3R6jkKc=
+        b=Bw12LOd5f6YhcGrkTTxGqw7jkvpB8P024XzL0ebPcjXBTK5k/Za7WJt2+H/XTt0oc
+         acRPXcBz9WQNzckF/2bXgcjseyMDsJ/eSdf/PhWXkuPO9I5SXV3UWNkAG8+p9AXo8h
+         LV15aemyVXmUT62Uc0pnH8QIrM0Hc1NQO1PWPSD0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
+        stable@vger.kernel.org, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 035/452] drm/komeda: return early if drm_universal_plane_init() fails.
-Date:   Tue,  7 Jun 2022 18:58:12 +0200
-Message-Id: <20220607164909.594486322@linuxfoundation.org>
+Subject: [PATCH 5.10 037/452] rcu: Make TASKS_RUDE_RCU select IRQ_WORK
+Date:   Tue,  7 Jun 2022 18:58:14 +0200
+Message-Id: <20220607164909.653420103@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,41 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liviu Dudau <liviu.dudau@arm.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 
-[ Upstream commit c8f76c37cc3668ee45e081e76a15f24a352ebbdd ]
+[ Upstream commit 46e861be589881e0905b9ade3d8439883858721c ]
 
-If drm_universal_plane_init() fails early we jump to the common cleanup code
-that calls komeda_plane_destroy() which in turn could access the uninitalised
-drm_plane and crash. Return early if an error is detected without going through
-the common code.
+The TASKS_RUDE_RCU does not select IRQ_WORK, which can result in build
+failures for kernels that do not otherwise select IRQ_WORK.  This commit
+therefore causes the TASKS_RUDE_RCU Kconfig option to select IRQ_WORK.
 
-Reported-by: Steven Price <steven.price@arm.com>
-Reviewed-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
-Link: https://lore.kernel.org/dri-devel/20211203100946.2706922-1-liviu.dudau@arm.com
+Reported-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/arm/display/komeda/komeda_plane.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ kernel/rcu/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-index 98e915e325dd..a5f57b38d193 100644
---- a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-+++ b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-@@ -274,8 +274,10 @@ static int komeda_plane_add(struct komeda_kms_dev *kms,
+diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
+index b71e21f73c40..cd6e11403f1b 100644
+--- a/kernel/rcu/Kconfig
++++ b/kernel/rcu/Kconfig
+@@ -86,6 +86,7 @@ config TASKS_RCU
  
- 	komeda_put_fourcc_list(formats);
- 
--	if (err)
--		goto cleanup;
-+	if (err) {
-+		kfree(kplane);
-+		return err;
-+	}
- 
- 	drm_plane_helper_add(plane, &komeda_plane_helper_funcs);
- 
+ config TASKS_RUDE_RCU
+ 	def_bool 0
++	select IRQ_WORK
+ 	help
+ 	  This option enables a task-based RCU implementation that uses
+ 	  only context switch (including preemption) and user-mode
 -- 
 2.35.1
 
