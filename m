@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F743CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 932EACCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351038AbiFGSP0 (ORCPT
+        id S1351138AbiFGSPr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:15:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48782 "EHLO
+        Tue, 7 Jun 2022 14:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348835AbiFGRyR (ORCPT
+        with ESMTP id S1348996AbiFGRzU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:54:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59443144FEE;
-        Tue,  7 Jun 2022 10:39:50 -0700 (PDT)
+        Tue, 7 Jun 2022 13:55:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED94D1455B4;
+        Tue,  7 Jun 2022 10:39:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9145660BC6;
-        Tue,  7 Jun 2022 17:39:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BCF5C385A5;
-        Tue,  7 Jun 2022 17:39:47 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 87588CE1D50;
+        Tue,  7 Jun 2022 17:39:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8423CC385A5;
+        Tue,  7 Jun 2022 17:39:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623588;
-        bh=c8rwA1Oweo9bfbt0j50bLlPx4QGY8fStSX1TOc23Wtw=;
+        s=korg; t=1654623565;
+        bh=pqBCAdYHPs2wo7zQLMzzRsdCj5voCUhEHbJdgs2Va04=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yadvwo8TL15jsYX4lsfNUp5CzsPPfHj1PeEar1tycyQ0mTiyTLFAT6jmu5e84+FQQ
-         HHgMye+gJksnV2qO8QEiT9XcMYHMU+wJI3KHu114uIe9YduN8gpt3M0iXDGnoW8hRB
-         +w8m6HLQqd2tq1c+JzPzG509aXRe85X7EgztAvnM=
+        b=sZa7HNhzL55TuYlfpqE5bbP23Oe2lzkLoZnHcHbOjB8nNS1oNEff1AJdBlbmE7si4
+         IdODUps6/RrOsO5o38XyksMa6arPLZ9Hqaqx9vOI2lYCSzriz7AilK1QhfyzgrR81n
+         tldOGU0RvYzWvNeFYFiYc+2XKAetqvZmOe4CBoIE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Kees Cook <keescook@chromium.org>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH 5.15 002/667] binfmt_flat: do not stop relocating GOT entries prematurely on riscv
-Date:   Tue,  7 Jun 2022 18:54:27 +0200
-Message-Id: <20220607164934.848413601@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Marios Levogiannis <marios.levogiannis@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 012/667] ALSA: hda/realtek - Fix microphone noise on ASUS TUF B550M-PLUS
+Date:   Tue,  7 Jun 2022 18:54:37 +0200
+Message-Id: <20220607164935.158144266@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,108 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Cassel <niklas.cassel@wdc.com>
+From: Marios Levogiannis <marios.levogiannis@gmail.com>
 
-commit 6045ab5fea4c849153ebeb0acb532da5f29d69c4 upstream.
+commit 9bfa7b36343c7d84370bc61c9ed774635b05e4eb upstream.
 
-bFLT binaries are usually created using elf2flt.
+Set microphone pins 0x18 (rear) and 0x19 (front) to VREF_50 to fix the
+microphone noise on ASUS TUF B550M-PLUS which uses the ALCS1200A codec.
+The initial value was VREF_80.
 
-The linker script used by elf2flt has defined the .data section like the
-following for the last 19 years:
+The same issue is also present on Windows using both the default Windows
+driver and all tested Realtek drivers before version 6.0.9049.1. Comparing
+Realtek driver 6.0.9049.1 (the first one without the microphone noise) to
+Realtek driver 6.0.9047.1 (the last one with the microphone noise)
+revealed that the fix is the result of setting pins 0x18 and 0x19 to
+VREF_50.
 
-.data : {
-	_sdata = . ;
-	__data_start = . ;
-	data_start = . ;
-	*(.got.plt)
-	*(.got)
-	FILL(0) ;
-	. = ALIGN(0x20) ;
-	LONG(-1)
-	. = ALIGN(0x20) ;
-	...
-}
+This fix may also work for other boards that have been reported to have
+the same microphone issue and use the ALC1150 and ALCS1200A codecs, since
+these codecs are similar and the fix in the Realtek driver on Windows is
+common for both. However, it is currently enabled only for ASUS TUF
+B550M-PLUS as this is the only board that could be tested.
 
-It places the .got.plt input section before the .got input section.
-The same is true for the default linker script (ld --verbose) on most
-architectures except x86/x86-64.
-
-The binfmt_flat loader should relocate all GOT entries until it encounters
-a -1 (the LONG(-1) in the linker script).
-
-The problem is that the .got.plt input section starts with a GOTPLT header
-(which has size 16 bytes on elf64-riscv and 8 bytes on elf32-riscv), where
-the first word is set to -1. See the binutils implementation for riscv [1].
-
-This causes the binfmt_flat loader to stop relocating GOT entries
-prematurely and thus causes the application to crash when running.
-
-Fix this by skipping the whole GOTPLT header, since the whole GOTPLT header
-is reserved for the dynamic linker.
-
-The GOTPLT header will only be skipped for bFLT binaries with flag
-FLAT_FLAG_GOTPIC set. This flag is unconditionally set by elf2flt if the
-supplied ELF binary has the symbol _GLOBAL_OFFSET_TABLE_ defined.
-ELF binaries without a .got input section should thus remain unaffected.
-
-Tested on RISC-V Canaan Kendryte K210 and RISC-V QEMU nommu_virt_defconfig.
-
-[1] https://sourceware.org/git/?p=binutils-gdb.git;a=blob;f=bfd/elfnn-riscv.c;hb=binutils-2_38#l3275
-
+Signed-off-by: Marios Levogiannis <marios.levogiannis@gmail.com>
 Cc: <stable@vger.kernel.org>
-Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Link: https://lore.kernel.org/r/20220414091018.896737-1-niklas.cassel@wdc.com
-Fixed-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/lkml/202204182333.OIUOotK8-lkp@intel.com
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220530074131.12258-1-marios.levogiannis@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/binfmt_flat.c |   27 ++++++++++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+ sound/pci/hda/patch_realtek.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/fs/binfmt_flat.c
-+++ b/fs/binfmt_flat.c
-@@ -433,6 +433,30 @@ static void old_reloc(unsigned long rl)
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -1976,6 +1976,7 @@ enum {
+ 	ALC1220_FIXUP_CLEVO_PB51ED_PINS,
+ 	ALC887_FIXUP_ASUS_AUDIO,
+ 	ALC887_FIXUP_ASUS_HMIC,
++	ALCS1200A_FIXUP_MIC_VREF,
+ };
  
- /****************************************************************************/
+ static void alc889_fixup_coef(struct hda_codec *codec,
+@@ -2521,6 +2522,14 @@ static const struct hda_fixup alc882_fix
+ 		.chained = true,
+ 		.chain_id = ALC887_FIXUP_ASUS_AUDIO,
+ 	},
++	[ALCS1200A_FIXUP_MIC_VREF] = {
++		.type = HDA_FIXUP_PINCTLS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x18, PIN_VREF50 }, /* rear mic */
++			{ 0x19, PIN_VREF50 }, /* front mic */
++			{}
++		}
++	},
+ };
  
-+static inline u32 __user *skip_got_header(u32 __user *rp)
-+{
-+	if (IS_ENABLED(CONFIG_RISCV)) {
-+		/*
-+		 * RISC-V has a 16 byte GOT PLT header for elf64-riscv
-+		 * and 8 byte GOT PLT header for elf32-riscv.
-+		 * Skip the whole GOT PLT header, since it is reserved
-+		 * for the dynamic linker (ld.so).
-+		 */
-+		u32 rp_val0, rp_val1;
-+
-+		if (get_user(rp_val0, rp))
-+			return rp;
-+		if (get_user(rp_val1, rp + 1))
-+			return rp;
-+
-+		if (rp_val0 == 0xffffffff && rp_val1 == 0xffffffff)
-+			rp += 4;
-+		else if (rp_val0 == 0xffffffff)
-+			rp += 2;
-+	}
-+	return rp;
-+}
-+
- static int load_flat_file(struct linux_binprm *bprm,
- 		struct lib_info *libinfo, int id, unsigned long *extra_stack)
- {
-@@ -782,7 +806,8 @@ static int load_flat_file(struct linux_b
- 	 * image.
- 	 */
- 	if (flags & FLAT_FLAG_GOTPIC) {
--		for (rp = (u32 __user *)datapos; ; rp++) {
-+		rp = skip_got_header((u32 __user *) datapos);
-+		for (; ; rp++) {
- 			u32 addr, rp_val;
- 			if (get_user(rp_val, rp))
- 				return -EFAULT;
+ static const struct snd_pci_quirk alc882_fixup_tbl[] = {
+@@ -2558,6 +2567,7 @@ static const struct snd_pci_quirk alc882
+ 	SND_PCI_QUIRK(0x1043, 0x835f, "Asus Eee 1601", ALC888_FIXUP_EEE1601),
+ 	SND_PCI_QUIRK(0x1043, 0x84bc, "ASUS ET2700", ALC887_FIXUP_ASUS_BASS),
+ 	SND_PCI_QUIRK(0x1043, 0x8691, "ASUS ROG Ranger VIII", ALC882_FIXUP_GPIO3),
++	SND_PCI_QUIRK(0x1043, 0x8797, "ASUS TUF B550M-PLUS", ALCS1200A_FIXUP_MIC_VREF),
+ 	SND_PCI_QUIRK(0x104d, 0x9043, "Sony Vaio VGC-LN51JGB", ALC882_FIXUP_NO_PRIMARY_HP),
+ 	SND_PCI_QUIRK(0x104d, 0x9044, "Sony VAIO AiO", ALC882_FIXUP_NO_PRIMARY_HP),
+ 	SND_PCI_QUIRK(0x104d, 0x9047, "Sony Vaio TT", ALC889_FIXUP_VAIO_TT),
 
 
