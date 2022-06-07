@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0F93C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:12:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BC0EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:12:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384087AbiFGWMj (ORCPT
+        id S1379568AbiFGWMp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:12:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
+        Tue, 7 Jun 2022 18:12:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359576AbiFGVJm (ORCPT
+        with ESMTP id S1379472AbiFGVKC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:09:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042AF214882;
-        Tue,  7 Jun 2022 11:51:39 -0700 (PDT)
+        Tue, 7 Jun 2022 17:10:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6EC21489D;
+        Tue,  7 Jun 2022 11:51:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 525B16156D;
-        Tue,  7 Jun 2022 18:51:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 622A5C385A2;
-        Tue,  7 Jun 2022 18:51:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 670FB616AF;
+        Tue,  7 Jun 2022 18:51:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 776C4C36B00;
+        Tue,  7 Jun 2022 18:51:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627898;
-        bh=mkOZcs9H0Fc6oEmSvunN1C04xzrsehRv9BhzW7OHhdE=;
+        s=korg; t=1654627906;
+        bh=7jqS2tTlnNZbrQ98eK9OJ7pRMtBHKuwDuhlgk5Xc4Sk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mOu6V0fe5zqnyrRNVdoSmol+0hr53822HZ5UYvdbYT4zTvn8o6F7ZRPGCtlKocYQV
-         d+KKpwRC10qRkzbTU1AOpOU1tPBhc6kqQBmu1D4K+88nVp+m5aGCB4cxomyu8LfkEN
-         YjCqqwOy1b/XdiMVdabutdImdUvFgCb2fkN58Aw0=
+        b=uz+BjS9/oXuQ2nrfpEmOmnHgRVoeNPKF6V+iv6EGFoyYmZnZXTYl2Ct9Ac1YcF1+1
+         4Q/MJTxUEfs6tfXQWEawvJ/wZulX11jZtXj7WzPTkkAxlpBGq69RFJZAlwcvAWWBKN
+         VLcI2GYRAsLhQKVIV6QUwd4ivnlHhKRZIePPCoRY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alice Wong <shiwei.wong@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 133/879] drm/amdgpu/ucode: Remove firmware load type check in amdgpu_ucode_free_bo
-Date:   Tue,  7 Jun 2022 18:54:11 +0200
-Message-Id: <20220607165006.563819317@linuxfoundation.org>
+        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 136/879] HID: bigben: fix slab-out-of-bounds Write in bigben_probe
+Date:   Tue,  7 Jun 2022 18:54:14 +0200
+Message-Id: <20220607165006.650590282@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,37 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alice Wong <shiwei.wong@amd.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit ab0cd4a9ae5b4679b714d8dbfedc0901fecdce9f ]
+[ Upstream commit fc4ef9d5724973193bfa5ebed181dba6de3a56db ]
 
-When psp_hw_init failed, it will set the load_type to AMDGPU_FW_LOAD_DIRECT.
-During amdgpu_device_ip_fini, amdgpu_ucode_free_bo checks that load_type is
-AMDGPU_FW_LOAD_DIRECT and skips deallocating fw_buf causing memory leak.
-Remove load_type check in amdgpu_ucode_free_bo.
+There is a slab-out-of-bounds Write bug in hid-bigbenff driver.
+The problem is the driver assumes the device must have an input but
+some malicious devices violate this assumption.
 
-Signed-off-by: Alice Wong <shiwei.wong@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fix this by checking hid_device's input is non-empty before its usage.
+
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/hid/hid-bigbenff.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
-index ca3350502618..aebafbc327fb 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
-@@ -714,8 +714,7 @@ int amdgpu_ucode_create_bo(struct amdgpu_device *adev)
+diff --git a/drivers/hid/hid-bigbenff.c b/drivers/hid/hid-bigbenff.c
+index 74ad8bf98bfd..e8c5e3ac9fff 100644
+--- a/drivers/hid/hid-bigbenff.c
++++ b/drivers/hid/hid-bigbenff.c
+@@ -347,6 +347,12 @@ static int bigben_probe(struct hid_device *hid,
+ 	bigben->report = list_entry(report_list->next,
+ 		struct hid_report, list);
  
- void amdgpu_ucode_free_bo(struct amdgpu_device *adev)
- {
--	if (adev->firmware.load_type != AMDGPU_FW_LOAD_DIRECT)
--		amdgpu_bo_free_kernel(&adev->firmware.fw_buf,
-+	amdgpu_bo_free_kernel(&adev->firmware.fw_buf,
- 		&adev->firmware.fw_buf_mc,
- 		&adev->firmware.fw_buf_ptr);
- }
++	if (list_empty(&hid->inputs)) {
++		hid_err(hid, "no inputs found\n");
++		error = -ENODEV;
++		goto error_hw_stop;
++	}
++
+ 	hidinput = list_first_entry(&hid->inputs, struct hid_input, list);
+ 	set_bit(FF_RUMBLE, hidinput->input->ffbit);
+ 
 -- 
 2.35.1
 
