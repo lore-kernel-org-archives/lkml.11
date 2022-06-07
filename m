@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA32CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC13CCA47F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383336AbiFGWk1 (ORCPT
+        id S1383385AbiFGWki (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:40:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
+        Tue, 7 Jun 2022 18:40:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348606AbiFGV1H (ORCPT
+        with ESMTP id S1376551AbiFGV1J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:27:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6476922873A;
-        Tue,  7 Jun 2022 12:01:56 -0700 (PDT)
+        Tue, 7 Jun 2022 17:27:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DD7151FF8;
+        Tue,  7 Jun 2022 12:02:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B41EB617F5;
-        Tue,  7 Jun 2022 19:01:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9A86C36B0A;
-        Tue,  7 Jun 2022 19:01:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06EA7B8220B;
+        Tue,  7 Jun 2022 19:01:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 740D8C385A5;
+        Tue,  7 Jun 2022 19:01:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628515;
-        bh=iO2P/nvW0rLUabYC+vymgQADo7tKPff85CdUNlAwSeg=;
+        s=korg; t=1654628517;
+        bh=5UyCFB4gTsJjkenL8FLM1HvxfFX8u5ctKllpEI4wXVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v04DR4A2gJuvk7VEvoRQSyKcuhSJkK4OkcWSMdRCN1NJtgoxgKIWH9nYNMDiK67In
-         t2aZEetbRxNRDOx2cEjqOGBtVYJZ4T2lAuEprF5OP6FJ2QN4dt7Zq2WcOU4d+P446g
-         trRBN8fhvtz6UxqDkh+vdCahGvDBMGwW2hjEhv78=
+        b=usVaTPoTbSKHOzBniNa9cZwqc+9YmWTnoozCf+8wO9V/I4eys8PtUWwFDMbF2VrYI
+         NMQmEp7eSLsPn5EgsYN7gTGpKaUEh6rUL3H7/UAfORuwa5e2qitvv1JMP26wdmdj4S
+         5GOm0gFSSiy/6GnSqmEGjbLKrulJ2qDPpj0vanh0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Bart Van Assche <bvanassche@acm.org>,
+        stable@vger.kernel.org, Kiwoong Kim <kwmad.kim@samsung.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 356/879] scsi: ufs: qcom: Fix ufs_qcom_resume()
-Date:   Tue,  7 Jun 2022 18:57:54 +0200
-Message-Id: <20220607165013.196950844@linuxfoundation.org>
+Subject: [PATCH 5.18 357/879] scsi: ufs: core: Exclude UECxx from SFR dump list
+Date:   Tue,  7 Jun 2022 18:57:55 +0200
+Message-Id: <20220607165013.226875284@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,45 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Kiwoong Kim <kwmad.kim@samsung.com>
 
-[ Upstream commit bee40dc167da159ea5b939c074e1da258610a3d6 ]
+[ Upstream commit ef60031022eb6d972aac86ca26c98c33e1289436 ]
 
-Clearing hba->is_sys_suspended if ufs_qcom_resume() succeeds is wrong. That
-variable must only be cleared if all actions involved in a resume succeed.
-Hence remove the statement that clears hba->is_sys_suspended from
-ufs_qcom_resume().
+Some devices may return invalid or zeroed data during an UIC error
+condition. In addition, reading these SFRs will clear them. This means the
+subsequent error handling will not be able to see them and therefore no
+error handling will be scheduled.
 
-Link: https://lore.kernel.org/r/20220419225811.4127248-23-bvanassche@acm.org
-Fixes: 81c0fc51b7a7 ("ufs-qcom: add support for Qualcomm Technologies Inc platforms")
-Tested-by: Bean Huo <beanhuo@micron.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Bean Huo <beanhuo@micron.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Skip reading these SFRs in ufshcd_dump_regs().
+
+Link: https://lore.kernel.org/r/1648689845-33521-1-git-send-email-kwmad.kim@samsung.com
+Fixes: d67247566450 ("scsi: ufs: Use explicit access size in ufshcd_dump_regs")
+Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufs-qcom.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/scsi/ufs/ufshcd.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/ufs/ufs-qcom.c b/drivers/scsi/ufs/ufs-qcom.c
-index 586c0e567ff9..e61083d01f6e 100644
---- a/drivers/scsi/ufs/ufs-qcom.c
-+++ b/drivers/scsi/ufs/ufs-qcom.c
-@@ -641,12 +641,7 @@ static int ufs_qcom_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
- 			return err;
- 	}
+diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+index 3f9caafa91bf..4c9eb4be449c 100644
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -113,8 +113,13 @@ int ufshcd_dump_regs(struct ufs_hba *hba, size_t offset, size_t len,
+ 	if (!regs)
+ 		return -ENOMEM;
  
--	err = ufs_qcom_ice_resume(host);
--	if (err)
--		return err;
--
--	hba->is_sys_suspended = false;
--	return 0;
-+	return ufs_qcom_ice_resume(host);
- }
+-	for (pos = 0; pos < len; pos += 4)
++	for (pos = 0; pos < len; pos += 4) {
++		if (offset == 0 &&
++		    pos >= REG_UIC_ERROR_CODE_PHY_ADAPTER_LAYER &&
++		    pos <= REG_UIC_ERROR_CODE_DME)
++			continue;
+ 		regs[pos / 4] = ufshcd_readl(hba, offset + pos);
++	}
  
- static void ufs_qcom_dev_ref_clk_ctrl(struct ufs_qcom_host *host, bool enable)
+ 	ufshcd_hex_dump(prefix, regs, len);
+ 	kfree(regs);
 -- 
 2.35.1
 
