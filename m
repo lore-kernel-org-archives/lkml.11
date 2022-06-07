@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C60C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A51CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:34:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241122AbiFGKeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:34:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35262 "EHLO
+        id S241152AbiFGKe2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241056AbiFGKeA (ORCPT
+        with ESMTP id S241081AbiFGKeD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:34:00 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA28633B6
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:33:58 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id n28so22385084edb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 03:33:58 -0700 (PDT)
+        Tue, 7 Jun 2022 06:34:03 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD3869296
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:34:00 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id c2so22372145edf.5
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 03:34:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Dd5lO9Nyjz5AIRsYXG5NRUO/Ey6wa6UMhXyIeGlXUg0=;
-        b=eZ6zeZZ2EJE8La1tHTQRdXBqpjs9sLbmwiyFygah/R0STfz9IA9xJlM1ALwVvS0ZKM
-         j+K6j0ZRInMppXB/nIrtjRlBELBn70UcO4wOgD/3Ug0va7aM0ezd4TiX+B8XCs2BPh22
-         pM99RZY0ZVmvE3PDSCceaIwQnRkO6ocWzPIkP5LQR8HrrbrgUOsOMG5gfFojf91iqaIY
-         EOaL1DP1KxcIUiCpdeaPUmeMx614Ug7kCj40w3htPVQwF89eNhkN6P4+AiWUD4eJH53r
-         JnwPKsoXkrFUCwDBXRjWAq0+CffMfPTxeXP94JOrA4dfD/gN7R+BqLQT+rZLMVzB+NXx
-         pIeg==
+        bh=UVrEyDI1PPHvzCAbZaShKqmCzODPm4yYUnVIkzwCwX8=;
+        b=OMMPzvhRG6d4OSSbryIv7SZSHeRq3Dpk+HEiJusk04NUzZYZQoyQXiuoHFhjHnHc7Z
+         5+kTRjFN1ZPI2NI7b1J6f4h/c2SdoCT156Yf1eb4fyAXpXULiAcCRqkTpkAw1i7deDiQ
+         07GvWkahXm0gkfIeI9jUjbJahg/GlYRNFhN1Lhrv60jsdsfe4tzJMNzpXOs5WZshsSgC
+         5/NBvTEoMmCQahWKto2xEwrKWnGhealIC868+nJ19qBwQKXW3OyWeTVZhaO7DsptYPoo
+         mgBORvAiLwRKQcAcQQVMcf4mZndp0MApNEifaoPZUXL8c08GiPtfGuKNefEdA8n4N5lf
+         PbdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Dd5lO9Nyjz5AIRsYXG5NRUO/Ey6wa6UMhXyIeGlXUg0=;
-        b=rWU2a968J9tsRWTN5NDxJtavQK4327hV8p2QON3zVXTNBqXL3LPcKOmDnbwzOE8jgO
-         11rwnJ11ux6pQY/m1g/Z83rl2oTebFYPv8/+lUwsn1Wa+qpLpM+wfdylP6KlTUP3Ps5b
-         v70xAj7M2y+fpenC+DH80TlT/hrDZw/F5seHfjnUWgqqlxi/Vx8H2WGZWu9vrNgDE53g
-         zvlxGHA0tVATJ0736U7a26ZrOw0eMwLcqu529Bv1fzX1s3LgWLPc1ymgOyKeuo7salqM
-         7ZsCr+6cJoakQgRZ31Yspi/7bWyej78QGOU9r+E0b5+6jDjVsV30hSD75ySTaVLt3Fq+
-         qD8g==
-X-Gm-Message-State: AOAM530E6C9cFW+YC+2EwuqhKdEVAnqd7xNamDMBorIKKzXplkbA56z2
-        x1l3ucth+vLxZzy+4yNXoYnpoA==
-X-Google-Smtp-Source: ABdhPJysACnYbT6jYK986UaQkNbOsugihS+ByBfYL0WLeGEzZeKBUa1usxw/dPC6ne5JQAu+AkTpvQ==
-X-Received: by 2002:aa7:da10:0:b0:42d:d47e:87ad with SMTP id r16-20020aa7da10000000b0042dd47e87admr34042977eds.161.1654598037876;
-        Tue, 07 Jun 2022 03:33:57 -0700 (PDT)
+        bh=UVrEyDI1PPHvzCAbZaShKqmCzODPm4yYUnVIkzwCwX8=;
+        b=Hcp5zNL5UHhOtnEFmJ0mHDx8LWP0I0rSTWWBgT7Qf1fn4B6Nl8y3gHK7CCOTMDjw5j
+         H5RH0teolwo4SBMGZI8WH+W8nGdoN89BiAMWwEAVtjzqdd9ppVSHppO9g1T8nyZMnDD+
+         3D/BXuYAcYMu/XIGoe/yduA5rx9qfYQ294HLwUcwkMYa3t5sG6Z28P3px7MXDyRYHtR+
+         aCsN4LUqsEv/LpCdywH723pJ6+SSEAVnZcm7aR4ZxNrQqW1EOpjFD/aDrhvuj4MdhbvR
+         4PPtk1C+40LVLP1uHrCumQ+yuOOrjIXGcT8TzGd63ZHynCRiFiW3eCkvmPiiIBu0Fc2r
+         K76Q==
+X-Gm-Message-State: AOAM530adPuWsjg618doX9mxj9CDkIN+cmJaknk2j1Z3eGL99vGXPnR8
+        oQRvkpmjqKdZc8aJzfiL8mUKLw==
+X-Google-Smtp-Source: ABdhPJyOTR5n6tilKn83GYM5Nsi6ppDbx5M6PKI7VSulNDoRCtph1T1Dw+nPWE2vli9It0aQ0A11Iw==
+X-Received: by 2002:a05:6402:50d2:b0:431:53c8:2356 with SMTP id h18-20020a05640250d200b0043153c82356mr13053043edb.300.1654598039850;
+        Tue, 07 Jun 2022 03:33:59 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id x4-20020a1709065ac400b00704fa2748ffsm7505359ejs.99.2022.06.07.03.33.56
+        by smtp.gmail.com with ESMTPSA id x4-20020a1709065ac400b00704fa2748ffsm7505359ejs.99.2022.06.07.03.33.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 03:33:57 -0700 (PDT)
+        Tue, 07 Jun 2022 03:33:59 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -56,9 +56,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 08/10] arm64: dts: qcom: sc7180-trogdor: add function to LED node
-Date:   Tue,  7 Jun 2022 12:29:29 +0200
-Message-Id: <20220607102931.102805-8-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 10/10] arm64: dts: qcom: sdm845-db845c: add function and color to LED nodes
+Date:   Tue,  7 Jun 2022 12:29:31 +0200
+Message-Id: <20220607102931.102805-10-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220607102931.102805-1-krzysztof.kozlowski@linaro.org>
 References: <20220607102931.102805-1-krzysztof.kozlowski@linaro.org>
@@ -68,33 +68,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add common LED property - the function - to LED node.
+Add common LED properties - the function and color - to LED nodes.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/boot/dts/qcom/sdm845-db845c.dts | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
-index e55dbaa6dc12..fe43795f7be1 100644
---- a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
-@@ -8,6 +8,7 @@
- #include <dt-bindings/gpio/gpio.h>
- #include <dt-bindings/input/gpio-keys.h>
- #include <dt-bindings/input/input.h>
-+#include <dt-bindings/leds/common.h>
- #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
- #include <dt-bindings/sound/sc7180-lpass.h>
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
+index 194ebeb3259c..398055fc1fdc 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
+@@ -5,6 +5,7 @@
  
-@@ -355,6 +356,7 @@ pwmleds {
- 		keyboard_backlight: keyboard-backlight {
- 			status = "disabled";
- 			label = "cros_ec::kbd_backlight";
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 			pwms = <&cros_ec_pwm 0>;
- 			max-brightness = <1023>;
- 		};
+ /dts-v1/;
+ 
++#include <dt-bindings/leds/common.h>
+ #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+ #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+ #include <dt-bindings/sound/qcom,q6afe.h>
+@@ -62,6 +63,8 @@ leds {
+ 
+ 		user4 {
+ 			label = "green:user4";
++			function = LED_FUNCTION_INDICATOR;
++			color = <LED_COLOR_ID_GREEN>;
+ 			gpios = <&pm8998_gpio 13 GPIO_ACTIVE_HIGH>;
+ 			linux,default-trigger = "panic-indicator";
+ 			default-state = "off";
+@@ -69,6 +72,8 @@ user4 {
+ 
+ 		wlan {
+ 			label = "yellow:wlan";
++			function = LED_FUNCTION_WLAN;
++			color = <LED_COLOR_ID_YELLOW>;
+ 			gpios = <&pm8998_gpio 9 GPIO_ACTIVE_HIGH>;
+ 			linux,default-trigger = "phy0tx";
+ 			default-state = "off";
+@@ -76,6 +81,8 @@ wlan {
+ 
+ 		bt {
+ 			label = "blue:bt";
++			function = LED_FUNCTION_BLUETOOTH;
++			color = <LED_COLOR_ID_BLUE>;
+ 			gpios = <&pm8998_gpio 5 GPIO_ACTIVE_HIGH>;
+ 			linux,default-trigger = "bluetooth-power";
+ 			default-state = "off";
 -- 
 2.34.1
 
