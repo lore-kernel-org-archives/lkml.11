@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 288ADCCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 755DDCCA48C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349552AbiFGRvN (ORCPT
+        id S1350001AbiFGRvr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35728 "EHLO
+        Tue, 7 Jun 2022 13:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347023AbiFGReA (ORCPT
+        with ESMTP id S1347266AbiFGReW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:34:00 -0400
+        Tue, 7 Jun 2022 13:34:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B743010636D;
-        Tue,  7 Jun 2022 10:30:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE94119909;
+        Tue,  7 Jun 2022 10:30:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88C326146F;
-        Tue,  7 Jun 2022 17:30:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99C75C385A5;
-        Tue,  7 Jun 2022 17:30:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CCE9A614B2;
+        Tue,  7 Jun 2022 17:30:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8081C385A5;
+        Tue,  7 Jun 2022 17:30:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623025;
-        bh=OtaDK/9/4CC4FHBdDAyjx3QgzFKJf/bhVbyteYso/MM=;
+        s=korg; t=1654623033;
+        bh=THnhl6EqQFhS3geuRLyG54hpkwuwb34QL3RX6SGZLlM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t2CnDW2CJ9iqUrkgbG8lGhE8IPJQtgMjeIcgvB+CPDn5Od7A3ICY1FlZmQtkFZNI1
-         qU0c+8V/C+YLTP2GofeZdMAUUe/L21TZXduS9wH2xPd3HNZxVR4vTi34DkjKKUpuSa
-         xNIdpAhcy9oOUNPELHVXVgqlwZTVXFreObXpFDd4=
+        b=VUnenGkDj8x7xCCSWa2xDEGYBCn98hhJay+g71aM9idx4Xz7XU4Kv2tBsuoGHHn2b
+         ygmVZHB13JsJ+ktwhukOfbOK6GeFeUbxKmTNZZv3o5QMT8UWHGkaYzql6w5AYMbp4t
+         2MjbvxqYgZZ+kxRAQra53PPQ4hIYilVGsGQujAyo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 268/452] KVM: nVMX: Leave most VM-Exit info fields unmodified on failed VM-Entry
-Date:   Tue,  7 Jun 2022 19:02:05 +0200
-Message-Id: <20220607164916.538546527@linuxfoundation.org>
+Subject: [PATCH 5.10 271/452] ARM: dts: imx6dl-colibri: Fix I2C pinmuxing
+Date:   Tue,  7 Jun 2022 19:02:08 +0200
+Message-Id: <20220607164916.627344367@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,60 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Max Krummenacher <max.krummenacher@toradex.com>
 
-[ Upstream commit c3634d25fbee88e2368a8e0903ae0d0670eb9e71 ]
+[ Upstream commit 5f5c579a34a87117c20b411df583ae816c1ec84f ]
 
-Don't modify vmcs12 exit fields except EXIT_REASON and EXIT_QUALIFICATION
-when performing a nested VM-Exit due to failed VM-Entry.  Per the SDM,
-only the two aformentioned fields are filled and "All other VM-exit
-information fields are unmodified".
+Fix names of extra pingroup node and property for gpio bus recovery.
+Without the change i2c2 is not functional.
 
-Fixes: 4704d0befb07 ("KVM: nVMX: Exiting from L2 to L1")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220407002315.78092-3-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 56f0df6b6b58 ("ARM: dts: imx*(colibri|apalis): add missing recovery modes to i2c")
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/nested.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ arch/arm/boot/dts/imx6qdl-colibri.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 0c2389d0fdaf..fe53cab1a8a6 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -4143,12 +4143,12 @@ static void prepare_vmcs12(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
- 	/* update exit information fields: */
- 	vmcs12->vm_exit_reason = vm_exit_reason;
- 	vmcs12->exit_qualification = exit_qualification;
--	vmcs12->vm_exit_intr_info = exit_intr_info;
--
--	vmcs12->idt_vectoring_info_field = 0;
--	vmcs12->vm_exit_instruction_len = vmcs_read32(VM_EXIT_INSTRUCTION_LEN);
--	vmcs12->vmx_instruction_info = vmcs_read32(VMX_INSTRUCTION_INFO);
+diff --git a/arch/arm/boot/dts/imx6qdl-colibri.dtsi b/arch/arm/boot/dts/imx6qdl-colibri.dtsi
+index 4e2a309c93fa..1e86b3814708 100644
+--- a/arch/arm/boot/dts/imx6qdl-colibri.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-colibri.dtsi
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0+ OR MIT
+ /*
+- * Copyright 2014-2020 Toradex
++ * Copyright 2014-2022 Toradex
+  * Copyright 2012 Freescale Semiconductor, Inc.
+  * Copyright 2011 Linaro Ltd.
+  */
+@@ -132,7 +132,7 @@
+ 	clock-frequency = <100000>;
+ 	pinctrl-names = "default", "gpio";
+ 	pinctrl-0 = <&pinctrl_i2c2>;
+-	pinctrl-0 = <&pinctrl_i2c2_gpio>;
++	pinctrl-1 = <&pinctrl_i2c2_gpio>;
+ 	scl-gpios = <&gpio2 30 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 	sda-gpios = <&gpio3 16 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 	status = "okay";
+@@ -488,7 +488,7 @@
+ 		>;
+ 	};
  
-+	/*
-+	 * On VM-Exit due to a failed VM-Entry, the VMCS isn't marked launched
-+	 * and only EXIT_REASON and EXIT_QUALIFICATION are updated, all other
-+	 * exit info fields are unmodified.
-+	 */
- 	if (!(vmcs12->vm_exit_reason & VMX_EXIT_REASONS_FAILED_VMENTRY)) {
- 		vmcs12->launch_state = 1;
- 
-@@ -4160,8 +4160,13 @@ static void prepare_vmcs12(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
- 		 * Transfer the event that L0 or L1 may wanted to inject into
- 		 * L2 to IDT_VECTORING_INFO_FIELD.
- 		 */
-+		vmcs12->idt_vectoring_info_field = 0;
- 		vmcs12_save_pending_event(vcpu, vmcs12);
- 
-+		vmcs12->vm_exit_intr_info = exit_intr_info;
-+		vmcs12->vm_exit_instruction_len = vmcs_read32(VM_EXIT_INSTRUCTION_LEN);
-+		vmcs12->vmx_instruction_info = vmcs_read32(VMX_INSTRUCTION_INFO);
-+
- 		/*
- 		 * According to spec, there's no need to store the guest's
- 		 * MSRs if the exit is due to a VM-entry failure that occurs
+-	pinctrl_i2c2_gpio: i2c2grp {
++	pinctrl_i2c2_gpio: i2c2gpiogrp {
+ 		fsl,pins = <
+ 			MX6QDL_PAD_EIM_EB2__GPIO2_IO30 0x4001b8b1
+ 			MX6QDL_PAD_EIM_D16__GPIO3_IO16 0x4001b8b1
 -- 
 2.35.1
 
