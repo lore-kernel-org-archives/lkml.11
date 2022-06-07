@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C047C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:32:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FEB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380860AbiFGVbZ (ORCPT
+        id S1381066AbiFGVbf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:31:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44710 "EHLO
+        Tue, 7 Jun 2022 17:31:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378162AbiFGUey (ORCPT
+        with ESMTP id S1377990AbiFGUen (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5BD181440;
-        Tue,  7 Jun 2022 11:37:36 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3919E1E82B9;
+        Tue,  7 Jun 2022 11:37:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBC83615E9;
-        Tue,  7 Jun 2022 18:37:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DC10C385A2;
-        Tue,  7 Jun 2022 18:37:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AA7661579;
+        Tue,  7 Jun 2022 18:37:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54F22C36B0E;
+        Tue,  7 Jun 2022 18:37:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627055;
-        bh=D5WoLubz/8pRjN+/3WrsVvLyU0W60nyn0u8iM9IvraE=;
+        s=korg; t=1654627024;
+        bh=ohP/jfSBL/ExsqgGs2Zkp69wvFadcqfktgMHUYKIiCM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KZKVD6mDWf63vqP2tNMe1gIlbkTWhOdFdEjAszdulmPTsgywFze+ezcCnMgZ8FPlL
-         S1Jn42/dmxHA3BgLGO4O+Gw27u3s88d8KHHfm1+akYPFIEUXOLyJcQolbjffi7NGXV
-         e2dD0uJJ/7R2Q9vfQw1zZUthaNu/xbcJ9ShHzNlI=
+        b=M3VEBQMGu0QqlghWXc8tTwzIy6iNYaNNFN6s12iD5vMlLyMjH/h40GERe3pvhHa94
+         UmBx+4XtPV+kXyoAFyprUyoMZayWPHFqukKcTGCqtVhRMRNj2Ebd5PSnmbSFLBrea6
+         gNaOBG7c7ZqN/G9MJ6BQJWp3yVjB1e00IJYw8SYE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Mario <jmario@redhat.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 599/772] perf c2c: Use stdio interface if slang is not supported
-Date:   Tue,  7 Jun 2022 19:03:11 +0200
-Message-Id: <20220607165006.591982230@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 589/772] dmaengine: stm32-mdma: fix chan initialization in stm32_mdma_irq_handler()
+Date:   Tue,  7 Jun 2022 19:03:01 +0200
+Message-Id: <20220607165006.301999510@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -56,80 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Yan <leo.yan@linaro.org>
+From: Amelie Delaunay <amelie.delaunay@foss.st.com>
 
-[ Upstream commit c4040212bc97d16040712a410335f93bc94d2262 ]
+[ Upstream commit da3b8ddb464bd49b6248d00ca888ad751c9e44fd ]
 
-If the slang lib is not installed on the system, perf c2c tool disables TUI
-mode and roll back to use stdio mode;  but the flag 'c2c.use_stdio' is
-missed to set true and thus it wrongly applies UI quirks in the function
-ui_quirks().
+The parameter to pass back to the handler function when irq has been
+requested is a struct stm32_mdma_device pointer, not a struct
+stm32_mdma_chan pointer.
+Even if chan is reinit later in the function, remove this wrong
+initialization.
 
-This commit forces to use stdio interface if slang is not supported, and
-it can avoid to apply the UI quirks and show the correct metric header.
-
-Before:
-
-=================================================
-      Shared Cache Line Distribution Pareto
-=================================================
-  -------------------------------------------------------------------------------
-      0        0        0       99        0        0        0      0xaaaac17d6000
-  -------------------------------------------------------------------------------
-    0.00%    0.00%    6.06%    0.00%    0.00%    0.00%   0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
-    0.00%    0.00%   93.94%    0.00%    0.00%    0.00%   0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
-
-After:
-
-=================================================
-      Shared Cache Line Distribution Pareto
-=================================================
-  -------------------------------------------------------------------------------
-      0        0        0       99        0        0        0      0xaaaac17d6000
-  -------------------------------------------------------------------------------
-           0.00%    0.00%    6.06%    0.00%    0.00%    0.00%                0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
-           0.00%    0.00%   93.94%    0.00%    0.00%    0.00%                0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
-
-Fixes: 5a1a99cd2e4e1557 ("perf c2c report: Add main TUI browser")
-Reported-by: Joe Mario <jmario@redhat.com>
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: http://lore.kernel.org/lkml/20220526145400.611249-1-leo.yan@linaro.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Link: https://lore.kernel.org/r/20220504155322.121431-3-amelie.delaunay@foss.st.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/builtin-c2c.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/dma/stm32-mdma.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
-index 77dd4afacca4..d8ec683b06a5 100644
---- a/tools/perf/builtin-c2c.c
-+++ b/tools/perf/builtin-c2c.c
-@@ -2734,9 +2734,7 @@ static int perf_c2c__report(int argc, const char **argv)
- 		   "the input file to process"),
- 	OPT_INCR('N', "node-info", &c2c.node_info,
- 		 "show extra node info in report (repeat for more info)"),
--#ifdef HAVE_SLANG_SUPPORT
- 	OPT_BOOLEAN(0, "stdio", &c2c.use_stdio, "Use the stdio interface"),
--#endif
- 	OPT_BOOLEAN(0, "stats", &c2c.stats_only,
- 		    "Display only statistic tables (implies --stdio)"),
- 	OPT_BOOLEAN(0, "full-symbols", &c2c.symbol_full,
-@@ -2766,6 +2764,10 @@ static int perf_c2c__report(int argc, const char **argv)
- 	if (argc)
- 		usage_with_options(report_c2c_usage, options);
+diff --git a/drivers/dma/stm32-mdma.c b/drivers/dma/stm32-mdma.c
+index 1e6bc22ddae9..f8c8b9d76aad 100644
+--- a/drivers/dma/stm32-mdma.c
++++ b/drivers/dma/stm32-mdma.c
+@@ -1316,7 +1316,7 @@ static void stm32_mdma_xfer_end(struct stm32_mdma_chan *chan)
+ static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
+ {
+ 	struct stm32_mdma_device *dmadev = devid;
+-	struct stm32_mdma_chan *chan = devid;
++	struct stm32_mdma_chan *chan;
+ 	u32 reg, id, ccr, ien, status;
  
-+#ifndef HAVE_SLANG_SUPPORT
-+	c2c.use_stdio = true;
-+#endif
-+
- 	if (c2c.stats_only)
- 		c2c.use_stdio = true;
- 
+ 	/* Find out which channel generates the interrupt */
 -- 
 2.35.1
 
