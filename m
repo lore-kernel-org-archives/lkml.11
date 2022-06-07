@@ -2,163 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A53A5CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57429CCA487
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382945AbiFGWoA (ORCPT
+        id S1385547AbiFGWp7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:44:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57638 "EHLO
+        Tue, 7 Jun 2022 18:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380746AbiFGVbM (ORCPT
+        with ESMTP id S1380023AbiFGVdt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:31:12 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C70822AE41;
-        Tue,  7 Jun 2022 12:03:17 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id m26so13980608wrb.4;
-        Tue, 07 Jun 2022 12:03:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YvJr1HjhCxOrlCoCkGFSV+IIsFWm48YyeI3AKcRnUIQ=;
-        b=Hms/G7n+Cgo9Oo8KkEEkY+zOKSfNSr0x2sJyW+zhwaVgQz3O94b2GcLqEXQ5rpNStl
-         0HKAm9+ZoLlNQPtIgr4cociDPkwCkncIQHflys8+rX7ekkN9msPRJi3y7Z32ZVcY4EiS
-         7BqJ/vQjOoHIBqnzmxcFtWqT7QYEfBo1Q/O2ARB7Zezb9YKydEPEtT4frki2lnbWxGbh
-         +l4HGgVODycuk5l12Ov27ifMex6LzR4b2/m50DSQAyRbCNVvVRI16BLqIO5hxeYWqMZf
-         1B5FmkDuafNHVx7eJh5UtqIQKDfI2oiQry9cQbb6BsPHPbHKrMcf9dIskCLmEL3K7DH1
-         6oNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YvJr1HjhCxOrlCoCkGFSV+IIsFWm48YyeI3AKcRnUIQ=;
-        b=DIYfuo3zHhXm0kxxbEBtJtyx6IyhTTpKGeEoNhHAM9ncitOxQvoIhcM8yF0Np3zdLd
-         70tQILsSWCgXNPMGxpY5HpiWbAd58wEoZgV1XaGmlO3eyC3kuZLqQE5sqowhO1xUvF6H
-         uBABo5tXEPn6gFb6oGqf6MDGIwH0hLuGEt8okXxFY7gWEitZljAjG9ex//z68kw9CNhh
-         4MVvvV/xVHtGzAMHa/W3EpTlAUblNnfAO9HkkGHy6yqVr+9LIUwCmK3G+kMfYp6d9VNF
-         PI1MA+tMp+U4t7KgH4sgCxVszR3JCIFh5hMnQeE9HXly80sFgJ2Qv8O+kgLfSe3vHiDw
-         s7qA==
-X-Gm-Message-State: AOAM5329wag/9ouEN6sPFCUufn5/SIeOTeRXdSzvqwQ3ztChRVLXpflV
-        OmuSokHQR98TgutBSsdnDJuSLuF4e73dRFA5smw=
-X-Google-Smtp-Source: ABdhPJzCEhxBgnE2TvKp0j//I+yGIGt10PvMUBcSniQ/uliTPAhBtZXCX4ft7FKRwzuXla8IHTC/85U5DKgXrpVCjbg=
-X-Received: by 2002:a5d:62c7:0:b0:216:fa41:2f81 with SMTP id
- o7-20020a5d62c7000000b00216fa412f81mr17337284wrv.249.1654628595478; Tue, 07
- Jun 2022 12:03:15 -0700 (PDT)
+        Tue, 7 Jun 2022 17:33:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C43EE172C09;
+        Tue,  7 Jun 2022 12:04:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA9B8B823B1;
+        Tue,  7 Jun 2022 19:04:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A47DC385A5;
+        Tue,  7 Jun 2022 19:04:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628664;
+        bh=m8Sd4aYGwsiu1xHVnWzSw6BMofJn741hGJ0Xt/ZJ+tI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=2bGxB5DHz+dE5Ix8nR36MEatYShbOUKVjdXUUaS7yWBMKSkpg86t+28Mon8Hjh4wu
+         iMmReyD/8lIRsxsy7Hha1S8fqQGv9njHN3IZcPK0KHH13onF3W7qqBkwFB7h3mm++Y
+         2clmwA0N3BP6E99sh8uvlZ8Pq+oVU+cY8PI+qVhY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, CKI Project <cki-project@redhat.com>,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Jerome Marchand <jmarchan@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 409/879] samples: bpf: Dont fail for a missing VMLINUX_BTF when VMLINUX_H is provided
+Date:   Tue,  7 Jun 2022 18:58:47 +0200
+Message-Id: <20220607165014.733939008@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220606204050.2625949-1-willy@infradead.org> <20220606204050.2625949-8-willy@infradead.org>
-In-Reply-To: <20220606204050.2625949-8-willy@infradead.org>
-From:   Anna Schumaker <schumaker.anna@gmail.com>
-Date:   Tue, 7 Jun 2022 15:02:59 -0400
-Message-ID: <CAFX2Jf=ugChaWF0Je=ew_-shhdSJYXy5dkjqsoL=9B37QWv3bA@mail.gmail.com>
-Subject: Re: [PATCH 07/20] nfs: Convert to migrate_folio
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-block@vger.kernel.org, linux-aio@kvack.org,
-        linux-btrfs@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, cluster-devel@redhat.com,
-        linux-mm@kvack.org, linux-xfs <linux-xfs@vger.kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        linux-ntfs-dev@lists.sourceforge.net, ocfs2-devel@oss.oracle.com,
-        linux-mtd@lists.infradead.org,
-        virtualization@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 7:37 PM Matthew Wilcox (Oracle)
-<willy@infradead.org> wrote:
->
-> Use a folio throughout this function.  migrate_page() will be converted
-> later.
->
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+From: Jerome Marchand <jmarchan@redhat.com>
 
-Looks fairly straightforward.
+[ Upstream commit ec24704492d8791a52a75a39e3ad762b6e017bc6 ]
 
-Acked-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+samples/bpf build currently always fails if it can't generate
+vmlinux.h from vmlinux, even when vmlinux.h is directly provided by
+VMLINUX_H variable, which makes VMLINUX_H pointless.
+Only fails when neither method works.
 
-> ---
->  fs/nfs/file.c     |  4 +---
->  fs/nfs/internal.h |  6 ++++--
->  fs/nfs/write.c    | 16 ++++++++--------
->  3 files changed, 13 insertions(+), 13 deletions(-)
->
-> diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-> index 2d72b1b7ed74..549baed76351 100644
-> --- a/fs/nfs/file.c
-> +++ b/fs/nfs/file.c
-> @@ -533,9 +533,7 @@ const struct address_space_operations nfs_file_aops = {
->         .write_end = nfs_write_end,
->         .invalidate_folio = nfs_invalidate_folio,
->         .release_folio = nfs_release_folio,
-> -#ifdef CONFIG_MIGRATION
-> -       .migratepage = nfs_migrate_page,
-> -#endif
-> +       .migrate_folio = nfs_migrate_folio,
->         .launder_folio = nfs_launder_folio,
->         .is_dirty_writeback = nfs_check_dirty_writeback,
->         .error_remove_page = generic_error_remove_page,
-> diff --git a/fs/nfs/internal.h b/fs/nfs/internal.h
-> index 8f8cd6e2d4db..437ebe544aaf 100644
-> --- a/fs/nfs/internal.h
-> +++ b/fs/nfs/internal.h
-> @@ -578,8 +578,10 @@ void nfs_clear_pnfs_ds_commit_verifiers(struct pnfs_ds_commit_info *cinfo)
->  #endif
->
->  #ifdef CONFIG_MIGRATION
-> -extern int nfs_migrate_page(struct address_space *,
-> -               struct page *, struct page *, enum migrate_mode);
-> +int nfs_migrate_folio(struct address_space *, struct folio *dst,
-> +               struct folio *src, enum migrate_mode);
-> +#else
-> +#define nfs_migrate_folio NULL
->  #endif
->
->  static inline int
-> diff --git a/fs/nfs/write.c b/fs/nfs/write.c
-> index 1c706465d090..649b9e633459 100644
-> --- a/fs/nfs/write.c
-> +++ b/fs/nfs/write.c
-> @@ -2119,27 +2119,27 @@ int nfs_wb_page(struct inode *inode, struct page *page)
->  }
->
->  #ifdef CONFIG_MIGRATION
-> -int nfs_migrate_page(struct address_space *mapping, struct page *newpage,
-> -               struct page *page, enum migrate_mode mode)
-> +int nfs_migrate_folio(struct address_space *mapping, struct folio *dst,
-> +               struct folio *src, enum migrate_mode mode)
->  {
->         /*
-> -        * If PagePrivate is set, then the page is currently associated with
-> +        * If the private flag is set, the folio is currently associated with
->          * an in-progress read or write request. Don't try to migrate it.
->          *
->          * FIXME: we could do this in principle, but we'll need a way to ensure
->          *        that we can safely release the inode reference while holding
-> -        *        the page lock.
-> +        *        the folio lock.
->          */
-> -       if (PagePrivate(page))
-> +       if (folio_test_private(src))
->                 return -EBUSY;
->
-> -       if (PageFsCache(page)) {
-> +       if (folio_test_fscache(src)) {
->                 if (mode == MIGRATE_ASYNC)
->                         return -EBUSY;
-> -               wait_on_page_fscache(page);
-> +               folio_wait_fscache(src);
->         }
->
-> -       return migrate_page(mapping, newpage, page, mode);
-> +       return migrate_page(mapping, &dst->page, &src->page, mode);
->  }
->  #endif
->
-> --
-> 2.35.1
->
+Fixes: 384b6b3bbf0d ("samples: bpf: Add vmlinux.h generation support")
+Reported-by: CKI Project <cki-project@redhat.com>
+Reported-by: Veronika Kabatova <vkabatov@redhat.com>
+Signed-off-by: Jerome Marchand <jmarchan@redhat.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220507161635.2219052-1-jmarchan@redhat.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ samples/bpf/Makefile | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 38638845db9d..72bb85c18804 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -368,16 +368,15 @@ VMLINUX_BTF ?= $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS))))
+ 
+ $(obj)/vmlinux.h: $(VMLINUX_BTF) $(BPFTOOL)
+ ifeq ($(VMLINUX_H),)
++ifeq ($(VMLINUX_BTF),)
++	$(error Cannot find a vmlinux for VMLINUX_BTF at any of "$(VMLINUX_BTF_PATHS)",\
++		build the kernel or set VMLINUX_BTF or VMLINUX_H variable)
++endif
+ 	$(Q)$(BPFTOOL) btf dump file $(VMLINUX_BTF) format c > $@
+ else
+ 	$(Q)cp "$(VMLINUX_H)" $@
+ endif
+ 
+-ifeq ($(VMLINUX_BTF),)
+-	$(error Cannot find a vmlinux for VMLINUX_BTF at any of "$(VMLINUX_BTF_PATHS)",\
+-		build the kernel or set VMLINUX_BTF variable)
+-endif
+-
+ clean-files += vmlinux.h
+ 
+ # Get Clang's default includes on this system, as opposed to those seen by
+-- 
+2.35.1
+
+
+
