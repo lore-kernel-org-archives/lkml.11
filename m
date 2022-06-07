@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D84ECCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC3ACCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378151AbiFGUzb (ORCPT
+        id S1378217AbiFGUzp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47130 "EHLO
+        Tue, 7 Jun 2022 16:55:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358868AbiFGTxT (ORCPT
+        with ESMTP id S1358899AbiFGTxV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:53:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21EB8AFB1B;
-        Tue,  7 Jun 2022 11:22:50 -0700 (PDT)
+        Tue, 7 Jun 2022 15:53:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3624D64BE1;
+        Tue,  7 Jun 2022 11:23:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C33A7B82368;
-        Tue,  7 Jun 2022 18:22:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3324CC385A2;
-        Tue,  7 Jun 2022 18:22:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D244260DB7;
+        Tue,  7 Jun 2022 18:23:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF419C385A2;
+        Tue,  7 Jun 2022 18:23:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626167;
-        bh=+zI6OmQ/T0upi5tdS+NukdBVJYLETxXO2Rr9cGXDaX4=;
+        s=korg; t=1654626181;
+        bh=nJKABFV7L4RLPvBO5QH7DR8OColWYo8kBeH2aJhbCnU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zvJepqPfEUVShOUirAW0MPD99pDELsDyMvUmHb7OkJUvcPmpiYpe1K+QEOCMnxDJL
-         2sTyNiEXE4An4k76wbYFzCYci1DzM3XZUn8A3uUBJPjBhtkwxp7a/1RvUyIfjLCcQb
-         T+4NK8mkjq1ZriAke6EciXYzGe7DHuI3MZIZ0JPI=
+        b=Lc8E3I5FuHzPTdx1LIi/3lSfOHFP6J4pMUHo0vpHXdZzoxx6npkN3GGPZx2707if7
+         1IL2qGrLKbdZ5TlfLwSRjnfcabpOnBjuHSCxxaCSTMq/vTvpzAh0pIptdFJQyweavp
+         IkfBb2u+sFXvoJWeJUW9dhbOydrZZpJmYXHkLBOA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Davide Caratti <dcaratti@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 254/772] mptcp: reset the packet scheduler on incoming MP_PRIO
-Date:   Tue,  7 Jun 2022 18:57:26 +0200
-Message-Id: <20220607164956.509615065@linuxfoundation.org>
+Subject: [PATCH 5.17 285/772] ath9k_htc: fix potential out of bounds access with invalid rxstatus->rs_keyix
+Date:   Tue,  7 Jun 2022 18:57:57 +0200
+Message-Id: <20220607164957.423222535@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,87 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 43f5b111d1ff16161ce60e19aeddb999cb6f0b01 ]
+[ Upstream commit 2dc509305cf956381532792cb8dceef2b1504765 ]
 
-When an incoming MP_PRIO option changes the backup
-status of any subflow, we need to reset the packet
-scheduler status, or the next send could keep using
-the previously selected subflow, without taking in account
-the new priorities.
+The "rxstatus->rs_keyix" eventually gets passed to test_bit() so we need to
+ensure that it is within the bitmap.
 
-Reported-by: Davide Caratti <dcaratti@redhat.com>
-Fixes: 40453a5c61f4 ("mptcp: add the incoming MP_PRIO support")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+drivers/net/wireless/ath/ath9k/common.c:46 ath9k_cmn_rx_accept()
+error: passing untrusted data 'rx_stats->rs_keyix' to 'test_bit()'
+
+Fixes: 4ed1a8d4a257 ("ath9k_htc: use ath9k_cmn_rx_accept")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220409061225.GA5447@kili
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mptcp/pm.c       | 19 +++++++++++++++----
- net/mptcp/protocol.c |  2 ++
- net/mptcp/protocol.h |  1 +
- 3 files changed, 18 insertions(+), 4 deletions(-)
+ drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
-index 1eb83cbe8aae..770c4e36c776 100644
---- a/net/mptcp/pm.c
-+++ b/net/mptcp/pm.c
-@@ -261,14 +261,25 @@ void mptcp_pm_rm_addr_received(struct mptcp_sock *msk,
- 	spin_unlock_bh(&pm->lock);
- }
- 
--void mptcp_pm_mp_prio_received(struct sock *sk, u8 bkup)
-+void mptcp_pm_mp_prio_received(struct sock *ssk, u8 bkup)
- {
--	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
-+	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
-+	struct sock *sk = subflow->conn;
-+	struct mptcp_sock *msk;
- 
- 	pr_debug("subflow->backup=%d, bkup=%d\n", subflow->backup, bkup);
--	subflow->backup = bkup;
-+	msk = mptcp_sk(sk);
-+	if (subflow->backup != bkup) {
-+		subflow->backup = bkup;
-+		mptcp_data_lock(sk);
-+		if (!sock_owned_by_user(sk))
-+			msk->last_snd = NULL;
-+		else
-+			__set_bit(MPTCP_RESET_SCHEDULER,  &msk->cb_flags);
-+		mptcp_data_unlock(sk);
-+	}
- 
--	mptcp_event(MPTCP_EVENT_SUB_PRIORITY, mptcp_sk(subflow->conn), sk, GFP_ATOMIC);
-+	mptcp_event(MPTCP_EVENT_SUB_PRIORITY, msk, ssk, GFP_ATOMIC);
- }
- 
- void mptcp_pm_mp_fail_received(struct sock *sk, u64 fail_seq)
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 7e8083d6f033..4a50906f4d8f 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -3098,6 +3098,8 @@ static void mptcp_release_cb(struct sock *sk)
- 			__mptcp_set_connected(sk);
- 		if (__test_and_clear_bit(MPTCP_ERROR_REPORT, &msk->cb_flags))
- 			__mptcp_error_report(sk);
-+		if (__test_and_clear_bit(MPTCP_RESET_SCHEDULER, &msk->cb_flags))
-+			msk->last_snd = NULL;
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+index 6a850a0bfa8a..a23eaca0326d 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+@@ -1016,6 +1016,14 @@ static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
+ 		goto rx_next;
  	}
  
- 	__mptcp_update_rmem(sk);
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 46b343a0b17e..2ae8276b82fc 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -124,6 +124,7 @@
- #define MPTCP_RETRANSMIT	4
- #define MPTCP_FLUSH_JOIN_LIST	5
- #define MPTCP_CONNECTED		6
-+#define MPTCP_RESET_SCHEDULER	7
++	if (rxstatus->rs_keyix >= ATH_KEYMAX &&
++	    rxstatus->rs_keyix != ATH9K_RXKEYIX_INVALID) {
++		ath_dbg(common, ANY,
++			"Invalid keyix, dropping (keyix: %d)\n",
++			rxstatus->rs_keyix);
++		goto rx_next;
++	}
++
+ 	/* Get the RX status information */
  
- static inline bool before64(__u64 seq1, __u64 seq2)
- {
+ 	memset(rx_status, 0, sizeof(struct ieee80211_rx_status));
 -- 
 2.35.1
 
