@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 943CECCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:47:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF2DCCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357809AbiFGTrQ (ORCPT
+        id S1355933AbiFGTr2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
+        Tue, 7 Jun 2022 15:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354576AbiFGSrL (ORCPT
+        with ESMTP id S1354580AbiFGSrN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5776EB36F3;
-        Tue,  7 Jun 2022 11:02:20 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CB9AF1F5;
+        Tue,  7 Jun 2022 11:02:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05020B82349;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF413617AE;
+        Tue,  7 Jun 2022 18:02:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77436C36AFF;
         Tue,  7 Jun 2022 18:02:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A61DC3411C;
-        Tue,  7 Jun 2022 18:02:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624937;
-        bh=ZjjU0/dkLm5kXM0wvK8rlULMZPZvcNcrfRe3LCRpX7M=;
+        s=k20201202; t=1654624940;
+        bh=XwFXbMMdJibZIWYA/iWR+3Sh0kSMy0/LmOH9DmOggJc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZJNJVMyXmREVGSoKmXC9NraMTPGSkanoce4SwdUU/NMORKNt49zY724vixkaUblmY
-         NwFyAEOvGuW/NCGvT3q6JxSSRMG/PLPU2ZyC9v2zby9VBLs2TH7xyneNVi8icplfhx
-         /w5KragSXJEsWnYgSoyAvk1Hlsee+ySl7noBW2PO2T8+O+vnPbz0+1FYmFxridVqmA
-         qdkAkrrr/HN7CBykblYM1b9AhxB5xqFzEkQYGwRDuQbD5ZtQuaPm/m+QqB+c8ZdgOM
-         wv1ezs2iAby3APXwixTB0NkLasVxu6uGF10NvXtLkAImqTZJhHNT6X9m4CKqX53T84
-         sUMXjamnf2yFA==
+        b=GDhDd1/sLlNMy0ZLDGpyzlr8B5XimYPL9EIhOFGSCb6ErqVfKUHjRrf9lB3LceIYh
+         E1Pic4WvSJ37JDSdNaCMZduXTupk9IN9yl7/E65bE0NYaGRsWuF5xPdYgmwvLsDu+u
+         59bm6+vjKNxe7kqFQgTyuX2LXVL1BNaXz7/6fK5C5Ab48owLmFqp6iO1UhWtVL82MP
+         iNyJh8imbbNekcYBHU0j0bNmucP4Ls4KckGbWd1Mytak+q/rqbfLlI01pyYbWGtBU0
+         cZUe9tyylJNA9CRhIP0nZHOnAwOnAP58PJt9+j/JW65v2OBfQa/n8BJ02IqVH/5nsR
+         DKYUA+rUkvLAg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Venky Shankar <vshankar@redhat.com>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 21/27] ceph: allow ceph.dir.rctime xattr to be updatable
-Date:   Tue,  7 Jun 2022 14:01:25 -0400
-Message-Id: <20220607180133.481701-21-sashal@kernel.org>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sasha Levin <sashal@kernel.org>, michal.lkml@markovi.net,
+        linux-kbuild@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 23/27] modpost: fix undefined behavior of is_arm_mapping_symbol()
+Date:   Tue,  7 Jun 2022 14:01:27 -0400
+Message-Id: <20220607180133.481701-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
 References: <20220607180133.481701-1-sashal@kernel.org>
@@ -52,65 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Venky Shankar <vshankar@redhat.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit d7a2dc523085f8b8c60548ceedc696934aefeb0e ]
+[ Upstream commit d6b732666a1bae0df3c3ae06925043bba34502b1 ]
 
-`rctime' has been a pain point in cephfs due to its buggy
-nature - inconsistent values reported and those sorts.
-Fixing rctime is non-trivial needing an overall redesign
-of the entire nested statistics infrastructure.
+The return value of is_arm_mapping_symbol() is unpredictable when "$"
+is passed in.
 
-As a workaround, PR
+strchr(3) says:
+  The strchr() and strrchr() functions return a pointer to the matched
+  character or NULL if the character is not found. The terminating null
+  byte is considered part of the string, so that if c is specified as
+  '\0', these functions return a pointer to the terminator.
 
-     http://github.com/ceph/ceph/pull/37938
+When str[1] is '\0', strchr("axtd", str[1]) is not NULL, and str[2] is
+referenced (i.e. buffer overrun).
 
-allows this extended attribute to be manually set. This allows
-users to "fixup" inconsistent rctime values. While this sounds
-messy, its probably the wisest approach allowing users/scripts
-to workaround buggy rctime values.
+Test code
+---------
 
-The above PR enables Ceph MDS to allow manually setting
-rctime extended attribute with the corresponding user-land
-changes. We may as well allow the same to be done via kclient
-for parity.
+  char str1[] = "abc";
+  char str2[] = "ab";
 
-Signed-off-by: Venky Shankar <vshankar@redhat.com>
-Reviewed-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+  strcpy(str1, "$");
+  strcpy(str2, "$");
+
+  printf("test1: %d\n", is_arm_mapping_symbol(str1));
+  printf("test2: %d\n", is_arm_mapping_symbol(str2));
+
+Result
+------
+
+  test1: 0
+  test2: 1
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/xattr.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ scripts/mod/modpost.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
-index a09ce27ab220..6fa9a784676b 100644
---- a/fs/ceph/xattr.c
-+++ b/fs/ceph/xattr.c
-@@ -273,6 +273,14 @@ static size_t ceph_vxattrcb_quota_max_files(struct ceph_inode_info *ci,
- 	}
- #define XATTR_RSTAT_FIELD(_type, _name)			\
- 	XATTR_NAME_CEPH(_type, _name, VXATTR_FLAG_RSTAT)
-+#define XATTR_RSTAT_FIELD_UPDATABLE(_type, _name)			\
-+	{								\
-+		.name = CEPH_XATTR_NAME(_type, _name),			\
-+		.name_size = sizeof (CEPH_XATTR_NAME(_type, _name)),	\
-+		.getxattr_cb = ceph_vxattrcb_ ## _type ## _ ## _name,	\
-+		.exists_cb = NULL,					\
-+		.flags = VXATTR_FLAG_RSTAT,				\
-+	}
- #define XATTR_LAYOUT_FIELD(_type, _name, _field)			\
- 	{								\
- 		.name = CEPH_XATTR_NAME2(_type, _name, _field),	\
-@@ -310,7 +318,7 @@ static struct ceph_vxattr ceph_dir_vxattrs[] = {
- 	XATTR_RSTAT_FIELD(dir, rfiles),
- 	XATTR_RSTAT_FIELD(dir, rsubdirs),
- 	XATTR_RSTAT_FIELD(dir, rbytes),
--	XATTR_RSTAT_FIELD(dir, rctime),
-+	XATTR_RSTAT_FIELD_UPDATABLE(dir, rctime),
- 	{
- 		.name = "ceph.quota",
- 		.name_size = sizeof("ceph.quota"),
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 7c693bd775c1..1c2f59245849 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1218,7 +1218,8 @@ static int secref_whitelist(const struct sectioncheck *mismatch,
+ 
+ static inline int is_arm_mapping_symbol(const char *str)
+ {
+-	return str[0] == '$' && strchr("axtd", str[1])
++	return str[0] == '$' &&
++	       (str[1] == 'a' || str[1] == 'd' || str[1] == 't' || str[1] == 'x')
+ 	       && (str[2] == '\0' || str[2] == '.');
+ }
+ 
 -- 
 2.35.1
 
