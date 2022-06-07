@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A54C2CCA48A
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4C9CCA49B
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350755AbiFGSS1 (ORCPT
+        id S1346696AbiFGSSW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:18:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42996 "EHLO
+        Tue, 7 Jun 2022 14:18:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349138AbiFGR6R (ORCPT
+        with ESMTP id S1348583AbiFGR6A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:58:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC97612BA;
-        Tue,  7 Jun 2022 10:41:13 -0700 (PDT)
+        Tue, 7 Jun 2022 13:58:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A08A56207;
+        Tue,  7 Jun 2022 10:41:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46174B822B3;
-        Tue,  7 Jun 2022 17:41:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97117C385A5;
-        Tue,  7 Jun 2022 17:41:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EB2DFB80B66;
+        Tue,  7 Jun 2022 17:41:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 620D7C385A5;
+        Tue,  7 Jun 2022 17:40:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623671;
-        bh=NCZ8ENLCATeP2GIJLaAP/xz+MzB5wHdRUTpcdOOL+I4=;
+        s=korg; t=1654623659;
+        bh=FQJSpetsLBnsxM9PqVdsBxFKyjDXSecnsj2VtGM4CvU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NumT2i5mTOs77WWWMIe50wP/hQLFkGZmKER7BdtrgjTru5ILK4gBWt1BzN0szSP6F
-         UB+91dNiUXs2sogecvi+Ie3CHvdhZq9soCoH3nPy60pfmbZpupbwAUglKCSBwKOPe1
-         ybvBCnRqq+AY4/CNE/px6GRy9bAtA8/I2SkRf5vA=
+        b=LhTg3MtINyYQo6P7hlgLonUHP7/y4bJdzeTSFIdkAK/86dqvQDyFfPUyrHvG9QuZf
+         VKiRral50gYdF2fMptZ5CAcR6VxSvqwBTjEnZ3DYlmsWwQF3wPRiprwGiZMv2Zeg9O
+         mP4RO78tf9JusS94ZOsTHC8c7nC40J13LjHWvxcQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 050/667] b43: Fix assigning negative value to unsigned variable
-Date:   Tue,  7 Jun 2022 18:55:15 +0200
-Message-Id: <20220607164936.308285777@linuxfoundation.org>
+        stable@vger.kernel.org, Tobias Klauser <tklauser@distanz.ch>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.15 008/667] riscv: Wire up memfd_secret in UAPI header
+Date:   Tue,  7 Jun 2022 18:54:33 +0200
+Message-Id: <20220607164935.033077935@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,37 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Tobias Klauser <tklauser@distanz.ch>
 
-[ Upstream commit 11800d893b38e0e12d636c170c1abc19c43c730c ]
+commit 02d88b40cb2e9614e0117c3385afdce878f0d377 upstream.
 
-fix warning reported by smatch:
-drivers/net/wireless/broadcom/b43/phy_n.c:585 b43_nphy_adjust_lna_gain_table()
-warn: assigning (-2) to unsigned variable '*(lna_gain[0])'
+Move the __ARCH_WANT_MEMFD_SECRET define added in commit 7bb7f2ac24a0
+("arch, mm: wire up memfd_secret system call where relevant") to
+<uapi/asm/unistd.h> so __NR_memfd_secret is defined when including
+<unistd.h> in userspace.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/1648203315-28093-1-git-send-email-baihaowen@meizu.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This allows the memfd_secret selftest to pass on riscv.
+
+Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+Link: https://lore.kernel.org/r/20220505081815.22808-1-tklauser@distanz.ch
+Fixes: 7bb7f2ac24a0 ("arch, mm: wire up memfd_secret system call where relevant")
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/broadcom/b43/phy_n.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/riscv/include/asm/unistd.h      |    1 -
+ arch/riscv/include/uapi/asm/unistd.h |    1 +
+ 2 files changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
-index cf3ccf4ddfe7..aa5c99465674 100644
---- a/drivers/net/wireless/broadcom/b43/phy_n.c
-+++ b/drivers/net/wireless/broadcom/b43/phy_n.c
-@@ -582,7 +582,7 @@ static void b43_nphy_adjust_lna_gain_table(struct b43_wldev *dev)
- 	u16 data[4];
- 	s16 gain[2];
- 	u16 minmax[2];
--	static const u16 lna_gain[4] = { -2, 10, 19, 25 };
-+	static const s16 lna_gain[4] = { -2, 10, 19, 25 };
+--- a/arch/riscv/include/asm/unistd.h
++++ b/arch/riscv/include/asm/unistd.h
+@@ -9,7 +9,6 @@
+  */
  
- 	if (nphy->hang_avoid)
- 		b43_nphy_stay_in_carrier_search(dev, 1);
--- 
-2.35.1
-
+ #define __ARCH_WANT_SYS_CLONE
+-#define __ARCH_WANT_MEMFD_SECRET
+ 
+ #include <uapi/asm/unistd.h>
+ 
+--- a/arch/riscv/include/uapi/asm/unistd.h
++++ b/arch/riscv/include/uapi/asm/unistd.h
+@@ -21,6 +21,7 @@
+ #endif /* __LP64__ */
+ 
+ #define __ARCH_WANT_SYS_CLONE3
++#define __ARCH_WANT_MEMFD_SECRET
+ 
+ #include <asm-generic/unistd.h>
+ 
 
 
