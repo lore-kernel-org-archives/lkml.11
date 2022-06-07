@@ -2,70 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C96EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3D1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237087AbiFGGil (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 02:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37398 "EHLO
+        id S237095AbiFGGjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 02:39:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237051AbiFGGib (ORCPT
+        with ESMTP id S237051AbiFGGjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 02:38:31 -0400
-X-Greylist: delayed 1631 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 23:38:29 PDT
-Received: from challenge-bot.com (challenge-bot.com [IPv6:2602:fffa:fff:108a:0:16:3e15:92b8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1624880D8
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:38:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=challenge-bot.com; s=20180430; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=NDHKKSmM/1awbA139++eN0BK1p5M4NDk8HA8lGCAbmY=; b=SNJKp+iyI1ltJjQhHkpFDpcoHV
-        Rn52ZpilNAVcmQ8COz/zmDXKCpDomonDTUL0IZTTnGmuZI3bJFQEPWjjOITvZOcS0ZdWwn7kVkWx5
-        nfvaq28AjcPebA2xD62m2Y4tIKyUIUOVUqhpWkRgOtXaNterNabTaf+T3h8GItepTivA=;
-Received: from ozzloy by challenge-bot.com with local (Exim 4.92)
-        (envelope-from <ozzloy@challenge-bot.com>)
-        id 1nySQt-0008Vi-6s; Mon, 06 Jun 2022 23:11:15 -0700
-From:   daniel watson <ozzloy@challenge-bot.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     Daniel Watson <ozzloy@challenge-bot.com>
-Subject: [PATCH] staging: r8188eu: fix declaration to match 'foo *bar'
-Date:   Mon,  6 Jun 2022 23:11:13 -0700
-Message-Id: <20220607061113.32633-1-ozzloy@challenge-bot.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 7 Jun 2022 02:39:01 -0400
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D337BAE268
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:39:00 -0700 (PDT)
+Received: by mail-qv1-xf2c.google.com with SMTP id cv1so11719751qvb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 23:39:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gooddata.com; s=google;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=SxS3QrHB7bjwl+Cm4ZFUlHa3N2idkpHOMv8U5Xnf73Y=;
+        b=SX73mvZOpIRMFB7v6iPMoemXaeivJ5yImf8A4byTZ5zbcnYsFCMSAIOE59s4U3WoFX
+         77U0JVlq7NfmaScdPv2qmylx/EV1xhCw02fboJjuCdBnlTTYFnU9uc7eWiOgxwggj9xV
+         wCRdMMiMTj/ht+aQb3yMKWmyvDcbb8EjPfpUo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=SxS3QrHB7bjwl+Cm4ZFUlHa3N2idkpHOMv8U5Xnf73Y=;
+        b=AQs3nENQdP7we0ltJmtwisWyq2YZGcct7P31+pD+rNuNJLdOHJb1lLuhjdQyQlwOgF
+         m7Niet8zj5DlWY8Wb7H6Bf7t6RnmVBlqfsugvtFZKL4j7LQmM2mSmuoQBmzehumOMuSz
+         slghsoxzGg6XRA6m4/MVBEPmKtP2YCfN0QgTDITyxvQX7YH8zfOm8HPkdiKgPZl+JirR
+         L2J6Dnkh7uhE+FZBeb8fs0vbVJjNyzktZwCLVB8GcSqZmpvbtoKKE/VEllHQkjCv1WAx
+         zaXuRmYmcwSGwAi+D4idX/4qNI7IBoRa4n9utlBgc516rS4hxj6UhXuOueFv5NlA5pCq
+         EHUw==
+X-Gm-Message-State: AOAM530ctxUMnnHSBlxvZ/gJ7XGnZbUH7GgZukxtOwQVEqtI1mo9mpQM
+        M5bqZyuHMy6FdjuBpefKu2yyJlveipxujCu9w3M5pfT/EeUcdQ==
+X-Google-Smtp-Source: ABdhPJx5J8gKc6vZqW/KSZ1HuQd73D+1DY7tBrY+ZzsNyJJkaT9fEJDx2+hggWlO86StbprNLLL0wMkZy4QV2Sr1Fzk=
+X-Received: by 2002:a05:6214:20c2:b0:464:41b9:f474 with SMTP id
+ 2-20020a05621420c200b0046441b9f474mr38034891qve.108.1654583939759; Mon, 06
+ Jun 2022 23:38:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From:   Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
+Date:   Tue, 7 Jun 2022 08:38:34 +0200
+Message-ID: <CAK8fFZ6N_7o0mRP5mAuuMc3Z9s=OzNk8NJZ2FAYDeHWATfZC_A@mail.gmail.com>
+Subject: ice: Error setting promisc mode on VSI 6 (rc=-17) @ 5.18.x
+To:     linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Watson <ozzloy@challenge-bot.com>
+Hello,
 
-put '*' next to variable to match kernel style from checkpatch
+I'm struggling with broken network connectivity at VMs using linux
+bridge at host after update of kernel from 5.17.x to 5.18.x @ Dell
+R750 server with E810-XXV NICs.
 
-Signed-off-by: Daniel Watson <ozzloy@challenge-bot.com>
----
- drivers/staging/r8188eu/include/rtw_io.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I noticed the kernel reports "Error setting promisc mode" in dmesg.
 
-diff --git a/drivers/staging/r8188eu/include/rtw_io.h b/drivers/staging/r8188eu/include/rtw_io.h
-index 6910e2b430e24..0e390eda5b4d3 100644
---- a/drivers/staging/r8188eu/include/rtw_io.h
-+++ b/drivers/staging/r8188eu/include/rtw_io.h
-@@ -283,7 +283,7 @@ void free_io_queue(struct adapter *adapter);
- void async_bus_io(struct io_queue *pio_q);
- void bus_sync_io(struct io_queue *pio_q);
- u32 _ioreq2rwmem(struct io_queue *pio_q);
--void dev_power_down(struct adapter * Adapter, u8 bpwrup);
-+void dev_power_down(struct adapter *Adapter, u8 bpwrup);
- 
- #define PlatformEFIOWrite1Byte(_a,_b,_c)		\
- 	rtw_write8(_a,_b,_c)
--- 
-2.34.1
+# dmesg  | grep 'Error setting promisc'
+[   24.863557] ice 0000:31:00.0: Error setting promisc mode on VSI 6 (rc=-17)
+[   24.878369] ice 0000:31:00.0: Error setting promisc mode on VSI 6 (rc=-17)
+[   25.045834] ice 0000:31:00.0: Error setting promisc mode on VSI 6 (rc=-17)
+[   25.129840] ice 0000:b1:00.0: Error setting promisc mode on VSI 6 (rc=-17)
+[   25.144440] ice 0000:b1:00.0: Error setting promisc mode on VSI 6 (rc=-17)
 
+# lspci -s 0000:31:00.0
+31:00.0 Ethernet controller: Intel Corporation Ethernet Controller
+E810-XXV for SFP (rev 02)
+# lspci -s 0000:b1:00.0
+b1:00.0 Ethernet controller: Intel Corporation Ethernet Controller
+E810-XXV for SFP (rev 02)
+
+Could it be a 'ice' driver bug?
+
+Best regards,
+Jaroslav Pulhart
