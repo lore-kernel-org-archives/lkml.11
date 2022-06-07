@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F65ECCA488
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EFF6CCA48B
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347498AbiFGRfT (ORCPT
+        id S1348647AbiFGRgj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:35:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46064 "EHLO
+        Tue, 7 Jun 2022 13:36:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346505AbiFGR0X (ORCPT
+        with ESMTP id S1347067AbiFGRaD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:26:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A593710A615;
-        Tue,  7 Jun 2022 10:24:12 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6460DA7E01;
+        Tue,  7 Jun 2022 10:25:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B718B822AF;
-        Tue,  7 Jun 2022 17:24:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD28EC34115;
-        Tue,  7 Jun 2022 17:24:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 013F260DE0;
+        Tue,  7 Jun 2022 17:25:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA0E3C385A5;
+        Tue,  7 Jun 2022 17:25:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622650;
-        bh=C1x3/Pm/7Q+lVwfJV7+jnbeTtLq3Jx8TI5iAVWW98wA=;
+        s=korg; t=1654622732;
+        bh=0y0FFTGDXWZJ7H/rNAVtgt3RCKaImJ3PuVIoA5Yd0qA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R15KNH6wj5QZ0hXaFNwjd+ZuSgZPHsc0arJr5XhzlDAAgBkhL6Va9XCAqo4GHq2jn
-         +lpM25YgDqP08yT/3gVKCSNhoEzeRBcpKVjNTHxGwaL+TeuWFisttZzYW4SLC4R5OU
-         VFtBib9KBwfGbJ95tlwYswVBYQlSNxD3GtjmBwTQ=
+        b=Fv6WGP/rXv1i1HpXFyV9+4YIOD0DNOkx0V9kzn0uQgRUMu5OYrmV1c6gQlqymUIQ5
+         LjJQ8SRcWz+mskdjzS2fAz54oIiGqd4xRKLBG7tCIy8ZutMvU+NM6ExqzeypehJQZM
+         MYj71X6H2plQlnv1IDXy3HGB3ULgbbeXzvC+/UXM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 135/452] libbpf: Dont error out on CO-RE relos for overriden weak subprogs
-Date:   Tue,  7 Jun 2022 18:59:52 +0200
-Message-Id: <20220607164912.583382921@linuxfoundation.org>
+Subject: [PATCH 5.10 156/452] media: hantro: Empty encoder capture buffers by default
+Date:   Tue,  7 Jun 2022 19:00:13 +0200
+Message-Id: <20220607164913.208046040@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,56 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit e89d57d938c8fa80c457982154ed6110804814fe ]
+[ Upstream commit 309373a3571ef7175bd9da0c9b13476a718e8478 ]
 
-During BPF static linking, all the ELF relocations and .BTF.ext
-information (including CO-RE relocations) are preserved for __weak
-subprograms that were logically overriden by either previous weak
-subprogram instance or by corresponding "strong" (non-weak) subprogram.
-This is just how native user-space linkers work, nothing new.
+The payload size for encoder capture buffers is set by the driver upon
+finishing encoding each frame, based on the encoded length returned from
+hardware, and whatever header and padding length used. Setting a
+non-zero default serves no real purpose, and also causes issues if the
+capture buffer is returned to userspace unused, confusing the
+application.
 
-But libbpf is over-zealous when processing CO-RE relocation to error out
-when CO-RE relocation belonging to such eliminated weak subprogram is
-encountered. Instead of erroring out on this expected situation, log
-debug-level message and skip the relocation.
+Instead, always set the payload size to 0 for encoder capture buffers
+when preparing them.
 
-Fixes: db2b8b06423c ("libbpf: Support CO-RE relocations for multi-prog sections")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220408181425.2287230-2-andrii@kernel.org
+Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
+Fixes: 082aaecff35f ("media: hantro: Fix .buf_prepare")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/staging/media/hantro/hantro_v4l2.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 61df26f048d9..dda8f9cdc652 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -5945,10 +5945,17 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
- 			insn_idx = rec->insn_off / BPF_INSN_SZ;
- 			prog = find_prog_by_sec_insn(obj, sec_idx, insn_idx);
- 			if (!prog) {
--				pr_warn("sec '%s': failed to find program at insn #%d for CO-RE offset relocation #%d\n",
--					sec_name, insn_idx, i);
--				err = -EINVAL;
--				goto out;
-+				/* When __weak subprog is "overridden" by another instance
-+				 * of the subprog from a different object file, linker still
-+				 * appends all the .BTF.ext info that used to belong to that
-+				 * eliminated subprogram.
-+				 * This is similar to what x86-64 linker does for relocations.
-+				 * So just ignore such relocations just like we ignore
-+				 * subprog instructions when discovering subprograms.
-+				 */
-+				pr_debug("sec '%s': skipping CO-RE relocation #%d for insn #%d belonging to eliminated weak subprogram\n",
-+					 sec_name, i, insn_idx);
-+				continue;
- 			}
- 			/* no need to apply CO-RE relocation if the program is
- 			 * not going to be loaded
+diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
+index 5c2ca61add8e..b65f2f3ef357 100644
+--- a/drivers/staging/media/hantro/hantro_v4l2.c
++++ b/drivers/staging/media/hantro/hantro_v4l2.c
+@@ -644,8 +644,12 @@ static int hantro_buf_prepare(struct vb2_buffer *vb)
+ 	 * (for OUTPUT buffers, if userspace passes 0 bytesused, v4l2-core sets
+ 	 * it to buffer length).
+ 	 */
+-	if (V4L2_TYPE_IS_CAPTURE(vq->type))
+-		vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
++	if (V4L2_TYPE_IS_CAPTURE(vq->type)) {
++		if (ctx->is_encoder)
++			vb2_set_plane_payload(vb, 0, 0);
++		else
++			vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
++	}
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
