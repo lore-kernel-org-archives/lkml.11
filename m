@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A0AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD497C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347314AbiFGRen (ORCPT
+        id S1344806AbiFGRes (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46130 "EHLO
+        Tue, 7 Jun 2022 13:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346946AbiFGRZf (ORCPT
+        with ESMTP id S1347105AbiFGRZm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:25:35 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8541108AA6;
-        Tue,  7 Jun 2022 10:23:45 -0700 (PDT)
+        Tue, 7 Jun 2022 13:25:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89411113B7D;
+        Tue,  7 Jun 2022 10:24:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1D9EDCE2017;
-        Tue,  7 Jun 2022 17:23:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9205C3411F;
-        Tue,  7 Jun 2022 17:23:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03AA4B8220B;
+        Tue,  7 Jun 2022 17:24:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A319C385A5;
+        Tue,  7 Jun 2022 17:24:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622622;
-        bh=cnXSpj71eQMwhKdrGkg6POkXC+2h0YgRyd9EbaikIb8=;
+        s=korg; t=1654622641;
+        bh=ol5bCb//r5rzaEAxNCC3RbfBBMFcGFurU65O6warK6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0tHJ59TECvRi1rXVKDKzvS93zilhDgd9m99lVoP0TOjYAp6HRvQK4qbw7/yZitK1i
-         mLa0zdm81F7upAOMO0HuFNkmu85oYTP6dukzeVFxksGl5QYf5xX0JtYCkrTtnb8/9e
-         lKcrsxRkhMXFlune/RzQFRe+g7t6Puqtrd8F6FEY=
+        b=CLZ5dN5KFclTGSx7CkRK76+XklCuCnpPK6uhfrRopynKYd9mPjfmIjqLRnZvwRIBA
+         x0t8OBMyY++miQPHWbu9vAtDtUXggjcwUoGMyh+tBIBeP8eoSmMt1QZa8Gd5gpS+oZ
+         CwyT9am5jEVUBkIviFfNI2YPzk58u/Fv0uNPHIf8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 126/452] spi: qcom-qspi: Add minItems to interconnect-names
-Date:   Tue,  7 Jun 2022 18:59:43 +0200
-Message-Id: <20220607164912.313103228@linuxfoundation.org>
+Subject: [PATCH 5.10 132/452] drm/vc4: hvs: Reset muxes at probe time
+Date:   Tue,  7 Jun 2022 18:59:49 +0200
+Message-Id: <20220607164912.494598871@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,38 +50,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit e23d86c49a9c78e8dbe3abff20b30812b26ab427 ]
+[ Upstream commit 8514e6b1f40319e31ac4aa3fbf606796786366c9 ]
 
-Add minItems constraint to interconnect-names as well. The schema
-currently tries to match 2 names and fail for DTs with single entry.
+By default, the HVS driver will force the HVS output 3 to be muxed to
+the HVS channel 2. However, the Transposer can only be assigned to the
+HVS channel 2, so whenever we try to use the writeback connector, we'll
+mux its associated output (Output 2) to the channel 2.
 
-With the change applied, below interconnect-names values are possible:
-['qspi-config'], ['qspi-config', 'qspi-memory']
+This leads to both the output 2 and 3 feeding from the same channel,
+which is explicitly discouraged in the documentation.
 
-Fixes: 8f9c291558ea ("dt-bindings: spi: Add interconnect binding for QSPI")
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220328192006.18523-1-singh.kuldeep87k@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+In order to avoid this, let's reset all the output muxes to their reset
+value.
+
+Fixes: 87ebcd42fb7b ("drm/vc4: crtc: Assign output to channel automatically")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://lore.kernel.org/r/20220328153659.2382206-2-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/vc4/vc4_hvs.c | 26 +++++++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml
-index ef5698f426b2..392204a08e96 100644
---- a/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml
-+++ b/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml
-@@ -45,6 +45,7 @@ properties:
-     maxItems: 2
+diff --git a/drivers/gpu/drm/vc4/vc4_hvs.c b/drivers/gpu/drm/vc4/vc4_hvs.c
+index ad691571d759..95fa6fc052a7 100644
+--- a/drivers/gpu/drm/vc4/vc4_hvs.c
++++ b/drivers/gpu/drm/vc4/vc4_hvs.c
+@@ -564,6 +564,7 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
+ 	struct vc4_hvs *hvs = NULL;
+ 	int ret;
+ 	u32 dispctrl;
++	u32 reg;
  
-   interconnect-names:
-+    minItems: 1
-     items:
-       - const: qspi-config
-       - const: qspi-memory
+ 	hvs = devm_kzalloc(&pdev->dev, sizeof(*hvs), GFP_KERNEL);
+ 	if (!hvs)
+@@ -635,6 +636,26 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
+ 
+ 	vc4->hvs = hvs;
+ 
++	reg = HVS_READ(SCALER_DISPECTRL);
++	reg &= ~SCALER_DISPECTRL_DSP2_MUX_MASK;
++	HVS_WRITE(SCALER_DISPECTRL,
++		  reg | VC4_SET_FIELD(0, SCALER_DISPECTRL_DSP2_MUX));
++
++	reg = HVS_READ(SCALER_DISPCTRL);
++	reg &= ~SCALER_DISPCTRL_DSP3_MUX_MASK;
++	HVS_WRITE(SCALER_DISPCTRL,
++		  reg | VC4_SET_FIELD(3, SCALER_DISPCTRL_DSP3_MUX));
++
++	reg = HVS_READ(SCALER_DISPEOLN);
++	reg &= ~SCALER_DISPEOLN_DSP4_MUX_MASK;
++	HVS_WRITE(SCALER_DISPEOLN,
++		  reg | VC4_SET_FIELD(3, SCALER_DISPEOLN_DSP4_MUX));
++
++	reg = HVS_READ(SCALER_DISPDITHER);
++	reg &= ~SCALER_DISPDITHER_DSP5_MUX_MASK;
++	HVS_WRITE(SCALER_DISPDITHER,
++		  reg | VC4_SET_FIELD(3, SCALER_DISPDITHER_DSP5_MUX));
++
+ 	dispctrl = HVS_READ(SCALER_DISPCTRL);
+ 
+ 	dispctrl |= SCALER_DISPCTRL_ENABLE;
+@@ -642,10 +663,6 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
+ 		    SCALER_DISPCTRL_DISPEIRQ(1) |
+ 		    SCALER_DISPCTRL_DISPEIRQ(2);
+ 
+-	/* Set DSP3 (PV1) to use HVS channel 2, which would otherwise
+-	 * be unused.
+-	 */
+-	dispctrl &= ~SCALER_DISPCTRL_DSP3_MUX_MASK;
+ 	dispctrl &= ~(SCALER_DISPCTRL_DMAEIRQ |
+ 		      SCALER_DISPCTRL_SLVWREIRQ |
+ 		      SCALER_DISPCTRL_SLVRDEIRQ |
+@@ -659,7 +676,6 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
+ 		      SCALER_DISPCTRL_DSPEISLUR(1) |
+ 		      SCALER_DISPCTRL_DSPEISLUR(2) |
+ 		      SCALER_DISPCTRL_SCLEIRQ);
+-	dispctrl |= VC4_SET_FIELD(2, SCALER_DISPCTRL_DSP3_MUX);
+ 
+ 	HVS_WRITE(SCALER_DISPCTRL, dispctrl);
+ 
 -- 
 2.35.1
 
