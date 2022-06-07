@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 873E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4315C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:23:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354544AbiFHBWw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38792 "EHLO
+        id S235136AbiFHBXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:23:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381764AbiFGWSJ (ORCPT
+        with ESMTP id S1382747AbiFGVvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:18:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDBD262AC5;
-        Tue,  7 Jun 2022 12:20:31 -0700 (PDT)
+        Tue, 7 Jun 2022 17:51:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5E423D5F9;
+        Tue,  7 Jun 2022 12:09:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C95CF6192C;
-        Tue,  7 Jun 2022 19:20:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3871C385A2;
-        Tue,  7 Jun 2022 19:20:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F43DB81F6D;
+        Tue,  7 Jun 2022 19:09:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80EFDC385A5;
+        Tue,  7 Jun 2022 19:09:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629613;
-        bh=BBg+mwCNWImlh+M2q37i5/XLQ4BevCr4QVoRF5vwmqI=;
+        s=korg; t=1654628961;
+        bh=yUWi9eLXk1J9vjjkZvhBAvrAmSPuFeslmO2wWxRBOq4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gGoMej0NE1OFC0jT0d2cIBsb96zV5RxGE7iOA0PX29Cf9C0xS79wj2/0dXBUWznBH
-         yYBdryLna3EfbYsk+Bc4v2jZTP0Nv7Q6HMN9Ppcb/wzF/ArG3sz55pp0d5V6rfwudM
-         mYsKyTCAxrw9Jz+jXJon8W+BRVHj9uuedAVhwOgM=
+        b=Qno4Tf19kIUGpy8a69SHWgkMmKd8VMQc+TyccwQmVVqCEp/GlJH6brqmxOFUxHQF4
+         CE717dsumKUvYgoB28Gbu88CQAtKDg16eef+3h3e42DQYwnleRHP6CeYHGV65ZsIlx
+         BzVaoyfO9ctiADqsO/WKe8ZktdTSvWdRREyKb1nI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guchun Chen <guchun.chen@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.18 753/879] drm/amdgpu: add beige goby PCI ID
-Date:   Tue,  7 Jun 2022 19:04:31 +0200
-Message-Id: <20220607165024.717481003@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Jeffrey Altman <jaltman@auristor.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 519/879] rxrpc: Fix overlapping ACK accounting
+Date:   Tue,  7 Jun 2022 19:00:37 +0200
+Message-Id: <20220607165017.940371166@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,29 +52,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: David Howells <dhowells@redhat.com>
 
-commit 62e9bd20035b53ff6c679499c08546d96c6c60a7 upstream.
+[ Upstream commit 8940ba3cfe4841928777fd45eaa92051522c7f0c ]
 
-Add a beige goby PCI ID.
+Fix accidental overlapping of Rx-phase ACK accounting with Tx-phase ACK
+accounting through variables shared between the two.  call->acks_* members
+refer to ACKs received in the Tx phase and call->ackr_* members to ACKs
+sent/to be sent during the Rx phase.
 
-Reviewed-by: Guchun Chen <guchun.chen@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1a2391c30c0b ("rxrpc: Fix detection of out of order acks")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Jeffrey Altman <jaltman@auristor.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/rxrpc/ar-internal.h |  7 ++++---
+ net/rxrpc/input.c       | 16 ++++++++--------
+ 2 files changed, 12 insertions(+), 11 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-@@ -1931,6 +1931,7 @@ static const struct pci_device_id pciidl
- 	{0x1002, 0x7421, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_BEIGE_GOBY},
- 	{0x1002, 0x7422, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_BEIGE_GOBY},
- 	{0x1002, 0x7423, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_BEIGE_GOBY},
-+	{0x1002, 0x7424, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_BEIGE_GOBY},
- 	{0x1002, 0x743F, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_BEIGE_GOBY},
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 422558d50571..cc1fe6d00eca 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -676,10 +676,9 @@ struct rxrpc_call {
  
- 	{ PCI_DEVICE(0x1002, PCI_ANY_ID),
+ 	spinlock_t		input_lock;	/* Lock for packet input to this call */
+ 
+-	/* receive-phase ACK management */
++	/* Receive-phase ACK management (ACKs we send). */
+ 	u8			ackr_reason;	/* reason to ACK */
+ 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
+-	rxrpc_serial_t		ackr_first_seq;	/* first sequence number received */
+ 	rxrpc_seq_t		ackr_prev_seq;	/* previous sequence number received */
+ 	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
+ 	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
+@@ -692,8 +691,10 @@ struct rxrpc_call {
+ #define RXRPC_CALL_RTT_AVAIL_MASK	0xf
+ #define RXRPC_CALL_RTT_PEND_SHIFT	8
+ 
+-	/* transmission-phase ACK management */
++	/* Transmission-phase ACK management (ACKs we've received). */
+ 	ktime_t			acks_latest_ts;	/* Timestamp of latest ACK received */
++	rxrpc_seq_t		acks_first_seq;	/* first sequence number received */
++	rxrpc_seq_t		acks_prev_seq;	/* previous sequence number received */
+ 	rxrpc_seq_t		acks_lowest_nak; /* Lowest NACK in the buffer (or ==tx_hard_ack) */
+ 	rxrpc_seq_t		acks_lost_top;	/* tx_top at the time lost-ack ping sent */
+ 	rxrpc_serial_t		acks_lost_ping;	/* Serial number of probe ACK */
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index 67d3eba60dc7..3da33b5c13b2 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -812,7 +812,7 @@ static void rxrpc_input_soft_acks(struct rxrpc_call *call, u8 *acks,
+ static bool rxrpc_is_ack_valid(struct rxrpc_call *call,
+ 			       rxrpc_seq_t first_pkt, rxrpc_seq_t prev_pkt)
+ {
+-	rxrpc_seq_t base = READ_ONCE(call->ackr_first_seq);
++	rxrpc_seq_t base = READ_ONCE(call->acks_first_seq);
+ 
+ 	if (after(first_pkt, base))
+ 		return true; /* The window advanced */
+@@ -820,7 +820,7 @@ static bool rxrpc_is_ack_valid(struct rxrpc_call *call,
+ 	if (before(first_pkt, base))
+ 		return false; /* firstPacket regressed */
+ 
+-	if (after_eq(prev_pkt, call->ackr_prev_seq))
++	if (after_eq(prev_pkt, call->acks_prev_seq))
+ 		return true; /* previousPacket hasn't regressed. */
+ 
+ 	/* Some rx implementations put a serial number in previousPacket. */
+@@ -933,8 +933,8 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
+ 	/* Discard any out-of-order or duplicate ACKs (outside lock). */
+ 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
+ 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
+-					   first_soft_ack, call->ackr_first_seq,
+-					   prev_pkt, call->ackr_prev_seq);
++					   first_soft_ack, call->acks_first_seq,
++					   prev_pkt, call->acks_prev_seq);
+ 		return;
+ 	}
+ 
+@@ -949,14 +949,14 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
+ 	/* Discard any out-of-order or duplicate ACKs (inside lock). */
+ 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
+ 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
+-					   first_soft_ack, call->ackr_first_seq,
+-					   prev_pkt, call->ackr_prev_seq);
++					   first_soft_ack, call->acks_first_seq,
++					   prev_pkt, call->acks_prev_seq);
+ 		goto out;
+ 	}
+ 	call->acks_latest_ts = skb->tstamp;
+ 
+-	call->ackr_first_seq = first_soft_ack;
+-	call->ackr_prev_seq = prev_pkt;
++	call->acks_first_seq = first_soft_ack;
++	call->acks_prev_seq = prev_pkt;
+ 
+ 	/* Parse rwind and mtu sizes if provided. */
+ 	if (buf.info.rxMTU)
+-- 
+2.35.1
+
 
 
