@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D658ECCA482
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F09CCA485
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385244AbiFGWpo (ORCPT
+        id S1385749AbiFGWqf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51080 "EHLO
+        Tue, 7 Jun 2022 18:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379545AbiFGVcq (ORCPT
+        with ESMTP id S1376372AbiFGVgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:32:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3229422D640;
-        Tue,  7 Jun 2022 12:04:20 -0700 (PDT)
+        Tue, 7 Jun 2022 17:36:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5416F140877;
+        Tue,  7 Jun 2022 12:04:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91E6E6181D;
-        Tue,  7 Jun 2022 19:04:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CC28C34115;
-        Tue,  7 Jun 2022 19:04:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EF36617CC;
+        Tue,  7 Jun 2022 19:04:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 997CBC385A2;
+        Tue,  7 Jun 2022 19:04:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628659;
-        bh=3oW9Tx/Id2jpAA18HoDTbbm0Aq9/0ChE827W/WUnirc=;
+        s=korg; t=1654628698;
+        bh=IBJFk8m+ISBuPo0dyzuyqrLXv+zS3d6XfsnD/v3iwUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M4f5YslFEvaktzu5e5hDeB0GcCNjQ9NZFmbodSOPwL/xGkZOryiY4wqBayQ0jGzvu
-         yDKW6F/vDckCAaXoYpoJbDjJC5l02VbJbcZDUHAiPZh6MEA7wrnodJj4G7iMYM5PMr
-         RBNBRgfSm1w3v/bdE+etmyhecRuciKUbJIMimpR0=
+        b=dVT5/6HrtxO12yIi/sKG00wseSj2T+QpYdWvHtw5qLrUKj9kAb95G84g0hGG/JN9y
+         NF/hgDf2wNgnwypfF3Z8cmRjzYIjdMcjppvnxMedmZdCOBUQzEpZ70rBNLphS0tCZN
+         w4JMwH2+u4Qx+/y9dPY7knHtbZlKMMJElVtHr9JE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 372/879] drm/msm/dp: do not stop transmitting phy test pattern during DP phy compliance test
-Date:   Tue,  7 Jun 2022 18:58:10 +0200
-Message-Id: <20220607165013.669857838@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Ming Lei <ming.lei@redhat.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 424/879] block: Fix the bio.bi_opf comment
+Date:   Tue,  7 Jun 2022 18:59:02 +0200
+Message-Id: <20220607165015.173018807@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,78 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: Bart Van Assche <bvanassche@acm.org>
 
-[ Upstream commit 2788b4efa60c1e03ac10a156f3fdbd3be0f9198c ]
+[ Upstream commit 5d2ae14276e698c76fa0c8ce870103f343b38263 ]
 
-At normal operation, transmit phy test pattern has to be terminated before
-DP controller switch to video ready state. However during phy compliance
-testing, transmit phy test pattern should not be terminated until end of
-compliance test which usually indicated by unplugged interrupt.
+Commit ef295ecf090d modified the Linux kernel such that the bottom bits
+of the bi_opf member contain the operation instead of the topmost bits.
+That commit did not update the comment next to bi_opf. Hence this patch.
 
-Only stop sending the train pattern in dp_ctrl_on_stream() if we're not
-doing compliance testing. We also no longer reset 'p_level' and
-'v_level' within dp_ctrl_on_link() due to both 'p_level' and 'v_level'
-are acquired from link status at previous dpcd read and we like to use
-those level to start link training.
+>From commit ef295ecf090d:
+-#define bio_op(bio)    ((bio)->bi_opf >> BIO_OP_SHIFT)
++#define bio_op(bio)    ((bio)->bi_opf & REQ_OP_MASK)
 
-Changes in v2:
--- add more details commit text
--- correct Fixes
-
-Changes in v3:
--- drop unnecessary braces
-
-Fixes: 2e0adc765d88 ("drm/msm/dp: do not end dp link training until video is ready")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/483564/
-Link: https://lore.kernel.org/r/1650995939-28467-3-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Ming Lei <ming.lei@redhat.com>
+Fixes: ef295ecf090d ("block: better op and flags encoding")
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220511235152.1082246-1-bvanassche@acm.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_ctrl.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ include/linux/blk_types.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index 193cc1a597ff..08cc48af03b7 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -1699,8 +1699,6 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
- 		ctrl->link->link_params.rate,
- 		ctrl->link->link_params.num_lanes, ctrl->dp_ctrl.pixel_rate);
- 
--	ctrl->link->phy_params.p_level = 0;
--	ctrl->link->phy_params.v_level = 0;
- 
- 	rc = dp_ctrl_enable_mainlink_clocks(ctrl);
- 	if (rc)
-@@ -1822,12 +1820,6 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
- 		}
- 	}
- 
--	if (!dp_ctrl_channel_eq_ok(ctrl))
--		dp_ctrl_link_retrain(ctrl);
--
--	/* stop txing train pattern to end link training */
--	dp_ctrl_clear_training_pattern(ctrl);
--
- 	ret = dp_ctrl_enable_stream_clocks(ctrl);
- 	if (ret) {
- 		DRM_ERROR("Failed to start pixel clocks. ret=%d\n", ret);
-@@ -1839,6 +1831,12 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
- 		return 0;
- 	}
- 
-+	if (!dp_ctrl_channel_eq_ok(ctrl))
-+		dp_ctrl_link_retrain(ctrl);
-+
-+	/* stop txing train pattern to end link training */
-+	dp_ctrl_clear_training_pattern(ctrl);
-+
- 	/*
- 	 * Set up transfer unit values and set controller state to send
- 	 * video.
+diff --git a/include/linux/blk_types.h b/include/linux/blk_types.h
+index 1973ef9bd40f..4fa359c2c01f 100644
+--- a/include/linux/blk_types.h
++++ b/include/linux/blk_types.h
+@@ -246,9 +246,8 @@ typedef unsigned int blk_qc_t;
+ struct bio {
+ 	struct bio		*bi_next;	/* request queue link */
+ 	struct block_device	*bi_bdev;
+-	unsigned int		bi_opf;		/* bottom bits req flags,
+-						 * top bits REQ_OP. Use
+-						 * accessors.
++	unsigned int		bi_opf;		/* bottom bits REQ_OP, top bits
++						 * req_flags.
+ 						 */
+ 	unsigned short		bi_flags;	/* BIO_* below */
+ 	unsigned short		bi_ioprio;
 -- 
 2.35.1
 
