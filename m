@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FEF8CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:57:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CED4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:58:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347786AbiFGR54 (ORCPT
+        id S1348593AbiFGR6A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:57:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53294 "EHLO
+        Tue, 7 Jun 2022 13:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347259AbiFGReW (ORCPT
+        with ESMTP id S1347231AbiFGRhi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:34:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4C611990E;
-        Tue,  7 Jun 2022 10:30:34 -0700 (PDT)
+        Tue, 7 Jun 2022 13:37:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33671929F;
+        Tue,  7 Jun 2022 10:33:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C2B361529;
-        Tue,  7 Jun 2022 17:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 970BCC385A5;
-        Tue,  7 Jun 2022 17:30:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B868A6146F;
+        Tue,  7 Jun 2022 17:33:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA505C385A5;
+        Tue,  7 Jun 2022 17:33:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623011;
-        bh=hzmh5xx+LcFfdBOwF9UjRFodRuc2GeEb4Zhds6M05Yo=;
+        s=korg; t=1654623189;
+        bh=lvjgWwCWMMG4oPUt5XqFiKHL2VFjfq8Xa8zNktZpPmc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VBMrSQL/1YnXKZwJy/DW6lw+O6m/ekJTq2FEGbxQZaTMUTG9SdbREPZ45AJiQhq2D
-         U7taDg/8/m7EHEuX2ac5lV1K/mHcKYGjpNMwu+yPvjvtTu2LfkfpR9Im7mGXXsZ/tK
-         M5Lm+hjn1ezeIZjlK8e2w5g3TKXSyUlXQq7JLio8=
+        b=ZSHoxsOwvD5kDiLv/cTblZnngxsW/IVrXK5GHgpkbMX5C0Uj/Oak5Zsv770LrKCGa
+         a5QrAFik7Wl42J29nnZNa0HQb84tfuC0ytpZxq/1IAa8sGxMpR67VtCYmiKMCUjZXg
+         kO4CSMRo4F+EHJEyUuYXH+RcVfQ6z10Uy8RDspYk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 263/452] PCI: cadence: Fix find_first_zero_bit() limit
-Date:   Tue,  7 Jun 2022 19:02:00 +0200
-Message-Id: <20220607164916.389779494@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 326/452] i2c: at91: Initialize dma_buf in at91_twi_xfer()
+Date:   Tue,  7 Jun 2022 19:03:03 +0200
+Message-Id: <20220607164918.275566049@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,35 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit 0aa3a0937feeb91a0e4e438c3c063b749b194192 ]
+[ Upstream commit 6977262c2eee111645668fe9e235ef2f5694abf7 ]
 
-The ep->ob_region_map bitmap is a long and it has BITS_PER_LONG bits.
+Clang warns:
 
-Link: https://lore.kernel.org/r/20220315065829.GA13572@kili
-Fixes: 37dddf14f1ae ("PCI: cadence: Add EndPoint Controller driver for Cadence PCIe controller")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+  drivers/i2c/busses/i2c-at91-master.c:707:6: warning: variable 'dma_buf' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+          if (dev->use_dma) {
+              ^~~~~~~~~~~~
+  drivers/i2c/busses/i2c-at91-master.c:717:27: note: uninitialized use occurs here
+          i2c_put_dma_safe_msg_buf(dma_buf, m_start, !ret);
+                                   ^~~~~~~
+
+Initialize dma_buf to NULL, as i2c_put_dma_safe_msg_buf() is a no-op
+when the first argument is NULL, which will work for the !dev->use_dma
+case.
+
+Fixes: 03fbb903c8bf ("i2c: at91: use dma safe buffers")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1629
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/cadence/pcie-cadence-ep.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/i2c/busses/i2c-at91-master.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/controller/cadence/pcie-cadence-ep.c b/drivers/pci/controller/cadence/pcie-cadence-ep.c
-index 1af14474abcf..4c5e6349d78c 100644
---- a/drivers/pci/controller/cadence/pcie-cadence-ep.c
-+++ b/drivers/pci/controller/cadence/pcie-cadence-ep.c
-@@ -154,8 +154,7 @@ static int cdns_pcie_ep_map_addr(struct pci_epc *epc, u8 fn, phys_addr_t addr,
- 	struct cdns_pcie *pcie = &ep->pcie;
- 	u32 r;
+diff --git a/drivers/i2c/busses/i2c-at91-master.c b/drivers/i2c/busses/i2c-at91-master.c
+index 974225faaf96..7960fa4b8c5b 100644
+--- a/drivers/i2c/busses/i2c-at91-master.c
++++ b/drivers/i2c/busses/i2c-at91-master.c
+@@ -657,7 +657,7 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
+ 	unsigned int_addr_flag = 0;
+ 	struct i2c_msg *m_start = msg;
+ 	bool is_read;
+-	u8 *dma_buf;
++	u8 *dma_buf = NULL;
  
--	r = find_first_zero_bit(&ep->ob_region_map,
--				sizeof(ep->ob_region_map) * BITS_PER_LONG);
-+	r = find_first_zero_bit(&ep->ob_region_map, BITS_PER_LONG);
- 	if (r >= ep->max_regions - 1) {
- 		dev_err(&epc->dev, "no free outbound region\n");
- 		return -EINVAL;
+ 	dev_dbg(&adap->dev, "at91_xfer: processing %d messages:\n", num);
+ 
 -- 
 2.35.1
 
