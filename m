@@ -2,130 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55221C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:26:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:26:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240188AbiFGO0C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:26:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40194 "EHLO
+        id S245459AbiFGO0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 10:26:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245411AbiFGOZ4 (ORCPT
+        with ESMTP id S244376AbiFGO0t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:25:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDD8F339F;
-        Tue,  7 Jun 2022 07:25:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6743F615BC;
-        Tue,  7 Jun 2022 14:25:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25812C385A5;
-        Tue,  7 Jun 2022 14:25:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654611952;
-        bh=eTmmhNitWRhmgZXJiNPWVRwjucfXXcjZHpQJMAyvH58=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rBR0PNsJs3s/xFyjfBsc4EC9G3D/5SUtETmaEp5FfEHy2Y4GkLRefOZZC16UJYwF1
-         ZLnF7A38kqHH808gvWreIM8pzJ9/T2hLyN12swLRB0jh6pA93lbsFjiD56+LsV2vXm
-         4kT+r3l0XMMjXazYdAxlil8FhZQ3fscdk+ObtXevsiol99sqlgyuXCEahsvWKzM+Dw
-         2f3hgoRrcHZj/n+bUqhHB6hMZgYfg/DsNmLsZ9YIOJ77WN0UdIu/imQNcAG7FhF+UJ
-         +90y5Yc98fFqkKvcRz/9VZnhx+8DpTr8UccPT4POnxYj+2sT3QPAA6h3/XM1RA/Hna
-         zedNydLz/9Hxw==
-Date:   Tue, 7 Jun 2022 07:25:50 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Jon Hunter <jonathanh@nvidia.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-modules@vger.kernel.org, llvm@lists.linux.dev,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH v6 06/10] kbuild: check static EXPORT_SYMBOL* by script
- instead of modpost
-Message-ID: <Yp9f7lKjcCrRUcAD@dev-arch.thelio-3990X>
-References: <20220513113930.10488-1-masahiroy@kernel.org>
- <20220513113930.10488-7-masahiroy@kernel.org>
- <e020f60d-218c-8e47-5863-23dcb55452f2@nvidia.com>
+        Tue, 7 Jun 2022 10:26:49 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF601F1355;
+        Tue,  7 Jun 2022 07:26:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654612007; x=1686148007;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=hCMgvCBkBCY4Vcl2F8PVd99E2NYd2skQpnhgyg7W0XQ=;
+  b=AcTIAvb1Cx1WTfyZgQY5cbglB6tNndtD6O7azIWq42mx914IeTzDOosh
+   lLb8lJlTScCtpbCzMQGKJ8ujrOVoSyptfBkQ+V/u4carj2IeUKgE+lwYa
+   8iQX4Bmmmfu4JGypiJiNzSBL3lAhPCgz3fSohvcNOhKQqm1hrwUROLhFp
+   fxtAgeYKidSJx4BVoHotkfP2+n0coawer6M4kkPXXIaBOgUBoNO6+xDFB
+   GrozcP8qc8Fm9cz09UuvZn/5jLfhpArFp9gkkKOIy2HhAFkC8WP6fKgzV
+   Ue371mGubefyw1LXkXFDL3m4Wk1kaWaxEG48OM+tA2QoDKyJADd0gVxkG
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277538376"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="277538376"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:19:22 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="636144213"
+Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:19:20 -0700
+Date:   Tue, 7 Jun 2022 17:19:18 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 16/36] tty/vt: consolemap: check put_user() in
+ con_get_unimap()
+In-Reply-To: <20220607104946.18710-16-jslaby@suse.cz>
+Message-ID: <8ad44d3b-449f-4a30-1a4c-dffd43bbbd1@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-16-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e020f60d-218c-8e47-5863-23dcb55452f2@nvidia.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 03:22:21PM +0100, Jon Hunter wrote:
-> 
-> On 13/05/2022 12:39, Masahiro Yamada wrote:
-> > The 'static' specifier and EXPORT_SYMBOL() are an odd combination.
-> > 
-> > Commit 15bfc2348d54 ("modpost: check for static EXPORT_SYMBOL*
-> > functions") tried to detect it, but this check has false negatives.
-> > 
-> > Here is the sample code.
-> > 
-> >    Makefile:
-> > 
-> >      obj-y += foo1.o foo2.o
-> > 
-> >    foo1.c:
-> > 
-> >      #include <linux/export.h>
-> >      static void foo(void) {}
-> >      EXPORT_SYMBOL(foo);
-> > 
-> >    foo2.c:
-> > 
-> >      void foo(void) {}
-> > 
-> > foo1.c exports the static symbol 'foo', but modpost cannot catch it
-> > because it is fooled by foo2.c, which has a global symbol with the
-> > same name.
-> > 
-> > s->is_static is cleared if a global symbol with the same name is found
-> > somewhere, but EXPORT_SYMBOL() and the global symbol do not necessarily
-> > belong to the same compilation unit.
-> > 
-> > This check should be done per compilation unit, but I do not know how
-> > to do it in modpost. modpost runs against vmlinux.o or modules, which
-> > merges multiple objects, then forgets their origin.
-> > 
-> > It is true modpost gets access to the lists of all the member objects
-> > (.vmlinux.objs and *.mod), but modpost cannot parse individual objects
-> > because they may not be ELF but LLVM IR when CONFIG_LTO_CLANG=y.
-> > 
-> > Add a simple bash script to parse the output from ${NM}. This works for
-> > CONFIG_LTO_CLANG=y because llvm-nm can dump symbols of LLVM IR files.
-> > 
-> > Revert 15bfc2348d54.
-> > 
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-> > Tested-by: Nathan Chancellor <nathan@kernel.org>
-> 
-> 
-> One some older build machines this is causing some builds (ARM/ARM64)
-> to fail ...
-> 
-> /dvs/git/dirty/git-master_l4t-upstream/kernel/scripts/check-local-export: line 54: wait: pid 48433 is not a child of this shell
-> /dvs/git/dirty/git-master_l4t-upstream/kernel/scripts/Makefile.build:250: recipe for target 'scripts/mod/empty.o' failed
-> make[2]: *** [scripts/mod/empty.o] Error 127
-> make[2]: *** Deleting file 'scripts/mod/empty.o'
-> make[2]: *** Waiting for unfinished jobs....
-> /dvs/git/dirty/git-master_l4t-upstream/kernel/Makefile:1285: recipe for target 'prepare0' failed
-> make[1]: *** [prepare0] Error 2
-> make[1]: Leaving directory '/dvs/git/dirty/git-master_l4t-upstream/artifacts/linux/arm64-defconfig-jetson'
-> Makefile:228: recipe for target '__sub-make' failed
-> make: *** [__sub-make] Error 2
-> 
-> Any ideas?
+On Tue, 7 Jun 2022, Jiri Slaby wrote:
 
-https://lore.kernel.org/20220607084317.211785-1-masahiroy@kernel.org/
-should resolve it if you wanted to give it a test.
+> Only the return value of copy_to_user() is checked in con_get_unimap().
+> Do the same for put_user() of the count too.
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> ---
+>  drivers/tty/vt/consolemap.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+> index 831450f2bfd1..92b5dddb00d9 100644
+> --- a/drivers/tty/vt/consolemap.c
+> +++ b/drivers/tty/vt/consolemap.c
+> @@ -813,7 +813,8 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct,
+>  	console_unlock();
+>  	if (copy_to_user(list, unilist, min(ect, ct) * sizeof(*unilist)))
+>  		ret = -EFAULT;
+> -	put_user(ect, uct);
+> +	if (put_user(ect, uct))
+> +		ret = -EFAULT;
+>  	kvfree(unilist);
+>  	return ret ? ret : (ect <= ct) ? 0 : -ENOMEM;
+>  }
+> 
 
-Cheers,
-Nathan
+Doesn't this fix something?
+
+-- 
+ i.
+
