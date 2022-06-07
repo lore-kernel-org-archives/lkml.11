@@ -2,89 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C71C6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:36:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F195C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:36:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239747AbiFGJgM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:36:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36408 "EHLO
+        id S239785AbiFGJgS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:36:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239702AbiFGJfK (ORCPT
+        with ESMTP id S239764AbiFGJfT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:35:10 -0400
-X-Greylist: delayed 191 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 02:35:06 PDT
-Received: from n169-111.mail.139.com (n169-111.mail.139.com [120.232.169.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E85AEE64D7
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:35:05 -0700 (PDT)
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM:                                                                                        
-X-RM-SPAM-FLAG: 00000000
-Received: from [127.0.0.1] (unknown[60.213.227.6])
-        by rmsmtp-lg-appmail-13-12002 (RichMail) with SMTP id 2ee2629f1affaed-e6591;
-        Tue, 07 Jun 2022 17:31:44 +0800 (CST)
-X-RM-TRANSID: 2ee2629f1affaed-e6591
-Message-ID: <a3a9d315-3b40-832a-8901-9adcbca1016a@139.com>
-Date:   Tue, 7 Jun 2022 17:31:43 +0800
+        Tue, 7 Jun 2022 05:35:19 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E26BE64D7;
+        Tue,  7 Jun 2022 02:35:16 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id w13-20020a17090a780d00b001e8961b355dso3125270pjk.5;
+        Tue, 07 Jun 2022 02:35:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/7EAFJgdonloPk0n/CJ/zciAeZ6ggjWIIfAJFu04Kc4=;
+        b=S1qC8HOeFifIMvVV7Ym8+VedrgGuml+FLWbRZJtWYWp2ddutmxt1jZh9nW1uaFdcP9
+         96r3gzbtnk3ex+h3r7BfV2K5VchL8Tx8o6sjpOAGg4EetIWYaBltqJDH29yt82KhuX6o
+         N2gDEoVoKxGdXYw3GzlLTGTrv/D0yHGWcEV7QJPYASc3ccnGoVXNYLQTs378SsxriSRy
+         VtvDsgfIMSF7B9piY1LNyOe4wK8iokWcZ5ZK/PgewvtfSxFqMgNm9YW+z9WJzsMEflT9
+         hJif8d/zv3kDz7ETAE75U+2euTntkYJA8WGiCfh9k/Iq8CPyd8Kdb5fB+UiZdb3p4fu5
+         9zZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/7EAFJgdonloPk0n/CJ/zciAeZ6ggjWIIfAJFu04Kc4=;
+        b=4DzfbDfBj11UgnKVmli5fzswFKrvbhvm/y931u+hyTi3TIAk8tb9OgFTsiuYnC9GcC
+         l1etp8OYGrBxDo1iHbbW0chwtDRlDwY4rPlcEqmGcB4Yakq3kwpErc14dnwHqhYUs70R
+         UzLMWAnYmqhicJq7vxwb4lwJTtndMDivC80QEWZ95MSpsFnQGs4S1hFRVnOKILAL0Whq
+         YkfI3tsmDD2TA0ZgjDaRRuYxD2pjG5BgS+ApqdrZN2lEaL26oj2/PelUr8PmyKzKsaYH
+         zDgQJn//DyDayqXh4z19V8nPwMM87SGsmC3ue87Rd4QqAosQxDzSPDDhW6xyQvDxg9KK
+         IcJw==
+X-Gm-Message-State: AOAM533EMk5piFz8zPU1nVH3OWRsOAJFtXsv8SjrjXmRhfi+0eEZNu5k
+        jC0X1L03ZZvVPPXQK67kG3WQIWj3+lg=
+X-Google-Smtp-Source: ABdhPJz6KP2YgSIRKs2hKh8e1UIylOlLROEWvw7Unv2OlluDBrIgSrrDYuWMc7+eJZ2wZ4C1CPEdUw==
+X-Received: by 2002:a17:90a:2c0c:b0:1ea:14c0:f0ca with SMTP id m12-20020a17090a2c0c00b001ea14c0f0camr169736pjd.143.1654594515102;
+        Tue, 07 Jun 2022 02:35:15 -0700 (PDT)
+Received: from localhost (subs28-116-206-12-32.three.co.id. [116.206.12.32])
+        by smtp.gmail.com with ESMTPSA id jg15-20020a17090326cf00b001640594376dsm12017207plb.183.2022.06.07.02.35.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 02:35:14 -0700 (PDT)
+Date:   Tue, 7 Jun 2022 16:35:11 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        linux-doc@vger.kernel.org
+Subject: Re: linux-next: build warnings after merge of the hwmon-staging tree
+Message-ID: <Yp8bz4Yo45Bq4VfR@debian.me>
+References: <20220607142301.3eb8a53c@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/1] MIPS: Loongson-3: fix compile mips cpu_hwmon as a
- module build error.
-To:     Yupeng Li <liyupeng@zbhlos.com>, chenhc@lemote.com,
-        ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org
-Cc:     linux-mips@linux-mips.org, linux-kernel@vger.kernel.org,
-        caizp2008@163.com
-References: <20220607021702.3224369-1-liyupeng@zbhlos.com>
-From:   HU Zeyuan <huzeyuan139@139.com>
-In-Reply-To: <20220607021702.3224369-1-liyupeng@zbhlos.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220607142301.3eb8a53c@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-If you want to submit patches,please send the email to the correct 
-maintainer(s),and CC the correct mailing list(s).
-
-Zeyuan
-
-在 2022/6/7 10:17, Yupeng Li 写道:
->    set cpu_hwmon as a module build with loongson_sysconf, loongson_chiptemp
->    undefined error,fix cpu_hwmon compile options to be bool.Some kernel
->    compilation error information is as follows:
+On Tue, Jun 07, 2022 at 02:23:01PM +1000, Stephen Rothwell wrote:
+> Hi all,
 > 
->    Checking missing-syscalls for N32
->    CALL    scripts/checksyscalls.sh
->    Checking missing-syscalls for O32
->    CALL    scripts/checksyscalls.sh
->    CALL    scripts/checksyscalls.sh
->    CHK     include/generated/compile.h
->    CC [M]  drivers/platform/mips/cpu_hwmon.o
->    Building modules, stage 2.
->    MODPOST 200 modules
-> ERROR: "loongson_sysconf" [drivers/platform/mips/cpu_hwmon.ko] undefined!
-> ERROR: "loongson_chiptemp" [drivers/platform/mips/cpu_hwmon.ko] undefined!
-> make[1]: *** [scripts/Makefile.modpost:92：__modpost] 错误 1
-> make: *** [Makefile:1261：modules] 错误 2
+> After merging the hwmon-staging tree, today's linux-next build (htmldocs)
+> produced these warnings:
 > 
-> Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
-> ---
->   drivers/platform/mips/Kconfig | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> Documentation/hwmon/lm90.rst:493: WARNING: Bullet list ends without a blank line; unexpected unindent.
+> Documentation/hwmon/lm90.rst:494: WARNING: Bullet list ends without a blank line; unexpected unindent.
 > 
-> diff --git a/drivers/platform/mips/Kconfig b/drivers/platform/mips/Kconfig
-> index b3ae30a4c67b..c2f1ede1caca 100644
-> --- a/drivers/platform/mips/Kconfig
-> +++ b/drivers/platform/mips/Kconfig
-> @@ -16,7 +16,7 @@ menuconfig MIPS_PLATFORM_DEVICES
->   if MIPS_PLATFORM_DEVICES
->   
->   config CPU_HWMON
-> -	tristate "Loongson CPU HWMon Driver"
-> +	bool "Loongson CPU HWMon Driver"
->   	depends on LOONGSON_MACH3X
->   	select HWMON
->   	default y
+> Introduced by commit
+> 
+>   7dd47c2603aa ("hwmon: (lm90) Support MAX1617 and LM84")
+>
 
+Hi Stephen,
+
+These warnings above doesn't appear when doing htmldocs build using
+Sphinx installed from pip on my system.
+
+Cc-ing linux-doc list.
+
+Thanks.
+
+-- 
+An old man doll... just what I always wanted! - Clara
