@@ -2,41 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3531CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F940CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:03:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230412AbiFHBDB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:03:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49884 "EHLO
+        id S1444220AbiFHBBc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:01:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385263AbiFGWVX (ORCPT
+        with ESMTP id S1381542AbiFGW3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E7026714C;
-        Tue,  7 Jun 2022 12:21:18 -0700 (PDT)
+        Tue, 7 Jun 2022 18:29:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3B319C3B9;
+        Tue,  7 Jun 2022 12:23:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BB23600E1;
-        Tue,  7 Jun 2022 19:21:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AE22C385A5;
-        Tue,  7 Jun 2022 19:21:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D4CFB823D8;
+        Tue,  7 Jun 2022 19:23:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A098C385A2;
+        Tue,  7 Jun 2022 19:23:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629674;
-        bh=YIivGeXXRfB6Sue+gelH2WioHvR7o0hxg8DWNPtEYV4=;
+        s=korg; t=1654629819;
+        bh=X1C2/LqC7ZSYlbBJm017pUCtoKMKyPs5LQhEGfYzQ90=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J/thVNzVhAbi0odMCe5GYZAmHOvM53KLft4PVcS2xcc7Lxw9OfS0cqeHm1lUE499J
-         OJd/Z6lUzekGjXqrqvhITJdw+RCv+vCJ+gKjpB/CN5fqEnmbjEK/idIWXXUNVpbmRG
-         ukvkjfsAi2NMRqk0bkzOVOH/jBvVDaapmkT2r79o=
+        b=1StKF03ITsEPhAUkdnzCeXUY8+FmUzQdILxpr6vO0UEcoDA1IB8W4dsMet4aUZATh
+         /YsEKGScoPv1u4t9NksSgpaB7q4WeHCs+LOFTy7mNIizSHPVpBwGqbMFRdYz49KOot
+         rs7G/27xkCURWpn1Kuwvkc1OX4TOqw67akpKn3gM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.18 777/879] landlock: Fix landlock_add_rule(2) documentation
-Date:   Tue,  7 Jun 2022 19:04:55 +0200
-Message-Id: <20220607165025.424498434@linuxfoundation.org>
+        stable@vger.kernel.org, Dong Aisheng <aisheng.dong@nxp.com>,
+        Minchan Kim <minchan@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Lecopzer Chen <lecopzer.chen@mediatek.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.18 828/879] Revert "mm/cma.c: remove redundant cma_mutex lock"
+Date:   Tue,  7 Jun 2022 19:05:46 +0200
+Message-Id: <20220607165026.888307472@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -48,55 +54,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+From: Dong Aisheng <aisheng.dong@nxp.com>
 
-commit a13e248ff90e81e9322406c0e618cf2168702f4e upstream.
+commit 60a60e32cf91169840abcb4a80f0b0df31708ba7 upstream.
 
-It is not mandatory to pass a file descriptor obtained with the O_PATH
-flag.  Also, replace rule's accesses with ruleset's accesses.
+This reverts commit a4efc174b382fcdb which introduced a regression issue
+that when there're multiple processes allocating dma memory in parallel by
+calling dma_alloc_coherent(), it may fail sometimes as follows:
 
-Link: https://lore.kernel.org/r/20220506160820.524344-2-mic@digikod.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Error log:
+cma: cma_alloc: linux,cma: alloc failed, req-size: 148 pages, ret: -16
+cma: number of available pages:
+3@125+20@172+12@236+4@380+32@736+17@2287+23@2473+20@36076+99@40477+108@40852+44@41108+20@41196+108@41364+108@41620+
+108@42900+108@43156+483@44061+1763@45341+1440@47712+20@49324+20@49388+5076@49452+2304@55040+35@58141+20@58220+20@58284+
+7188@58348+84@66220+7276@66452+227@74525+6371@75549=> 33161 free of 81920 total pages
+
+When issue happened, we saw there were still 33161 pages (129M) free CMA
+memory and a lot available free slots for 148 pages in CMA bitmap that we
+want to allocate.
+
+When dumping memory info, we found that there was also ~342M normal
+memory, but only 1352K CMA memory left in buddy system while a lot of
+pageblocks were isolated.
+
+Memory info log:
+Normal free:351096kB min:30000kB low:37500kB high:45000kB reserved_highatomic:0KB
+	    active_anon:98060kB inactive_anon:98948kB active_file:60864kB inactive_file:31776kB
+	    unevictable:0kB writepending:0kB present:1048576kB managed:1018328kB mlocked:0kB
+	    bounce:0kB free_pcp:220kB local_pcp:192kB free_cma:1352kB lowmem_reserve[]: 0 0 0
+Normal: 78*4kB (UECI) 1772*8kB (UMECI) 1335*16kB (UMECI) 360*32kB (UMECI) 65*64kB (UMCI)
+	36*128kB (UMECI) 16*256kB (UMCI) 6*512kB (EI) 8*1024kB (UEI) 4*2048kB (MI) 8*4096kB (EI)
+	8*8192kB (UI) 3*16384kB (EI) 8*32768kB (M) = 489288kB
+
+The root cause of this issue is that since commit a4efc174b382 ("mm/cma.c:
+remove redundant cma_mutex lock"), CMA supports concurrent memory
+allocation.  It's possible that the memory range process A trying to alloc
+has already been isolated by the allocation of process B during memory
+migration.
+
+The problem here is that the memory range isolated during one allocation
+by start_isolate_page_range() could be much bigger than the real size we
+want to alloc due to the range is aligned to MAX_ORDER_NR_PAGES.
+
+Taking an ARMv7 platform with 1G memory as an example, when
+MAX_ORDER_NR_PAGES is big (e.g.  32M with max_order 14) and CMA memory is
+relatively small (e.g.  128M), there're only 4 MAX_ORDER slot, then it's
+very easy that all CMA memory may have already been isolated by other
+processes when one trying to allocate memory using dma_alloc_coherent().
+Since current CMA code will only scan one time of whole available CMA
+memory, then dma_alloc_coherent() may easy fail due to contention with
+other processes.
+
+This patch simply falls back to the original method that using cma_mutex
+to make alloc_contig_range() run sequentially to avoid the issue.
+
+Link: https://lkml.kernel.org/r/20220509094551.3596244-1-aisheng.dong@nxp.com
+Link: https://lore.kernel.org/all/20220315144521.3810298-2-aisheng.dong@nxp.com/
+Fixes: a4efc174b382 ("mm/cma.c: remove redundant cma_mutex lock")
+Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
+Acked-by: Minchan Kim <minchan@kernel.org>
+Acked-by: David Hildenbrand <david@redhat.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Lecopzer Chen <lecopzer.chen@mediatek.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: <stable@vger.kernel.org>	[5.11+]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/linux/landlock.h |    5 +++--
- security/landlock/syscalls.c  |    7 +++----
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ mm/cma.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/include/uapi/linux/landlock.h
-+++ b/include/uapi/linux/landlock.h
-@@ -62,8 +62,9 @@ struct landlock_path_beneath_attr {
- 	 */
- 	__u64 allowed_access;
- 	/**
--	 * @parent_fd: File descriptor, open with ``O_PATH``, which identifies
--	 * the parent directory of a file hierarchy, or just a file.
-+	 * @parent_fd: File descriptor, preferably opened with ``O_PATH``,
-+	 * which identifies the parent directory of a file hierarchy, or just a
-+	 * file.
- 	 */
- 	__s32 parent_fd;
- 	/*
---- a/security/landlock/syscalls.c
-+++ b/security/landlock/syscalls.c
-@@ -292,14 +292,13 @@ out_fdput:
-  *
-  * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at boot time;
-  * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
-- *   &landlock_path_beneath_attr.allowed_access is not a subset of the rule's
-- *   accesses);
-+ *   &landlock_path_beneath_attr.allowed_access is not a subset of the
-+ *   ruleset handled accesses);
-  * - ENOMSG: Empty accesses (e.g. &landlock_path_beneath_attr.allowed_access);
-  * - EBADF: @ruleset_fd is not a file descriptor for the current thread, or a
-  *   member of @rule_attr is not a file descriptor as expected;
-  * - EBADFD: @ruleset_fd is not a ruleset file descriptor, or a member of
-- *   @rule_attr is not the expected file descriptor type (e.g. file open
-- *   without O_PATH);
-+ *   @rule_attr is not the expected file descriptor type;
-  * - EPERM: @ruleset_fd has no write access to the underlying ruleset;
-  * - EFAULT: @rule_attr inconsistency.
-  */
+--- a/mm/cma.c
++++ b/mm/cma.c
+@@ -37,6 +37,7 @@
+ 
+ struct cma cma_areas[MAX_CMA_AREAS];
+ unsigned cma_area_count;
++static DEFINE_MUTEX(cma_mutex);
+ 
+ phys_addr_t cma_get_base(const struct cma *cma)
+ {
+@@ -468,9 +469,10 @@ struct page *cma_alloc(struct cma *cma,
+ 		spin_unlock_irq(&cma->lock);
+ 
+ 		pfn = cma->base_pfn + (bitmap_no << cma->order_per_bit);
++		mutex_lock(&cma_mutex);
+ 		ret = alloc_contig_range(pfn, pfn + count, MIGRATE_CMA,
+ 				     GFP_KERNEL | (no_warn ? __GFP_NOWARN : 0));
+-
++		mutex_unlock(&cma_mutex);
+ 		if (ret == 0) {
+ 			page = pfn_to_page(pfn);
+ 			break;
 
 
