@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10A0ACCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FFFFCCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383903AbiFGWfh (ORCPT
+        id S1384055AbiFGWfl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        Tue, 7 Jun 2022 18:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378074AbiFGVX2 (ORCPT
+        with ESMTP id S1379068AbiFGVXQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:23:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E36227344;
-        Tue,  7 Jun 2022 12:00:41 -0700 (PDT)
+        Tue, 7 Jun 2022 17:23:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309A2226CFA;
+        Tue,  7 Jun 2022 12:00:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79A43B8239C;
-        Tue,  7 Jun 2022 19:00:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDEEAC34115;
-        Tue,  7 Jun 2022 19:00:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46A47617D6;
+        Tue,  7 Jun 2022 19:00:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51660C385A2;
+        Tue,  7 Jun 2022 19:00:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628440;
-        bh=JqfzZlWXzIpjCYyfXxBmymB6QuLGjqABK8mina/XokU=;
+        s=korg; t=1654628434;
+        bh=YwECxjUBPNlcBAdzuS3oVPUZZ6QHWvrITawN4M2aj/Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AesRTMkgv46lsnI/iYND7Lu3AwlhGvOGU7Ou6IpBo9Y/Luz/NgQafU/jYOmGGBHM5
-         ZwaCJwJQ9fNL9qtGZWsRP5kqAeIUw32OEixeN+/HygeghxZIGzQpknqmDKQVrG1NhO
-         DV4L3P83LOVhbPU8TfhcMbluTBS8Ro/p/UwfG9jo=
+        b=zRwh6P7fRv9ZuQde9oxQmBeifYul9/yu3zEIiiF61Ozoc1qhxB9vnWO+oXGTKxl2Q
+         a04gSJcTOJyYLUNYi7ek9ga6QHqLGUVoIKOZtRnoQ4JhnFdng51PJIi5IfpML3OGc7
+         0reVrKabDhqCKpyWl8T1TIao06lSB6murt970ld4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miles Chen <miles.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Zhiqiang Lin <zhiqiang.lin@mediatek.com>,
-        CK Hu <ck.hu@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 290/879] drm/mediatek: Fix mtk_cec_mask()
-Date:   Tue,  7 Jun 2022 18:56:48 +0200
-Message-Id: <20220607165011.265035809@linuxfoundation.org>
+Subject: [PATCH 5.18 288/879] drm/vc4: kms: Take old state core clock rate into account
+Date:   Tue,  7 Jun 2022 18:56:46 +0200
+Message-Id: <20220607165011.207047074@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -55,43 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miles Chen <miles.chen@mediatek.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 2c5d69b0a141e1e98febe3111e6f4fd8420493a5 ]
+[ Upstream commit 748acfc98adab21a93ae7a1b5bed0f048463e873 ]
 
-In current implementation, mtk_cec_mask() writes val into target register
-and ignores the mask. After talking to our hdmi experts, mtk_cec_mask()
-should read a register, clean only mask bits, and update (val | mask) bits
-to the register.
+During a commit, the core clock, which feeds the HVS, needs to run at
+a minimum of 500MHz.
 
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220315232301.2434-1-miles.chen@mediatek.com/
-Fixes: 8f83f26891e1 ("drm/mediatek: Add HDMI support")
-Signed-off-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Zhiqiang Lin <zhiqiang.lin@mediatek.com>
-Cc: CK Hu <ck.hu@mediatek.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+While doing that commit, we can also change the mode to one that
+requires a higher core clock, so we take the core clock rate associated
+to that new state into account for that boost.
+
+However, the old state also needs to be taken into account if it
+requires a core clock higher that the new one and our 500MHz limit,
+since it's still live in hardware at the beginning of our commit.
+
+Fixes: 16e101051f32 ("drm/vc4: Increase the core clock based on HVS load")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://lore.kernel.org/r/20220331143744.777652-2-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_cec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_kms.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_cec.c b/drivers/gpu/drm/mediatek/mtk_cec.c
-index e9cef5c0c8f7..cdfa648910b2 100644
---- a/drivers/gpu/drm/mediatek/mtk_cec.c
-+++ b/drivers/gpu/drm/mediatek/mtk_cec.c
-@@ -85,7 +85,7 @@ static void mtk_cec_mask(struct mtk_cec *cec, unsigned int offset,
- 	u32 tmp = readl(cec->regs + offset) & ~mask;
+diff --git a/drivers/gpu/drm/vc4/vc4_kms.c b/drivers/gpu/drm/vc4/vc4_kms.c
+index 24de29bc1cda..992d6a240002 100644
+--- a/drivers/gpu/drm/vc4/vc4_kms.c
++++ b/drivers/gpu/drm/vc4/vc4_kms.c
+@@ -385,9 +385,10 @@ static void vc4_atomic_commit_tail(struct drm_atomic_state *state)
+ 	}
  
- 	tmp |= val & mask;
--	writel(val, cec->regs + offset);
-+	writel(tmp, cec->regs + offset);
- }
+ 	if (vc4->hvs->hvs5) {
++		unsigned long state_rate = max(old_hvs_state->core_clock_rate,
++					       new_hvs_state->core_clock_rate);
+ 		unsigned long core_rate = max_t(unsigned long,
+-						500000000,
+-						new_hvs_state->core_clock_rate);
++						500000000, state_rate);
  
- void mtk_cec_set_hpd_event(struct device *dev,
+ 		clk_set_min_rate(hvs->core_clk, core_rate);
+ 	}
 -- 
 2.35.1
 
