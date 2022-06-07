@@ -2,134 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB78CCCA486
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5350CCA49A
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442859AbiFHCBR (ORCPT
+        id S1442303AbiFHCAI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32922 "EHLO
+        Tue, 7 Jun 2022 22:00:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1839425AbiFHADK (ORCPT
+        with ESMTP id S1836899AbiFGX67 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:03:10 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B76B1F0FE0
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:43:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654634588; x=1686170588;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=uznAsvO6cd/Fbzz5a8GDA5cYX4iuDUW8CoL5qsE86g8=;
-  b=TrKsk71zDrUTXesYZbvm09owtBsz/mDtrWhAMzg7Xg04bSJxANJRj3e/
-   AuArFEYJ4gqqCu44573jd5eaj1rh+kptjtKmgUC56z7aAi0lJla1Rw73N
-   uhnlgrOZu+tkdP5q2NSgdGeFBQt5LToX1KCMuCoKzA1dHenFMJc0vQ5Ib
-   9zpHZ/gzVDehxCadL0VtZ2QWtAn+jnR4FhcphZKr9650P8v0B03biz/G0
-   OfoYhh7k3mtmhUY3OIWMRTbH1zXk+67G+gPjDlhUwAZGjYd1CTLbdTIuD
-   Ww6dAZahnCSmjfo8bCW0vZhlPQInL72uR7cFGo0e2T7QxSGj4XGEAgRRW
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="338349902"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="338349902"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 13:07:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="584373102"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 07 Jun 2022 13:07:03 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nyfTi-000Duf-Ta;
-        Tue, 07 Jun 2022 20:07:02 +0000
-Date:   Wed, 8 Jun 2022 04:06:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Jocelyn Falempe <jfalempe@redhat.com>
-Subject: [drm-misc:drm-misc-next 2/10]
- drivers/gpu/drm/mgag200/mgag200_g200.c:120:14: warning: assignment to
- 'unsigned char *' from 'int' makes pointer from integer without a cast
-Message-ID: <202206080411.JpdjEVh2-lkp@intel.com>
+        Tue, 7 Jun 2022 19:58:59 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2521DE8C1
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:47:07 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id h192so10546281pgc.4
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:47:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xTyvpi/CRKA0ZDhB9x52q5aVKrqnKx4HjDRfGU8RMEU=;
+        b=RhcM6qukhvT8pJFmYD+0mUKD5iWzoF5VN8gC6Tr64XQE9Mc990RPHwCJQ0Dm1TSHI0
+         i1v5/nMeNtJ1sTNx1X7feZVKvVM5xc0KoNGrVgd1zw8v4hbfe/d0GGgnCXp1bs9Y7bAp
+         be+uXA+qs+u8UtQA4YdSBnqz0QTFsgOYFdcga1jqfz+kB6kD/rOTYDVi26HQl34C78QT
+         Qv69mncqMNaEwY0ZGEKC9iwgAgq183dsWPEvWtReoG8K9jb/DSKXwrHWzZYk0vvl3TLJ
+         avoyFNORUPpA1Q+9WfNI8gKy42nVJVfPH8LoaAbm4wZXMGYIWrr0q6q9PhVJkKn894/t
+         JW6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=xTyvpi/CRKA0ZDhB9x52q5aVKrqnKx4HjDRfGU8RMEU=;
+        b=7cZ8SjYAI6sEuN4k1KUMwCv2l+a4vLgMtMPOuiMfZsfU7SZoR9bzvg5plOYr0N3fSz
+         xHH/n4Gos4eHmr5Nj8K3F4wdwOhZ5XqNVINB4QKll7KUOiTS9eBBN4nnpAvWZsFgvrjw
+         demtRKiXV/XPZdFsfcp6TAuznwyyqd/mdqY8eiyFl9Pjjr/nSzH2D6fTywVy7hqkTcU2
+         49Ta2MevdpoXq6CJRV21YoZpacfmZBdCnHPYX+6UD/TGGIbAQofFl3vHetuPG2mCB75C
+         hskOWlp6GM6NwnKMrMi880Lx4UWlInw2Atd7+qXS5RiUgdofuC6z1VLs2IghuZf4hf3I
+         3mlA==
+X-Gm-Message-State: AOAM532AHChYudWLO7PjaCdevHS7N1+lnz/IBKmYdutSGd1V9DXUXXee
+        OfueCa04Ep4RwXF154kSeUk=
+X-Google-Smtp-Source: ABdhPJwXmky3Mb1g3joIbwT3sQR3nWxYKsMw1MQpZUNSfpVt5QUFs23oawRfNxy+Mb0Yfh8FKDB5bA==
+X-Received: by 2002:a05:6a00:1513:b0:51c:3ca8:47a4 with SMTP id q19-20020a056a00151300b0051c3ca847a4mr5537879pfu.48.1654645627188;
+        Tue, 07 Jun 2022 16:47:07 -0700 (PDT)
+Received: from google.com ([2620:15c:211:201:f30f:4d03:66e6:b121])
+        by smtp.gmail.com with ESMTPSA id q6-20020a170902a3c600b0016203a92865sm7365536plb.107.2022.06.07.16.47.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 16:47:06 -0700 (PDT)
+Sender: Minchan Kim <minchan.kim@gmail.com>
+Date:   Tue, 7 Jun 2022 16:47:04 -0700
+From:   Minchan Kim <minchan@kernel.org>
+To:     Jaewon Kim <jaewon31.kim@samsung.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        "ngupta@vflare.org" <ngupta@vflare.org>,
+        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
+        "avromanov@sberdevices.ru" <avromanov@sberdevices.ru>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Sooyong Suk <s.suk@samsung.com>,
+        YongTaek Lee <ytk.lee@samsung.com>,
+        "jaewon31.kim@gmail.com" <jaewon31.kim@gmail.com>,
+        Chulmin Kim <cmlaika.kim@samsung.com>
+Subject: Re: [PATCH] zram_drv: add __GFP_NOMEMALLOC not to use
+ ALLOC_NO_WATERMARKS
+Message-ID: <Yp/jeBtxIV/nsMiJ@google.com>
+References: <Yp5oDD8mfsGtsSaB@google.com>
+ <20220603055747.11694-1-jaewon31.kim@samsung.com>
+ <Yp5ZnkYEA5xrUksX@google.com>
+ <20220606125939.ae37867e43b8b8b07fa06ca7@linux-foundation.org>
+ <CGME20220603055341epcas1p2dd357326eea0cd818daf6f0db7c2aae1@epcms1p1>
+ <20220607011702epcms1p10100c4e86e2e0334f7fabbfafa3a0698@epcms1p1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220607011702epcms1p10100c4e86e2e0334f7fabbfafa3a0698@epcms1p1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
-head:   dfa687bffc8a4a21ed929c7dececf01b8f1f52ee
-commit: 85397f6bc4ff13a6bc5259facb8ebebb1986d666 [2/10] drm/mgag200: Initialize each model in separate function
-config: parisc-allyesconfig (https://download.01.org/0day-ci/archive/20220608/202206080411.JpdjEVh2-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add drm-misc git://anongit.freedesktop.org/drm/drm-misc
-        git fetch --no-tags drm-misc drm-misc-next
-        git checkout 85397f6bc4ff13a6bc5259facb8ebebb1986d666
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash drivers/gpu/drm/mgag200/
+Hi Jaewon,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On Tue, Jun 07, 2022 at 10:17:02AM +0900, Jaewon Kim wrote:
+> > 
+> > 
+> >--------- Original Message ---------
+> >Sender : Minchan Kim <minchan@kernel.org>
+> >Date : 2022-06-07 05:48 (GMT+9)
+> >Title : Re: [PATCH] zram_drv: add __GFP_NOMEMALLOC not to use ALLOC_NO_WATERMARKS
+> > 
+> >On Mon, Jun 06, 2022 at 12:59:39PM -0700, Andrew Morton wrote:
+> >> On Mon, 6 Jun 2022 12:46:38 -0700 Minchan Kim <minchan@kernel.org> wrote:
+> >> 
+> >> > On Fri, Jun 03, 2022 at 02:57:47PM +0900, Jaewon Kim wrote:
+> >> > > The atomic page allocation failure sometimes happened, and most of them
+> >> > > seem to occur during boot time.
+> >> > > 
+> >> > > <4>[   59.707645] system_server: page allocation failure: order:0, mode:0xa20(GFP_ATOMIC), nodemask=(null),cpuset=foreground-boost,mems_allowed=0
+> >> >
+> >> > ...
+> >> >
+> >> > > 
+> >> > > The kswapd or other reclaim contexts may not prepare enough free pages
+> >> > > for too many atomic allocations occurred in short time. But zram may not
+> >> > > be helpful for this atomic allocation even though zram is used to
+> >> > > reclaim.
+> >> > > 
+> >> > > To get one zs object for a specific size, zram may allocate serveral
+> >> > > pages. And this can be happened on different class sizes at the same
+> >> > > time. It means zram may consume more pages to reclaim only one page.
+> >> > > This inefficiency may consume all free pages below watmerk min by a
+> >> > > process having PF_MEMALLOC like kswapd.
+> >> > 
+> >> > However, that's how zram has worked for a long time(allocate memory
+> >> > under memory pressure) and many folks already have raised min_free_kbytes
+> >> > when they use zram as swap. If we don't allow the allocation, swap out
+> >> > fails easier than old, which would break existing tunes.
+> 
+> 
+> Hello.
+> 
+> Yes correct. We may need to tune again to swap out as much as we did.
+> 
+> But on my experiment, there were quite many zram allocations which might
+> be failed unless it has the ALLOC_NO_WATERMARKS. I thought the zram
+> allocations seem to be easy to affect atomic allocation failure.
 
-All warnings (new ones prefixed by >>):
+I understand your concern but solution here would affect to existing common
+users too much.
 
-   drivers/gpu/drm/mgag200/mgag200_g200.c: In function 'mgag200_g200_init_refclk':
-   drivers/gpu/drm/mgag200/mgag200_g200.c:120:16: error: implicit declaration of function 'vmalloc'; did you mean 'kvmalloc'? [-Werror=implicit-function-declaration]
-     120 |         bios = vmalloc(size);
-         |                ^~~~~~~
-         |                kvmalloc
->> drivers/gpu/drm/mgag200/mgag200_g200.c:120:14: warning: assignment to 'unsigned char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     120 |         bios = vmalloc(size);
-         |              ^
-   drivers/gpu/drm/mgag200/mgag200_g200.c:131:9: error: implicit declaration of function 'vfree'; did you mean 'kvfree'? [-Werror=implicit-function-declaration]
-     131 |         vfree(bios);
-         |         ^~~~~
-         |         kvfree
-   cc1: some warnings being treated as errors
+> 
+> >> 
+> >> So is there a better way of preventing this warning?  Just suppress it
+> >> with __GFP_NOWARN?
+> > 
+> >For me, I usually tries to remove GFP_ATOMIC alllocation since the
+> >atomic allocation can be failed easily(zram is not only source for
+> >it). Otherwise, increase min_free_kbytes?
+> > 
+> 
+> I also hope driver developers to handle this atomic allocation failure.
+> However this selinux stuff, context_struct_to_string, is out of their domain.
+> Do I need to report this to selinux community? Actualy I got several
+> different callpaths to reach this context_struct_to_string.
 
+I am not famliar with selinux stuff but if it's common to see the
+GFP_ATOMIC failures in the path, I think it should have __GFP_NOWARN
+or other solution to allocate memory in advance.
+(BTW, I had similar problem before and fixed it with adding __GFP_NOWARN
+648f2c6100cf, selinux: use __GFP_NOWARN with GFP_NOWAIT in the AVC)
 
-vim +120 drivers/gpu/drm/mgag200/mgag200_g200.c
+> 
+> Yes we may need to increase min_free_kbytes. But I have an experience where
+> changing wmark_min from 4MB to 8MB did not work last year. Could you share 
+> some advice about size?
 
-   102	
-   103	static void mgag200_g200_init_refclk(struct mgag200_g200_device *g200)
-   104	{
-   105		struct mga_device *mdev = &g200->base;
-   106		struct drm_device *dev = &mdev->base;
-   107		struct pci_dev *pdev = to_pci_dev(dev->dev);
-   108		unsigned char __iomem *rom;
-   109		unsigned char *bios;
-   110		size_t size;
-   111	
-   112		g200->pclk_min = 50000;
-   113		g200->pclk_max = 230000;
-   114		g200->ref_clk = 27050;
-   115	
-   116		rom = pci_map_rom(pdev, &size);
-   117		if (!rom)
-   118			return;
-   119	
- > 120		bios = vmalloc(size);
-   121		if (!bios)
-   122			goto out;
-   123		memcpy_fromio(bios, rom, size);
-   124	
-   125		if (size != 0 && bios[0] == 0x55 && bios[1] == 0xaa)
-   126			mgag200_g200_interpret_bios(g200, bios, size);
-   127	
-   128		drm_dbg_kms(dev, "pclk_min: %ld pclk_max: %ld ref_clk: %ld\n",
-   129			    g200->pclk_min, g200->pclk_max, g200->ref_clk);
-   130	
-   131		vfree(bios);
-   132	out:
-   133		pci_unmap_rom(pdev, rom);
-   134	}
-   135	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+I don't think we could have universal golden value for it since every
+workload and configuration are different in their system. Maybe,
+your zram size is rather big compared to system memory and swappiness
+is rather high for boot.
