@@ -2,227 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D865C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:56:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48116C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:56:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382842AbiFGV4I (ORCPT
+        id S1349917AbiFGV4O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:56:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49916 "EHLO
+        Tue, 7 Jun 2022 17:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379279AbiFGVCT (ORCPT
+        with ESMTP id S1379285AbiFGVCT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:02:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825F866AC7;
-        Tue,  7 Jun 2022 11:47:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DACE612F2;
-        Tue,  7 Jun 2022 18:47:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2802DC385A5;
-        Tue,  7 Jun 2022 18:47:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627644;
-        bh=zZiGrdNdmGO+3CfM32sERyqnjtDOD2AoS3nDEP+ZFb4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FnL9nV9ql5oZX81eCpv7ODEYK5z1uiYucH89xOMArC5+BkMuknutiB8HeKHx/eRQB
-         A3gPk83AtpBMsG6ScAmgtdTZhvwwHOQsqauURFCNqAuoQYWZZot6b2/1DZ5OyEK6oT
-         q1WZTaOePpPWRSKSUbf3TkWLKk/pXyxIbVZVrUyo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?=D0=9C=D0=B0=D0=BA=D1=81=D0=B8=D0=BC=20=D0=9A=D1=83=D1=82=D1=8F=D0=B2=D0=B8=D0=BD?= 
-        <maximkabox13@gmail.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.18 041/879] kthread: Dont allocate kthread_struct for init and umh
-Date:   Tue,  7 Jun 2022 18:52:39 +0200
-Message-Id: <20220607165003.871993847@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+X-Greylist: delayed 1149 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 11:47:31 PDT
+Received: from 1.mo560.mail-out.ovh.net (1.mo560.mail-out.ovh.net [46.105.63.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AFBE737A3
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:47:31 -0700 (PDT)
+Received: from player796.ha.ovh.net (unknown [10.108.1.219])
+        by mo560.mail-out.ovh.net (Postfix) with ESMTP id 8B96D2466E
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:47:29 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player796.ha.ovh.net (Postfix) with ESMTPSA id 5FF732B43742E;
+        Tue,  7 Jun 2022 18:47:20 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-100R0036d2f136e-90d2-4dc0-b8df-64c2249e2f69,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     "Lee, Chun-Yi" <jlee@suse.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Cezary Jackiewicz <cezary.jackiewicz@gmail.com>,
+        Henrique de Moraes Holschuh <hmh@hmh.eng.br>
+Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 3/4] platform/x86: compal-laptop: Use backlight helper
+Date:   Tue,  7 Jun 2022 20:46:34 +0200
+Message-Id: <20220607184635.1127913-4-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220607184635.1127913-1-steve@sk2.org>
+References: <20220607184635.1127913-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11331338138328008326
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvlecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheeitd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+Instead of manually checking the power state in struct
+backlight_properties, use backlight_is_blank().
 
-commit 343f4c49f2438d8920f1f76fa823ee59b91f02e4 upstream.
-
-If kthread_is_per_cpu runs concurrently with free_kthread_struct the
-kthread_struct that was just freed may be read from.
-
-This bug was introduced by commit 40966e316f86 ("kthread: Ensure
-struct kthread is present for all kthreads").  When kthread_struct
-started to be allocated for all tasks that have PF_KTHREAD set.  This
-in turn required the kthread_struct to be freed in kernel_execve and
-violated the assumption that kthread_struct will have the same
-lifetime as the task.
-
-Looking a bit deeper this only applies to callers of kernel_execve
-which is just the init process and the user mode helper processes.
-These processes really don't want to be kernel threads but are for
-historical reasons.  Mostly that copy_thread does not know how to take
-a kernel mode function to the process with for processes without
-PF_KTHREAD or PF_IO_WORKER set.
-
-Solve this by not allocating kthread_struct for the init process and
-the user mode helper processes.
-
-This is done by adding a kthread member to struct kernel_clone_args.
-Setting kthread in fork_idle and kernel_thread.  Adding
-user_mode_thread that works like kernel_thread except it does not set
-kthread.  In fork only allocating the kthread_struct if .kthread is set.
-
-I have looked at kernel/kthread.c and since commit 40966e316f86
-("kthread: Ensure struct kthread is present for all kthreads") there
-have been no assumptions added that to_kthread or __to_kthread will
-not return NULL.
-
-There are a few callers of to_kthread or __to_kthread that assume a
-non-NULL struct kthread pointer will be returned.  These functions are
-kthread_data(), kthread_parmme(), kthread_exit(), kthread(),
-kthread_park(), kthread_unpark(), kthread_stop().  All of those functions
-can reasonably expected to be called when it is know that a task is a
-kthread so that assumption seems reasonable.
-
-Cc: stable@vger.kernel.org
-Fixes: 40966e316f86 ("kthread: Ensure struct kthread is present for all kthreads")
-Reported-by: Максим Кутявин <maximkabox13@gmail.com>
-Link: https://lkml.kernel.org/r/20220506141512.516114-1-ebiederm@xmission.com
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Cezary Jackiewicz <cezary.jackiewicz@gmail.com>
+Cc: Hans de Goede <hdegoede@redhat.com>
+Cc: Mark Gross <markgross@kernel.org>
+Cc: platform-driver-x86@vger.kernel.org
 ---
- fs/exec.c                  |    6 ++++--
- include/linux/sched/task.h |    2 ++
- init/main.c                |    2 +-
- kernel/fork.c              |   22 ++++++++++++++++++++--
- kernel/umh.c               |    6 +++---
- 5 files changed, 30 insertions(+), 8 deletions(-)
+ drivers/platform/x86/compal-laptop.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/fs/exec.c
-+++ b/fs/exec.c
-@@ -1308,8 +1308,6 @@ int begin_new_exec(struct linux_binprm *
- 	if (retval)
- 		goto out_unlock;
+diff --git a/drivers/platform/x86/compal-laptop.c b/drivers/platform/x86/compal-laptop.c
+index ab610376fdad..0942f50bd793 100644
+--- a/drivers/platform/x86/compal-laptop.c
++++ b/drivers/platform/x86/compal-laptop.c
+@@ -324,9 +324,7 @@ static int bl_update_status(struct backlight_device *b)
+ 	if (ret)
+ 		return ret;
  
--	if (me->flags & PF_KTHREAD)
--		free_kthread_struct(me);
- 	me->flags &= ~(PF_RANDOMIZE | PF_FORKNOEXEC | PF_KTHREAD |
- 					PF_NOFREEZE | PF_NO_SETAFFINITY);
- 	flush_thread();
-@@ -1955,6 +1953,10 @@ int kernel_execve(const char *kernel_fil
- 	int fd = AT_FDCWD;
- 	int retval;
+-	set_backlight_state((b->props.power == FB_BLANK_UNBLANK)
+-		&&    !(b->props.state & BL_CORE_SUSPENDED)
+-		&&    !(b->props.state & BL_CORE_FBBLANK));
++	set_backlight_state(!backlight_is_blank(b));
+ 	return 0;
+ }
  
-+	if (WARN_ON_ONCE((current->flags & PF_KTHREAD) &&
-+			(current->worker_private)))
-+		return -EINVAL;
-+
- 	filename = getname_kernel(kernel_filename);
- 	if (IS_ERR(filename))
- 		return PTR_ERR(filename);
---- a/include/linux/sched/task.h
-+++ b/include/linux/sched/task.h
-@@ -32,6 +32,7 @@ struct kernel_clone_args {
- 	size_t set_tid_size;
- 	int cgroup;
- 	int io_thread;
-+	int kthread;
- 	struct cgroup *cgrp;
- 	struct css_set *cset;
- };
-@@ -89,6 +90,7 @@ struct task_struct *create_io_thread(int
- struct task_struct *fork_idle(int);
- struct mm_struct *copy_init_mm(void);
- extern pid_t kernel_thread(int (*fn)(void *), void *arg, unsigned long flags);
-+extern pid_t user_mode_thread(int (*fn)(void *), void *arg, unsigned long flags);
- extern long kernel_wait4(pid_t, int __user *, int, struct rusage *);
- int kernel_wait(pid_t pid, int *stat);
- 
---- a/init/main.c
-+++ b/init/main.c
-@@ -688,7 +688,7 @@ noinline void __ref rest_init(void)
- 	 * the init task will end up wanting to create kthreads, which, if
- 	 * we schedule it before we create kthreadd, will OOPS.
- 	 */
--	pid = kernel_thread(kernel_init, NULL, CLONE_FS);
-+	pid = user_mode_thread(kernel_init, NULL, CLONE_FS);
- 	/*
- 	 * Pin init on the boot CPU. Task migration is not properly working
- 	 * until sched_init_smp() has been run. It will set the allowed
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -2157,7 +2157,7 @@ static __latent_entropy struct task_stru
- 	p->io_context = NULL;
- 	audit_set_context(p, NULL);
- 	cgroup_fork(p);
--	if (p->flags & PF_KTHREAD) {
-+	if (args->kthread) {
- 		if (!set_kthread_struct(p))
- 			goto bad_fork_cleanup_delayacct;
- 	}
-@@ -2548,7 +2548,8 @@ struct task_struct * __init fork_idle(in
- {
- 	struct task_struct *task;
- 	struct kernel_clone_args args = {
--		.flags = CLONE_VM,
-+		.flags		= CLONE_VM,
-+		.kthread	= 1,
- 	};
- 
- 	task = copy_process(&init_struct_pid, 0, cpu_to_node(cpu), &args);
-@@ -2682,6 +2683,23 @@ pid_t kernel_thread(int (*fn)(void *), v
- {
- 	struct kernel_clone_args args = {
- 		.flags		= ((lower_32_bits(flags) | CLONE_VM |
-+				    CLONE_UNTRACED) & ~CSIGNAL),
-+		.exit_signal	= (lower_32_bits(flags) & CSIGNAL),
-+		.stack		= (unsigned long)fn,
-+		.stack_size	= (unsigned long)arg,
-+		.kthread	= 1,
-+	};
-+
-+	return kernel_clone(&args);
-+}
-+
-+/*
-+ * Create a user mode thread.
-+ */
-+pid_t user_mode_thread(int (*fn)(void *), void *arg, unsigned long flags)
-+{
-+	struct kernel_clone_args args = {
-+		.flags		= ((lower_32_bits(flags) | CLONE_VM |
- 				    CLONE_UNTRACED) & ~CSIGNAL),
- 		.exit_signal	= (lower_32_bits(flags) & CSIGNAL),
- 		.stack		= (unsigned long)fn,
---- a/kernel/umh.c
-+++ b/kernel/umh.c
-@@ -132,7 +132,7 @@ static void call_usermodehelper_exec_syn
- 
- 	/* If SIGCLD is ignored do_wait won't populate the status. */
- 	kernel_sigaction(SIGCHLD, SIG_DFL);
--	pid = kernel_thread(call_usermodehelper_exec_async, sub_info, SIGCHLD);
-+	pid = user_mode_thread(call_usermodehelper_exec_async, sub_info, SIGCHLD);
- 	if (pid < 0)
- 		sub_info->retval = pid;
- 	else
-@@ -171,8 +171,8 @@ static void call_usermodehelper_exec_wor
- 		 * want to pollute current->children, and we need a parent
- 		 * that always ignores SIGCHLD to ensure auto-reaping.
- 		 */
--		pid = kernel_thread(call_usermodehelper_exec_async, sub_info,
--				    CLONE_PARENT | SIGCHLD);
-+		pid = user_mode_thread(call_usermodehelper_exec_async, sub_info,
-+				       CLONE_PARENT | SIGCHLD);
- 		if (pid < 0) {
- 			sub_info->retval = pid;
- 			umh_complete(sub_info);
-
+-- 
+2.30.2
 
