@@ -2,51 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0929CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A9DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353509AbiFGSrk (ORCPT
+        id S1353721AbiFGSrs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:47:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51588 "EHLO
+        Tue, 7 Jun 2022 14:47:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352236AbiFGSQ7 (ORCPT
+        with ESMTP id S1352262AbiFGSRA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742FC68329;
-        Tue,  7 Jun 2022 10:51:13 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B66579397;
+        Tue,  7 Jun 2022 10:51:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 063D26172E;
-        Tue,  7 Jun 2022 17:51:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 757D8C3411C;
-        Tue,  7 Jun 2022 17:51:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16C896170B;
+        Tue,  7 Jun 2022 17:51:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9628CC34119;
+        Tue,  7 Jun 2022 17:51:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624272;
-        bh=Rv//rQT6MExGfmmYk5r6Q/5pYQkKhX0s2DVO7s2gm3w=;
+        s=k20201202; t=1654624275;
+        bh=x31zvOB0b/h3T21ZNGLUMTm+uU569tG9DWKh8rttLcU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jeNprH80ONiZlr9Lf1zwOFn/nE4+Q40KXSfjGda2zDScTFRQk1oLLRAzt3BgwERoP
-         Ts8vWTsi9z77ItZbd6F1Qu0AnTm6b01pHGCCC/HhXBQUreeQr1sJu5SBEvUA5nWqCl
-         wzjKITocQBlejfBNZEAPrE4lVFDitk/kPsKACvJjX8GfEuvDG1DpmWeqwDQoVliTTn
-         1fdPonn7yDBbaWLXeKYfupFn0DfTQ/35fHNAICqav+Z/CapZbB/nMzed2wj+4aPx8q
-         K83wCprbqGAGBdhYj2+2c5tgfkncNfqyBrN3uMDYR74kdZ/DiP8enpOBkRiNlLxQ6B
-         8iTjSy2jofzgw==
+        b=BFStR9ifeciWwHVzNrCkKMRjYrPVLlBPch4lAsvxBnLpmaCg6eBfeasGB/eNhw0xi
+         h/Vjx7FgYGOMoFt9EThN2bb35sqB3lLO0mv45cId1/rCFLzj4C4E9UPpTKSuC32NTd
+         nN/zZJlyMxyv8YoO5YZA0C4ppmYo+VFnMv5B4vrNLo966B52UUDrEpNAmU4FMttP/4
+         jpjGo7w7droOVCnGNLWUEN/9Xx5ilC/+Ppz6tJ9v1jILWaX9s2fgisq2BbB7J2zata
+         NF7hdrv09M9hOF/rpJAyLfrw6LzPoaLl9w8Vx2t9dhfBiWznW3abU3dLdtAaVESDzZ
+         S8fWxZsDOgB2A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oder Chiou <oder_chiou@realtek.com>,
-        Sameer Pujar <spujar@nvidia.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, cezary.rojewski@intel.com,
-        pierre-louis.bossart@linux.intel.com, yang.jie@linux.intel.com,
-        hdegoede@redhat.com, andriy.shevchenko@linux.intel.com,
-        peter.ujfalusi@linux.intel.com, akihiko.odaki@gmail.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.18 39/68] ASoC: rt5640: Do not manipulate pin "Platform Clock" if the "Platform Clock" is not in the DAPM
-Date:   Tue,  7 Jun 2022 13:48:05 -0400
-Message-Id: <20220607174846.477972-39-sashal@kernel.org>
+Cc:     Venky Shankar <vshankar@redhat.com>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 41/68] ceph: allow ceph.dir.rctime xattr to be updatable
+Date:   Tue,  7 Jun 2022 13:48:07 -0400
+Message-Id: <20220607174846.477972-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
 References: <20220607174846.477972-1-sashal@kernel.org>
@@ -58,105 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oder Chiou <oder_chiou@realtek.com>
+From: Venky Shankar <vshankar@redhat.com>
 
-[ Upstream commit 832296804bc7171730884e78c761c29f6d258e13 ]
+[ Upstream commit d7a2dc523085f8b8c60548ceedc696934aefeb0e ]
 
-The pin "Platform Clock" was only used by the Intel Byt CR platform. In the
-others, the error log will be informed. The patch will set the flag to
-avoid the pin "Platform Clock" manipulated by the other platforms.
+`rctime' has been a pain point in cephfs due to its buggy
+nature - inconsistent values reported and those sorts.
+Fixing rctime is non-trivial needing an overall redesign
+of the entire nested statistics infrastructure.
 
-Signed-off-by: Oder Chiou <oder_chiou@realtek.com>
-Reported-by: Sameer Pujar <spujar@nvidia.com>
-Link: https://lore.kernel.org/r/20220516103055.20003-1-oder_chiou@realtek.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+As a workaround, PR
+
+     http://github.com/ceph/ceph/pull/37938
+
+allows this extended attribute to be manually set. This allows
+users to "fixup" inconsistent rctime values. While this sounds
+messy, its probably the wisest approach allowing users/scripts
+to workaround buggy rctime values.
+
+The above PR enables Ceph MDS to allow manually setting
+rctime extended attribute with the corresponding user-land
+changes. We may as well allow the same to be done via kclient
+for parity.
+
+Signed-off-by: Venky Shankar <vshankar@redhat.com>
+Reviewed-by: Xiubo Li <xiubli@redhat.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5640.c             | 11 +++++++++--
- sound/soc/codecs/rt5640.h             |  2 ++
- sound/soc/intel/boards/bytcr_rt5640.c |  2 ++
- 3 files changed, 13 insertions(+), 2 deletions(-)
+ fs/ceph/xattr.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/rt5640.c b/sound/soc/codecs/rt5640.c
-index 30c2e7cb7ed2..3559d9ecfa07 100644
---- a/sound/soc/codecs/rt5640.c
-+++ b/sound/soc/codecs/rt5640.c
-@@ -2094,12 +2094,14 @@ EXPORT_SYMBOL_GPL(rt5640_sel_asrc_clk_src);
- void rt5640_enable_micbias1_for_ovcd(struct snd_soc_component *component)
- {
- 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
-+	struct rt5640_priv *rt5640 = snd_soc_component_get_drvdata(component);
- 
- 	snd_soc_dapm_mutex_lock(dapm);
- 	snd_soc_dapm_force_enable_pin_unlocked(dapm, "LDO2");
- 	snd_soc_dapm_force_enable_pin_unlocked(dapm, "MICBIAS1");
- 	/* OVCD is unreliable when used with RCCLK as sysclk-source */
--	snd_soc_dapm_force_enable_pin_unlocked(dapm, "Platform Clock");
-+	if (rt5640->use_platform_clock)
-+		snd_soc_dapm_force_enable_pin_unlocked(dapm, "Platform Clock");
- 	snd_soc_dapm_sync_unlocked(dapm);
- 	snd_soc_dapm_mutex_unlock(dapm);
- }
-@@ -2108,9 +2110,11 @@ EXPORT_SYMBOL_GPL(rt5640_enable_micbias1_for_ovcd);
- void rt5640_disable_micbias1_for_ovcd(struct snd_soc_component *component)
- {
- 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
-+	struct rt5640_priv *rt5640 = snd_soc_component_get_drvdata(component);
- 
- 	snd_soc_dapm_mutex_lock(dapm);
--	snd_soc_dapm_disable_pin_unlocked(dapm, "Platform Clock");
-+	if (rt5640->use_platform_clock)
-+		snd_soc_dapm_disable_pin_unlocked(dapm, "Platform Clock");
- 	snd_soc_dapm_disable_pin_unlocked(dapm, "MICBIAS1");
- 	snd_soc_dapm_disable_pin_unlocked(dapm, "LDO2");
- 	snd_soc_dapm_sync_unlocked(dapm);
-@@ -2535,6 +2539,9 @@ static void rt5640_enable_jack_detect(struct snd_soc_component *component,
- 		rt5640->jd_gpio_irq_requested = true;
+diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
+index afec84088471..8c2dc2c762a4 100644
+--- a/fs/ceph/xattr.c
++++ b/fs/ceph/xattr.c
+@@ -366,6 +366,14 @@ static ssize_t ceph_vxattrcb_auth_mds(struct ceph_inode_info *ci,
  	}
- 
-+	if (jack_data && jack_data->use_platform_clock)
-+		rt5640->use_platform_clock = jack_data->use_platform_clock;
-+
- 	ret = request_irq(rt5640->irq, rt5640_irq,
- 			  IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
- 			  "rt5640", rt5640);
-diff --git a/sound/soc/codecs/rt5640.h b/sound/soc/codecs/rt5640.h
-index 9e49b9a0ccaa..505c93514051 100644
---- a/sound/soc/codecs/rt5640.h
-+++ b/sound/soc/codecs/rt5640.h
-@@ -2155,11 +2155,13 @@ struct rt5640_priv {
- 	bool jd_inverted;
- 	unsigned int ovcd_th;
- 	unsigned int ovcd_sf;
-+	bool use_platform_clock;
- };
- 
- struct rt5640_set_jack_data {
- 	int codec_irq_override;
- 	struct gpio_desc *jd_gpio;
-+	bool use_platform_clock;
- };
- 
- int rt5640_dmic_enable(struct snd_soc_component *component,
-diff --git a/sound/soc/intel/boards/bytcr_rt5640.c b/sound/soc/intel/boards/bytcr_rt5640.c
-index d76a505052fb..96a2ea92dd1e 100644
---- a/sound/soc/intel/boards/bytcr_rt5640.c
-+++ b/sound/soc/intel/boards/bytcr_rt5640.c
-@@ -1179,12 +1179,14 @@ static int byt_rt5640_init(struct snd_soc_pcm_runtime *runtime)
- {
- 	struct snd_soc_card *card = runtime->card;
- 	struct byt_rt5640_private *priv = snd_soc_card_get_drvdata(card);
-+	struct rt5640_set_jack_data *jack_data = &priv->jack_data;
- 	struct snd_soc_component *component = asoc_rtd_to_codec(runtime, 0)->component;
- 	const struct snd_soc_dapm_route *custom_map = NULL;
- 	int num_routes = 0;
- 	int ret;
- 
- 	card->dapm.idle_bias_off = true;
-+	jack_data->use_platform_clock = true;
- 
- 	/* Start with RC clk for jack-detect (we disable MCLK below) */
- 	if (byt_rt5640_quirk & BYT_RT5640_MCLK_EN)
+ #define XATTR_RSTAT_FIELD(_type, _name)			\
+ 	XATTR_NAME_CEPH(_type, _name, VXATTR_FLAG_RSTAT)
++#define XATTR_RSTAT_FIELD_UPDATABLE(_type, _name)			\
++	{								\
++		.name = CEPH_XATTR_NAME(_type, _name),			\
++		.name_size = sizeof (CEPH_XATTR_NAME(_type, _name)),	\
++		.getxattr_cb = ceph_vxattrcb_ ## _type ## _ ## _name,	\
++		.exists_cb = NULL,					\
++		.flags = VXATTR_FLAG_RSTAT,				\
++	}
+ #define XATTR_LAYOUT_FIELD(_type, _name, _field)			\
+ 	{								\
+ 		.name = CEPH_XATTR_NAME2(_type, _name, _field),	\
+@@ -404,7 +412,7 @@ static struct ceph_vxattr ceph_dir_vxattrs[] = {
+ 	XATTR_RSTAT_FIELD(dir, rsubdirs),
+ 	XATTR_RSTAT_FIELD(dir, rsnaps),
+ 	XATTR_RSTAT_FIELD(dir, rbytes),
+-	XATTR_RSTAT_FIELD(dir, rctime),
++	XATTR_RSTAT_FIELD_UPDATABLE(dir, rctime),
+ 	{
+ 		.name = "ceph.dir.pin",
+ 		.name_size = sizeof("ceph.dir.pin"),
 -- 
 2.35.1
 
