@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B73B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:24:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA51CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:24:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349979AbiFGSY0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:24:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60322 "EHLO
+        id S237298AbiFGSYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350239AbiFGSAt (ORCPT
+        with ESMTP id S1350297AbiFGSAw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:00:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 775846129D;
-        Tue,  7 Jun 2022 10:42:54 -0700 (PDT)
+        Tue, 7 Jun 2022 14:00:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8414F737A3;
+        Tue,  7 Jun 2022 10:42:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4335CB81F38;
-        Tue,  7 Jun 2022 17:42:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A611AC385A5;
-        Tue,  7 Jun 2022 17:42:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C851E6146F;
+        Tue,  7 Jun 2022 17:42:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5B1EC385A5;
+        Tue,  7 Jun 2022 17:42:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623756;
-        bh=3os4nm//VWdtnukH4DMduEp3AKayG5T+pbN7X5F8Egs=;
+        s=korg; t=1654623775;
+        bh=EI6kyMEv2r+oMfMB12oZQKomnwfH3xTNuKb7+f/Swr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CXckkpdf9DqDh2geOMFNKWhUonFOF9KphdihsU7b2bNtYneDkAzXlY07lHrybfajr
-         7tjey177Lw1iToZO8t4IhDhIKASc/Kyy1L/fwGZXlVB0ZtnSrtJqGzs77lrKMh1KGd
-         qO3pCdwQLY2d6mpGcoarUojuDrX/nCXioWxj4/+k=
+        b=VQXNwjPthVDHfBFXqV3LdC69c9N+lhk+7W3vJAE/JV/hrSm38+ca/zeaXQoDD3huK
+         zGOf1vuVUAGgwrkintcFq1v+RrisuUwIu3AC8usk5BWGl73O1xPHZckjWHOJmtyRQ8
+         QjPNbeOy2+h8kt0OOL0v+4n0JGlCZPpP3NVQT6ys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vignesh Raghavendra <vigneshr@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Nikolay Borisov <nborisov@suse.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 079/667] drivers: mmc: sdhci_am654: Add the quirk to set TESTCD bit
-Date:   Tue,  7 Jun 2022 18:55:44 +0200
-Message-Id: <20220607164937.189911146@linuxfoundation.org>
+Subject: [PATCH 5.15 046/667] selftests/bpf: Fix vfs_link kprobe definition
+Date:   Tue,  7 Jun 2022 18:55:11 +0200
+Message-Id: <20220607164936.184442617@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,83 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vignesh Raghavendra <vigneshr@ti.com>
+From: Nikolay Borisov <nborisov@suse.com>
 
-[ Upstream commit c7666240ec76422cb7546bd07cc8ae80dc0ccdd2 ]
+[ Upstream commit e299bcd4d16ff86f46c48df1062c8aae0eca1ed8 ]
 
-The ARASAN MMC controller on Keystone 3 class of devices need the SDCD
-line to be connected for proper functioning. Similar to the issue pointed
-out in sdhci-of-arasan.c driver, commit 3794c542641f ("mmc:
-sdhci-of-arasan: Set controller to test mode when no CD bit").
+Since commit 6521f8917082 ("namei: prepare for idmapped mounts")
+vfs_link's prototype was changed, the kprobe definition in
+profiler selftest in turn wasn't updated. The result is that all
+argument after the first are now stored in different registers. This
+means that self-test has been broken ever since. Fix it by updating the
+kprobe definition accordingly.
 
-In cases where this can't be connected, add a quirk to force the
-controller into test mode and set the TESTCD bit. Use the flag
-"ti,fails-without-test-cd", to implement this above quirk when required.
-
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
-Link: https://lore.kernel.org/r/20220425063120.10135-3-a-govindraju@ti.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Nikolay Borisov <nborisov@suse.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220331140949.1410056-1-nborisov@suse.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci_am654.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/progs/profiler.inc.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
-index b4891bb26648..a3e62e212631 100644
---- a/drivers/mmc/host/sdhci_am654.c
-+++ b/drivers/mmc/host/sdhci_am654.c
-@@ -147,6 +147,9 @@ struct sdhci_am654_data {
- 	int drv_strength;
- 	int strb_sel;
- 	u32 flags;
-+	u32 quirks;
-+
-+#define SDHCI_AM654_QUIRK_FORCE_CDTEST BIT(0)
- };
+diff --git a/tools/testing/selftests/bpf/progs/profiler.inc.h b/tools/testing/selftests/bpf/progs/profiler.inc.h
+index 4896fdf816f7..92331053dba3 100644
+--- a/tools/testing/selftests/bpf/progs/profiler.inc.h
++++ b/tools/testing/selftests/bpf/progs/profiler.inc.h
+@@ -826,8 +826,9 @@ int kprobe_ret__do_filp_open(struct pt_regs* ctx)
  
- struct sdhci_am654_driver_data {
-@@ -369,6 +372,21 @@ static void sdhci_am654_write_b(struct sdhci_host *host, u8 val, int reg)
- 	}
- }
- 
-+static void sdhci_am654_reset(struct sdhci_host *host, u8 mask)
-+{
-+	u8 ctrl;
-+	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-+	struct sdhci_am654_data *sdhci_am654 = sdhci_pltfm_priv(pltfm_host);
-+
-+	sdhci_reset(host, mask);
-+
-+	if (sdhci_am654->quirks & SDHCI_AM654_QUIRK_FORCE_CDTEST) {
-+		ctrl = sdhci_readb(host, SDHCI_HOST_CONTROL);
-+		ctrl |= SDHCI_CTRL_CDTEST_INS | SDHCI_CTRL_CDTEST_EN;
-+		sdhci_writeb(host, ctrl, SDHCI_HOST_CONTROL);
-+	}
-+}
-+
- static int sdhci_am654_execute_tuning(struct mmc_host *mmc, u32 opcode)
+ SEC("kprobe/vfs_link")
+ int BPF_KPROBE(kprobe__vfs_link,
+-	       struct dentry* old_dentry, struct inode* dir,
+-	       struct dentry* new_dentry, struct inode** delegated_inode)
++	       struct dentry* old_dentry, struct user_namespace *mnt_userns,
++	       struct inode* dir, struct dentry* new_dentry,
++	       struct inode** delegated_inode)
  {
- 	struct sdhci_host *host = mmc_priv(mmc);
-@@ -500,7 +518,7 @@ static struct sdhci_ops sdhci_j721e_4bit_ops = {
- 	.set_clock = sdhci_j721e_4bit_set_clock,
- 	.write_b = sdhci_am654_write_b,
- 	.irq = sdhci_am654_cqhci_irq,
--	.reset = sdhci_reset,
-+	.reset = sdhci_am654_reset,
- };
- 
- static const struct sdhci_pltfm_data sdhci_j721e_4bit_pdata = {
-@@ -719,6 +737,9 @@ static int sdhci_am654_get_of_property(struct platform_device *pdev,
- 	device_property_read_u32(dev, "ti,clkbuf-sel",
- 				 &sdhci_am654->clkbuf_sel);
- 
-+	if (device_property_read_bool(dev, "ti,fails-without-test-cd"))
-+		sdhci_am654->quirks |= SDHCI_AM654_QUIRK_FORCE_CDTEST;
-+
- 	sdhci_get_of_property(pdev);
- 
- 	return 0;
+ 	struct bpf_func_stats_ctx stats_ctx;
+ 	bpf_stats_enter(&stats_ctx, profiler_bpf_vfs_link);
 -- 
 2.35.1
 
