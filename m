@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04609C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:08:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:08:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359118AbiFGUIk (ORCPT
+        id S1359125AbiFGUIo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54810 "EHLO
+        Tue, 7 Jun 2022 16:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355243AbiFGTOF (ORCPT
+        with ESMTP id S1355251AbiFGTOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:14:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BEC194BF4;
-        Tue,  7 Jun 2022 11:07:27 -0700 (PDT)
+        Tue, 7 Jun 2022 15:14:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD06194BFC;
+        Tue,  7 Jun 2022 11:07:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40CF1B82340;
-        Tue,  7 Jun 2022 18:07:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 910ADC34115;
-        Tue,  7 Jun 2022 18:07:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45315617A5;
+        Tue,  7 Jun 2022 18:07:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55353C34115;
+        Tue,  7 Jun 2022 18:07:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625242;
-        bh=sFYoKH3ur13xudM/5aKhDJvPwSJ1dZo6go0R0tMxJR0=;
+        s=korg; t=1654625244;
+        bh=jAfyJdtY7AW8Hezy+hcbPYqE7q7fX2MgEkIpU715TEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vI0S+SVxvQakomW5GOiiwhah2OrWE26BJg1pZAdmyDYN7MIb8hhdmWIwY4FaJgwh0
-         r5XF1CEU7RUtjgPiH8w0vOQnrixdPafk+BoSfJo7nl6QU1XB4K51taXgrasb/uDFm3
-         xNZlULTY0Aw+CvqfFQg4PTJNEOatOkGWSRm8Bi/k=
+        b=W2gfXERaUQ9MQQadlHhOCIXZfzo5GTOnK+ohyLjcXktbfuGbREoXYSGrmh1AMzMHd
+         c6Gf5fRmde08kd8FHc/ijjKhkL4V+7gvo90S08MG9fTl5R+2tvt/3b2bBxIj/5p7+9
+         3ZdkY2S2Hj6xpGwhhoYJ8yOwpKlxwxSGVLhQ4Ln8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        stable@vger.kernel.org,
         =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.15 576/667] selftests/landlock: Extend tests for minimal valid attribute size
-Date:   Tue,  7 Jun 2022 19:04:01 +0200
-Message-Id: <20220607164951.967253484@linuxfoundation.org>
+Subject: [PATCH 5.15 567/667] landlock: Add clang-format exceptions
+Date:   Tue,  7 Jun 2022 19:03:52 +0200
+Message-Id: <20220607164951.699114218@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,40 +51,81 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mickaël Salaün <mic@digikod.net>
 
-commit 291865bd7e8bb4b4033d341fa02dafa728e6378c upstream.
+commit 6cc2df8e3a3967e7c13a424f87f6efb1d4a62d80 upstream.
 
-This might be useful when the struct landlock_ruleset_attr will get more
-fields.
+In preparation to a following commit, add clang-format on and
+clang-format off stanzas around constant definitions.  This enables to
+keep aligned values, which is much more readable than packed
+definitions.
 
-Cc: Shuah Khan <shuah@kernel.org>
-Link: https://lore.kernel.org/r/20220506160820.524344-4-mic@digikod.net
+Link: https://lore.kernel.org/r/20220506160513.523257-2-mic@digikod.net
 Cc: stable@vger.kernel.org
 Signed-off-by: Mickaël Salaün <mic@digikod.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/landlock/base_test.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ include/uapi/linux/landlock.h |    4 ++++
+ security/landlock/fs.c        |    2 ++
+ security/landlock/limits.h    |    4 ++++
+ 3 files changed, 10 insertions(+)
 
---- a/tools/testing/selftests/landlock/base_test.c
-+++ b/tools/testing/selftests/landlock/base_test.c
-@@ -35,6 +35,8 @@ TEST(inconsistent_attr)
- 	ASSERT_EQ(EINVAL, errno);
- 	ASSERT_EQ(-1, landlock_create_ruleset(ruleset_attr, 1, 0));
- 	ASSERT_EQ(EINVAL, errno);
-+	ASSERT_EQ(-1, landlock_create_ruleset(ruleset_attr, 7, 0));
-+	ASSERT_EQ(EINVAL, errno);
+--- a/include/uapi/linux/landlock.h
++++ b/include/uapi/linux/landlock.h
+@@ -33,7 +33,9 @@ struct landlock_ruleset_attr {
+  * - %LANDLOCK_CREATE_RULESET_VERSION: Get the highest supported Landlock ABI
+  *   version.
+  */
++/* clang-format off */
+ #define LANDLOCK_CREATE_RULESET_VERSION			(1U << 0)
++/* clang-format on */
  
- 	ASSERT_EQ(-1, landlock_create_ruleset(NULL, 1, 0));
- 	/* The size if less than sizeof(struct landlock_attr_enforce). */
-@@ -47,6 +49,9 @@ TEST(inconsistent_attr)
- 	ASSERT_EQ(-1, landlock_create_ruleset(ruleset_attr, page_size + 1, 0));
- 	ASSERT_EQ(E2BIG, errno);
+ /**
+  * enum landlock_rule_type - Landlock rule type
+@@ -120,6 +122,7 @@ struct landlock_path_beneath_attr {
+  *   :manpage:`access(2)`.
+  *   Future Landlock evolutions will enable to restrict them.
+  */
++/* clang-format off */
+ #define LANDLOCK_ACCESS_FS_EXECUTE			(1ULL << 0)
+ #define LANDLOCK_ACCESS_FS_WRITE_FILE			(1ULL << 1)
+ #define LANDLOCK_ACCESS_FS_READ_FILE			(1ULL << 2)
+@@ -133,5 +136,6 @@ struct landlock_path_beneath_attr {
+ #define LANDLOCK_ACCESS_FS_MAKE_FIFO			(1ULL << 10)
+ #define LANDLOCK_ACCESS_FS_MAKE_BLOCK			(1ULL << 11)
+ #define LANDLOCK_ACCESS_FS_MAKE_SYM			(1ULL << 12)
++/* clang-format on */
  
-+	/* Checks minimal valid attribute size. */
-+	ASSERT_EQ(-1, landlock_create_ruleset(ruleset_attr, 8, 0));
-+	ASSERT_EQ(ENOMSG, errno);
- 	ASSERT_EQ(-1, landlock_create_ruleset(
- 			      ruleset_attr,
- 			      sizeof(struct landlock_ruleset_attr), 0));
+ #endif /* _UAPI_LINUX_LANDLOCK_H */
+--- a/security/landlock/fs.c
++++ b/security/landlock/fs.c
+@@ -141,10 +141,12 @@ retry:
+ }
+ 
+ /* All access rights that can be tied to files. */
++/* clang-format off */
+ #define ACCESS_FILE ( \
+ 	LANDLOCK_ACCESS_FS_EXECUTE | \
+ 	LANDLOCK_ACCESS_FS_WRITE_FILE | \
+ 	LANDLOCK_ACCESS_FS_READ_FILE)
++/* clang-format on */
+ 
+ /*
+  * @path: Should have been checked by get_path_from_fd().
+--- a/security/landlock/limits.h
++++ b/security/landlock/limits.h
+@@ -12,10 +12,14 @@
+ #include <linux/limits.h>
+ #include <uapi/linux/landlock.h>
+ 
++/* clang-format off */
++
+ #define LANDLOCK_MAX_NUM_LAYERS		64
+ #define LANDLOCK_MAX_NUM_RULES		U32_MAX
+ 
+ #define LANDLOCK_LAST_ACCESS_FS		LANDLOCK_ACCESS_FS_MAKE_SYM
+ #define LANDLOCK_MASK_ACCESS_FS		((LANDLOCK_LAST_ACCESS_FS << 1) - 1)
+ 
++/* clang-format on */
++
+ #endif /* _SECURITY_LANDLOCK_LIMITS_H */
 
 
