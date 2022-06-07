@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF4D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6032EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:12:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349777AbiFGSM3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:12:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
+        id S240181AbiFGSMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:12:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349826AbiFGRvi (ORCPT
+        with ESMTP id S1349725AbiFGRvc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEBAC252A6;
-        Tue,  7 Jun 2022 10:39:01 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA3713C4C4;
+        Tue,  7 Jun 2022 10:38:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BC2A615B1;
-        Tue,  7 Jun 2022 17:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A938AC385A5;
-        Tue,  7 Jun 2022 17:38:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5FB8615F5;
+        Tue,  7 Jun 2022 17:38:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B0EC385A5;
+        Tue,  7 Jun 2022 17:38:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623514;
-        bh=sgoGiyinGfGFOR0BlmGTWzl4IdhgAVwAoae3GDkUjaA=;
+        s=korg; t=1654623486;
+        bh=N92Elaq3Zey+mrdNun2r6vzaANKK0WHWOAm7kLBzVpM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xufLw3XO2GXjwTMwpz8F8b0A0fohZ9pmnLrOhKnPpCYrnB5pj7odbY9mCcZtBdtRa
-         VYs3xnvq2PAZSQdC6w0UZxfzyyU44Z9VJl1HHPIg6YNCLWpaChjQLbSCJA9saR5VZZ
-         g4+EbivJdmXTJNJAtbMy6uNDUnSTGZvpNN8wucKY=
+        b=RXJ2Vzqc9sp684DHL3ylarlL+p6P7BSBGB9XS+BqYc41KG5fvV0YfsSEKQiL/0p8A
+         OcyEqFMMHeeEkvxUqZ5ZsbGApBw0AjhiYeby4hSTpcwzyKOFMDqaW0vEjkEIDpcvom
+         mw+5bq7RnqF5mtG/i5TnqPaElyZFVnDI/7Y+D/tc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "yukuai (C)" <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 445/452] bfq: Make sure bfqg for which we are queueing requests is online
-Date:   Tue,  7 Jun 2022 19:05:02 +0200
-Message-Id: <20220607164921.830400796@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Amir Goldstein <amir73il@gmail.com>
+Subject: [PATCH 5.10 436/452] xfs: consider shutdown in bmapbt cursor delete assert
+Date:   Tue,  7 Jun 2022 19:04:53 +0200
+Message-Id: <20220607164921.552916317@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,54 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Brian Foster <bfoster@redhat.com>
 
-commit 075a53b78b815301f8d3dd1ee2cd99554e34f0dd upstream.
+commit 1cd738b13ae9b29e03d6149f0246c61f76e81fcf upstream.
 
-Bios queued into BFQ IO scheduler can be associated with a cgroup that
-was already offlined. This may then cause insertion of this bfq_group
-into a service tree. But this bfq_group will get freed as soon as last
-bio associated with it is completed leading to use after free issues for
-service tree users. Fix the problem by making sure we always operate on
-online bfq_group. If the bfq_group associated with the bio is not
-online, we pick the first online parent.
+The assert in xfs_btree_del_cursor() checks that the bmapbt block
+allocation field has been handled correctly before the cursor is
+freed. This field is used for accurate calculation of indirect block
+reservation requirements (for delayed allocations), for example.
+generic/019 reproduces a scenario where this assert fails because
+the filesystem has shutdown while in the middle of a bmbt record
+insertion. This occurs after a bmbt block has been allocated via the
+cursor but before the higher level bmap function (i.e.
+xfs_bmap_add_extent_hole_real()) completes and resets the field.
 
-CC: stable@vger.kernel.org
-Fixes: e21b7a0b9887 ("block, bfq: add full hierarchical scheduling and cgroups support")
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-9-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Update the assert to accommodate the transient state if the
+filesystem has shutdown. While here, clean up the indentation and
+comments in the function.
+
+Signed-off-by: Brian Foster <bfoster@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/bfq-cgroup.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ fs/xfs/libxfs/xfs_btree.c |   33 ++++++++++++---------------------
+ 1 file changed, 12 insertions(+), 21 deletions(-)
 
---- a/block/bfq-cgroup.c
-+++ b/block/bfq-cgroup.c
-@@ -608,10 +608,19 @@ static void bfq_link_bfqg(struct bfq_dat
- struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
+--- a/fs/xfs/libxfs/xfs_btree.c
++++ b/fs/xfs/libxfs/xfs_btree.c
+@@ -353,20 +353,17 @@ xfs_btree_free_block(
+  */
+ void
+ xfs_btree_del_cursor(
+-	xfs_btree_cur_t	*cur,		/* btree cursor */
+-	int		error)		/* del because of error */
++	struct xfs_btree_cur	*cur,		/* btree cursor */
++	int			error)		/* del because of error */
  {
- 	struct blkcg_gq *blkg = bio->bi_blkg;
-+	struct bfq_group *bfqg;
+-	int		i;		/* btree level */
++	int			i;		/* btree level */
  
--	if (!blkg)
--		return bfqd->root_group;
--	return blkg_to_bfqg(blkg);
-+	while (blkg) {
-+		bfqg = blkg_to_bfqg(blkg);
-+		if (bfqg->online) {
-+			bio_associate_blkg_from_css(bio, &blkg->blkcg->css);
-+			return bfqg;
-+		}
-+		blkg = blkg->parent;
-+	}
-+	bio_associate_blkg_from_css(bio,
-+				&bfqg_to_blkg(bfqd->root_group)->blkcg->css);
-+	return bfqd->root_group;
+ 	/*
+-	 * Clear the buffer pointers, and release the buffers.
+-	 * If we're doing this in the face of an error, we
+-	 * need to make sure to inspect all of the entries
+-	 * in the bc_bufs array for buffers to be unlocked.
+-	 * This is because some of the btree code works from
+-	 * level n down to 0, and if we get an error along
+-	 * the way we won't have initialized all the entries
+-	 * down to 0.
++	 * Clear the buffer pointers and release the buffers. If we're doing
++	 * this because of an error, inspect all of the entries in the bc_bufs
++	 * array for buffers to be unlocked. This is because some of the btree
++	 * code works from level n down to 0, and if we get an error along the
++	 * way we won't have initialized all the entries down to 0.
+ 	 */
+ 	for (i = 0; i < cur->bc_nlevels; i++) {
+ 		if (cur->bc_bufs[i])
+@@ -374,17 +371,11 @@ xfs_btree_del_cursor(
+ 		else if (!error)
+ 			break;
+ 	}
+-	/*
+-	 * Can't free a bmap cursor without having dealt with the
+-	 * allocated indirect blocks' accounting.
+-	 */
+-	ASSERT(cur->bc_btnum != XFS_BTNUM_BMAP ||
+-	       cur->bc_ino.allocated == 0);
+-	/*
+-	 * Free the cursor.
+-	 */
++
++	ASSERT(cur->bc_btnum != XFS_BTNUM_BMAP || cur->bc_ino.allocated == 0 ||
++	       XFS_FORCED_SHUTDOWN(cur->bc_mp));
+ 	if (unlikely(cur->bc_flags & XFS_BTREE_STAGING))
+-		kmem_free((void *)cur->bc_ops);
++		kmem_free(cur->bc_ops);
+ 	kmem_cache_free(xfs_btree_cur_zone, cur);
  }
  
- /**
 
 
