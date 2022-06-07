@@ -2,54 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91AEBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D26DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355142AbiFGT3W (ORCPT
+        id S1355310AbiFGT33 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37444 "EHLO
+        Tue, 7 Jun 2022 15:29:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352474AbiFGSeq (ORCPT
+        with ESMTP id S1346039AbiFGSdS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:34:46 -0400
+        Tue, 7 Jun 2022 14:33:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B7A65B6;
-        Tue,  7 Jun 2022 10:57:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB2414768F;
+        Tue,  7 Jun 2022 10:57:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BC7C6187F;
-        Tue,  7 Jun 2022 17:57:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 127A9C36AFE;
-        Tue,  7 Jun 2022 17:57:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41C2861856;
+        Tue,  7 Jun 2022 17:57:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBDF6C34119;
+        Tue,  7 Jun 2022 17:57:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624662;
-        bh=UuT5pcuIYfI0vQXMOvXgNqqRRJ+ochAjLD8cGR0HfcE=;
+        s=k20201202; t=1654624638;
+        bh=ZGTc8NAbbTjfxFouD80Ckbaghw1HwQote5WRz/Lbuus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YGnNDzbLoGTV7iErQHLL4YA2cw81OPiD3OoAXMbNMoZvzKQHiQszR1VI3fb+nHx+0
-         IUXEM91sgcu/N2A7BvbX5uP8reb86T7cZDUTKsdy9ahMOyh8UIbmDwa9lasahW0eMu
-         7w+XuhjJjs00FRRzqT7iZYoD3OKO8t8AYXOSmobjx1W2ZXooSfUgu5QpmxNMHDoJ6X
-         o0XxwDuahEjNYZoSgy2CnUakM8CGQDspoCWG6HXC+Nw8e87VcHPMLx7TpjJPP8MhW8
-         jE2ppP3VExxvNBjm+aNPbBey68CmEyn4h0BfDCDR10PWiUg10NayP1CkSG/pgGocJS
-         u8OlVmMsa0fEA==
+        b=Pu5yktFG2lEZp3dXOuJYgLAj+ywuIuT49H1/6iOTMFt+3JwQBqV/Gl7rz53IqgtIk
+         MH1JiO0J1H9sn5JBGrGBwiuQVzam2dh2/kwGEicVMFtAV8f8NZ3pFm71jqxQ3uHxGK
+         J6KDAMgeFwE6B2VRtdpn2ErKkrdkp1S+3arbjxn1CMGQoLFwJT7bIE9W6zC1bhsCeP
+         Hev+xN8wkuhxfMrIBZ1fXCozMg/VT5h9bqoDApq4QkyVcIxPrLl0BiMCKRiZuH/ksB
+         zOQpjqT4d1wcoOw/h7BjLx6wne9MBekyl9QaTmFrZWv0u/4gIGbGCTfRJJHrUb0mLz
+         IP+BhQJyPnuNQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Galiffi <David.Galiffi@amd.com>,
-        Martin Leung <Martin.Leung@amd.com>,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, Hansen.Dsouza@amd.com, Charlene.Liu@amd.com,
-        HaoPing.Liu@amd.com, Pavle.Kotarac@amd.com, dillon.varone@amd.com,
-        baihaowen@meizu.com, alex.hung@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 37/51] drm/amd/display: Check if modulo is 0 before dividing.
-Date:   Tue,  7 Jun 2022 13:55:36 -0400
-Message-Id: <20220607175552.479948-37-sashal@kernel.org>
+Cc:     Wang Cheng <wanngchenng@gmail.com>,
+        syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, Larry.Finger@lwfinger.net,
+        florian.c.schilhabel@googlemail.com, paskripkin@gmail.com,
+        fmdefrancesco@gmail.com, xkernel.wang@foxmail.com,
+        skumark1902@gmail.com, kuba@kernel.org,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.15 26/51] staging: rtl8712: fix uninit-value in r871xu_drv_init()
+Date:   Tue,  7 Jun 2022 13:55:25 -0400
+Message-Id: <20220607175552.479948-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
 References: <20220607175552.479948-1-sashal@kernel.org>
@@ -61,43 +58,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Galiffi <David.Galiffi@amd.com>
+From: Wang Cheng <wanngchenng@gmail.com>
 
-[ Upstream commit 49947b906a6bd9668eaf4f9cf691973c25c26955 ]
+[ Upstream commit 0458e5428e5e959d201a40ffe71d762a79ecedc4 ]
 
-[How & Why]
-If a value of 0 is read, then this will cause a divide-by-0 panic.
+When 'tmpU1b' returns from r8712_read8(padapter, EE_9346CR) is 0,
+'mac[6]' will not be initialized.
 
-Reviewed-by: Martin Leung <Martin.Leung@amd.com>
-Acked-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
-Signed-off-by: David Galiffi <David.Galiffi@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+BUG: KMSAN: uninit-value in r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
+ r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
+ usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
+ really_probe+0x653/0x14b0 drivers/base/dd.c:596
+ __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
+ driver_probe_device drivers/base/dd.c:782 [inline]
+ __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
+ bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
+ __device_attach+0x593/0x8e0 drivers/base/dd.c:970
+ device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
+ bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
+ device_add+0x1fff/0x26e0 drivers/base/core.c:3405
+ usb_set_configuration+0x37e9/0x3ed0 drivers/usb/core/message.c:2170
+ usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238
+ usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293
+ really_probe+0x653/0x14b0 drivers/base/dd.c:596
+ __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
+ driver_probe_device drivers/base/dd.c:782 [inline]
+ __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
+ bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
+ __device_attach+0x593/0x8e0 drivers/base/dd.c:970
+ device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
+ bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
+ device_add+0x1fff/0x26e0 drivers/base/core.c:3405
+ usb_new_device+0x1b8e/0x2950 drivers/usb/core/hub.c:2566
+ hub_port_connect drivers/usb/core/hub.c:5358 [inline]
+ hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
+ port_event drivers/usb/core/hub.c:5660 [inline]
+ hub_event+0x58e3/0x89e0 drivers/usb/core/hub.c:5742
+ process_one_work+0xdb6/0x1820 kernel/workqueue.c:2307
+ worker_thread+0x10b3/0x21e0 kernel/workqueue.c:2454
+ kthread+0x3c7/0x500 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30
+
+Local variable mac created at:
+ r871xu_drv_init+0x1771/0x3070 drivers/staging/rtl8712/usb_intf.c:394
+ usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
+
+KMSAN: uninit-value in r871xu_drv_init
+https://syzkaller.appspot.com/bug?id=3cd92b1d85428b128503bfa7a250294c9ae00bd8
+
+Reported-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
+Tested-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Wang Cheng <wanngchenng@gmail.com>
+Link: https://lore.kernel.org/r/14c3886173dfa4597f0704547c414cfdbcd11d16.1652618244.git.wanngchenng@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/staging/rtl8712/usb_intf.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
-index 2c7eb982eabc..054823d12403 100644
---- a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
-+++ b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
-@@ -1013,9 +1013,12 @@ static bool get_pixel_clk_frequency_100hz(
- 			 * not be programmed equal to DPREFCLK
- 			 */
- 			modulo_hz = REG_READ(MODULO[inst]);
--			*pixel_clk_khz = div_u64((uint64_t)clock_hz*
--				clock_source->ctx->dc->clk_mgr->dprefclk_khz*10,
--				modulo_hz);
-+			if (modulo_hz)
-+				*pixel_clk_khz = div_u64((uint64_t)clock_hz*
-+					clock_source->ctx->dc->clk_mgr->dprefclk_khz*10,
-+					modulo_hz);
-+			else
-+				*pixel_clk_khz = 0;
+diff --git a/drivers/staging/rtl8712/usb_intf.c b/drivers/staging/rtl8712/usb_intf.c
+index a61dd96ab2a4..6db2493e6d3a 100644
+--- a/drivers/staging/rtl8712/usb_intf.c
++++ b/drivers/staging/rtl8712/usb_intf.c
+@@ -536,13 +536,13 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
  		} else {
- 			/* NOTE: There is agreement with VBIOS here that MODULO is
- 			 * programmed equal to DPREFCLK, in which case PHASE will be
+ 			AutoloadFail = false;
+ 		}
+-		if (((mac[0] == 0xff) && (mac[1] == 0xff) &&
++		if ((!AutoloadFail) ||
++		    ((mac[0] == 0xff) && (mac[1] == 0xff) &&
+ 		     (mac[2] == 0xff) && (mac[3] == 0xff) &&
+ 		     (mac[4] == 0xff) && (mac[5] == 0xff)) ||
+ 		    ((mac[0] == 0x00) && (mac[1] == 0x00) &&
+ 		     (mac[2] == 0x00) && (mac[3] == 0x00) &&
+-		     (mac[4] == 0x00) && (mac[5] == 0x00)) ||
+-		     (!AutoloadFail)) {
++		     (mac[4] == 0x00) && (mac[5] == 0x00))) {
+ 			mac[0] = 0x00;
+ 			mac[1] = 0xe0;
+ 			mac[2] = 0x4c;
 -- 
 2.35.1
 
