@@ -2,141 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A34FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:50:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD73CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:51:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243169AbiFGLuy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
+        id S243174AbiFGLu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:50:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243139AbiFGLur (ORCPT
+        with ESMTP id S243140AbiFGLur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 07:50:47 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD2BB1C04
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 04:50:45 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LHTD51PDBzjXQ1;
-        Tue,  7 Jun 2022 19:49:25 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 7 Jun 2022 19:50:43 +0800
-Subject: Re: [PATCH] mm/memory-failure: don't allow to unpoison hw corrupted
- page
-To:     zhenwei pi <pizhenwei@bytedance.com>,
-        HORIGUCHI NAOYA <naoya.horiguchi@nec.com>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220604103229.3378591-1-pizhenwei@bytedance.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <b7b64c37-5326-de61-8c8e-efba38f9b207@huawei.com>
-Date:   Tue, 7 Jun 2022 19:50:43 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F5D9814A2;
+        Tue,  7 Jun 2022 04:50:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654602646; x=1686138646;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=jDD4lvp4bmVltOZHiPBrQe81UPImEdnKDg0Vz+nZ9ck=;
+  b=uDbSe4nwB4JqOv8bC6qPzNzbJ73jHLQ+ZdX147WdbtR4+5UTC0rpSwMv
+   snWQKtNtYw/SWnpxKQY2Fl3zO+Ed1kKpKTBapPvqjSSNJNHtIUUQgZic0
+   moGFMz38ZP4WoqKquyK5df+NPoBcEPk6cVerqc1EloPyj0q7JG5QEL6yg
+   g=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 04:50:46 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 04:50:45 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 7 Jun 2022 04:50:45 -0700
+Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 7 Jun 2022 04:50:40 -0700
+From:   Satya Priya <quic_c_skakit@quicinc.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
+        <quic_jprakash@quicinc.com>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Subject: [PATCH V14 1/9] dt-bindings: mfd: pm8008: Add reset-gpios
+Date:   Tue, 7 Jun 2022 17:20:07 +0530
+Message-ID: <1654602615-28849-2-git-send-email-quic_c_skakit@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1654602615-28849-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1654602615-28849-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-In-Reply-To: <20220604103229.3378591-1-pizhenwei@bytedance.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/4 18:32, zhenwei pi wrote:
-> Currently unpoison_memory(unsigned long pfn) is designed for soft
-> poison(hwpoison-inject) only. Unpoisoning a hardware corrupted page
-> puts page back buddy only, this leads BUG during accessing on the
-> corrupted KPTE.
-> 
-> Do not allow to unpoison hardware corrupted page in unpoison_memory()
-> to avoid BUG like this:
-> 
->  Unpoison: Software-unpoisoned page 0x61234
->  BUG: unable to handle page fault for address: ffff888061234000
->  #PF: supervisor write access in kernel mode
->  #PF: error_code(0x0002) - not-present page
->  PGD 2c01067 P4D 2c01067 PUD 107267063 PMD 10382b063 PTE 800fffff9edcb062
->  Oops: 0002 [#1] PREEMPT SMP NOPTI
->  CPU: 4 PID: 26551 Comm: stress Kdump: loaded Tainted: G   M       OE     5.18.0.bm.1-amd64 #7
->  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996) ...
->  RIP: 0010:clear_page_erms+0x7/0x10
->  Code: ...
->  RSP: 0000:ffffc90001107bc8 EFLAGS: 00010246
->  RAX: 0000000000000000 RBX: 0000000000000901 RCX: 0000000000001000
->  RDX: ffffea0001848d00 RSI: ffffea0001848d40 RDI: ffff888061234000
->  RBP: ffffea0001848d00 R08: 0000000000000901 R09: 0000000000001276
->  R10: 0000000000000003 R11: 0000000000000000 R12: 0000000000000001
->  R13: 0000000000000000 R14: 0000000000140dca R15: 0000000000000001
->  FS:  00007fd8b2333740(0000) GS:ffff88813fd00000(0000) knlGS:0000000000000000
->  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->  CR2: ffff888061234000 CR3: 00000001023d2005 CR4: 0000000000770ee0
->  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->  PKRU: 55555554
->  Call Trace:
->   <TASK>
->   prep_new_page+0x151/0x170
->   get_page_from_freelist+0xca0/0xe20
->   ? sysvec_apic_timer_interrupt+0xab/0xc0
->   ? asm_sysvec_apic_timer_interrupt+0x1b/0x20
->   __alloc_pages+0x17e/0x340
->   __folio_alloc+0x17/0x40
->   vma_alloc_folio+0x84/0x280
->   __handle_mm_fault+0x8d4/0xeb0
->   handle_mm_fault+0xd5/0x2a0
->   do_user_addr_fault+0x1d0/0x680
->   ? kvm_read_and_reset_apf_flags+0x3b/0x50
->   exc_page_fault+0x78/0x170
->   asm_exc_page_fault+0x27/0x30
-> 
+Add reset-gpios property for pm8008.
 
-Thanks for fixing this issue.
+Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+Changes in V14:
+ - None.
 
-> Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
-> ---
->  mm/memory-failure.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-> index b85661cbdc4a..ec49571924f4 100644
-> --- a/mm/memory-failure.c
-> +++ b/mm/memory-failure.c
-> @@ -2090,6 +2090,7 @@ int unpoison_memory(unsigned long pfn)
->  {
->  	struct page *page;
->  	struct page *p;
-> +	pte_t *kpte;
->  	int ret = -EBUSY;
->  	int freeit = 0;
->  	static DEFINE_RATELIMIT_STATE(unpoison_rs, DEFAULT_RATELIMIT_INTERVAL,
-> @@ -2101,6 +2102,13 @@ int unpoison_memory(unsigned long pfn)
->  	p = pfn_to_page(pfn);
->  	page = compound_head(p);
->  
-> +	kpte = virt_to_kpte((unsigned long)page_to_virt(p));
-> +	if (kpte && !pte_present(*kpte)) {
+Changes in V13:
+ - None.
 
-It seems this bug is specified to x86? IIUC, not all arch will unmap the entire page if the
-whole page is affected and poisoned. So the above virt_to_kpte + !pte_present check could not
-detect the hardware corrupted page reliably, i.e. if page is not *whole* unmapped, e.g. *possible*
-hugetlb page, we will still unpoison a hardware corrupted page. Or am I miss something?
+Changes in V12:
+ - None.
 
-> +		unpoison_pr_info("Unpoison: Page was hardware poisoned %#lx\n",
-> +				 pfn, &unpoison_rs);
-> +		return -EPERM;
-> +	}
-> +
+Changes in V11:
+ - Change the GPIO_ACTIVE_HIGH flag to GPIO_ACTIVE_LOW.
 
-I think -EOPNOTSUPP might be a better error code too as Naoya pointed out.
+ Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
->  	mutex_lock(&mf_mutex);
->  
->  	if (!PageHWPoison(p)) {
-> 
+diff --git a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
+index ec3138c..a89649c 100644
+--- a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
++++ b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
+@@ -44,6 +44,9 @@ properties:
+   "#size-cells":
+     const: 0
+ 
++  reset-gpios:
++    maxItems: 1
++
+ patternProperties:
+   "^gpio@[0-9a-f]+$":
+     type: object
+@@ -92,6 +95,7 @@ required:
+   - "#address-cells"
+   - "#size-cells"
+   - "#interrupt-cells"
++  - reset-gpios
+ 
+ additionalProperties: false
+ 
+@@ -99,6 +103,7 @@ examples:
+   - |
+     #include <dt-bindings/mfd/qcom-pm8008.h>
+     #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/gpio/gpio.h>
+     qupv3_se13_i2c {
+       #address-cells = <1>;
+       #size-cells = <0>;
+@@ -113,6 +118,8 @@ examples:
+         interrupt-parent = <&tlmm>;
+         interrupts = <32 IRQ_TYPE_EDGE_RISING>;
+ 
++        reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_LOW>;
++
+         pm8008_gpios: gpio@c000 {
+           compatible = "qcom,pm8008-gpio", "qcom,spmi-gpio";
+           reg = <0xc000>;
+-- 
+2.7.4
 
-Thanks!
