@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F25DFCCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:22:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D723C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377808AbiFGVWH (ORCPT
+        id S1378189AbiFGVWK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:22:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
+        Tue, 7 Jun 2022 17:22:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376517AbiFGU06 (ORCPT
+        with ESMTP id S1376458AbiFGU0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:26:58 -0400
+        Tue, 7 Jun 2022 16:26:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42ECA1D8096;
-        Tue,  7 Jun 2022 11:32:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38CB0108A89;
+        Tue,  7 Jun 2022 11:32:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30A2B60DDA;
-        Tue,  7 Jun 2022 18:32:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4224BC385A2;
-        Tue,  7 Jun 2022 18:32:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB48960DDA;
+        Tue,  7 Jun 2022 18:32:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E863AC385A2;
+        Tue,  7 Jun 2022 18:32:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626768;
-        bh=/atc0+gFpH0rsZcqQNrfsag5GHjaKYkPOJ5HwXSCjX8=;
+        s=korg; t=1654626760;
+        bh=cOVRoMh2dOk7ICQ8DdAnJhhYMLLUDecgkUZ1B1A+j5g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BjL2taf5a+RW+omI4lGDNHMAbN3TQz0BagtOUB9q6mrVPyIc5xLl6NW9+PaYKF4XK
-         eC2K7Ac0fmq0i9ire3SAg+uIASM3BUXatd5BLE44x8XfJPDP3MY3NJWlN395Hixtml
-         CB7GG61C5YchGnS1gYZO4gEQpZ2v/1Gt3cVoHPOA=
+        b=EC8TJgTNEOVOY6iImEtHUBOlhkmKDVzCZkCM6towCtvVq7kQjhqW4/3ms+VC2f+xB
+         5k7BUfRM6H6TBiVZLV1p7dGUC0374fQchu+clh7YvN7Cy4Cr/2M70agR3lcdn2wuXs
+         LCSKRmic1gW4srj1KlsBanEi1VOthZ+iAF73dszM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 497/772] arm64: dts: ti: k3-am64-mcu: remove incorrect UART base clock rates
-Date:   Tue,  7 Jun 2022 19:01:29 +0200
-Message-Id: <20220607165003.628821759@linuxfoundation.org>
+Subject: [PATCH 5.17 494/772] mfd: ipaq-micro: Fix error check return value of platform_get_irq()
+Date:   Tue,  7 Jun 2022 19:01:26 +0200
+Message-Id: <20220607165003.540215015@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,48 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 439677d416b17dd39964d5f7d64b742a2e51da5b ]
+[ Upstream commit 3b49ae380ce1a3054e0c505dd9a356b82a5b48e8 ]
 
-We found that (at least some versions of) the sci-fw set the base clock
-rate for UARTs in the MCU domain to 96 MHz instead of the expected 48 MHz,
-leading to incorrect baud rates when used from Linux.
+platform_get_irq() return negative value on failure, so null check of
+irq is incorrect. Fix it by comparing whether it is less than zero.
 
-As the 8250_omap driver will query the actual clock rate from the clk
-driver when clock-frequency is unset, removing the incorrect property is
-sufficient to fix the baud rate.
-
-Fixes: 8abae9389bdb ("arm64: dts: ti: Add support for AM642 SoC")
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Reviewed-by: Vignesh Raghavendra <vigneshr@ti.com>
-Link: https://lore.kernel.org/r/20220419075157.189347-1-matthias.schiffer@ew.tq-group.com
+Fixes: dcc21cc09e3c ("mfd: Add driver for Atmel Microcontroller on iPaq h3xxx")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20220412085305.2533030-1-lv.ruyi@zte.com.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/mfd/ipaq-micro.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi b/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
-index 2bb5c9ff172c..02d4285acbb8 100644
---- a/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
-@@ -10,7 +10,6 @@
- 		compatible = "ti,am64-uart", "ti,am654-uart";
- 		reg = <0x00 0x04a00000 0x00 0x100>;
- 		interrupts = <GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>;
--		clock-frequency = <48000000>;
- 		current-speed = <115200>;
- 		power-domains = <&k3_pds 149 TI_SCI_PD_EXCLUSIVE>;
- 		clocks = <&k3_clks 149 0>;
-@@ -21,7 +20,6 @@
- 		compatible = "ti,am64-uart", "ti,am654-uart";
- 		reg = <0x00 0x04a10000 0x00 0x100>;
- 		interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
--		clock-frequency = <48000000>;
- 		current-speed = <115200>;
- 		power-domains = <&k3_pds 160 TI_SCI_PD_EXCLUSIVE>;
- 		clocks = <&k3_clks 160 0>;
+diff --git a/drivers/mfd/ipaq-micro.c b/drivers/mfd/ipaq-micro.c
+index e92eeeb67a98..4cd5ecc72211 100644
+--- a/drivers/mfd/ipaq-micro.c
++++ b/drivers/mfd/ipaq-micro.c
+@@ -403,7 +403,7 @@ static int __init micro_probe(struct platform_device *pdev)
+ 	micro_reset_comm(micro);
+ 
+ 	irq = platform_get_irq(pdev, 0);
+-	if (!irq)
++	if (irq < 0)
+ 		return -EINVAL;
+ 	ret = devm_request_irq(&pdev->dev, irq, micro_serial_isr,
+ 			       IRQF_SHARED, "ipaq-micro",
 -- 
 2.35.1
 
