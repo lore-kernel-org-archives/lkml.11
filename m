@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 980B7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A64CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:21:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345928AbiFGRVY (ORCPT
+        id S1345949AbiFGRVa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39820 "EHLO
+        Tue, 7 Jun 2022 13:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345708AbiFGRTK (ORCPT
+        with ESMTP id S1345561AbiFGRTD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:19:10 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC7E1053CE
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:19:04 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id kq6so23530104ejb.11
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:19:04 -0700 (PDT)
+        Tue, 7 Jun 2022 13:19:03 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CE71053F0
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:18:59 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id n10so36593174ejk.5
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:18:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gKwByyPfxfr/n1cC+oLGoBG4NlLo51IgX3L05P+HJI8=;
-        b=Dy8vTNOUCL6SeBYk2LMOat+XlBHFSivtmw8Z3inXucd2HorZz4R7Vb+zYOT5076sDQ
-         eUmMt+Z96T//xNLlmqwLvPIz0d/ISgC1WQcJs1P1g3eS6Io+SdcH3AnFmuIyv45TxwkU
-         a8TC5HBI9aG3CaPUv+zlkd/TKcL8wD1Fwtxw6BUDXawuhDWzE/qR0H+QIcUwajleND+X
-         mZECitUnjhpVdyQAZ0AIVNw9VhpVMba40eBEU6O5sFcwOMAfFSJPu1HnOwjxDaH/WcwF
-         z5U9aqSprPrs2eHBpCga2xQMWpU9YKXgKPBtc6zbgLcWcUM7JEV8LmiZpeEVRKWmYVPa
-         xM4A==
+        bh=dkxGKqfjlk2BseBFR/4rpL2eqUgP+7L5CxVKR6PZDHY=;
+        b=jWjQn4yiof6z1wOf4VVqd3sJCsADu0ZkWQWoYH0kyxK0F/zYWpWqecY6/eNv/pHRcl
+         9v66ISeM4TY7zIRNTjX3CvR/Mdq6CrwMAgtErEbS1t9qzOeSnlckxG2NypIYOLTfkxVA
+         7tmfaMituYRQsf9F51jWJCtHhk98nZ+5pD42ToFN11jW/VrWZPA7jgck/yNqDoq8p3jG
+         huMKxoaJyUZb1haqDcqBwEn8HJj0mNkN1qXj+6OGtgdh7iYgIqnfUy4gA9HvCWbU/di8
+         2LHkBh0Q8YhLsHzsyGDH3jWmiwu+4tsclhTo7W0VpRPnEstPIodPDiQ/JXqYEqNJRJx5
+         7I1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gKwByyPfxfr/n1cC+oLGoBG4NlLo51IgX3L05P+HJI8=;
-        b=pY5YztJ2p3UtVVRzOSgF8ji9VBltict3BqJ49m6r6NCqvpCdE6tFXbOVsklrN1Jmib
-         NfEXNqgtbw+7BElt8vt8vjavdfYTHOCYqUN8bq8voRv1Iy2vYUyTThGBVutiO2Pnw5NI
-         hjobDTmxeZ/ZvkwHTrdCp/Z1Ar54aCs8vFHMWO86xuOS0umos2pwoFMZByRnbzNl7tcM
-         56NzmObRHttGi2fZgDYTPPsgsN/Hlh1VPF6HKWWthOzXfdyyglF9u2fn+utj+dnxeWWN
-         uwqDTGAYZLwnGOTM8Ub/XxavzktAqPoqMRPjHWz4LUbclEqapg4Aax3PN23P6Vwqc+6K
-         Q6oA==
-X-Gm-Message-State: AOAM530NIc0hkqXpmH5I5bkh4NxQ94H8FCTcKbDRD71q0LlTKIvON7FI
-        Q/UhqUVxVE59BwjA5QMW9WIf0w==
-X-Google-Smtp-Source: ABdhPJzSL/dwq6r3E9jWuUXk3PD0vK74fSqk9KX+ypDiU5Yy6dbsNXhfI1NXAO7sDxCZ0lIAYdKNEg==
-X-Received: by 2002:a17:907:9615:b0:708:a422:c9c2 with SMTP id gb21-20020a170907961500b00708a422c9c2mr28113240ejc.217.1654622343543;
-        Tue, 07 Jun 2022 10:19:03 -0700 (PDT)
+        bh=dkxGKqfjlk2BseBFR/4rpL2eqUgP+7L5CxVKR6PZDHY=;
+        b=0FEaXjaEBSQf7uLqTCoES5BvCLihM4gdhdRUG1ANwNi9f9MYDcI9OG8c0EG2U8azib
+         3+2Tdfue2uEkEBw40/7VNeoUZDRfoEmDzGy0oiaWyWuaZ/xJaQktVRAUcC5tp+mW/+oV
+         xnuDqlh2uemRPBuM/ARQyjkznRe3kKD0dSrHnFvkDCdV1EsqOC4grXX7DO2zZpzX0S+G
+         SZzpbvn0vyCNjTbWdfNemSnT9X+xyghyxKGzDHCiTP+hRIfVBC/x/uwfK70L2JOJ5VZ4
+         ODZI6e5hi1x2ILAh7DtSnne0qrcNhgQh7CZetMhWWBCIZcgPr54CAp4QC4kw7fKnfn3G
+         C5xw==
+X-Gm-Message-State: AOAM530CxH6dj/PiIX7OxKu0NohVcs5+hNXeP1Sj/1xbzHFExdeA7jRQ
+        AHDxYDemCgKyhCZb2VaS9OW3Kju+mBmX0w==
+X-Google-Smtp-Source: ABdhPJwvVpI5kUxoZUY5o27MdTOXLLE+WxNK8SL79kihah8urA6NRTQcJkTareJ4XD6xl4j9eOMKFQ==
+X-Received: by 2002:a17:906:2a86:b0:711:d8a5:cb0c with SMTP id l6-20020a1709062a8600b00711d8a5cb0cmr7919603eje.426.1654622338378;
+        Tue, 07 Jun 2022 10:18:58 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i7-20020a170906444700b0070e238ff66fsm5876540ejp.96.2022.06.07.10.19.02
+        by smtp.gmail.com with ESMTPSA id i7-20020a170906444700b0070e238ff66fsm5876540ejp.96.2022.06.07.10.18.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 10:19:03 -0700 (PDT)
+        Tue, 07 Jun 2022 10:18:58 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -59,9 +59,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 12/14] arm64: dts: qcom: sdm630: add dedicated IMEM and syscon compatibles
-Date:   Tue,  7 Jun 2022 19:18:46 +0200
-Message-Id: <20220607171848.535128-12-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 07/14] ARM: dts: qcom: msm8974: add required ranges to OCMEM
+Date:   Tue,  7 Jun 2022 19:18:41 +0200
+Message-Id: <20220607171848.535128-7-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
 References: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
@@ -71,28 +71,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add proper compatibles to the IMEM device node:
-1. syscon to allow accessing memory from other devices,
-2. dedicated compatible as required for syscon and simple-mfd nodes.
+The OCMEM bindings require ranges property.
 
+Fixes: a2cc991ed634 ("ARM: dts: qcom: msm8974: add ocmem node")
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm64/boot/dts/qcom/sdm630.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-index 8d38c3d3c940..771f74dec826 100644
---- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-@@ -1830,7 +1830,7 @@ blsp_i2c8: i2c@c1b8000 {
- 		};
- 
- 		sram@146bf000 {
--			compatible = "simple-mfd";
-+			compatible = "qcom,sdm630-imem", "syscon", "simple-mfd";
- 			reg = <0x146bf000 0x1000>;
- 
- 			#address-cells = <1>;
+---
+
+Not tested on HW. Testing might be useful.
+---
+ arch/arm/boot/dts/qcom-msm8974.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
+index 5e6b2ae72e62..add03309b3b4 100644
+--- a/arch/arm/boot/dts/qcom-msm8974.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
+@@ -1608,6 +1608,7 @@ sram@fdd00000 {
+ 			reg = <0xfdd00000 0x2000>,
+ 			      <0xfec00000 0x180000>;
+ 			reg-names = "ctrl", "mem";
++			ranges = <0 0xfec00000 0x180000>;
+ 			clocks = <&rpmcc RPM_SMD_OCMEMGX_CLK>,
+ 				 <&mmcc OCMEMCX_OCMEMNOC_CLK>;
+ 			clock-names = "core", "iface";
 -- 
 2.34.1
 
