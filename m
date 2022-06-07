@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52EA3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359533AbiFGUfr (ORCPT
+        id S1376414AbiFGUfx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:35:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
+        Tue, 7 Jun 2022 16:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357712AbiFGTmR (ORCPT
+        with ESMTP id S1357735AbiFGTmS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17581B6FD6;
-        Tue,  7 Jun 2022 11:15:57 -0700 (PDT)
+        Tue, 7 Jun 2022 15:42:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E321B6FED;
+        Tue,  7 Jun 2022 11:16:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76AF5B82368;
-        Tue,  7 Jun 2022 18:15:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9536C385A5;
-        Tue,  7 Jun 2022 18:15:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 768EFB822C0;
+        Tue,  7 Jun 2022 18:16:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3D46C385A2;
+        Tue,  7 Jun 2022 18:16:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625755;
-        bh=N8UbqJnFB6zL7Fltg5vHOaYoZGdWHnypTXLxuzrfcyo=;
+        s=korg; t=1654625766;
+        bh=KcMfdVrPS5sBaTos33sAmjiggMA4Goon5JHj92fmjP8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a9n8f8FnyYkh2arIa+t90QPbHrj4uE21rZldQr4S5DQhWuZbs3B4W+6lEh3vOVE/E
-         cnZPtouN0qZAI4jtR1qczgOk6XXdTtjgTEOCaLRT6Udtzk90a0vm83iN+WP8EMOhGT
-         WV+b5A5LZFf3hIshloL6V+e11ItiXxe7j9kgIwow=
+        b=V2GJhx87EDdbON+0QwOC4L7/pUnOvnfgGMbNyJeHdLBS98r7hNpXqbT2O52Efcv+P
+         8NQkDp+ewfAtNU6nq4ULKfsYDr3KwsUJ66pp3bWVn/bm62htMsmzVxNiIBYQCXjJZ/
+         q38Rt0p8WWCIQJp9ukGjANYGvJk6cF6X7j1ldm+U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
-        Corey Minyard <cminyard@mvista.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 133/772] ipmi:ssif: Check for NULL msg when handling events and messages
-Date:   Tue,  7 Jun 2022 18:55:25 +0200
-Message-Id: <20220607164952.962507398@linuxfoundation.org>
+        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 137/772] rtlwifi: Use pr_warn instead of WARN_ONCE
+Date:   Tue,  7 Jun 2022 18:55:29 +0200
+Message-Id: <20220607164953.080202423@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,73 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corey Minyard <cminyard@mvista.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit 7602b957e2404e5f98d9a40b68f1fd27f0028712 ]
+[ Upstream commit ad732da434a2936128769216eddaece3b1af4588 ]
 
-Even though it's not possible to get into the SSIF_GETTING_MESSAGES and
-SSIF_GETTING_EVENTS states without a valid message in the msg field,
-it's probably best to be defensive here and check and print a log, since
-that means something else went wrong.
+This memory allocation failure can be triggered by fault injection or
+high pressure testing, resulting a WARN.
 
-Also add a default clause to that switch statement to release the lock
-and print a log, in case the state variable gets messed up somehow.
+Fix this by replacing WARN with pr_warn.
 
-Reported-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Corey Minyard <cminyard@mvista.com>
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220511014453.1621366-1-dzm91@hust.edu.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/ipmi/ipmi_ssif.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/net/wireless/realtek/rtlwifi/usb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/char/ipmi/ipmi_ssif.c b/drivers/char/ipmi/ipmi_ssif.c
-index 48aab77abebf..588610236de1 100644
---- a/drivers/char/ipmi/ipmi_ssif.c
-+++ b/drivers/char/ipmi/ipmi_ssif.c
-@@ -814,6 +814,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
- 		break;
- 
- 	case SSIF_GETTING_EVENTS:
-+		if (!msg) {
-+			/* Should never happen, but just in case. */
-+			dev_warn(&ssif_info->client->dev,
-+				 "No message set while getting events\n");
-+			ipmi_ssif_unlock_cond(ssif_info, flags);
-+			break;
-+		}
-+
- 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
- 			/* Error getting event, probably done. */
- 			msg->done(msg);
-@@ -838,6 +846,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
- 		break;
- 
- 	case SSIF_GETTING_MESSAGES:
-+		if (!msg) {
-+			/* Should never happen, but just in case. */
-+			dev_warn(&ssif_info->client->dev,
-+				 "No message set while getting messages\n");
-+			ipmi_ssif_unlock_cond(ssif_info, flags);
-+			break;
-+		}
-+
- 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
- 			/* Error getting event, probably done. */
- 			msg->done(msg);
-@@ -861,6 +877,13 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
- 			deliver_recv_msg(ssif_info, msg);
- 		}
- 		break;
-+
-+	default:
-+		/* Should never happen, but just in case. */
-+		dev_warn(&ssif_info->client->dev,
-+			 "Invalid state in message done handling: %d\n",
-+			 ssif_info->ssif_state);
-+		ipmi_ssif_unlock_cond(ssif_info, flags);
+diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
+index 86a236873254..a8eebafb9a7e 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/usb.c
++++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
+@@ -1014,7 +1014,7 @@ int rtl_usb_probe(struct usb_interface *intf,
+ 	hw = ieee80211_alloc_hw(sizeof(struct rtl_priv) +
+ 				sizeof(struct rtl_usb_priv), &rtl_ops);
+ 	if (!hw) {
+-		WARN_ONCE(true, "rtl_usb: ieee80211 alloc failed\n");
++		pr_warn("rtl_usb: ieee80211 alloc failed\n");
+ 		return -ENOMEM;
  	}
- 
- 	flags = ipmi_ssif_lock_cond(ssif_info, &oflags);
+ 	rtlpriv = hw->priv;
 -- 
 2.35.1
 
