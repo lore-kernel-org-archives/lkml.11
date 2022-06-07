@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29FDECCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1364CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380059AbiFGVPL (ORCPT
+        id S1379969AbiFGVO6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
+        Tue, 7 Jun 2022 17:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376424AbiFGUQq (ORCPT
+        with ESMTP id S1376473AbiFGUQt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:16:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34C71CE796;
-        Tue,  7 Jun 2022 11:29:09 -0700 (PDT)
+        Tue, 7 Jun 2022 16:16:49 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0551CE7B6;
+        Tue,  7 Jun 2022 11:29:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2372C61481;
-        Tue,  7 Jun 2022 18:29:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FBCEC385A2;
-        Tue,  7 Jun 2022 18:29:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 59282CE2452;
+        Tue,  7 Jun 2022 18:24:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 676CCC385A2;
+        Tue,  7 Jun 2022 18:24:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626545;
-        bh=8E0BnoU9Kquo9eN4N25XA/aH9OKrsoQnWkajsrplp68=;
+        s=korg; t=1654626248;
+        bh=IZMxjjab0MeqFDPuBR/inMNlodIgWB0ahUKVDgWxLpw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y/ICAhzsFaqRfHMNcl2LdvZeTUbScbRQmdbcKOWuWaTKm99gKvtyEIHYNCwzXbWpY
-         aT+PwN8+BPY9QvQ33QfVgCB5uq/ozylJVF1UDa2BPaDkiSksREyiLQ1bNngsf6eOyy
-         WVOPquPH4VoEvb6A2Ae0YuuFacDmvNbWtU9HM0As=
+        b=g3F0FPIbrJPvDVgndqB1EPlJrRBzTDOObzM2q4Da7CWhyRwndUKBYQeJwxaRoYrbV
+         2tjlICaTOCvhFq5kojKwtyH8pvhVxYrzb063K60I9vm8x+/75Hg89SWYICUsjmJGDd
+         GpHS2diTeDxFdLLiddi9G9jmjFT8pIeoCihUdVd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 416/772] drm/msm/dpu: handle pm_runtime_get_sync() errors in bind path
-Date:   Tue,  7 Jun 2022 19:00:08 +0200
-Message-Id: <20220607165001.266000117@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 311/772] x86/speculation: Add missing prototype for unpriv_ebpf_notify()
+Date:   Tue,  7 Jun 2022 18:58:23 +0200
+Message-Id: <20220607164958.191727742@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,48 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abhinav Kumar <quic_abhinavk@quicinc.com>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-[ Upstream commit 64b22a0da12adb571c01edd671ee43634ebd7e41 ]
+[ Upstream commit 2147c438fde135d6c145a96e373d9348e7076f7f ]
 
-If there are errors while trying to enable the pm in the
-bind path, it will lead to unclocked access of hw revision
-register thereby crashing the device.
+Fix the following warnings seen with "make W=1":
 
-This will not address why the pm_runtime_get_sync() fails
-but at the very least we should be able to prevent the
-crash by handling the error and bailing out earlier.
+  kernel/sysctl.c:183:13: warning: no previous prototype for ‘unpriv_ebpf_notify’ [-Wmissing-prototypes]
+    183 | void __weak unpriv_ebpf_notify(int new_state)
+        |             ^~~~~~~~~~~~~~~~~~
 
-changes in v2:
-	- use pm_runtime_resume_and_get() instead of
-	  pm_runtime_get_sync()
+  arch/x86/kernel/cpu/bugs.c:659:6: warning: no previous prototype for ‘unpriv_ebpf_notify’ [-Wmissing-prototypes]
+    659 | void unpriv_ebpf_notify(int new_state)
+        |      ^~~~~~~~~~~~~~~~~~
 
-Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
-Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Reviewed-by: Rob Clark <robdclark@gmail.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/486721/
-Link: https://lore.kernel.org/r/20220518223407.26147-1-quic_abhinavk@quicinc.com
-Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Fixes: 44a3918c8245 ("x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/5689d065f739602ececaee1e05e68b8644009608.1650930000.git.jpoimboe@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/linux/bpf.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-index 4a8cf33594c3..ddb76fe46948 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-@@ -1075,7 +1075,9 @@ static int dpu_kms_hw_init(struct msm_kms *kms)
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 2f7e00e7af37..e78113f25b71 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -2064,6 +2064,8 @@ void bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
+ 				       struct net_device *netdev);
+ bool bpf_offload_dev_match(struct bpf_prog *prog, struct net_device *netdev);
  
- 	dpu_kms_parse_data_bus_icc_path(dpu_kms);
- 
--	pm_runtime_get_sync(&dpu_kms->pdev->dev);
-+	rc = pm_runtime_resume_and_get(&dpu_kms->pdev->dev);
-+	if (rc < 0)
-+		goto error;
- 
- 	dpu_kms->core_rev = readl_relaxed(dpu_kms->mmio + 0x0);
++void unpriv_ebpf_notify(int new_state);
++
+ #if defined(CONFIG_NET) && defined(CONFIG_BPF_SYSCALL)
+ int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr);
  
 -- 
 2.35.1
