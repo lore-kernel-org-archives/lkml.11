@@ -2,112 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 13:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4996C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 13:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244697AbiFGN0m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 09:26:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48338 "EHLO
+        id S244702AbiFGNaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 09:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244682AbiFGN0h (ORCPT
+        with ESMTP id S232553AbiFGNaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 09:26:37 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22762C17CD;
-        Tue,  7 Jun 2022 06:26:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654608397; x=1686144397;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=UzJ5sFk3XLUYlgy5MtTnQZmHTWhbXi6L2isVak6wDXU=;
-  b=y3+twpkCGtjxHOjVDpBcPpJ0564bv5zvPZDj+H+Q8DFsdUsHXjj13pfG
-   XCaw3saMrisc5sAwwK4EmMbIrILEHPOEuJWxL7I2gncCDLEB1TBJSG+ST
-   rxMeu91iubTLe18G+gvez1Ac/YLcTkPC9WX1AGL1BHnK0V4gbuJwYgTJc
-   Y=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 06:26:37 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 06:26:36 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 7 Jun 2022 06:26:35 -0700
-Received: from [10.216.0.16] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 7 Jun 2022
- 06:26:31 -0700
-Message-ID: <9c457623-7a80-dad8-8ef8-2346b0a4f0a1@quicinc.com>
-Date:   Tue, 7 Jun 2022 18:55:49 +0530
+        Tue, 7 Jun 2022 09:30:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F7F3D19E6;
+        Tue,  7 Jun 2022 06:30:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07AE561484;
+        Tue,  7 Jun 2022 13:30:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5159BC34119;
+        Tue,  7 Jun 2022 13:30:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654608612;
+        bh=zyhrWRXdVXO+HYqEJk8OrrgU5Np0Uk7LNBouSz/WdWk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ScN+2e1u3+nDzZk/Al7r1+6WF1/wNS0eV+otewgvoNfOjHPb2KfMd1X/bldLpTCnb
+         AAbYk3HnKiIUFUlMwrPUF2rpCiJ+dd2+0MN8sFOWVoxJ+wlUZpc4JoqEs1bcvuB9a2
+         h2ZiF1bKQsR8b6YchGandWN+7DtI5GRgYVNhKiaTL6aLSxes4cN4BLcdyTW3axXO7H
+         Xko5T/ioQy3I7z40H1xCTLC80OtIyWMg/YNyKyLZelyTEkYa6Z6kYzw+nbKIxEn7qZ
+         EPEKyNQBM7QQkm3L4hhfic9xpioxdOLfYPMvpLbhrSbYRTByyTsq2yvXK/sbbL1HaH
+         gUd/mRMYm4+Zg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 33CDEE737E2;
+        Tue,  7 Jun 2022 13:30:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [V4] serial: core: Do stop_rx in suspend path for console if
- console_suspend is disabled
-Content-Language: en-CA
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-CC:     <jirislaby@kernel.org>, <linux-serial@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_msavaliy@quicinc.com>,
-        <dianders@chromium.org>, <mka@chromium.org>, <swboyd@chromium.org>
-References: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
- <CGME20220523213246eucas1p2d0da08d931a996cd3410eda1c2fd48c0@eucas1p2.samsung.com>
- <bf7eec57-6ad6-2c1a-ea61-0e1d06fc77f5@samsung.com>
- <Yp9RCelSM9L+hpAV@kroah.com>
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-In-Reply-To: <Yp9RCelSM9L+hpAV@kroah.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3] selftests net: fix bpf build error
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165460861220.26982.2362920387757777214.git-patchwork-notify@kernel.org>
+Date:   Tue, 07 Jun 2022 13:30:12 +0000
+References: <20220606064517.8175-1-lina.wang@mediatek.com>
+In-Reply-To: <20220606064517.8175-1-lina.wang@mediatek.com>
+To:     Lina Wang <lina.wang@mediatek.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, shuah@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, matthias.bgg@gmail.com, maze@google.com,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello:
 
-On 6/7/2022 6:52 PM, Greg KH wrote:
-> On Mon, May 23, 2022 at 11:32:46PM +0200, Marek Szyprowski wrote:
->> Hi,
->>
->> On 16.05.2022 11:20, Vijaya Krishna Nivarthi wrote:
->>> For the case of console_suspend disabled, if back to back suspend/resume
->>> test is executed, at the end of test, sometimes console would appear to
->>> be frozen not responding to input. This would happen because, during
->>> resume, rx transactions can come in before system is ready, malfunction
->>> of rx happens in turn resulting in console appearing to be stuck.
->>>
->>> Do a stop_rx in suspend sequence to prevent this.
->>>
->>> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
->>> ---
->>> v4: moved the change to serial core to apply for all drivers
->>> v3: swapped the order of conditions to be more human readable
->>> v2: restricted patch to contain only stop_rx in suspend sequence
->>> v1: intial patch contained 2 additional unrelated changes in vicinity
->>> ---
->> This patch landed recently in linux-next as commit c9d2325cdb92
->> ("serial: core: Do stop_rx in suspend path for console if
->> console_suspend is disabled").
->>
->> Unfortunately it breaks console operation on my test systems after
->> system suspend/resume cycle if 'no_console_suspend' kernel parameter is
->> present. System properly resumes from suspend, the console displays all
->> the messages and even command line prompt, but then doesn't react on any
->> input. If I remove the 'no_console_suspend' parameter, the console is
->> again operational after system suspend/resume cycle. Before this patch
->> it worked fine regardless the 'no_console_suspend' parameter.
-> Did this ever get resolved or do I need to revert this?
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-We have a resolution and I will be uploading a Fixes: patch today.
+On Mon, 6 Jun 2022 14:45:17 +0800 you wrote:
+> bpf_helpers.h has been moved to tools/lib/bpf since 5.10, so add more
+> including path.
+> 
+> Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Signed-off-by: Lina Wang <lina.wang@mediatek.com>
+> Acked-by: Song Liu <songliubraving@fb.com>
+> 
+> [...]
 
-Thank you.
+Here is the summary with links:
+  - [v3] selftests net: fix bpf build error
+    https://git.kernel.org/netdev/net/c/cf67838c4422
 
--Vijay/
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
->
-> thanks,
->
-> greg k-h
