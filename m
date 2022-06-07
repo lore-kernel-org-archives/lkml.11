@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A48E3CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC71DCCA482
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358225AbiFGUAT (ORCPT
+        id S1358282AbiFGUAg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51102 "EHLO
+        Tue, 7 Jun 2022 16:00:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353407AbiFGSx7 (ORCPT
+        with ESMTP id S1353518AbiFGSyY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:53:59 -0400
+        Tue, 7 Jun 2022 14:54:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F5514ACB5;
-        Tue,  7 Jun 2022 11:03:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C80214AF7A;
+        Tue,  7 Jun 2022 11:03:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 956E66171C;
-        Tue,  7 Jun 2022 18:03:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1E4BC36AFF;
-        Tue,  7 Jun 2022 18:03:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C64D4617B4;
+        Tue,  7 Jun 2022 18:03:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57362C385A5;
+        Tue,  7 Jun 2022 18:03:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654625029;
-        bh=vdHmBAw1oESu3mBgdYJHfUNiSBmK3oQCUHtDEM6Fx5M=;
+        s=k20201202; t=1654625035;
+        bh=hxyMCmhz3XxhxX3+jhYEscF8Pnl9IFgTL79rNE10PTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B8ueaBSdT9bbfvyBl6w0cUKikOjz8aomfpOUfWBZT5I4a4uHzb56K73H/AMseEeUS
-         Y+Y4O8seQA0PemojvQcyR1PhABPRTdZwgH20ZhAZXgH1Fa5ED6S6skDfjgMYNcBebQ
-         PtuV2hd4U9TALkI79Wa6T/6HYmUjxUfcOyPvjmbd4aSDe18pGrhMs9R9HCy+Wq4U9o
-         sq1lapWPPDIKlIcukwCALJR+ukV685yqlK4nflNC9S3nPm+82P7JwZ+2mmPG5Ppqc4
-         ULaKoO1leaLmSbuabDScO/DaecgLo0Zr9Lc7l8V01jIAqB02ZEhdolZ/AVdE0BDXTW
-         6o9ypRCiaFb1A==
+        b=A8aM+scacYEMhn441FCvzqbPJuvIprz58kyWgLFrGr445kr8UNtuEdklibbAjUx/w
+         3i0Dk9jnbhBhGub8DiuaICIZLLJR+NG+OXsSPMr2S0P8em61ddCdh6REA2dqIXm+Cz
+         MwObQFaYyTNz/suKZ0iNgAWi5cdhW4D/jU5h1YETmtv2nV1qLdcSHlZSBtICkLWwyK
+         5oaIpYpEFrR2z/aP17eGzww6ujwEcjptRu+DhgXOiQOBYT+RwQjD1CnxI0kLBnQMPn
+         aABmvudaTQtasGLA7oir2vv2x/ohnY6+i2szocYLia0ug4l4/CoH6GQi7ZvF9nUMhk
+         jjJb58OvX1U7Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 14/19] serial: msm_serial: disable interrupts in __msm_console_write()
-Date:   Tue,  7 Jun 2022 14:03:09 -0400
-Message-Id: <20220607180317.482354-14-sashal@kernel.org>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sasha Levin <sashal@kernel.org>, michal.lkml@markovi.net,
+        linux-kbuild@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 18/19] modpost: fix undefined behavior of is_arm_mapping_symbol()
+Date:   Tue,  7 Jun 2022 14:03:13 -0400
+Message-Id: <20220607180317.482354-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180317.482354-1-sashal@kernel.org>
 References: <20220607180317.482354-1-sashal@kernel.org>
@@ -56,57 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Ogness <john.ogness@linutronix.de>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit aabdbb1b7a5819e18c403334a31fb0cc2c06ad41 ]
+[ Upstream commit d6b732666a1bae0df3c3ae06925043bba34502b1 ]
 
-__msm_console_write() assumes that interrupts are disabled, but
-with threaded console printers it is possible that the write()
-callback of the console is called with interrupts enabled.
+The return value of is_arm_mapping_symbol() is unpredictable when "$"
+is passed in.
 
-Explicitly disable interrupts using local_irq_save() to preserve
-the assumed context.
+strchr(3) says:
+  The strchr() and strrchr() functions return a pointer to the matched
+  character or NULL if the character is not found. The terminating null
+  byte is considered part of the string, so that if c is specified as
+  '\0', these functions return a pointer to the terminator.
 
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Link: https://lore.kernel.org/r/20220506213324.470461-1-john.ogness@linutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+When str[1] is '\0', strchr("axtd", str[1]) is not NULL, and str[2] is
+referenced (i.e. buffer overrun).
+
+Test code
+---------
+
+  char str1[] = "abc";
+  char str2[] = "ab";
+
+  strcpy(str1, "$");
+  strcpy(str2, "$");
+
+  printf("test1: %d\n", is_arm_mapping_symbol(str1));
+  printf("test2: %d\n", is_arm_mapping_symbol(str2));
+
+Result
+------
+
+  test1: 0
+  test2: 1
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/msm_serial.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ scripts/mod/modpost.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index c284e61ed4fc..33d035f9fded 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -1578,6 +1578,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
- static void __msm_console_write(struct uart_port *port, const char *s,
- 				unsigned int count, bool is_uartdm)
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 62b0552b7b71..28d1ce102e6d 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1212,7 +1212,8 @@ static int secref_whitelist(const struct sectioncheck *mismatch,
+ 
+ static inline int is_arm_mapping_symbol(const char *str)
  {
-+	unsigned long flags;
- 	int i;
- 	int num_newlines = 0;
- 	bool replaced = false;
-@@ -1595,6 +1596,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
- 			num_newlines++;
- 	count += num_newlines;
- 
-+	local_irq_save(flags);
-+
- 	if (port->sysrq)
- 		locked = 0;
- 	else if (oops_in_progress)
-@@ -1640,6 +1643,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
- 
- 	if (locked)
- 		spin_unlock(&port->lock);
-+
-+	local_irq_restore(flags);
+-	return str[0] == '$' && strchr("axtd", str[1])
++	return str[0] == '$' &&
++	       (str[1] == 'a' || str[1] == 'd' || str[1] == 't' || str[1] == 'x')
+ 	       && (str[2] == '\0' || str[2] == '.');
  }
  
- static void msm_console_write(struct console *co, const char *s,
 -- 
 2.35.1
 
