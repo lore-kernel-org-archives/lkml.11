@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB58CCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C541DCCA47F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380449AbiFGVfQ (ORCPT
+        id S1380346AbiFGVfG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42648 "EHLO
+        Tue, 7 Jun 2022 17:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377140AbiFGUcp (ORCPT
+        with ESMTP id S1376918AbiFGUks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:32:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C151E2266;
-        Tue,  7 Jun 2022 11:34:35 -0700 (PDT)
+        Tue, 7 Jun 2022 16:40:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3EE21EEB80;
+        Tue,  7 Jun 2022 11:38:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6566D60B3D;
-        Tue,  7 Jun 2022 18:34:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E1EBC341C0;
-        Tue,  7 Jun 2022 18:34:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C481B82182;
+        Tue,  7 Jun 2022 18:38:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E969C385A2;
+        Tue,  7 Jun 2022 18:38:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626865;
-        bh=db/ofgzZ/cuknA0GEviSYIS58W5Vqc32utfR3CdfX4Q=;
+        s=korg; t=1654627085;
+        bh=Ef0HGhy+7GGRYGoh67NWrc66shINJ2PSSX4Uj+r6/lM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fno9ox4xhkl+YnbhEfKJYYzuWe3wvQI9qLyVdXuzqvAj9qNVSWKW3zx6rC/Qr6Y4N
-         JxylZRiCdI5qT4P7klpW6ymzeM9EU91EKlnkMUSaELG/KyVg3I1O88PjvLMXXT/4WD
-         Q2jY3EkjXy3v4iUURzxNsD6aG6A6fPp/D6F5sk5I=
+        b=aWkK8YwFkxH4umQq5rgrmy9AFPj3L5bsv9o5vY+2lYAs4vOUdb85840nr+tzz9gac
+         rJJHBHTjcHogUwp++auWj3lBUDhM5YEnxNip0ZTYbMow84ubkS+JeFBiHtcKxoEwPX
+         iA3ojXmw0v91idsuqX4bXXUWdeyA1c0N/q1Rt7Tk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 515/772] pinctrl: renesas: core: Fix possible null-ptr-deref in sh_pfc_map_resources()
-Date:   Tue,  7 Jun 2022 19:01:47 +0200
-Message-Id: <20220607165004.157092743@linuxfoundation.org>
+        stable@vger.kernel.org, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.17 613/772] f2fs: dont need inode lock for system hidden quota
+Date:   Tue,  7 Jun 2022 19:03:25 +0200
+Message-Id: <20220607165007.002611310@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,46 +48,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Jaegeuk Kim <jaegeuk@kernel.org>
 
-[ Upstream commit 5376e3d904532e657fd7ca1a9b1ff3d351527b90 ]
+commit 6213f5d4d23c50d393a31dc8e351e63a1fd10dbe upstream.
 
-It will cause null-ptr-deref when using 'res', if platform_get_resource()
-returns NULL, so move using 'res' after devm_ioremap_resource() that
-will check it to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+Let's avoid false-alarmed lockdep warning.
 
-Fixes: c7977ec4a336 ("pinctrl: sh-pfc: Convert to platform_get_*()")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220429082637.1308182-1-yangyingliang@huawei.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[   58.914674] [T1501146] -> #2 (&sb->s_type->i_mutex_key#20){+.+.}-{3:3}:
+[   58.915975] [T1501146] system_server:        down_write+0x7c/0xe0
+[   58.916738] [T1501146] system_server:        f2fs_quota_sync+0x60/0x1a8
+[   58.917563] [T1501146] system_server:        block_operations+0x16c/0x43c
+[   58.918410] [T1501146] system_server:        f2fs_write_checkpoint+0x114/0x318
+[   58.919312] [T1501146] system_server:        f2fs_issue_checkpoint+0x178/0x21c
+[   58.920214] [T1501146] system_server:        f2fs_sync_fs+0x48/0x6c
+[   58.920999] [T1501146] system_server:        f2fs_do_sync_file+0x334/0x738
+[   58.921862] [T1501146] system_server:        f2fs_sync_file+0x30/0x48
+[   58.922667] [T1501146] system_server:        __arm64_sys_fsync+0x84/0xf8
+[   58.923506] [T1501146] system_server:        el0_svc_common.llvm.12821150825140585682+0xd8/0x20c
+[   58.924604] [T1501146] system_server:        do_el0_svc+0x28/0xa0
+[   58.925366] [T1501146] system_server:        el0_svc+0x24/0x38
+[   58.926094] [T1501146] system_server:        el0_sync_handler+0x88/0xec
+[   58.926920] [T1501146] system_server:        el0_sync+0x1b4/0x1c0
+
+[   58.927681] [T1501146] -> #1 (&sbi->cp_global_sem){+.+.}-{3:3}:
+[   58.928889] [T1501146] system_server:        down_write+0x7c/0xe0
+[   58.929650] [T1501146] system_server:        f2fs_write_checkpoint+0xbc/0x318
+[   58.930541] [T1501146] system_server:        f2fs_issue_checkpoint+0x178/0x21c
+[   58.931443] [T1501146] system_server:        f2fs_sync_fs+0x48/0x6c
+[   58.932226] [T1501146] system_server:        sync_filesystem+0xac/0x130
+[   58.933053] [T1501146] system_server:        generic_shutdown_super+0x38/0x150
+[   58.933958] [T1501146] system_server:        kill_block_super+0x24/0x58
+[   58.934791] [T1501146] system_server:        kill_f2fs_super+0xcc/0x124
+[   58.935618] [T1501146] system_server:        deactivate_locked_super+0x90/0x120
+[   58.936529] [T1501146] system_server:        deactivate_super+0x74/0xac
+[   58.937356] [T1501146] system_server:        cleanup_mnt+0x128/0x168
+[   58.938150] [T1501146] system_server:        __cleanup_mnt+0x18/0x28
+[   58.938944] [T1501146] system_server:        task_work_run+0xb8/0x14c
+[   58.939749] [T1501146] system_server:        do_notify_resume+0x114/0x1e8
+[   58.940595] [T1501146] system_server:        work_pending+0xc/0x5f0
+
+[   58.941375] [T1501146] -> #0 (&sbi->gc_lock){+.+.}-{3:3}:
+[   58.942519] [T1501146] system_server:        __lock_acquire+0x1270/0x2868
+[   58.943366] [T1501146] system_server:        lock_acquire+0x114/0x294
+[   58.944169] [T1501146] system_server:        down_write+0x7c/0xe0
+[   58.944930] [T1501146] system_server:        f2fs_issue_checkpoint+0x13c/0x21c
+[   58.945831] [T1501146] system_server:        f2fs_sync_fs+0x48/0x6c
+[   58.946614] [T1501146] system_server:        f2fs_do_sync_file+0x334/0x738
+[   58.947472] [T1501146] system_server:        f2fs_ioc_commit_atomic_write+0xc8/0x14c
+[   58.948439] [T1501146] system_server:        __f2fs_ioctl+0x674/0x154c
+[   58.949253] [T1501146] system_server:        f2fs_ioctl+0x54/0x88
+[   58.950018] [T1501146] system_server:        __arm64_sys_ioctl+0xa8/0x110
+[   58.950865] [T1501146] system_server:        el0_svc_common.llvm.12821150825140585682+0xd8/0x20c
+[   58.951965] [T1501146] system_server:        do_el0_svc+0x28/0xa0
+[   58.952727] [T1501146] system_server:        el0_svc+0x24/0x38
+[   58.953454] [T1501146] system_server:        el0_sync_handler+0x88/0xec
+[   58.954279] [T1501146] system_server:        el0_sync+0x1b4/0x1c0
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/renesas/core.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ fs/f2fs/super.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/renesas/core.c b/drivers/pinctrl/renesas/core.c
-index 12d41ac017b5..8ed95be90490 100644
---- a/drivers/pinctrl/renesas/core.c
-+++ b/drivers/pinctrl/renesas/core.c
-@@ -71,12 +71,11 @@ static int sh_pfc_map_resources(struct sh_pfc *pfc,
+--- a/fs/f2fs/super.c
++++ b/fs/f2fs/super.c
+@@ -2706,7 +2706,8 @@ int f2fs_quota_sync(struct super_block *
+ 		if (!sb_has_quota_active(sb, cnt))
+ 			continue;
  
- 	/* Fill them. */
- 	for (i = 0; i < num_windows; i++) {
--		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
--		windows->phys = res->start;
--		windows->size = resource_size(res);
--		windows->virt = devm_ioremap_resource(pfc->dev, res);
-+		windows->virt = devm_platform_get_and_ioremap_resource(pdev, i, &res);
- 		if (IS_ERR(windows->virt))
- 			return -ENOMEM;
-+		windows->phys = res->start;
-+		windows->size = resource_size(res);
- 		windows++;
- 	}
- 	for (i = 0; i < num_irqs; i++)
--- 
-2.35.1
-
+-		inode_lock(dqopt->files[cnt]);
++		if (!f2fs_sb_has_quota_ino(sbi))
++			inode_lock(dqopt->files[cnt]);
+ 
+ 		/*
+ 		 * do_quotactl
+@@ -2725,7 +2726,8 @@ int f2fs_quota_sync(struct super_block *
+ 		up_read(&sbi->quota_sem);
+ 		f2fs_unlock_op(sbi);
+ 
+-		inode_unlock(dqopt->files[cnt]);
++		if (!f2fs_sb_has_quota_ino(sbi))
++			inode_unlock(dqopt->files[cnt]);
+ 
+ 		if (ret)
+ 			break;
 
 
