@@ -2,86 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DACF1CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:24:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ACDDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378089AbiFGVYG (ORCPT
+        id S1377738AbiFGVYM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:24:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
+        Tue, 7 Jun 2022 17:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377082AbiFGU2Z (ORCPT
+        with ESMTP id S1377049AbiFGU2W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:28:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410E21DAF06;
-        Tue,  7 Jun 2022 11:33:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A72C60906;
-        Tue,  7 Jun 2022 18:33:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36960C34115;
-        Tue,  7 Jun 2022 18:33:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626829;
-        bh=ubdgmShlCAdXqWClDZ6Hb0uAyoLVgtwPZpi13NuRjMs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Indo3Cj0CAV2qREJJTBqxPx1ecgzsLaMq8u1F7Nrn7xqSbi2u8CHTI3SxrpKYXQni
-         LKnswFesSV0iiVtbXRHimQa74zirq346ZWlYUILqV+HoNNe90lzmcP8Xaw7uIh1RWw
-         m85bd5oh37jOvAmpNA7qfw3JOlIzea49TlFVXdQo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 478/772] ARM: dts: bcm2837-rpi-3-b-plus: Fix GPIO line name of power LED
-Date:   Tue,  7 Jun 2022 19:01:10 +0200
-Message-Id: <20220607165003.077953790@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 16:28:22 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F481DAE53
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:33:47 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id 61-20020a9d0bc3000000b0060b9bfcfe76so13475362oth.9
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:33:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=riYxWgnfyEpcIgAiDw0L5BFc6QRBMqAyo9RFEVz4Ltg=;
+        b=XBkzcn57gKjDBu71hUDF7cAVJFALVJI4Nv/Ffo3O1uQTQ2qw8JOcs/hc4yUu1NHNCp
+         +KgXAx7OYD6YxbzeZPvOozEqWsVq4hSzGeh3c/xROn+dyTt8DboZkCw/Tl+RdhY6OEAu
+         iX4P2GFeZ0wH6Iz5JajX+2AbV6wdBs5eqCa1Bh0/vGpZlUO0C328blVHX9R6iQUOi2co
+         FT58XcbsAP3L3EfnAg3UOvZT9e5p4dfMHJMekbq1peYgPGsbMsGw8uBfHFskrXtrc2Um
+         i0j85cQnTjMaDHcg5FH6wBHKFitjvV95aXQj81nT/B3ysWsJ6ujEayv7pAdT1Y8Y8JP/
+         Vnhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=riYxWgnfyEpcIgAiDw0L5BFc6QRBMqAyo9RFEVz4Ltg=;
+        b=LRDwF2CmjzHcoIew6zCgaT3tVnRozzVa5+RjfBMRWkw1WbX6fOzBLmJcAyZlmv4O0g
+         hAW5CgQcz3Ai5YTJmlGh6Pd/s9wf9aAcO+5RtWgZE7aQhFLJuqz9DDqCQTLfsPtSbX99
+         uao9/f26KG2TwSkTKb9F51eaJA9jkdiYCrVXw3Fn53VC6A9G8m5K6G691vAy9LCBYB7K
+         sVp4qw1rITI1/ffEsHzMC16C4nsL78T+D9cHBzZKId7WwnJY3cVD+1BSGiYET3KEJNGx
+         aTQ5DphyD0hVVs25kENuAI/OG0QOGkiBjM7KHepXBJ6ZLnj8O0gk8BnD0qZPuGpL9qj3
+         8Q2w==
+X-Gm-Message-State: AOAM533WyOis7Z9dQMnE2shOy1CofxGrP13LzzpIfCUsRkkhXVjURBlq
+        IakAllXOalniNHtTtUNb+TgoNZ8J2l6vJyq5c7I=
+X-Google-Smtp-Source: ABdhPJzCFqUJwteu4cxYpuQ2hYA5XaObaQJO5AY5u27Jnfmp15v1BHMqqwy3pR5lplBBUEgCdfoXCvfF1xZCEOYJgmI=
+X-Received: by 2002:a9d:5f9c:0:b0:60b:f3e3:4658 with SMTP id
+ g28-20020a9d5f9c000000b0060bf3e34658mr6776825oti.200.1654626826726; Tue, 07
+ Jun 2022 11:33:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220607153631.7885-1-xiaohuizhang@ruc.edu.cn>
+In-Reply-To: <20220607153631.7885-1-xiaohuizhang@ruc.edu.cn>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue, 7 Jun 2022 14:33:35 -0400
+Message-ID: <CADnq5_Nwf_bDVmT3fXTHFcxwfK1qzBP2Bi3mfYdSAHD5q9G=CQ@mail.gmail.com>
+Subject: Re: [PATCH 1/1] drm/radeon: integer overflow in radeon_mode_dumb_create()
+To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Christian Koenig <christian.koenig@amd.com>,
+        xinhui pan <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.com>
+Applied.  Thanks!
 
-[ Upstream commit 57f718aa4b93392fb1a8c0a874ab882b9e18136a ]
+Alex
 
-The red LED on the Raspberry Pi 3 B Plus is the power LED.
-So fix the GPIO line name accordingly.
-
-Fixes: 71c0cd2283f2 ("ARM: dts: bcm2837: Add Raspberry Pi 3 B+")
-Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
-index e12938baaf12..c263f5b48b96 100644
---- a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
-+++ b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
-@@ -45,7 +45,7 @@
- 		#gpio-cells = <2>;
- 		gpio-line-names = "BT_ON",
- 				  "WL_ON",
--				  "STATUS_LED_R",
-+				  "PWR_LED_R",
- 				  "LAN_RUN",
- 				  "",
- 				  "CAM_GPIO0",
--- 
-2.35.1
-
-
-
+On Tue, Jun 7, 2022 at 12:05 PM Xiaohui Zhang <xiaohuizhang@ruc.edu.cn> wrote:
+>
+> Similar to the handling of amdgpu_mode_dumb_create in commit 54ef0b5461c0
+> ("drm/amdgpu: integer overflow in amdgpu_mode_dumb_create()"),
+> we thought a patch might be needed here as well.
+>
+> args->size is a u64.  arg->pitch and args->height are u32.  The
+> multiplication will overflow instead of using the high 32 bits as
+> intended.
+>
+> Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+> ---
+>  drivers/gpu/drm/radeon/radeon_gem.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/radeon/radeon_gem.c b/drivers/gpu/drm/radeon/radeon_gem.c
+> index 8c01a7f0e027..84843b3b3aef 100644
+> --- a/drivers/gpu/drm/radeon/radeon_gem.c
+> +++ b/drivers/gpu/drm/radeon/radeon_gem.c
+> @@ -833,7 +833,7 @@ int radeon_mode_dumb_create(struct drm_file *file_priv,
+>
+>         args->pitch = radeon_align_pitch(rdev, args->width,
+>                                          DIV_ROUND_UP(args->bpp, 8), 0);
+> -       args->size = args->pitch * args->height;
+> +       args->size = (u64)args->pitch * args->height;
+>         args->size = ALIGN(args->size, PAGE_SIZE);
+>
+>         r = radeon_gem_object_create(rdev, args->size, 0,
+> --
+> 2.17.1
+>
