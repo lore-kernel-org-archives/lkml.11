@@ -2,94 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3341CCA49A
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 486DACCA499
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351942AbiFGSQt (ORCPT
+        id S1352359AbiFGSRD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40164 "EHLO
+        Tue, 7 Jun 2022 14:17:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348852AbiFGR4a (ORCPT
+        with ESMTP id S1348716AbiFGR5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:56:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DAC1483CE;
-        Tue,  7 Jun 2022 10:40:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 650F26146F;
-        Tue,  7 Jun 2022 17:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75227C385A5;
-        Tue,  7 Jun 2022 17:40:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623612;
-        bh=Ug2iDgnAtpoUE8P9c9MZInvHRwl5cstezlbysnMVdkc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ElTsZCbXRPS5/uGF2glaEQg0nlYWAc1+5frJCDmr7IbPXpRg0AVewOXJRZ9iheNve
-         T9UuVmEr6foFBSkR/bgl9bIThPmMHuBFWMaWplBqkZ9bc3HcIzNK+FOh2JlkT/f1e4
-         iEZ57kDtWZS8+lXU0KcITLlANE87AjC3HGdRpbfA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Roberto Bergantinos <rbergant@redhat.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.15 028/667] cifs: fix potential double free during failed mount
-Date:   Tue,  7 Jun 2022 18:54:53 +0200
-Message-Id: <20220607164935.640274400@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 13:57:35 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E789340D1;
+        Tue,  7 Jun 2022 10:40:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654623637; x=1686159637;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=+B4Iq6G37tAIJlQY0aVggAP2/4atVoACS5r1tyjM8L0=;
+  b=R/yYwROjOMH2nY4mjpS/Xg8WvFgVV4UiSb71qGC6n6BVJWV1nKGAN79P
+   2NZEAYd6J47eN6Q0pteZBbKPlK3tKqYy5eJmUs8jqIiWeg05kRMh/rjST
+   ZzQwql+bwGHTutPznZF5TPQwpiiy2Leq8pF80W2KxXWGhlrctTJiknbo6
+   8=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 10:40:34 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 10:40:33 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 7 Jun 2022 10:40:32 -0700
+Received: from [10.216.0.16] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 7 Jun 2022
+ 10:40:29 -0700
+Message-ID: <da18c508-f32e-fece-6392-e6a95f7c7968@quicinc.com>
+Date:   Tue, 7 Jun 2022 23:10:25 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] tty: serial: qcom-geni-serial: minor fixes to
+ get_clk_div_rate()
+Content-Language: en-CA
+To:     Doug Anderson <dianders@chromium.org>
+CC:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <quic_msavaliy@quicinc.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        "Stephen Boyd" <swboyd@chromium.org>
+References: <1654021066-13341-1-git-send-email-quic_vnivarth@quicinc.com>
+ <CAD=FV=UF3x5RHrQH-m1X-4kQSsKiufLnkew=VuJz7W9EAi3GHQ@mail.gmail.com>
+ <5d950007-7a92-a41b-e569-79e806adb06a@quicinc.com>
+ <CAD=FV=Xm1LJEoU5dKa5pMgqsHuAXuFVpdHvc1REULhAKTPbGnQ@mail.gmail.com>
+ <ad393ad2-a247-3c61-5033-185d39b5596d@quicinc.com>
+ <CAD=FV=XD+LozhkJZp0C7RUO01T-XuqBA-SJ0EQeyvGk0CxC3JQ@mail.gmail.com>
+ <e677fd02-011f-4f4e-fa73-17dc96aea7d0@quicinc.com>
+ <CAD=FV=UzjnEjMTLTRVXTrz6aoiBymJtnJ1o8dzPN9hn0Be3tng@mail.gmail.com>
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+In-Reply-To: <CAD=FV=UzjnEjMTLTRVXTrz6aoiBymJtnJ1o8dzPN9hn0Be3tng@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+Hi,
 
-commit 8378a51e3f8140f60901fb27208cc7a6e47047b5 upstream.
+On 6/7/2022 1:29 AM, Doug Anderson wrote:
+> Hi,
+>
+> On Mon, Jun 6, 2022 at 11:19 AM Vijaya Krishna Nivarthi
+> <quic_vnivarth@quicinc.com> wrote:
+>> Hi,
+>>
+>>
+>> On 6/4/2022 12:10 AM, Doug Anderson wrote:
+>>> Hi,
+>>>
+>>> On Fri, Jun 3, 2022 at 10:43 AM Vijaya Krishna Nivarthi
+>>> <quic_vnivarth@quicinc.com> wrote:
+>>>> Ah, or I guess what you're saying is that the table historically
+>>>> contained "rounded" rates but that clk_round_rate() isn't returning
+>>>> nice round rates. OK, but if we truly want to support an inexact
+>>>> match, you'd want to pick the rate that reduces the error, not just
+>>>> pick the first one. In other words, something like this (untested):
+>>>>
+>>>> freq = clk_round_rate(clk, mult);
+>>>> diff = abs(((long)mult - freq) / div);
+>>>> if (diff < best_diff) {
+>>>>      best_diff = diff;
+>>>>      ser_clk = freq;
+>>>>      best_div = div;
+>>>> }
+>>>> I am not sure if its required that freq is a multiple of best_div now
+>>>> that we don't have a multiple of desired_clk anyway.
+>>> How about just this (untested):
+>>>
+>>> freq = clk_round_rate(clk, mult);
+>>> candidate_div = max(1, DIV_ROUND_CLOSEST(freq, desired_clk));
+>>> candidate_freq = freq / candidate_div;
+>>> diff = abs((long)desired_clk - candidate_freq);
+>>> if (diff < best_diff) {
+>>>     best_diff = diff;
+>>>     ser_clk = freq;
+>>>     best_div = candidate_div;
+>>> }
+>> I am afraid this still doesn't guarantee that ser_clk is a multiple of
+>> best_div
+> OK. ...I guess my question would be: does it matter for some reason?
+> "ser_clk" is just a local variable in this function. Who cares if it's
+> not a multiple of best_div? This is why we're keeping track of
+> "best_div" in the first place, so that later in the function instead
+> of:
+>
+> *clk_div = ser_clk / desired_clk;
+> if (!(*clk_div))
+>    *clk_div = 1;
+>
+> You just do:
+>
+> *clk_div = best_div;
 
-RHBZ: https://bugzilla.redhat.com/show_bug.cgi?id=2088799
+My only concern continues to be...
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Roberto Bergantinos <rbergant@redhat.com>
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/cifs/cifsfs.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+Given ser_clk is the final frequency that this function is going to 
+return and best_div is going to be the clk_divider, is it ok if the 
+divider cant divide the frequency exactly?
 
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -826,7 +826,7 @@ cifs_smb3_do_mount(struct file_system_ty
- 	      int flags, struct smb3_fs_context *old_ctx)
- {
- 	int rc;
--	struct super_block *sb;
-+	struct super_block *sb = NULL;
- 	struct cifs_sb_info *cifs_sb = NULL;
- 	struct cifs_mnt_data mnt_data;
- 	struct dentry *root;
-@@ -922,9 +922,11 @@ out_super:
- 	return root;
- out:
- 	if (cifs_sb) {
--		kfree(cifs_sb->prepath);
--		smb3_cleanup_fs_context(cifs_sb->ctx);
--		kfree(cifs_sb);
-+		if (!sb || IS_ERR(sb)) {  /* otherwise kill_sb will handle */
-+			kfree(cifs_sb->prepath);
-+			smb3_cleanup_fs_context(cifs_sb->ctx);
-+			kfree(cifs_sb);
-+		}
- 	}
- 	return root;
- }
+In other words, Can this function output combinations like (402,4)  
+(501,5) ?
 
+If ok, then we can go ahead with this patch or even previous perhaps.
 
+>
+>> I tested it with a function simulates clk_round_rate.
+>>
+>> static unsigned long clk_round_rate_test(struct clk *clk, unsigned long
+>> in_freq)
+>> {
+>>       unsigned long root_freq[6] = {105, 204, 303, 402, 501, 602};
+>>       int i;
+>>
+>>       for (i = 0; i < 6; i++) {
+>>           if (root_freq[i] >= in_freq)
+>>               return root_freq[i];
+>>       }
+>>       return root_freq[6];
+>> }
+>>
+>>       {
+>>           unsigned long ser_clk;
+>>           unsigned long desired_clk;
+>>           unsigned long freq;
+>>           int div_round_closest;
+>>           unsigned long div;
+>>           unsigned long mult;
+>>           unsigned long candidate_div, candidate_freq;
+>>
+>>           unsigned long diff, best_diff, best_div;
+>>           unsigned long one;
+>>
+>>           desired_clk = 100;
+>>           one = 1;
+>>           best_diff = ULONG_MAX;
+>>           pr_err("\ndesired_clk-%d\n", desired_clk);
+>>           for (div = 1; div <= 10; div++) {
+>>               mult = div * desired_clk;
+>>
+>>               freq = clk_round_rate_test(clk, mult);
+>>               div_round_closest = DIV_ROUND_CLOSEST(freq, desired_clk);
+>>               candidate_div = max(one, (unsigned long)div_round_closest);
+>>               candidate_freq = freq / candidate_div;
+>>               diff = abs((long)desired_clk - candidate_freq);
+>>               pr_err("div-%d, mult-%d, freq-%d, div_round_closest-%d,
+>> candidate_div-%d, candidate_freq-%d, diff-%d\n",
+>>                   div, mult, freq, div_round_closest, candidate_div,
+>> candidate_freq, diff);
+>>               if (diff < best_diff) {
+>>                   pr_err("This is best so far\n");
+>>                   best_diff = diff;
+>>                   ser_clk = freq;
+>>                   best_div = candidate_div;
+>>               }
+>>           }
+>>           pr_err("\nbest_diff-%d, ser_clk-%d, best_div-%d\n",
+>>               best_diff, ser_clk, best_div);
+>>       }
+>>
+>> And here is the output
+>>
+>> [   17.835167] desired_clk-100
+>> [   17.839567] div-1, mult-100, freq-105, div_round_closest-1,
+>> candidate_div-1, candidate_freq-105, diff-5
+>> [   17.849220] This is best so far
+>> [   17.852458] div-2, mult-200, freq-204, div_round_closest-2,
+>> candidate_div-2, candidate_freq-102, diff-2
+>> [   17.862104] This is best so far
+>> [   17.865345] div-3, mult-300, freq-303, div_round_closest-3,
+>> candidate_div-3, candidate_freq-101, diff-1
+>> [   17.874995] This is best so far
+>> [   17.878237] div-4, mult-400, freq-402, div_round_closest-4,
+>> candidate_div-4, candidate_freq-100, diff-0
+>> [   17.887882] This is best so far
+>> [   17.891118] div-5, mult-500, freq-501, div_round_closest-5,
+>> candidate_div-5, candidate_freq-100, diff-0
+>> [   17.900770] div-6, mult-600, freq-602, div_round_closest-6,
+>> candidate_div-6, candidate_freq-100, diff-0
+>> [   17.910415] div-7, mult-700, freq-602, div_round_closest-6,
+>> candidate_div-6, candidate_freq-100, diff-0
+>> [   17.920057] div-8, mult-800, freq-602, div_round_closest-6,
+>> candidate_div-6, candidate_freq-100, diff-0
+>> [   17.929703] div-9, mult-900, freq-602, div_round_closest-6,
+>> candidate_div-6, candidate_freq-100, diff-0
+>> [   17.939353] div-10, mult-1000, freq-602, div_round_closest-6,
+>> candidate_div-6, candidate_freq-100, diff-0
+>> [   17.949181]
+>> [   17.949181] best_diff-0, ser_clk-402, best_div-4
+> That doesn't look like a terrible result. I guess nominally 602 is a
+> better approximation, but if we're accepting that we're not going to
+> have an exact rate anyway then maybe being off by that tiny amount
+> doesn't matter and we'd do better with the slow clock (maybe saves
+> power?)
+Actually power saving was the anticipation behind returning first 
+frequency in original patch, when we cant find exact frequency.
+>
+>> Please note that we go past cases when we have an divider that can
+>> exactly divide the frequency(105/1, 204/2, 303/3) and end up with one
+>> that doesn't.
+> Ah, good point. Luckily that's a 1-line fix, right?
+
+Apologies, I could not figure out how.
+
+Thank you.
+
+>
+>
+> -Doug
