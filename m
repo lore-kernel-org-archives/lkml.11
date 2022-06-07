@@ -2,268 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 028B1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:22:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B7F7CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:23:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354681AbiFGTWq (ORCPT
+        id S1355236AbiFGTWu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47216 "EHLO
+        Tue, 7 Jun 2022 15:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352597AbiFGSbJ (ORCPT
+        with ESMTP id S1352380AbiFGSa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:31:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842EE146427;
-        Tue,  7 Jun 2022 10:56:31 -0700 (PDT)
+        Tue, 7 Jun 2022 14:30:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F2B17B868;
+        Tue,  7 Jun 2022 10:56:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6FDB7CE242C;
-        Tue,  7 Jun 2022 17:56:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0618C385A5;
-        Tue,  7 Jun 2022 17:56:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624587;
-        bh=1hJPOJGNIcXFSa9CLjtVS0gJeJaw4SwglJArfgbQavk=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71EBD60DBA;
+        Tue,  7 Jun 2022 17:56:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86A1AC34119;
+        Tue,  7 Jun 2022 17:56:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624562;
+        bh=Dm+pSfsBakHYWaU8nNyLWuSFRBVN96HgtP82/8JBbYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XXlg8S+vp1e3E4a90VrtvpG7tzuhqprPqoCH3XuSIuBIardEa4uiV7zE+9LRyDWc3
-         3MsNXsY/QW5jKLPaSvw7Ol4riWBytvJOA78pPzTZ0h4L9iL4CgYTzYLvUHzzPIn3s5
-         UHxqn2Q/kM3CXsAjsyWCPMBU88GLgxYup3NwaJof2mwoGfkDo1Kh4Og3WKvQCr+CA7
-         977vOcwQUJ1A1xaZgBUyyk8lJMDG4WCN+9BClje4uzTNv33HRHo3y9wpffkPb1jxoa
-         Vawj2bU2dg0DvfXt/jQ2QM6L7OsytqTZduH4GSVQYhz6B92Mn/suH8vXfF/xA+3Jx8
-         6raBXYnYnDQPQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Brad Campbell <lists2009@fnarfbargle.com>,
-        Sasha Levin <sashal@kernel.org>, andreas.noever@gmail.com,
-        michael.jamet@intel.com, YehezkelShB@gmail.com,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 09/51] thunderbolt: Use different lane for second DisplayPort tunnel
-Date:   Tue,  7 Jun 2022 13:55:08 -0400
-Message-Id: <20220607175552.479948-9-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+        b=AEVTrX8nIIey19TTUOGaTgd3VgnuJhzECViXt5PfT/z6rQtCRp5uXlfFUVcRyu8Lx
+         Lzp907J4omcjetmDTqG4QTNUHGoLIahckDoL7Yi7J1fVrkt4XSJbdx27fzjdcHuUI9
+         pgSccRhdQjR6gfBgQQ+gVlPkqf7tsPJiAg8xcYZw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 372/667] rxrpc: Fix decision on when to generate an IDLE ACK
+Date:   Tue,  7 Jun 2022 19:00:37 +0200
+Message-Id: <20220607164945.906776249@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 9d2d0a5cf0ca063f417681cc33e767ce52615286 ]
+[ Upstream commit 9a3dedcf18096e8f7f22b8777d78c4acfdea1651 ]
 
-Brad reported that on Apple hardware with Light Ridge or Falcon Ridge
-controller, plugging in a chain of Thunderbolt displays (Light Ridge
-based controllers) causes all kinds of tearing and flickering. The
-reason for this is that on Thunderbolt 1 hardware there is no lane
-bonding so we have two independent 10 Gb/s lanes, and currently Linux
-tunnels both displays through the lane 1. This makes the displays to
-share the 10 Gb/s bandwidth which may not be enough for higher
-resolutions.
+Fix the decision on when to generate an IDLE ACK by keeping a count of the
+number of packets we've received, but not yet soft-ACK'd, and the number of
+packets we've processed, but not yet hard-ACK'd, rather than trying to keep
+track of which DATA sequence numbers correspond to those points.
 
-For this reason make the second tunnel go through the lane 0 instead.
-This seems to match what the macOS connection manager is also doing.
+We then generate an ACK when either counter exceeds 2.  The counters are
+both cleared when we transcribe the information into any sort of ACK packet
+for transmission.  IDLE and DELAY ACKs are skipped if both counters are 0
+(ie. no change).
 
-Reported-by: Brad Campbell <lists2009@fnarfbargle.com>
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Tested-by: Brad Campbell <lists2009@fnarfbargle.com>
+Fixes: 805b21b929e2 ("rxrpc: Send an ACK after every few DATA packets we receive")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/thunderbolt/tb.c     | 19 +++++++++++++++++--
- drivers/thunderbolt/test.c   | 16 ++++++++--------
- drivers/thunderbolt/tunnel.c | 11 ++++++-----
- drivers/thunderbolt/tunnel.h |  4 ++--
- 4 files changed, 33 insertions(+), 17 deletions(-)
+ include/trace/events/rxrpc.h |  2 +-
+ net/rxrpc/ar-internal.h      |  4 ++--
+ net/rxrpc/input.c            | 11 +++++++++--
+ net/rxrpc/output.c           | 18 +++++++++++-------
+ net/rxrpc/recvmsg.c          |  8 +++-----
+ 5 files changed, 26 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/thunderbolt/tb.c b/drivers/thunderbolt/tb.c
-index 2897a77d44c3..b805b6939794 100644
---- a/drivers/thunderbolt/tb.c
-+++ b/drivers/thunderbolt/tb.c
-@@ -851,7 +851,7 @@ static struct tb_port *tb_find_dp_out(struct tb *tb, struct tb_port *in)
+diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
+index 4a3ab0ed6e06..1c714336b863 100644
+--- a/include/trace/events/rxrpc.h
++++ b/include/trace/events/rxrpc.h
+@@ -1509,7 +1509,7 @@ TRACE_EVENT(rxrpc_call_reset,
+ 		    __entry->call_serial = call->rx_serial;
+ 		    __entry->conn_serial = call->conn->hi_serial;
+ 		    __entry->tx_seq = call->tx_hard_ack;
+-		    __entry->rx_seq = call->ackr_seen;
++		    __entry->rx_seq = call->rx_hard_ack;
+ 			   ),
  
- static void tb_tunnel_dp(struct tb *tb)
+ 	    TP_printk("c=%08x %08x:%08x r=%08x/%08x tx=%08x rx=%08x",
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 8465985a4cb6..dce056adb78c 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -680,8 +680,8 @@ struct rxrpc_call {
+ 	u8			ackr_reason;	/* reason to ACK */
+ 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
+ 	rxrpc_seq_t		ackr_highest_seq; /* Higest sequence number received */
+-	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
+-	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
++	atomic_t		ackr_nr_unacked; /* Number of unacked packets */
++	atomic_t		ackr_nr_consumed; /* Number of packets needing hard ACK */
+ 
+ 	/* RTT management */
+ 	rxrpc_serial_t		rtt_serial[4];	/* Serial number of DATA or PING sent */
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index 680b984ef87f..3521ebd0ee41 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -412,8 +412,8 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
  {
--	int available_up, available_down, ret;
-+	int available_up, available_down, ret, link_nr;
- 	struct tb_cm *tcm = tb_priv(tb);
- 	struct tb_port *port, *in, *out;
- 	struct tb_tunnel *tunnel;
-@@ -896,6 +896,20 @@ static void tb_tunnel_dp(struct tb *tb)
- 		return;
+ 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+ 	enum rxrpc_call_state state;
+-	unsigned int j, nr_subpackets;
+-	rxrpc_serial_t serial = sp->hdr.serial, ack_serial = 0;
++	unsigned int j, nr_subpackets, nr_unacked = 0;
++	rxrpc_serial_t serial = sp->hdr.serial, ack_serial = serial;
+ 	rxrpc_seq_t seq0 = sp->hdr.seq, hard_ack;
+ 	bool immediate_ack = false, jumbo_bad = false;
+ 	u8 ack = 0;
+@@ -569,6 +569,8 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 			sp = NULL;
+ 		}
+ 
++		nr_unacked++;
++
+ 		if (last) {
+ 			set_bit(RXRPC_CALL_RX_LAST, &call->flags);
+ 			if (!ack) {
+@@ -588,9 +590,14 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 			}
+ 			call->rx_expect_next = seq + 1;
+ 		}
++		if (!ack)
++			ack_serial = serial;
  	}
  
-+	/*
-+	 * This is only applicable to links that are not bonded (so
-+	 * when Thunderbolt 1 hardware is involved somewhere in the
-+	 * topology). For these try to share the DP bandwidth between
-+	 * the two lanes.
-+	 */
-+	link_nr = 1;
-+	list_for_each_entry(tunnel, &tcm->tunnel_list, list) {
-+		if (tb_tunnel_is_dp(tunnel)) {
-+			link_nr = 0;
-+			break;
-+		}
-+	}
+ ack:
++	if (atomic_add_return(nr_unacked, &call->ackr_nr_unacked) > 2 && !ack)
++		ack = RXRPC_ACK_IDLE;
 +
- 	/*
- 	 * DP stream needs the domain to be active so runtime resume
- 	 * both ends of the tunnel.
-@@ -927,7 +941,8 @@ static void tb_tunnel_dp(struct tb *tb)
- 	tb_dbg(tb, "available bandwidth for new DP tunnel %u/%u Mb/s\n",
- 	       available_up, available_down);
- 
--	tunnel = tb_tunnel_alloc_dp(tb, in, out, available_up, available_down);
-+	tunnel = tb_tunnel_alloc_dp(tb, in, out, link_nr, available_up,
-+				    available_down);
- 	if (!tunnel) {
- 		tb_port_dbg(out, "could not allocate DP tunnel\n");
- 		goto err_reclaim;
-diff --git a/drivers/thunderbolt/test.c b/drivers/thunderbolt/test.c
-index 1f69bab236ee..66b6e665e96f 100644
---- a/drivers/thunderbolt/test.c
-+++ b/drivers/thunderbolt/test.c
-@@ -1348,7 +1348,7 @@ static void tb_test_tunnel_dp(struct kunit *test)
- 	in = &host->ports[5];
- 	out = &dev->ports[13];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
-@@ -1394,7 +1394,7 @@ static void tb_test_tunnel_dp_chain(struct kunit *test)
- 	in = &host->ports[5];
- 	out = &dev4->ports[14];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
-@@ -1444,7 +1444,7 @@ static void tb_test_tunnel_dp_tree(struct kunit *test)
- 	in = &dev2->ports[13];
- 	out = &dev5->ports[13];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
-@@ -1509,7 +1509,7 @@ static void tb_test_tunnel_dp_max_length(struct kunit *test)
- 	in = &dev6->ports[13];
- 	out = &dev12->ports[13];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
-@@ -1627,7 +1627,7 @@ static void tb_test_tunnel_port_on_path(struct kunit *test)
- 	in = &dev2->ports[13];
- 	out = &dev5->ports[13];
- 
--	dp_tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	dp_tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, dp_tunnel != NULL);
- 
- 	KUNIT_EXPECT_TRUE(test, tb_tunnel_port_on_path(dp_tunnel, in));
-@@ -2009,7 +2009,7 @@ static void tb_test_credit_alloc_dp(struct kunit *test)
- 	in = &host->ports[5];
- 	out = &dev->ports[14];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_ASSERT_EQ(test, tunnel->npaths, (size_t)3);
- 
-@@ -2245,7 +2245,7 @@ static struct tb_tunnel *TB_TEST_DP_TUNNEL1(struct kunit *test,
- 
- 	in = &host->ports[5];
- 	out = &dev->ports[13];
--	dp_tunnel1 = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	dp_tunnel1 = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, dp_tunnel1 != NULL);
- 	KUNIT_ASSERT_EQ(test, dp_tunnel1->npaths, (size_t)3);
- 
-@@ -2282,7 +2282,7 @@ static struct tb_tunnel *TB_TEST_DP_TUNNEL2(struct kunit *test,
- 
- 	in = &host->ports[6];
- 	out = &dev->ports[14];
--	dp_tunnel2 = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	dp_tunnel2 = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, dp_tunnel2 != NULL);
- 	KUNIT_ASSERT_EQ(test, dp_tunnel2->npaths, (size_t)3);
- 
-diff --git a/drivers/thunderbolt/tunnel.c b/drivers/thunderbolt/tunnel.c
-index bb5cc480fc9a..bd98c719bf55 100644
---- a/drivers/thunderbolt/tunnel.c
-+++ b/drivers/thunderbolt/tunnel.c
-@@ -843,6 +843,7 @@ struct tb_tunnel *tb_tunnel_discover_dp(struct tb *tb, struct tb_port *in)
-  * @tb: Pointer to the domain structure
-  * @in: DP in adapter port
-  * @out: DP out adapter port
-+ * @link_nr: Preferred lane adapter when the link is not bonded
-  * @max_up: Maximum available upstream bandwidth for the DP tunnel (%0
-  *	    if not limited)
-  * @max_down: Maximum available downstream bandwidth for the DP tunnel
-@@ -854,8 +855,8 @@ struct tb_tunnel *tb_tunnel_discover_dp(struct tb *tb, struct tb_port *in)
-  * Return: Returns a tb_tunnel on success or NULL on failure.
-  */
- struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
--				     struct tb_port *out, int max_up,
--				     int max_down)
-+				     struct tb_port *out, int link_nr,
-+				     int max_up, int max_down)
+ 	if (ack)
+ 		rxrpc_propose_ACK(call, ack, ack_serial,
+ 				  immediate_ack, true,
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index 46aae9b7006f..9683617db704 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -74,11 +74,18 @@ static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
+ 				 u8 reason)
  {
- 	struct tb_tunnel *tunnel;
- 	struct tb_path **paths;
-@@ -879,21 +880,21 @@ struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
- 	paths = tunnel->paths;
+ 	rxrpc_serial_t serial;
++	unsigned int tmp;
+ 	rxrpc_seq_t hard_ack, top, seq;
+ 	int ix;
+ 	u32 mtu, jmax;
+ 	u8 *ackp = pkt->acks;
  
- 	path = tb_path_alloc(tb, in, TB_DP_VIDEO_HOPID, out, TB_DP_VIDEO_HOPID,
--			     1, "Video");
-+			     link_nr, "Video");
- 	if (!path)
- 		goto err_free;
- 	tb_dp_init_video_path(path);
- 	paths[TB_DP_VIDEO_PATH_OUT] = path;
++	tmp = atomic_xchg(&call->ackr_nr_unacked, 0);
++	tmp |= atomic_xchg(&call->ackr_nr_consumed, 0);
++	if (!tmp && (reason == RXRPC_ACK_DELAY ||
++		     reason == RXRPC_ACK_IDLE))
++		return 0;
++
+ 	/* Barrier against rxrpc_input_data(). */
+ 	serial = call->ackr_serial;
+ 	hard_ack = READ_ONCE(call->rx_hard_ack);
+@@ -223,6 +230,10 @@ int rxrpc_send_ack_packet(struct rxrpc_call *call, bool ping,
+ 	n = rxrpc_fill_out_ack(conn, call, pkt, &hard_ack, &top, reason);
  
- 	path = tb_path_alloc(tb, in, TB_DP_AUX_TX_HOPID, out,
--			     TB_DP_AUX_TX_HOPID, 1, "AUX TX");
-+			     TB_DP_AUX_TX_HOPID, link_nr, "AUX TX");
- 	if (!path)
- 		goto err_free;
- 	tb_dp_init_aux_path(path);
- 	paths[TB_DP_AUX_PATH_OUT] = path;
+ 	spin_unlock_bh(&call->lock);
++	if (n == 0) {
++		kfree(pkt);
++		return 0;
++	}
  
- 	path = tb_path_alloc(tb, out, TB_DP_AUX_RX_HOPID, in,
--			     TB_DP_AUX_RX_HOPID, 1, "AUX RX");
-+			     TB_DP_AUX_RX_HOPID, link_nr, "AUX RX");
- 	if (!path)
- 		goto err_free;
- 	tb_dp_init_aux_path(path);
-diff --git a/drivers/thunderbolt/tunnel.h b/drivers/thunderbolt/tunnel.h
-index eea14e24f7e0..a92027431697 100644
---- a/drivers/thunderbolt/tunnel.h
-+++ b/drivers/thunderbolt/tunnel.h
-@@ -69,8 +69,8 @@ struct tb_tunnel *tb_tunnel_alloc_pci(struct tb *tb, struct tb_port *up,
- 				      struct tb_port *down);
- struct tb_tunnel *tb_tunnel_discover_dp(struct tb *tb, struct tb_port *in);
- struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
--				     struct tb_port *out, int max_up,
--				     int max_down);
-+				     struct tb_port *out, int link_nr,
-+				     int max_up, int max_down);
- struct tb_tunnel *tb_tunnel_alloc_dma(struct tb *tb, struct tb_port *nhi,
- 				      struct tb_port *dst, int transmit_path,
- 				      int transmit_ring, int receive_path,
+ 	iov[0].iov_base	= pkt;
+ 	iov[0].iov_len	= sizeof(pkt->whdr) + sizeof(pkt->ack) + n;
+@@ -259,13 +270,6 @@ int rxrpc_send_ack_packet(struct rxrpc_call *call, bool ping,
+ 					  ntohl(pkt->ack.serial),
+ 					  false, true,
+ 					  rxrpc_propose_ack_retry_tx);
+-		} else {
+-			spin_lock_bh(&call->lock);
+-			if (after(hard_ack, call->ackr_consumed))
+-				call->ackr_consumed = hard_ack;
+-			if (after(top, call->ackr_seen))
+-				call->ackr_seen = top;
+-			spin_unlock_bh(&call->lock);
+ 		}
+ 
+ 		rxrpc_set_keepalive(call);
+diff --git a/net/rxrpc/recvmsg.c b/net/rxrpc/recvmsg.c
+index eca6dda26c77..250f23bc1c07 100644
+--- a/net/rxrpc/recvmsg.c
++++ b/net/rxrpc/recvmsg.c
+@@ -260,11 +260,9 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
+ 		rxrpc_end_rx_phase(call, serial);
+ 	} else {
+ 		/* Check to see if there's an ACK that needs sending. */
+-		if (after_eq(hard_ack, call->ackr_consumed + 2) ||
+-		    after_eq(top, call->ackr_seen + 2) ||
+-		    (hard_ack == top && after(hard_ack, call->ackr_consumed)))
+-			rxrpc_propose_ACK(call, RXRPC_ACK_DELAY, serial,
+-					  true, true,
++		if (atomic_inc_return(&call->ackr_nr_consumed) > 2)
++			rxrpc_propose_ACK(call, RXRPC_ACK_IDLE, serial,
++					  true, false,
+ 					  rxrpc_propose_ack_rotate_rx);
+ 		if (call->ackr_reason && call->ackr_reason != RXRPC_ACK_DELAY)
+ 			rxrpc_send_ack_packet(call, false, NULL);
 -- 
 2.35.1
+
+
 
