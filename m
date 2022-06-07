@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 787D3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:07:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2763C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:07:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382772AbiFGWHM (ORCPT
+        id S1382907AbiFGWHT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
+        Tue, 7 Jun 2022 18:07:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378735AbiFGVEb (ORCPT
+        with ESMTP id S1378801AbiFGVBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:04:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252E818CE18;
-        Tue,  7 Jun 2022 11:48:58 -0700 (PDT)
+        Tue, 7 Jun 2022 17:01:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A47A720ED57;
+        Tue,  7 Jun 2022 11:45:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8DACB8220B;
-        Tue,  7 Jun 2022 18:48:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2149CC385A2;
-        Tue,  7 Jun 2022 18:48:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3ED886156D;
+        Tue,  7 Jun 2022 18:45:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48FB5C34115;
+        Tue,  7 Jun 2022 18:45:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627735;
-        bh=Aoq/ZnXVcKk+p7VdfH7dk2D2Y56VczJQo9MgI9eHjA8=;
+        s=korg; t=1654627540;
+        bh=ScxqRn4CyVuet+Fn9+6gsApj3gvQxxDLbl/1mrX6GRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VNC3nVrUzn4nEr8DfhDa+WJ9o/6ul5g1h32KaHNtiQ2ONcNnBqoEbdDv8OvXXsHS9
-         kF4rfx6yJs3z4/UsYnRgTv6QaDJlZdBdfsqFN5gdb7WbQK9VAi5kL1rdk+PylWd7eW
-         Cpfjiw22AXp71ylrGfxr9yWq6zcaJWyeuUIM31Ic=
+        b=rzm57og0J1yGn+SG6j7WB+hm2ELYPhSbUhbTl6WKaKmdZ2n2WdhX33R0BkpEvGE0N
+         +Qh0s1D6WygFD7qYeChEER34NFF4dQEoubNC2D9mWTyE6NGbfw2mmjyR9fY5ObVtkF
+         XS/S1pkyLSWx7hhbHQ5J3/5Hdqo/qlHYgBb9G0ok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 075/879] drm/komeda: return early if drm_universal_plane_init() fails.
-Date:   Tue,  7 Jun 2022 18:53:13 +0200
-Message-Id: <20220607165004.868468353@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
+Subject: [PATCH 5.17 739/772] gma500: fix an incorrect NULL check on list iterator
+Date:   Tue,  7 Jun 2022 19:05:31 +0200
+Message-Id: <20220607165010.812487818@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,43 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liviu Dudau <liviu.dudau@arm.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit c8f76c37cc3668ee45e081e76a15f24a352ebbdd ]
+commit bdef417d84536715145f6dc9cc3275c46f26295a upstream.
 
-If drm_universal_plane_init() fails early we jump to the common cleanup code
-that calls komeda_plane_destroy() which in turn could access the uninitalised
-drm_plane and crash. Return early if an error is detected without going through
-the common code.
+The bug is here:
+	return crtc;
 
-Reported-by: Steven Price <steven.price@arm.com>
-Reviewed-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
-Link: https://lore.kernel.org/dri-devel/20211203100946.2706922-1-liviu.dudau@arm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The list iterator value 'crtc' will *always* be set and non-NULL by
+list_for_each_entry(), so it is incorrect to assume that the iterator
+value will be NULL if the list is empty or no element is found.
+
+To fix the bug, return 'crtc' when found, otherwise return NULL.
+
+Cc: stable@vger.kernel.org
+fixes: 89c78134cc54d ("gma500: Add Poulsbo support")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Signed-off-by: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220327052028.2013-1-xiam0nd.tong@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/arm/display/komeda/komeda_plane.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/gma500/psb_intel_display.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-index d63d83800a8a..d646e3ae1a23 100644
---- a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-+++ b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-@@ -275,8 +275,10 @@ static int komeda_plane_add(struct komeda_kms_dev *kms,
+--- a/drivers/gpu/drm/gma500/psb_intel_display.c
++++ b/drivers/gpu/drm/gma500/psb_intel_display.c
+@@ -535,14 +535,15 @@ void psb_intel_crtc_init(struct drm_devi
  
- 	komeda_put_fourcc_list(formats);
+ struct drm_crtc *psb_intel_get_crtc_from_pipe(struct drm_device *dev, int pipe)
+ {
+-	struct drm_crtc *crtc = NULL;
++	struct drm_crtc *crtc;
  
--	if (err)
--		goto cleanup;
-+	if (err) {
-+		kfree(kplane);
-+		return err;
-+	}
+ 	list_for_each_entry(crtc, &dev->mode_config.crtc_list, head) {
+ 		struct gma_crtc *gma_crtc = to_gma_crtc(crtc);
++
+ 		if (gma_crtc->pipe == pipe)
+-			break;
++			return crtc;
+ 	}
+-	return crtc;
++	return NULL;
+ }
  
- 	drm_plane_helper_add(plane, &komeda_plane_helper_funcs);
- 
--- 
-2.35.1
-
+ int gma_connector_clones(struct drm_device *dev, int type_mask)
 
 
