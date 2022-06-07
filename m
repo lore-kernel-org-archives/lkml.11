@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D22CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F34D5CCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354484AbiFGTGH (ORCPT
+        id S1354680AbiFGTGY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:06:07 -0400
+        Tue, 7 Jun 2022 15:06:24 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352343AbiFGSRC (ORCPT
+        with ESMTP id S1352494AbiFGSVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AD37813D8;
-        Tue,  7 Jun 2022 10:51:25 -0700 (PDT)
+        Tue, 7 Jun 2022 14:21:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC1536328;
+        Tue,  7 Jun 2022 10:53:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44329B82340;
-        Tue,  7 Jun 2022 17:51:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD249C34115;
-        Tue,  7 Jun 2022 17:51:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7E59615B1;
+        Tue,  7 Jun 2022 17:53:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC929C36AFF;
+        Tue,  7 Jun 2022 17:53:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624283;
-        bh=1MKKc6zajMzAhkWcXC+Hx4WyhxuQAkplFUMs2I3kjOU=;
+        s=korg; t=1654624432;
+        bh=4xqLIrzzEA/JuqLzZr/AFmoDw70Apy9I+tuZWlznjWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BFSVjfjkvDruWtxbl0dhdER52Va32XkGLGMwsAz7J7pTwJTNELyAOF4/hq6RGIeb6
-         9M/ZGoROKnN9wWaiLwVAudfs0dhwLfBkEPJj8nzhpP4YrrV0sXCkYaI4dlPNmIxcPH
-         FRC2eFb6jMrNmEEcMi8wVtoff/x+3u4ambrrSlF0=
+        b=XsFj3zcuDQ0FyDj4NxHVL01EBVVm4IAKOF4K2RbWf5J4QwSp6e1m4v19YzPno00td
+         GXEN0DNb+Zple5Hq0ACaRPTP/+GUxdtrRB05j11vqA5G4y+vwFH5wv0FsynRRyStyr
+         ZGZsYQLDG7NcXsKlu7Mr2LVnt3Zn4Q9ihA2qzru4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 272/667] drm/msm/hdmi: fix error check return value of irq_of_parse_and_map()
-Date:   Tue,  7 Jun 2022 18:58:57 +0200
-Message-Id: <20220607164942.943335089@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com
+Subject: [PATCH 5.15 325/667] media: pvrusb2: fix array-index-out-of-bounds in pvr2_i2c_core_init
+Date:   Tue,  7 Jun 2022 18:59:50 +0200
+Message-Id: <20220607164944.517728985@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,41 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit 03371e4fbdeb7f596cbceacb59e474248b6d95ac ]
+[ Upstream commit 471bec68457aaf981add77b4f590d65dd7da1059 ]
 
-The irq_of_parse_and_map() function returns 0 on failure, and does not
-return a negative value anyhow, so never enter this conditional branch.
+Syzbot reported that -1 is used as array index. The problem was in
+missing validation check.
 
-Fixes: f6a8eaca0ea1 ("drm/msm/mdp5: use irqdomains")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/483294/
-Link: https://lore.kernel.org/r/20220425091831.3500487-1-lv.ruyi@zte.com.cn
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+hdw->unit_number is initialized with -1 and then if init table walk fails
+this value remains unchanged. Since code blindly uses this member for
+array indexing adding sanity check is the easiest fix for that.
+
+hdw->workpoll initialization moved upper to prevent warning in
+__flush_work.
+
+Reported-and-tested-by: syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com
+
+Fixes: d855497edbfb ("V4L/DVB (4228a): pvrusb2 to kernel 2.6.18")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/hdmi/hdmi.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
-index c3d95e7af1e4..23fb88b53324 100644
---- a/drivers/gpu/drm/msm/hdmi/hdmi.c
-+++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
-@@ -319,9 +319,9 @@ int msm_hdmi_modeset_init(struct hdmi *hdmi,
- 	drm_connector_attach_encoder(hdmi->connector, hdmi->encoder);
+diff --git a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+index 3915d551d59e..fccd1798445d 100644
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -2569,6 +2569,11 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
+ 	} while (0);
+ 	mutex_unlock(&pvr2_unit_mtx);
  
- 	hdmi->irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
--	if (hdmi->irq < 0) {
--		ret = hdmi->irq;
--		DRM_DEV_ERROR(dev->dev, "failed to get irq: %d\n", ret);
-+	if (!hdmi->irq) {
-+		ret = -EINVAL;
-+		DRM_DEV_ERROR(dev->dev, "failed to get irq\n");
- 		goto fail;
- 	}
++	INIT_WORK(&hdw->workpoll, pvr2_hdw_worker_poll);
++
++	if (hdw->unit_number == -1)
++		goto fail;
++
+ 	cnt1 = 0;
+ 	cnt2 = scnprintf(hdw->name+cnt1,sizeof(hdw->name)-cnt1,"pvrusb2");
+ 	cnt1 += cnt2;
+@@ -2580,8 +2585,6 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
+ 	if (cnt1 >= sizeof(hdw->name)) cnt1 = sizeof(hdw->name)-1;
+ 	hdw->name[cnt1] = 0;
+ 
+-	INIT_WORK(&hdw->workpoll,pvr2_hdw_worker_poll);
+-
+ 	pvr2_trace(PVR2_TRACE_INIT,"Driver unit number is %d, name is %s",
+ 		   hdw->unit_number,hdw->name);
  
 -- 
 2.35.1
