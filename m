@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21592CCA495
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 122B4CCA493
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355764AbiFGTRO (ORCPT
+        id S1355749AbiFGTRK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:17:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37386 "EHLO
+        Tue, 7 Jun 2022 15:17:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351515AbiFGS3c (ORCPT
+        with ESMTP id S1351518AbiFGS3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:29:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712CF179962;
-        Tue,  7 Jun 2022 10:55:23 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B175144FEC;
+        Tue,  7 Jun 2022 10:55:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E844F617A6;
-        Tue,  7 Jun 2022 17:55:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41938C385A5;
-        Tue,  7 Jun 2022 17:55:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D68FDB8234A;
+        Tue,  7 Jun 2022 17:55:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59772C34115;
+        Tue,  7 Jun 2022 17:55:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624522;
-        bh=/AeziWqD0UgPgL+eWiFNYnEEuboJIxNJ/rnLkFTpcdU=;
+        s=k20201202; t=1654624516;
+        bh=QNxyg8a/EeMSToOh3j6ZgqqKkIM/59Fix+XBI1emb1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kZSJGSbZu5PUggqWLKG5BoPLtAjoVfWRc8R/+TWtZgKgnJ/jxmR5FcF7pI1SZVnUg
-         p59iP3QWEw66naYrvJttbIwX54uF1jgWrTV0Oruo8Z1iAvstbDZev/c9yhxBPpG0dm
-         mfCwHSv6JhVIuvXmwftJR9fSS/ceHyieYDaRQs54iHl4fm5IM1/+sUZMEqR36oHToZ
-         Iwm3oaaE0jCnwtQ79BzAXfEb6iThdEyLInBYO2Xp8M993/Wyd34fd6BYQOPqpp0+ch
-         +Ymdj+BQVq8t1ZaqllW+lbBvo2r/qJgMauN5ZOLSKr4duJmMAnrTMeZM+Ku7i9iq22
-         C2v1kSNhCGS/g==
+        b=YFJWMZcWL2GSKKvuM2lu+jeKO4KONdlvPvpP+pDUI/JyzeMeAcHX6v2iykc534Wue
+         cpcVgapGcrkDnwq2bTMEnEzjTjpAZuc9+NCH5sx4buIDeEWqKJMpZptNs11MWC0pAL
+         1o1fkpNOr9IbzP9q/65i+MOBcZ/UFhH8OvITEZep4ZH4s1MgNcVohGSUOT2hQnJsF4
+         zMo31LE/b2NkixspG4EkL5OF0fd8gWfmIEVOFl+whlmawl+LULd5rt20NheMtyBbCI
+         5NWlJoWcvzAEvkdm2WlsOdQmERtHuaXMkVmTFMS+NfT9o4dOKZpHHIGzakLSml6syd
+         6ClJso+25N1uw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yu Kuai <yukuai3@huawei.com>, Hou Tao <houtao1@huawei.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org, nbd@other.debian.org
-Subject: [PATCH AUTOSEL 5.17 50/60] nbd: fix race between nbd_alloc_config() and module removal
-Date:   Tue,  7 Jun 2022 13:52:47 -0400
-Message-Id: <20220607175259.478835-50-sashal@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, keescook@chromium.org
+Subject: [PATCH AUTOSEL 5.17 47/60] x86/cpu: Elide KCSAN for cpu_has() and friends
+Date:   Tue,  7 Jun 2022 13:52:44 -0400
+Message-Id: <20220607175259.478835-47-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
 References: <20220607175259.478835-1-sashal@kernel.org>
@@ -53,122 +54,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit c55b2b983b0fa012942c3eb16384b2b722caa810 ]
+[ Upstream commit a6a5eb269f6f3a2fe392f725a8d9052190c731e2 ]
 
-When nbd module is being removing, nbd_alloc_config() may be
-called concurrently by nbd_genl_connect(), although try_module_get()
-will return false, but nbd_alloc_config() doesn't handle it.
+As x86 uses the <asm-generic/bitops/instrumented-*.h> headers, the
+regular forms of all bitops are instrumented with explicit calls to
+KASAN and KCSAN checks. As these are explicit calls, these are not
+suppressed by the noinstr function attribute.
 
-The race may lead to the leak of nbd_config and its related
-resources (e.g, recv_workq) and oops in nbd_read_stat() due
-to the unload of nbd module as shown below:
+This can result in calls to those check functions in noinstr code, which
+objtool warns about:
 
-  BUG: kernel NULL pointer dereference, address: 0000000000000040
-  Oops: 0000 [#1] SMP PTI
-  CPU: 5 PID: 13840 Comm: kworker/u17:33 Not tainted 5.14.0+ #1
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
-  Workqueue: knbd16-recv recv_work [nbd]
-  RIP: 0010:nbd_read_stat.cold+0x130/0x1a4 [nbd]
-  Call Trace:
-   recv_work+0x3b/0xb0 [nbd]
-   process_one_work+0x1ed/0x390
-   worker_thread+0x4a/0x3d0
-   kthread+0x12a/0x150
-   ret_from_fork+0x22/0x30
+vmlinux.o: warning: objtool: enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
+vmlinux.o: warning: objtool: syscall_enter_from_user_mode+0x28: call to __kcsan_check_access() leaves .noinstr.text section
+vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare+0x24: call to __kcsan_check_access() leaves .noinstr.text section
+vmlinux.o: warning: objtool: irqentry_enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
 
-Fixing it by checking the return value of try_module_get()
-in nbd_alloc_config(). As nbd_alloc_config() may return ERR_PTR(-ENODEV),
-assign nbd->config only when nbd_alloc_config() succeeds to ensure
-the value of nbd->config is binary (valid or NULL).
+Prevent this by using the arch_*() bitops, which are the underlying
+bitops without explciit instrumentation.
 
-Also adding a debug message to check the reference counter
-of nbd_config during module removal.
-
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220521073749.3146892-3-yukuai3@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[null: Changelog]
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220502111216.290518605@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/nbd.c | 28 +++++++++++++++++++---------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+ arch/x86/include/asm/cpufeature.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 9dc27f9e9ddc..f26cdb51812b 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -1519,15 +1519,20 @@ static struct nbd_config *nbd_alloc_config(void)
- {
- 	struct nbd_config *config;
+diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
+index 1261842d006c..49a3b122279e 100644
+--- a/arch/x86/include/asm/cpufeature.h
++++ b/arch/x86/include/asm/cpufeature.h
+@@ -51,7 +51,7 @@ extern const char * const x86_power_flags[32];
+ extern const char * const x86_bug_flags[NBUGINTS*32];
  
-+	if (!try_module_get(THIS_MODULE))
-+		return ERR_PTR(-ENODEV);
-+
- 	config = kzalloc(sizeof(struct nbd_config), GFP_NOFS);
--	if (!config)
--		return NULL;
-+	if (!config) {
-+		module_put(THIS_MODULE);
-+		return ERR_PTR(-ENOMEM);
-+	}
-+
- 	atomic_set(&config->recv_threads, 0);
- 	init_waitqueue_head(&config->recv_wq);
- 	init_waitqueue_head(&config->conn_wait);
- 	config->blksize_bits = NBD_DEF_BLKSIZE_BITS;
- 	atomic_set(&config->live_connections, 0);
--	try_module_get(THIS_MODULE);
- 	return config;
- }
+ #define test_cpu_cap(c, bit)						\
+-	 test_bit(bit, (unsigned long *)((c)->x86_capability))
++	 arch_test_bit(bit, (unsigned long *)((c)->x86_capability))
  
-@@ -1554,12 +1559,13 @@ static int nbd_open(struct block_device *bdev, fmode_t mode)
- 			mutex_unlock(&nbd->config_lock);
- 			goto out;
- 		}
--		config = nbd->config = nbd_alloc_config();
--		if (!config) {
--			ret = -ENOMEM;
-+		config = nbd_alloc_config();
-+		if (IS_ERR(config)) {
-+			ret = PTR_ERR(config);
- 			mutex_unlock(&nbd->config_lock);
- 			goto out;
- 		}
-+		nbd->config = config;
- 		refcount_set(&nbd->config_refs, 1);
- 		refcount_inc(&nbd->refs);
- 		mutex_unlock(&nbd->config_lock);
-@@ -1966,13 +1972,14 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
- 		nbd_put(nbd);
- 		return -EINVAL;
- 	}
--	config = nbd->config = nbd_alloc_config();
--	if (!nbd->config) {
-+	config = nbd_alloc_config();
-+	if (IS_ERR(config)) {
- 		mutex_unlock(&nbd->config_lock);
- 		nbd_put(nbd);
- 		printk(KERN_ERR "nbd: couldn't allocate config\n");
--		return -ENOMEM;
-+		return PTR_ERR(config);
- 	}
-+	nbd->config = config;
- 	refcount_set(&nbd->config_refs, 1);
- 	set_bit(NBD_RT_BOUND, &config->runtime_flags);
- 
-@@ -2544,6 +2551,9 @@ static void __exit nbd_cleanup(void)
- 	while (!list_empty(&del_list)) {
- 		nbd = list_first_entry(&del_list, struct nbd_device, list);
- 		list_del_init(&nbd->list);
-+		if (refcount_read(&nbd->config_refs))
-+			printk(KERN_ERR "nbd: possibly leaking nbd_config (ref %d)\n",
-+					refcount_read(&nbd->config_refs));
- 		if (refcount_read(&nbd->refs) != 1)
- 			printk(KERN_ERR "nbd: possibly leaking a device\n");
- 		nbd_put(nbd);
+ /*
+  * There are 32 bits/features in each mask word.  The high bits
 -- 
 2.35.1
 
