@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2923C3F2D4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C004DCCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:56:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349406AbiFGR4T (ORCPT
+        id S1349382AbiFGR4O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36154 "EHLO
+        Tue, 7 Jun 2022 13:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347805AbiFGRfs (ORCPT
+        with ESMTP id S1347820AbiFGRft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0880110171D;
-        Tue,  7 Jun 2022 10:31:32 -0700 (PDT)
+        Tue, 7 Jun 2022 13:35:49 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5705710D936;
+        Tue,  7 Jun 2022 10:31:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7AD0ECE23D0;
-        Tue,  7 Jun 2022 17:31:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83DC3C3411F;
-        Tue,  7 Jun 2022 17:31:28 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A609ACE23D0;
+        Tue,  7 Jun 2022 17:31:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC08FC385A5;
+        Tue,  7 Jun 2022 17:31:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623088;
-        bh=1uQfHZyEVzAhNvhs2p8gXdX2bJGCq69ZMlYZfgFCGHs=;
+        s=korg; t=1654623103;
+        bh=zeFraWsJc3yTSgQb3pzJ/B6qVY2pED3bey0qvc0sm3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O4hEVEKv3OJL48Ly1t/1ZUWacN5ZlbmWSSwoYNRSLlR3Xt0OZnbTnIQPq8chHiQzG
-         oGL/WcqOFhB8J+TMa3SneKwGOp63bcA5+ASQPwoOhaXJCT1LUbcm5oF5FG6KwU4qfi
-         R3ftFBI4uI7fRHGXhgEaI6SSa5LaFiSOfMlqFwxM=
+        b=A+hhhYTfxFCWMFajhAyNgISCpaZKOH0acg4+JMXf16dwOgmEH+orPUhrq1WVuFUi3
+         IeBIftfhEFn3SPVWB9n2O1OpoBP7g8D5dyjdgMJZGqoyHHpOe9nXFC6sxL9FGJpVbD
+         ouitPWEkBDcp3aB9bUfopCziQEH2G/no2PHGaPDM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
-        David Howells <dhowells@redhat.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Igor Zhbanov <izh1979@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 250/452] rxrpc: Fix listen() setting the bar too high for the prealloc rings
-Date:   Tue,  7 Jun 2022 19:01:47 +0200
-Message-Id: <20220607164916.008923590@linuxfoundation.org>
+Subject: [PATCH 5.10 297/452] powerpc/4xx/cpm: Fix return value of __setup() handler
+Date:   Tue,  7 Jun 2022 19:02:34 +0200
+Message-Id: <20220607164917.405891843@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,72 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 88e22159750b0d55793302eeed8ee603f5c1a95c ]
+[ Upstream commit 5bb99fd4090fe1acfdb90a97993fcda7f8f5a3d6 ]
 
-AF_RXRPC's listen() handler lets you set the backlog up to 32 (if you bump
-up the sysctl), but whilst the preallocation circular buffers have 32 slots
-in them, one of them has to be a dead slot because we're using CIRC_CNT().
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
 
-This means that listen(rxrpc_sock, 32) will cause an oops when the socket
-is closed because rxrpc_service_prealloc_one() allocated one too many calls
-and rxrpc_discard_prealloc() won't then be able to get rid of them because
-it'll think the ring is empty.  rxrpc_release_calls_on_socket() then tries
-to abort them, but oopses because call->peer isn't yet set.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) argument or environment
+strings.
 
-Fix this by setting the maximum backlog to RXRPC_BACKLOG_MAX - 1 to match
-the ring capacity.
+Also, error return codes don't mean anything to obsolete_checksetup() --
+only non-zero (usually 1) or zero. So return 1 from cpm_powersave_off().
 
- BUG: kernel NULL pointer dereference, address: 0000000000000086
- ...
- RIP: 0010:rxrpc_send_abort_packet+0x73/0x240 [rxrpc]
- Call Trace:
-  <TASK>
-  ? __wake_up_common_lock+0x7a/0x90
-  ? rxrpc_notify_socket+0x8e/0x140 [rxrpc]
-  ? rxrpc_abort_call+0x4c/0x60 [rxrpc]
-  rxrpc_release_calls_on_socket+0x107/0x1a0 [rxrpc]
-  rxrpc_release+0xc9/0x1c0 [rxrpc]
-  __sock_release+0x37/0xa0
-  sock_close+0x11/0x20
-  __fput+0x89/0x240
-  task_work_run+0x59/0x90
-  do_exit+0x319/0xaa0
-
-Fixes: 00e907127e6f ("rxrpc: Preallocate peers, conns and calls for incoming service requests")
-Reported-by: Marc Dionne <marc.dionne@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-afs@lists.infradead.org
-Link: https://lists.infradead.org/pipermail/linux-afs/2022-March/005079.html
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: d164f6d4f910 ("powerpc/4xx: Add suspend and idle support")
+Reported-by: Igor Zhbanov <izh1979@gmail.com>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220502192941.20955-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/sysctl.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/powerpc/platforms/4xx/cpm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/rxrpc/sysctl.c b/net/rxrpc/sysctl.c
-index 540351d6a5f4..555e0910786b 100644
---- a/net/rxrpc/sysctl.c
-+++ b/net/rxrpc/sysctl.c
-@@ -12,7 +12,7 @@
- 
- static struct ctl_table_header *rxrpc_sysctl_reg_table;
- static const unsigned int four = 4;
--static const unsigned int thirtytwo = 32;
-+static const unsigned int max_backlog = RXRPC_BACKLOG_MAX - 1;
- static const unsigned int n_65535 = 65535;
- static const unsigned int n_max_acks = RXRPC_RXTX_BUFF_SIZE - 1;
- static const unsigned long one_jiffy = 1;
-@@ -89,7 +89,7 @@ static struct ctl_table rxrpc_sysctl_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= (void *)&four,
--		.extra2		= (void *)&thirtytwo,
-+		.extra2		= (void *)&max_backlog,
- 	},
- 	{
- 		.procname	= "rx_window_size",
+diff --git a/arch/powerpc/platforms/4xx/cpm.c b/arch/powerpc/platforms/4xx/cpm.c
+index ae8b812c9202..2481e78c0423 100644
+--- a/arch/powerpc/platforms/4xx/cpm.c
++++ b/arch/powerpc/platforms/4xx/cpm.c
+@@ -327,6 +327,6 @@ late_initcall(cpm_init);
+ static int __init cpm_powersave_off(char *arg)
+ {
+ 	cpm.powersave_off = 1;
+-	return 0;
++	return 1;
+ }
+ __setup("powersave=off", cpm_powersave_off);
 -- 
 2.35.1
 
