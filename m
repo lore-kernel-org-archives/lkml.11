@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A08C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D0CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379396AbiFGVdp (ORCPT
+        id S1380061AbiFGVdv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45226 "EHLO
+        Tue, 7 Jun 2022 17:33:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377472AbiFGUdZ (ORCPT
+        with ESMTP id S1359517AbiFGUfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:33:25 -0400
+        Tue, 7 Jun 2022 16:35:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0B11E4B50;
-        Tue,  7 Jun 2022 11:35:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530011EAF2;
+        Tue,  7 Jun 2022 11:37:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD88BB8237B;
-        Tue,  7 Jun 2022 18:35:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B410C385A2;
-        Tue,  7 Jun 2022 18:35:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3FBFBB8237F;
+        Tue,  7 Jun 2022 18:37:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97652C385A2;
+        Tue,  7 Jun 2022 18:37:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626909;
-        bh=W+FTR3kkajvWd2nZMl638Zr2vjMDmiXlj6AHR6X5zLQ=;
+        s=korg; t=1654627069;
+        bh=u7ZIt0Mxn6nLQ2SNVIueveazrS/E5Xd4kCtZ5F653Dk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nBPSEqmBUZKD7bR8VO+5mKhV/MSK+ZWJOLgq4Dyw+0jaRBFeok5jbqJwKd/YCXS1q
-         4jbi5nnvJa8At6DXWtbLbmkaj6kXx+BRpKRYgOPxk+y8Tiso6wt+7Vjxd6VBAdJ9qY
-         8qZA2VggSH63JvVYod5oDSv/3rZbSYOpBaKt9J4Y=
+        b=ToVZuZOQMNaYJCxEuoXDGwImLPNklwUT7RtPD+LFkd0vUOBpcQpdeWc9ATlTZu6km
+         s5U00DGrqK9OSh0ypJ+L2fVwqarA/4bNDHFE3pEVFJthSFWDaF/T/QE2sXhcxxunCt
+         MIKBLnSHQK1kqqzJYKBnCy6JUgyEYnP8K600yB0g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
-        Russell Currey <ruscur@russell.cc>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 547/772] powerpc/powernv: Get STF barrier requirements from device-tree
-Date:   Tue,  7 Jun 2022 19:02:19 +0200
-Message-Id: <20220607165005.082331213@linuxfoundation.org>
+Subject: [PATCH 5.17 565/772] f2fs: fix dereference of stale list iterator after loop body
+Date:   Tue,  7 Jun 2022 19:02:37 +0200
+Message-Id: <20220607165005.604542807@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,43 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell Currey <ruscur@russell.cc>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-[ Upstream commit d2a3c131981d4498571908df95c3c9393a00adf5 ]
+[ Upstream commit 2aaf51dd39afb6d01d13f1e6fe20b684733b37d5 ]
 
-The device-tree property no-need-store-drain-on-priv-state-switch is
-equivalent to H_CPU_BEHAV_NO_STF_BARRIER from the
-H_CPU_GET_CHARACTERISTICS hcall on pseries.
+The list iterator variable will be a bogus pointer if no break was hit.
+Dereferencing it (cur->page in this case) could load an out-of-bounds/undefined
+value making it unsafe to use that in the comparision to determine if the
+specific element was found.
 
-Since commit 84ed26fd00c5 ("powerpc/security: Add a security feature for
-STF barrier") powernv systems with this device-tree property have been
-enabling the STF barrier when they have no need for it.  This patch
-fixes this by clearing the STF barrier feature on those systems.
+Since 'cur->page' *can* be out-ouf-bounds it cannot be guaranteed that
+by chance (or intention of an attacker) it matches the value of 'page'
+even though the correct element was not found.
 
-Fixes: 84ed26fd00c5 ("powerpc/security: Add a security feature for STF barrier")
-Reported-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Russell Currey <ruscur@russell.cc>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220404101536.104794-2-ruscur@russell.cc
+This is fixed by using a separate list iterator variable for the loop
+and only setting the original variable if a suitable element was found.
+Then determing if the element was found is simply checking if the
+variable is set.
+
+Fixes: 8c242db9b8c0 ("f2fs: fix stale ATOMIC_WRITTEN_PAGE private pointer")
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powernv/setup.c | 3 +++
- 1 file changed, 3 insertions(+)
+ fs/f2fs/segment.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/platforms/powernv/setup.c b/arch/powerpc/platforms/powernv/setup.c
-index 378f7e5f18d2..824c3ad7a0fa 100644
---- a/arch/powerpc/platforms/powernv/setup.c
-+++ b/arch/powerpc/platforms/powernv/setup.c
-@@ -102,6 +102,9 @@ static void __init init_fw_feat_flags(struct device_node *np)
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index 416d802ebbea..1b37a619065e 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -356,16 +356,19 @@ void f2fs_drop_inmem_page(struct inode *inode, struct page *page)
+ 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
+ 	struct list_head *head = &fi->inmem_pages;
+ 	struct inmem_pages *cur = NULL;
++	struct inmem_pages *tmp;
  
- 	if (fw_feature_is("enabled", "no-need-l1d-flush-kernel-on-user-access", np))
- 		security_ftr_clear(SEC_FTR_L1D_FLUSH_UACCESS);
-+
-+	if (fw_feature_is("enabled", "no-need-store-drain-on-priv-state-switch", np))
-+		security_ftr_clear(SEC_FTR_STF_BARRIER);
- }
+ 	f2fs_bug_on(sbi, !page_private_atomic(page));
  
- static void __init pnv_setup_security_mitigations(void)
+ 	mutex_lock(&fi->inmem_lock);
+-	list_for_each_entry(cur, head, list) {
+-		if (cur->page == page)
++	list_for_each_entry(tmp, head, list) {
++		if (tmp->page == page) {
++			cur = tmp;
+ 			break;
++		}
+ 	}
+ 
+-	f2fs_bug_on(sbi, list_empty(head) || cur->page != page);
++	f2fs_bug_on(sbi, !cur);
+ 	list_del(&cur->list);
+ 	mutex_unlock(&fi->inmem_lock);
+ 
 -- 
 2.35.1
 
