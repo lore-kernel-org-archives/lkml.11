@@ -2,163 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B0B3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:01:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7996CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:02:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352739AbiFGTBv (ORCPT
+        id S1353001AbiFGTB6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41804 "EHLO
+        Tue, 7 Jun 2022 15:01:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352145AbiFGSQ4 (ORCPT
+        with ESMTP id S1352146AbiFGSQ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:16:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CDF11451;
-        Tue,  7 Jun 2022 10:50:39 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A44BF62;
+        Tue,  7 Jun 2022 10:50:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79BC961650;
-        Tue,  7 Jun 2022 17:50:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C377BC385A5;
-        Tue,  7 Jun 2022 17:50:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624238;
-        bh=9Lp2n8TAUiczV7Wk1h+S5aJI43ikGeidpwIOf4ToTRI=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CCF861650;
+        Tue,  7 Jun 2022 17:50:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F000C34115;
+        Tue,  7 Jun 2022 17:50:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624241;
+        bh=dbWiRrbUEdq/jShUoMSStxSROdj/mfEgDgb1SJh4nPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pNUDm40c8RKWhrD6I+oVn5djbceqUm04u5D03qiKMx4u/7QNet4RBnGd4PVoUJxK0
-         6YezoPtDemVCDK/nYLkaGgzjq0TtF14FPfTzV+PpTXkGOGWDzI4RmPMDwnfQ4n5Piz
-         BhtJWh0fhYQahybZ7xQCHShpyFLCASVJws2kgSwR1q+UrcSqXzrOQEytpXH8QdXbTb
-         SYJvHaQQ8LynThTO60qdq88ZRwcCh7O3UmPI35sC3y5k4y8IthBWAEyuAufu2xkd2b
-         x0gbiE9FMSfIhCC0oBXWyzh4FBwBjJzx7tJmvz8urep72kJcpmqwQ0GcC31JXmiYPt
-         JZS2iLi/7RToQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Soumya Negi <soumya.negi97@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, fabioaiuto83@gmail.com,
-        hdegoede@redhat.com, straube.linux@gmail.com,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.18 27/68] staging: rtl8723bs: Fix alignment to match open parenthesis
-Date:   Tue,  7 Jun 2022 13:47:53 -0400
-Message-Id: <20220607174846.477972-27-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=zM/3A9iE9QpSvLllz/GMnTnGgE35Iy2MkzjaHED4DkAe4u2cWtsfq6I9mGP0EWtxz
+         nbBk65UIpvUvwCQFEKuNUOjnvtxesF52qquQVDQ+4xZRUEXkgRpMVYR8xW3792Jz9T
+         5TY6dcA6IfwObqBD5bwNeCNO7AxhXhQMc5JLw/vw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
+        "Juan A. Suarez" <jasuarez@igalia.com>,
+        Melissa Wen <melissa.srw@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 255/667] drm/v3d: Fix null pointer dereference of pointer perfmon
+Date:   Tue,  7 Jun 2022 18:58:40 +0200
+Message-Id: <20220607164942.431058986@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Soumya Negi <soumya.negi97@gmail.com>
+From: Colin Ian King <colin.i.king@gmail.com>
 
-[ Upstream commit f722d67fad290b0c960f27062adc8cf59488d0a7 ]
+[ Upstream commit ce7a1ecf3f9f1fccaf67295307614511d8e11b13 ]
 
-Adhere to Linux coding style. Fixes checkpatch warnings:
-CHECK: Alignment should match open parenthesis
-CHECK: line length of 101 exceeds 100 columns
+In the unlikely event that pointer perfmon is null the WARN_ON return path
+occurs after the pointer has already been deferenced. Fix this by only
+dereferencing perfmon after it has been null checked.
 
-Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
-Link: https://lore.kernel.org/r/20220513025553.13634-1-soumya.negi97@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 26a4dc29b74a ("drm/v3d: Expose performance counters to userspace")
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Reviewed-by: Juan A. Suarez <jasuarez@igalia.com>
+Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220424183512.1365683-1-colin.i.king@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8723bs/core/rtw_ap.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
+ drivers/gpu/drm/v3d/v3d_perfmon.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8723bs/core/rtw_ap.c b/drivers/staging/rtl8723bs/core/rtw_ap.c
-index 5478188be991..d30d6e6bcd07 100644
---- a/drivers/staging/rtl8723bs/core/rtw_ap.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_ap.c
-@@ -520,12 +520,12 @@ void update_sta_info_apmode(struct adapter *padapter, struct sta_info *psta)
+diff --git a/drivers/gpu/drm/v3d/v3d_perfmon.c b/drivers/gpu/drm/v3d/v3d_perfmon.c
+index 0288ef063513..f6a88abccc7d 100644
+--- a/drivers/gpu/drm/v3d/v3d_perfmon.c
++++ b/drivers/gpu/drm/v3d/v3d_perfmon.c
+@@ -25,11 +25,12 @@ void v3d_perfmon_start(struct v3d_dev *v3d, struct v3d_perfmon *perfmon)
+ {
+ 	unsigned int i;
+ 	u32 mask;
+-	u8 ncounters = perfmon->ncounters;
++	u8 ncounters;
  
- 		/*  B0 Config LDPC Coding Capability */
- 		if (TEST_FLAG(phtpriv_ap->ldpc_cap, LDPC_HT_ENABLE_TX) &&
--			      GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
-+		    GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
- 			SET_FLAG(cur_ldpc_cap, (LDPC_HT_ENABLE_TX | LDPC_HT_CAP_TX));
+ 	if (WARN_ON_ONCE(!perfmon || v3d->active_perfmon))
+ 		return;
  
- 		/*  B7 B8 B9 Config STBC setting */
- 		if (TEST_FLAG(phtpriv_ap->stbc_cap, STBC_HT_ENABLE_TX) &&
--			      GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
-+		    GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
- 			SET_FLAG(cur_stbc_cap, (STBC_HT_ENABLE_TX | STBC_HT_CAP_TX));
- 	} else {
- 		phtpriv_sta->ampdu_enable = false;
-@@ -1065,10 +1065,12 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
- 		);
++	ncounters = perfmon->ncounters;
+ 	mask = GENMASK(ncounters - 1, 0);
  
- 		if ((psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_CCMP) ||
--		     (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
--			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & (0x07 << 2));
-+		    (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
-+			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
-+						       (0x07 << 2));
- 		} else {
--			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & 0x00);
-+			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
-+						       0x00);
- 		}
- 
- 		rtw_hal_get_def_var(
-@@ -1116,7 +1118,7 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
- 	pmlmepriv->htpriv.ht_option = false;
- 
- 	if ((psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_TKIP) ||
--	     (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
-+	    (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
- 		/* todo: */
- 		/* ht_cap = false; */
- 	}
-@@ -1725,7 +1727,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
- 			pmlmepriv->num_sta_no_short_preamble--;
- 
- 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
--				(pmlmepriv->num_sta_no_short_preamble == 0)) {
-+			    (pmlmepriv->num_sta_no_short_preamble == 0)) {
- 				beacon_updated = true;
- 				update_beacon(padapter, 0xFF, NULL, true);
- 			}
-@@ -1763,7 +1765,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
- 			pmlmepriv->num_sta_no_short_slot_time++;
- 
- 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
--				 (pmlmepriv->num_sta_no_short_slot_time == 1)) {
-+			    (pmlmepriv->num_sta_no_short_slot_time == 1)) {
- 				beacon_updated = true;
- 				update_beacon(padapter, 0xFF, NULL, true);
- 			}
-@@ -1775,7 +1777,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
- 			pmlmepriv->num_sta_no_short_slot_time--;
- 
- 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
--				 (pmlmepriv->num_sta_no_short_slot_time == 0)) {
-+			    (pmlmepriv->num_sta_no_short_slot_time == 0)) {
- 				beacon_updated = true;
- 				update_beacon(padapter, 0xFF, NULL, true);
- 			}
-@@ -2024,7 +2026,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
- 	start_bss_network(padapter);
- 
- 	if ((padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_) ||
--		(padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
-+	    (padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
- 		/* restore group key, WEP keys is restored in ips_leave() */
- 		rtw_set_key(
- 			padapter,
-@@ -2062,7 +2064,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
- 			/* pairwise key */
- 			/* per sta pairwise key and settings */
- 			if ((psecuritypriv->dot11PrivacyAlgrthm == _TKIP_) ||
--				(psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
-+			    (psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
- 				rtw_setstakey_cmd(padapter, psta, true, false);
- 			}
- 		}
+ 	for (i = 0; i < ncounters; i++) {
 -- 
 2.35.1
+
+
 
