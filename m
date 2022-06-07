@@ -2,135 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 371DEC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58056C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:14:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358817AbiFHCI6 (ORCPT
+        id S1382409AbiFHCJG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34090 "EHLO
+        Tue, 7 Jun 2022 22:09:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382765AbiFHAyp (ORCPT
+        with ESMTP id S1387740AbiFHAzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:54:45 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9161627CCDA
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:26:02 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id h23so29833324lfe.4
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:26:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=COofM4p4XVL9HB7oV/hO48snBSXqaKhyKNYxseRZ7lY=;
-        b=G/nza0Fj5r13MS+16/+zxQ6N7QIcMnCbPyyB2FoNYT48p6k8Zbpu1sSpGFr0CJTfbH
-         VswbNromqseElL/xO/gEFqDm3627364XoAnLx5K2lu0/J9b/kf9t5ODKTW2oGdKSLLju
-         S6vrMJkkpzqHDTDRyl/QzUoRHtecUkDCtAbsXVFnuLKvCk5lEjdPWVKXQ9FTSuw3bIcJ
-         HpbdAAqn0XuwrQQEYTfeZO/Wc7HYpB4FVMMPAj4WVnKLPPF1al9SFXh7fXNKryst34EL
-         lmKC9VhAf6fnjCHU8jrap9sczA4sULSggG4fX0bL5FtJ5kkKgqS3cvAhbREmA2pwbP2a
-         6lug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=COofM4p4XVL9HB7oV/hO48snBSXqaKhyKNYxseRZ7lY=;
-        b=Ss7IAlBssrdm+Vo9KIfglgEtjy8F2++2IV/sIXpElPPVAdZ7KH431fBcI+TIA2ZJwI
-         O24KwgibvFgHFcCvgoOio7Evi0MaKxnSHVxobKPuEPydPexOcrPAFlz6azEulHAzrxQp
-         U5aElRH8ANjXSQxr1PQI7cf3IIf29LZyzmFXtlBwh0ol7mPgL6S8CWv0XLVbObQsWz3Q
-         ksSSxxFI7AUCRPH88J6BqKkrExZxEHAYLy8DTONyIOXexemyS69rPOdlHZjM1c4/G2gu
-         dJEPg5nNM0SOK6XtjbQYOjMySqJ245ISNhZqWrsOX9vA+o5N6iazhVqTJSkK+o1udB69
-         YHYQ==
-X-Gm-Message-State: AOAM531nBYt8oUj0Dp8la1cUDURjbOPjwk0GyGIj5iE7Hdf/Lbiq0KjP
-        NOK7cphWtXhkjBKrVbgMdtA=
-X-Google-Smtp-Source: ABdhPJyKEAxr9oRjbnZ6aJpkt4b5tPhflQzr57mAeLwVZjPfmS7fp/DaRCKqm8By83TLXeK8nIlIaw==
-X-Received: by 2002:a05:6512:53a:b0:479:1725:51f2 with SMTP id o26-20020a056512053a00b00479172551f2mr16188235lfc.688.1654629960872;
-        Tue, 07 Jun 2022 12:26:00 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.229.27])
-        by smtp.gmail.com with ESMTPSA id a27-20020a056512201b00b0047900ad3f90sm3401917lfb.29.2022.06.07.12.25.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 12:26:00 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     gregkh@linuxfoundation.org, Larry.Finger@lwfinger.net,
-        phil@philpotter.co.uk, straube.linux@gmail.com,
-        dan.carpenter@oracle.com
-Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH v4 0/4] staging: r8188eu: add error handling of usb read errors 
-Date:   Tue,  7 Jun 2022 22:25:53 +0300
-Message-Id: <cover.1654629778.git.paskripkin@gmail.com>
+        Tue, 7 Jun 2022 20:55:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954E319C38E;
+        Tue,  7 Jun 2022 12:26:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BCFFB8220B;
+        Tue,  7 Jun 2022 19:26:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 925EAC385A5;
+        Tue,  7 Jun 2022 19:26:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629962;
+        bh=NrPlRNLy3VPCTlW9T90w4oVHwZBt8gL5yWLzuJeF2n0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=j6RgJJIw8++rHFBtn3nsQD4tLRujjM12erLYFF+3Id9IGYFfADTa0ktqL3QF1asFg
+         XwIaE/kZQE8q3eDduG7tv5k0b25/8ufuewA+EiBxzE9AEXykXegeDOOUl4tqYb7BQA
+         PdxuePcUAMyfbe6M69QdP6he3FcXgrbuNmT0eNnk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
+        Tony Lindgren <tony@atomide.com>
+Subject: [PATCH 5.18 879/879] tty: n_gsm: Fix packet data hex dump output
+Date:   Tue,  7 Jun 2022 19:06:37 +0200
+Message-Id: <20220607165028.369214832@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Tony Lindgren <tony@atomide.com>
 
-it's reincarnation of my old series for adding sane error handling in
-r8818eu.
+commit 925ea0fa5277c1e6bb9e51955ef34eea9736c3d7 upstream.
 
-*Problem*
+The module param debug for n_gsm uses KERN_INFO level, but the hexdump
+now uses KERN_DEBUG level. This started after commit 091cb0994edd
+("lib/hexdump: make print_hex_dump_bytes() a nop on !DEBUG builds").
+We now use dynamic_hex_dump() unless DEBUG is set.
 
-Old code was returning just stack variable in case of read error. It's
-not the best approach, since passing around stack data might cause
-device misconfiguration or even kernel data leakage
+This causes no packets to be seen with modprobe n_gsm debug=0x1f unlike
+earlier. Let's fix this by adding gsm_hex_dump_bytes() that calls
+print_hex_dump() with KERN_INFO to match what n_gsm is doing with the
+other debug related output.
 
-To solve this I've changed rtw_read{8,16,32} prototypes to return an error via
-return value and data via passed pointer. Some work should be done to
-propogate an error down to calltrace, but it's good way to at least
-start doing sane I/O error handling
+Fixes: 091cb0994edd ("lib/hexdump: make print_hex_dump_bytes() a nop on !DEBUG builds")
+Cc: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Link: https://lore.kernel.org/r/20220512131506.1216-1-tony@atomide.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/n_gsm.c |   31 +++++++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 8 deletions(-)
 
-Tested locally on qemu with TP-Link TL-WN722N v2/v3 [Realtek RTL8188EUS]
-device. More testing is welcomed, of course :)
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -444,6 +444,25 @@ static u8 gsm_encode_modem(const struct
+ 	return modembits;
+ }
+ 
++static void gsm_hex_dump_bytes(const char *fname, const u8 *data,
++			       unsigned long len)
++{
++	char *prefix;
++
++	if (!fname) {
++		print_hex_dump(KERN_INFO, "", DUMP_PREFIX_NONE, 16, 1, data, len,
++			       true);
++		return;
++	}
++
++	prefix = kasprintf(GFP_KERNEL, "%s: ", fname);
++	if (!prefix)
++		return;
++	print_hex_dump(KERN_INFO, prefix, DUMP_PREFIX_OFFSET, 16, 1, data, len,
++		       true);
++	kfree(prefix);
++}
++
+ /**
+  *	gsm_print_packet	-	display a frame for debug
+  *	@hdr: header to print before decode
+@@ -508,7 +527,7 @@ static void gsm_print_packet(const char
+ 	else
+ 		pr_cont("(F)");
+ 
+-	print_hex_dump_bytes("", DUMP_PREFIX_NONE, data, dlen);
++	gsm_hex_dump_bytes(NULL, data, dlen);
+ }
+ 
+ 
+@@ -698,9 +717,7 @@ static void gsm_data_kick(struct gsm_mux
+ 		}
+ 
+ 		if (debug & 4)
+-			print_hex_dump_bytes("gsm_data_kick: ",
+-					     DUMP_PREFIX_OFFSET,
+-					     gsm->txframe, len);
++			gsm_hex_dump_bytes(__func__, gsm->txframe, len);
+ 		if (gsmld_output(gsm, gsm->txframe, len) <= 0)
+ 			break;
+ 		/* FIXME: Can eliminate one SOF in many more cases */
+@@ -2448,8 +2465,7 @@ static int gsmld_output(struct gsm_mux *
+ 		return -ENOSPC;
+ 	}
+ 	if (debug & 4)
+-		print_hex_dump_bytes("gsmld_output: ", DUMP_PREFIX_OFFSET,
+-				     data, len);
++		gsm_hex_dump_bytes(__func__, data, len);
+ 	return gsm->tty->ops->write(gsm->tty, data, len);
+ }
+ 
+@@ -2525,8 +2541,7 @@ static void gsmld_receive_buf(struct tty
+ 	char flags = TTY_NORMAL;
+ 
+ 	if (debug & 4)
+-		print_hex_dump_bytes("gsmld_receive: ", DUMP_PREFIX_OFFSET,
+-				     cp, count);
++		gsm_hex_dump_bytes(__func__, cp, count);
+ 
+ 	for (; count; count--, cp++) {
+ 		if (fp)
 
-_NOTE_
-Series is based on top of staging-testing branch.
-
-Changes since v3:
-    fix build error in 1/4 caused by unused local variable
-
-Changes since v2:
-    get rid of `(void)res` and return an error from function instead of
-    hiding it
-
-Changes since v1:
-    addresses issues found by Dan and self review. Mostly related to returning
-    _FAIL instead of -errno, since callers expect _FAIL/_SUCCESS
-
-v1: https://lore.kernel.org/linux-staging/cover.1652911343.git.paskripkin@gmail.com/
-v2: https://lore.kernel.org/linux-staging/cover.1652994483.git.paskripkin@gmail.com/
-v3: https://lore.kernel.org/linux-staging/cover.1654543286.git.paskripkin@gmail.com/
-
-Pavel Skripkin (4):
-  staging: r8188eu: add error handling of rtw_read8
-  staging: r8188eu: add error handling of rtw_read16
-  staging: r8188eu: add error handling of rtw_read32
-  MAINTAINERS: add myself as r8188eu reviewer
-
- MAINTAINERS                                   |   1 +
- drivers/staging/r8188eu/core/rtw_cmd.c        |  15 +-
- drivers/staging/r8188eu/core/rtw_efuse.c      |  33 ++-
- drivers/staging/r8188eu/core/rtw_fw.c         |  72 +++--
- drivers/staging/r8188eu/core/rtw_led.c        |  16 +-
- drivers/staging/r8188eu/core/rtw_mlme_ext.c   |  62 ++++-
- drivers/staging/r8188eu/core/rtw_pwrctrl.c    |   9 +-
- drivers/staging/r8188eu/core/rtw_wlan_util.c  |  20 +-
- .../r8188eu/hal/Hal8188ERateAdaptive.c        |  21 +-
- drivers/staging/r8188eu/hal/HalPhyRf_8188e.c  |  21 +-
- drivers/staging/r8188eu/hal/HalPwrSeqCmd.c    |   9 +-
- drivers/staging/r8188eu/hal/hal_com.c         |  27 +-
- drivers/staging/r8188eu/hal/rtl8188e_cmd.c    |  37 ++-
- drivers/staging/r8188eu/hal/rtl8188e_dm.c     |   6 +-
- .../staging/r8188eu/hal/rtl8188e_hal_init.c   | 136 +++++++---
- drivers/staging/r8188eu/hal/rtl8188e_phycfg.c |  30 ++-
- drivers/staging/r8188eu/hal/usb_halinit.c     | 251 +++++++++++++++---
- drivers/staging/r8188eu/hal/usb_ops_linux.c   |  33 ++-
- drivers/staging/r8188eu/include/rtw_io.h      |   6 +-
- drivers/staging/r8188eu/os_dep/ioctl_linux.c  |  47 +++-
- drivers/staging/r8188eu/os_dep/os_intfs.c     |  19 +-
- 21 files changed, 693 insertions(+), 178 deletions(-)
-
--- 
-2.36.1
 
