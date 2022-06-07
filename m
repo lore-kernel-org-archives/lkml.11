@@ -2,167 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A21DC19F55
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A52CCA489
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443092AbiFHCBu (ORCPT
+        id S1443130AbiFHCBz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50280 "EHLO
+        Tue, 7 Jun 2022 22:01:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588847AbiFGXzL (ORCPT
+        with ESMTP id S1840875AbiFHAGQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:55:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05E632509F7
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:01:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654639264;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bMoHrYtckfc4pwaLoUCwp8YR9pNNBcpYBih/HMrWY2U=;
-        b=WoaJ3nuOliRY6bl+dXdNOuaSFgE6jE7NLallflqX+iY3C+l0mXYGN+yUbfWmdGFys+B8tf
-        KBOmmetJ1U0GMTPHKsNqVtGRH1EWqOcm6FzHrac4oVC2BgqYBE16S4CTqYKv4IKI7V8VzM
-        bQnll1YuE4O/FmZMrzXVUFT9XsiLfRA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-116-V_ZYYpPZOn6FNOhZnUMt-g-1; Tue, 07 Jun 2022 18:01:01 -0400
-X-MC-Unique: V_ZYYpPZOn6FNOhZnUMt-g-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1B28A1C161AF;
-        Tue,  7 Jun 2022 22:01:01 +0000 (UTC)
-Received: from horse.redhat.com (unknown [10.22.9.106])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 04CF11415100;
-        Tue,  7 Jun 2022 22:01:01 +0000 (UTC)
-Received: by horse.redhat.com (Postfix, from userid 10451)
-        id BB16D220882; Tue,  7 Jun 2022 18:01:00 -0400 (EDT)
-Date:   Tue, 7 Jun 2022 18:01:00 -0400
-From:   Vivek Goyal <vgoyal@redhat.com>
-To:     Bernd Schubert <bschubert@ddn.com>
-Cc:     Dharmendra Singh <dharamhans87@gmail.com>, miklos@szeredi.hu,
-        linux-fsdevel@vger.kernel.org, fuse-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Dharmendra Singh <dsingh@ddn.com>
-Subject: Re: [PATCH v4 1/1] Allow non-extending parallel direct writes on the
- same file.
-Message-ID: <Yp/KnF0oSIsk0SYd@redhat.com>
-References: <20220605072201.9237-1-dharamhans87@gmail.com>
- <20220605072201.9237-2-dharamhans87@gmail.com>
- <Yp/CYjONZHoekSVA@redhat.com>
- <34dd96b3-e253-de4e-d5d3-a49bc1990e6f@ddn.com>
+        Tue, 7 Jun 2022 20:06:16 -0400
+Received: from mail.enpas.org (zhong.enpas.org [46.38.239.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15A37C0380;
+        Tue,  7 Jun 2022 16:55:25 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        by mail.enpas.org (Postfix) with ESMTPSA id BD8D1FFB6C;
+        Tue,  7 Jun 2022 23:55:24 +0000 (UTC)
+Date:   Wed, 8 Jun 2022 01:55:21 +0200
+From:   Max Staudt <max@enpas.org>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        linux-kernel@vger.kernel.org,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 00/13] can: slcan: extend supported features
+Message-ID: <20220608015521.1ad4853c.max@enpas.org>
+In-Reply-To: <CAMZ6Rq+QpY23bmB4n1DfqaGgxU=i8sKm1Ee9R18xGSv9H5yMVQ@mail.gmail.com>
+References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
+        <CAMZ6Rq+QpY23bmB4n1DfqaGgxU=i8sKm1Ee9R18xGSv9H5yMVQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <34dd96b3-e253-de4e-d5d3-a49bc1990e6f@ddn.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 11:42:16PM +0200, Bernd Schubert wrote:
+On Tue, 7 Jun 2022 21:19:54 +0900
+Vincent MAILHOL <mailhol.vincent@wanadoo.fr> wrote:
+
+> In his CAN327 driver, Max manages to bring the can0 device without the
+> need of dedicated user space daemon by using line discipline
+> (ldattach):
+> https://lore.kernel.org/linux-can/20220602213544.68273-1-max@enpas.org/
 > 
-> 
-> On 6/7/22 23:25, Vivek Goyal wrote:
-> > On Sun, Jun 05, 2022 at 12:52:00PM +0530, Dharmendra Singh wrote:
-> > > From: Dharmendra Singh <dsingh@ddn.com>
-> > > 
-> > > In general, as of now, in FUSE, direct writes on the same file are
-> > > serialized over inode lock i.e we hold inode lock for the full duration
-> > > of the write request. I could not found in fuse code a comment which
-> > > clearly explains why this exclusive lock is taken for direct writes.
-> > > 
-> > > Following might be the reasons for acquiring exclusive lock but not
-> > > limited to
-> > > 1) Our guess is some USER space fuse implementations might be relying
-> > >     on this lock for seralization.
-> > 
-> > Hi Dharmendra,
-> > 
-> > I will just try to be devil's advocate. So if this is server side
-> > limitation, then it is possible that fuse client's isize data in
-> > cache is stale. For example, filesystem is shared between two
-> > clients.
-> > 
-> > - File size is 4G as seen by client A.
-> > - Client B truncates the file to 2G.
-> > - Two processes in client A, try to do parallel direct writes and will
-> >    be able to proceed and server will get two parallel writes both
-> >    extending file size.
-> > 
-> > I can see that this can happen with virtiofs with cache=auto policy.
-> > 
-> > IOW, if this is a fuse server side limitation, then how do you ensure
-> > that fuse kernel's i_size definition is not stale.
-> 
-> Hi Vivek,
-> 
-> I'm sorry, to be sure, can you explain where exactly a client is located for
-> you? For us these are multiple daemons linked to libufse - which you seem to
-> call 'server' Typically these clients are on different machines. And servers
-> are for us on the other side of the network - like an NFS server.
+> Isn't the same feasible with slcan so that we completely remove the
+> dependency toward slcand?
+> Max what do you think of this?
 
-Hi Bernd,
+I think it is a good idea to move this into the kernel driver. I don't
+have a slcan device, but a quick peek at its protocol suggests that
+it can be done much easier and cleaner than in can327.
 
-Agreed, terminology is little confusing. I am calling "fuse kernel" as
-client and fuse daemon (user space) as server. This server in turn might
-be the client to another network filesystem and real files might be
-served by that server on network.
 
-So for simple virtiofs case, There can be two fuse daemons (virtiofsd
-instances) sharing same directory (either on local filesystem or on
-a network filesystem).
+Fun fact: The use of a userspace "ignition" tool is a possible use case
+baked into can327's design ;)
 
-> 
-> So now while I'm not sure what you mean with 'client', I'm wondering about
-> two generic questions
-> 
-> a) I need to double check, but we were under the assumption the code in
-> question is a direct-io code path. I assume cache=auto would use the page
-> cache and should not be effected?
+There is only one use case I can see for it though: Probing the
+ELM327's baud rate, and/or setting it before attaching the ldisc. This
+is the single thing that the kernel driver cannot do, since it is
+attached to an already running TTY, with a fixed speed. Everything else
+is configurable via "ip link".
 
-By default cache=auto use page cache but if application initiates a
-direct I/O, it should use direct I/O path.
+slcand could be used to auto-probe and set the baud rate as well.
 
-> 
-> b) How would the current lock help for distributed clients? Or multiple fuse
-> daemons (what you seem to call server) per local machine?
+Then again, these stripped-down tools could likely be implemented as
+shell scripts calling stty and ldattach...
 
-I thought that current lock is trying to protect fuse kernel side and
-assumed fuse server (daemon linked to libfuse) can handle multiple
-parallel writes. Atleast that's how I thought about the things. I might
-be wrong. I am not sure.
 
-> 
-> For a single vfs mount point served by fuse, truncate should take the
-> exclusive lock and parallel writes the shared lock - I don't see a problem
-> here either.
-
-Agreed that this does not seem like a problem from fuse kernel side. I was
-just questioning that where parallel direct writes become a problem. And
-answer I heard was that it probably is fuse server (daemon linked with
-libfuse) which is expecting the locking. And if that's the case, this
-patch is not fool proof. It is possible that file got truncated from
-a different client (from a different fuse daemon linked with libfuse).
-
-So say A is first fuse daemon and B is another fuse daemon. Both are
-clients to some network file system as NFS.
-
-- Fuse kernel for A, sees file size as 4G.
-- fuse daemon B truncates the file to size 2G.
-- Fuse kernel for A, has stale cache, and can send two parallel writes
-  say at 3G and 3.5G offset.
-- Fuser daemon A might not like it.(Assuming this is fuse daemon/user
-  space side limitation).
-
-I hope I am able to explain my concern. I am not saying that this patch
-is not good. All I am saying that fuse daemon (user space) can not rely
-on that it will never get two parallel direct writes which can be beyond
-the file size. If fuse kernel cache is stale, it can happen. Just trying
-to set the expectations right.
-
-Thanks
-Vivek
-
+Max
