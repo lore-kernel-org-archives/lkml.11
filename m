@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A812BCCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A51CCA492
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:53:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391152AbiFHBwU (ORCPT
+        id S1391365AbiFHBwh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45778 "EHLO
+        Tue, 7 Jun 2022 21:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383311AbiFGVxC (ORCPT
+        with ESMTP id S239238AbiFGV6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:02 -0400
+        Tue, 7 Jun 2022 17:58:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB237243B82;
-        Tue,  7 Jun 2022 12:11:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FF0A24D7A9;
+        Tue,  7 Jun 2022 12:13:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7D3DB8220B;
-        Tue,  7 Jun 2022 19:11:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A855C385A2;
-        Tue,  7 Jun 2022 19:11:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 678DDB82182;
+        Tue,  7 Jun 2022 19:13:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7F73C385A2;
+        Tue,  7 Jun 2022 19:13:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629080;
-        bh=/jRDmFSFPhC1E2+WCUaB7eecRJmaXUV3udXOeKe+JVw=;
+        s=korg; t=1654629219;
+        bh=cDGXQDzvZnIg4L2nHZB3SGryb9zKYnI5rFK0O1CZtEY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q93KIY4NXiwjra4Lkv1FK5NeSb6gayuZ35XxSQW86QAnsmLoBvlQGqxsde1jS4RIT
-         4+NmTl2jMqGO3rUREjmTOW4B9gcDnR+HcauPceQpP/kz3UQbwnM6e0Pq/z7o49VQ4P
-         aycDHxeBlrMncZQw+vUBdt9a5XiC8FUhqgQwNluY=
+        b=FoxGOO/1uiJfNUXWbWH5u9+GCtvOcm43uQDoEZtmw5vk7wzKgTRtpcYdF6TsXs7Cl
+         bcnPJ407aJtYnk7Tb+sAWFWGkvsJdYlq5tte+0T1Qql+TddekpzIubwvrCE1NyNWfW
+         gAYuxCOtU5ydfgu8pFWdA7wB/K6ufh3UsK6zN6M8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianrong Zhang <zhangjianrong5@huawei.com>,
-        Jiantao Zhang <water.zhangjiantao@huawei.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 545/879] PCI: dwc: Fix setting error return on MSI DMA mapping failure
-Date:   Tue,  7 Jun 2022 19:01:03 +0200
-Message-Id: <20220607165018.687969949@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 612/879] ASoC: atmel-pdmic: Remove endianness flag on pdmic component
+Date:   Tue,  7 Jun 2022 19:02:10 +0200
+Message-Id: <20220607165020.614363265@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,38 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiantao Zhang <water.zhangjiantao@huawei.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 88557685cd72cf0db686a4ebff3fad4365cb6071 ]
+[ Upstream commit 52857c3baa0e5ddeba7b2c84e56bb71c9674e048 ]
 
-When dma_mapping_error() returns error because of no enough memory,
-but dw_pcie_host_init() returns success, which will mislead the callers.
+The endianness flag should have been removed when the driver was
+ported across from having both a CODEC and CPU side component, to
+just having a CPU component and using the dummy for the CODEC. The
+endianness flag is used to indicate that the device is completely
+ambivalent to the endianness of the data, typically due to the
+endianness being lost over the hardware link (ie. the link defines
+bit ordering). It's usage didn't have any effect when the driver
+had both a CPU and CODEC component, since the union of those equals
+the CPU side settings, but now causes the driver to falsely report
+it supports big endian. Correct this by removing the flag.
 
-Link: https://lore.kernel.org/r/30170911-0e2f-98ce-9266-70465b9073e5@huawei.com
-Fixes: 07940c369a6b ("PCI: dwc: Fix MSI page leakage in suspend/resume")
-Signed-off-by: Jianrong Zhang <zhangjianrong5@huawei.com>
-Signed-off-by: Jiantao Zhang <water.zhangjiantao@huawei.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Fixes: f3c668074a04 ("ASoC: atmel-pdmic: remove codec component")
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220504170905.332415-3-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-designware-host.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/soc/atmel/atmel-pdmic.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index 2fa86f32d964..9979302532b7 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -396,7 +396,8 @@ int dw_pcie_host_init(struct pcie_port *pp)
- 						      sizeof(pp->msi_msg),
- 						      DMA_FROM_DEVICE,
- 						      DMA_ATTR_SKIP_CPU_SYNC);
--			if (dma_mapping_error(pci->dev, pp->msi_data)) {
-+			ret = dma_mapping_error(pci->dev, pp->msi_data);
-+			if (ret) {
- 				dev_err(pci->dev, "Failed to map MSI data\n");
- 				pp->msi_data = 0;
- 				goto err_free_msi;
+diff --git a/sound/soc/atmel/atmel-pdmic.c b/sound/soc/atmel/atmel-pdmic.c
+index 42117de299e7..ea34efac2fff 100644
+--- a/sound/soc/atmel/atmel-pdmic.c
++++ b/sound/soc/atmel/atmel-pdmic.c
+@@ -481,7 +481,6 @@ static const struct snd_soc_component_driver atmel_pdmic_cpu_dai_component = {
+ 	.num_controls		= ARRAY_SIZE(atmel_pdmic_snd_controls),
+ 	.idle_bias_on		= 1,
+ 	.use_pmdown_time	= 1,
+-	.endianness		= 1,
+ };
+ 
+ /* ASoC sound card */
 -- 
 2.35.1
 
