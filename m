@@ -2,86 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F79FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE9D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343999AbiFGPXO (ORCPT
+        id S1344008AbiFGPXu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59722 "EHLO
+        Tue, 7 Jun 2022 11:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343998AbiFGPXL (ORCPT
+        with ESMTP id S1343998AbiFGPXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:23:11 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB2EA3B57E
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:23:09 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 257FFidN003178;
-        Tue, 7 Jun 2022 10:15:44 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 257FFfLo003176;
-        Tue, 7 Jun 2022 10:15:41 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Tue, 7 Jun 2022 10:15:41 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     "'Michael Ellerman'" <mpe@ellerman.id.au>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Yang Li <yang.lee@linux.alibaba.com>
-Subject: Re: outside array bounds error on ppc64_defconfig, GCC 12.1.0
-Message-ID: <20220607151541.GG25951@gate.crashing.org>
-References: <YpbUcPrm61RLIiZF@debian.me> <87mtepns81.fsf@mpe.ellerman.id.au> <d38aeb0d6f2040369256ee640b44fafe@AcuMS.aculab.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d38aeb0d6f2040369256ee640b44fafe@AcuMS.aculab.com>
-User-Agent: Mutt/1.4.2.3i
+        Tue, 7 Jun 2022 11:23:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A10AEC5E75
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:23:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654615424;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uGqsi3KJd9LaOiP/2DKVqWgAXQfJ4BFecWZlXXq685g=;
+        b=RcOv5nO4hzPDkygro2xWKTFpmrdRZo4U1LTx4puorgHWpH+tVxOi3m9QVhn+DJ/oPdajEx
+        pH+HvY6aMiyVkAbRnJuuchvtjzDlOiYeqHfOrYsPQpxYBVOdg2ir457JwcgT0jTIIOBsru
+        H4b5W1sGiZxzlebeegqoBEO5XkAOk/k=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-275-v02VOAFfNh6GQmH5_y6Dvw-1; Tue, 07 Jun 2022 11:23:43 -0400
+X-MC-Unique: v02VOAFfNh6GQmH5_y6Dvw-1
+Received: by mail-wr1-f70.google.com with SMTP id s14-20020adfa28e000000b0020ac7532f08so4032583wra.15
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 08:23:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uGqsi3KJd9LaOiP/2DKVqWgAXQfJ4BFecWZlXXq685g=;
+        b=vxUV/8JNePFpF7OCVXvqMXgsMjQWgZjZ2fuQGhuWoa113yYOVplcs7eJD80GNFifvJ
+         aPyiL1/36+zbHjvPV5c1kx298VbG+pxDKpeP0KTcPZSi1TOS2tQzS/uMrQzHmLY+/wAA
+         WsmREfI2xKFvCjmTN0zhKspMd8TYpM9ioFXC205n89v18W6P2iD1ZiH7qgeSRZWg09p2
+         a5JtYiXljTCry1fV+Y0XcqgUSYzYY70Iw3yDmSHg2AtuMRxQu5Q7qs0/wgOiL3SIjcxu
+         vdf5KzBwXry6s3aIAdg/hT2t0M7YPx6nv0lhAOlGzUZO46G2pTXvZJZ/ODT9KuR47bFD
+         y0Gw==
+X-Gm-Message-State: AOAM531ILup6HSa63WqXjGSOS/bFsqBPFGZqXk4tHHvZ0SfU6KzWQRRa
+        MawnCp/NR+kULcvEwsYr0KmgdAhJ/iwrjw4yyvgkNs8oe9vfDRZ3o8wjK6E2xEwFUzhQGU65g3u
+        KchiDOxRfM64fAb2hgvTK3sV/
+X-Received: by 2002:adf:f5d0:0:b0:216:5680:b41e with SMTP id k16-20020adff5d0000000b002165680b41emr17135762wrp.216.1654615422410;
+        Tue, 07 Jun 2022 08:23:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJymxyv939js1nCuiezDwMezdK7yYmsUnLpwyHlPMFlqmHxZ41tVGiSN5DSbEsqemA33zqMWzg==
+X-Received: by 2002:adf:f5d0:0:b0:216:5680:b41e with SMTP id k16-20020adff5d0000000b002165680b41emr17135716wrp.216.1654615422026;
+        Tue, 07 Jun 2022 08:23:42 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id bw1-20020a0560001f8100b002184280b3cbsm4675249wrb.91.2022.06.07.08.23.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 08:23:41 -0700 (PDT)
+Message-ID: <2c561959-2382-f668-7cb8-01d17d627dd6@redhat.com>
+Date:   Tue, 7 Jun 2022 17:23:38 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] KVM: x86: preserve interrupt shadow across SMM entries
+Content-Language: en-US
+To:     Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org
+Cc:     x86@kernel.org, Borislav Petkov <bp@alien8.de>,
+        linux-kernel@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jim Mattson <jmattson@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <20220607151647.307157-1-mlevitsk@redhat.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220607151647.307157-1-mlevitsk@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 02:23:25PM +0000, David Laight wrote:
-> > I don't see a really simple fix. I tried clamping the size parameter to
-> > do_byte_reverse() with max(), but that didn't work :/
+On 6/7/22 17:16, Maxim Levitsky wrote:
+> If the #SMI happens while the vCPU is in the interrupt shadow,
+> (after STI or MOV SS),
+> we must both clear it to avoid VM entry failure on VMX,
+> due to consistency check vs EFLAGS.IF which is cleared on SMM entries,
+> and restore it on RSM so that #SMI is transparent to the non SMM code.
 > 
-> I had a quick look at the code - it is somewhat horrid!
-> Not really surprising the compiler is confused.
-> Although it shouldn't be outputting that error message
-> unless it is certain.
-
-No.  It is a warning message, and the compiler should output it for all
-code it finds suspicious.  The conditions for this could be improved for
-sure, but it is and will remain a heuristic affair, so using -Werror
-with is is akin to self-flagellation.
-
-It is not an error, it is a warning.  The correct response to it when
-you determine it is not an error, or even you do not want to deal with
-it now, is to ignore it.  Which -Werror prevents, one of the ways that
-that warning flag is counterproductive to use.
-
-> Could it be re-written to read the data into an __u128
-> (or whatever the compiler type is).
-> Optionally byteswap the entire thing (swap the words and
-> then byteswap each word).
-> The do a put_user_8/16/32/64() to write out the value.
+> To support migration, reuse upper 4 bits of
+> 'kvm_vcpu_events.interrupt.shadow' to store the smm interrupt shadow.
 > 
-> I think that would remove all the memory accesses and make
-> it a lot faster as well.
+> This was lightly tested with a linux guest and smm load script,
+> and a unit test will be soon developed to test this better.
+> 
+> For discussion: there are other ways to fix this issue:
+> 
+> 1. The SMM shadow can be stored in SMRAM at some unused
+> offset, this will allow to avoid changes to kvm_vcpu_ioctl_x86_set_vcpu_events
 
-Yes, the warning sometimes fires for correct code that is "merely" next
-to impossible to read.  It may well improve even the performance of the
-code if the code is rewritten.
+Yes, that would be better (and would not require a new cap).
 
-But it also may introduce new bugs, or anything else detrimental.  It
-is yakshaving extraordinaire to do this every time a compiler warning
-points out something doesn't smell quite right :-)
+Paolo
 
-
-Segher
