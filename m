@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E2FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:47:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376722AbiFGUrd (ORCPT
+        id S1376873AbiFGUrl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:47:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35098 "EHLO
+        Tue, 7 Jun 2022 16:47:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357442AbiFGTpZ (ORCPT
+        with ESMTP id S1357366AbiFGTpN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:45:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2AF66AF3;
-        Tue,  7 Jun 2022 11:18:47 -0700 (PDT)
+        Tue, 7 Jun 2022 15:45:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02915F25F;
+        Tue,  7 Jun 2022 11:18:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D2B760C7F;
-        Tue,  7 Jun 2022 18:18:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C7A4C385A5;
-        Tue,  7 Jun 2022 18:18:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DAE07B82385;
+        Tue,  7 Jun 2022 18:18:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F158C36B05;
+        Tue,  7 Jun 2022 18:18:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625925;
-        bh=85vm1vrtGgzFH8G8lTONTiZh58r6Wicm/naQSPQ/3OI=;
+        s=korg; t=1654625906;
+        bh=ysGPMCEE6zTrrAwWhMonkdrC5EuSx87LJP4/nYS+s1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ej9C8VaI0eBzAp5ws0wh37RcRHbgJSC+wv2Lza9h++bJTJg7Fhd7X0fpskLtaH5fJ
-         ZUffmGr40xRlel6rTu7hRsG0T/hHdUWRxQMA+O0Ww+knUzSIY9a78VnlvkqQbnZXDU
-         G3wqxKK++lzltpENwgsPXZvXyFMZwcfxcTkRriS8=
+        b=HUfaHOfzptpYfWN0YaJsniiApWMwPENxmhvGJyn4lZjV5mpaOZ2+H1fDk+oMGfvnL
+         ynrmNjUEsZ9l6V0F0JcS7yT232TIq9uJ7Ve5obxYV17IV3p51UMBqMXhGzef19+4Dj
+         cnV4bNx5A1aDs+z4dUysnpePRrkoF2AcS8yUUbcg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, QintaoShen <unSimple1993@163.com>,
-        Nishanth Menon <nm@ti.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 193/772] soc: ti: ti_sci_pm_domains: Check for null return of devm_kcalloc
-Date:   Tue,  7 Jun 2022 18:56:25 +0200
-Message-Id: <20220607164954.722062026@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 187/772] ASoC: amd: Add driver data to acp6x machine driver
+Date:   Tue,  7 Jun 2022 18:56:19 +0200
+Message-Id: <20220607164954.546554661@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,36 +51,182 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: QintaoShen <unSimple1993@163.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit ba56291e297d28aa6eb82c5c1964fae2d7594746 ]
+[ Upstream commit e521f087780d07731e8c950f2f34d08358c86bc9 ]
 
-The allocation funciton devm_kcalloc may fail and return a null pointer,
-which would cause a null-pointer dereference later.
-It might be better to check it and directly return -ENOMEM just like the
-usage of devm_kcalloc in previous code.
+Currently all of the quirked systems use the same card and so the
+DMI quirk list doesn't contain driver data.
 
-Signed-off-by: QintaoShen <unSimple1993@163.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Link: https://lore.kernel.org/r/1648107843-29077-1-git-send-email-unSimple1993@163.com
+Add driver data to these quirks and then check the data was present
+or not.  This will allow potentially setting quirks for systems with
+faulty firmware that claims to have a DMIC but doesn't really.
+
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Link: https://lore.kernel.org/r/20220411134532.13538-2-mario.limonciello@amd.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/ti/ti_sci_pm_domains.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/amd/yc/acp6x-mach.c | 29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/soc/ti/ti_sci_pm_domains.c b/drivers/soc/ti/ti_sci_pm_domains.c
-index 8afb3f45d263..a33ec7eaf23d 100644
---- a/drivers/soc/ti/ti_sci_pm_domains.c
-+++ b/drivers/soc/ti/ti_sci_pm_domains.c
-@@ -183,6 +183,8 @@ static int ti_sci_pm_domain_probe(struct platform_device *pdev)
- 		devm_kcalloc(dev, max_id + 1,
- 			     sizeof(*pd_provider->data.domains),
- 			     GFP_KERNEL);
-+	if (!pd_provider->data.domains)
-+		return -ENOMEM;
+diff --git a/sound/soc/amd/yc/acp6x-mach.c b/sound/soc/amd/yc/acp6x-mach.c
+index 9a767f47b89f..959b70e8baf2 100644
+--- a/sound/soc/amd/yc/acp6x-mach.c
++++ b/sound/soc/amd/yc/acp6x-mach.c
+@@ -45,108 +45,126 @@ static struct snd_soc_card acp6x_card = {
  
- 	pd_provider->data.num_domains = max_id + 1;
- 	pd_provider->data.xlate = ti_sci_pd_xlate;
+ static const struct dmi_system_id yc_acp_quirk_table[] = {
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21D2"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21D3"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21D4"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21D5"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CF"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CG"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CQ"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CR"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21AW"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21AX"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21BN"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21BQ"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CH"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CJ"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CK"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CL"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21D8"),
+ 		}
+ 	},
+ 	{
++		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21D9"),
+@@ -157,18 +175,21 @@ static const struct dmi_system_id yc_acp_quirk_table[] = {
+ 
+ static int acp6x_probe(struct platform_device *pdev)
+ {
++	const struct dmi_system_id *dmi_id;
+ 	struct acp6x_pdm *machine = NULL;
+ 	struct snd_soc_card *card;
+ 	int ret;
+-	const struct dmi_system_id *dmi_id;
+ 
++	/* check for any DMI overrides */
+ 	dmi_id = dmi_first_match(yc_acp_quirk_table);
+-	if (!dmi_id)
++	if (dmi_id)
++		platform_set_drvdata(pdev, dmi_id->driver_data);
++
++	card = platform_get_drvdata(pdev);
++	if (!card)
+ 		return -ENODEV;
+-	card = &acp6x_card;
+ 	acp6x_card.dev = &pdev->dev;
+ 
+-	platform_set_drvdata(pdev, card);
+ 	snd_soc_card_set_drvdata(card, machine);
+ 	ret = devm_snd_soc_register_card(&pdev->dev, card);
+ 	if (ret) {
 -- 
 2.35.1
 
