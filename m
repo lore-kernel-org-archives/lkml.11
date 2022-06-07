@@ -2,117 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D07C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A1C0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242256AbiFGLCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48254 "EHLO
+        id S242362AbiFGLCm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:02:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242611AbiFGLAY (ORCPT
+        with ESMTP id S242807AbiFGLAv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 07:00:24 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4519831224;
-        Tue,  7 Jun 2022 03:58:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654599503; x=1686135503;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xf+xgYb0NBQxQ+h8wlDbNS86vV9+HUcg11x5pXMRmAQ=;
-  b=R2doGKjQuidWS+kP8eBepGTA0o9o2t3YZ1d7pIhaFSvt+amH2modQtqO
-   8OXFpDR1Z0iyOCd16iZiqBN0B3rqGDTOVsbechc0N7hrbOxTNobw4TjlR
-   mZnUK96IULjtFZscvt4FX/X7NxFu+6UeSj9yRomviIhVU79qUDGgV3pzV
-   nM2ANswMciiasZldd+Q0ziDOPbh84MQx9RfZhl8JeFTZ0b0mgNRSS/zkq
-   IvlAXc4Bmpx7shijjRfhE/f94CLJ95gH7ghQNxVijNeDlD2LDB0N5SzXH
-   RlNIwSHZaIpfnei5qaSSy5sA3JElSl0AOm8f6cxPa6PxvWRnQ71S6xloD
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="265083760"
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="265083760"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 03:58:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="614868186"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga001.jf.intel.com with ESMTP; 07 Jun 2022 03:58:16 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 257AwEl8019500;
-        Tue, 7 Jun 2022 11:58:14 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Yury Norov <yury.norov@gmail.com>,
-        "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
-        Richard Henderson <rth@twiddle.net>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "Yoshinori Sato" <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
-        Tony Luck <tony.luck@intel.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/6] bitops: wrap non-atomic bitops with a transparent macro
-Date:   Tue,  7 Jun 2022 12:57:18 +0200
-Message-Id: <20220607105718.72434-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <Yp4q5KlIxmlznvuh@FVFF77S0Q05N.cambridge.arm.com>
-References: <20220606114908.962562-1-alexandr.lobakin@intel.com> <20220606114908.962562-6-alexandr.lobakin@intel.com> <Yp4q5KlIxmlznvuh@FVFF77S0Q05N.cambridge.arm.com>
+        Tue, 7 Jun 2022 07:00:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A18B129
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 04:00:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654599608;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=m6bVRDhDwqhXUEbC4cBSqv9R/0i33tbMnIdzh+Mzw68=;
+        b=M1p2Anz3gFAuyLtMncmMDO+CgkjK+6AObWLVp3aMXnmt2e/pJoodua1ULXBcbRP5BE9Pwd
+        gQ/F9qoY+gXzFajMLndHcS/K7uks9CVMWgFwQDtJTVbvwTH1s4W0TazpOuSJwRF7RXVbPK
+        zAbjhlIq3hGvwzugdV573oJBA1lCMEM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-219-VII4NBxnMO2LXC51gicfMg-1; Tue, 07 Jun 2022 07:00:05 -0400
+X-MC-Unique: VII4NBxnMO2LXC51gicfMg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 00B1C18A6523;
+        Tue,  7 Jun 2022 11:00:05 +0000 (UTC)
+Received: from MiWiFi-R3L-srv.redhat.com (ovpn-13-113.pek2.redhat.com [10.72.13.113])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DE4231121315;
+        Tue,  7 Jun 2022 11:00:01 +0000 (UTC)
+From:   Baoquan He <bhe@redhat.com>
+To:     akpm@linux-foundation.org, urezki@gmail.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        hch@infradead.org, Baoquan He <bhe@redhat.com>
+Subject: [PATCH v2 0/4] Cleanup patches of vmalloc
+Date:   Tue,  7 Jun 2022 18:59:54 +0800
+Message-Id: <20220607105958.382076-1-bhe@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
-Date: Mon, 6 Jun 2022 17:27:16 +0100
+Some cleanup patches found when reading vmalloc code.
 
-> On Mon, Jun 06, 2022 at 01:49:06PM +0200, Alexander Lobakin wrote:
-> > In preparation for altering the non-atomic bitops with a macro, wrap
-> > them in a transparent definition. This requires prepending one more
-> > '_' to their names in order to be able to do that seamlessly.
-> > sparc32 already has the triple-underscored functions, so I had to
-> > rename them ('___' -> 'sp32_').
-> 
-> Could we use an 'arch_' prefix here, like we do for the atomics, or is that
-> already overloaded?
+v1->v2:
+- In Patch 1, Uladzislau suggested a better way to improve code logic,
+  and the NOTHING_FIT redundant checking issue naturally goes away.
 
-Yeah it is, for example, x86 has 'arch_' functions defined in its
-architecture headers[0] and at the same time uses generic
-instrumented '__' helpers[1], so on x86 both underscored and 'arch_'
-are defined and they are not the same.
-Same with those sparc32 triple-underscored, sparc32 at the same time
-uses generic non-instrumented, so it has underscored, 'arch_' and
-triple-underscored.
+- Take off the old patch 5 in v1. Instead convert to use generic
+  ioremap code in arch codes, then rename the left ioremap_page_range().
+  This should be done in later patches. This is suggested by Christoph.
 
-In general, bitops are overloaded with tons of prefixes already :)
-I'm not really glad that I introduced one more level, but not that
-we have many options here.
+Baoquan He (4):
+  mm/vmalloc: invoke classify_va_fit_type() in adjust_va_to_fit_type()
+  mm/vmalloc: remove the redundant boundary check
+  mm/vmalloc: fix typo in local variable name
+  mm/vmalloc: Add code comment for find_vmap_area_exceed_addr()
 
-> 
-> Thanks,
-> Mark.
-> 
-> > 
-> > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > ---
+ mm/vmalloc.c | 46 +++++++++++++++++-----------------------------
+ 1 file changed, 17 insertions(+), 29 deletions(-)
 
-[...]
+-- 
+2.34.1
 
-> > -- 
-> > 2.36.1
-
-Thanks,
-Olek
