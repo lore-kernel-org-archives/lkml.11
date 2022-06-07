@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E32C3F2D4
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB190CCA497
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442300AbiFHAyR (ORCPT
+        id S1392247AbiFHAwE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:54:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35528 "EHLO
+        Tue, 7 Jun 2022 20:52:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383441AbiFGWa6 (ORCPT
+        with ESMTP id S1382817AbiFGWD7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:30:58 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E28275596;
-        Tue,  7 Jun 2022 12:23:59 -0700 (PDT)
+        Tue, 7 Jun 2022 18:03:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B63A19578A;
+        Tue,  7 Jun 2022 12:14:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 718A7CE2476;
-        Tue,  7 Jun 2022 19:23:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ADC8C385A2;
-        Tue,  7 Jun 2022 19:23:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD997B823C5;
+        Tue,  7 Jun 2022 19:14:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34C37C385A2;
+        Tue,  7 Jun 2022 19:14:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629835;
-        bh=h3I5A+wDlDqLSRwTv8fsj9hr+2X2VVhVi4iPFBVDOFw=;
+        s=korg; t=1654629296;
+        bh=WiFCKulQ99PeGhv0WCZ7muvZMv1xXYlcq2nr0Cxd+lE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IEPoVUiiWOe7kJumph+Bw+L+HHVeWFm7ApLJgnhtNtEeoQVRUVanK7Tp3nMuWn7Nh
-         Ai9Jh5QfPb0fn0BdtOFpac5QwQxwq8QFCPsw67ux475ih5cumxeH1UsnCChaWDGoEs
-         TDyyRMhFRM9MUsLViX9bspV9KucT49qwWaKcXRKM=
+        b=XKl8vAYrWVsubpREvEn4OvrpPSEN4LC2Bsda/wWa4aAqIpC6EcT6oCv+z0MxWBwVg
+         aay2zdoBtlxeqnJCV0AkOCXSmPvsgSEXDxHYBuMaWz6mcQyyCsqgt1nq7M1tJDztBX
+         3l/jiVeCvekMy/Pd86LN/LtaRtODsoQ1xcUNiLn4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.18 807/879] RDMA/hfi1: Fix potential integer multiplication overflow errors
-Date:   Tue,  7 Jun 2022 19:05:25 +0200
-Message-Id: <20220607165026.282007587@linuxfoundation.org>
+        stable@vger.kernel.org, Kajol Jain <kjain@linux.ibm.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 641/879] powerpc/perf: Fix the threshold compare group constraint for power10
+Date:   Tue,  7 Jun 2022 19:02:39 +0200
+Message-Id: <20220607165021.452557766@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,40 +51,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+From: Kajol Jain <kjain@linux.ibm.com>
 
-commit f93e91a0372c922c20d5bee260b0f43b4b8a1bee upstream.
+[ Upstream commit 505d31650ba96d6032313480fdb566d289a4698c ]
 
-When multiplying of different types, an overflow is possible even when
-storing the result in a larger type. This is because the conversion is
-done after the multiplication. So arithmetic overflow and thus in
-incorrect value is possible.
+Thresh compare bits for a event is used to program thresh compare
+field in Monitor Mode Control Register A (MMCRA: 8-18 bits for power10).
+When scheduling events as a group, all events in that group should
+match value in threshold bits. Otherwise event open for the sibling
+events should fail. But in the current code, incase thresh compare bits are
+not valid, we are not failing in group_constraint function which can result
+in invalid group schduling.
 
-Correct an instance of this in the inter packet delay calculation.  Fix by
-ensuring one of the operands is u64 which will promote the other to u64 as
-well ensuring no overflow.
+Fix the issue by returning -1 incase event is threshold and threshold
+compare value is not valid in group_constraint function.
 
-Cc: stable@vger.kernel.org
-Fixes: 7724105686e7 ("IB/hfi1: add driver files")
-Link: https://lore.kernel.org/r/20220520183712.48973.29855.stgit@awfm-01.cornelisnetworks.com
-Reviewed-by: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
-Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Patch also fixes the p10_thresh_cmp_val function to return -1,
+incase threshold bits are not valid and changes corresponding check in
+is_thresh_cmp_valid function to return false only when the thresh_cmp
+value is less then 0.
+
+Thresh control bits in the event code is used to program thresh_ctl
+field in Monitor Mode Control Register A (MMCRA: 48-55). In below example,
+the scheduling of group events PM_MRK_INST_CMPL (3534401e0) and
+PM_THRESH_MET (34340101ec) is expected to fail as both event
+request different thresh control bits.
+
+Result before the patch changes:
+
+[command]# perf stat -e "{r35340401e0,r34340101ec}" sleep 1
+
+ Performance counter stats for 'sleep 1':
+
+             8,482      r35340401e0
+                 0      r34340101ec
+
+       1.001474838 seconds time elapsed
+
+       0.001145000 seconds user
+       0.000000000 seconds sys
+
+Result after the patch changes:
+
+[command]# perf stat -e "{r35340401e0,r34340101ec}" sleep 1
+
+ Performance counter stats for 'sleep 1':
+
+     <not counted>      r35340401e0
+   <not supported>      r34340101ec
+
+       1.001499607 seconds time elapsed
+
+       0.000204000 seconds user
+       0.000760000 seconds sys
+
+Fixes: 82d2c16b350f7 ("powerpc/perf: Adds support for programming of Thresholding in P10")
+Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
+Reviewed-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220506061015.43916-1-kjain@linux.ibm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hfi1/init.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/perf/isa207-common.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/drivers/infiniband/hw/hfi1/init.c
-+++ b/drivers/infiniband/hw/hfi1/init.c
-@@ -489,7 +489,7 @@ void set_link_ipg(struct hfi1_pportdata
- 	u16 shift, mult;
- 	u64 src;
- 	u32 current_egress_rate; /* Mbits /sec */
--	u32 max_pkt_time;
-+	u64 max_pkt_time;
+diff --git a/arch/powerpc/perf/isa207-common.c b/arch/powerpc/perf/isa207-common.c
+index a74d382ecbb7..013b06af6fe6 100644
+--- a/arch/powerpc/perf/isa207-common.c
++++ b/arch/powerpc/perf/isa207-common.c
+@@ -108,7 +108,7 @@ static void mmcra_sdar_mode(u64 event, unsigned long *mmcra)
+ 		*mmcra |= MMCRA_SDAR_MODE_TLB;
+ }
+ 
+-static u64 p10_thresh_cmp_val(u64 value)
++static int p10_thresh_cmp_val(u64 value)
+ {
+ 	int exp = 0;
+ 	u64 result = value;
+@@ -139,7 +139,7 @@ static u64 p10_thresh_cmp_val(u64 value)
+ 		 * exponent is also zero.
+ 		 */
+ 		if (!(value & 0xC0) && exp)
+-			result = 0;
++			result = -1;
+ 		else
+ 			result = (exp << 8) | value;
+ 	}
+@@ -187,7 +187,7 @@ static bool is_thresh_cmp_valid(u64 event)
+ 	unsigned int cmp, exp;
+ 
+ 	if (cpu_has_feature(CPU_FTR_ARCH_31))
+-		return p10_thresh_cmp_val(event) != 0;
++		return p10_thresh_cmp_val(event) >= 0;
+ 
  	/*
- 	 * max_pkt_time is the maximum packet egress time in units
- 	 * of the fabric clock period 1/(805 MHz).
+ 	 * Check the mantissa upper two bits are not zero, unless the
+@@ -502,7 +502,8 @@ int isa207_get_constraint(u64 event, unsigned long *maskp, unsigned long *valp,
+ 			value |= CNST_THRESH_CTL_SEL_VAL(event >> EVENT_THRESH_SHIFT);
+ 			mask  |= p10_CNST_THRESH_CMP_MASK;
+ 			value |= p10_CNST_THRESH_CMP_VAL(p10_thresh_cmp_val(event_config1));
+-		}
++		} else if (event_is_threshold(event))
++			return -1;
+ 	} else if (cpu_has_feature(CPU_FTR_ARCH_300))  {
+ 		if (event_is_threshold(event) && is_thresh_cmp_valid(event)) {
+ 			mask  |= CNST_THRESH_MASK;
+-- 
+2.35.1
+
 
 
