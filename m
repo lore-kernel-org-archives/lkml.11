@@ -2,107 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A8A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:11:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BA9EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:11:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242605AbiFGLL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:11:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35772 "EHLO
+        id S242426AbiFGLLm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:11:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243022AbiFGLKc (ORCPT
+        with ESMTP id S243286AbiFGLLA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 07:10:32 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185748B0A3;
-        Tue,  7 Jun 2022 04:08:54 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id cx11so15378461pjb.1;
-        Tue, 07 Jun 2022 04:08:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Po1Q5+6dI5yA4ldBgb2PF70K+bMXEwc5eVZhSQFEPLQ=;
-        b=oGkUJxSiFWnEbzHhenRsTq1+Di2BTqEPtyQKOuzfE117dtISgEKhcUGbepRpqseLXc
-         uDjuopqh2LIvIPWDRqkn3HtKKfO5WfoShBll48QLsqVtzwIG2CqplMMXW8kWt+77SMZz
-         eUfInGS8fV+8vqasQ/gFjGTS7u4hQ4Z1Gw0R2Y1jzLfKm9MQSduAN5Csz1EseWH4Tv3u
-         kTxulbf3f9SvFFo7VVjRTl9VDqktaI+zbxKnHuAeGK53bVfl7dPZpgqO1vNb4s74A+WS
-         iWkQdPJDO8jOgwTbwFasvLepqmcno7hRXfXSzHI1OKITixe1XbMtaxn8/j1hneoXgDmh
-         c0IA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Po1Q5+6dI5yA4ldBgb2PF70K+bMXEwc5eVZhSQFEPLQ=;
-        b=7qKmQwv5pNaE7+NNzs0ABtNPCxVi7fS3XnefOUfeEIu58TP5vFF6EW128LwPA6Dv6H
-         PEGEwMKCdAkCuGOv9ly3dEr9wIl+2u/RJKSVihZ4BFeqFn4LNqSTFVU3Rh88O2hbghaX
-         hw5/42vvNUjoEgXt2V6G49/81TaNXIgJUSpjKVenZ6pIGXqkXnyZHX0ZE+mnBi4fZ7U2
-         1bcmDc2gLzo6mN37cX6wjbYXMWltUHuZNQvpx2+KxLFr7KqZpk5v51Ks4HhxqvlX/W7d
-         6TroS1Fs2Gi5RrNlgSkjAjYuVenlv3myxBQq8ezMJKjjJkR4MgxFy14YF9IaEUFFvUWP
-         N1kg==
-X-Gm-Message-State: AOAM533LNoTgzr9cd3r9oecMMIbzBKejmkA7ic5vsd3j0nDbrOr1fk+x
-        SYNRZ6BacDPVkJUJbVFRQdE=
-X-Google-Smtp-Source: ABdhPJyzMIIixx7LNlorf8GeSs9/oSuBiBElDRVrwCUcFan3ee56iXcevAaVtwW0gAdH+D0FOIGpsg==
-X-Received: by 2002:a17:902:d58a:b0:164:f5d1:82e9 with SMTP id k10-20020a170902d58a00b00164f5d182e9mr28874742plh.3.1654600133569;
-        Tue, 07 Jun 2022 04:08:53 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id i4-20020aa787c4000000b0051bc581b62asm10439542pfo.121.2022.06.07.04.08.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 04:08:52 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Stephen Boyd <swboyd@chromium.org>,
-        David Heidelberg <david@ixit.cz>,
-        Guo Zhengkui <guozhengkui@vivo.com>,
-        Xu Wang <vulab@iscas.ac.cn>, Miaoqian Lin <linmq006@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/msm/mdp4: Fix refcount leak in mdp4_modeset_init_intf
-Date:   Tue,  7 Jun 2022 15:08:38 +0400
-Message-Id: <20220607110841.53889-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 7 Jun 2022 07:11:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4413393D5;
+        Tue,  7 Jun 2022 04:10:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A14BB81F69;
+        Tue,  7 Jun 2022 11:10:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D6967C34114;
+        Tue,  7 Jun 2022 11:10:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654600213;
+        bh=WNo/GKQfClkuUUNIAxhmLCRNfiQK1Xf045r+s/N/H8o=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=SQ86wqHt16s3t/HhIDRghw6tv1Fr4XmfFod2nVldf+4by1HHAr7y2iipnYixmHTgt
+         AWTq6nbJ1dQ2y9rnFS1ynEcTefv2hGU2SUirZfJJMfLgSQpwixk5dwwinsu/M88nNR
+         JNhIjl2Sn2nviAI0xAvOUKS4oWzhdjiMIuFVxpx/72E5uLcQ0xJCw/y8H90s3cvVRv
+         jKF0Rr6cSFt+urdSSxmKroTrYhLZaWLoaGGj5xLFN3aZISDOGj4CBLrosI9Qz/weV4
+         aQchIz9Jkk4QGZWQ9FC2Buk2jbuDKoLBsqRsYv7cI3pR6c9gLWauK/e0+d5N7qrQo6
+         a5kuQVC9VXS+g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B7F43E737E2;
+        Tue,  7 Jun 2022 11:10:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v4 0/3] reorganize the code of the enum
+ skb_drop_reason
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165460021374.11944.12196215356756517705.git-patchwork-notify@kernel.org>
+Date:   Tue, 07 Jun 2022 11:10:13 +0000
+References: <20220606022436.331005-1-imagedong@tencent.com>
+In-Reply-To: <20220606022436.331005-1-imagedong@tencent.com>
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     kuba@kernel.org, rostedt@goodmis.org, mingo@redhat.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        nhorman@tuxdriver.com, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        imagedong@tencent.com, dsahern@kernel.org, talalahmad@google.com,
+        keescook@chromium.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_graph_get_remote_node() returns remote device node pointer with
-refcount incremented, we should use of_node_put() on it
-when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+Hello:
 
-Fixes: 86418f90a4c1 ("drm: convert drivers to use of_graph_get_remote_node")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c | 2 ++
- 1 file changed, 2 insertions(+)
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
-index fb48c8c19ec3..17cb1fc78379 100644
---- a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
-+++ b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
-@@ -216,6 +216,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
- 		encoder = mdp4_lcdc_encoder_init(dev, panel_node);
- 		if (IS_ERR(encoder)) {
- 			DRM_DEV_ERROR(dev->dev, "failed to construct LCDC encoder\n");
-+			of_node_put(panel_node);
- 			return PTR_ERR(encoder);
- 		}
- 
-@@ -225,6 +226,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
- 		connector = mdp4_lvds_connector_init(dev, panel_node, encoder);
- 		if (IS_ERR(connector)) {
- 			DRM_DEV_ERROR(dev->dev, "failed to initialize LVDS connector\n");
-+			of_node_put(panel_node);
- 			return PTR_ERR(connector);
- 		}
- 
+On Mon,  6 Jun 2022 10:24:33 +0800 you wrote:
+> From: Menglong Dong <imagedong@tencent.com>
+> 
+> The code of skb_drop_reason is a little wild, let's reorganize them.
+> Three things and three patches:
+> 
+> 1) Move the enum 'skb_drop_reason' and related function to the standalone
+>    header 'dropreason.h', as Jakub Kicinski suggested, as the skb drop
+>    reasons are getting more and more.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v4,1/3] net: skb: move enum skb_drop_reason to standalone header file
+    https://git.kernel.org/netdev/net-next/c/ff8372a467fa
+  - [net-next,v4,2/3] net: skb: use auto-generation to convert skb drop reason to string
+    https://git.kernel.org/netdev/net-next/c/ec43908dd556
+  - [net-next,v4,3/3] net: dropreason: reformat the comment fo skb drop reasons
+    https://git.kernel.org/netdev/net-next/c/b160f7270e6d
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
