@@ -2,71 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDDC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D6AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382759AbiFGWZC (ORCPT
+        id S1383517AbiFGWZI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:25:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50224 "EHLO
+        Tue, 7 Jun 2022 18:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381082AbiFGVRS (ORCPT
+        with ESMTP id S1381139AbiFGVRV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:17:18 -0400
-X-Greylist: delayed 1421 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 11:58:21 PDT
-Received: from 10.mo575.mail-out.ovh.net (10.mo575.mail-out.ovh.net [46.105.79.203])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8088C7E21
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:58:19 -0700 (PDT)
-Received: from player728.ha.ovh.net (unknown [10.109.138.120])
-        by mo575.mail-out.ovh.net (Postfix) with ESMTP id 82571246CD
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:20:55 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player728.ha.ovh.net (Postfix) with ESMTPSA id 584D32B3FFAE5;
-        Tue,  7 Jun 2022 18:20:48 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-103G005fca0d426-c27e-4a09-a8fa-96d11bc6cef4,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 0/3] drm/panel: Use backlight helpers
-Date:   Tue,  7 Jun 2022 20:20:23 +0200
-Message-Id: <20220607182026.1121992-1-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
+        Tue, 7 Jun 2022 17:17:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0286022076D;
+        Tue,  7 Jun 2022 11:58:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 782DC617E1;
+        Tue,  7 Jun 2022 18:58:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 844E7C36AFF;
+        Tue,  7 Jun 2022 18:58:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628302;
+        bh=Dpsq0SyvXPZFqVamvS5ocvS63tmmQ/77Z9Mbo2Wq9AA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=T/tbU/nnVy3Jm8zkRTj/aRWNCNpRyCkpZwHZhzkMavh7rG4l/if5B0NcPBe2OrrUK
+         oirc0Vf1rn/LiJ+38av0CU3q8OtuzcQCQ+Rxc4t3utKBiT0g2Fa9mMui+ewBmNAJr9
+         Y4AAzF2qALL5X5DcwZ8y8T1kGc6ZQYfQanm6ZY5c=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 278/879] spi: qcom-qspi: Add minItems to interconnect-names
+Date:   Tue,  7 Jun 2022 18:56:36 +0200
+Message-Id: <20220607165010.918077311@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 10882667026634475142
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejvdekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejhe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-backlight_properties.fb_blank is deprecated. The states it represents
-are handled by other properties; but instead of accessing those
-properties directly, drivers should use the helpers provided by
-backlight.h.
+From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
 
-This will ultimately allow fb_blank to be removed.
+[ Upstream commit e23d86c49a9c78e8dbe3abff20b30812b26ab427 ]
 
-Stephen Kitt (3):
-  drm/panel: Use backlight helper
-  drm/panel: panel-dsi-cm: Use backlight helpers
-  drm/panel: sony-acx565akm: Use backlight helpers
+Add minItems constraint to interconnect-names as well. The schema
+currently tries to match 2 names and fail for DTs with single entry.
 
- .../drm/panel/panel-asus-z00t-tm5p5-n35596.c  |  7 +-----
- drivers/gpu/drm/panel/panel-dsi-cm.c          | 24 ++++---------------
- drivers/gpu/drm/panel/panel-sony-acx565akm.c  | 11 ++-------
- 3 files changed, 7 insertions(+), 35 deletions(-)
+With the change applied, below interconnect-names values are possible:
+['qspi-config'], ['qspi-config', 'qspi-memory']
 
+Fixes: 8f9c291558ea ("dt-bindings: spi: Add interconnect binding for QSPI")
+Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220328192006.18523-1-singh.kuldeep87k@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml
+index 5a60fba14bba..44d08aa3fd85 100644
+--- a/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml
++++ b/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml
+@@ -49,6 +49,7 @@ properties:
+     maxItems: 2
+ 
+   interconnect-names:
++    minItems: 1
+     items:
+       - const: qspi-config
+       - const: qspi-memory
 -- 
-2.30.2
+2.35.1
+
+
 
