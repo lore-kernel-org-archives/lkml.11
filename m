@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CE9CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1360CCA47E
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349565AbiFGSAP (ORCPT
+        id S1349491AbiFGSAM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60502 "EHLO
+        Tue, 7 Jun 2022 14:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348559AbiFGRlK (ORCPT
+        with ESMTP id S1348411AbiFGRkt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:41:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1819912088B;
-        Tue,  7 Jun 2022 10:34:21 -0700 (PDT)
+        Tue, 7 Jun 2022 13:40:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50846B018;
+        Tue,  7 Jun 2022 10:34:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C8CC61480;
-        Tue,  7 Jun 2022 17:33:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A653C3411C;
-        Tue,  7 Jun 2022 17:33:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7748A614AE;
+        Tue,  7 Jun 2022 17:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85C77C34115;
+        Tue,  7 Jun 2022 17:33:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623216;
-        bh=eaLkmUmdG/Xo6u8ERxj5u85vYOJwe/jt0YfOMpJMybE=;
+        s=korg; t=1654623191;
+        bh=1GMGT98+przndzzSNbR0Qqjc8joCQ0M2vp1ljX+83FI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PIdPsHeo84U7AX8Reh5ISGZuQe//Gr34jaNvh9T7RmTk+dEKINoXY2G9oxo3t+Tqw
-         jq7eVrOxXNCIXP4oxLmBf6b5HxNapkk+/5DDCwWiblw+k8qMC6nwH62gE0RF8dmj46
-         FC+gXSHNN6vjJX38MrVWqi70zow2mvGepEWYxLeM=
+        b=oxnsPTjEbggi8muUX4gOad4VrvL5NrS7mb+rq3NdtZgV/6qSV+iTj17UhUPdXQJBz
+         RWdneC33pk8dhpD+9X9cNWzVNZEOljckGmes9IBjW2gLugwRhw7LxxiraIJC+uHtOJ
+         S9snLH/3jhSsBxH+l2yjvgDHNfQ5kVYxmWHlkkuQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Zhbanov <izh1979@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Mel Gorman <mel@csn.ul.ie>,
+        Minchan Kim <minchan.kim@gmail.com>,
+        KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>,
+        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 296/452] powerpc/idle: Fix return value of __setup() handler
-Date:   Tue,  7 Jun 2022 19:02:33 +0200
-Message-Id: <20220607164917.376665570@linuxfoundation.org>
+Subject: [PATCH 5.10 291/452] drivers/base/node.c: fix compaction sysfs file leak
+Date:   Tue,  7 Jun 2022 19:02:28 +0200
+Message-Id: <20220607164917.222200219@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,43 +55,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-[ Upstream commit b793a01000122d2bd133ba451a76cc135b5e162c ]
+[ Upstream commit da63dc84befaa9e6079a0bc363ff0eaa975f9073 ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
+Compaction sysfs file is created via compaction_register_node in
+register_node.  But we forgot to remove it in unregister_node.  Thus
+compaction sysfs file is leaked.  Using compaction_unregister_node to fix
+this issue.
 
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) argument or environment
-strings.
-
-Also, error return codes don't mean anything to obsolete_checksetup() --
-only non-zero (usually 1) or zero. So return 1 from powersave_off().
-
-Fixes: 302eca184fb8 ("[POWERPC] cell: use ppc_md->power_save instead of cbe_idle_loop")
-Reported-by: Igor Zhbanov <izh1979@gmail.com>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220502192925.19954-1-rdunlap@infradead.org
+Link: https://lkml.kernel.org/r/20220401070905.43679-1-linmiaohe@huawei.com
+Fixes: ed4a6d7f0676 ("mm: compaction: add /sys trigger for per-node memory compaction")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Rafael J. Wysocki <rafael@kernel.org>
+Cc: Mel Gorman <mel@csn.ul.ie>
+Cc: Minchan Kim <minchan.kim@gmail.com>
+Cc: KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>
+Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/idle.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/base/node.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/powerpc/kernel/idle.c b/arch/powerpc/kernel/idle.c
-index 1f835539fda4..f0271daa8f6a 100644
---- a/arch/powerpc/kernel/idle.c
-+++ b/arch/powerpc/kernel/idle.c
-@@ -37,7 +37,7 @@ static int __init powersave_off(char *arg)
+diff --git a/drivers/base/node.c b/drivers/base/node.c
+index 21965de8538b..5f745c906c33 100644
+--- a/drivers/base/node.c
++++ b/drivers/base/node.c
+@@ -655,6 +655,7 @@ static int register_node(struct node *node, int num)
+  */
+ void unregister_node(struct node *node)
  {
- 	ppc_md.power_save = NULL;
- 	cpuidle_disable = IDLE_POWERSAVE_OFF;
--	return 0;
-+	return 1;
- }
- __setup("powersave=off", powersave_off);
- 
++	compaction_unregister_node(node);
+ 	hugetlb_unregister_node(node);		/* no-op, if memoryless node */
+ 	node_remove_accesses(node);
+ 	node_remove_caches(node);
 -- 
 2.35.1
 
