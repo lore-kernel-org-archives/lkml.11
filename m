@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50439CCA491
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F42BCCA494
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442262AbiFHAyM (ORCPT
+        id S1442361AbiFHAyW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:54:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38192 "EHLO
+        Tue, 7 Jun 2022 20:54:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382418AbiFGWCh (ORCPT
+        with ESMTP id S1384223AbiFGVyV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:02:37 -0400
+        Tue, 7 Jun 2022 17:54:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D49128144;
-        Tue,  7 Jun 2022 12:14:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7D837BD3;
+        Tue,  7 Jun 2022 12:13:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1B8D61807;
-        Tue,  7 Jun 2022 19:14:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB038C385A2;
-        Tue,  7 Jun 2022 19:14:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD2E0617D0;
+        Tue,  7 Jun 2022 19:12:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAAA0C385A2;
+        Tue,  7 Jun 2022 19:12:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629280;
-        bh=conex0sFGgB/DV350k7ij59++tfMZbwt9/zyaSY9Pe8=;
+        s=korg; t=1654629158;
+        bh=B/QuFEpq78xkrF1rplhhWqWNV0Fu2qI+glk260VWyvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GUnPt7cNXgGjXoZBZFj3OpHKLd6gkdIEe3LKbmqugKRUybbfX5PBIMgiga7CHN6Tz
-         KLd9sb/c/AyFUhQopBn67JdQlGCTsJZrP0P4XWUzE/o/iJ259Nn982vXndm0uxn6SN
-         tTDa3UjeEZr0m2TfeAZDwE4fqOxLhnLZDx6clYqQ=
+        b=Z6bzvGyP0Zwy/Qa6IAci3NZ6Zz+bBiygf675ZyvdaWwU8VSF9ndiq7tWs+9wzHW7N
+         GdZQoQt2/97LKjZNmUJXs+kz7zu6spWt5BUGHwzQGaR8t7e3Wq8NDX26YMp1cFvm5E
+         x6efrM2Kg7+21h5hdLdPXJLnvEri4dPExrsbwp60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Dan Williams <dan.j.williams@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 593/879] pinctrl: mvebu: Fix irq_of_parse_and_map() return value
-Date:   Tue,  7 Jun 2022 19:01:51 +0200
-Message-Id: <20220607165020.065562054@linuxfoundation.org>
+Subject: [PATCH 5.18 550/879] cxl/pci: Add debug for DVSEC range init failures
+Date:   Tue,  7 Jun 2022 19:01:08 +0200
+Message-Id: <20220607165018.830980067@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,34 +53,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Dan Williams <dan.j.williams@intel.com>
 
-[ Upstream commit 71bc7cf3be65bab441e03667cf215c557712976c ]
+[ Upstream commit e39f9be08d9dfe685c8a325ac1755c04f383effc ]
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+In preparation for not treating DVSEC range initialization failures as
+fatal to cxl_pci_probe() add individual dev_dbg() statements for each of
+the major failure reasons in cxl_dvsec_ranges().
 
-Fixes: 2f227605394b ("pinctrl: armada-37xx: Add irqchip support")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220422105339.78810-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+The rationale for cxl_dvsec_ranges() failure not being fatal is that
+there is still value for cxl_pci to enable mailbox operations even if
+CXL.mem operation is disabled.
+
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reviewed-by: Ben Widawsky <ben.widawsky@intel.com>
+Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+Link: https://lore.kernel.org/r/164730734812.3806189.2726330688692684104.stgit@dwillia2-desk3.amr.corp.intel.com
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/cxl/pci.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-index 08cad14042e2..adccf03b3e5a 100644
---- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-+++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-@@ -773,7 +773,7 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
- 	for (i = 0; i < nr_irq_parent; i++) {
- 		int irq = irq_of_parse_and_map(np, i);
+diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
+index 3f2182d66829..c4941a3ca6a8 100644
+--- a/drivers/cxl/pci.c
++++ b/drivers/cxl/pci.c
+@@ -466,12 +466,15 @@ static int cxl_dvsec_ranges(struct cxl_dev_state *cxlds)
+ {
+ 	struct cxl_endpoint_dvsec_info *info = &cxlds->info;
+ 	struct pci_dev *pdev = to_pci_dev(cxlds->dev);
++	struct device *dev = &pdev->dev;
+ 	int d = cxlds->cxl_dvsec;
+ 	int hdm_count, rc, i;
+ 	u16 cap, ctrl;
  
--		if (irq < 0)
-+		if (!irq)
- 			continue;
- 		girq->parents[i] = irq;
- 	}
+-	if (!d)
++	if (!d) {
++		dev_dbg(dev, "No DVSEC Capability\n");
+ 		return -ENXIO;
++	}
+ 
+ 	rc = pci_read_config_word(pdev, d + CXL_DVSEC_CAP_OFFSET, &cap);
+ 	if (rc)
+@@ -481,8 +484,10 @@ static int cxl_dvsec_ranges(struct cxl_dev_state *cxlds)
+ 	if (rc)
+ 		return rc;
+ 
+-	if (!(cap & CXL_DVSEC_MEM_CAPABLE))
++	if (!(cap & CXL_DVSEC_MEM_CAPABLE)) {
++		dev_dbg(dev, "Not MEM Capable\n");
+ 		return -ENXIO;
++	}
+ 
+ 	/*
+ 	 * It is not allowed by spec for MEM.capable to be set and have 0 legacy
+@@ -495,8 +500,10 @@ static int cxl_dvsec_ranges(struct cxl_dev_state *cxlds)
+ 		return -EINVAL;
+ 
+ 	rc = wait_for_valid(cxlds);
+-	if (rc)
++	if (rc) {
++		dev_dbg(dev, "Failure awaiting MEM_INFO_VALID (%d)\n", rc);
+ 		return rc;
++	}
+ 
+ 	info->mem_enabled = FIELD_GET(CXL_DVSEC_MEM_ENABLE, ctrl);
+ 
 -- 
 2.35.1
 
