@@ -2,150 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD43CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86354C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:37:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353703AbiFGThL (ORCPT
+        id S1353951AbiFGThO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
+        Tue, 7 Jun 2022 15:37:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354032AbiFGSq1 (ORCPT
+        with ESMTP id S1354036AbiFGSq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:46:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97EE18E47E;
-        Tue,  7 Jun 2022 10:59:57 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245AC18C054;
+        Tue,  7 Jun 2022 11:00:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0865B8236C;
-        Tue,  7 Jun 2022 17:59:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4629CC34119;
-        Tue,  7 Jun 2022 17:59:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624794;
-        bh=ucIaXTRbVB/oL/7bl68xYrtIpt1U6H0UrivdO4ahS1Q=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3ED5A618FA;
+        Tue,  7 Jun 2022 18:00:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D42E0C34119;
+        Tue,  7 Jun 2022 17:59:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624799;
+        bh=IhUtz9jVbqvCOmOqsUmTRlRO4beTo/ueWOj5DeHBtek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lOuzzgnvANeNfgRj/iQfH9LakLqnrZxAqfbxwpptn04IRbAUB+Fupt1UGeY6L8qz6
-         /yirt6EBgCO42wkFvDX0A145Hnu6r8op7TrSSZYqCOlsxSV904vkF80bci2Wy4uqDP
-         KYEiFVkRx+HZkg6aoHkuIJRTMkYuo7OeWfpfir2s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 456/667] crypto: cryptd - Protect per-CPU resource by disabling BH.
-Date:   Tue,  7 Jun 2022 19:02:01 +0200
-Message-Id: <20220607164948.388570044@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=HZk0Ug6nCZ7yaoHk3Thg0JpD03NHd6jym2rnl7oJJ46aX44uIcRfxkIsEUIBlp820
+         J6wHxgdJIh8EZpSi5F0dvRZs7KEnjbdN4IGey8jK1g/JiWuWTImtUG6Q3E3+UxAYAU
+         Lb1WbwGAz5li1Ley7F5VxmMBodnENWNWtZxdF8o0vP/psR1yJFlKRCssUMAw7FkJwK
+         zsCmJ7Atx5NoppsbTlA99werHjO9yQef+aQhNBQoAi4q7DNNjTiU9wN2HgtEofdSIa
+         McnNEJcO4tACHZxgv8gocwEcTh6kcq/4NZF1J6duOp93rPMX2oTsG8MOlA+eAK77gN
+         z3UjhntG/EC5w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Sasha Levin <sashal@kernel.org>, jpoimboe@kernel.org,
+        jbaron@akamai.com
+Subject: [PATCH AUTOSEL 5.10 32/38] jump_label,noinstr: Avoid instrumentation for JUMP_LABEL=n builds
+Date:   Tue,  7 Jun 2022 13:58:27 -0400
+Message-Id: <20220607175835.480735-32-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
+References: <20220607175835.480735-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 91e8bcd7b4da182e09ea19a2c73167345fe14c98 ]
+[ Upstream commit 656d054e0a15ec327bd82801ccd58201e59f6896 ]
 
-The access to cryptd_queue::cpu_queue is synchronized by disabling
-preemption in cryptd_enqueue_request() and disabling BH in
-cryptd_queue_worker(). This implies that access is allowed from BH.
+When building x86_64 with JUMP_LABEL=n it's possible for
+instrumentation to sneak into noinstr:
 
-If cryptd_enqueue_request() is invoked from preemptible context _and_
-soft interrupt then this can lead to list corruption since
-cryptd_enqueue_request() is not protected against access from
-soft interrupt.
+vmlinux.o: warning: objtool: exit_to_user_mode+0x14: call to static_key_count.constprop.0() leaves .noinstr.text section
+vmlinux.o: warning: objtool: syscall_exit_to_user_mode+0x2d: call to static_key_count.constprop.0() leaves .noinstr.text section
+vmlinux.o: warning: objtool: irqentry_exit_to_user_mode+0x1b: call to static_key_count.constprop.0() leaves .noinstr.text section
 
-Replace get_cpu() in cryptd_enqueue_request() with local_bh_disable()
-to ensure BH is always disabled.
-Remove preempt_disable() from cryptd_queue_worker() since it is not
-needed because local_bh_disable() ensures synchronisation.
+Switch to arch_ prefixed atomic to avoid the explicit instrumentation.
 
-Fixes: 254eff771441 ("crypto: cryptd - Per-CPU thread implementation...")
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- crypto/cryptd.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ include/linux/jump_label.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/crypto/cryptd.c b/crypto/cryptd.c
-index a1bea0f4baa8..668095eca0fa 100644
---- a/crypto/cryptd.c
-+++ b/crypto/cryptd.c
-@@ -39,6 +39,10 @@ struct cryptd_cpu_queue {
- };
+diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
+index 32809624d422..e67ee4d7318f 100644
+--- a/include/linux/jump_label.h
++++ b/include/linux/jump_label.h
+@@ -249,9 +249,9 @@ extern void static_key_disable_cpuslocked(struct static_key *key);
+ #include <linux/atomic.h>
+ #include <linux/bug.h>
  
- struct cryptd_queue {
-+	/*
-+	 * Protected by disabling BH to allow enqueueing from softinterrupt and
-+	 * dequeuing from kworker (cryptd_queue_worker()).
-+	 */
- 	struct cryptd_cpu_queue __percpu *cpu_queue;
- };
- 
-@@ -125,28 +129,28 @@ static void cryptd_fini_queue(struct cryptd_queue *queue)
- static int cryptd_enqueue_request(struct cryptd_queue *queue,
- 				  struct crypto_async_request *request)
+-static inline int static_key_count(struct static_key *key)
++static __always_inline int static_key_count(struct static_key *key)
  {
--	int cpu, err;
-+	int err;
- 	struct cryptd_cpu_queue *cpu_queue;
- 	refcount_t *refcnt;
- 
--	cpu = get_cpu();
-+	local_bh_disable();
- 	cpu_queue = this_cpu_ptr(queue->cpu_queue);
- 	err = crypto_enqueue_request(&cpu_queue->queue, request);
- 
- 	refcnt = crypto_tfm_ctx(request->tfm);
- 
- 	if (err == -ENOSPC)
--		goto out_put_cpu;
-+		goto out;
- 
--	queue_work_on(cpu, cryptd_wq, &cpu_queue->work);
-+	queue_work_on(smp_processor_id(), cryptd_wq, &cpu_queue->work);
- 
- 	if (!refcount_read(refcnt))
--		goto out_put_cpu;
-+		goto out;
- 
- 	refcount_inc(refcnt);
- 
--out_put_cpu:
--	put_cpu();
-+out:
-+	local_bh_enable();
- 
- 	return err;
+-	return atomic_read(&key->enabled);
++	return arch_atomic_read(&key->enabled);
  }
-@@ -162,15 +166,10 @@ static void cryptd_queue_worker(struct work_struct *work)
- 	cpu_queue = container_of(work, struct cryptd_cpu_queue, work);
- 	/*
- 	 * Only handle one request at a time to avoid hogging crypto workqueue.
--	 * preempt_disable/enable is used to prevent being preempted by
--	 * cryptd_enqueue_request(). local_bh_disable/enable is used to prevent
--	 * cryptd_enqueue_request() being accessed from software interrupts.
- 	 */
- 	local_bh_disable();
--	preempt_disable();
- 	backlog = crypto_get_backlog(&cpu_queue->queue);
- 	req = crypto_dequeue_request(&cpu_queue->queue);
--	preempt_enable();
- 	local_bh_enable();
  
- 	if (!req)
+ static __always_inline void jump_label_init(void)
 -- 
 2.35.1
-
-
 
