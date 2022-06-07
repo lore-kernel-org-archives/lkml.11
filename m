@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 576B7C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C9A5C43334
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443192AbiFHA5q (ORCPT
+        id S1443218AbiFHA5v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47592 "EHLO
+        Tue, 7 Jun 2022 20:57:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383249AbiFGVw6 (ORCPT
+        with ESMTP id S1381745AbiFGVow (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CA12431B6;
-        Tue,  7 Jun 2022 12:10:51 -0700 (PDT)
+        Tue, 7 Jun 2022 17:44:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31697235118;
+        Tue,  7 Jun 2022 12:07:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DCCD361846;
-        Tue,  7 Jun 2022 19:10:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E85FBC385A2;
-        Tue,  7 Jun 2022 19:10:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94C42B81F6D;
+        Tue,  7 Jun 2022 19:07:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1D24C385A2;
+        Tue,  7 Jun 2022 19:07:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629050;
-        bh=e7z7YYVlH1TL5GP3G+nujeATCGzehNUWZSCRno86fts=;
+        s=korg; t=1654628841;
+        bh=74S82kLFV4attk0fZoUqvtIlkJyl4CWuDDsLRNHjqLw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uLv9Sbuga5pyhfpXNTaHfGWtQqvTvQ35QI+55NbT9NIsbyj3tlGsmc4WNTfYvwg/B
-         0HcwMHJhTzQUx5xstON866oENR+zQhgWV0Wop54FsNPfdzjBsrwP/jlVTT8IY4RJs6
-         FmMcTiB3r4d74CGfsADZx7Iiy33xdfnyEkE+avu4=
+        b=g1Ya9QwgM6xbGXD1QsnTd70BDXXBqwUu2G1zIS7DQj3wGq12ymijsgdqXVRu5vCxa
+         IvbwDU/zxEBE1z9UQ3oSVFLM/InxpSrPYMTEdIM1LcukNMdR6fMYmDqOjxG09PyRVy
+         EKecRS8ZY/cRb7px1DWqm5arLuONMv9oUr26P9s4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 544/879] PCI: mediatek: Fix refcount leak in mtk_pcie_subsys_powerup()
-Date:   Tue,  7 Jun 2022 19:01:02 +0200
-Message-Id: <20220607165018.659861326@linuxfoundation.org>
+        stable@vger.kernel.org, Yake Yang <yake.yang@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 458/879] Bluetooth: btmtksdio: fix the reset takes too long
+Date:   Tue,  7 Jun 2022 18:59:36 +0200
+Message-Id: <20220607165016.166596385@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,38 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Sean Wang <sean.wang@mediatek.com>
 
-[ Upstream commit 214e0d8fe4a813ae6ffd62bc2dfe7544c20914f4 ]
+[ Upstream commit baabb7f530e8a3f0085d12f4ea0bada4115515d3 ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, We should use of_node_put() on it when done
-Add the missing of_node_put() to release the refcount.
+Sending WMT command during the reset in progress is invalid and would get
+no response from firmware until the reset is complete, so we ignore the WMT
+command here to resolve the issue which causes the whole reset process
+taking too long.
 
-Link: https://lore.kernel.org/r/20220309091953.5630-1-linmq006@gmail.com
-Fixes: 87e8657ba99c ("PCI: mediatek: Add new method to get shared pcie-cfg base address")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Acked-by: Rob Herring <robh@kernel.org>
+Fixes: 8fafe702253d ("Bluetooth: mt7921s: support bluetooth reset mechanism")
+Co-developed-by: Yake Yang <yake.yang@mediatek.com>
+Signed-off-by: Yake Yang <yake.yang@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-mediatek.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/bluetooth/btmtksdio.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/pci/controller/pcie-mediatek.c b/drivers/pci/controller/pcie-mediatek.c
-index ddfbd4aebdec..be8bd919cb88 100644
---- a/drivers/pci/controller/pcie-mediatek.c
-+++ b/drivers/pci/controller/pcie-mediatek.c
-@@ -1008,6 +1008,7 @@ static int mtk_pcie_subsys_powerup(struct mtk_pcie *pcie)
- 					   "mediatek,generic-pciecfg");
- 	if (cfg_node) {
- 		pcie->cfg = syscon_node_to_regmap(cfg_node);
-+		of_node_put(cfg_node);
- 		if (IS_ERR(pcie->cfg))
- 			return PTR_ERR(pcie->cfg);
+diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+index 5d13c1f61bd3..d6700efcfe8c 100644
+--- a/drivers/bluetooth/btmtksdio.c
++++ b/drivers/bluetooth/btmtksdio.c
+@@ -1189,6 +1189,10 @@ static int btmtksdio_shutdown(struct hci_dev *hdev)
+ 	 */
+ 	pm_runtime_get_sync(bdev->dev);
+ 
++	/* wmt command only works until the reset is complete */
++	if (test_bit(BTMTKSDIO_HW_RESET_ACTIVE, &bdev->tx_state))
++		goto ignore_wmt_cmd;
++
+ 	/* Disable the device */
+ 	wmt_params.op = BTMTK_WMT_FUNC_CTRL;
+ 	wmt_params.flag = 0;
+@@ -1202,6 +1206,7 @@ static int btmtksdio_shutdown(struct hci_dev *hdev)
+ 		return err;
  	}
+ 
++ignore_wmt_cmd:
+ 	pm_runtime_put_noidle(bdev->dev);
+ 	pm_runtime_disable(bdev->dev);
+ 
 -- 
 2.35.1
 
