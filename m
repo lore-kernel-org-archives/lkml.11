@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B8FCCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD3CCCCA492
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391890AbiFHAq4 (ORCPT
+        id S1391952AbiFHArE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:46:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40400 "EHLO
+        Tue, 7 Jun 2022 20:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383695AbiFGWGJ (ORCPT
+        with ESMTP id S1383766AbiFGVxn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:06:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07CCB25225D;
-        Tue,  7 Jun 2022 12:17:08 -0700 (PDT)
+        Tue, 7 Jun 2022 17:53:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70922462F0;
+        Tue,  7 Jun 2022 12:12:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB9C1B8237B;
-        Tue,  7 Jun 2022 19:17:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12862C385A5;
-        Tue,  7 Jun 2022 19:17:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42EDF61846;
+        Tue,  7 Jun 2022 19:12:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48702C385A5;
+        Tue,  7 Jun 2022 19:12:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629425;
-        bh=+rr6wQg1UXT8+9VQVPiZnQB4JkYD2ZkKEtekqVIyEF0=;
+        s=korg; t=1654629130;
+        bh=uXJgK6BeOyXr2XjfeVN6/zQWCm/h0aea7IH3uCLbEeU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qVaP8LQUeLOISYzQ8HMG9IeH6P9jHE0sj4vT5o7AuEiuXSVIdcOhQZFKxWFzopWV3
-         wZmSwecElJTI/v0gaYuuuNfGuGnMpdCOiPPivDhLogIt15L4IJt/5U4AdEMl88vf3x
-         y5VGPPv05oxSFYf2bl70IFoEScWrEeqnpCno4SKk=
+        b=w1IIZO5FjDs/PnqBRxYJHeSYgDLjt4ggU/mmQ0X1BgiMxjUfQZiSxUukeOreiP87l
+         H13qi8UHe7YbYBvM0SXe2Eji4+BUo62xiO5bggojzycLF5+7SIVpas88ENqhSVDyGJ
+         HM9tljUMAZIgUbpWKjjLYmcJzKwlH+Pp+ZYCO+LA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "D. Ziegfeld" <dzigg@posteo.de>,
-        =?UTF-8?q?J=C3=B6rg-Volker=20Peetz?= <jvpeetz@web.de>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 687/879] iommu/amd: Increase timeout waiting for GA log enablement
-Date:   Tue,  7 Jun 2022 19:03:25 +0200
-Message-Id: <20220607165022.791728528@linuxfoundation.org>
+        stable@vger.kernel.org, Caleb Connolly <kc@postmarketos.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 579/879] pinctrl/rockchip: support deferring other gpio params
+Date:   Tue,  7 Jun 2022 19:01:37 +0200
+Message-Id: <20220607165019.660801561@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,49 +50,213 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Caleb Connolly <kc@postmarketos.org>
 
-[ Upstream commit 42bb5aa043382f09bef2cc33b8431be867c70f8e ]
+[ Upstream commit 8ce5ef64546850294b021497046588a7abcebe96 ]
 
-On some systems it can take a long time for the hardware to enable the
-GA log of the AMD IOMMU. The current wait time is only 0.1ms, but
-testing showed that it can take up to 14ms for the GA log to enter
-running state after it has been enabled.
+Add support for deferring other params like PIN_CONFIG_INPUT_ENABLE.
+This will be used to add support for PIN_CONFIG_INPUT_ENABLE to the
+driver.
 
-Sometimes the long delay happens when booting the system, sometimes
-only on resume. Adjust the timeout accordingly to not print a warning
-when hardware takes a longer than usual.
-
-There has already been an attempt to fix this with commit
-
-	9b45a7738eec ("iommu/amd: Fix loop timeout issue in iommu_ga_log_enable()")
-
-But that commit was based on some wrong math and did not fix the issue
-in all cases.
-
-Cc: "D. Ziegfeld" <dzigg@posteo.de>
-Cc: Jörg-Volker Peetz <jvpeetz@web.de>
-Fixes: 8bda0cfbdc1a ("iommu/amd: Detect and initialize guest vAPIC log")
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Link: https://lore.kernel.org/r/20220520102214.12563-1-joro@8bytes.org
+Fixes: e7165b1dff06 ("pinctrl/rockchip: add a queue for deferred pin output settings on probe")
+Fixes: 59dd178e1d7c ("gpio/rockchip: fetch deferred output settings on probe")
+Signed-off-by: Caleb Connolly <kc@postmarketos.org>
+Link: https://lore.kernel.org/r/20220328005005.72492-2-kc@postmarketos.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/amd/init.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpio/gpio-rockchip.c       | 24 ++++++++-----
+ drivers/pinctrl/pinctrl-rockchip.c | 54 ++++++++++++++++--------------
+ drivers/pinctrl/pinctrl-rockchip.h |  7 ++--
+ 3 files changed, 50 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index b4a798c7b347..d8060503ba51 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -84,7 +84,7 @@
- #define ACPI_DEVFLAG_LINT1              0x80
- #define ACPI_DEVFLAG_ATSDIS             0x10000000
+diff --git a/drivers/gpio/gpio-rockchip.c b/drivers/gpio/gpio-rockchip.c
+index 099e358d2491..bcf5214e3586 100644
+--- a/drivers/gpio/gpio-rockchip.c
++++ b/drivers/gpio/gpio-rockchip.c
+@@ -19,6 +19,7 @@
+ #include <linux/of_address.h>
+ #include <linux/of_device.h>
+ #include <linux/of_irq.h>
++#include <linux/pinctrl/pinconf-generic.h>
+ #include <linux/regmap.h>
  
--#define LOOP_TIMEOUT	100000
-+#define LOOP_TIMEOUT	2000000
- /*
-  * ACPI table definitions
-  *
+ #include "../pinctrl/core.h"
+@@ -706,7 +707,7 @@ static int rockchip_gpio_probe(struct platform_device *pdev)
+ 	struct device_node *pctlnp = of_get_parent(np);
+ 	struct pinctrl_dev *pctldev = NULL;
+ 	struct rockchip_pin_bank *bank = NULL;
+-	struct rockchip_pin_output_deferred *cfg;
++	struct rockchip_pin_deferred *cfg;
+ 	static int gpio;
+ 	int id, ret;
+ 
+@@ -747,15 +748,22 @@ static int rockchip_gpio_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
+-	while (!list_empty(&bank->deferred_output)) {
+-		cfg = list_first_entry(&bank->deferred_output,
+-				       struct rockchip_pin_output_deferred, head);
++	while (!list_empty(&bank->deferred_pins)) {
++		cfg = list_first_entry(&bank->deferred_pins,
++				       struct rockchip_pin_deferred, head);
+ 		list_del(&cfg->head);
+ 
+-		ret = rockchip_gpio_direction_output(&bank->gpio_chip, cfg->pin, cfg->arg);
+-		if (ret)
+-			dev_warn(dev, "setting output pin %u to %u failed\n", cfg->pin, cfg->arg);
+-
++		switch (cfg->param) {
++		case PIN_CONFIG_OUTPUT:
++			ret = rockchip_gpio_direction_output(&bank->gpio_chip, cfg->pin, cfg->arg);
++			if (ret)
++				dev_warn(dev, "setting output pin %u to %u failed\n", cfg->pin,
++					 cfg->arg);
++			break;
++		default:
++			dev_warn(dev, "unknown deferred config param %d\n", cfg->param);
++			break;
++		}
+ 		kfree(cfg);
+ 	}
+ 
+diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
+index 2cb79e649fcf..bb0783fb86d5 100644
+--- a/drivers/pinctrl/pinctrl-rockchip.c
++++ b/drivers/pinctrl/pinctrl-rockchip.c
+@@ -2110,19 +2110,20 @@ static bool rockchip_pinconf_pull_valid(struct rockchip_pin_ctrl *ctrl,
+ 	return false;
+ }
+ 
+-static int rockchip_pinconf_defer_output(struct rockchip_pin_bank *bank,
+-					 unsigned int pin, u32 arg)
++static int rockchip_pinconf_defer_pin(struct rockchip_pin_bank *bank,
++					 unsigned int pin, u32 param, u32 arg)
+ {
+-	struct rockchip_pin_output_deferred *cfg;
++	struct rockchip_pin_deferred *cfg;
+ 
+ 	cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
+ 	if (!cfg)
+ 		return -ENOMEM;
+ 
+ 	cfg->pin = pin;
++	cfg->param = param;
+ 	cfg->arg = arg;
+ 
+-	list_add_tail(&cfg->head, &bank->deferred_output);
++	list_add_tail(&cfg->head, &bank->deferred_pins);
+ 
+ 	return 0;
+ }
+@@ -2143,6 +2144,25 @@ static int rockchip_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
+ 		param = pinconf_to_config_param(configs[i]);
+ 		arg = pinconf_to_config_argument(configs[i]);
+ 
++		if (param == (PIN_CONFIG_OUTPUT | PIN_CONFIG_INPUT_ENABLE)) {
++			/*
++			 * Check for gpio driver not being probed yet.
++			 * The lock makes sure that either gpio-probe has completed
++			 * or the gpio driver hasn't probed yet.
++			 */
++			mutex_lock(&bank->deferred_lock);
++			if (!gpio || !gpio->direction_output) {
++				rc = rockchip_pinconf_defer_pin(bank, pin - bank->pin_base, param,
++								arg);
++				mutex_unlock(&bank->deferred_lock);
++				if (rc)
++					return rc;
++
++				break;
++			}
++			mutex_unlock(&bank->deferred_lock);
++		}
++
+ 		switch (param) {
+ 		case PIN_CONFIG_BIAS_DISABLE:
+ 			rc =  rockchip_set_pull(bank, pin - bank->pin_base,
+@@ -2171,22 +2191,6 @@ static int rockchip_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
+ 			if (rc != RK_FUNC_GPIO)
+ 				return -EINVAL;
+ 
+-			/*
+-			 * Check for gpio driver not being probed yet.
+-			 * The lock makes sure that either gpio-probe has completed
+-			 * or the gpio driver hasn't probed yet.
+-			 */
+-			mutex_lock(&bank->deferred_lock);
+-			if (!gpio || !gpio->direction_output) {
+-				rc = rockchip_pinconf_defer_output(bank, pin - bank->pin_base, arg);
+-				mutex_unlock(&bank->deferred_lock);
+-				if (rc)
+-					return rc;
+-
+-				break;
+-			}
+-			mutex_unlock(&bank->deferred_lock);
+-
+ 			rc = gpio->direction_output(gpio, pin - bank->pin_base,
+ 						    arg);
+ 			if (rc)
+@@ -2500,7 +2504,7 @@ static int rockchip_pinctrl_register(struct platform_device *pdev,
+ 			pdesc++;
+ 		}
+ 
+-		INIT_LIST_HEAD(&pin_bank->deferred_output);
++		INIT_LIST_HEAD(&pin_bank->deferred_pins);
+ 		mutex_init(&pin_bank->deferred_lock);
+ 	}
+ 
+@@ -2763,7 +2767,7 @@ static int rockchip_pinctrl_remove(struct platform_device *pdev)
+ {
+ 	struct rockchip_pinctrl *info = platform_get_drvdata(pdev);
+ 	struct rockchip_pin_bank *bank;
+-	struct rockchip_pin_output_deferred *cfg;
++	struct rockchip_pin_deferred *cfg;
+ 	int i;
+ 
+ 	of_platform_depopulate(&pdev->dev);
+@@ -2772,9 +2776,9 @@ static int rockchip_pinctrl_remove(struct platform_device *pdev)
+ 		bank = &info->ctrl->pin_banks[i];
+ 
+ 		mutex_lock(&bank->deferred_lock);
+-		while (!list_empty(&bank->deferred_output)) {
+-			cfg = list_first_entry(&bank->deferred_output,
+-					       struct rockchip_pin_output_deferred, head);
++		while (!list_empty(&bank->deferred_pins)) {
++			cfg = list_first_entry(&bank->deferred_pins,
++					       struct rockchip_pin_deferred, head);
+ 			list_del(&cfg->head);
+ 			kfree(cfg);
+ 		}
+diff --git a/drivers/pinctrl/pinctrl-rockchip.h b/drivers/pinctrl/pinctrl-rockchip.h
+index 91f10279d084..98a01a616da6 100644
+--- a/drivers/pinctrl/pinctrl-rockchip.h
++++ b/drivers/pinctrl/pinctrl-rockchip.h
+@@ -171,7 +171,7 @@ struct rockchip_pin_bank {
+ 	u32				toggle_edge_mode;
+ 	u32				recalced_mask;
+ 	u32				route_mask;
+-	struct list_head		deferred_output;
++	struct list_head		deferred_pins;
+ 	struct mutex			deferred_lock;
+ };
+ 
+@@ -247,9 +247,12 @@ struct rockchip_pin_config {
+ 	unsigned int		nconfigs;
+ };
+ 
+-struct rockchip_pin_output_deferred {
++enum pin_config_param;
++
++struct rockchip_pin_deferred {
+ 	struct list_head head;
+ 	unsigned int pin;
++	enum pin_config_param param;
+ 	u32 arg;
+ };
+ 
 -- 
 2.35.1
 
