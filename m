@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C3CCCA490
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB77CCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378386AbiFGUvq (ORCPT
+        id S1378405AbiFGUv4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49214 "EHLO
+        Tue, 7 Jun 2022 16:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358553AbiFGTwl (ORCPT
+        with ESMTP id S1358576AbiFGTwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3CB16A27F;
-        Tue,  7 Jun 2022 11:21:02 -0700 (PDT)
+        Tue, 7 Jun 2022 15:52:43 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F5CABE172;
+        Tue,  7 Jun 2022 11:21:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64C46B82182;
-        Tue,  7 Jun 2022 18:21:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1CABC385A2;
-        Tue,  7 Jun 2022 18:20:59 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 59E9BCE244E;
+        Tue,  7 Jun 2022 18:21:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7004FC385A2;
+        Tue,  7 Jun 2022 18:21:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626060;
-        bh=mPjFnB12v9QIjvkloTIVfkJB+ZjteATQWCqedBdGsPw=;
+        s=korg; t=1654626065;
+        bh=OZ1Uoy2vqh3PYfJvOXagWnxhj6hh/98YwpjK7XnldXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MWT5zXpI+GuPCz8tp5LZhHpD5bYcGjkSUCWZlRfLh1BUSY5fh4re1CO99WPRsms56
-         FN/hKslbjJQSgumDExGySau8fQUOHD4IgOOtE+QxR7+4VlYgzDP7ekzGaBFf6jHlN9
-         ecvqAHOjcDKwFHUCztiH2888wV4I+VR63StajnSg=
+        b=eHY882Q3DYSliaKrBxl+Wm/4r5Wk5XOl97jcW8A/Ysju46nfvECNhH+slYTSfa/gp
+         UXhbRJ7u5admu6BdXFr6eHoQVjCi4R34N3OleDgAIN/lO7jpboLFNt9nmIVQS9cAKP
+         +laBN9W3J4I5pZZd7SwkgOxqR3/eTwrHKgdAHLaQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 242/772] x86/delay: Fix the wrong asm constraint in delay_loop()
-Date:   Tue,  7 Jun 2022 18:57:14 +0200
-Message-Id: <20220607164956.159200587@linuxfoundation.org>
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 244/772] drm/mediatek: Fix DPI component detection for MT8192
+Date:   Tue,  7 Jun 2022 18:57:16 +0200
+Message-Id: <20220607164956.217112296@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,49 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit b86eb74098a92afd789da02699b4b0dd3f73b889 ]
+[ Upstream commit cfab37ff31afcd0f99f3cccbff1f8ffa11e44c00 ]
 
-The asm constraint does not reflect the fact that the asm statement can
-modify the value of the local variable loops. Which it does.
+When support for MT8192 was added, the DPI device was not added to the
+list of components to look for. This causes the secondary display
+pipeline to not be able to fully bind, and the DRM driver subsequently
+defers probing.
 
-Specifying the wrong constraint may lead to undefined behavior, it may
-clobber random stuff (e.g. local variable, important temporary value in
-regs, etc.). This is especially dangerous when the compiler decides to
-inline the function and since it doesn't know that the value gets
-modified, it might decide to use it from a register directly without
-reloading it.
+Add the DPI device compatible to list of DPI components to fix this.
 
-Change the constraint to "+a" to denote that the first argument is an
-input and an output argument.
-
-  [ bp: Fix typo, massage commit message. ]
-
-Fixes: e01b70ef3eb3 ("x86: fix bug in arch/i386/lib/delay.c file, delay_loop function")
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220329104705.65256-2-ammarfaizi2@gnuweeb.org
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220225032754.140168-1-wenst@chromium.org/
+Fixes: 01365f549c88 ("drm/mediatek: Add support for Mediatek SoC MT8192")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/lib/delay.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_drm_drv.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/x86/lib/delay.c b/arch/x86/lib/delay.c
-index 65d15df6212d..0e65d00e2339 100644
---- a/arch/x86/lib/delay.c
-+++ b/arch/x86/lib/delay.c
-@@ -54,8 +54,8 @@ static void delay_loop(u64 __loops)
- 		"	jnz 2b		\n"
- 		"3:	dec %0		\n"
- 
--		: /* we don't need output */
--		:"a" (loops)
-+		: "+a" (loops)
-+		:
- 	);
- }
- 
+diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+index 56ff8c57ef8f..e29ac2f9254a 100644
+--- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
++++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+@@ -511,6 +511,8 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
+ 	  .data = (void *)MTK_DPI },
+ 	{ .compatible = "mediatek,mt8183-dpi",
+ 	  .data = (void *)MTK_DPI },
++	{ .compatible = "mediatek,mt8192-dpi",
++	  .data = (void *)MTK_DPI },
+ 	{ .compatible = "mediatek,mt2701-dsi",
+ 	  .data = (void *)MTK_DSI },
+ 	{ .compatible = "mediatek,mt8173-dsi",
 -- 
 2.35.1
 
