@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F64CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75576CCA490
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352804AbiFGSfY (ORCPT
+        id S1353068AbiFGSgC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60984 "EHLO
+        Tue, 7 Jun 2022 14:36:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350791AbiFGSBZ (ORCPT
+        with ESMTP id S1350386AbiFGSA4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:01:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B607114CA08;
-        Tue,  7 Jun 2022 10:43:31 -0700 (PDT)
+        Tue, 7 Jun 2022 14:00:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C5B138B45;
+        Tue,  7 Jun 2022 10:43:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C64B6146F;
-        Tue,  7 Jun 2022 17:43:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E415C34115;
-        Tue,  7 Jun 2022 17:43:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A31676146F;
+        Tue,  7 Jun 2022 17:43:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A96C3C385A5;
+        Tue,  7 Jun 2022 17:43:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623799;
-        bh=ncQfeGgnY0UBuqSIYCk3dqzB61DjWK0qKxJ9nLxTJKI=;
+        s=korg; t=1654623786;
+        bh=rNhPrWpWb5Rkbor0Yta50Ausbw27F01ediVZYvcfL64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yoep+6P5VqOOK9/QTOmKyjHXuauvSHso3n7VmVjZ8+DXb3MTUTiBl1gFMwuJlvYKM
-         pNJTK56Uq2BYN64Q3c1PcDkjdXiC9nlg8yT2cDqHoQ0B8D52zC9GdUR868GDSMRSiC
-         JRZc3JObfkl1tDMYUUkPBvmqixiTHUnQ71rranOw=
+        b=AuOT6hjBulq34d8XYtlZaz4eOcOQqOivd8w7w5gMQKaaix1YAIUJF1jcpoOb3Hscj
+         EKaWVhCfte3C4dnDkjhaQcnxmTVzi3diZbSnB5r5Ot43Eokd8eKVTUSRi1gCIkBVFe
+         qa1Ai3CbnKHueGwPciYicfDaz1xAIcrMygkIfn9A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hawking Zhang <Hawking.Zhang@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 097/667] drm/amdgpu/psp: move PSP memory alloc from hw_init to sw_init
-Date:   Tue,  7 Jun 2022 18:56:02 +0200
-Message-Id: <20220607164937.730982751@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 040/667] btrfs: return correct error number for __extent_writepage_io()
+Date:   Tue,  7 Jun 2022 18:55:05 +0200
+Message-Id: <20220607164936.002584485@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,158 +49,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Qu Wenruo <wqu@suse.com>
 
-[ Upstream commit b95b5391684b39695887afb4a13cccee7820f5d6 ]
+commit 44e5801fada6925d2bba1987c7b59cbcc9d0d592 upstream.
 
-Memory allocations should be done in sw_init.  hw_init should
-just be hardware programming needed to initialize the IP block.
-This is how most other IP blocks work.  Move the GPU memory
-allocations from psp hw_init to psp sw_init and move the memory
-free to sw_fini.  This also fixes a potential GPU memory leak
-if psp hw_init fails.
+[BUG]
+If we hit an error from submit_extent_page() inside
+__extent_writepage_io(), we could still return 0 to the caller, and
+even trigger the warning in btrfs_page_assert_not_dirty().
 
-Reviewed-by: Hawking Zhang <Hawking.Zhang@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[CAUSE]
+In __extent_writepage_io(), if we hit an error from
+submit_extent_page(), we will just clean up the range and continue.
+
+This is completely fine for regular PAGE_SIZE == sectorsize, as we can
+only hit one sector in one page, thus after the error we're ensured to
+exit and @ret will be saved.
+
+But for subpage case, we may have other dirty subpage range in the page,
+and in the next loop, we may succeeded submitting the next range.
+
+In that case, @ret will be overwritten, and we return 0 to the caller,
+while we have hit some error.
+
+[FIX]
+Introduce @has_error and @saved_ret to record the first error we hit, so
+we will never forget what error we hit.
+
+CC: stable@vger.kernel.org # 5.15+
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c | 95 ++++++++++++-------------
- 1 file changed, 47 insertions(+), 48 deletions(-)
+ fs/btrfs/extent_io.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-index 86e2090bbd6e..57e9932d8a04 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-@@ -314,7 +314,39 @@ static int psp_sw_init(void *handle)
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -3902,10 +3902,12 @@ static noinline_for_stack int __extent_w
+ 	u64 extent_offset;
+ 	u64 block_start;
+ 	struct extent_map *em;
++	int saved_ret = 0;
+ 	int ret = 0;
+ 	int nr = 0;
+ 	u32 opf = REQ_OP_WRITE;
+ 	const unsigned int write_flags = wbc_to_write_flags(wbc);
++	bool has_error = false;
+ 	bool compressed;
+ 
+ 	ret = btrfs_writepage_cow_fixup(page);
+@@ -3956,6 +3958,9 @@ static noinline_for_stack int __extent_w
+ 		if (IS_ERR_OR_NULL(em)) {
+ 			btrfs_page_set_error(fs_info, page, cur, end - cur + 1);
+ 			ret = PTR_ERR_OR_ZERO(em);
++			has_error = true;
++			if (!saved_ret)
++				saved_ret = ret;
+ 			break;
  		}
- 	}
  
-+	ret = amdgpu_bo_create_kernel(adev, PSP_1_MEG, PSP_1_MEG,
-+				      amdgpu_sriov_vf(adev) ?
-+				      AMDGPU_GEM_DOMAIN_VRAM : AMDGPU_GEM_DOMAIN_GTT,
-+				      &psp->fw_pri_bo,
-+				      &psp->fw_pri_mc_addr,
-+				      &psp->fw_pri_buf);
-+	if (ret)
-+		return ret;
+@@ -4019,6 +4024,10 @@ static noinline_for_stack int __extent_w
+ 					 end_bio_extent_writepage,
+ 					 0, 0, false);
+ 		if (ret) {
++			has_error = true;
++			if (!saved_ret)
++				saved_ret = ret;
 +
-+	ret = amdgpu_bo_create_kernel(adev, PSP_FENCE_BUFFER_SIZE, PAGE_SIZE,
-+				      AMDGPU_GEM_DOMAIN_VRAM,
-+				      &psp->fence_buf_bo,
-+				      &psp->fence_buf_mc_addr,
-+				      &psp->fence_buf);
-+	if (ret)
-+		goto failed1;
-+
-+	ret = amdgpu_bo_create_kernel(adev, PSP_CMD_BUFFER_SIZE, PAGE_SIZE,
-+				      AMDGPU_GEM_DOMAIN_VRAM,
-+				      &psp->cmd_buf_bo, &psp->cmd_buf_mc_addr,
-+				      (void **)&psp->cmd_buf_mem);
-+	if (ret)
-+		goto failed2;
-+
- 	return 0;
-+
-+failed2:
-+	amdgpu_bo_free_kernel(&psp->fw_pri_bo,
-+			      &psp->fw_pri_mc_addr, &psp->fw_pri_buf);
-+failed1:
-+	amdgpu_bo_free_kernel(&psp->fence_buf_bo,
-+			      &psp->fence_buf_mc_addr, &psp->fence_buf);
-+	return ret;
+ 			btrfs_page_set_error(fs_info, page, cur, iosize);
+ 			if (PageWriteback(page))
+ 				btrfs_page_clear_writeback(fs_info, page, cur,
+@@ -4032,8 +4041,10 @@ static noinline_for_stack int __extent_w
+ 	 * If we finish without problem, we should not only clear page dirty,
+ 	 * but also empty subpage dirty bits
+ 	 */
+-	if (!ret)
++	if (!has_error)
+ 		btrfs_page_assert_not_dirty(fs_info, page);
++	else
++		ret = saved_ret;
+ 	*nr_ret = nr;
+ 	return ret;
  }
- 
- static int psp_sw_fini(void *handle)
-@@ -344,6 +376,13 @@ static int psp_sw_fini(void *handle)
- 	kfree(cmd);
- 	cmd = NULL;
- 
-+	amdgpu_bo_free_kernel(&psp->fw_pri_bo,
-+			      &psp->fw_pri_mc_addr, &psp->fw_pri_buf);
-+	amdgpu_bo_free_kernel(&psp->fence_buf_bo,
-+			      &psp->fence_buf_mc_addr, &psp->fence_buf);
-+	amdgpu_bo_free_kernel(&psp->cmd_buf_bo, &psp->cmd_buf_mc_addr,
-+			      (void **)&psp->cmd_buf_mem);
-+
- 	return 0;
- }
- 
-@@ -2580,51 +2619,18 @@ static int psp_load_fw(struct amdgpu_device *adev)
- 	struct psp_context *psp = &adev->psp;
- 
- 	if (amdgpu_sriov_vf(adev) && amdgpu_in_reset(adev)) {
--		psp_ring_stop(psp, PSP_RING_TYPE__KM); /* should not destroy ring, only stop */
--		goto skip_memalloc;
--	}
--
--	if (amdgpu_sriov_vf(adev)) {
--		ret = amdgpu_bo_create_kernel(adev, PSP_1_MEG, PSP_1_MEG,
--						AMDGPU_GEM_DOMAIN_VRAM,
--						&psp->fw_pri_bo,
--						&psp->fw_pri_mc_addr,
--						&psp->fw_pri_buf);
-+		/* should not destroy ring, only stop */
-+		psp_ring_stop(psp, PSP_RING_TYPE__KM);
- 	} else {
--		ret = amdgpu_bo_create_kernel(adev, PSP_1_MEG, PSP_1_MEG,
--						AMDGPU_GEM_DOMAIN_GTT,
--						&psp->fw_pri_bo,
--						&psp->fw_pri_mc_addr,
--						&psp->fw_pri_buf);
--	}
--
--	if (ret)
--		goto failed;
--
--	ret = amdgpu_bo_create_kernel(adev, PSP_FENCE_BUFFER_SIZE, PAGE_SIZE,
--					AMDGPU_GEM_DOMAIN_VRAM,
--					&psp->fence_buf_bo,
--					&psp->fence_buf_mc_addr,
--					&psp->fence_buf);
--	if (ret)
--		goto failed;
--
--	ret = amdgpu_bo_create_kernel(adev, PSP_CMD_BUFFER_SIZE, PAGE_SIZE,
--				      AMDGPU_GEM_DOMAIN_VRAM,
--				      &psp->cmd_buf_bo, &psp->cmd_buf_mc_addr,
--				      (void **)&psp->cmd_buf_mem);
--	if (ret)
--		goto failed;
-+		memset(psp->fence_buf, 0, PSP_FENCE_BUFFER_SIZE);
- 
--	memset(psp->fence_buf, 0, PSP_FENCE_BUFFER_SIZE);
--
--	ret = psp_ring_init(psp, PSP_RING_TYPE__KM);
--	if (ret) {
--		DRM_ERROR("PSP ring init failed!\n");
--		goto failed;
-+		ret = psp_ring_init(psp, PSP_RING_TYPE__KM);
-+		if (ret) {
-+			DRM_ERROR("PSP ring init failed!\n");
-+			goto failed;
-+		}
- 	}
- 
--skip_memalloc:
- 	ret = psp_hw_start(psp);
- 	if (ret)
- 		goto failed;
-@@ -2730,13 +2736,6 @@ static int psp_hw_fini(void *handle)
- 	psp_tmr_terminate(psp);
- 	psp_ring_destroy(psp, PSP_RING_TYPE__KM);
- 
--	amdgpu_bo_free_kernel(&psp->fw_pri_bo,
--			      &psp->fw_pri_mc_addr, &psp->fw_pri_buf);
--	amdgpu_bo_free_kernel(&psp->fence_buf_bo,
--			      &psp->fence_buf_mc_addr, &psp->fence_buf);
--	amdgpu_bo_free_kernel(&psp->cmd_buf_bo, &psp->cmd_buf_mc_addr,
--			      (void **)&psp->cmd_buf_mem);
--
- 	return 0;
- }
- 
--- 
-2.35.1
-
 
 
