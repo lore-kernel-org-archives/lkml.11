@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:14:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B3CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379058AbiFGWO1 (ORCPT
+        id S1350967AbiFGWOi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:14:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
+        Tue, 7 Jun 2022 18:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380017AbiFGVLX (ORCPT
+        with ESMTP id S1380035AbiFGVLZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39D9131F19;
-        Tue,  7 Jun 2022 11:52:55 -0700 (PDT)
+        Tue, 7 Jun 2022 17:11:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963F61498DD;
+        Tue,  7 Jun 2022 11:52:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 291D3B82182;
-        Tue,  7 Jun 2022 18:52:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82772C385A5;
-        Tue,  7 Jun 2022 18:52:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CECC7616A9;
+        Tue,  7 Jun 2022 18:52:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1ABAC385A2;
+        Tue,  7 Jun 2022 18:52:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627972;
-        bh=edmrEx74CLJEL2ZSmVTR+lC6JWHI26Po+D1lAUpwoPY=;
+        s=korg; t=1654627978;
+        bh=XCIo5oBjPhUPMtJO6VtGpo5T64/wBIlRjbYu4ZudoSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j4Q55Z7L8Tw3J/7qB58IA4eiMBgcgrUKZOowfNQr0hyWpydyceiA/q5cB6ZG+91tA
-         YJhET7idukzVIQRbJRX+vMJWAkqXY1C4KRiXL2Ul85jeJT/ywQvutO9tYwQPBQA3s0
-         M2jEgyU/sWdyg6Egxvj9CMekeNhNJz/FRRcCMwPw=
+        b=aLIb1vKwsMeO9EE7eR5BeWy5qq2UGFDDAaRVHGGXmm/KUznJYJh0JwA449aIUxGaN
+         53tVK5T1RaKb3qPnAsD1bJcrZ0XqJDUJFgmyIX1fxETQCzZlo3zGprXwljOVwLNAls
+         gfuhFflHl1wgOpIaSrIpvxmGGetop+mY1bMd+4po=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thibaut=20VAR=C3=88NE?= <hacks+kernel@slashdirt.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 161/879] mt76: fix encap offload ethernet type check
-Date:   Tue,  7 Jun 2022 18:54:39 +0200
-Message-Id: <20220607165007.379568253@linuxfoundation.org>
+        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 163/879] media: coda: limit frame interval enumeration to supported encoder frame sizes
+Date:   Tue,  7 Jun 2022 18:54:41 +0200
+Message-Id: <20220607165007.437688168@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,67 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Philipp Zabel <p.zabel@pengutronix.de>
 
-[ Upstream commit bc98e7fdd80d215b4b55eea001023231eb8ce12e ]
+[ Upstream commit 67e33dd957880879e785cfea83a3aa24bd5c5577 ]
 
-The driver needs to check if the format is 802.2 vs 802.3 in order to set
-a tx descriptor flag. skb->protocol can't be used, since it may not be properly
-initialized for packets coming in from a packet socket.
-Fix misdetection by checking the ethertype from the skb data instead
+Let VIDIOC_ENUM_FRAMEINTERVALS return -EINVAL if userspace queries
+frame intervals for frame sizes unsupported by the encoder. Fixes the
+following v4l2-compliance failure:
 
-Reported-by: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+		fail: v4l2-test-formats.cpp(123): found frame intervals for invalid size 47x16
+		fail: v4l2-test-formats.cpp(282): node->codec_mask & STATEFUL_ENCODER
+	test VIDIOC_ENUM_FMT/FRAMESIZES/FRAMEINTERVALS: FAIL
+
+[hverkuil: drop incorrect 'For decoder devices, return -ENOTTY.' in the commit log]
+
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 4 +++-
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ .../media/platform/chips-media/coda-common.c  | 20 +++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-index a8df65cc115f..eaa31f5e0b00 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-@@ -1017,6 +1017,7 @@ mt7915_mac_write_txwi_8023(struct mt7915_dev *dev, __le32 *txwi,
- 
- 	u8 tid = skb->priority & IEEE80211_QOS_CTL_TID_MASK;
- 	u8 fc_type, fc_stype;
-+	u16 ethertype;
- 	bool wmm = false;
- 	u32 val;
- 
-@@ -1030,7 +1031,8 @@ mt7915_mac_write_txwi_8023(struct mt7915_dev *dev, __le32 *txwi,
- 	val = FIELD_PREP(MT_TXD1_HDR_FORMAT, MT_HDR_FORMAT_802_3) |
- 	      FIELD_PREP(MT_TXD1_TID, tid);
- 
--	if (be16_to_cpu(skb->protocol) >= ETH_P_802_3_MIN)
-+	ethertype = get_unaligned_be16(&skb->data[12]);
-+	if (ethertype >= ETH_P_802_3_MIN)
- 		val |= MT_TXD1_ETH_802_3;
- 
- 	txwi[1] |= cpu_to_le32(val);
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index f34070ca7bbe..c5350e7a11e6 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -814,6 +814,7 @@ mt7921_mac_write_txwi_8023(struct mt7921_dev *dev, __le32 *txwi,
+diff --git a/drivers/media/platform/chips-media/coda-common.c b/drivers/media/platform/chips-media/coda-common.c
+index a57822b05070..a2cad1830318 100644
+--- a/drivers/media/platform/chips-media/coda-common.c
++++ b/drivers/media/platform/chips-media/coda-common.c
+@@ -1324,7 +1324,8 @@ static int coda_enum_frameintervals(struct file *file, void *fh,
+ 				    struct v4l2_frmivalenum *f)
  {
- 	u8 tid = skb->priority & IEEE80211_QOS_CTL_TID_MASK;
- 	u8 fc_type, fc_stype;
-+	u16 ethertype;
- 	bool wmm = false;
- 	u32 val;
+ 	struct coda_ctx *ctx = fh_to_ctx(fh);
+-	int i;
++	struct coda_q_data *q_data;
++	const struct coda_codec *codec;
  
-@@ -827,7 +828,8 @@ mt7921_mac_write_txwi_8023(struct mt7921_dev *dev, __le32 *txwi,
- 	val = FIELD_PREP(MT_TXD1_HDR_FORMAT, MT_HDR_FORMAT_802_3) |
- 	      FIELD_PREP(MT_TXD1_TID, tid);
+ 	if (f->index)
+ 		return -EINVAL;
+@@ -1333,12 +1334,19 @@ static int coda_enum_frameintervals(struct file *file, void *fh,
+ 	if (!ctx->vdoa && f->pixel_format == V4L2_PIX_FMT_YUYV)
+ 		return -EINVAL;
  
--	if (be16_to_cpu(skb->protocol) >= ETH_P_802_3_MIN)
-+	ethertype = get_unaligned_be16(&skb->data[12]);
-+	if (ethertype >= ETH_P_802_3_MIN)
- 		val |= MT_TXD1_ETH_802_3;
+-	for (i = 0; i < CODA_MAX_FORMATS; i++) {
+-		if (f->pixel_format == ctx->cvd->src_formats[i] ||
+-		    f->pixel_format == ctx->cvd->dst_formats[i])
+-			break;
++	if (coda_format_normalize_yuv(f->pixel_format) == V4L2_PIX_FMT_YUV420) {
++		q_data = get_q_data(ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE);
++		codec = coda_find_codec(ctx->dev, f->pixel_format,
++					q_data->fourcc);
++	} else {
++		codec = coda_find_codec(ctx->dev, V4L2_PIX_FMT_YUV420,
++					f->pixel_format);
+ 	}
+-	if (i == CODA_MAX_FORMATS)
++	if (!codec)
++		return -EINVAL;
++
++	if (f->width < MIN_W || f->width > codec->max_w ||
++	    f->height < MIN_H || f->height > codec->max_h)
+ 		return -EINVAL;
  
- 	txwi[1] |= cpu_to_le32(val);
+ 	f->type = V4L2_FRMIVAL_TYPE_CONTINUOUS;
 -- 
 2.35.1
 
