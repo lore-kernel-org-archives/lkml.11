@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5957EC04E83
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E54A3CCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392282AbiFHBGl (ORCPT
+        id S1444009AbiFHBHQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46982 "EHLO
+        Tue, 7 Jun 2022 21:07:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383845AbiFGVxr (ORCPT
+        with ESMTP id S1385116AbiFGWVB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27592247068;
-        Tue,  7 Jun 2022 12:12:33 -0700 (PDT)
+        Tue, 7 Jun 2022 18:21:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE8A265F98;
+        Tue,  7 Jun 2022 12:21:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9271B81F6D;
-        Tue,  7 Jun 2022 19:12:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0579DC385A5;
-        Tue,  7 Jun 2022 19:12:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDA38609FA;
+        Tue,  7 Jun 2022 19:21:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6DA6C385A2;
+        Tue,  7 Jun 2022 19:21:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629133;
-        bh=kecQzPGQ7dWmlvvW6NveIbfZpTIlvO3pSUObXdcgE9s=;
+        s=korg; t=1654629669;
+        bh=Xj4t98qVdkLPZQTS7OXQAoSx8M/pu0ePvUGCBZ8pXgU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YGp9TkLRv/YMD818eq5MA34FYWhTbCVZXImGwcsBtpmZnutlifJcZ0lGR7FtIC+eu
-         ihL2LxkKeNhkpJXacrMn9slljhhaksAc5GHjBQ1rMGJCEpkWiybC7vDf7a/WeJVm/s
-         zCKeLOYkNROkTcLsdaUNBS1Y7obppkax5+g30up0=
+        b=ynzRyZABg5Op+lHFnC5U/78OoQMk7/TEgyP55hwvIarbtz4Vun3HkxSsrkiiaU7O5
+         L3nWXz7riDIxWp0A6roZkWgotI+WNKJA1K2MVoRe8BCl6CGXHrtS4rzZQA31sziwhR
+         io628VIueKYwZOBjQxVHQeup+LInm6cDV9K8DgCQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 580/879] pinctrl: mediatek: mt8195: enable driver on mtk platforms
-Date:   Tue,  7 Jun 2022 19:01:38 +0200
-Message-Id: <20220607165019.689292631@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Subject: [PATCH 5.18 775/879] samples/landlock: Add clang-format exceptions
+Date:   Tue,  7 Jun 2022 19:04:53 +0200
+Message-Id: <20220607165025.355203392@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,38 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabien Parent <fparent@baylibre.com>
+From: Mickaël Salaün <mic@digikod.net>
 
-[ Upstream commit 931d7fa89e640dea146e00b77c1d73459e66ab6e ]
+commit 9805a722db071e1772b80e6e0ff33f35355639ac upstream.
 
-Set the pinctrl driver as built-in by default if
-ARM64 and ARCH_MEDIATEK are enabled.
+In preparation to a following commit, add clang-format on and
+clang-format off stanzas around constant definitions.  This enables to
+keep aligned values, which is much more readable than packed
+definitions.
 
-Fixes: 6cf5e9ef362a ("pinctrl: add pinctrl driver on mt8195")
-Signed-off-by: Fabien Parent <fparent@baylibre.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Link: https://lore.kernel.org/r/20220327160813.2978637-1-fparent@baylibre.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220506160513.523257-7-mic@digikod.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/mediatek/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ samples/landlock/sandboxer.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/pinctrl/mediatek/Kconfig b/drivers/pinctrl/mediatek/Kconfig
-index 40accd110c3d..b3074082c56d 100644
---- a/drivers/pinctrl/mediatek/Kconfig
-+++ b/drivers/pinctrl/mediatek/Kconfig
-@@ -166,6 +166,7 @@ config PINCTRL_MT8195
- 	bool "Mediatek MT8195 pin control"
- 	depends on OF
- 	depends on ARM64 || COMPILE_TEST
-+	default ARM64 && ARCH_MEDIATEK
- 	select PINCTRL_MTK_PARIS
+--- a/samples/landlock/sandboxer.c
++++ b/samples/landlock/sandboxer.c
+@@ -70,11 +70,15 @@ static int parse_path(char *env_path, co
+ 	return num_paths;
+ }
  
- config PINCTRL_MT8365
--- 
-2.35.1
-
++/* clang-format off */
++
+ #define ACCESS_FILE ( \
+ 	LANDLOCK_ACCESS_FS_EXECUTE | \
+ 	LANDLOCK_ACCESS_FS_WRITE_FILE | \
+ 	LANDLOCK_ACCESS_FS_READ_FILE)
+ 
++/* clang-format on */
++
+ static int populate_ruleset(
+ 		const char *const env_var, const int ruleset_fd,
+ 		const __u64 allowed_access)
+@@ -139,6 +143,8 @@ out_free_name:
+ 	return ret;
+ }
+ 
++/* clang-format off */
++
+ #define ACCESS_FS_ROUGHLY_READ ( \
+ 	LANDLOCK_ACCESS_FS_EXECUTE | \
+ 	LANDLOCK_ACCESS_FS_READ_FILE | \
+@@ -156,6 +162,8 @@ out_free_name:
+ 	LANDLOCK_ACCESS_FS_MAKE_BLOCK | \
+ 	LANDLOCK_ACCESS_FS_MAKE_SYM)
+ 
++/* clang-format on */
++
+ int main(const int argc, char *const argv[], char *const *const envp)
+ {
+ 	const char *cmd_path;
 
 
