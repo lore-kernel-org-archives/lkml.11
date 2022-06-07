@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7512CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5454CCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378868AbiFGVFB (ORCPT
+        id S1378956AbiFGVFE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:05:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42688 "EHLO
+        Tue, 7 Jun 2022 17:05:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358163AbiFGUDO (ORCPT
+        with ESMTP id S1358167AbiFGUDO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:03:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567581C206F;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5843C1C2070;
         Tue,  7 Jun 2022 11:25:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C464DB82368;
-        Tue,  7 Jun 2022 18:25:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CAC0C385A5;
-        Tue,  7 Jun 2022 18:25:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3942EB82383;
+        Tue,  7 Jun 2022 18:24:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C6C7C385A2;
+        Tue,  7 Jun 2022 18:24:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626337;
-        bh=n8/GnrtqBN+ElbM5hRTEvorINHVSuxJ+d0Ck/aQi8+E=;
+        s=korg; t=1654626278;
+        bh=8zYSFrkihB6yudjGZuS1iNAEdatRTTDmZuCxsSPrQAA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FleGU3XwSU6Wnrc7mdAloxlOw5GR+nc7nbz2XYaMnzTSptmrCxFbNYGe9do0nrpJC
-         t/u/e6cczJ8pw85M3NdjuXAR6wcEhLbLNPzhd/twLebK/O616KctGuc5QK8wArq3XL
-         0dSpTwWEPztBTDLaz/J8mb8DoHJbtG2ENEs67ZWg=
+        b=B4SBs+94M+JmcosDe5UPtEAn+OtszK69P3Hnlxrb+m8PPMnucomqTLo2qtMie1W9R
+         aI1QIgSVyXAeiUoP9HBU2P4WEn4MGcOpAtIqhCpQuFwfimdLW4YVRkthnnOXTrYff7
+         DTSeb2x1ks7CTro67b0VGi429Xh+iNCiK6rpygcY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mike Christie <michael.christie@oracle.com>,
-        Lee Duncan <lduncan@suse.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 301/772] scsi: iscsi: Fix harmless double shift bug
-Date:   Tue,  7 Jun 2022 18:58:13 +0200
-Message-Id: <20220607164957.894310666@linuxfoundation.org>
+Subject: [PATCH 5.17 321/772] drm/msm/hdmi: fix error check return value of irq_of_parse_and_map()
+Date:   Tue,  7 Jun 2022 18:58:33 +0200
+Message-Id: <20220607164958.482269257@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,43 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 565138ac5f8a5330669a20e5f94759764e9165ec ]
+[ Upstream commit 03371e4fbdeb7f596cbceacb59e474248b6d95ac ]
 
-These flags are supposed to be bit numbers.  Right now they cause a double
-shift bug where we use BIT(BIT(2)) instead of BIT(2).  Fortunately, the bit
-numbers are small and it's done consistently so it does not cause an issue
-at run time.
+The irq_of_parse_and_map() function returns 0 on failure, and does not
+return a negative value anyhow, so never enter this conditional branch.
 
-Link: https://lore.kernel.org/r/YmFyWHf8nrrx+SHa@kili
-Fixes: 5bd856256f8c ("scsi: iscsi: Merge suspend fields")
-Reviewed-by: Mike Christie <michael.christie@oracle.com>
-Reviewed-by: Lee Duncan <lduncan@suse.com>
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: f6a8eaca0ea1 ("drm/msm/mdp5: use irqdomains")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/483294/
+Link: https://lore.kernel.org/r/20220425091831.3500487-1-lv.ruyi@zte.com.cn
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/scsi/libiscsi.h | 6 +++---
+ drivers/gpu/drm/msm/hdmi/hdmi.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/scsi/libiscsi.h b/include/scsi/libiscsi.h
-index d1e282f0d6f1..6ad01d7de480 100644
---- a/include/scsi/libiscsi.h
-+++ b/include/scsi/libiscsi.h
-@@ -53,9 +53,9 @@ enum {
- #define ISID_SIZE			6
+diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
+index d3fea6ec5246..46a1f74335d8 100644
+--- a/drivers/gpu/drm/msm/hdmi/hdmi.c
++++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
+@@ -303,9 +303,9 @@ int msm_hdmi_modeset_init(struct hdmi *hdmi,
+ 	drm_connector_attach_encoder(hdmi->connector, hdmi->encoder);
  
- /* Connection flags */
--#define ISCSI_CONN_FLAG_SUSPEND_TX	BIT(0)
--#define ISCSI_CONN_FLAG_SUSPEND_RX	BIT(1)
--#define ISCSI_CONN_FLAG_BOUND		BIT(2)
-+#define ISCSI_CONN_FLAG_SUSPEND_TX	0
-+#define ISCSI_CONN_FLAG_SUSPEND_RX	1
-+#define ISCSI_CONN_FLAG_BOUND		2
+ 	hdmi->irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
+-	if (hdmi->irq < 0) {
+-		ret = hdmi->irq;
+-		DRM_DEV_ERROR(dev->dev, "failed to get irq: %d\n", ret);
++	if (!hdmi->irq) {
++		ret = -EINVAL;
++		DRM_DEV_ERROR(dev->dev, "failed to get irq\n");
+ 		goto fail;
+ 	}
  
- #define ISCSI_ITT_MASK			0x1fff
- #define ISCSI_TOTAL_CMDS_MAX		4096
 -- 
 2.35.1
 
