@@ -2,187 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A88AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A40C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237728AbiFGHay (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 03:30:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59122 "EHLO
+        id S237687AbiFGHbI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 03:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237687AbiFGHal (ORCPT
+        with ESMTP id S237672AbiFGHau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 03:30:41 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E302D53B5B;
-        Tue,  7 Jun 2022 00:30:32 -0700 (PDT)
-X-UUID: f843737c3f404615a59783296f1684a9-20220607
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:598b5a6e-c7bd-4943-9063-8511df6351cf,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:704b727e-c8dc-403a-96e8-6237210dceee,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:0,BEC:nil
-X-UUID: f843737c3f404615a59783296f1684a9-20220607
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 841689716; Tue, 07 Jun 2022 15:30:24 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Tue, 7 Jun 2022 15:30:23 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Tue, 7 Jun 2022 15:30:23 +0800
-Message-ID: <a93e5600ca3526651b728eceba51145b96d58037.camel@mediatek.com>
-Subject: Re: [PATCH v10 18/21] drm/mediatek: Add mt8195 Embedded DisplayPort
- driver
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Guillaume Ranquet <granquet@baylibre.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        "Daniel Vetter" <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        "Kishon Vijay Abraham I" <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, "Helge Deller" <deller@gmx.de>,
-        Jitao shi <jitao.shi@mediatek.com>
-CC:     Markus Schneider-Pargmann <msp@baylibre.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-phy@lists.infradead.org>, <linux-fbdev@vger.kernel.org>
-Date:   Tue, 7 Jun 2022 15:30:20 +0800
-In-Reply-To: <20220523104758.29531-19-granquet@baylibre.com>
-References: <20220523104758.29531-1-granquet@baylibre.com>
-         <20220523104758.29531-19-granquet@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 7 Jun 2022 03:30:50 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6304253B5B
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 00:30:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654587048; x=1686123048;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=J4H+DmmV0Sf36iZKzFCffzDyO5WW16VgPNs6mbiVKxE=;
+  b=Rx/RSZo6pZAoJjqszK03DV+9X3bjx+gmBNgNyyjO09QhmLHXk+igCaoD
+   hKH3bNOd01GhdBi6RK2xOlN5zNCFGDPee+tsfb0IPagWfiShSB2rWKmxD
+   CBPd674/bB0uzc9me/zYJ4AgToE8xy8ISR3jKbKPiGuPfJ475oBvHgzqs
+   +LSeR9TMWefGcq5kb8t8p+0ffu9ngD1BrTDXsA73yAj5E+NH0NcRLMzOV
+   xmtx5Ii9qm9AhFldAYJ6gib6wVAa76twDsAxKzyJPvPoEwZ+8OoMiYEoJ
+   CFFbd1zs0pk3KH98cklaaiYu06gQd2qTZ8tm5cp8Q4+pt3yM3a/2rfHT5
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="256547746"
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
+   d="scan'208";a="256547746"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 00:30:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
+   d="scan'208";a="826238528"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 07 Jun 2022 00:30:46 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nyTfq-000DTZ-2z;
+        Tue, 07 Jun 2022 07:30:46 +0000
+Date:   Tue, 7 Jun 2022 15:29:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [frederic-dynticks:rcu/context-tracking-v4 16/20]
+ kernel/context_tracking.c:124:39: sparse: sparse: incorrect type in
+ initializer (different address spaces)
+Message-ID: <202206071536.jNspPAFL-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Rex:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git rcu/context-tracking-v4
+head:   43ac8196f06d6abb21f28143f62d879546ad262c
+commit: ab8851bd9c0f3773a18a2c950047d02ec908e03c [16/20] rcu/context-tracking: Move RCU-dynticks internal functions to context_tracking
+config: x86_64-randconfig-s021 (https://download.01.org/0day-ci/archive/20220607/202206071536.jNspPAFL-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-18-g56afb504-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git/commit/?id=ab8851bd9c0f3773a18a2c950047d02ec908e03c
+        git remote add frederic-dynticks https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
+        git fetch --no-tags frederic-dynticks rcu/context-tracking-v4
+        git checkout ab8851bd9c0f3773a18a2c950047d02ec908e03c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-On Mon, 2022-05-23 at 12:47 +0200, Guillaume Ranquet wrote:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
-> 
-> This patch adds a DisplayPort driver for the Mediatek mt8195 SoC.
-> 
-> It supports the mt8195, the embedded DisplayPort units. It offers
-> DisplayPort 1.4 with up to 4 lanes.
-> 
-> The driver creates a child device for the phy. The child device will
-> never exist without the parent being active. As they are sharing a
-> register range, the parent passes a regmap pointer to the child so
-> that
-> both can work with the same register range. The phy driver sets
-> device
-> data that is read by the parent to get the phy device that can be
-> used
-> to control the phy properties.
-> 
-> This driver is based on an initial version by
-> Jason-JH.Lin <jason-jh.lin@mediatek.com>.
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> ---
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-[snip]
 
-> +
-> +static ssize_t mtk_dp_aux_transfer(struct drm_dp_aux *mtk_aux,
-> +				   struct drm_dp_aux_msg *msg)
-> +{
-> +	struct mtk_dp *mtk_dp;
-> +	bool is_read;
-> +	u8 request;
-> +	size_t accessed_bytes = 0;
-> +	int ret = 0;
-> +
-> +	mtk_dp = container_of(mtk_aux, struct mtk_dp, aux);
-> +
-> +	if (!mtk_dp->train_info.cable_plugged_in ||
-> +	    mtk_dp->train_info.irq_status & MTK_DP_HPD_DISCONNECT) {
-> +		mtk_dp->train_state = MTK_DP_TRAIN_STATE_CHECKCAP;
+sparse warnings: (new ones prefixed by >>)
+>> kernel/context_tracking.c:124:39: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got struct context_tracking * @@
+   kernel/context_tracking.c:124:39: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:124:39: sparse:     got struct context_tracking *
+   kernel/context_tracking.c:163:39: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got struct context_tracking * @@
+   kernel/context_tracking.c:163:39: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:163:39: sparse:     got struct context_tracking *
+   kernel/context_tracking.c:204:39: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got struct context_tracking * @@
+   kernel/context_tracking.c:204:39: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:204:39: sparse:     got struct context_tracking *
+   kernel/context_tracking.c:259:39: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got struct context_tracking * @@
+   kernel/context_tracking.c:259:39: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:259:39: sparse:     got struct context_tracking *
+   kernel/context_tracking.c:490:21: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int * @@
+   kernel/context_tracking.c:490:21: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:490:21: sparse:     got int *
+   kernel/context_tracking.c:495:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int * @@
+   kernel/context_tracking.c:495:9: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:495:9: sparse:     got int *
+   kernel/context_tracking.c:524:14: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int enum ctx_state * @@
+   kernel/context_tracking.c:524:14: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:524:14: sparse:     got int enum ctx_state *
+   kernel/context_tracking.c:525:21: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got bool * @@
+   kernel/context_tracking.c:525:21: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:525:21: sparse:     got bool *
+   kernel/context_tracking.c:560:17: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int enum ctx_state * @@
+   kernel/context_tracking.c:560:17: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:560:17: sparse:     got int enum ctx_state *
+   kernel/context_tracking.c:624:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int enum ctx_state * @@
+   kernel/context_tracking.c:624:13: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:624:13: sparse:     got int enum ctx_state *
+   kernel/context_tracking.c:625:21: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got bool * @@
+   kernel/context_tracking.c:625:21: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:625:21: sparse:     got bool *
+   kernel/context_tracking.c:638:17: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int enum ctx_state * @@
+   kernel/context_tracking.c:638:17: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:638:17: sparse:     got int enum ctx_state *
+   kernel/context_tracking.c:681:14: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got bool * @@
+   kernel/context_tracking.c:681:14: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:681:14: sparse:     got bool *
+   kernel/context_tracking.c:682:17: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got bool * @@
+   kernel/context_tracking.c:682:17: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:682:17: sparse:     got bool *
+   kernel/context_tracking.c:502:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int * @@
+   kernel/context_tracking.c:502:9: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:502:9: sparse:     got int *
+   kernel/context_tracking.c:502:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int * @@
+   kernel/context_tracking.c:502:9: sparse:     expected void const [noderef] __percpu *__vpp_verify
+   kernel/context_tracking.c:502:9: sparse:     got int *
 
-Changing state here has no any effect, so drop this.
+vim +124 kernel/context_tracking.c
 
-> +		return -EAGAIN;
-> +	}
-> +
-> +	switch (msg->request) {
-> +	case DP_AUX_I2C_MOT:
-> +	case DP_AUX_I2C_WRITE:
-> +	case DP_AUX_NATIVE_WRITE:
-> +	case DP_AUX_I2C_WRITE_STATUS_UPDATE:
-> +	case DP_AUX_I2C_WRITE_STATUS_UPDATE | DP_AUX_I2C_MOT:
-> +		request = msg->request &
-> ~DP_AUX_I2C_WRITE_STATUS_UPDATE;
-> +		is_read = false;
-> +		break;
-> +	case DP_AUX_I2C_READ:
-> +	case DP_AUX_NATIVE_READ:
-> +	case DP_AUX_I2C_READ | DP_AUX_I2C_MOT:
-> +		request = msg->request;
-> +		is_read = true;
-> +		break;
-> +	default:
-> +		drm_err(mtk_aux->drm_dev, "invalid aux cmd = %d\n",
-> +			msg->request);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (msg->size == 0) {
-> +		ret = mtk_dp_aux_do_transfer(mtk_dp, is_read, request,
-> +					     msg->address +
-> accessed_bytes,
-> +					     msg->buffer +
-> accessed_bytes, 0);
-> +	} else {
-> +		while (accessed_bytes < msg->size) {
-> +			size_t to_access =
-> +				min_t(size_t, DP_AUX_MAX_PAYLOAD_BYTES,
-> +				      msg->size - accessed_bytes);
-> +
-> +			ret = mtk_dp_aux_do_transfer(mtk_dp,
-> +						     is_read, request,
-> +							 msg->address +
-> accessed_bytes,
-> +							 msg->buffer +
-> accessed_bytes,
-> +							 to_access);
-> +
-> +			if (ret) {
-> +				drm_info(mtk_dp->drm_dev,
-> +					 "Failed to do AUX transfer:
-> %d\n", ret);
-> +				break;
-> +			}
-> +			accessed_bytes += to_access;
-> +		}
-> +	}
-> +
-> +	if (ret) {
-> +		msg->reply = DP_AUX_NATIVE_REPLY_NACK |
-> DP_AUX_I2C_REPLY_NACK;
-> +		return ret;
-> +	}
-> +
-> +	msg->reply = DP_AUX_NATIVE_REPLY_ACK | DP_AUX_I2C_REPLY_ACK;
-> +	return msg->size;
-> +}
+   113	
+   114	/*
+   115	 * Enter an RCU extended quiescent state, which can be either the
+   116	 * idle loop or adaptive-tickless usermode execution.
+   117	 *
+   118	 * We crowbar the ->dynticks_nmi_nesting field to zero to allow for
+   119	 * the possibility of usermode upcalls having messed up our count
+   120	 * of interrupt nesting level during the prior busy period.
+   121	 */
+   122	static void noinstr rcu_eqs_enter(bool user)
+   123	{
+ > 124		struct context_tracking *ct = this_cpu_ptr(&context_tracking);
+   125	
+   126		WARN_ON_ONCE(ct_dynticks_nmi_nesting() != DYNTICK_IRQ_NONIDLE);
+   127		WRITE_ONCE(ct->dynticks_nmi_nesting, 0);
+   128		WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) &&
+   129			     ct_dynticks_nesting() == 0);
+   130		if (ct_dynticks_nesting() != 1) {
+   131			// RCU will still be watching, so just do accounting and leave.
+   132			ct->dynticks_nesting--;
+   133			return;
+   134		}
+   135	
+   136		instrumentation_begin();
+   137		lockdep_assert_irqs_disabled();
+   138		trace_rcu_dyntick(TPS("Start"), ct_dynticks_nesting(), 0, ct_dynticks());
+   139		WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !user && !is_idle_task(current));
+   140		rcu_preempt_deferred_qs(current);
+   141	
+   142		// instrumentation for the noinstr rcu_dynticks_eqs_enter()
+   143		instrument_atomic_write(&ct->dynticks, sizeof(ct->dynticks));
+   144	
+   145		instrumentation_end();
+   146		WRITE_ONCE(ct->dynticks_nesting, 0); /* Avoid irq-access tearing. */
+   147		// RCU is watching here ...
+   148		rcu_dynticks_eqs_enter();
+   149		// ... but is no longer watching here.
+   150		rcu_dynticks_task_enter();
+   151	}
+   152	
 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
