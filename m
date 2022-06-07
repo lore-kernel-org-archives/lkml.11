@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B1FBCCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F050CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381309AbiFGVk0 (ORCPT
+        id S1381375AbiFGVkk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
+        Tue, 7 Jun 2022 17:40:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377690AbiFGUux (ORCPT
+        with ESMTP id S1377764AbiFGUu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:50:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05BBC1FBF70;
-        Tue,  7 Jun 2022 11:40:31 -0700 (PDT)
+        Tue, 7 Jun 2022 16:50:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A572A1FC8DC;
+        Tue,  7 Jun 2022 11:40:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93737B82349;
-        Tue,  7 Jun 2022 18:40:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0358C385A2;
-        Tue,  7 Jun 2022 18:40:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DC8060B3D;
+        Tue,  7 Jun 2022 18:40:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D72BC385A5;
+        Tue,  7 Jun 2022 18:40:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627229;
-        bh=+DFhx/+zMYy9AJgFEs5i0jMWEHc2bLU2fzKwpiStgNA=;
+        s=korg; t=1654627234;
+        bh=2WAbyoW4m/eJ6y/kM/aiUzPDM+za6FHT5ZnRdYK0iaM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qbITrclOPFxkG6GpRrdjCWEKM5SzvzTVYSlwhh1O9mXBexLuYdCHqEhD0auAdyJhA
-         SjWrgwIKjuYCSUo2UrggX4LXc9891xIA9WfuNqAp4dahmZxsuKBhj3HskEItnNxWut
-         uUQ0D4RFqATFtvG+o/zt7mHTQaXOCHIX74BjaeBk=
+        b=GNMy14nmnm5KNly1EVhoKe5KNmZlsYMvsPhRlzw0SBJlh0nTUe13ckONE6jgnOlZQ
+         u9DFeYgfnFTCtjpysqRqT73nqwIluBJB0eX8g8cd5P7rw9yQ/hsfYGL3Ozz796hZIV
+         xgDR8dMo2WE8aSrt9eVd2pHplO47W4cDFlgXvXHg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>
-Subject: [PATCH 5.17 664/772] dlm: fix missing lkb refcount handling
-Date:   Tue,  7 Jun 2022 19:04:16 +0200
-Message-Id: <20220607165008.626192922@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.17 666/772] scsi: dc395x: Fix a missing check on list iterator
+Date:   Tue,  7 Jun 2022 19:04:18 +0200
+Message-Id: <20220607165008.685440359@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,74 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 1689c169134f4b5a39156122d799b7dca76d8ddb upstream.
+commit 036a45aa587a10fa2abbd50fbd0f6c4cfc44f69f upstream.
 
-We always call hold_lkb(lkb) if we increment lkb->lkb_wait_count.
-So, we always need to call unhold_lkb(lkb) if we decrement
-lkb->lkb_wait_count. This patch will add missing unhold_lkb(lkb) if we
-decrement lkb->lkb_wait_count. In case of setting lkb->lkb_wait_count to
-zero we need to countdown until reaching zero and call unhold_lkb(lkb).
-The waiters list unhold_lkb(lkb) can be removed because it's done for
-the last lkb_wait_count decrement iteration as it's done in
-_remove_from_waiters().
+The bug is here:
 
-This issue was discovered by a dlm gfs2 test case which use excessively
-dlm_unlock(LKF_CANCEL) feature. Probably the lkb->lkb_wait_count value
-never reached above 1 if this feature isn't used and so it was not
-discovered before.
+	p->target_id, p->target_lun);
 
-The testcase ended in a rsb on the rsb keep data structure with a
-refcount of 1 but no lkb was associated with it, which is itself
-an invalid behaviour. A side effect of that was a condition in which
-the dlm was sending remove messages in a looping behaviour. With this
-patch that has not been reproduced.
+The list iterator 'p' will point to a bogus position containing HEAD if the
+list is empty or no element is found. This case must be checked before any
+use of the iterator, otherwise it will lead to an invalid memory access.
 
+To fix this bug, add a check. Use a new variable 'iter' as the list
+iterator, and use the original variable 'p' as a dedicated pointer to point
+to the found element.
+
+Link: https://lore.kernel.org/r/20220414040231.2662-1-xiam0nd.tong@gmail.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Cc: stable@vger.kernel.org
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/dlm/lock.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/scsi/dc395x.c |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/fs/dlm/lock.c
-+++ b/fs/dlm/lock.c
-@@ -1559,6 +1559,7 @@ static int _remove_from_waiters(struct d
- 		lkb->lkb_wait_type = 0;
- 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
- 		lkb->lkb_wait_count--;
-+		unhold_lkb(lkb);
- 		goto out_del;
- 	}
- 
-@@ -1585,6 +1586,7 @@ static int _remove_from_waiters(struct d
- 		log_error(ls, "remwait error %x reply %d wait_type %d overlap",
- 			  lkb->lkb_id, mstype, lkb->lkb_wait_type);
- 		lkb->lkb_wait_count--;
-+		unhold_lkb(lkb);
- 		lkb->lkb_wait_type = 0;
- 	}
- 
-@@ -5331,11 +5333,16 @@ int dlm_recover_waiters_post(struct dlm_
- 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_UNLOCK;
- 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
- 		lkb->lkb_wait_type = 0;
--		lkb->lkb_wait_count = 0;
-+		/* drop all wait_count references we still
-+		 * hold a reference for this iteration.
-+		 */
-+		while (lkb->lkb_wait_count) {
-+			lkb->lkb_wait_count--;
-+			unhold_lkb(lkb);
+--- a/drivers/scsi/dc395x.c
++++ b/drivers/scsi/dc395x.c
+@@ -3588,10 +3588,19 @@ static struct DeviceCtlBlk *device_alloc
+ #endif
+ 	if (dcb->target_lun != 0) {
+ 		/* Copy settings */
+-		struct DeviceCtlBlk *p;
+-		list_for_each_entry(p, &acb->dcb_list, list)
+-			if (p->target_id == dcb->target_id)
++		struct DeviceCtlBlk *p = NULL, *iter;
++
++		list_for_each_entry(iter, &acb->dcb_list, list)
++			if (iter->target_id == dcb->target_id) {
++				p = iter;
+ 				break;
++			}
++
++		if (!p) {
++			kfree(dcb);
++			return NULL;
 +		}
- 		mutex_lock(&ls->ls_waiters_mutex);
- 		list_del_init(&lkb->lkb_wait_reply);
- 		mutex_unlock(&ls->ls_waiters_mutex);
--		unhold_lkb(lkb); /* for waiters list */
- 
- 		if (oc || ou) {
- 			/* do an unlock or cancel instead of resending */
++
+ 		dprintkdbg(DBG_1, 
+ 		       "device_alloc: <%02i-%i> copy from <%02i-%i>\n",
+ 		       dcb->target_id, dcb->target_lun,
 
 
