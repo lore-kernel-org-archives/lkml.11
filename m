@@ -2,150 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A7CCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:40:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D78FCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243898AbiFGMk3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
+        id S243925AbiFGMk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244039AbiFGMk0 (ORCPT
+        with ESMTP id S243905AbiFGMkx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:40:26 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4467EBE9;
-        Tue,  7 Jun 2022 05:40:25 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-edeb6c3642so22993747fac.3;
-        Tue, 07 Jun 2022 05:40:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=veXJPfHkMS+LtparZTe0eg0zxXaGbczedDsr7TOeC1g=;
-        b=oSzAR8Eh6bpfrAeaxldZCXadsI8haXay3afMInYK9HhlYvEsXiYOgWZ/VNTDz25noI
-         nNJiqtrVCyN15WKCLCSb7EH6FC+SUFjHQ0RTMSWId+pun/PUYqNkI4OxAb0MzSYFyqYS
-         Hh2PReF7BV5sLKMJrACP3zOoxBSsguOR737fhcp/ZvOAccFuYLw3ph2ZL+foS3y/FJLo
-         x0lH7wZDqTgzXgX2Q35/iDdfgPMeblWp6LND3q6NsjKDF1qVqGtXSrb/JDz3mDJ9V2XS
-         mMAWTaL2JCHGTpsMMFfXujseHiWdgSoZO6gacwtIWWkOY/i7W4DqSo17dmY5JKNkLM3w
-         88Zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=veXJPfHkMS+LtparZTe0eg0zxXaGbczedDsr7TOeC1g=;
-        b=G8EMo7wLCLyb0GPZwKFQNRMX6oY8VldW6oWH9S/hXgdo+Yj8i8Amh0j99NS+U7bZ1B
-         7Qgcu79OT2Zc03/sLg+ZV57HTKtTfKbHayQbQu2+NP++qhUOQs3zkkfJ1bjiyB60lZGj
-         tpMVakVILgnxm5DRpi1mLMWAJ4w10LK3GP/ASIpyopJ8EXRpiH7CwFBUuXssRerBlBqM
-         9wJcnHOBJPKbqn5mnQYsFcqNdSdUQURvTW3r6B2XDXyeEXUG5l6rX1oHz0sHDpunYSsZ
-         9Cydoon2bbpoYb07gKjYaRDSgSiosn5iOD9efAH/dwFszTp8I+cYrVjNyutMpbxSa6gp
-         SgSA==
-X-Gm-Message-State: AOAM530+kAm17r/h/RHd+bSzwR5Yywi84KahroSUlLxPitiweD4k0JQU
-        jggKfdqgvH2Da+TK4582VMA=
-X-Google-Smtp-Source: ABdhPJx9iIUqKOI6JhA/vc8xUWLUc/9nU/qd4Y/M+ng48dq5FhS3Hpa0ygnThnvEXqKSN0ggr3p+Jg==
-X-Received: by 2002:a05:6870:4395:b0:f5:f122:f44d with SMTP id r21-20020a056870439500b000f5f122f44dmr16112071oah.273.1654605624679;
-        Tue, 07 Jun 2022 05:40:24 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id y93-20020a9d22e6000000b0060c06bc1230sm1008749ota.69.2022.06.07.05.40.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 05:40:24 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <c1b1a66b-7f92-931e-ad5f-8ffa87865c4a@roeck-us.net>
-Date:   Tue, 7 Jun 2022 05:40:22 -0700
+        Tue, 7 Jun 2022 08:40:53 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 059CE336
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:40:50 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LHVKK30Lbz1KF0t;
+        Tue,  7 Jun 2022 20:39:01 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 7 Jun 2022 20:40:48 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 7 Jun 2022 20:40:48 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     <catalin.marinas@arm.com>, <will@kernel.org>,
+        <akpm@linux-foundation.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <linux-mm@kvack.org>, <hch@infradead.org>, <arnd@arndb.de>,
+        <anshuman.khandual@arm.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH v5 0/6] arm64: Cleanup ioremap() and support ioremap_prot()
+Date:   Tue, 7 Jun 2022 20:50:21 +0800
+Message-ID: <20220607125027.44946-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: linux-next: build warnings after merge of the hwmon-staging tree
-Content-Language: en-US
-To:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        linux-doc@vger.kernel.org
-References: <20220607141958.1e31971d@canb.auug.org.au>
- <Yp8cQ1BcDXuZ9Cv4@debian.me>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <Yp8cQ1BcDXuZ9Cv4@debian.me>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/7/22 02:37, Bagas Sanjaya wrote:
-> On Tue, Jun 07, 2022 at 02:19:58PM +1000, Stephen Rothwell wrote:
->> Hi all,
->>
->> After merging the hwmon-staging tree, today's linux-next build (htmldocs)
->> produced these warnings:
->>
->> Documentation/hwmon/lt7182s.rst:2: WARNING: Explicit markup ends without a blank line; unexpected unindent.
->> Documentation/hwmon/lt7182s.rst:75: WARNING: Malformed table.
->> Text in column margin in table line 33.
->>
->> ======================  ====================================
->> curr[1-2]_label         "iin[12]"
->> curr[1-2]_input         Measured input current
->> curr[1-2]_max           Maximum input current
->> curr[1-2]_max_alarm     Current high alarm
->>
->> curr[3-4]_label         "iout[1-2]"
->> curr[3-4]_input         Measured output current
->> curr[3-4]_highest       Highest measured output current
->> curr[3-4]_max           Maximum output current
->> curr[3-4]_max_alarm     Output current high alarm
->>
->> in[1-2]_label           "vin[12]"
->> in[1-2]_input           Measured input voltage
->> in[1-2]_highest         Highest measured input voltage
->> in[1-2]_crit            Critical maximum input voltage
->> in[1-2]_crit_alarm      Input voltage critical high alarm
->> in[1-2]_min             Minimum input voltage
->> in[1-2]_min_alarm       Input voltage low alarm
->> in[1-2]_rated_min       Rated minimum input voltage
->> in[1-2]_rated_max       Rated maximum input voltage
->> in1_reset_history       Write to reset history for all attributes
->>
->> in[3-5]_label           "vmon[1-3]"
->> in[3-5]_input           Measured voltage on ITH1/ITH2/EXTVCC pins
->>                          Only available if enabled with MFR_ADC_CONTROL_LT7182S
->>                          command.
->>
->> in[3-4|6-7]_label       "vout[1-2]"
->> in[3-4|6-7]_input       Measured output voltage
->> in[3-4|6-7]_highest     Highest measured output voltage
->> in[3-4|6-7]_lcrit       Critical minimum output voltage
->> in[3-4|6-7]_lcrit_alarm Output voltage critical low alarm
-                          ^
->> in[3-4|6-7]_min         Minimum output voltage
->> in[3-4|6-7]_max_alarm   Output voltage low alarm
->> in[3-4|6-7]_max         Maximum output voltage
->> in[3-4|6-7]_max_alarm   Output voltage high alarm
->> in[3-4|6-7]_crit        Critical maximum output voltage
->> in[3-4|6-7]_crit_alarm  Output voltage critical high alarm
->>
->> power[1-2]_label        "pout[1-2]"
->> power[1-2]_input        Measured output power
->>
->> temp1_input             Measured temperature
->> temp1_crit              Critical high temperature
->> temp1_crit_alarm        Chip temperature critical high alarm
->> temp1_max               Maximum temperature
->> temp1_max_alarm         Chip temperature high alarm
->> ======================  ====================================
->>
->> Introduced by commit
->>
->>    3d6bcaa21fbd ("hwmon: (pmbus) Add support for Analog Devices LT7182S")
->>
-> 
-> Hi Stephen,
-> 
-> The warning above doesn't appear when doing htmldocs build using Sphinx
-> installed from pip on my system.
-> 
+1. Enhance generic ioremap to make it more useful.
+2. Let's arm64 use GENERIC_IOREMAP to cleanup code.
+3. Support HAVE_IOREMAP_PROT on arm64, which enable generic_access_phys(),
+   it is useful when debug(eg, gdb) via access_process_vm device memory
+   infrastructure.
 
-I already fixed it up.
+v5:
+- break long lines(> 80 cols), per Christoph Hellwig
+- move is_vmalloc_addr() check from arm64 into generic ioremap, per
+  Christoph Hellwig
+- make arm64's ioremap_cache as an inline function, per Christoph
+- keep changes simple, make ioremap/iounmap_allowed return bool, per
+  Baoquan He
+- simplify use 'void *' instead of 'void __iomem *' in iounmap, then
+  drop __force annotation
 
-Guenter
+v4:
+- update based on v5.19-rc1
+- add generic arch_ioremap/arch_iounmap define, per Andrew Monrton
+- simply return an int for arch_ioremap and rename arch_ioremap/arch_iounmap
+  to a better name, ioremap_allowed/iounmap_allowed, per Arnd Bergmann
+- add __force annotation to slince sparse warning in vunmap() 
+
+Note, 
+1) after the renaming, the arm's change(patch1) is not the necessary
+   dependence for the following changes, but as a cleanup, still post
+   it here, hope it go in via the arm64 tree with reset of the series
+   directly if no object.
+2) the changes in this version only influence on patch4/5, so retain
+   the ack/review.
+
+v3:
+- add cleanup patch to kill ARM's unused arch_iounmap(the naming will be
+  used in GENERIC_IOREMAP) and add comments for arch_ioremap/arch_iounmap
+  hooks, per Anshuman Khandual
+- collect ack/review 
+
+v2:
+- s/addr/phys_addr in ioremap_prot, suggested by Andrew Morton 
+- rename arch_ioremap/iounmap_check to arch_ioremap/iounmap
+  and change return value, per Christoph Hellwig and Andrew Morton
+- and use 'ifndef arch_ioremap' instead of weak function, per Arnd Bergmann
+- collect ack/review
+
+Kefeng Wang (6):
+  ARM: mm: kill unused runtime hook arch_iounmap()
+  mm: ioremap: Use more sensibly name in ioremap_prot()
+  mm: ioremap: Setup phys_addr of struct vm_struct
+  mm: ioremap: Add ioremap/iounmap_allowed()
+  arm64: mm: Convert to GENERIC_IOREMAP
+  arm64: Add HAVE_IOREMAP_PROT support
+
+ .../features/vm/ioremap_prot/arch-support.txt |  2 +-
+ arch/arm/include/asm/io.h                     |  4 +-
+ arch/arm/mm/ioremap.c                         |  9 +-
+ arch/arm/mm/nommu.c                           |  9 +-
+ arch/arm64/Kconfig                            |  2 +
+ arch/arm64/include/asm/io.h                   | 24 +++--
+ arch/arm64/include/asm/pgtable.h              | 10 +++
+ arch/arm64/kernel/acpi.c                      |  2 +-
+ arch/arm64/mm/hugetlbpage.c                   | 10 ---
+ arch/arm64/mm/ioremap.c                       | 90 ++-----------------
+ include/asm-generic/io.h                      | 29 +++++-
+ mm/ioremap.c                                  | 26 ++++--
+ 12 files changed, 90 insertions(+), 127 deletions(-)
+
+-- 
+2.35.3
+
