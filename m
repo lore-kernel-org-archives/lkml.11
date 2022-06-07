@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 109E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:03:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C039FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:03:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379275AbiFGWDj (ORCPT
+        id S1382653AbiFGWDt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:03:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
+        Tue, 7 Jun 2022 18:03:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378665AbiFGVDX (ORCPT
+        with ESMTP id S1378839AbiFGVBw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:03:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E17B3145589;
-        Tue,  7 Jun 2022 11:48:36 -0700 (PDT)
+        Tue, 7 Jun 2022 17:01:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B30BE20ED78;
+        Tue,  7 Jun 2022 11:45:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F1BA61295;
-        Tue,  7 Jun 2022 18:48:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BA19C385A2;
-        Tue,  7 Jun 2022 18:48:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BE87B82018;
+        Tue,  7 Jun 2022 18:45:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F68C385A2;
+        Tue,  7 Jun 2022 18:45:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627715;
-        bh=qO2K96LJDhbirD99gp0YVHECVMdEPs1haKCeGlOd7O0=;
+        s=korg; t=1654627546;
+        bh=VWcjbaWEKU8jM7eBzPIHpVL4HsBF647GA3mic0FDKcI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0XIe/dzPnfwJ/bsDQODmzGdNvbFD6ABI6/rreRtwYI/IxXPWZ2lhokRnCMTsX+sgg
-         +xH4v0fd0+59idN32kj8WqBF6+0/aM4O6zCm2QsKgYfF96pycqo3xywmt1Dk5lQWJB
-         RG37+kbXrSCteus25fgxG6Bd5QcylBxhbTtO/t+A=
+        b=a8qFUc3k+CtLLG57l2/SDFnzJqQO/jR4Hl9DLAZaEYb8MyeZwU6F8btogQAr8R5lx
+         Ocr/EwpsujUiwEfHrCa+FhJ4yF8lt5YF2X+xgDNPmnD8/s6SGUujxFYFh7sWkemeQs
+         uDy3GS0hEeS8ec1IPsmO3O+8Jzj3hTsnciKhAMJA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Perches <joe@perches.com>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.18 026/879] fs/ntfs3: In function ntfs_set_acl_ex do not change inode->i_mode if called from function ntfs_init_acl
-Date:   Tue,  7 Jun 2022 18:52:24 +0200
-Message-Id: <20220607165003.435264945@linuxfoundation.org>
+        stable@vger.kernel.org, Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>,
+        Thierry Reding <treding@nvidia.com>
+Subject: [PATCH 5.17 741/772] arm64: tegra: Add missing DFLL reset on Tegra210
+Date:   Tue,  7 Jun 2022 19:05:33 +0200
+Message-Id: <20220607165010.869515890@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,71 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+From: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
 
-commit 9186d472ee780fabf74424756c4c00545166157e upstream.
+commit 0017f2c856e21bb900be88469e15dac4f41f4065 upstream.
 
-ntfs_init_acl sets mode. ntfs_init_acl calls ntfs_set_acl_ex.
-ntfs_set_acl_ex must not change this mode.
-Fixes xfstest generic/444
-Fixes: be71b5cba2e6 ("fs/ntfs3: Add attrib operations")
+Commit 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling
+clocks") removed deassertion of reset lines when enabling peripheral
+clocks. This breaks the initialization of the DFLL driver which relied
+on this behaviour.
 
-Reviewed-by: Joe Perches <joe@perches.com>
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+In order to be able to fix this, add the corresponding reset to the DT.
+Tested on Google Pixel C.
+
+Cc: stable@vger.kernel.org
+Fixes: 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling clocks")
+Signed-off-by: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/xattr.c |   13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ arch/arm64/boot/dts/nvidia/tegra210.dtsi |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/fs/ntfs3/xattr.c
-+++ b/fs/ntfs3/xattr.c
-@@ -541,7 +541,7 @@ struct posix_acl *ntfs_get_acl(struct in
- 
- static noinline int ntfs_set_acl_ex(struct user_namespace *mnt_userns,
- 				    struct inode *inode, struct posix_acl *acl,
--				    int type)
-+				    int type, bool init_acl)
- {
- 	const char *name;
- 	size_t size, name_len;
-@@ -554,8 +554,9 @@ static noinline int ntfs_set_acl_ex(stru
- 
- 	switch (type) {
- 	case ACL_TYPE_ACCESS:
--		if (acl) {
--			umode_t mode = inode->i_mode;
-+		/* Do not change i_mode if we are in init_acl */
-+		if (acl && !init_acl) {
-+			umode_t mode;
- 
- 			err = posix_acl_update_mode(mnt_userns, inode, &mode,
- 						    &acl);
-@@ -616,7 +617,7 @@ out:
- int ntfs_set_acl(struct user_namespace *mnt_userns, struct inode *inode,
- 		 struct posix_acl *acl, int type)
- {
--	return ntfs_set_acl_ex(mnt_userns, inode, acl, type);
-+	return ntfs_set_acl_ex(mnt_userns, inode, acl, type, false);
- }
- 
- /*
-@@ -636,7 +637,7 @@ int ntfs_init_acl(struct user_namespace
- 
- 	if (default_acl) {
- 		err = ntfs_set_acl_ex(mnt_userns, inode, default_acl,
--				      ACL_TYPE_DEFAULT);
-+				      ACL_TYPE_DEFAULT, true);
- 		posix_acl_release(default_acl);
- 	} else {
- 		inode->i_default_acl = NULL;
-@@ -647,7 +648,7 @@ int ntfs_init_acl(struct user_namespace
- 	else {
- 		if (!err)
- 			err = ntfs_set_acl_ex(mnt_userns, inode, acl,
--					      ACL_TYPE_ACCESS);
-+					      ACL_TYPE_ACCESS, true);
- 		posix_acl_release(acl);
- 	}
- 
+--- a/arch/arm64/boot/dts/nvidia/tegra210.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra210.dtsi
+@@ -1366,8 +1366,9 @@
+ 			 <&tegra_car TEGRA210_CLK_DFLL_REF>,
+ 			 <&tegra_car TEGRA210_CLK_I2C5>;
+ 		clock-names = "soc", "ref", "i2c";
+-		resets = <&tegra_car TEGRA210_RST_DFLL_DVCO>;
+-		reset-names = "dvco";
++		resets = <&tegra_car TEGRA210_RST_DFLL_DVCO>,
++			 <&tegra_car 155>;
++		reset-names = "dvco", "dfll";
+ 		#clock-cells = <0>;
+ 		clock-output-names = "dfllCPU_out";
+ 		status = "disabled";
 
 
