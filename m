@@ -2,34 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7F3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC046C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349197AbiFGR7f (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60502 "EHLO
+        id S235956AbiFGR7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348009AbiFGRka (ORCPT
+        with ESMTP id S1348065AbiFGRkd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:40:30 -0400
+        Tue, 7 Jun 2022 13:40:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACF45B3E7;
-        Tue,  7 Jun 2022 10:33:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C6E5EBE4;
+        Tue,  7 Jun 2022 10:33:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE6B3B822B3;
-        Tue,  7 Jun 2022 17:33:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39E14C385A5;
-        Tue,  7 Jun 2022 17:33:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5BD0DB822B5;
+        Tue,  7 Jun 2022 17:33:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3707C385A5;
+        Tue,  7 Jun 2022 17:33:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623197;
-        bh=QMWOu71xU4aZ6HYfkSh4ZATVgYsMLdfG+b2gbDozZto=;
+        s=korg; t=1654623203;
+        bh=/Fza7DPcEZiLdv6QQEr3Nv8/nx9sopsNoJkJqeHIs9c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mPMf2unndogkzX6cmXpTJcltSjI8q7hez6osb9ra8jlFhknjDxfg8A7MqKhgVj+TD
-         WvkpeDI0AOB0Z7vELHlIEIymA7gs0vuSvrKvXu3rulXljbTB09cOCtHF/QJAKIVYiA
-         atqANmY3q0FBZg/Xo/bf8agPTecLgp7IAckfQQg4=
+        b=AYVvTezp+Hk7E3W5LpgVq1MiyRlwM64zQU4mM4GpzKfHv4Dqemgwj0dVcGeQGkzZ0
+         VTc64KUWOEjySDK9JCr866G7aLyPAk9OJRW7TtJXR5A9iuLIXMo5qLeTstAYvtTN8g
+         zl4eM+CJVNopp4noQRaKKUIK3qcWoKJ//OXxHGc4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Trond Myklebust <trond.myklebust@hammerspace.com>,
         Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 328/452] NFS: Do not report EINTR/ERESTARTSYS as mapping errors
-Date:   Tue,  7 Jun 2022 19:03:05 +0200
-Message-Id: <20220607164918.335805949@linuxfoundation.org>
+Subject: [PATCH 5.10 330/452] NFS: Do not report flush errors in nfs_write_end()
+Date:   Tue,  7 Jun 2022 19:03:07 +0200
+Message-Id: <20220607164918.393702910@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -53,32 +52,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit cea9ba7239dcc84175041174304c6cdeae3226e5 ]
+[ Upstream commit d95b26650e86175e4a97698d89bc1626cd1df0c6 ]
 
-If the attempt to flush data was interrupted due to a local signal, then
-just requeue the writes back for I/O.
+If we do flush cached writebacks in nfs_write_end() due to the imminent
+expiration of an RPCSEC_GSS session, then we should defer reporting any
+resulting errors until the calls to file_check_and_advance_wb_err() in
+nfs_file_write() and nfs_file_fsync().
 
 Fixes: 6fbda89b257f ("NFS: Replace custom error reporting mechanism with generic one")
 Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/write.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/file.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/fs/nfs/write.c b/fs/nfs/write.c
-index 5d07799513a6..b08323ed0c25 100644
---- a/fs/nfs/write.c
-+++ b/fs/nfs/write.c
-@@ -1411,7 +1411,7 @@ static void nfs_async_write_error(struct list_head *head, int error)
- 	while (!list_empty(head)) {
- 		req = nfs_list_entry(head->next);
- 		nfs_list_remove_request(req);
--		if (nfs_error_is_fatal(error))
-+		if (nfs_error_is_fatal_on_server(error))
- 			nfs_write_error(req, error);
- 		else
- 			nfs_redirty_request(req);
+diff --git a/fs/nfs/file.c b/fs/nfs/file.c
+index 887faff3a73e..ad856b7b9a46 100644
+--- a/fs/nfs/file.c
++++ b/fs/nfs/file.c
+@@ -390,11 +390,8 @@ static int nfs_write_end(struct file *file, struct address_space *mapping,
+ 		return status;
+ 	NFS_I(mapping->host)->write_io += copied;
+ 
+-	if (nfs_ctx_key_to_expire(ctx, mapping->host)) {
+-		status = nfs_wb_all(mapping->host);
+-		if (status < 0)
+-			return status;
+-	}
++	if (nfs_ctx_key_to_expire(ctx, mapping->host))
++		nfs_wb_all(mapping->host);
+ 
+ 	return copied;
+ }
 -- 
 2.35.1
 
