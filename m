@@ -2,99 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E685CCA485
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:43:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7BB4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:43:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356736AbiFGTnT (ORCPT
+        id S1356755AbiFGTn1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:43:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        Tue, 7 Jun 2022 15:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354559AbiFGSrI (ORCPT
+        with ESMTP id S1354565AbiFGSrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22BC5DD1F;
-        Tue,  7 Jun 2022 11:02:11 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2276A015;
+        Tue,  7 Jun 2022 11:02:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BC5761804;
+        by ams.source.kernel.org (Postfix) with ESMTPS id A080BB82349;
         Tue,  7 Jun 2022 18:02:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9068DC341C0;
-        Tue,  7 Jun 2022 18:02:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624930;
-        bh=XAGJ6U13VmkrVh5Zc7zRwbkmBQUzO0nmuegqfoYHRKQ=;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E00FC34119;
+        Tue,  7 Jun 2022 18:02:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624930;
+        bh=LfWAWhbVjUE7KSVQYTqbDlcBwnnnhFqtXBohBmzGMuI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PsI29JOCn7k/UB5WmLepI8rlcHxzyF1oDsXM1TcQMqABSRCxWOXxgFqIGjJhV/I6a
-         tMzFd8TGTOz3ClzaMIdkEbExxCMzLk5VxpttHuuRBmsbF8HW7XH6B/gH/b1I1bgaQz
-         kD6oClvX0bNfvdyNICzJJOQ04m9IlXXYcbYLdPRs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tyrone Ting <kfting@nuvoton.com>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 505/667] i2c: npcm: Correct register access width
-Date:   Tue,  7 Jun 2022 19:02:50 +0200
-Message-Id: <20220607164949.847757337@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=ocQxog95iXHvvt73VRJy1hipY5KlmEYjoYpIKrslabcxIMvIhcw87O52hr6S8TNZY
+         GiihRlpVqXr130WYY+gd+ofnc6GL5kS6yicA9tLvs+21gVx93OyuHY0D7rR++PgmOR
+         m8yIs01k2ACr8Jm24OvbYO3bXMYLIibW7K5ejn3g+frBJdbpEi4WS6LHgfld7oxRCD
+         bMQFaWpOHHvi45A+6Lt6qt3sHMarZGXbtvRMsfE3zxnOXw0x7Sq5tysZhYnsXCG3wd
+         BYNTf0zBceDoRvZ66uZD9EuGQkRZgSi7741ovrsFPJEJ7aWIoPPCBG00UWN4EbSCFV
+         l+2uRRkPn6Phg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        bjorn.andersson@linaro.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 16/27] serial: msm_serial: disable interrupts in __msm_console_write()
+Date:   Tue,  7 Jun 2022 14:01:20 -0400
+Message-Id: <20220607180133.481701-16-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
+References: <20220607180133.481701-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyrone Ting <kfting@nuvoton.com>
+From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit ea9f8426d17620214ee345ffb77ee6cc196ff14f ]
+[ Upstream commit aabdbb1b7a5819e18c403334a31fb0cc2c06ad41 ]
 
-The SMBnCTL3 register is 8-bit wide and the 32-bit access was always
-incorrect, but simply didn't cause a visible error on the 32-bit machine.
+__msm_console_write() assumes that interrupts are disabled, but
+with threaded console printers it is possible that the write()
+callback of the console is called with interrupts enabled.
 
-On the 64-bit machine, the kernel message reports that ESR value is
-0x96000021. Checking Arm Architecture Reference Manual Armv8 suggests that
-it's the alignment fault.
+Explicitly disable interrupts using local_irq_save() to preserve
+the assumed context.
 
-SMBnCTL3's address is 0xE.
-
-Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
-Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
-Reviewed-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20220506213324.470461-1-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-npcm7xx.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/msm_serial.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
-index 92fd88a3f415..cdea7f440a9e 100644
---- a/drivers/i2c/busses/i2c-npcm7xx.c
-+++ b/drivers/i2c/busses/i2c-npcm7xx.c
-@@ -359,14 +359,14 @@ static int npcm_i2c_get_SCL(struct i2c_adapter *_adap)
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index a40827956bd1..d248c43db36a 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -1579,6 +1579,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
+ static void __msm_console_write(struct uart_port *port, const char *s,
+ 				unsigned int count, bool is_uartdm)
  {
- 	struct npcm_i2c *bus = container_of(_adap, struct npcm_i2c, adap);
++	unsigned long flags;
+ 	int i;
+ 	int num_newlines = 0;
+ 	bool replaced = false;
+@@ -1596,6 +1597,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+ 			num_newlines++;
+ 	count += num_newlines;
  
--	return !!(I2CCTL3_SCL_LVL & ioread32(bus->reg + NPCM_I2CCTL3));
-+	return !!(I2CCTL3_SCL_LVL & ioread8(bus->reg + NPCM_I2CCTL3));
++	local_irq_save(flags);
++
+ 	if (port->sysrq)
+ 		locked = 0;
+ 	else if (oops_in_progress)
+@@ -1641,6 +1644,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+ 
+ 	if (locked)
+ 		spin_unlock(&port->lock);
++
++	local_irq_restore(flags);
  }
  
- static int npcm_i2c_get_SDA(struct i2c_adapter *_adap)
- {
- 	struct npcm_i2c *bus = container_of(_adap, struct npcm_i2c, adap);
- 
--	return !!(I2CCTL3_SDA_LVL & ioread32(bus->reg + NPCM_I2CCTL3));
-+	return !!(I2CCTL3_SDA_LVL & ioread8(bus->reg + NPCM_I2CCTL3));
- }
- 
- static inline u16 npcm_i2c_get_index(struct npcm_i2c *bus)
+ static void msm_console_write(struct console *co, const char *s,
 -- 
 2.35.1
-
-
 
