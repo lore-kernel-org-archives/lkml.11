@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 902F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:32:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E06C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:33:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351872AbiFGScy (ORCPT
+        id S1351930AbiFGSdE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43086 "EHLO
+        Tue, 7 Jun 2022 14:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351695AbiFGSCO (ORCPT
+        with ESMTP id S1351605AbiFGSCK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F15B510657A;
-        Tue,  7 Jun 2022 10:45:10 -0700 (PDT)
+        Tue, 7 Jun 2022 14:02:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD9E15646A;
+        Tue,  7 Jun 2022 10:44:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6475761650;
-        Tue,  7 Jun 2022 17:45:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70F18C385A5;
-        Tue,  7 Jun 2022 17:45:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71C10B822CD;
+        Tue,  7 Jun 2022 17:44:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B88E2C385A5;
+        Tue,  7 Jun 2022 17:44:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623909;
-        bh=fgjiF2tH/XKhEaHyonsRjSyYtP/Y4zUuLwBps6AfGtU=;
+        s=korg; t=1654623896;
+        bh=UpzbA3wVk0DsQjKWMTYnU5OSFElWl46K5qBulj/XdIQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=riQaj7MwHdDnENMZ+8ycuEus+dQNsqWCNkdU7TYGFsVqCHqr3oAzTReyUcab/pMDz
-         PDowyVO/TqtutG5mxSAuSX7oBzLP/D49SEE32f5LMVLmDekNnxIlUXdt6DASGZJ3HC
-         VZ/P4y2Ol4A9FnBOuhdkmKk6XIf5Kt9xt4bmg0nw=
+        b=damwKUsr3Oqp/CSyAG5Yzf8pXj+p39OmwUZtEgm4SfR0bkEzyt4Q6pt9JsduSytm4
+         XAhAxfvFs50iNAaPoBAgJxdxWpCEEkXUbb/c6fpAeoNfqPDZesiMZ5nJKfRQqUJ3eF
+         xndW1MrhcGIXf2fopEjiYVFvrn56/V/tVlaXKDY0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 129/667] net: phy: micrel: Allow probing without .driver_data
-Date:   Tue,  7 Jun 2022 18:56:34 +0200
-Message-Id: <20220607164938.694405984@linuxfoundation.org>
+Subject: [PATCH 5.15 090/667] drm: msm: fix error check return value of irq_of_parse_and_map()
+Date:   Tue,  7 Jun 2022 18:55:55 +0200
+Message-Id: <20220607164937.518724238@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,69 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit f2ef6f7539c68c6bd6c32323d8845ee102b7c450 ]
+[ Upstream commit b9e4f1d2b505df8e2439b63e67afaa287c1c43e2 ]
 
-Currently, if the .probe element is present in the phy_driver structure
-and the .driver_data is not, a NULL pointer dereference happens.
+The irq_of_parse_and_map() function returns 0 on failure, and does not
+return an negative value.
 
-Allow passing .probe without .driver_data by inserting NULL checks
-for priv->type.
-
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220513114613.762810-1-festevam@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/483175/
+Link: https://lore.kernel.org/r/20220424031959.3172406-1-lv.ruyi@zte.com.cn
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/micrel.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 64d829ed9887..05a8985d7107 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -335,7 +335,7 @@ static int kszphy_config_reset(struct phy_device *phydev)
- 		}
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
+index b3b42672b2d4..a2b276ae9673 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
+@@ -598,9 +598,9 @@ struct msm_kms *mdp5_kms_init(struct drm_device *dev)
  	}
  
--	if (priv->led_mode >= 0)
-+	if (priv->type && priv->led_mode >= 0)
- 		kszphy_setup_led(phydev, priv->type->led_mode_reg, priv->led_mode);
- 
- 	return 0;
-@@ -351,10 +351,10 @@ static int kszphy_config_init(struct phy_device *phydev)
- 
- 	type = priv->type;
- 
--	if (type->has_broadcast_disable)
-+	if (type && type->has_broadcast_disable)
- 		kszphy_broadcast_disable(phydev);
- 
--	if (type->has_nand_tree_disable)
-+	if (type && type->has_nand_tree_disable)
- 		kszphy_nand_tree_disable(phydev);
- 
- 	return kszphy_config_reset(phydev);
-@@ -1328,7 +1328,7 @@ static int kszphy_probe(struct phy_device *phydev)
- 
- 	priv->type = type;
- 
--	if (type->led_mode_reg) {
-+	if (type && type->led_mode_reg) {
- 		ret = of_property_read_u32(np, "micrel,led-mode",
- 				&priv->led_mode);
- 		if (ret)
-@@ -1349,7 +1349,8 @@ static int kszphy_probe(struct phy_device *phydev)
- 		unsigned long rate = clk_get_rate(clk);
- 		bool rmii_ref_clk_sel_25_mhz;
- 
--		priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
-+		if (type)
-+			priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
- 		rmii_ref_clk_sel_25_mhz = of_property_read_bool(np,
- 				"micrel,rmii-reference-clock-select-25-mhz");
+ 	irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
+-	if (irq < 0) {
+-		ret = irq;
+-		DRM_DEV_ERROR(&pdev->dev, "failed to get irq: %d\n", ret);
++	if (!irq) {
++		ret = -EINVAL;
++		DRM_DEV_ERROR(&pdev->dev, "failed to get irq\n");
+ 		goto fail;
+ 	}
  
 -- 
 2.35.1
