@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E039BCCA487
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D825BCCA491
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347375AbiFGRfB (ORCPT
+        id S1347702AbiFGRfo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45946 "EHLO
+        Tue, 7 Jun 2022 13:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345877AbiFGRZz (ORCPT
+        with ESMTP id S1346514AbiFGR2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:25:55 -0400
+        Tue, 7 Jun 2022 13:28:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F761091A1;
-        Tue,  7 Jun 2022 10:24:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094A71157CB;
+        Tue,  7 Jun 2022 10:24:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3D2360BC6;
-        Tue,  7 Jun 2022 17:24:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA8B2C341C0;
-        Tue,  7 Jun 2022 17:24:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1D9D60906;
+        Tue,  7 Jun 2022 17:24:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC335C385A5;
+        Tue,  7 Jun 2022 17:24:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622647;
-        bh=RRWTUZVsSwee1Ch/9/1JO4bq3V/JSjTlgdIXBLugHgU=;
+        s=korg; t=1654622664;
+        bh=1vuZle/aJdf8IXFfMGotKYrT8HQrM8syeDFZeWAjPJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QwQUkiZzhqAUk6AuLhzAlNTef7yAO+vap4K3y00IdIfOSSdysOibsKNMrWWYBoX8g
-         VN0DXbsZs/zXe2t7IlS2g8qKplWCs0isS+jp/A6QpwSi4rvBJHySZ93MhBo40eQAL7
-         MhXc96t9MFWxxvBQDvB/cC0e4Q7GTUom2f1/XBns=
+        b=eGu+foy4QfitlcHvl1N2W/rMnJk1x6L1xYtvmLlW9sqR+8sr562glPGpFomofbDbx
+         ltjZ1rk6USCE1D/Ik0d+g+0lik8fXqzs4uxdRlEldICWp1wipE0scKofLbmovCSRrT
+         pFP01huG+Onn/s5ZxZgNBaDDcgXitDOrY31MeyPo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 134/452] drm/vc4: txp: Force alpha to be 0xff if its disabled
-Date:   Tue,  7 Jun 2022 18:59:51 +0200
-Message-Id: <20220607164912.553909340@linuxfoundation.org>
+Subject: [PATCH 5.10 140/452] spi: spi-ti-qspi: Fix return value handling of wait_for_completion_timeout
+Date:   Tue,  7 Jun 2022 18:59:57 +0200
+Message-Id: <20220607164912.731402210@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,45 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 5453343a88ede8b12812fced81ecd24cb888ccc3 ]
+[ Upstream commit 8b1ea69a63eb62f97cef63e6d816b64ed84e8760 ]
 
-If we use a format that has padding instead of the alpha component (such
-as XRGB8888), it appears that the Transposer will fill the padding to 0,
-disregarding what was stored in the input buffer padding.
+wait_for_completion_timeout() returns unsigned long not int.
+It returns 0 if timed out, and positive if completed.
+The check for <= 0 is ambiguous and should be == 0 here
+indicating timeout which is the only error case.
 
-This leads to issues with IGT, since it will set the padding to 0xff,
-but will then compare the CRC of the two frames which will thus fail.
-Another nice side effect is that it is now possible to just use the
-buffer as ARGB.
-
-Fixes: 008095e065a8 ("drm/vc4: Add support for the transposer block")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://lore.kernel.org/r/20220328153659.2382206-4-maxime@cerno.tech
+Fixes: 5720ec0a6d26 ("spi: spi-ti-qspi: Add DMA support for QSPI mmap read")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220411111034.24447-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_txp.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/spi/spi-ti-qspi.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_txp.c b/drivers/gpu/drm/vc4/vc4_txp.c
-index d4e750cf3c02..f8fa09dfea5d 100644
---- a/drivers/gpu/drm/vc4/vc4_txp.c
-+++ b/drivers/gpu/drm/vc4/vc4_txp.c
-@@ -301,6 +301,12 @@ static void vc4_txp_connector_atomic_commit(struct drm_connector *conn,
+diff --git a/drivers/spi/spi-ti-qspi.c b/drivers/spi/spi-ti-qspi.c
+index e06aafe169e0..081da1fd3fd7 100644
+--- a/drivers/spi/spi-ti-qspi.c
++++ b/drivers/spi/spi-ti-qspi.c
+@@ -448,6 +448,7 @@ static int ti_qspi_dma_xfer(struct ti_qspi *qspi, dma_addr_t dma_dst,
+ 	enum dma_ctrl_flags flags = DMA_CTRL_ACK | DMA_PREP_INTERRUPT;
+ 	struct dma_async_tx_descriptor *tx;
+ 	int ret;
++	unsigned long time_left;
  
- 	if (fb->format->has_alpha)
- 		ctrl |= TXP_ALPHA_ENABLE;
-+	else
-+		/*
-+		 * If TXP_ALPHA_ENABLE isn't set and TXP_ALPHA_INVERT is, the
-+		 * hardware will force the output padding to be 0xff.
-+		 */
-+		ctrl |= TXP_ALPHA_INVERT;
+ 	tx = dmaengine_prep_dma_memcpy(chan, dma_dst, dma_src, len, flags);
+ 	if (!tx) {
+@@ -467,9 +468,9 @@ static int ti_qspi_dma_xfer(struct ti_qspi *qspi, dma_addr_t dma_dst,
+ 	}
  
- 	gem = drm_fb_cma_get_gem_obj(fb, 0);
- 	TXP_WRITE(TXP_DST_PTR, gem->paddr + fb->offsets[0]);
+ 	dma_async_issue_pending(chan);
+-	ret = wait_for_completion_timeout(&qspi->transfer_complete,
++	time_left = wait_for_completion_timeout(&qspi->transfer_complete,
+ 					  msecs_to_jiffies(len));
+-	if (ret <= 0) {
++	if (time_left == 0) {
+ 		dmaengine_terminate_sync(chan);
+ 		dev_err(qspi->dev, "DMA wait_for_completion_timeout\n");
+ 		return -ETIMEDOUT;
 -- 
 2.35.1
 
