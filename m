@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8675DCCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A53E4CCA48C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384565AbiFGWgH (ORCPT
+        id S1384685AbiFGWgP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:36:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59562 "EHLO
+        Tue, 7 Jun 2022 18:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378416AbiFGVXw (ORCPT
+        with ESMTP id S1378632AbiFGVXz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:23:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797D9227350;
-        Tue,  7 Jun 2022 12:00:45 -0700 (PDT)
+        Tue, 7 Jun 2022 17:23:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF111227365;
+        Tue,  7 Jun 2022 12:00:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E517A617DA;
-        Tue,  7 Jun 2022 19:00:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0057EC385A5;
-        Tue,  7 Jun 2022 19:00:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20356B82391;
+        Tue,  7 Jun 2022 19:00:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B44AC34115;
+        Tue,  7 Jun 2022 19:00:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628426;
-        bh=F9dV5vWQHIX8olZhqFalnogpwZKt3tMjLk5mSopD5kU=;
+        s=korg; t=1654628431;
+        bh=JQE7vGWsZRjAHjJ8a52Qhw0oT6wu0apJy95muA6U7Wk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=crf8z+WDs6h/sno02TN8CBxzCnmvsOMYPstJV0AaszusKYRGc76O54RI4N2DD1V7/
-         0r0UcP/I3VKXFbWiMTsuaYLc/Cb3/7JuY6mSOIQlBcHPlWOyyJVi2+JGxMPbCPfDqD
-         2/IhCqZXh2HSVjcxvZv4gI4LgL8/osBKA1bVZCYM=
+        b=NGI2R57AAnuOEl7v0TCxl23hmIsizYBJ461oUqosp+GsNrejkO8Uejdzp19i/orNp
+         510RP5euW+4uyxNbRmmmMTqzuo/uD1jksLfSLX0gAEj3ttxdCqUSPTlFUiZwdz0fN/
+         OWWRV8oRwngSOZHN2RLvp8D1Zrbrk1ewmhju5STM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 323/879] drm/bridge: anx7625: Use uint8 for lane-swing arrays
-Date:   Tue,  7 Jun 2022 18:57:21 +0200
-Message-Id: <20220607165012.228618630@linuxfoundation.org>
+Subject: [PATCH 5.18 287/879] drm/mediatek: Fix DPI component detection for MT8192
+Date:   Tue,  7 Jun 2022 18:56:45 +0200
+Message-Id: <20220607165011.178129155@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -54,88 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit fb8da7f3111ab500606960bef1bb32450c664750 ]
+[ Upstream commit cfab37ff31afcd0f99f3cccbff1f8ffa11e44c00 ]
 
-As defined in the anx7625 dt-binding, the analogix,lane0-swing and
-analogix,lane1-swing properties are uint8 arrays. Yet, the driver was
-reading the array as if it were of uint32 and masking to 8-bit before
-writing to the registers. This means that a devicetree written in
-accordance to the dt-binding would have its values incorrectly parsed.
+When support for MT8192 was added, the DPI device was not added to the
+list of components to look for. This causes the secondary display
+pipeline to not be able to fully bind, and the DRM driver subsequently
+defers probing.
 
-Fix the issue by reading the array as uint8 and storing them as uint8
-internally, so that we can also drop the masking when writing the
-registers.
+Add the DPI device compatible to list of DPI components to fix this.
 
-Fixes: fd0310b6fe7d ("drm/bridge: anx7625: add MIPI DPI input feature")
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220408013034.673418-1-nfraprado@collabora.com
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220225032754.140168-1-wenst@chromium.org/
+Fixes: 01365f549c88 ("drm/mediatek: Add support for Mediatek SoC MT8192")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/analogix/anx7625.c | 12 ++++++------
- drivers/gpu/drm/bridge/analogix/anx7625.h |  4 ++--
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_drm_drv.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index a23e13c29a1d..060849f8ad8b 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -1478,12 +1478,12 @@ static void anx7625_dp_adjust_swing(struct anx7625_data *ctx)
- 	for (i = 0; i < ctx->pdata.dp_lane0_swing_reg_cnt; i++)
- 		anx7625_reg_write(ctx, ctx->i2c.tx_p1_client,
- 				  DP_TX_LANE0_SWING_REG0 + i,
--				  ctx->pdata.lane0_reg_data[i] & 0xFF);
-+				  ctx->pdata.lane0_reg_data[i]);
- 
- 	for (i = 0; i < ctx->pdata.dp_lane1_swing_reg_cnt; i++)
- 		anx7625_reg_write(ctx, ctx->i2c.tx_p1_client,
- 				  DP_TX_LANE1_SWING_REG0 + i,
--				  ctx->pdata.lane1_reg_data[i] & 0xFF);
-+				  ctx->pdata.lane1_reg_data[i]);
- }
- 
- static void dp_hpd_change_handler(struct anx7625_data *ctx, bool on)
-@@ -1590,8 +1590,8 @@ static int anx7625_get_swing_setting(struct device *dev,
- 			num_regs = DP_TX_SWING_REG_CNT;
- 
- 		pdata->dp_lane0_swing_reg_cnt = num_regs;
--		of_property_read_u32_array(dev->of_node, "analogix,lane0-swing",
--					   pdata->lane0_reg_data, num_regs);
-+		of_property_read_u8_array(dev->of_node, "analogix,lane0-swing",
-+					  pdata->lane0_reg_data, num_regs);
- 	}
- 
- 	if (of_get_property(dev->of_node,
-@@ -1600,8 +1600,8 @@ static int anx7625_get_swing_setting(struct device *dev,
- 			num_regs = DP_TX_SWING_REG_CNT;
- 
- 		pdata->dp_lane1_swing_reg_cnt = num_regs;
--		of_property_read_u32_array(dev->of_node, "analogix,lane1-swing",
--					   pdata->lane1_reg_data, num_regs);
-+		of_property_read_u8_array(dev->of_node, "analogix,lane1-swing",
-+					  pdata->lane1_reg_data, num_regs);
- 	}
- 
- 	return 0;
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
-index edbbfe410a56..e257a84db962 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.h
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
-@@ -426,9 +426,9 @@ struct anx7625_platform_data {
- 	int mipi_lanes;
- 	int audio_en;
- 	int dp_lane0_swing_reg_cnt;
--	int lane0_reg_data[DP_TX_SWING_REG_CNT];
-+	u8 lane0_reg_data[DP_TX_SWING_REG_CNT];
- 	int dp_lane1_swing_reg_cnt;
--	int lane1_reg_data[DP_TX_SWING_REG_CNT];
-+	u8 lane1_reg_data[DP_TX_SWING_REG_CNT];
- 	u32 low_power_mode;
- 	struct device_node *mipi_host_node;
- };
+diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+index 247c6ff277ef..b0e4e5d68927 100644
+--- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
++++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+@@ -509,6 +509,8 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
+ 	  .data = (void *)MTK_DPI },
+ 	{ .compatible = "mediatek,mt8183-dpi",
+ 	  .data = (void *)MTK_DPI },
++	{ .compatible = "mediatek,mt8192-dpi",
++	  .data = (void *)MTK_DPI },
+ 	{ .compatible = "mediatek,mt2701-dsi",
+ 	  .data = (void *)MTK_DSI },
+ 	{ .compatible = "mediatek,mt8173-dsi",
 -- 
 2.35.1
 
