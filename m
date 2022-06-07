@@ -2,134 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B9FCCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78962CCA487
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441801AbiFHAxF (ORCPT
+        id S1392619AbiFHAxA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
+        Tue, 7 Jun 2022 20:53:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448881AbiFGXJF (ORCPT
+        with ESMTP id S1382933AbiFGWM7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:09:05 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A0938237C
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:45:06 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id a29so1617768lfk.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 13:45:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=on30OEe/DO5zamISOEay2WIQIU04GrMtf4oLpYULsi0=;
-        b=qiK8I6WsrgYjyC91chUFuazIMqEbG3bN/GrHqaSMF4F8x6MV8QSOzCE71g3Nm8aqBY
-         GkphlLTEkCrLci6izemxw/C9WRQBv0IXrmoR1/KWbahNRw7cGoDMRwr5A/9l3/GzShi+
-         JRNwJT9PDXB63R0cJa3JnoL1VCWjQ1Cw1KWCrjyLqSoei6nvABDIIIhTw64rVpOQW1Kg
-         q1rMMkLT+fM3bK5K1OUIlEHDQDNblUNPpHV3zEMjJkKkxaj0qLC8V8JO+mZY8C44m+YZ
-         prF8n8lV7evp1UVmD7avSiGmHM86dDosTsCNkBqWSZoZeC8M3ague2Ctr85fdwk5aXGn
-         nRqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=on30OEe/DO5zamISOEay2WIQIU04GrMtf4oLpYULsi0=;
-        b=G47dhc/cSg3dGlsY57hSk20fr8V2wuvv7igG9vdlqTC1GEhTGBDRULOJuc3c3dOOKY
-         13PqW7c2OGtJTw7ZrlfyUzoNFx0PUrRWWplnwUTiJHsVIK7WDPGfNwbKC2tLD6KfblHd
-         tY2DlRJyQRXoE64hsNi9xSrFXjg9s6qTPYWzcnkAGAckH1NExvIUMzyomK8oIVjAvIdH
-         wEPl6Vl4FR3rbb+9GwZs1u4+BCE2M63KBlvgESxg3RGGTxyUneZl3c2HL3/zCjpgKJYI
-         KKjS7tH0b0JGjiG67rTr1mGt968NoTXP/CNqj0gBIfFXjdEvLpqsqn+fzoxrTGwsrMd1
-         SXpw==
-X-Gm-Message-State: AOAM533rDr1syAs+IQT+bAvmEj4Q+ou9yJKHtt92kOUO7DZJjhefm6KB
-        0skGP/MNVGwGViF6bOuwvB+4Dg9x8ljosFUGPHSdiWTyxLP39w==
-X-Google-Smtp-Source: ABdhPJydJnHSMFNA7KkWvxEBYxxyscRFA6vipqsuXxkhyRm5UrhSrOPz9WDL3yIG52KtyuSzUpI+acnnvERqzMf/7Ko=
-X-Received: by 2002:a05:6512:401c:b0:479:7232:5444 with SMTP id
- br28-20020a056512401c00b0047972325444mr2089108lfb.403.1654634701789; Tue, 07
- Jun 2022 13:45:01 -0700 (PDT)
+        Tue, 7 Jun 2022 18:12:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079D225F430;
+        Tue,  7 Jun 2022 12:19:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B551F61935;
+        Tue,  7 Jun 2022 19:19:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1801C385A2;
+        Tue,  7 Jun 2022 19:19:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629588;
+        bh=jk3GPX/z1hEDFjC03/RcNKJq/h0HQGSSLN8X7A3cII8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VwhS8G4u9U/gVou8hYx+Je3g6I6MsFMQU9a+iO8yvSakVr63VaRE61YbUjYqjXptf
+         YWpGJSkZtFSz4REff9Efg5wx54J5Oo7PgEIfkDHE0xtZ56RB7a+kPy3KQd41sJQpy3
+         vFgoOdW/WAMTHWLrubDyci5KoCjs2R4uN8Y3tMYw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.18 745/879] ext4: verify dir block before splitting it
+Date:   Tue,  7 Jun 2022 19:04:23 +0200
+Message-Id: <20220607165024.481567191@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220607191119.20686-1-jstitt007@gmail.com>
-In-Reply-To: <20220607191119.20686-1-jstitt007@gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 7 Jun 2022 13:44:50 -0700
-Message-ID: <CAKwvOdkHb9W1dePaKAuSKv2D0e0uMGLGCZGeakzgD3ZWxf-2iA@mail.gmail.com>
-Subject: Re: [PATCH] net: amd-xgbe: fix clang -Wformat warning
-To:     Justin Stitt <jstitt007@gmail.com>
-Cc:     Tom Lendacky <thomas.lendacky@amd.com>, llvm@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
-        Tom Rix <trix@redhat.com>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 12:11 PM Justin Stitt <jstitt007@gmail.com> wrote:
->
-> see warning:
-> | drivers/net/ethernet/amd/xgbe/xgbe-drv.c:2787:43: warning: format specifies
-> | type 'unsigned short' but the argument has type 'int' [-Wformat]
-> |        netdev_dbg(netdev, "Protocol: %#06hx\n", ntohs(eth->h_proto));
-> |                                      ~~~~~~     ^~~~~~~~~~~~~~~~~~~
->
-> Variadic functions (printf-like) undergo default argument promotion.
-> Documentation/core-api/printk-formats.rst specifically recommends
-> using the promoted-to-type's format flag.
->
-> Also, as per C11 6.3.1.1:
-> (https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1548.pdf)
-> `If an int can represent all values of the original type ..., the
-> value is converted to an int; otherwise, it is converted to an
-> unsigned int. These are called the integer promotions.`
->
-> Since the argument is a u16 it will get promoted to an int and thus it is
-> most accurate to use the %x format specifier here. It should be noted that the
-> `#06` formatting sugar does not alter the promotion rules.
->
-> Link: https://github.com/ClangBuiltLinux/linux/issues/378
-> Signed-off-by: Justin Stitt <jstitt007@gmail.com>
+From: Jan Kara <jack@suse.cz>
 
-LGTM; thanks for the patch!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+commit 46c116b920ebec58031f0a78c5ea9599b0d2a371 upstream.
 
-Don't forget to cc everyone from ./scripts/get_maintainer.pl!
-$ /scripts/get_maintainer.pl
-20220607_jstitt007_net_amd_xgbe_fix_clang_wformat_warning.mbx
-Tom Lendacky <thomas.lendacky@amd.com> (supporter:AMD XGBE DRIVER)
-"David S. Miller" <davem@davemloft.net> (maintainer:NETWORKING DRIVERS)
-Eric Dumazet <edumazet@google.com> (maintainer:NETWORKING DRIVERS)
-Jakub Kicinski <kuba@kernel.org> (maintainer:NETWORKING DRIVERS)
-Paolo Abeni <pabeni@redhat.com> (maintainer:NETWORKING DRIVERS)
-Nathan Chancellor <nathan@kernel.org> (supporter:CLANG/LLVM BUILD SUPPORT)
-Nick Desaulniers <ndesaulniers@google.com> (supporter:CLANG/LLVM BUILD SUPPORT)
-Tom Rix <trix@redhat.com> (reviewer:CLANG/LLVM BUILD SUPPORT)
-netdev@vger.kernel.org (open list:AMD XGBE DRIVER)
-linux-kernel@vger.kernel.org (open list)
-llvm@lists.linux.dev (open list:CLANG/LLVM BUILD SUPPORT)
+Before splitting a directory block verify its directory entries are sane
+so that the splitting code does not access memory it should not.
 
-> ---
->  drivers/net/ethernet/amd/xgbe/xgbe-drv.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-> index a3593290886f..4d46780fad13 100644
-> --- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-> @@ -2784,7 +2784,7 @@ void xgbe_print_pkt(struct net_device *netdev, struct sk_buff *skb, bool tx_rx)
->
->         netdev_dbg(netdev, "Dst MAC addr: %pM\n", eth->h_dest);
->         netdev_dbg(netdev, "Src MAC addr: %pM\n", eth->h_source);
-> -       netdev_dbg(netdev, "Protocol: %#06hx\n", ntohs(eth->h_proto));
-> +       netdev_dbg(netdev, "Protocol: %#06x\n", ntohs(eth->h_proto));
->
->         for (i = 0; i < skb->len; i += 32) {
->                 unsigned int len = min(skb->len - i, 32U);
-> --
-> 2.30.2
->
+Cc: stable@vger.kernel.org
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220518093332.13986-1-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ext4/namei.c |   32 +++++++++++++++++++++-----------
+ 1 file changed, 21 insertions(+), 11 deletions(-)
+
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -277,9 +277,9 @@ static struct dx_frame *dx_probe(struct
+ 				 struct dx_hash_info *hinfo,
+ 				 struct dx_frame *frame);
+ static void dx_release(struct dx_frame *frames);
+-static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
+-		       unsigned blocksize, struct dx_hash_info *hinfo,
+-		       struct dx_map_entry map[]);
++static int dx_make_map(struct inode *dir, struct buffer_head *bh,
++		       struct dx_hash_info *hinfo,
++		       struct dx_map_entry *map_tail);
+ static void dx_sort_map(struct dx_map_entry *map, unsigned count);
+ static struct ext4_dir_entry_2 *dx_move_dirents(struct inode *dir, char *from,
+ 					char *to, struct dx_map_entry *offsets,
+@@ -1249,15 +1249,23 @@ static inline int search_dirblock(struct
+  * Create map of hash values, offsets, and sizes, stored at end of block.
+  * Returns number of entries mapped.
+  */
+-static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
+-		       unsigned blocksize, struct dx_hash_info *hinfo,
++static int dx_make_map(struct inode *dir, struct buffer_head *bh,
++		       struct dx_hash_info *hinfo,
+ 		       struct dx_map_entry *map_tail)
+ {
+ 	int count = 0;
+-	char *base = (char *) de;
++	struct ext4_dir_entry_2 *de = (struct ext4_dir_entry_2 *)bh->b_data;
++	unsigned int buflen = bh->b_size;
++	char *base = bh->b_data;
+ 	struct dx_hash_info h = *hinfo;
+ 
+-	while ((char *) de < base + blocksize) {
++	if (ext4_has_metadata_csum(dir->i_sb))
++		buflen -= sizeof(struct ext4_dir_entry_tail);
++
++	while ((char *) de < base + buflen) {
++		if (ext4_check_dir_entry(dir, NULL, de, bh, base, buflen,
++					 ((char *)de) - base))
++			return -EFSCORRUPTED;
+ 		if (de->name_len && de->inode) {
+ 			if (ext4_hash_in_dirent(dir))
+ 				h.hash = EXT4_DIRENT_HASH(de);
+@@ -1270,8 +1278,7 @@ static int dx_make_map(struct inode *dir
+ 			count++;
+ 			cond_resched();
+ 		}
+-		/* XXX: do we need to check rec_len == 0 case? -Chris */
+-		de = ext4_next_entry(de, blocksize);
++		de = ext4_next_entry(de, dir->i_sb->s_blocksize);
+ 	}
+ 	return count;
+ }
+@@ -1943,8 +1950,11 @@ static struct ext4_dir_entry_2 *do_split
+ 
+ 	/* create map in the end of data2 block */
+ 	map = (struct dx_map_entry *) (data2 + blocksize);
+-	count = dx_make_map(dir, (struct ext4_dir_entry_2 *) data1,
+-			     blocksize, hinfo, map);
++	count = dx_make_map(dir, *bh, hinfo, map);
++	if (count < 0) {
++		err = count;
++		goto journal_error;
++	}
+ 	map -= count;
+ 	dx_sort_map(map, count);
+ 	/* Ensure that neither split block is over half full */
 
 
--- 
-Thanks,
-~Nick Desaulniers
