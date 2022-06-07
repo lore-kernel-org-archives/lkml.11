@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05FEDCCA48E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48CD6CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350670AbiFGSL3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:11:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59562 "EHLO
+        id S234719AbiFGSLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:11:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349933AbiFGRvm (ORCPT
+        with ESMTP id S1350009AbiFGRvs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A7E13CA1C;
-        Tue,  7 Jun 2022 10:39:13 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2007213FD46;
+        Tue,  7 Jun 2022 10:39:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E34426160E;
-        Tue,  7 Jun 2022 17:38:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB61FC385A5;
-        Tue,  7 Jun 2022 17:38:16 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 78527CE23DB;
+        Tue,  7 Jun 2022 17:33:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62646C385A5;
+        Tue,  7 Jun 2022 17:33:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623497;
-        bh=9o9q4WD8l/Xb1LIFiZ7mZPfpN8Qs+Tj9o9Js+pnAarU=;
+        s=korg; t=1654623235;
+        bh=K9Ad/0R0mUekL1RxqmlSHPscuZ/RJP8hFmg2yJpGxb0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GbkgruOBNMotBLTmZ7etrqagZxvYU7OFsorDD0fU3uSLLNhsJZGnFOb6OedSDaYpg
-         x5fmDDChQ91myVXFeekv6IYoahTyjHNK/jL+sSTHVUn5IkbykPgybQmLQvdyeGvrrf
-         yD1sN1mZy25s0B27yTAehKFjwrQUyVI3C0Bhg0Vs=
+        b=K7moO3dgPPwiwGMULvPGgJV8ShwvUspv0VygFwIT6/2zftsfP5sLO/KIMT7etHWKJ
+         D+39buJmmsVKS2Z8MYpAT9f832IHUO4v1rdArBQdTgaL1SUnXqyX3gkiaoRsHDDP+D
+         fV5Jukdt74JyttEe8aZOP63/ZIaDvrZHNFoC+o7c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ziyang Xuan <william.xuanziyang@huawei.com>,
-        kernel test robot <lkp@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: [PATCH 5.10 439/452] thermal/core: fix a UAF bug in __thermal_cooling_device_register()
-Date:   Tue,  7 Jun 2022 19:04:56 +0200
-Message-Id: <20220607164921.644649330@linuxfoundation.org>
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.10 345/452] f2fs: fix to do sanity check on block address in f2fs_do_zero_range()
+Date:   Tue,  7 Jun 2022 19:03:22 +0200
+Message-Id: <20220607164918.837780678@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,90 +48,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ziyang Xuan <william.xuanziyang@huawei.com>
+From: Chao Yu <chao@kernel.org>
 
-commit 0a5c26712f963f0500161a23e0ffff8d29f742ab upstream.
+commit 25f8236213a91efdf708b9d77e9e51b6fc3e141c upstream.
 
-When device_register() return failed, program will goto out_kfree_type
-to release 'cdev->device' by put_device(). That will call thermal_release()
-to free 'cdev'. But the follow-up processes access 'cdev' continually.
-That trggers the UAF bug.
+As Yanming reported in bugzilla:
 
-====================================================================
-BUG: KASAN: use-after-free in __thermal_cooling_device_register+0x75b/0xa90
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+https://bugzilla.kernel.org/show_bug.cgi?id=215894
+
+I have encountered a bug in F2FS file system in kernel v5.17.
+
+I have uploaded the system call sequence as case.c, and a fuzzed image can
+be found in google net disk
+
+The kernel should enable CONFIG_KASAN=y and CONFIG_KASAN_INLINE=y. You can
+reproduce the bug by running the following commands:
+
+kernel BUG at fs/f2fs/segment.c:2291!
 Call Trace:
- dump_stack_lvl+0xe2/0x152
- print_address_description.constprop.0+0x21/0x140
- ? __thermal_cooling_device_register+0x75b/0xa90
- kasan_report.cold+0x7f/0x11b
- ? __thermal_cooling_device_register+0x75b/0xa90
- __thermal_cooling_device_register+0x75b/0xa90
- ? memset+0x20/0x40
- ? __sanitizer_cov_trace_pc+0x1d/0x50
- ? __devres_alloc_node+0x130/0x180
- devm_thermal_of_cooling_device_register+0x67/0xf0
- max6650_probe.cold+0x557/0x6aa
-......
+ f2fs_invalidate_blocks+0x193/0x2d0
+ f2fs_fallocate+0x2593/0x4a70
+ vfs_fallocate+0x2a5/0xac0
+ ksys_fallocate+0x35/0x70
+ __x64_sys_fallocate+0x8e/0xf0
+ do_syscall_64+0x3b/0x90
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Freed by task 258:
- kasan_save_stack+0x1b/0x40
- kasan_set_track+0x1c/0x30
- kasan_set_free_info+0x20/0x30
- __kasan_slab_free+0x109/0x140
- kfree+0x117/0x4c0
- thermal_release+0xa0/0x110
- device_release+0xa7/0x240
- kobject_put+0x1ce/0x540
- put_device+0x20/0x30
- __thermal_cooling_device_register+0x731/0xa90
- devm_thermal_of_cooling_device_register+0x67/0xf0
- max6650_probe.cold+0x557/0x6aa [max6650]
+The root cause is, after image was fuzzed, block mapping info in inode
+will be inconsistent with SIT table, so in f2fs_fallocate(), it will cause
+panic when updating SIT with invalid blkaddr.
 
-Do not use 'cdev' again after put_device() to fix the problem like doing
-in thermal_zone_device_register().
+Let's fix the issue by adding sanity check on block address before updating
+SIT table with it.
 
-[dlezcano]: as requested by Rafael, change the affectation into two statements.
-
-Fixes: 584837618100 ("thermal/drivers/core: Use a char pointer for the cooling device name")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/r/20211015024504.947520-1-william.xuanziyang@huawei.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/thermal/thermal_core.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ fs/f2fs/file.c |   16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
---- a/drivers/thermal/thermal_core.c
-+++ b/drivers/thermal/thermal_core.c
-@@ -1092,7 +1092,7 @@ __thermal_cooling_device_register(struct
- {
- 	struct thermal_cooling_device *cdev;
- 	struct thermal_zone_device *pos = NULL;
--	int ret;
-+	int id, ret;
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -1413,11 +1413,19 @@ static int f2fs_do_zero_range(struct dno
+ 			ret = -ENOSPC;
+ 			break;
+ 		}
+-		if (dn->data_blkaddr != NEW_ADDR) {
+-			f2fs_invalidate_blocks(sbi, dn->data_blkaddr);
+-			dn->data_blkaddr = NEW_ADDR;
+-			f2fs_set_data_blkaddr(dn);
++
++		if (dn->data_blkaddr == NEW_ADDR)
++			continue;
++
++		if (!f2fs_is_valid_blkaddr(sbi, dn->data_blkaddr,
++					DATA_GENERIC_ENHANCE)) {
++			ret = -EFSCORRUPTED;
++			break;
+ 		}
++
++		f2fs_invalidate_blocks(sbi, dn->data_blkaddr);
++		dn->data_blkaddr = NEW_ADDR;
++		f2fs_set_data_blkaddr(dn);
+ 	}
  
- 	if (!ops || !ops->get_max_state || !ops->get_cur_state ||
- 	    !ops->set_cur_state)
-@@ -1106,6 +1106,7 @@ __thermal_cooling_device_register(struct
- 	if (ret < 0)
- 		goto out_kfree_cdev;
- 	cdev->id = ret;
-+	id = ret;
- 
- 	cdev->type = kstrdup(type ? type : "", GFP_KERNEL);
- 	if (!cdev->type) {
-@@ -1147,8 +1148,9 @@ out_kfree_type:
- 	thermal_cooling_device_destroy_sysfs(cdev);
- 	kfree(cdev->type);
- 	put_device(&cdev->device);
-+	cdev = NULL;
- out_ida_remove:
--	ida_simple_remove(&thermal_cdev_ida, cdev->id);
-+	ida_simple_remove(&thermal_cdev_ida, id);
- out_kfree_cdev:
- 	return ERR_PTR(ret);
- }
+ 	f2fs_update_extent_cache_range(dn, start, 0, index - start);
 
 
