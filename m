@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A2CCCA490
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7AFEC2BBF5
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351276AbiFGS56 (ORCPT
+        id S1355007AbiFGS5t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:57:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42268 "EHLO
+        Tue, 7 Jun 2022 14:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352319AbiFGSRC (ORCPT
+        with ESMTP id S1352351AbiFGSRD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E3C813FD;
-        Tue,  7 Jun 2022 10:51:22 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12338BD39;
+        Tue,  7 Jun 2022 10:51:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82111B82340;
-        Tue,  7 Jun 2022 17:51:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00464C385A5;
-        Tue,  7 Jun 2022 17:51:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D2006172E;
+        Tue,  7 Jun 2022 17:51:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69730C34115;
+        Tue,  7 Jun 2022 17:51:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624280;
-        bh=AI/iVe3KrISAP57OND7nI90CL8ueWm70r7ufJnFkhww=;
+        s=korg; t=1654624285;
+        bh=qlmXHUGCFcDHqwqkCcIi4THSIp4NWofFcLYLYb3H83g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MFqjKqKjW3fGCeKCDGkfi4ndl/nr3vShriXZiluHxQRWqAgvoMk193yUTTb3+8cLv
-         QEvA5tvp4KVlNrCsxTMgjnmcodVKxSRl4PMcyeRcgsnwenFur5vj9oihNkvYXnhZ3j
-         7dZkCDX6gipjHllmafAu2VJAEWUe7HFmZhcYwsm4=
+        b=OXADQ14kYNs7BnlWDHz6w2UKhxc3uKyQeuTHwJlkzoq2XgYmvoV0mfPu6NfRCk8Xr
+         BcxVqJh6zMcO59jRsiTKrKty8DdYtN9nxLi3Lx7KTFO/DSRkiKtr4TBLKiI/Fmr+ki
+         dVJsTmHQSPXRk3V2Huw2KlEs+f4bOLJ26bfH6OFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 271/667] drm/msm/hdmi: check return value after calling platform_get_resource_byname()
-Date:   Tue,  7 Jun 2022 18:58:56 +0200
-Message-Id: <20220607164942.914189510@linuxfoundation.org>
+Subject: [PATCH 5.15 273/667] drm/msm: add missing include to msm_drv.c
+Date:   Tue,  7 Jun 2022 18:58:58 +0200
+Message-Id: <20220607164942.973798310@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,39 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit a36e506711548df923ceb7ec9f6001375be799a5 ]
+[ Upstream commit 8123fe83c3a3448bbfa5b5b1cacfdfe7d076fca6 ]
 
-It will cause null-ptr-deref if platform_get_resource_byname() returns NULL,
-we need check the return value.
+Add explicit include of drm_bridge.h to the msm_drv.c to fix the
+following warning:
 
-Fixes: c6a57a50ad56 ("drm/msm/hdmi: add hdmi hdcp support (V3)")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/482992/
-Link: https://lore.kernel.org/r/20220422032227.2991553-1-yangyingliang@huawei.com
+drivers/gpu/drm/msm/msm_drv.c:236:17: error: implicit declaration of function 'drm_bridge_remove'; did you mean 'drm_bridge_detach'? [-Werror=implicit-function-declaration]
+
+Fixes: d28ea556267c ("drm/msm: properly add and remove internal bridges")
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/484310/
+Link: https://lore.kernel.org/r/20220430180917.3819294-1-dmitry.baryshkov@linaro.org
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/hdmi/hdmi.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpu/drm/msm/msm_drv.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
-index d5a80fa3e625..c3d95e7af1e4 100644
---- a/drivers/gpu/drm/msm/hdmi/hdmi.c
-+++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
-@@ -144,6 +144,10 @@ static struct hdmi *msm_hdmi_init(struct platform_device *pdev)
- 	/* HDCP needs physical address of hdmi register */
- 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
- 		config->mmio_name);
-+	if (!res) {
-+		ret = -EINVAL;
-+		goto fail;
-+	}
- 	hdmi->mmio_phy_addr = res->start;
+diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+index bbf999c66517..28524ea8601f 100644
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -11,6 +11,7 @@
+ #include <linux/uaccess.h>
+ #include <uapi/linux/sched/types.h>
  
- 	hdmi->qfprom_mmio = msm_ioremap(pdev,
++#include <drm/drm_bridge.h>
+ #include <drm/drm_drv.h>
+ #include <drm/drm_file.h>
+ #include <drm/drm_ioctl.h>
 -- 
 2.35.1
 
