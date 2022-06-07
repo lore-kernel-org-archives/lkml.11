@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF66CCCA48F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B9CCCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387019AbiFGWtl (ORCPT
+        id S1385129AbiFGWpa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51860 "EHLO
+        Tue, 7 Jun 2022 18:45:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381413AbiFGVkm (ORCPT
+        with ESMTP id S1354538AbiFGV3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B8E23281B;
-        Tue,  7 Jun 2022 12:06:52 -0700 (PDT)
+        Tue, 7 Jun 2022 17:29:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7481152BAC;
+        Tue,  7 Jun 2022 12:02:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BA9A6184D;
-        Tue,  7 Jun 2022 19:06:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 811E4C385A2;
-        Tue,  7 Jun 2022 19:06:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6765BB82391;
+        Tue,  7 Jun 2022 19:02:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1799C385A5;
+        Tue,  7 Jun 2022 19:02:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628810;
-        bh=WEl8kOHUEiPWdwBDQUAps0GyCtZmVnhXRwz9neMn+oc=;
+        s=korg; t=1654628545;
+        bh=uZOwd6s3kVhfsImudmQXu07CdvivTkI16naom/J1bL4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ws5kc7DwCwjMiztbcTMwetGxL1v/Ez5RQ4z57KLarbf7mDC355H7Tfz8SDahrVmzD
-         m6Icd2UOmYfA01XjO0Nyuj0GVkakOIBKOlcAezyznbqaWtwqVCtH7cshbnTI7itIX2
-         BvnQLtPkQo3O8j6cMsZVV6jALcfaKiBUbQtOJYf0=
+        b=cIt/6TQhSxOr45Q13C9zMug5nMcpJkbjWUcRhDMuW5w74MQa63kwZu8RX7Hs1C7lQ
+         Kkm1UReNx/sNHQ6NB56KNVH5BOBxOI406UFOnxHudZ6o+W0+K+LU8kde8kHngxWp2V
+         +KO6T9iDCXKw/XBupiSTbVS3Vn4/8B34BzseFT2w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yake Yang <yake.yang@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 457/879] Bluetooth: btmtksdio: fix possible FW initialization failure
-Date:   Tue,  7 Jun 2022 18:59:35 +0200
-Message-Id: <20220607165016.136929533@linuxfoundation.org>
+Subject: [PATCH 5.18 366/879] ASoC: rk3328: fix disabling mclk on pclk probe failure
+Date:   Tue,  7 Jun 2022 18:58:04 +0200
+Message-Id: <20220607165013.494505834@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,59 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
 
-[ Upstream commit 7469720563e01f479ec5afe06bd6f440f965d523 ]
+[ Upstream commit dd508e324cdde1c06ace08a8143fa50333a90703 ]
 
-According to FW advised sequence, mt7921s need to re-acquire privilege
-immediately after the firmware download is complete before normal running.
-Otherwise, it is still possible the bus may be stuck in an abnormal status
-that causes FW initialization failure in the current driver.
+If preparing/enabling the pclk fails, the probe function should
+unprepare and disable the previously prepared and enabled mclk,
+which it doesn't do. This commit rectifies this.
 
-Fixes: 752aea58489f ("Bluetooth: mt7921s: fix bus hang with wrong privilege")
-Co-developed-by: Yake Yang <yake.yang@mediatek.com>
-Signed-off-by: Yake Yang <yake.yang@mediatek.com>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: c32759035ad2 ("ASoC: rockchip: support ACODEC for rk3328")
+Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Reviewed-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
+Link: https://lore.kernel.org/r/20220427172310.138638-1-frattaroli.nicolas@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btmtksdio.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ sound/soc/codecs/rk3328_codec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
-index 4ae6631a7c29..5d13c1f61bd3 100644
---- a/drivers/bluetooth/btmtksdio.c
-+++ b/drivers/bluetooth/btmtksdio.c
-@@ -864,6 +864,14 @@ static int mt79xx_setup(struct hci_dev *hdev, const char *fwname)
- 		return err;
+diff --git a/sound/soc/codecs/rk3328_codec.c b/sound/soc/codecs/rk3328_codec.c
+index 758d439e8c7a..86b679cf7aef 100644
+--- a/sound/soc/codecs/rk3328_codec.c
++++ b/sound/soc/codecs/rk3328_codec.c
+@@ -481,7 +481,7 @@ static int rk3328_platform_probe(struct platform_device *pdev)
+ 	ret = clk_prepare_enable(rk3328->pclk);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to enable acodec pclk\n");
+-		return ret;
++		goto err_unprepare_mclk;
  	}
  
-+	err = btmtksdio_fw_pmctrl(bdev);
-+	if (err < 0)
-+		return err;
-+
-+	err = btmtksdio_drv_pmctrl(bdev);
-+	if (err < 0)
-+		return err;
-+
- 	/* Enable Bluetooth protocol */
- 	wmt_params.op = BTMTK_WMT_FUNC_CTRL;
- 	wmt_params.flag = 0;
-@@ -1109,14 +1117,6 @@ static int btmtksdio_setup(struct hci_dev *hdev)
- 		if (err < 0)
- 			return err;
- 
--		err = btmtksdio_fw_pmctrl(bdev);
--		if (err < 0)
--			return err;
--
--		err = btmtksdio_drv_pmctrl(bdev);
--		if (err < 0)
--			return err;
--
- 		/* Enable SCO over I2S/PCM */
- 		err = btmtksdio_sco_setting(hdev);
- 		if (err < 0) {
+ 	base = devm_platform_ioremap_resource(pdev, 0);
 -- 
 2.35.1
 
