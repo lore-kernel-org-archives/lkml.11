@@ -2,86 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46A36CCA488
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDEBFCCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356409AbiFGT1m (ORCPT
+        id S1356270AbiFGT1M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:27:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37520 "EHLO
+        Tue, 7 Jun 2022 15:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352498AbiFGSer (ORCPT
+        with ESMTP id S1352290AbiFGSdh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:34:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A771115;
-        Tue,  7 Jun 2022 10:57:43 -0700 (PDT)
+        Tue, 7 Jun 2022 14:33:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0130F17F800;
+        Tue,  7 Jun 2022 10:57:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 152E7617A7;
-        Tue,  7 Jun 2022 17:57:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22299C34115;
-        Tue,  7 Jun 2022 17:57:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624662;
-        bh=E/YtM1QEvoFa47vJQc7J+m3/JvtSD7J53XHh40VCSew=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58094B82239;
+        Tue,  7 Jun 2022 17:57:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D721FC385A5;
+        Tue,  7 Jun 2022 17:57:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624649;
+        bh=djfkJGyl9Urrz2t1OhokRNIKnl9BVSRu5D6W8hRQ91M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tqGOYdhFVldCMifaO8nAj+KbWao+I4mfmfzLFLrBqw00EMS96nhHora4oML7SZqUF
-         rdOx47haOEe6d5M/zbgL/FAK73wSZc40BvAgYniPJsi3TGbDRutIy/5bzS32zcuvro
-         VZYFfwLFyVza6JZbdGgeDZfKx6U2OH6tcJKl4lZk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 409/667] ARM: dts: bcm2837-rpi-3-b-plus: Fix GPIO line name of power LED
-Date:   Tue,  7 Jun 2022 19:01:14 +0200
-Message-Id: <20220607164947.008740669@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=mMpskNmouCJ8GdR5o8pmpIPP3NDjci51pOZiZ9bR1u56wxDauIbKA6zLPViGOh1/r
+         VwingW3JCUky2caRohyi56NIjtyqzU1xKkIAQfn/wdmo0LzWpiGpVnCpfV09K2MJxq
+         DaOsECyuepO5sjjKI1cTgriNSfVNCHNe4PGEAF+kVhb4Q9Y5eCAha1TsHNtQ5S3+Fv
+         hDP9Pf2kuH7lVCf13dTWQMnt7QJzVzDyoeW09u+mB0c+kBLw5GNodJyA7uP7e7QDOf
+         /Uwq+jprnaatOPkWfHbBsRVtFHIFmm6tkPFLR4QQTsyeo7L6yQYH70wm8kqE+riq7K
+         82NiCWXoMRNdw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Donald Buczek <buczek@molgen.mpg.de>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        agk@redhat.com, snitzer@kernel.org, dm-devel@redhat.com,
+        linux-raid@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 31/51] md: don't unregister sync_thread with reconfig_mutex held
+Date:   Tue,  7 Jun 2022 13:55:30 -0400
+Message-Id: <20220607175552.479948-31-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
+References: <20220607175552.479948-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.com>
+From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
 
-[ Upstream commit 57f718aa4b93392fb1a8c0a874ab882b9e18136a ]
+[ Upstream commit 8b48ec23cc51a4e7c8dbaef5f34ebe67e1a80934 ]
 
-The red LED on the Raspberry Pi 3 B Plus is the power LED.
-So fix the GPIO line name accordingly.
+Unregister sync_thread doesn't need to hold reconfig_mutex since it
+doesn't reconfigure array.
 
-Fixes: 71c0cd2283f2 ("ARM: dts: bcm2837: Add Raspberry Pi 3 B+")
-Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+And it could cause deadlock problem for raid5 as follows:
+
+1. process A tried to reap sync thread with reconfig_mutex held after echo
+   idle to sync_action.
+2. raid5 sync thread was blocked if there were too many active stripes.
+3. SB_CHANGE_PENDING was set (because of write IO comes from upper layer)
+   which causes the number of active stripes can't be decreased.
+4. SB_CHANGE_PENDING can't be cleared since md_check_recovery was not able
+   to hold reconfig_mutex.
+
+More details in the link:
+https://lore.kernel.org/linux-raid/5ed54ffc-ce82-bf66-4eff-390cb23bc1ac@molgen.mpg.de/T/#t
+
+And add one parameter to md_reap_sync_thread since it could be called by
+dm-raid which doesn't hold reconfig_mutex.
+
+Reported-and-tested-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/dm-raid.c |  2 +-
+ drivers/md/md.c      | 14 +++++++++-----
+ drivers/md/md.h      |  2 +-
+ 3 files changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
-index 61010266ca9a..90472e76a313 100644
---- a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
-+++ b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
-@@ -45,7 +45,7 @@
- 		#gpio-cells = <2>;
- 		gpio-line-names = "BT_ON",
- 				  "WL_ON",
--				  "STATUS_LED_R",
-+				  "PWR_LED_R",
- 				  "LAN_RUN",
- 				  "",
- 				  "CAM_GPIO0",
+diff --git a/drivers/md/dm-raid.c b/drivers/md/dm-raid.c
+index d9ef52159a22..dbfdc13988dc 100644
+--- a/drivers/md/dm-raid.c
++++ b/drivers/md/dm-raid.c
+@@ -3730,7 +3730,7 @@ static int raid_message(struct dm_target *ti, unsigned int argc, char **argv,
+ 	if (!strcasecmp(argv[0], "idle") || !strcasecmp(argv[0], "frozen")) {
+ 		if (mddev->sync_thread) {
+ 			set_bit(MD_RECOVERY_INTR, &mddev->recovery);
+-			md_reap_sync_thread(mddev);
++			md_reap_sync_thread(mddev, false);
+ 		}
+ 	} else if (decipher_sync_action(mddev, mddev->recovery) != st_idle)
+ 		return -EBUSY;
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 5ce2648cbe5b..8d569db21b1a 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -4842,7 +4842,7 @@ action_store(struct mddev *mddev, const char *page, size_t len)
+ 				flush_workqueue(md_misc_wq);
+ 			if (mddev->sync_thread) {
+ 				set_bit(MD_RECOVERY_INTR, &mddev->recovery);
+-				md_reap_sync_thread(mddev);
++				md_reap_sync_thread(mddev, true);
+ 			}
+ 			mddev_unlock(mddev);
+ 		}
+@@ -6204,7 +6204,7 @@ static void __md_stop_writes(struct mddev *mddev)
+ 		flush_workqueue(md_misc_wq);
+ 	if (mddev->sync_thread) {
+ 		set_bit(MD_RECOVERY_INTR, &mddev->recovery);
+-		md_reap_sync_thread(mddev);
++		md_reap_sync_thread(mddev, true);
+ 	}
+ 
+ 	del_timer_sync(&mddev->safemode_timer);
+@@ -9301,7 +9301,7 @@ void md_check_recovery(struct mddev *mddev)
+ 			 * ->spare_active and clear saved_raid_disk
+ 			 */
+ 			set_bit(MD_RECOVERY_INTR, &mddev->recovery);
+-			md_reap_sync_thread(mddev);
++			md_reap_sync_thread(mddev, true);
+ 			clear_bit(MD_RECOVERY_RECOVER, &mddev->recovery);
+ 			clear_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
+ 			clear_bit(MD_SB_CHANGE_PENDING, &mddev->sb_flags);
+@@ -9336,7 +9336,7 @@ void md_check_recovery(struct mddev *mddev)
+ 			goto unlock;
+ 		}
+ 		if (mddev->sync_thread) {
+-			md_reap_sync_thread(mddev);
++			md_reap_sync_thread(mddev, true);
+ 			goto unlock;
+ 		}
+ 		/* Set RUNNING before clearing NEEDED to avoid
+@@ -9409,14 +9409,18 @@ void md_check_recovery(struct mddev *mddev)
+ }
+ EXPORT_SYMBOL(md_check_recovery);
+ 
+-void md_reap_sync_thread(struct mddev *mddev)
++void md_reap_sync_thread(struct mddev *mddev, bool reconfig_mutex_held)
+ {
+ 	struct md_rdev *rdev;
+ 	sector_t old_dev_sectors = mddev->dev_sectors;
+ 	bool is_reshaped = false;
+ 
++	if (reconfig_mutex_held)
++		mddev_unlock(mddev);
+ 	/* resync has finished, collect result */
+ 	md_unregister_thread(&mddev->sync_thread);
++	if (reconfig_mutex_held)
++		mddev_lock_nointr(mddev);
+ 	if (!test_bit(MD_RECOVERY_INTR, &mddev->recovery) &&
+ 	    !test_bit(MD_RECOVERY_REQUESTED, &mddev->recovery) &&
+ 	    mddev->degraded != mddev->raid_disks) {
+diff --git a/drivers/md/md.h b/drivers/md/md.h
+index 62852d701145..3aa09e0d9f89 100644
+--- a/drivers/md/md.h
++++ b/drivers/md/md.h
+@@ -711,7 +711,7 @@ extern struct md_thread *md_register_thread(
+ extern void md_unregister_thread(struct md_thread **threadp);
+ extern void md_wakeup_thread(struct md_thread *thread);
+ extern void md_check_recovery(struct mddev *mddev);
+-extern void md_reap_sync_thread(struct mddev *mddev);
++extern void md_reap_sync_thread(struct mddev *mddev, bool reconfig_mutex_held);
+ extern int mddev_init_writes_pending(struct mddev *mddev);
+ extern bool md_write_start(struct mddev *mddev, struct bio *bi);
+ extern void md_write_inc(struct mddev *mddev, struct bio *bi);
 -- 
 2.35.1
-
-
 
