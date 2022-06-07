@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 570DCCCA483
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C50F8CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443811AbiFHCDQ (ORCPT
+        id S1443626AbiFHCC5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42620 "EHLO
+        Tue, 7 Jun 2022 22:02:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1843648AbiFHALR (ORCPT
+        with ESMTP id S1843621AbiFHALP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:11:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D30119CB77;
-        Tue,  7 Jun 2022 12:26:13 -0700 (PDT)
+        Tue, 7 Jun 2022 20:11:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7480726ACAA;
+        Tue,  7 Jun 2022 12:22:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 452D8B8237B;
-        Tue,  7 Jun 2022 19:26:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D06F9C385A5;
-        Tue,  7 Jun 2022 19:26:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBC3C60A1D;
+        Tue,  7 Jun 2022 19:22:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5A69C385A5;
+        Tue,  7 Jun 2022 19:22:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629971;
-        bh=2b3EwAxT/IxY3yiIFVjw+wSEWXH1+Ouo/kRi/T0Wbxw=;
+        s=korg; t=1654629736;
+        bh=3SrypJSqpHTOnMg7FaxQwgo1y/n+7Mnt8TkTGgLlH/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cogw5YqoEGLYQmkzpPP4C1Fv2Fc3DI0mxUDFk+U436W4NkEku7/SxttcoNt2yANyp
-         T33MUY2fzABT+Z7Op3h32kU8DdtMJi5j+ioonp4+qDgwvqhyyoR/OGPq1VWLqXJPmm
-         E/39LJwRAnbWItLOO9QQH+su6+GZqtCZXf4ry3Ng=
+        b=ijUEF6CO5sCCnPhW5Q3XrVH9RJ4i/xxjSsgE66rrDAJ+shwOkdxKl68eMeA4d4W4T
+         JdX+Le+j97BmfnERlLhs1Lo9ls5I8WBZzm8l0VvgEocQSSC8AHakL/XfPc5cIfDT3o
+         noIKtvOBk3QLg6RFSe9pzJBa7AOsjwKZMuEydy2o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ondrej Hubsch <ohubsch@purestorage.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.18 854/879] SMB3: EBADF/EIO errors in rename/open caused by race condition in smb2_compound_op
-Date:   Tue,  7 Jun 2022 19:06:12 +0200
-Message-Id: <20220607165027.643252462@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ville Syrjala <ville.syrjala@linux.intel.com>,
+        Jani Nikula <jani.nikula@intel.com>
+Subject: [PATCH 5.18 797/879] drm/i915/dsi: fix VBT send packet port selection for ICL+
+Date:   Tue,  7 Jun 2022 19:05:15 +0200
+Message-Id: <20220607165025.994535157@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,65 +50,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+From: Jani Nikula <jani.nikula@intel.com>
 
-commit 0a55cf74ffb5d004b93647e4389096880ce37d6b upstream.
+commit 0ea917819d12fed41ea4662cc26ffa0060a5c354 upstream.
 
-There is  a race condition in smb2_compound_op:
+The VBT send packet port selection was never updated for ICL+ where the
+2nd link is on port B instead of port C as in VLV+ DSI.
 
-after_close:
-	num_rqst++;
+First, single link DSI needs to use the configured port instead of
+relying on the VBT sequence block port. Remove the hard-coded port C
+check here and make it generic. For reference, see commit f915084edc5a
+("drm/i915: Changes related to the sequence port no for") for the
+original VLV specific fix.
 
-	if (cfile) {
-		cifsFileInfo_put(cfile); // sends SMB2_CLOSE to the server
-		cfile = NULL;
+Second, the sequence block port number is either 0 or 1, where 1
+indicates the 2nd link. Remove the hard-coded port C here for 2nd
+link. (This could be a "find second set bit" on DSI ports, but just
+check the two possible options.)
 
-This is triggered by smb2_query_path_info operation that happens during
-revalidate_dentry. In smb2_query_path_info, get_readable_path is called to
-load the cfile, increasing the reference counter. If in the meantime, this
-reference becomes the very last, this call to cifsFileInfo_put(cfile) will
-trigger a SMB2_CLOSE request sent to the server just before sending this compound
-request – and so then the compound request fails either with EBADF/EIO depending
-on the timing at the server, because the handle is already closed.
+Third, sanity check the result with a warning to avoid a NULL pointer
+dereference.
 
-In the first scenario, the race seems to be happening between smb2_query_path_info
-triggered by the rename operation, and between “cleanup” of asynchronous writes – while
-fsync(fd) likely waits for the asynchronous writes to complete, releasing the writeback
-structures can happen after the close(fd) call. So the EBADF/EIO errors will pop up if
-the timing is such that:
-1) There are still outstanding references after close(fd) in the writeback structures
-2) smb2_query_path_info successfully fetches the cfile, increasing the refcounter by 1
-3) All writeback structures release the same cfile, reducing refcounter to 1
-4) smb2_compound_op is called with that cfile
-
-In the second scenario, the race seems to be similar – here open triggers the
-smb2_query_path_info operation, and if all other threads in the meantime decrease the
-refcounter to 1 similarly to the first scenario, again SMB2_CLOSE will be sent to the
-server just before issuing the compound request. This case is harder to reproduce.
-
-See https://bugzilla.samba.org/show_bug.cgi?id=15051
-
-Cc: stable@vger.kernel.org
-Fixes: 8de9e86c67ba ("cifs: create a helper to find a writeable handle by path name")
-Signed-off-by: Ondrej Hubsch <ohubsch@purestorage.com>
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/5984
+Cc: stable@vger.kernel.org # v4.19+
+Cc: Ville Syrjala <ville.syrjala@linux.intel.com>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220520094600.2066945-1-jani.nikula@intel.com
+(cherry picked from commit 08c59dde71b73a0ac94e3ed2d431345b01f20485)
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/smb2inode.c |    2 --
- 1 file changed, 2 deletions(-)
+ drivers/gpu/drm/i915/display/intel_dsi_vbt.c |   33 ++++++++++++++++++---------
+ 1 file changed, 22 insertions(+), 11 deletions(-)
 
---- a/fs/cifs/smb2inode.c
-+++ b/fs/cifs/smb2inode.c
-@@ -362,8 +362,6 @@ smb2_compound_op(const unsigned int xid,
- 	num_rqst++;
+--- a/drivers/gpu/drm/i915/display/intel_dsi_vbt.c
++++ b/drivers/gpu/drm/i915/display/intel_dsi_vbt.c
+@@ -124,9 +124,25 @@ struct i2c_adapter_lookup {
+ #define  ICL_GPIO_DDPA_CTRLCLK_2	8
+ #define  ICL_GPIO_DDPA_CTRLDATA_2	9
  
- 	if (cfile) {
--		cifsFileInfo_put(cfile);
--		cfile = NULL;
- 		rc = compound_send_recv(xid, ses, server,
- 					flags, num_rqst - 2,
- 					&rqst[1], &resp_buftype[1],
+-static enum port intel_dsi_seq_port_to_port(u8 port)
++static enum port intel_dsi_seq_port_to_port(struct intel_dsi *intel_dsi,
++					    u8 seq_port)
+ {
+-	return port ? PORT_C : PORT_A;
++	/*
++	 * If single link DSI is being used on any port, the VBT sequence block
++	 * send packet apparently always has 0 for the port. Just use the port
++	 * we have configured, and ignore the sequence block port.
++	 */
++	if (hweight8(intel_dsi->ports) == 1)
++		return ffs(intel_dsi->ports) - 1;
++
++	if (seq_port) {
++		if (intel_dsi->ports & PORT_B)
++			return PORT_B;
++		else if (intel_dsi->ports & PORT_C)
++			return PORT_C;
++	}
++
++	return PORT_A;
+ }
+ 
+ static const u8 *mipi_exec_send_packet(struct intel_dsi *intel_dsi,
+@@ -148,15 +164,10 @@ static const u8 *mipi_exec_send_packet(s
+ 
+ 	seq_port = (flags >> MIPI_PORT_SHIFT) & 3;
+ 
+-	/* For DSI single link on Port A & C, the seq_port value which is
+-	 * parsed from Sequence Block#53 of VBT has been set to 0
+-	 * Now, read/write of packets for the DSI single link on Port A and
+-	 * Port C will based on the DVO port from VBT block 2.
+-	 */
+-	if (intel_dsi->ports == (1 << PORT_C))
+-		port = PORT_C;
+-	else
+-		port = intel_dsi_seq_port_to_port(seq_port);
++	port = intel_dsi_seq_port_to_port(intel_dsi, seq_port);
++
++	if (drm_WARN_ON(&dev_priv->drm, !intel_dsi->dsi_hosts[port]))
++		goto out;
+ 
+ 	dsi_device = intel_dsi->dsi_hosts[port]->device;
+ 	if (!dsi_device) {
 
 
