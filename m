@@ -2,138 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C40BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 08:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0850C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 08:45:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238366AbiFGIpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 04:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57148 "EHLO
+        id S238406AbiFGIpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 04:45:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238403AbiFGIpC (ORCPT
+        with ESMTP id S232116AbiFGIpk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 04:45:02 -0400
-Received: from conuserg-11.nifty.com (conuserg-11.nifty.com [210.131.2.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC6160B9C;
-        Tue,  7 Jun 2022 01:45:00 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-11.nifty.com with ESMTP id 2578hKA3010951;
-        Tue, 7 Jun 2022 17:43:20 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-11.nifty.com 2578hKA3010951
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654591401;
-        bh=Cj3y+Qp/VjL00R1LaGKflQeOz1WUkQnA5jR/e3iAuTM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=LIef4QxqITUfGQJLjVLGmPDVSHahO1iLHJEyvQCP/1vbQh/kGp+1JVcoUX3Nu8sAM
-         MGSQF50CK+RvFQSRHkI0DdO99FAdS8fK/ZZmxYWm27wZsAH7DJ/WdMESOJbKSJoG19
-         bUv7OfHclT08KCLgRNQslG5x0cb7KhVvzXzEzWucWgBMV0/MrPwa2pHkqPV8HjyuC8
-         5V7BlQ0CF0nlW+7W6tZUx+E/uIU9AtAUowItiLsSrry4ECySlBdF5GcxU3hNF8uA5K
-         jgOxJdw5GUDDi4gNXs8GlHu4ArK61UkOhzHsx9X7/5WajN+kl/+eYxTUIq3R8oSKTl
-         UR2zNdTIAwG1Q==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Wang Yugui <wangyugui@e16-tech.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH] scripts/check-local-export: avoid 'wait $!' for process substitution
-Date:   Tue,  7 Jun 2022 17:43:17 +0900
-Message-Id: <20220607084317.211785-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Tue, 7 Jun 2022 04:45:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 559E1D4100
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 01:45:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654591533;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gw6n8kcnDAqzzZl0t5SzEkY3u1ygu5PNN0SfRbosyDU=;
+        b=E9KRSuxvmCf6bJlJKN4zQMFdt7AmfxKphVC8uNifL86j9j5XWBGWI1cgdOKDBdnYHYSohj
+        zQbLhIChWv7Ch8XfrOlR8ZxRt+gu6J8kbTomYOfw/XSkpdg0XAgHk+AQEnQGMMsXZZV0Ub
+        m21HRqeC/HSPedVMQ1xDwmVBegcfPYw=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-529-4-bMjQGLOOu6-Ef1xwe_Wg-1; Tue, 07 Jun 2022 04:45:32 -0400
+X-MC-Unique: 4-bMjQGLOOu6-Ef1xwe_Wg-1
+Received: by mail-ej1-f70.google.com with SMTP id n2-20020a170906724200b006fed87ccbb8so7441517ejk.7
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 01:45:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gw6n8kcnDAqzzZl0t5SzEkY3u1ygu5PNN0SfRbosyDU=;
+        b=4P1pVHi2OgATj9clNeLH+svVrafFkDldSGYf+AgY5WcMELy9tQDx67/69QbOPqTKiS
+         h/v/UN3WO/zHwcFKcCdtFJUE6276zhEWJsVsZT/JSGpplPTH5AkNI7lKprsE8qXLXhqV
+         J6so2qn1XQLz310FpsMTpkF99kjTmX42U1Q49HHtdW6O50lgYHnXV/+cvuRiMBzN81Mw
+         IvizszP5ZD5nTEiHD8eO4KFDkHkeyBV9g6U872fP/GSap7bQXiSLqONc8tgljk/cnytm
+         bb9KL1MLRCeIbAOjFpc7tMeIykb/CEtdVk+fGINbvlXjo3t8STlx/0IXhRXXkFJHhpIz
+         XPRA==
+X-Gm-Message-State: AOAM532Ixqn18jmzItwDv12AsLxs0yT+y94L6FWTBEGXdUz8cKYfif1b
+        h35MeXyLMFvGMRi3D5QHE/f28DQ2eJChFDDxilIONutRdyNjKzHcyBxsh4PhPbjMrvmEilRCI4Y
+        nAx77A27H5KIrovNjlcS6GXf1
+X-Received: by 2002:a17:907:2daa:b0:6fe:b449:6a8f with SMTP id gt42-20020a1709072daa00b006feb4496a8fmr25098967ejc.318.1654591531151;
+        Tue, 07 Jun 2022 01:45:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyjr+mGRtNi/fkJf8ZvakUYRPS13AOp0TlU6j86OW8mrDlsW0ssNpowuYW6Cm2YKDaEb5wqdw==
+X-Received: by 2002:a17:907:2daa:b0:6fe:b449:6a8f with SMTP id gt42-20020a1709072daa00b006feb4496a8fmr25098945ejc.318.1654591530888;
+        Tue, 07 Jun 2022 01:45:30 -0700 (PDT)
+Received: from [192.168.0.198] (host-95-248-229-226.retail.telecomitalia.it. [95.248.229.226])
+        by smtp.gmail.com with ESMTPSA id w2-20020a056402268200b0042ddd08d5f8sm10457417edd.2.2022.06.07.01.45.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 01:45:30 -0700 (PDT)
+Message-ID: <f24a539c-f6bf-5e5f-c98f-b31d6a5c1564@redhat.com>
+Date:   Tue, 7 Jun 2022 10:45:29 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] sched/deadline: Use proc_douintvec_minmax() limit minimum
+ value
+Content-Language: en-US
+To:     Yajun Deng <yajun.deng@linux.dev>
+Cc:     linux-kernel@vger.kernel.org, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        dietmar.eggemann@arm.com, bsegall@google.com, vschneid@redhat.com,
+        rostedt@goodmis.org, mgorman@suse.de, vincent.guittot@linaro.org
+References: <46b7ca44-a338-e1c1-e005-326e89576211@redhat.com>
+ <20220513024109.648471-1-yajun.deng@linux.dev>
+ <9150a4ffa0ff94ab4697d615c60ed9b4@linux.dev>
+From:   Daniel Bristot de Oliveira <bristot@redhat.com>
+In-Reply-To: <9150a4ffa0ff94ab4697d615c60ed9b4@linux.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bash>=4.4 supports 'wait $!' to check the exit status of a process
-substitution, but some people using older bash versions reported an
-error like this:
+On 6/7/22 10:35, Yajun Deng wrote:
+> June 7, 2022 3:55 PM, "Daniel Bristot de Oliveira" <bristot@redhat.com> wrote:
+> 
+>> Hi Yajun
+>>
+>> On 5/13/22 04:41, Yajun Deng wrote:
+>>
+>>> proc_dointvec() is not applicable for unsigned integer, use
+>>> proc_douintvec_minmax() limit minimum value.
+>> I understand your patch, but your log message is somehow incomplete.
+>>
+>> Could you expand on that, showing the problem using an example, and then how you
+>> see it fixed?
+>>
+> This patch isn't a fix. It's just an optimization for match data and proc_handler in struct ctl_table.
+> 
+>> Also, could you please add the Fixes: tag so this patch can land on stable trees?
+>>
+> This statement 'if (period < min || period > max)' in __checkparam_dl() will work fine even if there hasn't this patch.
+> So this patch may not need land on stable trees.
+> 
 
-  ./scripts/check-local-export: line 54: wait: pid 17328 is not a child of this shell
+Good, so you already know how to improve your log message.
 
-I used the process substitution because a pipeline executes each command
-in a subshell; variables modified within the while-loop in the subshell
-context would be lost after the subshell terminates.
-
-Fortunately, Bash>=4.2 supports the 'lastpipe' option, which runs the
-last element of a pipeline in the current shell process.
-
-Also, set 'pipefail' to catch errors from ${NM}.
-
-Bash 4.2, released in 2011, is 5 years older than Bash 4.4.
-
-Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Reported-by: Michael Ellerman <mpe@ellerman.id.au>
-Reported-by: Wang Yugui <wangyugui@e16-tech.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
- scripts/check-local-export | 35 ++++++++++++++++++++---------------
- 1 file changed, 20 insertions(+), 15 deletions(-)
-
-diff --git a/scripts/check-local-export b/scripts/check-local-export
-index da745e2743b7..e21c7b54885d 100755
---- a/scripts/check-local-export
-+++ b/scripts/check-local-export
-@@ -8,11 +8,30 @@
- 
- set -e
- 
-+# catch errors from ${NM}
-+set -o pipefail
-+
-+# Run the last element of a pipeline in the current shell.
-+# Without this, the while-loop would be executed in a subshell, and
-+# the changes made to 'symbol_types' and 'export_symbols' would be lost.
-+shopt -s lastpipe
-+
- declare -A symbol_types
- declare -a export_symbols
- 
- exit_code=0
- 
-+# If there is no symbol in the object, ${NM} (both GNU nm and llvm-nm) shows
-+# 'no symbols' diagnostic (but exits with 0). It is harmless and hidden by
-+# '2>/dev/null'. However, it suppresses real error messages as well. Add a
-+# hand-crafted error message here.
-+#
-+# Use --quiet instead of 2>/dev/null when we upgrade the minimum version of
-+# binutils to 2.37, llvm to 13.0.0.
-+#
-+# Then, the following line will be really simple:
-+#   ${NM} --quiet ${1} |
-+{ ${NM} ${1} 2>/dev/null || { echo "${0}: ${NM} failed" >&2; false; } } |
- while read value type name
- do
- 	# Skip the line if the number of fields is less than 3.
-@@ -37,21 +56,7 @@ do
- 	if [[ ${name} == __ksymtab_* ]]; then
- 		export_symbols+=(${name#__ksymtab_})
- 	fi
--
--	# If there is no symbol in the object, ${NM} (both GNU nm and llvm-nm)
--	# shows 'no symbols' diagnostic (but exits with 0). It is harmless and
--	# hidden by '2>/dev/null'. However, it suppresses real error messages
--	# as well. Add a hand-crafted error message here.
--	#
--	# Use --quiet instead of 2>/dev/null when we upgrade the minimum version
--	# of binutils to 2.37, llvm to 13.0.0.
--	#
--	# Then, the following line will be really simple:
--	#   done < <(${NM} --quiet ${1})
--done < <(${NM} ${1} 2>/dev/null || { echo "${0}: ${NM} failed" >&2; false; } )
--
--# Catch error in the process substitution
--wait $!
-+done
- 
- for name in "${export_symbols[@]}"
- do
--- 
-2.32.0
+-- Daniel
 
