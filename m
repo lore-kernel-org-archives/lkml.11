@@ -2,102 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE30C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355304AbiFGTXU (ORCPT
+        id S1354727AbiFGTX3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:23:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32838 "EHLO
+        Tue, 7 Jun 2022 15:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352975AbiFGSbb (ORCPT
+        with ESMTP id S1352997AbiFGSbe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:31:31 -0400
+        Tue, 7 Jun 2022 14:31:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C8317CCB0;
-        Tue,  7 Jun 2022 10:56:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA04517CE4A;
+        Tue,  7 Jun 2022 10:56:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB478617A6;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B960561853;
+        Tue,  7 Jun 2022 17:56:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45D5BC36B01;
         Tue,  7 Jun 2022 17:56:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9DF0C341C0;
-        Tue,  7 Jun 2022 17:56:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624599;
-        bh=DHhMOTAVSHSY0j7O0/1UO25k14ku7/TFOBskDOIVeLg=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624600;
+        bh=KPi+PDnXetNqe8k0T50PiyVPHdsSkTnx9m4diIFuL3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wSK+gGBdlDpYaw6sO0qxWJTCdw3RCOg0XqZhZmlunycuh3vgDUPstNbB1mnXXUmv4
-         ZKbiLwbtmTWWv7QF0+5SKr6WvgaNdtJhCrX4gZ/yo/vcscheX1kyoZquGycF5m9qtw
-         AO9rpqTpU2VPugMztp87kqIomfXhC9yLpiaYd4e4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 384/667] memory: samsung: exynos5422-dmc: Avoid some over memory allocation
-Date:   Tue,  7 Jun 2022 19:00:49 +0200
-Message-Id: <20220607164946.265426046@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=D0lWwweAUSi5w2DIcEOnr4JosKQpI6jqPtTKv4kQlCc5V+B8JU331ZcBsTaCOWBaj
+         /vSW4pnolOmspVe0beGKs5fjA1V2NA0zSNDpAhoAjrb7z9n1XwUdljmrXH5pzE8RjA
+         wIItbH7vt5Tv062r5VoRjC+sa9dKYGlbIW/cemlcb1WNAqxBXpvHMsvTiwIZ0G0K32
+         g3qWOJg4Q1t5nVgcwFPv9AGoDEvmvNhhvzkl8oIS1uxGDHWe3gOAFWScxqPhQN0lT0
+         qZ+157i4SLzGTIYStD9pzZfAN3CX21x96uSgc5PoMbLLdV1YSeFMGt1F62c0ek398q
+         E8kfQz+0FSs+w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 13/51] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
+Date:   Tue,  7 Jun 2022 13:55:12 -0400
+Message-Id: <20220607175552.479948-13-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
+References: <20220607175552.479948-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 56653827f0d7bc7c2d8bac0e119fd1521fa9990a ]
+[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
 
-'dmc->counter' is a 'struct devfreq_event_dev **', so there is some
-over memory allocation. 'counters_size' should be computed with
-'sizeof(struct devfreq_event_dev *)'.
+There is a deadlock in sa1100_set_termios(), which is shown
+below:
 
-Use 'sizeof(*dmc->counter)' instead to fix it.
+   (Thread 1)              |      (Thread 2)
+                           | sa1100_enable_ms()
+sa1100_set_termios()       |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | sa1100_timeout()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-While at it, use devm_kcalloc() instead of devm_kzalloc()+open coded
-multiplication.
+We hold sport->port.lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need sport->port.lock in position (2) of thread 2. As a result,
+sa1100_set_termios() will block forever.
 
-Fixes: 6e7674c3c6df ("memory: Add DMC driver for Exynos5422")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/69d7e69346986e2fdb994d4382954c932f9f0993.1647760213.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+This patch moves del_timer_sync() before spin_lock_irqsave()
+in order to prevent the deadlock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/samsung/exynos5422-dmc.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/tty/serial/sa1100.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/memory/samsung/exynos5422-dmc.c b/drivers/memory/samsung/exynos5422-dmc.c
-index 9c8318923ed0..4733e7898ffe 100644
---- a/drivers/memory/samsung/exynos5422-dmc.c
-+++ b/drivers/memory/samsung/exynos5422-dmc.c
-@@ -1322,7 +1322,6 @@ static int exynos5_dmc_init_clks(struct exynos5_dmc *dmc)
-  */
- static int exynos5_performance_counters_init(struct exynos5_dmc *dmc)
- {
--	int counters_size;
- 	int ret, i;
+diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
+index 697b6a002a16..4ddcc985621a 100644
+--- a/drivers/tty/serial/sa1100.c
++++ b/drivers/tty/serial/sa1100.c
+@@ -446,6 +446,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
+ 	quot = uart_get_divisor(port, baud);
  
- 	dmc->num_counters = devfreq_event_get_edev_count(dmc->dev,
-@@ -1332,8 +1331,8 @@ static int exynos5_performance_counters_init(struct exynos5_dmc *dmc)
- 		return dmc->num_counters;
++	del_timer_sync(&sport->timer);
++
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+ 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
+@@ -476,8 +478,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+ 				UTSR1_TO_SM(UTSR1_ROR);
  	}
  
--	counters_size = sizeof(struct devfreq_event_dev) * dmc->num_counters;
--	dmc->counter = devm_kzalloc(dmc->dev, counters_size, GFP_KERNEL);
-+	dmc->counter = devm_kcalloc(dmc->dev, dmc->num_counters,
-+				    sizeof(*dmc->counter), GFP_KERNEL);
- 	if (!dmc->counter)
- 		return -ENOMEM;
- 
+-	del_timer_sync(&sport->timer);
+-
+ 	/*
+ 	 * Update the per-port timeout.
+ 	 */
 -- 
 2.35.1
-
-
 
