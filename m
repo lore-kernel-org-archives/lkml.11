@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77CBECCA499
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB25CCA49B
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384993AbiFGWRG (ORCPT
+        id S1384688AbiFGWQC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:17:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38824 "EHLO
+        Tue, 7 Jun 2022 18:16:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359589AbiFGVLs (ORCPT
+        with ESMTP id S1379866AbiFGVLH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A562194DB;
-        Tue,  7 Jun 2022 11:53:57 -0700 (PDT)
+        Tue, 7 Jun 2022 17:11:07 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900EF20E52F;
+        Tue,  7 Jun 2022 11:52:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A4B261724;
-        Tue,  7 Jun 2022 18:53:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38F53C385A2;
-        Tue,  7 Jun 2022 18:53:56 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C0626CE2465;
+        Tue,  7 Jun 2022 18:52:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB027C385A2;
+        Tue,  7 Jun 2022 18:52:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628036;
-        bh=xRzVVb9dp3AfJuQgs6IuBJGSwSqg0aexqaH6UBZReSc=;
+        s=korg; t=1654627934;
+        bh=vP7PH4Srh+bvPzDuDeiJrBEIpsiBzOwQZMJ0VjjfR3c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tyXGWFiN8R0iR0U7cL8JBciu1exTUMyPGa9nt4iD0OH7aY4oY48Rl0RHv7m40ORGB
-         egXkRkzSUCzhy0lXPPocGilDqs4Kdb0QhFfOETQwOW7oE8mWDe2RYkNYIg26EXZ6+X
-         sfd60eXp3+vIa0UNo+my6aUQ/7jlRNXV1HIsyI0I=
+        b=Ein+AwdvXhpl3IpfrdMs+lRp3hKbCHzVl5MopYJdtxUg1B55mE1BJj1OVCYkZbvU7
+         Wuu5fNTUZLZmJlq9ZK0xXH0VafqL+AWe+ijPIjBtlyLjy2jVczOTdcY7KY8c1FQkOo
+         a3PwrnDXNNZFggeJqIrtpYFbRY719IOEtqfQYxY0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Latypov <dlatypov@google.com>,
-        David Gow <davidgow@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 182/879] kunit: tool: make parser stop overwriting status of suites w/ no_tests
-Date:   Tue,  7 Jun 2022 18:55:00 +0200
-Message-Id: <20220607165008.124527200@linuxfoundation.org>
+Subject: [PATCH 5.18 145/879] net: remove two BUG() from skb_checksum_help()
+Date:   Tue,  7 Jun 2022 18:54:23 +0200
+Message-Id: <20220607165006.913303961@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,82 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Latypov <dlatypov@google.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit dbf0b0d53a2b5afa6ef7372dcedf52302669fc2c ]
+[ Upstream commit d7ea0d9df2a6265b2b180d17ebc64b38105968fc ]
 
-Consider this invocation
-$ ./tools/testing/kunit/kunit.py parse <<EOF
-  TAP version 14
-  1..2
-  ok 1 - suite
-    # Subtest: no_tests_suite
-    # catastrophic error!
-  not ok 1 - no_tests_suite
-EOF
+I have a syzbot report that managed to get a crash in skb_checksum_help()
 
-It will have a 0 exit code even though there's a "not ok".
+If syzbot can trigger these BUG(), it makes sense to replace
+them with more friendly WARN_ON_ONCE() since skb_checksum_help()
+can instead return an error code.
 
-Consider this one:
-$ ./tools/testing/kunit/kunit.py parse <<EOF
-  TAP version 14
-  1..2
-  ok 1 - suite
-  not ok 1 - no_tests_suite
-EOF
+Note that syzbot will still crash there, until real bug is fixed.
 
-It will a non-zero exit code.
-
-Why?
-We have this line in the kunit_parser.py
-> parent_test = parse_test_header(lines, test)
-where we have special handling when we see "# Subtest" and we ignore the
-explicit reported "not ok 1" status!
-
-Also, NO_TESTS at a suite-level only results in a non-zero status code
-where then there's only one suite atm.
-
-This change is the minimal one to make sure we don't overwrite it.
-
-Signed-off-by: Daniel Latypov <dlatypov@google.com>
-Reviewed-by: David Gow <davidgow@google.com>
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/kunit/kunit_parser.py                        | 7 +++++--
- .../test_data/test_is_test_passed-no_tests_no_plan.log     | 2 +-
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ net/core/dev.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/kunit/kunit_parser.py b/tools/testing/kunit/kunit_parser.py
-index 05ff334761dd..2f93ed1d7f99 100644
---- a/tools/testing/kunit/kunit_parser.py
-+++ b/tools/testing/kunit/kunit_parser.py
-@@ -789,8 +789,11 @@ def parse_test(lines: LineStream, expected_num: int, log: List[str]) -> Test:
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 2771fd22dc6a..0784c339cd7d 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3215,11 +3215,15 @@ int skb_checksum_help(struct sk_buff *skb)
+ 	}
  
- 	# Check for there being no tests
- 	if parent_test and len(subtests) == 0:
--		test.status = TestStatus.NO_TESTS
--		test.add_error('0 tests run!')
-+		# Don't override a bad status if this test had one reported.
-+		# Assumption: no subtests means CRASHED is from Test.__init__()
-+		if test.status in (TestStatus.TEST_CRASHED, TestStatus.SUCCESS):
-+			test.status = TestStatus.NO_TESTS
-+			test.add_error('0 tests run!')
+ 	offset = skb_checksum_start_offset(skb);
+-	BUG_ON(offset >= skb_headlen(skb));
++	ret = -EINVAL;
++	if (WARN_ON_ONCE(offset >= skb_headlen(skb)))
++		goto out;
++
+ 	csum = skb_checksum(skb, offset, skb->len - offset, 0);
  
- 	# Add statuses to TestCounts attribute in Test object
- 	bubble_up_test_results(test)
-diff --git a/tools/testing/kunit/test_data/test_is_test_passed-no_tests_no_plan.log b/tools/testing/kunit/test_data/test_is_test_passed-no_tests_no_plan.log
-index dd873c981108..4f81876ee6f1 100644
---- a/tools/testing/kunit/test_data/test_is_test_passed-no_tests_no_plan.log
-+++ b/tools/testing/kunit/test_data/test_is_test_passed-no_tests_no_plan.log
-@@ -3,5 +3,5 @@ TAP version 14
-   # Subtest: suite
-   1..1
-     # Subtest: case
--  ok 1 - case # SKIP
-+  ok 1 - case
- ok 1 - suite
+ 	offset += skb->csum_offset;
+-	BUG_ON(offset + sizeof(__sum16) > skb_headlen(skb));
++	if (WARN_ON_ONCE(offset + sizeof(__sum16) > skb_headlen(skb)))
++		goto out;
+ 
+ 	ret = skb_ensure_writable(skb, offset + sizeof(__sum16));
+ 	if (ret)
 -- 
 2.35.1
 
