@@ -2,97 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB99CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15FDECCA47F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379294AbiFGVZZ (ORCPT
+        id S1379170AbiFGVZS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:25:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35274 "EHLO
+        Tue, 7 Jun 2022 17:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359481AbiFGU2v (ORCPT
+        with ESMTP id S1359478AbiFGU2v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:28:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6121DE2F6;
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A62801DE2F4;
         Tue,  7 Jun 2022 11:34:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE5D260906;
-        Tue,  7 Jun 2022 18:34:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCF40C385A2;
-        Tue,  7 Jun 2022 18:34:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626849;
-        bh=jqHGMCzx24qQKDPktTXW/vu9addVIfjBqKQ83UTvzSY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O1dZTq+Axg4JH7LmSXkOLwjDvGFvKyRQsvDZX+tKo2o+O7OjZwQ15QWGtaM8fz0NF
-         lavxyR1sZtII4IBABz0tla6qxEHqDw0NJx62rY4E0EhSXS0+GRr495fGlUg3T4OVzs
-         FC/OCj7KsnAxUlt92iusQzGR0fUte6VRgQEmNnhU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Jessica Yu <jeyu@kernel.org>,
-        Matthias Maennich <maennich@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 527/772] module.h: simplify MODULE_IMPORT_NS
-Date:   Tue,  7 Jun 2022 19:01:59 +0200
-Message-Id: <20220607165004.503229394@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654626850; x=1686162850;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=H1D466g61S0JdOyvdeNI5Kb/2JvASwpfM/61n6c471g=;
+  b=Abrsy2FTdlWVZGxSFHBBaViyTOBrPa7mtJ9y2OUwXaF33DAVzFtC+aWS
+   agFalCePq6TYMTZpZX6Zd4B/J9iYdNAnRJX5qnGp2AZw8C8zBApy4wijL
+   jZayafI13cGzviOLWxo0RyQWvqRrWxLubsA78DVb3JobE80uqmGbKHFlT
+   UKF8Nu1pVMN6E7LW5IZ5nRDQhRlihkEkUAdQfGkhNuD+lYpaS8bmNXjQs
+   VR15UgpfNuEHywc5ls0XGatINDBNVXKP7Nr0EwY1CR0xoagMS7qOt72ej
+   nAFlWcXPvgDbPmZ3w8gQ37wQ/jjUuZKBWQKZRhSR8EyKf3u/A6sRABC6M
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="363078203"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="363078203"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 11:34:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="636265428"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 07 Jun 2022 11:34:01 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nye1g-000Dr3-MA;
+        Tue, 07 Jun 2022 18:34:00 +0000
+Date:   Wed, 8 Jun 2022 02:33:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tianfei Zhang <tianfei.zhang@intel.com>, yilun.xu@intel.com,
+        lee.jones@linaro.org
+Cc:     kbuild-all@lists.01.org, hao.wu@intel.com, trix@redhat.com,
+        linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
+        russell.h.weight@intel.com, matthew.gerlach@linux.intel.com,
+        Tianfei Zhang <tianfei.zhang@intel.com>
+Subject: Re: [PATCH v1 3/4] mfd: intel-m10-bmc: add PMCI driver
+Message-ID: <202206080218.qhislJf4-lkp@intel.com>
+References: <20220607032833.3482-4-tianfei.zhang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607032833.3482-4-tianfei.zhang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Hi Tianfei,
 
-[ Upstream commit 80140a81f7f833998d732102eea0fea230b88067 ]
+Thank you for the patch! Yet something to improve:
 
-In commit ca321ec74322 ("module.h: allow #define strings to work with
-MODULE_IMPORT_NS") I fixed up the MODULE_IMPORT_NS() macro to allow
-defined strings to work with it.  Unfortunatly I did it in a two-stage
-process, when it could just be done with the __stringify() macro as
-pointed out by Masahiro Yamada.
+[auto build test ERROR on lee-mfd/for-mfd-next]
+[also build test ERROR on v5.19-rc1]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Clean this up to only be one macro instead of two steps to achieve the
-same end result.
+url:    https://github.com/intel-lab-lkp/linux/commits/Tianfei-Zhang/mfd-add-PMCI-driver-support/20220607-113619
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git for-mfd-next
+config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220608/202206080218.qhislJf4-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/88995bb5653b69e780baba37b6ade01348054135
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Tianfei-Zhang/mfd-add-PMCI-driver-support/20220607-113619
+        git checkout 88995bb5653b69e780baba37b6ade01348054135
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/mfd/
 
-Fixes: ca321ec74322 ("module.h: allow #define strings to work with MODULE_IMPORT_NS")
-Reported-by: Masahiro Yamada <masahiroy@kernel.org>
-Cc: Luis Chamberlain <mcgrof@kernel.org>
-Cc: Jessica Yu <jeyu@kernel.org>
-Cc: Matthias Maennich <maennich@google.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/linux/module.h | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 1e135fd5c076..d5e9066990ca 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -290,8 +290,7 @@ extern typeof(name) __mod_##type##__##name##_device_table		\
-  * files require multiple MODULE_FIRMWARE() specifiers */
- #define MODULE_FIRMWARE(_firmware) MODULE_INFO(firmware, _firmware)
- 
--#define _MODULE_IMPORT_NS(ns)	MODULE_INFO(import_ns, #ns)
--#define MODULE_IMPORT_NS(ns)	_MODULE_IMPORT_NS(ns)
-+#define MODULE_IMPORT_NS(ns)	MODULE_INFO(import_ns, __stringify(ns))
- 
- struct notifier_block;
- 
+All error/warnings (new ones prefixed by >>):
+
+   drivers/mfd/intel-m10-bmc-pmci.c: In function 'pmci_probe':
+>> drivers/mfd/intel-m10-bmc-pmci.c:58:17: error: implicit declaration of function 'devm_regmap_init_indirect_register' [-Werror=implicit-function-declaration]
+      58 |                 devm_regmap_init_indirect_register(dev,
+         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/mfd/intel-m10-bmc-pmci.c:57:29: warning: assignment to 'struct regmap *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+      57 |         pmci->m10bmc.regmap =
+         |                             ^
+   cc1: some warnings being treated as errors
+
+
+vim +/devm_regmap_init_indirect_register +58 drivers/mfd/intel-m10-bmc-pmci.c
+
+    39	
+    40	static int pmci_probe(struct dfl_device *ddev)
+    41	{
+    42		struct device *dev = &ddev->dev;
+    43		struct pmci_device *pmci;
+    44	
+    45		pmci = devm_kzalloc(dev, sizeof(*pmci), GFP_KERNEL);
+    46		if (!pmci)
+    47			return -ENOMEM;
+    48	
+    49		pmci->m10bmc.dev = dev;
+    50		pmci->dev = dev;
+    51		pmci->m10bmc.type = M10_N6000;
+    52	
+    53		pmci->base = devm_ioremap_resource(dev, &ddev->mmio_res);
+    54		if (IS_ERR(pmci->base))
+    55			return PTR_ERR(pmci->base);
+    56	
+  > 57		pmci->m10bmc.regmap =
+  > 58			devm_regmap_init_indirect_register(dev,
+    59							   pmci->base + M10BMC_PMCI_INDIRECT_BASE,
+    60							   &m10bmc_pmci_regmap_config);
+    61		if (IS_ERR(pmci->m10bmc.regmap))
+    62			return PTR_ERR(pmci->m10bmc.regmap);
+    63	
+    64		return m10bmc_dev_init(&pmci->m10bmc);
+    65	}
+    66	
+
 -- 
-2.35.1
-
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
