@@ -2,65 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E5ECCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 262DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:32:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237018AbiFGGcw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 02:32:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45892 "EHLO
+        id S237030AbiFGGc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 02:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237002AbiFGGct (ORCPT
+        with ESMTP id S237013AbiFGGcu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 02:32:49 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F7D27CCD
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:32:47 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id er5so21591853edb.12
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 23:32:47 -0700 (PDT)
+        Tue, 7 Jun 2022 02:32:50 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6E52898B
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:32:49 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id er5so21591946edb.12
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 23:32:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=jdLvKxR1Z6t2c0hErw3/qchn3RYb6tyzzSPggFOMX2I=;
-        b=t82zzV+jvai9G2AknGaxPwASMP1QZ0N0isBE83qyXKWwykwcmJo9aEx/Q6hiMH1iTP
-         9gCea/EeG4sVdvQOCfIsSaoFeVLIfo+WYMrRKhONdNjNxIh5Ndhlcrgc/glI7fz21KnE
-         LDOHxNblAq4ArPPbHgT+RNKT+AQCoNtBgv88saHTS4YPYt4PEb8tml43HIWCF9wO93Ll
-         wG4GUA21zoe/zcHctKs6nhW0BIv7hnJHQsH+uH5mybHla40BpVOt2SznjGyXn9LVj+8t
-         qbWTZDhHHCs1rp2dWf09mM6nYbB8uMcBIEKSmt8PYJw3xmQoDR4X0/3LbTriN4lMpWsQ
-         mOBg==
+        bh=kUL0/+TW0ZmFocb8yDY5jqKbncdLIBblavQc/eaSQJI=;
+        b=sftAmM2OlEfC6VJ8zIEA0Xfsy6v2HTaNTjUKMfYdtxoSdcD3vxrEO/PCEGePaDtozC
+         xyHlmLmsdRgR2yk1elTff9tbXqil/B41tk+0WtgEj08Gm/1Kmpx2r/HeUOPzdA0SMfGc
+         wFE+ZMwPJFu6CpQ03yhMFxJ04tcjr5hJhfqrLepuc7NPW50CeYYD/ZycxufDQK3A+vuv
+         T2ZpVYajmKu/RZ+gY+7+/lh8OekW/q2hi1jds/Xh06lKnW8KXQa4oJEoM09itLbjopST
+         PwShn5HcVR8etj+2V8Zl0LAGZJFoRFdvIEiublN0VZCnbQrafYQwBrkLSxB59YhB/GsV
+         tuKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jdLvKxR1Z6t2c0hErw3/qchn3RYb6tyzzSPggFOMX2I=;
-        b=Mpj9c8tIbR5PMEEh9XzRKZYwPHlbhM5xtmCtFL3eQzqLvIULZqpEsrY19DY6WsIltw
-         WWo8csWzApt59jnAgZHhSwZpOPXb8pG9BbWo0mdlj9JihJKaDYFrYHh8Dd7+AtQ0whLZ
-         rdbOzNdenLpauOZRxpWbIAfgueUwj4Fk6FbHcLoahe0YzXtAujuXWMxZCkXf6QbkiBb5
-         gGvkyERVJA5Hy+r7O8E0Gfvp7ivaabGKnflaoQVu9+cVhvia4k9sOOSX9UbZJHuEZRyF
-         +Rt+tPSq+dQrVGDKOBWef/eL9XecgcfyMs1Nd5smxoKq54fOpqDZO6c6CofxTHKgA9vF
-         Z+xg==
-X-Gm-Message-State: AOAM530bttLN5JRFpe8uUOBUSsWgkPjyk0DxKpntNE/FIpgMR86L7qB6
-        fwB5Rg5NiDUAN8uCuEk/aPwH5Q==
-X-Google-Smtp-Source: ABdhPJwe3Habr/xYh2komg4xDDgNgQVn6qt25dw+usJac2OhwSPJ2zYyN3IUkCpg9bEII8U6RZz/lw==
-X-Received: by 2002:a05:6402:1e88:b0:42f:b1ff:7858 with SMTP id f8-20020a0564021e8800b0042fb1ff7858mr20912601edf.407.1654583565664;
-        Mon, 06 Jun 2022 23:32:45 -0700 (PDT)
+        bh=kUL0/+TW0ZmFocb8yDY5jqKbncdLIBblavQc/eaSQJI=;
+        b=J9sV1hAv0+JiZz1m+6vO/1Sm3Tfqy0MTX7iyLfotkb5UXCBiUx7pRLPJeczZzCQJ8j
+         2bGqIOxLom+AnZL7W6JII21AsHzeKsSTEIIjak7HSMNuexQkRA1/cr7umrFw8iOOGyGr
+         VPnjRG4Ciq8CfyHDJeV8nAUG0o/KfBduElKmm/TAraDA5z1SgayCwooBhZOGBCLTk/gs
+         hnewbcozB936CsDnhrqK6YXamHT1Rv+41LukrtrbsMzomKV9dunWOrfkSnpDT4KdzCgd
+         bwMLvjeDqo+XEqOAa7J/iTL3N6d/N7w2nQmuufKRc1v3+IcmStzXrLwMQgR0Gi2OCjTh
+         C0uw==
+X-Gm-Message-State: AOAM531q9DlIk5t5IDUBpwjXYy4cyIKvM0lLdYBnEHFkj3oc4X4R169C
+        voSCGwhcST19pud4knXz0L15fw==
+X-Google-Smtp-Source: ABdhPJzMq/JTC9wN4RGWyrxYyQtSlviJZtlJ2Wjip2i6n2thkVBo2E+uQfiitHipF1MrM27CgRNrQQ==
+X-Received: by 2002:a05:6402:139a:b0:431:6b50:11a2 with SMTP id b26-20020a056402139a00b004316b5011a2mr8272850edv.72.1654583567642;
+        Mon, 06 Jun 2022 23:32:47 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id eg13-20020a056402288d00b0042dce73168csm9796349edb.13.2022.06.06.23.32.44
+        by smtp.gmail.com with ESMTPSA id eg13-20020a056402288d00b0042dce73168csm9796349edb.13.2022.06.06.23.32.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 23:32:45 -0700 (PDT)
+        Mon, 06 Jun 2022 23:32:47 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         linux-arm-kernel@lists.infradead.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jaehoon Chung <jh80.chung@samsung.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-mmc@vger.kernel.org, Alim Akhtar <alim.akhtar@samsung.com>,
         devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH 1/2] arm64: dts: exynos: adjust whitespace around '='
-Date:   Tue,  7 Jun 2022 08:32:39 +0200
-Message-Id: <165458355452.6489.13343990795732516629.b4-ty@linaro.org>
+Subject: Re: (subset) [PATCH v2 2/4] arm64: dts: exynos: align MMC node name with dtschema
+Date:   Tue,  7 Jun 2022 08:32:41 +0200
+Message-Id: <165458355453.6489.3351290853657960731.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220526204323.832243-1-krzysztof.kozlowski@linaro.org>
-References: <20220526204323.832243-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220605163710.144210-3-krzysztof.kozlowski@linaro.org>
+References: <20220605163710.144210-1-krzysztof.kozlowski@linaro.org> <20220605163710.144210-3-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -68,19 +70,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 26 May 2022 22:43:22 +0200, Krzysztof Kozlowski wrote:
-> Fix whitespace coding style: use single space instead of tabs or
-> multiple spaces around '=' sign in property assignment.  No functional
-> changes (same DTB).
+On Sun, 5 Jun 2022 18:37:08 +0200, Krzysztof Kozlowski wrote:
+> The node names should be generic and MMC controller dtschema expects
+> "mmc".
 > 
 > 
 
 Applied, thanks!
 
-[1/2] arm64: dts: exynos: adjust whitespace around '='
-      https://git.kernel.org/krzk/linux/c/6f8c75ad5a1550257d60883eef6d5e97f6268022
-[2/2] ARM: dts: exynos: adjust whitespace around '='
-      https://git.kernel.org/krzk/linux/c/3b0a91e586dc92da738af9eb35352d5897b8b279
+[2/4] arm64: dts: exynos: align MMC node name with dtschema
+      https://git.kernel.org/krzk/linux/c/2164784a4b2700d1929854b5ec6b2169ff449814
 
 Best regards,
 -- 
