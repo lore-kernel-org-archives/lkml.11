@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8BD4CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D486CCA483
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355419AbiFGTZO (ORCPT
+        id S1355649AbiFGTZh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:25:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37386 "EHLO
+        Tue, 7 Jun 2022 15:25:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353114AbiFGSbn (ORCPT
+        with ESMTP id S1349153AbiFGSbp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:31:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF19917D3AB;
-        Tue,  7 Jun 2022 10:56:51 -0700 (PDT)
+        Tue, 7 Jun 2022 14:31:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7FE017DDD1;
+        Tue,  7 Jun 2022 10:56:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A96CCB81F38;
-        Tue,  7 Jun 2022 17:56:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34FE9C36AFE;
-        Tue,  7 Jun 2022 17:56:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 397B2617E1;
+        Tue,  7 Jun 2022 17:56:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F49DC34119;
+        Tue,  7 Jun 2022 17:56:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624609;
-        bh=YrV3nqLP+jAT5CvSK+m0J/RN1V+pBDdcZX8TEWWHFFg=;
+        s=k20201202; t=1654624615;
+        bh=fXydfbGPjscZ2gziUBtB4tTAPY3+/VZjcJkVsS08xN0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FHxaaonn7+4CiUHwocxlacP2lTqQfwVd+kRcLBcSShMFZpjl3Jok9YjSZG3DNZ+1k
-         dc195zCwtu+7rnbgyHO+pnDDvRK16DS4/XCdDTG6U/ZmpN3XjGfS5/3ATHPmxM6VXi
-         +Nx2V4IOMmBU4C5Ugp05PtA9e2LbTZSxfEz5rg6ycbd73PfUABCu2kNgZBC8BBBThu
-         PsGbxqlBDZ3eP6JNSPaxxLrgkPLTIE6sekIYyjCtokT7VHWx/UkkoFHhzH2ODF80XX
-         4/LxzayYtc5PXl3X6ODCSkxGzRyAiSMBvGc09Og92wyJB2vRDJfm11s3yZcft/jKab
-         C443JmY8XcmbA==
+        b=vKCciScZUHtjZxtSfsyLAtU5bWepZTIP3Mzo/q7w+9+pE1iOK/xhFM1oLFEYGhJ10
+         yLJOdSYkmlWNtY7xIiSoAU4hlODrLXkSV5uaaM17tHqbu0TyX26sF2A6jrfyAVLTlm
+         ZHdx188FnxaVbO4grtc+twuaAQj5Q8cLegwuoC4JEp0NfhfofN38VbL+5a5rFd8bdB
+         9OVVZCzyMh4oV7JjBx2t/pVIwt38eGTSUxG5OWw0lZQXm7Ze03V2v479raTHMsaynT
+         Kq9nf/IPbnOkJP2Lm3VGl0ltz0RCngCr9HJJHdEjCjaMoLkfoe1jxUwvvhetw2EkvN
+         qafGz/U2KFFsA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Evan Green <evgreen@chromium.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, yj84.jang@samsung.com,
-        christophe.leroy@csgroup.eu, rafael.j.wysocki@intel.com,
-        bhelgaas@google.com, linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 15/51] USB: hcd-pci: Fully suspend across freeze/thaw cycle
-Date:   Tue,  7 Jun 2022 13:55:14 -0400
-Message-Id: <20220607175552.479948-15-sashal@kernel.org>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        yung-chuan.liao@linux.intel.com, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 19/51] soundwire: qcom: adjust autoenumeration timeout
+Date:   Tue,  7 Jun 2022 13:55:18 -0400
+Message-Id: <20220607175552.479948-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
 References: <20220607175552.479948-1-sashal@kernel.org>
@@ -55,48 +55,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Green <evgreen@chromium.org>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit 63acaa8e9c65dc34dc249440216f8e977f5d2748 ]
+[ Upstream commit 74da272400b46f2e898f115d1b1cd60828766919 ]
 
-The documentation for the freeze() method says that it "should quiesce
-the device so that it doesn't generate IRQs or DMA". The unspoken
-consequence of not doing this is that MSIs aimed at non-boot CPUs may
-get fully lost if they're sent during the period where the target CPU is
-offline.
+Currently timeout for autoenumeration during probe and bus reset is set to
+2 secs which is really a big value. This can have an adverse effect on
+boot time if the slave device is not ready/reset.
+This was the case with wcd938x which was not reset yet but we spent 2
+secs waiting in the soundwire controller probe. Reduce this time to
+1/10 of Hz which should be good enough time to finish autoenumeration
+if any slaves are available on the bus.
 
-The current callbacks for USB HCD do not fully quiesce interrupts,
-specifically on XHCI. Change to use the full suspend/resume flow for
-freeze/thaw to ensure interrupts are fully quiesced. This fixes issues
-where USB devices fail to thaw during hibernation because XHCI misses
-its interrupt and cannot recover.
-
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Evan Green <evgreen@chromium.org>
-Link: https://lore.kernel.org/r/20220421103751.v3.2.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220506084705.18525-1-srinivas.kandagatla@linaro.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/hcd-pci.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/soundwire/qcom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/core/hcd-pci.c b/drivers/usb/core/hcd-pci.c
-index d630cccd2e6e..5af810cd8a58 100644
---- a/drivers/usb/core/hcd-pci.c
-+++ b/drivers/usb/core/hcd-pci.c
-@@ -616,10 +616,10 @@ const struct dev_pm_ops usb_hcd_pci_pm_ops = {
- 	.suspend_noirq	= hcd_pci_suspend_noirq,
- 	.resume_noirq	= hcd_pci_resume_noirq,
- 	.resume		= hcd_pci_resume,
--	.freeze		= check_root_hub_suspended,
-+	.freeze		= hcd_pci_suspend,
- 	.freeze_noirq	= check_root_hub_suspended,
- 	.thaw_noirq	= NULL,
--	.thaw		= NULL,
-+	.thaw		= hcd_pci_resume,
- 	.poweroff	= hcd_pci_suspend,
- 	.poweroff_noirq	= hcd_pci_suspend_noirq,
- 	.restore_noirq	= hcd_pci_resume_noirq,
+diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+index 0ef79d60e88e..f5955826b152 100644
+--- a/drivers/soundwire/qcom.c
++++ b/drivers/soundwire/qcom.c
+@@ -97,7 +97,7 @@
+ 
+ #define SWRM_SPECIAL_CMD_ID	0xF
+ #define MAX_FREQ_NUM		1
+-#define TIMEOUT_MS		(2 * HZ)
++#define TIMEOUT_MS		100
+ #define QCOM_SWRM_MAX_RD_LEN	0x1
+ #define QCOM_SDW_MAX_PORTS	14
+ #define DEFAULT_CLK_FREQ	9600000
 -- 
 2.35.1
 
