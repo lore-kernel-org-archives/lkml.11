@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5305CCA49D
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E4B1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:53:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379055AbiFGUwv (ORCPT
+        id S1358085AbiFGUw6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
+        Tue, 7 Jun 2022 16:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358612AbiFGTwp (ORCPT
+        with ESMTP id S1358626AbiFGTwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:45 -0400
+        Tue, 7 Jun 2022 15:52:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30D331374;
-        Tue,  7 Jun 2022 11:21:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB4D32EDA;
+        Tue,  7 Jun 2022 11:21:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74A92B82368;
-        Tue,  7 Jun 2022 18:21:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D147AC385A5;
-        Tue,  7 Jun 2022 18:21:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D091AB822C0;
+        Tue,  7 Jun 2022 18:21:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31709C385A2;
+        Tue,  7 Jun 2022 18:21:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626085;
-        bh=Aq7vSxKcjetfj93aKlRfrOrn3yESDQPRup+E2ckv/ac=;
+        s=korg; t=1654626093;
+        bh=8mRspE9nlDVKEVkmPlehDyDonM6JX4MSJvOIRx2gICE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vASabPSJBsihLSViFASSXL54vkjy/KLKUMIMWCGi6Rnue2CiXElGFnEvHS69WUQ8A
-         q+kua9bJXRcBHnOU19bFBOqLkozKVdMZdBtpxBexpWoU4aB0/Qf94QbZvYo87F/sbf
-         gaxw3ljY4TzTjAprFl9OYhKiAKztqRfVIYfvZKAI=
+        b=uvDreApV1l71ueQITxkx45YpR6LfkbCCkjWySGEKt9YytZgTk1Muq0YwixSMkdL3y
+         Ju2oQnQF0JHoL73xMRTo+uC7Bo5MIOARo+aE0vtnx3myowzOOy5ZCgvTPn6YbFdsnW
+         7xJmjJQY4v1mBUYQQgPVnp6tOW7QFPlkTFXz+WIw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        stable@vger.kernel.org, Enzo Matsumiya <ematsumiya@suse.de>,
+        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 250/772] drm/vc4: txp: Force alpha to be 0xff if its disabled
-Date:   Tue,  7 Jun 2022 18:57:22 +0200
-Message-Id: <20220607164956.393497105@linuxfoundation.org>
+Subject: [PATCH 5.17 214/772] cifs: return ENOENT for DFS lookup_cache_entry()
+Date:   Tue,  7 Jun 2022 18:56:46 +0200
+Message-Id: <20220607164955.340224243@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,45 +51,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Enzo Matsumiya <ematsumiya@suse.de>
 
-[ Upstream commit 5453343a88ede8b12812fced81ecd24cb888ccc3 ]
+[ Upstream commit 337b8b0e4343567221ef8d88aac5e418208d4ac1 ]
 
-If we use a format that has padding instead of the alpha component (such
-as XRGB8888), it appears that the Transposer will fill the padding to 0,
-disregarding what was stored in the input buffer padding.
+EEXIST didn't make sense to use when dfs_cache_find() couldn't find a
+cache entry nor retrieve a referral target.
 
-This leads to issues with IGT, since it will set the padding to 0xff,
-but will then compare the CRC of the two frames which will thus fail.
-Another nice side effect is that it is now possible to just use the
-buffer as ARGB.
+It also doesn't make sense cifs_dfs_query_info_nonascii_quirk() to
+emulate ENOENT anymore.
 
-Fixes: 008095e065a8 ("drm/vc4: Add support for the transposer block")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://lore.kernel.org/r/20220328153659.2382206-4-maxime@cerno.tech
+Signed-off-by: Enzo Matsumiya <ematsumiya@suse.de>
+Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_txp.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/cifs/connect.c   | 6 ++++--
+ fs/cifs/dfs_cache.c | 6 +++---
+ fs/cifs/misc.c      | 6 +-----
+ 3 files changed, 8 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_txp.c b/drivers/gpu/drm/vc4/vc4_txp.c
-index ace2d03649ba..82beb8c159f2 100644
---- a/drivers/gpu/drm/vc4/vc4_txp.c
-+++ b/drivers/gpu/drm/vc4/vc4_txp.c
-@@ -304,6 +304,12 @@ static void vc4_txp_connector_atomic_commit(struct drm_connector *conn,
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index 8f60be10aa43..82ae3b84caf6 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -3406,8 +3406,9 @@ cifs_are_all_path_components_accessible(struct TCP_Server_Info *server,
+ }
  
- 	if (fb->format->has_alpha)
- 		ctrl |= TXP_ALPHA_ENABLE;
-+	else
-+		/*
-+		 * If TXP_ALPHA_ENABLE isn't set and TXP_ALPHA_INVERT is, the
-+		 * hardware will force the output padding to be 0xff.
-+		 */
-+		ctrl |= TXP_ALPHA_INVERT;
+ /*
+- * Check if path is remote (e.g. a DFS share). Return -EREMOTE if it is,
+- * otherwise 0.
++ * Check if path is remote (i.e. a DFS share).
++ *
++ * Return -EREMOTE if it is, otherwise 0 or -errno.
+  */
+ static int is_path_remote(struct mount_ctx *mnt_ctx)
+ {
+@@ -3697,6 +3698,7 @@ int cifs_mount(struct cifs_sb_info *cifs_sb, struct smb3_fs_context *ctx)
+ 	if (!isdfs)
+ 		goto out;
  
- 	gem = drm_fb_cma_get_gem_obj(fb, 0);
- 	TXP_WRITE(TXP_DST_PTR, gem->paddr + fb->offsets[0]);
++	/* proceed as DFS mount */
+ 	uuid_gen(&mnt_ctx.mount_id);
+ 	rc = connect_dfs_root(&mnt_ctx, &tl);
+ 	dfs_cache_free_tgts(&tl);
+diff --git a/fs/cifs/dfs_cache.c b/fs/cifs/dfs_cache.c
+index 956f8e5cf3e7..c5dd6f7305bd 100644
+--- a/fs/cifs/dfs_cache.c
++++ b/fs/cifs/dfs_cache.c
+@@ -654,7 +654,7 @@ static struct cache_entry *__lookup_cache_entry(const char *path, unsigned int h
+ 			return ce;
+ 		}
+ 	}
+-	return ERR_PTR(-EEXIST);
++	return ERR_PTR(-ENOENT);
+ }
+ 
+ /*
+@@ -662,7 +662,7 @@ static struct cache_entry *__lookup_cache_entry(const char *path, unsigned int h
+  *
+  * Use whole path components in the match.  Must be called with htable_rw_lock held.
+  *
+- * Return ERR_PTR(-EEXIST) if the entry is not found.
++ * Return ERR_PTR(-ENOENT) if the entry is not found.
+  */
+ static struct cache_entry *lookup_cache_entry(const char *path)
+ {
+@@ -710,7 +710,7 @@ static struct cache_entry *lookup_cache_entry(const char *path)
+ 		while (e > s && *e != sep)
+ 			e--;
+ 	}
+-	return ERR_PTR(-EEXIST);
++	return ERR_PTR(-ENOENT);
+ }
+ 
+ /**
+diff --git a/fs/cifs/misc.c b/fs/cifs/misc.c
+index 114810e563a9..5a803d686146 100644
+--- a/fs/cifs/misc.c
++++ b/fs/cifs/misc.c
+@@ -1308,7 +1308,7 @@ int cifs_update_super_prepath(struct cifs_sb_info *cifs_sb, char *prefix)
+  * for "\<server>\<dfsname>\<linkpath>" DFS reference,
+  * where <dfsname> contains non-ASCII unicode symbols.
+  *
+- * Check such DFS reference and emulate -ENOENT if it is actual.
++ * Check such DFS reference.
+  */
+ int cifs_dfs_query_info_nonascii_quirk(const unsigned int xid,
+ 				       struct cifs_tcon *tcon,
+@@ -1340,10 +1340,6 @@ int cifs_dfs_query_info_nonascii_quirk(const unsigned int xid,
+ 		cifs_dbg(FYI, "DFS ref '%s' is found, emulate -EREMOTE\n",
+ 			 dfspath);
+ 		rc = -EREMOTE;
+-	} else if (rc == -EEXIST) {
+-		cifs_dbg(FYI, "DFS ref '%s' is not found, emulate -ENOENT\n",
+-			 dfspath);
+-		rc = -ENOENT;
+ 	} else {
+ 		cifs_dbg(FYI, "%s: dfs_cache_find returned %d\n", __func__, rc);
+ 	}
 -- 
 2.35.1
 
