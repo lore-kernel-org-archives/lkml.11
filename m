@@ -2,119 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5A86C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:36:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2110C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345043AbiFGQgk (ORCPT
+        id S1345062AbiFGQhk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:36:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33008 "EHLO
+        Tue, 7 Jun 2022 12:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232812AbiFGQgi (ORCPT
+        with ESMTP id S1345049AbiFGQhf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:36:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3DF34B88
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 09:36:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1904F61499
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:36:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5726AC385A5;
-        Tue,  7 Jun 2022 16:36:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654619796;
-        bh=8i5haULdeB2Ou8xLNgGyaqjpMUp/nNMdFFzefBtFQus=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YJOYP5lV5TwG9gnAjthINUaJCRhaAv5ayjybpS0BpNazzoGwVMj1SxQg/skv+eP2j
-         efB3JHODISGBtLWUuzpgVu+c7ki/+9fNOmc/qm31lf8ENLQGu6USScXIR7Zd28pTdR
-         I7xQe05KIYnjlzNRc9/HGJCmoftFlmEgqMYyxEpLsOT44uN6EThAx4V3w78k8oEVLl
-         Mg/nn5b6OJwEzh6oB1f2a94OudqtGDnidgkmdmRttS3p3DWqamPeIm2veizy34Wt+b
-         BYJXF201xvI3qlVaiD4trtkK1XnW2mq9C9RymqaGNWW8XM8nl6LEyESSq45YPdZeDL
-         AsE7PUYfzdm3w==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nycBz-0002GQ-7u; Tue, 07 Jun 2022 18:36:31 +0200
-Date:   Tue, 7 Jun 2022 18:36:31 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Jared Kangas <kangas.jd@gmail.com>
-Cc:     vaibhav.sr@gmail.com, mgreer@animalcreek.com, elder@kernel.org,
-        gregkh@linuxfoundation.org, greybus-dev@lists.linaro.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-Subject: Re: [PATCH] staging: greybus: audio: fix loop cursor use after
- iteration
-Message-ID: <Yp9+j7xrjDQWkem3@hovoldconsulting.com>
-References: <20220605231806.720085-1-kangas.jd@gmail.com>
+        Tue, 7 Jun 2022 12:37:35 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72E41EEF9
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 09:37:31 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2ec42eae76bso181934927b3.10
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 09:37:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=atishpatra.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=l+dfyGXg71t6EG1I1B0LTDArA2xlLZtV5Fm9wbpRGuw=;
+        b=VJO8PzyV5CICNSpQOyZZZHG0ePKdf2Oi1DgI9XQItzmtY3sgJzWhpI/fJzOM3fAfDa
+         IZYCQMcLILyqzDnXFShQ95qW8YuteG/uAzuI3fhwpD2RCyVwuXX0Qmu6WEfwiVUNaDYP
+         sEUY7dmZVsdPlV927UMTZdPZZ/rhzy3BJ6sTQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=l+dfyGXg71t6EG1I1B0LTDArA2xlLZtV5Fm9wbpRGuw=;
+        b=rkI9669XtgO//ty69y446UCr2AXyHo56UdESXtCxrm2EXjZItv87H5r0KWhbq71VIN
+         QQyu8Su0ix9gA9GikdIq8BMjijXq2cAQEgzcFYT9m07gJKSVts+/ZHQiNszL5S/RHA+n
+         dVMZ24Ycl0Df8dzzdMjlvsMVtMCoNdqgoC6tkZvt3OBNlRxQ7r6Uey6S9eC0xU7M9hj9
+         vXeYYdhhqtlxJbGJJXDAiSOaezh2kKWSRTeXhz8DRWJEAQ5nl7hf57bFrLmDHmo446L/
+         tr7YdXeizNMKdDTETp+1WiREhrju4fWSi2WtB0NcGlR6QB5odHWfDIiUOwO6oKftnfDz
+         bStA==
+X-Gm-Message-State: AOAM531uWSJv0mnCwQdLQlM65WofnAYhHA3lu2uWHk9kMleLu/eiCWK3
+        iiVbDGpN1RIulRVF8hh9JqE32Y25wyQYXrwtH+10
+X-Google-Smtp-Source: ABdhPJwfmmI65JOMj5cv1kXrR4819PlxuXlEbS1ungDbRjbNtZYPjbef+zuvALGG6jZL+m0qcjpdAaCnQN9rMKr66qc=
+X-Received: by 2002:a05:690c:28b:b0:30c:bcc2:240d with SMTP id
+ bf11-20020a05690c028b00b0030cbcc2240dmr33841028ywb.19.1654619850904; Tue, 07
+ Jun 2022 09:37:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220605231806.720085-1-kangas.jd@gmail.com>
+References: <20220607131648.29439-1-nikita.shubin@maquefel.me> <20220607131648.29439-2-nikita.shubin@maquefel.me>
+In-Reply-To: <20220607131648.29439-2-nikita.shubin@maquefel.me>
+From:   Atish Patra <atishp@atishpatra.org>
+Date:   Tue, 7 Jun 2022 09:37:19 -0700
+Message-ID: <CAOnJCULuQw2E3cD5KQKVs8EbcbPPeJQDqvikagxnkDSH+UWqjQ@mail.gmail.com>
+Subject: Re: [PATCH v3 1/4] RISC-V: Create unique identification for SoC PMU
+To:     Nikita Shubin <nikita.shubin@maquefel.me>
+Cc:     Genevieve Chan <genevieve.chan@starfivetech.com>,
+        =?UTF-8?B?Sm/Do28gTcOhcmlvIERvbWluZ29z?= 
+        <joao.mario@tecnico.ulisboa.pt>,
+        Nikita Shubin <n.shubin@yadro.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Anup Patel <anup@brainfault.org>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM PMU PROFILING AND DEBUGGING" 
+        <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 05, 2022 at 04:18:06PM -0700, Jared Kangas wrote:
-> gbaudio_dapm_free_controls() iterates over widgets using
-> list_for_each_entry_safe(), which leaves the loop cursor pointing to a
-> meaningless structure if it completes a traversal of the list. The
-> cursor was set to NULL at the end of the loop body, but would be
-> overwritten by the final loop cursor update.
-> 
-> Because of this behavior, the widget could be non-null after the loop
-> even if the widget wasn't found, and the cleanup logic would treat the
-> pointer as a valid widget to free.
-> 
-> To fix this, introduce a temporary variable to act as the loop cursor
-> and copy it to a variable that can be accessed after the loop finishes.
-> 
-> This was detected with the help of Coccinelle.
+On Tue, Jun 7, 2022 at 6:17 AM Nikita Shubin <nikita.shubin@maquefel.me> wr=
+ote:
+>
+> From: Jo=C3=A3o M=C3=A1rio Domingos <joao.mario@tecnico.ulisboa.pt>
+>
+> The SBI PMU platform driver did not provide any identification for
+> perf events matching. This patch introduces a new sysfs file inside the
+> platform device (soc:pmu/id) for pmu identification.
+>
+> The identification is a 64-bit value generated as:
+> [63-32]: mvendorid;
+> [31]: marchid[MSB];
+> [30-16]: marchid[15-0];
+> [15-0]: mimpid[15MSBs];
+>
 
-Please add the missing Fixes tag and a CC stable tag here as Dan
-mentioned.
+This is not entirely correct as marchid or mimpid can be MXLEN. The
+encoding scheme is left upto the
+vendor. We can not assume anything about it.
 
-> Signed-off-by: Jared Kangas <kangas.jd@gmail.com>
+The purpose of the PMU ID is to distinguish between different
+vendors/generations. The perf tool expects
+a json string.
+I think you can just keep all these 3 registers into the JSON string
+as it is to avoid any pitfalls with vendor weirdness.
+
+> The CSRs are detailed in the RISC-V privileged spec [1].
+> The marchid is split in MSB + 15LSBs, due to the MSB being used for
+> open-source architecture identification.
+>
+> [1] https://github.com/riscv/riscv-isa-manual
+>
+> Signed-off-by: Jo=C3=A3o M=C3=A1rio Domingos <joao.mario@tecnico.ulisboa.=
+pt>
+> Tested-by: Nikita Shubin <n.shubin@yadro.com>
 > ---
->  drivers/staging/greybus/audio_helper.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/greybus/audio_helper.c b/drivers/staging/greybus/audio_helper.c
-> index 843760675876..07461a5d97c7 100644
-> --- a/drivers/staging/greybus/audio_helper.c
-> +++ b/drivers/staging/greybus/audio_helper.c
-> @@ -115,7 +115,7 @@ int gbaudio_dapm_free_controls(struct snd_soc_dapm_context *dapm,
->  			       int num)
+>  arch/riscv/kernel/sbi.c      |  3 +++
+>  drivers/perf/riscv_pmu_sbi.c | 47 ++++++++++++++++++++++++++++++++++++
+>  2 files changed, 50 insertions(+)
+>
+> diff --git a/arch/riscv/kernel/sbi.c b/arch/riscv/kernel/sbi.c
+> index 775d3322b422..50dd9b6ecc9e 100644
+> --- a/arch/riscv/kernel/sbi.c
+> +++ b/arch/riscv/kernel/sbi.c
+> @@ -627,16 +627,19 @@ long sbi_get_mvendorid(void)
 >  {
->  	int i;
-> -	struct snd_soc_dapm_widget *w, *next_w;
-> +	struct snd_soc_dapm_widget *w, *next_w, *tmp_w;
->  #ifdef CONFIG_DEBUG_FS
->  	struct dentry *parent = dapm->debugfs_dapm;
->  	struct dentry *debugfs_w = NULL;
-> @@ -124,13 +124,14 @@ int gbaudio_dapm_free_controls(struct snd_soc_dapm_context *dapm,
->  	mutex_lock(&dapm->card->dapm_mutex);
->  	for (i = 0; i < num; i++) {
->  		/* below logic can be optimized to identify widget pointer */
-> -		list_for_each_entry_safe(w, next_w, &dapm->card->widgets,
-> +		w = NULL;
-> +		list_for_each_entry_safe(tmp_w, next_w, &dapm->card->widgets,
+>         return __sbi_base_ecall(SBI_EXT_BASE_GET_MVENDORID);
+>  }
+> +EXPORT_SYMBOL(sbi_get_mvendorid);
+>
+>  long sbi_get_marchid(void)
+>  {
+>         return __sbi_base_ecall(SBI_EXT_BASE_GET_MARCHID);
+>  }
+> +EXPORT_SYMBOL(sbi_get_marchid);
+>
+>  long sbi_get_mimpid(void)
+>  {
+>         return __sbi_base_ecall(SBI_EXT_BASE_GET_MIMPID);
+>  }
+> +EXPORT_SYMBOL(sbi_get_mimpid);
+>
+>  static void sbi_send_cpumask_ipi(const struct cpumask *target)
+>  {
+> diff --git a/drivers/perf/riscv_pmu_sbi.c b/drivers/perf/riscv_pmu_sbi.c
+> index a1317a483512..15ab3dc68e7a 100644
+> --- a/drivers/perf/riscv_pmu_sbi.c
+> +++ b/drivers/perf/riscv_pmu_sbi.c
+> @@ -693,6 +693,46 @@ static int pmu_sbi_setup_irqs(struct riscv_pmu *pmu,=
+ struct platform_device *pde
+>         return 0;
+>  }
+>
+> +static uint64_t pmu_sbi_get_pmu_id(void)
+> +{
+> +       union sbi_pmu_id {
+> +               uint64_t value;
+> +               struct {
+> +                       uint16_t imp:16;
+> +                       uint16_t arch:16;
+> +                       uint32_t vendor:32;
+> +               };
+> +       } pmuid;
+> +
+> +       pmuid.value =3D 0;
+> +       pmuid.vendor =3D (uint32_t) sbi_get_mvendorid();
+> +       pmuid.arch =3D (sbi_get_marchid() >> (63 - 15) & (1 << 15)) | (sb=
+i_get_marchid() & 0x7FFF);
+> +       pmuid.imp =3D (sbi_get_mimpid() >> 16);
+> +
+> +       return pmuid.value;
+> +}
+> +
+> +static ssize_t pmu_sbi_id_show(struct device *dev,
+> +               struct device_attribute *attr, char *buf)
+> +{
+> +       int len;
+> +
+> +       len =3D sprintf(buf, "0x%llx\n", pmu_sbi_get_pmu_id());
+> +       if (len <=3D 0)
+> +               dev_err(dev, "mydrv: Invalid sprintf len: %dn", len);
+> +
+> +       return len;
+> +}
+> +
+> +static DEVICE_ATTR(id, S_IRUGO | S_IWUSR, pmu_sbi_id_show, 0);
+> +
+> +static struct attribute *pmu_sbi_attrs[] =3D {
+> +       &dev_attr_id.attr,
+> +       NULL
+> +};
+> +
+> +ATTRIBUTE_GROUPS(pmu_sbi);
+> +
+>  static int pmu_sbi_device_probe(struct platform_device *pdev)
+>  {
+>         struct riscv_pmu *pmu =3D NULL;
+> @@ -729,6 +769,13 @@ static int pmu_sbi_device_probe(struct platform_devi=
+ce *pdev)
+>         pmu->ctr_clear_idx =3D pmu_sbi_ctr_clear_idx;
+>         pmu->ctr_read =3D pmu_sbi_ctr_read;
+>
+> +       ret =3D sysfs_create_group(&pdev->dev.kobj, &pmu_sbi_group);
+> +       if (ret) {
+> +               dev_err(&pdev->dev, "sysfs creation failed\n");
+> +               return ret;
+> +       }
+> +       pdev->dev.groups =3D pmu_sbi_groups;
+> +
+>         ret =3D cpuhp_state_add_instance(CPUHP_AP_PERF_RISCV_STARTING, &p=
+mu->node);
+>         if (ret)
+>                 return ret;
+> --
+> 2.35.1
+>
 
-This should be list_for_each_entry() as w is not unlinked in this loop.
 
->  					 list) {
-> -			if (w->dapm != dapm)
-> -				continue;
-> -			if (!strcmp(w->name, widget->name))
-> +			if (tmp_w->dapm == dapm &&
-> +			    !strcmp(tmp_w->name, widget->name)) {
-> +				w = tmp_w;
->  				break;
-> -			w = NULL;
-> +			}
->  		}
->  		if (!w) {
->  			dev_err(dapm->dev, "%s: widget not found\n",
-
-Looks good otherwise:
-
-Reviewed-by: Johan Hovold <johan@kernel.org>
+--
+Regards,
+Atish
