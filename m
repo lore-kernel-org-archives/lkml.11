@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB2ABC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0193CCA481
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:35:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377066AbiFGUcQ (ORCPT
+        id S1377687AbiFGUd6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:32:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
+        Tue, 7 Jun 2022 16:33:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356749AbiFGTji (ORCPT
+        with ESMTP id S1357585AbiFGTmI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:39:38 -0400
+        Tue, 7 Jun 2022 15:42:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353DBFD360;
-        Tue,  7 Jun 2022 11:14:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9711B5862;
+        Tue,  7 Jun 2022 11:15:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72412608CD;
-        Tue,  7 Jun 2022 18:14:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EEEBC385A2;
-        Tue,  7 Jun 2022 18:14:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16FED6006F;
+        Tue,  7 Jun 2022 18:15:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26EF3C385A2;
+        Tue,  7 Jun 2022 18:15:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625664;
-        bh=j8Yt/rvyij5nfucFmUgDa7YJAs2n/VmhyAQLsHtBdKM=;
+        s=korg; t=1654625725;
+        bh=ZN6hC2vdwKmBY0Swi3pq5qptEuPjZ0EGRv0BuujKnUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zqae/b+WaSWApkKx1aRU9l1c7dkZI1jz8Lb/ZyRFGedI1MDaDHh+tExU9fZrOYFq+
-         2rfEoRHLf0Sx6Xc4qxe+nfUH95bQaOafXij4SjFIKkUIMPr1ztlJsHLDKzXi+H2K2J
-         hHkf37mrvr7+wtHZ1A1rgc1kKjDUtYfjWdLf7A8s=
+        b=2vZB3Z7XGcd8sJvqh3hlbaNzRL2fUcU4rGVEiQeOZ4vU8XN1jQSDMxOrjtJY33Kto
+         xJINfQjK6UHmp7UnfrA8nfKSx71FpiV7HQYWLW4GVWSDlzkRTil/0crjP3OsyptwEV
+         Xgr2g37ngRqb41QkO9pUXk47JiSMctp7R39sUgCc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Hari Chandrakanthan <quic_haric@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Thierry Reding <treding@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 099/772] ath11k: disable spectral scan during spectral deinit
-Date:   Tue,  7 Jun 2022 18:54:51 +0200
-Message-Id: <20220607164951.966138341@linuxfoundation.org>
+Subject: [PATCH 5.17 119/772] drm/tegra: gem: Do not try to dereference ERR_PTR()
+Date:   Tue,  7 Jun 2022 18:55:11 +0200
+Message-Id: <20220607164952.554943998@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,101 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hari Chandrakanthan <quic_haric@quicinc.com>
+From: Thierry Reding <treding@nvidia.com>
 
-[ Upstream commit 161c64de239c7018e0295e7e0520a19f00aa32dc ]
+[ Upstream commit cb7e1abc2c73633e1eefa168ab2dad6e838899c9 ]
 
-When ath11k modules are removed using rmmod with spectral scan enabled,
-crash is observed. Different crash trace is observed for each crash.
+When mapping the DMA-BUF attachment fails, map->sgt will be an ERR_PTR-
+encoded error code and the cleanup code would try to free that memory,
+which obviously would fail.
 
-Send spectral scan disable WMI command to firmware before cleaning
-the spectral dbring in the spectral_deinit API to avoid this crash.
+Zero out that pointer after extracting the error code when this happens
+so that kfree() can do the right thing.
 
-call trace from one of the crash observed:
-[ 1252.880802] Unable to handle kernel NULL pointer dereference at virtual address 00000008
-[ 1252.882722] pgd = 0f42e886
-[ 1252.890955] [00000008] *pgd=00000000
-[ 1252.893478] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-[ 1253.093035] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.89 #0
-[ 1253.115261] Hardware name: Generic DT based system
-[ 1253.121149] PC is at ath11k_spectral_process_data+0x434/0x574 [ath11k]
-[ 1253.125940] LR is at 0x88e31017
-[ 1253.132448] pc : [<7f9387b8>]    lr : [<88e31017>]    psr: a0000193
-[ 1253.135488] sp : 80d01bc8  ip : 00000001  fp : 970e0000
-[ 1253.141737] r10: 88e31000  r9 : 970ec000  r8 : 00000080
-[ 1253.146946] r7 : 94734040  r6 : a0000113  r5 : 00000057  r4 : 00000000
-[ 1253.152159] r3 : e18cb694  r2 : 00000217  r1 : 1df1f000  r0 : 00000001
-[ 1253.158755] Flags: NzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment user
-[ 1253.165266] Control: 10c0383d  Table: 5e71006a  DAC: 00000055
-[ 1253.172472] Process swapper/0 (pid: 0, stack limit = 0x60870141)
-[ 1253.458055] [<7f9387b8>] (ath11k_spectral_process_data [ath11k]) from [<7f917fdc>] (ath11k_dbring_buffer_release_event+0x214/0x2e4 [ath11k])
-[ 1253.466139] [<7f917fdc>] (ath11k_dbring_buffer_release_event [ath11k]) from [<7f8ea3c4>] (ath11k_wmi_tlv_op_rx+0x1840/0x29cc [ath11k])
-[ 1253.478807] [<7f8ea3c4>] (ath11k_wmi_tlv_op_rx [ath11k]) from [<7f8fe868>] (ath11k_htc_rx_completion_handler+0x180/0x4e0 [ath11k])
-[ 1253.490699] [<7f8fe868>] (ath11k_htc_rx_completion_handler [ath11k]) from [<7f91308c>] (ath11k_ce_per_engine_service+0x2c4/0x3b4 [ath11k])
-[ 1253.502386] [<7f91308c>] (ath11k_ce_per_engine_service [ath11k]) from [<7f9a4198>] (ath11k_pci_ce_tasklet+0x28/0x80 [ath11k_pci])
-[ 1253.514811] [<7f9a4198>] (ath11k_pci_ce_tasklet [ath11k_pci]) from [<8032227c>] (tasklet_action_common.constprop.2+0x64/0xe8)
-[ 1253.526476] [<8032227c>] (tasklet_action_common.constprop.2) from [<803021e8>] (__do_softirq+0x130/0x2d0)
-[ 1253.537756] [<803021e8>] (__do_softirq) from [<80322610>] (irq_exit+0xcc/0xe8)
-[ 1253.547304] [<80322610>] (irq_exit) from [<8036a4a4>] (__handle_domain_irq+0x60/0xb4)
-[ 1253.554428] [<8036a4a4>] (__handle_domain_irq) from [<805eb348>] (gic_handle_irq+0x4c/0x90)
-[ 1253.562321] [<805eb348>] (gic_handle_irq) from [<80301a78>] (__irq_svc+0x58/0x8c)
-
-Tested-on: QCN6122 hw1.0 AHB WLAN.HK.2.6.0.1-00851-QCAHKSWPL_SILICONZ-1
-
-Signed-off-by: Hari Chandrakanthan <quic_haric@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/1649396345-349-1-git-send-email-quic_haric@quicinc.com
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/spectral.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/tegra/gem.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/spectral.c b/drivers/net/wireless/ath/ath11k/spectral.c
-index 4100cc1449a2..e997426a1b4b 100644
---- a/drivers/net/wireless/ath/ath11k/spectral.c
-+++ b/drivers/net/wireless/ath/ath11k/spectral.c
-@@ -212,7 +212,10 @@ static int ath11k_spectral_scan_config(struct ath11k *ar,
- 		return -ENODEV;
- 
- 	arvif->spectral_enabled = (mode != ATH11K_SPECTRAL_DISABLED);
-+
-+	spin_lock_bh(&ar->spectral.lock);
- 	ar->spectral.mode = mode;
-+	spin_unlock_bh(&ar->spectral.lock);
- 
- 	ret = ath11k_wmi_vdev_spectral_enable(ar, arvif->vdev_id,
- 					      ATH11K_WMI_SPECTRAL_TRIGGER_CMD_CLEAR,
-@@ -843,9 +846,6 @@ static inline void ath11k_spectral_ring_free(struct ath11k *ar)
- {
- 	struct ath11k_spectral *sp = &ar->spectral;
- 
--	if (!sp->enabled)
--		return;
--
- 	ath11k_dbring_srng_cleanup(ar, &sp->rx_ring);
- 	ath11k_dbring_buf_cleanup(ar, &sp->rx_ring);
- }
-@@ -897,15 +897,16 @@ void ath11k_spectral_deinit(struct ath11k_base *ab)
- 		if (!sp->enabled)
- 			continue;
- 
--		ath11k_spectral_debug_unregister(ar);
--		ath11k_spectral_ring_free(ar);
-+		mutex_lock(&ar->conf_mutex);
-+		ath11k_spectral_scan_config(ar, ATH11K_SPECTRAL_DISABLED);
-+		mutex_unlock(&ar->conf_mutex);
- 
- 		spin_lock_bh(&sp->lock);
--
--		sp->mode = ATH11K_SPECTRAL_DISABLED;
- 		sp->enabled = false;
--
- 		spin_unlock_bh(&sp->lock);
-+
-+		ath11k_spectral_debug_unregister(ar);
-+		ath11k_spectral_ring_free(ar);
- 	}
- }
+diff --git a/drivers/gpu/drm/tegra/gem.c b/drivers/gpu/drm/tegra/gem.c
+index fce0e52973c2..9810b3bdd342 100644
+--- a/drivers/gpu/drm/tegra/gem.c
++++ b/drivers/gpu/drm/tegra/gem.c
+@@ -88,6 +88,7 @@ static struct host1x_bo_mapping *tegra_bo_pin(struct device *dev, struct host1x_
+ 		if (IS_ERR(map->sgt)) {
+ 			dma_buf_detach(buf, map->attach);
+ 			err = PTR_ERR(map->sgt);
++			map->sgt = NULL;
+ 			goto free;
+ 		}
  
 -- 
 2.35.1
