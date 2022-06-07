@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF73CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0190DC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:11:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384011AbiFGWKF (ORCPT
+        id S1384073AbiFGWKT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:10:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50246 "EHLO
+        Tue, 7 Jun 2022 18:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379287AbiFGVFv (ORCPT
+        with ESMTP id S1377938AbiFGVGm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:05:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123F818DAE5;
-        Tue,  7 Jun 2022 11:49:20 -0700 (PDT)
+        Tue, 7 Jun 2022 17:06:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9A7212C84;
+        Tue,  7 Jun 2022 11:50:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9DA3B82018;
-        Tue,  7 Jun 2022 18:49:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D4A9C385A5;
-        Tue,  7 Jun 2022 18:49:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C71F7612F2;
+        Tue,  7 Jun 2022 18:50:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE02EC385A2;
+        Tue,  7 Jun 2022 18:50:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627757;
-        bh=R5pzKpdEPHGtsz9epenICLHLl0Q4w/B8PhegQPUoeNw=;
+        s=korg; t=1654627841;
+        bh=RsqfcE3Vlaza98kvhQkeITROjqKHS5OvbTROZhct/dA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yNFQUbF2dpU91kIGS4j1LZ8aHitrNuQrJA4JRXAu5IT2R3X44GWqIFOHMDY57Gmoo
-         wH0KYzVEmLHf1rEDh/PFnv4Bm9hv1Vho36xuM6B1Vgbxj8wgjHhaYOhETYY6r4U7aA
-         U6V86xchEuhV/uh+VSA7WANuwiBueEbkDJOZakaw=
+        b=VYqku34jBQP5pBFBA9T1woAMofXqvRhM65yMqZEDUKrJTp6xvOjT9C0F5p+5q6vGc
+         f9PV4JDDDWuIfpFd1NR9e1auuumFbX1356lbhnmMZQKQQDux7jLejhQsvNVJmPs3FH
+         T5TPQzm+YpN3cTvpnDFgxpQ4xgJjHoHVjQOEb3nE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Po-Hao Huang <phhuang@realtek.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 083/879] rtw88: 8821c: fix debugfs rssi value
-Date:   Tue,  7 Jun 2022 18:53:21 +0200
-Message-Id: <20220607165005.098729519@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 072/879] ACPICA: Avoid cache flush inside virtual machines
+Date:   Tue,  7 Jun 2022 18:53:10 +0200
+Message-Id: <20220607165004.781286229@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,58 +53,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Po-Hao Huang <phhuang@realtek.com>
+From: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 
-[ Upstream commit ece31c93d4d68f7eb8eea4431b052aacdb678de2 ]
+[ Upstream commit e2efb6359e620521d1e13f69b2257de8ceaa9475 ]
 
-RSSI value per frame is reported to mac80211 but not maintained in
-our own statistics, add it back to help us debug.
+While running inside virtual machine, the kernel can bypass cache
+flushing. Changing sleep state in a virtual machine doesn't affect the
+host system sleep state and cannot lead to data loss.
 
-Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220407095858.46807-7-pkshih@realtek.com
+Before entering sleep states, the ACPI code flushes caches to prevent
+data loss using the WBINVD instruction.  This mechanism is required on
+bare metal.
+
+But, any use WBINVD inside of a guest is worthless.  Changing sleep
+state in a virtual machine doesn't affect the host system sleep state
+and cannot lead to data loss, so most hypervisors simply ignore it.
+Despite this, the ACPI code calls WBINVD unconditionally anyway.
+It's useless, but also normally harmless.
+
+In TDX guests, though, WBINVD stops being harmless; it triggers a
+virtualization exception (#VE).  If the ACPI cache-flushing WBINVD
+were left in place, TDX guests would need handling to recover from
+the exception.
+
+Avoid using WBINVD whenever running under a hypervisor.  This both
+removes the useless WBINVDs and saves TDX from implementing WBINVD
+handling.
+
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lkml.kernel.org/r/20220405232939.73860-30-kirill.shutemov@linux.intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw88/rtw8821c.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/x86/include/asm/acenv.h | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-index 99eee128ae94..ec38a7c84951 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-@@ -512,6 +512,7 @@ static s8 get_cck_rx_pwr(struct rtw_dev *rtwdev, u8 lna_idx, u8 vga_idx)
- static void query_phy_status_page0(struct rtw_dev *rtwdev, u8 *phy_status,
- 				   struct rtw_rx_pkt_stat *pkt_stat)
- {
-+	struct rtw_dm_info *dm_info = &rtwdev->dm_info;
- 	s8 rx_power;
- 	u8 lna_idx = 0;
- 	u8 vga_idx = 0;
-@@ -523,6 +524,7 @@ static void query_phy_status_page0(struct rtw_dev *rtwdev, u8 *phy_status,
+diff --git a/arch/x86/include/asm/acenv.h b/arch/x86/include/asm/acenv.h
+index 9aff97f0de7f..d937c55e717e 100644
+--- a/arch/x86/include/asm/acenv.h
++++ b/arch/x86/include/asm/acenv.h
+@@ -13,7 +13,19 @@
  
- 	pkt_stat->rx_power[RF_PATH_A] = rx_power;
- 	pkt_stat->rssi = rtw_phy_rf_power_2_rssi(pkt_stat->rx_power, 1);
-+	dm_info->rssi[RF_PATH_A] = pkt_stat->rssi;
- 	pkt_stat->bw = RTW_CHANNEL_WIDTH_20;
- 	pkt_stat->signal_power = rx_power;
- }
-@@ -530,6 +532,7 @@ static void query_phy_status_page0(struct rtw_dev *rtwdev, u8 *phy_status,
- static void query_phy_status_page1(struct rtw_dev *rtwdev, u8 *phy_status,
- 				   struct rtw_rx_pkt_stat *pkt_stat)
- {
-+	struct rtw_dm_info *dm_info = &rtwdev->dm_info;
- 	u8 rxsc, bw;
- 	s8 min_rx_power = -120;
+ /* Asm macros */
  
-@@ -549,6 +552,7 @@ static void query_phy_status_page1(struct rtw_dev *rtwdev, u8 *phy_status,
+-#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
++/*
++ * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
++ * It is required to prevent data loss.
++ *
++ * While running inside virtual machine, the kernel can bypass cache flushing.
++ * Changing sleep state in a virtual machine doesn't affect the host system
++ * sleep state and cannot lead to data loss.
++ */
++#define ACPI_FLUSH_CPU_CACHE()					\
++do {								\
++	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))	\
++		wbinvd();					\
++} while (0)
  
- 	pkt_stat->rx_power[RF_PATH_A] = GET_PHY_STAT_P1_PWDB_A(phy_status) - 110;
- 	pkt_stat->rssi = rtw_phy_rf_power_2_rssi(pkt_stat->rx_power, 1);
-+	dm_info->rssi[RF_PATH_A] = pkt_stat->rssi;
- 	pkt_stat->bw = bw;
- 	pkt_stat->signal_power = max(pkt_stat->rx_power[RF_PATH_A],
- 				     min_rx_power);
+ int __acpi_acquire_global_lock(unsigned int *lock);
+ int __acpi_release_global_lock(unsigned int *lock);
 -- 
 2.35.1
 
