@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCC9CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9F0CCCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383587AbiFGWFz (ORCPT
+        id S1383626AbiFGWGD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:05:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
+        Tue, 7 Jun 2022 18:06:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379188AbiFGVFl (ORCPT
+        with ESMTP id S1379414AbiFGVFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:05:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0907FBCE9C;
-        Tue,  7 Jun 2022 11:49:14 -0700 (PDT)
+        Tue, 7 Jun 2022 17:05:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9306918DAE3;
+        Tue,  7 Jun 2022 11:49:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6373EB8239B;
-        Tue,  7 Jun 2022 18:49:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B89E0C385A2;
-        Tue,  7 Jun 2022 18:49:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FBC1616AF;
+        Tue,  7 Jun 2022 18:49:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D7ECC385A5;
+        Tue,  7 Jun 2022 18:49:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627752;
-        bh=GTHiEG6Fbnv6d3nL/QXh9DsjWVX96eO95njhrpvwukM=;
+        s=korg; t=1654627768;
+        bh=G8Lr5tC7exO+P44JmMYxw/QCR5EsrdoyP32XeHj5qcw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G6E6Q1KxfrqXTDuLYCeTxa4BlucrdRUhoovOnsdxJM0nb4uKr54SIbBkStzcezRgg
-         GVUC0sk7sVExR/OyACbJfXy/v85Z23fqnTotqX3kfcgXgDj0i5IHGuTMHOux0x09Bn
-         edP/+1JSnftM0u6i4FdHyXer+pDmLQoBM8L8qb8o=
+        b=2j834ykmfjyEZuhvzBCt+gpXKGZer9sT6onNE3NZGOtBx5Azg/BWork7XklboLOI2
+         rvnn+wh6DsiZII+ZDY0KFldOqhmR2VeLeBZDWSUWq5/OQl7YQ0r/i4EEnyfsueAQNz
+         +lFD9AbjsMrENmS2An2r47OnyOypKlR7M4uzg0hU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 081/879] ALSA: jack: Access input_dev under mutex
-Date:   Tue,  7 Jun 2022 18:53:19 +0200
-Message-Id: <20220607165005.041295530@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 086/879] tcp: consume incoming skb leading to a reset
+Date:   Tue,  7 Jun 2022 18:53:24 +0200
+Message-Id: <20220607165005.189550617@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,152 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 1b6a6fc5280e97559287b61eade2d4b363e836f2 ]
+[ Upstream commit d9d024f96609016628d750ebc8ee4a6f0d80e6e1 ]
 
-It is possible when using ASoC that input_dev is unregistered while
-calling snd_jack_report, which causes NULL pointer dereference.
-In order to prevent this serialize access to input_dev using mutex lock.
+Whenever tcp_validate_incoming() handles a valid RST packet,
+we should not pretend the packet was dropped.
 
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Link: https://lore.kernel.org/r/20220412091628.3056922-1-amadeuszx.slawinski@linux.intel.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Create a special section at the end of tcp_validate_incoming()
+to handle this case.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/sound/jack.h |  1 +
- sound/core/jack.c    | 34 +++++++++++++++++++++++++++-------
- 2 files changed, 28 insertions(+), 7 deletions(-)
+ net/ipv4/tcp_input.c | 28 ++++++++++++++++------------
+ 1 file changed, 16 insertions(+), 12 deletions(-)
 
-diff --git a/include/sound/jack.h b/include/sound/jack.h
-index 1181f536557e..1ed90e2109e9 100644
---- a/include/sound/jack.h
-+++ b/include/sound/jack.h
-@@ -62,6 +62,7 @@ struct snd_jack {
- 	const char *id;
- #ifdef CONFIG_SND_JACK_INPUT_DEV
- 	struct input_dev *input_dev;
-+	struct mutex input_dev_lock;
- 	int registered;
- 	int type;
- 	char name[100];
-diff --git a/sound/core/jack.c b/sound/core/jack.c
-index d1e3055f2b6a..88493cc31914 100644
---- a/sound/core/jack.c
-+++ b/sound/core/jack.c
-@@ -42,8 +42,11 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
- #ifdef CONFIG_SND_JACK_INPUT_DEV
- 	struct snd_jack *jack = device->device_data;
- 
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return 0;
-+	}
- 
- 	/* If the input device is registered with the input subsystem
- 	 * then we need to use a different deallocator. */
-@@ -52,6 +55,7 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
- 	else
- 		input_free_device(jack->input_dev);
- 	jack->input_dev = NULL;
-+	mutex_unlock(&jack->input_dev_lock);
- #endif /* CONFIG_SND_JACK_INPUT_DEV */
- 	return 0;
- }
-@@ -90,8 +94,11 @@ static int snd_jack_dev_register(struct snd_device *device)
- 	snprintf(jack->name, sizeof(jack->name), "%s %s",
- 		 card->shortname, jack->id);
- 
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return 0;
-+	}
- 
- 	jack->input_dev->name = jack->name;
- 
-@@ -116,6 +123,7 @@ static int snd_jack_dev_register(struct snd_device *device)
- 	if (err == 0)
- 		jack->registered = 1;
- 
-+	mutex_unlock(&jack->input_dev_lock);
- 	return err;
- }
- #endif /* CONFIG_SND_JACK_INPUT_DEV */
-@@ -517,9 +525,11 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
- 		return -ENOMEM;
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 60f99e9fb6d1..1f3ce7aea716 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5711,7 +5711,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+ 						  &tp->last_oow_ack_time))
+ 				tcp_send_dupack(sk, skb);
+ 		} else if (tcp_reset_check(sk, skb)) {
+-			tcp_reset(sk, skb);
++			goto reset;
+ 		}
+ 		goto discard;
  	}
+@@ -5747,17 +5747,16 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+ 		}
  
--	/* don't creat input device for phantom jack */
--	if (!phantom_jack) {
- #ifdef CONFIG_SND_JACK_INPUT_DEV
-+	mutex_init(&jack->input_dev_lock);
+ 		if (rst_seq_match)
+-			tcp_reset(sk, skb);
+-		else {
+-			/* Disable TFO if RST is out-of-order
+-			 * and no data has been received
+-			 * for current active TFO socket
+-			 */
+-			if (tp->syn_fastopen && !tp->data_segs_in &&
+-			    sk->sk_state == TCP_ESTABLISHED)
+-				tcp_fastopen_active_disable(sk);
+-			tcp_send_challenge_ack(sk);
+-		}
++			goto reset;
 +
-+	/* don't create input device for phantom jack */
-+	if (!phantom_jack) {
- 		int i;
- 
- 		jack->input_dev = input_allocate_device();
-@@ -537,8 +547,8 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
- 				input_set_capability(jack->input_dev, EV_SW,
- 						     jack_switch_types[i]);
- 
--#endif /* CONFIG_SND_JACK_INPUT_DEV */
- 	}
-+#endif /* CONFIG_SND_JACK_INPUT_DEV */
- 
- 	err = snd_device_new(card, SNDRV_DEV_JACK, jack, &ops);
- 	if (err < 0)
-@@ -578,10 +588,14 @@ EXPORT_SYMBOL(snd_jack_new);
- void snd_jack_set_parent(struct snd_jack *jack, struct device *parent)
- {
- 	WARN_ON(jack->registered);
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return;
-+	}
- 
- 	jack->input_dev->dev.parent = parent;
-+	mutex_unlock(&jack->input_dev_lock);
- }
- EXPORT_SYMBOL(snd_jack_set_parent);
- 
-@@ -629,6 +643,8 @@ EXPORT_SYMBOL(snd_jack_set_key);
- 
- /**
-  * snd_jack_report - Report the current status of a jack
-+ * Note: This function uses mutexes and should be called from a
-+ * context which can sleep (such as a workqueue).
-  *
-  * @jack:   The jack to report status for
-  * @status: The current status of the jack
-@@ -654,8 +670,11 @@ void snd_jack_report(struct snd_jack *jack, int status)
- 					     status & jack_kctl->mask_bits);
- 
- #ifdef CONFIG_SND_JACK_INPUT_DEV
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return;
-+	}
- 
- 	for (i = 0; i < ARRAY_SIZE(jack->key); i++) {
- 		int testbit = ((SND_JACK_BTN_0 >> i) & ~mask_bits);
-@@ -675,6 +694,7 @@ void snd_jack_report(struct snd_jack *jack, int status)
++		/* Disable TFO if RST is out-of-order
++		 * and no data has been received
++		 * for current active TFO socket
++		 */
++		if (tp->syn_fastopen && !tp->data_segs_in &&
++		    sk->sk_state == TCP_ESTABLISHED)
++			tcp_fastopen_active_disable(sk);
++		tcp_send_challenge_ack(sk);
+ 		goto discard;
  	}
  
- 	input_sync(jack->input_dev);
-+	mutex_unlock(&jack->input_dev_lock);
- #endif /* CONFIG_SND_JACK_INPUT_DEV */
+@@ -5782,6 +5781,11 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+ discard:
+ 	tcp_drop(sk, skb);
+ 	return false;
++
++reset:
++	tcp_reset(sk, skb);
++	__kfree_skb(skb);
++	return false;
  }
- EXPORT_SYMBOL(snd_jack_report);
+ 
+ /*
 -- 
 2.35.1
 
