@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90BB4CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380663AbiFGVjB (ORCPT
+        id S1380812AbiFGVjE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38966 "EHLO
+        Tue, 7 Jun 2022 17:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376859AbiFGUrb (ORCPT
+        with ESMTP id S1376933AbiFGUsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:47:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5DF21F5ADD;
-        Tue,  7 Jun 2022 11:39:34 -0700 (PDT)
+        Tue, 7 Jun 2022 16:48:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D90E1F62FC;
+        Tue,  7 Jun 2022 11:39:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A11F615D3;
-        Tue,  7 Jun 2022 18:39:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9F2EC385A5;
-        Tue,  7 Jun 2022 18:39:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D94DFB81FE1;
+        Tue,  7 Jun 2022 18:39:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43A65C385A2;
+        Tue,  7 Jun 2022 18:39:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627171;
-        bh=I/AxesGm+UuH/LfTjxhIW+yj0CyrQKwGuT/W633gWPQ=;
+        s=korg; t=1654627151;
+        bh=QkiFAHOJFLYpTE4pDqY8HSQkwJMKiiJioaFUGFDAQSM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HTfFoNo1Or9OYmI9aoe438Ba9zhk5R+q0Q7F+bXVtUr5YwGVmFiav2/09D55b/mCC
-         fI+mc4X8PI8+zoOIpWkF4Fnf+Ut33LBkiuw/XLRThruYZZlhZWFxR4ve1t+10s7wRx
-         /PcE2RK/tQpEDJ3nAfmNS0r969As+45j1p/G6GAI=
+        b=a++uQWqQTw9BIazdjHYlqv56UguIkM4FS5kXrULLb6+orv+c398zHhqF1jjiRrmXg
+         lxgl18AwAzwewQQB/s6vJ2Mj7TDmfW/j2I1yLWQ4lQMAhvdjC1uzc2snAMfg9UX7Zs
+         QR9SuAjlvtJlVDzFDbYyCkso+KcjKA8r9pSW/8WE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Ritesh Harjani <ritesh.list@gmail.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.17 641/772] ext4: fix memory leak in parse_apply_sb_mount_options()
-Date:   Tue,  7 Jun 2022 19:03:53 +0200
-Message-Id: <20220607165007.957508534@linuxfoundation.org>
+        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 635/772] bfq: Make sure bfqg for which we are queueing requests is online
+Date:   Tue,  7 Jun 2022 19:03:47 +0200
+Message-Id: <20220607165007.647021878@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,50 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Jan Kara <jack@suse.cz>
 
-commit c069db76ed7b681c69159f44be96d2137e9ca989 upstream.
+commit 075a53b78b815301f8d3dd1ee2cd99554e34f0dd upstream.
 
-If processing the on-disk mount options fails after any memory was
-allocated in the ext4_fs_context, e.g. s_qf_names, then this memory is
-leaked.  Fix this by calling ext4_fc_free() instead of kfree() directly.
+Bios queued into BFQ IO scheduler can be associated with a cgroup that
+was already offlined. This may then cause insertion of this bfq_group
+into a service tree. But this bfq_group will get freed as soon as last
+bio associated with it is completed leading to use after free issues for
+service tree users. Fix the problem by making sure we always operate on
+online bfq_group. If the bfq_group associated with the bio is not
+online, we pick the first online parent.
 
-Reproducer:
-
-    mkfs.ext4 -F /dev/vdc
-    tune2fs /dev/vdc -E mount_opts=usrjquota=file
-    echo clear > /sys/kernel/debug/kmemleak
-    mount /dev/vdc /vdc
-    echo scan > /sys/kernel/debug/kmemleak
-    sleep 5
-    echo scan > /sys/kernel/debug/kmemleak
-    cat /sys/kernel/debug/kmemleak
-
-Fixes: 7edfd85b1ffd ("ext4: Completely separate options parsing and sb setup")
-Cc: stable@vger.kernel.org
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Tested-by: Ritesh Harjani <ritesh.list@gmail.com>
-Link: https://lore.kernel.org/r/20220513231605.175121-2-ebiggers@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+CC: stable@vger.kernel.org
+Fixes: e21b7a0b9887 ("block, bfq: add full hierarchical scheduling and cgroups support")
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-9-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/super.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ block/bfq-cgroup.c |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -2626,8 +2626,10 @@ parse_failed:
- 	ret = ext4_apply_options(fc, sb);
+--- a/block/bfq-cgroup.c
++++ b/block/bfq-cgroup.c
+@@ -612,10 +612,19 @@ static void bfq_link_bfqg(struct bfq_dat
+ struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
+ {
+ 	struct blkcg_gq *blkg = bio->bi_blkg;
++	struct bfq_group *bfqg;
  
- out_free:
--	kfree(s_ctx);
--	kfree(fc);
-+	if (fc) {
-+		ext4_fc_free(fc);
-+		kfree(fc);
+-	if (!blkg)
+-		return bfqd->root_group;
+-	return blkg_to_bfqg(blkg);
++	while (blkg) {
++		bfqg = blkg_to_bfqg(blkg);
++		if (bfqg->online) {
++			bio_associate_blkg_from_css(bio, &blkg->blkcg->css);
++			return bfqg;
++		}
++		blkg = blkg->parent;
 +	}
- 	kfree(s_mount_opts);
- 	return ret;
++	bio_associate_blkg_from_css(bio,
++				&bfqg_to_blkg(bfqd->root_group)->blkcg->css);
++	return bfqd->root_group;
  }
+ 
+ /**
 
 
