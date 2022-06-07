@@ -2,87 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC895CCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 300F0CCA48D
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380765AbiFGVf4 (ORCPT
+        id S1380891AbiFGVgH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59714 "EHLO
+        Tue, 7 Jun 2022 17:36:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376619AbiFGU1E (ORCPT
+        with ESMTP id S1376392AbiFGU0i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:27:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C791D8705
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:32:59 -0700 (PDT)
+        Tue, 7 Jun 2022 16:26:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791911D7848;
+        Tue,  7 Jun 2022 11:32:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7C5B612F2
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:32:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23F75C385A5;
-        Tue,  7 Jun 2022 18:32:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1654626778;
-        bh=6EWeMUW4V3uJswyhJrlu4wS327ebt1gLFVtjQxZ6kwc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Pl0ITDp9k28djGN0qnztfygHz/ItO1iNYIxf2ZyNiMyFwJ2nWuUlWCIy6OpRtHl+d
-         C1/GjByo284UIQ7QGt6iyzD0bB23lhLejK9IXqu3J8LrAVWvuU+fbuCAxL0wXRTrKC
-         B5EmdlY3zLwNP+mHzd8A3GT74eASErBQfosc3fg0=
-Date:   Tue, 7 Jun 2022 11:32:57 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Joao Martins <joao.m.martins@oracle.com>
-Subject: Re: [PATCH] mm/page_alloc: make calling prep_compound_head more
- reliable
-Message-Id: <20220607113257.84b1bdd993f19be26b8c4944@linux-foundation.org>
-In-Reply-To: <20220607144157.36411-1-linmiaohe@huawei.com>
-References: <20220607144157.36411-1-linmiaohe@huawei.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91B20B81AEC;
+        Tue,  7 Jun 2022 18:32:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF0EBC385A2;
+        Tue,  7 Jun 2022 18:32:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654626749;
+        bh=lU1F8CHismqBywHxeDVAeLkxHq9NN76mv0QXTjsH8PA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aRKNCPvqcvahFT3sOuXlm+BIr6aPUm+/pZCygqWF2ccKfnUawvZ2HjkzGtXkkb1En
+         c490++HR7T77YTKXZWdBskB1C1NgpUvLzQhiQAd7AzdbE83BlatDCkDOHxUgHsyZDi
+         tIwLmn0v/Nh5vw8Oxxnr519YqB5PWDeKkTQnPW4Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 490/772] pinctrl: mediatek: mt8195: enable driver on mtk platforms
+Date:   Tue,  7 Jun 2022 19:01:22 +0200
+Message-Id: <20220607165003.423666396@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Fabien Parent <fparent@baylibre.com>
 
-Let's cc Joao.
+[ Upstream commit 931d7fa89e640dea146e00b77c1d73459e66ab6e ]
 
-On Tue, 7 Jun 2022 22:41:57 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
+Set the pinctrl driver as built-in by default if
+ARM64 and ARCH_MEDIATEK are enabled.
 
-> compound_pincount_ptr is stored at first tail page instead of second tail
-> page now.
+Fixes: 6cf5e9ef362a ("pinctrl: add pinctrl driver on mt8195")
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Link: https://lore.kernel.org/r/20220327160813.2978637-1-fparent@baylibre.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pinctrl/mediatek/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-"now"?  Some identifiable commit did this?
+diff --git a/drivers/pinctrl/mediatek/Kconfig b/drivers/pinctrl/mediatek/Kconfig
+index c7fa1525e42a..901c0ec0cca5 100644
+--- a/drivers/pinctrl/mediatek/Kconfig
++++ b/drivers/pinctrl/mediatek/Kconfig
+@@ -159,6 +159,7 @@ config PINCTRL_MT8195
+ 	bool "Mediatek MT8195 pin control"
+ 	depends on OF
+ 	depends on ARM64 || COMPILE_TEST
++	default ARM64 && ARCH_MEDIATEK
+ 	select PINCTRL_MTK_PARIS
+ 
+ config PINCTRL_MT8365
+-- 
+2.35.1
 
-> And if it or some other field changes again in the future, data
-> overwritten might happen. Calling prep_compound_head() outside the loop
-> to prevent such possible issue. No functional change intended.
-> 
-> ...
->
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -6772,17 +6772,8 @@ static void __ref memmap_init_compound(struct page *head,
->  		__init_zone_device_page(page, pfn, zone_idx, nid, pgmap);
->  		prep_compound_tail(head, pfn - head_pfn);
->  		set_page_count(page, 0);
-> -
-> -		/*
-> -		 * The first tail page stores compound_mapcount_ptr() and
-> -		 * compound_order() and the second tail page stores
-> -		 * compound_pincount_ptr(). Call prep_compound_head() after
-> -		 * the first and second tail pages have been initialized to
-> -		 * not have the data overwritten.
-> -		 */
-> -		if (pfn == head_pfn + 2)
-> -			prep_compound_head(head, order);
->  	}
-> +	prep_compound_head(head, order);
->  }
->  
->  void __ref memmap_init_zone_device(struct zone *zone,
+
 
