@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECFEACCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC10CCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386663AbiFHBpM (ORCPT
+        id S1384259AbiFHBpB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
+        Tue, 7 Jun 2022 21:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382437AbiFGWCi (ORCPT
+        with ESMTP id S1383192AbiFGWZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:02:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8B924F799;
-        Tue,  7 Jun 2022 12:14:38 -0700 (PDT)
+        Tue, 7 Jun 2022 18:25:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDFF26EEB6;
+        Tue,  7 Jun 2022 12:22:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95180617DA;
-        Tue,  7 Jun 2022 19:14:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0D59C34115;
-        Tue,  7 Jun 2022 19:14:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 337FDB823D6;
+        Tue,  7 Jun 2022 19:22:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 883B5C385A2;
+        Tue,  7 Jun 2022 19:22:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629272;
-        bh=F+Ejk3TJqvM9iJL5X57Am9LXrVwli2Qkgi0+4c09buY=;
+        s=korg; t=1654629763;
+        bh=b4XcJOUUruZ4QMXHty+HkTdu2vurMQ51l8/uCb2gwtA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=emSbu9NKAwLEWGI8kU9fBYnhVb5SGKSYdjzBJXxxXKX/qaHfsRCN35JH+ZVALTgnk
-         3LAO9cO/l66GiplBom+sVCtsMK0TCL2PyBp4flcGiaMCHBTRY2mN/fbCtG1JQzucQT
-         hkZ5qF4LvguxVfC/K4Xy2NIk42F2DFWwBPapn2mA=
+        b=vJCXFyXSThyhkAfIONI5waJtg+QARfAd9NcpU9oesMGDIXaj4vZaLNz23rYGigZ6V
+         TI+oDmt2HVGhG3P7j9kWOaws7LhllNp/PEH7068yXPszzWS6XEPubk/8KKyXL+WPlO
+         y763xCWexzoe2NmMr+u0fbGuOjcW7swtGKVYNDM0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 629/879] Input: sparcspkr - fix refcount leak in bbc_beep_probe
-Date:   Tue,  7 Jun 2022 19:02:27 +0200
-Message-Id: <20220607165021.107265229@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.18 768/879] scsi: dc395x: Fix a missing check on list iterator
+Date:   Tue,  7 Jun 2022 19:04:46 +0200
+Message-Id: <20220607165025.155491835@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,38 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit c8994b30d71d64d5dcc9bc0edbfdf367171aa96f ]
+commit 036a45aa587a10fa2abbd50fbd0f6c4cfc44f69f upstream.
 
-of_find_node_by_path() calls of_find_node_opts_by_path(),
-which returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+The bug is here:
 
-Fixes: 9c1a5077fdca ("input: Rewrite sparcspkr device probing.")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220516081018.42728-1-linmq006@gmail.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+	p->target_id, p->target_lun);
+
+The list iterator 'p' will point to a bogus position containing HEAD if the
+list is empty or no element is found. This case must be checked before any
+use of the iterator, otherwise it will lead to an invalid memory access.
+
+To fix this bug, add a check. Use a new variable 'iter' as the list
+iterator, and use the original variable 'p' as a dedicated pointer to point
+to the found element.
+
+Link: https://lore.kernel.org/r/20220414040231.2662-1-xiam0nd.tong@gmail.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Cc: stable@vger.kernel.org
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/misc/sparcspkr.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/dc395x.c |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/input/misc/sparcspkr.c b/drivers/input/misc/sparcspkr.c
-index fe43e5557ed7..cdcb7737c46a 100644
---- a/drivers/input/misc/sparcspkr.c
-+++ b/drivers/input/misc/sparcspkr.c
-@@ -205,6 +205,7 @@ static int bbc_beep_probe(struct platform_device *op)
- 
- 	info = &state->u.bbc;
- 	info->clock_freq = of_getintprop_default(dp, "clock-frequency", 0);
-+	of_node_put(dp);
- 	if (!info->clock_freq)
- 		goto out_free;
- 
--- 
-2.35.1
-
+--- a/drivers/scsi/dc395x.c
++++ b/drivers/scsi/dc395x.c
+@@ -3585,10 +3585,19 @@ static struct DeviceCtlBlk *device_alloc
+ #endif
+ 	if (dcb->target_lun != 0) {
+ 		/* Copy settings */
+-		struct DeviceCtlBlk *p;
+-		list_for_each_entry(p, &acb->dcb_list, list)
+-			if (p->target_id == dcb->target_id)
++		struct DeviceCtlBlk *p = NULL, *iter;
++
++		list_for_each_entry(iter, &acb->dcb_list, list)
++			if (iter->target_id == dcb->target_id) {
++				p = iter;
+ 				break;
++			}
++
++		if (!p) {
++			kfree(dcb);
++			return NULL;
++		}
++
+ 		dprintkdbg(DBG_1, 
+ 		       "device_alloc: <%02i-%i> copy from <%02i-%i>\n",
+ 		       dcb->target_id, dcb->target_lun,
 
 
