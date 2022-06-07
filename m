@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 976DBCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8643CCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387430AbiFHA0P (ORCPT
+        id S1382481AbiFHA0l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:26:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
+        Tue, 7 Jun 2022 20:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382691AbiFGVvo (ORCPT
+        with ESMTP id S1382135AbiFGWch (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:51:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C808F1912E4;
-        Tue,  7 Jun 2022 12:09:14 -0700 (PDT)
+        Tue, 7 Jun 2022 18:32:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9F35C65E;
+        Tue,  7 Jun 2022 12:25:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AD0CECE247B;
-        Tue,  7 Jun 2022 19:09:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81F59C385A2;
-        Tue,  7 Jun 2022 19:09:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E29FDB823CA;
+        Tue,  7 Jun 2022 19:25:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45366C385A2;
+        Tue,  7 Jun 2022 19:25:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628950;
-        bh=CBdFuoxeJZf+Mm7bY+1RL0qKFMs9Tl3D/WttRZfSVUY=;
+        s=korg; t=1654629940;
+        bh=9JoonTWpoek9ttj4ytgijLTdKPzH4Dk8tLw0vFaebRM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ra7MJYdQZWoEF/CE2+LyKjFZlMxOnKP0uhLs4ndUScVqvSO1oJNKuFu9Oerz6Zepa
-         WeByReq5mpgWZ2DUWVU89p2Ye1a8qneuemBKFMLfJKFRqbeyKrC4WEluN22PU2f3hj
-         Y3d5py90GGl8nACc2h9j8j3W7Na1rFgmu0HSSO6A=
+        b=LTGvK+r9mt7cu0tdyia12j7VFV9fHo2D8ilipEZmpzsEKGHA4RYMJZU8FSHw6TO17
+         zq+Dzw5Lf4wGufPH94KrjjxL3Y/dVpO0wke300PEjwGMgGrq4Y7zs8amXZqMhhXuyd
+         /nVYQRgOqPi5M4tHp4lA9CK6FwxJe5a4Hvm0tQSg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 516/879] rxrpc: Fix locking issue
-Date:   Tue,  7 Jun 2022 19:00:34 +0200
-Message-Id: <20220607165017.853491574@linuxfoundation.org>
+        stable@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Amir Goldstein <amir73il@gmail.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        Miklos Szeredi <mszeredi@redhat.com>
+Subject: [PATCH 5.18 872/879] fs: add two trivial lookup helpers
+Date:   Tue,  7 Jun 2022 19:06:30 +0200
+Message-Id: <20220607165028.168664855@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,278 +53,146 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Christian Brauner <brauner@kernel.org>
 
-[ Upstream commit ad25f5cb39872ca14bcbe00816ae65c22fe04b89 ]
+commit 00675017e0aeba5305665c52ded4ddce6a4c0231 upstream.
 
-There's a locking issue with the per-netns list of calls in rxrpc.  The
-pieces of code that add and remove a call from the list use write_lock()
-and the calls procfile uses read_lock() to access it.  However, the timer
-callback function may trigger a removal by trying to queue a call for
-processing and finding that it's already queued - at which point it has a
-spare refcount that it has to do something with.  Unfortunately, if it puts
-the call and this reduces the refcount to 0, the call will be removed from
-the list.  Unfortunately, since the _bh variants of the locking functions
-aren't used, this can deadlock.
+Similar to the addition of lookup_one() add a version of
+lookup_one_unlocked() and lookup_one_positive_unlocked() that take
+idmapped mounts into account. This is required to port overlay to
+support idmapped base layers.
 
-================================
-WARNING: inconsistent lock state
-5.18.0-rc3-build4+ #10 Not tainted
---------------------------------
-inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
-ksoftirqd/2/25 [HC0[0]:SC1[1]:HE1:SE0] takes:
-ffff888107ac4038 (&rxnet->call_lock){+.?.}-{2:2}, at: rxrpc_put_call+0x103/0x14b
-{SOFTIRQ-ON-W} state was registered at:
-...
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&rxnet->call_lock);
-  <Interrupt>
-    lock(&rxnet->call_lock);
-
- *** DEADLOCK ***
-
-1 lock held by ksoftirqd/2/25:
- #0: ffff8881008ffdb0 ((&call->timer)){+.-.}-{0:0}, at: call_timer_fn+0x5/0x23d
-
-Changes
-=======
-ver #2)
- - Changed to using list_next_rcu() rather than rcu_dereference() directly.
-
-Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: <linux-fsdevel@vger.kernel.org>
+Tested-by: Giuseppe Scrivano <gscrivan@redhat.com>
+Reviewed-by: Amir Goldstein <amir73il@gmail.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/seq_file.c            | 32 ++++++++++++++++++++++++++++++++
- include/linux/list.h     | 10 ++++++++++
- include/linux/seq_file.h |  4 ++++
- net/rxrpc/ar-internal.h  |  2 +-
- net/rxrpc/call_accept.c  |  6 +++---
- net/rxrpc/call_object.c  | 18 +++++++++---------
- net/rxrpc/net_ns.c       |  2 +-
- net/rxrpc/proc.c         | 10 ++--------
- 8 files changed, 62 insertions(+), 22 deletions(-)
+ fs/namei.c            |   70 ++++++++++++++++++++++++++++++++++++++++++--------
+ include/linux/namei.h |    6 ++++
+ 2 files changed, 66 insertions(+), 10 deletions(-)
 
-diff --git a/fs/seq_file.c b/fs/seq_file.c
-index 7ab8a58c29b6..9456a2032224 100644
---- a/fs/seq_file.c
-+++ b/fs/seq_file.c
-@@ -931,6 +931,38 @@ struct list_head *seq_list_next(void *v, struct list_head *head, loff_t *ppos)
- }
- EXPORT_SYMBOL(seq_list_next);
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -2768,7 +2768,8 @@ struct dentry *lookup_one(struct user_na
+ EXPORT_SYMBOL(lookup_one);
  
-+struct list_head *seq_list_start_rcu(struct list_head *head, loff_t pos)
-+{
-+	struct list_head *lh;
-+
-+	list_for_each_rcu(lh, head)
-+		if (pos-- == 0)
-+			return lh;
-+
-+	return NULL;
-+}
-+EXPORT_SYMBOL(seq_list_start_rcu);
-+
-+struct list_head *seq_list_start_head_rcu(struct list_head *head, loff_t pos)
-+{
-+	if (!pos)
-+		return head;
-+
-+	return seq_list_start_rcu(head, pos - 1);
-+}
-+EXPORT_SYMBOL(seq_list_start_head_rcu);
-+
-+struct list_head *seq_list_next_rcu(void *v, struct list_head *head,
-+				    loff_t *ppos)
-+{
-+	struct list_head *lh;
-+
-+	lh = list_next_rcu((struct list_head *)v);
-+	++*ppos;
-+	return lh == head ? NULL : lh;
-+}
-+EXPORT_SYMBOL(seq_list_next_rcu);
-+
  /**
-  * seq_hlist_start - start an iteration of a hlist
-  * @head: the head of the hlist
-diff --git a/include/linux/list.h b/include/linux/list.h
-index dd6c2041d09c..0f7d8ec5b4ed 100644
---- a/include/linux/list.h
-+++ b/include/linux/list.h
-@@ -579,6 +579,16 @@ static inline void list_splice_tail_init(struct list_head *list,
- #define list_for_each(pos, head) \
- 	for (pos = (head)->next; !list_is_head(pos, (head)); pos = pos->next)
+- * lookup_one_len_unlocked - filesystem helper to lookup single pathname component
++ * lookup_one_unlocked - filesystem helper to lookup single pathname component
++ * @mnt_userns:	idmapping of the mount the lookup is performed from
+  * @name:	pathname component to lookup
+  * @base:	base directory to lookup from
+  * @len:	maximum length @len should be interpreted to
+@@ -2779,14 +2780,15 @@ EXPORT_SYMBOL(lookup_one);
+  * Unlike lookup_one_len, it should be called without the parent
+  * i_mutex held, and will take the i_mutex itself if necessary.
+  */
+-struct dentry *lookup_one_len_unlocked(const char *name,
+-				       struct dentry *base, int len)
++struct dentry *lookup_one_unlocked(struct user_namespace *mnt_userns,
++				   const char *name, struct dentry *base,
++				   int len)
+ {
+ 	struct qstr this;
+ 	int err;
+ 	struct dentry *ret;
  
+-	err = lookup_one_common(&init_user_ns, name, base, len, &this);
++	err = lookup_one_common(mnt_userns, name, base, len, &this);
+ 	if (err)
+ 		return ERR_PTR(err);
+ 
+@@ -2795,6 +2797,59 @@ struct dentry *lookup_one_len_unlocked(c
+ 		ret = lookup_slow(&this, base, 0);
+ 	return ret;
+ }
++EXPORT_SYMBOL(lookup_one_unlocked);
++
 +/**
-+ * list_for_each_rcu - Iterate over a list in an RCU-safe fashion
-+ * @pos:	the &struct list_head to use as a loop cursor.
-+ * @head:	the head for your list.
++ * lookup_one_positive_unlocked - filesystem helper to lookup single
++ *				  pathname component
++ * @mnt_userns:	idmapping of the mount the lookup is performed from
++ * @name:	pathname component to lookup
++ * @base:	base directory to lookup from
++ * @len:	maximum length @len should be interpreted to
++ *
++ * This helper will yield ERR_PTR(-ENOENT) on negatives. The helper returns
++ * known positive or ERR_PTR(). This is what most of the users want.
++ *
++ * Note that pinned negative with unlocked parent _can_ become positive at any
++ * time, so callers of lookup_one_unlocked() need to be very careful; pinned
++ * positives have >d_inode stable, so this one avoids such problems.
++ *
++ * Note that this routine is purely a helper for filesystem usage and should
++ * not be called by generic code.
++ *
++ * The helper should be called without i_mutex held.
 + */
-+#define list_for_each_rcu(pos, head)		  \
-+	for (pos = rcu_dereference((head)->next); \
-+	     !list_is_head(pos, (head)); \
-+	     pos = rcu_dereference(pos->next))
++struct dentry *lookup_one_positive_unlocked(struct user_namespace *mnt_userns,
++					    const char *name,
++					    struct dentry *base, int len)
++{
++	struct dentry *ret = lookup_one_unlocked(mnt_userns, name, base, len);
 +
- /**
-  * list_for_each_continue - continue iteration over a list
-  * @pos:	the &struct list_head to use as a loop cursor.
-diff --git a/include/linux/seq_file.h b/include/linux/seq_file.h
-index 60820ab511d2..bd023dd38ae6 100644
---- a/include/linux/seq_file.h
-+++ b/include/linux/seq_file.h
-@@ -277,6 +277,10 @@ extern struct list_head *seq_list_start_head(struct list_head *head,
- extern struct list_head *seq_list_next(void *v, struct list_head *head,
- 		loff_t *ppos);
++	if (!IS_ERR(ret) && d_flags_negative(smp_load_acquire(&ret->d_flags))) {
++		dput(ret);
++		ret = ERR_PTR(-ENOENT);
++	}
++	return ret;
++}
++EXPORT_SYMBOL(lookup_one_positive_unlocked);
++
++/**
++ * lookup_one_len_unlocked - filesystem helper to lookup single pathname component
++ * @name:	pathname component to lookup
++ * @base:	base directory to lookup from
++ * @len:	maximum length @len should be interpreted to
++ *
++ * Note that this routine is purely a helper for filesystem usage and should
++ * not be called by generic code.
++ *
++ * Unlike lookup_one_len, it should be called without the parent
++ * i_mutex held, and will take the i_mutex itself if necessary.
++ */
++struct dentry *lookup_one_len_unlocked(const char *name,
++				       struct dentry *base, int len)
++{
++	return lookup_one_unlocked(&init_user_ns, name, base, len);
++}
+ EXPORT_SYMBOL(lookup_one_len_unlocked);
  
-+extern struct list_head *seq_list_start_rcu(struct list_head *head, loff_t pos);
-+extern struct list_head *seq_list_start_head_rcu(struct list_head *head, loff_t pos);
-+extern struct list_head *seq_list_next_rcu(void *v, struct list_head *head, loff_t *ppos);
-+
  /*
-  * Helpers for iteration over hlist_head-s in seq_files
-  */
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 969e532f77a9..422558d50571 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -68,7 +68,7 @@ struct rxrpc_net {
- 	struct proc_dir_entry	*proc_net;	/* Subdir in /proc/net */
- 	u32			epoch;		/* Local epoch for detecting local-end reset */
- 	struct list_head	calls;		/* List of calls active in this namespace */
--	rwlock_t		call_lock;	/* Lock for ->calls */
-+	spinlock_t		call_lock;	/* Lock for ->calls */
- 	atomic_t		nr_calls;	/* Count of allocated calls */
- 
- 	atomic_t		nr_conns;
-diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
-index 1ae90fb97936..8b24ffbc72ef 100644
---- a/net/rxrpc/call_accept.c
-+++ b/net/rxrpc/call_accept.c
-@@ -140,9 +140,9 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
- 	write_unlock(&rx->call_lock);
- 
- 	rxnet = call->rxnet;
--	write_lock(&rxnet->call_lock);
--	list_add_tail(&call->link, &rxnet->calls);
--	write_unlock(&rxnet->call_lock);
-+	spin_lock_bh(&rxnet->call_lock);
-+	list_add_tail_rcu(&call->link, &rxnet->calls);
-+	spin_unlock_bh(&rxnet->call_lock);
- 
- 	b->call_backlog[call_head] = call;
- 	smp_store_release(&b->call_backlog_head, (call_head + 1) & (size - 1));
-diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-index 043508fd8d8a..25c9a2cbf048 100644
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -337,9 +337,9 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
- 	write_unlock(&rx->call_lock);
- 
- 	rxnet = call->rxnet;
--	write_lock(&rxnet->call_lock);
--	list_add_tail(&call->link, &rxnet->calls);
--	write_unlock(&rxnet->call_lock);
-+	spin_lock_bh(&rxnet->call_lock);
-+	list_add_tail_rcu(&call->link, &rxnet->calls);
-+	spin_unlock_bh(&rxnet->call_lock);
- 
- 	/* From this point on, the call is protected by its own lock. */
- 	release_sock(&rx->sk);
-@@ -631,9 +631,9 @@ void rxrpc_put_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
- 		ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
- 
- 		if (!list_empty(&call->link)) {
--			write_lock(&rxnet->call_lock);
-+			spin_lock_bh(&rxnet->call_lock);
- 			list_del_init(&call->link);
--			write_unlock(&rxnet->call_lock);
-+			spin_unlock_bh(&rxnet->call_lock);
- 		}
- 
- 		rxrpc_cleanup_call(call);
-@@ -705,7 +705,7 @@ void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
- 	_enter("");
- 
- 	if (!list_empty(&rxnet->calls)) {
--		write_lock(&rxnet->call_lock);
-+		spin_lock_bh(&rxnet->call_lock);
- 
- 		while (!list_empty(&rxnet->calls)) {
- 			call = list_entry(rxnet->calls.next,
-@@ -720,12 +720,12 @@ void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
- 			       rxrpc_call_states[call->state],
- 			       call->flags, call->events);
- 
--			write_unlock(&rxnet->call_lock);
-+			spin_unlock_bh(&rxnet->call_lock);
- 			cond_resched();
--			write_lock(&rxnet->call_lock);
-+			spin_lock_bh(&rxnet->call_lock);
- 		}
- 
--		write_unlock(&rxnet->call_lock);
-+		spin_unlock_bh(&rxnet->call_lock);
- 	}
- 
- 	atomic_dec(&rxnet->nr_calls);
-diff --git a/net/rxrpc/net_ns.c b/net/rxrpc/net_ns.c
-index cc7e30733feb..e4d6d432515b 100644
---- a/net/rxrpc/net_ns.c
-+++ b/net/rxrpc/net_ns.c
-@@ -50,7 +50,7 @@ static __net_init int rxrpc_init_net(struct net *net)
- 	rxnet->epoch |= RXRPC_RANDOM_EPOCH;
- 
- 	INIT_LIST_HEAD(&rxnet->calls);
--	rwlock_init(&rxnet->call_lock);
-+	spin_lock_init(&rxnet->call_lock);
- 	atomic_set(&rxnet->nr_calls, 1);
- 
- 	atomic_set(&rxnet->nr_conns, 1);
-diff --git a/net/rxrpc/proc.c b/net/rxrpc/proc.c
-index e2f990754f88..5a67955cc00f 100644
---- a/net/rxrpc/proc.c
-+++ b/net/rxrpc/proc.c
-@@ -26,29 +26,23 @@ static const char *const rxrpc_conn_states[RXRPC_CONN__NR_STATES] = {
-  */
- static void *rxrpc_call_seq_start(struct seq_file *seq, loff_t *_pos)
- 	__acquires(rcu)
--	__acquires(rxnet->call_lock)
+@@ -2808,12 +2863,7 @@ EXPORT_SYMBOL(lookup_one_len_unlocked);
+ struct dentry *lookup_positive_unlocked(const char *name,
+ 				       struct dentry *base, int len)
  {
- 	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
- 
- 	rcu_read_lock();
--	read_lock(&rxnet->call_lock);
--	return seq_list_start_head(&rxnet->calls, *_pos);
-+	return seq_list_start_head_rcu(&rxnet->calls, *_pos);
+-	struct dentry *ret = lookup_one_len_unlocked(name, base, len);
+-	if (!IS_ERR(ret) && d_flags_negative(smp_load_acquire(&ret->d_flags))) {
+-		dput(ret);
+-		ret = ERR_PTR(-ENOENT);
+-	}
+-	return ret;
++	return lookup_one_positive_unlocked(&init_user_ns, name, base, len);
  }
+ EXPORT_SYMBOL(lookup_positive_unlocked);
  
- static void *rxrpc_call_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- {
- 	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
+--- a/include/linux/namei.h
++++ b/include/linux/namei.h
+@@ -69,6 +69,12 @@ extern struct dentry *lookup_one_len(con
+ extern struct dentry *lookup_one_len_unlocked(const char *, struct dentry *, int);
+ extern struct dentry *lookup_positive_unlocked(const char *, struct dentry *, int);
+ struct dentry *lookup_one(struct user_namespace *, const char *, struct dentry *, int);
++struct dentry *lookup_one_unlocked(struct user_namespace *mnt_userns,
++				   const char *name, struct dentry *base,
++				   int len);
++struct dentry *lookup_one_positive_unlocked(struct user_namespace *mnt_userns,
++					    const char *name,
++					    struct dentry *base, int len);
  
--	return seq_list_next(v, &rxnet->calls, pos);
-+	return seq_list_next_rcu(v, &rxnet->calls, pos);
- }
- 
- static void rxrpc_call_seq_stop(struct seq_file *seq, void *v)
--	__releases(rxnet->call_lock)
- 	__releases(rcu)
- {
--	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
--
--	read_unlock(&rxnet->call_lock);
- 	rcu_read_unlock();
- }
- 
--- 
-2.35.1
-
+ extern int follow_down_one(struct path *);
+ extern int follow_down(struct path *);
 
 
