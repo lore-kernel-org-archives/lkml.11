@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1326CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F235C43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377093AbiFGUc3 (ORCPT
+        id S1377048AbiFGUb5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:32:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43650 "EHLO
+        Tue, 7 Jun 2022 16:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356777AbiFGTjs (ORCPT
+        with ESMTP id S1356675AbiFGTjh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:39:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDBE1AEC50;
-        Tue,  7 Jun 2022 11:14:31 -0700 (PDT)
+        Tue, 7 Jun 2022 15:39:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB22F5518;
+        Tue,  7 Jun 2022 11:14:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC99F60AD9;
-        Tue,  7 Jun 2022 18:14:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFE54C385A5;
-        Tue,  7 Jun 2022 18:14:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55ADFB82239;
+        Tue,  7 Jun 2022 18:14:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE33BC385A2;
+        Tue,  7 Jun 2022 18:14:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625670;
-        bh=Nk3kL6bonCgW2p1suaJIp+npmeYoouMji55NiDP4wXM=;
+        s=korg; t=1654625662;
+        bh=7ItEnuZgI7sAM+jHg3w+0ZhqPnHL9n74ST6Y6vLO1Nk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cgEas+Vw4sYtSIMwTiXkJ0Z9ptqBowZdcCiMWWxHprWU0a6T78nzyezyBt0NbohMv
-         GoLuum9+w5rYJTwsO6UG0pvh2FAZK21CZdsdq96WJY+3OKKY3zL48HheymmjCs6Z/Z
-         Gf7aUxbKFMt5YNB5TUEdlVVJfHhcSl/I1Hacqo7g=
+        b=ItL0efFyareH0PCcRTJkcXhlod8qYlso44AOCUuHXvMFi43A6+ft7yhCks1hiPBwt
+         j2ghXR+f5locJ3KtpY/xDbhfX65W+reoBib40f4dk89fSnxV17DTehlC6aUH3UOnyl
+         MQcywAGsjx1Tg7bkPZ++LwP0Bm2Gs4DMQ9VtxM6U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 101/772] drm/plane: Move range check for format_count earlier
-Date:   Tue,  7 Jun 2022 18:54:53 +0200
-Message-Id: <20220607164952.023953602@linuxfoundation.org>
+Subject: [PATCH 5.17 098/772] scsi: lpfc: Fix resource leak in lpfc_sli4_send_seq_to_ulp()
+Date:   Tue,  7 Jun 2022 18:54:50 +0200
+Message-Id: <20220607164951.936578336@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,57 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Price <steven.price@arm.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 4b674dd69701c2e22e8e7770c1706a69f3b17269 ]
+[ Upstream commit 646db1a560f44236b7278b822ca99a1d3b6ea72c ]
 
-While the check for format_count > 64 in __drm_universal_plane_init()
-shouldn't be hit (it's a WARN_ON), in its current position it will then
-leak the plane->format_types array and fail to call
-drm_mode_object_unregister() leaking the modeset identifier. Move it to
-the start of the function to avoid allocating those resources in the
-first place.
+If no handler is found in lpfc_complete_unsol_iocb() to match the rctl of a
+received frame, the frame is dropped and resources are leaked.
 
-Signed-off-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
-Link: https://lore.kernel.org/dri-devel/20211203102815.38624-1-steven.price@arm.com/
+Fix by returning resources when discarding an unhandled frame type.  Update
+lpfc_fc_frame_check() handling of NOP basic link service.
+
+Link: https://lore.kernel.org/r/20220426181419.9154-1-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_plane.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/scsi/lpfc/lpfc_sli.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_plane.c b/drivers/gpu/drm/drm_plane.c
-index 82afb854141b..fd0bf90fb4c2 100644
---- a/drivers/gpu/drm/drm_plane.c
-+++ b/drivers/gpu/drm/drm_plane.c
-@@ -249,6 +249,13 @@ static int __drm_universal_plane_init(struct drm_device *dev,
- 	if (WARN_ON(config->num_total_plane >= 32))
- 		return -EINVAL;
- 
-+	/*
-+	 * First driver to need more than 64 formats needs to fix this. Each
-+	 * format is encoded as a bit and the current code only supports a u64.
-+	 */
-+	if (WARN_ON(format_count > 64))
-+		return -EINVAL;
-+
- 	WARN_ON(drm_drv_uses_atomic_modeset(dev) &&
- 		(!funcs->atomic_destroy_state ||
- 		 !funcs->atomic_duplicate_state));
-@@ -270,13 +277,6 @@ static int __drm_universal_plane_init(struct drm_device *dev,
- 		return -ENOMEM;
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index b64c5f157ce9..f5f472991816 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -18466,7 +18466,6 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
+ 	case FC_RCTL_ELS_REP:	/* extended link services reply */
+ 	case FC_RCTL_ELS4_REQ:	/* FC-4 ELS request */
+ 	case FC_RCTL_ELS4_REP:	/* FC-4 ELS reply */
+-	case FC_RCTL_BA_NOP:  	/* basic link service NOP */
+ 	case FC_RCTL_BA_ABTS: 	/* basic link service abort */
+ 	case FC_RCTL_BA_RMC: 	/* remove connection */
+ 	case FC_RCTL_BA_ACC:	/* basic accept */
+@@ -18487,6 +18486,7 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
+ 		fc_vft_hdr = (struct fc_vft_header *)fc_hdr;
+ 		fc_hdr = &((struct fc_frame_header *)fc_vft_hdr)[1];
+ 		return lpfc_fc_frame_check(phba, fc_hdr);
++	case FC_RCTL_BA_NOP:	/* basic link service NOP */
+ 	default:
+ 		goto drop;
  	}
+@@ -19299,12 +19299,14 @@ lpfc_sli4_send_seq_to_ulp(struct lpfc_vport *vport,
+ 	if (!lpfc_complete_unsol_iocb(phba,
+ 				      phba->sli4_hba.els_wq->pring,
+ 				      iocbq, fc_hdr->fh_r_ctl,
+-				      fc_hdr->fh_type))
++				      fc_hdr->fh_type)) {
+ 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+ 				"2540 Ring %d handler: unexpected Rctl "
+ 				"x%x Type x%x received\n",
+ 				LPFC_ELS_RING,
+ 				fc_hdr->fh_r_ctl, fc_hdr->fh_type);
++		lpfc_in_buf_free(phba, &seq_dmabuf->dbuf);
++	}
  
--	/*
--	 * First driver to need more than 64 formats needs to fix this. Each
--	 * format is encoded as a bit and the current code only supports a u64.
--	 */
--	if (WARN_ON(format_count > 64))
--		return -EINVAL;
--
- 	if (format_modifiers) {
- 		const uint64_t *temp_modifiers = format_modifiers;
- 
+ 	/* Free iocb created in lpfc_prep_seq */
+ 	list_for_each_entry_safe(curr_iocb, next_iocb,
 -- 
 2.35.1
 
