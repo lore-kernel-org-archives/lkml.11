@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C73CCA485
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04170CCA488
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377836AbiFGUu7 (ORCPT
+        id S1377884AbiFGUvI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49342 "EHLO
+        Tue, 7 Jun 2022 16:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358385AbiFGTw0 (ORCPT
+        with ESMTP id S1358403AbiFGTw2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663C2EACDB;
-        Tue,  7 Jun 2022 11:20:17 -0700 (PDT)
+        Tue, 7 Jun 2022 15:52:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09517EF057;
+        Tue,  7 Jun 2022 11:20:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 037F460DB7;
-        Tue,  7 Jun 2022 18:20:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13408C385A2;
-        Tue,  7 Jun 2022 18:20:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76294B82368;
+        Tue,  7 Jun 2022 18:20:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C65F0C385A2;
+        Tue,  7 Jun 2022 18:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626016;
-        bh=0or0bOVZvhDFy8k7MzwZE5SMX4NHHdVIR77GgpLle00=;
+        s=korg; t=1654626019;
+        bh=XJ50Jb/dd9venn1pdAoNrEN6xPogM9j8x9SREus6Qzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BV5f0ugb65dS8+MCRiTafHW4FX9/Gw0MTASqLIAKdE1fjO7QHJfJZBRmpLNHMj5oE
-         sFdNbfUCQd+VStQV+LS1WuODAyeawHdUey794Cu/Za+gj6vXJtJhCChOGz6CzovXCd
-         CzK9aUL0S3vEkO+EeGSXm1RVE1SDarIN9kHhbgxc=
+        b=pRJMaUS03H/wEk1foQyutPrxOw6UE2WEsi/gedG0imytwtOY/CgBGusxz/TxvM+GD
+         Ot20ElRtny5yktE8SS+qtRnzlHrt6PF6JaP/vAGRd2/IvKXT+FLQvjqghaJC4uu1wv
+         gfop5LAfYjjwnnUgqAjxdTDQ310U1ib/YWKlq1GE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wan Jiabing <wanjiabing@vivo.com>,
-        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Rob Herring <robh@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        David Lechner <david@lechnology.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 227/772] drm/omap: fix NULL but dereferenced coccicheck error
-Date:   Tue,  7 Jun 2022 18:56:59 +0200
-Message-Id: <20220607164955.721390952@linuxfoundation.org>
+Subject: [PATCH 5.17 228/772] dt-bindings: display: sitronix, st7735r: Fix backlight in example
+Date:   Tue,  7 Jun 2022 18:57:00 +0200
+Message-Id: <20220607164955.750570450@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,38 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wan Jiabing <wanjiabing@vivo.com>
+From: Noralf Trønnes <noralf@tronnes.org>
 
-[ Upstream commit 8f2a3970c969d0d8d7289a4c65edcedafc16fd92 ]
+[ Upstream commit 471e201f543559e2cb19b182b680ebf04d80ee31 ]
 
-Fix the following coccicheck warning:
-./drivers/gpu/drm/omapdrm/omap_overlay.c:89:22-25: ERROR: r_ovl is NULL
-but dereferenced.
+The backlight property was lost during conversion to yaml in commit
+abdd9e3705c8 ("dt-bindings: display: sitronix,st7735r: Convert to DT schema").
+Put it back.
 
-Here should be ovl->idx rather than r_ovl->idx.
-
-Fixes: e02b5cc9e898ad ("drm/omap: Add a 'right overlay' to plane state")
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-Signed-off-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220307095612.409090-1-wanjiabing@vivo.com
+Fixes: abdd9e3705c8 ("dt-bindings: display: sitronix,st7735r: Convert to DT schema")
+Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: David Lechner <david@lechnology.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211124150757.17929-2-noralf@tronnes.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/omapdrm/omap_overlay.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/display/sitronix,st7735r.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/omapdrm/omap_overlay.c b/drivers/gpu/drm/omapdrm/omap_overlay.c
-index 10730c9b2752..b0bc9ad2ef73 100644
---- a/drivers/gpu/drm/omapdrm/omap_overlay.c
-+++ b/drivers/gpu/drm/omapdrm/omap_overlay.c
-@@ -86,7 +86,7 @@ int omap_overlay_assign(struct drm_atomic_state *s, struct drm_plane *plane,
- 		r_ovl = omap_plane_find_free_overlay(s->dev, overlay_map,
- 						     caps, fourcc);
- 		if (!r_ovl) {
--			overlay_map[r_ovl->idx] = NULL;
-+			overlay_map[ovl->idx] = NULL;
- 			*overlay = NULL;
- 			return -ENOMEM;
- 		}
+diff --git a/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml b/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
+index 0cebaaefda03..419c3b2ac5a6 100644
+--- a/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
++++ b/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
+@@ -72,6 +72,7 @@ examples:
+                     dc-gpios = <&gpio 43 GPIO_ACTIVE_HIGH>;
+                     reset-gpios = <&gpio 80 GPIO_ACTIVE_HIGH>;
+                     rotation = <270>;
++                    backlight = <&backlight>;
+             };
+     };
+ 
 -- 
 2.35.1
 
