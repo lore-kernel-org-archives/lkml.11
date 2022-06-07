@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E44F3C04E88
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE9ECCA49F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391677AbiFHAvb (ORCPT
+        id S1388785AbiFHAu5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36750 "EHLO
+        Tue, 7 Jun 2022 20:50:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383625AbiFGWGD (ORCPT
+        with ESMTP id S1381813AbiFGWVt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:06:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C258195937;
-        Tue,  7 Jun 2022 12:16:11 -0700 (PDT)
+        Tue, 7 Jun 2022 18:21:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AA526A90C;
+        Tue,  7 Jun 2022 12:22:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 067AD61846;
-        Tue,  7 Jun 2022 19:16:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13502C385A2;
-        Tue,  7 Jun 2022 19:16:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9ED83609D0;
+        Tue,  7 Jun 2022 19:21:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA755C385A2;
+        Tue,  7 Jun 2022 19:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629370;
-        bh=zpIlo2dhr55SAn7L6nptZO8nID03IAKitfbd/IXs1qc=;
+        s=korg; t=1654629711;
+        bh=JResAk/B+hthY8xeZahQu9QuVQDbRBIYLvFy6476UII=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bT8TX9JOqz6rCmCZwtCZwTsuwLlw2j27aWO2M03AYBR9HhPNCCWVPDw4Z6x0+0RbV
-         E4BnoMFuhfp7tuLt0ZxUyNqc6GYUZdVjK74iGHxT2OZlKfKcBMWUIPOVKhwqkjdmkJ
-         OfK7pmgc5drp0GZoyOQ2WZah/IIOPyDkpxnOZ4nU=
+        b=F5jxDbSK9KcMjB2kTdT5ByCgM7vBGSKauRJu90rTZ55c0ks9z1CzCiDm90euJGhIv
+         VcTMf/OS+jLM8OQIf40Hh1pWXM5tpYHvV8d9Wkqcl8c95V6QMXjjy3nDbfjr6e0MBO
+         jy64hhea+FQZejsMCebA4sVmeVMPHWwYfcVPTmNg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
-        Yong Wu <yong.wu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 666/879] iommu/mediatek: Remove clk_disable in mtk_iommu_remove
-Date:   Tue,  7 Jun 2022 19:03:04 +0200
-Message-Id: <20220607165022.177239560@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Moore <paul@paul-moore.com>,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Subject: [PATCH 5.18 789/879] landlock: Create find_rule() from unmask_layers()
+Date:   Tue,  7 Jun 2022 19:05:07 +0200
+Message-Id: <20220607165025.766953867@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,65 +49,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yong Wu <yong.wu@mediatek.com>
+From: Mickaël Salaün <mic@digikod.net>
 
-[ Upstream commit 98df772bdd1c4ce717a26289efea15cbbe4b64ed ]
+commit 2cd7cd6eed88b8383cfddce589afe9c0ae1d19b4 upstream.
 
-After the commit b34ea31fe013 ("iommu/mediatek: Always enable the clk on
-resume"), the iommu clock is controlled by the runtime callback.
-thus remove the clk control in the mtk_iommu_remove.
+This refactoring will be useful in a following commit.
 
-Otherwise, it will warning like:
-
-echo 14018000.iommu > /sys/bus/platform/drivers/mtk-iommu/unbind
-
-[   51.413044] ------------[ cut here ]------------
-[   51.413648] vpp0_smi_iommu already disabled
-[   51.414233] WARNING: CPU: 2 PID: 157 at */v5.15-rc1/kernel/mediatek/
-                          drivers/clk/clk.c:952 clk_core_disable+0xb0/0xb8
-[   51.417174] Hardware name: MT8195V/C(ENG) (DT)
-[   51.418635] pc : clk_core_disable+0xb0/0xb8
-[   51.419177] lr : clk_core_disable+0xb0/0xb8
-...
-[   51.429375] Call trace:
-[   51.429694]  clk_core_disable+0xb0/0xb8
-[   51.430193]  clk_core_disable_lock+0x24/0x40
-[   51.430745]  clk_disable+0x20/0x30
-[   51.431189]  mtk_iommu_remove+0x58/0x118
-[   51.431705]  platform_remove+0x28/0x60
-[   51.432197]  device_release_driver_internal+0x110/0x1f0
-[   51.432873]  device_driver_detach+0x18/0x28
-[   51.433418]  unbind_store+0xd4/0x108
-[   51.433886]  drv_attr_store+0x24/0x38
-[   51.434363]  sysfs_kf_write+0x40/0x58
-[   51.434843]  kernfs_fop_write_iter+0x164/0x1e0
-
-Fixes: b34ea31fe013 ("iommu/mediatek: Always enable the clk on resume")
-Reported-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Link: https://lore.kernel.org/r/20220503071427.2285-7-yong.wu@mediatek.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reviewed-by: Paul Moore <paul@paul-moore.com>
+Link: https://lore.kernel.org/r/20220506161102.525323-4-mic@digikod.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/mtk_iommu.c | 1 -
- 1 file changed, 1 deletion(-)
+ security/landlock/fs.c |   41 ++++++++++++++++++++++++++++-------------
+ 1 file changed, 28 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index e4b4ebbcb73f..81b8db450eac 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -957,7 +957,6 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+--- a/security/landlock/fs.c
++++ b/security/landlock/fs.c
+@@ -183,23 +183,36 @@ int landlock_append_fs_rule(struct landl
  
- 	list_del(&data->list);
+ /* Access-control management */
  
--	clk_disable_unprepare(data->bclk);
- 	device_link_remove(data->smicomm_dev, &pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
- 	devm_free_irq(&pdev->dev, data->irq, data);
--- 
-2.35.1
-
+-static inline layer_mask_t
+-unmask_layers(const struct landlock_ruleset *const domain,
+-	      const struct path *const path, const access_mask_t access_request,
+-	      layer_mask_t layer_mask)
++/*
++ * The lifetime of the returned rule is tied to @domain.
++ *
++ * Returns NULL if no rule is found or if @dentry is negative.
++ */
++static inline const struct landlock_rule *
++find_rule(const struct landlock_ruleset *const domain,
++	  const struct dentry *const dentry)
+ {
+ 	const struct landlock_rule *rule;
+ 	const struct inode *inode;
+-	size_t i;
+ 
+-	if (d_is_negative(path->dentry))
+-		/* Ignore nonexistent leafs. */
+-		return layer_mask;
+-	inode = d_backing_inode(path->dentry);
++	/* Ignores nonexistent leafs. */
++	if (d_is_negative(dentry))
++		return NULL;
++
++	inode = d_backing_inode(dentry);
+ 	rcu_read_lock();
+ 	rule = landlock_find_rule(
+ 		domain, rcu_dereference(landlock_inode(inode)->object));
+ 	rcu_read_unlock();
++	return rule;
++}
++
++static inline layer_mask_t unmask_layers(const struct landlock_rule *const rule,
++					 const access_mask_t access_request,
++					 layer_mask_t layer_mask)
++{
++	size_t layer_level;
++
+ 	if (!rule)
+ 		return layer_mask;
+ 
+@@ -210,8 +223,9 @@ unmask_layers(const struct landlock_rule
+ 	 * the remaining layers for each inode, from the first added layer to
+ 	 * the last one.
+ 	 */
+-	for (i = 0; i < rule->num_layers; i++) {
+-		const struct landlock_layer *const layer = &rule->layers[i];
++	for (layer_level = 0; layer_level < rule->num_layers; layer_level++) {
++		const struct landlock_layer *const layer =
++			&rule->layers[layer_level];
+ 		const layer_mask_t layer_bit = BIT_ULL(layer->level - 1);
+ 
+ 		/* Checks that the layer grants access to the full request. */
+@@ -269,8 +283,9 @@ static int check_access_path(const struc
+ 	while (true) {
+ 		struct dentry *parent_dentry;
+ 
+-		layer_mask = unmask_layers(domain, &walker_path, access_request,
+-					   layer_mask);
++		layer_mask =
++			unmask_layers(find_rule(domain, walker_path.dentry),
++				      access_request, layer_mask);
+ 		if (layer_mask == 0) {
+ 			/* Stops when a rule from each layer grants access. */
+ 			allowed = true;
 
 
