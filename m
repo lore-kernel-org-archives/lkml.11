@@ -2,85 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1049FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 655A6CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354940AbiFGTdm (ORCPT
+        id S1355742AbiFGTdu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:33:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38366 "EHLO
+        Tue, 7 Jun 2022 15:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351737AbiFGSlg (ORCPT
+        with ESMTP id S1353202AbiFGSmE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:41:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B23186BA8;
-        Tue,  7 Jun 2022 10:58:53 -0700 (PDT)
+        Tue, 7 Jun 2022 14:42:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C24660DBB;
+        Tue,  7 Jun 2022 10:58:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22EC6B82368;
-        Tue,  7 Jun 2022 17:58:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94FF7C34115;
-        Tue,  7 Jun 2022 17:58:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624730;
-        bh=QaBLpXvVZZrFl1X5v6hzQGyuNtnzNjh2StDhRAR2WBY=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31B7A616B6;
+        Tue,  7 Jun 2022 17:58:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C92CAC341C5;
+        Tue,  7 Jun 2022 17:58:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624736;
+        bh=61LE+925SQ9LfGurc+pUTDU2OI/fL2ifgo1SqT+uFN4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IiL67AkKyHSPm9LeZXq6BP6ZJ5r21PaZBAEGAzq5vrLOjUIbczfYXvs935/X2Hcpq
-         H9m9GgdVCRBPBuY2VkwNTVmeNPU5f2xgTYKccEuJM/f+S2ylmqtBh2ST9l9mLkRfQe
-         Git+udgt054xV84INKYwrR47XWzNeB3lPBGJGW3U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        b=a1a0MgxqrtuwS9Ru7tVsIB8CPvD+07e2WU4omgwmSLbzGHlA3mwkDP+zpsw5Fd7Cg
+         f6ftrJKGQYScIKkitbt5S0k6rCBguW2rlAUOPtHkv9Y9hGA0xox0wpZIrNS+ugyXtY
+         XOkyvWL13gHSrZhQQ7G6rXxoqDRrsYS7LqK4s557ksWHx0EVVrzW7fpdQsEpfdGR7H
+         QiuXgwKuSZl4zmXeliB5ZTFA/1D1DnfxoCEc1K0fo887XWx8kQUszRbPqnt40syT9J
+         0ZvVkfQKmaREtMMyU+WbcVdIBQcOJRzxkScJgXikh1cvi3Xo5cJ0JGBAopRFUNor8K
+         Zkcuw1zhRPf4Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Kees Cook <keescook@chromium.org>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 431/667] pinctrl: mvebu: Fix irq_of_parse_and_map() return value
-Date:   Tue,  7 Jun 2022 19:01:36 +0200
-Message-Id: <20220607164947.651762721@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+Subject: [PATCH AUTOSEL 5.10 04/38] lkdtm/usercopy: Expand size of "out of frame" object
+Date:   Tue,  7 Jun 2022 13:57:59 -0400
+Message-Id: <20220607175835.480735-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
+References: <20220607175835.480735-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 71bc7cf3be65bab441e03667cf215c557712976c ]
+[ Upstream commit f387e86d3a74407bdd9c5815820ac9d060962840 ]
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+To be sufficiently out of range for the usercopy test to see the lifetime
+mismatch, expand the size of the "bad" buffer, which will let it be
+beyond current_stack_pointer regardless of stack growth direction.
+Paired with the recent addition of stack depth checking under
+CONFIG_HARDENED_USERCOPY=y, this will correctly start tripping again.
 
-Fixes: 2f227605394b ("pinctrl: armada-37xx: Add irqchip support")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220422105339.78810-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Reported-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Link: https://lore.kernel.org/lkml/762faf1b-0443-5ddf-4430-44a20cf2ec4d@collabora.com/
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/misc/lkdtm/usercopy.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-index 5cb018f98800..85a0052bb0e6 100644
---- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-+++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-@@ -781,7 +781,7 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
- 	for (i = 0; i < nr_irq_parent; i++) {
- 		int irq = irq_of_parse_and_map(np, i);
+diff --git a/drivers/misc/lkdtm/usercopy.c b/drivers/misc/lkdtm/usercopy.c
+index 109e8d4302c1..cde2655487ff 100644
+--- a/drivers/misc/lkdtm/usercopy.c
++++ b/drivers/misc/lkdtm/usercopy.c
+@@ -30,12 +30,12 @@ static const unsigned char test_text[] = "This is a test.\n";
+  */
+ static noinline unsigned char *trick_compiler(unsigned char *stack)
+ {
+-	return stack + 0;
++	return stack + unconst;
+ }
  
--		if (irq < 0)
-+		if (!irq)
- 			continue;
- 		girq->parents[i] = irq;
+ static noinline unsigned char *do_usercopy_stack_callee(int value)
+ {
+-	unsigned char buf[32];
++	unsigned char buf[128];
+ 	int i;
+ 
+ 	/* Exercise stack to avoid everything living in registers. */
+@@ -43,7 +43,12 @@ static noinline unsigned char *do_usercopy_stack_callee(int value)
+ 		buf[i] = value & 0xff;
  	}
+ 
+-	return trick_compiler(buf);
++	/*
++	 * Put the target buffer in the middle of stack allocation
++	 * so that we don't step on future stack users regardless
++	 * of stack growth direction.
++	 */
++	return trick_compiler(&buf[(128/2)-32]);
+ }
+ 
+ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+@@ -66,6 +71,12 @@ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+ 		bad_stack -= sizeof(unsigned long);
+ 	}
+ 
++#ifdef ARCH_HAS_CURRENT_STACK_POINTER
++	pr_info("stack     : %px\n", (void *)current_stack_pointer);
++#endif
++	pr_info("good_stack: %px-%px\n", good_stack, good_stack + sizeof(good_stack));
++	pr_info("bad_stack : %px-%px\n", bad_stack, bad_stack + sizeof(good_stack));
++
+ 	user_addr = vm_mmap(NULL, 0, PAGE_SIZE,
+ 			    PROT_READ | PROT_WRITE | PROT_EXEC,
+ 			    MAP_ANONYMOUS | MAP_PRIVATE, 0);
 -- 
 2.35.1
-
-
 
