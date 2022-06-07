@@ -2,647 +2,1325 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA8D4CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF830CCA487
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:14:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444203AbiFHCJ4 (ORCPT
+        id S1444227AbiFHCKI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:09:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46220 "EHLO
+        Tue, 7 Jun 2022 22:10:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1575172AbiFGX0w (ORCPT
+        with ESMTP id S1358566AbiFHBD4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:26:52 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC14640969B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:38:57 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-f2e0a41009so24867347fac.6
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:38:57 -0700 (PDT)
+        Tue, 7 Jun 2022 21:03:56 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90F614FCB4
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 17:02:14 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id j10so30677434lfe.12
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 17:02:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kKTDdZnjNKobY/jRMokEct4IEdP4iB51Sy8ttJLLgKM=;
-        b=oYO9Z5/u8WD+5rgR5+36FtYM2BbXTBFW/qMJqxwSK56Zeg3/aA+31UvEugsAlhMxvu
-         FENu1kUzQk+7jc6V9KmwNkDpju/TeEl/frhOv5n8Gh8HOlAFxZNrtm11os/mOLHOfwCp
-         xgypdLPJs8ybxC7uZRY+ntycKWi2wcQ/Iwm7OgXKHmgSZqTRaXF1a0rAwwpYMw3lM6i4
-         vLU65NCA39BIf3ucqRiBXDzGLfGX6u6cLo+lVrfq7cvg9Ltwq+XvkvBTGJDcFzyGED53
-         +wzsAhGLJSEii8fVfRso6TDJbOixCS/YnPUCGe1bGSQfy0mZKMQ1iLDF5NN1V3kREJGx
-         uuPQ==
+        d=profian-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7rQrIHUR2ALXPg40tZgzePGJXQzBKmMGjFqoTXETcwU=;
+        b=KSUodAogvxcC4QW7zEKgd2ZksXEsoO0Eh0gZy4nSd5ECHfUkhYPtsqJkjaLgLHwBn2
+         ZdY9Cp96lLYiLX0JNJy15GxXkI8QJM2yWVM8kjaGR3Eb+AjZUvJnld+djDA33w19VOHK
+         8l6PEBoCKeeRWTZEFETruCtFZ0W7YBh8+AxrQ7f7K6ZZhwiUuwJ6CZn1hnaGsG90iYma
+         igIfBX4B8+hh761Ucz7OmXogNJyePSPhvO760KZPNijhbvn1/t9scSY98MTXpDP25hqU
+         oufEtHEXmDZN24X5qRmlhGjSr43vRM9eKLR2UPQ4AWNfnAk/kalvRqV3TntRR+6iU6hS
+         XPPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kKTDdZnjNKobY/jRMokEct4IEdP4iB51Sy8ttJLLgKM=;
-        b=Fbi744qglkpKQ58rUFdfJUt+aQ7dyOoSnJqPkhsh4U1CPfum7rmd6yzZtDcHdw+hfY
-         BS+IE6fDvHEdIW1P+stHK8TVZeqN/s4eTd7mdMljy85i9sOcXg5xARTDtsfWlMoZrT4a
-         caJ7CShWvfs+b37eiK3d09MHERMdEnzfxbhwxk/WLve+Z4Zv7i3fhxC6XaZyhtXGWYpM
-         dJYKBDdFyDldXM1OJB4/CGCUxXXEva8CgVpfzD8ZVU+otyeuflYg9Hxbiw8+JG9U183q
-         NSyNy8C+uqn3pl6MiOiGS1wlEx9q004zhpZd9E9yMNjL+qinz3fJxFmBMTD2Cv68qP7v
-         DMZQ==
-X-Gm-Message-State: AOAM5329P6syEuDS/fF6sV+KZ2LYjm/f3crN4mpF2uQ4i3G1UBPWY5Ko
-        ovuMJVVSf+B/CWuqSde3D1Rnfg==
-X-Google-Smtp-Source: ABdhPJxab5q1niuCMVfaTF4Vqo7DTI9xNt5iYixY3qUo67MrTc7eDUstug2OZ2RXat+pb22iTZTlBQ==
-X-Received: by 2002:a05:6870:42c4:b0:f1:7bfd:b67c with SMTP id z4-20020a05687042c400b000f17bfdb67cmr570351oah.177.1654637932399;
-        Tue, 07 Jun 2022 14:38:52 -0700 (PDT)
-Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id cr11-20020a056870ebcb00b000f33a37411dsm8554122oab.26.2022.06.07.14.38.51
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7rQrIHUR2ALXPg40tZgzePGJXQzBKmMGjFqoTXETcwU=;
+        b=FPtrzcbuefOPbT6Vh/LVCAECEsmfUX04J5rZlFqAUIU7rTrtuflwVsbZ67tRhbxDdk
+         0FRxWqk8lttsLPnnklQGk36s2YzUqjF1oJLuTGXvVB/hNZclg+EyVeMSValcvufvOA1u
+         QntSsz7d5Y5K0zDAyyQyPwWAFMmB8Y7aQcQvU+l+gRMOu7f2/NiFNww7SqrVDd4ERJdj
+         KsuPnwDkEw+p2gADIEODmY7sdRJrHhnwkFKbxApo7HAwCpaoTSJY9w5/k7DH5el43npi
+         k002gaxHvW/3glgMQiBeoPy3xK+w2Krxf2cOzi9vEgoxRN7OonPyV960efB1feQQumed
+         tD1A==
+X-Gm-Message-State: AOAM53085htSYLOajnqvVv0n1nEtFzLtXq9ud+XgnLfMzgOwoyxNkE7W
+        68VwellOKjlDxmDd9camU5JvdylYbU5GSJZR9dE=
+X-Google-Smtp-Source: ABdhPJwPq2UQGDsadjSi8aAg4iI94Aq9dO3rI88bL0iw4vFAroLWLceqrmtrnvyQdmgfhZ3IDqi9yA==
+X-Received: by 2002:a05:6512:2302:b0:479:4005:3278 with SMTP id o2-20020a056512230200b0047940053278mr9228377lfu.621.1654646532348;
+        Tue, 07 Jun 2022 17:02:12 -0700 (PDT)
+Received: from localhost (91-154-92-55.elisa-laajakaista.fi. [91.154.92.55])
+        by smtp.gmail.com with ESMTPSA id k19-20020ac24f13000000b00477b9b1766dsm3482613lfr.13.2022.06.07.17.02.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 14:38:51 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>
-Cc:     Jassi Brar <jassisinghbrar@gmail.com>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] arm64: dts: qcom: sc8280x: Add reference device
-Date:   Tue,  7 Jun 2022 14:41:12 -0700
-Message-Id: <20220607214113.4057684-4-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607214113.4057684-1-bjorn.andersson@linaro.org>
-References: <20220607214113.4057684-1-bjorn.andersson@linaro.org>
+        Tue, 07 Jun 2022 17:02:11 -0700 (PDT)
+From:   Jarkko Sakkinen <jarkko@profian.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Nathaniel McCallum <nathaniel@profian.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jarkko Sakkinen <jarkko@profian.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Marco Elver <elver@google.com>,
+        Dan Li <ashimida@linux.alibaba.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Song Liu <song@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Chen Zhongjin <chenzhongjin@huawei.com>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Mark Brown <broonie@kernel.org>,
+        Luis Machado <luis.machado@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Atsushi Nemoto <anemo@mba.ocn.ne.jp>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dave Anglin <dave.anglin@bell.net>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Daniel Axtens <dja@axtens.net>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Jordan Niethe <jniethe5@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Changbin Du <changbin.du@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Liao Chang <liaochang1@huawei.com>,
+        Philipp Tomsich <philipp.tomsich@vrull.eu>,
+        Wu Caize <zepan@sipeed.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Tobias Huschle <huschle@linux.ibm.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Michael Roth <michael.roth@amd.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Aaron Tomlin <atomlin@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-modules@vger.kernel.org
+Subject: [PATCH] kprobes: Enable tracing for mololithic kernel images
+Date:   Wed,  8 Jun 2022 02:59:27 +0300
+Message-Id: <20220608000014.3054333-1-jarkko@profian.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add basic support for the SC8280XP reference device, which allows it to
-boot to a shell (using EFIFB) with functional storage (UFS), USB,
-keyboard, touchpad, touchscreen, backlight and remoteprocs.
+Tracing with kprobes while running a monolithic kernel is currently
+impossible because CONFIG_KPROBES is dependent of CONFIG_MODULES.  This
+dependency is a result of kprobes code using the module allocator for the
+trampoline code.
 
-The PMICs are, per socinfo, reused from other platforms. But given that
-the address of the PMICs doesn't match other cases and that it's
-desirable to label things according to the schematics a new dtsi file is
-created to represent the reference combination of PMICs.
+Detaching kprobes from modules helps to squeeze down the user space,
+e.g. when developing new core kernel features, while still having all
+the nice tracing capabilities.
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+For kernel/ and arch/*, move module_alloc() and module_memfree() to
+module_alloc.c, and compile as part of vmlinux when either CONFIG_MODULES
+or CONFIG_KPROBES is enabled.  In addition, flag kernel module specific
+code with CONFIG_MODULES.
+
+As the result, kprobes can be used with a monolithic kernel.
+
+Signed-off-by: Jarkko Sakkinen <jarkko@profian.com>
 ---
- arch/arm64/boot/dts/qcom/Makefile            |   1 +
- arch/arm64/boot/dts/qcom/sc8280xp-crd.dts    | 423 +++++++++++++++++++
- arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi | 108 +++++
- 3 files changed, 532 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
- create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
+Tested with the help of BuildRoot and QEMU:
+- arm (function tracer)
+- arm64 (function tracer)
+- mips (function tracer)
+- powerpc (function tracer)
+- riscv (function tracer)
+- s390 (function tracer)
+- sparc (function tracer)
+- x86 (function tracer)
+- sh (function tracer, for the "pure" kernel/modules_alloc.c path)
+---
+ arch/Kconfig                       |  1 -
+ arch/arm/kernel/Makefile           |  5 +++
+ arch/arm/kernel/module.c           | 32 ----------------
+ arch/arm/kernel/module_alloc.c     | 42 ++++++++++++++++++++
+ arch/arm64/kernel/Makefile         |  5 +++
+ arch/arm64/kernel/module.c         | 47 -----------------------
+ arch/arm64/kernel/module_alloc.c   | 57 ++++++++++++++++++++++++++++
+ arch/mips/kernel/Makefile          |  5 +++
+ arch/mips/kernel/module.c          |  9 -----
+ arch/mips/kernel/module_alloc.c    | 18 +++++++++
+ arch/parisc/kernel/Makefile        |  5 +++
+ arch/parisc/kernel/module.c        | 11 ------
+ arch/parisc/kernel/module_alloc.c  | 23 +++++++++++
+ arch/powerpc/kernel/Makefile       |  5 +++
+ arch/powerpc/kernel/module.c       | 37 ------------------
+ arch/powerpc/kernel/module_alloc.c | 47 +++++++++++++++++++++++
+ arch/riscv/kernel/Makefile         |  5 +++
+ arch/riscv/kernel/module.c         | 10 -----
+ arch/riscv/kernel/module_alloc.c   | 19 ++++++++++
+ arch/s390/kernel/Makefile          |  5 +++
+ arch/s390/kernel/module.c          | 17 ---------
+ arch/s390/kernel/module_alloc.c    | 33 ++++++++++++++++
+ arch/sparc/kernel/Makefile         |  5 +++
+ arch/sparc/kernel/module.c         | 30 ---------------
+ arch/sparc/kernel/module_alloc.c   | 39 +++++++++++++++++++
+ arch/x86/kernel/Makefile           |  5 +++
+ arch/x86/kernel/module.c           | 50 ------------------------
+ arch/x86/kernel/module_alloc.c     | 61 ++++++++++++++++++++++++++++++
+ kernel/Makefile                    |  5 +++
+ kernel/kprobes.c                   | 10 +++++
+ kernel/module/main.c               | 17 ---------
+ kernel/module_alloc.c              | 26 +++++++++++++
+ kernel/trace/trace_kprobe.c        | 10 ++++-
+ 33 files changed, 434 insertions(+), 262 deletions(-)
+ create mode 100644 arch/arm/kernel/module_alloc.c
+ create mode 100644 arch/arm64/kernel/module_alloc.c
+ create mode 100644 arch/mips/kernel/module_alloc.c
+ create mode 100644 arch/parisc/kernel/module_alloc.c
+ create mode 100644 arch/powerpc/kernel/module_alloc.c
+ create mode 100644 arch/riscv/kernel/module_alloc.c
+ create mode 100644 arch/s390/kernel/module_alloc.c
+ create mode 100644 arch/sparc/kernel/module_alloc.c
+ create mode 100644 arch/x86/kernel/module_alloc.c
+ create mode 100644 kernel/module_alloc.c
 
-diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-index 2f8aec2cc6db..ceeae094a59f 100644
---- a/arch/arm64/boot/dts/qcom/Makefile
-+++ b/arch/arm64/boot/dts/qcom/Makefile
-@@ -89,6 +89,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-villager-r0.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-idp.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-idp2.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-crd-r3.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sc8280xp-crd.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sdm630-sony-xperia-ganges-kirin.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sdm630-sony-xperia-nile-discovery.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sdm630-sony-xperia-nile-pioneer.dtb
-diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+diff --git a/arch/Kconfig b/arch/Kconfig
+index fcf9a41a4ef5..e8e3e7998a2e 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -39,7 +39,6 @@ config GENERIC_ENTRY
+ 
+ config KPROBES
+ 	bool "Kprobes"
+-	depends on MODULES
+ 	depends on HAVE_KPROBES
+ 	select KALLSYMS
+ 	select TASKS_RCU if PREEMPTION
+diff --git a/arch/arm/kernel/Makefile b/arch/arm/kernel/Makefile
+index 553866751e1a..d2bb954cd54f 100644
+--- a/arch/arm/kernel/Makefile
++++ b/arch/arm/kernel/Makefile
+@@ -44,6 +44,11 @@ obj-$(CONFIG_CPU_IDLE)		+= cpuidle.o
+ obj-$(CONFIG_ISA_DMA_API)	+= dma.o
+ obj-$(CONFIG_FIQ)		+= fiq.o fiqasm.o
+ obj-$(CONFIG_MODULES)		+= armksyms.o module.o
++ifeq ($(CONFIG_MODULES),y)
++obj-y				+= module_alloc.o
++else
++obj-$(CONFIG_KPROBES)		+= module_alloc.o
++endif
+ obj-$(CONFIG_ARM_MODULE_PLTS)	+= module-plts.o
+ obj-$(CONFIG_ISA_DMA)		+= dma-isa.o
+ obj-$(CONFIG_PCI)		+= bios32.o isa.o
+diff --git a/arch/arm/kernel/module.c b/arch/arm/kernel/module.c
+index d59c36dc0494..054e799e7091 100644
+--- a/arch/arm/kernel/module.c
++++ b/arch/arm/kernel/module.c
+@@ -22,38 +22,6 @@
+ #include <asm/unwind.h>
+ #include <asm/opcodes.h>
+ 
+-#ifdef CONFIG_XIP_KERNEL
+-/*
+- * The XIP kernel text is mapped in the module area for modules and
+- * some other stuff to work without any indirect relocations.
+- * MODULES_VADDR is redefined here and not in asm/memory.h to avoid
+- * recompiling the whole kernel when CONFIG_XIP_KERNEL is turned on/off.
+- */
+-#undef MODULES_VADDR
+-#define MODULES_VADDR	(((unsigned long)_exiprom + ~PMD_MASK) & PMD_MASK)
+-#endif
+-
+-#ifdef CONFIG_MMU
+-void *module_alloc(unsigned long size)
+-{
+-	gfp_t gfp_mask = GFP_KERNEL;
+-	void *p;
+-
+-	/* Silence the initial allocation */
+-	if (IS_ENABLED(CONFIG_ARM_MODULE_PLTS))
+-		gfp_mask |= __GFP_NOWARN;
+-
+-	p = __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
+-				gfp_mask, PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
+-				__builtin_return_address(0));
+-	if (!IS_ENABLED(CONFIG_ARM_MODULE_PLTS) || p)
+-		return p;
+-	return __vmalloc_node_range(size, 1,  VMALLOC_START, VMALLOC_END,
+-				GFP_KERNEL, PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
+-				__builtin_return_address(0));
+-}
+-#endif
+-
+ bool module_init_section(const char *name)
+ {
+ 	return strstarts(name, ".init") ||
+diff --git a/arch/arm/kernel/module_alloc.c b/arch/arm/kernel/module_alloc.c
 new file mode 100644
-index 000000000000..1031ee039107
+index 000000000000..c3cfb2b60575
 --- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
-@@ -0,0 +1,423 @@
-+// SPDX-License-Identifier: BSD-3-Clause
++++ b/arch/arm/kernel/module_alloc.c
+@@ -0,0 +1,42 @@
++// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2022, Linaro Limited
++ * Copyright (C) 2002 Russell King.
++ * Modified for nommu by Hyok S. Choi
++ *
++ * Module allocation method suggested by Andi Kleen.
 + */
 +
-+/dts-v1/;
++#include <linux/mm.h>
++#include <linux/vmalloc.h>
 +
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/gpio-keys.h>
-+#include <dt-bindings/input/input.h>
-+#include <dt-bindings/regulator/qcom,rpmh-regulator.h>
-+
-+#include "sc8280xp.dtsi"
-+#include "sc8280xp-pmics.dtsi"
-+
-+/ {
-+	model = "Qualcomm SC8280XP CRD";
-+	compatible = "qcom,sc8280xp-crd", "qcom,sc8280xp";
-+
-+	aliases {
-+		serial0 = &qup2_uart17;
-+	};
-+
-+	backlight {
-+		compatible = "pwm-backlight";
-+		pwms = <&pmc8280c_lpg 3 1000000>;
-+		enable-gpios = <&pmc8280_1_gpios 8 GPIO_ACTIVE_HIGH>;
-+		power-supply = <&vreg_edp_bl>;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&edp_bl_en>, <&edp_bl_pwm>;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	vreg_edp_bl: edp-bl-regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "VREG_EDP_BL";
-+
-+		regulator-min-microvolt = <3600000>;
-+		regulator-max-microvolt = <3600000>;
-+
-+		gpio = <&pmc8280_1_gpios 9 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&edp_bl_reg_en>;
-+
-+		regulator-boot-on;
-+	};
-+
-+	vreg_misc_3p3: misc-3p3-regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "VREG_MISC_3P3";
-+
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+
-+		gpio = <&pmc8280_1_gpios 0 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&misc_3p3_reg_en>;
-+
-+		regulator-boot-on;
-+		regulator-always-on;
-+	};
-+
-+	reserved-memory {
-+	};
-+};
-+
-+&apps_rsc {
-+	pmc8280-1-rpmh-regulators {
-+		compatible = "qcom,pm8350-rpmh-regulators";
-+		qcom,pmic-id = "b";
-+
-+		vdd-l3-l5-supply = <&vreg_s11b>;
-+
-+		vreg_s11b: smps11 {
-+			regulator-name = "vreg_s11b";
-+			regulator-min-microvolt = <1272000>;
-+			regulator-max-microvolt = <1272000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+		};
-+
-+		vreg_l3b: ldo3 {
-+			regulator-name = "vreg_l3b";
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1200000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+			regulator-boot-on;
-+			regulator-always-on;
-+		};
-+
-+		vreg_l4b: ldo4 {
-+			regulator-name = "vreg_l4b";
-+			regulator-min-microvolt = <912000>;
-+			regulator-max-microvolt = <912000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l6b: ldo6 {
-+			regulator-name = "vreg_l6b";
-+			regulator-min-microvolt = <880000>;
-+			regulator-max-microvolt = <880000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+			regulator-boot-on;
-+		};
-+	};
-+
-+	pmc8280c-rpmh-regulators {
-+		compatible = "qcom,pm8350c-rpmh-regulators";
-+		qcom,pmic-id = "c";
-+
-+		vreg_l1c: ldo1 {
-+			regulator-name = "vreg_l1c";
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l7c: ldo7 {
-+			regulator-name = "vreg_l7c";
-+			regulator-min-microvolt = <2504000>;
-+			regulator-max-microvolt = <2504000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l13c: ldo13 {
-+			regulator-name = "vreg_l13c";
-+			regulator-min-microvolt = <3072000>;
-+			regulator-max-microvolt = <3072000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+	};
-+
-+	pmc8280-2-rpmh-regulators {
-+		compatible = "qcom,pm8350-rpmh-regulators";
-+		qcom,pmic-id = "d";
-+
-+		vdd-l1-l4-supply = <&vreg_s11b>;
-+
-+		vreg_l3d: ldo3 {
-+			regulator-name = "vreg_l3d";
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1200000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l4d: ldo4 {
-+			regulator-name = "vreg_l4d";
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1200000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l6d: ldo6 {
-+			regulator-name = "vreg_l6d";
-+			regulator-min-microvolt = <880000>;
-+			regulator-max-microvolt = <880000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l7d: ldo7 {
-+			regulator-name = "vreg_l7d";
-+			regulator-min-microvolt = <3072000>;
-+			regulator-max-microvolt = <3072000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l9d: ldo9 {
-+			regulator-name = "vreg_l9d";
-+			regulator-min-microvolt = <912000>;
-+			regulator-max-microvolt = <912000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+	};
-+
-+};
-+
-+&pmc8280c_lpg {
-+	status = "okay";
-+};
-+
-+&pmk8280_pon_pwrkey {
-+	status = "okay";
-+};
-+
-+&qup0 {
-+	status = "okay";
-+};
-+
-+&qup0_i2c4 {
-+	status = "okay";
-+	clock-frequency = <400000>;
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&qup0_i2c4_default>, <&ts0_default>;
-+
-+	hid@10 {
-+		compatible = "hid-over-i2c";
-+		reg = <0x10>;
-+		hid-descr-addr = <0x1>;
-+
-+		interrupts-extended = <&tlmm 175 IRQ_TYPE_LEVEL_LOW>;
-+	};
-+};
-+
-+&qup1 {
-+	status = "okay";
-+};
-+
-+&qup2 {
-+	status = "okay";
-+};
-+
-+&qup2_i2c5 {
-+	status = "okay";
-+	clock-frequency = <400000>;
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&qup2_i2c5_default>, <&kybd_default>, <&tpad_default>;
-+
-+	hid@15 {
-+		compatible = "hid-over-i2c";
-+		reg = <0x15>;
-+		hid-descr-addr = <0x1>;
-+
-+		interrupts-extended = <&tlmm 182 IRQ_TYPE_LEVEL_LOW>;
-+	};
-+
-+	hid@68 {
-+		compatible = "hid-over-i2c";
-+		reg = <0x68>;
-+		hid-descr-addr = <0x1>;
-+
-+		interrupts-extended = <&tlmm 104 IRQ_TYPE_LEVEL_LOW>;
-+	};
-+};
-+
-+&qup2_uart17 {
-+	compatible = "qcom,geni-debug-uart";
-+	status = "okay";
-+};
-+
-+&remoteproc_adsp {
-+	status = "okay";
-+	firmware-name = "qcom/sc8280xp/qcadsp8280.mbn";
-+};
-+
-+&remoteproc_nsp0 {
-+	status = "okay";
-+	firmware-name = "qcom/sc8280xp/qccdsp8280.mbn";
-+};
-+
-+&ufs_mem_hc {
-+	status = "okay";
-+
-+	reset-gpios = <&tlmm 228 GPIO_ACTIVE_LOW>;
-+
-+	vcc-supply = <&vreg_l7c>;
-+	vcc-max-microamp = <800000>;
-+	vccq-supply = <&vreg_l3d>;
-+	vccq-max-microamp = <900000>;
-+};
-+
-+&ufs_mem_phy {
-+	status = "okay";
-+
-+	vdda-phy-supply = <&vreg_l6b>;
-+	vdda-pll-supply = <&vreg_l3b>;
-+};
-+
-+&usb_0 {
-+	status = "okay";
-+};
-+
-+&usb_0_dwc3 {
-+	/* TODO: Define USB-C connector properly */
-+	dr_mode = "host";
-+};
-+
-+&usb_0_hsphy {
-+	status = "okay";
-+
-+	vdda-pll-supply = <&vreg_l9d>;
-+	vdda18-supply = <&vreg_l1c>;
-+	vdda33-supply = <&vreg_l7d>;
-+};
-+
-+&usb_0_qmpphy {
-+	status = "okay";
-+
-+	vdda-phy-supply = <&vreg_l9d>;
-+	vdda-pll-supply = <&vreg_l4d>;
-+};
-+
-+&usb_1 {
-+	status = "okay";
-+};
-+
-+&usb_1_dwc3 {
-+	/* TODO: Define USB-C connector properly */
-+	dr_mode = "host";
-+};
-+
-+&usb_1_hsphy {
-+	status = "okay";
-+
-+	vdda-pll-supply = <&vreg_l4b>;
-+	vdda18-supply = <&vreg_l1c>;
-+	vdda33-supply = <&vreg_l13c>;
-+};
-+
-+&usb_1_qmpphy {
-+	status = "okay";
-+
-+	vdda-phy-supply = <&vreg_l4b>;
-+	vdda-pll-supply = <&vreg_l3b>;
-+};
-+
-+/* PINCTRL - additions to nodes defined in sc8280xp.dtsi */
-+
-+&pmc8280_1_gpios {
-+	edp_bl_en: edp-bl-en-state {
-+		pins = "gpio8";
-+		function = "normal";
-+	};
-+
-+	edp_bl_reg_en: edp-bl-reg-en-state {
-+		pins = "gpio9";
-+		function = "normal";
-+	};
-+
-+	misc_3p3_reg_en: misc-3p3-reg-en-state {
-+		pins = "gpio1";
-+		function = "normal";
-+	};
-+};
-+
-+&pmc8280c_gpios {
-+	edp_bl_pwm: edp-bl-pwm-state {
-+		pins = "gpio8";
-+		function = "func1";
-+	};
-+};
-+
-+&tlmm {
-+	gpio-reserved-ranges = <74 6>, <83 4>, <125 2>, <128 2>, <154 7>;
-+
-+	kybd_default: kybd-default-state {
-+		disable {
-+			pins = "gpio102";
-+			function = "gpio";
-+			output-low;
-+		};
-+
-+		int-n {
-+			pins = "gpio104";
-+			function = "gpio";
-+			bias-disable;
-+		};
-+
-+		reset {
-+			pins = "gpio105";
-+			function = "gpio";
-+			bias-disable;
-+		};
-+	};
-+
-+	qup0_i2c4_default: qup0-i2c4-default-state {
-+		pins = "gpio171", "gpio172";
-+		function = "qup4";
-+
-+		bias-disable;
-+		drive-strength = <16>;
-+	};
-+
-+	qup2_i2c5_default: qup2-i2c5-default-state {
-+		pins = "gpio81", "gpio82";
-+		function = "qup21";
-+
-+		bias-disable;
-+		drive-strength = <16>;
-+	};
-+
-+	tpad_default: tpad-default-state {
-+		int-n {
-+			pins = "gpio182";
-+			function = "gpio";
-+			bias-disable;
-+		};
-+	};
-+
-+	ts0_default: ts0-default-state {
-+		int-n {
-+			pins = "gpio175";
-+			function = "gpio";
-+			bias-pull-up;
-+		};
-+
-+		reset-n {
-+			pins = "gpio99";
-+			function = "gpio";
-+			output-high;
-+			drive-strength = <16>;
-+		};
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
-new file mode 100644
-index 000000000000..36ed7d808ab8
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
-@@ -0,0 +1,108 @@
-+// SPDX-License-Identifier: BSD-3-Clause
++#ifdef CONFIG_XIP_KERNEL
 +/*
-+ * Copyright (c) 2022, Linaro Limited
++ * The XIP kernel text is mapped in the module area for modules and
++ * some other stuff to work without any indirect relocations.
++ * MODULES_VADDR is redefined here and not in asm/memory.h to avoid
++ * recompiling the whole kernel when CONFIG_XIP_KERNEL is turned on/off.
++ */
++#undef MODULES_VADDR
++#define MODULES_VADDR	(((unsigned long)_exiprom + ~PMD_MASK) & PMD_MASK)
++#endif
++
++#ifdef CONFIG_MMU
++void *module_alloc(unsigned long size)
++{
++	gfp_t gfp_mask = GFP_KERNEL;
++	void *p;
++
++	/* Silence the initial allocation */
++	if (IS_ENABLED(CONFIG_ARM_MODULE_PLTS))
++		gfp_mask |= __GFP_NOWARN;
++
++	p = __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
++				gfp_mask, PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
++				__builtin_return_address(0));
++	if (!IS_ENABLED(CONFIG_ARM_MODULE_PLTS) || p)
++		return p;
++	return __vmalloc_node_range(size, 1,  VMALLOC_START, VMALLOC_END,
++				GFP_KERNEL, PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
++				__builtin_return_address(0));
++}
++#endif
+diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
+index fa7981d0d917..d61c02da857e 100644
+--- a/arch/arm64/kernel/Makefile
++++ b/arch/arm64/kernel/Makefile
+@@ -43,6 +43,11 @@ obj-$(CONFIG_COMPAT)			+= sigreturn32.o
+ obj-$(CONFIG_KUSER_HELPERS)		+= kuser32.o
+ obj-$(CONFIG_FUNCTION_TRACER)		+= ftrace.o entry-ftrace.o
+ obj-$(CONFIG_MODULES)			+= module.o
++ifeq ($(CONFIG_MODULES),y)
++obj-y					+= module_alloc.o
++else
++obj-$(CONFIG_KPROBES)			+= module_alloc.o
++endif
+ obj-$(CONFIG_ARM64_MODULE_PLTS)		+= module-plts.o
+ obj-$(CONFIG_PERF_EVENTS)		+= perf_regs.o perf_callchain.o
+ obj-$(CONFIG_HW_PERF_EVENTS)		+= perf_event.o
+diff --git a/arch/arm64/kernel/module.c b/arch/arm64/kernel/module.c
+index f2d4bb14bfab..d2a979746da0 100644
+--- a/arch/arm64/kernel/module.c
++++ b/arch/arm64/kernel/module.c
+@@ -20,53 +20,6 @@
+ #include <asm/insn.h>
+ #include <asm/sections.h>
+ 
+-void *module_alloc(unsigned long size)
+-{
+-	u64 module_alloc_end = module_alloc_base + MODULES_VSIZE;
+-	gfp_t gfp_mask = GFP_KERNEL;
+-	void *p;
+-
+-	/* Silence the initial allocation */
+-	if (IS_ENABLED(CONFIG_ARM64_MODULE_PLTS))
+-		gfp_mask |= __GFP_NOWARN;
+-
+-	if (IS_ENABLED(CONFIG_KASAN_GENERIC) ||
+-	    IS_ENABLED(CONFIG_KASAN_SW_TAGS))
+-		/* don't exceed the static module region - see below */
+-		module_alloc_end = MODULES_END;
+-
+-	p = __vmalloc_node_range(size, MODULE_ALIGN, module_alloc_base,
+-				module_alloc_end, gfp_mask, PAGE_KERNEL, VM_DEFER_KMEMLEAK,
+-				NUMA_NO_NODE, __builtin_return_address(0));
+-
+-	if (!p && IS_ENABLED(CONFIG_ARM64_MODULE_PLTS) &&
+-	    (IS_ENABLED(CONFIG_KASAN_VMALLOC) ||
+-	     (!IS_ENABLED(CONFIG_KASAN_GENERIC) &&
+-	      !IS_ENABLED(CONFIG_KASAN_SW_TAGS))))
+-		/*
+-		 * KASAN without KASAN_VMALLOC can only deal with module
+-		 * allocations being served from the reserved module region,
+-		 * since the remainder of the vmalloc region is already
+-		 * backed by zero shadow pages, and punching holes into it
+-		 * is non-trivial. Since the module region is not randomized
+-		 * when KASAN is enabled without KASAN_VMALLOC, it is even
+-		 * less likely that the module region gets exhausted, so we
+-		 * can simply omit this fallback in that case.
+-		 */
+-		p = __vmalloc_node_range(size, MODULE_ALIGN, module_alloc_base,
+-				module_alloc_base + SZ_2G, GFP_KERNEL,
+-				PAGE_KERNEL, 0, NUMA_NO_NODE,
+-				__builtin_return_address(0));
+-
+-	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
+-		vfree(p);
+-		return NULL;
+-	}
+-
+-	/* Memory is intended to be executable, reset the pointer tag. */
+-	return kasan_reset_tag(p);
+-}
+-
+ enum aarch64_reloc_op {
+ 	RELOC_OP_NONE,
+ 	RELOC_OP_ABS,
+diff --git a/arch/arm64/kernel/module_alloc.c b/arch/arm64/kernel/module_alloc.c
+new file mode 100644
+index 000000000000..0340c8c0b782
+--- /dev/null
++++ b/arch/arm64/kernel/module_alloc.c
+@@ -0,0 +1,57 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2012 ARM Limited
++ *
++ * Author: Will Deacon <will.deacon@arm.com>
 + */
 +
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/spmi/spmi.h>
++#include <linux/mm.h>
++#include <linux/moduleloader.h>
++#include <linux/vmalloc.h>
 +
-+&spmi_bus {
-+	pmk8280: pmic@0 {
-+		compatible = "qcom,pmk8350", "qcom,spmi-pmic";
-+		reg = <0x0 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
++void *module_alloc(unsigned long size)
++{
++	u64 module_alloc_end = module_alloc_base + MODULES_VSIZE;
++	gfp_t gfp_mask = GFP_KERNEL;
++	void *p;
 +
-+		pmk8280_pon: pon@1300 {
-+			compatible = "qcom,pm8998-pon";
-+			reg = <0x1300>;
++	/* Silence the initial allocation */
++	if (IS_ENABLED(CONFIG_ARM64_MODULE_PLTS))
++		gfp_mask |= __GFP_NOWARN;
 +
-+			pmk8280_pon_pwrkey: pwrkey {
-+				compatible = "qcom,pmk8350-pwrkey";
-+				interrupts = <0x0 0x13 0x7 IRQ_TYPE_EDGE_BOTH>;
-+				linux,code = <KEY_POWER>;
-+				status = "disabled";
-+			};
-+		};
-+	};
++	if (IS_ENABLED(CONFIG_KASAN_GENERIC) ||
++	    IS_ENABLED(CONFIG_KASAN_SW_TAGS))
++		/* don't exceed the static module region - see below */
++		module_alloc_end = MODULES_END;
 +
-+	pmc8280_1: pmic@1 {
-+		compatible = "qcom,pm8350", "qcom,spmi-pmic";
-+		reg = <0x1 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
++	p = __vmalloc_node_range(size, MODULE_ALIGN, module_alloc_base,
++				module_alloc_end, gfp_mask, PAGE_KERNEL, VM_DEFER_KMEMLEAK,
++				NUMA_NO_NODE, __builtin_return_address(0));
 +
-+		pmc8280_1_gpios: gpio@8800 {
-+			compatible = "qcom,pm8350-gpio", "qcom,spmi-gpio";
-+			reg = <0x8800>;
-+			gpio-controller;
-+			gpio-ranges = <&pmc8280_1_gpios 0 0 10>;
-+			#gpio-cells = <2>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
-+	};
++	if (!p && IS_ENABLED(CONFIG_ARM64_MODULE_PLTS) &&
++	    (IS_ENABLED(CONFIG_KASAN_VMALLOC) ||
++	     (!IS_ENABLED(CONFIG_KASAN_GENERIC) &&
++	      !IS_ENABLED(CONFIG_KASAN_SW_TAGS))))
++		/*
++		 * KASAN without KASAN_VMALLOC can only deal with module
++		 * allocations being served from the reserved module region,
++		 * since the remainder of the vmalloc region is already
++		 * backed by zero shadow pages, and punching holes into it
++		 * is non-trivial. Since the module region is not randomized
++		 * when KASAN is enabled without KASAN_VMALLOC, it is even
++		 * less likely that the module region gets exhausted, so we
++		 * can simply omit this fallback in that case.
++		 */
++		p = __vmalloc_node_range(size, MODULE_ALIGN, module_alloc_base,
++				module_alloc_base + SZ_2G, GFP_KERNEL,
++				PAGE_KERNEL, 0, NUMA_NO_NODE,
++				__builtin_return_address(0));
 +
-+	pmc8280c: pmic@2 {
-+		compatible = "qcom,pm8350c", "qcom,spmi-pmic";
-+		reg = <0x2 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
++	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
++		vfree(p);
++		return NULL;
++	}
 +
-+		pmc8280c_gpios: gpio@8800 {
-+			compatible = "qcom,pm8350c-gpio", "qcom,spmi-gpio";
-+			reg = <0x8800>;
-+			gpio-controller;
-+			gpio-ranges = <&pmc8280c_gpios 0 0 9>;
-+			#gpio-cells = <2>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
++	/* Memory is intended to be executable, reset the pointer tag. */
++	return kasan_reset_tag(p);
++}
+diff --git a/arch/mips/kernel/Makefile b/arch/mips/kernel/Makefile
+index 7c96282bff2e..cb9297b613a1 100644
+--- a/arch/mips/kernel/Makefile
++++ b/arch/mips/kernel/Makefile
+@@ -38,6 +38,11 @@ obj-$(CONFIG_SYNC_R4K)		+= sync-r4k.o
+ obj-$(CONFIG_DEBUG_FS)		+= segment.o
+ obj-$(CONFIG_STACKTRACE)	+= stacktrace.o
+ obj-$(CONFIG_MODULES)		+= module.o
++ifeq ($(CONFIG_MODULES),y)
++obj-y				+= module_alloc.o
++else
++obj-$(CONFIG_KPROBES)		+= module_alloc.o
++endif
+ 
+ obj-$(CONFIG_FTRACE_SYSCALLS)	+= ftrace.o
+ obj-$(CONFIG_FUNCTION_TRACER)	+= mcount.o ftrace.o
+diff --git a/arch/mips/kernel/module.c b/arch/mips/kernel/module.c
+index 14f46d17500a..214b2d1868a5 100644
+--- a/arch/mips/kernel/module.c
++++ b/arch/mips/kernel/module.c
+@@ -31,15 +31,6 @@ struct mips_hi16 {
+ static LIST_HEAD(dbe_list);
+ static DEFINE_SPINLOCK(dbe_lock);
+ 
+-#ifdef MODULE_START
+-void *module_alloc(unsigned long size)
+-{
+-	return __vmalloc_node_range(size, 1, MODULE_START, MODULE_END,
+-				GFP_KERNEL, PAGE_KERNEL, 0, NUMA_NO_NODE,
+-				__builtin_return_address(0));
+-}
+-#endif
+-
+ static void apply_r_mips_32(u32 *location, u32 base, Elf_Addr v)
+ {
+ 	*location = base + v;
+diff --git a/arch/mips/kernel/module_alloc.c b/arch/mips/kernel/module_alloc.c
+new file mode 100644
+index 000000000000..582ab5ed8916
+--- /dev/null
++++ b/arch/mips/kernel/module_alloc.c
+@@ -0,0 +1,18 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ *  Copyright (C) 2001 Rusty Russell.
++ *  Copyright (C) 2003, 2004 Ralf Baechle (ralf@linux-mips.org)
++ *  Copyright (C) 2005 Thiemo Seufer
++ */
 +
-+		pmc8280c_lpg: lpg@e800 {
-+			compatible = "qcom,pm8350c-pwm";
-+			reg = <0xe800>;
++#include <linux/mm.h>
++#include <linux/vmalloc.h>
 +
-+			#address-cells = <1>;
-+			#size-cells = <0>;
++#ifdef MODULE_START
++void *module_alloc(unsigned long size)
++{
++	return __vmalloc_node_range(size, 1, MODULE_START, MODULE_END,
++				GFP_KERNEL, PAGE_KERNEL, 0, NUMA_NO_NODE,
++				__builtin_return_address(0));
++}
++#endif
+diff --git a/arch/parisc/kernel/Makefile b/arch/parisc/kernel/Makefile
+index d0bfac89a842..cd38083ae077 100644
+--- a/arch/parisc/kernel/Makefile
++++ b/arch/parisc/kernel/Makefile
+@@ -25,6 +25,11 @@ obj-$(CONFIG_SMP)	+= smp.o
+ obj-$(CONFIG_PA11)	+= pci-dma.o
+ obj-$(CONFIG_PCI)	+= pci.o
+ obj-$(CONFIG_MODULES)	+= module.o
++ifeq ($(CONFIG_MODULES),y)
++obj-y			+= module_alloc.o
++else
++obj-$(CONFIG_KPROBES)	+= module_alloc.o
++endif
+ obj-$(CONFIG_64BIT)	+= sys_parisc32.o signal32.o
+ obj-$(CONFIG_STACKTRACE)+= stacktrace.o
+ obj-$(CONFIG_AUDIT)	+= audit.o
+diff --git a/arch/parisc/kernel/module.c b/arch/parisc/kernel/module.c
+index 7df140545b22..c81e63e2549b 100644
+--- a/arch/parisc/kernel/module.c
++++ b/arch/parisc/kernel/module.c
+@@ -192,17 +192,6 @@ static inline int reassemble_22(int as22)
+ 		((as22 & 0x0003ff) << 3));
+ }
+ 
+-void *module_alloc(unsigned long size)
+-{
+-	/* using RWX means less protection for modules, but it's
+-	 * easier than trying to map the text, data, init_text and
+-	 * init_data correctly */
+-	return __vmalloc_node_range(size, 1, VMALLOC_START, VMALLOC_END,
+-				    GFP_KERNEL,
+-				    PAGE_KERNEL_RWX, 0, NUMA_NO_NODE,
+-				    __builtin_return_address(0));
+-}
+-
+ #ifndef CONFIG_64BIT
+ static inline unsigned long count_gots(const Elf_Rela *rela, unsigned long n)
+ {
+diff --git a/arch/parisc/kernel/module_alloc.c b/arch/parisc/kernel/module_alloc.c
+new file mode 100644
+index 000000000000..4e4e4ce1132e
+--- /dev/null
++++ b/arch/parisc/kernel/module_alloc.c
+@@ -0,0 +1,23 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Linux/PA-RISC Project
++ * Copyright (C) 2003 Randolph Chung <tausq at debian . org>
++ * Copyright (C) 2008 Helge Deller <deller@gmx.de>
++ */
 +
-+			#pwm-cells = <2>;
++#include <linux/mm.h>
++#include <linux/moduleloader.h>
++#include <linux/vmalloc.h>
 +
-+			status = "disabled";
-+		};
-+	};
++void *module_alloc(unsigned long size)
++{
++	/*
++	 * Using RWX means less protection for modules, but it's
++	 * easier than trying to map the text, data, init_text and
++	 * init_data correctly.
++	 */
++	return __vmalloc_node_range(size, 1, VMALLOC_START, VMALLOC_END,
++				    GFP_KERNEL,
++				    PAGE_KERNEL_RWX, 0, NUMA_NO_NODE,
++				    __builtin_return_address(0));
++}
+diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
+index 2e2a2a9bcf43..5a811cdf230b 100644
+--- a/arch/powerpc/kernel/Makefile
++++ b/arch/powerpc/kernel/Makefile
+@@ -103,6 +103,11 @@ obj-$(CONFIG_HIBERNATION)	+= swsusp_$(BITS).o
+ endif
+ obj64-$(CONFIG_HIBERNATION)	+= swsusp_asm64.o
+ obj-$(CONFIG_MODULES)		+= module.o module_$(BITS).o
++ifeq ($(CONFIG_MODULES),y)
++obj-y				+= module_alloc.o
++else
++obj-$(CONFIG_KPROBES)		+= module_alloc.o
++endif
+ obj-$(CONFIG_44x)		+= cpu_setup_44x.o
+ obj-$(CONFIG_PPC_FSL_BOOK3E)	+= cpu_setup_fsl_booke.o
+ obj-$(CONFIG_PPC_DOORBELL)	+= dbell.o
+diff --git a/arch/powerpc/kernel/module.c b/arch/powerpc/kernel/module.c
+index f6d6ae0a1692..b30e00964a60 100644
+--- a/arch/powerpc/kernel/module.c
++++ b/arch/powerpc/kernel/module.c
+@@ -88,40 +88,3 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 
+ 	return 0;
+ }
+-
+-static __always_inline void *
+-__module_alloc(unsigned long size, unsigned long start, unsigned long end, bool nowarn)
+-{
+-	pgprot_t prot = strict_module_rwx_enabled() ? PAGE_KERNEL : PAGE_KERNEL_EXEC;
+-	gfp_t gfp = GFP_KERNEL | (nowarn ? __GFP_NOWARN : 0);
+-
+-	/*
+-	 * Don't do huge page allocations for modules yet until more testing
+-	 * is done. STRICT_MODULE_RWX may require extra work to support this
+-	 * too.
+-	 */
+-	return __vmalloc_node_range(size, 1, start, end, gfp, prot,
+-				    VM_FLUSH_RESET_PERMS,
+-				    NUMA_NO_NODE, __builtin_return_address(0));
+-}
+-
+-void *module_alloc(unsigned long size)
+-{
+-#ifdef MODULES_VADDR
+-	unsigned long limit = (unsigned long)_etext - SZ_32M;
+-	void *ptr = NULL;
+-
+-	BUILD_BUG_ON(TASK_SIZE > MODULES_VADDR);
+-
+-	/* First try within 32M limit from _etext to avoid branch trampolines */
+-	if (MODULES_VADDR < PAGE_OFFSET && MODULES_END > limit)
+-		ptr = __module_alloc(size, limit, MODULES_END, true);
+-
+-	if (!ptr)
+-		ptr = __module_alloc(size, MODULES_VADDR, MODULES_END, false);
+-
+-	return ptr;
+-#else
+-	return __module_alloc(size, VMALLOC_START, VMALLOC_END, false);
+-#endif
+-}
+diff --git a/arch/powerpc/kernel/module_alloc.c b/arch/powerpc/kernel/module_alloc.c
+new file mode 100644
+index 000000000000..48541c27ce46
+--- /dev/null
++++ b/arch/powerpc/kernel/module_alloc.c
+@@ -0,0 +1,47 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ *  Kernel module help for powerpc.
++ *  Copyright (C) 2001, 2003 Rusty Russell IBM Corporation.
++ *  Copyright (C) 2008 Freescale Semiconductor, Inc.
++ */
 +
-+	pmc8280_2: pmic@3 {
-+		compatible = "qcom,pm8350", "qcom,spmi-pmic";
-+		reg = <0x3 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
++#include <linux/mm.h>
++#include <linux/moduleloader.h>
++#include <linux/vmalloc.h>
 +
-+		pmc8280_2_gpios: gpio@8800 {
-+			compatible = "qcom,pm8350-gpio", "qcom,spmi-gpio";
-+			reg = <0x8800>;
-+			gpio-controller;
-+			gpio-ranges = <&pmc8280_2_gpios 0 0 10>;
-+			#gpio-cells = <2>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
-+	};
++static __always_inline void *
++__module_alloc(unsigned long size, unsigned long start, unsigned long end, bool nowarn)
++{
++	pgprot_t prot = strict_module_rwx_enabled() ? PAGE_KERNEL : PAGE_KERNEL_EXEC;
++	gfp_t gfp = GFP_KERNEL | (nowarn ? __GFP_NOWARN : 0);
 +
-+	pmr735a: pmic@4 {
-+		compatible = "qcom,pmr735a", "qcom,spmi-pmic";
-+		reg = <0x4 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
++	/*
++	 * Don't do huge page allocations for modules yet until more testing
++	 * is done. STRICT_MODULE_RWX may require extra work to support this
++	 * too.
++	 */
++	return __vmalloc_node_range(size, 1, start, end, gfp, prot,
++				    VM_FLUSH_RESET_PERMS,
++				    NUMA_NO_NODE, __builtin_return_address(0));
++}
 +
-+		pmr735a_gpios: gpio@8800 {
-+			compatible = "qcom,pmr735a-gpio", "qcom,spmi-gpio";
-+			reg = <0x8800>;
-+			gpio-controller;
-+			gpio-ranges = <&pmr735a_gpios 0 0 4>;
-+			#gpio-cells = <2>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
-+	};
-+};
++void *module_alloc(unsigned long size)
++{
++#ifdef MODULES_VADDR
++	unsigned long limit = (unsigned long)_etext - SZ_32M;
++	void *ptr = NULL;
++
++	BUILD_BUG_ON(TASK_SIZE > MODULES_VADDR);
++
++	/* First try within 32M limit from _etext to avoid branch trampolines */
++	if (MODULES_VADDR < PAGE_OFFSET && MODULES_END > limit)
++		ptr = __module_alloc(size, limit, MODULES_END, true);
++
++	if (!ptr)
++		ptr = __module_alloc(size, MODULES_VADDR, MODULES_END, false);
++
++	return ptr;
++#else
++	return __module_alloc(size, VMALLOC_START, VMALLOC_END, false);
++#endif
++}
+diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
+index c71d6591d539..7af346ae575e 100644
+--- a/arch/riscv/kernel/Makefile
++++ b/arch/riscv/kernel/Makefile
+@@ -61,6 +61,11 @@ obj-$(CONFIG_SMP)		+= cpu_ops.o
+ 
+ obj-$(CONFIG_RISCV_BOOT_SPINWAIT) += cpu_ops_spinwait.o
+ obj-$(CONFIG_MODULES)		+= module.o
++ifeq ($(CONFIG_MODULES),y)
++obj-y				+= module_alloc.o
++else
++obj-$(CONFIG_KPROBES)		+= module_alloc.o
++endif
+ obj-$(CONFIG_MODULE_SECTIONS)	+= module-sections.o
+ 
+ obj-$(CONFIG_CPU_PM)		+= suspend_entry.o suspend.o
+diff --git a/arch/riscv/kernel/module.c b/arch/riscv/kernel/module.c
+index 91fe16bfaa07..1621d5e458f7 100644
+--- a/arch/riscv/kernel/module.c
++++ b/arch/riscv/kernel/module.c
+@@ -419,16 +419,6 @@ int apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
+ 	return 0;
+ }
+ 
+-#if defined(CONFIG_MMU) && defined(CONFIG_64BIT)
+-void *module_alloc(unsigned long size)
+-{
+-	return __vmalloc_node_range(size, 1, MODULES_VADDR,
+-				    MODULES_END, GFP_KERNEL,
+-				    PAGE_KERNEL, 0, NUMA_NO_NODE,
+-				    __builtin_return_address(0));
+-}
+-#endif
+-
+ static const Elf_Shdr *find_section(const Elf_Ehdr *hdr,
+ 				    const Elf_Shdr *sechdrs,
+ 				    const char *name)
+diff --git a/arch/riscv/kernel/module_alloc.c b/arch/riscv/kernel/module_alloc.c
+new file mode 100644
+index 000000000000..ed87ed048713
+--- /dev/null
++++ b/arch/riscv/kernel/module_alloc.c
+@@ -0,0 +1,19 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ *  Copyright (C) 2017 Zihao Yu
++ */
++
++#include <linux/mm.h>
++#include <linux/moduleloader.h>
++#include <linux/vmalloc.h>
++#include <asm/sections.h>
++
++#if defined(CONFIG_MMU) && defined(CONFIG_64BIT)
++void *module_alloc(unsigned long size)
++{
++	return __vmalloc_node_range(size, 1, MODULES_VADDR,
++				    MODULES_END, GFP_KERNEL,
++				    PAGE_KERNEL, 0, NUMA_NO_NODE,
++				    __builtin_return_address(0));
++}
++#endif
+diff --git a/arch/s390/kernel/Makefile b/arch/s390/kernel/Makefile
+index 27d6b3c7aa06..71e73e34b441 100644
+--- a/arch/s390/kernel/Makefile
++++ b/arch/s390/kernel/Makefile
+@@ -48,6 +48,11 @@ obj-$(CONFIG_SYSFS)		+= nospec-sysfs.o
+ CFLAGS_REMOVE_nospec-branch.o	+= $(CC_FLAGS_EXPOLINE)
+ 
+ obj-$(CONFIG_MODULES)		+= module.o
++ifeq ($(CONFIG_MODULES),y)
++obj-y				+= module_alloc.o
++else
++obj-$(CONFIG_KPROBES)		+= module_alloc.o
++endif
+ obj-$(CONFIG_SCHED_TOPOLOGY)	+= topology.o
+ obj-$(CONFIG_NUMA)		+= numa.o
+ obj-$(CONFIG_AUDIT)		+= audit.o
+diff --git a/arch/s390/kernel/module.c b/arch/s390/kernel/module.c
+index 26125a9c436d..e15f09fa50e2 100644
+--- a/arch/s390/kernel/module.c
++++ b/arch/s390/kernel/module.c
+@@ -35,23 +35,6 @@
+ 
+ #define PLT_ENTRY_SIZE 22
+ 
+-void *module_alloc(unsigned long size)
+-{
+-	gfp_t gfp_mask = GFP_KERNEL;
+-	void *p;
+-
+-	if (PAGE_ALIGN(size) > MODULES_LEN)
+-		return NULL;
+-	p = __vmalloc_node_range(size, MODULE_ALIGN, MODULES_VADDR, MODULES_END,
+-				 gfp_mask, PAGE_KERNEL_EXEC, VM_DEFER_KMEMLEAK, NUMA_NO_NODE,
+-				 __builtin_return_address(0));
+-	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
+-		vfree(p);
+-		return NULL;
+-	}
+-	return p;
+-}
+-
+ #ifdef CONFIG_FUNCTION_TRACER
+ void module_arch_cleanup(struct module *mod)
+ {
+diff --git a/arch/s390/kernel/module_alloc.c b/arch/s390/kernel/module_alloc.c
+new file mode 100644
+index 000000000000..e4c4175fb759
+--- /dev/null
++++ b/arch/s390/kernel/module_alloc.c
+@@ -0,0 +1,33 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ *  Kernel module help for s390.
++ *
++ *  S390 version
++ *    Copyright IBM Corp. 2002, 2003
++ *    Author(s): Arnd Bergmann (arndb@de.ibm.com)
++ *		 Martin Schwidefsky (schwidefsky@de.ibm.com)
++ *
++ *  based on i386 version
++ *    Copyright (C) 2001 Rusty Russell.
++ */
++
++#include <linux/mm.h>
++#include <linux/moduleloader.h>
++#include <linux/vmalloc.h>
++
++void *module_alloc(unsigned long size)
++{
++	gfp_t gfp_mask = GFP_KERNEL;
++	void *p;
++
++	if (PAGE_ALIGN(size) > MODULES_LEN)
++		return NULL;
++	p = __vmalloc_node_range(size, MODULE_ALIGN, MODULES_VADDR, MODULES_END,
++				 gfp_mask, PAGE_KERNEL_EXEC, VM_DEFER_KMEMLEAK, NUMA_NO_NODE,
++				 __builtin_return_address(0));
++	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
++		vfree(p);
++		return NULL;
++	}
++	return p;
++}
+diff --git a/arch/sparc/kernel/Makefile b/arch/sparc/kernel/Makefile
+index d3a0e072ebe8..53905c00a094 100644
+--- a/arch/sparc/kernel/Makefile
++++ b/arch/sparc/kernel/Makefile
+@@ -89,6 +89,11 @@ obj-$(CONFIG_SUN_PM)      += apc.o pmc.o
+ 
+ obj-$(CONFIG_MODULES)     += module.o
+ obj-$(CONFIG_MODULES)     += sparc_ksyms.o
++ifeq ($(CONFIG_MODULES),y)
++obj-y                     += module_alloc.o
++else
++obj-$(CONFIG_KPROBES)     += module_alloc.o
++endif
+ obj-$(CONFIG_SPARC_LED)   += led.o
+ obj-$(CONFIG_KGDB)        += kgdb_$(BITS).o
+ 
+diff --git a/arch/sparc/kernel/module.c b/arch/sparc/kernel/module.c
+index df39580f398d..f2babc69f189 100644
+--- a/arch/sparc/kernel/module.c
++++ b/arch/sparc/kernel/module.c
+@@ -21,36 +21,6 @@
+ 
+ #include "entry.h"
+ 
+-#ifdef CONFIG_SPARC64
+-
+-#include <linux/jump_label.h>
+-
+-static void *module_map(unsigned long size)
+-{
+-	if (PAGE_ALIGN(size) > MODULES_LEN)
+-		return NULL;
+-	return __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
+-				GFP_KERNEL, PAGE_KERNEL, 0, NUMA_NO_NODE,
+-				__builtin_return_address(0));
+-}
+-#else
+-static void *module_map(unsigned long size)
+-{
+-	return vmalloc(size);
+-}
+-#endif /* CONFIG_SPARC64 */
+-
+-void *module_alloc(unsigned long size)
+-{
+-	void *ret;
+-
+-	ret = module_map(size);
+-	if (ret)
+-		memset(ret, 0, size);
+-
+-	return ret;
+-}
+-
+ /* Make generic code ignore STT_REGISTER dummy undefined symbols.  */
+ int module_frob_arch_sections(Elf_Ehdr *hdr,
+ 			      Elf_Shdr *sechdrs,
+diff --git a/arch/sparc/kernel/module_alloc.c b/arch/sparc/kernel/module_alloc.c
+new file mode 100644
+index 000000000000..4bacf8cff012
+--- /dev/null
++++ b/arch/sparc/kernel/module_alloc.c
+@@ -0,0 +1,39 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Kernel module help for sparc64.
++ *
++ * Copyright (C) 2001 Rusty Russell.
++ * Copyright (C) 2002 David S. Miller.
++ */
++
++#include <linux/mm.h>
++#include <linux/moduleloader.h>
++#include <linux/vmalloc.h>
++
++#ifdef CONFIG_SPARC64
++#include <linux/jump_label.h>
++
++static void *module_map(unsigned long size)
++{
++	if (PAGE_ALIGN(size) > MODULES_LEN)
++		return NULL;
++	return __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
++				GFP_KERNEL, PAGE_KERNEL, 0, NUMA_NO_NODE,
++				__builtin_return_address(0));
++}
++#else
++static void *module_map(unsigned long size)
++{
++	return vmalloc(size);
++}
++#endif /* CONFIG_SPARC64 */
++
++void *module_alloc(unsigned long size)
++{
++	void *ret;
++
++	ret = module_map(size);
++	if (ret)
++		memset(ret, 0, size);
++
++	return ret;
++}
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index 03364dc40d8d..1f0304140f44 100644
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -108,6 +108,11 @@ obj-$(CONFIG_KEXEC_FILE)	+= kexec-bzimage64.o
+ obj-$(CONFIG_CRASH_DUMP)	+= crash_dump_$(BITS).o
+ obj-y				+= kprobes/
+ obj-$(CONFIG_MODULES)		+= module.o
++ifeq ($(CONFIG_MODULES),y)
++obj-y				+= module_alloc.o
++else
++obj-$(CONFIG_KPROBES)		+= module_alloc.o
++endif
+ obj-$(CONFIG_X86_32)		+= doublefault_32.o
+ obj-$(CONFIG_KGDB)		+= kgdb.o
+ obj-$(CONFIG_VM86)		+= vm86_32.o
+diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
+index b98ffcf4d250..40bb10b5a68d 100644
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -36,56 +36,6 @@ do {							\
+ } while (0)
+ #endif
+ 
+-#ifdef CONFIG_RANDOMIZE_BASE
+-static unsigned long module_load_offset;
+-
+-/* Mutex protects the module_load_offset. */
+-static DEFINE_MUTEX(module_kaslr_mutex);
+-
+-static unsigned long int get_module_load_offset(void)
+-{
+-	if (kaslr_enabled()) {
+-		mutex_lock(&module_kaslr_mutex);
+-		/*
+-		 * Calculate the module_load_offset the first time this
+-		 * code is called. Once calculated it stays the same until
+-		 * reboot.
+-		 */
+-		if (module_load_offset == 0)
+-			module_load_offset =
+-				(get_random_int() % 1024 + 1) * PAGE_SIZE;
+-		mutex_unlock(&module_kaslr_mutex);
+-	}
+-	return module_load_offset;
+-}
+-#else
+-static unsigned long int get_module_load_offset(void)
+-{
+-	return 0;
+-}
+-#endif
+-
+-void *module_alloc(unsigned long size)
+-{
+-	gfp_t gfp_mask = GFP_KERNEL;
+-	void *p;
+-
+-	if (PAGE_ALIGN(size) > MODULES_LEN)
+-		return NULL;
+-
+-	p = __vmalloc_node_range(size, MODULE_ALIGN,
+-				    MODULES_VADDR + get_module_load_offset(),
+-				    MODULES_END, gfp_mask,
+-				    PAGE_KERNEL, VM_DEFER_KMEMLEAK, NUMA_NO_NODE,
+-				    __builtin_return_address(0));
+-	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
+-		vfree(p);
+-		return NULL;
+-	}
+-
+-	return p;
+-}
+-
+ #ifdef CONFIG_X86_32
+ int apply_relocate(Elf32_Shdr *sechdrs,
+ 		   const char *strtab,
+diff --git a/arch/x86/kernel/module_alloc.c b/arch/x86/kernel/module_alloc.c
+new file mode 100644
+index 000000000000..a7df2af1467a
+--- /dev/null
++++ b/arch/x86/kernel/module_alloc.c
+@@ -0,0 +1,61 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ *  Kernel module help for x86.
++ *  Copyright (C) 2001 Rusty Russell.
++ */
++
++#include <linux/mm.h>
++#include <linux/moduleloader.h>
++#include <linux/random.h>
++#include <linux/vmalloc.h>
++#include <asm/setup.h>
++
++#ifdef CONFIG_RANDOMIZE_BASE
++static unsigned long module_load_offset;
++
++/* Mutex protects the module_load_offset. */
++static DEFINE_MUTEX(module_kaslr_mutex);
++
++static unsigned long get_module_load_offset(void)
++{
++	if (kaslr_enabled()) {
++		mutex_lock(&module_kaslr_mutex);
++		/*
++		 * Calculate the module_load_offset the first time this
++		 * code is called. Once calculated it stays the same until
++		 * reboot.
++		 */
++		if (module_load_offset == 0)
++			module_load_offset =
++				(get_random_int() % 1024 + 1) * PAGE_SIZE;
++		mutex_unlock(&module_kaslr_mutex);
++	}
++	return module_load_offset;
++}
++#else
++static unsigned long get_module_load_offset(void)
++{
++	return 0;
++}
++#endif
++
++void *module_alloc(unsigned long size)
++{
++	gfp_t gfp_mask = GFP_KERNEL;
++	void *p;
++
++	if (PAGE_ALIGN(size) > MODULES_LEN)
++		return NULL;
++
++	p = __vmalloc_node_range(size, MODULE_ALIGN,
++				    MODULES_VADDR + get_module_load_offset(),
++				    MODULES_END, gfp_mask,
++				    PAGE_KERNEL, VM_DEFER_KMEMLEAK, NUMA_NO_NODE,
++				    __builtin_return_address(0));
++	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
++		vfree(p);
++		return NULL;
++	}
++
++	return p;
++}
+diff --git a/kernel/Makefile b/kernel/Makefile
+index 318789c728d3..2981fe42060d 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -53,6 +53,11 @@ obj-y += livepatch/
+ obj-y += dma/
+ obj-y += entry/
+ obj-$(CONFIG_MODULES) += module/
++ifeq ($(CONFIG_MODULES),y)
++obj-y += module_alloc.o
++else
++obj-$(CONFIG_KPROBES) += module_alloc.o
++endif
+ 
+ obj-$(CONFIG_KCMP) += kcmp.o
+ obj-$(CONFIG_FREEZER) += freezer.o
+diff --git a/kernel/kprobes.c b/kernel/kprobes.c
+index f214f8c088ed..3f9876374cd3 100644
+--- a/kernel/kprobes.c
++++ b/kernel/kprobes.c
+@@ -1569,6 +1569,7 @@ static int check_kprobe_address_safe(struct kprobe *p,
+ 		goto out;
+ 	}
+ 
++#ifdef CONFIG_MODULES
+ 	/* Check if 'p' is probing a module. */
+ 	*probed_mod = __module_text_address((unsigned long) p->addr);
+ 	if (*probed_mod) {
+@@ -1592,6 +1593,8 @@ static int check_kprobe_address_safe(struct kprobe *p,
+ 			ret = -ENOENT;
+ 		}
+ 	}
++#endif
++
+ out:
+ 	preempt_enable();
+ 	jump_label_unlock();
+@@ -2475,6 +2478,7 @@ int kprobe_add_area_blacklist(unsigned long start, unsigned long end)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_MODULES
+ /* Remove all symbols in given area from kprobe blacklist */
+ static void kprobe_remove_area_blacklist(unsigned long start, unsigned long end)
+ {
+@@ -2492,6 +2496,7 @@ static void kprobe_remove_ksym_blacklist(unsigned long entry)
+ {
+ 	kprobe_remove_area_blacklist(entry, entry + 1);
+ }
++#endif /* CONFIG_MODULES */
+ 
+ int __weak arch_kprobe_get_kallsym(unsigned int *symnum, unsigned long *value,
+ 				   char *type, char *sym)
+@@ -2557,6 +2562,7 @@ static int __init populate_kprobe_blacklist(unsigned long *start,
+ 	return ret ? : arch_populate_kprobe_blacklist();
+ }
+ 
++#ifdef CONFIG_MODULES
+ static void add_module_kprobe_blacklist(struct module *mod)
+ {
+ 	unsigned long start, end;
+@@ -2658,6 +2664,7 @@ static struct notifier_block kprobe_module_nb = {
+ 	.notifier_call = kprobes_module_callback,
+ 	.priority = 0
+ };
++#endif /* CONFIG_MODULES */
+ 
+ void kprobe_free_init_mem(void)
+ {
+@@ -2717,8 +2724,11 @@ static int __init init_kprobes(void)
+ 	err = arch_init_kprobes();
+ 	if (!err)
+ 		err = register_die_notifier(&kprobe_exceptions_nb);
++
++#ifdef CONFIG_MODULES
+ 	if (!err)
+ 		err = register_module_notifier(&kprobe_module_nb);
++#endif
+ 
+ 	kprobes_initialized = (err == 0);
+ 	kprobe_sysctls_init();
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index fed58d30725d..7fa182b78550 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -1121,16 +1121,6 @@ resolve_symbol_wait(struct module *mod,
+ 	return ksym;
+ }
+ 
+-void __weak module_memfree(void *module_region)
+-{
+-	/*
+-	 * This memory may be RO, and freeing RO memory in an interrupt is not
+-	 * supported by vmalloc.
+-	 */
+-	WARN_ON(in_interrupt());
+-	vfree(module_region);
+-}
+-
+ void __weak module_arch_cleanup(struct module *mod)
+ {
+ }
+@@ -1606,13 +1596,6 @@ static void dynamic_debug_remove(struct module *mod, struct _ddebug *debug)
+ 		ddebug_remove_module(mod->name);
+ }
+ 
+-void * __weak module_alloc(unsigned long size)
+-{
+-	return __vmalloc_node_range(size, 1, VMALLOC_START, VMALLOC_END,
+-			GFP_KERNEL, PAGE_KERNEL_EXEC, VM_FLUSH_RESET_PERMS,
+-			NUMA_NO_NODE, __builtin_return_address(0));
+-}
+-
+ bool __weak module_init_section(const char *name)
+ {
+ 	return strstarts(name, ".init");
+diff --git a/kernel/module_alloc.c b/kernel/module_alloc.c
+new file mode 100644
+index 000000000000..26a4c60998ad
+--- /dev/null
++++ b/kernel/module_alloc.c
+@@ -0,0 +1,26 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2002 Richard Henderson
++ * Copyright (C) 2001 Rusty Russell, 2002, 2010 Rusty Russell IBM.
++ */
++
++#include <linux/mm.h>
++#include <linux/moduleloader.h>
++#include <linux/vmalloc.h>
++
++void * __weak module_alloc(unsigned long size)
++{
++	return __vmalloc_node_range(size, 1, VMALLOC_START, VMALLOC_END,
++			GFP_KERNEL, PAGE_KERNEL_EXEC, VM_FLUSH_RESET_PERMS,
++			NUMA_NO_NODE, __builtin_return_address(0));
++}
++
++void __weak module_memfree(void *module_region)
++{
++	/*
++	 * This memory may be RO, and freeing RO memory in an interrupt is not
++	 * supported by vmalloc.
++	 */
++	WARN_ON(in_interrupt());
++	vfree(module_region);
++}
+diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
+index 93507330462c..050b2975332e 100644
+--- a/kernel/trace/trace_kprobe.c
++++ b/kernel/trace/trace_kprobe.c
+@@ -101,6 +101,7 @@ static nokprobe_inline bool trace_kprobe_has_gone(struct trace_kprobe *tk)
+ 	return kprobe_gone(&tk->rp.kp);
+ }
+ 
++#ifdef CONFIG_MODULES
+ static nokprobe_inline bool trace_kprobe_within_module(struct trace_kprobe *tk,
+ 						 struct module *mod)
+ {
+@@ -109,11 +110,13 @@ static nokprobe_inline bool trace_kprobe_within_module(struct trace_kprobe *tk,
+ 
+ 	return strncmp(module_name(mod), name, len) == 0 && name[len] == ':';
+ }
++#endif /* CONFIG_MODULES */
+ 
+ static nokprobe_inline bool trace_kprobe_module_exist(struct trace_kprobe *tk)
+ {
++	bool ret = false;
++#ifdef CONFIG_MODULES
+ 	char *p;
+-	bool ret;
+ 
+ 	if (!tk->symbol)
+ 		return false;
+@@ -125,6 +128,7 @@ static nokprobe_inline bool trace_kprobe_module_exist(struct trace_kprobe *tk)
+ 	ret = !!find_module(tk->symbol);
+ 	rcu_read_unlock_sched();
+ 	*p = ':';
++#endif /* CONFIG_MODULES */
+ 
+ 	return ret;
+ }
+@@ -668,6 +672,7 @@ static int register_trace_kprobe(struct trace_kprobe *tk)
+ 	return ret;
+ }
+ 
++#ifdef CONFIG_MODULES
+ /* Module notifier call back, checking event on the module */
+ static int trace_kprobe_module_callback(struct notifier_block *nb,
+ 				       unsigned long val, void *data)
+@@ -702,6 +707,7 @@ static struct notifier_block trace_kprobe_module_nb = {
+ 	.notifier_call = trace_kprobe_module_callback,
+ 	.priority = 1	/* Invoked after kprobe module callback */
+ };
++#endif /* CONFIG_MODULES */
+ 
+ static int __trace_kprobe_create(int argc, const char *argv[])
+ {
+@@ -1896,8 +1902,10 @@ static __init int init_kprobe_trace_early(void)
+ 	if (ret)
+ 		return ret;
+ 
++#ifdef CONFIG_MODULES
+ 	if (register_module_notifier(&trace_kprobe_module_nb))
+ 		return -EINVAL;
++#endif /* CONFIG_MODULES */
+ 
+ 	return 0;
+ }
 -- 
-2.35.1
+2.36.1
 
