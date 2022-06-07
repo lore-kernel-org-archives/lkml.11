@@ -2,114 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB9F1CCA498
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE326C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385008AbiFGWRJ (ORCPT
+        id S1385047AbiFGWRQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:17:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43896 "EHLO
+        Tue, 7 Jun 2022 18:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380207AbiFGVLl (ORCPT
+        with ESMTP id S1380104AbiFGVL3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB4A218AA1;
-        Tue,  7 Jun 2022 11:53:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07FCD6176D;
-        Tue,  7 Jun 2022 18:53:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1682CC385A2;
-        Tue,  7 Jun 2022 18:53:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628011;
-        bh=HfOrDTLhdUzR7V2uVaro7XE7vKpON/b5Tcu5bw6pI6g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Suoh2DyTcAmYQwcdDFTOah0GP7uRCWIJ4CS6h/szG3AEiVA6hk58BnxdOmxpOolcv
-         LLS/NoMXWH7vNkgLt9Y/3+dymhWa5fyqZSsIqV0CzLlhp36ondDATrAWLFDvqkEHy4
-         zUMH77aMHpGj3E6Mt2oCaFwJnHA75/66yOPyU15w=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Stafford Horne <shorne@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 174/879] openrisc: start CPU timer early in boot
-Date:   Tue,  7 Jun 2022 18:54:52 +0200
-Message-Id: <20220607165007.891629583@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 7 Jun 2022 17:11:29 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248D6217886;
+        Tue,  7 Jun 2022 11:53:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654627990; x=1686163990;
+  h=from:to:cc:subject:date:message-id;
+  bh=Mjo2C2QUnHYivixBRLOK87mExe7tAphbj9VcKmRn5xA=;
+  b=WMrwSgCztjn7AUkonBWE5kBI7lPDYdrGa9HkX5qK3TyXnYY2FeOxN+Z6
+   rKDsrPUaYtr0NM5tkHRCpz+LITQsw272g+GBrcORNdZOhmKJRLnZNg7jE
+   DK7XS8EdXfOsPe0HKhBC9FSLRTRsamtysCDPDEGz3zJCrGlrDBU6KdPou
+   U=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 11:53:09 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 07 Jun 2022 11:53:08 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 08 Jun 2022 00:22:51 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id D48183F74; Wed,  8 Jun 2022 00:22:49 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [PATCH 0/2] tty: serial: Introduce callback for start_rx and implement same for qcom-geni-serial
+Date:   Wed,  8 Jun 2022 00:22:43 +0530
+Message-Id: <1654627965-1461-1-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+This patch handles the problem of asynchronous data over RX like observed
+in qcom-geni-serial driver while ensuring that it doesn't cause side-
+effect for other drivers.
 
-[ Upstream commit 516dd4aacd67a0f27da94f3fe63fe0f4dbab6e2b ]
+Vijaya Krishna Nivarthi (2):
+  serial: core: Introduce callback for start_rx and do stop_rx in
+    suspend only if this callback implementation is present.
+  tty: serial: qcom-geni-serial: Implement start_rx callback
 
-In order to measure the boot process, the timer should be switched on as
-early in boot as possible. As well, the commit defines the get_cycles
-macro, like the previous patches in this series, so that generic code is
-aware that it's implemented by the platform, as is done on other archs.
+ drivers/tty/serial/qcom_geni_serial.c | 1 +
+ drivers/tty/serial/serial_core.c      | 9 ++++++---
+ include/linux/serial_core.h           | 1 +
+ 3 files changed, 8 insertions(+), 3 deletions(-)
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Jonas Bonn <jonas@southpole.se>
-Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
-Acked-by: Stafford Horne <shorne@gmail.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/openrisc/include/asm/timex.h | 1 +
- arch/openrisc/kernel/head.S       | 9 +++++++++
- 2 files changed, 10 insertions(+)
-
-diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
-index d52b4e536e3f..5487fa93dd9b 100644
---- a/arch/openrisc/include/asm/timex.h
-+++ b/arch/openrisc/include/asm/timex.h
-@@ -23,6 +23,7 @@ static inline cycles_t get_cycles(void)
- {
- 	return mfspr(SPR_TTCR);
- }
-+#define get_cycles get_cycles
- 
- /* This isn't really used any more */
- #define CLOCK_TICK_RATE 1000
-diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
-index 15f1b38dfe03..871f4c858859 100644
---- a/arch/openrisc/kernel/head.S
-+++ b/arch/openrisc/kernel/head.S
-@@ -521,6 +521,15 @@ _start:
- 	l.ori	r3,r0,0x1
- 	l.mtspr	r0,r3,SPR_SR
- 
-+	/*
-+	 * Start the TTCR as early as possible, so that the RNG can make use of
-+	 * measurements of boot time from the earliest opportunity. Especially
-+	 * important is that the TTCR does not return zero by the time we reach
-+	 * rand_initialize().
-+	 */
-+	l.movhi r3,hi(SPR_TTMR_CR)
-+	l.mtspr r0,r3,SPR_TTMR
-+
- 	CLEAR_GPR(r1)
- 	CLEAR_GPR(r2)
- 	CLEAR_GPR(r3)
 -- 
-2.35.1
-
-
 
