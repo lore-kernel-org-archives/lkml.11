@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F09CCA485
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E61D4CCA483
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385749AbiFGWqf (ORCPT
+        id S1386200AbiFGWsh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40900 "EHLO
+        Tue, 7 Jun 2022 18:48:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376372AbiFGVgp (ORCPT
+        with ESMTP id S1381293AbiFGVk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:36:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5416F140877;
-        Tue,  7 Jun 2022 12:04:59 -0700 (PDT)
+        Tue, 7 Jun 2022 17:40:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0DB16FEF1;
+        Tue,  7 Jun 2022 12:06:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EF36617CC;
-        Tue,  7 Jun 2022 19:04:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 997CBC385A2;
-        Tue,  7 Jun 2022 19:04:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40657B82182;
+        Tue,  7 Jun 2022 19:06:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD19DC385A2;
+        Tue,  7 Jun 2022 19:06:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628698;
-        bh=IBJFk8m+ISBuPo0dyzuyqrLXv+zS3d6XfsnD/v3iwUM=;
+        s=korg; t=1654628772;
+        bh=2AEIenh73aLoWh9XjJ4hnoXRqQVSDuUQ2rYXV4WjRI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dVT5/6HrtxO12yIi/sKG00wseSj2T+QpYdWvHtw5qLrUKj9kAb95G84g0hGG/JN9y
-         NF/hgDf2wNgnwypfF3Z8cmRjzYIjdMcjppvnxMedmZdCOBUQzEpZ70rBNLphS0tCZN
-         w4JMwH2+u4Qx+/y9dPY7knHtbZlKMMJElVtHr9JE=
+        b=D985yuVaKE8Okks1lRB7XVMb9Omt/ZM9biuLc1VDAzjOzso0nFfX7icbITcDgcOuw
+         ueEiFEK5w1BN6o1zCKdrFqwmezG6ULbsCnXHM26tATi+glvk1vt8dQlV/M5awF6drv
+         A/gwJNjh00Qngw8FwGiEZRqMC1+kz7ywkXkkdJ08=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Ming Lei <ming.lei@redhat.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 424/879] block: Fix the bio.bi_opf comment
-Date:   Tue,  7 Jun 2022 18:59:02 +0200
-Message-Id: <20220607165015.173018807@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 449/879] media: atmel: atmel-sama5d2-isc: fix wrong mask in YUYV format check
+Date:   Tue,  7 Jun 2022 18:59:27 +0200
+Message-Id: <20220607165015.902057776@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,46 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Eugen Hristev <eugen.hristev@microchip.com>
 
-[ Upstream commit 5d2ae14276e698c76fa0c8ce870103f343b38263 ]
+[ Upstream commit 91f49b80983f7bffdea9498209b2b896231ac776 ]
 
-Commit ef295ecf090d modified the Linux kernel such that the bottom bits
-of the bi_opf member contain the operation instead of the topmost bits.
-That commit did not update the comment next to bi_opf. Hence this patch.
+While this does not happen in production, this check should be done
+versus the mask, as checking with the YCYC value may not include
+some bits that may be set.
+It is correct and safe to check the whole mask.
 
->From commit ef295ecf090d:
--#define bio_op(bio)    ((bio)->bi_opf >> BIO_OP_SHIFT)
-+#define bio_op(bio)    ((bio)->bi_opf & REQ_OP_MASK)
-
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Ming Lei <ming.lei@redhat.com>
-Fixes: ef295ecf090d ("block: better op and flags encoding")
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220511235152.1082246-1-bvanassche@acm.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 123aaf816b95 ("media: atmel: atmel-sama5d2-isc: fix YUYV format")
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/blk_types.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/media/platform/atmel/atmel-sama5d2-isc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/blk_types.h b/include/linux/blk_types.h
-index 1973ef9bd40f..4fa359c2c01f 100644
---- a/include/linux/blk_types.h
-+++ b/include/linux/blk_types.h
-@@ -246,9 +246,8 @@ typedef unsigned int blk_qc_t;
- struct bio {
- 	struct bio		*bi_next;	/* request queue link */
- 	struct block_device	*bi_bdev;
--	unsigned int		bi_opf;		/* bottom bits req flags,
--						 * top bits REQ_OP. Use
--						 * accessors.
-+	unsigned int		bi_opf;		/* bottom bits REQ_OP, top bits
-+						 * req_flags.
- 						 */
- 	unsigned short		bi_flags;	/* BIO_* below */
- 	unsigned short		bi_ioprio;
+diff --git a/drivers/media/platform/atmel/atmel-sama5d2-isc.c b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
+index e9415495e738..c2d50b0c0e3d 100644
+--- a/drivers/media/platform/atmel/atmel-sama5d2-isc.c
++++ b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
+@@ -291,7 +291,7 @@ static void isc_sama5d2_config_rlp(struct isc_device *isc)
+ 	 * Thus, if the YCYC mode is selected, replace it with the
+ 	 * sama5d2-compliant mode which is YYCC .
+ 	 */
+-	if ((rlp_mode & ISC_RLP_CFG_MODE_YCYC) == ISC_RLP_CFG_MODE_YCYC) {
++	if ((rlp_mode & ISC_RLP_CFG_MODE_MASK) == ISC_RLP_CFG_MODE_YCYC) {
+ 		rlp_mode &= ~ISC_RLP_CFG_MODE_MASK;
+ 		rlp_mode |= ISC_RLP_CFG_MODE_YYCC;
+ 	}
 -- 
 2.35.1
 
