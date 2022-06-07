@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E008ECCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62BAACCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:07:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378706AbiFGVHS (ORCPT
+        id S1378751AbiFGVHW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:07:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48294 "EHLO
+        Tue, 7 Jun 2022 17:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358610AbiFGUJB (ORCPT
+        with ESMTP id S1359113AbiFGUJb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:09:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9ECCED8D5;
-        Tue,  7 Jun 2022 11:26:27 -0700 (PDT)
+        Tue, 7 Jun 2022 16:09:31 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6A41406C5;
+        Tue,  7 Jun 2022 11:26:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 767F0B822C0;
-        Tue,  7 Jun 2022 18:26:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E41B9C385A2;
-        Tue,  7 Jun 2022 18:26:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9474BCE244F;
+        Tue,  7 Jun 2022 18:26:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CBB2C385A2;
+        Tue,  7 Jun 2022 18:26:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626385;
-        bh=Wv8LqfiVahQyHFgoG9Vecq8fraqBk8Ym4cTjhUqnw5A=;
+        s=korg; t=1654626399;
+        bh=rsPwkGNK9GIoywZVByF5Yv2MTWSczBPHM5FyQ9egQNU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mxiIfdkEw2+YSh/S21jkm4UKZdffpKcasgiDxSYOFb2+znpXE17J4Q/Ty0gcmBChp
-         OWMfdXkXJIXVNL09iiiJnBm4WTpKD0VCOhCSJpEPQox8WktGJtEJArr7Dncrn/pM+t
-         DIeEThofMPs6lzbfTZGNdx6WNyCaJEvD6CWd/evw=
+        b=asKruAHzxg1wsVn6KnPf3VbQ46SRHCPckoGjvAsbWXpZ/g9CoI2XzND2XvpbW+jZ3
+         +9WB7Pab1/3nfc1Sdjr5j/NAvW9gESYEBVcTKs57dJdYz6yTFvIBSgIz0RYGIlLK85
+         zOXt1vV2vgLhxkU75tLyebDmlIiNFDp4OY6HsftU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 359/772] regulator: pfuze100: Fix refcount leak in pfuze_parse_regulators_dt
-Date:   Tue,  7 Jun 2022 18:59:11 +0200
-Message-Id: <20220607164959.596112475@linuxfoundation.org>
+        stable@vger.kernel.org, Phil Auld <pauld@redhat.com>,
+        Tejun Heo <tj@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 364/772] kselftest/cgroup: fix test_stress.sh to use OUTPUT dir
+Date:   Tue,  7 Jun 2022 18:59:16 +0200
+Message-Id: <20220607164959.739992646@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,42 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Phil Auld <pauld@redhat.com>
 
-[ Upstream commit afaa7b933ef00a2d3262f4d1252087613fb5c06d ]
+[ Upstream commit 54de76c0123915e7533ce352de30a1f2d80fe81f ]
 
-of_node_get() returns a node with refcount incremented.
-Calling of_node_put() to drop the reference when not needed anymore.
+Running cgroup kselftest with O= fails to run the with_stress test due
+to hardcoded ./test_core. Find test_core binary using the OUTPUT directory.
 
-Fixes: 3784b6d64dc5 ("regulator: pfuze100: add pfuze100 regulator driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220511113506.45185-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 1a99fcc035fb ("selftests: cgroup: Run test_core under interfering stress")
+Signed-off-by: Phil Auld <pauld@redhat.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/pfuze100-regulator.c | 2 ++
- 1 file changed, 2 insertions(+)
+ tools/testing/selftests/cgroup/test_stress.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/regulator/pfuze100-regulator.c b/drivers/regulator/pfuze100-regulator.c
-index d60d7d1b7fa2..aa55cfca9e40 100644
---- a/drivers/regulator/pfuze100-regulator.c
-+++ b/drivers/regulator/pfuze100-regulator.c
-@@ -521,6 +521,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
- 	parent = of_get_child_by_name(np, "regulators");
- 	if (!parent) {
- 		dev_err(dev, "regulators node not found\n");
-+		of_node_put(np);
- 		return -EINVAL;
- 	}
+diff --git a/tools/testing/selftests/cgroup/test_stress.sh b/tools/testing/selftests/cgroup/test_stress.sh
+index 15d9d5896394..109c044f715f 100755
+--- a/tools/testing/selftests/cgroup/test_stress.sh
++++ b/tools/testing/selftests/cgroup/test_stress.sh
+@@ -1,4 +1,4 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0
  
-@@ -550,6 +551,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
- 	}
- 
- 	of_node_put(parent);
-+	of_node_put(np);
- 	if (ret < 0) {
- 		dev_err(dev, "Error parsing regulator init data: %d\n",
- 			ret);
+-./with_stress.sh -s subsys -s fork ./test_core
++./with_stress.sh -s subsys -s fork ${OUTPUT}/test_core
 -- 
 2.35.1
 
