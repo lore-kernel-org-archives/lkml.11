@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05FDFCCA487
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05FEDCCA48E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350427AbiFGSK6 (ORCPT
+        id S1350670AbiFGSL3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:10:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40700 "EHLO
+        Tue, 7 Jun 2022 14:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350029AbiFGRvt (ORCPT
+        with ESMTP id S1349933AbiFGRvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF7413FD73;
-        Tue,  7 Jun 2022 10:39:22 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A7E13CA1C;
+        Tue,  7 Jun 2022 10:39:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 561C1615B5;
-        Tue,  7 Jun 2022 17:38:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D0F5C385A5;
-        Tue,  7 Jun 2022 17:38:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E34426160E;
+        Tue,  7 Jun 2022 17:38:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB61FC385A5;
+        Tue,  7 Jun 2022 17:38:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623516;
-        bh=bGKUlB+stWvlUSMfdSGssdWsMlsCDWNVuR+RfD/mrXg=;
+        s=korg; t=1654623497;
+        bh=9o9q4WD8l/Xb1LIFiZ7mZPfpN8Qs+Tj9o9Js+pnAarU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sxn+NuwpH7WKDWr8fOz4iQjzPDHnHrFjwA2pTTdZh/42vy8W12RiWQvKHQsYRozXi
-         ZdujZ5lRHnNEGKtYAcDW7tw82fGeI1dKQcZheSnVx7XHlgF+SKLSgzVBR3d9vTk+RY
-         LrY8ZfWO5F7QxoMNH6scutVEuNkQssYzSPlB2l4c=
+        b=GbkgruOBNMotBLTmZ7etrqagZxvYU7OFsorDD0fU3uSLLNhsJZGnFOb6OedSDaYpg
+         x5fmDDChQ91myVXFeekv6IYoahTyjHNK/jL+sSTHVUn5IkbykPgybQmLQvdyeGvrrf
+         yD1sN1mZy25s0B27yTAehKFjwrQUyVI3C0Bhg0Vs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>,
-        Jens Axboe <axboe@kernel.dk>,
-        Donald Buczek <buczek@molgen.mpg.de>
-Subject: [PATCH 5.10 446/452] block: fix bio_clone_blkg_association() to associate with proper blkcg_gq
-Date:   Tue,  7 Jun 2022 19:05:03 +0200
-Message-Id: <20220607164921.860742429@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ziyang Xuan <william.xuanziyang@huawei.com>,
+        kernel test robot <lkp@intel.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: [PATCH 5.10 439/452] thermal/core: fix a UAF bug in __thermal_cooling_device_register()
+Date:   Tue,  7 Jun 2022 19:04:56 +0200
+Message-Id: <20220607164921.644649330@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,50 +51,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Ziyang Xuan <william.xuanziyang@huawei.com>
 
-commit 22b106e5355d6e7a9c3b5cb5ed4ef22ae585ea94 upstream.
+commit 0a5c26712f963f0500161a23e0ffff8d29f742ab upstream.
 
-Commit d92c370a16cb ("block: really clone the block cgroup in
-bio_clone_blkg_association") changed bio_clone_blkg_association() to
-just clone bio->bi_blkg reference from source to destination bio. This
-is however wrong if the source and destination bios are against
-different block devices because struct blkcg_gq is different for each
-bdev-blkcg pair. This will result in IOs being accounted (and throttled
-as a result) multiple times against the same device (src bdev) while
-throttling of the other device (dst bdev) is ignored. In case of BFQ the
-inconsistency can even result in crashes in bfq_bic_update_cgroup().
-Fix the problem by looking up correct blkcg_gq for the cloned bio.
+When device_register() return failed, program will goto out_kfree_type
+to release 'cdev->device' by put_device(). That will call thermal_release()
+to free 'cdev'. But the follow-up processes access 'cdev' continually.
+That trggers the UAF bug.
 
-Reported-by: Logan Gunthorpe <logang@deltatee.com>
-Reported-and-tested-by: Donald Buczek <buczek@molgen.mpg.de>
-Fixes: d92c370a16cb ("block: really clone the block cgroup in bio_clone_blkg_association")
-CC: stable@vger.kernel.org
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220602081242.7731-1-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+====================================================================
+BUG: KASAN: use-after-free in __thermal_cooling_device_register+0x75b/0xa90
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+Call Trace:
+ dump_stack_lvl+0xe2/0x152
+ print_address_description.constprop.0+0x21/0x140
+ ? __thermal_cooling_device_register+0x75b/0xa90
+ kasan_report.cold+0x7f/0x11b
+ ? __thermal_cooling_device_register+0x75b/0xa90
+ __thermal_cooling_device_register+0x75b/0xa90
+ ? memset+0x20/0x40
+ ? __sanitizer_cov_trace_pc+0x1d/0x50
+ ? __devres_alloc_node+0x130/0x180
+ devm_thermal_of_cooling_device_register+0x67/0xf0
+ max6650_probe.cold+0x557/0x6aa
+......
+
+Freed by task 258:
+ kasan_save_stack+0x1b/0x40
+ kasan_set_track+0x1c/0x30
+ kasan_set_free_info+0x20/0x30
+ __kasan_slab_free+0x109/0x140
+ kfree+0x117/0x4c0
+ thermal_release+0xa0/0x110
+ device_release+0xa7/0x240
+ kobject_put+0x1ce/0x540
+ put_device+0x20/0x30
+ __thermal_cooling_device_register+0x731/0xa90
+ devm_thermal_of_cooling_device_register+0x67/0xf0
+ max6650_probe.cold+0x557/0x6aa [max6650]
+
+Do not use 'cdev' again after put_device() to fix the problem like doing
+in thermal_zone_device_register().
+
+[dlezcano]: as requested by Rafael, change the affectation into two statements.
+
+Fixes: 584837618100 ("thermal/drivers/core: Use a char pointer for the cooling device name")
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/r/20211015024504.947520-1-william.xuanziyang@huawei.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/blk-cgroup.c |    8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/thermal/thermal_core.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/block/blk-cgroup.c
-+++ b/block/blk-cgroup.c
-@@ -1892,12 +1892,8 @@ EXPORT_SYMBOL_GPL(bio_associate_blkg);
-  */
- void bio_clone_blkg_association(struct bio *dst, struct bio *src)
+--- a/drivers/thermal/thermal_core.c
++++ b/drivers/thermal/thermal_core.c
+@@ -1092,7 +1092,7 @@ __thermal_cooling_device_register(struct
  {
--	if (src->bi_blkg) {
--		if (dst->bi_blkg)
--			blkg_put(dst->bi_blkg);
--		blkg_get(src->bi_blkg);
--		dst->bi_blkg = src->bi_blkg;
--	}
-+	if (src->bi_blkg)
-+		bio_associate_blkg_from_css(dst, &bio_blkcg(src)->css);
- }
- EXPORT_SYMBOL_GPL(bio_clone_blkg_association);
+ 	struct thermal_cooling_device *cdev;
+ 	struct thermal_zone_device *pos = NULL;
+-	int ret;
++	int id, ret;
  
+ 	if (!ops || !ops->get_max_state || !ops->get_cur_state ||
+ 	    !ops->set_cur_state)
+@@ -1106,6 +1106,7 @@ __thermal_cooling_device_register(struct
+ 	if (ret < 0)
+ 		goto out_kfree_cdev;
+ 	cdev->id = ret;
++	id = ret;
+ 
+ 	cdev->type = kstrdup(type ? type : "", GFP_KERNEL);
+ 	if (!cdev->type) {
+@@ -1147,8 +1148,9 @@ out_kfree_type:
+ 	thermal_cooling_device_destroy_sysfs(cdev);
+ 	kfree(cdev->type);
+ 	put_device(&cdev->device);
++	cdev = NULL;
+ out_ida_remove:
+-	ida_simple_remove(&thermal_cdev_ida, cdev->id);
++	ida_simple_remove(&thermal_cdev_ida, id);
+ out_kfree_cdev:
+ 	return ERR_PTR(ret);
+ }
 
 
