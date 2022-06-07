@@ -2,177 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F28ACCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8675DCCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384264AbiFGWfx (ORCPT
+        id S1384565AbiFGWgH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:35:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38922 "EHLO
+        Tue, 7 Jun 2022 18:36:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378460AbiFGVXP (ORCPT
+        with ESMTP id S1378416AbiFGVXw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:23:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4940B226CFB;
-        Tue,  7 Jun 2022 12:00:37 -0700 (PDT)
+        Tue, 7 Jun 2022 17:23:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797D9227350;
+        Tue,  7 Jun 2022 12:00:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D0E9BCE247C;
-        Tue,  7 Jun 2022 19:00:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C34FC385A5;
-        Tue,  7 Jun 2022 19:00:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654628433;
-        bh=PETGTpshoDoTRoH9w/heaUnGsqX8NQyeufAgBDPT+dc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iuBUuLTlpKLrFOJkqHh9kPQ0JfJeWqd0WcizgQYJomwFKG9B/mo340eff68SsGWf4
-         u5rhlB6BKhXhVBjN+rccBwo2qO7SHi+KTsBx3QaTokTup472ptXiBsZ5TOOWgyqnXP
-         DaIVzhsTvmjipXXk7l4x/9ezYPItrCzvrh0mT4PsSa7pLcSRAuCUUZ9/JVbsZpqQEo
-         USNVw2sU7sHjD53sXPDaUC2koJIWm9cA2cdI0bcBwo1O72rEspr0ANGPvUsPjK5Zrq
-         Nnhj4Ww7jT9vCOXVegNe5YkO+lNfWH/hYB6P0yggJTeDAEQL069ZI1yQiGHZEE2fJA
-         zArkaLa/809aw==
-Date:   Tue, 7 Jun 2022 20:00:27 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     cy_huang <u0084500@gmail.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lee.jones@linaro.org, dmitry.torokhov@gmail.com,
-        lgirdwood@gmail.com, cy_huang@richtek.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-input@vger.kernel.org
-Subject: Re: [PATCH 3/4] regulator: rt5120: Add PMIC regulator support
-Message-ID: <Yp+gS6r5Kpi33Ags@sirena.org.uk>
-References: <1654581161-12349-1-git-send-email-u0084500@gmail.com>
- <1654581161-12349-4-git-send-email-u0084500@gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E517A617DA;
+        Tue,  7 Jun 2022 19:00:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0057EC385A5;
+        Tue,  7 Jun 2022 19:00:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628426;
+        bh=F9dV5vWQHIX8olZhqFalnogpwZKt3tMjLk5mSopD5kU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=crf8z+WDs6h/sno02TN8CBxzCnmvsOMYPstJV0AaszusKYRGc76O54RI4N2DD1V7/
+         0r0UcP/I3VKXFbWiMTsuaYLc/Cb3/7JuY6mSOIQlBcHPlWOyyJVi2+JGxMPbCPfDqD
+         2/IhCqZXh2HSVjcxvZv4gI4LgL8/osBKA1bVZCYM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 323/879] drm/bridge: anx7625: Use uint8 for lane-swing arrays
+Date:   Tue,  7 Jun 2022 18:57:21 +0200
+Message-Id: <20220607165012.228618630@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ksAClhgkgYP1BOgI"
-Content-Disposition: inline
-In-Reply-To: <1654581161-12349-4-git-send-email-u0084500@gmail.com>
-X-Cookie: Where's SANDY DUNCAN?
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
---ksAClhgkgYP1BOgI
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+[ Upstream commit fb8da7f3111ab500606960bef1bb32450c664750 ]
 
-On Tue, Jun 07, 2022 at 01:52:40PM +0800, cy_huang wrote:
+As defined in the anx7625 dt-binding, the analogix,lane0-swing and
+analogix,lane1-swing properties are uint8 arrays. Yet, the driver was
+reading the array as if it were of uint32 and masking to 8-bit before
+writing to the registers. This means that a devicetree written in
+accordance to the dt-binding would have its values incorrectly parsed.
 
-This looks mostly good, a few things though:
+Fix the issue by reading the array as uint8 and storing them as uint8
+internally, so that we can also drop the masking when writing the
+registers.
 
-> +static void rt5120_fillin_regulator_desc(struct regulator_desc *desc, int rid)
-> +{
-> +	static const char * const name[] = { "buck1", "buck2", "buck3", "buck4",
-> +					     "ldo", "exten" };
-> +	static const char * const sname[] = { "vin1", "vin2", "vin3", "vin4",
-> +					      "vinldo", NULL };
+Fixes: fd0310b6fe7d ("drm/bridge: anx7625: add MIPI DPI input feature")
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220408013034.673418-1-nfraprado@collabora.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/bridge/analogix/anx7625.c | 12 ++++++------
+ drivers/gpu/drm/bridge/analogix/anx7625.h |  4 ++--
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-It would be easier and clearer to just make this a static table like
-other drivers do, there's no need to generate anything dynamically as
-far as I can see.
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+index a23e13c29a1d..060849f8ad8b 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.c
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+@@ -1478,12 +1478,12 @@ static void anx7625_dp_adjust_swing(struct anx7625_data *ctx)
+ 	for (i = 0; i < ctx->pdata.dp_lane0_swing_reg_cnt; i++)
+ 		anx7625_reg_write(ctx, ctx->i2c.tx_p1_client,
+ 				  DP_TX_LANE0_SWING_REG0 + i,
+-				  ctx->pdata.lane0_reg_data[i] & 0xFF);
++				  ctx->pdata.lane0_reg_data[i]);
+ 
+ 	for (i = 0; i < ctx->pdata.dp_lane1_swing_reg_cnt; i++)
+ 		anx7625_reg_write(ctx, ctx->i2c.tx_p1_client,
+ 				  DP_TX_LANE1_SWING_REG0 + i,
+-				  ctx->pdata.lane1_reg_data[i] & 0xFF);
++				  ctx->pdata.lane1_reg_data[i]);
+ }
+ 
+ static void dp_hpd_change_handler(struct anx7625_data *ctx, bool on)
+@@ -1590,8 +1590,8 @@ static int anx7625_get_swing_setting(struct device *dev,
+ 			num_regs = DP_TX_SWING_REG_CNT;
+ 
+ 		pdata->dp_lane0_swing_reg_cnt = num_regs;
+-		of_property_read_u32_array(dev->of_node, "analogix,lane0-swing",
+-					   pdata->lane0_reg_data, num_regs);
++		of_property_read_u8_array(dev->of_node, "analogix,lane0-swing",
++					  pdata->lane0_reg_data, num_regs);
+ 	}
+ 
+ 	if (of_get_property(dev->of_node,
+@@ -1600,8 +1600,8 @@ static int anx7625_get_swing_setting(struct device *dev,
+ 			num_regs = DP_TX_SWING_REG_CNT;
+ 
+ 		pdata->dp_lane1_swing_reg_cnt = num_regs;
+-		of_property_read_u32_array(dev->of_node, "analogix,lane1-swing",
+-					   pdata->lane1_reg_data, num_regs);
++		of_property_read_u8_array(dev->of_node, "analogix,lane1-swing",
++					  pdata->lane1_reg_data, num_regs);
+ 	}
+ 
+ 	return 0;
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
+index edbbfe410a56..e257a84db962 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.h
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
+@@ -426,9 +426,9 @@ struct anx7625_platform_data {
+ 	int mipi_lanes;
+ 	int audio_en;
+ 	int dp_lane0_swing_reg_cnt;
+-	int lane0_reg_data[DP_TX_SWING_REG_CNT];
++	u8 lane0_reg_data[DP_TX_SWING_REG_CNT];
+ 	int dp_lane1_swing_reg_cnt;
+-	int lane1_reg_data[DP_TX_SWING_REG_CNT];
++	u8 lane1_reg_data[DP_TX_SWING_REG_CNT];
+ 	u32 low_power_mode;
+ 	struct device_node *mipi_host_node;
+ };
+-- 
+2.35.1
 
-> +static int rt5120_of_parse_cb(struct rt5120_priv *priv, int rid,
-> +			      struct of_regulator_match *match)
-> +{
-> +	struct regulator_desc *desc = priv->rdesc + rid;
-> +	struct regulator_init_data *init_data = match->init_data;
-> +
-> +	if (!init_data || rid == RT5120_REGULATOR_BUCK1)
-> +		return 0;
-> +
-> +	if (init_data->constraints.min_uV != init_data->constraints.max_uV) {
-> +		dev_err(priv->dev, "Variable voltage for fixed regulator\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	desc->fixed_uV = init_data->constraints.min_uV;
-> +	init_data->constraints.apply_uV = 0;
 
-Drivers should never override constraints passed in by machine drivers,
-if there's validation needed let the core do it.  The same probably
-applies to providing a voltage range for a fixed regulator though that's
-not modifying everything so not such a problem.
 
-> +static int rt5120_parse_regulator_dt_data(struct rt5120_priv *priv)
-> +{
-> +	struct device *dev = priv->dev->parent;
-> +	struct device_node *reg_node;
-> +	int i, ret;
-> +
-> +	for (i = 0; i < RT5120_MAX_REGULATOR; i++) {
-> +		rt5120_fillin_regulator_desc(priv->rdesc + i, i);
-> +
-> +		rt5120_regu_match[i].desc = priv->rdesc + i;
-> +	}
-
-Like I said above just make the list of regulators static data and loop
-through registering them.
-
-> +
-> +	reg_node = of_get_child_by_name(dev->of_node, "regulators");
-> +	if (!reg_node) {
-> +		dev_err(priv->dev, "Couldn't find 'regulators' node\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	ret = of_regulator_match(priv->dev, reg_node, rt5120_regu_match,
-> +				 ARRAY_SIZE(rt5120_regu_match));
-> +
-> +	of_node_put(reg_node);
-> +
-> +	if (ret < 0) {
-> +		dev_err(priv->dev,
-> +			"Error parsing regulator init data (%d)\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	for (i = 0; i < RT5120_MAX_REGULATOR; i++) {
-> +		ret = rt5120_of_parse_cb(priv, i, rt5120_regu_match + i);
-> +		if (ret) {
-> +			dev_err(priv->dev, "Failed in [%d] of_passe_cb\n", i);
-> +			return ret;
-> +		}
-> +	}
-
-This is all open coding stuff that's in the core - just provde an
-of_parse_cb() operation and let the core take care of calling it.
-
-> +static int rt5120_device_property_init(struct rt5120_priv *priv)
-> +{
-> +	struct device *dev = priv->dev->parent;
-> +	bool prot_enable;
-> +	unsigned int prot_enable_val = 0;
-> +
-> +	/* Assign UV/OV HW protection behavior */
-> +	prot_enable = device_property_read_bool(dev,
-> +					"richtek,enable-undervolt-hiccup");
-> +	if (prot_enable)
-> +		prot_enable_val |= RT5120_UVHICCUP_MASK;
-
-Use the DT APIs to parse DT - since ACPI has a very strong idea of how
-power management works which is fundamentally incompatible with with the
-DT model we should be writing code in a way that minimises the risk that
-we'll end up trying to parse DT properties out of ACPI systems and
-creating confusion as DT and ACPI software tries to run on the same
-system.
-
---ksAClhgkgYP1BOgI
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKfoEsACgkQJNaLcl1U
-h9CbXgf/UP1xlHdcxsSMcl+dOuHtQVClDCrw8ssMEZoh5P0ptx96m8VaEPkVF/pU
-64Y/IH4gv/ROwEXDSIT9ExPMBg4J0kTvOl08x+bnUl3oQUopPOC65uA03hOkI9V1
-ygSjgh6WlNl6sT8mKOPRluz85uEGgzlGQviAdXhe/WvMSpYRkeQwScD61qJYE0Ur
-yO+goydPHRmt/kNT/fqTypQ0wKu5n0j4LzIxcKN+4ovTJiNj4jdnoPLwtr+iVDVR
-5n2ze8TBEUuL2Elh0d2qWqc6DXDm/2OelFLCx03gVdkr6ahg62/QOTRnJzz2Vhgp
-SINDFI1pJt2+4f+R/poMsQxOUOvdPA==
-=d5Wn
------END PGP SIGNATURE-----
-
---ksAClhgkgYP1BOgI--
