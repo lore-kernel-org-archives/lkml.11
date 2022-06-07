@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 217A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30858C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382799AbiFGWEh (ORCPT
+        id S1382836AbiFGWEr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50204 "EHLO
+        Tue, 7 Jun 2022 18:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378863AbiFGVDj (ORCPT
+        with ESMTP id S1378831AbiFGVBv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:03:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E6F18A879;
-        Tue,  7 Jun 2022 11:48:42 -0700 (PDT)
+        Tue, 7 Jun 2022 17:01:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D0C20ED6E;
+        Tue,  7 Jun 2022 11:45:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 199296156D;
-        Tue,  7 Jun 2022 18:48:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26177C385A2;
-        Tue,  7 Jun 2022 18:48:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79B35B822C0;
+        Tue,  7 Jun 2022 18:45:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED857C385A2;
+        Tue,  7 Jun 2022 18:45:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627721;
-        bh=24/+sW6Sob7YMv6wVRkObr+QQ67G3CdFjp9sCUgysVY=;
+        s=korg; t=1654627543;
+        bh=rcBjoiXgO+z+OvXdXoESTU8m02RbV16e9JWR3eqW3Y8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B8gAGp9vy41VWHqzJZLHlRr2Pqdq2Iy9ioDIXun/6+4PEJQsmueBm75gFttbqt5Yg
-         tNMg2N6AKdVlJWcNOyP1UC6HpXdHJY6SNnn4C6bXsWONS/4lI/uQ3fxIiQMVxLybo+
-         cF0rodDs4sCczl5tqsCJHVL+TNZz5rl44J5Sqt+8=
+        b=K4PxKF+42Zqk2L8Z10unwjjb5TpLHDJKjBsE193liOMwZ3VHFXM9SWbHAkUK64VTu
+         aVNumWTmoCGbBDpH2cFbR9lvUFhiJAxeJHPY9pqIxkcOgQFvb+gUX8p6al05a9Oo64
+         FgLM+6FAxMY4D7g5/mbJrzzLZ7Qt0Su8oRh5gFSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.18 028/879] fs/ntfs3: Update i_ctime when xattr is added
-Date:   Tue,  7 Jun 2022 18:52:26 +0200
-Message-Id: <20220607165003.492806765@linuxfoundation.org>
+        stable@vger.kernel.org, Kathiravan T <quic_kathirav@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.17 740/772] arm64: dts: qcom: ipq8074: fix the sleep clock frequency
+Date:   Tue,  7 Jun 2022 19:05:32 +0200
+Message-Id: <20220607165010.841134537@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,31 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+From: Kathiravan T <quic_kathirav@quicinc.com>
 
-commit 2d44667c306e7806848a3478820f87343feb5421 upstream.
+commit f607dd767f5d6800ffbdce5b99ba81763b023781 upstream.
 
-Ctime wasn't updated after setfacl command.
-This commit fixes xfstest generic/307
-Fixes: be71b5cba2e6 ("fs/ntfs3: Add attrib operations")
+Sleep clock frequency should be 32768Hz. Lets fix it.
 
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Cc: stable@vger.kernel.org
+Fixes: 41dac73e243d ("arm64: dts: Add ipq8074 SoC and HK01 board support")
+Link: https://lore.kernel.org/all/e2a447f8-6024-0369-f698-2027b6edcf9e@codeaurora.org/
+Signed-off-by: Kathiravan T <quic_kathirav@quicinc.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1644581655-11568-1-git-send-email-quic_kathirav@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/xattr.c |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ntfs3/xattr.c
-+++ b/fs/ntfs3/xattr.c
-@@ -902,6 +902,9 @@ set_new_fa:
- 	err = ntfs_set_ea(inode, name, name_len, value, size, flags);
- 
- out:
-+	inode->i_ctime = current_time(inode);
-+	mark_inode_dirty(inode);
-+
- 	return err;
- }
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -13,7 +13,7 @@
+ 	clocks {
+ 		sleep_clk: sleep_clk {
+ 			compatible = "fixed-clock";
+-			clock-frequency = <32000>;
++			clock-frequency = <32768>;
+ 			#clock-cells = <0>;
+ 		};
  
 
 
