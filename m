@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C3F1C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DD61C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383222AbiFGWkQ (ORCPT
+        id S1383028AbiFGWkI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44152 "EHLO
+        Tue, 7 Jun 2022 18:40:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379528AbiFGVZq (ORCPT
+        with ESMTP id S1379087AbiFGVZL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:25:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F5522871B;
-        Tue,  7 Jun 2022 12:01:52 -0700 (PDT)
+        Tue, 7 Jun 2022 17:25:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF716150B5D;
+        Tue,  7 Jun 2022 12:01:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 019CAB8220B;
-        Tue,  7 Jun 2022 19:01:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EB63C385A5;
-        Tue,  7 Jun 2022 19:01:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8991861768;
+        Tue,  7 Jun 2022 19:01:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98FDFC385A2;
+        Tue,  7 Jun 2022 19:01:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628509;
-        bh=LQq/7blpbZyhfx4zRTEyWiRAUMsgZCLnSCZeVlsS+RE=;
+        s=korg; t=1654628490;
+        bh=EFyZopC0NhI4QmX1Xz/RSlu+pmSVcB0t0WKz9AarTs8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I+FAD5ANiGV5TI/769ITUsqdpOzN998TTd+wuBzq4jhuNPnEldtpmD21sXL3iXc4k
-         3ZP1pl4ufwAR4FBEhRaHvq3TsgWMY8nsUZHpYLP75gV6G49AM7u+F3OpxFxEYUD4gB
-         e1/ifH3KQXmeQDQMWO491Bo6t658pF8W8nnCx/pY=
+        b=dc74W2XsOxZWDeWMsHoXLNRWrcNxfXgFm9mVu6XpvNO798XbVPyMFCZd1efBv5cRV
+         9+lZh7e8gy1JWseBbI/QhgjmYfo9/mplJzyAnid9F+qW8ez/YXWf1sTMapnDhvxUgn
+         rEvdfnc8fhogB+hJGrmOicRPfoQuj59Xu960olGg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        Adam Ward <Adam.Ward.Opensource@diasemi.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 328/879] regulator: da9121: Fix uninit-value in da9121_assign_chip_model()
-Date:   Tue,  7 Jun 2022 18:57:26 +0200
-Message-Id: <20220607165012.374554430@linuxfoundation.org>
+        stable@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
+        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 348/879] inotify: show inotify mask flags in proc fdinfo
+Date:   Tue,  7 Jun 2022 18:57:46 +0200
+Message-Id: <20220607165012.962358623@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,59 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Amir Goldstein <amir73il@gmail.com>
 
-[ Upstream commit bab76514aca36bc513224525d5598da676938218 ]
+[ Upstream commit a32e697cda27679a0327ae2cafdad8c7170f548f ]
 
-KASAN report slab-out-of-bounds in __regmap_init as follows:
+The inotify mask flags IN_ONESHOT and IN_EXCL_UNLINK are not "internal
+to kernel" and should be exposed in procfs fdinfo so CRIU can restore
+them.
 
-BUG: KASAN: slab-out-of-bounds in __regmap_init drivers/base/regmap/regmap.c:841
-Read of size 1 at addr ffff88803678cdf1 by task xrun/9137
-
-CPU: 0 PID: 9137 Comm: xrun Tainted: G        W         5.18.0-rc2
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x15a lib/dump_stack.c:88
- print_report.cold+0xcd/0x69b mm/kasan/report.c:313
- kasan_report+0x8e/0xc0 mm/kasan/report.c:491
- __regmap_init+0x4540/0x4ba0 drivers/base/regmap/regmap.c:841
- __devm_regmap_init+0x7a/0x100 drivers/base/regmap/regmap.c:1266
- __devm_regmap_init_i2c+0x65/0x80 drivers/base/regmap/regmap-i2c.c:394
- da9121_i2c_probe+0x386/0x6d1 drivers/regulator/da9121-regulator.c:1039
- i2c_device_probe+0x959/0xac0 drivers/i2c/i2c-core-base.c:563
-
-This happend when da9121 device is probe by da9121_i2c_id, but with
-invalid dts. Thus, chip->subvariant_id is set to -EINVAL, and later
-da9121_assign_chip_model() will access 'regmap' without init it.
-
-Fix it by return -EINVAL from da9121_assign_chip_model() if
-'chip->subvariant_id' is invalid.
-
-Fixes: f3fbd5566f6a ("regulator: da9121: Add device variants")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Reviewed-by: Adam Ward <Adam.Ward.Opensource@diasemi.com>
-Link: https://lore.kernel.org/r/20220421090335.1876149-1-weiyongjun1@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 6933599697c9 ("inotify: hide internal kernel bits from fdinfo")
+Link: https://lore.kernel.org/r/20220422120327.3459282-2-amir73il@gmail.com
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/da9121-regulator.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/notify/fdinfo.c               | 11 ++---------
+ fs/notify/inotify/inotify.h      | 12 ++++++++++++
+ fs/notify/inotify/inotify_user.c |  2 +-
+ 3 files changed, 15 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/regulator/da9121-regulator.c b/drivers/regulator/da9121-regulator.c
-index eb9df485bd8a..76e0e23bf598 100644
---- a/drivers/regulator/da9121-regulator.c
-+++ b/drivers/regulator/da9121-regulator.c
-@@ -1030,6 +1030,8 @@ static int da9121_assign_chip_model(struct i2c_client *i2c,
- 		chip->variant_id = DA9121_TYPE_DA9142;
- 		regmap = &da9121_2ch_regmap_config;
- 		break;
-+	default:
-+		return -EINVAL;
- 	}
+diff --git a/fs/notify/fdinfo.c b/fs/notify/fdinfo.c
+index 57f0d5d9f934..3451708fd035 100644
+--- a/fs/notify/fdinfo.c
++++ b/fs/notify/fdinfo.c
+@@ -83,16 +83,9 @@ static void inotify_fdinfo(struct seq_file *m, struct fsnotify_mark *mark)
+ 	inode_mark = container_of(mark, struct inotify_inode_mark, fsn_mark);
+ 	inode = igrab(fsnotify_conn_inode(mark->connector));
+ 	if (inode) {
+-		/*
+-		 * IN_ALL_EVENTS represents all of the mask bits
+-		 * that we expose to userspace.  There is at
+-		 * least one bit (FS_EVENT_ON_CHILD) which is
+-		 * used only internally to the kernel.
+-		 */
+-		u32 mask = mark->mask & IN_ALL_EVENTS;
+-		seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:%x ",
++		seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:0 ",
+ 			   inode_mark->wd, inode->i_ino, inode->i_sb->s_dev,
+-			   mask, mark->ignored_mask);
++			   inotify_mark_user_mask(mark));
+ 		show_mark_fhandle(m, inode);
+ 		seq_putc(m, '\n');
+ 		iput(inode);
+diff --git a/fs/notify/inotify/inotify.h b/fs/notify/inotify/inotify.h
+index 2007e3711916..8f00151eb731 100644
+--- a/fs/notify/inotify/inotify.h
++++ b/fs/notify/inotify/inotify.h
+@@ -22,6 +22,18 @@ static inline struct inotify_event_info *INOTIFY_E(struct fsnotify_event *fse)
+ 	return container_of(fse, struct inotify_event_info, fse);
+ }
  
- 	/* Set these up for of_regulator_match call which may want .of_map_modes */
++/*
++ * INOTIFY_USER_FLAGS represents all of the mask bits that we expose to
++ * userspace.  There is at least one bit (FS_EVENT_ON_CHILD) which is
++ * used only internally to the kernel.
++ */
++#define INOTIFY_USER_MASK (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK)
++
++static inline __u32 inotify_mark_user_mask(struct fsnotify_mark *fsn_mark)
++{
++	return fsn_mark->mask & INOTIFY_USER_MASK;
++}
++
+ extern void inotify_ignored_and_remove_idr(struct fsnotify_mark *fsn_mark,
+ 					   struct fsnotify_group *group);
+ extern int inotify_handle_inode_event(struct fsnotify_mark *inode_mark,
+diff --git a/fs/notify/inotify/inotify_user.c b/fs/notify/inotify/inotify_user.c
+index 54583f62dc44..3ef57db0ec9d 100644
+--- a/fs/notify/inotify/inotify_user.c
++++ b/fs/notify/inotify/inotify_user.c
+@@ -110,7 +110,7 @@ static inline __u32 inotify_arg_to_mask(struct inode *inode, u32 arg)
+ 		mask |= FS_EVENT_ON_CHILD;
+ 
+ 	/* mask off the flags used to open the fd */
+-	mask |= (arg & (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK));
++	mask |= (arg & INOTIFY_USER_MASK);
+ 
+ 	return mask;
+ }
 -- 
 2.35.1
 
