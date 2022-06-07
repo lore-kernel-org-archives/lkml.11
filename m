@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A901CCCA49A
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49544CCA49F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351950AbiFGSZP (ORCPT
+        id S1352363AbiFGS0D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32902 "EHLO
+        Tue, 7 Jun 2022 14:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350898AbiFGSB3 (ORCPT
+        with ESMTP id S1351233AbiFGSBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:01:29 -0400
+        Tue, 7 Jun 2022 14:01:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF9A14CDC2;
-        Tue,  7 Jun 2022 10:43:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998BF150B50;
+        Tue,  7 Jun 2022 10:44:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 837CC6159B;
-        Tue,  7 Jun 2022 17:43:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CD22C385A5;
-        Tue,  7 Jun 2022 17:43:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC6F8615B1;
+        Tue,  7 Jun 2022 17:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD5DEC385A5;
+        Tue,  7 Jun 2022 17:44:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623807;
-        bh=7jqS2tTlnNZbrQ98eK9OJ7pRMtBHKuwDuhlgk5Xc4Sk=;
+        s=korg; t=1654623846;
+        bh=KcMfdVrPS5sBaTos33sAmjiggMA4Goon5JHj92fmjP8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kvbIN+tA3AqU/ybwHqjTdzgHvwq+P1ZpePkMZhA1YAeU7qoFdqqG9ZrV2/+kUeCwV
-         hJ1bRAsvI1XR8VAhwKqLvBrQUWI20gCWmewca5bppzwtgwWpRw+x/znxP6RZDw7zGG
-         tasrd/Sm9l942h8skBEwcfJSPN8bhDo/GfBcH8l0=
+        b=0x3i8H3gvs9ywwz6mPAeI0NXsbSxoiZaiWRhpdAjW7zRus4JITm500eQ70QovU7gV
+         eOyUZAjOHKUdIfcfrqyxg8jbnEfnZiFWS7ZbHBK2/HcfTek5okIx3W3BcozJIQI3E1
+         rvP8D/Q5IPX0TfsIOZ57qO2DZYp123xrmZIzbg1s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
         Dongliang Mu <mudongliangabcd@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 100/667] HID: bigben: fix slab-out-of-bounds Write in bigben_probe
-Date:   Tue,  7 Jun 2022 18:56:05 +0200
-Message-Id: <20220607164937.822068896@linuxfoundation.org>
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 113/667] rtlwifi: Use pr_warn instead of WARN_ONCE
+Date:   Tue,  7 Jun 2022 18:56:18 +0200
+Message-Id: <20220607164938.211783979@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,39 +52,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit fc4ef9d5724973193bfa5ebed181dba6de3a56db ]
+[ Upstream commit ad732da434a2936128769216eddaece3b1af4588 ]
 
-There is a slab-out-of-bounds Write bug in hid-bigbenff driver.
-The problem is the driver assumes the device must have an input but
-some malicious devices violate this assumption.
+This memory allocation failure can be triggered by fault injection or
+high pressure testing, resulting a WARN.
 
-Fix this by checking hid_device's input is non-empty before its usage.
+Fix this by replacing WARN with pr_warn.
 
 Reported-by: syzkaller <syzkaller@googlegroups.com>
 Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220511014453.1621366-1-dzm91@hust.edu.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-bigbenff.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/wireless/realtek/rtlwifi/usb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/hid/hid-bigbenff.c b/drivers/hid/hid-bigbenff.c
-index 74ad8bf98bfd..e8c5e3ac9fff 100644
---- a/drivers/hid/hid-bigbenff.c
-+++ b/drivers/hid/hid-bigbenff.c
-@@ -347,6 +347,12 @@ static int bigben_probe(struct hid_device *hid,
- 	bigben->report = list_entry(report_list->next,
- 		struct hid_report, list);
- 
-+	if (list_empty(&hid->inputs)) {
-+		hid_err(hid, "no inputs found\n");
-+		error = -ENODEV;
-+		goto error_hw_stop;
-+	}
-+
- 	hidinput = list_first_entry(&hid->inputs, struct hid_input, list);
- 	set_bit(FF_RUMBLE, hidinput->input->ffbit);
- 
+diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
+index 86a236873254..a8eebafb9a7e 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/usb.c
++++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
+@@ -1014,7 +1014,7 @@ int rtl_usb_probe(struct usb_interface *intf,
+ 	hw = ieee80211_alloc_hw(sizeof(struct rtl_priv) +
+ 				sizeof(struct rtl_usb_priv), &rtl_ops);
+ 	if (!hw) {
+-		WARN_ONCE(true, "rtl_usb: ieee80211 alloc failed\n");
++		pr_warn("rtl_usb: ieee80211 alloc failed\n");
+ 		return -ENOMEM;
+ 	}
+ 	rtlpriv = hw->priv;
 -- 
 2.35.1
 
