@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D825FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0708DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349865AbiFGV2B (ORCPT
+        id S1379529AbiFGV2M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:28:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
+        Tue, 7 Jun 2022 17:28:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377770AbiFGUeE (ORCPT
+        with ESMTP id S1377729AbiFGUeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:04 -0400
+        Tue, 7 Jun 2022 16:34:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A26F1E73D5;
-        Tue,  7 Jun 2022 11:35:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3F31E7348;
+        Tue,  7 Jun 2022 11:35:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70A78612F2;
-        Tue,  7 Jun 2022 18:35:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FFFAC385A2;
-        Tue,  7 Jun 2022 18:35:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9547461579;
+        Tue,  7 Jun 2022 18:35:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3A9BC385A5;
+        Tue,  7 Jun 2022 18:35:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626958;
-        bh=+K1lCRNxqNUDo7RhKYAXGxU/yjFx0irCjRgVthz9R/w=;
+        s=korg; t=1654626948;
+        bh=cDGXQDzvZnIg4L2nHZB3SGryb9zKYnI5rFK0O1CZtEY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mCLK0uZWMYpUpg5H1uQUKsKu072676cw3Vd7WdkubzyP7uDpZt/NU46qLVYkr2pHU
-         ++RMdd8SCQjpFW0VFTICRp25FY5TR6Vv3YFUSqd6m6VLARFZ0dxzGyZ0+nHcAPvirP
-         k5IJ68wBMQMTH7dNA6akH5q5THUprGQF+qx8fB5w=
+        b=BCIkmfdiYWaVSRyPAvLXHLz/anuNCqeMtl/6jrRveQ9lm3yhA0qSw6Mp2VEXyijOy
+         qCwEimQDy4D2BYGgPaEUnvpDFMuHHIez/0OYlzeYWZv8ou51LBx2B9OibOLGCIIW27
+         ZZGFFXpyeL+mHI197aoQxeolWkucI5GHtonrzats=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>, Joerg Roedel <jroedel@suse.de>,
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 567/772] iommu/amd: Enable swiotlb in all cases
-Date:   Tue,  7 Jun 2022 19:02:39 +0200
-Message-Id: <20220607165005.662800332@linuxfoundation.org>
+Subject: [PATCH 5.17 521/772] ASoC: atmel-pdmic: Remove endianness flag on pdmic component
+Date:   Tue,  7 Jun 2022 19:01:53 +0200
+Message-Id: <20220607165004.329655752@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,64 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 121660bba631104154b7c15e88f208c48c8c3297 ]
+[ Upstream commit 52857c3baa0e5ddeba7b2c84e56bb71c9674e048 ]
 
-Previously the AMD IOMMU would only enable SWIOTLB in certain
-circumstances:
- * IOMMU in passthrough mode
- * SME enabled
+The endianness flag should have been removed when the driver was
+ported across from having both a CODEC and CPU side component, to
+just having a CPU component and using the dummy for the CODEC. The
+endianness flag is used to indicate that the device is completely
+ambivalent to the endianness of the data, typically due to the
+endianness being lost over the hardware link (ie. the link defines
+bit ordering). It's usage didn't have any effect when the driver
+had both a CPU and CODEC component, since the union of those equals
+the CPU side settings, but now causes the driver to falsely report
+it supports big endian. Correct this by removing the flag.
 
-This logic however doesn't work when an untrusted device is plugged in
-that doesn't do page aligned DMA transactions.  The expectation is
-that a bounce buffer is used for those transactions.
-
-This fails like this:
-
-swiotlb buffer is full (sz: 4096 bytes), total 0 (slots), used 0 (slots)
-
-That happens because the bounce buffers have been allocated, followed by
-freed during startup but the bounce buffering code expects that all IOMMUs
-have left it enabled.
-
-Remove the criteria to set up bounce buffers on AMD systems to ensure
-they're always available for supporting untrusted devices.
-
-Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
-Suggested-by: Christoph Hellwig <hch@infradead.org>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220404204723.9767-2-mario.limonciello@amd.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Fixes: f3c668074a04 ("ASoC: atmel-pdmic: remove codec component")
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220504170905.332415-3-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/amd/iommu.c | 7 -------
- 1 file changed, 7 deletions(-)
+ sound/soc/atmel/atmel-pdmic.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index a18b549951bb..74c4ae85e41e 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1838,17 +1838,10 @@ void amd_iommu_domain_update(struct protection_domain *domain)
- 	amd_iommu_domain_flush_complete(domain);
- }
+diff --git a/sound/soc/atmel/atmel-pdmic.c b/sound/soc/atmel/atmel-pdmic.c
+index 42117de299e7..ea34efac2fff 100644
+--- a/sound/soc/atmel/atmel-pdmic.c
++++ b/sound/soc/atmel/atmel-pdmic.c
+@@ -481,7 +481,6 @@ static const struct snd_soc_component_driver atmel_pdmic_cpu_dai_component = {
+ 	.num_controls		= ARRAY_SIZE(atmel_pdmic_snd_controls),
+ 	.idle_bias_on		= 1,
+ 	.use_pmdown_time	= 1,
+-	.endianness		= 1,
+ };
  
--static void __init amd_iommu_init_dma_ops(void)
--{
--	swiotlb = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
--}
--
- int __init amd_iommu_init_api(void)
- {
- 	int err;
- 
--	amd_iommu_init_dma_ops();
--
- 	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
- 	if (err)
- 		return err;
+ /* ASoC sound card */
 -- 
 2.35.1
 
