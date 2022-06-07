@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D26E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:44:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21826C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:44:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347552AbiFGRoG (ORCPT
+        id S1345441AbiFGRoU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53196 "EHLO
+        Tue, 7 Jun 2022 13:44:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347947AbiFGRbZ (ORCPT
+        with ESMTP id S1347936AbiFGRbX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D42E11CA22;
-        Tue,  7 Jun 2022 10:28:53 -0700 (PDT)
+        Tue, 7 Jun 2022 13:31:23 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062EB11CB48;
+        Tue,  7 Jun 2022 10:28:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D779BB82285;
-        Tue,  7 Jun 2022 17:28:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DA95C34115;
-        Tue,  7 Jun 2022 17:28:50 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 75CCDCE23D0;
+        Tue,  7 Jun 2022 17:28:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BB6CC385A5;
+        Tue,  7 Jun 2022 17:28:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622930;
-        bh=DtHJIM0o0kZFOpi+gNqdluDzT/TvC0d1gsK1qWbUl+c=;
+        s=korg; t=1654622927;
+        bh=GZ1iR0fIvOKJSYdWQ6afDonHcNyO9EnM5YTlpgdNY/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lF7ecVSEAgOf80oJkXLHlGAEAtTfqymtGU1PCYq51C9awWda4RVbqwy6zRbOumUIN
-         GB8anvEtnwkAbXIK7MjAB3PG1gS/KeLnWH8iE19yHGf3bQegWafapFlEtFMYQM69TG
-         vaPY9bPpceYmazS41ZR6Ndd0vyBpFET7j+a9frWQ=
+        b=JWudSFdGuh7gJPaFDNY/Zr5UcBcDP+HcZUtFOApffyBcSDkKrsKSiASnJILkTYU8F
+         z+4UoQwuWqZ8+wnNZKM2wkw7NtljOklnA0C8BP14pa4mlmGKeeKqwr/CKsJD34Tarf
+         45G4k8vqJlGp0LFkp7/6xwkNc+kWr052NBYbhSWg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Ritesh Harjani <ritesh.list@gmail.com>,
-        Lukas Czerner <lczerner@redhat.com>,
+        stable@vger.kernel.org, Jonas Karlman <jonas@kwiboo.se>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Ezequiel Garcia <ezequiel@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 233/452] ext4: reject the commit option on ext2 filesystems
-Date:   Tue,  7 Jun 2022 19:01:30 +0200
-Message-Id: <20220607164915.505202877@linuxfoundation.org>
+Subject: [PATCH 5.10 232/452] media: rkvdec: h264: Fix bit depth wrap in pps packet
+Date:   Tue,  7 Jun 2022 19:01:29 +0200
+Message-Id: <20220607164915.475815365@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,38 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Jonas Karlman <jonas@kwiboo.se>
 
-[ Upstream commit cb8435dc8ba33bcafa41cf2aa253794320a3b8df ]
+[ Upstream commit a074aa4760d1dad0bd565c0f66e7250f5f219ab0 ]
 
-The 'commit' option is only applicable for ext3 and ext4 filesystems,
-and has never been accepted by the ext2 filesystem driver, so the ext4
-driver shouldn't allow it on ext2 filesystems.
+The luma and chroma bit depth fields in the pps packet are 3 bits wide.
+8 is wrongly added to the bit depth values written to these 3 bit fields.
+Because only the 3 LSB are written, the hardware was configured
+correctly.
 
-This fixes a failure in xfstest ext4/053.
+Correct this by not adding 8 to the luma and chroma bit depth value.
 
-Fixes: 8dc0aa8cf0f7 ("ext4: check incompatible mount options while mounting ext2/3")
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
-Reviewed-by: Lukas Czerner <lczerner@redhat.com>
-Link: https://lore.kernel.org/r/20220510183232.172615-1-ebiggers@kernel.org
+Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Reviewed-by: Ezequiel Garcia <ezequiel@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/super.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/media/rkvdec/rkvdec-h264.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 3e26edeca8c7..35d990adefc6 100644
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -1960,6 +1960,7 @@ static const struct mount_opts {
- 	 MOPT_EXT4_ONLY | MOPT_CLEAR},
- 	{Opt_warn_on_error, EXT4_MOUNT_WARN_ON_ERROR, MOPT_SET},
- 	{Opt_nowarn_on_error, EXT4_MOUNT_WARN_ON_ERROR, MOPT_CLEAR},
-+	{Opt_commit, 0, MOPT_NO_EXT2},
- 	{Opt_nojournal_checksum, EXT4_MOUNT_JOURNAL_CHECKSUM,
- 	 MOPT_EXT4_ONLY | MOPT_CLEAR},
- 	{Opt_journal_checksum, EXT4_MOUNT_JOURNAL_CHECKSUM,
+diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
+index 52ffa31f08ac..7013f7ce3678 100644
+--- a/drivers/staging/media/rkvdec/rkvdec-h264.c
++++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
+@@ -662,8 +662,8 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
+ 	WRITE_PPS(0xff, PROFILE_IDC);
+ 	WRITE_PPS(1, CONSTRAINT_SET3_FLAG);
+ 	WRITE_PPS(sps->chroma_format_idc, CHROMA_FORMAT_IDC);
+-	WRITE_PPS(sps->bit_depth_luma_minus8 + 8, BIT_DEPTH_LUMA);
+-	WRITE_PPS(sps->bit_depth_chroma_minus8 + 8, BIT_DEPTH_CHROMA);
++	WRITE_PPS(sps->bit_depth_luma_minus8, BIT_DEPTH_LUMA);
++	WRITE_PPS(sps->bit_depth_chroma_minus8, BIT_DEPTH_CHROMA);
+ 	WRITE_PPS(0, QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG);
+ 	WRITE_PPS(sps->log2_max_frame_num_minus4, LOG2_MAX_FRAME_NUM_MINUS4);
+ 	WRITE_PPS(sps->max_num_ref_frames, MAX_NUM_REF_FRAMES);
 -- 
 2.35.1
 
