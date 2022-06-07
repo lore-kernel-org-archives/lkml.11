@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 385FDCCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A78CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381897AbiFGVpa (ORCPT
+        id S1381881AbiFGVpX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:45:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
+        Tue, 7 Jun 2022 17:45:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378985AbiFGUwq (ORCPT
+        with ESMTP id S1378982AbiFGUwq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:52:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF6D5EBFC;
-        Tue,  7 Jun 2022 11:43:32 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D90B5DD18;
+        Tue,  7 Jun 2022 11:43:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E3DE660B3D;
-        Tue,  7 Jun 2022 18:43:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2C8BC385A2;
-        Tue,  7 Jun 2022 18:43:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CDDA4B82018;
+        Tue,  7 Jun 2022 18:43:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A11AC385A5;
+        Tue,  7 Jun 2022 18:43:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627411;
-        bh=e5c3CxGrpbc0Jirl6dkEelSrmn2mfAXYagN8IL4SVRg=;
+        s=korg; t=1654627408;
+        bh=MLkY1OvX2VTXtWkd4B2hKU9SxPB0F0RJYdX5ADWhvgw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NfaRmVWzwfrr0QrA9e6B7hPzcwkQgLlXgieHvScPps5yhKCbUIaGbZgZ2HWLVbjNR
-         4RuoHm3EFkcdhtRDwq/BRw5TOV0m6va2554GkN2KRpfoZOOZAGFJW3cXM1v4dVNgOm
-         tpvGGRQxaxq4fzrsso8P5VH6RocbdzRJS2sIfTz8=
+        b=MESPoffPnVZJv0vEZT4cstW9C2cbGwnmDYkftCm3STc9zfQlWHu/8kpEO7hV36SKc
+         s12LtS92pUQcQ1dzJSBh5FF3JMtxDeqobAHyxA4GC7l4DRdFo+s61RXInh08DzCfei
+         YZyWuplz2AArz9Z6GDOEgt6IX//TPRa29GRJJSrw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Yang <yiyang13@huawei.com>,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.17 728/772] xtensa/simdisk: fix proc_read_simdisk()
-Date:   Tue,  7 Jun 2022 19:05:20 +0200
-Message-Id: <20220607165010.493623154@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 5.17 692/772] drm/nouveau/clk: Fix an incorrect NULL check on list iterator
+Date:   Tue,  7 Jun 2022 19:04:44 +0200
+Message-Id: <20220607165009.444085967@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,56 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yi Yang <yiyang13@huawei.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit b011946d039d66bbc7102137e98cc67e1356aa87 upstream.
+commit 1c3b2a27def609473ed13b1cd668cb10deab49b4 upstream.
 
-The commit a69755b18774 ("xtensa simdisk: switch to proc_create_data()")
-split read operation into two parts, first retrieving the path when it's
-non-null and second retrieving the trailing '\n'. However when the path
-is non-null the first simple_read_from_buffer updates ppos, and the
-second simple_read_from_buffer returns 0 if ppos is greater than 1 (i.e.
-almost always). As a result reading from that proc file is almost always
-empty.
+The bug is here:
+	if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
+		return cstate;
 
-Fix it by making a temporary copy of the path with the trailing '\n' and
-using simple_read_from_buffer on that copy.
+The list iterator value 'cstate' will *always* be set and non-NULL
+by list_for_each_entry_from_reverse(), so it is incorrect to assume
+that the iterator value will be unchanged if the list is empty or no
+element is found (In fact, it will be a bogus pointer to an invalid
+structure object containing the HEAD). Also it missed a NULL check
+at callsite and may lead to invalid memory access after that.
+
+To fix this bug, just return 'encoder' when found, otherwise return
+NULL. And add the NULL check.
 
 Cc: stable@vger.kernel.org
-Fixes: a69755b18774 ("xtensa simdisk: switch to proc_create_data()")
-Signed-off-by: Yi Yang <yiyang13@huawei.com>
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Fixes: 1f7f3d91ad38a ("drm/nouveau/clk: Respect voltage limits in nvkm_cstate_prog")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220327075824.11806-1-xiam0nd.tong@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/platforms/iss/simdisk.c |   18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/arch/xtensa/platforms/iss/simdisk.c
-+++ b/arch/xtensa/platforms/iss/simdisk.c
-@@ -211,12 +211,18 @@ static ssize_t proc_read_simdisk(struct
- 	struct simdisk *dev = pde_data(file_inode(file));
- 	const char *s = dev->filename;
- 	if (s) {
--		ssize_t n = simple_read_from_buffer(buf, size, ppos,
--							s, strlen(s));
--		if (n < 0)
--			return n;
--		buf += n;
--		size -= n;
-+		ssize_t len = strlen(s);
-+		char *temp = kmalloc(len + 2, GFP_KERNEL);
-+
-+		if (!temp)
-+			return -ENOMEM;
-+
-+		len = scnprintf(temp, len + 2, "%s\n", s);
-+		len = simple_read_from_buffer(buf, size, ppos,
-+					      temp, len);
-+
-+		kfree(temp);
-+		return len;
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
+@@ -135,10 +135,10 @@ nvkm_cstate_find_best(struct nvkm_clk *c
+ 
+ 	list_for_each_entry_from_reverse(cstate, &pstate->list, head) {
+ 		if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
+-			break;
++			return cstate;
  	}
- 	return simple_read_from_buffer(buf, size, ppos, "\n", 1);
+ 
+-	return cstate;
++	return NULL;
  }
+ 
+ static struct nvkm_cstate *
+@@ -169,6 +169,8 @@ nvkm_cstate_prog(struct nvkm_clk *clk, s
+ 	if (!list_empty(&pstate->list)) {
+ 		cstate = nvkm_cstate_get(clk, pstate, cstatei);
+ 		cstate = nvkm_cstate_find_best(clk, pstate, cstate);
++		if (!cstate)
++			return -EINVAL;
+ 	} else {
+ 		cstate = &pstate->base;
+ 	}
 
 
