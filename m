@@ -2,92 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C72C2BBF1
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14CB3C2BBF0
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354918AbiFGS51 (ORCPT
+        id S1354932AbiFGS5a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:57:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42104 "EHLO
+        Tue, 7 Jun 2022 14:57:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352399AbiFGSRG (ORCPT
+        with ESMTP id S1352416AbiFGSRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:06 -0400
+        Tue, 7 Jun 2022 14:17:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E52620F43;
-        Tue,  7 Jun 2022 10:51:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505812716B;
+        Tue,  7 Jun 2022 10:52:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C62BB82366;
-        Tue,  7 Jun 2022 17:51:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A4F9C34115;
-        Tue,  7 Jun 2022 17:51:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624297;
-        bh=g0oaQyRmKjYxMqGZ54+Uxj1lpZP/JlxUKgiwTG+f6pE=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA53FB82366;
+        Tue,  7 Jun 2022 17:52:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCCD5C34119;
+        Tue,  7 Jun 2022 17:51:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624320;
+        bh=aqBhceqBGhC+HNxaI5YNjyD+0ZRKEAmv1OOd4cUY2SY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=anKNJxWAgE9RXO83nVxO9jZfdCJ1c4LPqWlB8ziZIng17rwzr4/0qcDiab1jFZpZw
-         3ZC9Gn6tJhbq8GR53p1SAIPvc3ysBERcxlKTwpsY3rMpTSQXp8FyN0910UI38rnZvL
-         MXaGb9b/UEUXcQP+l1Dfc5TWvywPM6aXPcpPHw6o=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 277/667] spi: cadence-quadspi: fix Direct Access Mode disable for SoCFPGA
-Date:   Tue,  7 Jun 2022 18:59:02 +0200
-Message-Id: <20220607164943.093858303@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=WIO/KgIgI7mwWA611k4B0yOcu3Ja91pgk4SZDZuJ3xkQVpo0B8N8HEFrfOmJRgCAi
+         cFgl/HfzVsXp1O9KDhpov/SWJadfF6aYCuLeluMUVgrRJJ8hYjNcvPFTlGFpcJyQ0X
+         p18R5G32Wat0GE1QR84sRswIxVLvWN4a+0z+A28EZrKv01PAW0ljru7prAzF1w61FI
+         x1LYPIg7uRWXxptsSn+/SDN7WJii0LfsHvBKKOL1HA0aRSH38zPXg7wLSHCD1zqAlb
+         JdX/1O1FPxztGt3LoYVp3FimonQnRjw4Y8dnZB1JknmrvBzt7gNF2ieGqLSj84h6kA
+         vvFyDzIFnU+JQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Lijo Lazar <lijo.lazar@amd.com>,
+        Yang Wang <kevinyang.wang@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, kevin1.wang@amd.com, luben.tuikov@amd.com,
+        Stanley.Yang@amd.com, tao.zhou1@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 49/68] drm/amd/pm: Fix missing thermal throttler status
+Date:   Tue,  7 Jun 2022 13:48:15 -0400
+Message-Id: <20220607174846.477972-49-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ian Abbott <abbotti@mev.co.uk>
+From: Lijo Lazar <lijo.lazar@amd.com>
 
-[ Upstream commit f724c296f2f2cc3f9342b0fc26239635cbed856e ]
+[ Upstream commit b0f4d663fce6a4232d3c20ce820f919111b1c60b ]
 
-The Cadence QSPI compatible string required for the SoCFPGA platform
-changed from the default "cdns,qspi-nor" to "intel,socfpga-qspi" with
-the introduction of an additional quirk in
-commit 98d948eb8331 ("spi: cadence-quadspi: fix write completion support").
-However, that change did not preserve the previously used
-quirk for this platform.  Reinstate the `CQSPI_DISABLE_DAC_MODE` quirk
-for the SoCFPGA platform.
+On aldebaran, when thermal throttling happens due to excessive GPU
+temperature, the reason for throttling event is missed in warning
+message. This patch fixes it.
 
-Fixes: 98d948eb8331 ("spi: cadence-quadspi: fix write completion support")
-Cc: Dinh Nguyen <dinguyen@kernel.org>
-Signed-off-by: Ian Abbott <abbotti@mev.co.uk>
-Link: https://lore.kernel.org/r/20220427153446.10113-1-abbotti@mev.co.uk
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Lijo Lazar <lijo.lazar@amd.com>
+Reviewed-by: Yang Wang <kevinyang.wang@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-cadence-quadspi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
-index 2714ba02b176..cda70de38330 100644
---- a/drivers/spi/spi-cadence-quadspi.c
-+++ b/drivers/spi/spi-cadence-quadspi.c
-@@ -1660,7 +1660,7 @@ static const struct cqspi_driver_platdata intel_lgm_qspi = {
- };
- 
- static const struct cqspi_driver_platdata socfpga_qspi = {
--	.quirks = CQSPI_NO_SUPPORT_WR_COMPLETION,
-+	.quirks = CQSPI_DISABLE_DAC_MODE | CQSPI_NO_SUPPORT_WR_COMPLETION,
- };
- 
- static const struct of_device_id cqspi_dt_ids[] = {
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
+index cd81f848d45a..7f998f24af81 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
+@@ -1664,6 +1664,7 @@ static const struct throttling_logging_label {
+ 	uint32_t feature_mask;
+ 	const char *label;
+ } logging_label[] = {
++	{(1U << THROTTLER_TEMP_GPU_BIT), "GPU"},
+ 	{(1U << THROTTLER_TEMP_MEM_BIT), "HBM"},
+ 	{(1U << THROTTLER_TEMP_VR_GFX_BIT), "VR of GFX rail"},
+ 	{(1U << THROTTLER_TEMP_VR_MEM_BIT), "VR of HBM rail"},
 -- 
 2.35.1
-
-
 
