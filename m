@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91CACCCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6047AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:56:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378314AbiFGU4G (ORCPT
+        id S1358345AbiFGU4T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50072 "EHLO
+        Tue, 7 Jun 2022 16:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358947AbiFGTxY (ORCPT
+        with ESMTP id S1358379AbiFGTw0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:53:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C5F32EDC;
-        Tue,  7 Jun 2022 11:23:08 -0700 (PDT)
+        Tue, 7 Jun 2022 15:52:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C274E27AF;
+        Tue,  7 Jun 2022 11:20:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 328A9B8237D;
-        Tue,  7 Jun 2022 18:23:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AE4CC385A2;
-        Tue,  7 Jun 2022 18:23:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4ACC76116C;
+        Tue,  7 Jun 2022 18:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A607C385A2;
+        Tue,  7 Jun 2022 18:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626186;
-        bh=zmVLlQpTiH15ShWxpAuNa8u5VbIpjW9gJqgWwSjyFMk=;
+        s=korg; t=1654626013;
+        bh=g0u/pd5I5cajoFlJAmHmEkUnMh+QPi0LxEXCIF7xBjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q4epXaNUwnj9ees8I6JLNrZ3Q4fp87rtMwkDYlmQAzsWIFbDso21G3Tvh6tyrHUs6
-         buojrHAnuUo3jeKoZ5fzZ01v9nEdULaDt2DMDJlBmLBs476XJbdWr0qckqMRmGwn7Z
-         1fxZHxH3vbAXJA5J3kzU63/GgGLFwqjvgiQFbReM=
+        b=WyQC0oInapn+Ng6dMSQVlicS6YBunZgBO6AFsWcTeyyiNwFKZx4N6K1c0jTNudmdY
+         5d6rzHhGANWnQ9651zt21z8/Dc7EfzJ9H489o+Sz79pGxTTfpKu9ccIqu+FE4wlWYp
+         p6UDk0JbcoNMSgEsN0/dsf+hJSR9MWuCgK5ihSyc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jacopo Mondi <jacopo+renesas@jmondi.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 286/772] media: i2c: max9286: Use "maxim,gpio-poc" property
-Date:   Tue,  7 Jun 2022 18:57:58 +0200
-Message-Id: <20220607164957.453846572@linuxfoundation.org>
+        stable@vger.kernel.org, Yicong Yang <yangyicong@hisilicon.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Jay Zhou <jianjay.zhou@huawei.com>
+Subject: [PATCH 5.17 209/772] PCI: Avoid pci_dev_lock() AB/BA deadlock with sriov_numvfs_store()
+Date:   Tue,  7 Jun 2022 18:56:41 +0200
+Message-Id: <20220607164955.192126670@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,251 +51,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jacopo Mondi <jacopo+renesas@jmondi.org>
+From: Yicong Yang <yangyicong@hisilicon.com>
 
-[ Upstream commit c9352df7139bc5be6642ebc8a78b40477ab32acd ]
+[ Upstream commit a91ee0e9fca9d7501286cfbced9b30a33e52740a ]
 
-The 'maxim,gpio-poc' property is used when the remote camera
-power-over-coax is controlled by one of the MAX9286 gpio lines,
-to instruct the driver about which line to use and what the line
-polarity is.
+The sysfs sriov_numvfs_store() path acquires the device lock before the
+config space access lock:
 
-Add to the max9286 driver support for parsing the newly introduced
-property and use it if available in place of the usual supply, as it is
-not possible to establish one as consumer of the max9286 gpio
-controller.
+  sriov_numvfs_store
+    device_lock                 # A (1) acquire device lock
+    sriov_configure
+      vfio_pci_sriov_configure  # (for example)
+        vfio_pci_core_sriov_configure
+          pci_disable_sriov
+            sriov_disable
+              pci_cfg_access_lock
+                pci_wait_cfg    # B (4) wait for dev->block_cfg_access == 0
 
-If the new property is present, no gpio controller is registered and
-'poc-supply' is ignored.
+Previously, pci_dev_lock() acquired the config space access lock before the
+device lock:
 
-In order to maximize code re-use, break out the max9286 gpio handling
-function so that they can be used by the gpio controller through the
-gpio-consumer API, or directly by the driver code.
+  pci_dev_lock
+    pci_cfg_access_lock
+      dev->block_cfg_access = 1 # B (2) set dev->block_cfg_access = 1
+    device_lock                 # A (3) wait for device lock
 
-Wrap the power up and power down routines to their own function to
-be able to use either the gpio line directly or the supply. This will
-make it easier to control the remote camera power at run time.
+Any path that uses pci_dev_lock(), e.g., pci_reset_function(), may
+deadlock with sriov_numvfs_store() if the operations occur in the sequence
+(1) (2) (3) (4).
 
-Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Avoid the deadlock by reversing the order in pci_dev_lock() so it acquires
+the device lock before the config space access lock, the same as the
+sriov_numvfs_store() path.
+
+[bhelgaas: combined and adapted commit log from Jay Zhou's independent
+subsequent posting:
+https://lore.kernel.org/r/20220404062539.1710-1-jianjay.zhou@huawei.com]
+Link: https://lore.kernel.org/linux-pci/1583489997-17156-1-git-send-email-yangyicong@hisilicon.com/
+Also-posted-by: Jay Zhou <jianjay.zhou@huawei.com>
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/max9286.c | 120 +++++++++++++++++++++++++++---------
- 1 file changed, 90 insertions(+), 30 deletions(-)
+ drivers/pci/pci.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/media/i2c/max9286.c b/drivers/media/i2c/max9286.c
-index eb2b8e42335b..c572eec54044 100644
---- a/drivers/media/i2c/max9286.c
-+++ b/drivers/media/i2c/max9286.c
-@@ -15,6 +15,7 @@
- #include <linux/fwnode.h>
- #include <linux/gpio/consumer.h>
- #include <linux/gpio/driver.h>
-+#include <linux/gpio/machine.h>
- #include <linux/i2c.h>
- #include <linux/i2c-mux.h>
- #include <linux/module.h>
-@@ -168,6 +169,8 @@ struct max9286_priv {
- 	u32 init_rev_chan_mv;
- 	u32 rev_chan_mv;
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index d25122fbe98a..1af69e298ac3 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -5113,19 +5113,19 @@ static int pci_reset_bus_function(struct pci_dev *dev, bool probe)
  
-+	u32 gpio_poc[2];
-+
- 	struct v4l2_ctrl_handler ctrls;
- 	struct v4l2_ctrl *pixelrate;
+ void pci_dev_lock(struct pci_dev *dev)
+ {
+-	pci_cfg_access_lock(dev);
+ 	/* block PM suspend, driver probe, etc. */
+ 	device_lock(&dev->dev);
++	pci_cfg_access_lock(dev);
+ }
+ EXPORT_SYMBOL_GPL(pci_dev_lock);
  
-@@ -1025,20 +1028,27 @@ static int max9286_setup(struct max9286_priv *priv)
+ /* Return 1 on successful lock, 0 on contention */
+ int pci_dev_trylock(struct pci_dev *dev)
+ {
+-	if (pci_cfg_access_trylock(dev)) {
+-		if (device_trylock(&dev->dev))
++	if (device_trylock(&dev->dev)) {
++		if (pci_cfg_access_trylock(dev))
+ 			return 1;
+-		pci_cfg_access_unlock(dev);
++		device_unlock(&dev->dev);
+ 	}
+ 
  	return 0;
- }
+@@ -5134,8 +5134,8 @@ EXPORT_SYMBOL_GPL(pci_dev_trylock);
  
--static void max9286_gpio_set(struct gpio_chip *chip,
--			     unsigned int offset, int value)
-+static int max9286_gpio_set(struct max9286_priv *priv, unsigned int offset,
-+			    int value)
+ void pci_dev_unlock(struct pci_dev *dev)
  {
--	struct max9286_priv *priv = gpiochip_get_data(chip);
--
- 	if (value)
- 		priv->gpio_state |= BIT(offset);
- 	else
- 		priv->gpio_state &= ~BIT(offset);
- 
--	max9286_write(priv, 0x0f, MAX9286_0X0F_RESERVED | priv->gpio_state);
-+	return max9286_write(priv, 0x0f,
-+			     MAX9286_0X0F_RESERVED | priv->gpio_state);
+-	device_unlock(&dev->dev);
+ 	pci_cfg_access_unlock(dev);
++	device_unlock(&dev->dev);
  }
- 
--static int max9286_gpio_get(struct gpio_chip *chip, unsigned int offset)
-+static void max9286_gpiochip_set(struct gpio_chip *chip,
-+				 unsigned int offset, int value)
-+{
-+	struct max9286_priv *priv = gpiochip_get_data(chip);
-+
-+	max9286_gpio_set(priv, offset, value);
-+}
-+
-+static int max9286_gpiochip_get(struct gpio_chip *chip, unsigned int offset)
- {
- 	struct max9286_priv *priv = gpiochip_get_data(chip);
- 
-@@ -1057,13 +1067,10 @@ static int max9286_register_gpio(struct max9286_priv *priv)
- 	gpio->owner = THIS_MODULE;
- 	gpio->ngpio = 2;
- 	gpio->base = -1;
--	gpio->set = max9286_gpio_set;
--	gpio->get = max9286_gpio_get;
-+	gpio->set = max9286_gpiochip_set;
-+	gpio->get = max9286_gpiochip_get;
- 	gpio->can_sleep = true;
- 
--	/* GPIO values default to high */
--	priv->gpio_state = BIT(0) | BIT(1);
--
- 	ret = devm_gpiochip_add_data(dev, gpio, priv);
- 	if (ret)
- 		dev_err(dev, "Unable to create gpio_chip\n");
-@@ -1071,6 +1078,70 @@ static int max9286_register_gpio(struct max9286_priv *priv)
- 	return ret;
- }
- 
-+static int max9286_parse_gpios(struct max9286_priv *priv)
-+{
-+	struct device *dev = &priv->client->dev;
-+	int ret;
-+
-+	/* GPIO values default to high */
-+	priv->gpio_state = BIT(0) | BIT(1);
-+
-+	/*
-+	 * Parse the "gpio-poc" vendor property. If the property is not
-+	 * specified the camera power is controlled by a regulator.
-+	 */
-+	ret = of_property_read_u32_array(dev->of_node, "maxim,gpio-poc",
-+					 priv->gpio_poc, 2);
-+	if (ret == -EINVAL) {
-+		/*
-+		 * If gpio lines are not used for the camera power, register
-+		 * a gpio controller for consumers.
-+		 */
-+		ret = max9286_register_gpio(priv);
-+		if (ret)
-+			return ret;
-+
-+		priv->regulator = devm_regulator_get(dev, "poc");
-+		if (IS_ERR(priv->regulator)) {
-+			return dev_err_probe(dev, PTR_ERR(priv->regulator),
-+					     "Unable to get PoC regulator (%ld)\n",
-+					     PTR_ERR(priv->regulator));
-+		}
-+
-+		return 0;
-+	}
-+
-+	/* If the property is specified make sure it is well formed. */
-+	if (ret || priv->gpio_poc[0] > 1 ||
-+	    (priv->gpio_poc[1] != GPIO_ACTIVE_HIGH &&
-+	     priv->gpio_poc[1] != GPIO_ACTIVE_LOW)) {
-+		dev_err(dev, "Invalid 'gpio-poc' property\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int max9286_poc_enable(struct max9286_priv *priv, bool enable)
-+{
-+	int ret;
-+
-+	/* If the regulator is not available, use gpio to control power. */
-+	if (!priv->regulator)
-+		ret = max9286_gpio_set(priv, priv->gpio_poc[0],
-+				       enable ^ priv->gpio_poc[1]);
-+	else if (enable)
-+		ret = regulator_enable(priv->regulator);
-+	else
-+		ret = regulator_disable(priv->regulator);
-+
-+	if (ret < 0)
-+		dev_err(&priv->client->dev, "Unable to turn power %s\n",
-+			enable ? "on" : "off");
-+
-+	return ret;
-+}
-+
- static int max9286_init(struct device *dev)
- {
- 	struct max9286_priv *priv;
-@@ -1080,17 +1151,14 @@ static int max9286_init(struct device *dev)
- 	client = to_i2c_client(dev);
- 	priv = i2c_get_clientdata(client);
- 
--	/* Enable the bus power. */
--	ret = regulator_enable(priv->regulator);
--	if (ret < 0) {
--		dev_err(&client->dev, "Unable to turn PoC on\n");
-+	ret = max9286_poc_enable(priv, true);
-+	if (ret)
- 		return ret;
--	}
- 
- 	ret = max9286_setup(priv);
- 	if (ret) {
- 		dev_err(dev, "Unable to setup max9286\n");
--		goto err_regulator;
-+		goto err_poc_disable;
- 	}
- 
- 	/*
-@@ -1100,7 +1168,7 @@ static int max9286_init(struct device *dev)
- 	ret = max9286_v4l2_register(priv);
- 	if (ret) {
- 		dev_err(dev, "Failed to register with V4L2\n");
--		goto err_regulator;
-+		goto err_poc_disable;
- 	}
- 
- 	ret = max9286_i2c_mux_init(priv);
-@@ -1116,8 +1184,8 @@ static int max9286_init(struct device *dev)
- 
- err_v4l2_register:
- 	max9286_v4l2_unregister(priv);
--err_regulator:
--	regulator_disable(priv->regulator);
-+err_poc_disable:
-+	max9286_poc_enable(priv, false);
- 
- 	return ret;
- }
-@@ -1288,18 +1356,10 @@ static int max9286_probe(struct i2c_client *client)
- 	 */
- 	max9286_configure_i2c(priv, false);
- 
--	ret = max9286_register_gpio(priv);
-+	ret = max9286_parse_gpios(priv);
- 	if (ret)
- 		goto err_powerdown;
- 
--	priv->regulator = devm_regulator_get(&client->dev, "poc");
--	if (IS_ERR(priv->regulator)) {
--		ret = PTR_ERR(priv->regulator);
--		dev_err_probe(&client->dev, ret,
--			      "Unable to get PoC regulator\n");
--		goto err_powerdown;
--	}
--
- 	ret = max9286_parse_dt(priv);
- 	if (ret)
- 		goto err_powerdown;
-@@ -1326,7 +1386,7 @@ static int max9286_remove(struct i2c_client *client)
- 
- 	max9286_v4l2_unregister(priv);
- 
--	regulator_disable(priv->regulator);
-+	max9286_poc_enable(priv, false);
- 
- 	gpiod_set_value_cansleep(priv->gpiod_pwdn, 0);
+ EXPORT_SYMBOL_GPL(pci_dev_unlock);
  
 -- 
 2.35.1
