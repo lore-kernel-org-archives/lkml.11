@@ -2,94 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 821B5CCA49E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54CB1CCA496
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356152AbiFGTSC (ORCPT
+        id S1355799AbiFGTRX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:18:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39812 "EHLO
+        Tue, 7 Jun 2022 15:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352091AbiFGSao (ORCPT
+        with ESMTP id S1351524AbiFGS3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:30:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C9B2144FE9;
-        Tue,  7 Jun 2022 10:55:57 -0700 (PDT)
+        Tue, 7 Jun 2022 14:29:32 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1673C179946;
+        Tue,  7 Jun 2022 10:55:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEBA4B82370;
-        Tue,  7 Jun 2022 17:55:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54DD8C385A5;
-        Tue,  7 Jun 2022 17:55:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624554;
-        bh=d5f3waSstqFwsHwR92Wq26SEDDhS6+RyUHdRiynwipA=;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0F62FCE2426;
+        Tue,  7 Jun 2022 17:55:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7578DC3411C;
+        Tue,  7 Jun 2022 17:55:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624518;
+        bh=KcOo1oA3ujYCM/X6/pxf5zQ0h3TH3jWllfC3FvL+cl8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DcN9D6iCGnc0/4fCsNP4N4xMF4IDDzsmfdNxhZ3tTCeP6hhkex/gwxJ5lUb+E4ChB
-         SXxZwOWfpQ/9wQW/qB1M7/Vnz2YmGo0nrUlijzLVcpaslc6jRyUfpZx5df7MYgXJGX
-         plwCXeAQ4GQ2IH2XweF/C3Ei3hf/cmCFSSRFjrag=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 369/667] rxrpc: Dont try to resend the request if were receiving the reply
-Date:   Tue,  7 Jun 2022 19:00:34 +0200
-Message-Id: <20220607164945.817811613@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=LJZrLbjIhV57CeYCj3DSD1begJOOKNQ4QCfZOh+FPFjbzb4mnOeNHwJvLYxRdUDaW
+         9BDY6HEHO0JUJ5eNZPjxlLIK/iZOTFXQZP0xfcwTKBCc8Ti+iBFcRMM4e5otXsa1yR
+         /LYZWnlBQoDT1i6+lbqPIFJgbk45AeQHvSzVOzClNo9v1pJzEBvDVi/l8gxytrv2LJ
+         CSjojsSenT3aZE0+1Di8XCOdKzRct71741unX+oDRkQ0/sN3QcZinK5ul1tHWHf9AR
+         VuV/4nWVSUKrxGVbciBP7xxDE19ZwZav7urGN7M9BgH+zs5xR3F+7NEIjuzHnCjQMc
+         /1QFQXf3Xw0BQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Sasha Levin <sashal@kernel.org>, jpoimboe@kernel.org,
+        jbaron@akamai.com
+Subject: [PATCH AUTOSEL 5.17 48/60] jump_label,noinstr: Avoid instrumentation for JUMP_LABEL=n builds
+Date:   Tue,  7 Jun 2022 13:52:45 -0400
+Message-Id: <20220607175259.478835-48-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 114af61f88fbe34d641b13922d098ffec4c1be1b ]
+[ Upstream commit 656d054e0a15ec327bd82801ccd58201e59f6896 ]
 
-rxrpc has a timer to trigger resending of unacked data packets in a call.
-This is not cancelled when a client call switches to the receive phase on
-the basis that most calls don't last long enough for it to ever expire.
-However, if it *does* expire after we've started to receive the reply, we
-shouldn't then go into trying to retransmit or pinging the server to find
-out if an ack got lost.
+When building x86_64 with JUMP_LABEL=n it's possible for
+instrumentation to sneak into noinstr:
 
-Fix this by skipping the resend code if we're into receiving the reply to a
-client call.
+vmlinux.o: warning: objtool: exit_to_user_mode+0x14: call to static_key_count.constprop.0() leaves .noinstr.text section
+vmlinux.o: warning: objtool: syscall_exit_to_user_mode+0x2d: call to static_key_count.constprop.0() leaves .noinstr.text section
+vmlinux.o: warning: objtool: irqentry_exit_to_user_mode+0x1b: call to static_key_count.constprop.0() leaves .noinstr.text section
 
-Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-afs@lists.infradead.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Switch to arch_ prefixed atomic to avoid the explicit instrumentation.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/call_event.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/jump_label.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index e426f6831aab..f8ecad2b730e 100644
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -406,7 +406,8 @@ void rxrpc_process_call(struct work_struct *work)
- 		goto recheck_state;
- 	}
+diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
+index 48b9b2a82767..019e55c13248 100644
+--- a/include/linux/jump_label.h
++++ b/include/linux/jump_label.h
+@@ -261,9 +261,9 @@ extern void static_key_disable_cpuslocked(struct static_key *key);
+ #include <linux/atomic.h>
+ #include <linux/bug.h>
  
--	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events)) {
-+	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events) &&
-+	    call->state != RXRPC_CALL_CLIENT_RECV_REPLY) {
- 		rxrpc_resend(call, now);
- 		goto recheck_state;
- 	}
+-static inline int static_key_count(struct static_key *key)
++static __always_inline int static_key_count(struct static_key *key)
+ {
+-	return atomic_read(&key->enabled);
++	return arch_atomic_read(&key->enabled);
+ }
+ 
+ static __always_inline void jump_label_init(void)
 -- 
 2.35.1
-
-
 
