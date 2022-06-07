@@ -2,121 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 020FDCCA495
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B328FCCA496
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357324AbiFGTly (ORCPT
+        id S1357679AbiFGTmP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:41:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49966 "EHLO
+        Tue, 7 Jun 2022 15:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354399AbiFGSq7 (ORCPT
+        with ESMTP id S1353941AbiFGSqT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F5231525;
-        Tue,  7 Jun 2022 11:01:04 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56FF18DAD1;
+        Tue,  7 Jun 2022 10:59:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA7BBB82182;
-        Tue,  7 Jun 2022 18:01:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30F4DC34115;
-        Tue,  7 Jun 2022 18:01:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624861;
-        bh=qnJP0T1+bmEA74l/tgyI47/F2KVHUGm3HiAnzF8iaI0=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF150617C4;
+        Tue,  7 Jun 2022 17:59:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EC8CC34115;
+        Tue,  7 Jun 2022 17:59:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624789;
+        bh=hN7LPJ4e0xE9JtyyG9UniMZ4fjLVO2/rkl8KphTwKpo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h/IYkSfjl4npnTWCci2oMpjeisycSum5mpoCs3pLsuThVXFt4rQVyVYcHA/1bCYJC
-         KTIZX63gmQvYp98hhp+LURYeaKZh3pBwEK3dArhStU1Ax1MZPANRpW+9rTdRJLHihL
-         AfuMHiBYXuXsefSmDKo3V3fay1xaluuOsNpkZFSs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wenqing Liu <wenqingliu0120@gmail.com>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 478/667] f2fs: fix to do sanity check on inline_dots inode
-Date:   Tue,  7 Jun 2022 19:02:23 +0200
-Message-Id: <20220607164949.037518863@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=Wv9IVnGqJ0oPLOo3uVwzw/L8Poc4jJVamcj9nPZIW09tBaJnhjxtxnV+kIKV1PlIi
+         +LwEK+tm+I/EWYTOq/f34FyHK4hJJhiybUZROdLzIuXshvra7jx2C+pJounhrVJJO+
+         uZq+M2+dKQEuPW3akhI3KVvR8A/TnGND2g67FrvgTB0NmSqO9hF9avl5cttkxnl0w+
+         dPy17Cniw+7slsIRXbQBavrFhMGM/F3aSZFfOZlbWitRYIoPD2XkKHOHj9boGMZrnu
+         YHLx2t6ElKrN9yB8CNhZzZWaDXy4JhyETnqD1Ypbt1PkJkF0P+KJEnFvymNKXnCIzr
+         cV0vCkc5Pnlmw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Hannes Reinecke <hare@suse.de>, Zheyu Ma <zheyuma97@gmail.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, hare@kernel.org,
+        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 26/38] scsi: myrb: Fix up null pointer access on myrb_cleanup()
+Date:   Tue,  7 Jun 2022 13:58:21 -0400
+Message-Id: <20220607175835.480735-26-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
+References: <20220607175835.480735-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Hannes Reinecke <hare@suse.de>
 
-[ Upstream commit 12662d19467b391b5b509ac5e9ab4f583c6dde16 ]
+[ Upstream commit f9f0a46141e2e39bedb4779c88380d1b5f018c14 ]
 
-As Wenqing reported in bugzilla:
+When myrb_probe() fails the callback might not be set, so we need to
+validate the 'disable_intr' callback in myrb_cleanup() to not cause a null
+pointer exception. And while at it do not call myrb_cleanup() if we cannot
+enable the PCI device at all.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215765
-
-It will cause a kernel panic with steps:
-- mkdir mnt
-- mount tmp40.img mnt
-- ls mnt
-
-folio_mark_dirty+0x33/0x50
-f2fs_add_regular_entry+0x541/0xad0 [f2fs]
-f2fs_add_dentry+0x6c/0xb0 [f2fs]
-f2fs_do_add_link+0x182/0x230 [f2fs]
-__recover_dot_dentries+0x2d6/0x470 [f2fs]
-f2fs_lookup+0x5af/0x6a0 [f2fs]
-__lookup_slow+0xac/0x200
-lookup_slow+0x45/0x70
-walk_component+0x16c/0x250
-path_lookupat+0x8b/0x1f0
-filename_lookup+0xef/0x250
-user_path_at_empty+0x46/0x70
-vfs_statx+0x98/0x190
-__do_sys_newlstat+0x41/0x90
-__x64_sys_newlstat+0x1a/0x30
-do_syscall_64+0x37/0xb0
-entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The root cause is for special file: e.g. character, block, fifo or
-socket file, f2fs doesn't assign address space operations pointer array
-for mapping->a_ops field, so, in a fuzzed image, if inline_dots flag was
-tagged in special file, during lookup(), when f2fs runs into
-__recover_dot_dentries(), it will cause NULL pointer access once
-f2fs_add_regular_entry() calls a_ops->set_dirty_page().
-
-Fixes: 510022a85839 ("f2fs: add F2FS_INLINE_DOTS to recover missing dot dentries")
-Reported-by: Wenqing Liu <wenqingliu0120@gmail.com>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Link: https://lore.kernel.org/r/20220523120244.99515-1-hare@suse.de
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Tested-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/namei.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/scsi/myrb.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/fs/f2fs/namei.c b/fs/f2fs/namei.c
-index a728a0af9ce0..e4b25ef871b3 100644
---- a/fs/f2fs/namei.c
-+++ b/fs/f2fs/namei.c
-@@ -460,6 +460,13 @@ static int __recover_dot_dentries(struct inode *dir, nid_t pino)
- 		return 0;
- 	}
+diff --git a/drivers/scsi/myrb.c b/drivers/scsi/myrb.c
+index 5fa0f4ed6565..ad17c2beaaca 100644
+--- a/drivers/scsi/myrb.c
++++ b/drivers/scsi/myrb.c
+@@ -1241,7 +1241,8 @@ static void myrb_cleanup(struct myrb_hba *cb)
+ 	myrb_unmap(cb);
  
-+	if (!S_ISDIR(dir->i_mode)) {
-+		f2fs_err(sbi, "inconsistent inode status, skip recovering inline_dots inode (ino:%lu, i_mode:%u, pino:%u)",
-+			  dir->i_ino, dir->i_mode, pino);
-+		set_sbi_flag(sbi, SBI_NEED_FSCK);
-+		return -ENOTDIR;
+ 	if (cb->mmio_base) {
+-		cb->disable_intr(cb->io_base);
++		if (cb->disable_intr)
++			cb->disable_intr(cb->io_base);
+ 		iounmap(cb->mmio_base);
+ 	}
+ 	if (cb->irq)
+@@ -3515,9 +3516,13 @@ static struct myrb_hba *myrb_detect(struct pci_dev *pdev,
+ 	mutex_init(&cb->dcmd_mutex);
+ 	mutex_init(&cb->dma_mutex);
+ 	cb->pdev = pdev;
++	cb->host = shost;
+ 
+-	if (pci_enable_device(pdev))
+-		goto failure;
++	if (pci_enable_device(pdev)) {
++		dev_err(&pdev->dev, "Failed to enable PCI device\n");
++		scsi_host_put(shost);
++		return NULL;
 +	}
-+
- 	err = f2fs_dquot_initialize(dir);
- 	if (err)
- 		return err;
+ 
+ 	if (privdata->hw_init == DAC960_PD_hw_init ||
+ 	    privdata->hw_init == DAC960_P_hw_init) {
 -- 
 2.35.1
-
-
 
