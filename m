@@ -2,91 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B6CCCA49B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 322DBCCA48F
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383628AbiFHAyx (ORCPT
+        id S1442169AbiFHAyD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:54:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46702 "EHLO
+        Tue, 7 Jun 2022 20:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383020AbiFGVwK (ORCPT
+        with ESMTP id S1384812AbiFGWQZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:10 -0400
-Received: from 10.mo575.mail-out.ovh.net (10.mo575.mail-out.ovh.net [46.105.79.203])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C40B192273
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:10:16 -0700 (PDT)
-Received: from player797.ha.ovh.net (unknown [10.109.156.73])
-        by mo575.mail-out.ovh.net (Postfix) with ESMTP id 66B9F244A4
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:10:15 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player797.ha.ovh.net (Postfix) with ESMTPSA id 6C1C5273DCAFE;
-        Tue,  7 Jun 2022 19:10:06 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-102R0044cfacc26-662a-4bfb-be9e-be6068cb65b5,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Helge Deller <deller@gmx.de>
-Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 3/4] backlight: ipaq_micro: Use backlight helper
-Date:   Tue,  7 Jun 2022 21:09:24 +0200
-Message-Id: <20220607190925.1134737-4-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220607190925.1134737-1-steve@sk2.org>
-References: <20220607190925.1134737-1-steve@sk2.org>
+        Tue, 7 Jun 2022 18:16:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA5D2612AC;
+        Tue,  7 Jun 2022 12:20:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB16AB823CE;
+        Tue,  7 Jun 2022 19:19:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15F69C385A2;
+        Tue,  7 Jun 2022 19:19:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629585;
+        bh=bMeP3TdBU0MLzEVLX4M4aq30+vz2kCbplZYoeO4zO3E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FxhCY1JcV4KZWHPODFqLyQ3PUahy1g5Ga0ktak1pp7b+E2qsDWI1PhIQ/bh8za0lZ
+         9P6+pBtKDwup5dFcEt7JKQk2uiBFNZI8K4Lxw4WirMkTpmJet4P0M6hFXmgG+v1TdJ
+         yW3GI7ApjQ9RlEaWV6knj9Y3aJG+bn5mvQlb+qwk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, stable@kernel.org,
+        Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.18 744/879] ext4: fix bug_on in __es_tree_search
+Date:   Tue,  7 Jun 2022 19:04:22 +0200
+Message-Id: <20220607165024.453392918@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11715832959796545158
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleejrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejhe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+From: Baokun Li <libaokun1@huawei.com>
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Jingoo Han <jingoohan1@gmail.com>
-Cc: Helge Deller <deller@gmx.de>
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-fbdev@vger.kernel.org
+commit d36f6ed761b53933b0b4126486c10d3da7751e7f upstream.
+
+Hulk Robot reported a BUG_ON:
+==================================================================
+kernel BUG at fs/ext4/extents_status.c:199!
+[...]
+RIP: 0010:ext4_es_end fs/ext4/extents_status.c:199 [inline]
+RIP: 0010:__es_tree_search+0x1e0/0x260 fs/ext4/extents_status.c:217
+[...]
+Call Trace:
+ ext4_es_cache_extent+0x109/0x340 fs/ext4/extents_status.c:766
+ ext4_cache_extents+0x239/0x2e0 fs/ext4/extents.c:561
+ ext4_find_extent+0x6b7/0xa20 fs/ext4/extents.c:964
+ ext4_ext_map_blocks+0x16b/0x4b70 fs/ext4/extents.c:4384
+ ext4_map_blocks+0xe26/0x19f0 fs/ext4/inode.c:567
+ ext4_getblk+0x320/0x4c0 fs/ext4/inode.c:980
+ ext4_bread+0x2d/0x170 fs/ext4/inode.c:1031
+ ext4_quota_read+0x248/0x320 fs/ext4/super.c:6257
+ v2_read_header+0x78/0x110 fs/quota/quota_v2.c:63
+ v2_check_quota_file+0x76/0x230 fs/quota/quota_v2.c:82
+ vfs_load_quota_inode+0x5d1/0x1530 fs/quota/dquot.c:2368
+ dquot_enable+0x28a/0x330 fs/quota/dquot.c:2490
+ ext4_quota_enable fs/ext4/super.c:6137 [inline]
+ ext4_enable_quotas+0x5d7/0x960 fs/ext4/super.c:6163
+ ext4_fill_super+0xa7c9/0xdc00 fs/ext4/super.c:4754
+ mount_bdev+0x2e9/0x3b0 fs/super.c:1158
+ mount_fs+0x4b/0x1e4 fs/super.c:1261
+[...]
+==================================================================
+
+Above issue may happen as follows:
+-------------------------------------
+ext4_fill_super
+ ext4_enable_quotas
+  ext4_quota_enable
+   ext4_iget
+    __ext4_iget
+     ext4_ext_check_inode
+      ext4_ext_check
+       __ext4_ext_check
+        ext4_valid_extent_entries
+         Check for overlapping extents does't take effect
+   dquot_enable
+    vfs_load_quota_inode
+     v2_check_quota_file
+      v2_read_header
+       ext4_quota_read
+        ext4_bread
+         ext4_getblk
+          ext4_map_blocks
+           ext4_ext_map_blocks
+            ext4_find_extent
+             ext4_cache_extents
+              ext4_es_cache_extent
+               ext4_es_cache_extent
+                __es_tree_search
+                 ext4_es_end
+                  BUG_ON(es->es_lblk + es->es_len < es->es_lblk)
+
+The error ext4 extents is as follows:
+0af3 0300 0400 0000 00000000    extent_header
+00000000 0100 0000 12000000     extent1
+00000000 0100 0000 18000000     extent2
+02000000 0400 0000 14000000     extent3
+
+In the ext4_valid_extent_entries function,
+if prev is 0, no error is returned even if lblock<=prev.
+This was intended to skip the check on the first extent, but
+in the error image above, prev=0+1-1=0 when checking the second extent,
+so even though lblock<=prev, the function does not return an error.
+As a result, bug_ON occurs in __es_tree_search and the system panics.
+
+To solve this problem, we only need to check that:
+1. The lblock of the first extent is not less than 0.
+2. The lblock of the next extent  is not less than
+   the next block of the previous extent.
+The same applies to extent_idx.
+
+Cc: stable@kernel.org
+Fixes: 5946d089379a ("ext4: check for overlapping extents in ext4_valid_extent_entries()")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220518120816.1541863-1-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/backlight/ipaq_micro_bl.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ fs/ext4/extents.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/video/backlight/ipaq_micro_bl.c b/drivers/video/backlight/ipaq_micro_bl.c
-index 85b16cc82878..f595b8c8cbb2 100644
---- a/drivers/video/backlight/ipaq_micro_bl.c
-+++ b/drivers/video/backlight/ipaq_micro_bl.c
-@@ -16,17 +16,12 @@
- static int micro_bl_update_status(struct backlight_device *bd)
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -372,7 +372,7 @@ static int ext4_valid_extent_entries(str
  {
- 	struct ipaq_micro *micro = dev_get_drvdata(&bd->dev);
--	int intensity = bd->props.brightness;
-+	int intensity = backlight_get_brightness(bd);
- 	struct ipaq_micro_msg msg = {
- 		.id = MSG_BACKLIGHT,
- 		.tx_len = 3,
- 	};
+ 	unsigned short entries;
+ 	ext4_lblk_t lblock = 0;
+-	ext4_lblk_t prev = 0;
++	ext4_lblk_t cur = 0;
  
--	if (bd->props.power != FB_BLANK_UNBLANK)
--		intensity = 0;
--	if (bd->props.state & (BL_CORE_FBBLANK | BL_CORE_SUSPENDED))
--		intensity = 0;
--
- 	/*
- 	 * Message format:
- 	 * Byte 0: backlight instance (usually 1)
--- 
-2.30.2
+ 	if (eh->eh_entries == 0)
+ 		return 1;
+@@ -396,11 +396,11 @@ static int ext4_valid_extent_entries(str
+ 
+ 			/* Check for overlapping extents */
+ 			lblock = le32_to_cpu(ext->ee_block);
+-			if ((lblock <= prev) && prev) {
++			if (lblock < cur) {
+ 				*pblk = ext4_ext_pblock(ext);
+ 				return 0;
+ 			}
+-			prev = lblock + ext4_ext_get_actual_len(ext) - 1;
++			cur = lblock + ext4_ext_get_actual_len(ext);
+ 			ext++;
+ 			entries--;
+ 		}
+@@ -420,13 +420,13 @@ static int ext4_valid_extent_entries(str
+ 
+ 			/* Check for overlapping index extents */
+ 			lblock = le32_to_cpu(ext_idx->ei_block);
+-			if ((lblock <= prev) && prev) {
++			if (lblock < cur) {
+ 				*pblk = ext4_idx_pblock(ext_idx);
+ 				return 0;
+ 			}
+ 			ext_idx++;
+ 			entries--;
+-			prev = lblock;
++			cur = lblock + 1;
+ 		}
+ 	}
+ 	return 1;
+
 
