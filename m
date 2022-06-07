@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B31B5CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D047CCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388704AbiFHAco (ORCPT
+        id S1388651AbiFHAcj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:32:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58104 "EHLO
+        Tue, 7 Jun 2022 20:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382702AbiFGV7i (ORCPT
+        with ESMTP id S1382451AbiFGV6s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:59:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267EF24E009;
-        Tue,  7 Jun 2022 12:14:18 -0700 (PDT)
+        Tue, 7 Jun 2022 17:58:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A81DA1C93A;
+        Tue,  7 Jun 2022 12:14:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3E056187F;
-        Tue,  7 Jun 2022 19:14:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A428C385A2;
-        Tue,  7 Jun 2022 19:14:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C3E9B8237B;
+        Tue,  7 Jun 2022 19:13:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 765F7C385A2;
+        Tue,  7 Jun 2022 19:13:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629241;
-        bh=5NVwfizFJYa+rVoBcHgPIn0dLHQ3kWh10mrNptlL5ho=;
+        s=korg; t=1654629227;
+        bh=g9VhsKXrQN/jX3DPUybyMswcmuRgsxa1Z38Jhy2E7qA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=puvmC65iLdPQEPaDzBB6WZ+9hwWLdiYexgbeKbCiT8CQNA3n/olqlt3DcsogJQYQl
-         g0dlelLIFyj9EE2Zins/eJJ2CtCYGjsg+nd3HDxNpQd31q4AMk3D3c53s2D8i9Kxy6
-         YpvP/fKtAs9Hp5Idre44q0LRsIjN9LhCS9dBnM18=
+        b=hDJAhm3g6AdUEkC3Ccpv0yVgC0yNnzPPUPvIuf+C+uhIJNcOwrQz28qz6MhbH+yPE
+         EfSs7LKksFGkzAWu7Zgd4UG6UkjZ2KjgC6lLNNiUSxnafVTlN2C1x8wlAkKVDVv+F2
+         DNoN3uPRAmk4nswbf6v4hE3tGttwxd34MeMlKZjY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
+        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        David Howells <dhowells@redhat.com>,
+        Manfred Spraul <manfred@colorfullife.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 619/879] module: fix [e_shstrndx].sh_size=0 OOB access
-Date:   Tue,  7 Jun 2022 19:02:17 +0200
-Message-Id: <20220607165020.817539600@linuxfoundation.org>
+Subject: [PATCH 5.18 615/879] ipc/mqueue: use get_tree_nodev() in mqueue_get_tree()
+Date:   Tue,  7 Jun 2022 19:02:13 +0200
+Message-Id: <20220607165020.700622910@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,45 +54,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Dobriyan <adobriyan@gmail.com>
+From: Waiman Long <longman@redhat.com>
 
-[ Upstream commit 391e982bfa632b8315235d8be9c0a81374c6a19c ]
+[ Upstream commit d60c4d01a98bc1942dba6e3adc02031f5519f94b ]
 
-It is trivial to craft a module to trigger OOB access in this line:
+When running the stress-ng clone benchmark with multiple testing threads,
+it was found that there were significant spinlock contention in sget_fc().
+The contended spinlock was the sb_lock.  It is under heavy contention
+because the following code in the critcal section of sget_fc():
 
-	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
+  hlist_for_each_entry(old, &fc->fs_type->fs_supers, s_instances) {
+      if (test(old, fc))
+          goto share_extant_sb;
+  }
 
-BUG: unable to handle page fault for address: ffffc90000aa0fff
-PGD 100000067 P4D 100000067 PUD 100066067 PMD 10436f067 PTE 0
-Oops: 0000 [#1] PREEMPT SMP PTI
-CPU: 7 PID: 1215 Comm: insmod Not tainted 5.18.0-rc5-00007-g9bf578647087-dirty #10
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/01/2014
-RIP: 0010:load_module+0x19b/0x2391
+After testing with added instrumentation code, it was found that the
+benchmark could generate thousands of ipc namespaces with the
+corresponding number of entries in the mqueue's fs_supers list where the
+namespaces are the key for the search.  This leads to excessive time in
+scanning the list for a match.
 
-Fixes: ec2a29593c83 ("module: harden ELF info handling")
-Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
-[rebased patch onto modules-next]
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+Looking back at the mqueue calling sequence leading to sget_fc():
+
+  mq_init_ns()
+  => mq_create_mount()
+  => fc_mount()
+  => vfs_get_tree()
+  => mqueue_get_tree()
+  => get_tree_keyed()
+  => vfs_get_super()
+  => sget_fc()
+
+Currently, mq_init_ns() is the only mqueue function that will indirectly
+call mqueue_get_tree() with a newly allocated ipc namespace as the key for
+searching.  As a result, there will never be a match with the exising ipc
+namespaces stored in the mqueue's fs_supers list.
+
+So using get_tree_keyed() to do an existing ipc namespace search is just a
+waste of time.  Instead, we could use get_tree_nodev() to eliminate the
+useless search.  By doing so, we can greatly reduce the sb_lock hold time
+and avoid the spinlock contention problem in case a large number of ipc
+namespaces are present.
+
+Of course, if the code is modified in the future to allow
+mqueue_get_tree() to be called with an existing ipc namespace instead of a
+new one, we will have to use get_tree_keyed() in this case.
+
+The following stress-ng clone benchmark command was run on a 2-socket
+48-core Intel system:
+
+./stress-ng --clone 32 --verbose --oomable --metrics-brief -t 20
+
+The "bogo ops/s" increased from 5948.45 before patch to 9137.06 after
+patch. This is an increase of 54% in performance.
+
+Link: https://lkml.kernel.org/r/20220121172315.19652-1-longman@redhat.com
+Fixes: 935c6912b198 ("ipc: Convert mqueue fs to fs_context")
+Signed-off-by: Waiman Long <longman@redhat.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Manfred Spraul <manfred@colorfullife.com>
+Cc: Davidlohr Bueso <dave@stgolabs.net>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/module.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ ipc/mqueue.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/kernel/module.c b/kernel/module.c
-index 6cea788fd965..6529c84c536f 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -3033,6 +3033,10 @@ static int elf_validity_check(struct load_info *info)
- 	 * strings in the section safe.
- 	 */
- 	info->secstrings = (void *)info->hdr + strhdr->sh_offset;
-+	if (strhdr->sh_size == 0) {
-+		pr_err("empty section name table\n");
-+		goto no_exec;
+diff --git a/ipc/mqueue.c b/ipc/mqueue.c
+index 7c08eb3c258d..54cb6264f8cf 100644
+--- a/ipc/mqueue.c
++++ b/ipc/mqueue.c
+@@ -45,6 +45,7 @@
+ 
+ struct mqueue_fs_context {
+ 	struct ipc_namespace	*ipc_ns;
++	bool			 newns;	/* Set if newly created ipc namespace */
+ };
+ 
+ #define MQUEUE_MAGIC	0x19800202
+@@ -427,6 +428,14 @@ static int mqueue_get_tree(struct fs_context *fc)
+ {
+ 	struct mqueue_fs_context *ctx = fc->fs_private;
+ 
++	/*
++	 * With a newly created ipc namespace, we don't need to do a search
++	 * for an ipc namespace match, but we still need to set s_fs_info.
++	 */
++	if (ctx->newns) {
++		fc->s_fs_info = ctx->ipc_ns;
++		return get_tree_nodev(fc, mqueue_fill_super);
 +	}
- 	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
- 		pr_err("ELF Spec violation: section name table isn't null terminated\n");
- 		goto no_exec;
+ 	return get_tree_keyed(fc, mqueue_fill_super, ctx->ipc_ns);
+ }
+ 
+@@ -454,6 +463,10 @@ static int mqueue_init_fs_context(struct fs_context *fc)
+ 	return 0;
+ }
+ 
++/*
++ * mq_init_ns() is currently the only caller of mq_create_mount().
++ * So the ns parameter is always a newly created ipc namespace.
++ */
+ static struct vfsmount *mq_create_mount(struct ipc_namespace *ns)
+ {
+ 	struct mqueue_fs_context *ctx;
+@@ -465,6 +478,7 @@ static struct vfsmount *mq_create_mount(struct ipc_namespace *ns)
+ 		return ERR_CAST(fc);
+ 
+ 	ctx = fc->fs_private;
++	ctx->newns = true;
+ 	put_ipc_ns(ctx->ipc_ns);
+ 	ctx->ipc_ns = get_ipc_ns(ns);
+ 	put_user_ns(fc->user_ns);
 -- 
 2.35.1
 
