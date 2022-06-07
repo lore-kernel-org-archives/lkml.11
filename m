@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD425CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63CE1CCA485
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387089AbiFGWtz (ORCPT
+        id S1386134AbiFGWsD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46816 "EHLO
+        Tue, 7 Jun 2022 18:48:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381454AbiFGVko (ORCPT
+        with ESMTP id S1380822AbiFGViz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812062332CC;
-        Tue,  7 Jun 2022 12:06:59 -0700 (PDT)
+        Tue, 7 Jun 2022 17:38:55 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518E233E39;
+        Tue,  7 Jun 2022 12:05:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4CF1B823AE;
-        Tue,  7 Jun 2022 19:06:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DA27C385A2;
-        Tue,  7 Jun 2022 19:06:56 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7931BCE249F;
+        Tue,  7 Jun 2022 19:05:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62816C341C4;
+        Tue,  7 Jun 2022 19:05:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628816;
-        bh=7B96NCyCY60ye0SkM8jPVgARvQMd8SFvkOC/kaQfVcg=;
+        s=korg; t=1654628736;
+        bh=VvEMwFTsWdTGPEoYmkCgqck1dH6F3jcTrr8S+0Olq6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zAb9mQrc8d4Wt+r0pDxhQWH/Nekjt8P9bVUU8RgXHoHrJ4uvrc0x/9BTgrdeazxcK
-         tBantCGt853jdGvlLdBaeodrqfzyWvkEir8ZvqKB866844+D50vt1f5RoMkZ5MfUg9
-         SXu/lbxbUAfUov1WlAICTYNaq1DjERSpzw8jmmh0=
+        b=OyZBzEgcsOdHoec92xQZXNvGZmJfRaSVX/INX6tc6Z6mHzgY6hZCHZR5NQ8jIaTSW
+         rYpp9xjf4M45wJVuyxMKSsbN4uxDUvpYkqAd/iVALLyi4L07vL4zGIvH/z/0YHX8Ak
+         k64Q+P+XfXmapEU1zZ3+MEpSk8ogzmpo1m7z6Tfk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 467/879] net: annotate races around sk->sk_bound_dev_if
-Date:   Tue,  7 Jun 2022 18:59:45 +0200
-Message-Id: <20220607165016.433231259@linuxfoundation.org>
+        stable@vger.kernel.org, Deren Wu <deren.wu@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 437/879] mt76: fix antenna config missing in 6G cap
+Date:   Tue,  7 Jun 2022 18:59:15 +0200
+Message-Id: <20220607165015.554653307@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,172 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Deren Wu <deren.wu@mediatek.com>
 
-[ Upstream commit 4c971d2f3548e4f11b1460ac048f5307e4b39fdb ]
+[ Upstream commit abba345311a740d9dca1b5eb293b3b1c296715dd ]
 
-UDP sendmsg() is lockless, and reads sk->sk_bound_dev_if while
-this field can be changed by another thread.
+To make sure we have the proper antenna config in 6g cap,
+move IEEE80211_VHT_CAP_[T/R]X_ANTENNA_PATTERN to stream init.
 
-Adds minimal annotations to avoid KCSAN splats for UDP.
-Following patches will add more annotations to potential lockless readers.
-
-BUG: KCSAN: data-race in __ip6_datagram_connect / udpv6_sendmsg
-
-write to 0xffff888136d47a94 of 4 bytes by task 7681 on cpu 0:
- __ip6_datagram_connect+0x6e2/0x930 net/ipv6/datagram.c:221
- ip6_datagram_connect+0x2a/0x40 net/ipv6/datagram.c:272
- inet_dgram_connect+0x107/0x190 net/ipv4/af_inet.c:576
- __sys_connect_file net/socket.c:1900 [inline]
- __sys_connect+0x197/0x1b0 net/socket.c:1917
- __do_sys_connect net/socket.c:1927 [inline]
- __se_sys_connect net/socket.c:1924 [inline]
- __x64_sys_connect+0x3d/0x50 net/socket.c:1924
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x50 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff888136d47a94 of 4 bytes by task 7670 on cpu 1:
- udpv6_sendmsg+0xc60/0x16e0 net/ipv6/udp.c:1436
- inet6_sendmsg+0x5f/0x80 net/ipv6/af_inet6.c:652
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg net/socket.c:725 [inline]
- ____sys_sendmsg+0x39a/0x510 net/socket.c:2413
- ___sys_sendmsg net/socket.c:2467 [inline]
- __sys_sendmmsg+0x267/0x4c0 net/socket.c:2553
- __do_sys_sendmmsg net/socket.c:2582 [inline]
- __se_sys_sendmmsg net/socket.c:2579 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2579
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x50 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x00000000 -> 0xffffff9b
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 7670 Comm: syz-executor.3 Tainted: G        W         5.18.0-rc1-syzkaller-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-I chose to not add Fixes: tag because race has minor consequences
-and stable teams busy enough.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: edf9dab8ba27 ("mt76: add 6GHz support")
+Signed-off-by: Deren Wu <deren.wu@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/ip.h    |  2 +-
- include/net/sock.h  |  5 +++--
- net/ipv6/datagram.c |  6 +++---
- net/ipv6/udp.c      | 11 ++++++-----
- 4 files changed, 13 insertions(+), 11 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mac80211.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/ip.h b/include/net/ip.h
-index 0161137914cf..26fffda78cca 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -94,7 +94,7 @@ static inline void ipcm_init_sk(struct ipcm_cookie *ipcm,
+diff --git a/drivers/net/wireless/mediatek/mt76/mac80211.c b/drivers/net/wireless/mediatek/mt76/mac80211.c
+index 5b53d008eb66..917ea20c026b 100644
+--- a/drivers/net/wireless/mediatek/mt76/mac80211.c
++++ b/drivers/net/wireless/mediatek/mt76/mac80211.c
+@@ -248,6 +248,8 @@ static void mt76_init_stream_cap(struct mt76_phy *phy,
+ 		vht_cap->cap |= IEEE80211_VHT_CAP_TXSTBC;
+ 	else
+ 		vht_cap->cap &= ~IEEE80211_VHT_CAP_TXSTBC;
++	vht_cap->cap |= IEEE80211_VHT_CAP_TX_ANTENNA_PATTERN |
++			IEEE80211_VHT_CAP_RX_ANTENNA_PATTERN;
  
- 	ipcm->sockc.mark = inet->sk.sk_mark;
- 	ipcm->sockc.tsflags = inet->sk.sk_tsflags;
--	ipcm->oif = inet->sk.sk_bound_dev_if;
-+	ipcm->oif = READ_ONCE(inet->sk.sk_bound_dev_if);
- 	ipcm->addr = inet->inet_saddr;
- }
+ 	for (i = 0; i < 8; i++) {
+ 		if (i < nstream)
+@@ -323,8 +325,6 @@ mt76_init_sband(struct mt76_phy *phy, struct mt76_sband *msband,
+ 	vht_cap->cap |= IEEE80211_VHT_CAP_RXLDPC |
+ 			IEEE80211_VHT_CAP_RXSTBC_1 |
+ 			IEEE80211_VHT_CAP_SHORT_GI_80 |
+-			IEEE80211_VHT_CAP_RX_ANTENNA_PATTERN |
+-			IEEE80211_VHT_CAP_TX_ANTENNA_PATTERN |
+ 			(3 << IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_SHIFT);
  
-diff --git a/include/net/sock.h b/include/net/sock.h
-index c4b91fc19b9c..3c4fb8f03fd9 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2866,13 +2866,14 @@ static inline void sk_pacing_shift_update(struct sock *sk, int val)
-  */
- static inline bool sk_dev_equal_l3scope(struct sock *sk, int dif)
- {
-+	int bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
- 	int mdif;
- 
--	if (!sk->sk_bound_dev_if || sk->sk_bound_dev_if == dif)
-+	if (!bound_dev_if || bound_dev_if == dif)
- 		return true;
- 
- 	mdif = l3mdev_master_ifindex_by_index(sock_net(sk), dif);
--	if (mdif && mdif == sk->sk_bound_dev_if)
-+	if (mdif && mdif == bound_dev_if)
- 		return true;
- 
- 	return false;
-diff --git a/net/ipv6/datagram.c b/net/ipv6/datagram.c
-index 206f66310a88..0324e2685016 100644
---- a/net/ipv6/datagram.c
-+++ b/net/ipv6/datagram.c
-@@ -218,11 +218,11 @@ int __ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr,
- 				err = -EINVAL;
- 				goto out;
- 			}
--			sk->sk_bound_dev_if = usin->sin6_scope_id;
-+			WRITE_ONCE(sk->sk_bound_dev_if, usin->sin6_scope_id);
- 		}
- 
- 		if (!sk->sk_bound_dev_if && (addr_type & IPV6_ADDR_MULTICAST))
--			sk->sk_bound_dev_if = np->mcast_oif;
-+			WRITE_ONCE(sk->sk_bound_dev_if, np->mcast_oif);
- 
- 		/* Connect to link-local address requires an interface */
- 		if (!sk->sk_bound_dev_if) {
-@@ -798,7 +798,7 @@ int ip6_datagram_send_ctl(struct net *net, struct sock *sk,
- 			if (src_idx) {
- 				if (fl6->flowi6_oif &&
- 				    src_idx != fl6->flowi6_oif &&
--				    (sk->sk_bound_dev_if != fl6->flowi6_oif ||
-+				    (READ_ONCE(sk->sk_bound_dev_if) != fl6->flowi6_oif ||
- 				     !sk_dev_equal_l3scope(sk, src_idx)))
- 					return -EINVAL;
- 				fl6->flowi6_oif = src_idx;
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 7f0fa9bd9ffe..a535c3f2e4af 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -105,7 +105,7 @@ static int compute_score(struct sock *sk, struct net *net,
- 			 const struct in6_addr *daddr, unsigned short hnum,
- 			 int dif, int sdif)
- {
--	int score;
-+	int bound_dev_if, score;
- 	struct inet_sock *inet;
- 	bool dev_match;
- 
-@@ -132,10 +132,11 @@ static int compute_score(struct sock *sk, struct net *net,
- 		score++;
- 	}
- 
--	dev_match = udp_sk_bound_dev_eq(net, sk->sk_bound_dev_if, dif, sdif);
-+	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
-+	dev_match = udp_sk_bound_dev_eq(net, bound_dev_if, dif, sdif);
- 	if (!dev_match)
- 		return -1;
--	if (sk->sk_bound_dev_if)
-+	if (bound_dev_if)
- 		score++;
- 
- 	if (READ_ONCE(sk->sk_incoming_cpu) == raw_smp_processor_id())
-@@ -789,7 +790,7 @@ static bool __udp_v6_is_mcast_sock(struct net *net, struct sock *sk,
- 	    (inet->inet_dport && inet->inet_dport != rmt_port) ||
- 	    (!ipv6_addr_any(&sk->sk_v6_daddr) &&
- 		    !ipv6_addr_equal(&sk->sk_v6_daddr, rmt_addr)) ||
--	    !udp_sk_bound_dev_eq(net, sk->sk_bound_dev_if, dif, sdif) ||
-+	    !udp_sk_bound_dev_eq(net, READ_ONCE(sk->sk_bound_dev_if), dif, sdif) ||
- 	    (!ipv6_addr_any(&sk->sk_v6_rcv_saddr) &&
- 		    !ipv6_addr_equal(&sk->sk_v6_rcv_saddr, loc_addr)))
- 		return false;
-@@ -1433,7 +1434,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	}
- 
- 	if (!fl6->flowi6_oif)
--		fl6->flowi6_oif = sk->sk_bound_dev_if;
-+		fl6->flowi6_oif = READ_ONCE(sk->sk_bound_dev_if);
- 
- 	if (!fl6->flowi6_oif)
- 		fl6->flowi6_oif = np->sticky_pktinfo.ipi6_ifindex;
+ 	return 0;
 -- 
 2.35.1
 
