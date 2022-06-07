@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D56BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:18:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0162DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:23:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234968AbiFHASX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:18:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38830 "EHLO
+        id S1382832AbiFHATF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:19:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383408AbiFGWHV (ORCPT
+        with ESMTP id S1383480AbiFGWa6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:07:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C7625697F;
-        Tue,  7 Jun 2022 12:18:42 -0700 (PDT)
+        Tue, 7 Jun 2022 18:30:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8DD627622D;
+        Tue,  7 Jun 2022 12:24:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 644FEB823D7;
-        Tue,  7 Jun 2022 19:18:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7F96C385A5;
-        Tue,  7 Jun 2022 19:18:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF08C60BA3;
+        Tue,  7 Jun 2022 19:24:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA5A9C385A2;
+        Tue,  7 Jun 2022 19:24:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629513;
-        bh=kvQwX66IBqrliEZUsOIORhCNcgPD4+MofW2EB6QgFGY=;
+        s=korg; t=1654629849;
+        bh=I01p0vfEEMyUzbTAF3PuxHt9/dUVilVk+CUtI2t2RoM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QwrKwOthhKO5++ZBDR1+7XlO3D3gujNd7+YB4gAi9AlluZxfkGIJlv2AKB9+4cVOf
-         yooEpKsoudDkl45peQOinHmXKcCge+dwiTtgh/FEb3An7xnyuHMe7tGIN4I0FPRREE
-         BIwpwYkQonRUpVxrW9c6KDxplu28ZOVAEiYajosI=
+        b=HmDtuPpbcPuIZD1eqjZpjD7PZ/unN1FS+CepjAb2k8nhl3Ujp+y/J3uUJjmYhMZ6C
+         N0kl32Sem2KaF/Pa169uz2tQw9WNprBLGIdoR8D0/aVJT3CEQdGiELPUESxBoNG7LC
+         YehftGhlaKQCUR84s7MAwUGvfDdGFQGIik4XCsbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.18 716/879] f2fs: fix to do sanity check for inline inode
-Date:   Tue,  7 Jun 2022 19:03:54 +0200
-Message-Id: <20220607165023.636219498@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
+        Philippe Cornu <philippe.cornu@foss.st.com>
+Subject: [PATCH 5.18 838/879] stm: ltdc: fix two incorrect NULL checks on list iterator
+Date:   Tue,  7 Jun 2022 19:05:56 +0200
+Message-Id: <20220607165027.178600320@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -48,114 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 677a82b44ebf263d4f9a0cfbd576a6ade797a07b upstream.
+commit 2e6c86be0e57079d1fb6c7c7e5423db096d0548a upstream.
 
-Yanming reported a kernel bug in Bugzilla kernel [1], which can be
-reproduced. The bug message is:
+The two bugs are here:
+	if (encoder) {
+	if (bridge && bridge->timings)
 
-The kernel message is shown below:
+The list iterator value 'encoder/bridge' will *always* be set and
+non-NULL by drm_for_each_encoder()/list_for_each_entry(), so it is
+incorrect to assume that the iterator value will be NULL if the
+list is empty or no element is found.
 
-kernel BUG at fs/inode.c:611!
-Call Trace:
- evict+0x282/0x4e0
- __dentry_kill+0x2b2/0x4d0
- dput+0x2dd/0x720
- do_renameat2+0x596/0x970
- __x64_sys_rename+0x78/0x90
- do_syscall_64+0x3b/0x90
-
-[1] https://bugzilla.kernel.org/show_bug.cgi?id=215895
-
-The bug is due to fuzzed inode has both inline_data and encrypted flags.
-During f2fs_evict_inode(), as the inode was deleted by rename(), it
-will cause inline data conversion due to conflicting flags. The page
-cache will be polluted and the panic will be triggered in clear_inode().
-
-Try fixing the bug by doing more sanity checks for inline data inode in
-sanity_check_inode().
+To fix the bug, use a new variable '*_iter' as the list iterator,
+while use the old variable 'encoder/bridge' as a dedicated pointer
+to point to the found element.
 
 Cc: stable@vger.kernel.org
-Reported-by: Ming Yan <yanming@tju.edu.cn>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: 99e360442f223 ("drm/stm: Fix bus_flags handling")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Acked-by: Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
+Signed-off-by: Philippe Cornu <philippe.cornu@foss.st.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220327055355.3808-1-xiam0nd.tong@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/f2fs.h   |    1 +
- fs/f2fs/inline.c |   29 ++++++++++++++++++++++++-----
- fs/f2fs/inode.c  |    3 +--
- 3 files changed, 26 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/stm/ltdc.c |   16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -4052,6 +4052,7 @@ extern struct kmem_cache *f2fs_inode_ent
-  * inline.c
-  */
- bool f2fs_may_inline_data(struct inode *inode);
-+bool f2fs_sanity_check_inline_data(struct inode *inode);
- bool f2fs_may_inline_dentry(struct inode *inode);
- void f2fs_do_read_inline_data(struct page *page, struct page *ipage);
- void f2fs_truncate_inline_inode(struct inode *inode,
---- a/fs/f2fs/inline.c
-+++ b/fs/f2fs/inline.c
-@@ -14,21 +14,40 @@
- #include "node.h"
- #include <trace/events/f2fs.h>
+--- a/drivers/gpu/drm/stm/ltdc.c
++++ b/drivers/gpu/drm/stm/ltdc.c
+@@ -869,8 +869,8 @@ static void ltdc_crtc_mode_set_nofb(stru
+ 	struct drm_device *ddev = crtc->dev;
+ 	struct drm_connector_list_iter iter;
+ 	struct drm_connector *connector = NULL;
+-	struct drm_encoder *encoder = NULL;
+-	struct drm_bridge *bridge = NULL;
++	struct drm_encoder *encoder = NULL, *en_iter;
++	struct drm_bridge *bridge = NULL, *br_iter;
+ 	struct drm_display_mode *mode = &crtc->state->adjusted_mode;
+ 	u32 hsync, vsync, accum_hbp, accum_vbp, accum_act_w, accum_act_h;
+ 	u32 total_width, total_height;
+@@ -880,15 +880,19 @@ static void ltdc_crtc_mode_set_nofb(stru
+ 	int ret;
  
--bool f2fs_may_inline_data(struct inode *inode)
-+static bool support_inline_data(struct inode *inode)
- {
- 	if (f2fs_is_atomic_file(inode))
- 		return false;
--
- 	if (!S_ISREG(inode->i_mode) && !S_ISLNK(inode->i_mode))
- 		return false;
--
- 	if (i_size_read(inode) > MAX_INLINE_DATA(inode))
- 		return false;
-+	return true;
-+}
-+
-+bool f2fs_may_inline_data(struct inode *inode)
-+{
-+	if (!support_inline_data(inode))
-+		return false;
-+
-+	return !f2fs_post_read_required(inode);
-+}
+ 	/* get encoder from crtc */
+-	drm_for_each_encoder(encoder, ddev)
+-		if (encoder->crtc == crtc)
++	drm_for_each_encoder(en_iter, ddev)
++		if (en_iter->crtc == crtc) {
++			encoder = en_iter;
+ 			break;
++		}
  
--	if (f2fs_post_read_required(inode))
-+bool f2fs_sanity_check_inline_data(struct inode *inode)
-+{
-+	if (!f2fs_has_inline_data(inode))
- 		return false;
+ 	if (encoder) {
+ 		/* get bridge from encoder */
+-		list_for_each_entry(bridge, &encoder->bridge_chain, chain_node)
+-			if (bridge->encoder == encoder)
++		list_for_each_entry(br_iter, &encoder->bridge_chain, chain_node)
++			if (br_iter->encoder == encoder) {
++				bridge = br_iter;
+ 				break;
++			}
  
--	return true;
-+	if (!support_inline_data(inode))
-+		return true;
-+
-+	/*
-+	 * used by sanity_check_inode(), when disk layout fields has not
-+	 * been synchronized to inmem fields.
-+	 */
-+	return (S_ISREG(inode->i_mode) &&
-+		(file_is_encrypt(inode) || file_is_verity(inode) ||
-+		(F2FS_I(inode)->i_flags & F2FS_COMPR_FL)));
- }
- 
- bool f2fs_may_inline_dentry(struct inode *inode)
---- a/fs/f2fs/inode.c
-+++ b/fs/f2fs/inode.c
-@@ -276,8 +276,7 @@ static bool sanity_check_inode(struct in
- 		}
- 	}
- 
--	if (f2fs_has_inline_data(inode) &&
--			(!S_ISREG(inode->i_mode) && !S_ISLNK(inode->i_mode))) {
-+	if (f2fs_sanity_check_inline_data(inode)) {
- 		set_sbi_flag(sbi, SBI_NEED_FSCK);
- 		f2fs_warn(sbi, "%s: inode (ino=%lx, mode=%u) should not have inline_data, run fsck to fix",
- 			  __func__, inode->i_ino, inode->i_mode);
+ 		/* Get the connector from encoder */
+ 		drm_connector_list_iter_begin(ddev, &iter);
 
 
