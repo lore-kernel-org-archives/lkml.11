@@ -2,166 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACFDBCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7E2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343582AbiFGOye (ORCPT
+        id S1343609AbiFGO5G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38996 "EHLO
+        Tue, 7 Jun 2022 10:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230385AbiFGOyc (ORCPT
+        with ESMTP id S230385AbiFGO4y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:54:32 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E53F5061
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 07:54:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654613671; x=1686149671;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=zvcJr5+iQoAK6fcqSS027wnYABW2kz88MgZCy5Lz/5k=;
-  b=tAfz4DQ/7t6ST7c5LchQm6+zWegI4kd25vcQstlOi8J5/OV1LwxpYmXM
-   ds+iiww8Pw9hMVkiadYTXC17Du1hVxIy3lTXrEXTHUznjARhQkgEDLe3+
-   jmFEwIE+BUXr/gBsvsPvOSezf/d51Uzkgjmx27uwNwsPLxpRPCW5jG3n/
-   Q=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 07:54:30 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:54:30 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 7 Jun 2022 07:54:29 -0700
-Received: from [10.214.30.67] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 7 Jun 2022
- 07:54:26 -0700
-Message-ID: <7584364f-3aaf-282a-0a67-d8329a3415dc@quicinc.com>
-Date:   Tue, 7 Jun 2022 20:22:34 +0530
+        Tue, 7 Jun 2022 10:56:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF486880D3
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 07:56:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5908F615EF
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:56:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA7ACC34115;
+        Tue,  7 Jun 2022 14:56:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654613812;
+        bh=PJOeK80iHgC8RRWMR0Ls4DGQF5PPFq++wbR7M5To6Lc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Q8p0rFxNnFfRkKOTVn8kGoeui1G+UYcnhqDByyN7dI/k3zz6mnI/sNGmPtO8D6Ger
+         RAor38SXM+DW7T+FBy+cVrKMVpws5va3EZH5eHK5KbliXBcMohuoF2t0/1LwWU3W42
+         cfkYllvbgVC6zSsp6ZtZIOH+O7eIyp8INT4ieRSu7YWr835Q8UXi9yJNvNJfMOI5wo
+         U3Jz9T2efPDDGwNxCvsilNypz7cDaM61PPdeE9wtS4WjroA1Q9Vjtt10nEti4wsl6r
+         T0pTae/gtYYsPirxe7nNEHmF4vhsAesPOKM6jiyQbvf5vHG0S/94s1oN1aBgcfbMwt
+         G3gwH3a+mAoLg==
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     bleung@chromium.org, groeck@chromium.org
+Cc:     chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        tzungbi@kernel.org
+Subject: [PATCH v2 01/15] platform/chrome: cros_ec_commands: fix compile errors
+Date:   Tue,  7 Jun 2022 14:56:25 +0000
+Message-Id: <20220607145639.2362750-2-tzungbi@kernel.org>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+In-Reply-To: <20220607145639.2362750-1-tzungbi@kernel.org>
+References: <20220607145639.2362750-1-tzungbi@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH RESEND V5,2/2] mm: shmem: implement
- POSIX_FADV_[WILL|DONT]NEED for shmem
-Content-Language: en-US
-To:     Andrew Morton <akpm@linux-foundation.org>
-CC:     <willy@infradead.org>, <markhemm@googlemail.com>,
-        <hughd@google.com>, <rientjes@google.com>, <surenb@google.com>,
-        <shakeelb@google.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-References: <cover.1648706231.git.quic_charante@quicinc.com>
- <c2f7242faffd41f46120f82079256ece26b92bf0.1648706231.git.quic_charante@quicinc.com>
- <20220531142135.666b1fcf506e4a327af98ff9@linux-foundation.org>
-From:   Charan Teja Kalla <quic_charante@quicinc.com>
-In-Reply-To: <20220531142135.666b1fcf506e4a327af98ff9@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks Andrew for your review!!
+Fix compile errors when including cros_ec_commands.h solely.
 
-Sorry for the delayed reply here as I was on vacation.
+1.
+cros_ec_commands.h:587:9: error: unknown type name 'uint8_t'
+  587 |         uint8_t flags;
+      |         ^~~~~~~
 
-On 6/1/2022 2:51 AM, Andrew Morton wrote:
-> On Thu, 31 Mar 2022 12:08:21 +0530 Charan Teja Kalla <quic_charante@quicinc.com> wrote:
-> 
->> From: Charan Teja Reddy <quic_charante@quicinc.com>
->>
->> Currently fadvise(2) is supported only for the files that doesn't
->> associated with noop_backing_dev_info thus for the files, like shmem,
->> fadvise results into NOP. But then there is file_operations->fadvise()
->> that lets the file systems to implement their own fadvise
->> implementation. Use this support to implement some of the POSIX_FADV_XXX
->> functionality for shmem files.
->>
->> This patch aims to implement POSIX_FADV_WILLNEED and POSIX_FADV_DONTNEED
->> advices to shmem files which can be helpful for the drivers who may want
->> to manage the shmem pages of the files that are created through
->> shmem_file_setup[_with_mnt]().  An example usecase may be like, driver
->> can create the shmem file of the size equal to its requirements and
->> map the pages for DMA and then pass the fd to user. The user who knows
->> well about the usage of these pages can now decide when these pages are
->> not required push them to swap through DONTNEED thus free up memory well
->> in advance rather than relying on the reclaim and use WILLNEED when it
->> decide that they are useful in the near future. IOW, it lets the clients
->> to free up/read the memory when it wants to.
-> 
-> Is there an actual userspace/driver combination which will use this? 
-> Has the new feature been tested in such an arrangement?  And if so,
-> which driver(s)?
-> 
+2.
+cros_ec_commands.h:1105:43: error: implicit declaration of function 'BIT'
+ 1105 |         EC_COMMS_STATUS_PROCESSING      = BIT(0),
+      |                                           ^~~
 
-Currently my organization is using this setup where it does makes use of
-the shmem infrastructure to allocate the pages and its fd is passed to
-the user. The user is now deciding on when to reclaim these pages to
-free up the memory through already presented vfs_fadvise(DONTNEED)
-system call and bringing back them through vfs_fadvise(WILLNEED), when
-they are needed.
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+---
+Changes from v1:
+- Add R-b tag.
 
-This user decision, in just one of the usecases, is based on memory
-pressure in the system. Using this fadvise(), the driver now has fully
-managing the pages as the usecase requirement is such that when it is
-running, all the pages should be present in the ram. And when it is not
-running, I am making all those pages to goto swap there by making some
-free memory.
+ include/linux/platform_data/cros_ec_commands.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-This is for embedded system application where display drivers are involved.
+diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
+index 8cfa8cfca77e..a5b749a85707 100644
+--- a/include/linux/platform_data/cros_ec_commands.h
++++ b/include/linux/platform_data/cros_ec_commands.h
+@@ -13,8 +13,8 @@
+ #ifndef __CROS_EC_COMMANDS_H
+ #define __CROS_EC_COMMANDS_H
+ 
+-
+-
++#include <linux/bits.h>
++#include <linux/types.h>
+ 
+ #define BUILD_ASSERT(_cond)
+ 
+-- 
+2.36.1.255.ge46751e96f-goog
 
->> Another usecase is that GEM
->> objects which are currently allocated and managed through shmem files
->> can use vfs_fadvise(DONT|WILLNEED) on shmem fd when the driver comes to
->> know(like through some hints from user space) that GEM objects are not
->> going to use/will need in the near future.
-> 
-> Again, is this just a theoretical bright idea, or can we be assured
-> that adding this code to the kernel will end up having been useful to
-> our users?
-
-This is currently the idea I have and we really not have the code for
-the usecase mentioned above mentioning about GEM objects. But I strongly
-see that this will be definitely end up been useful to our users.
-
-Because, we have another usecase which is close to the GEM buffer
-allocation mechanism and using the vfs_fadvise() from the kernel to
-manage those for DRM(display) drivers hence saying that can be useful to
-others as well.
-
-> 
->> Some questions asked while reviewing this patch:
->>
->> Q) Can the same thing be achieved with FD mapped to user and use
->> madvise?
->> A) All drivers are not mapping all the shmem fd's to user space and want
->> to manage them with in the kernel. Ex: shmem memory can be mapped to the
->> other subsystems and they fill in the data and then give it to other
->> subsystem for further processing, where, the user mapping is not at all
->> required.  A simple example, memory that is given for gpu subsystem
->> which can be filled directly and give to display subsystem. And the
->> respective drivers know well about when to keep that memory in ram or
->> swap based on may be a user activity.
->>
->> Q) Should we add the documentation section in Manual pages?
->> A) The man[1] pages for the fadvise() whatever says is also applicable
->> for shmem files. so couldn't feel it correct to add specific to shmem
->> files separately.
->> [1] https://linux.die.net/man/2/fadvise
->>
->> Q) The proposed semantics of POSIX_FADV_DONTNEED is actually similar to
->> MADV_PAGEOUT and different from MADV_DONTNEED. This is a user facing API
->> and this difference will cause confusion?
->> A) man pages [1] says that "POSIX_FADV_DONTNEED attempts to free cached
->> pages associated with the specified region." This means on issuing this
->> FADV, it is expected to free the file cache pages. And it is
->> implementation defined If the dirty pages may be attempted to writeback.
->> And the unwritten dirty pages will not be freed. So, FADV_DONTNEED also
->> covers the semantics of MADV_PAGEOUT for file pages and there is no
->> purpose of PAGEOUT for file pages.
-> 
