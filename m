@@ -2,87 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB62FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:05:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29314C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:05:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238855AbiFGJFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37938 "EHLO
+        id S238871AbiFGJFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238878AbiFGJFN (ORCPT
+        with ESMTP id S237671AbiFGJFm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:05:13 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52832CBD40;
-        Tue,  7 Jun 2022 02:05:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1654592712; x=1686128712;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7G1aWv28grmHqE+jlxP2LzRm4Rvv2RJ0SpbrSY4E25E=;
-  b=KoN1wqhY7Q81dXrfr5/BDVHtR3COs+DPHcXYz1RRPZ/bzI/5O6/FfwPf
-   z0vkTPmGzvE2KshMPhuavlcT92Nh/lHwJxpJjkOuNYmeDDFYM5N8FILEL
-   q+z935kFdfTJFLsg6OQ0e6tVLSDHaGXVfWczB5sM9C8KN0t2rWGD6yFxy
-   yc+DphZCGTXUTKJon59IuFzgcVad7MZlV2NldiLDzvUsijZ1ZKaRu+d2Z
-   XVh7R9xJZzMNrUq+ag/VJCkAXkdbAS/YwsO8Iv+eSqThX972+9q6v9W9j
-   dkVxSpPYs2v6KF4Z4U2ywZO97wQpuqKomqsTzK3Cx3QLb0sfhh5glPSd8
-   w==;
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="167384996"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Jun 2022 02:05:09 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 7 Jun 2022 02:05:06 -0700
-Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 7 Jun 2022 02:05:04 -0700
-From:   Eugen Hristev <eugen.hristev@microchip.com>
-To:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <linux-kernel@vger.kernel.org>, <claudiu.beznea@microchip.com>,
-        <nicolas.ferre@microchip.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>
-Subject: [PATCH 1/2] ARM: dts: at91: sam9x60ek: fix eeprom compatible and size
-Date:   Tue, 7 Jun 2022 12:04:54 +0300
-Message-ID: <20220607090455.80433-1-eugen.hristev@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 7 Jun 2022 05:05:42 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9912CA3F9
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:05:39 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2578DSs3026664;
+        Tue, 7 Jun 2022 09:05:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=wIF17mc88TQDikBWbO5rcF1fzzeQJu0QKNUSoKAazAg=;
+ b=GWNy+uYhBNqEAfS3OhoGZZcWezgFNBXaGolxBwjyiDWEKHLatI7Zf5JOFyZk7NkGMRSz
+ QTd8rhNQ3wwVOH1LE0WXE1cL1Cw+uOsATZYiFGjM7YW5dhyy/VrgY7FetyRYeIqzvctT
+ zYWZHUFSyNItujAp5rpQl476N+Gq/pF8msYhtsRVRyLMDzXcoi6Rfi7+xB4LtRiQ8FSI
+ 01gv2Rvua6lWlu+qN8KAaUPcdS75QAWE3sy7gbv7dxRI70jO8iEdnjaenTnrGprf1XeS
+ N1nYS3oXoWJqEpE+J+G5xs7/PFtJkUyqTReDxgEOmIbbYSm4PCf8XEiU5CrGQInTKDdn nw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gj2yms1q6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Jun 2022 09:05:27 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2578H5BP007254;
+        Tue, 7 Jun 2022 09:05:26 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gj2yms1pf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Jun 2022 09:05:26 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2578pjmB012598;
+        Tue, 7 Jun 2022 09:05:24 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06fra.de.ibm.com with ESMTP id 3gfxnj2qxj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Jun 2022 09:05:24 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 257958XR21758334
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 7 Jun 2022 09:05:08 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 67BEE11C04A;
+        Tue,  7 Jun 2022 09:05:22 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EB05311C04C;
+        Tue,  7 Jun 2022 09:05:21 +0000 (GMT)
+Received: from [9.171.53.11] (unknown [9.171.53.11])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  7 Jun 2022 09:05:21 +0000 (GMT)
+Message-ID: <96560c72-3c24-f4fd-4212-3daa26c0f96f@linux.ibm.com>
+Date:   Tue, 7 Jun 2022 11:05:21 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] cxl: Fix refcount leak in cxl_calc_capp_routing
+Content-Language: en-US
+To:     Miaoqian Lin <linmq006@gmail.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Christophe Lombard <clombard@linux.vnet.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+References: <20220605060038.62217-1-linmq006@gmail.com>
+From:   Frederic Barrat <fbarrat@linux.ibm.com>
+In-Reply-To: <20220605060038.62217-1-linmq006@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: -TzHRbacfZORohthD5M3Eik4ozt_Wj-0
+X-Proofpoint-ORIG-GUID: ybabcjRcUJTIDj3fzWbz9mQkkuuf99zO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-07_03,2022-06-03_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
+ mlxscore=0 malwarescore=0 suspectscore=0 mlxlogscore=999 bulkscore=0
+ adultscore=0 spamscore=0 lowpriorityscore=0 priorityscore=1501
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206070037
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The board has a microchip 24aa025e48 eeprom, which is a 2 Kbits memory,
-so it's compatible with at24c02 not at24c32.
-Also the size property is wrong, it's not 128 bytes, but 256 bytes.
-Thus removing and leaving it to the default (256).
 
-Fixes: 1e5f532c27371 ("ARM: dts: at91: sam9x60: add device tree for soc and board")
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
----
- arch/arm/boot/dts/at91-sam9x60ek.dts | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/at91-sam9x60ek.dts b/arch/arm/boot/dts/at91-sam9x60ek.dts
-index 7719ea3d4933c..81ccb0636a009 100644
---- a/arch/arm/boot/dts/at91-sam9x60ek.dts
-+++ b/arch/arm/boot/dts/at91-sam9x60ek.dts
-@@ -233,10 +233,9 @@ i2c0: i2c@600 {
- 		status = "okay";
- 
- 		eeprom@53 {
--			compatible = "atmel,24c32";
-+			compatible = "atmel,24c02";
- 			reg = <0x53>;
- 			pagesize = <16>;
--			size = <128>;
- 			status = "okay";
- 		};
- 	};
--- 
-2.25.1
+On 05/06/2022 08:00, Miaoqian Lin wrote:
+> of_get_next_parent() returns a node pointer with refcount incremented,
+> we should use of_node_put() on it when not need anymore.
+> This function only calls of_node_put() in normal path,
+> missing it in the error path.
+> Add missing of_node_put() to avoid refcount leak.
+> 
+> Fixes: f24be42aab37 ("cxl: Add psl9 specific code")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 
+
+Indeed. Thanks!
+Acked-by: Frederic Barrat <fbarrat@linux.ibm.com>
+
+   Fred
+
+
+> ---
+>   drivers/misc/cxl/pci.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/misc/cxl/pci.c b/drivers/misc/cxl/pci.c
+> index 3de0aea62ade..62385a529d86 100644
+> --- a/drivers/misc/cxl/pci.c
+> +++ b/drivers/misc/cxl/pci.c
+> @@ -387,6 +387,7 @@ int cxl_calc_capp_routing(struct pci_dev *dev, u64 *chipid,
+>   	rc = get_phb_index(np, phb_index);
+>   	if (rc) {
+>   		pr_err("cxl: invalid phb index\n");
+> +		of_node_put(np);
+>   		return rc;
+>   	}
+>   
