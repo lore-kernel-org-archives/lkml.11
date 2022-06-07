@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD488C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9895DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378811AbiFGVHv (ORCPT
+        id S1378979AbiFGVIB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58154 "EHLO
+        Tue, 7 Jun 2022 17:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359134AbiFGUJh (ORCPT
+        with ESMTP id S1359194AbiFGUJh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:09:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E48F1C4F12;
-        Tue,  7 Jun 2022 11:26:55 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB081C4F11;
+        Tue,  7 Jun 2022 11:26:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F33D7B82340;
-        Tue,  7 Jun 2022 18:26:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64FF3C385A2;
-        Tue,  7 Jun 2022 18:26:52 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 84469CE2439;
+        Tue,  7 Jun 2022 18:26:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C846C385A2;
+        Tue,  7 Jun 2022 18:26:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626412;
-        bh=JmSnWJRLpiOuRHOA+w8FNwqa7CahLCoSKiHjvYzbH7w=;
+        s=korg; t=1654626409;
+        bh=rIWEQtuxPfuKBsbbuJZf9HyCJZEe/1UXdJJHnQuAxVI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s4K7bzs3PIt/U4sT2WX/EAkqwinxaS2iOtlnsfX/oiI1QvpBa/2BpIj23/0v+SRtT
-         uHmeCPLc6EjE9dngcmj8csbFFrqffVU0xa/LrZk3xMcVPPf1XmrER5lN7Cr2FrWZh9
-         sL7rgUw6dQg+BHcMFvkGdaZv/V4QSmgBIFL2olj0=
+        b=zrb5WDxZwYuvodAG+hgrCHNeqnZ93/i0kGzVdjV+0yFJoDs3AKwlvuHv18PT0UgLy
+         pLsSutrENY/A/nf/kyRWVdicfp2/NdmF3i2+9fvoz4S4BIGk1C0wC//Wt93ie+L34/
+         KshZXhZN3kCOByZm+jv38ECrBTsGNNUXlbUsN2To=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 368/772] mt76: mt7921: Fix the error handling path of mt7921_pci_probe()
-Date:   Tue,  7 Jun 2022 18:59:20 +0200
-Message-Id: <20220607164959.859976933@linuxfoundation.org>
+        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Jessica Zhang <quic_jesszhan@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 341/772] drm/msm/mdp5: Return error code in mdp5_mixer_release when deadlock is detected
+Date:   Tue,  7 Jun 2022 18:58:53 +0200
+Message-Id: <20220607164959.071961204@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,48 +52,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Jessica Zhang <quic_jesszhan@quicinc.com>
 
-[ Upstream commit 4e90db5e21eb3bb272fe47386dc3506755e209e9 ]
+[ Upstream commit ca75f6f7c6f89365e40f10f641b15981b1f07c31 ]
 
-In case of error, some resources must be freed, as already done above and
-below the devm_kmemdup() and __mt7921e_mcu_drv_pmctrl() calls added in the
-commit in Fixes:.
+There is a possibility for mdp5_get_global_state to return
+-EDEADLK when acquiring the modeset lock, but currently global_state in
+mdp5_mixer_release doesn't check for if an error is returned.
 
-Fixes: 602cc0c9618a ("mt76: mt7921e: fix possible probe failure after reboot")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+To avoid a NULL dereference error, let's have mdp5_mixer_release
+check if an error is returned and propagate that error.
+
+Reported-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
+Fixes: 7907a0d77cb4 ("drm/msm/mdp5: Use the new private_obj state")
+Reviewed-by: Rob Clark <robdclark@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485181/
+Link: https://lore.kernel.org/r/20220505214051.155-2-quic_jesszhan@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/pci.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c  | 10 ++++++++--
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c | 15 +++++++++++----
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h |  4 ++--
+ 3 files changed, 21 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-index 9a71a5d86481..18c8f5cbd96c 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-@@ -300,8 +300,10 @@ static int mt7921_pci_probe(struct pci_dev *pdev,
- 	dev->bus_ops = dev->mt76.bus;
- 	bus_ops = devm_kmemdup(dev->mt76.dev, dev->bus_ops, sizeof(*bus_ops),
- 			       GFP_KERNEL);
--	if (!bus_ops)
--		return -ENOMEM;
-+	if (!bus_ops) {
-+		ret = -ENOMEM;
-+		goto err_free_dev;
-+	}
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
+index bb7d066618e6..477cda4ec23b 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
+@@ -612,9 +612,15 @@ static int mdp5_crtc_setup_pipeline(struct drm_crtc *crtc,
+ 		if (ret)
+ 			return ret;
  
- 	bus_ops->rr = mt7921_rr;
- 	bus_ops->wr = mt7921_wr;
-@@ -310,7 +312,7 @@ static int mt7921_pci_probe(struct pci_dev *pdev,
+-		mdp5_mixer_release(new_crtc_state->state, old_mixer);
++		ret = mdp5_mixer_release(new_crtc_state->state, old_mixer);
++		if (ret)
++			return ret;
++
+ 		if (old_r_mixer) {
+-			mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
++			ret = mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
++			if (ret)
++				return ret;
++
+ 			if (!need_right_mixer)
+ 				pipeline->r_mixer = NULL;
+ 		}
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
+index 954db683ae44..2536def2a000 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
+@@ -116,21 +116,28 @@ int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
+ 	return 0;
+ }
  
- 	ret = __mt7921e_mcu_drv_pmctrl(dev);
- 	if (ret)
--		return ret;
-+		goto err_free_dev;
+-void mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
++int mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
+ {
+ 	struct mdp5_global_state *global_state = mdp5_get_global_state(s);
+-	struct mdp5_hw_mixer_state *new_state = &global_state->hwmixer;
++	struct mdp5_hw_mixer_state *new_state;
  
- 	mdev->rev = (mt7921_l1_rr(dev, MT_HW_CHIPID) << 16) |
- 		    (mt7921_l1_rr(dev, MT_HW_REV) & 0xff);
+ 	if (!mixer)
+-		return;
++		return 0;
++
++	if (IS_ERR(global_state))
++		return PTR_ERR(global_state);
++
++	new_state = &global_state->hwmixer;
+ 
+ 	if (WARN_ON(!new_state->hwmixer_to_crtc[mixer->idx]))
+-		return;
++		return -EINVAL;
+ 
+ 	DBG("%s: release from crtc %s", mixer->name,
+ 	    new_state->hwmixer_to_crtc[mixer->idx]->name);
+ 
+ 	new_state->hwmixer_to_crtc[mixer->idx] = NULL;
++
++	return 0;
+ }
+ 
+ void mdp5_mixer_destroy(struct mdp5_hw_mixer *mixer)
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
+index 43c9ba43ce18..545ee223b9d7 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
+@@ -30,7 +30,7 @@ void mdp5_mixer_destroy(struct mdp5_hw_mixer *lm);
+ int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
+ 		      uint32_t caps, struct mdp5_hw_mixer **mixer,
+ 		      struct mdp5_hw_mixer **r_mixer);
+-void mdp5_mixer_release(struct drm_atomic_state *s,
+-			struct mdp5_hw_mixer *mixer);
++int mdp5_mixer_release(struct drm_atomic_state *s,
++		       struct mdp5_hw_mixer *mixer);
+ 
+ #endif /* __MDP5_LM_H__ */
 -- 
 2.35.1
 
