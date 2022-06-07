@@ -2,304 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59266CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D22CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354235AbiFGTFe (ORCPT
+        id S1354484AbiFGTGH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51570 "EHLO
+        Tue, 7 Jun 2022 15:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352532AbiFGSRQ (ORCPT
+        with ESMTP id S1352343AbiFGSRC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 049C1136E9D;
-        Tue,  7 Jun 2022 10:52:18 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AD37813D8;
+        Tue,  7 Jun 2022 10:51:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F09B0617A6;
-        Tue,  7 Jun 2022 17:52:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7630C36B00;
-        Tue,  7 Jun 2022 17:52:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624337;
-        bh=jE3W0hdEMyYHxjf7LaaIstu20hqOtMFfzW4n4q0p/Ss=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 44329B82340;
+        Tue,  7 Jun 2022 17:51:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD249C34115;
+        Tue,  7 Jun 2022 17:51:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624283;
+        bh=1MKKc6zajMzAhkWcXC+Hx4WyhxuQAkplFUMs2I3kjOU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mucu5/TUWyey6dTOclTR9H65Eq9PG5mv/vdfuUa5cVg84BK8+FJyL6IzpHWr0zHoh
-         gXssCxxJi+Dz92EI5R0hGcR7oQ1DW5vZ8g65sNT/oFI4RIF0yo76fyRD0RK36M7u+g
-         F+4DonbYskTfHLk/7TrirgrFcfVakngtPUlUjH9bpx2UcSlbIAl+hzUuw3RMcHFaRv
-         +t8TQ2+cAeCvpRuDujJc+sI50+ZWQZtCwUfxENwaXmYPFCO8Y3hCzT2hbFtveA8bcX
-         WyhUROIBDejwro5FvYVLJG7B1Gex2Gm4tgijoP1ZSSVKIYcvzoZTIOjOwrb6xIjpj9
-         RmzUkncXSmV5A==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>, Jouni Malinen <j@w1.fi>,
-        anton ivanov <anton.ivanov@cambridgegreys.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        jcmvbkbc@gmail.com, borntraeger@linux.ibm.com,
-        siglesias@igalia.com, dsterba@suse.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, linux-um@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.18 51/68] um: line: Use separate IRQs per line
-Date:   Tue,  7 Jun 2022 13:48:17 -0400
-Message-Id: <20220607174846.477972-51-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=BFSVjfjkvDruWtxbl0dhdER52Va32XkGLGMwsAz7J7pTwJTNELyAOF4/hq6RGIeb6
+         9M/ZGoROKnN9wWaiLwVAudfs0dhwLfBkEPJj8nzhpP4YrrV0sXCkYaI4dlPNmIxcPH
+         FRC2eFb6jMrNmEEcMi8wVtoff/x+3u4ambrrSlF0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 272/667] drm/msm/hdmi: fix error check return value of irq_of_parse_and_map()
+Date:   Tue,  7 Jun 2022 18:58:57 +0200
+Message-Id: <20220607164942.943335089@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit d5a9597d6916a76663085db984cb8fe97f0a5c56 ]
+[ Upstream commit 03371e4fbdeb7f596cbceacb59e474248b6d95ac ]
 
-Today, all possible serial lines (ssl*=) as well as all
-possible consoles (con*=) each share a single interrupt
-(with a fixed number) with others of the same type.
+The irq_of_parse_and_map() function returns 0 on failure, and does not
+return a negative value anyhow, so never enter this conditional branch.
 
-Now, if you have two lines, say ssl0 and ssl1, and one
-of them is connected to an fd you cannot read (e.g. a
-file), but the other gets a read interrupt, then both
-of them get the interrupt since it's shared. Then, the
-read() call will return EOF, since it's a file being
-written and there's nothing to read (at least not at
-the current offset, at the end).
-
-Unfortunately, this is treated as a read error, and we
-close this line, losing all the possible output.
-
-It might be possible to work around this and make the
-IRQ sharing work, however, now that we have dynamically
-allocated IRQs that are easy to use, simply use that to
-achieve separating between the events; then there's no
-interrupt for that line and we never attempt the read
-in the first place, thus not closing the line.
-
-This manifested itself in the wifi hostap/hwsim tests
-where the parallel script communicates via one serial
-console and the kernel messages go to another (a file)
-and sending data on the communication console caused
-the kernel messages to stop flowing into the file.
-
-Reported-by: Jouni Malinen <j@w1.fi>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Acked-By: anton ivanov <anton.ivanov@cambridgegreys.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Fixes: f6a8eaca0ea1 ("drm/msm/mdp5: use irqdomains")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/483294/
+Link: https://lore.kernel.org/r/20220425091831.3500487-1-lv.ruyi@zte.com.cn
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/drivers/chan_kern.c     | 10 +++++-----
- arch/um/drivers/line.c          | 22 +++++++++++++---------
- arch/um/drivers/line.h          |  4 ++--
- arch/um/drivers/ssl.c           |  2 --
- arch/um/drivers/stdio_console.c |  2 --
- arch/um/include/asm/irq.h       | 22 +++++++++-------------
- 6 files changed, 29 insertions(+), 33 deletions(-)
+ drivers/gpu/drm/msm/hdmi/hdmi.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/um/drivers/chan_kern.c b/arch/um/drivers/chan_kern.c
-index 62997055c454..26a702a06515 100644
---- a/arch/um/drivers/chan_kern.c
-+++ b/arch/um/drivers/chan_kern.c
-@@ -133,7 +133,7 @@ static void line_timer_cb(struct work_struct *work)
- 	struct line *line = container_of(work, struct line, task.work);
+diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
+index c3d95e7af1e4..23fb88b53324 100644
+--- a/drivers/gpu/drm/msm/hdmi/hdmi.c
++++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
+@@ -319,9 +319,9 @@ int msm_hdmi_modeset_init(struct hdmi *hdmi,
+ 	drm_connector_attach_encoder(hdmi->connector, hdmi->encoder);
  
- 	if (!line->throttled)
--		chan_interrupt(line, line->driver->read_irq);
-+		chan_interrupt(line, line->read_irq);
- }
- 
- int enable_chan(struct line *line)
-@@ -195,9 +195,9 @@ void free_irqs(void)
- 		chan = list_entry(ele, struct chan, free_list);
- 
- 		if (chan->input && chan->enabled)
--			um_free_irq(chan->line->driver->read_irq, chan);
-+			um_free_irq(chan->line->read_irq, chan);
- 		if (chan->output && chan->enabled)
--			um_free_irq(chan->line->driver->write_irq, chan);
-+			um_free_irq(chan->line->write_irq, chan);
- 		chan->enabled = 0;
+ 	hdmi->irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
+-	if (hdmi->irq < 0) {
+-		ret = hdmi->irq;
+-		DRM_DEV_ERROR(dev->dev, "failed to get irq: %d\n", ret);
++	if (!hdmi->irq) {
++		ret = -EINVAL;
++		DRM_DEV_ERROR(dev->dev, "failed to get irq\n");
+ 		goto fail;
  	}
- }
-@@ -215,9 +215,9 @@ static void close_one_chan(struct chan *chan, int delay_free_irq)
- 		spin_unlock_irqrestore(&irqs_to_free_lock, flags);
- 	} else {
- 		if (chan->input && chan->enabled)
--			um_free_irq(chan->line->driver->read_irq, chan);
-+			um_free_irq(chan->line->read_irq, chan);
- 		if (chan->output && chan->enabled)
--			um_free_irq(chan->line->driver->write_irq, chan);
-+			um_free_irq(chan->line->write_irq, chan);
- 		chan->enabled = 0;
- 	}
- 	if (chan->ops->close != NULL)
-diff --git a/arch/um/drivers/line.c b/arch/um/drivers/line.c
-index 8febf95da96e..02b0befd6763 100644
---- a/arch/um/drivers/line.c
-+++ b/arch/um/drivers/line.c
-@@ -139,7 +139,7 @@ static int flush_buffer(struct line *line)
- 		count = line->buffer + LINE_BUFSIZE - line->head;
- 
- 		n = write_chan(line->chan_out, line->head, count,
--			       line->driver->write_irq);
-+			       line->write_irq);
- 		if (n < 0)
- 			return n;
- 		if (n == count) {
-@@ -156,7 +156,7 @@ static int flush_buffer(struct line *line)
- 
- 	count = line->tail - line->head;
- 	n = write_chan(line->chan_out, line->head, count,
--		       line->driver->write_irq);
-+		       line->write_irq);
- 
- 	if (n < 0)
- 		return n;
-@@ -195,7 +195,7 @@ int line_write(struct tty_struct *tty, const unsigned char *buf, int len)
- 		ret = buffer_data(line, buf, len);
- 	else {
- 		n = write_chan(line->chan_out, buf, len,
--			       line->driver->write_irq);
-+			       line->write_irq);
- 		if (n < 0) {
- 			ret = n;
- 			goto out_up;
-@@ -215,7 +215,7 @@ void line_throttle(struct tty_struct *tty)
- {
- 	struct line *line = tty->driver_data;
- 
--	deactivate_chan(line->chan_in, line->driver->read_irq);
-+	deactivate_chan(line->chan_in, line->read_irq);
- 	line->throttled = 1;
- }
- 
-@@ -224,7 +224,7 @@ void line_unthrottle(struct tty_struct *tty)
- 	struct line *line = tty->driver_data;
- 
- 	line->throttled = 0;
--	chan_interrupt(line, line->driver->read_irq);
-+	chan_interrupt(line, line->read_irq);
- }
- 
- static irqreturn_t line_write_interrupt(int irq, void *data)
-@@ -260,19 +260,23 @@ int line_setup_irq(int fd, int input, int output, struct line *line, void *data)
- 	int err;
- 
- 	if (input) {
--		err = um_request_irq(driver->read_irq, fd, IRQ_READ,
--				     line_interrupt, IRQF_SHARED,
-+		err = um_request_irq(UM_IRQ_ALLOC, fd, IRQ_READ,
-+				     line_interrupt, 0,
- 				     driver->read_irq_name, data);
- 		if (err < 0)
- 			return err;
-+
-+		line->read_irq = err;
- 	}
- 
- 	if (output) {
--		err = um_request_irq(driver->write_irq, fd, IRQ_WRITE,
--				     line_write_interrupt, IRQF_SHARED,
-+		err = um_request_irq(UM_IRQ_ALLOC, fd, IRQ_WRITE,
-+				     line_write_interrupt, 0,
- 				     driver->write_irq_name, data);
- 		if (err < 0)
- 			return err;
-+
-+		line->write_irq = err;
- 	}
- 
- 	return 0;
-diff --git a/arch/um/drivers/line.h b/arch/um/drivers/line.h
-index bdb16b96e76f..f15be75a3bf3 100644
---- a/arch/um/drivers/line.h
-+++ b/arch/um/drivers/line.h
-@@ -23,9 +23,7 @@ struct line_driver {
- 	const short minor_start;
- 	const short type;
- 	const short subtype;
--	const int read_irq;
- 	const char *read_irq_name;
--	const int write_irq;
- 	const char *write_irq_name;
- 	struct mc_device mc;
- 	struct tty_driver *driver;
-@@ -35,6 +33,8 @@ struct line {
- 	struct tty_port port;
- 	int valid;
- 
-+	int read_irq, write_irq;
-+
- 	char *init_str;
- 	struct list_head chan_list;
- 	struct chan *chan_in, *chan_out;
-diff --git a/arch/um/drivers/ssl.c b/arch/um/drivers/ssl.c
-index 41eae2e8fb65..8514966778d5 100644
---- a/arch/um/drivers/ssl.c
-+++ b/arch/um/drivers/ssl.c
-@@ -47,9 +47,7 @@ static struct line_driver driver = {
- 	.minor_start 		= 64,
- 	.type 		 	= TTY_DRIVER_TYPE_SERIAL,
- 	.subtype 	 	= 0,
--	.read_irq 		= SSL_IRQ,
- 	.read_irq_name 		= "ssl",
--	.write_irq 		= SSL_WRITE_IRQ,
- 	.write_irq_name 	= "ssl-write",
- 	.mc  = {
- 		.list		= LIST_HEAD_INIT(driver.mc.list),
-diff --git a/arch/um/drivers/stdio_console.c b/arch/um/drivers/stdio_console.c
-index e8b762f4d8c2..489d5a746ed3 100644
---- a/arch/um/drivers/stdio_console.c
-+++ b/arch/um/drivers/stdio_console.c
-@@ -53,9 +53,7 @@ static struct line_driver driver = {
- 	.minor_start 		= 0,
- 	.type 		 	= TTY_DRIVER_TYPE_CONSOLE,
- 	.subtype 	 	= SYSTEM_TYPE_CONSOLE,
--	.read_irq 		= CONSOLE_IRQ,
- 	.read_irq_name 		= "console",
--	.write_irq 		= CONSOLE_WRITE_IRQ,
- 	.write_irq_name 	= "console-write",
- 	.mc  = {
- 		.list		= LIST_HEAD_INIT(driver.mc.list),
-diff --git a/arch/um/include/asm/irq.h b/arch/um/include/asm/irq.h
-index e187c789369d..749dfe8512e8 100644
---- a/arch/um/include/asm/irq.h
-+++ b/arch/um/include/asm/irq.h
-@@ -4,19 +4,15 @@
- 
- #define TIMER_IRQ		0
- #define UMN_IRQ			1
--#define CONSOLE_IRQ		2
--#define CONSOLE_WRITE_IRQ	3
--#define UBD_IRQ			4
--#define UM_ETH_IRQ		5
--#define SSL_IRQ			6
--#define SSL_WRITE_IRQ		7
--#define ACCEPT_IRQ		8
--#define MCONSOLE_IRQ		9
--#define WINCH_IRQ		10
--#define SIGIO_WRITE_IRQ 	11
--#define TELNETD_IRQ 		12
--#define XTERM_IRQ 		13
--#define RANDOM_IRQ 		14
-+#define UBD_IRQ			2
-+#define UM_ETH_IRQ		3
-+#define ACCEPT_IRQ		4
-+#define MCONSOLE_IRQ		5
-+#define WINCH_IRQ		6
-+#define SIGIO_WRITE_IRQ 	7
-+#define TELNETD_IRQ 		8
-+#define XTERM_IRQ 		9
-+#define RANDOM_IRQ 		10
- 
- #ifdef CONFIG_UML_NET_VECTOR
  
 -- 
 2.35.1
+
+
 
