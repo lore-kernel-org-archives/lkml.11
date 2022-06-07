@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AEA3CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A659CCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380125AbiFGVP0 (ORCPT
+        id S1380140AbiFGVPa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:15:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38242 "EHLO
+        Tue, 7 Jun 2022 17:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376309AbiFGUQj (ORCPT
+        with ESMTP id S1376293AbiFGUQi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:16:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7AD41CD34D;
-        Tue,  7 Jun 2022 11:28:57 -0700 (PDT)
+        Tue, 7 Jun 2022 16:16:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D111CC631;
+        Tue,  7 Jun 2022 11:28:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C976EB81FF8;
-        Tue,  7 Jun 2022 18:28:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 229C0C385A2;
-        Tue,  7 Jun 2022 18:28:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B7D9611B9;
+        Tue,  7 Jun 2022 18:28:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65918C385A2;
+        Tue,  7 Jun 2022 18:28:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626534;
-        bh=FYj3e4Dru2Jo9FvmGlnE8Gi8G7I9SD2Vl7ijBLyRvuQ=;
+        s=korg; t=1654626531;
+        bh=Oo/YlPR21+sSxIZJFb57UBAg32cF9hiwAuVkHeccN6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ugG3kkip3gzK0sPobLafisVxqfVxI6qP4ev6y8vU2svM5hj+Zr+Ped2u094D1p23P
-         pU/nAJGmxy1QJEH0zB27Wn5ENs+AmLrNQK0Q1SuJWqEJhO5iFNub5wQUDlvkWQoR1M
-         PXDcORIBmJxPTC7UPukIySswUbCSWXIh/AZD/z2I=
+        b=pQlpQiPi+2UhQ9HfrbslBiZU5zYpaKfY+4lk+oZhzsdXmXKNufOrPiRKCGz5XQHCg
+         YHytXhVd5vPy+v7yiuGxSZbu/Zpqf4HxEMr+TqsQzvFFYc6AZx0nj3Mbtouu9HYCFn
+         GcAyczhDaqdpA137Fy7uWfhK8H79+kNdDMaIBM/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 412/772] drm: msm: fix possible memory leak in mdp5_crtc_cursor_set()
-Date:   Tue,  7 Jun 2022 19:00:04 +0200
-Message-Id: <20220607165001.146947224@linuxfoundation.org>
+Subject: [PATCH 5.17 385/772] Bluetooth: use hdev lock for accept_list and reject_list in conn req
+Date:   Tue,  7 Jun 2022 18:59:37 +0200
+Message-Id: <20220607165000.360668556@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,38 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 947a844bb3ebff0f4736d244d792ce129f6700d7 ]
+[ Upstream commit fb048cae51bacdfbbda2954af3c213fdb1d484f4 ]
 
-drm_gem_object_lookup will call drm_gem_object_get inside. So cursor_bo
-needs to be put when msm_gem_get_and_pin_iova fails.
+All accesses (both reads and modifications) to
+hdev->{accept,reject}_list are protected by hdev lock,
+except the ones in hci_conn_request_evt. This can cause a race
+condition in the form of a list corruption.
+The solution is to protect these lists in hci_conn_request_evt as well.
 
-Fixes: e172d10a9c4a ("drm/msm/mdp5: Add hardware cursor support")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220509061125.18585-1-hbh25y@gmail.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+I was unable to find the exact commit that introduced the issue for the
+reject list, I was only able to find it for the accept list.
+
+Fixes: a55bd29d5227 ("Bluetooth: Add white list lookup for incoming connection requests")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/bluetooth/hci_event.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-index 477cda4ec23b..0e02e252ff89 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-@@ -989,8 +989,10 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 33a1b4115194..75bad1781983 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -3224,10 +3224,12 @@ static void hci_conn_request_evt(struct hci_dev *hdev, void *data,
+ 		return;
+ 	}
  
- 	ret = msm_gem_get_and_pin_iova(cursor_bo, kms->aspace,
- 			&mdp5_crtc->cursor.iova);
--	if (ret)
-+	if (ret) {
-+		drm_gem_object_put(cursor_bo);
- 		return -EINVAL;
-+	}
++	hci_dev_lock(hdev);
++
+ 	if (hci_bdaddr_list_lookup(&hdev->reject_list, &ev->bdaddr,
+ 				   BDADDR_BREDR)) {
+ 		hci_reject_conn(hdev, &ev->bdaddr);
+-		return;
++		goto unlock;
+ 	}
  
- 	pm_runtime_get_sync(&pdev->dev);
+ 	/* Require HCI_CONNECTABLE or an accept list entry to accept the
+@@ -3239,13 +3241,11 @@ static void hci_conn_request_evt(struct hci_dev *hdev, void *data,
+ 	    !hci_bdaddr_list_lookup_with_flags(&hdev->accept_list, &ev->bdaddr,
+ 					       BDADDR_BREDR)) {
+ 		hci_reject_conn(hdev, &ev->bdaddr);
+-		return;
++		goto unlock;
+ 	}
  
+ 	/* Connection accepted */
+ 
+-	hci_dev_lock(hdev);
+-
+ 	ie = hci_inquiry_cache_lookup(hdev, &ev->bdaddr);
+ 	if (ie)
+ 		memcpy(ie->data.dev_class, ev->dev_class, 3);
+@@ -3257,8 +3257,7 @@ static void hci_conn_request_evt(struct hci_dev *hdev, void *data,
+ 				    HCI_ROLE_SLAVE);
+ 		if (!conn) {
+ 			bt_dev_err(hdev, "no memory for new connection");
+-			hci_dev_unlock(hdev);
+-			return;
++			goto unlock;
+ 		}
+ 	}
+ 
+@@ -3298,6 +3297,10 @@ static void hci_conn_request_evt(struct hci_dev *hdev, void *data,
+ 		conn->state = BT_CONNECT2;
+ 		hci_connect_cfm(conn, 0);
+ 	}
++
++	return;
++unlock:
++	hci_dev_unlock(hdev);
+ }
+ 
+ static u8 hci_to_mgmt_reason(u8 err)
 -- 
 2.35.1
 
