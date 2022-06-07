@@ -2,105 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E54A3CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18BE3CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444009AbiFHBHQ (ORCPT
+        id S1444526AbiFHBHc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49788 "EHLO
+        Tue, 7 Jun 2022 21:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385116AbiFGWVB (ORCPT
+        with ESMTP id S1386532AbiFGWtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE8A265F98;
-        Tue,  7 Jun 2022 12:21:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 7 Jun 2022 18:49:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E1A629FE57
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:36:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654630611;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dSSRC0WIkS5IpQW5GfgCwEoSZKSvhgHutOeLQYQVc4o=;
+        b=iBqVYlM+KXaYE3/XGOO4pjW9W/qjB5pmFtsNF/bdvfzKmrnOJKWUCObdLTOe5majJ99Uoz
+        adjzI+KSQvZ2prAxJFEzZkgL7QgACRcT36D+FPco6DRbkI2fTSQxGEp/hZLU8cGHDcIN/C
+        Rq9BfWvDTXXhYuxb7zQ3IT8lXe325vw=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-615-rBYHaFOCOqOHB7s71ZIylw-1; Tue, 07 Jun 2022 15:36:47 -0400
+X-MC-Unique: rBYHaFOCOqOHB7s71ZIylw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDA38609FA;
-        Tue,  7 Jun 2022 19:21:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6DA6C385A2;
-        Tue,  7 Jun 2022 19:21:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629669;
-        bh=Xj4t98qVdkLPZQTS7OXQAoSx8M/pu0ePvUGCBZ8pXgU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ynzRyZABg5Op+lHFnC5U/78OoQMk7/TEgyP55hwvIarbtz4Vun3HkxSsrkiiaU7O5
-         L3nWXz7riDIxWp0A6roZkWgotI+WNKJA1K2MVoRe8BCl6CGXHrtS4rzZQA31sziwhR
-         io628VIueKYwZOBjQxVHQeup+LInm6cDV9K8DgCQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.18 775/879] samples/landlock: Add clang-format exceptions
-Date:   Tue,  7 Jun 2022 19:04:53 +0200
-Message-Id: <20220607165025.355203392@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6C6FA2949BA5;
+        Tue,  7 Jun 2022 19:35:36 +0000 (UTC)
+Received: from emerald.redhat.com (unknown [10.22.9.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 51B852C05D49;
+        Tue,  7 Jun 2022 19:35:10 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org
+Cc:     Ben Skeggs <bskeggs@redhat.com>, Karol Herbst <kherbst@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sean Paul <seanpaul@chromium.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Fernando Ramos <greenfoo@u92.eu>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RESEND RFC 12/18] drm/nouveau/kms: Pull mst state in for all modesets
+Date:   Tue,  7 Jun 2022 15:29:27 -0400
+Message-Id: <20220607192933.1333228-13-lyude@redhat.com>
+In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
+References: <20220607192933.1333228-1-lyude@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+Since we're going to be relying on atomic locking for payloads now (and the
+MST mgr needs to track CRTCs), pull in the topology state for all modesets
+in nv50_msto_atomic_check().
 
-commit 9805a722db071e1772b80e6e0ff33f35355639ac upstream.
-
-In preparation to a following commit, add clang-format on and
-clang-format off stanzas around constant definitions.  This enables to
-keep aligned values, which is much more readable than packed
-definitions.
-
-Link: https://lore.kernel.org/r/20220506160513.523257-7-mic@digikod.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
 ---
- samples/landlock/sandboxer.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/gpu/drm/nouveau/dispnv50/disp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/samples/landlock/sandboxer.c
-+++ b/samples/landlock/sandboxer.c
-@@ -70,11 +70,15 @@ static int parse_path(char *env_path, co
- 	return num_paths;
- }
+diff --git a/drivers/gpu/drm/nouveau/dispnv50/disp.c b/drivers/gpu/drm/nouveau/dispnv50/disp.c
+index 461e5e3345f8..834a5c5b77d5 100644
+--- a/drivers/gpu/drm/nouveau/dispnv50/disp.c
++++ b/drivers/gpu/drm/nouveau/dispnv50/disp.c
+@@ -1054,7 +1054,7 @@ nv50_msto_atomic_check(struct drm_encoder *encoder,
+ 	if (ret)
+ 		return ret;
  
-+/* clang-format off */
-+
- #define ACCESS_FILE ( \
- 	LANDLOCK_ACCESS_FS_EXECUTE | \
- 	LANDLOCK_ACCESS_FS_WRITE_FILE | \
- 	LANDLOCK_ACCESS_FS_READ_FILE)
+-	if (!crtc_state->mode_changed && !crtc_state->connectors_changed)
++	if (!drm_atomic_crtc_needs_modeset(crtc_state))
+ 		return 0;
  
-+/* clang-format on */
-+
- static int populate_ruleset(
- 		const char *const env_var, const int ruleset_fd,
- 		const __u64 allowed_access)
-@@ -139,6 +143,8 @@ out_free_name:
- 	return ret;
- }
- 
-+/* clang-format off */
-+
- #define ACCESS_FS_ROUGHLY_READ ( \
- 	LANDLOCK_ACCESS_FS_EXECUTE | \
- 	LANDLOCK_ACCESS_FS_READ_FILE | \
-@@ -156,6 +162,8 @@ out_free_name:
- 	LANDLOCK_ACCESS_FS_MAKE_BLOCK | \
- 	LANDLOCK_ACCESS_FS_MAKE_SYM)
- 
-+/* clang-format on */
-+
- int main(const int argc, char *const argv[], char *const *const envp)
- {
- 	const char *cmd_path;
-
+ 	/*
+-- 
+2.35.3
 
