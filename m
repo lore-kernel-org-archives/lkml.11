@@ -2,159 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF91DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:11:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A5C7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242629AbiFGLLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:11:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57382 "EHLO
+        id S242641AbiFGLLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242756AbiFGLKF (ORCPT
+        with ESMTP id S243338AbiFGLLK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 07:10:05 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 235478721C;
-        Tue,  7 Jun 2022 04:06:17 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id q1so34459151ejz.9;
-        Tue, 07 Jun 2022 04:06:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=JYTw8qBceECAtQp7A1kdanNQp5jRY5QBdh0dwqqC9RU=;
-        b=Nw5HmIulmE1vH1fMJ8FcWCnuJQHQiHH/x26C400Hk5Bf9PGo6Hw3r8UEWG1iplpkO3
-         bn2h1/zeXA+zFIZm1mDr53CRhOeZBRmwk6l3fWcutnWVOBQX8QXyqimHHXhXCV5SW1D9
-         xneNpq0uZNxhavrDzIyjaOlg3cRi/GIRrnD6ph4c9sc+7OaVG22cBe4ciXUj1oSePQ8H
-         dTk9dRNW6OXOx83c+AUB10I/nvHOjLk6/U8Qxj2b5caJczVcORF4L2HCpp0ebje4/wKs
-         EN8zGeT/km2CULPG1J7Sa/caGJwt7KFGxSaItC782x1KKRszWhdDADTmktx1IH/qarM9
-         N3bQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=JYTw8qBceECAtQp7A1kdanNQp5jRY5QBdh0dwqqC9RU=;
-        b=UBNjL3NrXNDVHoom9pNMDHtTdP8dJr4AUoBKoHqGPIKDQwFbP0hS1rWPkyeCK5UzAz
-         vobp5UfQJiuJOtQeYkVXwlF3qmWyyU2QDssPgVWAK1Scs+4PRo5pmhHvdfvEMgnI5q1j
-         1RA/VlbTLqxaVklYZXPCL8K2r3uwYQI6/KgBVTYpeGht17ESHhUs7QU4XTLePmYCk3lu
-         hJYSmcm5AKNTin3RtusZZfar43RnJ2yYXJqVtlvZadAkuxesm4aYOupPlIfUqcBHACL5
-         8HwBEQp7evtbxijTmPWKHIwmK9L0mUAcW+IqVpHe2rJJEpSVgVPNfxSrjicTj5Em11Bm
-         2Kuw==
-X-Gm-Message-State: AOAM533xbJXsTCxAlMpQoS5ElN9Blc22nNQbl07CWmPrnfqFucLUubof
-        Cfeoh1qSbKNgwy9nfoFgbsfhoaQGCYc=
-X-Google-Smtp-Source: ABdhPJy8xYlbSp5BuzRvztb2RbXiyhlVE5XzRRPnbXnxapSzqknqjm/tCBViCfgB25Q9EmDSXjGvQg==
-X-Received: by 2002:a17:907:da3:b0:6fe:f08b:776 with SMTP id go35-20020a1709070da300b006fef08b0776mr26382420ejc.558.1654599976053;
-        Tue, 07 Jun 2022 04:06:16 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id w21-20020aa7d295000000b0042dd482d0c4sm10115552edq.80.2022.06.07.04.06.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 04:06:15 -0700 (PDT)
-Message-ID: <629f3127.1c69fb81.2590d.39ac@mx.google.com>
-X-Google-Original-Message-ID: <Yp74rG6DVmeU+QCQ@Ansuel-xps.>
-Date:   Tue, 7 Jun 2022 09:05:16 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Manivannan Sadhasivam <mani@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] dt-bindings: mtd: qcom_nandc: document
- qcom,boot-pages binding
-References: <20220519190112.6344-1-ansuelsmth@gmail.com>
- <20220519190112.6344-3-ansuelsmth@gmail.com>
- <20220607091522.GB5410@thinkpad>
+        Tue, 7 Jun 2022 07:11:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0265F120B0
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 04:11:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98FBBB81F68
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:11:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41F2FC385A5
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:11:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654600266;
+        bh=PIkzzbA01Ke1e/RvnsMMOC+0QlwVwbLmLPr3rdaNonU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=NpkMadAVWM+8qyvEpWsUhzhB+bfwyX/YxFEzg6lTh6fkXOfa7vjRQWNPcsCo9L9GC
+         yF8xCzHKzvQed+DO6cYsIgTFLgGkIE4+j282R2+4EOxqz89JM9PKY+0hueMhKvrvu9
+         M75u5kWdy88pyHNKWnqYewAvL8SX0In4UA23S06Xo/te+8qYIzC1yF+F15a5z9eY58
+         7AlfvEU8dJ6Weu7H0m6JTbkTiMfY25razWKB42jpSidP6lflLf3NkJ/OtOg3K7RCR3
+         /hYWLb97qOk5GJ3N8K/Wy+f1+ufg4m+3/PMZyBI6ZDjxbyIjIrYuJcP06GzMY8Qg/V
+         liLERutnYuwcg==
+Received: by mail-oi1-f176.google.com with SMTP id s8so18161059oib.6
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 04:11:06 -0700 (PDT)
+X-Gm-Message-State: AOAM532voL2al5PCbmTsFlJAMpAS2BRJ0fFeUgEgnuyEV529ySPQWeCs
+        W+8XvCikQwUrdPFtElPhn+cNvuCL3ecz0rqVV+o=
+X-Google-Smtp-Source: ABdhPJx1A/CvRWfOQ3GFWIDzS3fTiGPqRgRi8dTUnmjkP0XSzpYtlEYcz6hvOOgD5Zoh3259OdkBrVt9FP81qFpcuLs=
+X-Received: by 2002:a05:6808:300e:b0:32c:425e:df34 with SMTP id
+ ay14-20020a056808300e00b0032c425edf34mr16693579oib.126.1654600265478; Tue, 07
+ Jun 2022 04:11:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220607091522.GB5410@thinkpad>
+References: <20220607100210.683136-1-Jason@zx2c4.com> <CAMj1kXEAuh-tokcqvKCQF5Vq+jZKj4ZM=PyGaHKapXPJKVyOrg@mail.gmail.com>
+ <Yp8oOH+9V336LrLk@zx2c4.com> <Yp8rcFrqK/IkzKXj@zx2c4.com> <CAMj1kXHV833uMJYrdUagJpH5hoj4ivC6zxMJvNnxLAF2NG3_sg@mail.gmail.com>
+ <Yp8wz2Ey4J4u+ZlK@zx2c4.com>
+In-Reply-To: <Yp8wz2Ey4J4u+ZlK@zx2c4.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Tue, 7 Jun 2022 13:10:52 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXFK9pFUdOABKP0Zp7tEJNVS1dTjxp5DgSwqzM8TEYJLTQ@mail.gmail.com>
+Message-ID: <CAMj1kXFK9pFUdOABKP0Zp7tEJNVS1dTjxp5DgSwqzM8TEYJLTQ@mail.gmail.com>
+Subject: Re: [PATCH] random: do not use jump labels before they are initialized
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Stephen Boyd <swboyd@chromium.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Phil Elwell <phil@raspberrypi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 02:45:22PM +0530, Manivannan Sadhasivam wrote:
-> On Thu, May 19, 2022 at 09:01:12PM +0200, Ansuel Smith wrote:
-> > Document new qcom,boot-pages binding used to apply special
-> > read/write configuration to boot pages.
-> > 
-> > QCOM apply a special configuration where spare data is not protected
-> > by ECC for some special pages (used for boot partition). Add
-> > Documentation on how to declare these special pages.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > ---
-> >  .../devicetree/bindings/mtd/qcom,nandc.yaml   | 26 +++++++++++++++++++
-> >  1 file changed, 26 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml b/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
-> > index 84ad7ff30121..a59ae9525f4e 100644
-> > --- a/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
-> > +++ b/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
-> > @@ -102,6 +102,30 @@ allOf:
-> >              - const: rx
-> >              - const: cmd
-> >  
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            enum:
-> > +              - qcom,ipq806x-nand
-> > +
-> > +    then:
-> > +      properties:
-> > +        qcom,boot-pages:
-> 
-> Eventhough the page layout is what making the difference, here the boot
-> partition offset and size are getting specified. So how about, changing it
-> to "qcom,boot-partitions"?
-> 
-> Thanks,
-> Mani
+On Tue, 7 Jun 2022 at 13:04, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> Hi Ard,
+>
+> On Tue, Jun 07, 2022 at 12:56:20PM +0200, Ard Biesheuvel wrote:
+> > Could we do this to defer the static key manipulation? That way, the
+> > first call to crng_reseed() that occurs after the static keys API
+> > becomes available will set the static key, and patch itself away at
+> > the same time.
+>
+> That's almost the same as the patch I just posted, except you
+> pushed the logic down into crng_reseed() instead of credit_init_bits().
+
+Sure.
+
+> (A previous mini-project aimed to remove as much logic as possible from
+> crng_reseed(), counting on those blocks in crng_init_bits() to only ever
+> run once.) What this means is that the static key won't get changed
+> until whenever the next reseeding is. I guess that's "fine" but I think
+> I'd prefer to keep the entropy counting stuff as separate from the init
+> bits stuff as possible.
 >
 
-Yep, you are correct and the naming is confusing. Will do the change.
-Did you check the code if you notice something to improve / an idea of a
-better implementation or better naming?
-Just to skip sending multiple revision with small changes.
+Fair enough. What I would like is to remove the need to play around
+with the placement of jump_label_init() across architectures. Jump
+labels are fundamentally a performance optimization, so unless you can
+explain how setting it as early as possible makes a material
+difference, performance or otherwise, I really think we should pursue
+a solution that does the static key manipulation at some later time.
 
-> > +          $ref: /schemas/types.yaml#/definitions/uint32-matrix
-> > +          items:
-> > +            items:
-> > +              - description: offset
-> > +              - description: size
-> > +          description:
-> > +            Some special page used by boot partition have spare data
-> > +            not protected by ECC. Use this to declare these special page
-> > +            by defining first the offset and then the size.
-> > +
-> > +            It's in the form of <offset1 size1 offset2 size2 offset3 ...>
-> > +
-> > +            Refer to the ipq8064 example on how to use this special binding.
-> > +
-> >  required:
-> >    - compatible
-> >    - reg
-> > @@ -135,6 +159,8 @@ examples:
-> >          nand-ecc-strength = <4>;
-> >          nand-bus-width = <8>;
-> >  
-> > +        qcom,boot-pages = <0x0 0x58a0000>;
-> > +
-> >          partitions {
-> >            compatible = "fixed-partitions";
-> >            #address-cells = <1>;
-> > -- 
-> > 2.34.1
-> > 
-> 
-> -- 
-> மணிவண்ணன் சதாசிவம்
+> >> As a third, I could just defer doing anything with the bootloader seed
+> >> until random_init(). This might actually be the simplest solution...
+> >> I'll sketch something out. A downside, which might be sort of
+> >> significant, is that a few odd things actually use randomness before
+> >> random_init() is called. So these would miss out on having that seed.
+> >> I'll have to look what exactly to see if we're actually getting anything
+> >> real out of that.
+> >>
+> >
+> > This is kind of the point of using a firmware provided seed, i.e.,
+> > that it is available much earlier than anything else.
+>
+> I'll send a patch for this anyway because I'm sort of curious now. Maybe
+> it'll be a dead end, for the reason you mentioned, but I think I'll
+> still try to evaluate it.
+>
 
--- 
-	Ansuel
+Sure. Anything that can be deferred to an initcall() should be, as the
+early arch code is much too fragile to much around with.
