@@ -2,169 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 557A6CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 464FECCA489
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388214AbiFHAbr (ORCPT
+        id S1388164AbiFHAbk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:31:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45980 "EHLO
+        Tue, 7 Jun 2022 20:31:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382815AbiFGVwD (ORCPT
+        with ESMTP id S1389413AbiFGWxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CD323F7D5;
-        Tue,  7 Jun 2022 12:09:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB094618E1;
-        Tue,  7 Jun 2022 19:09:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3A0BC385A5;
-        Tue,  7 Jun 2022 19:09:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628998;
-        bh=rnrAVh8TFZm3cAqfuvMQc8xzmqqS6HwYs40C1rok/OA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pHOV8K8xQrG5dAbghtvyny4arDW18cL8Xwd1Gg4JQQkFDtTXjzR9RwIsErpW5tTvc
-         I0hl4kErFPTCtOd64OMLAc3IkzNiVDnNBlLEnWH0x5/IRIrjCIQFI2ZhK6wF3RIYVg
-         hzsQobnWTJxno4/Usri7w1wUEAp7OaJ5YgCAYe5s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 531/879] Revert "net/smc: fix listen processing for SMC-Rv2"
-Date:   Tue,  7 Jun 2022 19:00:49 +0200
-Message-Id: <20220607165018.286602041@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 18:53:17 -0400
+X-Greylist: delayed 842 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 12:48:30 PDT
+Received: from 6.mo583.mail-out.ovh.net (6.mo583.mail-out.ovh.net [178.32.119.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65CB62DE7FB
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:48:24 -0700 (PDT)
+Received: from player797.ha.ovh.net (unknown [10.108.1.161])
+        by mo583.mail-out.ovh.net (Postfix) with ESMTP id B0CE7243A9
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:10:24 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player797.ha.ovh.net (Postfix) with ESMTPSA id 894BD273DCB28;
+        Tue,  7 Jun 2022 19:10:15 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-102R004c1185a33-f4c2-4b0e-9337-679f3581da73,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Helge Deller <deller@gmx.de>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 4/4] backlight: tosa: Use backlight helper
+Date:   Tue,  7 Jun 2022 21:09:25 +0200
+Message-Id: <20220607190925.1134737-5-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220607190925.1134737-1-steve@sk2.org>
+References: <20220607190925.1134737-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11718366230841099910
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleejrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekfe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: liuyacan <liuyacan@corp.netease.com>
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-[ Upstream commit 9029ac03f20a5999bc5627277c6cf008ab8e23ed ]
-
-This reverts commit 8c3b8dc5cc9bf6d273ebe18b16e2d6882bcfb36d.
-
-Some rollback issue will be fixed in other patches in the future.
-
-Link: https://lore.kernel.org/all/20220523055056.2078994-1-liuyacan@corp.netease.com/
-
-Fixes: 8c3b8dc5cc9b ("net/smc: fix listen processing for SMC-Rv2")
-Signed-off-by: liuyacan <liuyacan@corp.netease.com>
-Link: https://lore.kernel.org/r/20220524090230.2140302-1-liuyacan@corp.netease.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Jingoo Han <jingoohan1@gmail.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-fbdev@vger.kernel.org
 ---
- net/smc/af_smc.c | 44 +++++++++++++++++---------------------------
- 1 file changed, 17 insertions(+), 27 deletions(-)
+ drivers/video/backlight/tosa_bl.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index d3de54b70c05..45a24d24210f 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -2093,13 +2093,13 @@ static int smc_listen_rdma_reg(struct smc_sock *new_smc, bool local_first)
- 	return 0;
- }
+diff --git a/drivers/video/backlight/tosa_bl.c b/drivers/video/backlight/tosa_bl.c
+index 6df6fcd132e3..5bbb769f9746 100644
+--- a/drivers/video/backlight/tosa_bl.c
++++ b/drivers/video/backlight/tosa_bl.c
+@@ -50,13 +50,8 @@ static void tosa_bl_set_backlight(struct tosa_bl_data *data, int brightness)
  
--static int smc_find_rdma_v2_device_serv(struct smc_sock *new_smc,
--					struct smc_clc_msg_proposal *pclc,
--					struct smc_init_info *ini)
-+static void smc_find_rdma_v2_device_serv(struct smc_sock *new_smc,
-+					 struct smc_clc_msg_proposal *pclc,
-+					 struct smc_init_info *ini)
+ static int tosa_bl_update_status(struct backlight_device *dev)
  {
- 	struct smc_clc_v2_extension *smc_v2_ext;
- 	u8 smcr_version;
--	int rc = 0;
-+	int rc;
- 
- 	if (!(ini->smcr_version & SMC_V2) || !smcr_indicated(ini->smc_type_v2))
- 		goto not_found;
-@@ -2117,31 +2117,26 @@ static int smc_find_rdma_v2_device_serv(struct smc_sock *new_smc,
- 	ini->smcrv2.saddr = new_smc->clcsock->sk->sk_rcv_saddr;
- 	ini->smcrv2.daddr = smc_ib_gid_to_ipv4(smc_v2_ext->roce);
- 	rc = smc_find_rdma_device(new_smc, ini);
--	if (rc)
-+	if (rc) {
-+		smc_find_ism_store_rc(rc, ini);
- 		goto not_found;
+-	struct backlight_properties *props = &dev->props;
+ 	struct tosa_bl_data *data = bl_get_data(dev);
+-	int power = max(props->power, props->fb_blank);
+-	int brightness = props->brightness;
 -
-+	}
- 	if (!ini->smcrv2.uses_gateway)
- 		memcpy(ini->smcrv2.nexthop_mac, pclc->lcl.mac, ETH_ALEN);
+-	if (power)
+-		brightness = 0;
++	int brightness = backlight_get_brightness(dev);
  
- 	smcr_version = ini->smcr_version;
- 	ini->smcr_version = SMC_V2;
- 	rc = smc_listen_rdma_init(new_smc, ini);
--	if (rc) {
--		ini->smcr_version = smcr_version;
--		goto not_found;
--	}
--	rc = smc_listen_rdma_reg(new_smc, ini->first_contact_local);
--	if (rc) {
--		ini->smcr_version = smcr_version;
--		goto not_found;
--	}
--	return 0;
-+	if (!rc)
-+		rc = smc_listen_rdma_reg(new_smc, ini->first_contact_local);
-+	if (!rc)
-+		return;
-+	ini->smcr_version = smcr_version;
-+	smc_find_ism_store_rc(rc, ini);
+ 	tosa_bl_set_backlight(data, brightness);
  
- not_found:
--	rc = rc ?: SMC_CLC_DECL_NOSMCDEV;
- 	ini->smcr_version &= ~SMC_V2;
- 	ini->check_smcrv2 = false;
--	return rc;
- }
- 
- static int smc_find_rdma_v1_device_serv(struct smc_sock *new_smc,
-@@ -2174,7 +2169,6 @@ static int smc_listen_find_device(struct smc_sock *new_smc,
- 				  struct smc_init_info *ini)
- {
- 	int prfx_rc;
--	int rc;
- 
- 	/* check for ISM device matching V2 proposed device */
- 	smc_find_ism_v2_device_serv(new_smc, pclc, ini);
-@@ -2202,18 +2196,14 @@ static int smc_listen_find_device(struct smc_sock *new_smc,
- 		return ini->rc ?: SMC_CLC_DECL_NOSMCDDEV;
- 
- 	/* check if RDMA V2 is available */
--	rc = smc_find_rdma_v2_device_serv(new_smc, pclc, ini);
--	if (!rc)
-+	smc_find_rdma_v2_device_serv(new_smc, pclc, ini);
-+	if (ini->smcrv2.ib_dev_v2)
- 		return 0;
- 
--	/* skip V1 check if V2 is unavailable for non-Device reason */
--	if (rc != SMC_CLC_DECL_NOSMCDEV &&
--	    rc != SMC_CLC_DECL_NOSMCRDEV &&
--	    rc != SMC_CLC_DECL_NOSMCDDEV)
--		return rc;
--
- 	/* check if RDMA V1 is available */
- 	if (!prfx_rc) {
-+		int rc;
-+
- 		rc = smc_find_rdma_v1_device_serv(new_smc, pclc, ini);
- 		smc_find_ism_store_rc(rc, ini);
- 		return (!rc) ? 0 : ini->rc;
 -- 
-2.35.1
-
-
+2.30.2
 
