@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBE0CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8871CCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384956AbiFGW0N (ORCPT
+        id S1385089AbiFGW0W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:26:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54464 "EHLO
+        Tue, 7 Jun 2022 18:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380707AbiFGVQo (ORCPT
+        with ESMTP id S1380740AbiFGVQz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:16:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA9814AF64;
-        Tue,  7 Jun 2022 11:56:31 -0700 (PDT)
+        Tue, 7 Jun 2022 17:16:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C90414B2CD;
+        Tue,  7 Jun 2022 11:57:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8CBDB81F6D;
-        Tue,  7 Jun 2022 18:56:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4934DC385A2;
-        Tue,  7 Jun 2022 18:56:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24DB86159D;
+        Tue,  7 Jun 2022 18:57:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E1CAC385A5;
+        Tue,  7 Jun 2022 18:57:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628188;
-        bh=rZ2OXPCITf7LRFHCb0HH1soMLzMUo8JEpL8zp4zSYqI=;
+        s=korg; t=1654628221;
+        bh=+Eu7a/01Gm0vvkEXgIQO9gAsjJXm9bL/OnGxnrNXiSo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cI/GRWuJf0GGaexbrXIVdnmqHu+FeG7Iv8ig9AlrZc1KzsTcCvuML1piyfULBwfE8
-         fDWThG0LEnfyOoGtYX/yfLqIurHzmQqjfPBcqU+OA3i8M4k3TizNGSTlyS1DIKcXrY
-         F1brha14yvDBtPWroXxB+QRC7nNsNzah4pgPOE0s=
+        b=FtjCq7GiMDxGfYpzMh4P/dQsrrOcsbx69a0CmEd+pGu79qmoRZwb/l6uJrzmxDvp5
+         fOuLJjzgY5cY6j/PhH82D5zNSqm6n/dcr1hTPAURpj1aQWfuEUXHoZpz1mzq4ZIjkJ
+         VKaqMRx/nZyQVLQc+OjrazDh8o5OwCLQfA1gievw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 236/879] powerpc/rtas: Keep MSR[RI] set when calling RTAS
-Date:   Tue,  7 Jun 2022 18:55:54 +0200
-Message-Id: <20220607165009.703824925@linuxfoundation.org>
+Subject: [PATCH 5.18 251/879] cifs: do not use tcpStatus after negotiate completes
+Date:   Tue,  7 Jun 2022 18:56:09 +0200
+Message-Id: <20220607165010.135030627@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,162 +50,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurent Dufour <ldufour@linux.ibm.com>
+From: Shyam Prasad N <sprasad@microsoft.com>
 
-[ Upstream commit b6b1c3ce06ca438eb24e0f45bf0e63ecad0369f5 ]
+[ Upstream commit 1a6a41d4cedd9b302e2200e6f0e3c44dbbe13689 ]
 
-RTAS runs in real mode (MSR[DR] and MSR[IR] unset) and in 32-bit big
-endian mode (MSR[SF,LE] unset).
+Recent changes to multichannel to allow channel reconnects to
+work in parallel and independent of each other did so by
+making use of tcpStatus for the connection, and status for the
+session. However, this did not take into account the multiuser
+scenario, where same connection is used by multiple connections.
 
-The change in MSR is done in enter_rtas() in a relatively complex way,
-since the MSR value could be hardcoded.
+However, tcpStatus should be tracked only till the end of
+negotiate exchange, and not used for session setup. This change
+fixes this.
 
-Furthermore, a panic has been reported when hitting the watchdog interrupt
-while running in RTAS, this leads to the following stack trace:
-
-  watchdog: CPU 24 Hard LOCKUP
-  watchdog: CPU 24 TB:997512652051031, last heartbeat TB:997504470175378 (15980ms ago)
-  ...
-  Supported: No, Unreleased kernel
-  CPU: 24 PID: 87504 Comm: drmgr Kdump: loaded Tainted: G            E  X    5.14.21-150400.71.1.bz196362_2-default #1 SLE15-SP4 (unreleased) 0d821077ef4faa8dfaf370efb5fdca1fa35f4e2c
-  NIP:  000000001fb41050 LR: 000000001fb4104c CTR: 0000000000000000
-  REGS: c00000000fc33d60 TRAP: 0100   Tainted: G            E  X     (5.14.21-150400.71.1.bz196362_2-default)
-  MSR:  8000000002981000 <SF,VEC,VSX,ME>  CR: 48800002  XER: 20040020
-  CFAR: 000000000000011c IRQMASK: 1
-  GPR00: 0000000000000003 ffffffffffffffff 0000000000000001 00000000000050dc
-  GPR04: 000000001ffb6100 0000000000000020 0000000000000001 000000001fb09010
-  GPR08: 0000000020000000 0000000000000000 0000000000000000 0000000000000000
-  GPR12: 80040000072a40a8 c00000000ff8b680 0000000000000007 0000000000000034
-  GPR16: 000000001fbf6e94 000000001fbf6d84 000000001fbd1db0 000000001fb3f008
-  GPR20: 000000001fb41018 ffffffffffffffff 000000000000017f fffffffffffff68f
-  GPR24: 000000001fb18fe8 000000001fb3e000 000000001fb1adc0 000000001fb1cf40
-  GPR28: 000000001fb26000 000000001fb460f0 000000001fb17f18 000000001fb17000
-  NIP [000000001fb41050] 0x1fb41050
-  LR [000000001fb4104c] 0x1fb4104c
-  Call Trace:
-  Instruction dump:
-  XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
-  XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
-  Oops: Unrecoverable System Reset, sig: 6 [#1]
-  LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
-  ...
-  Supported: No, Unreleased kernel
-  CPU: 24 PID: 87504 Comm: drmgr Kdump: loaded Tainted: G            E  X    5.14.21-150400.71.1.bz196362_2-default #1 SLE15-SP4 (unreleased) 0d821077ef4faa8dfaf370efb5fdca1fa35f4e2c
-  NIP:  000000001fb41050 LR: 000000001fb4104c CTR: 0000000000000000
-  REGS: c00000000fc33d60 TRAP: 0100   Tainted: G            E  X     (5.14.21-150400.71.1.bz196362_2-default)
-  MSR:  8000000002981000 <SF,VEC,VSX,ME>  CR: 48800002  XER: 20040020
-  CFAR: 000000000000011c IRQMASK: 1
-  GPR00: 0000000000000003 ffffffffffffffff 0000000000000001 00000000000050dc
-  GPR04: 000000001ffb6100 0000000000000020 0000000000000001 000000001fb09010
-  GPR08: 0000000020000000 0000000000000000 0000000000000000 0000000000000000
-  GPR12: 80040000072a40a8 c00000000ff8b680 0000000000000007 0000000000000034
-  GPR16: 000000001fbf6e94 000000001fbf6d84 000000001fbd1db0 000000001fb3f008
-  GPR20: 000000001fb41018 ffffffffffffffff 000000000000017f fffffffffffff68f
-  GPR24: 000000001fb18fe8 000000001fb3e000 000000001fb1adc0 000000001fb1cf40
-  GPR28: 000000001fb26000 000000001fb460f0 000000001fb17f18 000000001fb17000
-  NIP [000000001fb41050] 0x1fb41050
-  LR [000000001fb4104c] 0x1fb4104c
-  Call Trace:
-  Instruction dump:
-  XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
-  XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
-  ---[ end trace 3ddec07f638c34a2 ]---
-
-This happens because MSR[RI] is unset when entering RTAS but there is no
-valid reason to not set it here.
-
-RTAS is expected to be called with MSR[RI] as specified in PAPR+ section
-"7.2.1 Machine State":
-
-  R1–7.2.1–9. If called with MSR[RI] equal to 1, then RTAS must protect
-  its own critical regions from recursion by setting the MSR[RI] bit to
-  0 when in the critical regions.
-
-Fixing this by reviewing the way MSR is compute before calling RTAS. Now a
-hardcoded value meaning real mode, 32 bits big endian mode and Recoverable
-Interrupt is loaded. In the case MSR[S] is set, it will remain set while
-entering RTAS as only urfid can unset it (thanks Fabiano).
-
-In addition a check is added in do_enter_rtas() to detect calls made with
-MSR[RI] unset, as we are forcing it on later.
-
-This patch has been tested on the following machines:
-Power KVM Guest
-  P8 S822L (host Ubuntu kernel 5.11.0-49-generic)
-PowerVM LPAR
-  P8 9119-MME (FW860.A1)
-  p9 9008-22L (FW950.00)
-  P10 9080-HEX (FW1010.00)
-
-Suggested-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220504101244.12107-1-ldufour@linux.ibm.com
+Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/entry_64.S | 24 ++++++++++++------------
- arch/powerpc/kernel/rtas.c     |  9 +++++++++
- 2 files changed, 21 insertions(+), 12 deletions(-)
+ fs/cifs/connect.c       | 23 +++++++++++------------
+ fs/cifs/smb2pdu.c       |  3 ++-
+ fs/cifs/smb2transport.c |  3 ++-
+ 3 files changed, 15 insertions(+), 14 deletions(-)
 
-diff --git a/arch/powerpc/kernel/entry_64.S b/arch/powerpc/kernel/entry_64.S
-index 9581906b5ee9..da18f83ef883 100644
---- a/arch/powerpc/kernel/entry_64.S
-+++ b/arch/powerpc/kernel/entry_64.S
-@@ -330,22 +330,22 @@ _GLOBAL(enter_rtas)
- 	clrldi	r4,r4,2			/* convert to realmode address */
-        	mtlr	r4
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index b28b1ff39fed..aa2d4c49e2a5 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -3956,7 +3956,7 @@ cifs_negotiate_protocol(const unsigned int xid, struct cifs_ses *ses,
+ 	if (rc == 0) {
+ 		spin_lock(&cifs_tcp_ses_lock);
+ 		if (server->tcpStatus == CifsInNegotiate)
+-			server->tcpStatus = CifsNeedSessSetup;
++			server->tcpStatus = CifsGood;
+ 		else
+ 			rc = -EHOSTDOWN;
+ 		spin_unlock(&cifs_tcp_ses_lock);
+@@ -3979,19 +3979,18 @@ cifs_setup_session(const unsigned int xid, struct cifs_ses *ses,
+ 	bool is_binding = false;
  
--	li	r0,0
--	ori	r0,r0,MSR_EE|MSR_SE|MSR_BE|MSR_RI
--	andc	r0,r6,r0
--	
--        li      r9,1
--        rldicr  r9,r9,MSR_SF_LG,(63-MSR_SF_LG)
--	ori	r9,r9,MSR_IR|MSR_DR|MSR_FE0|MSR_FE1|MSR_FP|MSR_RI|MSR_LE
--	andc	r6,r0,r9
+ 	/* only send once per connect */
++	spin_lock(&ses->chan_lock);
++	is_binding = !CIFS_ALL_CHANS_NEED_RECONNECT(ses);
++	spin_unlock(&ses->chan_lock);
++
+ 	spin_lock(&cifs_tcp_ses_lock);
+-	if ((server->tcpStatus != CifsNeedSessSetup) &&
+-	    (ses->status == CifsGood)) {
++	if (ses->status == CifsExiting) {
+ 		spin_unlock(&cifs_tcp_ses_lock);
+ 		return 0;
+ 	}
+-	server->tcpStatus = CifsInSessSetup;
++	ses->status = CifsInSessSetup;
+ 	spin_unlock(&cifs_tcp_ses_lock);
+ 
+-	spin_lock(&ses->chan_lock);
+-	is_binding = !CIFS_ALL_CHANS_NEED_RECONNECT(ses);
+-	spin_unlock(&ses->chan_lock);
 -
- __enter_rtas:
--	sync				/* disable interrupts so SRR0/1 */
--	mtmsrd	r0			/* don't get trashed */
--
- 	LOAD_REG_ADDR(r4, rtas)
- 	ld	r5,RTASENTRY(r4)	/* get the rtas->entry value */
- 	ld	r4,RTASBASE(r4)		/* get the rtas->base value */
-+
-+	/*
-+	 * RTAS runs in 32-bit big endian real mode, but leave MSR[RI] on as we
-+	 * may hit NMI (SRESET or MCE) while in RTAS. RTAS should disable RI in
-+	 * its critical regions (as specified in PAPR+ section 7.2.1). MSR[S]
-+	 * is not impacted by RFI_TO_KERNEL (only urfid can unset it). So if
-+	 * MSR[S] is set, it will remain when entering RTAS.
-+	 */
-+	LOAD_REG_IMMEDIATE(r6, MSR_ME | MSR_RI)
-+
-+	li      r0,0
-+	mtmsrd  r0,1                    /* disable RI before using SRR0/1 */
- 	
- 	mtspr	SPRN_SRR0,r5
- 	mtspr	SPRN_SRR1,r6
-diff --git a/arch/powerpc/kernel/rtas.c b/arch/powerpc/kernel/rtas.c
-index 1f42aabbbab3..6bc89d9ccf63 100644
---- a/arch/powerpc/kernel/rtas.c
-+++ b/arch/powerpc/kernel/rtas.c
-@@ -49,6 +49,15 @@ void enter_rtas(unsigned long);
+ 	if (!is_binding) {
+ 		ses->capabilities = server->capabilities;
+ 		if (!linuxExtEnabled)
+@@ -4015,13 +4014,13 @@ cifs_setup_session(const unsigned int xid, struct cifs_ses *ses,
+ 	if (rc) {
+ 		cifs_server_dbg(VFS, "Send error in SessSetup = %d\n", rc);
+ 		spin_lock(&cifs_tcp_ses_lock);
+-		if (server->tcpStatus == CifsInSessSetup)
+-			server->tcpStatus = CifsNeedSessSetup;
++		if (ses->status == CifsInSessSetup)
++			ses->status = CifsNeedSessSetup;
+ 		spin_unlock(&cifs_tcp_ses_lock);
+ 	} else {
+ 		spin_lock(&cifs_tcp_ses_lock);
+-		if (server->tcpStatus == CifsInSessSetup)
+-			server->tcpStatus = CifsGood;
++		if (ses->status == CifsInSessSetup)
++			ses->status = CifsGood;
+ 		/* Even if one channel is active, session is in good state */
+ 		ses->status = CifsGood;
+ 		spin_unlock(&cifs_tcp_ses_lock);
+diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
+index 1b7ad0c09566..f5321a3500f3 100644
+--- a/fs/cifs/smb2pdu.c
++++ b/fs/cifs/smb2pdu.c
+@@ -3899,7 +3899,8 @@ SMB2_echo(struct TCP_Server_Info *server)
+ 	cifs_dbg(FYI, "In echo request for conn_id %lld\n", server->conn_id);
  
- static inline void do_enter_rtas(unsigned long args)
- {
-+	unsigned long msr;
-+
-+	/*
-+	 * Make sure MSR[RI] is currently enabled as it will be forced later
-+	 * in enter_rtas.
-+	 */
-+	msr = mfmsr();
-+	BUG_ON(!(msr & MSR_RI));
-+
- 	enter_rtas(args);
- 
- 	srr_regs_clobbered(); /* rtas uses SRRs, invalidate */
+ 	spin_lock(&cifs_tcp_ses_lock);
+-	if (server->tcpStatus == CifsNeedNegotiate) {
++	if (server->ops->need_neg &&
++	    server->ops->need_neg(server)) {
+ 		spin_unlock(&cifs_tcp_ses_lock);
+ 		/* No need to send echo on newly established connections */
+ 		mod_delayed_work(cifsiod_wq, &server->reconnect, 0);
+diff --git a/fs/cifs/smb2transport.c b/fs/cifs/smb2transport.c
+index 2af79093b78b..01b732641edb 100644
+--- a/fs/cifs/smb2transport.c
++++ b/fs/cifs/smb2transport.c
+@@ -641,7 +641,8 @@ smb2_sign_rqst(struct smb_rqst *rqst, struct TCP_Server_Info *server)
+ 	if (!is_signed)
+ 		return 0;
+ 	spin_lock(&cifs_tcp_ses_lock);
+-	if (server->tcpStatus == CifsNeedNegotiate) {
++	if (server->ops->need_neg &&
++	    server->ops->need_neg(server)) {
+ 		spin_unlock(&cifs_tcp_ses_lock);
+ 		return 0;
+ 	}
 -- 
 2.35.1
 
