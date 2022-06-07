@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 990CDCCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B932CCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352901AbiFGSbV (ORCPT
+        id S1352323AbiFGSay (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35356 "EHLO
+        Tue, 7 Jun 2022 14:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352040AbiFGSCf (ORCPT
+        with ESMTP id S1351999AbiFGSCe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2EEE33368;
-        Tue,  7 Jun 2022 10:46:51 -0700 (PDT)
+        Tue, 7 Jun 2022 14:02:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3865A21B7;
+        Tue,  7 Jun 2022 10:46:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 990D261534;
-        Tue,  7 Jun 2022 17:46:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A177EC385A5;
-        Tue,  7 Jun 2022 17:46:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E39ABB82239;
+        Tue,  7 Jun 2022 17:46:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46D70C385A5;
+        Tue,  7 Jun 2022 17:46:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624010;
-        bh=nXNs2TKaYBe3HGWE0Y7zWPQB9J0WpS5ZjTFwM5df4Yo=;
+        s=korg; t=1654623998;
+        bh=djdQ9S61mfxn5Qroahz8b0fLg9sK1orzkaSB+oH7BUw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rUHKzGozoHz1doLQLdqlGK06nSYgF85Vd/+t83STQHGL9gsVM7w0TX2vKXhmqHxSh
-         FJM/aQYAm78DRvUa+7FzeamhObYSCfn+oYIvEZhnncU8poY5xph4tE2WOSJ0SMuH8L
-         2zWe8b30agD1yie2EGOHLCBrbzUkAo1ibLRPV7QE=
+        b=ml6OafgJpZWHeg4XRsBFrnkF6B9Ob8U4qP2M1o+rmn4+fzFI9l5ttqIRldBGNJdnD
+         hlUaayw4kCtJjL283StH1r2CeJOpm4dB0tNclXD4ZDNnwDhmr4Nb1MhHM14qUozQCI
+         uRxDVncShaKy0wEUOZAiCQDjQUuZsAC4l+QQOkbw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yicong Yang <yangyicong@hisilicon.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Jay Zhou <jianjay.zhou@huawei.com>
-Subject: [PATCH 5.15 170/667] PCI: Avoid pci_dev_lock() AB/BA deadlock with sriov_numvfs_store()
-Date:   Tue,  7 Jun 2022 18:57:15 +0200
-Message-Id: <20220607164939.911914526@linuxfoundation.org>
+        stable@vger.kernel.org, Peng Wu <wupeng58@huawei.com>,
+        Wei Xu <xuwei5@hisilicon.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 167/667] ARM: hisi: Add missing of_node_put after of_find_compatible_node
+Date:   Tue,  7 Jun 2022 18:57:12 +0200
+Message-Id: <20220607164939.822726029@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,88 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yicong Yang <yangyicong@hisilicon.com>
+From: Peng Wu <wupeng58@huawei.com>
 
-[ Upstream commit a91ee0e9fca9d7501286cfbced9b30a33e52740a ]
+[ Upstream commit 9bc72e47d4630d58a840a66a869c56b29554cfe4 ]
 
-The sysfs sriov_numvfs_store() path acquires the device lock before the
-config space access lock:
+of_find_compatible_node  will increment the refcount of the returned
+device_node. Calling of_node_put() to avoid the refcount leak
 
-  sriov_numvfs_store
-    device_lock                 # A (1) acquire device lock
-    sriov_configure
-      vfio_pci_sriov_configure  # (for example)
-        vfio_pci_core_sriov_configure
-          pci_disable_sriov
-            sriov_disable
-              pci_cfg_access_lock
-                pci_wait_cfg    # B (4) wait for dev->block_cfg_access == 0
-
-Previously, pci_dev_lock() acquired the config space access lock before the
-device lock:
-
-  pci_dev_lock
-    pci_cfg_access_lock
-      dev->block_cfg_access = 1 # B (2) set dev->block_cfg_access = 1
-    device_lock                 # A (3) wait for device lock
-
-Any path that uses pci_dev_lock(), e.g., pci_reset_function(), may
-deadlock with sriov_numvfs_store() if the operations occur in the sequence
-(1) (2) (3) (4).
-
-Avoid the deadlock by reversing the order in pci_dev_lock() so it acquires
-the device lock before the config space access lock, the same as the
-sriov_numvfs_store() path.
-
-[bhelgaas: combined and adapted commit log from Jay Zhou's independent
-subsequent posting:
-https://lore.kernel.org/r/20220404062539.1710-1-jianjay.zhou@huawei.com]
-Link: https://lore.kernel.org/linux-pci/1583489997-17156-1-git-send-email-yangyicong@hisilicon.com/
-Also-posted-by: Jay Zhou <jianjay.zhou@huawei.com>
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
+Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pci.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ arch/arm/mach-hisi/platsmp.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 0380543d10fd..09815cbc18f9 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -5079,18 +5079,18 @@ static int pci_reset_bus_function(struct pci_dev *dev, bool probe)
- 
- static void pci_dev_lock(struct pci_dev *dev)
- {
--	pci_cfg_access_lock(dev);
- 	/* block PM suspend, driver probe, etc. */
- 	device_lock(&dev->dev);
-+	pci_cfg_access_lock(dev);
- }
- 
- /* Return 1 on successful lock, 0 on contention */
- int pci_dev_trylock(struct pci_dev *dev)
- {
--	if (pci_cfg_access_trylock(dev)) {
--		if (device_trylock(&dev->dev))
-+	if (device_trylock(&dev->dev)) {
-+		if (pci_cfg_access_trylock(dev))
- 			return 1;
--		pci_cfg_access_unlock(dev);
-+		device_unlock(&dev->dev);
+diff --git a/arch/arm/mach-hisi/platsmp.c b/arch/arm/mach-hisi/platsmp.c
+index a56cc64deeb8..9ce93e0b6cdc 100644
+--- a/arch/arm/mach-hisi/platsmp.c
++++ b/arch/arm/mach-hisi/platsmp.c
+@@ -67,14 +67,17 @@ static void __init hi3xxx_smp_prepare_cpus(unsigned int max_cpus)
+ 		}
+ 		ctrl_base = of_iomap(np, 0);
+ 		if (!ctrl_base) {
++			of_node_put(np);
+ 			pr_err("failed to map address\n");
+ 			return;
+ 		}
+ 		if (of_property_read_u32(np, "smp-offset", &offset) < 0) {
++			of_node_put(np);
+ 			pr_err("failed to find smp-offset property\n");
+ 			return;
+ 		}
+ 		ctrl_base += offset;
++		of_node_put(np);
  	}
- 
- 	return 0;
-@@ -5099,8 +5099,8 @@ EXPORT_SYMBOL_GPL(pci_dev_trylock);
- 
- void pci_dev_unlock(struct pci_dev *dev)
- {
--	device_unlock(&dev->dev);
- 	pci_cfg_access_unlock(dev);
-+	device_unlock(&dev->dev);
  }
- EXPORT_SYMBOL_GPL(pci_dev_unlock);
  
+@@ -160,6 +163,7 @@ static int hip01_boot_secondary(unsigned int cpu, struct task_struct *idle)
+ 	if (WARN_ON(!node))
+ 		return -1;
+ 	ctrl_base = of_iomap(node, 0);
++	of_node_put(node);
+ 
+ 	/* set the secondary core boot from DDR */
+ 	remap_reg_value = readl_relaxed(ctrl_base + REG_SC_CTRL);
 -- 
 2.35.1
 
