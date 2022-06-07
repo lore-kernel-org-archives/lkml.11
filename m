@@ -2,56 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F505CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:54:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15982C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:54:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356617AbiFGTyX (ORCPT
+        id S1356796AbiFGTya (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58132 "EHLO
+        Tue, 7 Jun 2022 15:54:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354135AbiFGSqh (ORCPT
+        with ESMTP id S1354040AbiFGSq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFED1208AB;
-        Tue,  7 Jun 2022 11:00:11 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C04718E44F;
+        Tue,  7 Jun 2022 10:59:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC075B82239;
-        Tue,  7 Jun 2022 18:00:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75B97C34115;
-        Tue,  7 Jun 2022 18:00:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 43752616B6;
+        Tue,  7 Jun 2022 17:59:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84D3FC36AFF;
+        Tue,  7 Jun 2022 17:59:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624808;
-        bh=UP9KMN543kU6QQyQCCMOySYyF+aE6lrj+mqAuR83e+g=;
+        s=k20201202; t=1654624793;
+        bh=JzGW/PIlJA/cMyZJ3ANK0AFOuDKSu3Alt53e/wLXUWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NNJAZFtPGdYCOlDj58EZlNeI1hCecmUxntlaAl7uvy+s9iF1TehSRMKUSIIVeOUm0
-         vSywVN3oxKIZMNAWMXOTU/xjOQZ0ieF+8myKBojO7RpgxcKLTmqjrv1BDL8yYAi6Uw
-         dsDa7uiSjVioun1HPbE4eg8rgcooemoELXTx6fwnKPkolA1yHQq2Y/58CfH4HCIc/I
-         W+VQYPpcWfLlRxa/vOpapZ52+PnrdUR2EiPa7PqVpUiQAOsZQwxa6fNW5dbV0GMDTC
-         hMyJOaq5sUnHPwTzgMRt3BDx4UPAxrejlHnuTGlyntny+YjGJI0HJz2r1wjOBkhu7v
-         48XdW67xrALTQ==
+        b=Pp2dQXMcHnNruHwv7begOWvnX6NyUgcmjE570Y14EV9TRUnR6GSLBEoK/FtEfD+ro
+         KfCR+HtSW5jCjvFZBXvCtQUkS79zAwd8nUrR8nJdDlG6/YWLqCDPbOqH78vYmpochH
+         DXwbyqU0Oc1iHYMSojxjgnz0d0EIxzEaLgSmp5Ba8xi960OGg7ocZEm0mBS0nof+hG
+         c8RJewf6AqrOtguG0/ojr5BCQzaL3HWyTHkTCgUWQ8/Uq3Xq/TT+ot8G+on64dYxv6
+         1N76bT0lznxXiacFR0TXeqtBIe28SBU+PIKnfOWaVZPhyUDcsU3o3s77qMsB0V7PfP
+         LwTvlWctvEbQw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        Christophe de Dinechin <dinechin@redhat.com>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.10 38/38] nodemask: Fix return values to be unsigned
-Date:   Tue,  7 Jun 2022 13:58:33 -0400
-Message-Id: <20220607175835.480735-38-sashal@kernel.org>
+Cc:     Gong Yuanjun <ruc_gongyuanjun@163.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.10 29/38] drm/radeon: fix a possible null pointer dereference
+Date:   Tue,  7 Jun 2022 13:58:24 -0400
+Message-Id: <20220607175835.480735-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
 References: <20220607175835.480735-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,184 +54,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 
-[ Upstream commit 0dfe54071d7c828a02917b595456bfde1afdddc9 ]
+[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
 
-The nodemask routines had mixed return values that provided potentially
-signed return values that could never happen. This was leading to the
-compiler getting confusing about the range of possible return values
-(it was thinking things could be negative where they could not be). Fix
-all the nodemask routines that should be returning unsigned
-(or bool) values. Silences:
+In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
+is assigned to mode, which will lead to a NULL pointer dereference
+on failure of drm_mode_duplicate(). Add a check to avoid npd.
 
- mm/swapfile.c: In function ‘setup_swap_info’:
- mm/swapfile.c:2291:47: error: array subscript -1 is below array bounds of ‘struct plist_node[]’ [-Werror=array-bounds]
-  2291 |                                 p->avail_lists[i].prio = 1;
-       |                                 ~~~~~~~~~~~~~~^~~
- In file included from mm/swapfile.c:16:
- ./include/linux/swap.h:292:27: note: while referencing ‘avail_lists’
-   292 |         struct plist_node avail_lists[]; /*
-       |                           ^~~~~~~~~~~
+The failure status of drm_cvt_mode() on the other path is checked too.
 
-Reported-by: Christophe de Dinechin <dinechin@redhat.com>
-Link: https://lore.kernel.org/lkml/20220414150855.2407137-3-dinechin@redhat.com/
-Cc: Alexey Dobriyan <adobriyan@gmail.com>
-Cc: Yury Norov <yury.norov@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/nodemask.h | 38 +++++++++++++++++++-------------------
- lib/nodemask.c           |  4 ++--
- 2 files changed, 21 insertions(+), 21 deletions(-)
+ drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
-index ac398e143c9a..82c86b0b09d9 100644
---- a/include/linux/nodemask.h
-+++ b/include/linux/nodemask.h
-@@ -42,11 +42,11 @@
-  * void nodes_shift_right(dst, src, n)	Shift right
-  * void nodes_shift_left(dst, src, n)	Shift left
-  *
-- * int first_node(mask)			Number lowest set bit, or MAX_NUMNODES
-- * int next_node(node, mask)		Next node past 'node', or MAX_NUMNODES
-- * int next_node_in(node, mask)		Next node past 'node', or wrap to first,
-+ * unsigned int first_node(mask)	Number lowest set bit, or MAX_NUMNODES
-+ * unsigend int next_node(node, mask)	Next node past 'node', or MAX_NUMNODES
-+ * unsigned int next_node_in(node, mask) Next node past 'node', or wrap to first,
-  *					or MAX_NUMNODES
-- * int first_unset_node(mask)		First node not set in mask, or 
-+ * unsigned int first_unset_node(mask)	First node not set in mask, or
-  *					MAX_NUMNODES
-  *
-  * nodemask_t nodemask_of_node(node)	Return nodemask with bit 'node' set
-@@ -153,7 +153,7 @@ static inline void __nodes_clear(nodemask_t *dstp, unsigned int nbits)
+diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
+index e30834434442..ef111d460be2 100644
+--- a/drivers/gpu/drm/radeon/radeon_connectors.c
++++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+@@ -473,6 +473,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 	    native_mode->vdisplay != 0 &&
+ 	    native_mode->clock != 0) {
+ 		mode = drm_mode_duplicate(dev, native_mode);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		drm_mode_set_name(mode);
  
- #define node_test_and_set(node, nodemask) \
- 			__node_test_and_set((node), &(nodemask))
--static inline int __node_test_and_set(int node, nodemask_t *addr)
-+static inline bool __node_test_and_set(int node, nodemask_t *addr)
- {
- 	return test_and_set_bit(node, addr->bits);
- }
-@@ -200,7 +200,7 @@ static inline void __nodes_complement(nodemask_t *dstp,
- 
- #define nodes_equal(src1, src2) \
- 			__nodes_equal(&(src1), &(src2), MAX_NUMNODES)
--static inline int __nodes_equal(const nodemask_t *src1p,
-+static inline bool __nodes_equal(const nodemask_t *src1p,
- 					const nodemask_t *src2p, unsigned int nbits)
- {
- 	return bitmap_equal(src1p->bits, src2p->bits, nbits);
-@@ -208,7 +208,7 @@ static inline int __nodes_equal(const nodemask_t *src1p,
- 
- #define nodes_intersects(src1, src2) \
- 			__nodes_intersects(&(src1), &(src2), MAX_NUMNODES)
--static inline int __nodes_intersects(const nodemask_t *src1p,
-+static inline bool __nodes_intersects(const nodemask_t *src1p,
- 					const nodemask_t *src2p, unsigned int nbits)
- {
- 	return bitmap_intersects(src1p->bits, src2p->bits, nbits);
-@@ -216,20 +216,20 @@ static inline int __nodes_intersects(const nodemask_t *src1p,
- 
- #define nodes_subset(src1, src2) \
- 			__nodes_subset(&(src1), &(src2), MAX_NUMNODES)
--static inline int __nodes_subset(const nodemask_t *src1p,
-+static inline bool __nodes_subset(const nodemask_t *src1p,
- 					const nodemask_t *src2p, unsigned int nbits)
- {
- 	return bitmap_subset(src1p->bits, src2p->bits, nbits);
- }
- 
- #define nodes_empty(src) __nodes_empty(&(src), MAX_NUMNODES)
--static inline int __nodes_empty(const nodemask_t *srcp, unsigned int nbits)
-+static inline bool __nodes_empty(const nodemask_t *srcp, unsigned int nbits)
- {
- 	return bitmap_empty(srcp->bits, nbits);
- }
- 
- #define nodes_full(nodemask) __nodes_full(&(nodemask), MAX_NUMNODES)
--static inline int __nodes_full(const nodemask_t *srcp, unsigned int nbits)
-+static inline bool __nodes_full(const nodemask_t *srcp, unsigned int nbits)
- {
- 	return bitmap_full(srcp->bits, nbits);
- }
-@@ -260,15 +260,15 @@ static inline void __nodes_shift_left(nodemask_t *dstp,
-           > MAX_NUMNODES, then the silly min_ts could be dropped. */
- 
- #define first_node(src) __first_node(&(src))
--static inline int __first_node(const nodemask_t *srcp)
-+static inline unsigned int __first_node(const nodemask_t *srcp)
- {
--	return min_t(int, MAX_NUMNODES, find_first_bit(srcp->bits, MAX_NUMNODES));
-+	return min_t(unsigned int, MAX_NUMNODES, find_first_bit(srcp->bits, MAX_NUMNODES));
- }
- 
- #define next_node(n, src) __next_node((n), &(src))
--static inline int __next_node(int n, const nodemask_t *srcp)
-+static inline unsigned int __next_node(int n, const nodemask_t *srcp)
- {
--	return min_t(int,MAX_NUMNODES,find_next_bit(srcp->bits, MAX_NUMNODES, n+1));
-+	return min_t(unsigned int, MAX_NUMNODES, find_next_bit(srcp->bits, MAX_NUMNODES, n+1));
- }
- 
- /*
-@@ -276,7 +276,7 @@ static inline int __next_node(int n, const nodemask_t *srcp)
-  * the first node in src if needed.  Returns MAX_NUMNODES if src is empty.
-  */
- #define next_node_in(n, src) __next_node_in((n), &(src))
--int __next_node_in(int node, const nodemask_t *srcp);
-+unsigned int __next_node_in(int node, const nodemask_t *srcp);
- 
- static inline void init_nodemask_of_node(nodemask_t *mask, int node)
- {
-@@ -296,9 +296,9 @@ static inline void init_nodemask_of_node(nodemask_t *mask, int node)
- })
- 
- #define first_unset_node(mask) __first_unset_node(&(mask))
--static inline int __first_unset_node(const nodemask_t *maskp)
-+static inline unsigned int __first_unset_node(const nodemask_t *maskp)
- {
--	return min_t(int,MAX_NUMNODES,
-+	return min_t(unsigned int, MAX_NUMNODES,
- 			find_first_zero_bit(maskp->bits, MAX_NUMNODES));
- }
- 
-@@ -436,11 +436,11 @@ static inline int num_node_state(enum node_states state)
- 
- #define first_online_node	first_node(node_states[N_ONLINE])
- #define first_memory_node	first_node(node_states[N_MEMORY])
--static inline int next_online_node(int nid)
-+static inline unsigned int next_online_node(int nid)
- {
- 	return next_node(nid, node_states[N_ONLINE]);
- }
--static inline int next_memory_node(int nid)
-+static inline unsigned int next_memory_node(int nid)
- {
- 	return next_node(nid, node_states[N_MEMORY]);
- }
-diff --git a/lib/nodemask.c b/lib/nodemask.c
-index 3aa454c54c0d..e22647f5181b 100644
---- a/lib/nodemask.c
-+++ b/lib/nodemask.c
-@@ -3,9 +3,9 @@
- #include <linux/module.h>
- #include <linux/random.h>
- 
--int __next_node_in(int node, const nodemask_t *srcp)
-+unsigned int __next_node_in(int node, const nodemask_t *srcp)
- {
--	int ret = __next_node(node, srcp);
-+	unsigned int ret = __next_node(node, srcp);
- 
- 	if (ret == MAX_NUMNODES)
- 		ret = __first_node(srcp);
+@@ -487,6 +489,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 		 * simpler.
+ 		 */
+ 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
+ 	}
 -- 
 2.35.1
 
