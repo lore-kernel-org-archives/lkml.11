@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F4E6CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 288ADCCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349734AbiFGRvd (ORCPT
+        id S1349552AbiFGRvN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:51:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
+        Tue, 7 Jun 2022 13:51:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347299AbiFGReh (ORCPT
+        with ESMTP id S1347023AbiFGReA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:34:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2DD1207EB;
-        Tue,  7 Jun 2022 10:30:38 -0700 (PDT)
+        Tue, 7 Jun 2022 13:34:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B743010636D;
+        Tue,  7 Jun 2022 10:30:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 217746141D;
-        Tue,  7 Jun 2022 17:30:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 271ACC385A5;
-        Tue,  7 Jun 2022 17:30:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88C326146F;
+        Tue,  7 Jun 2022 17:30:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99C75C385A5;
+        Tue,  7 Jun 2022 17:30:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623016;
-        bh=1H/ZYMuNAcLbh8Xb5XE+Py9Or4YtjdvnvS5eciXsu7c=;
+        s=korg; t=1654623025;
+        bh=OtaDK/9/4CC4FHBdDAyjx3QgzFKJf/bhVbyteYso/MM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=extoASMeaj45eSeKfJEkhmLdpl2mXRSELxEiE6fveIWvN03XCqemcNdB/25I556VX
-         NVLFez2ZcUXRB2j/+NCI8K4my8mjcReT89/fST8Y4F3+1LZgRsh8L4CIDX/bT6Eg3F
-         APl8VL1W2ovWnO6p6Oq3xbh+aLDGI2/LBrCXgV9Q=
+        b=t2CnDW2CJ9iqUrkgbG8lGhE8IPJQtgMjeIcgvB+CPDn5Od7A3ICY1FlZmQtkFZNI1
+         qU0c+8V/C+YLTP2GofeZdMAUUe/L21TZXduS9wH2xPd3HNZxVR4vTi34DkjKKUpuSa
+         xNIdpAhcy9oOUNPELHVXVgqlwZTVXFreObXpFDd4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianrong Zhang <zhangjianrong5@huawei.com>,
-        Jiantao Zhang <water.zhangjiantao@huawei.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 265/452] PCI: dwc: Fix setting error return on MSI DMA mapping failure
-Date:   Tue,  7 Jun 2022 19:02:02 +0200
-Message-Id: <20220607164916.449308441@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 268/452] KVM: nVMX: Leave most VM-Exit info fields unmodified on failed VM-Entry
+Date:   Tue,  7 Jun 2022 19:02:05 +0200
+Message-Id: <20220607164916.538546527@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,38 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiantao Zhang <water.zhangjiantao@huawei.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 88557685cd72cf0db686a4ebff3fad4365cb6071 ]
+[ Upstream commit c3634d25fbee88e2368a8e0903ae0d0670eb9e71 ]
 
-When dma_mapping_error() returns error because of no enough memory,
-but dw_pcie_host_init() returns success, which will mislead the callers.
+Don't modify vmcs12 exit fields except EXIT_REASON and EXIT_QUALIFICATION
+when performing a nested VM-Exit due to failed VM-Entry.  Per the SDM,
+only the two aformentioned fields are filled and "All other VM-exit
+information fields are unmodified".
 
-Link: https://lore.kernel.org/r/30170911-0e2f-98ce-9266-70465b9073e5@huawei.com
-Fixes: 07940c369a6b ("PCI: dwc: Fix MSI page leakage in suspend/resume")
-Signed-off-by: Jianrong Zhang <zhangjianrong5@huawei.com>
-Signed-off-by: Jiantao Zhang <water.zhangjiantao@huawei.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Fixes: 4704d0befb07 ("KVM: nVMX: Exiting from L2 to L1")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220407002315.78092-3-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-designware-host.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/kvm/vmx/nested.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index 44c2a6572199..42d8116a4a00 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -392,7 +392,8 @@ int dw_pcie_host_init(struct pcie_port *pp)
- 						      sizeof(pp->msi_msg),
- 						      DMA_FROM_DEVICE,
- 						      DMA_ATTR_SKIP_CPU_SYNC);
--			if (dma_mapping_error(pci->dev, pp->msi_data)) {
-+			ret = dma_mapping_error(pci->dev, pp->msi_data);
-+			if (ret) {
- 				dev_err(pci->dev, "Failed to map MSI data\n");
- 				pp->msi_data = 0;
- 				goto err_free_msi;
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index 0c2389d0fdaf..fe53cab1a8a6 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -4143,12 +4143,12 @@ static void prepare_vmcs12(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
+ 	/* update exit information fields: */
+ 	vmcs12->vm_exit_reason = vm_exit_reason;
+ 	vmcs12->exit_qualification = exit_qualification;
+-	vmcs12->vm_exit_intr_info = exit_intr_info;
+-
+-	vmcs12->idt_vectoring_info_field = 0;
+-	vmcs12->vm_exit_instruction_len = vmcs_read32(VM_EXIT_INSTRUCTION_LEN);
+-	vmcs12->vmx_instruction_info = vmcs_read32(VMX_INSTRUCTION_INFO);
+ 
++	/*
++	 * On VM-Exit due to a failed VM-Entry, the VMCS isn't marked launched
++	 * and only EXIT_REASON and EXIT_QUALIFICATION are updated, all other
++	 * exit info fields are unmodified.
++	 */
+ 	if (!(vmcs12->vm_exit_reason & VMX_EXIT_REASONS_FAILED_VMENTRY)) {
+ 		vmcs12->launch_state = 1;
+ 
+@@ -4160,8 +4160,13 @@ static void prepare_vmcs12(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
+ 		 * Transfer the event that L0 or L1 may wanted to inject into
+ 		 * L2 to IDT_VECTORING_INFO_FIELD.
+ 		 */
++		vmcs12->idt_vectoring_info_field = 0;
+ 		vmcs12_save_pending_event(vcpu, vmcs12);
+ 
++		vmcs12->vm_exit_intr_info = exit_intr_info;
++		vmcs12->vm_exit_instruction_len = vmcs_read32(VM_EXIT_INSTRUCTION_LEN);
++		vmcs12->vmx_instruction_info = vmcs_read32(VMX_INSTRUCTION_INFO);
++
+ 		/*
+ 		 * According to spec, there's no need to store the guest's
+ 		 * MSRs if the exit is due to a VM-entry failure that occurs
 -- 
 2.35.1
 
