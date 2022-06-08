@@ -2,123 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E9C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 21:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E98C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 21:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233761AbiFHVVJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 17:21:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47672 "EHLO
+        id S233793AbiFHVYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 17:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233999AbiFHVVE (ORCPT
+        with ESMTP id S229534AbiFHVYi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 17:21:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91CA6194BEF;
-        Wed,  8 Jun 2022 14:21:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 8 Jun 2022 17:24:38 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E50B0A79;
+        Wed,  8 Jun 2022 14:24:37 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 419EDB82B41;
-        Wed,  8 Jun 2022 21:21:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA963C3411E;
-        Wed,  8 Jun 2022 21:20:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654723260;
-        bh=S3UEZv3ead2hOkIPLW7Y042Bs94VzTGvzX0yMk+NxlY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=rbfxb19Ae3cah/01V7chFtBj+m46O5WTrj4ME78TsGsYH8e3YRinhfNXJoSg4VOft
-         4KXfE9px6mQqZUtk3mA2jL8VJNXKk6a4/9ZocluE3GBrstjvkd7sDZBYq/ReztMUew
-         kzzLvHqRzpdljwPJNm7fuYNRtDiEDTJSJGb5+SkSsT8Zk+L0bya94XtMGOe/MmQqMo
-         R02p6t+mL8QPInjZhu+ZHlDjhPBXpKUJD4jzdYCZXPEjYFUMdHW79wb2r7zBNvWXkg
-         CGe1Idm4gzUdd8g6egGBwPZcJ3JPiez0TfHJrH562iHqj/ezcCMpMQGj3brbmqFL14
-         aZaq1gPAa+PwA==
-Date:   Wed, 8 Jun 2022 16:20:58 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     miles.chen@mediatek.com, Ryder Lee <ryder.lee@mediatek.com>,
-        Jianjun Wang <jianjun.wang@mediatek.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, linux-pci@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3] PCI: mediatek-gen3: Fix refcount leak in
- mtk_pcie_init_irq_domains
-Message-ID: <20220608212058.GA424368@bhelgaas>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id BD55F1FD42;
+        Wed,  8 Jun 2022 21:24:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1654723475;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xv+4uQrrTakP3KnxIQgdrzZcegHCXASlvH7JzPuS3/g=;
+        b=CnFhx+sj2FpBl88LIpsas+PafUhM8T5ER+AEhId8tOjgQQ0LoCbiokdJaw2V44cJLKTQaF
+        vol2HmAudPtksWVGXp7wvZ28uyCCn1xO3yAY6A0CWyqn/E0aUosvKi250CmYQsBikeX2YX
+        TeyCW4ZDHEWoOd0wJ6K61RXL7DyxLwA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1654723475;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xv+4uQrrTakP3KnxIQgdrzZcegHCXASlvH7JzPuS3/g=;
+        b=TrIYudiCW6NR5RfIorfnylRra0nNoRFo5demygjiHyhgfII7jyODV3guHgX4TvRu+QiPde
+        Sm92tn+aTieTf6Dw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7B4A413A15;
+        Wed,  8 Jun 2022 21:24:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 14vPHJMToWJ5DgAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Wed, 08 Jun 2022 21:24:35 +0000
+Date:   Wed, 8 Jun 2022 23:20:05 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH -next] btrfs: Remove the unused function
+ scrub_calc_parity_bitmap_len()
+Message-ID: <20220608212005.GR20633@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Yang Li <yang.lee@linux.alibaba.com>,
+        clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+References: <20220608012158.109334-1-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220601041259.56185-1-linmq006@gmail.com>
+In-Reply-To: <20220608012158.109334-1-yang.lee@linux.alibaba.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 08:12:58AM +0400, Miaoqian Lin wrote:
-> of_get_child_by_name() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when not need anymore.
-> Add missing of_node_put() to avoid refcount leak.
+On Wed, Jun 08, 2022 at 09:21:58AM +0800, Yang Li wrote:
+> bitmap_len = scrub_calc_parity_bitmap_len(), the only call point of this
+> function has been deleted, so it should also be removed.
 > 
-> Fixes: 814cceebba9b ("PCI: mediatek-gen3: Add INTx support")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> Fix the following W=1 kernel warning:
+> fs/btrfs/scrub.c:2857:19: warning: unused function 'scrub_calc_parity_bitmap_len'
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-Can we get an ack from Ryder or Jianjun, as well, since they're listed
-as maintainers?
-
-> ---
-> changes in v2:
-> - move of_node_put(intc_node) right after irq_domain_add_linear to cover
-> normal path and error paths.
-> ---
-> changes in v3:
-> - call of_node_put() in error paths with goto, and call of_node_put() before
->   return 0 in normal path. Since this function has a goto part to handle
->   resources, so put them together, as suggested by Miles Chen <miles.chen@mediatek.com>
-> 
-> v1 link: https://lore.kernel.org/all/20220526110246.53502-1-linmq006@gmail.com/
-> v2 link: https://lore.kernel.org/all/20220530064807.34534-1-linmq006@gmail.com/
-> ---
->  drivers/pci/controller/pcie-mediatek-gen3.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
-> index 3e8d70bfabc6..bceed28446ed 100644
-> --- a/drivers/pci/controller/pcie-mediatek-gen3.c
-> +++ b/drivers/pci/controller/pcie-mediatek-gen3.c
-> @@ -600,7 +600,8 @@ static int mtk_pcie_init_irq_domains(struct mtk_gen3_pcie *pcie)
->  						  &intx_domain_ops, pcie);
->  	if (!pcie->intx_domain) {
->  		dev_err(dev, "failed to create INTx IRQ domain\n");
-> -		return -ENODEV;
-> +		ret = -ENODEV;
-> +		goto out_put_node;
->  	}
->  
->  	/* Setup MSI */
-> @@ -623,13 +624,15 @@ static int mtk_pcie_init_irq_domains(struct mtk_gen3_pcie *pcie)
->  		goto err_msi_domain;
->  	}
->  
-> +	of_node_put(intc_node);
->  	return 0;
->  
->  err_msi_domain:
->  	irq_domain_remove(pcie->msi_bottom_domain);
->  err_msi_bottom_domain:
->  	irq_domain_remove(pcie->intx_domain);
-> -
-> +out_put_node:
-> +	of_node_put(intc_node);
->  	return ret;
->  }
->  
-> -- 
-> 2.25.1
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+Thanks, fix folded to the patch as it's still in the development branch.
