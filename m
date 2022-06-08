@@ -2,248 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D90C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:47:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5513CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232273AbiFHHrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50864 "EHLO
+        id S232648AbiFHHrc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:47:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237663AbiFHHht (ORCPT
+        with ESMTP id S237554AbiFHHhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:37:49 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0758031398
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:02:03 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id z7so25767161edm.13
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 00:02:02 -0700 (PDT)
+        Wed, 8 Jun 2022 03:37:48 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD9512D2A
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:00:42 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id y187so18094187pgd.3
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 00:00:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=IszLqlcgD05eXsWHK13yuSjgjcF65FqgTaQ7oezgSi4=;
-        b=NjXMwy0Ts/fq1WUFcl5f4PCvQ/UYTYZE3Rs/+jZBO44gx1HpJBaivPOwsr61BxJTRo
-         0jOQdxVMzqB3XC7uLPTP+9b/fzypRc86ErpIoxSxn74l65/OqMDRMPODtxkIAvkU4IZg
-         VE8aL2/NkHewERdimvy7JordNYjmdyLk2yhdEj2tkxU3Rfej+NiRWKdn5EgYX7K3nrzO
-         sEtmFe55nQJXl6pZr6suToBXUXpSxeKdAfdkg3w4QMC6joj364ejRrFkRMnFo9gEtIbI
-         N9CfgAmn4Gr60zenjPy6xNzOGVTY/bP5tiIKL6q18qIynPjDrxzWuZQfWlyAHGy5JWmb
-         YiMQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references:reply-to
+         :mime-version:content-transfer-encoding;
+        bh=RsEt277LJhdNT3xgMfY4gmplIMtfLCGqPexhdZhIrR0=;
+        b=d6qBRChW8ulGWplHIzV46CI9b5RKkIJPp2HqlmEFqabpHl5NTecOeFQVHV20tjr67q
+         fu7v7e96Z3OElFaKbcENm/q6Q6uk3AYgTZrMvk32XNCbRJX1r+NF1rr9LF9iA7TVULSm
+         Wz4qoK560ZD9joKpd/xRhfDZe9iocv98u4/9+TxxbLdG56p0N77Rk1DDlMVc9c1SQsfY
+         bVGHHxn5WDqEVNS9hZuqnCbHN37DDEzkNZTrBemRzBDasV3jXY086V0YHLwItlRkz0BV
+         librgxUzv84dcxeNY/+k38jQspS/LnRXrszfdWWIjbuHEHtEVTWUsicUHt9iJRqkK/Eb
+         J1jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=IszLqlcgD05eXsWHK13yuSjgjcF65FqgTaQ7oezgSi4=;
-        b=B+2OisMiU559Z6hZT5qF3/xp34mlgTTit0r7EcnN1j2T6AHP2evf3lxY9RxtY1XsT1
-         82R2Z1hbVYKPJHvYa8+YeLCGKoRLHGyTADve0GnpFxV8kGC9sipBlHPVhxmuDiV3AH3J
-         Bzr5N2MCshGsXgvA2170m4h64FMbLeWM8htxS7ZQWaBYeU609QchzHCxC6dz7SJIv8CV
-         pLs1F4KE51vH4BVqSm2Zi8S90lqiK5zJxmnrGjtaH5lkekfYKCIe/7dG+3CpCJoa59Na
-         DTAhQY7XJJE1bjj98DdblOvUU+R4nkL+T/svjizMQQH2Ic3ebaj9hJxjWxB/GYc7dJOc
-         RuCg==
-X-Gm-Message-State: AOAM530M78/D/8XSRTYb3AmC1gpCCZjVK78laeQB9eqxwPERAhzoxKqN
-        0HKBV7+pxdeDyF0H/I4as9vI1g==
-X-Google-Smtp-Source: ABdhPJxvk8YHrSsJrzY21s3QYfRp4SZFfYvBTOWmH1qJRX3O68CfGHN5Cg7V2McI8/LJ5VGflChnpA==
-X-Received: by 2002:a05:6402:270a:b0:431:43f6:1e02 with SMTP id y10-20020a056402270a00b0043143f61e02mr20644054edd.317.1654671721433;
-        Wed, 08 Jun 2022 00:02:01 -0700 (PDT)
-Received: from [192.168.0.188] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i27-20020a170906115b00b006fec56c57e6sm8687368eja.46.2022.06.08.00.01.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 00:02:00 -0700 (PDT)
-Message-ID: <678ce480-cbbc-ffa8-10bf-d93021a0df0a@linaro.org>
-Date:   Wed, 8 Jun 2022 09:01:58 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:reply-to:mime-version:content-transfer-encoding;
+        bh=RsEt277LJhdNT3xgMfY4gmplIMtfLCGqPexhdZhIrR0=;
+        b=3Z8wwqW4vPHNllDpoFz4tIY+JDwCgjq6jl/lWXNsRLqBd0QjWSg0DhbQU+dV0rIMbr
+         DD+wUK0WBtOiAoF3T2tmcqHyvGEGz5GgTIdkmn5yQBrvKylToH/iov5kGRr3GtpE/FCA
+         L03MBpVAjP93R8ldhdl1ja5+C+XEhlJ+6daHXG7PDzy0TwqUXNL12atPUHgW4W8s4koK
+         tFXl45c/V+D4AW1AfxLh2P/gxWtesyaL9XC2VhiETXyGM7hqtLZzcLqZbwkZlHVTSpya
+         rJ5OIf9jiF18idxHHbXBoirt62pVebJJ1wYXoGrQDWFM2pjVAsh2tbkVm2jkDnTeuyvt
+         ckeQ==
+X-Gm-Message-State: AOAM5333+18BzqzJSTsCAbmTCPTmb7FU5VBKjXvqtoYlv36AhMbB7LeO
+        52BWqabSnt+CTBp1WskcJEmo1MdZ7Fekxie6
+X-Google-Smtp-Source: ABdhPJwFNHuUrEjh3QfVOTfDQIGZtXmcqAi/MrpL6pTxDNf7qcGDbiGiFK559NNiaxMOz0OPhJJkqQ==
+X-Received: by 2002:a63:551e:0:b0:3fe:3f58:7ffb with SMTP id j30-20020a63551e000000b003fe3f587ffbmr436507pgb.248.1654671641317;
+        Wed, 08 Jun 2022 00:00:41 -0700 (PDT)
+Received: from KASONG-MB0.tencent.com ([103.7.29.31])
+        by smtp.gmail.com with ESMTPSA id e18-20020a170902ed9200b001675991fb7fsm8396425plj.55.2022.06.08.00.00.38
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Wed, 08 Jun 2022 00:00:40 -0700 (PDT)
+From:   Kairui Song <ryncsn@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Eric Biederman <ebiederm@xmission.com>, x86@kernel.org,
+        kexec@lists.infradead.org, Kairui Song <kasong@tencent.com>
+Subject: [PATCH 1/2] x86/apic: add a more generic early_probe
+Date:   Wed,  8 Jun 2022 14:43:47 +0800
+Message-Id: <20220608064348.66402-2-ryncsn@gmail.com>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220608064348.66402-1-ryncsn@gmail.com>
+References: <20220608064348.66402-1-ryncsn@gmail.com>
+Reply-To: Kairui Song <kasong@tencent.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/4] dt-binding: mfd: Add Richtek RT5120 PMIC support
-Content-Language: en-US
-To:     ChiYuan Huang <u0084500@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Mark Brown <broonie@kernel.org>, dmitry.torokhov@gmail.com,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        cy_huang <cy_huang@richtek.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        linux-input@vger.kernel.org
-References: <1654581161-12349-1-git-send-email-u0084500@gmail.com>
- <1654581161-12349-2-git-send-email-u0084500@gmail.com>
- <96ecca0b-b65c-749d-d66b-33443cacf2e4@linaro.org>
- <CADiBU39BTr9FjtXgBe55aOTHNVotHfC1n=aHrH3XAcVoWkk8sA@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CADiBU39BTr9FjtXgBe55aOTHNVotHfC1n=aHrH3XAcVoWkk8sA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/06/2022 04:52, ChiYuan Huang wrote:
-> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> 於 2022年6月7日 週二 下午7:52寫道：
->>
->> On 07/06/2022 07:52, cy_huang wrote:
->>> From: ChiYuan Huang <cy_huang@richtek.com>
->>>
->>> Add Richtek RT5120 PMIC devicetree document.
->>>
->>> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
->>> ---
->>>  .../devicetree/bindings/mfd/richtek,rt5120.yaml    | 180 +++++++++++++++++++++
->>>  1 file changed, 180 insertions(+)
->>>  create mode 100644 Documentation/devicetree/bindings/mfd/richtek,rt5120.yaml
->>>
->>> diff --git a/Documentation/devicetree/bindings/mfd/richtek,rt5120.yaml b/Documentation/devicetree/bindings/mfd/richtek,rt5120.yaml
->>> new file mode 100644
->>> index 00000000..376bf73
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/mfd/richtek,rt5120.yaml
->>> @@ -0,0 +1,180 @@
->>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/mfd/richtek,rt5120.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: Richtek RT5120 PMIC
->>> +
->>> +maintainers:
->>> +  - ChiYuan Huang <cy_huang@richtek.com>
->>> +
->>> +description: |
->>> +  The RT5120 provides four high-efficiency buck converters and one LDO voltage
->>> +  regulator. The device is targeted at providingthe processor voltage, memory,
->>> +  I/O, and peripheral rails in home entertainment devices. The I2C interface is
->>> +  used for dynamic voltage scaling of the processor voltage, power rails on/off
->>> +  sequence control, operation mode selection.
->>> +
->>> +properties:
->>> +  compatible:
->>> +    enum:
->>> +      - richtek,rt5120
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +
->>> +  interrupts:
->>> +    maxItems: 1
+From: Kairui Song <kasong@tencent.com>
 
-Your powerkey driver takes two interrupts. You should describe them in
-the powerkey.
+There is only one early apic driver probe method: acpi_madt_oem_check,
+which is used by ACPI MADT init path only.
 
->>> +
->>> +  interrupt-controller: true
->>> +
->>> +  "#interrupt-cells":
->>> +    const: 1
->>> +
->>> +  wakeup-source: true
->>> +
->>> +  richtek,enable-undervolt-hiccup:
->>> +    type: boolean
->>> +    description: |
->>> +      If used, under voltage protection trigger hiccup behavior, else latchup as
->>> +      default
->>> +
->>> +  richtek,enable-overvolt-hiccup:
->>> +    type: boolean
->>> +    description:
->>> +      Like as 'enable-uv-hiccup', it configures over voltage protection to
->>> +      hiccup, else latchup as default
->>> +
->>> +  vin1-supply:
->>> +    description: phandle for buck1 input power source
->>> +
->>> +  vin2-supply:
->>> +    description: phandle for buck2 input power source
->>> +
->>> +  vin3-supply:
->>> +    description: phandle for buck3 input power source
->>> +
->>> +  vin4-supply:
->>> +    description: phandle for buck4 input power source
->>> +
->>> +  vinldo-supply:
->>> +    description: phandle for ldo input power source
->>> +
->>> +  regulators:
->>> +    type: object
->>> +
->>> +    patternProperties:
->>> +      "^buck[1-4]$":
->>> +        type: object
->>> +        $ref: /schemas/regulator/regulator.yaml#
->>> +
->>> +        properties:
->>> +          regulator-allowed-modes:
->>> +            description: |
->>> +              Used to specify the allowed buck converter operating mode
->>> +              mode mapping:
->>> +                0: auto mode
->>> +                1: force pwm mode
->>> +            items:
->>> +              enum: [0, 1]
->>> +
->>> +        unevaluatedProperties: false
->>
->> Better to put it after '$ref' for readability.
-> OK, Fix in next
->>
->>> +
->>> +      "^(ldo|exten)$":
->>> +        type: object
->>> +        $ref: /schemas/regulator/regulator.yaml#
->>
->> You need here unevaluatedProperties:false as well (for the ldo/exten
->> properties)
-> Fix in next.
->>
->>> +
->>> +    additionalProperties: false
->>> +
->>> +  powerkey:
->>> +    type: object
->>> +    description:
->>> +      The power key driver may be optional. If not used, change node status to
->>> +      'disabled'
->>
->> This description is not helpful, does not describe the hardware. Please
->> describe hardware, not Devicetree usage.
-> That's because it's a PMIC. Power key is also connected to it.
-> For power key press, all power rails will start to power up.
-> But in the application, there may be other PMIC that's also connected
-> to power key.
-> That's why this power key driver may need to be optional.
-> One system only need one driver to report the power key status.
-> 
-> Currently in some linux OS, it uses the auto module loading mechanism.
-> All kernel module files may be all the same, but it uses the
-> devicetree to decide how many devices
-> need to be declared. Since RT5120 power key device may be optional,
-> following by mfd_add_device, if of_node is
-> found, and status is "disabled", the sub device would be skipped.
-> 
-> Actually, I'm also confused about it. There may be three ways to implement it
-> 1. not to build this kernel module -> seems to violate my above application
-> 2. Use one boolean property to decide power key cell need to be used or not??
-> 3. like as now, use the node status to decide it.
-> 
-> Is there the better way to do it?
+Some apic drivers' early probe doesn't need ACPI info. Even when probed
+from ACPI subsystem, the ACPI info is simply ignored. So add a more generic
+early_probe method, which can be used by MPTABLE parse later.
 
-The status does not determine whether device in the bindings is optional
-or not. Rather it's presence. In the term of bindings the "optional"
-means that something might not be there physically. E.g. clock line
-connected or not. System implementation - MFD, power off handling - is
-here (almost) irrelevant.
+Signed-off-by: Kairui Song <kasong@tencent.com>
+---
+ arch/x86/include/asm/apic.h           |  6 ++++++
+ arch/x86/kernel/apic/probe_64.c       | 16 ++++++++++++++++
+ arch/x86/kernel/apic/x2apic_cluster.c |  8 +++++++-
+ arch/x86/kernel/apic/x2apic_phys.c    |  8 +++++++-
+ 4 files changed, 36 insertions(+), 2 deletions(-)
 
-In your case, the power key feature seems to be there always, so the
-"powerkey" node should be required and not disabled. Don't mention in
-description of hardware anything about disabling it or not.
+diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
+index bd8ae0a7010a..cd3266fbfa63 100644
+--- a/arch/x86/include/asm/apic.h
++++ b/arch/x86/include/asm/apic.h
+@@ -310,6 +310,7 @@ struct apic {
+ 
+ 	/* Probe, setup and smpboot functions */
+ 	int	(*probe)(void);
++	int	(*early_probe)(void);
+ 	int	(*acpi_madt_oem_check)(char *oem_id, char *oem_table_id);
+ 	int	(*apic_id_valid)(u32 apicid);
+ 	int	(*apic_id_registered)(void);
+@@ -498,6 +499,11 @@ extern void acpi_wake_cpu_handler_update(wakeup_cpu_handler handler);
+ extern int default_apic_id_valid(u32 apicid);
+ extern int default_acpi_madt_oem_check(char *, char *);
+ extern void default_setup_apic_routing(void);
++#ifdef CONFIG_X86_64
++extern void apic_early_probe(void);
++#else
++static inline void apic_early_probe(void) { }
++#endif
+ 
+ extern u32 apic_default_calc_apicid(unsigned int cpu);
+ extern u32 apic_flat_calc_apicid(unsigned int cpu);
+diff --git a/arch/x86/kernel/apic/probe_64.c b/arch/x86/kernel/apic/probe_64.c
+index c46720f185c0..3f600c421f07 100644
+--- a/arch/x86/kernel/apic/probe_64.c
++++ b/arch/x86/kernel/apic/probe_64.c
+@@ -13,6 +13,22 @@
+ 
+ #include "local.h"
+ 
++void __init apic_early_probe(void)
++{
++	struct apic **drv;
++
++	for (drv = __apicdrivers; drv < __apicdrivers_end; drv++) {
++		if ((*drv)->early_probe && (*drv)->early_probe()) {
++			if (apic != *drv) {
++				apic = *drv;
++				pr_info("Switched to APIC driver %s.\n",
++					apic->name);
++			}
++			break;
++		}
++	}
++}
++
+ /*
+  * Check the APIC IDs in bios_cpu_apicid and choose the APIC mode.
+  */
+diff --git a/arch/x86/kernel/apic/x2apic_cluster.c b/arch/x86/kernel/apic/x2apic_cluster.c
+index e696e22d0531..02eb8ea9a5b5 100644
+--- a/arch/x86/kernel/apic/x2apic_cluster.c
++++ b/arch/x86/kernel/apic/x2apic_cluster.c
+@@ -26,11 +26,16 @@ static DEFINE_PER_CPU(cpumask_var_t, ipi_mask);
+ static DEFINE_PER_CPU_READ_MOSTLY(struct cluster_mask *, cluster_masks);
+ static struct cluster_mask *cluster_hotplug_mask;
+ 
+-static int x2apic_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
++static int x2apic_early_probe(void)
+ {
+ 	return x2apic_enabled();
+ }
+ 
++static int x2apic_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
++{
++	return x2apic_early_probe();
++}
++
+ static void x2apic_send_IPI(int cpu, int vector)
+ {
+ 	u32 dest = x86_cpu_to_logical_apicid[cpu];
+@@ -197,6 +202,7 @@ static struct apic apic_x2apic_cluster __ro_after_init = {
+ 
+ 	.name				= "cluster x2apic",
+ 	.probe				= x2apic_cluster_probe,
++	.early_probe			= x2apic_early_probe,
+ 	.acpi_madt_oem_check		= x2apic_acpi_madt_oem_check,
+ 	.apic_id_valid			= x2apic_apic_id_valid,
+ 	.apic_id_registered		= x2apic_apic_id_registered,
+diff --git a/arch/x86/kernel/apic/x2apic_phys.c b/arch/x86/kernel/apic/x2apic_phys.c
+index 6bde05a86b4e..c4dd4ec0f1ac 100644
+--- a/arch/x86/kernel/apic/x2apic_phys.c
++++ b/arch/x86/kernel/apic/x2apic_phys.c
+@@ -34,11 +34,16 @@ static bool x2apic_fadt_phys(void)
+ 	return false;
+ }
+ 
+-static int x2apic_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
++static int x2apic_early_probe(void)
+ {
+ 	return x2apic_enabled() && (x2apic_phys || x2apic_fadt_phys());
+ }
+ 
++static int x2apic_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
++{
++	return x2apic_early_probe();
++}
++
+ static void x2apic_send_IPI(int cpu, int vector)
+ {
+ 	u32 dest = per_cpu(x86_cpu_to_apicid, cpu);
+@@ -156,6 +161,7 @@ static struct apic apic_x2apic_phys __ro_after_init = {
+ 
+ 	.name				= "physical x2apic",
+ 	.probe				= x2apic_phys_probe,
++	.early_probe			= x2apic_early_probe,
+ 	.acpi_madt_oem_check		= x2apic_acpi_madt_oem_check,
+ 	.apic_id_valid			= x2apic_apic_id_valid,
+ 	.apic_id_registered		= x2apic_apic_id_registered,
+-- 
+2.35.2
 
-In your application, I would say it is interesting design that someone
-connects one power up line to two different PMICs in a conflicting way.
-This sounds like total mistake from hardware point of view.
-
-Anyway it is not the job for this patch to solve such conflicts.
-
-Best regards,
-Krzysztof
