@@ -2,151 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9F8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 17:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D3A5CCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 17:13:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230202AbiFHRMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 13:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39954 "EHLO
+        id S229962AbiFHRNC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 13:13:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229980AbiFHRKs (ORCPT
+        with ESMTP id S229706AbiFHRMi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 13:10:48 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6289C3FBBCE;
-        Wed,  8 Jun 2022 09:56:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654707412; x=1686243412;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=F4L0RjTrL9ocDlqPulFosaCzsuwH2sWkXHYM3jpPmOo=;
-  b=lNsUY7D7F5So1YpLz2U6+df9bddJRo3ZYnp2D+u8SGKDhfwApqfGG+LP
-   qIRzBbf/hMmj0zO+EhUDwLtBZXiYd0DAKbtF0CorJYn2Ge/jacOHYlBS6
-   j5j5UicSD65zk1tnEDGaaeHGZzB+AuSb1/Av2BUoRB3N9O6F+9C0giY+v
-   9ncZvKXbjCreZccwPKQeDBP/aJkn3ym82DLoW2xE8m4DZ4FEbENMysgLi
-   CIL+UljYFN54ZRwX/7+WaBdXrI04+fxZu6GAjbJGNrLSCGkuDYuGTqf+L
-   uPJZ/0DJZmiTs/lxx69UPKiS8nscA275NRJLLcPVHlpnIPvr3HNUaXiDf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="265768316"
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="265768316"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 09:56:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="585001329"
-Received: from chang-linux-3.sc.intel.com ([172.25.66.173])
-  by fmsmga007.fm.intel.com with ESMTP; 08 Jun 2022 09:56:51 -0700
-From:   "Chang S. Bae" <chang.seok.bae@intel.com>
-To:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-pm@vger.kernel.org
-Cc:     tglx@linutronix.de, dave.hansen@linux.intel.com,
-        peterz@infradead.org, bp@alien8.de, rafael@kernel.org, riel@fb.com,
-        bigeasy@linutronix.de, hch@lst.de, fenghua.yu@intel.com,
-        rui.zhang@intel.com, artem.bityutskiy@linux.intel.com,
-        jacob.jun.pan@linux.intel.com, lenb@kernel.org,
-        chang.seok.bae@intel.com
-Subject: [PATCH v5 1/2] x86/fpu: Add a helper to prepare AMX state for low-power CPU idle
-Date:   Wed,  8 Jun 2022 09:47:47 -0700
-Message-Id: <20220608164748.11864-2-chang.seok.bae@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220608164748.11864-1-chang.seok.bae@intel.com>
-References: <20220608164748.11864-1-chang.seok.bae@intel.com>
+        Wed, 8 Jun 2022 13:12:38 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAB061FE8DC;
+        Wed,  8 Jun 2022 09:57:35 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 86A261F9A9;
+        Wed,  8 Jun 2022 16:57:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1654707454; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5e+pVB/HXrwHYJ53O8Bi72Pko0mOIlxl6e8wCUHcuMo=;
+        b=c/wlGidIaOiFmaIeIYa34mqPOP9ouH/T1bZS7CcW1LrvYbq7XkMnxGKS8ch9Hr0HkYv0AT
+        I0ywnTGlJX3h0iGmKGwGQXfhiYZH/ZW8WKd95v/pEoWRHUtjQ6BXc/4t3+eLj/RkCQ9wGQ
+        3hSHHVO6AkTI7bmZN0AUOKk1IGBC4DQ=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4889E13A15;
+        Wed,  8 Jun 2022 16:57:34 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id JHu8D/7UoGI3NgAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Wed, 08 Jun 2022 16:57:34 +0000
+Date:   Wed, 8 Jun 2022 18:57:32 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Tejun Heo <tj@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ming Lei <ming.lei@redhat.com>
+Subject: Re: [PATCH v6 3/3] blk-cgroup: Optimize blkcg_rstat_flush()
+Message-ID: <20220608165732.GB19399@blackbody.suse.cz>
+References: <20220602192020.166940-1-longman@redhat.com>
+ <20220602192020.166940-4-longman@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220602192020.166940-4-longman@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a CPU enters an idle state, a non-initialized AMX register state may
-be the cause of preventing a deeper low-power state. Other extended
-register states whether initialized or not do not impact the CPU idle
-state.
+Hello.
 
-The new helper can ensure the AMX state is initialized before the CPU is
-idle, and it will be used by the intel idle driver.
+On Thu, Jun 02, 2022 at 03:20:20PM -0400, Waiman Long <longman@redhat.com> wrote:
+> As it is likely that not all the percpu blkg_iostat_set's has been
+> updated since the last flush, those stale blkg_iostat_set's don't need
+> to be flushed in this case.
 
-Check the AMX_TILE feature bit before using XGETBV1 as a chain of
-dependencies was established via cpuid_deps[]: AMX->XFD->XGETBV1.
+Yes, there's no point to flush stats for idle devices if there can be
+many of them. Good idea.
 
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
-Cc: x86@kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Rik van Riel <riel@fb.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Fenghua Yu <fenghua.yu@intel.com>
----
-Changes from v4:
-* Switch to check the AMX_TILE flag instead XGETBV1 (Dave Hansen).
-* Massage the changelog.
+> +static struct llist_node *fetch_delete_blkcg_llist(struct llist_head *lhead)
+> +{
+> +	return xchg(&lhead->first, &llist_last);
+> +}
+> +
+> +static struct llist_node *fetch_delete_lnode_next(struct llist_node *lnode)
+> +{
+> +	struct llist_node *next = READ_ONCE(lnode->next);
+> +	struct blkcg_gq *blkg = llist_entry(lnode, struct blkg_iostat_set,
+> +					    lnode)->blkg;
+> +
+> +	WRITE_ONCE(lnode->next, NULL);
+> +	percpu_ref_put(&blkg->refcnt);
+> +	return next;
+> +}
 
-Changes from v3:
-* Call out AMX state in changelog (Thomas Glexiner).
+Idea/just asking: would it make sense to generalize this into llist.c
+(this is basically llist_del_first() + llist_del_all() with a sentinel)?
+For the sake of reusability.
 
-Changes from v2:
-* Check the feature flag instead of fpu_state_size_dynamic() (Dave Hansen).
+> +#define blkcg_llist_for_each_entry_safe(pos, node, nxt)			\
+> +	for (; (node != &llist_last) &&					\
+> +	       (pos = llist_entry(node, struct blkg_iostat_set, lnode),	\
+> +		nxt = fetch_delete_lnode_next(node), true);		\
+> +		node = nxt)
+> +
 
-Changes from v1:
-* Check the dynamic state flag first, to avoid #UD with XGETBV(1).
----
- arch/x86/include/asm/fpu/api.h       |  2 ++
- arch/x86/include/asm/special_insns.h |  9 +++++++++
- arch/x86/kernel/fpu/core.c           | 14 ++++++++++++++
- 3 files changed, 25 insertions(+)
+It's good hygiene to parenthesize the args.
 
-diff --git a/arch/x86/include/asm/fpu/api.h b/arch/x86/include/asm/fpu/api.h
-index 6b0f31fb53f7..503a577814b2 100644
---- a/arch/x86/include/asm/fpu/api.h
-+++ b/arch/x86/include/asm/fpu/api.h
-@@ -164,4 +164,6 @@ static inline bool fpstate_is_confidential(struct fpu_guest *gfpu)
- /* prctl */
- extern long fpu_xstate_prctl(int option, unsigned long arg2);
- 
-+extern void fpu_idle_fpregs(void);
+> @@ -2011,9 +2092,16 @@ void blk_cgroup_bio_start(struct bio *bio)
+>  	}
+>  	bis->cur.ios[rwd]++;
+>  
+> +	if (!READ_ONCE(bis->lnode.next)) {
+> +		struct llist_head *lhead = per_cpu_ptr(blkcg->lhead, cpu);
+> +
+> +		llist_add(&bis->lnode, lhead);
+> +		percpu_ref_get(&bis->blkg->refcnt);
+> +	}
+> +
+
+When a blkg's cgroup is rmdir'd, what happens with the lhead list?
+We have cgroup_rstat_exit() in css_free_rwork_fn() that ultimately flushes rstats.
+init_and_link_css however adds reference form blkcg->css to cgroup->css.
+The blkcg->css would be (transitively) pinned by the lhead list and
+hence would prevent the final flush (when refs drop to zero). Seems like
+a cyclic dependency.
+
+Luckily, there's also per-subsys flushing in css_release which could be
+moved after rmdir (offlining) but before last ref is gone:
+
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index adb820e98f24..d830e6a8fb3b 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -5165,11 +5165,6 @@ static void css_release_work_fn(struct work_struct *work)
+
+        if (ss) {
+                /* css release path */
+-               if (!list_empty(&css->rstat_css_node)) {
+-                       cgroup_rstat_flush(cgrp);
+-                       list_del_rcu(&css->rstat_css_node);
+-               }
+-
+                cgroup_idr_replace(&ss->css_idr, NULL, css->id);
+                if (ss->css_released)
+                        ss->css_released(css);
+@@ -5279,6 +5274,11 @@ static void offline_css(struct cgroup_subsys_state *css)
+        css->flags &= ~CSS_ONLINE;
+        RCU_INIT_POINTER(css->cgroup->subsys[ss->id], NULL);
+
++       if (!list_empty(&css->rstat_css_node)) {
++               cgroup_rstat_flush(css->cgrp);
++               list_del_rcu(&css->rstat_css_node);
++       }
 +
- #endif /* _ASM_X86_FPU_API_H */
-diff --git a/arch/x86/include/asm/special_insns.h b/arch/x86/include/asm/special_insns.h
-index 45b18eb94fa1..35f709f619fb 100644
---- a/arch/x86/include/asm/special_insns.h
-+++ b/arch/x86/include/asm/special_insns.h
-@@ -295,6 +295,15 @@ static inline int enqcmds(void __iomem *dst, const void *src)
- 	return 0;
+        wake_up_all(&css->cgroup->offline_waitq);
  }
- 
-+static inline void tile_release(void)
-+{
-+	/*
-+	 * Instruction opcode for TILERELEASE; supported in binutils
-+	 * version >= 2.36.
-+	 */
-+	asm volatile(".byte 0xc4, 0xe2, 0x78, 0x49, 0xc0");
-+}
-+
- #endif /* __KERNEL__ */
- 
- #endif /* _ASM_X86_SPECIAL_INSNS_H */
-diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
-index 0531d6a06df5..3b28c5b25e12 100644
---- a/arch/x86/kernel/fpu/core.c
-+++ b/arch/x86/kernel/fpu/core.c
-@@ -851,3 +851,17 @@ int fpu__exception_code(struct fpu *fpu, int trap_nr)
- 	 */
- 	return 0;
- }
-+
-+/*
-+ * Initialize register state that may prevent from entering low-power idle.
-+ * This function will be invoked from the cpuidle driver only when needed.
-+ */
-+void fpu_idle_fpregs(void)
-+{
-+	/* Note: AMX_TILE being enabled implies XGETBV1 support */
-+	if (cpu_feature_enabled(X86_FEATURE_AMX_TILE) &&
-+	    (xfeatures_in_use() & XFEATURE_MASK_XTILE)) {
-+		tile_release();
-+		fpregs_deactivate(&current->thread.fpu);
-+	}
-+}
--- 
-2.17.1
 
+(not tested)
+
+
+>  	u64_stats_update_end_irqrestore(&bis->sync, flags);
+>  	if (cgroup_subsys_on_dfl(io_cgrp_subsys))
+> -		cgroup_rstat_updated(bio->bi_blkg->blkcg->css.cgroup, cpu);
+> +		cgroup_rstat_updated(blkcg->css.cgroup, cpu);
+
+Maybe bundle the lhead list maintenace with cgroup_rstat_updated() under
+cgroup_subsys_on_dfl()? The stats can be read on v1 anyway.
+
+
+Thanks,
+Michal
