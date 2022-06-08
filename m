@@ -2,84 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDC68C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 19:29:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C67C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 19:30:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235604AbiFHT3V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 15:29:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59796 "EHLO
+        id S235540AbiFHTaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 15:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235573AbiFHT2a (ORCPT
+        with ESMTP id S229830AbiFHTaW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 15:28:30 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB78315C8BF;
-        Wed,  8 Jun 2022 12:28:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
-        MIME-Version:Date:Message-ID:content-disposition;
-        bh=jzw+GWOG9Mfo0ITA4LZ9XZSuZUbnK+zW/G3KRzWMyhM=; b=L2Su555++vPsLsMQ/LOPbzg0VM
-        OIDSzfYDrYarzgNd/CHqdmT+bxgaYJ0yXhc4lHn6HFxF5Y5NWDhTfnlKfqxYto6f5wBOvZfHHFv3I
-        X0CgPBUgoGYIkpx+o1TXyKL8rn7QPse+MQeqxlNy+O0gtA0WvfAduEiDIkL54UKNPTn3L3QOsZTob
-        KKtuhBBhh0uZ1yuc3IpJ1j8lGkCPDNGEcNeWvxwpXJzc7d3vZTVF2+j9pQtvD5z8rVvdrItu5M+rL
-        e64zOFtM43aBXQx9mFccZO64X91LRqYj/zAwTKo/pq6G+0/NPJTFHOmCs6MjLU0Lvu3aZrBrDCy/W
-        L9D2NtIg==;
-Received: from s0106ac1f6bb1ecac.cg.shawcable.net ([70.73.163.230] helo=[192.168.11.155])
-        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <logang@deltatee.com>)
-        id 1nz1Lj-002A3y-39; Wed, 08 Jun 2022 13:28:15 -0600
-Message-ID: <bb078344-2394-e9a6-712c-8dfa8afff6d3@deltatee.com>
-Date:   Wed, 8 Jun 2022 13:28:12 -0600
+        Wed, 8 Jun 2022 15:30:22 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F8791E734A;
+        Wed,  8 Jun 2022 12:30:21 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id a15so17279567ilq.12;
+        Wed, 08 Jun 2022 12:30:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=AOjdpRzw4kjXPBWg+IgjE0lEriWtzNXqibpX4C2uBGc=;
+        b=jAHJfid2MSi3OT1OIrtN7Gv3Z7jqBsRN41Sb5eYx0Qjy5mikfQtYnmbGDS4uiVXgW7
+         zHNMxIlB11TP9sMUU5jW7e5OuPn1/lBV0Tm2C+amVjedIj1dvPGXRLHZ61sGNkqTiEVN
+         TiiQOwyIc8G0sRKr/Fik/5BCd0m/7McOMzOV7vilEJr85Dc2R4KJfQ00f+YN85b0flW7
+         MtX3WMntOfil+plLEXbCxOZnvKfrdAmnLZY250xVt971dFPC+GtCLuVg9TfjZGbJxnnz
+         aPjCRVpFAOpYWXuUQNXOknXyi+1/YPh4qnS/Lpwsv42WL7UrBNUL3L6UhzFmk+qPpmux
+         j5ZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=AOjdpRzw4kjXPBWg+IgjE0lEriWtzNXqibpX4C2uBGc=;
+        b=2BAMnOUA4gFJgxoTfqITiKGoLzCrrV6c05WUO1aWfWnFm2HH3Cj6NprVOdFRMtGjAp
+         nXsAM2uOKn2Nz7uqmMD0NyHbj/SEP+CFdVxDL5M810QCBHJxzb38pP9+w8aw64iSIPzr
+         cKeqr8LningBh5nmbrq42Bzj9qUXaJ8P4BjFgxERmsq6TcYFv31z7A1IIOMkGvoD1w/V
+         6+PR4UoOg7aJiBh6iyZ+/nKOLL2A2Ol9wX1ifV+MbOMlr1o+N6zry0gaseR8jBC6P75z
+         aUO5ZZvb83cUYVW1GB+OHk5bt6ZIdHZi1lgpgkwE1R1slbZEL5e0XK94FaIj0MVoB4nu
+         4ZJA==
+X-Gm-Message-State: AOAM531w2yKr4Q1Mtl+NIm+mvlsh3J8bO2KIQUrwPSAt9LKKXXzWDkNh
+        vBmwzi25ciK+IWoUnBVdBjrBm3WVex8hGHmodUg=
+X-Google-Smtp-Source: ABdhPJzZNF45qIna6xgVavAW/mvucDEcDYNma7Scvm6od77BMHrymlGXZcfcVbmbJ3P8L2ngZSRCY9O8y2BRxRRcNTk=
+X-Received: by 2002:a05:6e02:16ce:b0:2d3:edec:17a5 with SMTP id
+ 14-20020a056e0216ce00b002d3edec17a5mr18678433ilx.4.1654716620920; Wed, 08 Jun
+ 2022 12:30:20 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>, Ke Liu <liuke94@huawei.com>
-Cc:     bhelgaas@google.com, nirmal.patel@linux.intel.com,
-        jonathan.derrick@linux.dev, lpieralisi@kernel.org, robh@kernel.org,
-        kw@linux.com, kurt.schwemmer@microsemi.com,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220608184259.GA410049@bhelgaas>
-From:   Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <20220608184259.GA410049@bhelgaas>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.73.163.230
-X-SA-Exim-Rcpt-To: helgaas@kernel.org, liuke94@huawei.com, bhelgaas@google.com, nirmal.patel@linux.intel.com, jonathan.derrick@linux.dev, lpieralisi@kernel.org, robh@kernel.org, kw@linux.com, kurt.schwemmer@microsemi.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH v2] drivers: pci: Directly use ida_alloc()/free()
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+References: <20220607000851.39798-1-irogers@google.com> <CA+icZUW-Zrri=ofkdVtNNYcBCQ-cNvLt7GHfcJw54bxzf_zjZA@mail.gmail.com>
+In-Reply-To: <CA+icZUW-Zrri=ofkdVtNNYcBCQ-cNvLt7GHfcJw54bxzf_zjZA@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Wed, 8 Jun 2022 21:29:44 +0200
+Message-ID: <CA+icZUUMY1pxzXm-Me92w18ochhAjJvrsFxbC=6dZZg7HZJsiw@mail.gmail.com>
+Subject: Re: [PATCH] perf unwind: Fix uninitialized variable
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Fangrui Song <maskray@google.com>,
+        Sebastian Ullrich <sebasti@nullri.ch>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jun 7, 2022 at 8:12 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+>
+> On Tue, Jun 7, 2022 at 2:09 AM Ian Rogers <irogers@google.com> wrote:
+> >
+> > ret may be uninitialized on error goto paths.
+> >
+> > Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
+> > Fixes: dc2cf4ca866f ("perf unwind: Fix segbase for ld.lld linked objects")
+> > Signed-off-by: Ian Rogers <irogers@google.com>
+>
+> Thanks for the patch.
+>
+> Feel free to add my:
+>
+> Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
+>
 
+If it is not too late, more exactly:
 
-On 2022-06-08 12:42, Bjorn Helgaas wrote:
-> On Thu, Jun 02, 2022 at 07:11:15AM +0000, Ke Liu wrote:
->> Use ida_alloc()/ida_free() instead of deprecated
->> ida_simple_get()/ida_simple_remove().
->>
->> Signed-off-by: Ke Liu <liuke94@huawei.com>
-> 
-> I'd like acks from a vmd maintainer (Nirmal) and a switchtec
-> maintainer (Kirt, Logan) before applying this.
-> 
-> You don't need to post this again with those acks, but if you do post
-> it again for some reason, take note of the subject line history; see
-> "git log --oneline drivers/pci/controller/ drivers/pci/switch/"
->> ---
->> v2	fix sign-off name suggest by Bjorn Helgaas
->> ---
->>  drivers/pci/controller/vmd.c   | 6 +++---
->>  drivers/pci/switch/switchtec.c | 7 +++----
->>  2 files changed, 6 insertions(+), 7 deletions(-)
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # LLVM-14 (x86-64)
 
+-Sedat-
 
-Oh, yup, looks good to me. Thanks!
-
-Acked-by: Logan Gunthorpe <logang@deltatee.com>
-
-Logan
+> $ LC_ALL=C ll ~/bin/perf
+> -rwxr-xr-x 2 dileks dileks 16M Jun  7 20:10 /home/dileks/bin/perf
+>
+> $ ~/bin/perf -vv
+> perf version 5.19.0-rc1
+>                 dwarf: [ on  ]  # HAVE_DWARF_SUPPORT
+>    dwarf_getlocations: [ on  ]  # HAVE_DWARF_GETLOCATIONS_SUPPORT
+>                 glibc: [ on  ]  # HAVE_GLIBC_SUPPORT
+>         syscall_table: [ on  ]  # HAVE_SYSCALL_TABLE_SUPPORT
+>                libbfd: [ on  ]  # HAVE_LIBBFD_SUPPORT
+>            debuginfod: [ OFF ]  # HAVE_DEBUGINFOD_SUPPORT
+>                libelf: [ on  ]  # HAVE_LIBELF_SUPPORT
+>               libnuma: [ on  ]  # HAVE_LIBNUMA_SUPPORT
+> numa_num_possible_cpus: [ on  ]  # HAVE_LIBNUMA_SUPPORT
+>               libperl: [ on  ]  # HAVE_LIBPERL_SUPPORT
+>             libpython: [ on  ]  # HAVE_LIBPYTHON_SUPPORT
+>              libslang: [ on  ]  # HAVE_SLANG_SUPPORT
+>             libcrypto: [ on  ]  # HAVE_LIBCRYPTO_SUPPORT
+>             libunwind: [ on  ]  # HAVE_LIBUNWIND_SUPPORT
+>    libdw-dwarf-unwind: [ on  ]  # HAVE_DWARF_SUPPORT
+>                  zlib: [ on  ]  # HAVE_ZLIB_SUPPORT
+>                  lzma: [ on  ]  # HAVE_LZMA_SUPPORT
+>             get_cpuid: [ on  ]  # HAVE_AUXTRACE_SUPPORT
+>                   bpf: [ on  ]  # HAVE_LIBBPF_SUPPORT
+>                   aio: [ on  ]  # HAVE_AIO_SUPPORT
+>                  zstd: [ on  ]  # HAVE_ZSTD_SUPPORT
+>               libpfm4: [ OFF ]  # HAVE_LIBPFM
+>
+> -Sedat-
+>
+> > ---
+> >  tools/perf/util/unwind-libunwind-local.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/tools/perf/util/unwind-libunwind-local.c b/tools/perf/util/unwind-libunwind-local.c
+> > index 37622699c91a..6e5b8cce47bf 100644
+> > --- a/tools/perf/util/unwind-libunwind-local.c
+> > +++ b/tools/perf/util/unwind-libunwind-local.c
+> > @@ -174,7 +174,7 @@ static int elf_section_address_and_offset(int fd, const char *name, u64 *address
+> >         Elf *elf;
+> >         GElf_Ehdr ehdr;
+> >         GElf_Shdr shdr;
+> > -       int ret;
+> > +       int ret = -1;
+> >
+> >         elf = elf_begin(fd, PERF_ELF_C_READ_MMAP, NULL);
+> >         if (elf == NULL)
+> > --
+> > 2.36.1.255.ge46751e96f-goog
+> >
