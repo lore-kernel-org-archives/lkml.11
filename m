@@ -2,100 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01909CCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:15:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A91C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:16:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236053AbiFHHKO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
+        id S238717AbiFHHLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:11:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350558AbiFHGOl (ORCPT
+        with ESMTP id S233060AbiFHGSZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 02:14:41 -0400
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6BDD27CCA;
-        Tue,  7 Jun 2022 22:43:02 -0700 (PDT)
-Received: by mail-ej1-f44.google.com with SMTP id y19so39232120ejq.6;
-        Tue, 07 Jun 2022 22:43:02 -0700 (PDT)
+        Wed, 8 Jun 2022 02:18:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1EBEA19CED2
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:03:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654668129;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UsmRmrmyC0YlUnFIqRRJkIZ3ojsOtC4OxRQHrbODTWU=;
+        b=Tjb77YBezB5HtWDIgiElPXSw6MxMt2Cgt9bdnRGg/t1ZmFvTNm5Fti1zulqiiv2Yo/GQGo
+        Rq4GKFooiKgh440+iH89S/eSJuHmwCBifCZ+5TgnaLbWldB2UV1Wo0VZhimNMuqnQdVMlj
+        HSPi0kLsz/QVYdom+h3f8jKIZ2v87z4=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-370-_1-_uCFpMtmZH3briLCSmg-1; Wed, 08 Jun 2022 02:02:06 -0400
+X-MC-Unique: _1-_uCFpMtmZH3briLCSmg-1
+Received: by mail-wm1-f69.google.com with SMTP id bi22-20020a05600c3d9600b0039c4144992cso5652545wmb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 23:02:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=gMGNu91Gx6YDbvR5JQvBJeAlO/wMEvI2zj5hAaR6Zrg=;
-        b=ZNUSS5+7wEikzr+myYGXjYuTlgHSrFKN1bnKbcf+5MHOQMg4/M59fH2xvMZricjyaA
-         uNqAp3ba+UHXXZpafe9UHfCppv5BNjKN5nQa8zJ499KpzrFjIVWx9xf0VfWwr7lbM4Yr
-         MpoqETpB1Y9xYCt7QZ7bEK0n+ZMvCgZ7pqEAM9O1E+6CEBLZDU68JFV0mg1I+csb1fdE
-         5H+/EEgZtPYOp4hlZOLk96ds8+n+cb+8TOJ+2Ik5WcnN6xfMuEYb/tW0zFLDxT2d2eNI
-         QptD+j+DqsBECFHYQe4IxbMBgmZUN/e4LpIS4Ior8WPFO2tle/FCa8pz3WxBtalfLgWQ
-         iVmg==
-X-Gm-Message-State: AOAM533GzLMWNY3Ylap5D9lN1QnT9T0q2cdxsBqwXqufAz/9UROV0FUv
-        eZf5BLTGo8AHJ7lRlFPAExM=
-X-Google-Smtp-Source: ABdhPJzQ8LZuW+1+srFEBy1aDK0rkmppPaNCYjNmU6aY098PL8I7MIVOTd14Xe6jxua4s6p/TOdfcw==
-X-Received: by 2002:a17:906:66d4:b0:70f:e86d:61b with SMTP id k20-20020a17090666d400b0070fe86d061bmr22844751ejp.401.1654666939610;
-        Tue, 07 Jun 2022 22:42:19 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id p18-20020a17090628d200b006f3ef214dbesm8539768ejd.36.2022.06.07.22.42.18
+        bh=UsmRmrmyC0YlUnFIqRRJkIZ3ojsOtC4OxRQHrbODTWU=;
+        b=GPJN+1Qkte6rfw1ELCSf6fNxTASRTE1FcKW8MuR8XA433OyNeF27Cjp7daeIXKVi+Z
+         E7qTkCTgGdIwZ0zIQfo6QINGD74cGVy9/oRrda1Y8waxy8FPnwi1Aj+mNOLyQuZzn4R+
+         fdkLx46g4FQIGL8Bdb40UdSL0XyGiXi39pKYtc6p08VbOWBejkfKy6jIr29EeUzQpTRh
+         KXTRyebY6lp6T0b84nm6AEqkzOpR9lZ8jCgHmVM+PQi3M0AFAhmEMmiYbhnzOmSsb9Pc
+         0Ub4Nvk8XrKeFgjlzWOtV/V6kExOmplanIH/6ca+dNFtUAcgOCyyduVZMMtKC3DjrLxP
+         Lb8w==
+X-Gm-Message-State: AOAM5305PiPOLIS5tVeTp3ddONN6Yf55Wsr2TqfxlnF/i+r98P8vyjH5
+        uVU528n6jsEOgOWfhxStvyAB97GqedpBaHH9vTXg7blV/CYYrzCwbJ8yf+NQobWbQk8IODeuU8u
+        mKg3ET5d9dLQ350GZ4xDeK0al
+X-Received: by 2002:a05:6000:147:b0:214:7d6e:cb1d with SMTP id r7-20020a056000014700b002147d6ecb1dmr24578582wrx.650.1654668125066;
+        Tue, 07 Jun 2022 23:02:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxHgUMf0DiGTalylNFpQjB5EiBfIrRc71DZVAGtXhPU6EUyeZBdyPoZS/71mmMYC1pA8jBi1g==
+X-Received: by 2002:a05:6000:147:b0:214:7d6e:cb1d with SMTP id r7-20020a056000014700b002147d6ecb1dmr24578561wrx.650.1654668124893;
+        Tue, 07 Jun 2022 23:02:04 -0700 (PDT)
+Received: from [192.168.0.3] (ip-109-42-114-66.web.vodafone.de. [109.42.114.66])
+        by smtp.gmail.com with ESMTPSA id x14-20020adff0ce000000b00210396b2eaesm24124187wro.45.2022.06.07.23.02.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 22:42:19 -0700 (PDT)
-Message-ID: <83fb92d0-7006-a488-1ba2-490ade9b2604@kernel.org>
-Date:   Wed, 8 Jun 2022 07:42:17 +0200
+        Tue, 07 Jun 2022 23:02:04 -0700 (PDT)
+Message-ID: <1bdd501e-01f6-a0fb-86f3-49ec19ec5bcf@redhat.com>
+Date:   Wed, 8 Jun 2022 08:02:02 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH 02/36] tty/vt: consolemap: rename and document struct
- uni_pagedir
+Subject: Re: [PATCH v9 21/21] MAINTAINERS: additional files related kvm s390
+ pci passthrough
 Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220607104946.18710-1-jslaby@suse.cz>
- <20220607104946.18710-2-jslaby@suse.cz>
- <46cbc044-5157-65d8-65f0-2ecbee908150@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <46cbc044-5157-65d8-65f0-2ecbee908150@linux.intel.com>
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, pasic@linux.ibm.com,
+        pbonzini@redhat.com, corbet@lwn.net, jgg@nvidia.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220606203325.110625-1-mjrosato@linux.ibm.com>
+ <20220606203325.110625-22-mjrosato@linux.ibm.com>
+From:   Thomas Huth <thuth@redhat.com>
+In-Reply-To: <20220606203325.110625-22-mjrosato@linux.ibm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07. 06. 22, 14:36, Ilpo Järvinen wrote:
-> On Tue, 7 Jun 2022, Jiri Slaby wrote:
+On 06/06/2022 22.33, Matthew Rosato wrote:
+> Add entries from the s390 kvm subdirectory related to pci passthrough.
 > 
->> struct uni_pagedir contains 32 unicode page directories, so the name of
->> the structure is a bit misleading. Rename the structure to uni_pagedict,
->> so it looks like this:
->> struct uni_pagedict
->>    -> 32 page dirs
->>       -> 32 rows
->>         -> 64 glyphs
->>
->> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
->> ---
+> Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>   MAINTAINERS | 1 +
+>   1 file changed, 1 insertion(+)
 > 
-> The rename looks incomplete:
-> 
->>   drivers/tty/vt/consolemap.c    | 47 ++++++++++++++++++++--------------
->>   drivers/video/console/vgacon.c |  4 +--
->>   include/linux/console_struct.h |  6 ++---
->>   3 files changed, 33 insertions(+), 24 deletions(-)
-> 
-> vs
-> 
-> $ git grep -l vc_uni_pagedir
-> drivers/tty/vt/consolemap.c
-> drivers/tty/vt/vt.c
-> drivers/usb/misc/sisusbvga/sisusb_con.c
-> drivers/video/console/vgacon.c
-> drivers/video/fbdev/core/fbcon.c
-> include/linux/console_struct.h
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index a6d3bd9d2a8d..3dd8657f5482 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -17454,6 +17454,7 @@ M:	Eric Farman <farman@linux.ibm.com>
+>   L:	linux-s390@vger.kernel.org
+>   L:	kvm@vger.kernel.org
+>   S:	Supported
+> +F:	arch/s390/kvm/pci*
+>   F:	drivers/vfio/pci/vfio_pci_zdev.c
+>   F:	include/uapi/linux/vfio_zdev.h
+>   
 
-I renamed only the type, not the variables/members. Maybe the latter 
-makes sense too. I will do that as a follow-up patch.
+Reviewed-by: Thomas Huth <thuth@redhat.com>
 
-thanks,
--- 
-js
-suse labs
