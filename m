@@ -2,68 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB4E3C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:00:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB676C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231163AbiFHFAI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46984 "EHLO
+        id S232132AbiFHFAP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:00:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233158AbiFHE7C (ORCPT
+        with ESMTP id S231970AbiFHE6S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 00:59:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E31A277FB9;
-        Tue,  7 Jun 2022 18:30:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3F1F6194B;
-        Wed,  8 Jun 2022 01:30:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5D367C34114;
-        Wed,  8 Jun 2022 01:30:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654651804;
-        bh=Hb+BN4EbTI7oHbNdiClO0nwi6BMjuaLDtiOn5aXUWjI=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=kAO87fxpwyta+zT4FPAxocJDpJxU4nfDtVC/aBPVT8FpAiVXPI03yEejFGiyhJLsk
-         LGqTMrJfThn3mDY9r1g1FASo4bQPA7+UB2aOnnVe1XYUhCmIg56iqs0r+CxS6EDlFD
-         yHEYzLjeXBjoaCH9lLy1H+B96Sxm3gwc44pbkO4uB1mUybT7hir0flhuYHSXosEncf
-         zC+wsws6e7QQt2OJWpbzTvDI3agiUu3S5HRu1Y3ipsPIOC6C1f8nOzVkIHSqsD/0Bz
-         CRQO7vdh4hGhlGs1+jRRznk264lGEHoYpdZbi/mPBzoaUrTo9/jmcgcqEXgr7MG5Wc
-         QH6plDPXo90WQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3ED58E737EF;
-        Wed,  8 Jun 2022 01:30:04 +0000 (UTC)
-Subject: Re: [git pull] Input updates for v5.19-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Yp/AGMpXXnx9lW6j@google.com>
-References: <Yp/AGMpXXnx9lW6j@google.com>
-X-PR-Tracked-List-Id: <linux-input.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Yp/AGMpXXnx9lW6j@google.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git tags/input-for-v5.19-rc1
-X-PR-Tracked-Commit-Id: 6ab2e51898cd4343bbdf8587af8ce8fbabddbcb5
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 9886142c7a2226439c1e3f7d9b69f9c7094c3ef6
-Message-Id: <165465180419.26354.5340851139035739936.pr-tracker-bot@kernel.org>
-Date:   Wed, 08 Jun 2022 01:30:04 +0000
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
+        Wed, 8 Jun 2022 00:58:18 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD982584C1
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:29:25 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id i201so11791699ioa.6
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 18:29:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=g/FyTJSdUmnIw8e0BMa6AuXeqzIW/H0uELplCSxIKYI=;
+        b=WjwYVUwLrvT6SvyNkyxcsXhXmLjZb00LOh6ljURgUxzDG8Cn+yn9BkKr6OD6O6191X
+         snwXgYG5mkDrpi2X+mhfp4ixpim4Shn5seCc2xe4eDEqQSRmuRa5Mgo2caG5/QzmReZK
+         T6W9ebEu9jgkUG9AwDIQgK7Vf0H9l+xNgUBXg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=g/FyTJSdUmnIw8e0BMa6AuXeqzIW/H0uELplCSxIKYI=;
+        b=nSb5U+/dQmqOKdO3NBwwHjxsP1oOA/gXgT7bEQgJTdLpa//i9LTWNv8Vl6laXQ7lId
+         Tsip/k4+28qdz1NHISBAJnRdq24HkvWPDmI1yoOUKDKBUdo95a0gwk5tXA9MnNXP2hiU
+         yik8WEuBSmvDlUvNDRswaxovGpGIgrcJTnNACF/hikU/QotNKcPiMltEquF7J+wZqsB0
+         J0wUIc6GQuRBYjHpHlZn5uzBP18ZbrMjXPhvx86qOe+fwVDCbZWZe8j7P2PVeyAUPoBs
+         lklGloa0KCyo0Yw1ycNZEJIBhkcB2B0YdJaXzTiIdZUcaZgyrP6czlTX+UmIxlTsXUaa
+         EjtQ==
+X-Gm-Message-State: AOAM533LUgD1FK3z5+/mSs2upXxsJae6obw7GZj+/mjn/tDIrRsg7Ccl
+        1AhT7+7pNjMLFmlIYAcWdfVezQ==
+X-Google-Smtp-Source: ABdhPJwgHgS9a+2m4fzbod5RRpMFPyIWrF465Y0yhQ+Cc2sf+vRXsDSx9fp3Xi+hOnYE64g4wqA/Xw==
+X-Received: by 2002:a5d:8348:0:b0:668:9cc6:1a52 with SMTP id q8-20020a5d8348000000b006689cc61a52mr14694337ior.101.1654651763747;
+        Tue, 07 Jun 2022 18:29:23 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id k2-20020a5d97c2000000b006656f9eefa3sm7358056ios.18.2022.06.07.18.29.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 18:29:23 -0700 (PDT)
+Subject: Re: [PATCH 5.10 000/452] 5.10.121-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220607164908.521895282@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <7f0e1a0e-a6c0-abaa-f390-4e1adc78d14c@linuxfoundation.org>
+Date:   Tue, 7 Jun 2022 19:29:22 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+MIME-Version: 1.0
+In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 7 Jun 2022 14:16:08 -0700:
+On 6/7/22 10:57 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.121 release.
+> There are 452 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 09 Jun 2022 16:48:02 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.121-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git tags/input-for-v5.19-rc1
+Compiled and booted on my test system. No dmesg regressions.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/9886142c7a2226439c1e3f7d9b69f9c7094c3ef6
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
-Thank you!
+thanks,
+-- Shuah
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+
