@@ -2,90 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31790C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5925C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:08:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232558AbiFHFHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
+        id S231290AbiFHFIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232345AbiFHFHE (ORCPT
+        with ESMTP id S232322AbiFHFIc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:07:04 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD4938C095
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:04:01 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id c14so17544861pgu.13
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 19:04:01 -0700 (PDT)
+        Wed, 8 Jun 2022 01:08:32 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86E5271460
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:11:01 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id i1so16379739plg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 19:11:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=gZXrszXX7k1pBY3XgYLyYIZ6g0yO7YcboidjDQLSSdI=;
-        b=S+W8GHU4TmgSe6etHH92wHg1dGZtvtlP2y0QBbAsfuAeIlQ22yprzG9DlmaA+LRnQc
-         LMArhYFLeryQ8PWLSbsV17y48C1nMDqHF7iurVrqSLzHbEWk2QgmH6aWoPUZNdUNUgt7
-         Fgwg9dpFIrJm0VRRVxV4IWiEEFfIPbUZE5J+KHPUgJfZSArkqiyvaAA6/Re1qaY59epZ
-         ihOx08WsNcHCCHnL4aM7PJ+dGtxDp6qxWy1v5fXQjDUBWivDOkrYJC+YC57RdH7mJZR4
-         ftFvw5N4djR2oF9ogEjaF0Br/q3IHt1RFICnS/k8zhUj/O4WzXGeZBX4Glveje+X08re
-         nHrA==
+        bh=J1xTU6kj0/mXxD+Ml9TPjDN30P//McYOe7F06FaSLhc=;
+        b=BDN2paihn1LCyhLcp4pP9rIPTRr4vLDEEADf8vnc8LBhTkSHVMtYpbHSDk0LmEpJ3P
+         0QsQ4xcEAQ6mR7KHehHmVsf/fWbrWOLJqMA3C7wB6W0RRpM5JnLPlHPzW42eEYGlPD/g
+         b7ixAiiAizc05j6l9TC8iNb+FhfSxSIB5GedeD9cRRDbw1VBHgLVM1zA3K+OvirQHDY9
+         FocZ73WmXw3ISGxpOAwzf7naIyjAfY8oIYw2cwaOCfx8pg4yLYQkpkc6ZXboWo67BlHe
+         uizjLucbvk/HRFRcL/5fzFkl1+jMmyDycdLqETntdULGwTRhc+EKVReGZB8AI/d1KALW
+         KIEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=gZXrszXX7k1pBY3XgYLyYIZ6g0yO7YcboidjDQLSSdI=;
-        b=nosekiZrgWvFSE59MEsGm0P0RGQVm9kpQJynZItuj1DUtylu9+HDMSWt9phVkCcYTT
-         iBVXRLcDgRQokfPAlv3ntKnrrDqZ7MavlP8KX6zM3qmWJ1ET/lMKFyoB14qC/9pzlNCZ
-         LHUE0lynU7OV8GbCkBUNSS1du5SWTMo3LJutz8JxeleosVblGn3Zuyn52rw0fWvRcQOU
-         WjpuEc1Ohwvee7vF7aHOUrAfANJDg1ikchw/HfJctMKyaQ3USZVelTHtzp12lWq5gWDj
-         ZCVnC7vR+5r5wQIYJyWOHH5QhLxfAfdpwVIlADKt1Qp3/GDq57ACqFFGsjUzqu6KDeME
-         xUHw==
-X-Gm-Message-State: AOAM5319Xm9IcYFnL8+ulwTgCsyAdzJ7MhLBkEL504tM4bUJ2EZW/7PY
-        Wr8NAMFjAoosQEcxqt4pOxa1gm8ZvRDLX6/zsSUEaPWr
-X-Google-Smtp-Source: ABdhPJzQs/lopGPQRYXnXLzcsZTMGBV+KHwYVJQRqvXdwK53PrvrN0T5j3K/Wzll29dP6UVOVS7LIw==
-X-Received: by 2002:a63:1c5c:0:b0:3fc:109e:8386 with SMTP id c28-20020a631c5c000000b003fc109e8386mr28437657pgm.133.1654653832995;
-        Tue, 07 Jun 2022 19:03:52 -0700 (PDT)
-Received: from localhost.localdomain ([116.128.244.169])
-        by smtp.gmail.com with ESMTPSA id kp12-20020a17090ae94c00b001e310303275sm12597126pjb.54.2022.06.07.19.03.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 19:03:52 -0700 (PDT)
-From:   luoxueqin <luoxueqin66@gmail.com>
-X-Google-Original-From: luoxueqin <937225041@qq.com>
-To:     jk@ozlabs.org, joel@jms.id.au
-Cc:     alistair@popple.id.au, eajames@linux.ibm.com,
-        linux-fsi@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        luoxueqin <luoxueqin@kylinos.cn>
-Subject: [PATCH -next] fsi: Fix typo in comment
-Date:   Wed,  8 Jun 2022 10:03:46 +0800
-Message-Id: <20220608020346.5002-1-937225041@qq.com>
-X-Mailer: git-send-email 2.25.1
+        bh=J1xTU6kj0/mXxD+Ml9TPjDN30P//McYOe7F06FaSLhc=;
+        b=hoxH9DEXFapxUWf9vVfINi9gNj3wXLdYka9//PQvS2Zin3IP4DxVFWDHkLwCuhBhja
+         Pp3uv5sFkcwAuepKR5xWJNrvNE/4KvZKRIuDJ+8ke+X1llLycuylYEM3daP6+0RKvf22
+         5sRcM+8WyxoGlXVPNoZmD1pONHSOPZ6Pb/HEEHprYln612g3HwuD58JJ/XUYnQRi4hCX
+         VwfiAE5JevO2XAuaX3m/2UA3PPTDf4kHBoja7GF4m9F1Vl/z0yvGShArXD3zS3jnfGSe
+         Z6gxjp0J+eMjGcEjy/ucToM1ZiUFVN1cWH9Y+j0u+c+Weqoo4ycFSF2NYPBCfb8MbIT8
+         yCrg==
+X-Gm-Message-State: AOAM533THxrYM1eVnzaZEnc2veiqGKJQBz1k75YDUP5zlpm8Jq1t94Mh
+        XHcXLtJM5hyxzSmapa8lB0GxTA==
+X-Google-Smtp-Source: ABdhPJyOtBnUKFIXKz2YiKYmMkeKDNdYHJ5kDFk1kSUTeqre5MwAtUnqpD/YnlfoT75RoZ8erq6BzQ==
+X-Received: by 2002:a17:902:ee54:b0:163:bdf4:1112 with SMTP id 20-20020a170902ee5400b00163bdf41112mr31483056plo.89.1654654260881;
+        Tue, 07 Jun 2022 19:11:00 -0700 (PDT)
+Received: from C02F52LSML85.bytedance.net ([139.177.225.241])
+        by smtp.gmail.com with ESMTPSA id h7-20020a170902680700b001651562eb16sm13166636plk.124.2022.06.07.19.10.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 07 Jun 2022 19:11:00 -0700 (PDT)
+From:   Feng zhou <zhoufeng.zf@bytedance.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
+        songmuchun@bytedance.com, wangdongdong.6@bytedance.com,
+        cong.wang@bytedance.com, zhouchengming@bytedance.com,
+        zhoufeng.zf@bytedance.com
+Subject: [PATCH v5 0/2] Optimize performance of update hash-map when free is zero
+Date:   Wed,  8 Jun 2022 10:10:48 +0800
+Message-Id: <20220608021050.47279-1-zhoufeng.zf@bytedance.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: luoxueqin <luoxueqin@kylinos.cn>
+From: Feng Zhou <zhoufeng.zf@bytedance.com>
 
-Spelling mistake in comment.
+We encountered bad case on big system with 96 CPUs that
+alloc_htab_elem() would last for 1ms. The reason is that after the
+prealloc hashtab has no free elems, when trying to update, it will still
+grab spin_locks of all cpus. If there are multiple update users, the
+competition is very serious.
 
-Signed-off-by: luoxueqin <luoxueqin@kylinos.cn>
----
- drivers/fsi/fsi-master.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+0001: Use head->first to check whether the free list is empty or not before taking
+the lock.
+0002: Add benchmark to reproduce this worst case.
 
-diff --git a/drivers/fsi/fsi-master.h b/drivers/fsi/fsi-master.h
-index cd6bee5e12a7..4762315a46ba 100644
---- a/drivers/fsi/fsi-master.h
-+++ b/drivers/fsi/fsi-master.h
-@@ -51,7 +51,7 @@
- #define FSI_MMODE_CRS1SHFT	8		/* Clk rate selection 1 shift */
- #define FSI_MMODE_CRS1MASK	0x3ff		/* Clk rate selection 1 mask */
- 
--/* MRESB: Reset brindge */
-+/* MRESB: Reset bridge */
- #define FSI_MRESB_RST_GEN	0x80000000	/* General reset */
- #define FSI_MRESB_RST_ERR	0x40000000	/* Error Reset */
- 
+Changelog:
+v4->v5: Addressed comments from Alexei Starovoitov.
+- Use head->first.
+- Use cpu+max_entries.
+some details in here:
+https://lore.kernel.org/bpf/20220601084149.13097-1-zhoufeng.zf@bytedance.com/
+
+v3->v4: Addressed comments from Daniel Borkmann.
+- Use READ_ONCE/WRITE_ONCE.
+some details in here:
+https://lore.kernel.org/all/20220530091340.53443-1-zhoufeng.zf@bytedance.com/
+
+v2->v3: Addressed comments from Alexei Starovoitov, Andrii Nakryiko.
+- Adjust the way the benchmark is tested.
+- Adjust the code format.
+some details in here:
+https://lore.kernel.org/all/20220524075306.32306-1-zhoufeng.zf@bytedance.com/T/
+
+v1->v2: Addressed comments from Alexei Starovoitov.
+- add a benchmark to reproduce the issue.
+- Adjust the code format that avoid adding indent.
+some details in here:
+https://lore.kernel.org/all/877ac441-045b-1844-6938-fcaee5eee7f2@bytedance.com/T/
+
+Feng Zhou (2):
+  bpf: avoid grabbing spin_locks of all cpus when no free elems
+  selftest/bpf/benchs: Add bpf_map benchmark
+
+ kernel/bpf/percpu_freelist.c                  | 20 ++--
+ tools/testing/selftests/bpf/Makefile          |  4 +-
+ tools/testing/selftests/bpf/bench.c           |  2 +
+ .../benchs/bench_bpf_hashmap_full_update.c    | 96 +++++++++++++++++++
+ .../run_bench_bpf_hashmap_full_update.sh      | 11 +++
+ .../bpf/progs/bpf_hashmap_full_update_bench.c | 40 ++++++++
+ 6 files changed, 166 insertions(+), 7 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/benchs/bench_bpf_hashmap_full_update.c
+ create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_bpf_hashmap_full_update.sh
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_hashmap_full_update_bench.c
+
 -- 
-2.25.1
+2.20.1
 
