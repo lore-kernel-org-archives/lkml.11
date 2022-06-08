@@ -2,124 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70638C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:04:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B140C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238627AbiFHMEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50046 "EHLO
+        id S238636AbiFHMES (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:04:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238541AbiFHMD7 (ORCPT
+        with ESMTP id S238551AbiFHMD7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 8 Jun 2022 08:03:59 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F069232A54;
-        Wed,  8 Jun 2022 05:03:58 -0700 (PDT)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A283117656;
+        Wed,  8 Jun 2022 05:03:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654689838; x=1686225838;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Q1sMptKRWmaXA4p2CjVpRnL0Jw2fDyzc4hN56hJsYXo=;
-  b=S1B2CwuXUVBqThm8xUjUd+9AarMmGGyE1Aae/XUQ9L6o6rZm5hkd7GIt
-   ObnS1nEEFehbkQGbuB6Uo0chFUog+GJHPxBDWmsT3MEkh1MHX0M8b/jXT
-   Ee16iejsiNgJVApPayMUhiRhDFYB08yu5DgIw7JRe0niZIFvxFX25CmQ6
-   M41ZoGXtCYIOFE0tV3MM3f0G9w7OJxWZ482Te7ZnlBZfWHAJFJ/n4fFS9
-   m7BPjXiRTUm5jbFq7/zqz/qkXLPEhHGiCyKbtHmcvnel5tgHJApNbMyTE
-   ZzLmTvPhE3LE9FmAJJEX3Gxl4ak1Ucq9z1yKqu67yJ/Gwcgt5cM9xlSNZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="257302986"
+  t=1654689839; x=1686225839;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=u6KvyscW+4tTQVyeDXB/L7hOF5WmF9Q2JgTsY/byqX8=;
+  b=BDuo+189zgj3lo+J7oubfiPlYapl26R9bm6fsaONmfLt2bf9FD33yF30
+   qHKrMgVxT1gD7nTtK67peWmeFnJmwb1ZPNblopYL9jnUrTgmXoLGAMQgt
+   0OcQARtT/eb+/lADcGtGbT7Sks7F+tMGgL00wwoLh3xHVBuFhY2GLCgHs
+   kK17mjKPDZfWkguhegR1wP9nR+pThFu6EO9fY4azDa3Cc4s7xYItu3UQR
+   mO8LgcyHF3FpyOVjWRYDmgwNrDWaX7cFEekmUTja1hnSiI1rucf2Zsoe2
+   LQ96lFb0+JpNT8b1n2Y+BNIyouUOfwZrrBGbTx0Pg2rNU7xieMruqC7hR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="256701612"
 X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="257302986"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 05:03:58 -0700
+   d="scan'208";a="256701612"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 05:03:57 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="615357877"
+   d="scan'208";a="636792039"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 08 Jun 2022 05:03:56 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 08 Jun 2022 05:03:56 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id B74D0343; Wed,  8 Jun 2022 15:03:59 +0300 (EEST)
+        id A2D8E1F8; Wed,  8 Jun 2022 15:03:59 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Jonathan Lemon <jonathan.lemon@gmail.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Richard Cochran <richardcochran@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 net-next 2/5] ptp_ocp: use bits.h macros for all masks
-Date:   Wed,  8 Jun 2022 15:03:55 +0300
-Message-Id: <20220608120358.81147-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH net-next v1 0/5] ptp_ocp: set of small cleanups
+Date:   Wed,  8 Jun 2022 15:03:53 +0300
+Message-Id: <20220608120358.81147-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220608120358.81147-1-andriy.shevchenko@linux.intel.com>
-References: <20220608120358.81147-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently we are using BIT(), but GENMASK(). Make use of the latter one
-as well (far less error-prone, far more concise).
+The set of (independent) cleanups against ptp_ocp driver.
+Each patch has its own description, no need to repeat it here.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/ptp/ptp_ocp.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+Andy Shevchenko (5):
+  ptp_ocp: use dev_err_probe()
+  ptp_ocp: use bits.h macros for all masks
+  ptp_ocp: drop duplicate NULL check in ptp_ocp_detach()
+  ptp_ocp: do not call pci_set_drvdata(pdev, NULL)
+  ptp_ocp: replace kzalloc(x*y) by kcalloc(y, x)
 
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 17930762fde9..926add7be9a2 100644
---- a/drivers/ptp/ptp_ocp.c
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /* Copyright (c) 2020 Facebook */
- 
-+#include <linux/bits.h>
- #include <linux/err.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-@@ -88,10 +89,10 @@ struct tod_reg {
- #define TOD_CTRL_DISABLE_FMT_A	BIT(17)
- #define TOD_CTRL_DISABLE_FMT_B	BIT(16)
- #define TOD_CTRL_ENABLE		BIT(0)
--#define TOD_CTRL_GNSS_MASK	((1U << 4) - 1)
-+#define TOD_CTRL_GNSS_MASK	GENMASK(3, 0)
- #define TOD_CTRL_GNSS_SHIFT	24
- 
--#define TOD_STATUS_UTC_MASK		0xff
-+#define TOD_STATUS_UTC_MASK		GENMASK(7, 0)
- #define TOD_STATUS_UTC_VALID		BIT(8)
- #define TOD_STATUS_LEAP_ANNOUNCE	BIT(12)
- #define TOD_STATUS_LEAP_VALID		BIT(16)
-@@ -205,7 +206,7 @@ struct frequency_reg {
- #define FREQ_STATUS_VALID	BIT(31)
- #define FREQ_STATUS_ERROR	BIT(30)
- #define FREQ_STATUS_OVERRUN	BIT(29)
--#define FREQ_STATUS_MASK	(BIT(24) - 1)
-+#define FREQ_STATUS_MASK	GENMASK(23, 0)
- 
- struct ptp_ocp_flash_info {
- 	const char *name;
-@@ -674,9 +675,9 @@ static const struct ocp_selector ptp_ocp_clock[] = {
- 	{ }
- };
- 
-+#define SMA_DISABLE		BIT(16)
- #define SMA_ENABLE		BIT(15)
--#define SMA_SELECT_MASK		((1U << 15) - 1)
--#define SMA_DISABLE		0x10000
-+#define SMA_SELECT_MASK		GENMASK(14, 0)
- 
- static const struct ocp_selector ptp_ocp_sma_in[] = {
- 	{ .name = "10Mhz",	.value = 0x0000 },
-@@ -3440,7 +3441,7 @@ ptp_ocp_tod_status_show(struct seq_file *s, void *data)
- 
- 	val = ioread32(&bp->tod->utc_status);
- 	seq_printf(s, "UTC status register: 0x%08X\n", val);
--	seq_printf(s, "UTC offset: %d  valid:%d\n",
-+	seq_printf(s, "UTC offset: %ld  valid:%d\n",
- 		val & TOD_STATUS_UTC_MASK, val & TOD_STATUS_UTC_VALID ? 1 : 0);
- 	seq_printf(s, "Leap second info valid:%d, Leap second announce %d\n",
- 		val & TOD_STATUS_LEAP_VALID ? 1 : 0,
+ drivers/ptp/ptp_ocp.c | 36 +++++++++++++++---------------------
+ 1 file changed, 15 insertions(+), 21 deletions(-)
+
 -- 
 2.35.1
 
