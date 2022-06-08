@@ -2,188 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 22:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2954C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 22:46:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235926AbiFHWps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 18:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32832 "EHLO
+        id S232125AbiFHWq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 18:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236959AbiFHWpW (ORCPT
+        with ESMTP id S236200AbiFHWqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 18:45:22 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C620A2506CB
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 15:45:21 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31382419c22so15075587b3.18
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 15:45:21 -0700 (PDT)
+        Wed, 8 Jun 2022 18:46:24 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C03253329;
+        Wed,  8 Jun 2022 15:46:04 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id gl15so30303533ejb.4;
+        Wed, 08 Jun 2022 15:46:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=Aj47vH7bOM7CIvT8Dyt2GzqDM34J/7dBeBUz69774ew=;
-        b=FvUPMqERCr+vn5DAlXucDMK8JQYwnBC6iD8ztZR5A8TbC0iMs2oNwezvO8LZsbk2Bd
-         JAnaOUZlOiKhfVjCBJhHExnscF2eISgVrvFq+nbT+JmZ7aqhE2tG9XNQZLeCqXw8yDHQ
-         FHC3PRf0jU40rP479ZovjS3+Cu/81X9UX9pbb3DjmdXZGlRx1JB2Wep4jVFaj5DVxZrO
-         25RiEmgEBl0NQ1gGT7yrntGFbguPrYyNx2VpcH7B6YueRUaLHp5ioeHiaIX5zViGdvaj
-         dvqZ3w7+J+wTbq734pXBBu9nywfJaXrQvl4ybyZbRWZFvkS4gMVHZbQUF+Nph9rz2J4b
-         HAqg==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RGyEQx4XWPendUVIT5iH3jx+IKfbaeExu0R992MzqQc=;
+        b=SEfIfZdBf+iUPWQ84Xx/UK3Jih3tLOBZ34JtUVzGUBT4CjLrNly6+yNX1/1WpYx87C
+         KEgViwFPHgwDF8NoBf6vNRXlPqDaH+QGJvkPMBJw09vAkse9uLwioPVNGEtkZODqo4n+
+         QTdv0rcegiaB4K+bNml3+fDmNnk+vvKHKlKEbtHlMF8Hlctn2gP1MkeMjOR+Mx7uetqc
+         T9tKETI/Y/jWheQYaPkYJGY9L+YlFUyuWpCBbTdMNIIqL6SYnTb7nhhfwrH9Kogcnshe
+         nwnoSAfOau4l//65+Yvi46YnfaRbeZz7MoJmtYKj58ZUk5f0LxNAtdaaSOaaeonfifrm
+         nvMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=Aj47vH7bOM7CIvT8Dyt2GzqDM34J/7dBeBUz69774ew=;
-        b=leOAqoBy+1f6zZ19C+OHycLPRT7qCs9e0a4N4fEJvzgGZu2UzmGuFSkm700sH/GIkJ
-         3EqmCphU/iVwa1DFxv4OJTphGEdztn0relmnCa7a6Y0i0uIV3MWBEJmNxzDi2wD+RYSb
-         QiX3qXND/dow+Kwu9555mM7rnQoOR4FYKNiwMnwWmNeQPXL4ngt+RXV1v6zkn5z6LF8l
-         Uf0VWDerserqUPjTvxOdcCPIdibZxRWR/wpZZCd8SIVNK+H4e4W1LBFzbZPbtn/c13IQ
-         JJiuF95gyHm6v0aTAmIdgo8DVcUNKxl59wpv5naorMoByn28Njs1L/Q18RGNpbqYoA9V
-         VpjA==
-X-Gm-Message-State: AOAM5321CMMQ8XOY4KoYj83UTgrDMpopS0jcGpSyv+qf3A9AkLjAh9G/
-        zroY1rKC+O+Zy3/rKVF0o2B9vntps20=
-X-Google-Smtp-Source: ABdhPJwitxoDkwVjT8ngUL3WN+GVfi9ZRSFxFHUCta7tvzet9Zy5A3/DRpzqmKRGgeqbz97ywWxxDaO5gjo=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a0d:d843:0:b0:30e:c210:87a4 with SMTP id
- a64-20020a0dd843000000b0030ec21087a4mr39532146ywe.313.1654728321051; Wed, 08
- Jun 2022 15:45:21 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  8 Jun 2022 22:45:12 +0000
-In-Reply-To: <20220608224516.3788274-1-seanjc@google.com>
-Message-Id: <20220608224516.3788274-2-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220608224516.3788274-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH 1/5] KVM: x86: Add a quirk for KVM's "MONITOR/MWAIT are NOPs!" behavior
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RGyEQx4XWPendUVIT5iH3jx+IKfbaeExu0R992MzqQc=;
+        b=xlDy2lXLa2buFpBQ4Tb2mXbTjWOOnbIK4vgXnJRpDsXyEWG0QybdGG+Zl5nOPFk6nL
+         6XAfb7HBZfW4aVOPYcFQX0IpvMo2lIiNgJ6+mwODJXbQAhhn8n9o72ttC12bx+ODr0Jw
+         6F5z544NUrFf89YXH0jPVm8nFQUUIp+zZTvdbYg+EJZFs6v8DA08lzNwhAD0d3AWZSHF
+         Z1tj65cQ576mTq6q459iKDcNzzJxPRcBNvJm0XmPLHxVzfB6dWl9QaixGMNOwRqGfzzF
+         2gJtsRBFUBF2mLl65qn8iiibbM8b6e+3NdgpVLP7GivxTM5scTxpSgvcw3fJLwn1tzJ5
+         Uj2Q==
+X-Gm-Message-State: AOAM532qceiaGS+LxnjvRNv6vBniBsxUFqx5BEt4imAM3oXhHstN9sdw
+        cOC+GLjIgROd5lwpFAIzo2zydTRzkNmnwdRC4oM=
+X-Google-Smtp-Source: ABdhPJycCulqR/dNreJvVX5htaggHlxzrVNrJd1i+/13R78yiSZFXhgCbhoCFawHBoYXeJSOMPhKQmin+waHYgUqL/k=
+X-Received: by 2002:a17:907:a0c8:b0:711:d82a:1caa with SMTP id
+ hw8-20020a170907a0c800b00711d82a1caamr14138368ejc.702.1654728362854; Wed, 08
+ Jun 2022 15:46:02 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220518014632.922072-1-yuzhao@google.com> <20220518014632.922072-8-yuzhao@google.com>
+ <CAGsJ_4yboZEY9OfyujPxBa_AEuGM3OAq5y_L9gvzSMUv70BxeQ@mail.gmail.com>
+ <CAGsJ_4w3S_8Kaw2GyB3hg7b4N_D+6yBO7D6qmgxD9Fqz3_dhAg@mail.gmail.com>
+ <20220607102135.GA32448@willie-the-truck> <CAGsJ_4zGEdHDv0ObZ-5y8sFKLO7Y6ZjTsZFs0KvdLwA_-iGJ5A@mail.gmail.com>
+ <20220607104358.GA32583@willie-the-truck> <CAOUHufZh46A2hh_fn-8vVBDi_621rgbZq64_afDt8VxrzqJz1g@mail.gmail.com>
+ <CAGsJ_4yvsXCj8snemAyX3jPJgWJR+tFCtUhV-3QJ75RNi=q_KA@mail.gmail.com> <CAHk-=wirMfOpzNavjWao5GA65ve=9LQN-6=YCUtJGRpu=ujdoA@mail.gmail.com>
+In-Reply-To: <CAHk-=wirMfOpzNavjWao5GA65ve=9LQN-6=YCUtJGRpu=ujdoA@mail.gmail.com>
+From:   Barry Song <21cnbao@gmail.com>
+Date:   Thu, 9 Jun 2022 10:45:51 +1200
+Message-ID: <CAGsJ_4yLCsJJvK5QkFOk_7UW72DRO7gWnd6wdn2TWzBrTmRjSg@mail.gmail.com>
+Subject: Re: [PATCH v11 07/14] mm: multi-gen LRU: exploit locality in rmap
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Yu Zhao <yuzhao@google.com>, Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@suse.cz>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, x86 <x86@kernel.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>, huzhanyuan@oppo.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a quirk for KVM's behavior of emulating intercepted MONITOR/MWAIT
-instructions a NOPs regardless of whether or not they are supported in
-guest CPUID.  KVM's current behavior was likely motiviated by a certain
-fruity operating system that expects MONITOR/MWAIT to be supported
-unconditionally and blindly executes MONITOR/MWAIT without first checking
-CPUID.  And because KVM does NOT advertise MONITOR/MWAIT to userspace,
-that's effectively the default setup for any VMM that regurgitates
-KVM_GET_SUPPORTED_CPUID to KVM_SET_CPUID2.
+On Thu, Jun 9, 2022 at 3:52 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Tue, Jun 7, 2022 at 5:43 PM Barry Song <21cnbao@gmail.com> wrote:
+> >
+> > Given we used to have a flush for clear pte young in LRU, right now we are
+> > moving to nop in almost all cases for the flush unless the address becomes
+> > young exactly after look_around and before ptep_clear_flush_young_notify.
+> > It means we are actually dropping flush. So the question is,  were we
+> > overcautious? we actually don't need the flush at all even without mglru?
+>
+> We stopped flushing the TLB on A bit clears on x86 back in 2014.
+>
+> See commit b13b1d2d8692 ("x86/mm: In the PTE swapout page reclaim case
+> clear the accessed bit instead of flushing the TLB").
 
-Note, this quirk interacts with KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT.  The
-behavior is actually desirable, as userspace VMMs that want to
-unconditionally hide MONITOR/MWAIT from the guest can leave the
-MISC_ENABLE quirk enabled.
+This is true for x86, RISC-V, powerpc and S390. but it is not true for
+most platforms.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- Documentation/virt/kvm/api.rst  | 13 +++++++++++++
- arch/x86/include/asm/kvm_host.h |  3 ++-
- arch/x86/include/uapi/asm/kvm.h |  1 +
- arch/x86/kvm/x86.c              | 26 +++++++++++++++++---------
- 4 files changed, 33 insertions(+), 10 deletions(-)
+There was an attempt to do the same thing in arm64:
+https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1793830.html
+but arm64 still sent a nosync tlbi and depent on a deferred to dsb :
+https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1794484.html
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index 42a1984fafc8..5c6cd8f7975f 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -7374,6 +7374,19 @@ The valid bits in cap.args[0] are:
-                                     hypercall instructions. Executing the
-                                     incorrect hypercall instruction will
-                                     generate a #UD within the guest.
-+
-+KVM_X86_QUIRK_MWAIT_NEVER_FAULTS    By default, KVM emulates MONITOR/MWAIT (if
-+                                    they are intercepted) as NOPs regardless of
-+                                    whether or not MONITOR/MWAIT are supported
-+                                    according to guest CPUID.  When this quirk
-+                                    is disabled and KVM_X86_DISABLE_EXITS_MWAIT
-+                                    is not set (MONITOR/MWAIT are intercepted),
-+                                    KVM will inject a #UD on MONITOR/MWAIT if
-+                                    they're unsupported per guest CPUID.  Note,
-+                                    KVM will modify MONITOR/MWAIT support in
-+                                    guest CPUID on writes to MISC_ENABLE if
-+                                    KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT is
-+                                    disabled.
- =================================== ============================================
- 
- 7.32 KVM_CAP_MAX_VCPU_ID
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 6cf5d77d7896..bc3e85a81f41 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -2011,6 +2011,7 @@ int memslot_rmap_alloc(struct kvm_memory_slot *slot, unsigned long npages);
- 	 KVM_X86_QUIRK_LAPIC_MMIO_HOLE |	\
- 	 KVM_X86_QUIRK_OUT_7E_INC_RIP |		\
- 	 KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT |	\
--	 KVM_X86_QUIRK_FIX_HYPERCALL_INSN)
-+	 KVM_X86_QUIRK_FIX_HYPERCALL_INSN |	\
-+	 KVM_X86_QUIRK_MWAIT_NEVER_FAULTS)
- 
- #endif /* _ASM_X86_KVM_HOST_H */
-diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
-index 24c807c8d5f7..b7c92844550b 100644
---- a/arch/x86/include/uapi/asm/kvm.h
-+++ b/arch/x86/include/uapi/asm/kvm.h
-@@ -438,6 +438,7 @@ struct kvm_sync_regs {
- #define KVM_X86_QUIRK_OUT_7E_INC_RIP		(1 << 3)
- #define KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT	(1 << 4)
- #define KVM_X86_QUIRK_FIX_HYPERCALL_INSN	(1 << 5)
-+#define KVM_X86_QUIRK_MWAIT_NEVER_FAULTS	(1 << 6)
- 
- #define KVM_STATE_NESTED_FORMAT_VMX	0
- #define KVM_STATE_NESTED_FORMAT_SVM	1
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 2db6f0373fa3..14abcd5c2714 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -2034,13 +2034,6 @@ int kvm_emulate_invd(struct kvm_vcpu *vcpu)
- }
- EXPORT_SYMBOL_GPL(kvm_emulate_invd);
- 
--int kvm_emulate_mwait(struct kvm_vcpu *vcpu)
--{
--	pr_warn_once("kvm: MWAIT instruction emulated as NOP!\n");
--	return kvm_emulate_as_nop(vcpu);
--}
--EXPORT_SYMBOL_GPL(kvm_emulate_mwait);
--
- int kvm_handle_invalid_op(struct kvm_vcpu *vcpu)
- {
- 	kvm_queue_exception(vcpu, UD_VECTOR);
-@@ -2048,10 +2041,25 @@ int kvm_handle_invalid_op(struct kvm_vcpu *vcpu)
- }
- EXPORT_SYMBOL_GPL(kvm_handle_invalid_op);
- 
-+
-+static int kvm_emulate_monitor_mwait(struct kvm_vcpu *vcpu, const char *insn)
-+{
-+	if (!kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_MWAIT_NEVER_FAULTS) &&
-+	    !guest_cpuid_has(vcpu, X86_FEATURE_MWAIT))
-+		return kvm_handle_invalid_op(vcpu);
-+
-+	pr_warn_once("kvm: %s instruction emulated as NOP!\n", insn);
-+	return kvm_emulate_as_nop(vcpu);
-+}
-+int kvm_emulate_mwait(struct kvm_vcpu *vcpu)
-+{
-+	return kvm_emulate_monitor_mwait(vcpu, "MWAIT");
-+}
-+EXPORT_SYMBOL_GPL(kvm_emulate_mwait);
-+
- int kvm_emulate_monitor(struct kvm_vcpu *vcpu)
- {
--	pr_warn_once("kvm: MONITOR instruction emulated as NOP!\n");
--	return kvm_emulate_as_nop(vcpu);
-+	return kvm_emulate_monitor_mwait(vcpu, "MONITOR");
- }
- EXPORT_SYMBOL_GPL(kvm_emulate_monitor);
- 
--- 
-2.36.1.255.ge46751e96f-goog
+Plus, generic code will also send a tlb flush:
+int ptep_clear_flush_young(struct vm_area_struct *vma,
+                           unsigned long address, pte_t *ptep)
+{
+        int young;
+        young = ptep_test_and_clear_young(vma, address, ptep);
+        if (young)
+                flush_tlb_page(vma, address);
+        return young;
+}
 
+We used to use ptep_test_and_clear_young() only in rmap.c for page_referenced()
+in 2.6.0:
+https://git.kernel.org/pub/scm/linux/kernel/git/mpe/linux-fullhistory.git/tree/mm/rmap.c?h=v2.6.0
+int page_referenced(struct page * page)
+{
+      ...
+      if (ptep_test_and_clear_young(p))
+      ...
+}
+
+but in 2.6.12, it has been already ptep_clear_flush_young() in
+page_referenced_one()
+https://git.kernel.org/pub/scm/linux/kernel/git/mpe/linux-fullhistory.git/tree/mm/rmap.c?h=v2.6.12
+
+I failed to find the history to figure out the motivation for 2.6.12
+to use ptep_clear_flush_young()
+in LRU, but I am still curious how using flush or not will affect LRU
+on those platforms whose
+ptep_clear_flush_young() and  ptep_test_and_clear_young() are different.
+
+>
+>                Linus
+
+Thanks
+Barry
