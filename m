@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D463BCCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:16:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D8BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234807AbiFHJQM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:16:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48318 "EHLO
+        id S234847AbiFHJQV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:16:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235108AbiFHJOb (ORCPT
+        with ESMTP id S235109AbiFHJOb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 8 Jun 2022 05:14:31 -0400
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4164B1285C9;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1276A1E7349;
         Wed,  8 Jun 2022 01:36:12 -0700 (PDT)
-X-UUID: c835ab158e284bddb1877ac900538f02-20220608
+X-UUID: 569b3735fca34859a0ff75c044fca289-20220608
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:f3055498-72a6-4c8e-b6f1-c622fac0ef7e,OB:20,L
-        OB:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
+X-CID-O-INFO: VERSION:1.1.5,REQID:4df39298-de03-4d3e-b3bb-0ce690f802b3,OB:50,L
+        OB:20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
         CTION:release,TS:95
-X-CID-INFO: VERSION:1.1.5,REQID:f3055498-72a6-4c8e-b6f1-c622fac0ef7e,OB:20,LOB
-        :10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
+X-CID-INFO: VERSION:1.1.5,REQID:4df39298-de03-4d3e-b3bb-0ce690f802b3,OB:50,LOB
+        :20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
         CTION:quarantine,TS:95
-X-CID-META: VersionHash:2a19b09,CLOUDID:577d9f7e-c8dc-403a-96e8-6237210dceee,C
+X-CID-META: VersionHash:2a19b09,CLOUDID:907d9f7e-c8dc-403a-96e8-6237210dceee,C
         OID:ab9fe7398c47,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
         RL:0,File:nil,QS:0,BEC:nil
-X-UUID: c835ab158e284bddb1877ac900538f02-20220608
+X-UUID: 569b3735fca34859a0ff75c044fca289-20220608
 Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
         (envelope-from <tinghan.shen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 18680939; Wed, 08 Jun 2022 16:36:04 +0800
+        with ESMTP id 586299730; Wed, 08 Jun 2022 16:36:04 +0800
 Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
  mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 8 Jun 2022 16:36:02 +0800
+ 15.2.792.15; Wed, 8 Jun 2022 16:36:03 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 8 Jun 2022 16:36:02 +0800
+ 15.2.792.3 via Frontend Transport; Wed, 8 Jun 2022 16:36:03 +0800
 From:   Tinghan Shen <tinghan.shen@mediatek.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         Mathieu Poirier <mathieu.poirier@linaro.org>,
@@ -60,9 +60,9 @@ CC:     <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <chrome-platform@lists.linux.dev>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         <weishunc@google.com>
-Subject: [PATCH v2 5/9] remoteproc: mediatek: Add chip dependent operations for SCP core 1
-Date:   Wed, 8 Jun 2022 16:35:49 +0800
-Message-ID: <20220608083553.8697-6-tinghan.shen@mediatek.com>
+Subject: [PATCH v2 9/9] mfd: cros_ec: Add SCP core 1 as a new CrOS EC MCU
+Date:   Wed, 8 Jun 2022 16:35:53 +0800
+Message-ID: <20220608083553.8697-10-tinghan.shen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220608083553.8697-1-tinghan.shen@mediatek.com>
 References: <20220608083553.8697-1-tinghan.shen@mediatek.com>
@@ -73,123 +73,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SCP rproc operations has chip dependent callbacks. Implement a
-version of these callbacks for MT8195 SCP core 1.
+MT8195 System Companion Processors(SCP) is a dual-core RISC-V MCU.
+Add a new cros feature id to represent the SCP 2nd core.
+
+The 1st core is referred to as 'core 0', and the 2nd core is referred
+to as 'core 1'.
 
 Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
 ---
- drivers/remoteproc/mtk_scp.c | 65 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 65 insertions(+)
+ drivers/mfd/cros_ec_dev.c                      | 5 +++++
+ include/linux/platform_data/cros_ec_commands.h | 2 ++
+ include/linux/platform_data/cros_ec_proto.h    | 1 +
+ 3 files changed, 8 insertions(+)
 
-diff --git a/drivers/remoteproc/mtk_scp.c b/drivers/remoteproc/mtk_scp.c
-index 91b4aefde4ac..731a8094c373 100644
---- a/drivers/remoteproc/mtk_scp.c
-+++ b/drivers/remoteproc/mtk_scp.c
-@@ -180,6 +180,16 @@ static void mt8192_scp_reset_deassert(struct mtk_scp *scp)
- 	writel(1, scp->reg_base + MT8192_CORE0_SW_RSTN_CLR);
- }
- 
-+static void mt8195_scp_dual_reset_assert(struct mtk_scp *scp)
-+{
-+	writel(1, scp->reg_base + MT8195_CORE1_SW_RSTN_SET);
-+}
-+
-+static void mt8195_scp_dual_reset_deassert(struct mtk_scp *scp)
-+{
-+	writel(1, scp->reg_base + MT8195_CORE1_SW_RSTN_CLR);
-+}
-+
- static void mt8183_scp_irq_handler(struct mtk_scp *scp)
- {
- 	u32 scp_to_host;
-@@ -241,6 +251,24 @@ static void mt8195_scp_irq_handler(struct mtk_scp *scp)
- 	}
- }
- 
-+static void mt8195_scp_dual_irq_handler(struct mtk_scp *scp)
-+{
-+	u32 scp_to_host;
-+
-+	scp_to_host = readl(scp->reg_base + MT8195_SSHUB2APMCU_IPC_SET);
-+
-+	if (scp_to_host & MT8192_SCP_IPC_INT_BIT) {
-+		scp_ipi_handler(scp);
-+
-+		/*
-+		 * SCP won't send another interrupt until we clear
-+		 * MT8195_SSHUB2APMCU_IPC_CLR.
-+		 */
-+		writel(MT8192_SCP_IPC_INT_BIT,
-+		       scp->reg_base + MT8195_SSHUB2APMCU_IPC_CLR);
-+	}
-+}
-+
- static irqreturn_t scp_irq_handler(int irq, void *priv)
- {
- 	struct mtk_scp *scp = priv;
-@@ -474,6 +502,21 @@ static int mt8195_scp_before_load(struct mtk_scp *scp)
- 	return 0;
- }
- 
-+static int mt8195_scp_dual_before_load(struct mtk_scp *scp)
-+{
-+	u32 sec_ctrl;
-+
-+	scp_sram_power_on(scp->reg_base + MT8195_CPU1_SRAM_PD, 0);
-+
-+	/* hold SCP in reset while loading FW. */
-+	scp->data->scp_reset_assert(scp);
-+
-+	/* enable MPU for all memory regions */
-+	writel(0xff, scp->reg_base + MT8195_CORE1_MEM_ATT_PREDEF);
-+
-+	return 0;
-+}
-+
- static int scp_load(struct rproc *rproc, const struct firmware *fw)
- {
- 	struct mtk_scp *scp = rproc->priv;
-@@ -646,6 +689,15 @@ static void mt8195_scp_stop(struct mtk_scp *scp)
- 	writel(0, scp->reg_base + MT8192_CORE0_WDT_CFG);
- }
- 
-+static void mt8195_scp_dual_stop(struct mtk_scp *scp)
-+{
-+	/* Power off CPU SRAM */
-+	scp_sram_power_off(scp->reg_base + MT8195_CPU1_SRAM_PD, 0);
-+
-+	/* Disable SCP watchdog */
-+	writel(0, scp->reg_base + MT8195_CORE1_WDT_CFG);
-+}
-+
- static int scp_stop(struct rproc *rproc)
- {
- 	struct mtk_scp *scp = (struct mtk_scp *)rproc->priv;
-@@ -1013,11 +1065,24 @@ static const struct mtk_scp_of_data mt8195_of_data = {
- 	.host_to_scp_int_bit = MT8192_HOST_IPC_INT_BIT,
+diff --git a/drivers/mfd/cros_ec_dev.c b/drivers/mfd/cros_ec_dev.c
+index 546feef851ab..7be2e23525e1 100644
+--- a/drivers/mfd/cros_ec_dev.c
++++ b/drivers/mfd/cros_ec_dev.c
+@@ -64,6 +64,11 @@ static const struct cros_feature_to_name cros_mcu_devices[] = {
+ 		.name	= CROS_EC_DEV_SCP_NAME,
+ 		.desc	= "System Control Processor",
+ 	},
++	{
++		.id	= EC_FEATURE_SCP_C1,
++		.name	= CROS_EC_DEV_SCP_C1_NAME,
++		.desc	= "System Control Processor 2nd Core",
++	},
+ 	{
+ 		.id	= EC_FEATURE_TOUCHPAD,
+ 		.name	= CROS_EC_DEV_TP_NAME,
+diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
+index c23554531961..1176cdc92d23 100644
+--- a/include/linux/platform_data/cros_ec_commands.h
++++ b/include/linux/platform_data/cros_ec_commands.h
+@@ -1296,6 +1296,8 @@ enum ec_feature_code {
+ 	 * mux.
+ 	 */
+ 	EC_FEATURE_TYPEC_MUX_REQUIRE_AP_ACK = 43,
++	/* The MCU is a System Companion Processor (SCP) 2nd Core. */
++	EC_FEATURE_SCP_C1 = 45,
  };
  
-+static const struct mtk_scp_of_data mt8195_scp_dual_of_data = {
-+	.scp_clk_get = mt8195_scp_clk_get,
-+	.scp_before_load = mt8195_scp_dual_before_load,
-+	.scp_irq_handler = mt8195_scp_dual_irq_handler,
-+	.scp_reset_assert = mt8195_scp_dual_reset_assert,
-+	.scp_reset_deassert = mt8195_scp_dual_reset_deassert,
-+	.scp_stop = mt8195_scp_dual_stop,
-+	.scp_da_to_va = mt8192_scp_da_to_va,
-+	.host_to_scp_reg = MT8192_GIPC_IN_SET,
-+	.host_to_scp_int_bit = MT8195_CORE1_HOST_IPC_INT_BIT,
-+};
-+
- static const struct of_device_id mtk_scp_of_match[] = {
- 	{ .compatible = "mediatek,mt8183-scp", .data = &mt8183_of_data },
- 	{ .compatible = "mediatek,mt8186-scp", .data = &mt8186_of_data },
- 	{ .compatible = "mediatek,mt8192-scp", .data = &mt8192_of_data },
- 	{ .compatible = "mediatek,mt8195-scp", .data = &mt8195_of_data },
-+	{ .compatible = "mediatek,mt8195-scp-dual", .data = &mt8195_scp_dual_of_data },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, mtk_scp_of_match);
+ #define EC_FEATURE_MASK_0(event_code) BIT(event_code % 32)
+diff --git a/include/linux/platform_data/cros_ec_proto.h b/include/linux/platform_data/cros_ec_proto.h
+index df3c78c92ca2..12fc60f3c90d 100644
+--- a/include/linux/platform_data/cros_ec_proto.h
++++ b/include/linux/platform_data/cros_ec_proto.h
+@@ -19,6 +19,7 @@
+ #define CROS_EC_DEV_ISH_NAME	"cros_ish"
+ #define CROS_EC_DEV_PD_NAME	"cros_pd"
+ #define CROS_EC_DEV_SCP_NAME	"cros_scp"
++#define CROS_EC_DEV_SCP_C1_NAME	"cros_scp_c1"
+ #define CROS_EC_DEV_TP_NAME	"cros_tp"
+ 
+ /*
 -- 
 2.18.0
 
