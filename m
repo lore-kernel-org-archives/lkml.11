@@ -2,127 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57645C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5239C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:58:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235857AbiFHJ5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38470 "EHLO
+        id S235553AbiFHJ6B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:58:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235667AbiFHJ5Y (ORCPT
+        with ESMTP id S235746AbiFHJ5a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:57:24 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D974614B668;
-        Wed,  8 Jun 2022 02:29:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654680602; x=1686216602;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uwxUPQpS1espMfB9OR5NDTwor4yh42xNFnlWv+i1FFY=;
-  b=G+mB33Yct5kLRbJKol4Hd/6j9uIJly5CjcYujPGO2sonvSNmbicsNSG9
-   IlYlqC+agTAF4Lk2wjyIKM+dJPW8P+lej5eJ90qXMs4nbdLlBQrHvRNIs
-   DfEH/tHuJfrFEnrpaBcMvXlH11DuXqjIDTX5s5zKmEQyA8kqI1Aq36P2V
-   zVJ6NDBpa+TgSTONqjp6uIunr+2X5jba7Bm9VKZbUNhhK7q1Sv6j/m952
-   JeS9zz4MZdub1R1OhVDGQMXT1s20Fg/xCvAgDD6SFkRCk3dYFRpZNTHW3
-   ANNyKlGCVeSFysYzB5G7hAW5Cyd1lDx26vUiVVguiZTiGiPvXLn87vZq9
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="302189006"
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="302189006"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:29:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="683230214"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by fmsmga002.fm.intel.com with ESMTP; 08 Jun 2022 02:29:33 -0700
-Date:   Wed, 8 Jun 2022 17:21:39 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
-        Conor.Dooley@microchip.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v16 3/3] dt-bindings: fpga: add binding doc for
- microchip-spi fpga mgr
-Message-ID: <20220608092139.GC481269@yilunxu-OptiPlex-7050>
-References: <20220607111030.3003-1-i.bornyakov@metrotek.ru>
- <20220607111030.3003-4-i.bornyakov@metrotek.ru>
+        Wed, 8 Jun 2022 05:57:30 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6FB115A854
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:30:03 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id m20so40190569ejj.10
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 02:30:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=5OSQTqUpVQqGdtiWsQiVzCNGN/W+6rXCSBNE12Fte78=;
+        b=enw+NAUpYeQlR6hfdS6xQpRkqLghi6Z2iYYF2YW+inYhh6MXxx9ps2oboBmw7sVEaJ
+         0Mm50RUaA2kKP4rEFFIkDypeMAPgiSRifYJiTO6UfFGqAVDtF510NJmQco/zdGYMrpt8
+         P4W9osQMjyrRrhHw8bE/7fUsJ35fRglmf5U6JjyJJYqA/Iix9L53C0zF/KO3yMC7dZH2
+         9cS6XaOgTZGDQw+iegdG0lnsyzIdjsMEzbBw6RGqT9IfmFXE9bcg6U7Ay4T1+xU8Sgbg
+         uqyDXRmd3nCM1nm2XObVyaU40A9z1m+U2qcV/fdQAqE0d6MF6ISUaupq7c98IUFaFGOb
+         eMKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5OSQTqUpVQqGdtiWsQiVzCNGN/W+6rXCSBNE12Fte78=;
+        b=YhgCiVnwt3F2IqQsrsw0n9T00WLI47ABXfF8zvX2623eJlRFk7QRv55rM/ooV5tP3w
+         rXOYuL6sZqX+rMO87qXFV5A9dvucPbmtW5C83gfAvLLZYEgYGWOeH/w24vhkVi9fuWDM
+         JLklgoVNoa9gskH0Sf+lcV0U//h3sTD/WJxqXwgj8V+b+9SI7qXrB4ccHUP40Ks5tW/M
+         /2vDENhYS6BXEqtK3HMFj11VzFHNU02nUsqHcl2HRPrLVio0b9oCoogztHSeV7Ar4upv
+         Yt2nRyJhMJuyxS7grnIsc+N1xPw4ansA5U7o3GukSS446LrbAZX6rL/yDS8+h2vkixmU
+         9hJw==
+X-Gm-Message-State: AOAM530qKaEkOZ6jw9oCrxUj16kxHdMmsYTNYfSmHZwAKIsVsJxMrE1b
+        9iZoNk4aT2vJGzW2afaSJe4vXw==
+X-Google-Smtp-Source: ABdhPJzdM9jQq7Knm4/sB2ExOoHBLPfrsf5VDhDvQZsiispnrNYZsvuDkJKUdXzIVPgg30O3pT7bMg==
+X-Received: by 2002:a17:907:868f:b0:702:f865:55de with SMTP id qa15-20020a170907868f00b00702f86555demr30709192ejc.24.1654680601876;
+        Wed, 08 Jun 2022 02:30:01 -0700 (PDT)
+Received: from [192.168.0.191] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id n24-20020aa7c698000000b0042bb229e81esm11830571edq.15.2022.06.08.02.30.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 02:30:01 -0700 (PDT)
+Message-ID: <3c9abbcf-086b-07ab-2638-cd25fa9f329b@linaro.org>
+Date:   Wed, 8 Jun 2022 11:30:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607111030.3003-4-i.bornyakov@metrotek.ru>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH][next] spi: s3c64xx: Fix spelling mistake "hannel" ->
+ "channel"
+Content-Language: en-US
+To:     Colin Ian King <colin.i.king@gmail.com>,
+        Andi Shyti <andi@etezian.org>, Mark Brown <broonie@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-spi@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220608081912.2083086-1-colin.i.king@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220608081912.2083086-1-colin.i.king@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 02:10:30PM +0300, Ivan Bornyakov wrote:
-> Add Device Tree Binding doc for Microchip Polarfire FPGA Manager using
-> slave SPI to load .dat formatted bitstream image.
+On 08/06/2022 10:19, Colin Ian King wrote:
+> There is a spelling mistake in a dev_err message. Fix it.
 > 
-> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-Signed-off-by: Xu Yilun <yilun.xu@intel.com>
 
-> ---
->  .../fpga/microchip,mpf-spi-fpga-mgr.yaml      | 44 +++++++++++++++++++
->  1 file changed, 44 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-> new file mode 100644
-> index 000000000000..aee45cb15592
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-> @@ -0,0 +1,44 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/fpga/microchip,mpf-spi-fpga-mgr.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Microchip Polarfire FPGA manager.
-> +
-> +maintainers:
-> +  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> +
-> +description:
-> +  Device Tree Bindings for Microchip Polarfire FPGA Manager using slave SPI to
-> +  load the bitstream in .dat format.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - microchip,mpf-spi-fpga-mgr
-> +
-> +  reg:
-> +    description: SPI chip select
-> +    maxItems: 1
-> +
-> +  spi-max-frequency: true
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    spi {
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +
-> +            fpga_mgr@0 {
-> +                    compatible = "microchip,mpf-spi-fpga-mgr";
-> +                    spi-max-frequency = <20000000>;
-> +                    reg = <0>;
-> +            };
-> +    };
-> -- 
-> 2.35.1
-> 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
