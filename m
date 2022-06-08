@@ -2,119 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04EB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:40:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 715D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:41:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236933AbiFHKkD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52386 "EHLO
+        id S236862AbiFHKlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238486AbiFHKjX (ORCPT
+        with ESMTP id S236591AbiFHKlV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:39:23 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0F2311002;
-        Wed,  8 Jun 2022 03:38:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654684735; x=1686220735;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mIAf68904yK5TA4/7pDwIQkOjWrI2K2wTX2UlDAKuYA=;
-  b=PWdJQ8+DykFHI59p0yrVREDrRS93BXWX8m3P3hyStwWhnTisK+c+eTr2
-   2EbsKynlvh+Bc8j+SeM9DwR3imN6HPcKuYxiUn1BJJTEepXA7UKLS+hVb
-   hwiM+jhJ3DrCqpgx+vdeENNdM1OEcCrmRzpDDeMkDZjiungCSatoS080S
-   mCH+5hZCxDyZDmt7cN8YzOnM93UQsjC6v02OuPVZr8t1QyKrSEBLknpr5
-   kkYglqp0Achk3ciIL1BuVfJ4iBDcdJhDARcbBO0oYpDSUQlqCkFWyPlC1
-   DNHd6fbwFCTGhmUYcIAXkCeSsx8mV2ViRfMMIHyYm4MSU9i2wzX49pFL9
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277690947"
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="277690947"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 03:38:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="636741028"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by fmsmga008.fm.intel.com with ESMTP; 08 Jun 2022 03:38:52 -0700
-Date:   Wed, 8 Jun 2022 18:30:58 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     tien.sung.ang@intel.com
-Cc:     christophe.jaillet@wanadoo.fr, hao.wu@intel.com,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mdf@kernel.org, trix@redhat.com
-Subject: Re: [PATCH v2] fpga: altera-cvp: Truncated bitstream error support
-Message-ID: <20220608103058.GG481269@yilunxu-OptiPlex-7050>
-References: <20220603094911.GA238410@yilunxu-OptiPlex-7050>
- <20220607055530.3755617-1-tien.sung.ang@intel.com>
+        Wed, 8 Jun 2022 06:41:21 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642481D8809;
+        Wed,  8 Jun 2022 03:41:16 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=chengyou@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VFlnOFv_1654684873;
+Received: from 30.43.105.165(mailfrom:chengyou@linux.alibaba.com fp:SMTPD_---0VFlnOFv_1654684873)
+          by smtp.aliyun-inc.com;
+          Wed, 08 Jun 2022 18:41:14 +0800
+Message-ID: <47f97387-5587-3f81-1407-3e1d943025cb@linux.alibaba.com>
+Date:   Wed, 8 Jun 2022 18:41:12 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607055530.3755617-1-tien.sung.ang@intel.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH -next] RDMA/erdma: remove unneeded semicolon
+Content-Language: en-US
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Yang Li <yang.lee@linux.alibaba.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>, kaishen@linux.alibaba.com,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+References: <20220608005534.76789-1-yang.lee@linux.alibaba.com>
+ <ef94d5de-da12-a894-8ff3-af7ecf9d568a@linux.alibaba.com>
+ <YqBWrU27/wNsLU/u@unreal>
+From:   Cheng Xu <chengyou@linux.alibaba.com>
+In-Reply-To: <YqBWrU27/wNsLU/u@unreal>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 01:55:30PM +0800, tien.sung.ang@intel.com wrote:
-> > But you are adding the logic in altera_cvp_write() to keep the
-> > correctness. What's the difference adding it somewhere else? And as I
-> > can see, preventing the writing at the very beginning is a much cleaner
-> > way.
-> 
-> Though without doubt, your solution is doable, I have a 
-> discussion with the Intel architect and they insisted that
-> the device driver must not make such a decision. The decision to 
-> drop or accept a transfer is up to the firmware. The firmware
 
-Why dropping or accepting is forbidden, but padding is allowed? If the
-decision is no operation to the data, then padding should also be
-forbidden.
 
-> insisted that the buffer be padded with whatever value. They
+On 6/8/22 3:58 PM, Leon Romanovsky wrote:
+> On Wed, Jun 08, 2022 at 11:36:07AM +0800, Cheng Xu wrote:
+>>
+>>
+>> On 6/8/22 8:55 AM, Yang Li wrote:
+>>> Eliminate the following coccicheck warning:
+>>> ./drivers/infiniband/hw/erdma/erdma_qp.c:254:3-4: Unneeded semicolon
+>>>
+>>> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+>>> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+>>
+>> Reviewed-by: Cheng Xu <chengyou@linux.alibaba.com>
+>>
+>> Thanks.
+>>
+>>
+>> Jason,
+>>
+>> BTW, are this and other two patches for erdma posted today parts of
+>> the static checker reports which you mentioned in [1] ? If so, I think I
+>> should re-post the v10 patches including the fixes ?
+> 
+> Yes, the fixes need to be squashed into the relevant patches.
+> 
+> Thanks
+> 
 
-If I understand right, the 2 decisions are conflicted. On one hand,
-the driver should not care about the data. On another hand, the
-driver should still care about the data for some rule.
+Get it, thanks.
+Cheng Xu
 
-So please firstly reach your agreement before making patches.
-
-> desire the transfer protocol to be obeyed to ensure, that 
-> there is no hard dependencies on the device driver if they
-> do one day change the 4kbytes to some other smaller value.
-> 
-> > > > If the image size is larger than 1 Page but is not aligned to 1 Page,
-> > > > will the reprogramming still fail?
-> > > Yes, the reconfiguration will fail. The above tear-down  is to prevent
-> > > that CvP Hardware/firmware in the FPGA from entering into a dead-lock.
-> 
-> > So if the image size is not aligned to 1 Page, the reprogram should fail
-> > anyway, is it? Then I really recommend you fail the reprogramming at the
-> > very beginning.
-> 
-> Same reasoning as above. We don't want the driver to make this
-> decision.
-> 
-> > > >> +		altera_cvp_send_block(conf, (const u32 *)conf->send_buf,
-> > > >> +				      conf->priv->block_size);
-> > > 
-> > > >If the len equals block_size, is the copy still needed?
-> > > Actually, not required. But to maintain a simple design, we use
-> > > a common flow for all so you can skip the check.
-> 
-> > I don't think so. We should make the code reasonable. Blindly copy the
-> > whole buffer impacts all normal cases, and makes people confused. The
-> > code seems shorter now, but not simpler, it takes people more time to
-> > figure out why.
-> 
-> Yes, it could look confusing to other programmers. And, yes, the 
-> padding doesn't matter. Let me relook into this. As the driver is 
-> already re-tested by the silicon validatioin. 
-> I want to avoid making any change as it
-> would meant another couple of weeks of re-testing. 
-> Can this be accepted as it is?
-
-Sorry, I can't. Some clarification is needed.
-
-Thanks,
-Yilun
+>>
+>> Thanks,
+>> Cheng Xu
+>>
+>> [1] https://lore.kernel.org/linux-rdma/20220606154754.GA645238@nvidia.com/
