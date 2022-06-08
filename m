@@ -2,84 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C07BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:03:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 810B7CCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:03:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236075AbiFHKDC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39490 "EHLO
+        id S235856AbiFHKDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235750AbiFHKCk (ORCPT
+        with ESMTP id S235965AbiFHKCv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:02:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D975A13C1EE
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:41:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654681280;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3+IKQAxPaDV1lsEnEpDWXsKDpaqq+QeuuTyOBnuSML8=;
-        b=NMte0v9D9tm2pKj9octgcbFYxm2mbvupEt+i3r5CwjBQTB82eXd92M3sCF4eyzRHvOkPdG
-        AT7+XwuoK9TP6cQ+k00Sajd6/3ID+HgvZU9jJ3wp9rkbP9Vzit4/y87tA6nqITAX2Uz47g
-        lERu06DopFsrmtXc7U0D9uMV5SVhi6w=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-615-w3WQnUBOPViMCdoJoJfKsA-1; Wed, 08 Jun 2022 05:41:16 -0400
-X-MC-Unique: w3WQnUBOPViMCdoJoJfKsA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CA5C61C01B2C;
-        Wed,  8 Jun 2022 09:41:15 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.40.208.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0009D9D7F;
-        Wed,  8 Jun 2022 09:41:10 +0000 (UTC)
-Date:   Wed, 8 Jun 2022 11:41:08 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     guoren@kernel.org, Christoph Hellwig <hch@lst.de>
-Cc:     palmer@dabbelt.com, arnd@arndb.de, gregkh@linuxfoundation.org,
-        hch@lst.de, nathan@kernel.org, naresh.kamboju@linaro.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-parisc@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, x86@kernel.org,
-        heiko@sntech.de, ldv@strace.io
-Subject: Re: [PATCH V12 02/20] uapi: always define
- F_GETLK64/F_SETLK64/F_SETLKW64 in fcntl.h
-Message-ID: <20220608094108.GA18122@asgard.redhat.com>
-References: <20220405071314.3225832-1-guoren@kernel.org>
- <20220405071314.3225832-3-guoren@kernel.org>
+        Wed, 8 Jun 2022 06:02:51 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7381451CF;
+        Wed,  8 Jun 2022 02:43:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=A+CyjXVi+KYsagLnxynLgPapKZafI2doGh1EpEXW+4I=; b=TpYct5GI0487LzQAlTdrSE007A
+        Sa5jAYgO/UNmcTh8AyD0Z86ax39efkq0QC0bGMOOwswFnooLZ9ePviOj1F1EXNpbbg/LevKDMxUMg
+        cJoctLg2AKYrmd1dkC9lo/rGo42fq++QVYxb+oT/Dg9eBzqKS5+PUcCk8dDSY+8zHL4nmNR7rhigb
+        fhwj/f7n3NDigPX/Spdm1kmlg52GG/Jnd8P2wkRl49Na/85fAMDtG17ZErtT/2Q5JuiPuXa4vsU6n
+        HrkTF53KHft8nDem3bVFnp9QjYRO5D9NZ3fVkxg4EuAN+W6sLAIAurJaa+oHdlDgG1itc5X7jHTCs
+        J/zq9nhw==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nysDb-005zfL-LV; Wed, 08 Jun 2022 09:43:16 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6596C30017D;
+        Wed,  8 Jun 2022 11:43:13 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 2A9E620250966; Wed,  8 Jun 2022 11:43:13 +0200 (CEST)
+Date:   Wed, 8 Jun 2022 11:43:13 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Yanfei Xu <yanfei.xu@intel.com>
+Cc:     mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH] perf/core: remove a meaningless pair of
+ rcu_read_{,un}lock()
+Message-ID: <YqBvMWwc1T4ZdKCg@hirez.programming.kicks-ass.net>
+References: <20220608090938.2178624-1-yanfei.xu@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220405071314.3225832-3-guoren@kernel.org>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+In-Reply-To: <20220608090938.2178624-1-yanfei.xu@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 03:12:56PM +0800, guoren@kernel.org wrote:
-> From: Christoph Hellwig <hch@lst.de>
+On Wed, Jun 08, 2022 at 05:09:38PM +0800, Yanfei Xu wrote:
+> Per the codes, this pair of rcu_read_{,un}lock() protects nothing.
+> Let's remove it.
 > 
-> Note that before this change they were never visible to userspace due
-> to the fact that CONFIG_64BIT is only set for kernel builds.
+> Further, the variable "pmu" is safe as it is in the SRCU read-side
+> critical scope of "pmus_srcu" and perf_pmu_unregister() delete it
+> after calling synchronize_srcu.
+> 
+> Signed-off-by: Yanfei Xu <yanfei.xu@intel.com>
+> ---
+>  kernel/events/core.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/kernel/events/core.c b/kernel/events/core.c
+> index 950b25c3f210..36b0df6feab4 100644
+> --- a/kernel/events/core.c
+> +++ b/kernel/events/core.c
+> @@ -11296,9 +11296,7 @@ static struct pmu *perf_init_event(struct perf_event *event)
+>  	}
+>  
+>  again:
+> -	rcu_read_lock();
+>  	pmu = idr_find(&pmu_idr, type);
+> -	rcu_read_unlock();
 
-> -#ifndef CONFIG_64BIT
-> +#if __BITS_PER_LONG == 32 || defined(__KERNEL__)
-
-Actually, it's quite the opposite: "ifndef" usage made it vailable at all times
-to the userspace, and this change has actually broken building strace
-with the latest kernel headers[1][2].  There could be some debate
-whether having these F_*64 definitions exposed to the user space 64-bit
-applications, but it seems that were no harm (as they were exposed already
-for quite some time), and they are useful at least for strace for compat
-application tracing purposes.
-
-[1] https://github.com/strace/strace/runs/6779763146?check_suite_focus=true#step:4:3222
-[2] https://pipelines.actions.githubusercontent.com/serviceHosts/e5309ebd-8a2f-43f4-a212-b52080275b5d/_apis/pipelines/1/runs/1473/signedlogcontent/12?urlExpires=2022-06-08T09%3A37%3A13.9248496Z&urlSigningMethod=HMACV1&urlSignature=fIT7vd0O4NNRwzwKWLXY4UVZBIIF3XiVI9skAsGvV0I%3D
-
+You're mistaken, this is required for the radix tree internal nodes.
+Without it we can't safely traverse the radix tree without full
+serialization against the modifiers.
