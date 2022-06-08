@@ -2,118 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB67C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:03:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B0FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:04:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238554AbiFHMDo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:03:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48732 "EHLO
+        id S238592AbiFHMEC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:04:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238432AbiFHMDj (ORCPT
+        with ESMTP id S238540AbiFHMD6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:03:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C6622BD5;
-        Wed,  8 Jun 2022 05:03:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DAF261796;
-        Wed,  8 Jun 2022 12:03:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51CE3C34116;
-        Wed,  8 Jun 2022 12:03:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654689815;
-        bh=3Kv1ske3mQCJvHHnTjOiGzX4NxWnEChsCKT/2kNbG2Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NZyePu6sOZYJTwmttakqqrOsDxRtnjClOHoS1jbaaTlvl/5sI5GxrmS6dZhg5hQ40
-         nMV6daNFhXVs8SMA5gqpzP4s7Fk+izoUJb156mGt61uoHf83rF/4R6+5/SAVlJajJV
-         2PkgJmClEuvEkCrgsfRJNIbOpB7jyipow3VHIIRk=
-Date:   Wed, 8 Jun 2022 14:03:32 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v1 2/2] spi: Use device_find_first_child() instead of
- custom approach
-Message-ID: <YqCQFFRXyaaQNSWv@kroah.com>
-References: <20220607202058.8304-1-andriy.shevchenko@linux.intel.com>
- <20220607202058.8304-2-andriy.shevchenko@linux.intel.com>
- <YqCJsRqrCRiIBm1P@kroah.com>
- <YqCMunw+2WHIinOP@smile.fi.intel.com>
+        Wed, 8 Jun 2022 08:03:58 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B578115CB9;
+        Wed,  8 Jun 2022 05:03:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654689838; x=1686225838;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=8+59vdbtwdJ9mUcZg9lTLgsNCEcr0zI48wsgtLiBnQg=;
+  b=htn9Btg1aKEEiORnPH6UoK69drkvWNxU1avV8ASC+ZSXwmd9A3kye3Wq
+   wvYk7vhGAsGqgsYc5e3J2vjxRpn9YiRdTayeaZTIwmzXV/pU/tNpZ/SYO
+   iJWeqTJ/hJqaIyUnoqdbgVE+ygSNIF0Met6Ka028Yo1Iv7cTzTBJDAx5m
+   ZT6K4/oWyzs8JEaJRbvR3v+X7REiW5ZoB7QyFkF1zHzABFf7cYJKZUEVG
+   EviuJ2K5iPzJN+pKl3GSm78nj8DGWrK7PMQe867uARAPnLrMLDkFEjvVN
+   ygKE28BLPQJbRENzRD1/ZwCySZqMLHN8mi16n64aC8b/dy7k0TIdT6b5Y
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="274397797"
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="274397797"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 05:03:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="648576519"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga004.fm.intel.com with ESMTP; 08 Jun 2022 05:03:56 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id C60074E5; Wed,  8 Jun 2022 15:03:59 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 net-next 3/5] ptp_ocp: drop duplicate NULL check in ptp_ocp_detach()
+Date:   Wed,  8 Jun 2022 15:03:56 +0300
+Message-Id: <20220608120358.81147-4-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220608120358.81147-1-andriy.shevchenko@linux.intel.com>
+References: <20220608120358.81147-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqCMunw+2WHIinOP@smile.fi.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 02:49:14PM +0300, Andy Shevchenko wrote:
-> On Wed, Jun 08, 2022 at 01:36:17PM +0200, Greg Kroah-Hartman wrote:
-> > On Tue, Jun 07, 2022 at 11:20:58PM +0300, Andy Shevchenko wrote:
-> > > We have already a helper to get the first child device, use it and
-> > > drop custom approach.
-> > > 
-> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > > ---
-> > >  drivers/spi/spi.c | 9 ++-------
-> > >  1 file changed, 2 insertions(+), 7 deletions(-)
-> > > 
-> > > diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-> > > index ea09d1b42bf6..87dc8773108b 100644
-> > > --- a/drivers/spi/spi.c
-> > > +++ b/drivers/spi/spi.c
-> > > @@ -2613,11 +2613,6 @@ int spi_slave_abort(struct spi_device *spi)
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(spi_slave_abort);
-> > >  
-> > > -static int match_true(struct device *dev, void *data)
-> > > -{
-> > > -	return 1;
-> > > -}
-> > > -
-> > >  static ssize_t slave_show(struct device *dev, struct device_attribute *attr,
-> > >  			  char *buf)
-> > >  {
-> > > @@ -2625,7 +2620,7 @@ static ssize_t slave_show(struct device *dev, struct device_attribute *attr,
-> > >  						   dev);
-> > >  	struct device *child;
-> > >  
-> > > -	child = device_find_child(&ctlr->dev, NULL, match_true);
-> > > +	child = device_find_first_child(&ctlr->dev);
-> > >  	return sprintf(buf, "%s\n",
-> > >  		       child ? to_spi_device(child)->modalias : NULL);
-> > >  }
-> > 
-> > Horrible naming convention asside, what is this really showing?  I do
-> > not see this documented in Documentation/ABI/ anywhere, so can it just
-> > be dropped entirely?
-> > 
-> > Ah, it's in Documentation/spi/spi-summary.rst not where it belongs...
-> > 
-> > Looks like "any" of the child devices could match here, so it's just
-> > finding the first one by default.  So you aren't explicitly asking for
-> > the real first device, you could return the last one as well, and it
-> > would still work as there is just "one" device in this list from what I
-> > can tell.
-> > 
-> > So is does this really deserve a new driver core api call?
-> 
-> As I said I noticed more places like this (*) and the problem is that I can't
-> simply use device_match_any() because of the different prototype.
+Since platform_device_unregister() is NULL-aware, we don't need to duplicate
+this check. Remove it and fold the rest of the code.
 
-Why not exactly?  match_true() above and device_match_any() have the
-same signature from what I can tell:
-	static int match_true(struct device *dev, void *data)
-	int device_match_any(struct device *dev, const void *unused)
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/ptp/ptp_ocp.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-What am I missing, the const?
+diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+index 926add7be9a2..4e237f806085 100644
+--- a/drivers/ptp/ptp_ocp.c
++++ b/drivers/ptp/ptp_ocp.c
+@@ -3701,10 +3701,8 @@ ptp_ocp_detach(struct ptp_ocp *bp)
+ 		serial8250_unregister_port(bp->mac_port);
+ 	if (bp->nmea_port != -1)
+ 		serial8250_unregister_port(bp->nmea_port);
+-	if (bp->spi_flash)
+-		platform_device_unregister(bp->spi_flash);
+-	if (bp->i2c_ctrl)
+-		platform_device_unregister(bp->i2c_ctrl);
++	platform_device_unregister(bp->spi_flash);
++	platform_device_unregister(bp->i2c_ctrl);
+ 	if (bp->i2c_clk)
+ 		clk_hw_unregister_fixed_rate(bp->i2c_clk);
+ 	if (bp->n_irqs)
+-- 
+2.35.1
 
-> I agree that all thing should be using _any instead of _first.
-
-Yes, so let's fix it please, don't propagate bad patterns.
-
-thanks,
-
-greg k-h
