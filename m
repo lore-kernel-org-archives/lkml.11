@@ -2,113 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C405CCA488
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8C3BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230355AbiFHHWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:22:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55184 "EHLO
+        id S232871AbiFHHXM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:23:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241128AbiFHHM1 (ORCPT
+        with ESMTP id S1345236AbiFHHSc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:12:27 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3DF1CF93C
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:51:48 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nypXY-0000mV-3Y; Wed, 08 Jun 2022 08:51:40 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nypXU-0078Sz-To; Wed, 08 Jun 2022 08:51:35 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nypXS-00EvGb-Qb; Wed, 08 Jun 2022 08:51:34 +0200
-Date:   Wed, 8 Jun 2022 08:51:31 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>
-Cc:     thierry.reding@gmail.com, lee.jones@linaro.org,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        linux-pwm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pwm: stmpe: Deleted extra {}
-Message-ID: <20220608065131.svkxcwfgzdd7cs57@pengutronix.de>
-References: <20220608010318.18040-1-yuanjilin@cdjrlc.com>
+        Wed, 8 Jun 2022 03:18:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FDD1DE2CC;
+        Tue,  7 Jun 2022 23:55:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94C376192F;
+        Wed,  8 Jun 2022 06:55:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06A43C341C0;
+        Wed,  8 Jun 2022 06:55:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654671330;
+        bh=Rnn1xBK4SIoD9hGohMKvEaSOmmA84kgkDcpeFkCbE0I=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=svnvyldiri3TXNI0HtXisFJvUOEMCZUraz5tktAacH1aAMa2Utu1B+kdcb9Ej87lA
+         Ww64rvIpAeQvbZHOHSsnrRn3S+wKiGHTiXJ7M2+6KVZmNjCT1+R6AJqDKg2WPK9SqV
+         2zGOJDV77zZvhgObklf6u0vjGcW9TDy7VJ4ysUUtA0mBlssDtkj50N/Q9dSb+8Yhuy
+         UTpt64QdvVNSn+4RcqEVqI1oyDSMTsW5/FRpGT4OxuoiseBtB7oVOKgfgkRcopsbiY
+         HUypxIZPeu7NkrfxoOFLO9RJVQl3gvVfzS5LhPqg4iWXpY1ZuIRBwH2rY2bwRjyl35
+         QIIhue+kEdwjA==
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-fb1ae0cd9cso15504570fac.13;
+        Tue, 07 Jun 2022 23:55:29 -0700 (PDT)
+X-Gm-Message-State: AOAM530F0TCVcmgoIWh3aZnJ9ZqlY+RREbDpyYGEp+yV8VGVpq6IaiB/
+        PcPak7XoRz+XFLshophF9qT0cTLT+SGNOmcWPTQ=
+X-Google-Smtp-Source: ABdhPJx2F1i643WQL+zBTDpGnFGWhgyrQmob/a9LQ18PsuWS0BUtU+nfj0OwGQyxh8pQl5ZYzouobThzNc+Do1iFKbQ=
+X-Received: by 2002:a05:6871:5c8:b0:f3:3c1c:126f with SMTP id
+ v8-20020a05687105c800b000f33c1c126fmr1577934oan.126.1654671329179; Tue, 07
+ Jun 2022 23:55:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7azeu5p4ver3v3re"
-Content-Disposition: inline
-In-Reply-To: <20220608010318.18040-1-yuanjilin@cdjrlc.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+References: <20220607164908.521895282@linuxfoundation.org> <20220607164908.572141803@linuxfoundation.org>
+ <Yp+KxkkTctBDLJTA@arm.com>
+In-Reply-To: <Yp+KxkkTctBDLJTA@arm.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Wed, 8 Jun 2022 08:55:17 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXEtFVWgTgKh+vV2oi-mgqfzVJnqJpTneM9mwTEC3+Nasg@mail.gmail.com>
+Message-ID: <CAMj1kXEtFVWgTgKh+vV2oi-mgqfzVJnqJpTneM9mwTEC3+Nasg@mail.gmail.com>
+Subject: Re: [PATCH 5.10 001/452] arm64: Initialize jump labels before setup_machine_fdt()
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "# 3.4.x" <stable@vger.kernel.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Stephen Boyd <swboyd@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 7 Jun 2022 at 19:28, Catalin Marinas <catalin.marinas@arm.com> wrote:
+>
+> Hi Greg,
+>
+> On Tue, Jun 07, 2022 at 06:57:38PM +0200, Greg Kroah-Hartman wrote:
+> > From: Stephen Boyd <swboyd@chromium.org>
+> >
+> > commit 73e2d827a501d48dceeb5b9b267a4cd283d6b1ae upstream.
+> >
+> > A static key warning splat appears during early boot on arm64 systems
+> > that credit randomness from devicetrees that contain an "rng-seed"
+> > property. This is because setup_machine_fdt() is called before
+> > jump_label_init() during setup_arch(). Let's swap the order of these two
+> > calls so that jump labels are initialized before the devicetree is
+> > unflattened and the rng seed is credited.
+> >
+> >  static_key_enable_cpuslocked(): static key '0xffffffe51c6fcfc0' used before call to jump_label_init()
+> >  WARNING: CPU: 0 PID: 0 at kernel/jump_label.c:166 static_key_enable_cpuslocked+0xb0/0xb8
+> >  Modules linked in:
+> >  CPU: 0 PID: 0 Comm: swapper Not tainted 5.18.0+ #224 44b43e377bfc84bc99bb5ab885ff694984ee09ff
+> >  pstate: 600001c9 (nZCv dAIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> >  pc : static_key_enable_cpuslocked+0xb0/0xb8
+> >  lr : static_key_enable_cpuslocked+0xb0/0xb8
+> >  sp : ffffffe51c393cf0
+> >  x29: ffffffe51c393cf0 x28: 000000008185054c x27: 00000000f1042f10
+> >  x26: 0000000000000000 x25: 00000000f10302b2 x24: 0000002513200000
+> >  x23: 0000002513200000 x22: ffffffe51c1c9000 x21: fffffffdfdc00000
+> >  x20: ffffffe51c2f0831 x19: ffffffe51c6fcfc0 x18: 00000000ffff1020
+> >  x17: 00000000e1e2ac90 x16: 00000000000000e0 x15: ffffffe51b710708
+> >  x14: 0000000000000066 x13: 0000000000000018 x12: 0000000000000000
+> >  x11: 0000000000000000 x10: 00000000ffffffff x9 : 0000000000000000
+> >  x8 : 0000000000000000 x7 : 61632065726f6665 x6 : 6220646573752027
+> >  x5 : ffffffe51c641d25 x4 : ffffffe51c13142c x3 : ffff0a00ffffff05
+> >  x2 : 40000000ffffe003 x1 : 00000000000001c0 x0 : 0000000000000065
+> >  Call trace:
+> >   static_key_enable_cpuslocked+0xb0/0xb8
+> >   static_key_enable+0x2c/0x40
+> >   crng_set_ready+0x24/0x30
+> >   execute_in_process_context+0x80/0x90
+> >   _credit_init_bits+0x100/0x154
+> >   add_bootloader_randomness+0x64/0x78
+> >   early_init_dt_scan_chosen+0x140/0x184
+> >   early_init_dt_scan_nodes+0x28/0x4c
+> >   early_init_dt_scan+0x40/0x44
+> >   setup_machine_fdt+0x7c/0x120
+> >   setup_arch+0x74/0x1d8
+> >   start_kernel+0x84/0x44c
+> >   __primary_switched+0xc0/0xc8
+> >  ---[ end trace 0000000000000000 ]---
+> >  random: crng init done
+> >  Machine model: Google Lazor (rev1 - 2) with LTE
+> >
+> > Cc: Hsin-Yi Wang <hsinyi@chromium.org>
+> > Cc: Douglas Anderson <dianders@chromium.org>
+> > Cc: Ard Biesheuvel <ardb@kernel.org>
+> > Cc: Steven Rostedt <rostedt@goodmis.org>
+> > Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+> > Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> > Fixes: f5bda35fba61 ("random: use static branch for crng_ready()")
+> > Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> > Reviewed-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> > Link: https://lore.kernel.org/r/20220602022109.780348-1-swboyd@chromium.org
+> > Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>
+> Since Jason asked for the fixed commit (f5bda35fba61) to be reverted in
+> stable, please don't push this arm64 patch either. Given the risks of
+> breakage as on arm32 (it doesn't look like but you never know), I'm
+> tempted to revert it from mainline as well if Jason finds a better
+> solution for the early crng_reseed() call.
+>
 
---7azeu5p4ver3v3re
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+So as I understand it, there are basically three options:
+0. don't use a static branch in the RNG code
+1. use a static branch but don't patch it extremely early
+2. fix all the arch code so that it is safe to patch static branches
+extremely early.
 
-On Wed, Jun 08, 2022 at 09:03:18AM +0800, Jilin Yuan wrote:
-> Remove unnecessary braces
->=20
-> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
-> ---
->  drivers/pwm/pwm-stmpe.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->=20
-> diff --git a/drivers/pwm/pwm-stmpe.c b/drivers/pwm/pwm-stmpe.c
-> index 2df526fe9c38..c45fe27859de 100644
-> --- a/drivers/pwm/pwm-stmpe.c
-> +++ b/drivers/pwm/pwm-stmpe.c
-> @@ -78,10 +78,9 @@ static void stmpe_24xx_pwm_disable(struct pwm_chip *ch=
-ip,
->  	value =3D ret & ~BIT(pwm->hwpwm);
-> =20
->  	ret =3D stmpe_reg_write(stmpe_pwm->stmpe, STMPE24XX_PWMCS, value);
-> -	if (ret) {
-> +	if (ret)
->  		dev_err(chip->dev, "error writing PWM#%u control\n",
->  			pwm->hwpwm);
-> -	}
->  }
+We have been digging into the ARM code yesterday, and identified that
+RISC-V needs to be fixed as well. In fact, every arch that calls
+early_init_dt_scan() from setup_arch() will need to be vetted to
+ensure that jump label patching is possible this early.
 
-This doesn't apply to neither next nor on the pwm tree nor on Linus
-Torvald's tree. Please always mention preconditions of your patches,
-preferably using git format-patch's --base option.
+Jason already proposed an implementation of 1) here
 
-In this case it builds on top of a patch that was sent to only some
-maintainers, but no public list. Please squash these patches together
-and send them to (at least) linux-pwm@vger.kernel.org.
+https://lore.kernel.org/lkml/20220607100210.683136-1-Jason@zx2c4.com/
 
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---7azeu5p4ver3v3re
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKgRvAACgkQwfwUeK3K
-7Aly8gf+IsXwM8wK6WR96UUHInicXEyDlpcmhCEbr3j0EI3D8JLbzSBwABVFvzVy
-gVCD/rvGtjr5R7jRS3TCshBUoqdSxcf50Rt+aUPvxlUAzs/eqhIVqE0B9kEwI0U/
-vAqW/55RtMNlL/eZV40sm/2OJ8SoSxZMZrI9xyh9BAdvUgGLMnKiWIkRy8ofA7pw
-aUyoMHGL1zGE8s4STMPIQ+s59D4HCSwTksnYJYxHeu+UCAvVYXWIp2XVek52Dh/a
-DyR8PbYvwXIfk26gENsvwXfKg2AQixfVSZukfj3whieoEsEbsfUWHkPdYQAxPnDY
-X31yMqD443j/uEeaCDsmicULvIXdGg==
-=en01
------END PGP SIGNATURE-----
-
---7azeu5p4ver3v3re--
+which seems to me to be the most suitable approach by far, given that
+it removes the need to fiddle with very early boot code on many
+different architectures. That would also allow the arm64 of /this/
+patch to be reverted from mainline.
