@@ -2,158 +2,429 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D8EECCA497
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D73E3CCA491
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236478AbiFHGD4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 02:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55834 "EHLO
+        id S235160AbiFHGCZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 02:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343497AbiFHFzw (ORCPT
+        with ESMTP id S234677AbiFHFtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:55:52 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-bgr052101064016.outbound.protection.outlook.com [52.101.64.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06FFE251964
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 20:59:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RDiF/4lRHCzTRR/2UMfSTM1KRx83pS/Rbz43aU4lTk1YaRw/q4tlA9v9yiw2D1SlfqHHuxnLFnTQwviOpRHbyPHaAZSaWt1Ibtpq5DPC0KfPC3sSBm+nb2nP6VroftazI5GbysyEnKpq5JUV24ZtoeUJG7yfHqEmwDxPGOLQmuqI2uyDjU25jSgkufXXAA/i/G8EcS++titxEOPiKiy8RVA4rr/w387IXUgr22eMCvDvmVuzx/RDVnPmo0DZj7jdTVv0K0Li6v8Bt3Ow/XC+RruBg/4mQzndfp4e/W0gxcBiPjnfWszlVuTsMozvyPMI0kE58YfnA7izYkPXspu9Rg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=y1Dv6GjyAMNnh6Y/d7LlHoDJ8APcy8Tjtt1vlwSHupI=;
- b=iPGERceK9+H5LOrLQwHpQVpVgglRhq/uO8ZmvgpAjdqZwCKdBS1RmwZFSdPj30mfEr5/4cScE5iUiS4TUaQYpLy3Dy9pmHV1tv/pF1ElvlvMslaH306Hg54738qvVSYv/m9zeX9g9utXEywjwXUeEuYU65Ys2v0g6/e9Zrqcavgxb/Zomm87X8FB+btcyWcAcU3FfCos/Kl9cljERG4kwTiso0SO5rybiEhTkZr3v+I4xKHrmJpjOI67DMfxz0gubm4b6FVlQdh0ftH1Oc4wec3SVa5jnm8OQ92cNC5iMB4Puq39UxHUuakvU6WMLf8j7emVypgAj8qBm9Tt32Zhsg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y1Dv6GjyAMNnh6Y/d7LlHoDJ8APcy8Tjtt1vlwSHupI=;
- b=QXJhrXd0Vk6yxUro5J7ArnChpjz1QtgbzvijzUEM5AmDlIKc+ykp/TmDDO8jsmQW36PUN7rjzjMqtp3z7lkct0aOx5IYEnFlc5shDChRITG1Ow22R5J9GhLIAcv7Y5w70wUfyr92FL1VX9Z/9jOT9T4zTMFrZVT/XOm5FMU4caI=
-Received: from PH0PR21MB3025.namprd21.prod.outlook.com (2603:10b6:510:d2::21)
- by SJ0PR21MB1296.namprd21.prod.outlook.com (2603:10b6:a03:3fe::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.1; Wed, 8 Jun
- 2022 03:59:00 +0000
-Received: from PH0PR21MB3025.namprd21.prod.outlook.com
- ([fe80::8061:e9da:aa0f:a013]) by PH0PR21MB3025.namprd21.prod.outlook.com
- ([fe80::8061:e9da:aa0f:a013%9]) with mapi id 15.20.5332.007; Wed, 8 Jun 2022
- 03:59:00 +0000
-From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To:     Christoph Hellwig <hch@lst.de>
-CC:     "kbusch@kernel.org" <kbusch@kernel.org>,
-        "axboe@fb.com" <axboe@fb.com>,
-        "sagi@grimberg.me" <sagi@grimberg.me>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Caroline Subramoney <Caroline.Subramoney@microsoft.com>,
-        Richard Wurdack <riwurd@microsoft.com>,
-        Nathan Obr <Nathan.Obr@microsoft.com>
-Subject: RE: [PATCH v3 2/2] nvme: handle persistent internal error AER from
- NVMe controller
-Thread-Topic: [PATCH v3 2/2] nvme: handle persistent internal error AER from
- NVMe controller
-Thread-Index: AQHYegPAfmbLbbh7zk6WMSOLg+2tw61DwKAAgAEivxA=
-Date:   Wed, 8 Jun 2022 03:59:00 +0000
-Message-ID: <PH0PR21MB3025187DD97DA485E6931793D7A49@PH0PR21MB3025.namprd21.prod.outlook.com>
-References: <1654560915-22449-1-git-send-email-mikelley@microsoft.com>
- <1654560915-22449-2-git-send-email-mikelley@microsoft.com>
- <20220607103538.GA25071@lst.de>
-In-Reply-To: <20220607103538.GA25071@lst.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=0bb635bc-4865-4ea5-bdc6-84d8fcabc310;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-06-08T03:56:15Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 59bba5a3-a0b6-4efe-71e2-08da49033866
-x-ms-traffictypediagnostic: SJ0PR21MB1296:EE_
-x-microsoft-antispam-prvs: <SJ0PR21MB1296A5FD9231535CDE980861D7A49@SJ0PR21MB1296.namprd21.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2XzeK+VZFtl7LUr+CWAm1bEw/cB0quOlUfXPLzzEgM29UJkOe9dYmtwp7FP6dwPrIW0A3Z+PP2jcMcT1yMZyC+t4ZZnHv4cZSKiCxPIrZjyPBlInFl4ZBGgpmNLZ0sq4wUcOzpFHfrMog74CY6SKphJ81GlIUuCsHP+6drrnJKD21Xh07SWHSUSmlAP0xWiVxZZpMvVYisExgdhwerkxCFLY2ejmyStN5zoxu2MHnfmfAiMNZVpd9cPNcESqB4mV81Znk/i42CJvbTUPx6V422ZAwtBdQ2nm7nykdkiUJ+wWTC5kNkApFyaJXkGeaKF6zpvhl//B6qQEOnI5Cl5rVboSYX/urRVNjHe4ZiDxpoZpkiDyJHhQNKEzWgTbKjvZkwGpyQQ17rFALCgY+5UL9G1In+ZR6uBY38puhMt0RXR0FFvi2PUDSB0FjeTzJb86aDn//0tGHRGD0V3SD2xF6cmqYdlPRuZtk0XKp9P1e29HT/V5n/JAf3sy0fHi3LITTtGsmBCAMewDJ0w9oPUH5tyjxeuqR54G8irImugJvMnrPGjkLE7BjYFwYdEKBxPB9rszuTWorV/GP74gf1OW40/fZzl/mCfy+xl9kK6fHiBzZ+ZGsP75Ah6sgFauVXSZFUumZZuXl/1MHE1cDKkfuSRB/2Eh7fTYDZtTOOAqC7kKU7Si8d5iUDT4qWkWneM0s0ywKROiHR+7AaMgFIZmXrfImXP4ey4K9s17ke3IS6mKX8RMP3dVnXj+NVEaKf/3
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR21MB3025.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(83380400001)(508600001)(9686003)(71200400001)(316002)(2906002)(33656002)(10290500003)(86362001)(6916009)(54906003)(38070700005)(8990500004)(122000001)(5660300002)(6506007)(82950400001)(7696005)(82960400001)(55016003)(38100700002)(186003)(107886003)(26005)(66946007)(52536014)(76116006)(64756008)(66476007)(66446008)(4326008)(66556008)(8676002)(8936002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?9CyZcSXq1FXygNYPm7opMo7ZVm9WGIbEIfgZO9ILWjUynsw7CYeI52JL6pzz?=
- =?us-ascii?Q?6JI2Hbba3hoUc6sh7oFnJsK7Sbi0UJsgfb+68WCRyjpfy9jOi2AQWzNdgTap?=
- =?us-ascii?Q?bRiRINaFISDiruxwB2m8Rra0epmHdvuHsMOadS9N6zr6e3t7XmAksVAMsid/?=
- =?us-ascii?Q?UV4nptIco4+OeFodXGITvr9DfVahbZ7HLjFy52jua/NtxuN3BlHkp6LpE6aG?=
- =?us-ascii?Q?N11VA0JSJJQwTeMZKkHYduWR6Bo7JRYngfdRKQkrmjhDd8jif0OnSWCvg3HN?=
- =?us-ascii?Q?9axORhcnUUXdo/hwuxI5yFQPNU/MlxwBQFBKUXh8KHqlwEuM/HJCW2Qyyb5k?=
- =?us-ascii?Q?BO3PRq5LywaykGd760jxMkLj7h+mihVRTXoex9FqSWdLFDTbgw+N9gpPT+UX?=
- =?us-ascii?Q?a0y0h8fjD03X8xyqFSVp0vFraTD6++G8A8+dgBJ9mua4IT9Lo7hxFsDNtgAv?=
- =?us-ascii?Q?F5PymRICyhnX4cSieTB1Nnc3SFr4HeHR3vShjYwtVjWS5ytt3CY3l8nOmSio?=
- =?us-ascii?Q?6hzXlD9lRP9Zz9UQ1xGTDAjIGBNVHA6OP/FLUg1Fks/ZxwE+rBvkz0SPWXkw?=
- =?us-ascii?Q?FdFzHtAdSl+w1PdM8rEO0rh94kwAHiHrN6GEjXsEbM7V4os2nAz8l9v7Qr9m?=
- =?us-ascii?Q?TC6Fq/OL8JdoI6/hgevIDN3d25qehA3IjJkrwqT4q7E2x8g8Vj7jkelKKA/6?=
- =?us-ascii?Q?7nDniYCIcpuEbY+T8uvRAp0zfeAOpJpZIWhOmYPjTJ6EWRbU4YcHbAT859no?=
- =?us-ascii?Q?52ABZHUxbgw10+DwpcBVWF9LgWq6zuLgA5p9VfQ3UwpKlVFJY7goYr/d/Hf3?=
- =?us-ascii?Q?2YsmEI0SWw7E8hOJi8vqRJCulCQ1rNBeRP1XSiHGpSSHyZwwaa9IYDGmesFX?=
- =?us-ascii?Q?G3BcsYoZj+6WVVrAmowL1eo8cK4OM5Ys5ikTgSb/yRHkUJtvKLvFgfZMH7jl?=
- =?us-ascii?Q?Lmucnw0BU4ZdPeZsUfQMLJM7jGHjGZswEqL4TWWizZwXe3atBwhh5zTTrCjF?=
- =?us-ascii?Q?/ivDOaKCZO3CwqVPO45HC/i2dIn+m93wkeNMe+5VgjTLZFo2p5b9Tte/mRiQ?=
- =?us-ascii?Q?acqL466vZTmegxYpTPYVjtPSyAzrYyvpI2gpb5L2nQDnJ7BF7gutcKztmnAJ?=
- =?us-ascii?Q?Et39FSQgpY7PYsyL6f8WiZWLXAGpbhRGTDrenq7TK1pfHulVVctMEHRbxNW0?=
- =?us-ascii?Q?IAlDt+9OikYfkK2bjjz2cGEQq5iWx7atioEP6eOWWnQrUXWpiNbZBV6loPMj?=
- =?us-ascii?Q?N0vq9PtT0mYwRX3sLjlQNSLQyaU7E8W9wlsHSx2aXxXrEuq9rmwCyPHidEOV?=
- =?us-ascii?Q?XIIu59+PaCBTNb7N/prtbI6BqlnJwJUb34tamXKv300qJ3lJZBRPvOYVNYkU?=
- =?us-ascii?Q?oIREoN71zIx+bCgA9DnZT73T9oJjpgU00j1oPX62VMS856T1NiEjLlVAxUzL?=
- =?us-ascii?Q?1rVEoE6bpP0F+HEFLML/NfgMsNlMn1XwNGc7O7Oi867LPgcXgRF5pKPUg4Hm?=
- =?us-ascii?Q?Uhl/u9+GgbWhtuKf/BhaZbTcDpz25dS2053DC4terQtPQD7Th/DXoth7XlQi?=
- =?us-ascii?Q?UyWEKJzQpz/7XyMR+Cd5giiziKViqawsKOdmHxJ7C5Bi8/p/ufmjaqgHCSQo?=
- =?us-ascii?Q?fla0MuNaTzbwBZ2turoDwDfVzME5pdnOVEl0DGc+jsSmZIBG02xHKe2aa9ux?=
- =?us-ascii?Q?fWYmWmP+zkunOuIoeCH3F2gWM+B9mFRaVaHRqLlQqBewHzLg4NjA+3V7QKxq?=
- =?us-ascii?Q?WYkhBncSe2H4hDkUppDufZH0qX846Os=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 8 Jun 2022 01:49:06 -0400
+Received: from EX-PRD-EDGE01.vmware.com (ex-prd-edge01.vmware.com [208.91.3.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D8B30723C;
+        Tue,  7 Jun 2022 20:24:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+    s=s1024; d=vmware.com;
+    h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
+      content-type;
+    bh=ye2AXpXM8HdfpBAnmf0gC/E5GIezfSWTFYYONI/trtQ=;
+    b=s6c8QtWHu8YDTfzvQNlpgLw1dNm6zUXiTtzAPZc8laU7ytZ7ov7SGfQZbjgOL4
+      B3oHpURlq0AM/DMLtRUN2XxSjVWpXs2UY0N+aCS58qx4qZaMeYLN4SbBl5+35Y
+      jWFk3CCZniEVg/EtV9J8pjFvK6e+2zmuXpNwB2XYcaQ4X90=
+Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
+ EX-PRD-EDGE01.vmware.com (10.188.245.6) with Microsoft SMTP Server id
+ 15.1.2308.20; Tue, 7 Jun 2022 20:23:47 -0700
+Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
+        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id 01998202DC;
+        Tue,  7 Jun 2022 20:24:03 -0700 (PDT)
+Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
+        id EFA6DAA454; Tue,  7 Jun 2022 20:24:02 -0700 (PDT)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 net-next 2/8] vmxnet3: add support for capability registers
+Date:   Tue, 7 Jun 2022 20:23:47 -0700
+Message-ID: <20220608032353.964-3-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20220608032353.964-1-doshir@vmware.com>
+References: <20220608032353.964-1-doshir@vmware.com>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR21MB3025.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59bba5a3-a0b6-4efe-71e2-08da49033866
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jun 2022 03:59:00.6157
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: TLSE9KNqLgdk4aAZ33AbTrWu56d54MadpIgzI+FrW+qLVSCl8vlkco+f+9Isw0UuwYGeOJ2PyhBBHNth6KEz9JvyiXxg2qpkkZhzLK6/t9Y=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR21MB1296
+Content-Type: text/plain
+Received-SPF: None (EX-PRD-EDGE01.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de> Sent: Tuesday, June 7, 2022 3:36 AM
->=20
-> On Mon, Jun 06, 2022 at 05:15:15PM -0700, Michael Kelley wrote:
-> > +static void nvme_handle_aer_persistent_error(struct nvme_ctrl *ctrl)
-> > +{
-> > +	trace_nvme_async_event(ctrl, NVME_AER_ERROR);
-> > +
-> > +	/*
-> > +	 * We can't read the CSTS here because we're in an atomic context on
-> > +	 * some transports and the read may require submitting a request to t=
-he
-> > +	 * to the controller and getting a response. Such a sequence isn't
-> > +	 * likely to be successful anyway if the controller is reporting a
-> > +	 * persistent internal error. So assume CSTS.CFS is set.
-> > +	 */
-> > +	if (nvme_should_reset(ctrl, NVME_CSTS_CFS)) {
-> > +		dev_warn(ctrl->device, "resetting controller due to AER\n");
-> > +		nvme_reset_ctrl(ctrl);
->=20
-> I don't think we even need the nvme_should_reset check now.
->=20
-> nvme_reset_ctrl first calls nvme_change_ctrl_state, which only allows
-> the transition to the RESETTING state if it previously was NEW or LIVE,
-> so we are already covered.  The only downside would be an extra kernel
-> message if we already were in another state.
+This patch enhances vmxnet3 to suuport capability registers which
+allows it to enable features selectively. The DCR register tracks
+the capabilities vmxnet3 device supports. The PTCR register states
+the capabilities that the passthrough device supports.
 
-OK, I agree.  Patch 1/2 can be dropped since there's now no need to
-move nvme_should_reset(), and patch 2 is simplified even further.
+With the help of these registers, vmxnet3 can enable only those
+features which the passthrough device supoprts. This allows
+smooth trasition to Uniform-Passthrough (UPT) mode if the virtual
+nic requests it. If PTCR register returns nothing or error it means
+UPT is not being requested and vnic will continue in emulation mode.
 
-I'll do a v4.
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+---
+ drivers/net/vmxnet3/vmxnet3_defs.h    |  37 ++++++++++++-
+ drivers/net/vmxnet3/vmxnet3_drv.c     |  97 ++++++++++++++++++++++++++++++++
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 101 ++++++++++++++++++++++++++++++++--
+ drivers/net/vmxnet3/vmxnet3_int.h     |   4 ++
+ 4 files changed, 233 insertions(+), 6 deletions(-)
 
-Michael
+diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
+index 9f91ebb10137..0157155ff677 100644
+--- a/drivers/net/vmxnet3/vmxnet3_defs.h
++++ b/drivers/net/vmxnet3/vmxnet3_defs.h
+@@ -40,7 +40,13 @@ enum {
+ 	VMXNET3_REG_MACL	= 0x28,	/* MAC Address Low */
+ 	VMXNET3_REG_MACH	= 0x30,	/* MAC Address High */
+ 	VMXNET3_REG_ICR		= 0x38,	/* Interrupt Cause Register */
+-	VMXNET3_REG_ECR		= 0x40	/* Event Cause Register */
++	VMXNET3_REG_ECR		= 0x40, /* Event Cause Register */
++	VMXNET3_REG_DCR         = 0x48, /* Device capability register,
++					 * from 0x48 to 0x80
++					 */
++	VMXNET3_REG_PTCR        = 0x88, /* Passthru capbility register
++					 * from 0x88 to 0xb0
++					 */
+ };
+ 
+ /* BAR 0 */
+@@ -101,6 +107,9 @@ enum {
+ 	VMXNET3_CMD_GET_RESERVED2,
+ 	VMXNET3_CMD_GET_RESERVED3,
+ 	VMXNET3_CMD_GET_MAX_QUEUES_CONF,
++	VMXNET3_CMD_GET_RESERVED4,
++	VMXNET3_CMD_GET_MAX_CAPABILITIES,
++	VMXNET3_CMD_GET_DCR0_REG,
+ };
+ 
+ /*
+@@ -801,4 +810,30 @@ struct Vmxnet3_DriverShared {
+ #define VMXNET3_LINK_UP         (10000 << 16 | 1)    /* 10 Gbps, up */
+ #define VMXNET3_LINK_DOWN       0
+ 
++#define VMXNET3_DCR_ERROR                          31   /* error when bit 31 of DCR is set */
++#define VMXNET3_CAP_UDP_RSS                        0    /* bit 0 of DCR 0 */
++#define VMXNET3_CAP_ESP_RSS_IPV4                   1    /* bit 1 of DCR 0 */
++#define VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD        2    /* bit 2 of DCR 0 */
++#define VMXNET3_CAP_GENEVE_TSO                     3    /* bit 3 of DCR 0 */
++#define VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD         4    /* bit 4 of DCR 0 */
++#define VMXNET3_CAP_VXLAN_TSO                      5    /* bit 5 of DCR 0 */
++#define VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD  6    /* bit 6 of DCR 0 */
++#define VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD   7    /* bit 7 of DCR 0 */
++#define VMXNET3_CAP_PKT_STEERING_IPV4              8    /* bit 8 of DCR 0 */
++#define VMXNET3_CAP_VERSION_4_MAX                  VMXNET3_CAP_PKT_STEERING_IPV4
++#define VMXNET3_CAP_ESP_RSS_IPV6                   9    /* bit 9 of DCR 0 */
++#define VMXNET3_CAP_VERSION_5_MAX                  VMXNET3_CAP_ESP_RSS_IPV6
++#define VMXNET3_CAP_ESP_OVER_UDP_RSS               10   /* bit 10 of DCR 0 */
++#define VMXNET3_CAP_INNER_RSS                      11   /* bit 11 of DCR 0 */
++#define VMXNET3_CAP_INNER_ESP_RSS                  12   /* bit 12 of DCR 0 */
++#define VMXNET3_CAP_CRC32_HASH_FUNC                13   /* bit 13 of DCR 0 */
++#define VMXNET3_CAP_VERSION_6_MAX                  VMXNET3_CAP_CRC32_HASH_FUNC
++#define VMXNET3_CAP_OAM_FILTER                     14   /* bit 14 of DCR 0 */
++#define VMXNET3_CAP_ESP_QS                         15   /* bit 15 of DCR 0 */
++#define VMXNET3_CAP_LARGE_BAR                      16   /* bit 16 of DCR 0 */
++#define VMXNET3_CAP_OOORX_COMP                     17   /* bit 17 of DCR 0 */
++#define VMXNET3_CAP_VERSION_7_MAX                  18
++/* when new capability is introduced, update VMXNET3_CAP_MAX */
++#define VMXNET3_CAP_MAX                            VMXNET3_CAP_VERSION_7_MAX
++
+ #endif /* _VMXNET3_DEFS_H_ */
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 6fc6a2a26161..edc4f23d4965 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -130,6 +130,20 @@ vmxnet3_tq_stop(struct vmxnet3_tx_queue *tq, struct vmxnet3_adapter *adapter)
+ 	netif_stop_subqueue(adapter->netdev, (tq - adapter->tx_queue));
+ }
+ 
++/* Check if capability is supported by UPT device or
++ * UPT is even requested
++ */
++bool
++vmxnet3_check_ptcapability(u32 cap_supported, u32 cap)
++{
++	if (cap_supported & (1UL << VMXNET3_DCR_ERROR) ||
++	    cap_supported & (1UL << cap)) {
++		return true;
++	}
++
++	return false;
++}
++
+ 
+ /*
+  * Check the link state. This may start or stop the tx queue.
+@@ -2671,6 +2685,36 @@ vmxnet3_init_rssfields(struct vmxnet3_adapter *adapter)
+ 		adapter->rss_fields =
+ 			VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
+ 	} else {
++		if (VMXNET3_VERSION_GE_7(adapter)) {
++			if ((adapter->rss_fields & VMXNET3_RSS_FIELDS_UDPIP4 ||
++			     adapter->rss_fields & VMXNET3_RSS_FIELDS_UDPIP6) &&
++			    vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++						       VMXNET3_CAP_UDP_RSS)) {
++				adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_UDP_RSS;
++			} else {
++				adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_UDP_RSS);
++			}
++
++			if ((adapter->rss_fields & VMXNET3_RSS_FIELDS_ESPIP4) &&
++			    vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++						       VMXNET3_CAP_ESP_RSS_IPV4)) {
++				adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_ESP_RSS_IPV4;
++			} else {
++				adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_ESP_RSS_IPV4);
++			}
++
++			if ((adapter->rss_fields & VMXNET3_RSS_FIELDS_ESPIP6) &&
++			    vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++						       VMXNET3_CAP_ESP_RSS_IPV6)) {
++				adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_ESP_RSS_IPV6;
++			} else {
++				adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_ESP_RSS_IPV6);
++			}
++
++			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
++			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD, VMXNET3_CMD_GET_DCR0_REG);
++			adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
++		}
+ 		cmdInfo->setRssFields = adapter->rss_fields;
+ 		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+ 				       VMXNET3_CMD_SET_RSS_FIELDS);
+@@ -3185,6 +3229,47 @@ vmxnet3_declare_features(struct vmxnet3_adapter *adapter)
+ 			NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 	}
+ 
++	if (VMXNET3_VERSION_GE_7(adapter)) {
++		unsigned long flags;
++
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_GENEVE_TSO)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_GENEVE_TSO;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_VXLAN_TSO)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_VXLAN_TSO;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD;
++		}
++
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
++		spin_lock_irqsave(&adapter->cmd_lock, flags);
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD, VMXNET3_CMD_GET_DCR0_REG);
++		adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
++		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
++
++		if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD))) {
++			netdev->hw_enc_features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
++			netdev->features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
++		}
++	}
++
+ 	netdev->vlan_features = netdev->hw_features &
+ 				~(NETIF_F_HW_VLAN_CTAG_TX |
+ 				  NETIF_F_HW_VLAN_CTAG_RX);
+@@ -3520,6 +3605,18 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		goto err_ver;
+ 	}
+ 
++	if (VMXNET3_VERSION_GE_7(adapter)) {
++		adapter->devcap_supported[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_DCR);
++		adapter->ptcap_supported[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_PTCR);
++		if (adapter->dev_caps[0])
++			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
++
++		spin_lock_irqsave(&adapter->cmd_lock, flags);
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD, VMXNET3_CMD_GET_DCR0_REG);
++		adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
++		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
++	}
++
+ 	if (VMXNET3_VERSION_GE_6(adapter)) {
+ 		spin_lock_irqsave(&adapter->cmd_lock, flags);
+ 		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index e41e76757c5b..458f2da1ebab 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -298,7 +298,7 @@ netdev_features_t vmxnet3_features_check(struct sk_buff *skb,
+ 	return features;
+ }
+ 
+-static void vmxnet3_enable_encap_offloads(struct net_device *netdev)
++static void vmxnet3_enable_encap_offloads(struct net_device *netdev, netdev_features_t features)
+ {
+ 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
+ 
+@@ -306,8 +306,50 @@ static void vmxnet3_enable_encap_offloads(struct net_device *netdev)
+ 		netdev->hw_enc_features |= NETIF_F_SG | NETIF_F_RXCSUM |
+ 			NETIF_F_HW_CSUM | NETIF_F_HW_VLAN_CTAG_TX |
+ 			NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_TSO | NETIF_F_TSO6 |
+-			NETIF_F_LRO | NETIF_F_GSO_UDP_TUNNEL |
+-			NETIF_F_GSO_UDP_TUNNEL_CSUM;
++			NETIF_F_LRO;
++		if (features & NETIF_F_GSO_UDP_TUNNEL)
++			netdev->hw_enc_features |= NETIF_F_GSO_UDP_TUNNEL;
++		if (features & NETIF_F_GSO_UDP_TUNNEL_CSUM)
++			netdev->hw_enc_features |= NETIF_F_GSO_UDP_TUNNEL_CSUM;
++	}
++	if (VMXNET3_VERSION_GE_7(adapter)) {
++		unsigned long flags;
++
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_GENEVE_TSO)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_GENEVE_TSO;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_VXLAN_TSO)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_VXLAN_TSO;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD;
++		}
++
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
++		spin_lock_irqsave(&adapter->cmd_lock, flags);
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD, VMXNET3_CMD_GET_DCR0_REG);
++		adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
++		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
++
++		if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD))) {
++			netdev->hw_enc_features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
++		}
+ 	}
+ }
+ 
+@@ -322,6 +364,22 @@ static void vmxnet3_disable_encap_offloads(struct net_device *netdev)
+ 			NETIF_F_LRO | NETIF_F_GSO_UDP_TUNNEL |
+ 			NETIF_F_GSO_UDP_TUNNEL_CSUM);
+ 	}
++	if (VMXNET3_VERSION_GE_7(adapter)) {
++		unsigned long flags;
++
++		adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD |
++					  1UL << VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD  |
++					  1UL << VMXNET3_CAP_GENEVE_TSO |
++					  1UL << VMXNET3_CAP_VXLAN_TSO  |
++					  1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD |
++					  1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD);
++
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
++		spin_lock_irqsave(&adapter->cmd_lock, flags);
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD, VMXNET3_CMD_GET_DCR0_REG);
++		adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
++		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
++	}
+ }
+ 
+ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
+@@ -357,8 +415,8 @@ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
+ 			adapter->shared->devRead.misc.uptFeatures &=
+ 			~UPT1_F_RXVLAN;
+ 
+-		if ((features & tun_offload_mask) != 0 && !udp_tun_enabled) {
+-			vmxnet3_enable_encap_offloads(netdev);
++		if ((features & tun_offload_mask) != 0) {
++			vmxnet3_enable_encap_offloads(netdev, features);
+ 			adapter->shared->devRead.misc.uptFeatures |=
+ 			UPT1_F_RXINNEROFLD;
+ 		} else if ((features & tun_offload_mask) == 0 &&
+@@ -913,6 +971,39 @@ vmxnet3_set_rss_hash_opt(struct net_device *netdev,
+ 			union Vmxnet3_CmdInfo *cmdInfo = &shared->cu.cmdInfo;
+ 			unsigned long flags;
+ 
++			if (VMXNET3_VERSION_GE_7(adapter)) {
++				if ((rss_fields & VMXNET3_RSS_FIELDS_UDPIP4 ||
++				     rss_fields & VMXNET3_RSS_FIELDS_UDPIP6) &&
++				    vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++							       VMXNET3_CAP_UDP_RSS)) {
++					adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_UDP_RSS;
++				} else {
++					adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_UDP_RSS);
++				}
++				if ((rss_fields & VMXNET3_RSS_FIELDS_ESPIP4) &&
++				    vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++							       VMXNET3_CAP_ESP_RSS_IPV4)) {
++					adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_ESP_RSS_IPV4;
++				} else {
++					adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_ESP_RSS_IPV4);
++				}
++				if ((rss_fields & VMXNET3_RSS_FIELDS_ESPIP6) &&
++				    vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++							       VMXNET3_CAP_ESP_RSS_IPV6)) {
++					adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_ESP_RSS_IPV6;
++				} else {
++					adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_ESP_RSS_IPV6);
++				}
++
++				VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR,
++						       adapter->dev_caps[0]);
++				spin_lock_irqsave(&adapter->cmd_lock, flags);
++				VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
++						       VMXNET3_CMD_GET_DCR0_REG);
++				adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter,
++									     VMXNET3_REG_CMD);
++				spin_unlock_irqrestore(&adapter->cmd_lock, flags);
++			}
+ 			spin_lock_irqsave(&adapter->cmd_lock, flags);
+ 			cmdInfo->setRssFields = rss_fields;
+ 			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index 5251c3439d6a..a7c8f80702c2 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -403,6 +403,9 @@ struct vmxnet3_adapter {
+ 	dma_addr_t pm_conf_pa;
+ 	dma_addr_t rss_conf_pa;
+ 	bool   queuesExtEnabled;
++	u32    devcap_supported[8];
++	u32    ptcap_supported[8];
++	u32    dev_caps[8];
+ };
+ 
+ #define VMXNET3_WRITE_BAR0_REG(adapter, reg, val)  \
+@@ -497,6 +500,7 @@ void vmxnet3_set_ethtool_ops(struct net_device *netdev);
+ 
+ void vmxnet3_get_stats64(struct net_device *dev,
+ 			 struct rtnl_link_stats64 *stats);
++bool vmxnet3_check_ptcapability(u32 cap_supported, u32 cap);
+ 
+ extern char vmxnet3_driver_name[];
+ #endif
+-- 
+2.11.0
+
