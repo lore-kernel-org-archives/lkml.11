@@ -2,164 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64AF2CCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC96BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241909AbiFHOvm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 10:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57998 "EHLO
+        id S242209AbiFHOw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 10:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242353AbiFHOrI (ORCPT
+        with ESMTP id S243743AbiFHOvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 10:47:08 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DFFC49F00;
-        Wed,  8 Jun 2022 07:46:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
-        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To;
-        bh=Gj+eSw46X5SDCGNw8cDv0ubviLBcGEVy5VW0lj+ATKg=; b=N77RkI+QTaxDMs240pQaEKT6dP
-        4VgjixhsERFCAhqks8uUKYnPmgaasveu2D0er8qSsZ8usH68kBhYOFIT2yrd9wsE9EnUYwKD6vJFn
-        YrCqldOcFxaXkSm4md4Vmu8hIzcIEOupQGBDlSNznBz2Y5P+odjiBnErl61uy2dx6q+UOqet17BYz
-        YRYnLabyMm8DrqBCCxXS/evp2i38LSWPNGIlCoCVIiahKLBEt4buZJSAugJ95CGT+rwrcjJrgfDvy
-        7iWP6pqixLlyQSDUsBLus3ti7xSHLVPaECcwxD3le6NZmXfGe4TsQ4UGNm/smN8NdfrNJt3gzGoLJ
-        2l4659PA==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nywx6-0066Dl-Fu; Wed, 08 Jun 2022 14:46:33 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id E20D8302F49;
-        Wed,  8 Jun 2022 16:46:23 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id BC41C20C119B1; Wed,  8 Jun 2022 16:46:18 +0200 (CEST)
-Message-ID: <20220608144517.948600553@infradead.org>
-User-Agent: quilt/0.66
-Date:   Wed, 08 Jun 2022 16:27:55 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     peterz@infradead.org
-Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
-        vgupta@kernel.org, linux@armlinux.org.uk,
-        ulli.kroll@googlemail.com, linus.walleij@linaro.org,
-        shawnguo@kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        tony@atomide.com, khilman@kernel.org, catalin.marinas@arm.com,
-        will@kernel.org, guoren@kernel.org, bcain@quicinc.com,
-        chenhuacai@kernel.org, kernel@xen0n.name, geert@linux-m68k.org,
-        sammy@sammy.net, monstr@monstr.eu, tsbogend@alpha.franken.de,
-        dinguyen@kernel.org, jonas@southpole.se,
-        stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
-        James.Bottomley@HansenPartnership.com, deller@gmx.de,
-        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
-        davem@davemloft.net, richard@nod.at,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, jgross@suse.com, srivatsa@csail.mit.edu,
-        amakhalov@vmware.com, pv-drivers@vmware.com,
-        boris.ostrovsky@oracle.com, chris@zankel.net, jcmvbkbc@gmail.com,
-        rafael@kernel.org, lenb@kernel.org, pavel@ucw.cz,
-        gregkh@linuxfoundation.org, mturquette@baylibre.com,
-        sboyd@kernel.org, daniel.lezcano@linaro.org, lpieralisi@kernel.org,
-        sudeep.holla@arm.com, agross@kernel.org,
-        bjorn.andersson@linaro.org, anup@brainfault.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        jacob.jun.pan@linux.intel.com, Arnd Bergmann <arnd@arndb.de>,
-        yury.norov@gmail.com, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk, rostedt@goodmis.org, pmladek@suse.com,
-        senozhatsky@chromium.org, john.ogness@linutronix.de,
-        paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com,
-        josh@joshtriplett.org, mathieu.desnoyers@efficios.com,
-        jiangshanlai@gmail.com, joel@joelfernandes.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com, jpoimboe@kernel.org,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-perf-users@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org,
-        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-arch@vger.kernel.org,
-        rcu@vger.kernel.org
-Subject: [PATCH 32/36] ftrace: WARN on rcuidle
-References: <20220608142723.103523089@infradead.org>
+        Wed, 8 Jun 2022 10:51:18 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20DA72C6530;
+        Wed,  8 Jun 2022 07:50:12 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 135225C01D7;
+        Wed,  8 Jun 2022 10:48:51 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Wed, 08 Jun 2022 10:48:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1654699731; x=1654786131; bh=wvfHGDUJj5
+        HTe8KNpI/We7HJo6zHxzE6/zDY7YQE62U=; b=gjQXF1atg0p2d3bAa3gaA/bP1t
+        MIcmOetW6epvjQL6zhjlxYMCXxPSSuhMSMSjap9/8qE+mkBw4h9ZNKTgV7a0RaZl
+        /SfgjXQZocDn36RpJDFoXpWRf2ee7O4vnq6TDpis57kBZdOeKbf0PEoQB0ojyUuT
+        23hZ84CHt/9hOUGahKKqSmw/NQsS7YnT+4gncv7hc+X9ecSRixmkCl84oRPBJEj8
+        amo01RLfXRfiaTCpBlHrL2BlV+e+mIPhRSVnBaAC9eo8isN3ov8tq5TwzgXGi+Nt
+        e0PaR9B0YWFnjgmJrO6ARKDyqAQ9EF5G5ftClY/W8Fgdzojv1r0Uk53I6dow==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1654699731; x=1654786131; bh=wvfHGDUJj5HTe8KNpI/We7HJo6zH
+        xzE6/zDY7YQE62U=; b=LU/8i0p8cid4FsmSI7SS17u0V5nOI8l3a236Wusg/0oM
+        UZXwTqWLee9gqeHJf2VqkDphlnpyToDjVAoY9SXoDUC8s8/GrQglyXmjZQKWdWnD
+        maQmBy+xqVVhPxg9aB1zwI0Uo8Qj/Nn+bw3o9L6UP29CzBNJ62toSwBXyIzITq5O
+        rUBXCfutEey5JfCPlQX3W0sJEjw6U+2isCSyi1U2cR6qWp4KdqVXuLH7h9c23FDT
+        y3xSX4cSU+8DfYzRJRBqTzaI5O0wlI0w036LeJ0Bt3EvHV2EtAdBlUuzugSb2ZXV
+        GKsbym/x9JX3zeZomXtm6VfRY+pNRFQrxIxIPJrEMw==
+X-ME-Sender: <xms:0bagYtkcOfjSf1LetKWt9Q6GizidLuAcxtZ1_XzefPJBJSFsReQb8g>
+    <xme:0bagYo1aPg61L0nGu7Ey2t0Gk7Iluyzova92m-rLm0PxSWYrdV6--Zf2-XnZsyHE5
+    3gDJZeCqwqhaagJW8Y>
+X-ME-Received: <xmr:0bagYjqUQ83G3wCejlwGrVXEpxPAQDFqspVmfpqgrzPtOxOQhoYkbWeV2C1qZknM8X_dTmwYZqiZYitUzW3uZK3_atgyjthfmovdYqo>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddtjedgkedtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
+    gedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
+    grgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:0bagYtmkTVNSjqLc8P_jRx9cqqXJR4-0gMWm6lnGBJF-V36C7t3uMA>
+    <xmx:0bagYr3qeZy7Q1gQvm9rq3vy-XB4gx_bkcLZE2b123uE8TxzYP9UOA>
+    <xmx:0bagYstc8fV8xzQ2fkfbaNjwQn8UE93Jj7voutWxAYHBmwwEHo3m1w>
+    <xmx:07agYi8PM4SWSSTAdcyiQZayWLeHRbZXiE6ge11fRK0xiOHFIVRCWw>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 8 Jun 2022 10:48:49 -0400 (EDT)
+Date:   Wed, 8 Jun 2022 16:48:47 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Samuel Holland <samuel@sholland.org>,
+        Heiko =?utf-8?Q?St=C3=BCbner?= <heiko@sntech.de>,
+        Sandy Huang <hjc@rock-chips.com>,
+        dri-devel@lists.freedesktop.org,
+        linux-rockchip@lists.infradead.org,
+        Alistair Francis <alistair@alistair23.me>,
+        =?utf-8?Q?Ond=C5=99ej?= Jirman <x@xff.cz>,
+        Andreas Kemnade <andreas@kemnade.info>,
+        David Airlie <airlied@linux.ie>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Liang Chen <cl@rock-chips.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 00/16] drm/rockchip: Rockchip EBC ("E-Book
+ Controller") display driver
+Message-ID: <20220608144847.3ibr4buxcbmfj3al@houat>
+References: <20220413221916.50995-1-samuel@sholland.org>
+ <20220414085018.ayjvscgdkoen5nw5@houat>
+ <Yo5kz/9cSd6ewC5f@phenom.ffwll.local>
+ <20220531085835.grw5nt4vyofis3po@penduick>
+ <YpddFxvC9pCsobNB@phenom.ffwll.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5uxifszvnbelvki3"
+Content-Disposition: inline
+In-Reply-To: <YpddFxvC9pCsobNB@phenom.ffwll.local>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CONFIG_GENERIC_ENTRY disallows any and all tracing when RCU isn't
-enabled.
 
-XXX if s390 (the only other GENERIC_ENTRY user as of this writing)
-isn't comfortable with this, we could switch to
-HAVE_NOINSTR_VALIDATION which is x86_64 only atm.
+--5uxifszvnbelvki3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- include/linux/tracepoint.h |   13 ++++++++++++-
- kernel/trace/trace.c       |    3 +++
- 2 files changed, 15 insertions(+), 1 deletion(-)
+On Wed, Jun 01, 2022 at 02:35:35PM +0200, Daniel Vetter wrote:
+> On Tue, May 31, 2022 at 10:58:35AM +0200, Maxime Ripard wrote:
+> > Hi Daniel,
+> >=20
+> > Thanks for your feedback
+> >=20
+> > On Wed, May 25, 2022 at 07:18:07PM +0200, Daniel Vetter wrote:
+> > > > > VBLANK Events and Asynchronous Commits
+> > > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > > > When should the VBLANK event complete? When the pixels have been =
+blitted
+> > > > > to the kernel's shadow buffer? When the first frame of the wavefo=
+rm is
+> > > > > sent to the panel? When the last frame is sent to the panel?
+> > > > >=20
+> > > > > Currently, the driver is taking the first option, letting
+> > > > > drm_atomic_helper_fake_vblank() send the VBLANK event without wai=
+ting on
+> > > > > the refresh thread. This is the only way I was able to get good
+> > > > > performance with existing userspace.
+> > > >=20
+> > > > I've been having the same kind of discussions in private lately, so=
+ I'm
+> > > > interested by the answer as well :)
+> > > >=20
+> > > > It would be worth looking into the SPI/I2C panels for this, since i=
+t's
+> > > > basically the same case.
+> > >=20
+> > > So it's maybe a bit misnamed and maybe kerneldocs aren't super clear =
+(pls
+> > > help improve them), but there's two modes:
+> > >=20
+> > > - drivers which have vblank, which might be somewhat variable (VRR) or
+> > >   become simulated (self-refresh panels), but otherwise is a more-or-=
+less
+> > >   regular clock. For this case the atomic commit event must match the
+> > >   vblank events exactly (frame count and timestamp)
+> >=20
+> > Part of my interrogation there is do we have any kind of expectation
+> > on whether or not, when we commit, the next vblank is going to be the
+> > one matching that commit or we're allowed to defer it by an arbitrary
+> > number of frames (provided that the frame count and timestamps are
+> > correct) ?
+>=20
+> In general yes, but there's no guarantee. The only guarante we give for
+> drivers with vblank counters is that if you receive a vblank event (flip
+> complete or vblank event) for frame #n, then an immediate flip/atomic
+> ioctl call will display earliest for frame #n+1.
+>=20
+> Also usually you should be able to hit #n+1, but even today with fun stuff
+> like self refresh panels getting out of self refresh mode might take a bit
+> more than a few frames, and so you might end up being late. But otoh if
+> you just do a page flip loop then on average (after the crtc is fully
+> resumed) you should be able to update at vrefresh rate exactly.
 
---- a/include/linux/tracepoint.h
-+++ b/include/linux/tracepoint.h
-@@ -178,6 +178,16 @@ static inline struct tracepoint *tracepo
- #endif /* CONFIG_HAVE_STATIC_CALL */
- 
- /*
-+ * CONFIG_GENERIC_ENTRY archs are expected to have sanitized entry and idle
-+ * code that disallow any/all tracing/instrumentation when RCU isn't watching.
-+ */
-+#ifdef CONFIG_GENERIC_ENTRY
-+#define RCUIDLE_COND(rcuidle)	(rcuidle)
-+#else
-+#define RCUIDLE_COND(rcuidle)	(rcuidle && in_nmi())
-+#endif
-+
-+/*
-  * it_func[0] is never NULL because there is at least one element in the array
-  * when the array itself is non NULL.
-  */
-@@ -189,7 +199,8 @@ static inline struct tracepoint *tracepo
- 			return;						\
- 									\
- 		/* srcu can't be used from NMI */			\
--		WARN_ON_ONCE(rcuidle && in_nmi());			\
-+		if (WARN_ON_ONCE(RCUIDLE_COND(rcuidle)))		\
-+			return;						\
- 									\
- 		/* keep srcu and sched-rcu usage consistent */		\
- 		preempt_disable_notrace();				\
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -3104,6 +3104,9 @@ void __trace_stack(struct trace_array *t
- 		return;
- 	}
- 
-+	if (WARN_ON_ONCE(IS_ENABLED(CONFIG_GENERIC_ENTRY)))
-+		return;
-+
- 	/*
- 	 * When an NMI triggers, RCU is enabled via rcu_nmi_enter(),
- 	 * but if the above rcu_is_watching() failed, then the NMI
+I had more the next item in mind there: if we were to write something in
+the kernel that would transparently behave like a full-blown KMS driver,
+but would pipe the commits through a KMS writeback driver before sending
+them to our SPI panel, we would always be at best two vblanks late.
 
+So this would mean that userspace would do a page flip, get a first
+vblank, but the actual vblank for that commit would be the next one (at
+best), consistently.
 
+> > > - drivers which don't have vblank at all, mostly these are i2c/spi pa=
+nels
+> > >   or virtual hw and stuff like that. In this case the event simply ha=
+ppens
+> > >   when the driver is done with refresh/upload, and the frame count sh=
+ould
+> > >   be zero (since it's meaningless).
+> > >=20
+> > > Unfortuantely the helper to dtrt has fake_vblank in it's name, maybe
+> > > should be renamed to no_vblank or so (the various flags that control =
+it
+> > > are a bit better named).
+> > >=20
+> > > Again the docs should explain it all, but maybe we should clarify the=
+m or
+> > > perhaps rename that helper to be more meaningful.
+> > >=20
+> > > > > Blitting/Blending in Software
+> > > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+> > > > > There are multiple layers to this topic (pun slightly intended):
+> > > > >  1) Today's userspace does not expect a grayscale framebuffer.
+> > > > >     Currently, the driver advertises XRGB8888 and converts to Y4
+> > > > >     in software. This seems to match other drivers (e.g. repaper).
+> > > > >
+> > > > >  2) Ignoring what userspace "wants", the closest existing format =
+is
+> > > > >     DRM_FORMAT_R8. Geert sent a series[4] adding DRM_FORMAT_R1 th=
+rough
+> > > > >     DRM_FORMAT_R4 (patch 9), which I believe are the "correct" fo=
+rmats
+> > > > >     to use.
+> > > > >=20
+> > > > >  3) The RK356x SoCs have an "RGA" hardware block that can do the
+> > > > >     RGB-to-grayscale conversion, and also RGB-to-dithered-monochr=
+ome
+> > > > >     which is needed for animation/video. Currently this is expose=
+d with
+> > > > >     a V4L2 platform driver. Can this be inserted into the pipelin=
+e in a
+> > > > >     way that is transparent to userspace? Or must some userspace =
+library
+> > > > >     be responsible for setting up the RGA =3D> EBC pipeline?
+> > > >=20
+> > > > I'm very interested in this answer as well :)
+> > > >=20
+> > > > I think the current consensus is that it's up to userspace to set t=
+his
+> > > > up though.
+> > >=20
+> > > Yeah I think v4l mem2mem device is the answer for these, and then
+> > > userspace gets to set it all up.
+> >=20
+> > I think the question wasn't really about where that driver should be,
+> > but more about who gets to set it up, and if the kernel could have
+> > some component to expose the formats supported by the converter, but
+> > whenever a commit is being done pipe that to the v4l2 device before
+> > doing a page flip.
+> >=20
+> > We have a similar use-case for the RaspberryPi where the hardware
+> > codec will produce a framebuffer format that isn't standard. That
+> > format is understood by the display pipeline, and it can do
+> > writeback.
+> >=20
+> > However, some people are using a separate display (like a SPI display
+> > supported by tinydrm) and we would still like to be able to output the
+> > decoded frames there.
+> >=20
+> > Is there some way we could plumb things to "route" that buffer through
+> > the writeback engine to perform a format conversion before sending it
+> > over to the SPI display automatically?
+>=20
+> Currently not transparently. Or at least no one has done that, and I'm not
+> sure that's really a great idea. With big gpus all that stuff is done with
+> separate command submission to the render side of things, and you can
+> fully pipeline all that with in/out-fences.
+>=20
+> Doing that in the kms driver side in the kernel feels very wrong to me :-/
+
+So I guess what you're saying is that there's a close to 0% chance of it
+being accepted if we were to come up with such an architecture?
+
+Thanks!
+Maxime
+
+--5uxifszvnbelvki3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYqC2zwAKCRDj7w1vZxhR
+xfFhAQDpMG8318nD1cMM0/HpUu4Jvkjq5pn1/sC4MDW1ViKg7gEAifSRNemz4cgr
+ZtPYHR4j21YFIDjjzeYl80Rl/2PoBwc=
+=iUBo
+-----END PGP SIGNATURE-----
+
+--5uxifszvnbelvki3--
