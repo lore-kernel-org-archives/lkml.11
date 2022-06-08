@@ -2,82 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 814E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A825CCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239597AbiFHMtW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38094 "EHLO
+        id S239613AbiFHMtm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239514AbiFHMtS (ORCPT
+        with ESMTP id S239570AbiFHMtk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:49:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC203C4AE
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 05:49:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60D8E619C0
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 12:49:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 515B1C34116;
-        Wed,  8 Jun 2022 12:49:15 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="YW4cLIZb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1654692553;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hySWdXi2kL6m9EGUGgZIsII1nwfn9UHerii4bIuCYus=;
-        b=YW4cLIZby+GCYoNqZX29VlKmj5DMZvNlecSHVgOSVP3SYmPUHiZBmZvrbKgrCJOEpXLPme
-        79qrLJXdx+dTiW3zozVZsUGUqL9z/NEv86+jwSFzXTR+xbsadl+92UEyoZ+l0cNeK1VTq3
-        Os9Bg7fA14bHO9kaZdaa5sw05c2oHpE=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d1293f51 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 8 Jun 2022 12:49:12 +0000 (UTC)
-Date:   Wed, 8 Jun 2022 14:49:07 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     viro@zeniv.linux.org.uk
-Cc:     linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
-Subject: Re: [PATCH] splice: allow direct splicing with chardevs
-Message-ID: <YqCaw3zychulNAp1@zx2c4.com>
-References: <20220520095747.123748-1-Jason@zx2c4.com>
- <938111ca-d3c7-9888-24f8-0017a989002b@kernel.dk>
- <CAHmME9pSZYZSz3YLRK7onO0E6zq9_B1GNwoTOkEQy_kws200Fw@mail.gmail.com>
+        Wed, 8 Jun 2022 08:49:40 -0400
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2291119A73D;
+        Wed,  8 Jun 2022 05:49:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1654692577; x=1686228577;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=bTEuPpHCpiyWA+h54w2IRHDnZA08e2LOl8H6omyG5ls=;
+  b=HW5rjhqAslC+jlLuT4HG4HCc6dtVVPX5gi7d48CYbQHm0YR3jTBXq7zA
+   GFZZLSWEbhFpcpj6Bf6j2Vf/ELYMEMSYe0rEDTMIkjFTR5AHGFSVSsqBk
+   QeLImPSA8uHjgY7Nmqdj3KD4FKKaJF12q9phW51H6S7op3zuhuINLjIBW
+   iGC4Ndc7UvnUqeUzgkX5f/NAEWUshF+oxZMvNkb6ABWEGQm+l7oApOtxV
+   SQ4yTgEaDk0Wd+1sTNfL0mEs68AJR9y2S3jphHl1i1P64Xd1C/0oiMLid
+   WKYontTOmGvGokCxDLbrG0QN+GuEjzzF79QKBVVRD1N4stPQtORgu7+2W
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,286,1647298800"; 
+   d="scan'208";a="24330534"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 08 Jun 2022 14:49:30 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Wed, 08 Jun 2022 14:49:30 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Wed, 08 Jun 2022 14:49:30 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1654692570; x=1686228570;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=bTEuPpHCpiyWA+h54w2IRHDnZA08e2LOl8H6omyG5ls=;
+  b=YV9FS4sqgiNROgYj4JMYVPyOKjsfgLrJYgyo6fNHcLmGNvRmPpQd9zit
+   /SScDTYBxF2BqHp7+YUHzIZaTXxu95rUChYJdHTujsgoDuba3RlAqC8nD
+   vp0L+zb0h531TyXr1POl9ATB3hyFgWywBYziY5AklDJKaRmjTCBXRfafE
+   u6Wpu72FzxBsSC0FHLBMt8j+hKZfWSIJA6sRuI4kxDDNJQEgKhpi22a5t
+   u2BvvEL7KQ3sUUdyhIwqYT8jOI27aavkZ3EworN/PX5frBr5ne0iWH2R1
+   5fqJmLzg+wJ05HBEKZOl4ZjSHL8TUOcXwb6OCOJkjjJq4bfizKveYY2jZ
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,286,1647298800"; 
+   d="scan'208";a="24330533"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 08 Jun 2022 14:49:30 +0200
+Received: from localhost.localdomain (SCHIFFERM-M2.tq-net.de [10.121.49.136])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 5E100280056;
+        Wed,  8 Jun 2022 14:49:30 +0200 (CEST)
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Lyude Paul <lyude@redhat.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH 0/9] Input: synaptics-rmi4 - Bootloader v7/v8 firmware update improvements
+Date:   Wed,  8 Jun 2022 14:47:59 +0200
+Message-Id: <20220608124808.51402-1-matthias.schiffer@ew.tq-group.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHmME9pSZYZSz3YLRK7onO0E6zq9_B1GNwoTOkEQy_kws200Fw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey again,
+This fixes the firmware update function with bootloader v8, allows to
+recover from interrupted updates with v7/v8, and does some code cleanup.
 
-On Thu, May 26, 2022 at 11:19:46PM +0200, Jason A. Donenfeld wrote:
-> Hey Al,
-> 
-> On 5/20/22, Jens Axboe <axboe@kernel.dk> wrote:
-> > On 5/20/22 3:57 AM, Jason A. Donenfeld wrote:
-> >> The original direct splicing mechanism from Jens required the input to
-> >> be a regular file because it was avoiding the special socket case. It
-> >> also recognized blkdevs as being close enough to a regular file. But it
-> >> forgot about chardevs, which behave the same way and work fine here.
-> >>
-> >> This commit adds the missing S_ISCHR condition so that chardevs such as
-> >> /dev/urandom can be directly spliced without strangely returning
-> >> -EINVAL.
-> >
-> > Should be fine to turn this on for char devices:
-> >
-> > Reviewed-by: Jens Axboe <axboe@kernel.dk>
-> >
-> 
-> Was wondering if this would make 5.19. That'd be nice, as it's the
-> release in which we switch to read_iter().
+I believe that the code that allows to recover from a broken partition
+table is also necessary to make flashing a different partition table
+work at all, but I wasn't able to verify that, as I don't have any firmware
+images with different partition tables to test with. In any case, I'm
+pretty sure that it is working correctly now, as recovery from a mostly
+empty flash without partition table has been tested successfully.
 
-Just thought I should ping once more on this. Should probably be queued
-up somewhat soon for 5.19 if it's to make 5.19, which I would really
-appreciate.
+I have only tested the new code with bootloader v8, and I don't have the
+documentation / interfacing guide for v7, so it would be great if anyone
+could check that I didn't break updates for v7.
 
-Jason
+
+Matthias Schiffer (9):
+  Input: synaptics-rmi4 - fix firmware update operations with bootloader
+    v8
+  Input: synaptics-rmi4 - introduce rmi_f34v7_check_command_status()
+    helper
+  Input: synaptics-rmi4 - fix command completion check for bootloader
+    v7/v8
+  Input: synaptics-rmi4 - rewrite partition table unconditionally
+  Input: synaptics-rmi4 - reset after writing partition table
+  Input: synaptics-rmi4 - make rmi_f34v7_erase_all() use the "erase all"
+    command
+  Input: synaptics-rmi4 - remove unneeded struct register_offset
+  Input: synaptics-rmi4 - simplify rmi_f34v7_start_reflash()
+  Input: synaptics-rmi4 - drop useless gotos in rmi_f34v7_do_reflash()
+
+ drivers/input/rmi4/rmi_f34.c   |  16 +-
+ drivers/input/rmi4/rmi_f34.h   |  17 --
+ drivers/input/rmi4/rmi_f34v7.c | 349 +++++++--------------------------
+ 3 files changed, 81 insertions(+), 301 deletions(-)
+
+-- 
+2.25.1
+
