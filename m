@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66833CCA495
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 19:02:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3690C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 19:02:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234851AbiFHTCO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 15:02:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51738 "EHLO
+        id S234930AbiFHTC0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 15:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234120AbiFHTBs (ORCPT
+        with ESMTP id S233980AbiFHTBs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 8 Jun 2022 15:01:48 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B35073AA5A;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15C2530565;
         Wed,  8 Jun 2022 12:01:46 -0700 (PDT)
 Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
-        by linux.microsoft.com (Postfix) with ESMTPSA id D439320BE676;
+        by linux.microsoft.com (Postfix) with ESMTPSA id 9FA0820BE672;
         Wed,  8 Jun 2022 12:01:44 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D439320BE676
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9FA0820BE672
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
         s=default; t=1654714904;
-        bh=oxcl4VWDjkQJJLUJyWVlObluHCw+WnAyBzJSnSbo5Wo=;
+        bh=tZ0tEV78U4XYhZBbLbR3cTHG9gHVuXD3NQAKNEzNx7M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lJDMB5uQ6vPGJXTjSq9o9osNKOSh8UJPSZQoLi2AkXYWEmNtTIhtJ9oB02s+3XFno
-         C+hAPTo2p2AUdKXJCsKSQh141aDytqF+vPzToYg33NXO9VWsWcE08CuELX+6GLrBHx
-         9ALvKVoYb19eg4cntYIazz/KqAcgHhORTmHPXynE=
+        b=YeMPHkDt4bj55xtTxzPIYAM5Kuo2SoOVbyr87vnk3y6zKZkbmmHYE1XH4MHiA36k9
+         f7cxoLWX5oachgv44CfUQVjxIPKwHPvL+Jba6cZKhs0pIDleR6rsfA/pfr1DY5Vn6A
+         ogyap4DaiG1yFJVYlbtTj0nTnlnLLDYub3ROrc5g=
 From:   Deven Bowers <deven.desai@linux.microsoft.com>
 To:     corbet@lwn.net, zohar@linux.ibm.com, jmorris@namei.org,
         serge@hallyn.com, tytso@mit.edu, ebiggers@kernel.org,
@@ -36,9 +36,9 @@ Cc:     linux-doc@vger.kernel.org, linux-integrity@vger.kernel.org,
         linux-fscrypt@vger.kernel.org, linux-block@vger.kernel.org,
         dm-devel@redhat.com, linux-audit@redhat.com,
         roberto.sassu@huawei.com, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v8 10/17] block|security: add LSM blob to block_device
-Date:   Wed,  8 Jun 2022 12:01:22 -0700
-Message-Id: <1654714889-26728-11-git-send-email-deven.desai@linux.microsoft.com>
+Subject: [RFC PATCH v8 08/17] ipe: add permissive toggle
+Date:   Wed,  8 Jun 2022 12:01:20 -0700
+Message-Id: <1654714889-26728-9-git-send-email-deven.desai@linux.microsoft.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1654714889-26728-1-git-send-email-deven.desai@linux.microsoft.com>
 References: <1654714889-26728-1-git-send-email-deven.desai@linux.microsoft.com>
@@ -46,292 +46,351 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-block_device structures can have valuable security properties,
-based on how they are created, and what subsystem manages them.
-
-By adding LSM storage to this structure, this data can be accessed
-at the LSM layer.
+IPE, like SELinux, supports a permissive mode. This mode allows policy
+authors to test and evaluate IPE policy without it effecting their
+programs. When the mode is changed, a 1423 AUDIT_TRUST_STATUS will
+be reported.
 
 Signed-off-by: Deven Bowers <deven.desai@linux.microsoft.com>
 
 ---
+
+This patch adds the following audit records:
+
+  type=1404 audit(1653425689.008:55): permissive=1
+  type=1404 audit(1653425689.008:55): permissive=0
+
+These records are emitted within the following events:
+
+  type=1404 audit(1653425689.008:55): permissive=1
+  type=1300 audit(1653425689.008:55): arch=c000003e syscall=1
+    success=yes exit=2 a0=1 a1=55c1065e5c60 a2=2 a3=0 items=0 ppid=405
+    pid=441 auid=0 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=)
+  type=1327 audit(1653425689.008:55): proctitle="-bash"
+
+---
 v2:
-  + No Changes
+  + Split evaluation loop, access control hooks,
+    and evaluation loop from policy parser and userspace
+    interface to pass mailing list character limit
 
 v3:
-  + Minor style changes from checkpatch --strict
+  + Move ipe_load_properties to patch 04.
+  + Remove useless 0-initializations
+  + Prefix extern variables with ipe_
+  + Remove kernel module parameters, as these are
+    exposed through sysctls.
+  + Add more prose to the IPE base config option
+    help text.
+  + Use GFP_KERNEL for audit_log_start.
+  + Remove unnecessary caching system.
+  + Remove comments from headers
+  + Use rcu_access_pointer for rcu-pointer null check
+  + Remove usage of reqprot; use prot only.
+  + Move policy load and activation audit event to 03/12
 
 v4:
-  + No Changes
+  + Remove sysctls in favor of securityfs nodes
+  + Re-add kernel module parameters, as these are now
+    exposed through securityfs.
+  + Refactor property audit loop to a separate function.
 
 v5:
-  + Allow multiple callers to call security_bdev_setsecurity
+  + fix minor grammatical errors
+  + do not group rule by curly-brace in audit record,
+    reconstruct the exact rule.
 
 v6:
-  + Simplify security_bdev_setsecurity break condition
+  + No changes
 
 v7:
-  + Squash all dm-verity related patches to two patches,
-    the additions to dm-verity/fs, and the consumption of
-    the additions.
+  + Further split lsm creation into a separate commit from the
+    evaluation loop and audit system, for easier review.
+  + Propogating changes to support the new ipe_context structure in the
+    evaluation loop.
+  + Split out permissive functionality into a separate patch for easier
+    review.
+  + Remove permissive switch compile-time configuration option - this
+    is trivial to add later.
 
 v8:
-  + Split dm-verity related patches squashed in v7 to 3 commits based on
-    topic:
-      + New LSM hook
-      + Consumption of hook outside LSM
-      + Consumption of hook inside LSM.
+  + Remove "IPE" prefix from permissive audit record
+  + align fields to the linux-audit field dictionary. This causes the
+    following fields to change:
+      enforce -> permissive
 
-  + change return of security_bdev_alloc / security_bdev_setsecurity
-    to LSM_RET_DEFAULT instead of 0.
-
-  + Change return code to -EOPNOTSUPP, bring inline with other
-    setsecurity hooks.
+  + Remove duplicated information correlated with syscall record, that
+    will always be present in the audit event.
+  + Change audit types:
+    + AUDIT_TRUST_STATUS -> AUDIT_MAC_STATUS
+      + There is no significant difference in meaning between
+        these types.
 ---
- block/bdev.c                  |  7 ++++
- include/linux/blk_types.h     |  1 +
- include/linux/lsm_hook_defs.h |  5 +++
- include/linux/lsm_hooks.h     | 12 ++++++
- include/linux/security.h      | 22 +++++++++++
- security/security.c           | 70 +++++++++++++++++++++++++++++++++++
- 6 files changed, 117 insertions(+)
+ security/ipe/audit.c | 43 ++++++++++++++++++++++++
+ security/ipe/audit.h |  5 +++
+ security/ipe/ctx.c   |  6 ++++
+ security/ipe/ctx.h   |  1 +
+ security/ipe/eval.c  |  6 ++++
+ security/ipe/fs.c    | 78 ++++++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 139 insertions(+)
 
-diff --git a/block/bdev.c b/block/bdev.c
-index 5fe06c1f2def..e7ef2c7a22c9 100644
---- a/block/bdev.c
-+++ b/block/bdev.c
-@@ -24,6 +24,7 @@
- #include <linux/pseudo_fs.h>
- #include <linux/uio.h>
- #include <linux/namei.h>
-+#include <linux/security.h>
- #include <linux/part_stat.h>
- #include <linux/uaccess.h>
- #include "../fs/internal.h"
-@@ -397,6 +398,11 @@ static struct inode *bdev_alloc_inode(struct super_block *sb)
- 	if (!ei)
- 		return NULL;
- 	memset(&ei->bdev, 0, sizeof(ei->bdev));
-+
-+	if (unlikely(security_bdev_alloc(&ei->bdev))) {
-+		kmem_cache_free(bdev_cachep, ei);
-+		return NULL;
-+	}
- 	return &ei->vfs_inode;
+diff --git a/security/ipe/audit.c b/security/ipe/audit.c
+index 0442cc51a4bd..cf0ccea32c90 100644
+--- a/security/ipe/audit.c
++++ b/security/ipe/audit.c
+@@ -182,3 +182,46 @@ void ipe_audit_policy_load(const struct ipe_policy *const p)
+ 
+ 	audit_log_end(ab);
  }
- 
-@@ -406,6 +412,7 @@ static void bdev_free_inode(struct inode *inode)
- 
- 	free_percpu(bdev->bd_stats);
- 	kfree(bdev->bd_meta_info);
-+	security_bdev_free(bdev);
- 
- 	if (!bdev_is_partition(bdev)) {
- 		if (bdev->bd_disk && bdev->bd_disk->bdi)
-diff --git a/include/linux/blk_types.h b/include/linux/blk_types.h
-index a24d4078fb21..a014ffa14b2d 100644
---- a/include/linux/blk_types.h
-+++ b/include/linux/blk_types.h
-@@ -68,6 +68,7 @@ struct block_device {
- #ifdef CONFIG_FAIL_MAKE_REQUEST
- 	bool			bd_make_it_fail;
- #endif
-+	void			*security;
- } __randomize_layout;
- 
- #define bdev_whole(_bdev) \
-diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index eafa1d2489fd..3449c004bd84 100644
---- a/include/linux/lsm_hook_defs.h
-+++ b/include/linux/lsm_hook_defs.h
-@@ -407,3 +407,8 @@ LSM_HOOK(int, 0, perf_event_write, struct perf_event *event)
- LSM_HOOK(int, 0, uring_override_creds, const struct cred *new)
- LSM_HOOK(int, 0, uring_sqpoll, void)
- #endif /* CONFIG_IO_URING */
 +
-+LSM_HOOK(int, 0, bdev_alloc_security, struct block_device *bdev)
-+LSM_HOOK(void, LSM_RET_VOID, bdev_free_security, struct block_device *bdev)
-+LSM_HOOK(int, 0, bdev_setsecurity, struct block_device *bdev, const char *name,
-+	 const void *value, size_t size)
-diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 91c8146649f5..9f011d705ea8 100644
---- a/include/linux/lsm_hooks.h
-+++ b/include/linux/lsm_hooks.h
-@@ -1550,6 +1550,17 @@
-  *
-  *     @what: kernel feature being accessed
-  *
-+ * @bdev_alloc_security:
-+ *	Initialize the security field inside a block_device structure.
++/**
++ * ipe_audit_enforce: Audit a change in IPE's enforcement state
++ * @ctx: Supplies a pointer to the contexts whose state changed.
++ */
++void ipe_audit_enforce(const struct ipe_context *const ctx)
++{
++	struct audit_buffer *ab;
++	bool enforcing = false;
++
++	ab = audit_log_start(audit_context(), GFP_KERNEL, AUDIT_MAC_STATUS);
++	if (!ab)
++		return;
++
++	rcu_read_lock();
++	enforcing = READ_ONCE(ctx->enforce);
++	rcu_read_unlock();
++
++	audit_log_format(ab, "permissive=%d", !enforcing);
++
++	audit_log_end(ab);
++}
++
++/**
++ * emit_enforcement: Emit the enforcement state of IPE started with.
 + *
-+ * @bdev_free_security:
-+ *	Cleanup the security information stored inside a block_device structure.
-+ *
-+ * @bdev_setsecurity:
-+ *	Set a security property associated with @name for @bdev with
-+ *	value @value. @size indicates the size of @value in bytes.
-+ *	If a @name is not implemented, return -EOPNOTSUPP.
-+ *
-  * Security hooks for perf events
-  *
-  * @perf_event_open:
-@@ -1610,6 +1621,7 @@ struct lsm_blob_sizes {
- 	int	lbs_ipc;
- 	int	lbs_msg_msg;
- 	int	lbs_task;
-+	int	lbs_bdev;
- };
- 
- /*
-diff --git a/include/linux/security.h b/include/linux/security.h
-index 7fc4e9f49f54..30b663de301f 100644
---- a/include/linux/security.h
-+++ b/include/linux/security.h
-@@ -473,6 +473,11 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
- int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
- int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
- int security_locked_down(enum lockdown_reason what);
-+int security_bdev_alloc(struct block_device *bdev);
-+void security_bdev_free(struct block_device *bdev);
-+int security_bdev_setsecurity(struct block_device *bdev,
-+			      const char *name, const void *value,
-+			      size_t size);
- #else /* CONFIG_SECURITY */
- 
- static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1349,6 +1354,23 @@ static inline int security_locked_down(enum lockdown_reason what)
++ * Return:
++ * 0 - Always
++ */
++static int emit_enforcement(void)
++{
++	struct ipe_context *ctx = NULL;
++
++	if (!ipe_enabled)
++		return -EOPNOTSUPP;
++
++	ctx = ipe_current_ctx();
++	ipe_audit_enforce(ctx);
++	ipe_put_ctx(ctx);
++	return 0;
++}
++
++late_initcall(emit_enforcement);
+diff --git a/security/ipe/audit.h b/security/ipe/audit.h
+index bec03208042d..daff9c801a8e 100644
+--- a/security/ipe/audit.h
++++ b/security/ipe/audit.h
+@@ -15,6 +15,7 @@ void ipe_audit_match(const struct ipe_eval_ctx *const ctx,
+ 		     enum ipe_action act, const struct ipe_rule *const r);
+ void ipe_audit_policy_load(const struct ipe_policy *const p);
+ void ipe_audit_policy_activation(const struct ipe_policy *const p);
++void ipe_audit_enforce(const struct ipe_context *const ctx);
+ #else
+ static inline void ipe_audit_match(const struct ipe_eval_ctx *const ctx,
+ 				   enum ipe_match match_type,
+@@ -29,6 +30,10 @@ static inline void ipe_audit_policy_load(const struct ipe_policy *const p)
+ static inline void ipe_audit_policy_activation(const struct ipe_policy *const p)
  {
- 	return 0;
  }
 +
-+static inline int security_bdev_alloc(struct block_device *bdev)
-+{
-+	return 0;
-+}
-+
-+static inline void security_bdev_free(struct block_device *bdev)
++static inline void ipe_audit_enforce(const struct ipe_context *const ctx)
 +{
 +}
+ #endif /* CONFIG_IPE_AUDIT */
+ 
+ #endif /* IPE_AUDIT_H */
+diff --git a/security/ipe/ctx.c b/security/ipe/ctx.c
+index 391c7102e08d..ee3cb2bd6028 100644
+--- a/security/ipe/ctx.c
++++ b/security/ipe/ctx.c
+@@ -16,6 +16,7 @@
+ #include <linux/moduleparam.h>
+ 
+ static bool success_audit;
++static bool enforce = true;
+ 
+ /**
+  * ver_to_u64: convert an internal ipe_policy_version to a u64
+@@ -135,6 +136,7 @@ static struct ipe_context *create_ctx(void)
+ 	INIT_LIST_HEAD(&ctx->policies);
+ 	refcount_set(&ctx->refcount, 1);
+ 	spin_lock_init(&ctx->lock);
++	WRITE_ONCE(ctx->enforce, true);
+ 
+ 	return ctx;
+ 
+@@ -324,6 +326,7 @@ int __init ipe_init_ctx(void)
+ 
+ 	spin_lock(&lns->lock);
+ 	WRITE_ONCE(lns->success_audit, success_audit);
++	WRITE_ONCE(lns->enforce, enforce);
+ 	spin_unlock(&lns->lock);
+ 
+ 	rcu_assign_pointer(*ipe_tsk_ctx(current), lns);
+@@ -342,3 +345,6 @@ int __init ipe_init_ctx(void)
+ 
+ module_param(success_audit, bool, 0400);
+ MODULE_PARM_DESC(success_audit, "Start IPE with success auditing enabled");
 +
-+static inline int security_bdev_setsecurity(struct block_device *bdev,
-+					    const char *name,
-+					    const void *value, size_t size)
-+{
-+	return 0;
-+}
++module_param(enforce, bool, 0400);
++MODULE_PARM_DESC(enforce, "Start IPE in enforce or permissive mode");
+diff --git a/security/ipe/ctx.h b/security/ipe/ctx.h
+index 31aea2fb9e49..d7bf9fc6426a 100644
+--- a/security/ipe/ctx.h
++++ b/security/ipe/ctx.h
+@@ -14,6 +14,7 @@
+ 
+ struct ipe_context {
+ 	struct ipe_policy __rcu *active_policy;
++	bool __rcu enforce;
+ 
+ 	bool __rcu success_audit;
+ 
+diff --git a/security/ipe/eval.c b/security/ipe/eval.c
+index fcfa3a37b0ed..eafa670558e3 100644
+--- a/security/ipe/eval.c
++++ b/security/ipe/eval.c
+@@ -84,6 +84,10 @@ static int evaluate(const struct ipe_eval_ctx *const ctx)
+ 	if (!pol)
+ 		goto out;
+ 
++	rcu_read_lock();
++	enforcing = READ_ONCE(ctx->ci_ctx->enforce);
++	rcu_read_unlock();
 +
- #endif	/* CONFIG_SECURITY */
+ 	if (ctx->op == ipe_operation_max) {
+ 		action = pol->parsed->global_default;
+ 		match_type = ipe_match_global;
+@@ -119,6 +123,8 @@ static int evaluate(const struct ipe_eval_ctx *const ctx)
+ 	if (action == ipe_action_deny)
+ 		rc = -EACCES;
  
- #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
-diff --git a/security/security.c b/security/security.c
-index 188b8f782220..59ec336788e8 100644
---- a/security/security.c
-+++ b/security/security.c
-@@ -29,6 +29,7 @@
- #include <linux/string.h>
- #include <linux/msg.h>
- #include <net/flow.h>
-+#include <linux/fs.h>
- 
- #define MAX_LSM_EVM_XATTR	2
- 
-@@ -208,6 +209,7 @@ static void __init lsm_set_blob_sizes(struct lsm_blob_sizes *needed)
- 	lsm_set_blob_size(&needed->lbs_msg_msg, &blob_sizes.lbs_msg_msg);
- 	lsm_set_blob_size(&needed->lbs_superblock, &blob_sizes.lbs_superblock);
- 	lsm_set_blob_size(&needed->lbs_task, &blob_sizes.lbs_task);
-+	lsm_set_blob_size(&needed->lbs_bdev, &blob_sizes.lbs_bdev);
- }
- 
- /* Prepare LSM for initialization. */
-@@ -344,6 +346,7 @@ static void __init ordered_lsm_init(void)
- 	init_debug("msg_msg blob size    = %d\n", blob_sizes.lbs_msg_msg);
- 	init_debug("superblock blob size = %d\n", blob_sizes.lbs_superblock);
- 	init_debug("task blob size       = %d\n", blob_sizes.lbs_task);
-+	init_debug("bdev blob size       = %d\n", blob_sizes.lbs_bdev);
- 
- 	/*
- 	 * Create any kmem_caches needed for blobs
-@@ -660,6 +663,28 @@ static int lsm_msg_msg_alloc(struct msg_msg *mp)
- 	return 0;
- }
++	if (!enforcing)
++		rc = 0;
+ out:
+ 	ipe_put_policy(pol);
+ 	return rc;
+diff --git a/security/ipe/fs.c b/security/ipe/fs.c
+index 6e28807780c0..f4d32f84c945 100644
+--- a/security/ipe/fs.c
++++ b/security/ipe/fs.c
+@@ -13,8 +13,73 @@
+ static struct dentry *np __ro_after_init;
+ static struct dentry *root __ro_after_init;
+ static struct dentry *config __ro_after_init;
++static struct dentry *enforce __ro_after_init;
+ static struct dentry *success_audit __ro_after_init;
  
 +/**
-+ * lsm_bdev_alloc - allocate a composite block_device blob
-+ * @bdev: the block_device that needs a blob
++ * setenforce: Write handler for the securityfs node, "ipe/enforce"
++ * @f: Supplies a file structure representing the securityfs node.
++ * @data: Supplies a buffer passed to the write syscall
++ * @len: Supplies the length of @data
++ * @offset: unused.
 + *
-+ * Allocate the block_device blob for all the modules
-+ *
-+ * Returns 0, or -ENOMEM if memory can't be allocated.
++ * Return:
++ * >0 - Success, Length of buffer written
++ * <0 - Error
 + */
-+static int lsm_bdev_alloc(struct block_device *bdev)
++static ssize_t setenforce(struct file *f, const char __user *data,
++			  size_t len, loff_t *offset)
 +{
-+	if (blob_sizes.lbs_bdev == 0) {
-+		bdev->security = NULL;
-+		return 0;
-+	}
++	int rc = 0;
++	bool value;
++	struct ipe_context *ctx;
 +
-+	bdev->security = kzalloc(blob_sizes.lbs_bdev, GFP_KERNEL);
-+	if (!bdev->security)
-+		return -ENOMEM;
++	if (!file_ns_capable(f, &init_user_ns, CAP_MAC_ADMIN))
++		return -EPERM;
 +
-+	return 0;
++	rc = kstrtobool_from_user(data, len, &value);
++	if (rc)
++		return rc;
++
++	ctx = ipe_current_ctx();
++
++	spin_lock(&ctx->lock);
++	WRITE_ONCE(ctx->enforce, value);
++	spin_unlock(&ctx->lock);
++	synchronize_rcu();
++
++	ipe_audit_enforce(ctx);
++	ipe_put_ctx(ctx);
++	return len;
++}
++
++/**
++ * getenforce: Read handler for the securityfs node, "ipe/enforce"
++ * @f: Supplies a file structure representing the securityfs node.
++ * @data: Supplies a buffer passed to the read syscall
++ * @len: Supplies the length of @data
++ * @offset: unused.
++ *
++ * Return:
++ * >0 - Success, Length of buffer written
++ * <0 - Error
++ */
++static ssize_t getenforce(struct file *f, char __user *data,
++			  size_t len, loff_t *offset)
++{
++	const char *result;
++	struct ipe_context *ctx;
++
++	ctx = ipe_current_ctx();
++
++	rcu_read_lock();
++	result = ((READ_ONCE(ctx->enforce)) ? "1" : "0");
++	rcu_read_unlock();
++
++	ipe_put_ctx(ctx);
++	return simple_read_from_buffer(data, len, offset, result, 2);
 +}
 +
  /**
-  * lsm_early_task - during initialization allocate a composite task blob
-  * @task: the task that needs a blob
-@@ -2617,6 +2642,51 @@ int security_locked_down(enum lockdown_reason what)
- }
- EXPORT_SYMBOL(security_locked_down);
+  * setaudit: Write handler for the securityfs node, "ipe/success_audit"
+  * @f: Supplies a file structure representing the securityfs node.
+@@ -185,6 +250,11 @@ static const struct file_operations np_fops = {
+ 	.write = new_policy,
+ };
  
-+int security_bdev_alloc(struct block_device *bdev)
-+{
-+	int rc = 0;
++static const struct file_operations enforce_fops = {
++	.write = setenforce,
++	.read = getenforce,
++};
 +
-+	rc = lsm_bdev_alloc(bdev);
-+	if (unlikely(rc))
-+		return rc;
-+
-+	rc = call_int_hook(bdev_alloc_security, 0, bdev);
-+	if (unlikely(rc))
-+		security_bdev_free(bdev);
-+
-+	return LSM_RET_DEFAULT(bdev_alloc_security);
-+}
-+EXPORT_SYMBOL(security_bdev_alloc);
-+
-+void security_bdev_free(struct block_device *bdev)
-+{
-+	if (!bdev->security)
-+		return;
-+
-+	call_void_hook(bdev_free_security, bdev);
-+
-+	kfree(bdev->security);
-+	bdev->security = NULL;
-+}
-+EXPORT_SYMBOL(security_bdev_free);
-+
-+int security_bdev_setsecurity(struct block_device *bdev,
-+			      const char *name, const void *value,
-+			      size_t size)
-+{
-+	int rc = 0;
-+	struct security_hook_list *p;
-+
-+	hlist_for_each_entry(p, &security_hook_heads.bdev_setsecurity, list) {
-+		rc = p->hook.bdev_setsecurity(bdev, name, value, size);
-+		if (rc && rc != -EOPNOTSUPP)
-+			return rc;
+ static const struct file_operations audit_fops = {
+ 	.write = setaudit,
+ 	.read = getaudit,
+@@ -233,6 +303,13 @@ static int __init ipe_init_securityfs(void)
+ 		goto err;
+ 	}
+ 
++	enforce = securityfs_create_file("enforce", 0600, root, NULL,
++					 &enforce_fops);
++	if (IS_ERR(enforce)) {
++		rc = PTR_ERR(enforce);
++		goto err;
 +	}
 +
-+	return LSM_RET_DEFAULT(bdev_setsecurity);
-+}
-+EXPORT_SYMBOL(security_bdev_setsecurity);
-+
- #ifdef CONFIG_PERF_EVENTS
- int security_perf_event_open(struct perf_event_attr *attr, int type)
- {
+ 	ctx->policy_root = securityfs_create_dir("policies", root);
+ 	if (IS_ERR(ctx->policy_root)) {
+ 		rc = PTR_ERR(ctx->policy_root);
+@@ -244,6 +321,7 @@ static int __init ipe_init_securityfs(void)
+ 	securityfs_remove(np);
+ 	securityfs_remove(root);
+ 	securityfs_remove(config);
++	securityfs_remove(enforce);
+ 	securityfs_remove(success_audit);
+ 	securityfs_remove(ctx->policy_root);
+ 	return rc;
 -- 
 2.25.1
 
