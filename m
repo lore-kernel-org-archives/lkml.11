@@ -2,122 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9259CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 19:27:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B35C2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 19:28:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235414AbiFHT07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 15:26:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51746 "EHLO
+        id S235437AbiFHT2A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 15:28:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233902AbiFHT0t (ORCPT
+        with ESMTP id S235427AbiFHT16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 15:26:49 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE6773D4B7
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 12:26:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654716408; x=1686252408;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Uy0NJ8HqhtZ8h5uZtYMnISXssK4l/TvtOa+ng9NUjPA=;
-  b=ID4DkiNZ8oEg+SPwQq9ye4ESZQw1QMbbtnhJGCg4w9dHNITRawU5MfY6
-   lAyrcg1uqVALt1XpGnX4Uxm6tEx0Yg0wqSKPCZ3EHelTWC5UNi8CX/UKZ
-   Bi54MJwe3vOuA/O1tIbA7x5YOpKafV09hCszqaKBWOrOyIrZrWYGGU45M
-   yxFL2n49Ws3YC4LaAQRfOx7hVVGjTrDU3H16+3dBvTAP2JfIMrnmX9sWO
-   d/QnuhyQFHu1mO9dGEjaEMy8vNpV5tW2mU46j+n6WvHsfcE+RzowYKIoY
-   VCw9QEDKy7lJjV3y25b6slOUK2ScJpbRAoRBI7uHq22InMpxnTeZdBTrZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="277840829"
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="277840829"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 12:26:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="609807458"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 08 Jun 2022 12:26:45 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nz1KG-000EwD-MG;
-        Wed, 08 Jun 2022 19:26:44 +0000
-Date:   Thu, 9 Jun 2022 03:26:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tom Fitzhenry <tom@tom-fitzhenry.me.uk>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Tom Fitzhenry <tom@tom-fitzhenry.me.uk>,
-        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
-Subject: Re: [PATCH] mtd: spi-nor: siliconkaiser: add support for sk25lp128
-Message-ID: <202206090308.3aMXmhee-lkp@intel.com>
-References: <20220603135933.143372-1-tom@tom-fitzhenry.me.uk>
+        Wed, 8 Jun 2022 15:27:58 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9F51B7814
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 12:27:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=rhbHZ5VaGmUyTCleUDguhQAkaOJovJzetkNMfx1Ybes=; b=IYkHOWHEH2izaqISQwtGzkZIrO
+        OcfJr28cmAbWZ1TxYXHl/8vMSWQrQWiRqg/UTdvLWdPHfKlnTGxJS/YDgM2Ed/8o5PnrGSPw9Kewb
+        u7ovIfbFi0iEaB5yCuuODNlXVHA9jnD/VstRu2w4Zv8QXEiSAsSB3LUyzSFrvUKeKaekFw28SwNuB
+        J02PIHq6N2NzUOQzn8IPFF8USSTeHc+PJ48tBZ0fZy6IsKACSSkIVzSaDUzyPwZ0gwGo5MBi0FZ6+
+        lu/lDq8NFrAwm57vGWnvKfvNjzHfsjbcdUrJ2qV1fnWwpzZ5V2j13KSko35Qas4AsRoh/MzW5fYUM
+        dS2gu1JQ==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nz1LF-00CuP8-QK; Wed, 08 Jun 2022 19:27:46 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9B9E4300222;
+        Wed,  8 Jun 2022 21:27:42 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 60E7D201E482B; Wed,  8 Jun 2022 21:27:42 +0200 (CEST)
+Date:   Wed, 8 Jun 2022 21:27:42 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     =?utf-8?B?6b6N5biG6LuS?= <1030steven@gmail.com>
+Cc:     Randy Dunlap <rdunlap@infradead.org>, mingo@redhat.com,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org,
+        Benjamin Segall <bsegall@google.com>, mgorman@suse.de,
+        bristot@redhat.com, vschneid@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] sched/pelt: Fix bracket typo
+Message-ID: <YqD4LiEcxpHTrTVp@hirez.programming.kicks-ass.net>
+References: <20220608150008.57629-1-1030steven@gmail.com>
+ <3193fcc9-c672-19d9-a2e2-ad67809dd20b@infradead.org>
+ <CAEZ6PjwamdjavX_AvsFmRasE7W1cnc10dpPqSzxhvzEKm4i5Aw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220603135933.143372-1-tom@tom-fitzhenry.me.uk>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAEZ6PjwamdjavX_AvsFmRasE7W1cnc10dpPqSzxhvzEKm4i5Aw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tom,
+On Thu, Jun 09, 2022 at 01:24:45AM +0800, 龍帆軒 wrote:
+> On Wed, Jun 8, 2022 at 11:33 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+> >
+> >
+> >
+> > On 6/8/22 08:00, Steven Lung wrote:
+> > > The second bracket describing the range is inverted, this patch
+> > > will fix it.
+> > >
+> > > Signed-off-by: Steven Lung <1030steven@gmail.com>
+> > > ---
+> > >  kernel/sched/pelt.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/kernel/sched/pelt.c b/kernel/sched/pelt.c
+> > > index 0f3107682..ed82cfba9 100644
+> > > --- a/kernel/sched/pelt.c
+> > > +++ b/kernel/sched/pelt.c
+> > > @@ -233,7 +233,7 @@ ___update_load_sum(u64 now, struct sched_avg *sa,
+> > >   * When syncing *_avg with *_sum, we must take into account the current
+> > >   * position in the PELT segment otherwise the remaining part of the segment
+> > >   * will be considered as idle time whereas it's not yet elapsed and this will
+> > > - * generate unwanted oscillation in the range [1002..1024[.
+> >
+> > Is the above the same as                   range [1002..1024).
+> > ?  I.e. 1002-1023 inclusive (or 1024 excluded)?
 
-Thank you for the patch! Perhaps something to improve:
+> In the patch that the author submitted[1] for this comment, he
+> mentioned that the value 1024 can be obtained.
+> So I think we should use brackets instead of parenthesis.
 
-[auto build test WARNING on mtd/spi-nor/next]
-[also build test WARNING on v5.19-rc1]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Tom-Fitzhenry/mtd-spi-nor-siliconkaiser-add-support-for-sk25lp128/20220605-163120
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git spi-nor/next
-config: arm-randconfig-c002-20220607 (https://download.01.org/0day-ci/archive/20220609/202206090308.3aMXmhee-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b92436efcb7813fc481b30f2593a4907568d917a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/intel-lab-lkp/linux/commit/9ee4927880d43f8611d371e7cc7d8854a927de66
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Tom-Fitzhenry/mtd-spi-nor-siliconkaiser-add-support-for-sk25lp128/20220605-163120
-        git checkout 9ee4927880d43f8611d371e7cc7d8854a927de66
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/mtd/spi-nor/ drivers/nfc/nfcmrvl/ fs/quota/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/mtd/spi-nor/siliconkaiser.c:8:18: error: call to undeclared function 'SNOR_ID3'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-     { "sk25lp128", SNOR_ID3(0x257018) },
-                    ^
->> drivers/mtd/spi-nor/siliconkaiser.c:8:18: warning: suggest braces around initialization of subobject [-Wmissing-braces]
-     { "sk25lp128", SNOR_ID3(0x257018) },
-                    ^~~~~~~~~~~~~~~~~~
-                    {                 }
-   drivers/mtd/spi-nor/siliconkaiser.c:8:18: error: initializer element is not a compile-time constant
-     { "sk25lp128", SNOR_ID3(0x257018) },
-                    ^~~~~~~~~~~~~~~~~~
-   1 warning and 2 errors generated.
-
-
-vim +8 drivers/mtd/spi-nor/siliconkaiser.c
-
-     6	
-     7	static const struct flash_info siliconkaiser_nor_parts[] = {
-   > 8	  { "sk25lp128", SNOR_ID3(0x257018) },
-     9	};
-    10	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Yeah, IIRC the value is fundamentally [0,1] (*scale) there. Therefore
+the patch as proposed makes sense to me.
