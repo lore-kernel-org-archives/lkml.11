@@ -2,143 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58056C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2179CCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:14:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382409AbiFHCJG (ORCPT
+        id S1444138AbiFHCJl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34128 "EHLO
+        Tue, 7 Jun 2022 22:09:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387740AbiFHAzK (ORCPT
+        with ESMTP id S1442542AbiFHAz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:55:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954E319C38E;
-        Tue,  7 Jun 2022 12:26:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BCFFB8220B;
-        Tue,  7 Jun 2022 19:26:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 925EAC385A5;
-        Tue,  7 Jun 2022 19:26:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629962;
-        bh=NrPlRNLy3VPCTlW9T90w4oVHwZBt8gL5yWLzuJeF2n0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j6RgJJIw8++rHFBtn3nsQD4tLRujjM12erLYFF+3Id9IGYFfADTa0ktqL3QF1asFg
-         XwIaE/kZQE8q3eDduG7tv5k0b25/8ufuewA+EiBxzE9AEXykXegeDOOUl4tqYb7BQA
-         PdxuePcUAMyfbe6M69QdP6he3FcXgrbuNmT0eNnk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
-        Tony Lindgren <tony@atomide.com>
-Subject: [PATCH 5.18 879/879] tty: n_gsm: Fix packet data hex dump output
-Date:   Tue,  7 Jun 2022 19:06:37 +0200
-Message-Id: <20220607165028.369214832@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 20:55:26 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80CF1271A6
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 17:01:29 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id o7so4955289eja.1
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 17:01:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BbtiLiOJU0rTXaLM0hDshg4m31VYD4/CJhwA3wxcIfY=;
+        b=UEbSN7CqnGLPUgHOCHUnxVgvcwwH5fIjCRkDU1hMHEOw3O6Crn+zFT4cHbt26zWAIE
+         8N37tZnKa2IQm97YWALddX+9sX5+eUdSGgLUjTzkUqGjd8eF/munkHc/iMXNVyIQulDr
+         RzbvLPuA7QuYsQ2rp6uFK7J90q2o99MR/JxvoP1OAXLS/i1XFkjUHB5dMmTRPvkqrKN1
+         GVlnO15zjvzdRH/a9AZT92GfOjEnw3KTd/XmxNJvNtOd6X7CXsn2ckNAviyYg0+ZlzRg
+         9Ks+ItmnXrzSqHobsOovoV7ncr9CtW9Vq3iZguF++zTcNjSYE725THejD4ccN1rYOdeo
+         eKIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BbtiLiOJU0rTXaLM0hDshg4m31VYD4/CJhwA3wxcIfY=;
+        b=m1HUVYFMtbKA7CTE29olGccbP7GJ6u9A6aAPZljkPGv9Z7Tcwrkpcr6nkLyP+e/JUF
+         b9CUG9PxDhmwIOln52iDX2eJ21qaOqeWkVU0oc18wyNveVqsksVsWztkUy80mz6G0lgo
+         39n70J6RX4nztfmPl+XB/ZW5Q4et7iFDAvTDX2AST1x8ZKz0rP5+j1JGRfO7FLOOdO9A
+         TMSJanEFN6yX466LI8S8rR8CsVKlighhX0oDsjH+Aa5jWo0fDRoEgG3wkMDHPNcwpbGF
+         6gd/npRx1fsUJqCROmEBPx8XFbym1WlkLsJcu7bLMfnxUUryK1EVx975WTnbBGQoo20f
+         t1Fw==
+X-Gm-Message-State: AOAM532Van2HXw3DHotjacilAEhcnkhkq8GTP9A8MsygNoCQxc+m+V19
+        e2J9bsVxDr7QgRWQaZmcx3w=
+X-Google-Smtp-Source: ABdhPJy47AJ9g+udmP2NQVg/F+sAWua/3HNM6FM8/NI+MyAJiUqdrDek1YV+kEU4eBlEYg5lhWQe1Q==
+X-Received: by 2002:a17:906:99c5:b0:6fe:b069:4ab6 with SMTP id s5-20020a17090699c500b006feb0694ab6mr29042371ejn.436.1654646487635;
+        Tue, 07 Jun 2022 17:01:27 -0700 (PDT)
+Received: from mail (239.125-180-91.adsl-dyn.isp.belgacom.be. [91.180.125.239])
+        by smtp.gmail.com with ESMTPSA id z11-20020a05640240cb00b0042e17781fc5sm9790817edb.49.2022.06.07.17.01.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 17:01:26 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 02:01:25 +0200
+From:   Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+To:     Ankur Arora <ankur.a.arora@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org, x86@kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        mike.kravetz@oracle.com, mingo@kernel.org, luto@kernel.org,
+        tglx@linutronix.de, bp@alien8.de, peterz@infradead.org,
+        ak@linux.intel.com, arnd@arndb.de, jgg@nvidia.com,
+        jon.grimm@amd.com, boris.ostrovsky@oracle.com,
+        konrad.wilk@oracle.com, joao.m.martins@oracle.com
+Subject: Re: [PATCH v3 13/21] clear_page: add generic
+ clear_user_pages_incoherent()
+Message-ID: <20220608000125.na6z3niyv4ty7xn7@mail>
+References: <20220606202109.1306034-1-ankur.a.arora@oracle.com>
+ <20220606203725.1313715-9-ankur.a.arora@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606203725.1313715-9-ankur.a.arora@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+On Mon, Jun 06, 2022 at 08:37:17PM +0000, Ankur Arora wrote:
+> +static inline void clear_user_pages_incoherent(__incoherent void *page,
+> +					       unsigned long vaddr,
+> +					       struct page *pg,
+> +					       unsigned int npages)
+> +{
+> +	clear_user_pages((__force void *)page, vaddr, pg, npages);
+> +}
 
-commit 925ea0fa5277c1e6bb9e51955ef34eea9736c3d7 upstream.
+Hi,
 
-The module param debug for n_gsm uses KERN_INFO level, but the hexdump
-now uses KERN_DEBUG level. This started after commit 091cb0994edd
-("lib/hexdump: make print_hex_dump_bytes() a nop on !DEBUG builds").
-We now use dynamic_hex_dump() unless DEBUG is set.
+Please use 'void __incoherent *' and 'void __force *', as it's done
+elsewhere for __force and address spaces.
 
-This causes no packets to be seen with modprobe n_gsm debug=0x1f unlike
-earlier. Let's fix this by adding gsm_hex_dump_bytes() that calls
-print_hex_dump() with KERN_INFO to match what n_gsm is doing with the
-other debug related output.
-
-Fixes: 091cb0994edd ("lib/hexdump: make print_hex_dump_bytes() a nop on !DEBUG builds")
-Cc: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Link: https://lore.kernel.org/r/20220512131506.1216-1-tony@atomide.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/n_gsm.c |   31 +++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
-
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -444,6 +444,25 @@ static u8 gsm_encode_modem(const struct
- 	return modembits;
- }
- 
-+static void gsm_hex_dump_bytes(const char *fname, const u8 *data,
-+			       unsigned long len)
-+{
-+	char *prefix;
-+
-+	if (!fname) {
-+		print_hex_dump(KERN_INFO, "", DUMP_PREFIX_NONE, 16, 1, data, len,
-+			       true);
-+		return;
-+	}
-+
-+	prefix = kasprintf(GFP_KERNEL, "%s: ", fname);
-+	if (!prefix)
-+		return;
-+	print_hex_dump(KERN_INFO, prefix, DUMP_PREFIX_OFFSET, 16, 1, data, len,
-+		       true);
-+	kfree(prefix);
-+}
-+
- /**
-  *	gsm_print_packet	-	display a frame for debug
-  *	@hdr: header to print before decode
-@@ -508,7 +527,7 @@ static void gsm_print_packet(const char
- 	else
- 		pr_cont("(F)");
- 
--	print_hex_dump_bytes("", DUMP_PREFIX_NONE, data, dlen);
-+	gsm_hex_dump_bytes(NULL, data, dlen);
- }
- 
- 
-@@ -698,9 +717,7 @@ static void gsm_data_kick(struct gsm_mux
- 		}
- 
- 		if (debug & 4)
--			print_hex_dump_bytes("gsm_data_kick: ",
--					     DUMP_PREFIX_OFFSET,
--					     gsm->txframe, len);
-+			gsm_hex_dump_bytes(__func__, gsm->txframe, len);
- 		if (gsmld_output(gsm, gsm->txframe, len) <= 0)
- 			break;
- 		/* FIXME: Can eliminate one SOF in many more cases */
-@@ -2448,8 +2465,7 @@ static int gsmld_output(struct gsm_mux *
- 		return -ENOSPC;
- 	}
- 	if (debug & 4)
--		print_hex_dump_bytes("gsmld_output: ", DUMP_PREFIX_OFFSET,
--				     data, len);
-+		gsm_hex_dump_bytes(__func__, data, len);
- 	return gsm->tty->ops->write(gsm->tty, data, len);
- }
- 
-@@ -2525,8 +2541,7 @@ static void gsmld_receive_buf(struct tty
- 	char flags = TTY_NORMAL;
- 
- 	if (debug & 4)
--		print_hex_dump_bytes("gsmld_receive: ", DUMP_PREFIX_OFFSET,
--				     cp, count);
-+		gsm_hex_dump_bytes(__func__, cp, count);
- 
- 	for (; count; count--, cp++) {
- 		if (fp)
-
-
+-- Luc
