@@ -2,104 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 211BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 141D3C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:10:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238101AbiFHLK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 07:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54476 "EHLO
+        id S238131AbiFHLKe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 07:10:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237833AbiFHLIV (ORCPT
+        with ESMTP id S237780AbiFHLIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 07:08:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B9721E303D
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 04:08:18 -0700 (PDT)
+        Wed, 8 Jun 2022 07:08:49 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAA61B2168;
+        Wed,  8 Jun 2022 04:08:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 491F2615BF
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:08:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6796C3411D;
-        Wed,  8 Jun 2022 11:08:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 881CFCE1D6F;
+        Wed,  8 Jun 2022 11:08:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 933C9C34116;
+        Wed,  8 Jun 2022 11:08:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654686496;
-        bh=bPnqyf9AZKQ61p03l1ZhTBaGGia2Im8xpRcxv1K85hQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PZJBe4BPctuMS3xI7WkpvRptbond4MxlN5ysPKMwP9R9W9kRHAotuWVmUvzRnzJRq
-         SC/xUS3w+jQOXbJnC5+BC+hWgHmcJPc8QxIy6CFFk5PH9udZLOiJWVbcjzkBqN7JkN
-         YgV6C6ggBYYrWIqTb6ursL+OjgrxANfIf6ZVLxwcW5VDLI0ODtJFzZGCjshavQykXX
-         r6cSE4TlMIvziJ0siULm83x9kM1tyDBFOIgIPYJPBK6k+Cez3lsrLqyp2drdbx8WJy
-         hpCzS3JJVnCN/znzeU3LhfXjJMzYKxInZ5uFpSvoo3VbNtZV+uVVKp5gxGsf34SkHI
-         rgPHrV/G4kllw==
-From:   Tzung-Bi Shih <tzungbi@kernel.org>
-To:     bleung@chromium.org, groeck@chromium.org
-Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 23/23] platform/chrome: cros_ec_proto: handle empty payload in getting wake mask
-Date:   Wed,  8 Jun 2022 11:07:34 +0000
-Message-Id: <20220608110734.2928245-24-tzungbi@kernel.org>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-In-Reply-To: <20220608110734.2928245-1-tzungbi@kernel.org>
-References: <20220608110734.2928245-1-tzungbi@kernel.org>
+        s=k20201202; t=1654686524;
+        bh=bnCVPgqGZK5fBMahxZ7HHsO5nJ1Jj7QarAUy/aXfRws=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=c+C0Bs4PJEMrAs5KNJQYYQB770dgj5XpSjU3AsiD0N1+NCQIf7Dx3qcpzRjMACHv/
+         aOXyvsLwpF3LVq9qVa1qXsEviv4RldtK1Fgvi9zYYeOdE3Hx6OIsxjugkLWuntRNJ8
+         0bw3E2glXXDor1q8252nHJqrqhrzAMwyfgy0ge940nqs/HH0/33UBZRjuBfK0dVVJW
+         DHGJBBu2PoM9xlXFCtRpE3HtIgny7SmKTISZZpacNcP1scv6xmtHIXfdUElkSJ3Yy6
+         bEwqV6TZom+9LX6mZhiUkcBKNGByasRpl9UmEHtlZyUMh3B4Wjo1nsC0dAal3gDwlO
+         8PbA7fVvkb/rw==
+Message-ID: <830f58cbcae3275310fe8b132c8f7cb12842e0f4.camel@kernel.org>
+Subject: Re: [GIT PULL] tpmdd updates for v5.19-rc2
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Peter Huewe <peterhuewe@gmx.de>, Jason Gunthorpe <jgg@ziepe.ca>,
+        David Howells <dhowells@redhat.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
+Date:   Wed, 08 Jun 2022 14:06:48 +0300
+In-Reply-To: <20220608092646.3074700-1-jarkko@kernel.org>
+References: <20220608092646.3074700-1-jarkko@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cros_ec_get_host_event_wake_mask() expects to receive
-sizeof(struct ec_response_host_event_mask) from send_command().  The
-payload is valid only if the return value is positive.
+On Wed, 2022-06-08 at 12:26 +0300, Jarkko Sakkinen wrote:
+> The following changes since commit 9886142c7a2226439c1e3f7d9b69f9c7094c3e=
+f6:
+>=20
+> =C2=A0 Merge tag 'input-for-v5.19-rc1' of git://git.kernel.org/pub/scm/li=
+nux/kernel/git/dtor/input (2022-06-07 15:00:29 -0700)
+>=20
+> are available in the Git repository at:
+>=20
+> =C2=A0 git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.g=
+it/ tags/tpmdd-next-v5.19-rc2
+>=20
+> for you to fetch changes up to 967a4b757b51164a3dc3307234fcb48b7be2745b:
+>=20
+> =C2=A0 KEYS: trusted: tpm2: Fix migratable logic (2022-06-08 12:13:26 +03=
+00)
+>=20
+> ----------------------------------------------------------------
+> A bug fix for migratable (whether or not a key is tied to the TPM chip
+> soldered to the machine) handling for TPM2 trusted keys.
+>=20
+> ----------------------------------------------------------------
+> david.safford@gmail.com=C2=A0(1):
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 KEYS: trusted: tpm2: Fix migratable logic
+>=20
+> =C2=A0security/keys/trusted-keys/trusted_tpm2.c | 4 ++--
+> =C2=A01 file changed, 2 insertions(+), 2 deletions(-)
 
-Return -EPROTO if send_command() returns 0 in
-cros_ec_get_host_event_wake_mask().
+Ugh, from-address in malformed. I'll need to redo the PR.
 
-Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
----
-No v2.  New and separated from the original series.
-
- drivers/platform/chrome/cros_ec_proto.c | 24 ++++++++++++++----------
- 1 file changed, 14 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index 68a411e84744..5cbaaba26ff7 100644
---- a/drivers/platform/chrome/cros_ec_proto.c
-+++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -256,19 +256,23 @@ static int cros_ec_get_host_event_wake_mask(struct cros_ec_device *ec_dev, uint3
- 	msg->insize = sizeof(*r);
- 
- 	ret = send_command(ec_dev, msg);
--	if (ret >= 0) {
--		mapped = cros_ec_map_error(msg->result);
--		if (mapped) {
--			ret = mapped;
--			goto exit;
--		}
-+	if (ret < 0)
-+		goto exit;
-+
-+	mapped = cros_ec_map_error(msg->result);
-+	if (mapped) {
-+		ret = mapped;
-+		goto exit;
- 	}
--	if (ret > 0) {
--		r = (struct ec_response_host_event_mask *)msg->data;
--		*mask = r->mask;
--		ret = 0;
-+
-+	if (ret == 0) {
-+		ret = -EPROTO;
-+		goto exit;
- 	}
- 
-+	r = (struct ec_response_host_event_mask *)msg->data;
-+	*mask = r->mask;
-+	ret = 0;
- exit:
- 	kfree(msg);
- 	return ret;
--- 
-2.36.1.255.ge46751e96f-goog
+BR, Jarkko
 
