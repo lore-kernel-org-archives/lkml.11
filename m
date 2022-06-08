@@ -2,77 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE7BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 23:40:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F7EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 23:44:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230454AbiFHXkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 19:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33248 "EHLO
+        id S234239AbiFHXmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 19:42:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233983AbiFHXj7 (ORCPT
+        with ESMTP id S235144AbiFHXl5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 19:39:59 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F551169E3D
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 16:39:35 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id x75so13267079qkb.12
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 16:39:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=kc8hDtKnDcjkjtnpKv99miwrNZ1mscnVCOSjHJGhRR0=;
-        b=TGdTe8ftgW2E2QSXLDATWBAXq3sauk3KYSj6BMlJLGO6AIyIfhb5n1gjvAikC5sfj1
-         pnF2q+aa3J49SlWeHoe8utIJbft2tfdvJWfSA/DWdGmQ81xwpFbbShsO99rjEfX37VOJ
-         O7nf0OOCHhgW59XOZB2AYutoUpxS75uohsXNuBYCQ74OZWV0IkfqStkyQpIXIgp5Yu/X
-         /b47CaBvS9tF2RvKGzD2OXWMoCKHHF/JqW3mtCMGdzWVyYoNxEJonBGyxomdCDOnzKP5
-         Wm0OipG0BCiWNN5Q3OyAx5VK7fAStBf4WuoirjR9Gnpdd0r+CJ+NosZexvzLXB8JwqtT
-         YXTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=kc8hDtKnDcjkjtnpKv99miwrNZ1mscnVCOSjHJGhRR0=;
-        b=mp7tG/bA2bz8HbXzichWetDdG6JSdBpeHLycLYckQ7bplrIe6MUagPAoxwkwTcBdQh
-         FHBV9GY7doKWzrcJK6suG7T3GIXVt2ZaAjEBR4g1XnjyyZEIFa5efHb619X5oZrSLWe3
-         T6U8+1YH7xgC3zDlGAxI3cMLi0QOV3ZtJAmEjMokXlFfGZRQ5KcyeKxCWxzeKhJac1PC
-         z4IUEtmQF78A7PaaTi86SCaLceNOwH5/2+23c2SbnAcfvrzfc1f3yfToaLq4Z6lmGZ64
-         RjLzwGiCCokIVo44X673+JluHoEYeTIsMHp8nd64VBWz5FrQGovCaqPqZ+oz4PyX9idG
-         H+eQ==
-X-Gm-Message-State: AOAM533KtSXpi/kvloVUhWMaFif/pZlBVPmKieXKtTAq0kdArFQy9uH1
-        L3zDrTqQuTK6AiV6dlv1kbygamPlqRekdLLscJth2g==
-X-Google-Smtp-Source: ABdhPJwwoi0drQjkYJ1j2Qdt6XiU3x2RVVqapgseeDGRMrMmyQCzzXLwavj3DbqQ68d+IFyAWbxsz4ReHsk+ofIZ0q4=
-X-Received: by 2002:a05:620a:1911:b0:6a6:e8e9:70cd with SMTP id
- bj17-20020a05620a191100b006a6e8e970cdmr6816152qkb.627.1654731574196; Wed, 08
- Jun 2022 16:39:34 -0700 (PDT)
+        Wed, 8 Jun 2022 19:41:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995891AA17D;
+        Wed,  8 Jun 2022 16:41:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA6F4B829F9;
+        Wed,  8 Jun 2022 23:41:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19D42C3411E;
+        Wed,  8 Jun 2022 23:41:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654731662;
+        bh=8TesstUwyX400Czc4f/SvrGdHmpleWBYHpobEaZCwkE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=InGtDqacJmo8CM6l4lGtNFSqYRF/mp1WqAFeknGWsuvfBS9Gio9rSz/TDbEI9VoYW
+         lq/1cpE72U11sAE/A76bYuzsaoWytZqKhexukpWwxlW/OJX1HCFHmRxAEUzfrYCcox
+         K8gn4Qfl4aJIGB+qzccPQOekypKr4mCHM6bKwIG+vDFfwlbiuKx1TQ6dmkkaV1G5b3
+         SveEMin/ZOuGfatVXUe3wyYVmktytRcA0NepOcbpC5VSSMryzeRYteu2j8LPq9xW5g
+         TG78VLvGMspHYQnuk4iYHa3/aPM3NHhE37V9kf29qHbUD2hr0V7COa2zi9MmuwFZfJ
+         mtC/+JRlfJ3bQ==
+Date:   Wed, 8 Jun 2022 18:40:59 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, pmladek@suse.com,
+        rostedt@goodmis.org, linux-pci@vger.kernel.org,
+        Logan Gunthorpe <logang@deltatee.com>
+Subject: Re: [PATCH v3 29/33] PCI/P2PDMA: Convert to printbuf
+Message-ID: <20220608234059.GA434397@bhelgaas>
 MIME-Version: 1.0
-From:   Atul Khare <atulkhare@rivosinc.com>
-Date:   Wed, 8 Jun 2022 16:39:23 -0700
-Message-ID: <CABMhjYp3xUyQ9q6nXHvEA2zuzhYi0ETn6UETeH1apWf2n2eP7A@mail.gmail.com>
-Subject: [PATCH v2 0/2] dt-bindings: sifive: fix dt-schema errors
-To:     Palmer Dabbelt <palmer@rivosinc.com>,
-        Atul Khare <atulkhare@rivosinc.com>
-Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-riscv@lists.infradead.org, Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d5d0cc2e-79e1-3248-0f55-8f1afd21f926@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The patch series fixes dt-schema validation errors that can be reproduced
-using the following: make ARCH=riscv defconfig; make ARCH=riscv
-dt_binding_check dtbs_check
+On Wed, Jun 08, 2022 at 07:24:02PM -0400, Kent Overstreet wrote:
+> On 6/8/22 17:11, Bjorn Helgaas wrote:
+> > On Sat, Jun 04, 2022 at 03:30:38PM -0400, Kent Overstreet wrote:
+> > > This converts from seq_buf to printbuf. We're using printbuf in external
+> > > buffer mode, so it's a direct conversion, aside from some trivial
+> > > refactoring in cpu_show_meltdown() to make the code more consistent.
+> > 
+> > cpu_show_meltdown() doesn't appear in p2pdma.c.  Leftover from another
+> > patch?  Maybe from 27/33 ("powerpc: Convert to printbuf")?
 
-This is a rebased version of https://tinyurl.com/yvdvmsjd, and excludes
-two patches that are now redundant.
+Don't forget this part :)
 
-Atul Khare (2):
-  dt-bindings: sifive: add cache-set value of 2048
-  dt-bindings: sifive: add gpio-line-names
+> > I'm not opposed to this, but it would be nice to say what the benefit
+> > is.  How is printbuf better than seq_buf?  It's not obvious from the
+> > patch how this is better/safer/shorter/etc.
+> > 
+> > Even the cover letter [1] is not very clear about the benefit.  Yes, I
+> > see it has something to do with improving buffer management, and I
+> > know from experience that's a pain.  Concrete examples of typical
+> > printbuf usage and bugs that printbufs avoid would be helpful.
+> 
+> Take a look at the vsprintf.c conversion if you want to see big
+> improvements. Also, %pf() is another thing that's going to enable a lot more
+> improvements.
 
- Documentation/devicetree/bindings/gpio/sifive,gpio.yaml      | 3 +++
- Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml | 4 +++-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+Like I said, I'm not opposed to this, I'm just looking for a hint in
+this commit log that makes me think "yes, this is a good idea for
+PCI."
 
---
-2.34.1
+Right now it just says "converts X to Y."  I'm hoping for "convert X
+to Y to avoid <some problem with X>."
+
+Bjorn
