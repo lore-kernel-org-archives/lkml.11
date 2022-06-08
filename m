@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C948C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:35:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B36FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245586AbiFHQfm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41594 "EHLO
+        id S245725AbiFHQfp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:35:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245289AbiFHQfi (ORCPT
+        with ESMTP id S245186AbiFHQfi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 8 Jun 2022 12:35:38 -0400
-Received: from out199-16.us.a.mail.aliyun.com (out199-16.us.a.mail.aliyun.com [47.90.199.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADB9376F21
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:35:37 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R291e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VFmubbq_1654706132;
-Received: from localhost.localdomain(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0VFmubbq_1654706132)
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D49B376277
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:35:36 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VFmubTl_1654706119;
+Received: from localhost.localdomain(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0VFmubTl_1654706119)
           by smtp.aliyun-inc.com;
-          Thu, 09 Jun 2022 00:35:32 +0800
+          Thu, 09 Jun 2022 00:35:31 +0800
 From:   Tianchen Ding <dtcccc@linux.alibaba.com>
 To:     Ingo Molnar <mingo@redhat.com>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -30,57 +30,52 @@ To:     Ingo Molnar <mingo@redhat.com>,
         Daniel Bristot de Oliveira <bristot@redhat.com>,
         Valentin Schneider <vschneid@redhat.com>
 Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH v4 1/2] sched: Fix the check of nr_running at queue wakelist
-Date:   Thu,  9 Jun 2022 00:35:17 +0800
-Message-Id: <20220608163518.324276-2-dtcccc@linux.alibaba.com>
+Subject: [PATCH v4 0/2] sched: Queue task on wakelist in the same llc if the wakee cpu is idle
+Date:   Thu,  9 Jun 2022 00:35:16 +0800
+Message-Id: <20220608163518.324276-1-dtcccc@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220608163518.324276-1-dtcccc@linux.alibaba.com>
-References: <20220608163518.324276-1-dtcccc@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit 2ebb17717550 ("sched/core: Offload wakee task activation if it
-the wakee is descheduling") checked rq->nr_running <= 1 to avoid task
-stacking when WF_ON_CPU.
+Wakelist can help avoid cache bouncing and offload the overhead of waker
+cpu. So far, using wakelist within the same llc only happens on
+WF_ON_CPU, and this limitation could be removed to further improve
+wakeup performance. The result of Unixbench Pipe-based Context Switching
+can be improved up to ~10%.
 
-Per the ordering of writes to p->on_rq and p->on_cpu, observing p->on_cpu
-(WF_ON_CPU) in ttwu_queue_cond() implies !p->on_rq, IOW p has gone through
-the deactivate_task() in __schedule(), thus p has been accounted out of
-rq->nr_running. As such, the task being the only runnable task on the rq
-implies reading rq->nr_running == 0 at that point.
+The 1st patch introduces a more "correct" way to check whether the wakee
+cpu is soon-to-be-idle.
 
-The benchmark result is in [1].
+The 2nd patch allows using wakelist in any case when the wakee cpu is
+idle or soon-to-be-idle.
 
-[1] https://lore.kernel.org/all/e34de686-4e85-bde1-9f3c-9bbc86b38627@linux.alibaba.com/
+v4:
+Add benchmark results about the 1st patch.
+Modify some comments.
 
-Suggested-by: Valentin Schneider <vschneid@redhat.com>
-Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
-Reviewed-by: Valentin Schneider <vschneid@redhat.com>
----
- kernel/sched/core.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+v3: https://lore.kernel.org/all/20220602040645.275555-1-dtcccc@linux.alibaba.com/
+Add a patch to fix the check of nr_running.
+After that, we can remove WF_ON_CPU to achieve the same purpose.
+Thank Valentin and Mel.
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 21db6816a7bd..a4bdb2b95976 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3829,8 +3829,12 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
- 	 * CPU then use the wakelist to offload the task activation to
- 	 * the soon-to-be-idle CPU as the current CPU is likely busy.
- 	 * nr_running is checked to avoid unnecessary task stacking.
-+	 *
-+	 * Note that we can only get here with (wakee) p->on_rq=0,
-+	 * p->on_cpu can be whatever, we've done the dequeue, so
-+	 * the wakee has been accounted out of ->nr_running.
- 	 */
--	if ((wake_flags & WF_ON_CPU) && cpu_rq(cpu)->nr_running <= 1)
-+	if ((wake_flags & WF_ON_CPU) && !cpu_rq(cpu)->nr_running)
- 		return true;
- 
- 	return false;
+v2: https://lore.kernel.org/all/20220527090544.527411-1-dtcccc@linux.alibaba.com/
+Modify commit log to describe key point in detail.
+Add more benchmark results on more archs.
+
+v1: https://lore.kernel.org/all/20220513062427.2375743-1-dtcccc@linux.alibaba.com/
+
+Tianchen Ding (2):
+  sched: Fix the check of nr_running at queue wakelist
+  sched: Remove the limitation of WF_ON_CPU on wakelist if wakee cpu is
+    idle
+
+ kernel/sched/core.c  | 30 ++++++++++++++++++------------
+ kernel/sched/sched.h |  1 -
+ 2 files changed, 18 insertions(+), 13 deletions(-)
+
 -- 
 2.27.0
 
