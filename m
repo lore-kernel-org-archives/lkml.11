@@ -2,175 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1ED9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 18:01:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FA66C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 18:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233628AbiFHSBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 14:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55916 "EHLO
+        id S233723AbiFHSBX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 14:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233489AbiFHSBO (ORCPT
+        with ESMTP id S233825AbiFHR7c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 14:01:14 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CCAB1CC63A
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:01:13 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id 184so3667398pga.12
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 11:01:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version;
-        bh=NR+QMpuaZNyOqcA87ZVpLMjyYYEawK8YSVSKX6b1aBc=;
-        b=bLnz3Xb0oka7dfuPF+vhE7hwQZiSHqGsbT5Jhm0lGrJLj9Itb6KbhqhpYdxMBI2Ohe
-         4vQSy/g0afz+kZMlSrGcdNMsy9aAnVnixQo3OgudZPXW/7+PK4DCI0GCAJnewdZNztkb
-         JyLQXPwD++nL9GjX+iufucEK+PfT7VlfWFvVY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
-        bh=NR+QMpuaZNyOqcA87ZVpLMjyYYEawK8YSVSKX6b1aBc=;
-        b=a1So2AQJFv8LTf52xSaFOhHo3zaCuTe23mAldt2BUMk/rigLjR1dQ8SCgdxLXiZshE
-         8VlaQld18ArciA+Dfmks6ifH4y/Sn/asb5+V5HTPDOXeM1cBOmQ+ytMzQ4IjLBW0SwYb
-         5OUpOR+5l888TNLPObluLSIuS0SvKoJpZf178tPXYn/hxcP9HBI+hLOGZUBtt2TtDHV1
-         9DHN7jl4sKEHifKPEe/Hr0xdvLzPhNYv15vDtuJPRHUD5fnr9aVG3mwcnQf74BXlhAyi
-         eeFAmJV0fFwYlEpiRkldwoiVechUiQle53hfVW+JujbnbpwT0ciKPi0dKBypToUnnqfw
-         G/IQ==
-X-Gm-Message-State: AOAM5317p5pR9UY2k1wWPyGtazW3qq2Rl+YwNoFSEduCu07jJmAnxGEU
-        uNShSRaakWDLCJ953jghmxL8aw==
-X-Google-Smtp-Source: ABdhPJxHQ8CBRFEZCScOK7zbJUucS8w9CIgdlOTL92QxXihxah2hTe30uh8H+fcMUpSxYHm6KNf0uA==
-X-Received: by 2002:a05:6a00:15d3:b0:51c:1a20:f8d8 with SMTP id o19-20020a056a0015d300b0051c1a20f8d8mr16803446pfu.57.1654711272539;
-        Wed, 08 Jun 2022 11:01:12 -0700 (PDT)
-Received: from T3500-3.dhcp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a70-20020a639049000000b003fd55608671sm9698397pge.27.2022.06.08.11.01.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 11:01:12 -0700 (PDT)
-From:   William Zhang <william.zhang@broadcom.com>
-To:     Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     f.fainelli@gmail.com,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        samyon.furman@broadcom.com, tomer.yacoby@broadcom.com,
-        philippe.reynes@softathome.com, joel.peshkin@broadcom.com,
-        dan.beygelman@broadcom.com, kursad.oney@broadcom.com,
-        anand.gore@broadcom.com,
-        William Zhang <william.zhang@broadcom.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Wed, 8 Jun 2022 13:59:32 -0400
+Received: from polaris.svanheule.net (polaris.svanheule.net [IPv6:2a00:c98:2060:a004:1::200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CAB315AB11
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 10:59:30 -0700 (PDT)
+Received: from [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd] (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id 0DF752E4BB7;
+        Wed,  8 Jun 2022 19:59:26 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1654711167;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vyTeB1JzZD9fmF558GD2qgS4Kq5QrIO/iFm0srgpPl0=;
+        b=lxAvNswjnRftM23DfjCpgOhPgHLrjEyrvLCPka6PDjTjRusJoRjKIsHCQfRVl2W3NEOWhk
+        73bQt63OxjIkg16LwpCk4QKTZCeqhWxQhmeYVcswxxRikc2dwukxvJGBh5llwjPaiDidze
+        i5+LpiyVE9uNuUr2ayLww0+HjGnl3UlxuWnsr6rcjFaFD3r66uSSVH0tKqkHctdR863ROp
+        u1/HPmp/Rai8AlzS4hBJNZci1BxyHx5HjzxAJnaGO6UuVm6NtjHMvlPNMpnqiUWhvDNExQ
+        rA92Im/RgrJ95lYi2PyXe5j2JAcwBgOoBKK0QGPp6fcYIKJCeBDygfOFntkC5w==
+Message-ID: <99cf531fb8c7e8155edbad56817c8c0208e793c2.camel@svanheule.net>
+Subject: Re: [PATCH v3 1/4] cpumask: Fix invalid uniprocessor mask assumption
+From:   Sander Vanheule <sander@svanheule.net>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        kernel test robot <lkp@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marco Elver <elver@google.com>, kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] arm: bcmbca: Add BCM63146 SoC support
-Date:   Wed,  8 Jun 2022 11:00:57 -0700
-Message-Id: <20220608180100.31749-1-william.zhang@broadcom.com>
-X-Mailer: git-send-email 2.36.1
+Date:   Wed, 08 Jun 2022 19:59:24 +0200
+In-Reply-To: <Yp3ZsoPV0yx2TKo3@smile.fi.intel.com>
+References: <cc1f7d3334348cccbf9fde091015a802f379a9be.1654410109.git.sander@svanheule.net>
+         <202206060858.wA0FOzRy-lkp@intel.com> <Yp3ZsoPV0yx2TKo3@smile.fi.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000a00b1105e0f37d15"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000a00b1105e0f37d15
-Content-Transfer-Encoding: 8bit
+On Mon, 2022-06-06 at 13:40 +0300, Andy Shevchenko wrote:
+> On Mon, Jun 06, 2022 at 08:48:05AM +0800, kernel test robot wrote:
+> > Hi Sander,
+> >=20
+> > I love your patch! Yet something to improve:
+> >=20
+> > [auto build test ERROR on akpm-mm/mm-everything]
+> > [also build test ERROR on linus/master v5.18 next-20220603]
+> > [If your patch is applied to the wrong git tree, kindly drop us a note.
+> > And when submitting patch, we suggest to use '--base' as documented in
+> > https://git-scm.com/docs/git-format-patch]
+> >=20
+> > url:=C2=A0=C2=A0=C2=A0
+> > https://github.com/intel-lab-lkp/linux/commits/Sander-Vanheule/cpumask-=
+Fix-invalid-uniprocessor-assumptions/20220606-004959
+> > base:=C2=A0=C2=A0 https://git.kernel.org/pub/scm/linux/kernel/git/akpm/=
+mm.git=C2=A0mm-everything
+> > config: i386-randconfig-a009
+> > (https://download.01.org/0day-ci/archive/20220606/202206060858.wA0FOzRy=
+-lkp@intel.com/config)
+> > compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+> > reproduce (this is a W=3D1 build):
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 # https://github.com/intel-l=
+ab-lkp/linux/commit/37b3f10c4604ea299b454f39ac5ba3cad903ae16
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 git remote add linux-review =
+https://github.com/intel-lab-lkp/linux
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 git fetch --no-tags linux-re=
+view Sander-Vanheule/cpumask-Fix-invalid-uniprocessor-
+> > assumptions/20220606-004959
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 git checkout 37b3f10c4604ea2=
+99b454f39ac5ba3cad903ae16
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 # save the config file
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mkdir build_dir && cp config=
+ build_dir/.config
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 make W=3D1 O=3Dbuild_dir ARC=
+H=3Di386 SHELL=3D/bin/bash
+> >=20
+> > If you fix the issue, kindly add following tag where applicable
+> > Reported-by: kernel test robot <lkp@intel.com>
+> >=20
+> > All errors (new ones prefixed by >>):
+> >=20
+> > =C2=A0=C2=A0 ld: arch/x86/kernel/cpu/cacheinfo.o: in function `__cache_=
+amd_cpumap_setup':
+> > =C2=A0=C2=A0 arch/x86/kernel/cpu/cacheinfo.c:890: undefined reference t=
+o `cpu_llc_shared_map'
+> > > > ld: arch/x86/kernel/cpu/cacheinfo.c:895: undefined reference to `cp=
+u_llc_shared_map'
+>=20
+> Seems like somewhere we need stubs for UP builds for those cache related =
+functions.
+>=20
 
-This change adds the basic support for Broadcom's ARM64 based
-Broadband SoC BCM63146. The initial support includes a bare-bone DTS
-for dual core ARM A53 with a ARM PL011 uart. Linux kernel image can be
-build with the ARM64 defconfig
+I think I finally figured out what's going on here.
 
+cpu_llc_shared_map is always declared with DECLARE_PER_CPU_READ_MOSTLY, but=
+ defined in
+arch/x86/kernel/smpboot.c which only builds on CONFIG_SMP=3Dy.
 
-William Zhang (3):
-  dt-bindings: arm64: Add BCM63146 SoC
-  arm64: dts: Add DTS files for bcmbca SoC BCM63146
-  MAINTAINERS: Add BCM63146 to bcmbca arch entry
+cpu_llc_shared_map is accessed in a for_each_cpu loop:
+for_each_cpu(i, cpu_llc_shared_mask(cpu))
 
- .../bindings/arm/bcm/brcm,bcmbca.yaml         |   7 ++
- MAINTAINERS                                   |   1 +
- arch/arm64/boot/dts/broadcom/bcmbca/Makefile  |   3 +-
- .../boot/dts/broadcom/bcmbca/bcm63146.dtsi    | 110 ++++++++++++++++++
- .../boot/dts/broadcom/bcmbca/bcm963146.dts    |  30 +++++
- 5 files changed, 150 insertions(+), 1 deletion(-)
- create mode 100644 arch/arm64/boot/dts/broadcom/bcmbca/bcm63146.dtsi
- create mode 100644 arch/arm64/boot/dts/broadcom/bcmbca/bcm963146.dts
+The old (wrong) UP implementation would ignore the mask, so cpu_llc_shared_=
+map access was optimised
+out and the linker would never see that symbol.
 
--- 
-2.36.1
+Adding a stub for the two inline functions in arch/x86/include/smp.h won't =
+be sufficient I'm afraid.
+But I think we can safely make the following assumptions (nobody complained=
+ before):
+ * anything using cpumask_first_zero(), cpumask_next_zero(), and for_each_c=
+pu_not() was expecting an
+   empty mask on UP builds,
+ * anything else would have expected a filled mask on UP builds.
 
+I'll think about how to identify all the possible cases, but may not be abl=
+e to spend a lot of time
+on this in the two coming weeks. Any suggestions, or alternative solutions,=
+ are of course welcome.
 
---000000000000a00b1105e0f37d15
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-TltlrAeBKRJ1M9O/DY5v7L1Yrs//7XIRg/d2ZPAOSGBQzFYjYTFWwNBiR1s1zP0m2y56DPbS5gwj
-fqAN/I4PJHIvTh3zUgHXNKadYoYRiPHXfaTWO9UhzysOpQIDAQABo4IB2zCCAdcwDgYDVR0PAQH/
-BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9i
-YWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUF
-BzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAy
-MDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv
-YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRw
-Oi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAlBgNV
-HREEHjAcgRp3aWxsaWFtLnpoYW5nQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAf
-BgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUohM5GmNlGWe5wpzDxzIy
-+EgzbRswDQYJKoZIhvcNAQELBQADggEBACKu9JSQAYTlmC+JTniO/C/UcXGonATI/muBjWTxtkHc
-abZtz0uwzzrRrpV+mbHLGVFFeRbXSLvcEzqHp8VomXifEZlfsE9LajSehzaqhd+np+tmUPz1RlI/
-ibZ7vW+1VF18lfoL+wHs2H0fsG6JfoqZldEWYXASXnUrs0iTLgXxvwaQj69cSMuzfFm1X5kWqWCP
-W0KkR8025J0L5L4yXfkSO6psD/k4VcTsMJHLN4RfMuaXIT6EM0cNO6h3GypyTuPf1N1X+F6WQPKb
-1u+rvdML63P9fX7e7mwwGt5klRnf8aK2VU7mIdYCcrFHaKDTW3fkG6kIgrE1wWSgiZYL400xggJt
-MIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYD
-VQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw28eX6TfvsbNfu
-SIMwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINdBLcEpjvSMjTTAQXBpgf3kF2F8
-LYOESoxTWvjHj/dNMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIy
-MDYwODE4MDExMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
-CWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFl
-AwQCATANBgkqhkiG9w0BAQEFAASCAQDYE5T2WArAcerJeLWJ6R7hKTUyafqgVSfM/Me2VKddA7F1
-sJhaEsN8hC4Qm8DDxpda5NVkqTPROg0iqNrakfkyjcIa8Tq6ZDPeTGSbOTvOezXdDh2bx8Qqdx4g
-IZWuGwSAA/NYC5J8cLdUAerwY4ajY/b7Xgr9365Fpsujbkl1FqnyV1nUbHMbw+kA8HQLZ7xFTMx1
-+AXoYX5+F5doO3B9xvbk27HIYjTqv10RitOcJLCG0hjv5IkLqfppSES7ISiGP9C2lFd7FIR5YdR3
-QKqKgsqGapJxbqSN2BcbY93ycyo+C5gWB9KIOCVY3zclMZw/KStbtKnsGMnvtgyaSHU5
---000000000000a00b1105e0f37d15--
+Best,
+Sander
