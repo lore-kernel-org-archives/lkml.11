@@ -2,111 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B67D9C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18CBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232724AbiFHEyz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 00:54:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60706 "EHLO
+        id S231950AbiFHEzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 00:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233445AbiFHEyM (ORCPT
+        with ESMTP id S232559AbiFHEyx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 00:54:12 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6665E26C0D9;
-        Tue,  7 Jun 2022 18:26:37 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LHqJv1XQ4z1KH3V;
-        Wed,  8 Jun 2022 09:24:47 +0800 (CST)
-Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 8 Jun 2022 09:26:35 +0800
-Received: from [10.174.178.120] (10.174.178.120) by
- dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 8 Jun 2022 09:26:33 +0800
-Message-ID: <a820f287-e879-6183-a917-6a577b6160ab@huawei.com>
-Date:   Wed, 8 Jun 2022 09:26:33 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-From:   mawupeng <mawupeng1@huawei.com>
-Subject: Re: [PATCH v3 4/6] mm: Demote warning message in vmemmap_verify() to
- debug level
-To:     <david@redhat.com>, <corbet@lwn.net>, <will@kernel.org>,
-        <ardb@kernel.org>, <catalin.marinas@arm.com>
-CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>,
-        <dvhart@infradead.org>, <andy@infradead.org>, <rppt@kernel.org>,
-        <akpm@linux-foundation.org>, <paul.walmsley@sifive.com>,
-        <palmer@dabbelt.com>, <aou@eecs.berkeley.edu>,
-        <paulmck@kernel.org>, <keescook@chromium.org>,
-        <songmuchun@bytedance.com>, <rdunlap@infradead.org>,
-        <damien.lemoal@opensource.wdc.com>, <swboyd@chromium.org>,
-        <wei.liu@kernel.org>, <robin.murphy@arm.com>,
-        <anshuman.khandual@arm.com>, <thunder.leizhen@huawei.com>,
-        <wangkefeng.wang@huawei.com>, <gpiccoli@igalia.com>,
-        <chenhuacai@kernel.org>, <geert@linux-m68k.org>,
-        <vijayb@linux.microsoft.com>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-efi@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>,
-        <linux-mm@kvack.org>, <linux-riscv@lists.infradead.org>,
-        <mawupeng1@huawei.com>
-References: <20220607093805.1354256-1-mawupeng1@huawei.com>
- <20220607093805.1354256-5-mawupeng1@huawei.com>
- <b1975f44-2552-a03c-bb6f-1452f1fd99c0@redhat.com>
-In-Reply-To: <b1975f44-2552-a03c-bb6f-1452f1fd99c0@redhat.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.120]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500014.china.huawei.com (7.185.36.153)
-X-CFilter-Loop: Reflected
+        Wed, 8 Jun 2022 00:54:53 -0400
+X-Greylist: delayed 601 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 18:27:47 PDT
+Received: from smtp.ruc.edu.cn (m177126.mail.qiye.163.com [123.58.177.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BD0AFACE;
+        Tue,  7 Jun 2022 18:27:46 -0700 (PDT)
+Received: from localhost.localdomain (unknown [202.112.113.212])
+        by smtp.ruc.edu.cn (Hmail) with ESMTPSA id 58E35800A3;
+        Wed,  8 Jun 2022 09:09:04 +0800 (CST)
+From:   Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Jongpil Jung <jongpil19.jung@samsung.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/1] iio:proximity:sx9360: Fix hardware gain read/write
+Date:   Wed,  8 Jun 2022 09:08:57 +0800
+Message-Id: <20220608010857.1720-1-xiaohuizhang@ruc.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
+        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWRpNHRpWTUgdTU1PQk1DGh
+        5CVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSUtDTk1VS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OBw6Kio*OT0zLRchIzAaDUM8
+        SiMwCTxVSlVKTU5PTU5LTk9PQkJKVTMWGhIXVQMSGhQTDhIBExoVHDsJDhhVHh8OVRgVRVlXWRIL
+        WUFZSUtJVUpKSVVKSkhVSUpJWVdZCAFZQU9IQ0s3Bg++
+X-HM-Tid: 0a8140dba1f02c20kusn58e35800a3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Similar to the handling of read/write in commit 108e4d4de2b5
+("iio:proximity:sx9324: Fix hardware gain read/write"), we thought
+a patch might be needed here as well.
 
+There are four possible gain values according to 'sx9360_gain_vals[]':
 
-在 2022/6/7 20:25, David Hildenbrand 写道:
-> On 07.06.22 11:38, Wupeng Ma wrote:
->> From: Ma Wupeng <mawupeng1@huawei.com>
->>
->> For a system only have limited mirrored memory or some numa node without
->> mirrored memory, the per node vmemmap page_structs prefer to allocate
->> memory from mirrored region, which will lead to vmemmap_verify() in
->> vmemmap_populate_basepages() report lots of warning message.
->>
->> This patch demote the "potential offnode page_structs" warning messages
->> to debug level to avoid a very long print during bootup.
->>
->> Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
->> ---
->>   mm/sparse-vmemmap.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
->> index f4fa61dbbee3..78debdb89eb1 100644
->> --- a/mm/sparse-vmemmap.c
->> +++ b/mm/sparse-vmemmap.c
->> @@ -528,7 +528,7 @@ void __meminit vmemmap_verify(pte_t *pte, int node,
->>   	int actual_node = early_pfn_to_nid(pfn);
->>   
->>   	if (node_distance(actual_node, node) > LOCAL_DISTANCE)
->> -		pr_warn("[%lx-%lx] potential offnode page_structs\n",
->> +		pr_debug("[%lx-%lx] potential offnode page_structs\n",
->>   			start, end - 1);
->>   }
->>   
-> 
-> This will possibly hide it in environments where this might indeed
-> indicate performance issues.
-> 
-> What about a pr_warn_once()?
-> 
+	1, 2, 4, and 8
 
-Sure.
+The values are off by one when writing and reading the register. The
+bits should be set according to this equation:
 
-This will works. We can certainly use a pr_warn_once().
+	ilog2(<gain>) + 1
+
+so that a gain of 8 is 0x4 in the register field and a gain of 4 is 0x3
+in the register field, etc. Note that a gain of 0 is reserved per the
+datasheet. The default gain (SX9360_REG_PROX_CTRL0_GAIN_1) is also
+wrong. It should be 0x1 << 3, i.e. 0x8, not 0x80 which is setting the
+reserved bit 7.
+
+Fix this all up to properly handle the hardware gain and return errors
+for invalid settings.
+
+Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+---
+ drivers/iio/proximity/sx9360.c | 26 +++++++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/proximity/sx9360.c b/drivers/iio/proximity/sx9360.c
+index 3ebb30c8a4f6..3dbcc9f584cf 100644
+--- a/drivers/iio/proximity/sx9360.c
++++ b/drivers/iio/proximity/sx9360.c
+@@ -64,7 +64,10 @@
+ #define SX9360_REG_PROX_CTRL0_PHR	0x40
+ #define SX9360_REG_PROX_CTRL0_PHM	0x41
+ #define SX9360_REG_PROX_CTRL0_GAIN_MASK	GENMASK(5, 3)
+-#define SX9360_REG_PROX_CTRL0_GAIN_1		0x80
++#define SX9324_REG_PROX_CTRL0_GAIN_SHIFT	3
++#define SX9324_REG_PROX_CTRL0_GAIN_RSVD	0x0
++#define SX9324_REG_PROX_CTRL0_GAIN_1	0x1
++#define SX9324_REG_PROX_CTRL0_GAIN_8	0x4
+ #define SX9360_REG_PROX_CTRL0_RAWFILT_MASK	GENMASK(2, 0)
+ #define SX9360_REG_PROX_CTRL0_RAWFILT_1P50	0x01
+ #define SX9360_REG_PROX_CTRL1		0x42
+@@ -288,7 +291,14 @@ static int sx9360_read_gain(struct sx_common_data *data,
+ 	if (ret)
+ 		return ret;
+ 
+-	*val = 1 << FIELD_GET(SX9360_REG_PROX_CTRL0_GAIN_MASK, regval);
++	regval = FIELD_GET(SX9360_REG_PROX_CTRL0_GAIN_MASK, regval);
++	if (regval)
++		regval--;
++	else if (regval == SX9360_REG_PROX_CTRL0_GAIN_RSVD ||
++		 regval > SX9360_REG_PROX_CTRL0_GAIN_8)
++		return -EINVAL;
++
++	*val = 1 << regval;
+ 
+ 	return IIO_VAL_INT;
+ }
+@@ -630,8 +640,12 @@ static int sx9360_write_gain(struct sx_common_data *data,
+ 	unsigned int gain, reg;
+ 	int ret;
+ 
+-	gain = ilog2(val);
+ 	reg = SX9360_REG_PROX_CTRL0_PHR + chan->channel;
++
++	gain = ilog2(val) + 1;
++	if (val <= 0 || gain > SX9360_REG_PROX_CTRL0_GAIN_8)
++		return -EINVAL;
++
+ 	gain = FIELD_PREP(SX9360_REG_PROX_CTRL0_GAIN_MASK, gain);
+ 
+ 	mutex_lock(&data->mutex);
+@@ -681,9 +695,11 @@ static const struct sx_common_reg_default sx9360_default_regs[] = {
+ 	{ SX9360_REG_AFE_PARAM1_PHM, SX9360_REG_AFE_PARAM1_AGAIN_PHM_6PF |
+ 		SX9360_REG_AFE_PARAM1_FREQ_83_33HZ },
+ 
+-	{ SX9360_REG_PROX_CTRL0_PHR, SX9360_REG_PROX_CTRL0_GAIN_1 |
++	{ SX9360_REG_PROX_CTRL0_PHR,
++		SX9360_REG_PROX_CTRL0_GAIN_1 << SX9360_REG_PROX_CTRL0_GAIN_SHIFT |
+ 		SX9360_REG_PROX_CTRL0_RAWFILT_1P50 },
+-	{ SX9360_REG_PROX_CTRL0_PHM, SX9360_REG_PROX_CTRL0_GAIN_1 |
++	{ SX9360_REG_PROX_CTRL0_PHM,
++		SX9360_REG_PROX_CTRL0_GAIN_1 << SX9360_REG_PROX_CTRL0_GAIN_SHIFT |
+ 		SX9360_REG_PROX_CTRL0_RAWFILT_1P50 },
+ 	{ SX9360_REG_PROX_CTRL1, SX9360_REG_PROX_CTRL1_AVGNEG_THRESH_16K },
+ 	{ SX9360_REG_PROX_CTRL2, SX9360_REG_PROX_CTRL2_AVGDEB_2SAMPLES |
+-- 
+2.17.1
+
