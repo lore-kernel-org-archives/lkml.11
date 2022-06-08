@@ -2,116 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D395C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92FCCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:49:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235854AbiFHCsR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59704 "EHLO
+        id S229689AbiFHCsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447787AbiFHCoF (ORCPT
+        with ESMTP id S1354025AbiFHCgH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:44:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB23D26855B;
-        Tue,  7 Jun 2022 12:21:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4359B60A54;
-        Tue,  7 Jun 2022 19:21:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C633C385A2;
-        Tue,  7 Jun 2022 19:21:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629702;
-        bh=5eZbs3RUyx8krHHab6EXWvD9mRyJfw/nCvHv1W7UiA4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FnixDBPe+KhUQBj054s3qDlfByDfVFkS8nBjri+a5tY70AgOV7Zv6lGjYKBXMq04u
-         PV+PS+3iytTHvxXYC0Xxo786zU/CNem8Re7Y7gDa4ObRhJ4FDb7MV8N/zeb5fzoR6R
-         HpbhXFUAMbL0r8VRrD4THUhyFHJTsa6dIrqZsPKU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.18 786/879] selftests/landlock: Test landlock_create_ruleset(2) argument check ordering
-Date:   Tue,  7 Jun 2022 19:05:04 +0200
-Message-Id: <20220607165025.682786588@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 22:36:07 -0400
+Received: from mail.enpas.org (zhong.enpas.org [IPv6:2a03:4000:2:537::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C99EE13F928;
+        Tue,  7 Jun 2022 17:15:46 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        by mail.enpas.org (Postfix) with ESMTPSA id AD247FFB6C;
+        Wed,  8 Jun 2022 00:15:44 +0000 (UTC)
+Date:   Wed, 8 Jun 2022 02:15:37 +0200
+From:   Max Staudt <max@enpas.org>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 00/13] can: slcan: extend supported features
+Message-ID: <20220608021537.04c45cf9.max@enpas.org>
+In-Reply-To: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
+References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
-
-commit 6533d0c3a86ee1cc74ff37ac92ca597deb87015c upstream.
-
-Add inval_create_ruleset_arguments, extension of
-inval_create_ruleset_flags, to also check error ordering for
-landlock_create_ruleset(2).
-
-This is similar to the previous commit checking landlock_add_rule(2).
-
-Test coverage for security/landlock is 94.4% of 504 lines accorging to
-gcc/gcov-11.
-
-Link: https://lore.kernel.org/r/20220506160820.524344-11-mic@digikod.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- tools/testing/selftests/landlock/base_test.c |   21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
-
---- a/tools/testing/selftests/landlock/base_test.c
-+++ b/tools/testing/selftests/landlock/base_test.c
-@@ -97,14 +97,17 @@ TEST(abi_version)
- 	ASSERT_EQ(EINVAL, errno);
- }
- 
--TEST(inval_create_ruleset_flags)
-+/* Tests ordering of syscall argument checks. */
-+TEST(create_ruleset_checks_ordering)
- {
- 	const int last_flag = LANDLOCK_CREATE_RULESET_VERSION;
- 	const int invalid_flag = last_flag << 1;
-+	int ruleset_fd;
- 	const struct landlock_ruleset_attr ruleset_attr = {
- 		.handled_access_fs = LANDLOCK_ACCESS_FS_READ_FILE,
- 	};
- 
-+	/* Checks priority for invalid flags. */
- 	ASSERT_EQ(-1, landlock_create_ruleset(NULL, 0, invalid_flag));
- 	ASSERT_EQ(EINVAL, errno);
- 
-@@ -119,6 +122,22 @@ TEST(inval_create_ruleset_flags)
- 		  landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr),
- 					  invalid_flag));
- 	ASSERT_EQ(EINVAL, errno);
-+
-+	/* Checks too big ruleset_attr size. */
-+	ASSERT_EQ(-1, landlock_create_ruleset(&ruleset_attr, -1, 0));
-+	ASSERT_EQ(E2BIG, errno);
-+
-+	/* Checks too small ruleset_attr size. */
-+	ASSERT_EQ(-1, landlock_create_ruleset(&ruleset_attr, 0, 0));
-+	ASSERT_EQ(EINVAL, errno);
-+	ASSERT_EQ(-1, landlock_create_ruleset(&ruleset_attr, 1, 0));
-+	ASSERT_EQ(EINVAL, errno);
-+
-+	/* Checks valid call. */
-+	ruleset_fd =
-+		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
-+	ASSERT_LE(0, ruleset_fd);
-+	ASSERT_EQ(0, close(ruleset_fd));
- }
- 
- /* Tests ordering of syscall argument checks. */
+Dario, thank you so much for working on slcan!
 
 
+To speed up the slcan cleanup, may I suggest looking at can327?
+
+It started as a modification of slcan, and over the past few months,
+it has gone through several review rounds in upstreaming. In fact, a
+*ton* of things pointed out during reviews would apply 1:1 to slcan.
+
+What's more, there's legacy stuff that's no longer needed. No
+SLCAN_MAGIC, no slcan_devs, ... it's all gone in can327. May I suggest
+you have a look at it and bring slcan's boilerplate in line with it?
+
+It's certainly not perfect (7 patch series and counting, and that's
+just the public ones), but I'm sure that looking at the two drivers
+side-by-side could serve as a good starting point, to avoid
+re-reviewing the same things all over again.
+
+
+The current out-of-tree version can be found here (the repo name is
+still the old one, elmcan), where I occasionally push changes before
+bundling them up into an upstreaming patch. If a specific line seems
+strange to you, "git blame" on this repo is likely to dig up a helpful
+commit message, explaining the choice:
+
+  https://github.com/norly/elmcan
+  https://git.enpas.org/?p=elmcan.git
+
+
+Max
