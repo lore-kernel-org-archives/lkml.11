@@ -2,171 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A971CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 18:17:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89EDACCA482
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 18:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236123AbiFHSRZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 14:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33274 "EHLO
+        id S236236AbiFHSRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 14:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234901AbiFHSOr (ORCPT
+        with ESMTP id S234219AbiFHSQx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 14:14:47 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3711A2BD3
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:14:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654712086; x=1686248086;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zoVhbVSww6vgXA0XEhlME76soUKAgYb99ZfQdPe51Ys=;
-  b=Hs0DOlwNGZnQigsVEKcTeGmOu3VGhoe8/RtWYEtTiegiK2PQg0/fmud3
-   qDJWzZVOtGFqztR8zPI6urOHhK4Jech+ie/0TIeOQm/mTF+r2rb/D8yPD
-   ZlHfyyQePkCZBw8IcgvqCHI2tvtVa2KmAtLmv/TuL2sSm/e73cyCSp1b7
-   mlkmfzFk0FnbIoWRe8KenEvjcgUvD4MAHoO+EN9ihE3LkT+KmVIWD4ZEb
-   kSoUA0YWbFXb7Zy50AAcDqUTyy5a/oIDSdLp0CMZzd+K9ZzqKin/5CRtb
-   E62K/3fUC3O3BXB5ps2s1lyM0AgAiFC6vRFudwHtJXMncXU47uxEMwfOV
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="341092827"
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="341092827"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 11:14:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="555520428"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 08 Jun 2022 11:14:43 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nz0CY-000Esz-NX;
-        Wed, 08 Jun 2022 18:14:42 +0000
-Date:   Thu, 9 Jun 2022 02:14:35 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: drivers/net/wireless/ath/ath10k/htt.h:1677:2: warning: field  within
- 'struct htt_tx_fetch_ind' is less aligned than 'union
- htt_tx_fetch_ind::(anonymous at
- drivers/net/wireless/ath/ath10k/htt.h:1677:2)' and is usually due to 'struct
- htt_tx_fetch_ind' being...
-Message-ID: <202206090102.3HEgdeVW-lkp@intel.com>
+        Wed, 8 Jun 2022 14:16:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0AE79E0C1
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:16:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654712209;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=puhUcvLRx9zat7PF7KwdoaGeUx8bqAUgfHHvV+ON4tg=;
+        b=bWy6leFf7ZNYRqMnXkt+79tueNdCvBx9E9WZi1ISZXI8sSt/RtUIEuuMPUx4oZm+1rlacJ
+        eDoit+RnIAib8C3mHtnn1rrvAbJ8v88gGqHt/TWXsIuBPASXIhrLsb8K6wtftd+fSU3v9b
+        eSZYn4vH2FIkcbJdz2EuhlIv5e5zqR8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-400-fMFaPEQmNa6fs8BCIm9aTg-1; Wed, 08 Jun 2022 14:16:46 -0400
+X-MC-Unique: fMFaPEQmNa6fs8BCIm9aTg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A325A185A7A4;
+        Wed,  8 Jun 2022 18:16:45 +0000 (UTC)
+Received: from [10.18.17.215] (dhcp-17-215.bos.redhat.com [10.18.17.215])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F9DF2026D64;
+        Wed,  8 Jun 2022 18:16:45 +0000 (UTC)
+Message-ID: <506eaa3d-be84-c51e-3252-2979847054fe@redhat.com>
+Date:   Wed, 8 Jun 2022 14:16:45 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v6 3/3] blk-cgroup: Optimize blkcg_rstat_flush()
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     Tejun Heo <tj@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ming Lei <ming.lei@redhat.com>
+References: <20220602192020.166940-1-longman@redhat.com>
+ <20220602192020.166940-4-longman@redhat.com>
+ <20220608165732.GB19399@blackbody.suse.cz>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <20220608165732.GB19399@blackbody.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kees,
+On 6/8/22 12:57, Michal Koutný wrote:
+> Hello.
+>
+> On Thu, Jun 02, 2022 at 03:20:20PM -0400, Waiman Long <longman@redhat.com> wrote:
+>> As it is likely that not all the percpu blkg_iostat_set's has been
+>> updated since the last flush, those stale blkg_iostat_set's don't need
+>> to be flushed in this case.
+> Yes, there's no point to flush stats for idle devices if there can be
+> many of them. Good idea.
+>
+>> +static struct llist_node *fetch_delete_blkcg_llist(struct llist_head *lhead)
+>> +{
+>> +	return xchg(&lhead->first, &llist_last);
+>> +}
+>> +
+>> +static struct llist_node *fetch_delete_lnode_next(struct llist_node *lnode)
+>> +{
+>> +	struct llist_node *next = READ_ONCE(lnode->next);
+>> +	struct blkcg_gq *blkg = llist_entry(lnode, struct blkg_iostat_set,
+>> +					    lnode)->blkg;
+>> +
+>> +	WRITE_ONCE(lnode->next, NULL);
+>> +	percpu_ref_put(&blkg->refcnt);
+>> +	return next;
+>> +}
+> Idea/just asking: would it make sense to generalize this into llist.c
+> (this is basically llist_del_first() + llist_del_all() with a sentinel)?
+> For the sake of reusability.
 
-FYI, the error/warning still remains.
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   9886142c7a2226439c1e3f7d9b69f9c7094c3ef6
-commit: fa7845cfd53f3b1d3f60efa55db89805595bc045 treewide: Replace open-coded flex arrays in unions
-date:   8 months ago
-config: arm-randconfig-c002-20220607 (https://download.01.org/0day-ci/archive/20220609/202206090102.3HEgdeVW-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b92436efcb7813fc481b30f2593a4907568d917a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=fa7845cfd53f3b1d3f60efa55db89805595bc045
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout fa7845cfd53f3b1d3f60efa55db89805595bc045
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/mtd/spi-nor/ drivers/net/wireless/ath/ath10k/ drivers/nfc/nfcmrvl/ fs/quota/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/net/wireless/ath/ath10k/mac.c:8:
-   In file included from drivers/net/wireless/ath/ath10k/mac.h:11:
-   In file included from drivers/net/wireless/ath/ath10k/core.h:18:
-   drivers/net/wireless/ath/ath10k/htt.h:721:34: warning: field prefix within 'struct htt_rx_indication' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           struct htt_rx_indication_prefix prefix;
-                                           ^
-   drivers/net/wireless/ath/ath10k/htt.h:742:34: warning: field prefix within 'struct htt_rx_indication_hl' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication_hl' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           struct htt_rx_indication_prefix prefix;
-                                           ^
->> drivers/net/wireless/ath/ath10k/htt.h:1677:2: warning: field  within 'struct htt_tx_fetch_ind' is less aligned than 'union htt_tx_fetch_ind::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1677:2)' and is usually due to 'struct htt_tx_fetch_ind' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           union {
-           ^
-   drivers/net/wireless/ath/ath10k/htt.h:1815:2: warning: field  within 'struct htt_resp' is less aligned than 'union htt_resp::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1815:2)' and is usually due to 'struct htt_resp' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           union {
-           ^
-   drivers/net/wireless/ath/ath10k/mac.c:5942:22: warning: parameter 'changed_flags' set but not used [-Wunused-but-set-parameter]
-                                       unsigned int changed_flags,
-                                                    ^
-   5 warnings generated.
---
-   In file included from drivers/net/wireless/ath/ath10k/debug.c:14:
-   In file included from drivers/net/wireless/ath/ath10k/core.h:18:
-   drivers/net/wireless/ath/ath10k/htt.h:721:34: warning: field prefix within 'struct htt_rx_indication' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           struct htt_rx_indication_prefix prefix;
-                                           ^
-   drivers/net/wireless/ath/ath10k/htt.h:742:34: warning: field prefix within 'struct htt_rx_indication_hl' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication_hl' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           struct htt_rx_indication_prefix prefix;
-                                           ^
->> drivers/net/wireless/ath/ath10k/htt.h:1677:2: warning: field  within 'struct htt_tx_fetch_ind' is less aligned than 'union htt_tx_fetch_ind::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1677:2)' and is usually due to 'struct htt_tx_fetch_ind' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           union {
-           ^
-   drivers/net/wireless/ath/ath10k/htt.h:1815:2: warning: field  within 'struct htt_resp' is less aligned than 'union htt_resp::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1815:2)' and is usually due to 'struct htt_resp' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           union {
-           ^
-   4 warnings generated.
---
-   In file included from drivers/net/wireless/ath/ath10k/ce.c:8:
-   In file included from drivers/net/wireless/ath/ath10k/hif.h:11:
-   In file included from drivers/net/wireless/ath/ath10k/core.h:18:
-   drivers/net/wireless/ath/ath10k/htt.h:721:34: warning: field prefix within 'struct htt_rx_indication' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           struct htt_rx_indication_prefix prefix;
-                                           ^
-   drivers/net/wireless/ath/ath10k/htt.h:742:34: warning: field prefix within 'struct htt_rx_indication_hl' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication_hl' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           struct htt_rx_indication_prefix prefix;
-                                           ^
->> drivers/net/wireless/ath/ath10k/htt.h:1677:2: warning: field  within 'struct htt_tx_fetch_ind' is less aligned than 'union htt_tx_fetch_ind::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1677:2)' and is usually due to 'struct htt_tx_fetch_ind' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           union {
-           ^
-   drivers/net/wireless/ath/ath10k/htt.h:1815:2: warning: field  within 'struct htt_resp' is less aligned than 'union htt_resp::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1815:2)' and is usually due to 'struct htt_resp' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           union {
-           ^
-   drivers/net/wireless/ath/ath10k/ce.c:127:1: warning: unused function 'ath10k_get_ring_byte' [-Wunused-function]
-   ath10k_get_ring_byte(unsigned int offset,
-   ^
-   drivers/net/wireless/ath/ath10k/ce.c:212:1: warning: unused function 'ath10k_ce_shadow_dest_ring_write_index_set' [-Wunused-function]
-   ath10k_ce_shadow_dest_ring_write_index_set(struct ath10k *ar,
-   ^
-   drivers/net/wireless/ath/ath10k/ce.c:449:20: warning: unused function 'ath10k_ce_error_intr_enable' [-Wunused-function]
-   static inline void ath10k_ce_error_intr_enable(struct ath10k *ar,
-                      ^
-   7 warnings generated.
+I have thought about that. It can be done as a follow-up patch to add a 
+sentinel version into llist and use that instead. Of course, I can also 
+update this patchset to include that.
 
 
-vim +1677 drivers/net/wireless/ath/ath10k/htt.h
+>
+>> +#define blkcg_llist_for_each_entry_safe(pos, node, nxt)			\
+>> +	for (; (node != &llist_last) &&					\
+>> +	       (pos = llist_entry(node, struct blkg_iostat_set, lnode),	\
+>> +		nxt = fetch_delete_lnode_next(node), true);		\
+>> +		node = nxt)
+>> +
+> It's good hygiene to parenthesize the args.
+I am aware of that. I will certainly add that if it is a generic macro 
+that can have many users.
 
-  1670	
-  1671	struct htt_tx_fetch_ind {
-  1672		u8 pad0;
-  1673		__le16 fetch_seq_num;
-  1674		__le32 token;
-  1675		__le16 num_resp_ids;
-  1676		__le16 num_records;
-> 1677		union {
-  1678			/* ath10k_htt_get_tx_fetch_ind_resp_ids() */
-  1679			DECLARE_FLEX_ARRAY(__le32, resp_ids);
-  1680			DECLARE_FLEX_ARRAY(struct htt_tx_fetch_record, records);
-  1681		};
-  1682	} __packed;
-  1683	
+>
+>> @@ -2011,9 +2092,16 @@ void blk_cgroup_bio_start(struct bio *bio)
+>>   	}
+>>   	bis->cur.ios[rwd]++;
+>>   
+>> +	if (!READ_ONCE(bis->lnode.next)) {
+>> +		struct llist_head *lhead = per_cpu_ptr(blkcg->lhead, cpu);
+>> +
+>> +		llist_add(&bis->lnode, lhead);
+>> +		percpu_ref_get(&bis->blkg->refcnt);
+>> +	}
+>> +
+> When a blkg's cgroup is rmdir'd, what happens with the lhead list?
+> We have cgroup_rstat_exit() in css_free_rwork_fn() that ultimately flushes rstats.
+> init_and_link_css however adds reference form blkcg->css to cgroup->css.
+> The blkcg->css would be (transitively) pinned by the lhead list and
+> hence would prevent the final flush (when refs drop to zero). Seems like
+> a cyclic dependency.
+>
+> Luckily, there's also per-subsys flushing in css_release which could be
+> moved after rmdir (offlining) but before last ref is gone:
+>
+> diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+> index adb820e98f24..d830e6a8fb3b 100644
+> --- a/kernel/cgroup/cgroup.c
+> +++ b/kernel/cgroup/cgroup.c
+> @@ -5165,11 +5165,6 @@ static void css_release_work_fn(struct work_struct *work)
+>
+>          if (ss) {
+>                  /* css release path */
+> -               if (!list_empty(&css->rstat_css_node)) {
+> -                       cgroup_rstat_flush(cgrp);
+> -                       list_del_rcu(&css->rstat_css_node);
+> -               }
+> -
+>                  cgroup_idr_replace(&ss->css_idr, NULL, css->id);
+>                  if (ss->css_released)
+>                          ss->css_released(css);
+> @@ -5279,6 +5274,11 @@ static void offline_css(struct cgroup_subsys_state *css)
+>          css->flags &= ~CSS_ONLINE;
+>          RCU_INIT_POINTER(css->cgroup->subsys[ss->id], NULL);
+>
+> +       if (!list_empty(&css->rstat_css_node)) {
+> +               cgroup_rstat_flush(css->cgrp);
+> +               list_del_rcu(&css->rstat_css_node);
+> +       }
+> +
+>          wake_up_all(&css->cgroup->offline_waitq);
+>   }
+>
+> (not tested)
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Good point.
+
+Your change may not be enough since there could be update after the 
+flush which will pin the blkg and hence blkcg.  I guess one possible 
+solution may be to abandon the llist and revert back to list iteration 
+when offline. I need to think a bit more about that.
+
+>
+>
+>>   	u64_stats_update_end_irqrestore(&bis->sync, flags);
+>>   	if (cgroup_subsys_on_dfl(io_cgrp_subsys))
+>> -		cgroup_rstat_updated(bio->bi_blkg->blkcg->css.cgroup, cpu);
+>> +		cgroup_rstat_updated(blkcg->css.cgroup, cpu);
+> Maybe bundle the lhead list maintenace with cgroup_rstat_updated() under
+> cgroup_subsys_on_dfl()? The stats can be read on v1 anyway.
+
+I don't quite understand here. The change is not specific to v1 or v2. 
+What do you mean by the stat is readable on v1?
+
+Cheers,
+Longman
+
