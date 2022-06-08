@@ -2,88 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30312C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF95C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244417AbiFHPiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52306 "EHLO
+        id S244296AbiFHPiw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:38:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244236AbiFHPh6 (ORCPT
+        with ESMTP id S244875AbiFHPin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:37:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E6271ABA60
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:37:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654702676;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=jxVgCrklswpT7+9OTco4k57y0oY6Ie2TEna3/n27Pv0=;
-        b=aIGGIjYZkN9kR5RuoYuWJNDnkvxRX4jFLBhMLTIyKjvaCN++REJtSqUiNWEbx52bKZBqfP
-        /x/WQUvfQmNXRls/GANZQR23AqMO0Pfy73PnsipgjNeGDEH+73/HpxrUPLy6OFU/x/mwvb
-        zNclVr4AhJIyLbzbEdRwtif+9nhalV0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-447-1N_yXshMOpCapjyVnQXy2A-1; Wed, 08 Jun 2022 11:37:51 -0400
-X-MC-Unique: 1N_yXshMOpCapjyVnQXy2A-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A7D3A801755;
-        Wed,  8 Jun 2022 15:37:49 +0000 (UTC)
-Received: from sirius.home.kraxel.org (unknown [10.39.192.40])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5F2111121314;
-        Wed,  8 Jun 2022 15:37:49 +0000 (UTC)
-Received: by sirius.home.kraxel.org (Postfix, from userid 1000)
-        id 6FB4818003AA; Wed,  8 Jun 2022 17:37:47 +0200 (CEST)
-Date:   Wed, 8 Jun 2022 17:37:47 +0200
-From:   Gerd Hoffmann <kraxel@redhat.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        airlied@linux.ie, daniel@ffwll.ch, kvm@vger.kernel.org,
-        Laszlo Ersek <lersek@redhat.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] vfio/pci: Remove console drivers
-Message-ID: <20220608153747.5d5h446vzbteqzwb@sirius.home.kraxel.org>
-References: <165453797543.3592816.6381793341352595461.stgit@omen>
- <165453800875.3592816.12944011921352366695.stgit@omen>
- <0c45183c-cdb8-4578-e346-bc4855be038f@suse.de>
+        Wed, 8 Jun 2022 11:38:43 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC3DDD2
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:38:38 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VFmlR9q_1654702713;
+Received: from 30.15.195.212(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0VFmlR9q_1654702713)
+          by smtp.aliyun-inc.com;
+          Wed, 08 Jun 2022 23:38:34 +0800
+Message-ID: <e34de686-4e85-bde1-9f3c-9bbc86b38627@linux.alibaba.com>
+Date:   Wed, 8 Jun 2022 23:38:33 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0c45183c-cdb8-4578-e346-bc4855be038f@suse.de>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [PATCH v3 1/2] sched: Fix the check of nr_running at queue
+ wakelist
+Content-Language: en-US
+To:     Valentin Schneider <vschneid@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>
+Cc:     linux-kernel@vger.kernel.org
+References: <20220602040645.275555-1-dtcccc@linux.alibaba.com>
+ <20220602040645.275555-2-dtcccc@linux.alibaba.com>
+ <xhsmh4k0y84ah.mognet@vschneid.remote.csb>
+From:   Tianchen Ding <dtcccc@linux.alibaba.com>
+In-Reply-To: <xhsmh4k0y84ah.mognet@vschneid.remote.csb>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  Hi,
+On 2022/6/6 18:39, Valentin Schneider wrote:
+> On 02/06/22 12:06, Tianchen Ding wrote:
+>> The commit 2ebb17717550 ("sched/core: Offload wakee task activation if it
+>> the wakee is descheduling") checked nr_running <= 1 to avoid task
+>> stacking when WF_ON_CPU. Consider the order of p->on_rq and p->on_cpu,
+>> if we have WF_ON_CPU here then we must have !p->on_rq, so the deactivate
+>> has happened, thus the task being alone on the rq implies nr_running==0.
+>> Change the check to !cpu_rq(cpu)->nr_running to fix it.
+>>
+> 
+> I'd flesh this out a bit as in the below:
+> 
+> """
+> The commit 2ebb17717550 ("sched/core: Offload wakee task activation if it
+> the wakee is descheduling") checked rq->nr_running <= 1 to avoid task
+> stacking when WF_ON_CPU.
+> 
+> Per the ordering of writes to p->on_rq and p->on_cpu, observing p->on_cpu
+> (WF_ON_CPU) in ttwu_queue_cond() implies !p->on_rq, IOW p has gone through
+> the deactivate_task() in __schedule(), thus p has been accounted out of
+> rq->nr_running. As such, the task being the only runnable task on the rq
+> implies reading rq->nr_running == 0 at that point.
+> 
+> Change the check to !cpu_rq(cpu)->nr_running.
+> """
+> 
+> Also, this is lacking some mention of tests that have been run to verify
+> this isn't causing a regression. This does however make sense to me, so as
+> long as nothing gets hurt by the change:
+> 
 
-> You shouldn't have to copy any of the implementation of the aperture
-> helpers.
+I've run the complete test cases of unixbench and it seems no regression (which 
+is expected). The result of Pipe-based Context Switching seems to be stable when 
+I simply type "./Run" to run all cases. :-/
 
-That comes from the aperture helpers being part of drm ...
+On x86 (Intel Xeon Platinum 8269CY):
+   schbench -m 2 -t 8
 
-> For patch 2, the most trivial workaround is to instanciate struct drm_driver
-> here and set the name field to 'vdev->vdev.ops->name'. In the longer term,
-> the aperture helpers will be moved out of DRM and into a more prominent
-> location. That workaround will be cleaned up then.
+     Latency percentiles (usec)             before         after
+         50.0000th:                            8             8
+         75.0000th:                           10            10
+         90.0000th:                           11            11
+         95.0000th:                           12            12
+         *99.0000th:                          15            13
+         99.5000th:                           16            15
+         99.9000th:                           20            18
 
-... but if the long-term plan is to clean that up properly anyway I
-don't see the point in bike shedding too much on the details of some
-temporary solution.
+   Unixbench with full threads (104)
+                                             before        after
+     Dhrystone 2 using register variables  3004715731    3011862938   0.24%
+     Double-Precision Whetstone              616685.8      617119.3   0.07%
+     Execl Throughput                         27162.1       27667.3   1.86%
+     File Copy 1024 bufsize 2000 maxblocks   786221.4      785871.4  -0.04%
+     File Copy 256 bufsize 500 maxblocks     209420.6      210113.6   0.33%
+     File Copy 4096 bufsize 8000 maxblocks  2340458.8     2328862.2  -0.50%
+     Pipe Throughput                      145249195.6   145535622.8   0.20%
+     Pipe-based Context Switching           3195567.7     3221686.4   0.82%
+     Process Creation                        100597.6      101347.1   0.75%
+     Shell Scripts (1 concurrent)            120943.6      120193.5  -0.62%
+     Shell Scripts (8 concurrent)             17289.7       17233.4  -0.33%
+     System Call Overhead                   5286847.6     5300604.8   0.26%
 
-> Alternatively, drm_aperture_remove_conflicting_pci_framebuffers() could be
-> changed to accept the name string as second argument, but that's quite a bit
-> of churn within the DRM code.
+On arm64 (Ampere Altra):
+   schbench -m 2 -t 8
 
-Also pointless churn because you'll have the very same churn again when
-moving the aperture helpers out of drm.
+     Latency percentiles (usec)             before         after
+         50.0000th:                           14            14
+         75.0000th:                           19            19
+         90.0000th:                           22            22
+         95.0000th:                           23            23
+         *99.0000th:                          23            24
+         99.5000th:                           23            24
+         99.9000th:                           28            28
 
-take care,
-  Gerd
+   Unixbench with full threads (80)
+                                             before        after
+     Dhrystone 2 using register variables  3536273441    3536194249   0.00%
+     Double-Precision Whetstone              629406.9      629383.6   0.00%
+     Execl Throughput                         66419.3       65920.5  -0.75%
+     File Copy 1024 bufsize 2000 maxblocks  1060185.2     1063722.8   0.33%
+     File Copy 256 bufsize 500 maxblocks     317495.4      322684.5   1.63%
+     File Copy 4096 bufsize 8000 maxblocks  2350706.8     2348285.3  -0.10%
+     Pipe Throughput                      133516462.4   133542875.3   0.02%
+     Pipe-based Context Switching           3227430.6     3215356.1  -0.37%
+     Process Creation                        108958.3      108520.5  -0.40%
+     Shell Scripts (1 concurrent)            122821.4      122636.3  -0.15%
+     Shell Scripts (8 concurrent)             17456.5       17462.1   0.03%
+     System Call Overhead                   4430303.2     4429998.9  -0.01%
 
+> Reviewed-by: Valentin Schneider <vschneid@redhat.com>
+> 
+
+Thanks. Will update my patch and send v4 soon.
