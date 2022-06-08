@@ -2,93 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CCCFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF11C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236037AbiFHKFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39908 "EHLO
+        id S236651AbiFHKEP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236353AbiFHKDm (ORCPT
+        with ESMTP id S235796AbiFHKCo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:03:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52E717EF4C;
-        Wed,  8 Jun 2022 02:47:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 8 Jun 2022 06:02:44 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A1746B7F7
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:42:12 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id EC54721C27;
+        Wed,  8 Jun 2022 09:42:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1654681330; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=puXxdi25LGyGFvq7a5BBHZdXBRmygOr9wt6hwW7GUSM=;
+        b=mZ1+pzLPt9vUFms9Lo0TES46yTN5Mor7jcVMIBPcuEn80D8I1fjsBEU2IwZRP2uGS3eopy
+        2vIxCAYzquUhdGJ/+Waqs6vdYvAOAxYQUSjGjixJb/2IlRibMVQVngCGOdQT0dNXJaQb5K
+        IHvj4973xaktjYUDwCItVHAtKJAC5hE=
+Received: from suse.cz (unknown [10.100.208.146])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 431BC619C5;
-        Wed,  8 Jun 2022 09:47:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 744BFC34116;
-        Wed,  8 Jun 2022 09:47:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654681625;
-        bh=Jorqtsqre+knYuVCMZVf8w1e+vT3PzQP8A6uE9eOcy0=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=ia1uTWThiKJKkirUArp2zjiq0kobE6RwKYmZKHNbgpZTPkbpYUQFUslRjCXTXLG0f
-         eLCLHr+lnNY1BNrvwwu5fIG9tNAMo8hpMI+5TKr8C4hiZ0i1bSYC4aWGa+TburuZ9m
-         /X6c6Fe0X8a6lrrrUeIDg6iS+Sx6bpm8O0o3ISgHIKIsyIvVdH1wWi+mzkzbl0UDSq
-         IAOzeCx9822Y5RQzLC31P8AQCUNazUqO17x5xchx1vq8Fj/nQ0TL9sy0475Q0r2FJK
-         D7kx9cY06b0+oUhjePOojzbIG/EcgkGt9QJOticwFliv/HyIl9EBX39Nrpzyimqb76
-         jIfjRBOdvUgtg==
-Date:   Wed, 8 Jun 2022 11:47:00 +0200 (CEST)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Douglas Anderson <dianders@chromium.org>
-cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        swboyd@chromium.org, mka@chromium.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: HID: i2c-hid: elan: Introduce bindings
- for Elan eKTH6915
-In-Reply-To: <20220523142257.v2.1.Iedc61f9ef220a89af6a031200a7850a27a440134@changeid>
-Message-ID: <nycvar.YFH.7.76.2206081146490.10851@cbobk.fhfr.pm>
-References: <20220523142257.v2.1.Iedc61f9ef220a89af6a031200a7850a27a440134@changeid>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        by relay2.suse.de (Postfix) with ESMTPS id CFBEB2C141;
+        Wed,  8 Jun 2022 09:42:10 +0000 (UTC)
+Date:   Wed, 8 Jun 2022 11:42:07 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] random: remove rng_has_arch_random()
+Message-ID: <YqBu73Buvna+hROC@alley>
+References: <20220608083459.1179854-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220608083459.1179854-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 23 May 2022, Douglas Anderson wrote:
-
-> Like many i2c-hid touchscreen controllers, the Elan eKTH6915
-> controller has a reset gpio. For the Goodix GT7375P touchscreen the
-> decision was to add a new binding rather than trying to add a new GPIO
-> to the existing i2c-hid binding. We'll follow the lead and do it here,
-> too.
+On Wed 2022-06-08 10:34:59, Jason A. Donenfeld wrote:
+> With arch randomness being used by every distro and enabled in
+> defconfigs, the distinction between rng_has_arch_random() and
+> rng_is_initialized() is now rather small. In fact, the places where they
+> differ are now places where paranoid users and system builders really
+> don't want arch randomness to be used, in which case we should respect
+> that choice, or places where arch randomness is known to be broken, in
+> which case that choice is all the more important. So this commit just
+> removes the function and its one user.
 > 
-> SIDE NOTE: the Elan eKTH6915 is a touchscreen _controller_ that's
-> included as a part on some touchscreens. The reset line isn't truly
-> necessary for the functioning of the touchscreen, so it's possible
-> that some designs won't have it hooked up and will just guarantee the
-> power sequencing requirements with RLC circuits. Thus, we'll mark the
-> reset gpio as optional.
-> 
-> Note that if the reset GPIO isn't used there's actually no true need
-> to use the "elan,ekth6915" compatible instead of the "hid-over-i2c" on
-> Linux. However:
-> - Officially using just "hid-over-i2c" for this device violates the
->   existing "hid-over-i2c" bindings. The bindings say that you're not
->   supposed to use "post-power-on-delay-ms" without specifying a more
->   specific compatible. Currently the Linux driver doesn't enforce
->   this, but it violates the bindings to just use
->   "hid-over-i2c". ...and if you're going to add a more specific
->   compatible anyway, might as well do it right.
-> - Using this compatible means we don't need to specify
->   "hid-descr-addr" since it's inferred from the compatible.
-> - Using this compatible means that the regulator names match the names
->   on the Elan datasheet (vcc33 / vccio) vs the generic hid-over-i2c
->   (vdd / vddl).
-> 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> Cc: Petr Mladek <pmladek@suse.com>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-Now queued in hid.git, thanks.
+I am not expert on random numbers but it sounds reasonable.
+Anyway, the change in vsprintf.c looks good:
 
--- 
-Jiri Kosina
-SUSE Labs
+Reviewed-by: Petr Mladek <pmladek@suse.com>    # vsprintf.c
 
+Best Regards,
+Petr
