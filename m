@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 139FEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D080CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243534AbiFHQ4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
+        id S237394AbiFHQ5E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:57:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245377AbiFHQxg (ORCPT
+        with ESMTP id S1343805AbiFHQyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:53:36 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92CE332342B
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:51:32 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id u12so42644352eja.8
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 09:51:32 -0700 (PDT)
+        Wed, 8 Jun 2022 12:54:12 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B90A3C8810
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:51:35 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id u12so42644593eja.8
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 09:51:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nVyQpX+Yrz3qKt1Nh+jQPIqCDb+sgmjzafkew5xQQck=;
-        b=EbNQlONLEw3flg+v8r7QTPOnPPJjDqYyauDId67C9ZpX0EjOci3Gm9WoX8m07QgFXN
-         w6dKi3IzR1XQuYf2Ngd5xSWYWTQKGu2/d+F0HuUqgO73NK+niApZ3J3YwyiUwkZaYgNP
-         Ayn5woO2pi3yTGTM3n7s+1CmRBu6gpNEm1oWE=
+        bh=5gQL+PBjKdFRbWGXqCko2W4l6SNrb34I5/OqJqVjfAw=;
+        b=orhsCgXR3r1BmMaiVIHHK+Nuz2maix0QOkibEQtFMj7JRULKjQ2TmKUbzmsWiWQ11f
+         21BhhDfSH1+my9PR/jKLCnwF+cYEaKsxeuQPyHr8hcVFqIz/2yMZeN3Es3ervF0Xs9D8
+         1LHxBlsXpg62lhf6PtkztHFd5z6kFnbmH94kM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nVyQpX+Yrz3qKt1Nh+jQPIqCDb+sgmjzafkew5xQQck=;
-        b=wcF6HZr78cwzlsoYjmpr3BI41s4oi7y2PkKgg/hErBow4eQVYN26fVo11C5ooxeYQq
-         olfpGWyDjkomF9qZtJ+Ubi40J29xBJ5Zk85i4NTPU0x5SNK6QTfT0Ugu38BjG8tK+mG3
-         7lWQGx6CdvTNjWtz2YfxGjajInJL5J4epgGifTc7clEyZJs+Y12TVmeKnKAqFXZfYzGI
-         QMGnpF5+NhmASZiZKKqggHoGVqj6BzSVih6L1eJiI/5I6LloZiqSf8M3nEpKOAj2oAra
-         7Q1Q2ArSHgtfwS26YxoCkhaSfH/s6p9PRwNx4s7A2uAv0zI+R9tM8xPSCk2WpDh8Sdgz
-         hkxg==
-X-Gm-Message-State: AOAM531MTGMBn2CNpvAJc0kJk5QjPUIoD4QC/0aG16fxOw9DF9NK984F
-        zjHrnlQRIy7VB48LXZcFHqT0x0cEgIQflQ==
-X-Google-Smtp-Source: ABdhPJzS0WTgsEmT6o/MldkA0xQDsGfnejkAvMiaThfxPCarALGnI2DSJejx4G0f9/wXxWeUN+pCuw==
-X-Received: by 2002:a17:907:6e13:b0:711:c722:4fc with SMTP id sd19-20020a1709076e1300b00711c72204fcmr18014645ejc.253.1654707090839;
-        Wed, 08 Jun 2022 09:51:30 -0700 (PDT)
+        bh=5gQL+PBjKdFRbWGXqCko2W4l6SNrb34I5/OqJqVjfAw=;
+        b=HI3xPEtlB4mv2cZ62u3ijdfQIRu5MBnCwpEV6VQsAFbNMEbWVIdOiAkRTRh/23u2si
+         jRAvDi4xohakD5nQEcPEkHdLDJuAhjoyCcyg4KbTsdunxCbXMesWqhSe9DFGiFftyCz/
+         62RNT4u1N1uAtfMfm6Q/5pFV0OG5C3xJv8MgAXfRf60KR/DVxv63hfpIMICu4SwwQP9N
+         z4KZIvm4or8BEUFhf6PvtqCJfeMPPTXEaTLvt7QwdPmecSvqBYtSLXuo6c0zPnIIuoby
+         rUoYHiWGx60d4+XWO3hgW+463wfMBSlRY78hV9OlJ3PraknytqWYQs9QluBJkZsOcgPj
+         actQ==
+X-Gm-Message-State: AOAM530H+WSoueHunZJU5F4oeXlLSeL1yrfn9nq+5YuyDQ07mYXSbSMf
+        pzniwQZX+113QqGxcXl/Yp0AnwAdXmxf2g==
+X-Google-Smtp-Source: ABdhPJwEWkc0e/hCdf76+OadjT0fOD3L09SgEiHoy/8QJAHWuIGxJFru4kyaMAMn9hO2kGZVrovw3Q==
+X-Received: by 2002:a17:907:6d9b:b0:711:d26b:f5ba with SMTP id sb27-20020a1709076d9b00b00711d26bf5bamr13923231ejc.135.1654707093625;
+        Wed, 08 Jun 2022 09:51:33 -0700 (PDT)
 Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id c22-20020a17090654d600b0070587f81bcfsm9569071ejp.19.2022.06.08.09.51.29
+        by smtp.gmail.com with ESMTPSA id c22-20020a17090654d600b0070587f81bcfsm9569071ejp.19.2022.06.08.09.51.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 09:51:30 -0700 (PDT)
+        Wed, 08 Jun 2022 09:51:33 -0700 (PDT)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
@@ -57,9 +57,9 @@ Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 05/13] can: slcan: simplify the device de-allocation
-Date:   Wed,  8 Jun 2022 18:51:08 +0200
-Message-Id: <20220608165116.1575390-6-dario.binacchi@amarulasolutions.com>
+Subject: [PATCH v2 07/13] can: slcan: set bitrate by CAN device driver API
+Date:   Wed,  8 Jun 2022 18:51:10 +0200
+Message-Id: <20220608165116.1575390-8-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220608165116.1575390-1-dario.binacchi@amarulasolutions.com>
 References: <20220608165116.1575390-1-dario.binacchi@amarulasolutions.com>
@@ -69,53 +69,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since slcan_devs array contains the addresses of the created devices, I
-think it is more natural to use its address to remove it from the list.
-It is not necessary to store the index of the array that points to the
-device in the driver's private data.
+It allows to set the bitrate via ip tool, as it happens for the other
+CAN device drivers. It still remains possible to set the bitrate via
+slcand or slcan_attach utilities. In case the ip tool is used, the
+driver will send the serial command to the adapter.
 
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+
 ---
 
-(no changes since v1)
+Changes in v2:
+- Use the CAN framework support for setting fixed bit rates.
 
- drivers/net/can/slcan.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/net/can/slcan.c | 39 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 38 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index 929cb55e08af..cf05c30b8da5 100644
+index cab0a2a8c84c..8561bcee81ba 100644
 --- a/drivers/net/can/slcan.c
 +++ b/drivers/net/can/slcan.c
-@@ -432,11 +432,17 @@ static int slc_open(struct net_device *dev)
- 
- static void slc_dealloc(struct slcan *sl)
- {
--	int i = sl->dev->base_addr;
-+	unsigned int i;
- 
--	free_candev(sl->dev);
--	if (slcan_devs)
--		slcan_devs[i] = NULL;
-+	for (i = 0; i < maxdev; i++) {
-+		if (sl->dev == slcan_devs[i]) {
-+			free_candev(sl->dev);
-+			slcan_devs[i] = NULL;
-+			return;
-+		}
-+	}
+@@ -439,6 +439,7 @@ static int slc_close(struct net_device *dev)
+ 	netif_stop_queue(dev);
+ 	close_candev(dev);
+ 	sl->can.state = CAN_STATE_STOPPED;
++	sl->can.bittiming.bitrate = 0;
+ 	sl->rcount   = 0;
+ 	sl->xleft    = 0;
+ 	spin_unlock_bh(&sl->lock);
+@@ -460,7 +461,9 @@ static int slc_open(struct net_device *dev)
+ 	 * can.bittiming.bitrate is 0, causing open_candev() to fail.
+ 	 * So let's set to a fake value.
+ 	 */
+-	sl->can.bittiming.bitrate = -1;
++	if (sl->can.bittiming.bitrate == 0)
++		sl->can.bittiming.bitrate = -1UL;
 +
-+	pr_err("slcan: can't free %s resources\n",  sl->dev->name);
+ 	err = open_candev(dev);
+ 	if (err) {
+ 		netdev_err(dev, "failed to open can device\n");
+@@ -558,6 +561,37 @@ static void slc_sync(void)
+ 	}
  }
  
- static int slcan_change_mtu(struct net_device *dev, int new_mtu)
-@@ -533,7 +539,6 @@ static struct slcan *slc_alloc(void)
- 
- 	snprintf(dev->name, sizeof(dev->name), "slcan%d", i);
- 	dev->netdev_ops = &slc_netdev_ops;
--	dev->base_addr  = i;
- 	sl = netdev_priv(dev);
- 
++static const u32 slcan_bitrate_const[] = {
++	10000, 20000, 50000, 100000, 125000,
++	250000, 500000, 800000, 1000000
++};
++
++static int slc_do_set_bittiming(struct net_device *dev)
++{
++	struct slcan *sl = netdev_priv(dev);
++	unsigned char cmd[SLC_MTU];
++	int s, err;
++
++	for (s = 0; s < ARRAY_SIZE(slcan_bitrate_const); s++) {
++		if (sl->can.bittiming.bitrate == slcan_bitrate_const[s])
++			break;
++	}
++
++	/* The CAN framework has already validate the bitrate value,
++	 * so we can avoid to check if `s' has been properly set.
++	 */
++
++	snprintf(cmd, sizeof(cmd), "C\rS%d\r", s);
++	err = slcan_transmit_cmd(sl, cmd);
++	if (err) {
++		sl->can.bittiming.bitrate = 0;
++		netdev_err(sl->dev,
++			   "failed to send bitrate command 'C\\rS%d\\r'\n", s);
++	}
++
++	return err;
++}
++
+ /* Find a free SLCAN channel, and link in this `tty' line. */
+ static struct slcan *slc_alloc(void)
+ {
+@@ -587,6 +621,9 @@ static struct slcan *slc_alloc(void)
  	/* Initialize channel control data */
+ 	sl->magic = SLCAN_MAGIC;
+ 	sl->dev	= dev;
++	sl->can.bitrate_const = slcan_bitrate_const;
++	sl->can.bitrate_const_cnt = ARRAY_SIZE(slcan_bitrate_const);
++	sl->can.do_set_bittiming = slc_do_set_bittiming;
+ 	spin_lock_init(&sl->lock);
+ 	INIT_WORK(&sl->tx_work, slcan_transmit);
+ 	init_waitqueue_head(&sl->xcmd_wait);
 -- 
 2.32.0
 
