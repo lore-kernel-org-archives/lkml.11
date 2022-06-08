@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD77FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 22:45:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF5E1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 22:45:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236910AbiFHWpd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 18:45:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
+        id S236760AbiFHWpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 18:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236535AbiFHWp1 (ORCPT
+        with ESMTP id S235167AbiFHWp0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 18:45:27 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F7CB250E59
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 15:45:26 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id 206-20020a6218d7000000b0051893ee2888so9595908pfy.16
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 15:45:26 -0700 (PDT)
+        Wed, 8 Jun 2022 18:45:26 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C210D2509FD
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 15:45:24 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id q12-20020a056a0002ac00b0051bb2e66c91so11327999pfs.4
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 15:45:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=odWASXlloDi60XXoBrlzFlyWsT1m7IgRF4ZHI9ifXSg=;
-        b=SUBOFoIgf90Txf8Nz+beruQQ7cYKBDZ5tsjoZOqGJh1/Q0jvMXGaS4vpnsOIZz8VxJ
-         gT9pu9+SO4R/r0xtsSmlALrI7SKB3YIKrPA/PT49ihp/SB8mXiw4pCO92iJronG3x2FU
-         qljTMX9E1Jalg3CUVPFGkprKD5TqpksWSKRWBGet0tVbkz5tqrleQ+KXrAxwmKIiCzrr
-         MiVGCGdQxQk60JH9TNj6SvKUJVdhGDW1S5puZEPmpp3LyRFfmkwOHd5pRVlnbT9GR3+D
-         fRyzFzZaFM935hzwsARKC/2VdWqPSK2DjuXovvDDsuGgcUulyEa5Y7qXFpAw2QZCpJ/Q
-         Y4Og==
+        bh=07WAXpZ8zYpETI7/zyyHdKHPCaSNMRWniZB3LhzmunI=;
+        b=n4NpljONrmuO8XHC+yhagdRPrE5285G0RXSdHOSmWK2IHXg+uKRc1NX6IIL/9Q1e0/
+         eTT6gu0GDKeYFly+9WUIonxDDVnEks+0WK1ZiP1Xe5FKWYEQL0a+QiUwko0jFEN+FUqi
+         RxXYrO+ek5Xy5E1Acdas5hE3AVgFWNpyQdkiR0iYTpN+WsakKEpLe5hGm7M3tD29encC
+         M2TiOsC//mdu1Zu+Yz73MTylWILBWz/pFxNFdU2uztePhtcVYS8YUveNPsjJhkZWlZei
+         ue+KYpaS98++kLbDqfV2Bb1R503KAe1cBuIifnEsXRxG/4LQZn/IqC1hSoggxEhgKHYi
+         UmlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=odWASXlloDi60XXoBrlzFlyWsT1m7IgRF4ZHI9ifXSg=;
-        b=uOyTmKzVXNoxYv4VXuo3XyuONFNJCLvoX9J98733sFIbEL7PGh58eEIw3nwMT4H0DZ
-         QzctbNBMh3fK3JixborYUnVlRUWSRt8Rnxm/2iykquzboEtWyRu0OlODzn8pKBgC0hmd
-         Zpogto10cB5zyyyWtCUz1Mm/TxQYDexVQAOWTPbHgkVkX80X6zUL2WgHbpFaSs+STgT8
-         3uggU4S1o1t0xn1NeX3UrqAoAPugrDrR5AWA68jV+Z895+NTzRNWp88KzSOh+JGIla3U
-         xOp0wewTG0SkQUhK3Hto9hmVAqn3MDz+tR7AuZNKTMuGA3hGnhAp89gaPXUCw4w/rsp4
-         hHKw==
-X-Gm-Message-State: AOAM5334I26LoB9X6C2BO9/befmQXr2sBMm5lKW0QxYMI/Wt9k3whwfo
-        7Jvca6n3N/O+UQpnXEXsb3nAwejnOWM=
-X-Google-Smtp-Source: ABdhPJzQaZNHK6o2xZ0ojhjwS0+2ugBghUe638w9x98DctunKZduCh6I6F4eCzJI9Q7xdgEtohDcq89DJSw=
+        bh=07WAXpZ8zYpETI7/zyyHdKHPCaSNMRWniZB3LhzmunI=;
+        b=xnWiLRjk+1Y3XFkS+1WFZCje2AqAZ65VhrPJ4hBxa0AycNM3YaSiXddvZV3hWqVuR1
+         sA9VK4n6rXYv8YVf0BG/ezmiyhuifewYDaGDdXUWPuYcJK0d7+OcLMaGd+zzSDG6hqCi
+         EsYoAUMm6j/8m0ecscCur8z0GGEzJKqyfRj0b2mgSPsZvFz2xzC7gsuDXQ9L++17wilh
+         PMwslpzUf9u6Z5/ol3Bb+zdp01NjlEa7Npu7+LiKkTix2SnVthju0ELvw5B0lbjNRhQq
+         f9ezUJLZ76ADuBh4/JLOwpg7ZMx/2jf7iv/QGFvEwVkQ94Zc4neMYFmvP4crZuTRzj/n
+         VEiA==
+X-Gm-Message-State: AOAM532cC9S4gkgJ67vInAF8kH/SSZlj7V0j61/rVM6xmcZ6/VANy2PM
+        5iv5Z9dJLNP/gOg2Mx078fhOX8FwduA=
+X-Google-Smtp-Source: ABdhPJzZ220X3EGihTs7WYUjhmHEiiWcHk7yzkTbOsrf6kQXHP5XoP3qtOADSq73ynOjcLGTWIuOgNfwIKc=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a63:594c:0:b0:3fd:9b8b:863d with SMTP id
- j12-20020a63594c000000b003fd9b8b863dmr18078697pgm.250.1654728325763; Wed, 08
- Jun 2022 15:45:25 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:8ce:b0:510:9298:ea26 with SMTP id
+ s14-20020a056a0008ce00b005109298ea26mr36502407pfu.55.1654728324255; Wed, 08
+ Jun 2022 15:45:24 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  8 Jun 2022 22:45:15 +0000
+Date:   Wed,  8 Jun 2022 22:45:14 +0000
 In-Reply-To: <20220608224516.3788274-1-seanjc@google.com>
-Message-Id: <20220608224516.3788274-5-seanjc@google.com>
+Message-Id: <20220608224516.3788274-4-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220608224516.3788274-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH 4/5] KVM: selftests: Use exception fixup for #UD/#GP Hyper-V
- MSR/hcall tests
+Subject: [PATCH 3/5] KVM: selftests: Mostly fix comically broken Hyper-V
+ Features test
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -68,208 +68,467 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use exception fixup to verify VMCALL/RDMSR/WRMSR fault as expected in the
-Hyper-V Features test.
+Explicitly do all setup at every stage of the Hyper-V Features test, e.g.
+set the MSR/hypercall, enable capabilities, etc...  Now that the VM is
+recreated for every stage, values that are written into the VM's address
+space, i.e. shared with the guest, are reset between sub-tests, as are
+any capabilities, etc...
 
-No functional change intended.
+Fix the hypercall params as well, which were broken in the same rework.
+The "hcall" struct/pointer needs to point at the hcall_params object, not
+the set of hypercall pages.
 
+The goofs were hidden by the test's dubious behavior of using '0' to
+signal "done", i.e. the MSR test ran exactly one sub-test, and the
+hypercall test was a gigantic nop.
+
+Fixes: 6c1186430a80 ("KVM: selftests: Avoid KVM_SET_CPUID2 after KVM_RUN in hyperv_features test")
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/x86_64/hyperv_features.c    | 117 +++++-------------
- 1 file changed, 33 insertions(+), 84 deletions(-)
+ .../selftests/kvm/x86_64/hyperv_features.c    | 146 ++++++++++--------
+ 1 file changed, 83 insertions(+), 63 deletions(-)
 
 diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_features.c b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-index 5ec40422d72a..0de13ab38e8b 100644
+index 3d0df079496b..5ec40422d72a 100644
 --- a/tools/testing/selftests/kvm/x86_64/hyperv_features.c
 +++ b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-@@ -15,75 +15,20 @@
- 
- #define LINUX_OS_ID ((u64)0x8100 << 48)
- 
--extern unsigned char rdmsr_start;
--extern unsigned char rdmsr_end;
--
--static u64 do_rdmsr(u32 idx)
--{
--	u32 lo, hi;
--
--	asm volatile("rdmsr_start: rdmsr;"
--		     "rdmsr_end:"
--		     : "=a"(lo), "=c"(hi)
--		     : "c"(idx));
--
--	return (((u64) hi) << 32) | lo;
--}
--
--extern unsigned char wrmsr_start;
--extern unsigned char wrmsr_end;
--
--static void do_wrmsr(u32 idx, u64 val)
--{
--	u32 lo, hi;
--
--	lo = val;
--	hi = val >> 32;
--
--	asm volatile("wrmsr_start: wrmsr;"
--		     "wrmsr_end:"
--		     : : "a"(lo), "c"(idx), "d"(hi));
--}
--
--static int nr_gp;
--static int nr_ud;
--
--static inline u64 hypercall(u64 control, vm_vaddr_t input_address,
--			    vm_vaddr_t output_address)
--{
--	u64 hv_status;
--
--	asm volatile("mov %3, %%r8\n"
--		     "vmcall"
--		     : "=a" (hv_status),
--		       "+c" (control), "+d" (input_address)
--		     :  "r" (output_address)
--		     : "cc", "memory", "r8", "r9", "r10", "r11");
--
--	return hv_status;
--}
--
--static void guest_gp_handler(struct ex_regs *regs)
--{
--	unsigned char *rip = (unsigned char *)regs->rip;
--	bool r, w;
--
--	r = rip == &rdmsr_start;
--	w = rip == &wrmsr_start;
--	GUEST_ASSERT(r || w);
--
--	nr_gp++;
--
--	if (r)
--		regs->rip = (uint64_t)&rdmsr_end;
--	else
--		regs->rip = (uint64_t)&wrmsr_end;
--}
--
--static void guest_ud_handler(struct ex_regs *regs)
--{
--	nr_ud++;
--	regs->rip += 3;
-+static inline uint8_t hypercall(u64 control, vm_vaddr_t input_address,
-+				vm_vaddr_t output_address, uint64_t *hv_status)
-+{
-+	uint8_t vector;
-+
-+	/* Note both the hypercall and the "asm safe" clobber r9-r11. */
-+	asm volatile("mov %[output_address], %%r8\n\t"
-+		     KVM_ASM_SAFE("vmcall")
-+		     : "=a" (*hv_status),
-+		       "+c" (control), "+d" (input_address),
-+		       KVM_ASM_SAFE_OUTPUTS(vector)
-+		     : [output_address] "r"(output_address)
-+		     : "cc", "memory", "r8", KVM_ASM_SAFE_CLOBBERS);
-+	return vector;
- }
- 
- struct msr_data {
-@@ -101,31 +46,33 @@ struct hcall_data {
+@@ -101,52 +101,44 @@ struct hcall_data {
  
  static void guest_msr(struct msr_data *msr)
  {
-+	uint64_t ignored;
-+	uint8_t vector;
+-	int i = 0;
+-
+-	while (msr->idx) {
+-		WRITE_ONCE(nr_gp, 0);
+-		if (!msr->write)
+-			do_rdmsr(msr->idx);
+-		else
+-			do_wrmsr(msr->idx, msr->write_val);
+-
+-		if (msr->available)
+-			GUEST_ASSERT(READ_ONCE(nr_gp) == 0);
+-		else
+-			GUEST_ASSERT(READ_ONCE(nr_gp) == 1);
+-
+-		GUEST_SYNC(i++);
+-	}
+-
++	GUEST_ASSERT(msr->idx);
 +
- 	GUEST_ASSERT(msr->idx);
- 
--	WRITE_ONCE(nr_gp, 0);
- 	if (!msr->write)
--		do_rdmsr(msr->idx);
-+		vector = rdmsr_safe(msr->idx, &ignored);
- 	else
--		do_wrmsr(msr->idx, msr->write_val);
-+		vector = wrmsr_safe(msr->idx, msr->write_val);
- 
- 	if (msr->available)
--		GUEST_ASSERT(READ_ONCE(nr_gp) == 0);
-+		GUEST_ASSERT_2(!vector, msr->idx, vector);
- 	else
--		GUEST_ASSERT(READ_ONCE(nr_gp) == 1);
-+		GUEST_ASSERT_2(vector == GP_VECTOR, msr->idx, vector);
++	WRITE_ONCE(nr_gp, 0);
++	if (!msr->write)
++		do_rdmsr(msr->idx);
++	else
++		do_wrmsr(msr->idx, msr->write_val);
++
++	if (msr->available)
++		GUEST_ASSERT(READ_ONCE(nr_gp) == 0);
++	else
++		GUEST_ASSERT(READ_ONCE(nr_gp) == 1);
  	GUEST_DONE();
  }
  
  static void guest_hcall(vm_vaddr_t pgs_gpa, struct hcall_data *hcall)
  {
+-	int i = 0;
  	u64 res, input, output;
-+	uint8_t vector;
  
- 	GUEST_ASSERT(hcall->control);
- 
++	GUEST_ASSERT(hcall->control);
++
  	wrmsr(HV_X64_MSR_GUEST_OS_ID, LINUX_OS_ID);
  	wrmsr(HV_X64_MSR_HYPERCALL, pgs_gpa);
  
--	nr_ud = 0;
- 	if (!(hcall->control & HV_HYPERCALL_FAST_BIT)) {
- 		input = pgs_gpa;
- 		output = pgs_gpa + 4096;
-@@ -133,12 +80,14 @@ static void guest_hcall(vm_vaddr_t pgs_gpa, struct hcall_data *hcall)
- 		input = output = 0;
+-	while (hcall->control) {
+-		nr_ud = 0;
+-		if (!(hcall->control & HV_HYPERCALL_FAST_BIT)) {
+-			input = pgs_gpa;
+-			output = pgs_gpa + 4096;
+-		} else {
+-			input = output = 0;
+-		}
+-
+-		res = hypercall(hcall->control, input, output);
+-		if (hcall->ud_expected)
+-			GUEST_ASSERT(nr_ud == 1);
+-		else
+-			GUEST_ASSERT(res == hcall->expect);
+-
+-		GUEST_SYNC(i++);
++	nr_ud = 0;
++	if (!(hcall->control & HV_HYPERCALL_FAST_BIT)) {
++		input = pgs_gpa;
++		output = pgs_gpa + 4096;
++	} else {
++		input = output = 0;
  	}
  
--	res = hypercall(hcall->control, input, output);
-+	vector = hypercall(hcall->control, input, output, &res);
- 	if (hcall->ud_expected)
--		GUEST_ASSERT(nr_ud == 1);
-+		GUEST_ASSERT_2(vector == UD_VECTOR, hcall->control, vector);
- 	else
--		GUEST_ASSERT(res == hcall->expect);
-+		GUEST_ASSERT_2(!vector, hcall->control, vector);
- 
-+	GUEST_ASSERT_2(!hcall->ud_expected || res == hcall->expect,
-+			hcall->expect, res);
++	res = hypercall(hcall->control, input, output);
++	if (hcall->ud_expected)
++		GUEST_ASSERT(nr_ud == 1);
++	else
++		GUEST_ASSERT(res == hcall->expect);
++
  	GUEST_DONE();
  }
  
-@@ -190,7 +139,6 @@ static void guest_test_msrs_access(void)
- 
- 		vm_init_descriptor_tables(vm);
- 		vcpu_init_descriptor_tables(vcpu);
--		vm_install_exception_handler(vm, GP_VECTOR, guest_gp_handler);
+@@ -202,6 +194,10 @@ static void guest_test_msrs_access(void)
  
  		run = vcpu->run;
  
-@@ -499,8 +447,9 @@ static void guest_test_msrs_access(void)
++		/* TODO: Make this entire test easier to maintain. */
++		if (stage >= 21)
++			vcpu_enable_cap(vcpu, KVM_CAP_HYPERV_SYNIC2, 0);
++
+ 		switch (stage) {
+ 		case 0:
+ 			/*
+@@ -245,11 +241,13 @@ static void guest_test_msrs_access(void)
+ 			break;
+ 		case 6:
+ 			feat->eax |= HV_MSR_VP_RUNTIME_AVAILABLE;
++			msr->idx = HV_X64_MSR_VP_RUNTIME;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+ 		case 7:
+ 			/* Read only */
++			msr->idx = HV_X64_MSR_VP_RUNTIME;
+ 			msr->write = 1;
+ 			msr->write_val = 1;
+ 			msr->available = 0;
+@@ -262,11 +260,13 @@ static void guest_test_msrs_access(void)
+ 			break;
+ 		case 9:
+ 			feat->eax |= HV_MSR_TIME_REF_COUNT_AVAILABLE;
++			msr->idx = HV_X64_MSR_TIME_REF_COUNT;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+ 		case 10:
+ 			/* Read only */
++			msr->idx = HV_X64_MSR_TIME_REF_COUNT;
+ 			msr->write = 1;
+ 			msr->write_val = 1;
+ 			msr->available = 0;
+@@ -279,11 +279,13 @@ static void guest_test_msrs_access(void)
+ 			break;
+ 		case 12:
+ 			feat->eax |= HV_MSR_VP_INDEX_AVAILABLE;
++			msr->idx = HV_X64_MSR_VP_INDEX;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+ 		case 13:
+ 			/* Read only */
++			msr->idx = HV_X64_MSR_VP_INDEX;
+ 			msr->write = 1;
+ 			msr->write_val = 1;
+ 			msr->available = 0;
+@@ -296,10 +298,12 @@ static void guest_test_msrs_access(void)
+ 			break;
+ 		case 15:
+ 			feat->eax |= HV_MSR_RESET_AVAILABLE;
++			msr->idx = HV_X64_MSR_RESET;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+ 		case 16:
++			msr->idx = HV_X64_MSR_RESET;
+ 			msr->write = 1;
+ 			msr->write_val = 0;
+ 			msr->available = 1;
+@@ -312,10 +316,12 @@ static void guest_test_msrs_access(void)
+ 			break;
+ 		case 18:
+ 			feat->eax |= HV_MSR_REFERENCE_TSC_AVAILABLE;
++			msr->idx = HV_X64_MSR_REFERENCE_TSC;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+ 		case 19:
++			msr->idx = HV_X64_MSR_REFERENCE_TSC;
+ 			msr->write = 1;
+ 			msr->write_val = 0;
+ 			msr->available = 1;
+@@ -331,14 +337,18 @@ static void guest_test_msrs_access(void)
+ 			 * Remains unavailable even with KVM_CAP_HYPERV_SYNIC2
+ 			 * capability enabled and guest visible CPUID bit unset.
+ 			 */
+-			vcpu_enable_cap(vcpu, KVM_CAP_HYPERV_SYNIC2, 0);
++			msr->idx = HV_X64_MSR_EOM;
++			msr->write = 0;
++			msr->available = 0;
+ 			break;
+ 		case 22:
+ 			feat->eax |= HV_MSR_SYNIC_AVAILABLE;
++			msr->idx = HV_X64_MSR_EOM;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+ 		case 23:
++			msr->idx = HV_X64_MSR_EOM;
+ 			msr->write = 1;
+ 			msr->write_val = 0;
+ 			msr->available = 1;
+@@ -351,22 +361,28 @@ static void guest_test_msrs_access(void)
+ 			break;
+ 		case 25:
+ 			feat->eax |= HV_MSR_SYNTIMER_AVAILABLE;
++			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+ 		case 26:
++			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
+ 			msr->write = 1;
+ 			msr->write_val = 0;
+ 			msr->available = 1;
+ 			break;
+ 		case 27:
+ 			/* Direct mode test */
++			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
+ 			msr->write = 1;
+ 			msr->write_val = 1 << 12;
+ 			msr->available = 0;
+ 			break;
+ 		case 28:
+ 			feat->edx |= HV_STIMER_DIRECT_MODE_AVAILABLE;
++			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
++			msr->write = 1;
++			msr->write_val = 1 << 12;
+ 			msr->available = 1;
+ 			break;
+ 
+@@ -377,6 +393,7 @@ static void guest_test_msrs_access(void)
+ 			break;
+ 		case 30:
+ 			feat->eax |= HV_MSR_APIC_ACCESS_AVAILABLE;
++			msr->idx = HV_X64_MSR_EOI;
+ 			msr->write = 1;
+ 			msr->write_val = 1;
+ 			msr->available = 1;
+@@ -389,11 +406,13 @@ static void guest_test_msrs_access(void)
+ 			break;
+ 		case 32:
+ 			feat->eax |= HV_ACCESS_FREQUENCY_MSRS;
++			msr->idx = HV_X64_MSR_TSC_FREQUENCY;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+ 		case 33:
+ 			/* Read only */
++			msr->idx = HV_X64_MSR_TSC_FREQUENCY;
+ 			msr->write = 1;
+ 			msr->write_val = 1;
+ 			msr->available = 0;
+@@ -406,10 +425,12 @@ static void guest_test_msrs_access(void)
+ 			break;
+ 		case 35:
+ 			feat->eax |= HV_ACCESS_REENLIGHTENMENT;
++			msr->idx = HV_X64_MSR_REENLIGHTENMENT_CONTROL;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+ 		case 36:
++			msr->idx = HV_X64_MSR_REENLIGHTENMENT_CONTROL;
+ 			msr->write = 1;
+ 			msr->write_val = 1;
+ 			msr->available = 1;
+@@ -429,10 +450,12 @@ static void guest_test_msrs_access(void)
+ 			break;
+ 		case 39:
+ 			feat->edx |= HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE;
++			msr->idx = HV_X64_MSR_CRASH_P0;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+ 		case 40:
++			msr->idx = HV_X64_MSR_CRASH_P0;
+ 			msr->write = 1;
+ 			msr->write_val = 1;
+ 			msr->available = 1;
+@@ -446,30 +469,28 @@ static void guest_test_msrs_access(void)
+ 		case 42:
+ 			feat->edx |= HV_FEATURE_DEBUG_MSRS_AVAILABLE;
+ 			dbg->eax |= HV_X64_SYNDBG_CAP_ALLOW_KERNEL_DEBUGGING;
++			msr->idx = HV_X64_MSR_SYNDBG_STATUS;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+ 		case 43:
++			msr->idx = HV_X64_MSR_SYNDBG_STATUS;
+ 			msr->write = 1;
+ 			msr->write_val = 0;
+ 			msr->available = 1;
+ 			break;
+ 
+ 		case 44:
+-			/* END */
+-			msr->idx = 0;
+-			break;
++			kvm_vm_free(vm);
++			return;
+ 		}
+ 
+ 		vcpu_set_cpuid(vcpu);
+ 
+ 		memcpy(prev_cpuid, vcpu->cpuid, kvm_cpuid2_size(vcpu->cpuid->nent));
+ 
+-		if (msr->idx)
+-			pr_debug("Stage %d: testing msr: 0x%x for %s\n", stage,
+-				 msr->idx, msr->write ? "write" : "read");
+-		else
+-			pr_debug("Stage %d: finish\n", stage);
++		pr_debug("Stage %d: testing msr: 0x%x for %s\n", stage,
++			 msr->idx, msr->write ? "write" : "read");
+ 
+ 		vcpu_run(vcpu);
+ 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+@@ -477,16 +498,14 @@ static void guest_test_msrs_access(void)
+ 			    run->exit_reason, exit_reason_str(run->exit_reason));
  
  		switch (get_ucall(vcpu, &uc)) {
+-		case UCALL_SYNC:
+-			TEST_ASSERT(uc.args[1] == 0,
+-				    "Unexpected stage: %ld (0 expected)\n",
+-				    uc.args[1]);
+-			break;
  		case UCALL_ABORT:
--			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
--				  __FILE__, uc.args[1]);
-+			TEST_FAIL("%s at %s:%ld, MSR = %lx, vector = %lx",
-+				  (const char *)uc.args[0], __FILE__,
-+				  uc.args[1], uc.args[2], uc.args[3]);
+ 			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
+ 				  __FILE__, uc.args[1]);
  			return;
  		case UCALL_DONE:
- 			break;
-@@ -531,7 +480,6 @@ static void guest_test_hcalls_access(void)
++			break;
++		default:
++			TEST_FAIL("Unhandled ucall: %ld", uc.cmd);
+ 			return;
+ 		}
  
- 		vm_init_descriptor_tables(vm);
- 		vcpu_init_descriptor_tables(vcpu);
--		vm_install_exception_handler(vm, UD_VECTOR, guest_ud_handler);
+@@ -516,11 +535,11 @@ static void guest_test_hcalls_access(void)
  
  		/* Hypercall input/output */
  		hcall_page = vm_vaddr_alloc_pages(vm, 2);
-@@ -672,8 +620,9 @@ static void guest_test_hcalls_access(void)
+-		hcall = addr_gva2hva(vm, hcall_page);
+ 		memset(addr_gva2hva(vm, hcall_page), 0x0, 2 * getpagesize());
+ 
+ 		hcall_params = vm_vaddr_alloc_page(vm);
+ 		memset(addr_gva2hva(vm, hcall_params), 0x0, getpagesize());
++		hcall = addr_gva2hva(vm, hcall_params);
+ 
+ 		vcpu_args_set(vcpu, 2, addr_gva2gpa(vm, hcall_page), hcall_params);
+ 		vcpu_enable_cap(vcpu, KVM_CAP_HYPERV_ENFORCE_CPUID, 1);
+@@ -552,6 +571,7 @@ static void guest_test_hcalls_access(void)
+ 			break;
+ 		case 2:
+ 			feat->ebx |= HV_POST_MESSAGES;
++			hcall->control = HVCALL_POST_MESSAGE;
+ 			hcall->expect = HV_STATUS_INVALID_HYPERCALL_INPUT;
+ 			break;
+ 
+@@ -561,6 +581,7 @@ static void guest_test_hcalls_access(void)
+ 			break;
+ 		case 4:
+ 			feat->ebx |= HV_SIGNAL_EVENTS;
++			hcall->control = HVCALL_SIGNAL_EVENT;
+ 			hcall->expect = HV_STATUS_INVALID_HYPERCALL_INPUT;
+ 			break;
+ 
+@@ -570,10 +591,12 @@ static void guest_test_hcalls_access(void)
+ 			break;
+ 		case 6:
+ 			dbg->eax |= HV_X64_SYNDBG_CAP_ALLOW_KERNEL_DEBUGGING;
++			hcall->control = HVCALL_RESET_DEBUG_SESSION;
+ 			hcall->expect = HV_STATUS_ACCESS_DENIED;
+ 			break;
+ 		case 7:
+ 			feat->ebx |= HV_DEBUGGING;
++			hcall->control = HVCALL_RESET_DEBUG_SESSION;
+ 			hcall->expect = HV_STATUS_OPERATION_DENIED;
+ 			break;
+ 
+@@ -583,6 +606,7 @@ static void guest_test_hcalls_access(void)
+ 			break;
+ 		case 9:
+ 			recomm->eax |= HV_X64_REMOTE_TLB_FLUSH_RECOMMENDED;
++			hcall->control = HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE;
+ 			hcall->expect = HV_STATUS_SUCCESS;
+ 			break;
+ 		case 10:
+@@ -591,6 +615,7 @@ static void guest_test_hcalls_access(void)
+ 			break;
+ 		case 11:
+ 			recomm->eax |= HV_X64_EX_PROCESSOR_MASKS_RECOMMENDED;
++			hcall->control = HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX;
+ 			hcall->expect = HV_STATUS_SUCCESS;
+ 			break;
+ 
+@@ -600,6 +625,7 @@ static void guest_test_hcalls_access(void)
+ 			break;
+ 		case 13:
+ 			recomm->eax |= HV_X64_CLUSTER_IPI_RECOMMENDED;
++			hcall->control = HVCALL_SEND_IPI;
+ 			hcall->expect = HV_STATUS_INVALID_HYPERCALL_INPUT;
+ 			break;
+ 		case 14:
+@@ -613,6 +639,7 @@ static void guest_test_hcalls_access(void)
+ 			hcall->expect = HV_STATUS_ACCESS_DENIED;
+ 			break;
+ 		case 16:
++			hcall->control = HVCALL_NOTIFY_LONG_SPIN_WAIT;
+ 			recomm->ebx = 0xfff;
+ 			hcall->expect = HV_STATUS_SUCCESS;
+ 			break;
+@@ -622,26 +649,21 @@ static void guest_test_hcalls_access(void)
+ 			hcall->ud_expected = true;
+ 			break;
+ 		case 18:
++			hcall->control = HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE | HV_HYPERCALL_FAST_BIT;
+ 			feat->edx |= HV_X64_HYPERCALL_XMM_INPUT_AVAILABLE;
+ 			hcall->ud_expected = false;
+ 			hcall->expect = HV_STATUS_SUCCESS;
+ 			break;
+-
+ 		case 19:
+-			/* END */
+-			hcall->control = 0;
+-			break;
++			kvm_vm_free(vm);
++			return;
+ 		}
+ 
+ 		vcpu_set_cpuid(vcpu);
+ 
+ 		memcpy(prev_cpuid, vcpu->cpuid, kvm_cpuid2_size(vcpu->cpuid->nent));
+ 
+-		if (hcall->control)
+-			pr_debug("Stage %d: testing hcall: 0x%lx\n", stage,
+-				 hcall->control);
+-		else
+-			pr_debug("Stage %d: finish\n", stage);
++		pr_debug("Stage %d: testing hcall: 0x%lx\n", stage, hcall->control);
+ 
+ 		vcpu_run(vcpu);
+ 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+@@ -649,16 +671,14 @@ static void guest_test_hcalls_access(void)
+ 			    run->exit_reason, exit_reason_str(run->exit_reason));
  
  		switch (get_ucall(vcpu, &uc)) {
+-		case UCALL_SYNC:
+-			TEST_ASSERT(uc.args[1] == 0,
+-				    "Unexpected stage: %ld (0 expected)\n",
+-				    uc.args[1]);
+-			break;
  		case UCALL_ABORT:
--			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
--				  __FILE__, uc.args[1]);
-+			TEST_FAIL("%s at %s:%ld, arg1 = %lx, arg2 = %lx",
-+				  (const char *)uc.args[0], __FILE__,
-+				  uc.args[1], uc.args[2], uc.args[3]);
+ 			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
+ 				  __FILE__, uc.args[1]);
  			return;
  		case UCALL_DONE:
- 			break;
++			break;
++		default:
++			TEST_FAIL("Unhandled ucall: %ld", uc.cmd);
+ 			return;
+ 		}
+ 
 -- 
 2.36.1.255.ge46751e96f-goog
 
