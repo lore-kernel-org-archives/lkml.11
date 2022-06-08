@@ -2,270 +2,351 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EE80CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D1D2CCA488
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229995AbiFHIRe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:17:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50000 "EHLO
+        id S231538AbiFHIR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiFHIPh (ORCPT
+        with ESMTP id S231240AbiFHIQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 04:15:37 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577DA25F41D
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:44:34 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id u12so39749754eja.8
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 00:44:34 -0700 (PDT)
+        Wed, 8 Jun 2022 04:16:08 -0400
+Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.111.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A95375E54
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:45:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1654674300;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kdwPkpZzctPvwE/o79T8GkqOfZXSdYfzXOj5EUKMvvU=;
+        b=DiatrHaooWGWT1m+uA5X+DIeOLqp1V8xWdsaDrWF/ERgZkqz8GvamYJloCNEhFGoDHZv+B
+        55RIulDIf2y8KV5sEySoTTR4VaiO1/nDc68PC5GorG0LW+Wod3Hcx+9LubT8/mD2vnlJkW
+        DrWshnc9CMk6C0P0wcDaEJHLBQtaamE=
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com
+ (mail-dbaeur03lp2170.outbound.protection.outlook.com [104.47.51.170]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-28-M-XjCMvVOvWx5iPBgtVZJw-1; Wed, 08 Jun 2022 09:44:59 +0200
+X-MC-Unique: M-XjCMvVOvWx5iPBgtVZJw-1
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nXDXgsNm+qtm8U/lEsq1GGg7RYV8ZZL00ULqVUDm9z/Dr5mgIsiSSWdfPvRM1LuMwbgulWCVm6m1MMnmArpdawtPayFT2d95RSfd3t/PrMy51+Wz3sVxiZK6VRAvp3cHL/w/b4DYVU3qZvpvs2kEWZyeGbh5m7T6wsBxdFiG7bAl0msM5h65oqy0o046gtHK/5pMSiEccly92mvCQqh9dwQSsvRbLEjH/ZJItt4uf4WLwe4pTEwxFhsGfK4rCtPjTqYniNDyUmJN+j0R5uarNJOxa/HNPNYEsTb4f/3Yb9wQvogSCGfTLVaiozRqbjfUuzFbur8n8nTEAg/PS/G+Yg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kdwPkpZzctPvwE/o79T8GkqOfZXSdYfzXOj5EUKMvvU=;
+ b=YG0VyeMdOWMlCGEKhXPyACtoToIHS71jaFTQiH/SLtcEeuSQDKqqhuMwDwBc4Ws3JEkn+ghho5KB2raYzPoON+tkmEaD0X9GBPZvJ/DiyE1NU8BEo9L5zUwfyvFr0retUHXeW79+qPGuBISV7uE8yG3l2ESq8HSKjIyvSVjqzwzv7YK0s3emDB3hrO3oxnrx+OdgMDAX57GAUqxbRUuL0kLiCuB/LgEpHTI31xcaavMAQcGrqqMYC1YDjrsafCMAjLm6CDDjr6rJXhLmknJ4ugZT+V6uqo7pludOE4CW4+xUbN6vQ0DKiKXf8/gsEf6V9HWOIocQuJ//wxhm5/+NxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=N2n4ue6PvN6bYRXZMADyZay+yUMidu99Jpd+YeUrnSA=;
-        b=EN01mXO3gemFA0PVoJChdj4QdHI1gLkxsAGQia81YCD5SnC0p/H3vC0bs/YFKRLsz5
-         TKg1iprCemQ5rTvvNZt2zEpQdA9ubyqYnl0Qc6r1x1+gVapgHIm6AazbUK+d0QjdLSNU
-         ADEtPXitLSnC4xasjZJEvcZnIPs1F9XnfCq2HpWC70Btu7OM/tWTdDHJT/BtCtvZObok
-         oBSNCdmGPQt+a4oBurqbktDCdOUkAB0jwhHhsAzzAdHlrZZdlfW0Zj0YVKTrv+r39Cli
-         DnHFoHJRPgGEG9w3QMMEe+cvibpTIUCEg/43ZN87gA01F6Xlpg3n4TCzvy17V09EYGjj
-         JiUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=N2n4ue6PvN6bYRXZMADyZay+yUMidu99Jpd+YeUrnSA=;
-        b=W8OjbHUKicJ2pEGm+o1s8xiS/XJNHdQ4O4c2/9izhjOa58Fgion3nnbvMa5kEYyyoW
-         59n90LXQu05YPC+dlUfWxlNLk+8EM+UUbSDgfX7NEiqdLoFlai4DQz103hJiNuZBvEhS
-         Nxo5PByzNAjS8229HaEnw3gzGRCpxZqvXLErpQup3mFbzcIRZEi+gEWye37LMQxu4mCW
-         2dCF1IoxpH0N3GtN3/tftSno7egd/4PBdrznEG+QqbhN4Pp6DJIE8WlasT72K26S41Fu
-         tIYuJzeh0nbaHf+uZwein0FC4lX8hJOERUf4o5r04zZGYuPV6bR8XqsqKXOeCZHKMMQK
-         Ezgw==
-X-Gm-Message-State: AOAM531IlflobYJGEZJGJW0Dg5s+HHiElryU0kq082An141BInl2Fzhi
-        r6bt4HrhYtvT2zuKxfGjziuRHQ==
-X-Google-Smtp-Source: ABdhPJxktVGx8ZCyus9xJ9fy5x0fPfD7lcKo9ekfLPVPW5eczfU5qTVPGdJFlmZrt/qJH5NCv2WViQ==
-X-Received: by 2002:a17:907:724c:b0:711:d0bc:2369 with SMTP id ds12-20020a170907724c00b00711d0bc2369mr13248474ejc.23.1654674272867;
-        Wed, 08 Jun 2022 00:44:32 -0700 (PDT)
-Received: from [192.168.0.188] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id cf18-20020a170906b2d200b006ff802baf5dsm8738219ejb.54.2022.06.08.00.44.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 00:44:32 -0700 (PDT)
-Message-ID: <d2a81596-3a70-98e4-c406-36417d36f00b@linaro.org>
-Date:   Wed, 8 Jun 2022 09:44:31 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/4] dt-binding: mfd: Add Richtek RT5120 PMIC support
+ d=mysuse.onmicrosoft.com; s=selector1-mysuse-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kdwPkpZzctPvwE/o79T8GkqOfZXSdYfzXOj5EUKMvvU=;
+ b=Fn9mzReFfSOQvK8ezyk/Uj/Laj1EwxWSyq7VN6p7npfSYBdvg3ynQVTyfqVtvtGCcsHXcTjzzfZf3cwLFfwLzlS6lbJffeR7aq/FEF+xnw4yVBcW06cHT7Pg38koacR9zN7hlazAfcN68U7082f/7vBI5XX7k2wjD9rFkS0a51l14MT8NyvsVhZZkXh22Fc51SwRnt7JSSfd9n8ah923f8WqdI7DW2rTp1gAn3/pjLjja8m21NBDPdtyW+ar/Occ33Sr+uFB7JJ1iKo1vCFe9XXr8FOBHyeh1u7aTwn4vNw5SHbsPhJvp2p3vLs/dR3yJxt4Pfbl4zcNvJixfIHKVg==
+Received: from DB8PR04MB6555.eurprd04.prod.outlook.com (2603:10a6:10:103::20)
+ by HE1PR0401MB2555.eurprd04.prod.outlook.com (2603:10a6:3:84::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Wed, 8 Jun
+ 2022 07:44:57 +0000
+Received: from DB8PR04MB6555.eurprd04.prod.outlook.com
+ ([fe80::80f9:38c4:1d69:7886]) by DB8PR04MB6555.eurprd04.prod.outlook.com
+ ([fe80::80f9:38c4:1d69:7886%6]) with mapi id 15.20.5332.012; Wed, 8 Jun 2022
+ 07:44:56 +0000
+From:   Martin Wilck <martin.wilck@suse.com>
+To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "brian@purestorage.com" <brian@purestorage.com>
+CC:     "krishna.kant@purestorage.com" <krishna.kant@purestorage.com>,
+        "sconnor@purestorage.com" <sconnor@purestorage.com>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "hare@suse.de" <hare@suse.de>, "mwilck@suse.de" <mwilck@suse.de>
+Subject: Re: [PATCH] scsi_lib: Don't fail the path in ALUA transition state
+Thread-Topic: [PATCH] scsi_lib: Don't fail the path in ALUA transition state
+Thread-Index: AQHYewulLlwlhBouRUWghRhCtyQnOw==
+Date:   Wed, 8 Jun 2022 07:44:56 +0000
+Message-ID: <0f741edf62532dbccb25ac5b9fab5031fdbbcd67.camel@suse.com>
+References: <20220607195800.43485-1-brian@purestorage.com>
+In-Reply-To: <20220607195800.43485-1-brian@purestorage.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     ChiYuan Huang <u0084500@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Mark Brown <broonie@kernel.org>, dmitry.torokhov@gmail.com,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        cy_huang <cy_huang@richtek.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        linux-input@vger.kernel.org
-References: <1654581161-12349-1-git-send-email-u0084500@gmail.com>
- <1654581161-12349-2-git-send-email-u0084500@gmail.com>
- <96ecca0b-b65c-749d-d66b-33443cacf2e4@linaro.org>
- <CADiBU39BTr9FjtXgBe55aOTHNVotHfC1n=aHrH3XAcVoWkk8sA@mail.gmail.com>
- <678ce480-cbbc-ffa8-10bf-d93021a0df0a@linaro.org>
- <CADiBU38Gc2McH0ryRFPUAkmJzL1rxQnLHqvo5-+U_TPVjgHxzg@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CADiBU38Gc2McH0ryRFPUAkmJzL1rxQnLHqvo5-+U_TPVjgHxzg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.44.2 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 000e04a4-39ab-401a-2ad3-08da4922c83a
+x-ms-traffictypediagnostic: HE1PR0401MB2555:EE_
+x-microsoft-antispam-prvs: <HE1PR0401MB2555E28C343C5873088E35C4FCA49@HE1PR0401MB2555.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: uJr0pbEEv0WWAPrSIraT5OHRNP+Gi8MsFzyEQGzlc+6JebAO/ZnRgm6yaN+r8CYbMw9IEM1ztZ7bNoWI9Pe/+2yYVy3reNFGriw/ssyPFgD75UJZJJB1uZnPvSwDUaRp4a0Vm7ORCL5wkRT5NrODjvE3Ox9K2OTgRlahGQqpiA6C95fmzJKIfcwkJf2dzy+oFpNUqlFq1zTDHiH7ABvZOrNKI0vRFxZKbbmBGFa3//NCwm45uVZlLozXSmw7GkHdhMXX6XaX7pW94kHe/ACo0jo2/Juzj/dOinQirpy09BcctFhU1gGTlTZHQX7cRU5/DHsNL+VAbzmrVP6xG3GZXD6F2meGtSkpP58zTBpi5ZvnIAWMdruEoQkSzFc6gzjhumJ24W3j04f+N4gHXB03DLzdPneBLLr8JJQFS9hbcxRk9l6VxmBoZ4+Eqwrj7cKenro0ZEWEDFqtYAJ+lKChUKK7FWDdPL2XzmIUQB2Iz58zSumU5Y3XbiuXz/UHBbZs97jDJJtsoFXtTgfjJOap3ql7Mv56izQChV6NUexYKLrUitiZjlopSuePRZ6xzOn1EYB+iZL2nqquGzLJQo4iHReDTGWp4SJgqg4qSEUU4CTrFvtxOT9fv9F3710UmGupzFRlmV1SyA5SLnRy+gxs8RBQNMPDhO4BC/WklTc5Fet4Kzp9wWJly+RFWqOKLWeehcvbvkAq9Z2xx7PtV/dZtA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6555.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2616005)(186003)(6512007)(26005)(83380400001)(6506007)(36756003)(316002)(8676002)(66556008)(66476007)(66446008)(76116006)(66946007)(4326008)(64756008)(91956017)(54906003)(110136005)(5660300002)(6486002)(8936002)(508600001)(38100700002)(44832011)(71200400001)(38070700005)(86362001)(122000001)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-15?Q?qMIxZhN1Hhx5iH9Zb2Vl1XtUlUqisC++LegBZZCIgQCtgSl7UkX3ivaT3?=
+ =?iso-8859-15?Q?vZiVNN5ZeUmqTl1hJCtD8ckZbYHvncWPk/dK8mNVVTbl0ydqEXqTNrm1B?=
+ =?iso-8859-15?Q?Ucwj22KfOwwDzOtjCoFiXcWNoYFDCBzhbYY4x/23v3+axL6b7bOZrF6ng?=
+ =?iso-8859-15?Q?fgzshFKnIWX3W4ctrYh4xWbkGG5m4c4nrkYL/u9LxIs92riUF468NGaZ0?=
+ =?iso-8859-15?Q?y+S7X94GDhLH6t+9pPYw4deUZ6micBDKLNhBZen5DEhOYzjv+qBljJCbg?=
+ =?iso-8859-15?Q?CNWnt3RRN4sSDMjiZEzOPEc9zc9Abz+UD5rucUc1xuughB7phK1WA6EC6?=
+ =?iso-8859-15?Q?julEqVXcjjimpRzIQWrahzyVFGI3NzPW4eah8c3bRMF90WpxWYXhNFb7f?=
+ =?iso-8859-15?Q?d2sKz2VGb/o6g4j1qeclU1zbdyYK9XOX5bP6mpwX3L8E0uknKqWiRqfI6?=
+ =?iso-8859-15?Q?TDJTBz+vGneKvh8KM12TgiEZ36JhlhDtn2yPDxJSshjeGoivEv7d9EW81?=
+ =?iso-8859-15?Q?m5Spl4bqNQK5Zb5wuLW6Snc6AWNoqUJZ25woTyVf3MUth1yKlyp609inM?=
+ =?iso-8859-15?Q?OMNXzkDQkPVF0scsOJWruMSb6YsI9JfQOhXArp+cm0nHzGQU64w9EKMXF?=
+ =?iso-8859-15?Q?csVNZo7G587lLxxUGIA89srd41FfFIhXOmVq/te3lLdHWfMO2TL31M3Og?=
+ =?iso-8859-15?Q?YVDog0N0gOKXs913xMiaMDrzaPt20oNRiFQocHs0cMGnVBGEshkbBPaID?=
+ =?iso-8859-15?Q?4TEWwPTGbPiEbRPQoH3tSWLCna18eBojJC4fySXpy1TFFWQWeJYQnKWVX?=
+ =?iso-8859-15?Q?NsTw2yHtb1j9Z9Z7v8qk6hl4qaiYdydE2UDXfuRUN+gGVXeLW2SN99xSM?=
+ =?iso-8859-15?Q?J8msWGpAG+ARRjlYKGKrkgQZeGFelotg4BY1c4LKV2uOqg9RcZB9IQTys?=
+ =?iso-8859-15?Q?5sp+CdCvvGclz3qZibvsj6/tWvPyRznK8Swqb3uULxeKKWivjZ7bmy6bZ?=
+ =?iso-8859-15?Q?o/QhshxKMYjLY6xtgF6W0nzW/EGgQouIXyLoNRj4NViQ0F4XR+roOrk1F?=
+ =?iso-8859-15?Q?lGAZ/kMOBWgiplalbWHM4IrRRZ+elm3P1JVO+bCbP15HZAb2DdHUoYdCt?=
+ =?iso-8859-15?Q?fhNDDxZXpsL8oaGIufBhbPWmX8RXGcUBzKGo5wp1INJvecwgiALbGo87G?=
+ =?iso-8859-15?Q?iwJ0EwprsrUFIqOHwW9aJP7OaXdXDD3kAkBL2DNWDbxqQZdVS0aderpPl?=
+ =?iso-8859-15?Q?1f01T/zhdj3JzTCWifmuIXBlfqzxK3h5GBAn62CBHNPrQUjarDfKCXq2V?=
+ =?iso-8859-15?Q?R3fPZ3V7KF+EtLgenI25abYZwm2UkcUojlT8VEzZjWp+KY2zR5tVzFXS8?=
+ =?iso-8859-15?Q?m8syrcMrhSIDV8taoL3Zh/G8S4Japid7tGiQ2X0u2owldrn0omLElcJ05?=
+ =?iso-8859-15?Q?tk9RhX1lq8JJ68zD9CX3mX813AJqsHvSetpjliO1LltysWnr7q3sEPh6f?=
+ =?iso-8859-15?Q?xCkWkIoKXdtfYovGW3DYPh3XCsv4kXPqYIG0YlPt40VyCwKFmPwnQ+fCe?=
+ =?iso-8859-15?Q?pT1xenb/ehQ6gHMMlk3IKfEf+RYNafRItQjzDmnE4Zfeqqj0K5Kydze1a?=
+ =?iso-8859-15?Q?wzBacAFwlzWWH7fki2Gd9m1KUd9w7jkt/4XM3vlVa7IUwe3t0/jRhiNgW?=
+ =?iso-8859-15?Q?6CWCezArbAcqUjMJ1DYDMjNdhwaU2yu3l26oFwcrADVD5/BBbXrX5ZRSc?=
+ =?iso-8859-15?Q?BbjgsQkOfewU7zd+oLwJP1vN/Phooo+n8unTQCh2oJjeroY9n+kQ2pg9K?=
+ =?iso-8859-15?Q?GvV8F4mbZ5RC7XIEh2q2eLePkGuD9vEPeNMxchb4DlpWQJqCbiB8ZRTEK?=
+ =?iso-8859-15?Q?Y1po=3D?=
+Content-Type: text/plain; charset="iso-8859-15"
+Content-ID: <E0693D740085B347A9E97DDA54A2FF67@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6555.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 000e04a4-39ab-401a-2ad3-08da4922c83a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jun 2022 07:44:56.2692
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SkX2KioLqKza/xH+Sv1Z4XDmK5xmTMu4s/hKQi3R01fgFW1QLPj+Y97/rH2/3iqRJEG638sDqd1Pgra6exAGzQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0401MB2555
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/06/2022 09:25, ChiYuan Huang wrote:
-> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> 於 2022年6月8日 週三 下午3:02寫道：
->>
->> On 08/06/2022 04:52, ChiYuan Huang wrote:
->>> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> 於 2022年6月7日 週二 下午7:52寫道：
->>>>
->>>> On 07/06/2022 07:52, cy_huang wrote:
->>>>> From: ChiYuan Huang <cy_huang@richtek.com>
->>>>>
->>>>> Add Richtek RT5120 PMIC devicetree document.
->>>>>
->>>>> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
->>>>> ---
->>>>>  .../devicetree/bindings/mfd/richtek,rt5120.yaml    | 180 +++++++++++++++++++++
->>>>>  1 file changed, 180 insertions(+)
->>>>>  create mode 100644 Documentation/devicetree/bindings/mfd/richtek,rt5120.yaml
->>>>>
->>>>> diff --git a/Documentation/devicetree/bindings/mfd/richtek,rt5120.yaml b/Documentation/devicetree/bindings/mfd/richtek,rt5120.yaml
->>>>> new file mode 100644
->>>>> index 00000000..376bf73
->>>>> --- /dev/null
->>>>> +++ b/Documentation/devicetree/bindings/mfd/richtek,rt5120.yaml
->>>>> @@ -0,0 +1,180 @@
->>>>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->>>>> +%YAML 1.2
->>>>> +---
->>>>> +$id: http://devicetree.org/schemas/mfd/richtek,rt5120.yaml#
->>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>>>> +
->>>>> +title: Richtek RT5120 PMIC
->>>>> +
->>>>> +maintainers:
->>>>> +  - ChiYuan Huang <cy_huang@richtek.com>
->>>>> +
->>>>> +description: |
->>>>> +  The RT5120 provides four high-efficiency buck converters and one LDO voltage
->>>>> +  regulator. The device is targeted at providingthe processor voltage, memory,
->>>>> +  I/O, and peripheral rails in home entertainment devices. The I2C interface is
->>>>> +  used for dynamic voltage scaling of the processor voltage, power rails on/off
->>>>> +  sequence control, operation mode selection.
->>>>> +
->>>>> +properties:
->>>>> +  compatible:
->>>>> +    enum:
->>>>> +      - richtek,rt5120
->>>>> +
->>>>> +  reg:
->>>>> +    maxItems: 1
->>>>> +
->>>>> +  interrupts:
->>>>> +    maxItems: 1
->>
->> Your powerkey driver takes two interrupts. You should describe them in
->> the powerkey.
->>
->>>>> +
->>>>> +  interrupt-controller: true
->>>>> +
->>>>> +  "#interrupt-cells":
->>>>> +    const: 1
->>>>> +
->>>>> +  wakeup-source: true
->>>>> +
->>>>> +  richtek,enable-undervolt-hiccup:
->>>>> +    type: boolean
->>>>> +    description: |
->>>>> +      If used, under voltage protection trigger hiccup behavior, else latchup as
->>>>> +      default
->>>>> +
->>>>> +  richtek,enable-overvolt-hiccup:
->>>>> +    type: boolean
->>>>> +    description:
->>>>> +      Like as 'enable-uv-hiccup', it configures over voltage protection to
->>>>> +      hiccup, else latchup as default
->>>>> +
->>>>> +  vin1-supply:
->>>>> +    description: phandle for buck1 input power source
->>>>> +
->>>>> +  vin2-supply:
->>>>> +    description: phandle for buck2 input power source
->>>>> +
->>>>> +  vin3-supply:
->>>>> +    description: phandle for buck3 input power source
->>>>> +
->>>>> +  vin4-supply:
->>>>> +    description: phandle for buck4 input power source
->>>>> +
->>>>> +  vinldo-supply:
->>>>> +    description: phandle for ldo input power source
->>>>> +
->>>>> +  regulators:
->>>>> +    type: object
->>>>> +
->>>>> +    patternProperties:
->>>>> +      "^buck[1-4]$":
->>>>> +        type: object
->>>>> +        $ref: /schemas/regulator/regulator.yaml#
->>>>> +
->>>>> +        properties:
->>>>> +          regulator-allowed-modes:
->>>>> +            description: |
->>>>> +              Used to specify the allowed buck converter operating mode
->>>>> +              mode mapping:
->>>>> +                0: auto mode
->>>>> +                1: force pwm mode
->>>>> +            items:
->>>>> +              enum: [0, 1]
->>>>> +
->>>>> +        unevaluatedProperties: false
->>>>
->>>> Better to put it after '$ref' for readability.
->>> OK, Fix in next
->>>>
->>>>> +
->>>>> +      "^(ldo|exten)$":
->>>>> +        type: object
->>>>> +        $ref: /schemas/regulator/regulator.yaml#
->>>>
->>>> You need here unevaluatedProperties:false as well (for the ldo/exten
->>>> properties)
->>> Fix in next.
->>>>
->>>>> +
->>>>> +    additionalProperties: false
->>>>> +
->>>>> +  powerkey:
->>>>> +    type: object
->>>>> +    description:
->>>>> +      The power key driver may be optional. If not used, change node status to
->>>>> +      'disabled'
->>>>
->>>> This description is not helpful, does not describe the hardware. Please
->>>> describe hardware, not Devicetree usage.
->>> That's because it's a PMIC. Power key is also connected to it.
->>> For power key press, all power rails will start to power up.
->>> But in the application, there may be other PMIC that's also connected
->>> to power key.
->>> That's why this power key driver may need to be optional.
->>> One system only need one driver to report the power key status.
->>>
->>> Currently in some linux OS, it uses the auto module loading mechanism.
->>> All kernel module files may be all the same, but it uses the
->>> devicetree to decide how many devices
->>> need to be declared. Since RT5120 power key device may be optional,
->>> following by mfd_add_device, if of_node is
->>> found, and status is "disabled", the sub device would be skipped.
->>>
->>> Actually, I'm also confused about it. There may be three ways to implement it
->>> 1. not to build this kernel module -> seems to violate my above application
->>> 2. Use one boolean property to decide power key cell need to be used or not??
->>> 3. like as now, use the node status to decide it.
->>>
->>> Is there the better way to do it?
->>
->> The status does not determine whether device in the bindings is optional
->> or not. Rather it's presence. In the term of bindings the "optional"
->> means that something might not be there physically. E.g. clock line
->> connected or not. System implementation - MFD, power off handling - is
->> here (almost) irrelevant.
->>
->> In your case, the power key feature seems to be there always, so the
->> "powerkey" node should be required and not disabled. Don't mention in
->> description of hardware anything about disabling it or not.
->>
->> In your application, I would say it is interesting design that someone
->> connects one power up line to two different PMICs in a conflicting way.
->> This sounds like total mistake from hardware point of view.
->>
->> Anyway it is not the job for this patch to solve such conflicts.
->>
-> Thanks,  I think your point is 'optional' keyword.
-> If there's only redundant description line, I may decide to remove it.
-> The property name already show its usage.
+On Tue, 2022-06-07 at 12:58 -0700, Brian Bunker wrote:
+> The error path for the SCSI check condition of not ready, target in
+> ALUA state transition, will result in the failure of that path after
+> the retries are exhausted. In most cases that is well ahead of the
+> transition timeout established in the SCSI ALUA device handler.
+>=20
+> Instead, reprep the command and re-add it to the queue after a 1
+> second
+> delay. This will allow the handler to take care of the timeout and
+> only fail the path in the transition state if the target has exceeded
+> the transition timeout (default 60 seconds).
+>=20
 
-I repeated my point twice - your description is not relevant to the
-bindings:
-"This description is not helpful, does not describe the hardware. Please
-describe hardware, not Devicetree usage."
-"System implementation - MFD, power off handling - is
-here (almost) irrelevant."
-"Don't mention in
-description of hardware anything about disabling it or not."
+Please explain how th (failing the path after the timeout) will come to
+pass.
 
-Please describe briefly the hardware behind this property, not status or
-other Devicetree usage.
+AFAICS, this means that commands will first be retried without delay
+from the mid layer (NEEDS_RETRY / maybe_retry logic in Are you relying
+scsi_decide_disposition()), until the retries are exhausted. After
+that, they'll be requeued on the high layer, with a 1s delay and
+retries reloaded. How do we make sure this doesn't go on forever?
+
+Do you rely on alua_rtpg() setting the state to STANDBY and
+alua_prep_fn() subsequently returning an error?
+
+I believe this should at least be explained more clearly with comments.
+
+Other than that, the patch looks good to me.
+
+Regards
+Martin
 
 
-Best regards,
-Krzysztof
+> Acked-by: Krishna Kant <krishna.kant@purestorage.com>
+> Acked-by: Seamus Connor <sconnor@purestorage.com>
+> Signed-off-by: Brian Bunker <brian@purestorage.com>
+> ---
+> =A0drivers/scsi/scsi_lib.c | 44 +++++++++++++++++++++++----------------
+> --
+> =A01 file changed, 25 insertions(+), 19 deletions(-)
+>=20
+
+
+
+
+> diff --git a/drivers/scsi/scsi_lib.c b/drivers/scsi/scsi_lib.c
+> index 6ffc9e4258a8..1afb267ff9a2 100644
+> --- a/drivers/scsi/scsi_lib.c
+> +++ b/drivers/scsi/scsi_lib.c
+> @@ -118,7 +118,7 @@ scsi_set_blocked(struct scsi_cmnd *cmd, int
+> reason)
+> =A0=A0=A0=A0=A0=A0=A0=A0}
+> =A0}
+> =A0
+> -static void scsi_mq_requeue_cmd(struct scsi_cmnd *cmd)
+> +static void scsi_mq_requeue_cmd(struct scsi_cmnd *cmd, unsigned long
+> msecs)
+> =A0{
+> =A0=A0=A0=A0=A0=A0=A0=A0struct request *rq =3D scsi_cmd_to_rq(cmd);
+> =A0
+> @@ -128,7 +128,12 @@ static void scsi_mq_requeue_cmd(struct scsi_cmnd
+> *cmd)
+> =A0=A0=A0=A0=A0=A0=A0=A0} else {
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0WARN_ON_ONCE(true);
+> =A0=A0=A0=A0=A0=A0=A0=A0}
+> -=A0=A0=A0=A0=A0=A0=A0blk_mq_requeue_request(rq, true);
+> +
+> +=A0=A0=A0=A0=A0=A0=A0if (msecs) {
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0blk_mq_requeue_request(rq, =
+false);
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0blk_mq_delay_kick_requeue_l=
+ist(rq->q, msecs);
+> +=A0=A0=A0=A0=A0=A0=A0} else
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0blk_mq_requeue_request(rq, =
+true);
+> =A0}
+> =A0
+> =A0/**
+> @@ -658,14 +663,6 @@ static unsigned int scsi_rq_err_bytes(const
+> struct request *rq)
+> =A0=A0=A0=A0=A0=A0=A0=A0return bytes;
+> =A0}
+> =A0
+> -/* Helper for scsi_io_completion() when "reprep" action required. */
+> -static void scsi_io_completion_reprep(struct scsi_cmnd *cmd,
+> -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 struct request_queue *q)
+> -{
+> -=A0=A0=A0=A0=A0=A0=A0/* A new command will be prepared and issued. */
+> -=A0=A0=A0=A0=A0=A0=A0scsi_mq_requeue_cmd(cmd);
+> -}
+> -
+> =A0static bool scsi_cmd_runtime_exceeced(struct scsi_cmnd *cmd)
+> =A0{
+> =A0=A0=A0=A0=A0=A0=A0=A0struct request *req =3D scsi_cmd_to_rq(cmd);
+> @@ -683,14 +680,21 @@ static bool scsi_cmd_runtime_exceeced(struct
+> scsi_cmnd *cmd)
+> =A0=A0=A0=A0=A0=A0=A0=A0return false;
+> =A0}
+> =A0
+> +/*
+> + * When ALUA transition state is returned, reprep the cmd to
+> + * use the ALUA handlers transition timeout. Delay the reprep
+> + * 1 sec to avoid aggressive retries of the target in that
+> + * state.
+> + */
+> +#define ALUA_TRANSITION_REPREP_DELAY=A0=A0=A01000
+> +
+> =A0/* Helper for scsi_io_completion() when special action required. */
+> =A0static void scsi_io_completion_action(struct scsi_cmnd *cmd, int
+> result)
+> =A0{
+> -=A0=A0=A0=A0=A0=A0=A0struct request_queue *q =3D cmd->device->request_qu=
+eue;
+> =A0=A0=A0=A0=A0=A0=A0=A0struct request *req =3D scsi_cmd_to_rq(cmd);
+> =A0=A0=A0=A0=A0=A0=A0=A0int level =3D 0;
+> -=A0=A0=A0=A0=A0=A0=A0enum {ACTION_FAIL, ACTION_REPREP, ACTION_RETRY,
+> -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ACTION_DELAYED_RETRY} action;
+> +=A0=A0=A0=A0=A0=A0=A0enum {ACTION_FAIL, ACTION_REPREP, ACTION_DELAYED_RE=
+PREP,
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ACTION_RETRY, ACTION_DELAYED_RETRY}=
+ action;
+> =A0=A0=A0=A0=A0=A0=A0=A0struct scsi_sense_hdr sshdr;
+> =A0=A0=A0=A0=A0=A0=A0=A0bool sense_valid;
+> =A0=A0=A0=A0=A0=A0=A0=A0bool sense_current =3D true;=A0=A0=A0=A0=A0 /* fa=
+lse implies "deferred
+> sense" */
+> @@ -779,8 +783,8 @@ static void scsi_io_completion_action(struct
+> scsi_cmnd *cmd, int result)
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0action =3D
+> ACTION_DELAYED_RETRY;
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0break;
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0case 0x0a: /* ALUA state transition
+> */
+> -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0blk_stat =3D BLK_STS_TRANSPORT=
+;
+> -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0fallthrough;
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0action =3D
+> ACTION_DELAYED_REPREP;
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0break;
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0default:
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0action =3D ACTION_FAIL;
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0break;
+> @@ -839,7 +843,10 @@ static void scsi_io_completion_action(struct
+> scsi_cmnd *cmd, int result)
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0r=
+eturn;
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0fallthrough;
+> =A0=A0=A0=A0=A0=A0=A0=A0case ACTION_REPREP:
+> -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0scsi_io_completion_reprep(c=
+md, q);
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0scsi_mq_requeue_cmd(cmd, 0)=
+;
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0break;
+> +=A0=A0=A0=A0=A0=A0=A0case ACTION_DELAYED_REPREP:
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0scsi_mq_requeue_cmd(cmd,
+> ALUA_TRANSITION_REPREP_DELAY);
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0break;
+> =A0=A0=A0=A0=A0=A0=A0=A0case ACTION_RETRY:
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0/* Retry the same command=
+ immediately */
+> @@ -933,7 +940,7 @@ static int scsi_io_completion_nz_result(struct
+> scsi_cmnd *cmd, int result,
+> =A0 * command block will be released and the queue function will be
+> goosed. If we
+> =A0 * are not done then we have to figure out what to do next:
+> =A0 *
+> - *=A0=A0 a) We can call scsi_io_completion_reprep().=A0 The request will
+> be
+> + *=A0=A0 a) We can call scsi_mq_requeue_cmd().=A0 The request will be
+> =A0 *=A0=A0=A0=A0=A0unprepared and put back on the queue.=A0 Then a new c=
+ommand
+> will
+> =A0 *=A0=A0=A0=A0=A0be created for it.=A0 This should be used if we made =
+forward
+> =A0 *=A0=A0=A0=A0=A0progress, or if we want to switch from READ(10) to RE=
+AD(6)
+> for
+> @@ -949,7 +956,6 @@ static int scsi_io_completion_nz_result(struct
+> scsi_cmnd *cmd, int result,
+> =A0void scsi_io_completion(struct scsi_cmnd *cmd, unsigned int
+> good_bytes)
+> =A0{
+> =A0=A0=A0=A0=A0=A0=A0=A0int result =3D cmd->result;
+> -=A0=A0=A0=A0=A0=A0=A0struct request_queue *q =3D cmd->device->request_qu=
+eue;
+> =A0=A0=A0=A0=A0=A0=A0=A0struct request *req =3D scsi_cmd_to_rq(cmd);
+> =A0=A0=A0=A0=A0=A0=A0=A0blk_status_t blk_stat =3D BLK_STS_OK;
+> =A0
+> @@ -986,7 +992,7 @@ void scsi_io_completion(struct scsi_cmnd *cmd,
+> unsigned int good_bytes)
+> =A0=A0=A0=A0=A0=A0=A0=A0 * request just queue the command up again.
+> =A0=A0=A0=A0=A0=A0=A0=A0 */
+> =A0=A0=A0=A0=A0=A0=A0=A0if (likely(result =3D=3D 0))
+> -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0scsi_io_completion_reprep(c=
+md, q);
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0scsi_mq_requeue_cmd(cmd, 0)=
+;
+> =A0=A0=A0=A0=A0=A0=A0=A0else
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0scsi_io_completion_action=
+(cmd, result);
+> =A0}
+
