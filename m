@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66BD0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233924AbiFHFlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44470 "EHLO
+        id S231960AbiFHFnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236085AbiFHFky (ORCPT
+        with ESMTP id S233632AbiFHFlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:40:54 -0400
-Received: from EX-PRD-EDGE01.vmware.com (ex-prd-edge01.vmware.com [208.91.3.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C3940BA5B;
-        Tue,  7 Jun 2022 20:24:19 -0700 (PDT)
+        Wed, 8 Jun 2022 01:41:07 -0400
+Received: from EX-PRD-EDGE02.vmware.com (ex-prd-edge02.vmware.com [208.91.3.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61AB240968B;
+        Tue,  7 Jun 2022 20:24:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
     s=s1024; d=vmware.com;
     h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
       content-type;
-    bh=q1Tg/wqCzr6O6IDRP6nkjppRtmGVU7CRSaKK5KQoZrA=;
-    b=gM+7zrFYzjuT6XB249YrR14hDSE0pNgadBb5EYVQBxpkux77eDEerMCkNigeDr
-      VX6ec/RkYldNjjdjNkC9dSCkhTJsL+27eDaJz+Wm+4N+T8AtGr7m9bVIq2C8d/
-      dhn6J1AQpqzipRJ7BPGBgUKzSKT2Ysbu1tdVppMyHslNiKc=
-Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
- EX-PRD-EDGE01.vmware.com (10.188.245.6) with Microsoft SMTP Server id
- 15.1.2308.20; Tue, 7 Jun 2022 20:23:53 -0700
+    bh=hR6auVRymSfv8wZvT+7WbS5RtZHhVgJnjQJxvMEJ4bw=;
+    b=LlivIzg3L0e9OcZYWilnLcYv9W12WSMVLWOb0RMm9SSmF0QcgXdUm+EYBrQ43J
+      6uHgYnPr4YWDkNpoS2uImRI22/bKfgwJCu6ZGTOUSS5GyrfpMxUpDRslrJNGwh
+      950pkVW9EOGMJ3F76uYRjyscKshDPZ55DKXOF0KZvigjodY=
+Received: from sc9-mailhost2.vmware.com (10.113.161.72) by
+ EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
+ 15.1.2308.14; Tue, 7 Jun 2022 20:23:55 -0700
 Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id 9C6692346F;
-        Tue,  7 Jun 2022 20:24:08 -0700 (PDT)
+        by sc9-mailhost2.vmware.com (Postfix) with ESMTP id 914C720328;
+        Tue,  7 Jun 2022 20:24:01 -0700 (PDT)
 Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 96D69AA454; Tue,  7 Jun 2022 20:24:08 -0700 (PDT)
+        id 8AD2AAA454; Tue,  7 Jun 2022 20:24:01 -0700 (PDT)
 From:   Ronak Doshi <doshir@vmware.com>
 To:     <netdev@vger.kernel.org>
 CC:     Ronak Doshi <doshir@vmware.com>,
@@ -40,111 +40,131 @@ CC:     Ronak Doshi <doshir@vmware.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 net-next 7/8] vmxnet3: use ext1 field to indicate encapsulated packet
-Date:   Tue, 7 Jun 2022 20:23:52 -0700
-Message-ID: <20220608032353.964-8-doshir@vmware.com>
+Subject: [PATCH v3 net-next 1/8] vmxnet3: prepare for version 7 changes
+Date:   Tue, 7 Jun 2022 20:23:46 -0700
+Message-ID: <20220608032353.964-2-doshir@vmware.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20220608032353.964-1-doshir@vmware.com>
 References: <20220608032353.964-1-doshir@vmware.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-Received-SPF: None (EX-PRD-EDGE01.vmware.com: doshir@vmware.com does not
+Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
  designate permitted sender hosts)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Till vmxnet3 version 6, om field of transmit descriptor was used
-to indicate encapsulated offload packet and msscof was used to
-indirectly indicate TSO/CSO. From version 7 and later, ext1 field
-will be used to indicate whether packet is encapsulated or not and
-om fields will continue to indicate if the packet is TSO or CSO.
+vmxnet3 is currently at version 6 and this patch initiates the
+preparation to accommodate changes for upto version 7. Introduced
+utility macros for vmxnet3 version 7 comparison and update Copyright
+information.
 
 Signed-off-by: Ronak Doshi <doshir@vmware.com>
 Acked-by: Guolin Yang <gyang@vmware.com>
 ---
- drivers/net/vmxnet3/vmxnet3_defs.h | 14 ++++++++------
- drivers/net/vmxnet3/vmxnet3_drv.c  | 18 +++++++++++++++---
- 2 files changed, 23 insertions(+), 9 deletions(-)
+ drivers/net/vmxnet3/Makefile          | 2 +-
+ drivers/net/vmxnet3/upt1_defs.h       | 2 +-
+ drivers/net/vmxnet3/vmxnet3_defs.h    | 2 +-
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 2 +-
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 2 +-
+ drivers/net/vmxnet3/vmxnet3_int.h     | 5 ++++-
+ 6 files changed, 9 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/net/vmxnet3/Makefile b/drivers/net/vmxnet3/Makefile
+index 7a38925f4165..a666a88ac1ff 100644
+--- a/drivers/net/vmxnet3/Makefile
++++ b/drivers/net/vmxnet3/Makefile
+@@ -2,7 +2,7 @@
+ #
+ # Linux driver for VMware's vmxnet3 ethernet NIC.
+ #
+-# Copyright (C) 2007-2021, VMware, Inc. All Rights Reserved.
++# Copyright (C) 2007-2022, VMware, Inc. All Rights Reserved.
+ #
+ # This program is free software; you can redistribute it and/or modify it
+ # under the terms of the GNU General Public License as published by the
+diff --git a/drivers/net/vmxnet3/upt1_defs.h b/drivers/net/vmxnet3/upt1_defs.h
+index f9f3a23d1698..41c0660a0c54 100644
+--- a/drivers/net/vmxnet3/upt1_defs.h
++++ b/drivers/net/vmxnet3/upt1_defs.h
+@@ -1,7 +1,7 @@
+ /*
+  * Linux driver for VMware's vmxnet3 ethernet NIC.
+  *
+- * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
++ * Copyright (C) 2008-2022, VMware, Inc. All Rights Reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
 diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
-index cb9dc72f2b3d..41d6767283a6 100644
+index 74d4e8bc4abc..9f91ebb10137 100644
 --- a/drivers/net/vmxnet3/vmxnet3_defs.h
 +++ b/drivers/net/vmxnet3/vmxnet3_defs.h
-@@ -148,17 +148,17 @@ struct Vmxnet3_TxDesc {
- 
- #ifdef __BIG_ENDIAN_BITFIELD
- 	u32 msscof:14;  /* MSS, checksum offset, flags */
--	u32 ext1:1;
-+	u32 ext1:1;     /* set to 1 to indicate inner csum/tso, vmxnet3 v7 */
- 	u32 dtype:1;    /* descriptor type */
--	u32 oco:1;
-+	u32 oco:1;      /* Outer csum offload */
- 	u32 gen:1;      /* generation bit */
- 	u32 len:14;
- #else
- 	u32 len:14;
- 	u32 gen:1;      /* generation bit */
--	u32 oco:1;
-+	u32 oco:1;      /* Outer csum offload */
- 	u32 dtype:1;    /* descriptor type */
--	u32 ext1:1;
-+	u32 ext1:1;     /* set to 1 to indicate inner csum/tso, vmxnet3 v7 */
- 	u32 msscof:14;  /* MSS, checksum offset, flags */
- #endif  /* __BIG_ENDIAN_BITFIELD */
- 
-@@ -262,11 +262,13 @@ struct Vmxnet3_RxCompDesc {
- 	u32		rqID:10;      /* rx queue/ring ID */
- 	u32		sop:1;        /* Start of Packet */
- 	u32		eop:1;        /* End of Packet */
--	u32		ext1:2;
-+	u32		ext1:2;       /* bit 0: indicating v4/v6/.. is for inner header */
-+				      /* bit 1: indicating rssType is based on inner header */
- 	u32		rxdIdx:12;    /* Index of the RxDesc */
- #else
- 	u32		rxdIdx:12;    /* Index of the RxDesc */
--	u32		ext1:2;
-+	u32		ext1:2;       /* bit 0: indicating v4/v6/.. is for inner header */
-+				      /* bit 1: indicating rssType is based on inner header */
- 	u32		eop:1;        /* End of Packet */
- 	u32		sop:1;        /* Start of Packet */
- 	u32		rqID:10;      /* rx queue/ring ID */
+@@ -1,7 +1,7 @@
+ /*
+  * Linux driver for VMware's vmxnet3 ethernet NIC.
+  *
+- * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
++ * Copyright (C) 2008-2022, VMware, Inc. All Rights Reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
 diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 2ee3a2e39f10..5c42b4a008e8 100644
+index 93e8d119d45f..6fc6a2a26161 100644
 --- a/drivers/net/vmxnet3/vmxnet3_drv.c
 +++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -1161,7 +1161,12 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
- 	if (ctx.mss) {
- 		if (VMXNET3_VERSION_GE_4(adapter) && skb->encapsulation) {
- 			gdesc->txd.hlen = ctx.l4_offset + ctx.l4_hdr_size;
--			gdesc->txd.om = VMXNET3_OM_ENCAP;
-+			if (VMXNET3_VERSION_GE_7(adapter)) {
-+				gdesc->txd.om = VMXNET3_OM_TSO;
-+				gdesc->txd.ext1 = 1;
-+			} else {
-+				gdesc->txd.om = VMXNET3_OM_ENCAP;
-+			}
- 			gdesc->txd.msscof = ctx.mss;
+@@ -1,7 +1,7 @@
+ /*
+  * Linux driver for VMware's vmxnet3 ethernet NIC.
+  *
+- * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
++ * Copyright (C) 2008-2022, VMware, Inc. All Rights Reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index 3172d46c0335..e41e76757c5b 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -1,7 +1,7 @@
+ /*
+  * Linux driver for VMware's vmxnet3 ethernet NIC.
+  *
+- * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
++ * Copyright (C) 2008-2022, VMware, Inc. All Rights Reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index 7027ff483fa5..5251c3439d6a 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -1,7 +1,7 @@
+ /*
+  * Linux driver for VMware's vmxnet3 ethernet NIC.
+  *
+- * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
++ * Copyright (C) 2008-2022, VMware, Inc. All Rights Reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -81,6 +81,7 @@
+ 	#define VMXNET3_RSS
+ #endif
  
- 			if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_TUNNEL_CSUM)
-@@ -1178,8 +1183,15 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
- 			    skb->encapsulation) {
- 				gdesc->txd.hlen = ctx.l4_offset +
- 						  ctx.l4_hdr_size;
--				gdesc->txd.om = VMXNET3_OM_ENCAP;
--				gdesc->txd.msscof = 0;		/* Reserved */
-+				if (VMXNET3_VERSION_GE_7(adapter)) {
-+					gdesc->txd.om = VMXNET3_OM_CSUM;
-+					gdesc->txd.msscof = ctx.l4_offset +
-+							    skb->csum_offset;
-+					gdesc->txd.ext1 = 1;
-+				} else {
-+					gdesc->txd.om = VMXNET3_OM_ENCAP;
-+					gdesc->txd.msscof = 0;		/* Reserved */
-+				}
- 			} else {
- 				gdesc->txd.hlen = ctx.l4_offset;
- 				gdesc->txd.om = VMXNET3_OM_CSUM;
++#define VMXNET3_REV_7		6	/* Vmxnet3 Rev. 7 */
+ #define VMXNET3_REV_6		5	/* Vmxnet3 Rev. 6 */
+ #define VMXNET3_REV_5		4	/* Vmxnet3 Rev. 5 */
+ #define VMXNET3_REV_4		3	/* Vmxnet3 Rev. 4 */
+@@ -431,6 +432,8 @@ struct vmxnet3_adapter {
+ 	(adapter->version >= VMXNET3_REV_5 + 1)
+ #define VMXNET3_VERSION_GE_6(adapter) \
+ 	(adapter->version >= VMXNET3_REV_6 + 1)
++#define VMXNET3_VERSION_GE_7(adapter) \
++	(adapter->version >= VMXNET3_REV_7 + 1)
+ 
+ /* must be a multiple of VMXNET3_RING_SIZE_ALIGN */
+ #define VMXNET3_DEF_TX_RING_SIZE    512
 -- 
 2.11.0
 
