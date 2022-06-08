@@ -2,102 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7B1C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B609C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:23:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239102AbiFHMXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54240 "EHLO
+        id S239114AbiFHMXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:23:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238835AbiFHMXd (ORCPT
+        with ESMTP id S238835AbiFHMXj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:23:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413201BF166;
-        Wed,  8 Jun 2022 05:23:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 679F961952;
-        Wed,  8 Jun 2022 12:23:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A0D4C3411D;
-        Wed,  8 Jun 2022 12:23:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654691010;
-        bh=hIdL6cBQ9jfGk5bMrXChPdyIkuqD0IoOIuXFKA+q0kE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h4T3JmvsnzEdWc8XoIoCfFFSJe23N9szNsUf+ahCt7NSzvYJ+JcYtcQEQA6TIO/vT
-         ezR5dLzPsrKa/Wek4AYspsDsAoOJwRiwuLdoIGRXqz/iNfak3nK4hZzI2FWKHGSPty
-         /h2QjzpVR4qrAdQLZ/7MOmgEwLYsXWteXAd3p3TA=
-Date:   Wed, 8 Jun 2022 14:23:27 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>
-Subject: Re: [PATCH v1 1/2] driver core: Introduce device_find_first_child()
- helper
-Message-ID: <YqCUv55XKmUfe1J5@kroah.com>
-References: <20220607202058.8304-1-andriy.shevchenko@linux.intel.com>
- <CAJZ5v0gmO-BDyurQtG4sU5KLfe2mjs7vm5kpJQoAaxYxF57t3g@mail.gmail.com>
- <YqCNuJ3RQX3jIy59@smile.fi.intel.com>
- <YqCQOAy64heA3GPM@kroah.com>
- <CAJZ5v0hxvqYaEXzEKYG++egKVgNk=KUNnMMKRT2pS2S9PN-ibw@mail.gmail.com>
+        Wed, 8 Jun 2022 08:23:39 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087541C78C9
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 05:23:38 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nyuid-0005zT-Sq; Wed, 08 Jun 2022 14:23:27 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nyuid-007BL8-PT; Wed, 08 Jun 2022 14:23:26 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nyuib-003F5r-DU; Wed, 08 Jun 2022 14:23:25 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v2 0/2] net: add remote fault support 
+Date:   Wed,  8 Jun 2022 14:23:20 +0200
+Message-Id: <20220608122322.772950-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJZ5v0hxvqYaEXzEKYG++egKVgNk=KUNnMMKRT2pS2S9PN-ibw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 02:15:19PM +0200, Rafael J. Wysocki wrote:
-> On Wed, Jun 8, 2022 at 2:04 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Wed, Jun 08, 2022 at 02:53:28PM +0300, Andy Shevchenko wrote:
-> > > On Wed, Jun 08, 2022 at 01:29:08PM +0200, Rafael J. Wysocki wrote:
-> > > > On Tue, Jun 7, 2022 at 10:22 PM Andy Shevchenko
-> > > > <andriy.shevchenko@linux.intel.com> wrote:
-> > >
-> > > ...
-> > >
-> > > > I would define it as
-> > > >
-> > > > static int match_first(struct device *dev, void *)
-> > > > {
-> > > >        return 1;
-> > > > }
-> > > >
-> > > > struct device *device_find_first_child(struct device *parent)
-> > > > {
-> > > >         return device_find_first_child(parent, NULL, match_first);
-> > > > }
-> > > > EXPORT_SYMBOL_GPL(device_find_first_child);
-> > > >
-> > > > which is not that much more overhead.
-> > >
-> > > With this we actually may simply provide a match function and it will make the
-> > > clean ups (like patch 2 in the series) almost the same without introducing a
-> > > device core call.
-> > >
-> > > Something like
-> > >
-> > > int device_match_any_for_find(struct device *dev, void *unused)
-> > > {
-> > >       return 1;
-> > > }
-> > >
-> > > As I replied to Greg it's pity we can't use device_match_any()...
-> >
-> >         int device_match_any(struct device *dev, const void *unused)
-> >
-> > How is that not ok to use here?
-> 
-> Because of the const that will be frowned upon by the compiler.
-> 
-> We need to define another device_match_any_relaxed() taking (void *)
-> as the second argument for this.
+changes v2:
+- add missing genphy_c45_aneg_done_lp_clean() patch
 
-Or we could cast it away :)
+Oleksij Rempel (2):
+  net: phy: move common code to separate genphy_c45_aneg_done_lp_clean()
+    function
+  net: phy: add remote fault support
+
+ Documentation/networking/ethtool-netlink.rst |  2 +
+ drivers/net/phy/phy-c45.c                    | 78 ++++++++++-------
+ drivers/net/phy/phy.c                        |  4 +
+ include/linux/phy.h                          |  5 ++
+ include/uapi/linux/ethtool.h                 | 46 +++++++++-
+ include/uapi/linux/ethtool_netlink.h         |  2 +
+ net/ethtool/ioctl.c                          |  6 ++
+ net/ethtool/linkmodes.c                      | 88 +++++++++++++++++++-
+ net/ethtool/netlink.h                        |  2 +-
+ 9 files changed, 199 insertions(+), 34 deletions(-)
+
+-- 
+2.30.2
+
