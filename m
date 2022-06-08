@@ -2,71 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B6FCCA48B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:15:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5688CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:15:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243744AbiFHPPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:15:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52306 "EHLO
+        id S244128AbiFHPPb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:15:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243737AbiFHPMW (ORCPT
+        with ESMTP id S243212AbiFHPOL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:12:22 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D12103888;
-        Wed,  8 Jun 2022 08:05:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:To:From:Sender:
-        Reply-To:Cc:Content-Type:Content-ID:Content-Description;
-        bh=x7JOqfa2RI0AOqNl02SQf1wFVJ5Ok2YV4zXvh/LnRsU=; b=NvquLW9gwRTmhQyGqfAPWAzDSN
-        4aTfkhphSIRmLdBhL7Ly2eznMvI5BlkmIvMfX0PAvbTrLMWaPaXQk77zIFeoTaMC2d6/fSgmBeGY5
-        NBJsAVSelW5jk+jBVipAcF5jodxqxIdDEOT3vshgvQ9U606vkPaoZCuJ+J4YLRtkKLtyQd+y6D5Pw
-        Dq1o2qdpFW1TJRWX/KWryCq2LbW8kO+Ln5kb8GeWSdYzdeoyJiNIPx6IPgeeevsJn+eXJMc0xPDrF
-        nhnmtjbYfT/85dPWS/7Lnvv/QPpd1N9vKDRYsB3miIORTclPMJo1oH63rR4HwdtYFC2Ldp7DFxtFZ
-        IEyN3EHA==;
-Received: from [2001:4bb8:190:726c:66c4:f635:4b37:bdda] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nyxF4-00DtL1-No; Wed, 08 Jun 2022 15:05:07 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.com>,
-        Dave Kleikamp <shaggy@kernel.org>, linux-ext4@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jfs-discussion@lists.sourceforge.net
-Subject: [PATCH 4/5] fs: don't call ->writepage from __mpage_writepage
-Date:   Wed,  8 Jun 2022 17:04:50 +0200
-Message-Id: <20220608150451.1432388-5-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220608150451.1432388-1-hch@lst.de>
-References: <20220608150451.1432388-1-hch@lst.de>
+        Wed, 8 Jun 2022 11:14:11 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD7020C243
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:06:36 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id d14so19763396wra.10
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 08:06:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PhrsnkQYF8hJROFLG3oTpTLzsaUl8ukSdrO+5KpRu9o=;
+        b=oNno/0HbthPALtO1PqKOPIaz5DBcFf9pQWt8bZu0u8lxyCMFRn99MmD/7nQpyKYBjW
+         9z4NkSnmwkbSBCcrMc9tNIZFPojEWX1fUE2Z4l26/61CQ/QJ3t3Dfy8iRwncY8JsrDvW
+         WcGPn0EIk7FDariBsKjKiV8kWPlyVeGGAPvLRVxpqCqCZAfEAEbrUpX0WPh+qa6+hyfS
+         VRibz/A2tn66MQ7M04t1ysEoJCULNws+NqbRP06JhkMEpTtjNSKaaFU7RBBx0X/X+nLR
+         /RQRKZpwczAm6BSqgWxWzNEQwGM3y8g022JdnuH/9iS6cWuNwhlPUqduiSU7NQSa3nvY
+         aT/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PhrsnkQYF8hJROFLG3oTpTLzsaUl8ukSdrO+5KpRu9o=;
+        b=WPBq73CSFxYZs7WaSRqTaMuEuDqL/ZcQzAOT8zbM4XOYJ3L8TRtNGsQCsRN/hxyjyo
+         NLSZhuUIpZ9A1wnklwcZn/BZJZgsOur7bBMyxjGskifRYDcXb21qym0iG34dobNj1hK3
+         Rx3hGw4c9GKeyEIWa5orK/NPQrfEi/3VJoRAzJVejOpTicCN+/9ne6pLnOIjJhHh9SqM
+         ZZnJFGBhsHP7A989adh8LH1MtJjeqSmK5ve5r1EM30L52vg/9SkjbSJOt/VLpdZkcg8j
+         8d5ekCzJBmLdWAcdVgE55eozwaex0aW1anZfsURRpFYyfvCeAXvXWSSJzrj+XQXbP7iR
+         GQWQ==
+X-Gm-Message-State: AOAM532ULn8yYIVOprddOJ2UUuM/Wgu3NIWwb+54YJrVRpPha2eLZYmc
+        MHiBEYyYF18qgovSuiwW/Giz9A==
+X-Google-Smtp-Source: ABdhPJw2zbIWGQqQEdA8aTNGLbz3Y44qF4XhRLn2zSheJU7Rky18ZqbW4vt8p/Wq7OYg6zhHflIsxw==
+X-Received: by 2002:a5d:6f1c:0:b0:213:d715:d09f with SMTP id ay28-20020a5d6f1c000000b00213d715d09fmr28589518wrb.275.1654700794698;
+        Wed, 08 Jun 2022 08:06:34 -0700 (PDT)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id t22-20020a05600c41d600b00397550b387bsm28672852wmh.23.2022.06.08.08.06.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 08:06:34 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 16:06:32 +0100
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Stephen Kitt <steve@sk2.org>
+Cc:     "Lee, Chun-Yi" <jlee@suse.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Cezary Jackiewicz <cezary.jackiewicz@gmail.com>,
+        Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/4] platform/x86: apple-gmux: Use backlight helper
+Message-ID: <20220608150632.mnebepml2cply4px@maple.lan>
+References: <20220607184635.1127913-1-steve@sk2.org>
+ <20220607184635.1127913-3-steve@sk2.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607184635.1127913-3-steve@sk2.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All callers of mpage_writepage use block_write_full_page as their
-->writepage implementation, so hard code that.
+On Tue, Jun 07, 2022 at 08:46:33PM +0200, Stephen Kitt wrote:
+> Instead of retrieving the backlight brightness in struct
+> backlight_properties manually, and then checking whether the backlight
+> should be on at all, use backlight_get_brightness() which does all
+> this and insulates this from future changes.
+> 
+> Signed-off-by: Stephen Kitt <steve@sk2.org>
+> Cc: Hans de Goede <hdegoede@redhat.com>
+> Cc: Mark Gross <markgross@kernel.org>
+> Cc: platform-driver-x86@vger.kernel.org
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- fs/mpage.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 
-diff --git a/fs/mpage.c b/fs/mpage.c
-index 31a97a0acf5f5..a354ef2b4b4eb 100644
---- a/fs/mpage.c
-+++ b/fs/mpage.c
-@@ -624,7 +624,7 @@ static int __mpage_writepage(struct page *page, struct writeback_control *wbc,
- 	/*
- 	 * The caller has a ref on the inode, so *mapping is stable
- 	 */
--	ret = mapping->a_ops->writepage(page, wbc);
-+	ret = block_write_full_page(page, mpd->get_block, wbc);
- 	mapping_set_error(mapping, ret);
- out:
- 	mpd->bio = bio;
--- 
-2.30.2
 
+Daniel.
