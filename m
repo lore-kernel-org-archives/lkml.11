@@ -2,81 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 609BACCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FE3FCCA481
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238673AbiFHHCH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50184 "EHLO
+        id S237416AbiFHHBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242646AbiFHFyA (ORCPT
+        with ESMTP id S1351731AbiFHGPY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:54:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCFC38C099;
-        Tue,  7 Jun 2022 20:50:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99084618C8;
-        Wed,  8 Jun 2022 03:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EBE05C341C7;
-        Wed,  8 Jun 2022 03:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654660214;
-        bh=zvc5dPjGHLIiwFXIyn4yFbXnGs9Wvp4EGzk9Sq+ECTM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Suh1aCUnML21wTTwN7/s0gDbthDB/Poe+oLcd4nRcThht78KCex97FxLOtRUVDv++
-         P9CVfwGcYyE25JSTBxH0/hkadAO8/Bt90Al5n9P9qElvHr0930NXRgemyzdCrCQ3q7
-         LhJxEIOEP7g6D8qldGZaP9FXIh20RFmUFv6k6C/4iBaGfn7x5ieyVkS3GynWGrLygZ
-         sTtfo0uV5o3ED1cAad5QrRaQclgu4otXt9Pc8JbYGa0gQdOBKYOIV9FyG17O261B5Z
-         WunFHf+oNHxoT/+fZ6CK2PR6XqOVslkprp/u9mtQVBRyrBfxYgTD/dQArXTzFpNqkM
-         7GGjn4DjVNTiw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D6688E737F4;
-        Wed,  8 Jun 2022 03:50:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 8 Jun 2022 02:15:24 -0400
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5387E1EEBA1;
+        Tue,  7 Jun 2022 22:46:14 -0700 (PDT)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 2585jrgk007510;
+        Wed, 8 Jun 2022 07:45:53 +0200
+Date:   Wed, 8 Jun 2022 07:45:53 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        lkp@lists.01.org, lkp@intel.com, rui.zhang@intel.com,
+        yu.c.chen@intel.com
+Subject: Re: [net]  6922110d15: suspend-stress.fail
+Message-ID: <20220608054553.GA7499@1wt.eu>
+References: <20220605143935.GA27576@xsang-OptiPlex-9020>
+ <20220607174730.018fe58e@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: dsa: microchip: ksz8xxx: Replace kernel.h with the
- necessary inclusions
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165466021387.10912.5607242798001878048.git-patchwork-notify@kernel.org>
-Date:   Wed, 08 Jun 2022 03:50:13 +0000
-References: <41d99ef8629e1db03d4f2662f5556611e0b94652.1654323308.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <41d99ef8629e1db03d4f2662f5556611e0b94652.1654323308.git.christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607174730.018fe58e@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sat,  4 Jun 2022 08:15:21 +0200 you wrote:
-> When kernel.h is used in the headers it adds a lot into dependency hell,
-> especially when there are circular dependencies are involved.
+On Tue, Jun 07, 2022 at 05:47:30PM -0700, Jakub Kicinski wrote:
+> On Sun, 5 Jun 2022 22:39:35 +0800 kernel test robot wrote:
+> > Greeting,
+> > 
+> > FYI, we noticed the following commit (built with gcc-11):
+> > 
+> > commit: 6922110d152e56d7569616b45a1f02876cf3eb9f ("net: linkwatch: fix failure to restore device state across suspend/resume")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > 
+> > in testcase: suspend-stress
+> > version: 
+> > with following parameters:
+> > 
+> > 	mode: freeze
+> > 	iterations: 10
+> > 
+> > 
+> > 
+> > on test machine: 4 threads Ivy Bridge with 4G memory
+> > 
+> > caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> > 
+> > 
+> > 
+> > 
+> > If you fix the issue, kindly add following tag
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > 
+> > 
+> > Suspend to freeze 1/10:
+> > Done
+> > Suspend to freeze 2/10:
+> > network not ready
+> > network not ready
+> > network not ready
+> > network not ready
+> > network not ready
+> > network not ready
+> > network not ready
+> > network not ready
+> > network not ready
+> > network not ready
+> > network not ready
+> > Done
 > 
-> Replace kernel.h inclusion with the list of what is really being used.
+> What's the failure? I'm looking at this script:
 > 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> https://github.com/intel/lkp-tests/blob/master/tests/suspend-stress
 > 
-> [...]
+> And it seems that we are not actually hitting any "exit 1" paths here.
 
-Here is the summary with links:
-  - net: dsa: microchip: ksz8xxx: Replace kernel.h with the necessary inclusions
-    https://git.kernel.org/netdev/net-next/c/67074ae6af59
+I'm not sure how the test has to be interpreted but one possible
+interpretation is that the link really takes time to re-appear and
+that prior to the fix, the link was believed to still be up since
+the event was silently lost during suspend, while now the link is
+correctly being reported as being down and something is waiting for
+it to be up again, as it possibly should. Thus it could be possible
+that the fix revealed an incorrect expectation in that test.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Willy
