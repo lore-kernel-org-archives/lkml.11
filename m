@@ -2,71 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B7AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:22:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B09FAC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:25:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232489AbiFHFWl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:22:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37546 "EHLO
+        id S233348AbiFHFZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231774AbiFHFU5 (ORCPT
+        with ESMTP id S234669AbiFHFYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:20:57 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B0F27559C
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:51:08 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id j12-20020a5d93cc000000b006692aee869fso5473466ioo.5
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 19:51:08 -0700 (PDT)
+        Wed, 8 Jun 2022 01:24:54 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA36A167CB
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:39:58 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id q12-20020a17090a304c00b001e2d4fb0eb4so22537712pjl.4
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 19:39:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6bOa4esw0xksLVfNdAT6B93rV/P/8VSGEKMP6EjzR0E=;
+        b=K6KpXwM81tTGGNFDdq17Lj1eMk1q3eODHH8nocGcaU9nWe7rFntrd/gnI4dJmrX5ot
+         jelT47mS9pdJT0S2PzSCrNgL5Sh63CeXCG+aYcN+ywbxrVtSsSCUllZRXU38BSZmlUri
+         DAKxKJgyjtIwfLg5ysES88sOtfU39kmTixM4U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=9RKAoJeiSZe3EQhiQtHMGEfkjZC8rMlcX/wtjfSGmZo=;
-        b=cMv9fuTrrrEmmMPzV2E/4mzwQu6POGbwTSHavKXVfPGxDmBcOGYXy5CvjSrh7liA0t
-         nlbkMIbABq5xrYlGZVrqiZSgjhVQ2/S7t5PNvKnTMBz5ypnyskBz3bwwisjMrtXJwhDT
-         peXFdC3x+X1KhYsq3PXsEaTw7K05HTYT+fTpkHP692KBO1CFTsKM02XH1+8TiNaAOtIQ
-         ZRYEnWlLsr2E1PM16k+w2SXyIw+oUgMPkU8UHzU11PYmZt7RDBd2fHOU1E2YcG37Z0nM
-         XIw4ZSG1qmqci+yFigBfGECDqkG0ZSkgJGAghiGIr61bF5Jm6rL+Dap+BYgjRvIrzxI3
-         mCVA==
-X-Gm-Message-State: AOAM531WUobzM9e+BI2vgcLCSlw4MglJSYfgDsnAXSaRSBoich5kKpTe
-        F8AbwwQrsnabcBaMaEcglMGxRyMUJorzPvF5NFAlbbV7AuT0
-X-Google-Smtp-Source: ABdhPJwHWDSpCC0WchloMDJtjp2ekL7TNVVprJjUbPcnJTsuVKCcOficGv4YWiReILvGYDzovpuwpzGZF4W6lsmLboE1EZkSP2bI
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6bOa4esw0xksLVfNdAT6B93rV/P/8VSGEKMP6EjzR0E=;
+        b=QQ76NgZgH/cYmWyrl0XjRsh5zbGfAo0im7xmmt5dG07aREFYiaqlN0OtEt6dRsVUMY
+         DN8K+hsMdV5zxLxZ8RNMs/kkLnRteuy1pKgX6vSIhEXZq2ajCk+tSoyyt5B4wFtcYBGh
+         A4eZn+412vC8Fgpwh/QTXtDSKa1E+W+ixiSxcSnNdXnohh4BGZkH82Oubnpt0bmVDBqb
+         upy/EZtnmNCG1nLHZod1lOo1HqeM4aZi6iUW1t6ni6onp2KZl4UJrVtt4ufx+LmwuAOC
+         R90mHUXVjUX3Q8JpDFtqq5B3qLG23DlHp8MOLGCY181wWkFiBPzBCYd8Q94LUDTZ5cKw
+         A/xg==
+X-Gm-Message-State: AOAM531w1+Bo5I3ToYPcXJDmvgGn0K/ZmUEhxz6Pi1hF87W7l4S9qQUL
+        n0LmxRa/5iD9wnklARYPkdTkDA==
+X-Google-Smtp-Source: ABdhPJyJZwIgrQupdT+vh6Z2lrRhM1s6jhssKdeRPoFc/TqToiSIDBj6GM5p6VPlbfki0O4rCxkesQ==
+X-Received: by 2002:a17:90b:3a8f:b0:1e8:7669:8a2f with SMTP id om15-20020a17090b3a8f00b001e876698a2fmr16728205pjb.55.1654655998366;
+        Tue, 07 Jun 2022 19:39:58 -0700 (PDT)
+Received: from google.com ([2401:fa00:8f:203:463d:a192:6128:66e])
+        by smtp.gmail.com with ESMTPSA id 84-20020a621857000000b0050dc7628158sm13612168pfy.50.2022.06.07.19.39.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 19:39:57 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 11:39:52 +0900
+From:   Sergey Senozhatsky <senozhatsky@chromium.org>
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        regressions@lists.linux.dev, Jens Axboe <axboe@kernel.dk>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Nitin Gupta <ngupta@vflare.org>
+Subject: Re: qemu-arm: zram: mkfs.ext4 : Unable to handle kernel NULL pointer
+ dereference at virtual address 00000140
+Message-ID: <YqAL+HeZDk5Wug28@google.com>
+References: <CA+G9fYtVOfWWpx96fa3zzKzBPKiNu1w3FOD4j++G8MOG3Vs0EA@mail.gmail.com>
+ <Yp47DODPCz0kNgE8@google.com>
+ <CA+G9fYsjn0zySHU4YYNJWAgkABuJuKtHty7ELHmN-+30VYgCDA@mail.gmail.com>
+ <Yp/kpPA7GdbArXDo@google.com>
 MIME-Version: 1.0
-X-Received: by 2002:a02:bb85:0:b0:331:7a13:201b with SMTP id
- g5-20020a02bb85000000b003317a13201bmr13410664jan.41.1654656667728; Tue, 07
- Jun 2022 19:51:07 -0700 (PDT)
-Date:   Tue, 07 Jun 2022 19:51:07 -0700
-In-Reply-To: <CACGkMEvtV+hVdpgpkYvAmkRteYDN+2dDacrfXsYDv0ZzjJU+ag@mail.gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e7c46e05e0e6c6a1@google.com>
-Subject: Re: [syzbot] INFO: task hung in add_early_randomness (2)
-From:   syzbot <syzbot+5b59d6d459306a556f54@syzkaller.appspotmail.com>
-To:     herbert@gondor.apana.org.au, jasowang@redhat.com,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux@dominikbrodowski.net, mpm@selenic.com, mst@redhat.com,
-        syzkaller-bugs@googlegroups.com, xuanzhuo@linux.alibaba.com,
-        yuehaibing@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yp/kpPA7GdbArXDo@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On (22/06/07 16:52), Minchan Kim wrote:
+> > rootfs: https://oebuilds.tuxbuild.com/29zhlbEc3EWq2wod9Uy964Bp27q/images/am57xx-evm/rpb-console-image-lkft-am57xx-evm-20220601222434.rootfs.ext4.gz
+> > kernel: https://builds.tuxbuild.com/29zhqJJizU2Y7Ka7ArhryUOrNDC/zImage
+> > 
+> > Boot command,
+> >  /usr/bin/qemu-system-aarch64 -cpu host,aarch64=off -machine
+> > virt-2.10,accel=kvm -nographic -net
+> > nic,model=virtio,maaacaddr=BA:DD:AD:CC:09:04 -net tap -m 2048 -monitor
+> > none -kernel kernel/zImage --append "console=ttyAMA0 root=/dev/vda rw"
+> > -hda rootfs/rpb-console-image-lkft-am57xx-evm-20220601222434.rootfs.ext4
+> > -m 4096 -smp 2
+> > 
+> > # cd /opt/kselftests/default-in-kernel/zram
+> > # ./zram.sh
+> > 
+> > Allow me sometime I will try to bisect this problem.
+> 
+> Thanks for sharing the info. 
+> 
+> I managed to work your rootfs with my local arm build
+> based on the problematic git tip. 
+> However, I couldn't suceed to reproduce it.
+> 
+> I needed to build zsmalloc/zram built-in instead of modules
+> Is it related? Hmm,
+> 
+> Yeah, It would be very helpful if you could help to bisect it.
 
-syzbot tried to test the proposed patch but the build/boot failed:
-
-failed to apply patch:
-checking file drivers/char/hw_random/virtio-rng.c
-patch: **** unexpected end of file in patch
-
-
-
-Tested on:
-
-commit:         bd8bb9ae vdpa: ifcvf: set pci driver data in probe
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
-dashboard link: https://syzkaller.appspot.com/bug?extid=5b59d6d459306a556f54
-compiler:       
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=165a0febf00000
-
+This looks like a NULL lock->name dereference in lockdep. I suspect
+that somehow local_lock doesn't get .dep_map initialized. Maybe running
+the kernel with CONFIG_DEBUG_LOCK_ALLOC would help us? Naresh, can you
+help us with this?
