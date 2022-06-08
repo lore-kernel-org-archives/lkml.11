@@ -2,112 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E594AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:00:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51571C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:01:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235568AbiFHKAu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:00:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53960 "EHLO
+        id S235720AbiFHKBX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235566AbiFHJ7s (ORCPT
+        with ESMTP id S235778AbiFHKA7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:59:48 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87583BBCC9
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:34:49 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id s13so22064500ljd.4
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 02:34:49 -0700 (PDT)
+        Wed, 8 Jun 2022 06:00:59 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB81C4B1CB
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:36:37 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id o7so6994027eja.1
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 02:36:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Wt4jwJ729Z1cnfmXAe7mWf4AuHpZaK+zbrq+TbEYiBw=;
-        b=PvqochYMZDfynfYYKE45DzNEhxM3QRXxLYYCE9aCl2GpRV5MT59qnGp1rDJ0Zu40qm
-         aYga+EH/CHQgTUYpkq6JtxBp7C/DnYp1aWsRRnQxLhyxkAyRzLfsMc3P5JEeAvnkC/Xq
-         Yl222M/kISKiVQ4cRlDz57PG6LnRTZbCIVdCmYqUoAMbcaXSP3oCKhkdw6V8fJwxgKKu
-         t2GPlDnewcDCz9TCyjo9wiEWCOmEVAV+EOeE2LROiM61ZL5UJ4/DwcvGL+bqlICncASX
-         uY85oGcDWqwuevmeG5rrh6vfEeY/K58xs35oZCOFyJQouO136TiC4FpMEIbk09vPLgGm
-         8cBA==
+        bh=Kpmo7UeS2XJUltFXsYvK1cKEeY9o0dVRqp/sC/YL3Dk=;
+        b=uKCZkhB1+8jxuH6AiQ4zRdCOXEvKaBt/5+UnRk6DkVIcXew4DnwU58d/d0dXot9Mam
+         HkT1/ElgHOLf7a9J7rMz76/rtFSO5lHeq6jWMqeHkw4Q+lEm/2R9fAHE55x6UStDLGL9
+         jGZ8tHlPhaQLe/A9KnCyVFhOlUDAfrUI4dBop2mfW9rrEFwORGGo1Om0RMA2QmGvA/ZA
+         j2BsrALYRqbdlQBAIDMdGiOB/Qc84Np6DA1C7yTbAYdpj8pVHLEhUfSI8Jd1LrTWJfbk
+         5k/8bLKvdaN+zEgK+i4ESUJ5QDLAUCH3Ad1zyWjB6CbEj1yjbTHaVQ4cXtyC9kLP5PJ/
+         7t4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Wt4jwJ729Z1cnfmXAe7mWf4AuHpZaK+zbrq+TbEYiBw=;
-        b=Ogutk052PQfIOoD7+cv+PuytTnnr2rrN0R0FSpSP8apeTYusWF9YOpWNu+vQhFoef4
-         pla04XuQAb1rcXGwk4vDq621YAlzyDgGNMoEfh+na4t72kzhjJO6oDNqJp/FuDgPR77F
-         ps1gdzSNB7RNL0yloUjYJTmcuSvxHw6Bc7cHQCPsejfwnCo5R7MTFJ1MTGZBgRnZKtX/
-         6BZRKI9OyE1x/7qABcrUbYk8mSNPhFCLkto9SzT91CI8KdImcIhBFIpRwYRmSMlf55SY
-         JchWWd7t5wzffU0gP9S4WZ0WIqd4Ct6f5qFvqmP4D/tK1By/+NmWSAR9QiSVydRggHR4
-         qO3Q==
-X-Gm-Message-State: AOAM532CTpj3iLpwS1T51lz5Ks9GEJHneo22YWMh0Uxj62RrUEXl06hd
-        XuJW1y7L0Zw5nnPC/WcgtoA=
-X-Google-Smtp-Source: ABdhPJwdubS3TXLWHq+L7vaZZzmCKQ5lJzILUbuYzRsE5fpQGm5jWdZKmyNJkL0/poUAbRZsY5byOA==
-X-Received: by 2002:a2e:b0d0:0:b0:255:9be1:a472 with SMTP id g16-20020a2eb0d0000000b002559be1a472mr7557098ljl.453.1654680887545;
-        Wed, 08 Jun 2022 02:34:47 -0700 (PDT)
-Received: from [192.168.1.11] ([94.103.229.27])
-        by smtp.gmail.com with ESMTPSA id m16-20020a056512115000b00478f2f2f044sm3625005lfg.123.2022.06.08.02.34.46
+        bh=Kpmo7UeS2XJUltFXsYvK1cKEeY9o0dVRqp/sC/YL3Dk=;
+        b=3u5uxTPk42OurDusAuJ46hLtoYn4qsf0c4nI050yyVzGoyhAT2OF3t4AFuYg2MyF+i
+         U4nJpLqUw4b4uHOrGfLHDLqVnDnLEa6nIq6QMQBT5rbeCJWmcubE8wHLV+MS/SaRQ4IW
+         5zjlVjgFzTDapkuGZylsKYmXZDvBsnui1wNGy5Dor0Z3u3PKjyJanlg2UOSjTTmGcUq/
+         YiOMx4L+ct93xsrUtM8iHsbCDRt5cQlNeBizqAp4wZ23WcjzkzHHFiS7gtE+oIelshwn
+         5tzHXCYuI+f6e8M8k/Om7/YD0zdRVlYaSxGkwz24FngKCAq6gOgaba1EJmwebtvpXabI
+         Y71w==
+X-Gm-Message-State: AOAM532N3SgEDH2Zm/qklNDYV0aEIfJG3P4p7yIAv3z+hdf8DBXfjEWu
+        b7tLZNHet0PHu9lOJxzgaf7oQw==
+X-Google-Smtp-Source: ABdhPJw8iZ4CGSvQ5CosOn5nP4C7ONH+zhaseW/eid1dlnzNMHrirG75Ha4zhHbFqrG/GvG9OMg60Q==
+X-Received: by 2002:a17:906:7b82:b0:6f3:ee8d:b959 with SMTP id s2-20020a1709067b8200b006f3ee8db959mr31198083ejo.458.1654680996179;
+        Wed, 08 Jun 2022 02:36:36 -0700 (PDT)
+Received: from [192.168.0.191] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id ck11-20020a0564021c0b00b0042de3d661d2sm11974599edb.1.2022.06.08.02.36.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 02:34:47 -0700 (PDT)
-Message-ID: <01d6737a-9e2d-c009-4e24-c2c54b39b80c@gmail.com>
-Date:   Wed, 8 Jun 2022 12:34:45 +0300
+        Wed, 08 Jun 2022 02:36:35 -0700 (PDT)
+Message-ID: <0de4b78f-5ed1-efea-4b53-fe16ed9c7e42@linaro.org>
+Date:   Wed, 8 Jun 2022 11:36:34 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [BUG] staging: r8188eu: driver stopped working with commit
- ("staging: r8188eu: add check for kzalloc")
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v8 3/3] arm64: dts: qcom: sc7280: Update SNPS Phy params
+ for SC7280 IDP device
 Content-Language: en-US
-To:     Martin Kaiser <lists@kaiser.cx>,
-        Michael Straube <straube.linux@gmail.com>,
-        phil@philpotter.co.uk
-Cc:     gregkh@linuxfoundation.org, Larry.Finger@lwfinger.net,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220606064055.12565-1-straube.linux@gmail.com>
- <ded4b3f5-a9bc-4612-33cc-68bd85cb92fe@gmail.com>
- <20220608092731.hz26q37fhmrhipmj@viti.kaiser.cx>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220608092731.hz26q37fhmrhipmj@viti.kaiser.cx>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Krishna Kurapati <quic_kriskura@quicinc.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Wesley Cheng <quic_wcheng@quicinc.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, quic_pkondeti@quicinc.com,
+        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com
+References: <1654066564-20518-1-git-send-email-quic_kriskura@quicinc.com>
+ <1654066564-20518-4-git-send-email-quic_kriskura@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1654066564-20518-4-git-send-email-quic_kriskura@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Martin,
-
-On 6/8/22 12:27, Martin Kaiser wrote:
-> Hi Michael & Phil,
+On 01/06/2022 08:56, Krishna Kurapati wrote:
+> Overriding the SNPS Phy tuning parameters for SC7280 IDP device.
 > 
-> Thus wrote Michael Straube (straube.linux@gmail.com):
-> 
->> The driver does not work anymore on my system. In dmesg there is:
-> 
->> "r8188eu 1-4:1.0: _rtw_init_xmit_priv failed"
-> 
->> I bisected it to commit f94b47c6bde ("staging: r8188eu: add check for
->> kzalloc").
-> 
->> ~/kernels/staging> git bisect bad
->> f94b47c6bde624d6c07f43054087607c52054a95 is the first bad commit
-> 
->> At the moment I have no time to look further into it.
-> 
-> See also
-> 
-> https://lore.kernel.org/linux-staging/YoyU4zXf45UpF1Tq@kroah.com/T/#mb5e56a285b8eb1ebb0e798462fc388cb02b4a7cc
-> 
-> Phil said in
-> 
-> https://lore.kernel.org/linux-staging/YoyU4zXf45UpF1Tq@kroah.com/T/#m7a21d460b2569f6b59965ecc3298a6337fa3458a
-> 
-
-There is the posted patch [1]. I also have to apply it every time I want 
-to test smth.
-
-[1] https://lore.kernel.org/all/20220521204741.921-1-phil@philpotter.co.uk/
+> Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 6 ++++++
+>  1 file changed, 6 insertions(+)
 
 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
-With regards,
-Pavel Skripkin
+Best regards,
+Krzysztof
