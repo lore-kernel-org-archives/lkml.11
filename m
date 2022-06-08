@@ -2,86 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED8B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:52:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE08DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:52:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232389AbiFHIwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51188 "EHLO
+        id S229964AbiFHIwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:52:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232505AbiFHIv5 (ORCPT
+        with ESMTP id S232516AbiFHIv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 8 Jun 2022 04:51:57 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C8A26A926;
-        Wed,  8 Jun 2022 01:09:21 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id h1so16965661plf.11;
-        Wed, 08 Jun 2022 01:09:21 -0700 (PDT)
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58B026EEB5
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:09:29 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-f2e0a41009so26290096fac.6
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 01:09:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wzCO2PHgpPzaCVBVfWdrrgnry8jUU6uemsouKbLB4Pc=;
-        b=kPTykBE3ERcs7XgModDK/vMFZHXgn8br/ljamm2UtAtie5/HYQ5y7diDf8ds42B06m
-         xMN7sBQ5vJhuyosrGLubGqgaFtggMbK1UtZAoJPbvOkn9tNFr+jAwJmLaFVfnZ9Iehwh
-         yCd5jHtWUjMTC//CoNqgNMsOpYu47NRQOOoODVgqHQhwZPabgstDwKW7MCVw/UMSllwQ
-         T0e56yNmXH3ns+T9gZUiPge5WDMr6CfTmbF182AbnbyoXSgc9lerKFCkD5AvA05BmPmQ
-         kkFu/VewHjANXX4XgZSnvO+OAGpuU7Hm6gl1YS3YVmj5o46YvCUNeR3dIQ4QNOs/68Dz
-         Aqrg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=+MMD21NPgOfS4IM7Z40OZnUQr5CdKWtzJx16Y8c5lj4=;
+        b=nLkPwpCsFWCdSyyriJWdU7K9NnAY9DMXz2vxLPoilFBQnN5Vf7Jr17b5AI4FryypkC
+         CBEPZ+OYSWkAm3gTy3Wi4TfmB+mWRclLHrwGywod8DusEz2uz3E0TSdxBPNDSILCc2Yq
+         Ujqutye6DLuW1jMagA4OzYN7furJcYnH4HB9vuVouxIIy6kXuOAZZz3sYkpNV112rGXe
+         bfoZfllXWX9/yiEXlDsShmfFd+zStw64GNtZKta+boKiIRvuH+UioiOT0E3ypS4ZRwKK
+         T8D47ikdDZG00SmnFtJpCw63/kge7mHD9fyy16mJXoTF9NISSDTId2RWuurS1zKs1P3t
+         Tn3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wzCO2PHgpPzaCVBVfWdrrgnry8jUU6uemsouKbLB4Pc=;
-        b=zDsRGiv0lXAwv8dbvVxodiVKxaFc97LKBsUczOjZVtSLFA3FrF52e4KETf/bWNfJUL
-         kUvXpCJWpHuKn+EPM+TjolRGSfUtV3UNXALTL6zsauLu4hK1vjERSb8WjHMoVa9nE9Xy
-         uU0VIN9sUq/o4EhLLq0gb0VGZ6AqZwXQ+rplnuvdVREoZDkcuAiGT5AsNvVE4PEHWOiJ
-         giKnWQ3jvzYKO6oWXSN0e6eU0z1DP01Jkb8gjNKHUwdy0ZakTbbSHuI3vJoVhPuRF1pD
-         EJ7M5gh59fmq7Fk5GkFdBKlajlEhMOlBCxPwvxQ08Q5nSXY0guLav8UvgM+G7z2H/A0C
-         UT2w==
-X-Gm-Message-State: AOAM533bWsggDvPrek4f9Tgy7irsTpoc/yQ7VMX8wjgiJPV6hEXGYvLE
-        VHrQ7M7XqAhDbYjzcSuHFwE=
-X-Google-Smtp-Source: ABdhPJwy7w1/KLYXns+KpuB2zm2khovi9eQl2y3X3BbPGCbRCANZ/itnaL9+SU6NpnPv35n7LVPfvQ==
-X-Received: by 2002:a17:90b:1101:b0:1e8:5df5:b2ac with SMTP id gi1-20020a17090b110100b001e85df5b2acmr22164892pjb.239.1654675760849;
-        Wed, 08 Jun 2022 01:09:20 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t18-20020a170902e85200b0015e8d4eb1c8sm14008098plg.18.2022.06.08.01.09.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 01:09:20 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     bcm-kernel-feedback-list@broadcom.com,
-        William Zhang <william.zhang@broadcom.com>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     joel.peshkin@broadcom.com, tomer.yacoby@broadcom.com,
-        kursad.oney@broadcom.com, philippe.reynes@softathome.com,
-        dan.beygelman@broadcom.com, samyon.furman@broadcom.com,
-        anand.gore@broadcom.com, florian.fainelli@broadcom.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/5] arm64: dts: add dts files for bcmbca soc 63158
-Date:   Wed,  8 Jun 2022 01:09:18 -0700
-Message-Id: <20220608080918.1448974-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220601225654.18519-4-william.zhang@broadcom.com>
-References: <20220601225654.18519-1-william.zhang@broadcom.com> <20220601225654.18519-4-william.zhang@broadcom.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+MMD21NPgOfS4IM7Z40OZnUQr5CdKWtzJx16Y8c5lj4=;
+        b=EZreYyxpT7cyZqgKjxkn+IBd2Qg0IxvK1knUyRuCs33Pz7KydI/+TaQHZrcdyv/gvZ
+         FHkIwofXv7wTC936YtxLCt6WtsBssC0FaD6kffOq3R+5wk8SPX14suvR9AAgCD6RWIbq
+         62w86PAcIFONEljVENoyMUYlyMMppPYu9AgSlJJowF6fLUBxOO2epvmLw1RdX6M/5r1z
+         dylewE/QQnFGIqTSmyDcN6ha7u6bSvrNx9eEY8wBiYrubiOqtX76dBdwIKSkwybSeUib
+         2ccD4WQii+yw64eBf9N0yhXzaHFWwmCJ5jE/yFZJiJSAIcYszfJ0u26jDXQeJWfFJ4VG
+         rptg==
+X-Gm-Message-State: AOAM531fsIns5avjJFh2AIklAvPb1cA5LdBXojEZWUJqbvxzO4CuY3fC
+        SukjMoZBXByLCcm67mcGl/PBUYGSG7Ck2X73
+X-Google-Smtp-Source: ABdhPJx9i9bRAxE/hgST/uEDns41HlY0VQPP2LJmKUBRajjCi+cPxt/fmt3SUADALQO7okgUyrAkyQ==
+X-Received: by 2002:a17:90b:304:b0:1e3:4285:ce1e with SMTP id ay4-20020a17090b030400b001e34285ce1emr37276571pjb.71.1654675344879;
+        Wed, 08 Jun 2022 01:02:24 -0700 (PDT)
+Received: from [192.168.0.24] ([88.126.57.132])
+        by smtp.gmail.com with ESMTPSA id q16-20020a170902dad000b0015e8d4eb1c6sm14166232plx.16.2022.06.08.01.02.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 01:02:24 -0700 (PDT)
+Message-ID: <7c6cd8c3-dc1f-5130-19d5-00443ee56bdd@gmail.com>
+Date:   Wed, 8 Jun 2022 10:02:08 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] MAINTAINERS: Update BCM2711/BCM2835 maintainer
+Content-Language: en-US
+To:     Nicolas Saenz Julienne <nsaenz@kernel.org>, f.fainelli@gmail.com
+Cc:     stefan.wahren@i2se.com, bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220603073012.30979-1-nsaenz@kernel.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220603073012.30979-1-nsaenz@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  1 Jun 2022 15:56:51 -0700, William Zhang <william.zhang@broadcom.com> wrote:
-> Add dts for ARMv8 based broadband SoC BCM63158. bcm63158.dtsi is the
-> SoC description dts header and bcm963158.dts is a simple dts file for
-> Broadcom BCM963158 Reference board that only enable the UART port.
+
+
+On 6/3/2022 9:30 AM, Nicolas Saenz Julienne wrote:
+> I haven't been able to find time to maintain BCM2711/BCM2835 these last
+> months, so it's only fair to pass the baton to Florian who's been doing
+> the work.
 > 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
-> 
+> Signed-off-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
 > ---
 
-Applied to https://github.com/Broadcom/stblinux/commits/devicetree-arm64/next, thanks!
---
+Applied to maintainers/fixes, thanks Nicolas for your time as a maintainer!
+-- 
 Florian
