@@ -2,104 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FEB7CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:16:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E68ECC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241441AbiFHHMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41712 "EHLO
+        id S241808AbiFHHMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:12:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348783AbiFHGNp (ORCPT
+        with ESMTP id S243146AbiFHGvO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 02:13:45 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3A2DA608;
-        Tue,  7 Jun 2022 22:39:57 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 07DE42059C;
-        Wed,  8 Jun 2022 07:39:41 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id tChzzvgOgNwg; Wed,  8 Jun 2022 07:39:39 +0200 (CEST)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id DD1F420581;
-        Wed,  8 Jun 2022 07:39:39 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id D5B9580004A;
-        Wed,  8 Jun 2022 07:39:39 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 8 Jun 2022 07:39:39 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 8 Jun
- 2022 07:39:39 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 3F3B83182CC9; Wed,  8 Jun 2022 07:39:39 +0200 (CEST)
-Date:   Wed, 8 Jun 2022 07:39:39 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-CC:     Eric Dumazet <edumazet@google.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Ahern <dsahern@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH 2/3] net: xfrm: unexport __init-annotated
- xfrm4_protocol_init()
-Message-ID: <20220608053939.GM680067@gauss3.secunet.de>
-References: <20220606045355.4160711-1-masahiroy@kernel.org>
- <20220606045355.4160711-3-masahiroy@kernel.org>
- <52e02030f7b2c0052472f127dae91fb9f5312b85.camel@redhat.com>
+        Wed, 8 Jun 2022 02:51:14 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E1517DDCC
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:42:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654670562; x=1686206562;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Jb5Q9Xorlzkgr5sm1kTa2c32QeDSwnsiMBz2O49CaLE=;
+  b=fBC7l95KaVGahUWADJqLf71dXMxBk+1Tgolrdqq6VlV+/jie6oYVqrGp
+   oZasi6YW6mnLy24NAhZQbjz4xUko1fWKXyAXz36uuduLbEm11txeS+DcX
+   J1QrxJFjMzXUi95VdvKP7PyhOeS1B9Mx3q8Opm2AcOMnRXZhdkH7Vd98i
+   a//HchoNXd2PGNcOUZYGVU2bG5ANv7HNvq5p3X3fxpDqfZPiz1rkgzF8r
+   XsCT+RV6cqZbgwn2j3A7gC1g4nL+7IM1ZOeWplXCCFtXUj0LX1GU+Phii
+   FIgxIf/3dWZIJAFH7hSSrTuOpQXhVK9iNYTk6A49d/s90nD/rMdwu7cck
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="363136883"
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="363136883"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 23:42:41 -0700
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="636616169"
+Received: from xding11-mobl.ccr.corp.intel.com ([10.254.214.239])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 23:42:36 -0700
+Message-ID: <052e3ba49bf815393ca4b51650134faee0d70feb.camel@intel.com>
+Subject: Re: [PATCH v5 2/9] mm/demotion: Expose per node memory tier to sysfs
+From:   Ying Huang <ying.huang@intel.com>
+To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>, linux-mm@kvack.org,
+        akpm@linux-foundation.org
+Cc:     Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+Date:   Wed, 08 Jun 2022 14:42:33 +0800
+In-Reply-To: <626023e8-8443-619e-18ee-a758c37fcec2@linux.ibm.com>
+References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
+         <20220603134237.131362-3-aneesh.kumar@linux.ibm.com>
+         <fa6b575dfea7c2131ecfec0f5578d72ca4acfd95.camel@linux.intel.com>
+         <626023e8-8443-619e-18ee-a758c37fcec2@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <52e02030f7b2c0052472f127dae91fb9f5312b85.camel@redhat.com>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 01:18:32PM +0200, Paolo Abeni wrote:
-> On Mon, 2022-06-06 at 13:53 +0900, Masahiro Yamada wrote:
-> > EXPORT_SYMBOL and __init is a bad combination because the .init.text
-> > section is freed up after the initialization. Hence, modules cannot
-> > use symbols annotated __init. The access to a freed symbol may end up
-> > with kernel panic.
+On Wed, 2022-06-08 at 10:25 +0530, Aneesh Kumar K V wrote:
+> On 6/8/22 1:45 AM, Tim Chen wrote:
+> > On Fri, 2022-06-03 at 19:12 +0530, Aneesh Kumar K.V wrote:
+> > > 
+> > >   
+> > > 
+> > > 
+> > > 
+> > > +static struct memory_tier *__node_get_memory_tier(int node)
+> > > +{
+> > > +	struct memory_tier *memtier;
+> > > +
+> > > +	list_for_each_entry(memtier, &memory_tiers, list) {
 > > 
-> > modpost used to detect it, but it has been broken for a decade.
+> > We could need to map node to mem_tier quite often, if we need
+> > to account memory usage at tier level.  It will be more efficient
+> > to have a pointer from node (pgdat) to memtier rather
+> > than doing a search through the list.
 > > 
-> > Recently, I fixed modpost so it started to warn it again, then this
-> > showed up in linux-next builds.
 > > 
-> > There are two ways to fix it:
-> > 
-> >   - Remove __init
-> >   - Remove EXPORT_SYMBOL
-> > 
-> > I chose the latter for this case because the only in-tree call-site,
-> > net/ipv4/xfrm4_policy.c is never compiled as modular.
-> > (CONFIG_XFRM is boolean)
-> > 
-> > Fixes: 2f32b51b609f ("xfrm: Introduce xfrm_input_afinfo to access the the callbacks properly")
-> > Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 > 
-> @Steffen: are you ok if we take this one in the -net tree directly?
-> Otherwise a repost would probably be the better option, with this patch
-> stand-alone targeting the ipsec tree and the other 2 targeting -net.
+> That is something I was actively trying to avoid. Currently all struct 
+> memory_tier references are with memory_tier_lock mutex held. That 
+> simplify the locking and reference counting.
+> 
+> As of now we are able to implement all the required interfaces without 
+> pgdat having pointers to struct memory_tier. We can update pgdat with 
+> memtier details when we are implementing changes requiring those. We 
+> could keep additional memtier->dev reference to make sure memory tiers 
+> are not destroyed while other part of the kernel is referencing the 
+> same. But IMHO such changes should wait till we have users for the same.
 
-Yes, just take it.
+No.  We need a convenient way to access memory tier information from
+inside the kernel.  For example, from nid to memory tier rank, this is
+needed by migrate_misplaced_page() to do statistics too, iterate all
+nodes of a memory tier, etc.
 
-Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
+And, "allowed" field of struct demotion_nodes (introduced in [7/9] is
+per-memory tier instead of per-node.  Please move it to struct
+memory_tier.  And we just need a convenient way to access it.
 
-Thanks!
+All these are not complex, unless you insist to use memory_tier_lock and
+device liftcycle to manage this in-kernel data structure.
+
+Best Regards,
+Huang, Ying
+
+> > > +		if (node_isset(node, memtier->nodelist))
+> > > +			return memtier;
+> > > +	}
+> > > +	return NULL;
+> > > +}
+> > > +
+> > > 
+> > 
+> > Tim
+> > 
+> 
+> -aneesh
+> 
+
+
