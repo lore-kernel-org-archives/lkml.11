@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A91DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:35:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 518C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:38:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230222AbiFHIcb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:32:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55064 "EHLO
+        id S231560AbiFHIiP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:38:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbiFHIbE (ORCPT
+        with ESMTP id S231421AbiFHIgn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 04:31:04 -0400
+        Wed, 8 Jun 2022 04:36:43 -0400
 Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FAC1CE7B8
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:53:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1654671960; cv=none; 
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0848012088B
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:56:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1654671931; cv=none; 
         d=zohomail.com; s=zohoarc; 
-        b=bvBVBp311UrrA3YEXD3M4S9ESkLApb49rsbhfGG8twXJaPM5FGXZEuIkyjKV/qliv4jDa9vpL2y3P8sWLD3CTijGlUjH0N9FLel+k0IdcwWZ/mS1oauxGgIr/5MA62+ilVBZVPReB88NbzKPmtaBQrwTOpDwNa+qlhmCKH3MeVw=
+        b=I6iTAv7VV57zQvIZ3qbDQHUVA7U6jmANnzJSSF64qN7oWfgcz7JbbfFFLFK+LkpJN4ukb9IFd7AhKhRT+cqittQNJMgolkveshF27qSCcPZwdGQv0WO16VD7RP7JsWGsbQAGh40T3OkFFo4BDMEYbg7nMdKcSsK1+KE4CQHAgz8=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1654671960; h=Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=bwLNTfaNNmXUu3sy1HadN8NYZVEx7VSfxP8UHGZMLLA=; 
-        b=fmnIHZUjzhMAZTajRK/wUl5YYDW4NxfsHfCceBaEcGVQWhduF4H+9MHWuQcA8EbYm3qHiJy7WQjAMCoiau68k3TCFQdm1zOwpsRhm5TYDTgsBeoKKpv0CVvCXsqGNeDB3jatLlI7trDtrWR2YDQ4OCEhtgP3WwsjXVFzF70x4D0=
+        t=1654671931; h=Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=d2+L3oYy7eNvjEgKjDZKUUUnCobv7HCrKGgG0zEy0dA=; 
+        b=PblKKECZ66RYVO2Gb+iMUgUTDlYNeRJ/xFs6lQJSS5ogy8vfdgGmO0VE8lLq7CA1giqjBC2T37447FAlzm6KnrBcA+tMBoz7jzHzbxNhU+29rKMlk+cLU7ssLJHsiCSWBWHcPvSrXswx/asHMucKYj1N9yq+PqIsi+wuW86DxpU=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
         dkim=pass  header.i=icenowy.me;
         spf=pass  smtp.mailfrom=uwu@icenowy.me;
         dmarc=pass header.from=<uwu@icenowy.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1654671960;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1654671931;
         s=zmail; d=icenowy.me; i=uwu@icenowy.me;
         h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Reply-To;
-        bh=bwLNTfaNNmXUu3sy1HadN8NYZVEx7VSfxP8UHGZMLLA=;
-        b=GXTl4vKL53A4jWqTuURNFn9gezZrfZok8N+u7O9RFmYEcm8rNb8uSOP6nof9hn39
-        8qx6fm11SglYz3ThP5ObLBlFhH8O16B76O29CmNhVwrcN3qrLzbL+G5NJ2z0qnACGsg
-        8kxyu7p/svDe3nUba14D6n9jW11+Wj6JVuecp0jo=
+        bh=d2+L3oYy7eNvjEgKjDZKUUUnCobv7HCrKGgG0zEy0dA=;
+        b=HIJ6fzQ5H58U2YX9pWAZ1Gyp6vbfNYSNNIPe1ojTHRtMXayGuj0HC5OhtsAljhOj
+        hu6MZ8TQh6w6+EGG8zHKij+HY60jpnGmU3ikImCWiFy/VoCZeiVMhqd2EfMBxUc27xN
+        8nl4VnmgKHLo5es0GEz9sj2TqeatBaQXh+P4dLP4=
 Received: from edelgard.icenowy.me (59.41.163.66 [59.41.163.66]) by mx.zohomail.com
-        with SMTPS id 1654671958834763.4225983678638; Wed, 8 Jun 2022 00:05:58 -0700 (PDT)
+        with SMTPS id 1654671930603545.7452579301226; Wed, 8 Jun 2022 00:05:30 -0700 (PDT)
 From:   Icenowy Zheng <uwu@icenowy.me>
 To:     Kishon Vijay Abraham I <kishon@ti.com>,
         Vinod Koul <vkoul@kernel.org>,
@@ -47,9 +47,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-sunxi@lists.linux.dev, linux-usb@vger.kernel.org,
         Icenowy Zheng <icenowy@aosc.io>
-Subject: [PATCH 7/7] ARM: suniv: f1c100s: enable USB on Lichee Pi Nano
-Date:   Wed,  8 Jun 2022 15:04:52 +0800
-Message-Id: <20220608070452.338006-8-uwu@icenowy.me>
+Subject: [PATCH 4/7] phy: sun4i-usb: add support for the USB PHY on F1C100s SoC
+Date:   Wed,  8 Jun 2022 15:04:49 +0800
+Message-Id: <20220608070452.338006-5-uwu@icenowy.me>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220608070452.338006-1-uwu@icenowy.me>
 References: <20220608070452.338006-1-uwu@icenowy.me>
@@ -62,52 +62,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Icenowy Zheng <icenowy@aosc.io>
 
-Lichee Pi Nano has a Micro-USB connector, with its D+, D- pins connected
-to the USB pins of the SoC and ID pin connected to PE2 GPIO.
+The F1C100s SoC has one USB OTG port connected to a MUSB controller.
 
-Enable the USB functionality.
+Add support for its USB PHY.
 
 Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
 ---
- .../arm/boot/dts/suniv-f1c100s-licheepi-nano.dts | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/phy/allwinner/phy-sun4i-usb.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/arch/arm/boot/dts/suniv-f1c100s-licheepi-nano.dts b/arch/arm/boot/dts/suniv-f1c100s-licheepi-nano.dts
-index 04e59b8381cb..1935d8c8855b 100644
---- a/arch/arm/boot/dts/suniv-f1c100s-licheepi-nano.dts
-+++ b/arch/arm/boot/dts/suniv-f1c100s-licheepi-nano.dts
-@@ -6,6 +6,8 @@
- /dts-v1/;
- #include "suniv-f1c100s.dtsi"
- 
-+#include <dt-bindings/gpio/gpio.h>
-+
- / {
- 	model = "Lichee Pi Nano";
- 	compatible = "licheepi,licheepi-nano", "allwinner,suniv-f1c100s";
-@@ -50,8 +52,22 @@ flash@0 {
- 	};
+diff --git a/drivers/phy/allwinner/phy-sun4i-usb.c b/drivers/phy/allwinner/phy-sun4i-usb.c
+index d5f3b42eb8ce..f6592c8d611b 100644
+--- a/drivers/phy/allwinner/phy-sun4i-usb.c
++++ b/drivers/phy/allwinner/phy-sun4i-usb.c
+@@ -109,6 +109,7 @@ enum sun4i_usb_phy_type {
+ 	sun8i_v3s_phy,
+ 	sun50i_a64_phy,
+ 	sun50i_h6_phy,
++	suniv_f1c100s_phy,
  };
  
-+&otg_sram {
-+	status = "okay";
+ struct sun4i_usb_phy_cfg {
+@@ -859,6 +860,14 @@ static int sun4i_usb_phy_probe(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static const struct sun4i_usb_phy_cfg suniv_f1c100s_cfg = {
++	.num_phys = 1,
++	.type = suniv_f1c100s_phy,
++	.disc_thresh = 3,
++	.phyctl_offset = REG_PHYCTL_A10,
++	.dedicated_clocks = true,
 +};
 +
- &uart0 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&uart0_pe_pins>;
- 	status = "okay";
+ static const struct sun4i_usb_phy_cfg sun4i_a10_cfg = {
+ 	.num_phys = 3,
+ 	.type = sun4i_a10_phy,
+@@ -988,6 +997,8 @@ static const struct of_device_id sun4i_usb_phy_of_match[] = {
+ 	{ .compatible = "allwinner,sun50i-a64-usb-phy",
+ 	  .data = &sun50i_a64_cfg},
+ 	{ .compatible = "allwinner,sun50i-h6-usb-phy", .data = &sun50i_h6_cfg },
++	{ .compatible = "allwinner,suniv-f1c100s-usb-phy",
++	  .data = &suniv_f1c100s_cfg },
+ 	{ },
  };
-+
-+&usb_otg {
-+	dr_mode = "otg";
-+	status = "okay";
-+};
-+
-+&usbphy {
-+	usb0_id_det-gpio = <&pio 4 2 GPIO_ACTIVE_HIGH>; /* PE2 */
-+	status = "okay";
-+};
+ MODULE_DEVICE_TABLE(of, sun4i_usb_phy_of_match);
 -- 
 2.36.0
 
