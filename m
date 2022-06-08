@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD50C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 21:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C789C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 21:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236189AbiFHVNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 17:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44274 "EHLO
+        id S233846AbiFHVNx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 17:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236181AbiFHVNB (ORCPT
+        with ESMTP id S236594AbiFHVNb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 17:13:01 -0400
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6738D405279
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 14:13:00 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id j8-20020a9d7d88000000b0060c1484c93eso2611233otn.13
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 14:13:00 -0700 (PDT)
+        Wed, 8 Jun 2022 17:13:31 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88AA533E0C
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 14:13:30 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id w16so19793384oie.5
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 14:13:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=mime-version:in-reply-to:references:from:user-agent:date:message-id
          :subject:to:cc;
-        bh=zU2IqojqnmMw7oHCklReG2t+BVElCfqra7nD/0zeq60=;
-        b=nL4lh+nhXy6KDiZMuEC7AZ+4T+CP3Ep054FT+G2lyrT98EsI9lclYve4NTngxRw4nj
-         gYZnhWXCE+kV1tiFShrOpXOvU+rJpkUA8gsvKgpj3BnM5tTzUIxtVcWi4oo7qXu3+QW+
-         p6qqZh7ij1fnnc73xDYW10Ir3V9zRzUW3F08M=
+        bh=5k2lXIDEokraHei/3DYd5toc4NljbiupbB9a2J4ktCM=;
+        b=IKyGCewybNq/ZI5ZI8rwFTQc4RMHecpFlA6Sr294bP744cAsP+FMFaE7S+Izj5Pgsr
+         bi78zZngqLumr8m/yfk8rwxl4Ia6FixggXylLiikaOAyOvLZFTYDcEZrBE279aF9WHCh
+         ozjGevapw8S4vym5rOMGlXpwAh88TvZ1rrnxg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:in-reply-to:references:from
          :user-agent:date:message-id:subject:to:cc;
-        bh=zU2IqojqnmMw7oHCklReG2t+BVElCfqra7nD/0zeq60=;
-        b=6otWZYnajW4rAz/L20O7iSCPyJIvvZ+whkTD5XibFtHf2qpSxuRe4uTGZRMgv/ME8x
-         EIRInNJeLDSTo94pw38TNdfDYiUFKRLvb/qVNRbLgkAjEs49pTsRC4z/8jGlPfl6EkEQ
-         A8pXY+LZ4UbvO8UxApoYSlm1GLoX6fNnaqTC2X//8lvNG1EBVbt4RjnyF5eJLH80ZQAt
-         JpLDqw58f4wYL9bTM3o33gXZ/DbkepPXbSGwbFSQDRIRzvz2HqBZDt2BXiApnwf0wZC6
-         qw/UACq7KQGvRIjUo1uU+/HQRI/lmniSEV7cnMqoiwlcGCjIQpZZM0MoX9tObKLs1d7S
-         QE8w==
-X-Gm-Message-State: AOAM5327BUa/fok2y9+WjWsNMQUHPeFf8/beggW8RXc761pf0YYhaGGP
-        z+u5uNO+P465eNugJwhAXKda09cNu52yQfK2Sz0qQQ==
-X-Google-Smtp-Source: ABdhPJyR4UOJKCdH5PXUeGUCZIN4eiKjKZgdVngW7ipxNAeZ+R7k6eQQUsVT11umQLjPb0Qz/kSYO1exywAyN9vRN+o=
-X-Received: by 2002:a9d:729b:0:b0:60c:21bd:97c0 with SMTP id
- t27-20020a9d729b000000b0060c21bd97c0mr617497otj.77.1654722779429; Wed, 08 Jun
- 2022 14:12:59 -0700 (PDT)
+        bh=5k2lXIDEokraHei/3DYd5toc4NljbiupbB9a2J4ktCM=;
+        b=l1aLcId6b9lhEvX5ExhGL1Cr7CSAh//7mVvpUu4jrugC1ujKcO2j+Pi4lZAnoNAgAk
+         wJfoIdlyJ1oFM4BU0V9I8sOfL9AzLicjQn21qUBf+5ZBkxDSizn4QrnQvl+aKH2NP/IU
+         3RZFjgi+oXanJPLAjs0XI8YJUxNVa0rxdmln1RQM+rnTB/JHh5nkh7C5w3IBKbz2428X
+         JbsS583ZAHWppwFMg6NmLXcRY8P8faPbhRw1KNQAYPvLvRQrRRB9eFU5xkGojhobSTc6
+         PLbAudsjU4AjoDeaL06I4/xh0P3Ugpkg8AocKtWpikjemXlHK1VGSCC5FE176VmIfjn/
+         kecg==
+X-Gm-Message-State: AOAM530cmtEe4Q/jNj5f1LMef7ttG0SmWx7sJaJHv3udcOouy968jIqR
+        My862vH4CXodPgucytwGT30amOQ172GWeCr6eRVhZzwMIsU=
+X-Google-Smtp-Source: ABdhPJwFB1+veA013diaL1hpc7zDl+bDQYmdQp2R/FPuKhRGEK6UJHYtZ6FE7vIIHppzs22TjDEAh6WxjTFUaZDzHJQ=
+X-Received: by 2002:a05:6808:e87:b0:32e:4789:d2c with SMTP id
+ k7-20020a0568080e8700b0032e47890d2cmr3389111oil.193.1654722809854; Wed, 08
+ Jun 2022 14:13:29 -0700 (PDT)
 Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 8 Jun 2022 14:12:59 -0700
+ HTTPREST; Wed, 8 Jun 2022 14:13:29 -0700
 MIME-Version: 1.0
-In-Reply-To: <20220608094816.2898692-7-hsinyi@chromium.org>
-References: <20220608094816.2898692-1-hsinyi@chromium.org> <20220608094816.2898692-7-hsinyi@chromium.org>
+In-Reply-To: <20220608094816.2898692-5-hsinyi@chromium.org>
+References: <20220608094816.2898692-1-hsinyi@chromium.org> <20220608094816.2898692-5-hsinyi@chromium.org>
 From:   Stephen Boyd <swboyd@chromium.org>
 User-Agent: alot/0.10
-Date:   Wed, 8 Jun 2022 14:12:59 -0700
-Message-ID: <CAE-0n50C0rJkoH=EPkXfqOPz9ZfODAfx6eimeV8VK8dxRXU_5Q@mail.gmail.com>
-Subject: Re: [PATCH v6 6/8] drm/panel: ili9881c: Implement .get_orientation callback
+Date:   Wed, 8 Jun 2022 14:13:29 -0700
+Message-ID: <CAE-0n519y4i+8RnRv0xUHuW+s3uDG4Cn8i0t5i3NCyUT-s=q-g@mail.gmail.com>
+Subject: Re: [PATCH v6 4/8] drm/panel: lvds: Implement .get_orientation callback
 To:     Douglas Anderson <dianders@chromium.org>,
         Hans de Goede <hdegoede@redhat.com>,
         Hsin-Yi Wang <hsinyi@chromium.org>,
@@ -72,7 +72,7 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Hsin-Yi Wang (2022-06-08 02:48:14)
+Quoting Hsin-Yi Wang (2022-06-08 02:48:12)
 > To return the orientation property to drm/kms driver.
 >
 > Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
