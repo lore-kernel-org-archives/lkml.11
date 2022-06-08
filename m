@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B47C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:09:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 842EAC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:09:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237891AbiFHLI7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 07:08:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
+        id S237066AbiFHLJF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 07:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237858AbiFHLIQ (ORCPT
+        with ESMTP id S237865AbiFHLIQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 8 Jun 2022 07:08:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE711F7025
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 04:08:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0127208B11
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 04:08:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05730B826ED
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:08:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E61BCC341C7;
-        Wed,  8 Jun 2022 11:08:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D12F9B826F5
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:08:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A03DDC341C5;
+        Wed,  8 Jun 2022 11:08:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654686481;
-        bh=Um6SwSY/R7iCUAQw7u/d1daMAEsUQQfyx1jfmVt5HZ8=;
+        s=k20201202; t=1654686485;
+        bh=SOuPQn+pA+TZKZrMQUFucIbBb8s6sRe9OeriPuEMDuw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ADqOpWIx5guELp4hDEkdG5npLO9m52yfVwf77Q9BvFAgzJUa+8Ezwg8FqOjkyrKPN
-         cE4kP14WK+hO0+5p4ymhuUVhDJXA+LwS9kqoUFOri0JSXSg0PJEqpQytmQn6W3+nFj
-         YZK+ThLHJfrHJU9/ODSZpZP6jKct+DCQTk+JcncohkCt1RJqneGP3Bkbx+UojYr5ti
-         vG5QkEMYhSdJsvuqIPrqMT7yKH140204klMK/F4aYoSb9Ncql2UYsdGY56D0b8WDxT
-         cLcVrT1n12owxDMtxbOYXb3unVn/4Zu3C0sheKFrwioPQx6YvueMWkjBomHl58o4QE
-         +cR9gQb0JMYNA==
+        b=GsfLoyFmpW+QFja1teaME4QJkiYD8SA1umyq9chvRuoU6imv/asJmw3i/Nmyc6dAR
+         2xouHHmMYgdiXS3Q2k6PgsDrkck2wnDKsigqihEg0Lr+sfnMH/vPW59oeC+nVf8IOw
+         DbrzXCZ5eiSwdpW0+4YabznaEOR25XHGyxjKcFVU86LYouzbTvRck29RtfkHxZTNel
+         9s/tcYG4lyslhkju0CE2vc8lvOzZzfXk7T1vKnbPmhQqLrPRv+w475ZTTzO0RcgKmx
+         xoedvOiNuIaANdeInTDcnalmjGrhp2ckJVh95kDYlw64Z0ZPtb004J2+TnE++ylo/T
+         BTWAqUCoY5iKQ==
 From:   Tzung-Bi Shih <tzungbi@kernel.org>
 To:     bleung@chromium.org, groeck@chromium.org
 Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 11/23] platform/chrome: cros_ec_proto: add Kunit test for getting legacy info
-Date:   Wed,  8 Jun 2022 11:07:22 +0000
-Message-Id: <20220608110734.2928245-12-tzungbi@kernel.org>
+Subject: [PATCH v3 14/23] platform/chrome: don't use devm variants for `din` and `dout`
+Date:   Wed,  8 Jun 2022 11:07:25 +0000
+Message-Id: <20220608110734.2928245-15-tzungbi@kernel.org>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 In-Reply-To: <20220608110734.2928245-1-tzungbi@kernel.org>
 References: <20220608110734.2928245-1-tzungbi@kernel.org>
@@ -48,87 +48,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cros_ec_get_proto_info_legacy() expects to receive
-sizeof(struct ec_response_hello) from send_command().  The payload is
-valid only if the return value is positive.
+Don't use devm variants because the two buffers could be re-allocated
+multiple times during runtime.  Their life cycles aren't quite aligned
+to the device's.
 
-Add a Kunit test for returning 0 from send_command() in
-cros_ec_get_proto_info_legacy().
+Normally, free the memory if any when the ec_dev gets unregistered in
+cros_ec_unregister().
+
+No need to free memory if kmalloc() fails.  They will be freed
+eventually in either of the following:
+- Error handling path in cros_ec_register().
+- In cros_ec_unregister().
+- Next kmalloc() in cros_ec_query_all().
 
 Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 ---
-No v2.  New and separated from the original series.
+Changes from v2:
+- Don't use realloc.
 
- drivers/platform/chrome/cros_ec_proto_test.c | 49 ++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+Changes from v1:
+- Don't use devm.
+- Free in cros_ec_unregister().
 
+ drivers/platform/chrome/cros_ec.c            |  4 +++
+ drivers/platform/chrome/cros_ec_proto.c      | 29 ++++++++------------
+ drivers/platform/chrome/cros_ec_proto_test.c |  4 +--
+ 3 files changed, 17 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/platform/chrome/cros_ec.c b/drivers/platform/chrome/cros_ec.c
+index 29d3b544dafb..fb8cb8a73295 100644
+--- a/drivers/platform/chrome/cros_ec.c
++++ b/drivers/platform/chrome/cros_ec.c
+@@ -285,6 +285,8 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
+ exit:
+ 	platform_device_unregister(ec_dev->ec);
+ 	platform_device_unregister(ec_dev->pd);
++	kfree(ec_dev->din);
++	kfree(ec_dev->dout);
+ 	return err;
+ }
+ EXPORT_SYMBOL(cros_ec_register);
+@@ -302,6 +304,8 @@ void cros_ec_unregister(struct cros_ec_device *ec_dev)
+ 	if (ec_dev->pd)
+ 		platform_device_unregister(ec_dev->pd);
+ 	platform_device_unregister(ec_dev->ec);
++	kfree(ec_dev->din);
++	kfree(ec_dev->dout);
+ }
+ EXPORT_SYMBOL(cros_ec_unregister);
+ 
+diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+index 473654f50bca..8a53e989c7e2 100644
+--- a/drivers/platform/chrome/cros_ec_proto.c
++++ b/drivers/platform/chrome/cros_ec_proto.c
+@@ -469,7 +469,6 @@ static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev,
+  */
+ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+ {
+-	struct device *dev = ec_dev->dev;
+ 	u32 ver_mask = 0;
+ 	int ret;
+ 
+@@ -492,21 +491,18 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+ 		}
+ 	}
+ 
+-	devm_kfree(dev, ec_dev->din);
+-	devm_kfree(dev, ec_dev->dout);
++	kfree(ec_dev->din);
++	ec_dev->din = NULL;
++	kfree(ec_dev->dout);
++	ec_dev->dout = NULL;
+ 
+-	ec_dev->din = devm_kzalloc(dev, ec_dev->din_size, GFP_KERNEL);
+-	if (!ec_dev->din) {
+-		ret = -ENOMEM;
+-		goto exit;
+-	}
++	ec_dev->din = kmalloc(ec_dev->din_size, GFP_KERNEL);
++	if (!ec_dev->din)
++		return -ENOMEM;
+ 
+-	ec_dev->dout = devm_kzalloc(dev, ec_dev->dout_size, GFP_KERNEL);
+-	if (!ec_dev->dout) {
+-		devm_kfree(dev, ec_dev->din);
+-		ret = -ENOMEM;
+-		goto exit;
+-	}
++	ec_dev->dout = kmalloc(ec_dev->dout_size, GFP_KERNEL);
++	if (!ec_dev->dout)
++		return -ENOMEM;
+ 
+ 	/* Probe if MKBP event is supported */
+ 	ret = cros_ec_get_host_command_version_mask(ec_dev,
+@@ -555,10 +551,7 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+ 				"failed to retrieve wake mask: %d\n", ret);
+ 	}
+ 
+-	ret = 0;
+-
+-exit:
+-	return ret;
++	return 0;
+ }
+ EXPORT_SYMBOL(cros_ec_query_all);
+ 
 diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
-index 8e47cb70dc8b..63071af81c94 100644
+index 63071af81c94..ec106d0f5648 100644
 --- a/drivers/platform/chrome/cros_ec_proto_test.c
 +++ b/drivers/platform/chrome/cros_ec_proto_test.c
-@@ -751,6 +751,54 @@ static void cros_ec_proto_test_query_all_legacy_data_error(struct kunit *test)
- 	}
- }
+@@ -180,8 +180,8 @@ static void cros_ec_proto_test_query_all_pretest(struct kunit *test)
  
-+static void cros_ec_proto_test_query_all_legacy_return0(struct kunit *test)
-+{
-+	struct cros_ec_proto_test_priv *priv = test->priv;
-+	struct cros_ec_device *ec_dev = &priv->ec_dev;
-+	struct ec_xfer_mock *mock;
-+	int ret;
-+
-+	/* For cros_ec_get_proto_info() without passthru. */
-+	{
-+		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
-+		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-+	}
-+
-+	/* For cros_ec_get_proto_info_legacy(). */
-+	{
-+		mock = cros_kunit_ec_xfer_mock_add(test, 0);
-+		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-+	}
-+
-+	cros_ec_proto_test_query_all_pretest(test);
-+	ret = cros_ec_query_all(ec_dev);
-+	KUNIT_EXPECT_EQ(test, ret, -EPROTO);
-+	KUNIT_EXPECT_EQ(test, ec_dev->proto_version, EC_PROTO_VERSION_UNKNOWN);
-+
-+	/* For cros_ec_get_proto_info() without passthru. */
-+	{
-+		mock = cros_kunit_ec_xfer_mock_next();
-+		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-+
-+		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-+		KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
-+		KUNIT_EXPECT_EQ(test, mock->msg.insize,
-+				sizeof(struct ec_response_get_protocol_info));
-+		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-+	}
-+
-+	/* For cros_ec_get_proto_info_legacy(). */
-+	{
-+		mock = cros_kunit_ec_xfer_mock_next();
-+		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-+
-+		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-+		KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_HELLO);
-+		KUNIT_EXPECT_EQ(test, mock->msg.insize, sizeof(struct ec_response_hello));
-+		KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_hello));
-+	}
-+}
-+
- static void cros_ec_proto_test_query_all_no_mkbp(struct kunit *test)
- {
- 	struct cros_ec_proto_test_priv *priv = test->priv;
-@@ -1135,6 +1183,7 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
- 	KUNIT_CASE(cros_ec_proto_test_query_all_legacy_xfer_error),
- 	KUNIT_CASE(cros_ec_proto_test_query_all_legacy_return_error),
- 	KUNIT_CASE(cros_ec_proto_test_query_all_legacy_data_error),
-+	KUNIT_CASE(cros_ec_proto_test_query_all_legacy_return0),
- 	KUNIT_CASE(cros_ec_proto_test_query_all_no_mkbp),
- 	KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep),
- 	KUNIT_CASE(cros_ec_proto_test_query_all_default_wake_mask_return_error),
+ 	/*
+ 	 * cros_ec_query_all() will free din and dout and allocate them again to fit the usage by
+-	 * calling devm_kfree() and devm_kzalloc().  Set them to NULL as they aren't managed by
+-	 * ec_dev->dev but allocated statically in struct cros_ec_proto_test_priv
++	 * calling kfree() and kmalloc().  Set them to NULL as they aren't allocated by kmalloc()
++	 * but allocated statically in struct cros_ec_proto_test_priv
+ 	 * (see cros_ec_proto_test_init()).
+ 	 */
+ 	ec_dev->din = NULL;
 -- 
 2.36.1.255.ge46751e96f-goog
 
