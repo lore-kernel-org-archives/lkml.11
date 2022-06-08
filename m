@@ -2,86 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 141D3C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6219AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:10:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238131AbiFHLKe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 07:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56122 "EHLO
+        id S238145AbiFHLKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 07:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237780AbiFHLIt (ORCPT
+        with ESMTP id S237892AbiFHLIT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 07:08:49 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAA61B2168;
-        Wed,  8 Jun 2022 04:08:48 -0700 (PDT)
+        Wed, 8 Jun 2022 07:08:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F1ED1BE64C
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 04:08:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 881CFCE1D6F;
-        Wed,  8 Jun 2022 11:08:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 933C9C34116;
-        Wed,  8 Jun 2022 11:08:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EB3761632
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:08:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C547C341C0;
+        Wed,  8 Jun 2022 11:08:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654686524;
-        bh=bnCVPgqGZK5fBMahxZ7HHsO5nJ1Jj7QarAUy/aXfRws=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=c+C0Bs4PJEMrAs5KNJQYYQB770dgj5XpSjU3AsiD0N1+NCQIf7Dx3qcpzRjMACHv/
-         aOXyvsLwpF3LVq9qVa1qXsEviv4RldtK1Fgvi9zYYeOdE3Hx6OIsxjugkLWuntRNJ8
-         0bw3E2glXXDor1q8252nHJqrqhrzAMwyfgy0ge940nqs/HH0/33UBZRjuBfK0dVVJW
-         DHGJBBu2PoM9xlXFCtRpE3HtIgny7SmKTISZZpacNcP1scv6xmtHIXfdUElkSJ3Yy6
-         bEwqV6TZom+9LX6mZhiUkcBKNGByasRpl9UmEHtlZyUMh3B4Wjo1nsC0dAal3gDwlO
-         8PbA7fVvkb/rw==
-Message-ID: <830f58cbcae3275310fe8b132c8f7cb12842e0f4.camel@kernel.org>
-Subject: Re: [GIT PULL] tpmdd updates for v5.19-rc2
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Peter Huewe <peterhuewe@gmx.de>, Jason Gunthorpe <jgg@ziepe.ca>,
-        David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
-Date:   Wed, 08 Jun 2022 14:06:48 +0300
-In-Reply-To: <20220608092646.3074700-1-jarkko@kernel.org>
-References: <20220608092646.3074700-1-jarkko@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.2 
+        s=k20201202; t=1654686495;
+        bh=Yu96pi+cguTHaljms/OjYMMKQm8TXMYsFUwlNWVoEgI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Rt1fNhcFu9kBc0vlxlE0jNF1QlBzVUsvYh2YyH5LqMvPAJGKJ7NP7yC6GRKFHNOY4
+         JNEUl4Bf3LlQTWHWB6ZAGN/XiN/RvE6G3MhrL1VWWxV5jmepntBtfZDxTl5XghAr95
+         SmqzZR9yDhcigLAiWfTALgZRWDeA+njvP11kWy431EM2iUrEQoVA+NwhpFk9SXhyJk
+         qcJZHjqto9oFFap7RfwVM1maTsPmZ8ur59qe3ihB76ipubGmwwOHOzvSuezY1uzXwp
+         mMZtwFlugadOd53D525zofX8RHVFgKYftdrZkl8brL7aDeyIqEwxZnIrWL5iVepgiQ
+         OfxyAxtbtkHLw==
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     bleung@chromium.org, groeck@chromium.org
+Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 22/23] platform/chrome: cros_ec_proto: add Kunit test for getting wake mask
+Date:   Wed,  8 Jun 2022 11:07:33 +0000
+Message-Id: <20220608110734.2928245-23-tzungbi@kernel.org>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+In-Reply-To: <20220608110734.2928245-1-tzungbi@kernel.org>
+References: <20220608110734.2928245-1-tzungbi@kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-06-08 at 12:26 +0300, Jarkko Sakkinen wrote:
-> The following changes since commit 9886142c7a2226439c1e3f7d9b69f9c7094c3e=
-f6:
->=20
-> =C2=A0 Merge tag 'input-for-v5.19-rc1' of git://git.kernel.org/pub/scm/li=
-nux/kernel/git/dtor/input (2022-06-07 15:00:29 -0700)
->=20
-> are available in the Git repository at:
->=20
-> =C2=A0 git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.g=
-it/ tags/tpmdd-next-v5.19-rc2
->=20
-> for you to fetch changes up to 967a4b757b51164a3dc3307234fcb48b7be2745b:
->=20
-> =C2=A0 KEYS: trusted: tpm2: Fix migratable logic (2022-06-08 12:13:26 +03=
-00)
->=20
-> ----------------------------------------------------------------
-> A bug fix for migratable (whether or not a key is tied to the TPM chip
-> soldered to the machine) handling for TPM2 trusted keys.
->=20
-> ----------------------------------------------------------------
-> david.safford@gmail.com=C2=A0(1):
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 KEYS: trusted: tpm2: Fix migratable logic
->=20
-> =C2=A0security/keys/trusted-keys/trusted_tpm2.c | 4 ++--
-> =C2=A01 file changed, 2 insertions(+), 2 deletions(-)
+cros_ec_get_host_event_wake_mask() expects to receive
+sizeof(struct ec_response_host_event_mask) from send_command().
+The payload is valid only if the return value is positive.
 
-Ugh, from-address in malformed. I'll need to redo the PR.
+Add Kunit tests for returning 0 from send_command() in
+cros_ec_get_host_event_wake_mask().
 
-BR, Jarkko
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+---
+No v2.  New and separated from the original series.
+
+ drivers/platform/chrome/cros_ec_proto_test.c | 128 +++++++++++++++++++
+ 1 file changed, 128 insertions(+)
+
+diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
+index c988ff1e2a5a..6cd136ce9e50 100644
+--- a/drivers/platform/chrome/cros_ec_proto_test.c
++++ b/drivers/platform/chrome/cros_ec_proto_test.c
+@@ -1408,6 +1408,133 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return_error(struct k
+ 	}
+ }
+ 
++static void cros_ec_proto_test_query_all_default_wake_mask_return0(struct kunit *test)
++{
++	struct cros_ec_proto_test_priv *priv = test->priv;
++	struct cros_ec_device *ec_dev = &priv->ec_dev;
++	struct ec_xfer_mock *mock;
++	int ret;
++
++	/* Set some garbage bytes. */
++	ec_dev->host_event_wake_mask = U32_MAX;
++
++	/* For cros_ec_get_proto_info() without passthru. */
++	{
++		struct ec_response_get_protocol_info *data;
++
++		mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
++		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
++
++		/*
++		 * Although it doesn't check the value, provides valid sizes so that
++		 * cros_ec_query_all() allocates din and dout correctly.
++		 */
++		data = (struct ec_response_get_protocol_info *)mock->o_data;
++		data->max_request_packet_size = 0xbe;
++		data->max_response_packet_size = 0xef;
++	}
++
++	/* For cros_ec_get_proto_info() with passthru. */
++	{
++		mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
++		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
++	}
++
++	/* For cros_ec_get_host_command_version_mask() for MKBP. */
++	{
++		mock = cros_kunit_ec_xfer_mock_add(test, 0);
++		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
++	}
++
++	/* For cros_ec_get_host_command_version_mask() for host sleep v1. */
++	{
++		mock = cros_kunit_ec_xfer_mock_add(test, 0);
++		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
++	}
++
++	/* For get_host_event_wake_mask(). */
++	{
++		mock = cros_kunit_ec_xfer_mock_add(test, 0);
++		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
++	}
++
++	cros_ec_proto_test_query_all_pretest(test);
++	ret = cros_ec_query_all(ec_dev);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++
++	/* For cros_ec_get_proto_info() without passthru. */
++	{
++		mock = cros_kunit_ec_xfer_mock_next();
++		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
++
++		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
++		KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
++		KUNIT_EXPECT_EQ(test, mock->msg.insize,
++				sizeof(struct ec_response_get_protocol_info));
++		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
++	}
++
++	/* For cros_ec_get_proto_info() with passthru. */
++	{
++		mock = cros_kunit_ec_xfer_mock_next();
++		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
++
++		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
++		KUNIT_EXPECT_EQ(test, mock->msg.command,
++				EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
++				EC_CMD_GET_PROTOCOL_INFO);
++		KUNIT_EXPECT_EQ(test, mock->msg.insize,
++				sizeof(struct ec_response_get_protocol_info));
++		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
++	}
++
++	/* For cros_ec_get_host_command_version_mask() for MKBP. */
++	{
++		mock = cros_kunit_ec_xfer_mock_next();
++		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
++
++		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
++		KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
++		KUNIT_EXPECT_EQ(test, mock->msg.insize,
++				sizeof(struct ec_response_get_cmd_versions));
++		KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
++	}
++
++	/* For cros_ec_get_host_command_version_mask() for host sleep v1. */
++	{
++		mock = cros_kunit_ec_xfer_mock_next();
++		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
++
++		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
++		KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
++		KUNIT_EXPECT_EQ(test, mock->msg.insize,
++				sizeof(struct ec_response_get_cmd_versions));
++		KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
++	}
++
++	/* For get_host_event_wake_mask(). */
++	{
++		u32 mask;
++
++		mock = cros_kunit_ec_xfer_mock_next();
++		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
++
++		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
++		KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_HOST_EVENT_GET_WAKE_MASK);
++		KUNIT_EXPECT_EQ(test, mock->msg.insize, sizeof(struct ec_response_host_event_mask));
++		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
++
++		mask = ec_dev->host_event_wake_mask;
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED), 0);
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_DISCONNECTED), 0);
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_LOW), 0);
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_CRITICAL), 0);
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY), 0);
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_PD_MCU), 0);
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_STATUS), 0);
++	}
++}
++
+ static void cros_ec_proto_test_release(struct device *dev)
+ {
+ }
+@@ -1473,6 +1600,7 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
+ 	KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep),
+ 	KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep_return0),
+ 	KUNIT_CASE(cros_ec_proto_test_query_all_default_wake_mask_return_error),
++	KUNIT_CASE(cros_ec_proto_test_query_all_default_wake_mask_return0),
+ 	{}
+ };
+ 
+-- 
+2.36.1.255.ge46751e96f-goog
 
