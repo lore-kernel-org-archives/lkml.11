@@ -2,227 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC4C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 13:30:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92109CCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 13:31:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240343AbiFHNa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 09:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49578 "EHLO
+        id S240138AbiFHNb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 09:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240310AbiFHNaY (ORCPT
+        with ESMTP id S239983AbiFHNbz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 09:30:24 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F12CE5C1;
-        Wed,  8 Jun 2022 06:30:23 -0700 (PDT)
-Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LJ7L04GtLz67J0f;
-        Wed,  8 Jun 2022 21:26:48 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 8 Jun 2022 15:30:21 +0200
-Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 8 Jun
- 2022 14:30:20 +0100
-Date:   Wed, 8 Jun 2022 14:30:18 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-CC:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <wens@csie.org>,
-        <jic23@kernel.org>, <lee.jones@linaro.org>, <sre@kernel.org>,
-        <broonie@kernel.org>, <gregkh@linuxfoundation.org>,
-        <lgirdwood@gmail.com>, <lars@metafoo.de>, <rafael@kernel.org>,
-        <quic_gurus@quicinc.com>, <linux-gpio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-pm@vger.kernel.org>
-Subject: Re: [PATCH v2 11/17] iio: adc: axp20x_adc: Consolidate ADC raw read
- functions
-Message-ID: <20220608143018.00005aa6@Huawei.com>
-In-Reply-To: <20220607155324.118102-12-aidanmacdonald.0x0@gmail.com>
-References: <20220607155324.118102-1-aidanmacdonald.0x0@gmail.com>
-        <20220607155324.118102-12-aidanmacdonald.0x0@gmail.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Wed, 8 Jun 2022 09:31:55 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F664C9EC0;
+        Wed,  8 Jun 2022 06:31:53 -0700 (PDT)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 258CqAet018265;
+        Wed, 8 Jun 2022 13:31:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=tbUoJADDfy69tOLB5oIBIp2mPffNhGp0fJvy4h43UCM=;
+ b=eCd5WUFsd3ynHYKoY28p32KjL3IK+IWshKurZpMZLW2R3aT7Q7/w66f+i80MhmnL2KPt
+ ayBNp4kxYLsBSjaeOQd0S0EDsFlfKg08m76hPPUQjpOi8JLILrf6IphlVIgOVb7yyZey
+ iicvw6vzE4gYnh+Afxal17C3LD/0StM89V6g5IbqS1S1Rk0/ZwRiNMflbb+OQ/CVDIkn
+ UwAPGAUH/6ID0DSBjMlR0PZEHZl6aJdSkZ4y9EuBt0yXp9KZD6C2ClVFY/uxah1w5vQA
+ 2t7EzN7z0oNvZgyqrY9d2Sy6ilEJvckAp60R92hTfp1GvwJZw4rOMjoYwWNJ/BYqRxrd jg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjv5cgxf9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Jun 2022 13:31:50 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 258DPw01016869;
+        Wed, 8 Jun 2022 13:31:50 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjv5cgxeq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Jun 2022 13:31:49 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 258DKMJ7006054;
+        Wed, 8 Jun 2022 13:31:48 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma03wdc.us.ibm.com with ESMTP id 3gfy19uhua-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Jun 2022 13:31:48 +0000
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 258DVlt830736866
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 8 Jun 2022 13:31:47 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 86748BE053;
+        Wed,  8 Jun 2022 13:31:47 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 857F6BE04F;
+        Wed,  8 Jun 2022 13:31:46 +0000 (GMT)
+Received: from [9.160.55.57] (unknown [9.160.55.57])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Wed,  8 Jun 2022 13:31:46 +0000 (GMT)
+Message-ID: <db3bc9c5-8f65-0507-2453-ccee41e10127@linux.ibm.com>
+Date:   Wed, 8 Jun 2022 09:31:46 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhreml739-chm.china.huawei.com (10.201.108.189) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v19 11/20] s390/vfio-ap: prepare for dynamic update of
+ guest's APCB on queue probe/remove
+Content-Language: en-US
+To:     Halil Pasic <pasic@linux.ibm.com>
+Cc:     jjherne@linux.ibm.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        freude@linux.ibm.com, borntraeger@de.ibm.com, cohuck@redhat.com,
+        mjrosato@linux.ibm.com, alex.williamson@redhat.com,
+        kwankhede@nvidia.com, fiuczy@linux.ibm.com
+References: <20220404221039.1272245-1-akrowiak@linux.ibm.com>
+ <20220404221039.1272245-12-akrowiak@linux.ibm.com>
+ <9364a1b7-9060-20aa-b0d6-88c41a30e7d4@linux.ibm.com>
+ <f838f274-ff4d-496d-2393-14423117ff7e@linux.ibm.com>
+ <20220607140544.32d33f3d.pasic@linux.ibm.com>
+From:   Tony Krowiak <akrowiak@linux.ibm.com>
+In-Reply-To: <20220607140544.32d33f3d.pasic@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: xOfdXdbKMTdautt6Ps_qr1bprHaB9I8i
+X-Proofpoint-ORIG-GUID: ELQ7UXCaAOPiI9u170yr3ccxVjU7AFxA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-08_04,2022-06-07_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ priorityscore=1501 suspectscore=0 bulkscore=0 spamscore=0 mlxlogscore=999
+ lowpriorityscore=0 impostorscore=0 malwarescore=0 adultscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206080058
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue,  7 Jun 2022 16:53:18 +0100
-Aidan MacDonald <aidanmacdonald.0x0@gmail.com> wrote:
 
-> Add an axp20x_id variant field to the axp_data struct and use it
-> to consolidate the adc_raw functions, reducing code duplication.
-> Variant IDs are chosen to match the OF compatible strings.
-> 
-> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 
-Also, try building after this patch....
+On 6/7/22 8:05 AM, Halil Pasic wrote:
+> On Tue, 31 May 2022 06:44:46 -0400
+> Tony Krowiak <akrowiak@linux.ibm.com> wrote:
+>
+>>> vfio_ap_mdev_get_update_locks_for_apqn is "crazy long".
+>>> How about:
+>>>    get_mdev_for_apqn()
+>>>
+>>> This function is static and the terms mdev and apqn are specific
+>>> enough that I
+>>> don't think it needs to start with vfio_ap. And there is no need to
+>>> state in
+>>> the function name that locks are acquired. That point will be obvious
+>>> to anyone
+>>> reading the prologue or the code.
+>> The primary purpose of the function is to acquire the locks in the
+>> proper order, so
+>> I think the name should state that purpose. It may be obvious to someone
+>> reading
+>> the prologue or this function, but not so obvious in the context of the
+>> calling function.
+> I agree with Tony. To me get_mdev_for_apqn() sounds like getting a
+> reference to a matrix_mdev object (and incrementing its refcount) or
+> something similar. BTW some more bike shedding: I prefer by_apqn instead
+> of for_apqn, because the set of locks we need to take is determined _by_
+> the apqn parameter, but it ain't semantically the set of locks we need
+> to perform an update operation on the apqn or on the queue associated
+> with the apqn. No strong opinion though -- I'm no native speaker and
+> prepositions are difficult for me.
 
-> ---
->  drivers/iio/adc/axp20x_adc.c | 83 +++++++++++++++---------------------
->  1 file changed, 34 insertions(+), 49 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/axp20x_adc.c b/drivers/iio/adc/axp20x_adc.c
-> index 9d5b1de24908..0260433782d8 100644
-> --- a/drivers/iio/adc/axp20x_adc.c
-> +++ b/drivers/iio/adc/axp20x_adc.c
-> @@ -71,6 +71,18 @@ struct axp20x_adc_iio {
->  	const struct axp_data	*data;
->  };
->  
-> +struct axp_data {
-> +	const struct iio_info		*iio_info;
-> +	int				num_channels;
-> +	struct iio_chan_spec const	*channels;
-> +	unsigned long			adc_en1_mask;
-> +	unsigned long			adc_en2_mask;
+I am a native speaker and I had to review prepositions. I learned
+grammar in elementary school (grades 1-6) and have forgotten
+much of the terminology as it relates to sentence structure. Anyway,
+I digress. I'm okay with 'by_apqn'.
 
-This new field should be in the next patch.
-
-> +	int				(*adc_rate)(struct axp20x_adc_iio *info,
-> +						    int rate);
-> +	struct iio_map			*maps;
-> +	enum axp20x_variants		axp20x_id;
-> +};
-> +
->  enum axp20x_adc_channel_v {
->  	AXP20X_ACIN_V = 0,
->  	AXP20X_VBUS_V,
-> @@ -237,15 +249,24 @@ static int axp20x_adc_raw(struct iio_dev *indio_dev,
->  	struct axp20x_adc_iio *info = iio_priv(indio_dev);
->  	int ret, size;
->  
-> -	/*
-> -	 * N.B.:  Unlike the Chinese datasheets tell, the charging current is
-> -	 * stored on 12 bits, not 13 bits. Only discharging current is on 13
-> -	 * bits.
-> -	 */
-> -	if (chan->type == IIO_CURRENT && chan->channel == AXP20X_BATT_DISCHRG_I)
-> -		size = 13;
-> -	else
-> +	switch (info->data->axp20x_id) {
-> +	case AXP202_ID:
-> +	case AXP209_ID:
-> +		/*
-> +		 * N.B.:  Unlike the Chinese datasheets tell, the charging current is
-> +		 * stored on 12 bits, not 13 bits. Only discharging current is on 13
-> +		 * bits.
-> +		 */
-> +		if (chan->type == IIO_CURRENT && chan->channel == AXP20X_BATT_DISCHRG_I)
-> +			size = 13;
-> +		else
-> +			size = 12;
-> +		break;
-> +
-> +	default:
->  		size = 12;
-> +		break;
-> +	}
->  
->  	ret = axp20x_read_variable_width(info->regmap, chan->address, size);
->  	if (ret < 0)
-> @@ -255,34 +276,6 @@ static int axp20x_adc_raw(struct iio_dev *indio_dev,
->  	return IIO_VAL_INT;
->  }
->  
-> -static int axp22x_adc_raw(struct iio_dev *indio_dev,
-> -			  struct iio_chan_spec const *chan, int *val)
-> -{
-> -	struct axp20x_adc_iio *info = iio_priv(indio_dev);
-> -	int ret;
-> -
-> -	ret = axp20x_read_variable_width(info->regmap, chan->address, 12);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	*val = ret;
-> -	return IIO_VAL_INT;
-> -}
-> -
-> -static int axp813_adc_raw(struct iio_dev *indio_dev,
-> -			  struct iio_chan_spec const *chan, int *val)
-> -{
-> -	struct axp20x_adc_iio *info = iio_priv(indio_dev);
-> -	int ret;
-> -
-> -	ret = axp20x_read_variable_width(info->regmap, chan->address, 12);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	*val = ret;
-> -	return IIO_VAL_INT;
-> -}
-> -
->  static int axp20x_adc_scale_voltage(int channel, int *val, int *val2)
->  {
->  	switch (channel) {
-> @@ -522,7 +515,7 @@ static int axp22x_read_raw(struct iio_dev *indio_dev,
->  		return axp22x_adc_scale(chan, val, val2);
->  
->  	case IIO_CHAN_INFO_RAW:
-> -		return axp22x_adc_raw(indio_dev, chan, val);
-> +		return axp20x_adc_raw(indio_dev, chan, val);
->  
->  	default:
->  		return -EINVAL;
-> @@ -542,7 +535,7 @@ static int axp813_read_raw(struct iio_dev *indio_dev,
->  		return axp813_adc_scale(chan, val, val2);
->  
->  	case IIO_CHAN_INFO_RAW:
-> -		return axp813_adc_raw(indio_dev, chan, val);
-> +		return axp20x_adc_raw(indio_dev, chan, val);
->  
->  	default:
->  		return -EINVAL;
-> @@ -620,17 +613,6 @@ static int axp813_adc_rate(struct axp20x_adc_iio *info, int rate)
->  				 AXP813_ADC_RATE_HZ(rate));
->  }
->  
-> -struct axp_data {
-> -	const struct iio_info		*iio_info;
-> -	int				num_channels;
-> -	struct iio_chan_spec const	*channels;
-> -	unsigned long			adc_en1_mask;
-> -	int				(*adc_rate)(struct axp20x_adc_iio *info,
-> -						    int rate);
-> -	bool				adc_en2;
-> -	struct iio_map			*maps;
-> -};
-> -
->  static const struct axp_data axp20x_data = {
->  	.iio_info = &axp20x_adc_iio_info,
->  	.num_channels = ARRAY_SIZE(axp20x_adc_channels),
-> @@ -639,6 +621,7 @@ static const struct axp_data axp20x_data = {
->  	.adc_rate = axp20x_adc_rate,
->  	.adc_en2 = true,
->  	.maps = axp20x_maps,
-> +	.axp20x_id = AXP209_ID,
->  };
->  
->  static const struct axp_data axp22x_data = {
-> @@ -649,6 +632,7 @@ static const struct axp_data axp22x_data = {
->  	.adc_rate = axp22x_adc_rate,
->  	.adc_en2 = false,
->  	.maps = axp22x_maps,
-> +	.axp20x_id = AXP221_ID,
->  };
->  
->  static const struct axp_data axp813_data = {
-> @@ -659,6 +643,7 @@ static const struct axp_data axp813_data = {
->  	.adc_rate = axp813_adc_rate,
->  	.adc_en2 = false,
->  	.maps = axp22x_maps,
-> +	.axp20x_id = AXP813_ID,
->  };
->  
->  static const struct of_device_id axp20x_adc_of_match[] = {
+>
+> Regards,
+> Halil
 
