@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94395C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 20:53:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C386C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 20:53:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234029AbiFHUxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 16:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42266 "EHLO
+        id S234163AbiFHUx3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 16:53:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230403AbiFHUwz (ORCPT
+        with ESMTP id S232927AbiFHUw6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 16:52:55 -0400
+        Wed, 8 Jun 2022 16:52:58 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0391C8669
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 13:52:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054651C8669
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 13:52:57 -0700 (PDT)
 Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 0D341660174C;
-        Wed,  8 Jun 2022 21:52:52 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 810DB6601805;
+        Wed,  8 Jun 2022 21:52:55 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654721572;
-        bh=KHg3eOnYqUoUcg57EXhLlpoQHXoJLlQC7w8GyVbN4OU=;
+        s=mail; t=1654721575;
+        bh=JT0TnJkB0rL8RAGj5L8WxKKfTjJ2qr1XwBthtCgxh3Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fTpnDBrRHU2piuEtAyNHVQQKt/cWTdalqnYL10DlHWK0Z1tvCGW7yiSOVJlFklyGV
-         Y1e88ZnQanwV/Rq+8iwr7/Am2tzUr/mJL0rrXQ7HUJr1RpkB71bKQPJepWv3gVTT0p
-         8gcAnSzTH6+CsflPCLwLAlKAopIlUpCW+MA5Jw4kXQFSIEXOjTuJNQTmLG7oBUH//V
-         +8jYex+Ofi06dgNErPXlrU1HjH8bJ3FjRE0tt7OlSehHyABVc8Tj5dnblzUNLaSj9V
-         sWwSA0AtMdNlbEydFUT11/rEEnzqASzKaPjPtpngUL3M+WNpC5rZgvdthF+8kF/cC/
-         Kl/lPe3l/8OwA==
+        b=kisOM10h9nMW6pgqPu1+eO9FO086hy96YBnCUh110Q2IycstFCxOCLlHs13LDWV6x
+         HujXxpbzKEOzCvh+2WBN5eAtWYA2dH3WEy+y3C6J6192yea7TyhtA4kJklLHp7N8Os
+         /fCmjqkzp5ucSGO6PwX2vcq/Qm1bGTGNeIGXK9RdkfB+cfJ0EI6Ome+veZhZoczhsI
+         SHQpztRcrtAuffcsJpVOROCClhcCJrpKnG5HE8Bm+jVeF2Jh0n0XHONGhCqlTa6XtH
+         n/sTggH2d/fjFIh0vk25rn5OumM+51by4+9YJ6Yj0d/0hfj0/0l8HkQ0ubfFactygj
+         UJk3ehFDcMlzw==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -44,9 +44,9 @@ Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
         Matthew Auld <matthew.auld@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/8] drm/i915/ttm: dont trample cache_level overrides during ttm move
-Date:   Wed,  8 Jun 2022 20:51:24 +0000
-Message-Id: <20220608205132.438596-2-bob.beckett@collabora.com>
+Subject: [PATCH v2 5/8] drm/i915: limit ttm to dma32 for i965G[M]
+Date:   Wed,  8 Jun 2022 20:51:28 +0000
+Message-Id: <20220608205132.438596-6-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220608205132.438596-1-bob.beckett@collabora.com>
 References: <20220608205132.438596-1-bob.beckett@collabora.com>
@@ -56,80 +56,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Various places within the driver override the default chosen cache_level.
-Before ttm, these overrides were permanent until explicitly changed again
-or for the lifetime of the buffer.
-
-TTM movement code came along and decided that it could make that
-decision at that time, which is usually well after object creation, so
-overrode the cache_level decision and reverted it back to its default
-decision.
-
-Add logic to indicate whether the caching mode has been set by anything
-other than the move logic. If so, assume that the code that overrode the
-defaults knows best and keep it.
+i965G[M] cannot relocate objects above 4GiB.
+Ensure ttm uses dma32 on these systems.
 
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_object.c       | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_object_types.h | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_ttm.c          | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c     | 9 ++++++---
- 4 files changed, 9 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/intel_region_ttm.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.c b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-index 06b1b188ce5a..519887769c08 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-@@ -125,6 +125,7 @@ void i915_gem_object_set_cache_coherency(struct drm_i915_gem_object *obj,
- 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
+diff --git a/drivers/gpu/drm/i915/intel_region_ttm.c b/drivers/gpu/drm/i915/intel_region_ttm.c
+index 62ff77445b01..fd2ecfdd8fa1 100644
+--- a/drivers/gpu/drm/i915/intel_region_ttm.c
++++ b/drivers/gpu/drm/i915/intel_region_ttm.c
+@@ -32,10 +32,15 @@
+ int intel_region_ttm_device_init(struct drm_i915_private *dev_priv)
+ {
+ 	struct drm_device *drm = &dev_priv->drm;
++	bool use_dma32 = false;
++
++	/* i965g[m] cannot relocate objects above 4GiB. */
++	if (IS_I965GM(dev_priv) || IS_I965G(dev_priv))
++		use_dma32 = true;
  
- 	obj->cache_level = cache_level;
-+	obj->ttm.cache_level_override = true;
- 
- 	if (cache_level != I915_CACHE_NONE)
- 		obj->cache_coherent = (I915_BO_CACHE_COHERENT_FOR_READ |
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-index 2c88bdb8ff7c..6632ed52e919 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-@@ -605,6 +605,7 @@ struct drm_i915_gem_object {
- 		struct i915_gem_object_page_iter get_io_page;
- 		struct drm_i915_gem_object *backup;
- 		bool created:1;
-+		bool cache_level_override:1;
- 	} ttm;
- 
- 	/*
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-index 4c25d9b2f138..27d59639177f 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-@@ -1241,6 +1241,7 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
- 	i915_gem_object_init_memory_region(obj, mem);
- 	i915_ttm_adjust_domains_after_move(obj);
- 	i915_ttm_adjust_gem_after_move(obj);
-+	obj->ttm.cache_level_override = false;
- 	i915_gem_object_unlock(obj);
- 
- 	return 0;
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-index a10716f4e717..4c1de0b4a10f 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-@@ -123,9 +123,12 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
- 	obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
- 		I915_BO_FLAG_STRUCT_PAGE;
- 
--	cache_level = i915_ttm_cache_level(to_i915(bo->base.dev), bo->resource,
--					   bo->ttm);
--	i915_gem_object_set_cache_coherency(obj, cache_level);
-+	if (!obj->ttm.cache_level_override) {
-+		cache_level = i915_ttm_cache_level(to_i915(bo->base.dev),
-+						   bo->resource, bo->ttm);
-+		i915_gem_object_set_cache_coherency(obj, cache_level);
-+		obj->ttm.cache_level_override = false;
-+	}
+ 	return ttm_device_init(&dev_priv->bdev, i915_ttm_driver(),
+ 			       drm->dev, drm->anon_inode->i_mapping,
+-			       drm->vma_offset_manager, false, false);
++			       drm->vma_offset_manager, false, use_dma32);
  }
  
  /**
