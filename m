@@ -2,87 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C10FDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:32:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E706C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239349AbiFHMb7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:31:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40280 "EHLO
+        id S239378AbiFHMcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239319AbiFHMbx (ORCPT
+        with ESMTP id S239359AbiFHMcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:31:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88790254445;
-        Wed,  8 Jun 2022 05:31:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C021561989;
-        Wed,  8 Jun 2022 12:31:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC139C34116;
-        Wed,  8 Jun 2022 12:31:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654691509;
-        bh=wCnYRZBxGyUKef4VTi5QtcmExzsl1dSCCREqJefOnVY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UY22bJ3DUSHOjm907zQMtNTN1RYJ450j2ibq/Q2BgPu6yVFFiMmVASRPF4yQuCBsr
-         9p951FboNmJ6ag8VGSq270ecj5GhJa+OGNZbr+C7Eli9BVbQlHtvgRjW9e2RHimk5J
-         miwEln8aUIOjY3Ruq0gPthVkE31HTrZMQbiexCxU4Tn+AujbhhjkTg3EAqMdGRc9Lw
-         cVTkWi37jZfYXkcth+GREAFdbCxXlUQUUKbVYOEkx1+zriY/4czLT1poh6XZnQkw/R
-         RuHvaxxIcnNsR9KUydZeoPtje1CWoYT6+iQJJ4LamacvYdKFx+OheGmOS46GA7z6o/
-         3xix4jt7cHiqw==
-Date:   Wed, 8 Jun 2022 13:31:44 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     David Jander <david@protonic.nl>
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [PATCH] include: linux: spi: spi.h: Add missing documentation
- for struct members
-Message-ID: <YqCWsJI4xPFO1gYs@sirena.org.uk>
-References: <20220608122917.2892953-1-david@protonic.nl>
+        Wed, 8 Jun 2022 08:32:46 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204A0298596
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 05:32:45 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nyurX-0007kb-4p; Wed, 08 Jun 2022 14:32:39 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nyurX-007BME-A0; Wed, 08 Jun 2022 14:32:37 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nyurV-003K9o-8u; Wed, 08 Jun 2022 14:32:37 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v3 1/3] net: phy: dp83td510: add SQI support
+Date:   Wed,  8 Jun 2022 14:32:34 +0200
+Message-Id: <20220608123236.792405-2-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220608123236.792405-1-o.rempel@pengutronix.de>
+References: <20220608123236.792405-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="VtcYoMsHYZmsI3QG"
-Content-Disposition: inline
-In-Reply-To: <20220608122917.2892953-1-david@protonic.nl>
-X-Cookie: My NOSE is NUMB!
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Convert MSE (mean-square error) values to SNR and split it SQI (Signal Quality
+Indicator) ranges. The used ranges are taken from "OPEN ALLIANCE - Advanced
+diagnostic features for 100BASE-T1 automotive Ethernet PHYs"
+specification.
 
---VtcYoMsHYZmsI3QG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/phy/dp83td510.c | 49 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
-On Wed, Jun 08, 2022 at 02:29:17PM +0200, David Jander wrote:
-> Fixes "make htmldocs" warnings.
->=20
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: David Jander <david@protonic.nl>
+diff --git a/drivers/net/phy/dp83td510.c b/drivers/net/phy/dp83td510.c
+index 1ae792b0daaa..3cd9a77f9532 100644
+--- a/drivers/net/phy/dp83td510.c
++++ b/drivers/net/phy/dp83td510.c
+@@ -27,6 +27,27 @@
+ #define DP83TD510E_AN_STAT_1			0x60c
+ #define DP83TD510E_MASTER_SLAVE_RESOL_FAIL	BIT(15)
+ 
++#define DP83TD510E_MSE_DETECT			0xa85
++
++#define DP83TD510_SQI_MAX	7
++
++/* Register values are converted to SNR(dB) as suggested by
++ * "Application Report - DP83TD510E Cable Diagnostics Toolkit":
++ * SNR(dB) = -10 * log10 (VAL/2^17) - 1.76 dB.
++ * SQI ranges are implemented according to "OPEN ALLIANCE - Advanced diagnostic
++ * features for 100BASE-T1 automotive Ethernet PHYs"
++ */
++static const u16 dp83td510_mse_sqi_map[] = {
++	0x0569, /* < 18dB */
++	0x044c, /* 18dB =< SNR < 19dB */
++	0x0369, /* 19dB =< SNR < 20dB */
++	0x02b6, /* 20dB =< SNR < 21dB */
++	0x0227, /* 21dB =< SNR < 22dB */
++	0x01b6, /* 22dB =< SNR < 23dB */
++	0x015b, /* 23dB =< SNR < 24dB */
++	0x0000  /* 24dB =< SNR */
++};
++
+ static int dp83td510_config_intr(struct phy_device *phydev)
+ {
+ 	int ret;
+@@ -164,6 +185,32 @@ static int dp83td510_config_aneg(struct phy_device *phydev)
+ 	return genphy_c45_check_and_restart_aneg(phydev, changed);
+ }
+ 
++static int dp83td510_get_sqi(struct phy_device *phydev)
++{
++	int sqi, ret;
++	u16 mse_val;
++
++	if (!phydev->link)
++		return 0;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_MSE_DETECT);
++	if (ret < 0)
++		return ret;
++
++	mse_val = 0xFFFF & ret;
++	for (sqi = 0; sqi < ARRAY_SIZE(dp83td510_mse_sqi_map); sqi++) {
++		if (mse_val >= dp83td510_mse_sqi_map[sqi])
++			return sqi;
++	}
++
++	return -EINVAL;
++}
++
++static int dp83td510_get_sqi_max(struct phy_device *phydev)
++{
++	return DP83TD510_SQI_MAX;
++}
++
+ static int dp83td510_get_features(struct phy_device *phydev)
+ {
+ 	/* This PHY can't respond on MDIO bus if no RMII clock is enabled.
+@@ -192,6 +239,8 @@ static struct phy_driver dp83td510_driver[] = {
+ 	.get_features	= dp83td510_get_features,
+ 	.config_intr	= dp83td510_config_intr,
+ 	.handle_interrupt = dp83td510_handle_interrupt,
++	.get_sqi	= dp83td510_get_sqi,
++	.get_sqi_max	= dp83td510_get_sqi_max,
+ 
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
+-- 
+2.30.2
 
-Please submit patches using subject lines reflecting the style for the
-subsystem, this makes it easier for people to identify relevant patches.
-Look at what existing commits in the area you're changing are doing and
-make sure your subject lines visually resemble what they're doing.
-There's no need to resubmit to fix this alone.
-
---VtcYoMsHYZmsI3QG
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKglq8ACgkQJNaLcl1U
-h9DF1wf/UXe6VSorZ58oWhUU+MjuqwhIEtco+z9ydp2YpTObjA6rj67wOZgj8WrG
-d6TUnd+rnvseZzVwHCu87h7xnk11PulQuQQ5GUGiaY8vGuaL8gny8AXnis3tvyqM
-+KbiDL59M/BL2FZywSsRovsa9PDvU0w19QCrMFrkBKECdSaGI/B94nB48XGQoAks
-OeAmZ8YWRkhYSTtfSrpDO8XJ4hhNaqvt5jB5QYHKrgW83AjlRlX0Gd2BwWxbgt1G
-r77lR3esINOgl5xUj+EfVQrJ9ESJYcbzqkDj2f40WDzLvFCp9ORhwEt3XlKq5Q7N
-edZFAca5/apLYgUk9tEYoC1FeQzpWw==
-=JXc4
------END PGP SIGNATURE-----
-
---VtcYoMsHYZmsI3QG--
