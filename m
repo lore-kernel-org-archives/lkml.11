@@ -2,75 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8637EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:33:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43051C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239469AbiFHMdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47314 "EHLO
+        id S239411AbiFHMhk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239398AbiFHMdD (ORCPT
+        with ESMTP id S239345AbiFHMhi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:33:03 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BADD329E4E2;
-        Wed,  8 Jun 2022 05:33:01 -0700 (PDT)
-Received: from localhost.localdomain (unknown [186.189.224.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: adalessandro)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 47A026601780;
-        Wed,  8 Jun 2022 13:32:54 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654691577;
-        bh=6zZ3JVA8se89xqhPzZ/QyyWi3pmDJIoGZzkI1kPjPWs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ChrNavfDiEB7trqMZP2l3apaGDKGiBfsNfVI9+ToKN+VT2mSnJaED05UyAu8+byX6
-         802C088qtVbBcKmSQOcKfpIp0EVfAw8lbr894uJ+ItfjXAvYw2d3suXRsC/3GfOfUU
-         U1hng2DREUx1gzzBHC8SuAvYLRnaeOok0klz6YuPV62HjV4MytxEW1uFSLXuJxNNJj
-         6hKJXrlC3rnR+Ch0qufjd7ffL4aGH0qRLVEReMpco1z9IbZAUZVUXSsWXMvxaK6YLI
-         1RFKEnD4mLg9JUMo8w6HDz1p78+9ytOGnW+DwHddkPMQE/ZbB0WZXaQiAMPYTpx5CK
-         88V3w6661Z2rg==
-From:   Ariel D'Alessandro <ariel.dalessandro@collabora.com>
-To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
-Cc:     gbcm-kernel-feedback-list@broadcom.com,
-        gkrzysztof.kozlowski+dt@linaro.org, gnsaenz@kernel.org,
-        grobh+dt@kernel.org
-Subject: [PATCH] ARM: dts: bcm2711-rpi-4-b: Use aliases to set custom MMC device index
-Date:   Wed,  8 Jun 2022 09:32:33 -0300
-Message-Id: <20220608123233.13439-1-ariel.dalessandro@collabora.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 8 Jun 2022 08:37:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 886181A8E28
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 05:37:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654691854;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8dky9Q0grtxm6b93mWl07j//u8P3MPxwBKG9VP1vCco=;
+        b=dDZWGZtSZDgERd5NOxVJGx7Zhu6t2y35oTaPN0JYJr0zgo1iKazB4ajBDtVQ686ywgLOBK
+        ih/aI0oRJF87hQTo59QJ/CDVeZqUQt3vJXbxeSYziYNluNR0K8gPjDXL0YdgTN/MwHgZTW
+        UYG/nZsoNbnz4i0NTcbcWD2ZihZs97s=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-509-nAVky5ymPCuPoEAXocOFpA-1; Wed, 08 Jun 2022 08:37:33 -0400
+X-MC-Unique: nAVky5ymPCuPoEAXocOFpA-1
+Received: by mail-wm1-f69.google.com with SMTP id k16-20020a7bc310000000b0038e6cf00439so9884546wmj.0
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 05:37:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8dky9Q0grtxm6b93mWl07j//u8P3MPxwBKG9VP1vCco=;
+        b=jIK42d+iqTAqnZRHBJDVPCPw8bkrLTV6Huf/qfvFNf6CAiQVHixqKQz9aRwrHz2oqk
+         b93dHFqF60VIdjAEFm/LvohNojKZuIxUEICYiKiKq6xglmTIaV1jjb+L+JoxDU5d0UJa
+         Jpb4UWqEV/Omu56H9KttlKNaefMfzVTkpcwxR3NK143tJubobln3Vq4H3gAOBzhDSMsi
+         KGG+u5/WEcRvEIwB6jtrb6pEy8r1eOidSdNbMaw9T6JqCopLl+DJ8rs8xAaD3+PnwJra
+         qHNnsI4oyGro84Y6t6GRG6LjtaXEBvxoaImOpOaebdavwhbIpCFxhO9FBZfoVni3MPb8
+         mw9Q==
+X-Gm-Message-State: AOAM530sT2gJlLwRzDY4I8Kwdbh+6rsi5corm2HYEa/uio2MRcr6vkY0
+        4P4vyK7WtQBT1mxGYqpwRdLNgXGFK7GypmGzTdLU9Q/B7hXHlbNKU7wcGNLfP3oisMhABk1A6yy
+        j/vmnDSoQTWfAd62zpPMlDcuZ
+X-Received: by 2002:adf:f3ce:0:b0:211:55a:a604 with SMTP id g14-20020adff3ce000000b00211055aa604mr32701445wrp.213.1654691852004;
+        Wed, 08 Jun 2022 05:37:32 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy77EGhhtl0nBMLfucR5OSuKH4gN4JaC0XpDm2yOcYvhL8P5ZHh72RlDtKtlyCqqJROaD5wXQ==
+X-Received: by 2002:adf:f3ce:0:b0:211:55a:a604 with SMTP id g14-20020adff3ce000000b00211055aa604mr32701429wrp.213.1654691851724;
+        Wed, 08 Jun 2022 05:37:31 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id o5-20020a1c7505000000b0039c4ba160absm12429479wmc.2.2022.06.08.05.37.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 05:37:31 -0700 (PDT)
+Message-ID: <6a9e17c5-c49a-e5c4-b74b-b8a97f7dc675@redhat.com>
+Date:   Wed, 8 Jun 2022 14:37:27 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 1/1] KVM: x86/mmu: Set memory encryption "value", not
+ "mask", in shadow PDPTRs
+Content-Language: en-US
+To:     Yuan Yao <yuan.yao@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Kai Huang <kai.huang@intel.com>,
+        Yuan Yao <yuan.yao@linux.intel.com>
+References: <20220608012015.19566-1-yuan.yao@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220608012015.19566-1-yuan.yao@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add MMC aliases to ensure that the /dev/mmcblk ID for SD card won't
-change depending on the probe order of the MMC drivers.
+On 6/8/22 03:20, Yuan Yao wrote:
+> Assign shadow_me_value, not shadow_me_mask, to PAE root entries,
+> a.k.a. shadow PDPTRs, when host memory encryption is supported.  The
+> "mask" is the set of all possible memory encryption bits, e.g. MKTME
+> KeyIDs, whereas "value" holds the actual value that needs to be
+> stuffed into host page tables.
+> 
+> Using shadow_me_mask results in a failed VM-Entry due to setting
+> reserved PA bits in the PDPTRs, and ultimately causes an OOPS due to
+> physical addresses with non-zero MKTME bits sending to_shadow_page()
+> into the weeds:
+> 
+> set kvm_intel.dump_invalid_vmcs=1 to dump internal KVM state.
+> BUG: unable to handle page fault for address: ffd43f00063049e8
+> PGD 86dfd8067 P4D 0
+> Oops: 0000 [#1] PREEMPT SMP
+> RIP: 0010:mmu_free_root_page+0x3c/0x90 [kvm]
+>   kvm_mmu_free_roots+0xd1/0x200 [kvm]
+>   __kvm_mmu_unload+0x29/0x70 [kvm]
+>   kvm_mmu_unload+0x13/0x20 [kvm]
+>   kvm_arch_destroy_vm+0x8a/0x190 [kvm]
+>   kvm_put_kvm+0x197/0x2d0 [kvm]
+>   kvm_vm_release+0x21/0x30 [kvm]
+>   __fput+0x8e/0x260
+>   ____fput+0xe/0x10
+>   task_work_run+0x6f/0xb0
+>   do_exit+0x327/0xa90
+>   do_group_exit+0x35/0xa0
+>   get_signal+0x911/0x930
+>   arch_do_signal_or_restart+0x37/0x720
+>   exit_to_user_mode_prepare+0xb2/0x140
+>   syscall_exit_to_user_mode+0x16/0x30
+>   do_syscall_64+0x4e/0x90
+>   entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> Fixes: e54f1ff244ac ("KVM: x86/mmu: Add shadow_me_value and repurpose shadow_me_mask")
+> Signed-off-by: Yuan Yao <yuan.yao@intel.com>
+> Reviewed-by: Kai Huang <kai.huang@intel.com>
+> ---
+>   arch/x86/kvm/mmu/mmu.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index efe5a3dca1e0..6bd144f1e60c 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -3411,7 +3411,7 @@ static int mmu_alloc_direct_roots(struct kvm_vcpu *vcpu)
+>   			root = mmu_alloc_root(vcpu, i << (30 - PAGE_SHIFT),
+>   					      i << 30, PT32_ROOT_LEVEL, true);
+>   			mmu->pae_root[i] = root | PT_PRESENT_MASK |
+> -					   shadow_me_mask;
+> +					   shadow_me_value;
+>   		}
+>   		mmu->root.hpa = __pa(mmu->pae_root);
+>   	} else {
 
-Signed-off-by: Ariel D'Alessandro <ariel.dalessandro@collabora.com>
----
- arch/arm/boot/dts/bcm2711-rpi-4-b.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+Queued, thanks.
 
-diff --git a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-index 4432412044de..780812542bad 100644
---- a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-+++ b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-@@ -14,6 +14,10 @@ chosen {
- 		stdout-path = "serial1:115200n8";
- 	};
- 
-+	aliases {
-+		mmc0 = &emmc2;	/* mmcblk0 for SD */
-+	};
-+
- 	leds {
- 		led-act {
- 			gpios = <&gpio 42 GPIO_ACTIVE_HIGH>;
--- 
-2.34.1
+Paolo
 
