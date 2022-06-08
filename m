@@ -2,99 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98701C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:13:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F1EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:15:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239231AbiFHMNw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:13:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37066 "EHLO
+        id S238972AbiFHMPg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:15:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238887AbiFHMNA (ORCPT
+        with ESMTP id S238902AbiFHMPc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:13:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B66425F92E
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 05:12:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654690378;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ggbC2+qLXyMIhkrl+egmbVWenv3iYa8SCHIeX6BJa58=;
-        b=h9E8+/A3nloIPuNKw86gBNZqRI7I8VHbGS3+iQdUHBMSKuj2unfxovQRzQRUMINsWS1bw1
-        9EFXOPzDG2yB5wvdZOkOq9tTK2nYKPKuz6B59d6WoomMsj/vTdrRftf4xu5xC9F216qu6L
-        Zbab5NsHGMUrtM9acXtipRUFt2+/oCM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-397-3brLBe_ZM4KIhFhmgCQHuw-1; Wed, 08 Jun 2022 08:12:55 -0400
-X-MC-Unique: 3brLBe_ZM4KIhFhmgCQHuw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 999ED811E83;
-        Wed,  8 Jun 2022 12:12:54 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7D1371415100;
-        Wed,  8 Jun 2022 12:12:54 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com
-Subject: [PATCH 4/6] KVM: x86: wean fast IN from emulator_pio_in
-Date:   Wed,  8 Jun 2022 08:12:51 -0400
-Message-Id: <20220608121253.867333-5-pbonzini@redhat.com>
-In-Reply-To: <20220608121253.867333-1-pbonzini@redhat.com>
-References: <20220608121253.867333-1-pbonzini@redhat.com>
+        Wed, 8 Jun 2022 08:15:32 -0400
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2B512AE9;
+        Wed,  8 Jun 2022 05:15:31 -0700 (PDT)
+Received: by mail-yb1-f179.google.com with SMTP id i39so8166494ybj.9;
+        Wed, 08 Jun 2022 05:15:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1aZWEN82Z0cY56MtJ5ndwQ+W1emzo6CrCRXt1Oh8kYI=;
+        b=ZC4+mYmW0U0rtUxvwUUMJyi1dagjsjzUKAR0ftc8vVsAKW2/j4bIrWgHz3b+gjhWSv
+         yGt6Up8W6KNKQQv/XLIRrR1Lv8dgMsnimi9hznVpeSYWuLnkrPba1czv0RIAPuE/+QbZ
+         FafwuOQdvQFbgA2IDeCCeQ4KdkDYPdJrpRcACZeB16ybXJCn+wCNOZ80iIqEDcI6lwo8
+         b0K6eDLM6/KBSlVZNGbd5BRBxZya1WMxXXPwHANU6t1iZw5UMGQ6ZHUmz/M85jonJFyX
+         Mo61ZX891QEaY0sbPLDd1n6MjAZ4Hdh7bp08d/8Y5+tsMKeMDsJOx9lUJYwHgtbAJvt6
+         iMLA==
+X-Gm-Message-State: AOAM531yqFgRu9PJ64k1YhyaXRUCuFU0NXD22baPaGPJrnBL0um25GjN
+        znuVsWC/Pc/8Lf6cHyRIV7i5Wp8NfnytbRJQ8Ns=
+X-Google-Smtp-Source: ABdhPJxrP9w6wAx7YCUFKQR8uJR+AUmdqNWjW40bRQlPlEIPZhimRS+TnIphjRvV3V+jfWdUW7B7UkaccookIUhOT9A=
+X-Received: by 2002:a25:84ca:0:b0:65c:b5a4:3d0a with SMTP id
+ x10-20020a2584ca000000b0065cb5a43d0amr34362425ybm.137.1654690530409; Wed, 08
+ Jun 2022 05:15:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+References: <20220607202058.8304-1-andriy.shevchenko@linux.intel.com>
+ <CAJZ5v0gmO-BDyurQtG4sU5KLfe2mjs7vm5kpJQoAaxYxF57t3g@mail.gmail.com>
+ <YqCNuJ3RQX3jIy59@smile.fi.intel.com> <YqCQOAy64heA3GPM@kroah.com>
+In-Reply-To: <YqCQOAy64heA3GPM@kroah.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 8 Jun 2022 14:15:19 +0200
+Message-ID: <CAJZ5v0hxvqYaEXzEKYG++egKVgNk=KUNnMMKRT2pS2S9PN-ibw@mail.gmail.com>
+Subject: Re: [PATCH v1 1/2] driver core: Introduce device_find_first_child() helper
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that __emulator_pio_in already fills "val" for in-kernel PIO, it
-is both simpler and clearer not to use emulator_pio_in.
-Use the appropriate function in kvm_fast_pio_in and complete_fast_pio_in,
-respectively __emulator_pio_in and complete_emulator_pio_in.
+On Wed, Jun 8, 2022 at 2:04 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Wed, Jun 08, 2022 at 02:53:28PM +0300, Andy Shevchenko wrote:
+> > On Wed, Jun 08, 2022 at 01:29:08PM +0200, Rafael J. Wysocki wrote:
+> > > On Tue, Jun 7, 2022 at 10:22 PM Andy Shevchenko
+> > > <andriy.shevchenko@linux.intel.com> wrote:
+> >
+> > ...
+> >
+> > > I would define it as
+> > >
+> > > static int match_first(struct device *dev, void *)
+> > > {
+> > >        return 1;
+> > > }
+> > >
+> > > struct device *device_find_first_child(struct device *parent)
+> > > {
+> > >         return device_find_first_child(parent, NULL, match_first);
+> > > }
+> > > EXPORT_SYMBOL_GPL(device_find_first_child);
+> > >
+> > > which is not that much more overhead.
+> >
+> > With this we actually may simply provide a match function and it will make the
+> > clean ups (like patch 2 in the series) almost the same without introducing a
+> > device core call.
+> >
+> > Something like
+> >
+> > int device_match_any_for_find(struct device *dev, void *unused)
+> > {
+> >       return 1;
+> > }
+> >
+> > As I replied to Greg it's pity we can't use device_match_any()...
+>
+>         int device_match_any(struct device *dev, const void *unused)
+>
+> How is that not ok to use here?
 
-emulator_pio_in_emulated is now the last caller of emulator_pio_in.
+Because of the const that will be frowned upon by the compiler.
 
-No functional change intended.
-
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- arch/x86/kvm/x86.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
-
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 3b641cd2ff6f..aefcc71a7040 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -8692,11 +8692,7 @@ static int complete_fast_pio_in(struct kvm_vcpu *vcpu)
- 	/* For size less than 4 we merge, else we zero extend */
- 	val = (vcpu->arch.pio.size < 4) ? kvm_rax_read(vcpu) : 0;
- 
--	/*
--	 * Since vcpu->arch.pio.count == 1 let emulator_pio_in perform
--	 * the copy and tracing
--	 */
--	emulator_pio_in(vcpu, vcpu->arch.pio.size, vcpu->arch.pio.port, &val, 1);
-+	complete_emulator_pio_in(vcpu, &val);
- 	kvm_rax_write(vcpu, val);
- 
- 	return kvm_skip_emulated_instruction(vcpu);
-@@ -8711,7 +8707,7 @@ static int kvm_fast_pio_in(struct kvm_vcpu *vcpu, int size,
- 	/* For size less than 4 we merge, else we zero extend */
- 	val = (size < 4) ? kvm_rax_read(vcpu) : 0;
- 
--	ret = emulator_pio_in(vcpu, size, port, &val, 1);
-+	ret = __emulator_pio_in(vcpu, size, port, &val, 1);
- 	if (ret) {
- 		kvm_rax_write(vcpu, val);
- 		return ret;
--- 
-2.31.1
-
-
+We need to define another device_match_any_relaxed() taking (void *)
+as the second argument for this.
