@@ -2,113 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D00EFCCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7266DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232198AbiFHIdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:33:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
+        id S232032AbiFHIdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231646AbiFHIbW (ORCPT
+        with ESMTP id S232054AbiFHIct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 04:31:22 -0400
-Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39843BC3E6
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:53:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1654671954; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=QBYaXVSrh0KHPaoowHgjYi0kdMbKz9bfxBVEjUFYqcf8Bv+wgjTHbquhmw5vHzoqSXf+TGUJ5f3ItBmiD96AfyryitQ46fUgfLwIe0HvZzqL0DboR9ys6+5VBJ9TNKRv/4nmg3UJ8YDgkwEPUTc2m/JTFvUdb0Igrz8Xv5gu7Yw=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1654671954; h=Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=bK+qygT/W8e7IdMMhLssT6sOTIHj4DjaVCfrAGmo3wY=; 
-        b=GqG8SBbImRgbseNAloTdvbc0H4UilPdE75MRoH1taHqrXPebJTd26jXsgf50nnhfRvVbWzGWQVdkHePb7KSyq8nFBqg6eLASVY2dNg1EQIQLCk44SF1FmWMhGNRJw2SgXGCH6javF4pXkpgXOUGevPmC+Ps9AhcmEvaTpEJn0Rg=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=icenowy.me;
-        spf=pass  smtp.mailfrom=uwu@icenowy.me;
-        dmarc=pass header.from=<uwu@icenowy.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1654671954;
-        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Reply-To;
-        bh=bK+qygT/W8e7IdMMhLssT6sOTIHj4DjaVCfrAGmo3wY=;
-        b=EIQ6oOQk03dtkmAYYWCnH09Ex0X5yuigfdvdPWL53oPg5rAxSm0GGIVXAsWEesAG
-        qNIz4lceQ9oXGQiDS0Fecr5q+3SioH4bTppeCuL4yfYPQTQx/kZcPS+5XWoFteGNflu
-        vsfBNqT6Yx12CXQYIg72dZ6d7U4Ne71w7IFeHyuY=
-Received: from edelgard.icenowy.me (59.41.163.66 [59.41.163.66]) by mx.zohomail.com
-        with SMTPS id 1654671953211498.9764845551447; Wed, 8 Jun 2022 00:05:53 -0700 (PDT)
-From:   Icenowy Zheng <uwu@icenowy.me>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bin Liu <b-liu@ti.com>
-Cc:     linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-usb@vger.kernel.org,
-        Icenowy Zheng <icenowy@aosc.io>
-Subject: [PATCH 6/7] ARM: suniv: add USB-related device nodes
-Date:   Wed,  8 Jun 2022 15:04:51 +0800
-Message-Id: <20220608070452.338006-7-uwu@icenowy.me>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220608070452.338006-1-uwu@icenowy.me>
-References: <20220608070452.338006-1-uwu@icenowy.me>
+        Wed, 8 Jun 2022 04:32:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09FCD3BDF65
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:54:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654674787;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sNGYKi3MSRgxelnf8gcdJUea13LkpYvVIrd2JFz6gTg=;
+        b=VaKO+ZNfdlXcMtbgHVZa/wq5AjmFjcF1jjXijH25rjXrb9Jea0FmeHS9vANT6LLSkWC+oN
+        s8LjoMMFSSXcqW6SUJ114707eFZnSR8YYwjqYjrAvPkBUXSZr31euKpwigoUxJfjx2nRJ8
+        BYkZtW8S2TUcme3Ev8DByQv1/HLxzFM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-124-m_9QHWYTMcGvKPKkAQKL5g-1; Wed, 08 Jun 2022 03:53:04 -0400
+X-MC-Unique: m_9QHWYTMcGvKPKkAQKL5g-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id ACC3F88743A;
+        Wed,  8 Jun 2022 07:52:57 +0000 (UTC)
+Received: from localhost (ovpn-12-81.pek2.redhat.com [10.72.12.81])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C71E340D0166;
+        Wed,  8 Jun 2022 07:52:56 +0000 (UTC)
+Date:   Wed, 8 Jun 2022 15:52:51 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Cc:     Rob Landley <rob@landley.net>, akpm@linux-foundation.org,
+        ysato@users.sourceforge.jp, dalias@libc.org,
+        linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] sh: cast away __iomem to remove sparse warning
+Message-ID: <YqBVU9oW6FfGdR9H@MiWiFi-R3L-srv>
+References: <20220507013411.74277-1-bhe@redhat.com>
+ <YpS0C8tVG2E5jGSV@MiWiFi-R3L-srv>
+ <c24579a3-74e4-1dbb-6237-d9e1a01e6e09@landley.net>
+ <Yp/3Lq03+UVs9Bpv@MiWiFi-R3L-srv>
+ <db5505e5-811e-0572-7614-8443c864b5e6@physik.fu-berlin.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <db5505e5-811e-0572-7614-8443c864b5e6@physik.fu-berlin.de>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Icenowy Zheng <icenowy@aosc.io>
+On 06/08/22 at 09:05am, John Paul Adrian Glaubitz wrote:
+> Hi!
+> 
+> On 6/8/22 03:11, Baoquan He wrote:
+> > I guess SuperH arch has been in status of no maintenance, however some
+> > generic code change may involve correspondant ARCH change so that we
+> > have to touch arch/sh/.
+> 
+> It is actually actively maintained by Rich Felker but he is often slow to
+> respond at the moment. I have already offered Rich my help and maybe we
+> can work something out that I can help him with the maintenance.
 
-The suniv SoC has a USB OTG controller and a USB PHY like other
-Allwinner SoCs.
+Thanks, Adrian.
 
-Add their device tree node.
+Maybe you can start with being a reviewer by adding yourself into
+MAINTAINERS file like below. You need post below change as patch and got
+Rich's ACK. Then people will add you to CC when sending patches related
+to sh code. Or add yourself as maintainer directly if you have done a
+lot of work on maintaining, surely need get other sh maintainers' ACK
+too. Personal suggeestion.
 
-Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
----
- arch/arm/boot/dts/suniv-f1c100s.dtsi | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
-
-diff --git a/arch/arm/boot/dts/suniv-f1c100s.dtsi b/arch/arm/boot/dts/suniv-f1c100s.dtsi
-index 0edc1724407b..a01541ba42c5 100644
---- a/arch/arm/boot/dts/suniv-f1c100s.dtsi
-+++ b/arch/arm/boot/dts/suniv-f1c100s.dtsi
-@@ -133,6 +133,32 @@ mmc1: mmc@1c10000 {
- 			#size-cells = <0>;
- 		};
- 
-+		usb_otg: usb@1c13000 {
-+			compatible = "allwinner,suniv-f1c100s-musb";
-+			reg = <0x01c13000 0x0400>;
-+			clocks = <&ccu CLK_BUS_OTG>;
-+			resets = <&ccu RST_BUS_OTG>;
-+			interrupts = <26>;
-+			interrupt-names = "mc";
-+			phys = <&usbphy 0>;
-+			phy-names = "usb";
-+			extcon = <&usbphy 0>;
-+			allwinner,sram = <&otg_sram 1>;
-+			status = "disabled";
-+		};
-+
-+		usbphy: phy@1c13400 {
-+			compatible = "allwinner,suniv-f1c100s-usb-phy";
-+			reg = <0x01c13400 0x10>;
-+			reg-names = "phy_ctrl";
-+			clocks = <&ccu CLK_USB_PHY0>;
-+			clock-names = "usb0_phy";
-+			resets = <&ccu RST_USB_PHY0>;
-+			reset-names = "usb0_reset";
-+			#phy-cells = <1>;
-+			status = "disabled";
-+		};
-+
- 		ccu: clock@1c20000 {
- 			compatible = "allwinner,suniv-f1c100s-ccu";
- 			reg = <0x01c20000 0x400>;
--- 
-2.36.0
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a6d3bd9d2a8d..0e7ce3540eb7 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19119,6 +19119,7 @@ F:	drivers/watchdog/sunplus_wdt.c
+ SUPERH
+ M:	Yoshinori Sato <ysato@users.sourceforge.jp>
+ M:	Rich Felker <dalias@libc.org>
++R:	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+ L:	linux-sh@vger.kernel.org
+ S:	Maintained
+ Q:	http://patchwork.kernel.org/project/linux-sh/list/
 
