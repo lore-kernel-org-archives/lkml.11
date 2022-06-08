@@ -2,133 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18CBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:55:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD68C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231950AbiFHEzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 00:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46896 "EHLO
+        id S232043AbiFHE4D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 00:56:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232559AbiFHEyx (ORCPT
+        with ESMTP id S232571AbiFHEyx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 8 Jun 2022 00:54:53 -0400
-X-Greylist: delayed 601 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 18:27:47 PDT
+X-Greylist: delayed 628 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 18:27:48 PDT
 Received: from smtp.ruc.edu.cn (m177126.mail.qiye.163.com [123.58.177.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BD0AFACE;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281E487A36;
         Tue,  7 Jun 2022 18:27:46 -0700 (PDT)
 Received: from localhost.localdomain (unknown [202.112.113.212])
-        by smtp.ruc.edu.cn (Hmail) with ESMTPSA id 58E35800A3;
-        Wed,  8 Jun 2022 09:09:04 +0800 (CST)
+        by smtp.ruc.edu.cn (Hmail) with ESMTPSA id 3DE65800A4;
+        Wed,  8 Jun 2022 09:17:17 +0800 (CST)
 From:   Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
 To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Jongpil Jung <jongpil19.jung@samsung.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] iio:proximity:sx9360: Fix hardware gain read/write
-Date:   Wed,  8 Jun 2022 09:08:57 +0800
-Message-Id: <20220608010857.1720-1-xiaohuizhang@ruc.edu.cn>
+        "David E . Box" <david.e.box@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/1] platform/x86/intel: Fix uninitialized entry in pmt_crashlog_probe
+Date:   Wed,  8 Jun 2022 09:17:12 +0800
+Message-Id: <20220608011712.2371-1-xiaohuizhang@ruc.edu.cn>
 X-Mailer: git-send-email 2.17.1
 X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWRpNHRpWTUgdTU1PQk1DGh
-        5CVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSUtDTk1VS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OBw6Kio*OT0zLRchIzAaDUM8
-        SiMwCTxVSlVKTU5PTU5LTk9PQkJKVTMWGhIXVQMSGhQTDhIBExoVHDsJDhhVHh8OVRgVRVlXWRIL
-        WUFZSUtJVUpKSVVKSkhVSUpJWVdZCAFZQU9IQ0s3Bg++
-X-HM-Tid: 0a8140dba1f02c20kusn58e35800a3
+        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUNLS0pWSh9NTkIYSkgaTh
+        0ZVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MxA6ERw4Gj08IRcUIzJLDUNK
+        SRdPCxxVSlVKTU5PTU5KS0hMQ0lDVTMWGhIXVQMSGhQTDhIBExoVHDsJDhhVHh8OVRgVRVlXWRIL
+        WUFZSUtJVUpKSVVKSkhVSUpJWVdZCAFZQUlITkw3Bg++
+X-HM-Tid: 0a8140e327092c20kusn3de65800a4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Similar to the handling of read/write in commit 108e4d4de2b5
-("iio:proximity:sx9324: Fix hardware gain read/write"), we thought
+Similar to the handling of pmt_telem_probe in commit 2cdfa0c20d58
+("platform/x86/intel: Fix 'rmmod pmt_telemetry' panic"), we thought
 a patch might be needed here as well.
 
-There are four possible gain values according to 'sx9360_gain_vals[]':
+The probe function, pmt_crashlog_probe(), adds an entry for devices even if
+they have not been initialized.  This results in the array of initialized
+devices containing both initialized and uninitialized entries.  This
+causes a panic in the remove function, pmt_crashlog_remove() which expects
+the array to only contain initialized entries.
 
-	1, 2, 4, and 8
-
-The values are off by one when writing and reading the register. The
-bits should be set according to this equation:
-
-	ilog2(<gain>) + 1
-
-so that a gain of 8 is 0x4 in the register field and a gain of 4 is 0x3
-in the register field, etc. Note that a gain of 0 is reserved per the
-datasheet. The default gain (SX9360_REG_PROX_CTRL0_GAIN_1) is also
-wrong. It should be 0x1 << 3, i.e. 0x8, not 0x80 which is setting the
-reserved bit 7.
-
-Fix this all up to properly handle the hardware gain and return errors
-for invalid settings.
+Only use an entry when a device is initialized.
 
 Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
 ---
- drivers/iio/proximity/sx9360.c | 26 +++++++++++++++++++++-----
- 1 file changed, 21 insertions(+), 5 deletions(-)
+ drivers/platform/x86/intel/pmt/crashlog.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/proximity/sx9360.c b/drivers/iio/proximity/sx9360.c
-index 3ebb30c8a4f6..3dbcc9f584cf 100644
---- a/drivers/iio/proximity/sx9360.c
-+++ b/drivers/iio/proximity/sx9360.c
-@@ -64,7 +64,10 @@
- #define SX9360_REG_PROX_CTRL0_PHR	0x40
- #define SX9360_REG_PROX_CTRL0_PHM	0x41
- #define SX9360_REG_PROX_CTRL0_GAIN_MASK	GENMASK(5, 3)
--#define SX9360_REG_PROX_CTRL0_GAIN_1		0x80
-+#define SX9324_REG_PROX_CTRL0_GAIN_SHIFT	3
-+#define SX9324_REG_PROX_CTRL0_GAIN_RSVD	0x0
-+#define SX9324_REG_PROX_CTRL0_GAIN_1	0x1
-+#define SX9324_REG_PROX_CTRL0_GAIN_8	0x4
- #define SX9360_REG_PROX_CTRL0_RAWFILT_MASK	GENMASK(2, 0)
- #define SX9360_REG_PROX_CTRL0_RAWFILT_1P50	0x01
- #define SX9360_REG_PROX_CTRL1		0x42
-@@ -288,7 +291,14 @@ static int sx9360_read_gain(struct sx_common_data *data,
- 	if (ret)
- 		return ret;
+diff --git a/drivers/platform/x86/intel/pmt/crashlog.c b/drivers/platform/x86/intel/pmt/crashlog.c
+index 34daf9df168b..ace1239bc0a0 100644
+--- a/drivers/platform/x86/intel/pmt/crashlog.c
++++ b/drivers/platform/x86/intel/pmt/crashlog.c
+@@ -282,7 +282,7 @@ static int pmt_crashlog_probe(struct auxiliary_device *auxdev,
+ 	auxiliary_set_drvdata(auxdev, priv);
  
--	*val = 1 << FIELD_GET(SX9360_REG_PROX_CTRL0_GAIN_MASK, regval);
-+	regval = FIELD_GET(SX9360_REG_PROX_CTRL0_GAIN_MASK, regval);
-+	if (regval)
-+		regval--;
-+	else if (regval == SX9360_REG_PROX_CTRL0_GAIN_RSVD ||
-+		 regval > SX9360_REG_PROX_CTRL0_GAIN_8)
-+		return -EINVAL;
-+
-+	*val = 1 << regval;
+ 	for (i = 0; i < intel_vsec_dev->num_resources; i++) {
+-		struct intel_pmt_entry *entry = &priv->entry[i].entry;
++		struct intel_pmt_entry *entry = &priv->entry[priv->num_entries].entry;
  
- 	return IIO_VAL_INT;
- }
-@@ -630,8 +640,12 @@ static int sx9360_write_gain(struct sx_common_data *data,
- 	unsigned int gain, reg;
- 	int ret;
- 
--	gain = ilog2(val);
- 	reg = SX9360_REG_PROX_CTRL0_PHR + chan->channel;
-+
-+	gain = ilog2(val) + 1;
-+	if (val <= 0 || gain > SX9360_REG_PROX_CTRL0_GAIN_8)
-+		return -EINVAL;
-+
- 	gain = FIELD_PREP(SX9360_REG_PROX_CTRL0_GAIN_MASK, gain);
- 
- 	mutex_lock(&data->mutex);
-@@ -681,9 +695,11 @@ static const struct sx_common_reg_default sx9360_default_regs[] = {
- 	{ SX9360_REG_AFE_PARAM1_PHM, SX9360_REG_AFE_PARAM1_AGAIN_PHM_6PF |
- 		SX9360_REG_AFE_PARAM1_FREQ_83_33HZ },
- 
--	{ SX9360_REG_PROX_CTRL0_PHR, SX9360_REG_PROX_CTRL0_GAIN_1 |
-+	{ SX9360_REG_PROX_CTRL0_PHR,
-+		SX9360_REG_PROX_CTRL0_GAIN_1 << SX9360_REG_PROX_CTRL0_GAIN_SHIFT |
- 		SX9360_REG_PROX_CTRL0_RAWFILT_1P50 },
--	{ SX9360_REG_PROX_CTRL0_PHM, SX9360_REG_PROX_CTRL0_GAIN_1 |
-+	{ SX9360_REG_PROX_CTRL0_PHM,
-+		SX9360_REG_PROX_CTRL0_GAIN_1 << SX9360_REG_PROX_CTRL0_GAIN_SHIFT |
- 		SX9360_REG_PROX_CTRL0_RAWFILT_1P50 },
- 	{ SX9360_REG_PROX_CTRL1, SX9360_REG_PROX_CTRL1_AVGNEG_THRESH_16K },
- 	{ SX9360_REG_PROX_CTRL2, SX9360_REG_PROX_CTRL2_AVGDEB_2SAMPLES |
+ 		ret = intel_pmt_dev_create(entry, &pmt_crashlog_ns, intel_vsec_dev, i);
+ 		if (ret < 0)
 -- 
 2.17.1
 
