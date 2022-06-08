@@ -2,55 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDF6CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 22:45:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD77FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 22:45:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236837AbiFHWp3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 18:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33106 "EHLO
+        id S236910AbiFHWpd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 18:45:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236760AbiFHWpW (ORCPT
+        with ESMTP id S236535AbiFHWp1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 18:45:22 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DFE22504CB
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 15:45:20 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id h10-20020a170902f54a00b00166449db7f8so9875308plf.9
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 15:45:20 -0700 (PDT)
+        Wed, 8 Jun 2022 18:45:27 -0400
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F7CB250E59
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 15:45:26 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id 206-20020a6218d7000000b0051893ee2888so9595908pfy.16
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 15:45:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
-        bh=yCbEbo+df7vgbLKbjDx0RQYKHwie9yOVPcwB1toB8f8=;
-        b=k5LfhIpAsUDz3vvRH2NBDxbNy06eyXZ+a6OkBBULxoOAC3HXgui7IfK0/8RG/XmhNh
-         tG3A435WsMxzlUJO/+hIE9NZ9Vib8jN9JQ+dVUnZbkOe2cBh9bJiHypwxqjiGq3EqU3M
-         Ub/yymlxK8EYeTrHwRAmd0KdRXhAR41Sj2lvOpeeJwoEV6pBTKtD272p5yWvOM3UndUD
-         0/0uwvLCAgnIwK3nFLFgF6AS/ldpYm4Xc2TJW0bqT9RxEzgrAXGk304OPcN2WJatxXc8
-         GYEgb4Z0xQ1CmwDZ1DRAbBZq8Zgqv3vEGen+tY72pwtLZFYW+z0G3EhdL/4qo0zdMg3X
-         P1Tg==
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=odWASXlloDi60XXoBrlzFlyWsT1m7IgRF4ZHI9ifXSg=;
+        b=SUBOFoIgf90Txf8Nz+beruQQ7cYKBDZ5tsjoZOqGJh1/Q0jvMXGaS4vpnsOIZz8VxJ
+         gT9pu9+SO4R/r0xtsSmlALrI7SKB3YIKrPA/PT49ihp/SB8mXiw4pCO92iJronG3x2FU
+         qljTMX9E1Jalg3CUVPFGkprKD5TqpksWSKRWBGet0tVbkz5tqrleQ+KXrAxwmKIiCzrr
+         MiVGCGdQxQk60JH9TNj6SvKUJVdhGDW1S5puZEPmpp3LyRFfmkwOHd5pRVlnbT9GR3+D
+         fRyzFzZaFM935hzwsARKC/2VdWqPSK2DjuXovvDDsuGgcUulyEa5Y7qXFpAw2QZCpJ/Q
+         Y4Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
-         :from:to:cc;
-        bh=yCbEbo+df7vgbLKbjDx0RQYKHwie9yOVPcwB1toB8f8=;
-        b=UoopqZhIvGihvh4AiqqBhE1XwsdEbecOrm830B94lLFeoukh54NZ0L+KTP78w/3nO3
-         rL+Uxw9zXCPAygV13ouhIRnlv0rGcU6+rA7IpFi5mEgHbiQvcF7hHgz7XQn44dBhhmB9
-         NPZLSToLICbq0Wfq/WE0Rcg/FD27RAKGRwZLbhSD+21l3PLWVJLuAu8TWg97w1NcMK+0
-         nfmpWX4ofN/FiCxMovnyjxeZpkHypglju58mVOR0HwI/KeQk3RdEyNygx1paKa/1wlhJ
-         Sach/aU9WP8DVXp0Sb9O+xE7P/wQsOOifMsT9O6RzAxoEEv4IEngeG63y2IgWLKGjTGT
-         w9XA==
-X-Gm-Message-State: AOAM531WabsRO7k/tDe6X/sZCwNkomu47PX5UYfmaS8+pwbAfUbovyr5
-        fC8Z0K7PU9a97SECgHyE83QJo6jc2Tc=
-X-Google-Smtp-Source: ABdhPJxm3hT8if9YTa6TKsTS36qYZCqd0YSIH4rJVjnEN23pwM1xXA3Hc5TyBkY4ZNKCuPEGYYIcuqyBvKE=
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=odWASXlloDi60XXoBrlzFlyWsT1m7IgRF4ZHI9ifXSg=;
+        b=uOyTmKzVXNoxYv4VXuo3XyuONFNJCLvoX9J98733sFIbEL7PGh58eEIw3nwMT4H0DZ
+         QzctbNBMh3fK3JixborYUnVlRUWSRt8Rnxm/2iykquzboEtWyRu0OlODzn8pKBgC0hmd
+         Zpogto10cB5zyyyWtCUz1Mm/TxQYDexVQAOWTPbHgkVkX80X6zUL2WgHbpFaSs+STgT8
+         3uggU4S1o1t0xn1NeX3UrqAoAPugrDrR5AWA68jV+Z895+NTzRNWp88KzSOh+JGIla3U
+         xOp0wewTG0SkQUhK3Hto9hmVAqn3MDz+tR7AuZNKTMuGA3hGnhAp89gaPXUCw4w/rsp4
+         hHKw==
+X-Gm-Message-State: AOAM5334I26LoB9X6C2BO9/befmQXr2sBMm5lKW0QxYMI/Wt9k3whwfo
+        7Jvca6n3N/O+UQpnXEXsb3nAwejnOWM=
+X-Google-Smtp-Source: ABdhPJzQaZNHK6o2xZ0ojhjwS0+2ugBghUe638w9x98DctunKZduCh6I6F4eCzJI9Q7xdgEtohDcq89DJSw=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a63:9752:0:b0:3c6:5a7a:5bd6 with SMTP id
- d18-20020a639752000000b003c65a7a5bd6mr32399629pgo.390.1654728319367; Wed, 08
- Jun 2022 15:45:19 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a63:594c:0:b0:3fd:9b8b:863d with SMTP id
+ j12-20020a63594c000000b003fd9b8b863dmr18078697pgm.250.1654728325763; Wed, 08
+ Jun 2022 15:45:25 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  8 Jun 2022 22:45:11 +0000
-Message-Id: <20220608224516.3788274-1-seanjc@google.com>
+Date:   Wed,  8 Jun 2022 22:45:15 +0000
+In-Reply-To: <20220608224516.3788274-1-seanjc@google.com>
+Message-Id: <20220608224516.3788274-5-seanjc@google.com>
 Mime-Version: 1.0
+References: <20220608224516.3788274-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH 0/5] KVM: x86: Quirk "MWAIT never faults" behavior
+Subject: [PATCH 4/5] KVM: selftests: Use exception fixup for #UD/#GP Hyper-V
+ MSR/hcall tests
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -64,46 +68,208 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a quirk to let userspace opt into correctly emulating MONITOR/MWAIT
-when they are disabled in CPUID instead of unconditionally treating them
-as NOPs.
+Use exception fixup to verify VMCALL/RDMSR/WRMSR fault as expected in the
+Hyper-V Features test.
 
-The selftest changes are based on the CPUID overhaul[*], the KVM patch
-should apply cleanly on kvm/queue, commit 55371f1d0c01 ("...").
+No functional change intended.
 
-Note!  Patch 3 is a fix for a bug in the Hyper-V Features test that I
-encountered when verifying the exception fixup works as expected.  The
-"bug", which is in reality a rather large set of bugs, basically turns
-the test into a giant nop.  The patch really should be "backported" all
-the way across the selftests overhaul, but I don't care enough about
-Hyper-V to spend yet more time on selftests at this point.
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ .../selftests/kvm/x86_64/hyperv_features.c    | 117 +++++-------------
+ 1 file changed, 33 insertions(+), 84 deletions(-)
 
-[*] https://lore.kernel.org/all/20220604012058.1972195-1-seanjc@google.com
-
-Sean Christopherson (5):
-  KVM: x86: Add a quirk for KVM's "MONITOR/MWAIT are NOPs!" behavior
-  KVM: selftests: Add x86-64 support for exception fixup
-  KVM: selftests: Mostly fix comically broken Hyper-V Features test
-  KVM: selftests: Use exception fixup for #UD/#GP Hyper-V MSR/hcall
-    tests
-  KVM: selftests: Add MONITOR/MWAIT quirk test
-
- Documentation/virt/kvm/api.rst                |  13 +
- arch/x86/include/asm/kvm_host.h               |   3 +-
- arch/x86/include/uapi/asm/kvm.h               |   1 +
- arch/x86/kvm/x86.c                            |  26 +-
- tools/testing/selftests/kvm/.gitignore        |   1 +
- tools/testing/selftests/kvm/Makefile          |   1 +
- .../selftests/kvm/include/x86_64/processor.h  |  74 ++++++
- .../selftests/kvm/lib/x86_64/processor.c      |  17 ++
- .../selftests/kvm/x86_64/hyperv_features.c    | 239 ++++++++----------
- .../selftests/kvm/x86_64/kvm_pv_test.c        |  82 ++----
- .../selftests/kvm/x86_64/monitor_mwait_test.c | 127 ++++++++++
- 11 files changed, 375 insertions(+), 209 deletions(-)
- create mode 100644 tools/testing/selftests/kvm/x86_64/monitor_mwait_test.c
-
-
-base-commit: 081ad4bbae8d503c79fae45f463766d28b2f3241
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_features.c b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
+index 5ec40422d72a..0de13ab38e8b 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_features.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
+@@ -15,75 +15,20 @@
+ 
+ #define LINUX_OS_ID ((u64)0x8100 << 48)
+ 
+-extern unsigned char rdmsr_start;
+-extern unsigned char rdmsr_end;
+-
+-static u64 do_rdmsr(u32 idx)
+-{
+-	u32 lo, hi;
+-
+-	asm volatile("rdmsr_start: rdmsr;"
+-		     "rdmsr_end:"
+-		     : "=a"(lo), "=c"(hi)
+-		     : "c"(idx));
+-
+-	return (((u64) hi) << 32) | lo;
+-}
+-
+-extern unsigned char wrmsr_start;
+-extern unsigned char wrmsr_end;
+-
+-static void do_wrmsr(u32 idx, u64 val)
+-{
+-	u32 lo, hi;
+-
+-	lo = val;
+-	hi = val >> 32;
+-
+-	asm volatile("wrmsr_start: wrmsr;"
+-		     "wrmsr_end:"
+-		     : : "a"(lo), "c"(idx), "d"(hi));
+-}
+-
+-static int nr_gp;
+-static int nr_ud;
+-
+-static inline u64 hypercall(u64 control, vm_vaddr_t input_address,
+-			    vm_vaddr_t output_address)
+-{
+-	u64 hv_status;
+-
+-	asm volatile("mov %3, %%r8\n"
+-		     "vmcall"
+-		     : "=a" (hv_status),
+-		       "+c" (control), "+d" (input_address)
+-		     :  "r" (output_address)
+-		     : "cc", "memory", "r8", "r9", "r10", "r11");
+-
+-	return hv_status;
+-}
+-
+-static void guest_gp_handler(struct ex_regs *regs)
+-{
+-	unsigned char *rip = (unsigned char *)regs->rip;
+-	bool r, w;
+-
+-	r = rip == &rdmsr_start;
+-	w = rip == &wrmsr_start;
+-	GUEST_ASSERT(r || w);
+-
+-	nr_gp++;
+-
+-	if (r)
+-		regs->rip = (uint64_t)&rdmsr_end;
+-	else
+-		regs->rip = (uint64_t)&wrmsr_end;
+-}
+-
+-static void guest_ud_handler(struct ex_regs *regs)
+-{
+-	nr_ud++;
+-	regs->rip += 3;
++static inline uint8_t hypercall(u64 control, vm_vaddr_t input_address,
++				vm_vaddr_t output_address, uint64_t *hv_status)
++{
++	uint8_t vector;
++
++	/* Note both the hypercall and the "asm safe" clobber r9-r11. */
++	asm volatile("mov %[output_address], %%r8\n\t"
++		     KVM_ASM_SAFE("vmcall")
++		     : "=a" (*hv_status),
++		       "+c" (control), "+d" (input_address),
++		       KVM_ASM_SAFE_OUTPUTS(vector)
++		     : [output_address] "r"(output_address)
++		     : "cc", "memory", "r8", KVM_ASM_SAFE_CLOBBERS);
++	return vector;
+ }
+ 
+ struct msr_data {
+@@ -101,31 +46,33 @@ struct hcall_data {
+ 
+ static void guest_msr(struct msr_data *msr)
+ {
++	uint64_t ignored;
++	uint8_t vector;
++
+ 	GUEST_ASSERT(msr->idx);
+ 
+-	WRITE_ONCE(nr_gp, 0);
+ 	if (!msr->write)
+-		do_rdmsr(msr->idx);
++		vector = rdmsr_safe(msr->idx, &ignored);
+ 	else
+-		do_wrmsr(msr->idx, msr->write_val);
++		vector = wrmsr_safe(msr->idx, msr->write_val);
+ 
+ 	if (msr->available)
+-		GUEST_ASSERT(READ_ONCE(nr_gp) == 0);
++		GUEST_ASSERT_2(!vector, msr->idx, vector);
+ 	else
+-		GUEST_ASSERT(READ_ONCE(nr_gp) == 1);
++		GUEST_ASSERT_2(vector == GP_VECTOR, msr->idx, vector);
+ 	GUEST_DONE();
+ }
+ 
+ static void guest_hcall(vm_vaddr_t pgs_gpa, struct hcall_data *hcall)
+ {
+ 	u64 res, input, output;
++	uint8_t vector;
+ 
+ 	GUEST_ASSERT(hcall->control);
+ 
+ 	wrmsr(HV_X64_MSR_GUEST_OS_ID, LINUX_OS_ID);
+ 	wrmsr(HV_X64_MSR_HYPERCALL, pgs_gpa);
+ 
+-	nr_ud = 0;
+ 	if (!(hcall->control & HV_HYPERCALL_FAST_BIT)) {
+ 		input = pgs_gpa;
+ 		output = pgs_gpa + 4096;
+@@ -133,12 +80,14 @@ static void guest_hcall(vm_vaddr_t pgs_gpa, struct hcall_data *hcall)
+ 		input = output = 0;
+ 	}
+ 
+-	res = hypercall(hcall->control, input, output);
++	vector = hypercall(hcall->control, input, output, &res);
+ 	if (hcall->ud_expected)
+-		GUEST_ASSERT(nr_ud == 1);
++		GUEST_ASSERT_2(vector == UD_VECTOR, hcall->control, vector);
+ 	else
+-		GUEST_ASSERT(res == hcall->expect);
++		GUEST_ASSERT_2(!vector, hcall->control, vector);
+ 
++	GUEST_ASSERT_2(!hcall->ud_expected || res == hcall->expect,
++			hcall->expect, res);
+ 	GUEST_DONE();
+ }
+ 
+@@ -190,7 +139,6 @@ static void guest_test_msrs_access(void)
+ 
+ 		vm_init_descriptor_tables(vm);
+ 		vcpu_init_descriptor_tables(vcpu);
+-		vm_install_exception_handler(vm, GP_VECTOR, guest_gp_handler);
+ 
+ 		run = vcpu->run;
+ 
+@@ -499,8 +447,9 @@ static void guest_test_msrs_access(void)
+ 
+ 		switch (get_ucall(vcpu, &uc)) {
+ 		case UCALL_ABORT:
+-			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
+-				  __FILE__, uc.args[1]);
++			TEST_FAIL("%s at %s:%ld, MSR = %lx, vector = %lx",
++				  (const char *)uc.args[0], __FILE__,
++				  uc.args[1], uc.args[2], uc.args[3]);
+ 			return;
+ 		case UCALL_DONE:
+ 			break;
+@@ -531,7 +480,6 @@ static void guest_test_hcalls_access(void)
+ 
+ 		vm_init_descriptor_tables(vm);
+ 		vcpu_init_descriptor_tables(vcpu);
+-		vm_install_exception_handler(vm, UD_VECTOR, guest_ud_handler);
+ 
+ 		/* Hypercall input/output */
+ 		hcall_page = vm_vaddr_alloc_pages(vm, 2);
+@@ -672,8 +620,9 @@ static void guest_test_hcalls_access(void)
+ 
+ 		switch (get_ucall(vcpu, &uc)) {
+ 		case UCALL_ABORT:
+-			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
+-				  __FILE__, uc.args[1]);
++			TEST_FAIL("%s at %s:%ld, arg1 = %lx, arg2 = %lx",
++				  (const char *)uc.args[0], __FILE__,
++				  uc.args[1], uc.args[2], uc.args[3]);
+ 			return;
+ 		case UCALL_DONE:
+ 			break;
 -- 
 2.36.1.255.ge46751e96f-goog
 
