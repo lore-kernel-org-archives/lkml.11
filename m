@@ -2,146 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC1BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:59:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231203AbiFHH7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:59:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49412 "EHLO
+        id S231820AbiFHH7d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:59:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234313AbiFHH6u (ORCPT
+        with ESMTP id S232952AbiFHH6E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:58:50 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 536E720EE86;
-        Wed,  8 Jun 2022 00:33:11 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id bg6so19855142ejb.0;
-        Wed, 08 Jun 2022 00:33:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=al6uMPCdvbAtX8ruwnHnA0G0kBr4QU1mqamtCwMfyXE=;
-        b=CBbjmk7g/q2NL183FleRyhAqNLcVzzXUrP63fHkRbjWRDXqsZjIbEpjBVLMlj8CyUI
-         CIkidgeuM4bTliykltzAo1itGxpx9XrTDaxuXPamB0kRlbkWFiq0jd/1sOyPKI2AIMya
-         41HSq5ZHhp5rTyxKz29Etkuh0QOlOHQ1K2RiEqrQaC0Cf1Vi3WR4rBToego7/oSMMclC
-         9azSB4x/gg/GYJ1tkPLfcYZjB//+B19fYV1X2lurg37pck5vI1G7AjxfWmUXU15Ckb5B
-         aAw+hyLBL3CAxGyv1dK+8gU+WbtQbtfj9LSL1COTVEaMKcUEsT6/j9b31i0vLg8A4pjy
-         LE1g==
-X-Gm-Message-State: AOAM530o2iFFge9alCnMNjBWgDHxxUPvLjC8PHxgJ5gGMxsEeFqwpd4r
-        Sc9g5uspIA1Tj/oBDvjqd4s=
-X-Google-Smtp-Source: ABdhPJzC6YuOKMJYbKjEW9a9NEOzHrQG7ncU4tYuOwnI1N5sWINWZ6k/N/xj7lepCuseLljAb9Wsxw==
-X-Received: by 2002:a17:907:7294:b0:6ff:200e:8d62 with SMTP id dt20-20020a170907729400b006ff200e8d62mr30157738ejc.719.1654673455298;
-        Wed, 08 Jun 2022 00:30:55 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id v3-20020a056402348300b0042dccb44e88sm715283edc.23.2022.06.08.00.30.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 00:30:54 -0700 (PDT)
-Message-ID: <e9fdf394-9dd2-b1d3-29c9-66eb3353c0ec@kernel.org>
-Date:   Wed, 8 Jun 2022 09:30:53 +0200
+        Wed, 8 Jun 2022 03:58:04 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E76B1E2269;
+        Wed,  8 Jun 2022 00:27:14 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LHzKy3CJYzYsQl;
+        Wed,  8 Jun 2022 15:26:14 +0800 (CST)
+Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 8 Jun 2022 15:27:12 +0800
+Received: from [10.174.178.120] (10.174.178.120) by
+ dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 8 Jun 2022 15:27:10 +0800
+Message-ID: <29900b05-ec44-76a2-645a-22a13399d7fd@huawei.com>
+Date:   Wed, 8 Jun 2022 15:27:09 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 10/36] tty/vt: consolemap: introduce UNI_*() macros
-Content-Language: en-US
-From:   Jiri Slaby <jirislaby@kernel.org>
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220607104946.18710-1-jslaby@suse.cz>
- <20220607104946.18710-10-jslaby@suse.cz>
- <2e2623a0-4b9f-f15d-78e0-d6e335bdcdff@linux.intel.com>
- <54049291-db20-a536-0615-cc3b56ceb3a3@kernel.org>
-In-Reply-To: <54049291-db20-a536-0615-cc3b56ceb3a3@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 5/6] mm: Add mirror flag back on initrd memory
+To:     <ardb@kernel.org>, <david@redhat.com>
+CC:     <corbet@lwn.net>, <will@kernel.org>, <catalin.marinas@arm.com>,
+        <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>,
+        <dvhart@infradead.org>, <andy@infradead.org>, <rppt@kernel.org>,
+        <akpm@linux-foundation.org>, <paul.walmsley@sifive.com>,
+        <palmer@dabbelt.com>, <aou@eecs.berkeley.edu>,
+        <paulmck@kernel.org>, <keescook@chromium.org>,
+        <songmuchun@bytedance.com>, <rdunlap@infradead.org>,
+        <damien.lemoal@opensource.wdc.com>, <swboyd@chromium.org>,
+        <wei.liu@kernel.org>, <robin.murphy@arm.com>,
+        <anshuman.khandual@arm.com>, <thunder.leizhen@huawei.com>,
+        <wangkefeng.wang@huawei.com>, <gpiccoli@igalia.com>,
+        <chenhuacai@kernel.org>, <geert@linux-m68k.org>,
+        <chenzhou10@huawei.com>, <vijayb@linux.microsoft.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-efi@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>,
+        <linux-mm@kvack.org>, <linux-riscv@lists.infradead.org>,
+        <mawupeng1@huawei.com>
+References: <20220607093805.1354256-1-mawupeng1@huawei.com>
+ <20220607093805.1354256-6-mawupeng1@huawei.com>
+ <99900b31-2605-2c85-a1b7-9ef2666b58da@redhat.com>
+ <CAMj1kXGkzjq3koW_sgO4uzrdtwqSqzsJfT5ABYyvodf+ggXT2w@mail.gmail.com>
+From:   mawupeng <mawupeng1@huawei.com>
+In-Reply-To: <CAMj1kXGkzjq3koW_sgO4uzrdtwqSqzsJfT5ABYyvodf+ggXT2w@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.178.120]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500014.china.huawei.com (7.185.36.153)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08. 06. 22, 8:59, Jiri Slaby wrote:
-> On 07. 06. 22, 15:47, Ilpo Järvinen wrote:
->> On Tue, 7 Jun 2022, Jiri Slaby wrote:
+
+
+在 2022/6/7 22:49, Ard Biesheuvel 写道:
+> On Tue, 7 Jun 2022 at 14:22, David Hildenbrand <david@redhat.com> wrote:
 >>
->>> The code currently does shift, OR, and AND logic directly in the code.
->>> It is not much obvious what happens there. Therefore define four macros
->>> for that purpose and use them in the code. We use GENMASK() so that it
->>> is clear which bits serve what purpose:
->>> - UNI_GLYPH: bits  0.. 5
->>> - UNI_ROW:   bits  6..10
->>> - UNI_DIR:   bits 11..31
+>> On 07.06.22 11:38, Wupeng Ma wrote:
+>>> From: Ma Wupeng <mawupeng1@huawei.com>
 >>>
->>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>>> Initrd memory will be removed and then added in arm64_memblock_init() and this
+>>> will cause it to lose all of its memblock flags. The lost of MEMBLOCK_MIRROR
+>>> flag will lead to error log printed by find_zone_movable_pfns_for_nodes if
+>>> the lower 4G range has some non-mirrored memory.
+>>>
+>>> In order to solve this problem, the lost MEMBLOCK_MIRROR flag will be
+>>> reinstalled if the origin memblock has this flag.
+>>>
+>>> Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
 >>> ---
->>>   drivers/tty/vt/consolemap.c | 21 +++++++++++++--------
->>>   1 file changed, 13 insertions(+), 8 deletions(-)
+>>>   arch/arm64/mm/init.c     |  9 +++++++++
+>>>   include/linux/memblock.h |  1 +
+>>>   mm/memblock.c            | 20 ++++++++++++++++++++
+>>>   3 files changed, 30 insertions(+)
 >>>
->>> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
->>> index 016c1a0b4290..e5fd225e87bd 100644
->>> --- a/drivers/tty/vt/consolemap.c
->>> +++ b/drivers/tty/vt/consolemap.c
->>> @@ -190,6 +190,11 @@ static int inv_translate[MAX_NR_CONSOLES];
->>>   #define UNI_DIR_ROWS    32U
->>>   #define UNI_ROW_GLYPHS    64U
->>> +#define UNI_DIR(uni)        ( (uni)                   >> 11)
->>> +#define UNI_ROW(uni)        (((uni) & GENMASK(10, 6)) >>  6)
+>>> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+>>> index 339ee84e5a61..11641f924d08 100644
+>>> --- a/arch/arm64/mm/init.c
+>>> +++ b/arch/arm64/mm/init.c
+>>> @@ -350,9 +350,18 @@ void __init arm64_memblock_init(void)
+>>>                        "initrd not fully accessible via the linear mapping -- please check your bootloader ...\n")) {
+>>>                        phys_initrd_size = 0;
+>>>                } else {
+>>> +                     int flags, ret;
+>>> +
+>>> +                     ret = memblock_get_flags(base, &flags);
+>>> +                     if (ret)
+>>> +                             flags = 0;
+>>> +
+>>>                        memblock_remove(base, size); /* clear MEMBLOCK_ flags */
+>>>                        memblock_add(base, size);
+>>>                        memblock_reserve(base, size);
 >>
->> This is opencoding what FIELD_GET() does. Maybe just define these as
->> masks and use FIELD_GET in the code below.
+>> Can you explain why we're removing+re-adding here exactly? Is it just to
+>> clear flags as the comment indicates?
+>>
 > 
-> Ah, great -- I was thinking there should be something for that purpose 
-> already, but didn't find this. But let's define these UNI_* macros using 
-> appropriate FIELD_GET(). (And not using FIELD_GET() in the code.)
+> This should only happen if the placement of the initrd conflicts with
+> a mem= command line parameter or it is not covered by memblock for
+> some other reason.
 > 
->>> +#define UNI_GLYPH(uni)        ( (uni) & GENMASK( 5, 0))
-> thanks,
+> IOW, this should never happen, and if re-memblock_add'ing this memory
+> unconditionally is causing problems, we should fix that instead of
+> working around it.
 
-JFYI, I ended up with this diff to the original approach:
---- a/drivers/tty/vt/consolemap.c
-+++ b/drivers/tty/vt/consolemap.c
-@@ -23,6 +23,8 @@
-   * stack overflow.
-   */
+This will happen if we use initrdmem=3G,100M to reserve initrd memory below
+the 4G limit to test this scenario(just for testing, I have trouble to boot
+qemu with initrd enabled and memory below 4G are all mirror memory).
 
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-  #include <linux/module.h>
-  #include <linux/kd.h>
-  #include <linux/errno.h>
-@@ -190,10 +192,17 @@ static int inv_translate[MAX_NR_CONSOLES];
-  #define UNI_DIR_ROWS   32U
-  #define UNI_ROW_GLYPHS 64U
+Re-memblock_add'ing this memory unconditionally seems fine but clear all
+flags(especially MEMBLOCK_MIRROR) may lead to some error log.
 
--#define UNI_DIR(uni)           ( (uni)                   >> 11)
--#define UNI_ROW(uni)           (((uni) & GENMASK(10, 6)) >>  6)
--#define UNI_GLYPH(uni)         ( (uni) & GENMASK( 5, 0))
--#define UNI(dir, row, glyph)   (((dir) << 11) | ((row) << 6) | (glyph))
-+#define UNI_DIR_BITS(max)      GENMASK((max), 11)
-+#define UNI_ROW_BITS           GENMASK(10,  6)
-+#define UNI_GLYPH_BITS         GENMASK( 5,  0)
-+
-+#define UNI_DIR(uni)   FIELD_GET(UNI_DIR_BITS(sizeof(uni) * 8 - 1), (uni))
-+#define UNI_ROW(uni)   FIELD_GET(UNI_ROW_BITS, (uni))
-+#define UNI_GLYPH(uni) FIELD_GET(UNI_GLYPH_BITS, (uni))
-+
-+#define UNI(dir, row, glyph)   (FIELD_PREP(UNI_DIR_BITS(31), (dir)) | \
-+                                FIELD_PREP(UNI_ROW_BITS, (row)) | \
-+                                FIELD_PREP(UNI_GLYPH_BITS, (glyph)))
+> 
+>> If it's really just about clearing flags, I wonder if we rather want to
+>> have an interface that does exactly that, and hides the way this is
+>> actually implemented (obtain flags, remove, re-add ...), internally.
+>>
+>> But most probably there is more magic in the code and clearing flags
+>> isn't all it ends up doing.
+>>
+> 
+> I don't remember exactly why we needed to clear the flags, but I think
+> it had to do with some corner case we hit when the initrd was
+> partially covered.
+If "mem=" is set in command line, memblock_mem_limit_remove_map() will
+remove all memory block without MEMBLOCK_NOMAP. Maybe this will bring the
+memory back if this initrd mem has the MEMBLOCK_NOMAP flag?
 
-  /**
-   * struct uni_pagedict -- unicode directory
+The rfc version [1] introduce and use memblock_clear_nomap() to clear the
+MEMBLOCK_NOMAP of this initrd memblock.
+So maybe the usage of memblock_remove() is just to avoid introducing new
+function(memblock_clear_nomap)?
 
-=======================================================
+Since commit 4c546b8a3469 ("memblock: add memblock_clear_nomap()") already
+introduced memblock_clear_nomap(). Can we use this to remove flag MEMBLOCK_NOMAP
+to solve this problem rather than bring flag MEMBLOCK_MIRROR back?
 
-More text, but easier to follow, I think. except the UNI_DIR_BITS() has 
-to have a parameter, otherwise compilation raises a too-big value 
-warning with use of UNI_DIR() in con_insert_unipair() where uni is only 
-of ushort type. Alternatively, we can cast uni to u32, but that produces 
-worse assembly (extensions to u32 here and there).
-
-thanks,
--- 
-js
-suse labs
+[1] https://lore.kernel.org/linux-arm-kernel/20160202180622.GP10166@arm.com/T/#t
+> .
