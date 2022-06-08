@@ -2,181 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23BDBC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:46:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97BF0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230204AbiFHDqo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 23:46:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37320 "EHLO
+        id S233068AbiFHDr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 23:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235315AbiFHDpY (ORCPT
+        with ESMTP id S234021AbiFHDpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 23:45:24 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0328D5DBC6
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 17:56:06 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id k11so26114030oia.12
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 17:56:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wFH16JpjBRikHN1IAO48ehtoxfzCGCzN3oM9EiMa6X8=;
-        b=l4i+k+6Abr5HeudzU075zO0r/BLzbacv0V6STNZIEAEBluaeTcRvx1TChTOuxyCASs
-         uAUgVwmDgoEyG6k0dhZ8NFmw5OEbd2l74yvSxXxWA53CBaw9OoBV3iEq26EPYk4y+7IT
-         qKn9JDYz2OP806c9cvPpDahmxZAZDvrVhTSIayulr7dYNanhmDiOChse+RJNE6HykCsj
-         9xuaaLmPGA8/BJDWN8cpUzOPbGbAyNe0shOzPx2NRgDBxX7ug5Bu5rZe5CkKdYsGZDwp
-         RBwBbso17/gWhg2hEdQ9VBPL7L2J3NplhFzwna8YW9Inmvn2hE+jo34OGkRp4w12iAUj
-         sThA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wFH16JpjBRikHN1IAO48ehtoxfzCGCzN3oM9EiMa6X8=;
-        b=mvEgwW++QzyUX1dLq0uyNLiMj5p1BkQaAuk5Ymi8+lkwf0+x50AT1KVps0sfMPMzEc
-         omwI/JxplDB4Lsr74pCF7PTJ9PAjvFUYU2n/wdYPygqWGsUvBzoz8mnix4VViBzmO5JV
-         DFbgFi9pFFpMGgSKvrdg0nCDvM6PQbpjiTT8stB2Zu14Eg7LL00pLyklmUROw2l6Q49o
-         OzLWlfVvsYzlSkkDT8s2Wz0gqwA7mqs5hyAPaibOtwwO8o8U2A8JUuT23JeId6tJmAs5
-         iLogxe405Rmwn8g8IvU0moW220BU+C1vIsjvBDUMy15sge5eHOkDmSbViYV8QTIo2f2z
-         QfHQ==
-X-Gm-Message-State: AOAM532/OFtjKP9QDrh1h/qtnShqNmrrpedFH+FH7q+pOxl1Jear7bsJ
-        MYeszPu3vutAC1cFJgA8Ms8KmUeAFDOUIqs614sFog==
-X-Google-Smtp-Source: ABdhPJwjBSZgp55zoUZOFIm3kjCTD4NqCF0p7muhSr/F2gMJemxqIIRloSiqM46aTGwoS/mB8l6y90gRDZltreZ8pZ8=
-X-Received: by 2002:a05:6808:bd3:b0:32e:400d:1eb1 with SMTP id
- o19-20020a0568080bd300b0032e400d1eb1mr1047136oik.110.1654649757116; Tue, 07
- Jun 2022 17:55:57 -0700 (PDT)
+        Tue, 7 Jun 2022 23:45:05 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC3922C834;
+        Tue,  7 Jun 2022 17:55:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 01557CE2519;
+        Wed,  8 Jun 2022 00:55:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 046A7C3411C;
+        Wed,  8 Jun 2022 00:55:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654649714;
+        bh=xjrzCsFcTkudeoY/nGuX8OacXikEuO8+6CAFVuglQwI=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=NHoVYZTn6JJtZuWt1ytsYScgxa49s3JFPBQwXYh8/atVWV9fk89xE3ptxILwu6Gxo
+         50JlDiPwWRBX7/Hrw6tqpksPvGquDaOL8NC1x3SVo1TNmu4EkcPguSLNkZXF5qW8C6
+         TfiKLoWXWQxmvOoKGPlA1vvsBSFSm4US4VuEc5sjsRelt3k6mZYyiw7Xhef/sw3ez5
+         UX4sNJZTejhB7XIahuth09pXmVs3+jusrOvffPa1psn9Q9IM2YjE+UtErAiSWpumzN
+         hKNh9HJ56MKQv6N1chDcFZ0XkUeOKaeu88LRn+DgTRIWyXLwtt0HWBCKb/mTFTncMr
+         x8r6oJiSl/RrQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 8C2AC5C034F; Tue,  7 Jun 2022 17:55:13 -0700 (PDT)
+Date:   Tue, 7 Jun 2022 17:55:13 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
+Cc:     "frederic@kernel.org" <frederic@kernel.org>,
+        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] rcu/nocb: Avoid polling when myrdp->nocb_head_rdp
+ list is empty
+Message-ID: <20220608005513.GK1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220607075057.909070-1-qiang1.zhang@intel.com>
+ <20220607161620.GH1790663@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB5880551F642B1490CEFA65A8DAA49@PH0PR11MB5880.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-References: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
- <CAGtprH_83CEC0U-cBR2FzHsxbwbGn0QJ87WFNOEet8sineOcbQ@mail.gmail.com> <20220607065749.GA1513445@chaop.bj.intel.com>
-In-Reply-To: <20220607065749.GA1513445@chaop.bj.intel.com>
-From:   Marc Orr <marcorr@google.com>
-Date:   Tue, 7 Jun 2022 17:55:46 -0700
-Message-ID: <CAA03e5H_vOQS-qdZgacnmqP5T5jJLnEfm44yfRzJQ2KVu0Br+Q@mail.gmail.com>
-Subject: Re: [PATCH v6 0/8] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-To:     Chao Peng <chao.p.peng@linux.intel.com>
-Cc:     Vishal Annapurve <vannapurve@google.com>,
-        kvm list <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86 <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Jun Nakajima <jun.nakajima@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        David Hildenbrand <david@redhat.com>, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR11MB5880551F642B1490CEFA65A8DAA49@PH0PR11MB5880.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 12:01 AM Chao Peng <chao.p.peng@linux.intel.com> wrote:
->
-> On Mon, Jun 06, 2022 at 01:09:50PM -0700, Vishal Annapurve wrote:
-> > >
-> > > Private memory map/unmap and conversion
-> > > ---------------------------------------
-> > > Userspace's map/unmap operations are done by fallocate() ioctl on the
-> > > backing store fd.
-> > >   - map: default fallocate() with mode=0.
-> > >   - unmap: fallocate() with FALLOC_FL_PUNCH_HOLE.
-> > > The map/unmap will trigger above memfile_notifier_ops to let KVM map/unmap
-> > > secondary MMU page tables.
-> > >
-> > ....
-> > >    QEMU: https://github.com/chao-p/qemu/tree/privmem-v6
-> > >
-> > > An example QEMU command line for TDX test:
-> > > -object tdx-guest,id=tdx \
-> > > -object memory-backend-memfd-private,id=ram1,size=2G \
-> > > -machine q35,kvm-type=tdx,pic=no,kernel_irqchip=split,memory-encryption=tdx,memory-backend=ram1
-> > >
+On Wed, Jun 08, 2022 at 12:41:28AM +0000, Zhang, Qiang1 wrote:
+> On Tue, Jun 07, 2022 at 03:50:57PM +0800, Zqiang wrote:
+> > Currently, If the 'rcu_nocb_poll' bootargs is enable, all rcuog 
+> > kthreads enter polling mode. however, due to only insert CPU's rdp 
+> > which belong to rcu_nocb_mask to 'nocb_head_rdp' list or all CPU's rdp 
+> > served by rcuog kthread have been de-offloaded, these cause the 
+> > 'nocb_head_rdp' list served by rcuog kthread is empty, when the 
+> > 'nocb_head_rdp' is empty, the rcuog kthread in polling mode not 
+> > actually do anything. fix it by exiting polling mode when the 
+> > 'nocb_head_rdp'list is empty, otherwise entering polling mode.
+> > 
+> > Signed-off-by: Zqiang <qiang1.zhang@intel.com>
 > >
-> > There should be more discussion around double allocation scenarios
-> > when using the private fd approach. A malicious guest or buggy
-> > userspace VMM can cause physical memory getting allocated for both
-> > shared (memory accessible from host) and private fds backing the guest
-> > memory.
-> > Userspace VMM will need to unback the shared guest memory while
-> > handling the conversion from shared to private in order to prevent
-> > double allocation even with malicious guests or bugs in userspace VMM.
->
-> I don't know how malicious guest can cause that. The initial design of
-> this serie is to put the private/shared memory into two different
-> address spaces and gives usersapce VMM the flexibility to convert
-> between the two. It can choose respect the guest conversion request or
-> not.
+> >This looks a bit more plausible, but what have you done to test this?
+> 
+> Yes , I have only tested as follows and I added two trace events.
+> 
+> +                      trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("EnterNoPoll"));
+>                         rcu_wait(READ_ONCE(my_rdp->nocb_toggling_rdp));
+> +                       trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("ExitNoPoll"));
+> 
+> runqemu kvm slirp nographic qemuparams="-m 2048 -smp 4" bootparams="rcu_nocbs=2,3 rcutree.dump_tree=1 rcu_nocb_poll rcutorture.nocbs_nthreads=4 rcutorture.test_boost=0" -d
 
-For example, the guest could maliciously give a device driver a
-private page so that a host-side virtual device will blindly write the
-private page.
+To exercise your change, could you please also add an appropriate value
+for the rcutorture.nocbs_nthreads kernel boot parameter?  Without that
+boot parameter, your kernel will not actually offload or deoffload
+any CPUs.
 
-> It's possible for a usrspace VMM to cause double allocation if it fails
-> to call the unback operation during the conversion, this may be a bug
-> or not. Double allocation may not be a wrong thing, even in conception.
-> At least TDX allows you to use half shared half private in guest, means
-> both shared/private can be effective. Unbacking the memory is just the
-> current QEMU implementation choice.
+An alternative approach is to run rcutorture scenario TREE01.
 
-Right. But the idea is that this patch series should accommodate all
-of the CVM architectures. Or at least that's what I know was
-envisioned last time we discussed this topic for SNP [*].
+							Thanx, Paul
 
-Regardless, it's important to ensure that the VM respects its memory
-budget. For example, within Google, we run VMs inside of containers.
-So if we double allocate we're going to OOM. This seems acceptable for
-an early version of CVMs. But ultimately, I think we need a more
-robust way to ensure that the VM operates within its memory container.
-Otherwise, the OOM is going to be hard to diagnose and distinguish
-from a real OOM.
-
-[*] https://lore.kernel.org/all/20210820155918.7518-1-brijesh.singh@amd.com/
-
->
-> Chao
+> Thanks
+> Zqiang
+> 
 > >
-> > Options to unback shared guest memory seem to be:
-> > 1) madvise(.., MADV_DONTNEED/MADV_REMOVE) - This option won't stop
-> > kernel from backing the shared memory on subsequent write accesses
-> > 2) fallocate(..., FALLOC_FL_PUNCH_HOLE...) - For file backed shared
-> > guest memory, this option still is similar to madvice since this would
-> > still allow shared memory to get backed on write accesses
-> > 3) munmap - This would give away the contiguous virtual memory region
-> > reservation with holes in the guest backing memory, which might make
-> > guest memory management difficult.
-> > 4) mprotect(... PROT_NONE) - This would keep the virtual memory
-> > address range backing the guest memory preserved
+> >							Thanx, Paul
 > >
-> > ram_block_discard_range_fd from reference implementation:
-> > https://github.com/chao-p/qemu/tree/privmem-v6 seems to be relying on
-> > fallocate/madvise.
-> >
-> > Any thoughts/suggestions around better ways to unback the shared
-> > memory in order to avoid double allocation scenarios?
-
-I agree with Vishal. I think this patch set is making great progress.
-But the double allocation scenario seems like a high-level design
-issue that warrants more discussion.
+> > ---
+> >  v1->v2:
+> >  Move rcu_nocb_poll flags check from rdp_offload_toggle() to  
+> > rcu_nocb_rdp_offload/deoffload(), avoid unnecessary setting of  
+> > rdp_gp->nocb_gp_sleep flags, because when rcu_nocb_poll is set  the 
+> > rdp_gp->nocb_gp_sleep is not used.
+> > 
+> >  kernel/rcu/tree_nocb.h | 16 ++++++++++------
+> >  1 file changed, 10 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h index 
+> > fa8e4f82e60c..2a52c9abc681 100644
+> > --- a/kernel/rcu/tree_nocb.h
+> > +++ b/kernel/rcu/tree_nocb.h
+> > @@ -698,10 +698,14 @@ static void nocb_gp_wait(struct rcu_data *my_rdp)
+> >  				   TPS("WakeBypassIsDeferred"));
+> >  	}
+> >  	if (rcu_nocb_poll) {
+> > -		/* Polling, so trace if first poll in the series. */
+> > -		if (gotcbs)
+> > -			trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("Poll"));
+> > -		schedule_timeout_idle(1);
+> > +		if (list_empty(&my_rdp->nocb_head_rdp)) {
+> > +			rcu_wait(READ_ONCE(my_rdp->nocb_toggling_rdp));
+> > +		} else {
+> > +			/* Polling, so trace if first poll in the series. */
+> > +			if (gotcbs)
+> > +				trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("Poll"));
+> > +			schedule_timeout_idle(1);
+> > +		}
+> >  	} else if (!needwait_gp) {
+> >  		/* Wait for callbacks to appear. */
+> >  		trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("Sleep")); @@ -1030,7 
+> > +1034,7 @@ static long rcu_nocb_rdp_deoffload(void *arg)
+> >  
+> >  	mutex_lock(&rdp_gp->nocb_gp_kthread_mutex);
+> >  	if (rdp_gp->nocb_gp_kthread) {
+> > -		if (wake_gp)
+> > +		if (wake_gp || rcu_nocb_poll)
+> >  			wake_up_process(rdp_gp->nocb_gp_kthread);
+> >  
+> >  		/*
+> > @@ -1152,7 +1156,7 @@ static long rcu_nocb_rdp_offload(void *arg)
+> >  	 *      rcu_nocb_unlock()         rcu_nocb_unlock()
+> >  	 */
+> >  	wake_gp = rdp_offload_toggle(rdp, true, flags);
+> > -	if (wake_gp)
+> > +	if (wake_gp || rcu_nocb_poll)
+> >  		wake_up_process(rdp_gp->nocb_gp_kthread);
+> >  	swait_event_exclusive(rdp->nocb_state_wq,
+> >  			      rcu_segcblist_test_flags(cblist, SEGCBLIST_KTHREAD_CB) &&
+> > --
+> > 2.25.1
+> > 
