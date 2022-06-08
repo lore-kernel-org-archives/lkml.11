@@ -2,103 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23F1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:59:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231927AbiFHD6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 23:58:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56692 "EHLO
+        id S230013AbiFHD7s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 23:59:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232130AbiFHD5i (ORCPT
+        with ESMTP id S231666AbiFHD6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 23:57:38 -0400
-Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6C824B61C;
-        Tue,  7 Jun 2022 18:08:00 -0700 (PDT)
-X-QQ-mid: bizesmtp75t1654650379tjnj372u
-Received: from localhost.localdomain ( [182.148.15.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 08 Jun 2022 09:06:14 +0800 (CST)
-X-QQ-SSF: 01000000000000209000000A0000000
-X-QQ-FEAT: 78zNK54033KQhLuSK7j6I1w7EDLGvXYfDxi4XCOlfhXsQByUpReHk1I2tUbsu
-        eV8SZ+LwWUUDTRLLCrQf1I1DOkIB8QbBui0v56C7yxyho/OkKMrwM+QV7TCnfbKfrT4bhbk
-        fcBahmNefnax2dSkIlXmKTI3jGDH99UQNoC0UKr+vJ1tA/r2ZpF0gjkb1Xnf5bsNn9kdfW7
-        3433rk3I9A0Sn4MOqXBmNdBeUx0k+Lo9eDtQ+Tubs8j5EINRXQfK6cTXBwwrh4Uq8ErBMy3
-        E8qbLhkWfNE5pYmBi52nnPRiAv3s/XLesZfFoFeRcHqDMEoMU77FlmyNX4NgZdKotY2w==
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     thierry.reding@gmail.com, lee.jones@linaro.org
-Cc:     u.kleine-koenig@pengutronix.de, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] pwm: atmel-tcb: use 'unsigned int' instead of 'unsigned'
-Date:   Wed,  8 Jun 2022 09:06:07 +0800
-Message-Id: <20220608010607.19469-1-yuanjilin@cdjrlc.com>
+        Tue, 7 Jun 2022 23:58:08 -0400
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210422509CB
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:09:47 -0700 (PDT)
+Received: by mail-ot1-x32d.google.com with SMTP id r12-20020a056830448c00b0060aec7b7a54so14106975otv.5
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 18:09:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=usp.br; s=usp-google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=TH0uwVgHZAwq0jKJ2rY7rr0n6nybjWr8m8j939NAcUE=;
+        b=qqCZGsFj3WTgMs3F8eplwxhY8tlcCpyszawL420QxCE1KGOlb2XREx+0YHhA/DXDht
+         y6FTG7VikxjZzWmeWN6N7dhQM6c04xnY1Y9LYsQa0IHup3PFgpYPGjBz949gatfecqpi
+         UTKgVldl/uVChP2nADj5fLDq6mcJx1CAkykZRO+OF6G0E/S+cXNXjIZRZYjb71pMMMQu
+         BR4xCLhM2SA+nS2/WaI7iPZmaNvV1DOWF24hrKmioPRzxxEm7vDUUV1peqgLyn8ZlhgR
+         Hn5h/IxgLHkgxbj9VkurqF+8cQfRShUn2s3hqev+lUZXCEtavv3dWnsflftx7KmbvLnC
+         k0Ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TH0uwVgHZAwq0jKJ2rY7rr0n6nybjWr8m8j939NAcUE=;
+        b=BfsZekbHDH0R690zWzmBtR4jbemyDNUJAfVLCEMZblBmiQQwaqScntGFg/CKqbAbA9
+         AlFFqMvcmV9SlJ/RG4AkHSZ6Qfp1VS1lkAB2x8CksjHOD5rixbbhDTzfahK67t/rSsD2
+         CrpQRLQKkE4dl8o5x42k+0i5RjYbKYg/bEpIX/U095BP6/NhZpLLEEGxHsixCnjc3wMr
+         UaJA9AlU2iww7rjHSWGhIK6otJ+HOtxX221GqnqdFIdSAYrqC42elUo8xufBpj0LpwPH
+         M/vZImRCUN5UjzOA7X+V3zQj2TPnDXn1HWhELqpVawBOxBlvRBPUoF5Wsmz+mqDwJcDe
+         o3uA==
+X-Gm-Message-State: AOAM530OtYwW5J+hdOmSBMe6JxCTZ6zblUZ1rsU51oJYVVYadzdIfMk5
+        oYuya6KQwe1q11YP8JBMvChxLg==
+X-Google-Smtp-Source: ABdhPJzuiHfBdj/hVttQ2zZajzaYxynowqNPbS/D5BqnB7NeOLdkb2qK7wfnz1fb68HTl5Wobxs8vA==
+X-Received: by 2002:a05:6830:1456:b0:60b:f7b9:fc49 with SMTP id w22-20020a056830145600b0060bf7b9fc49mr6437094otp.260.1654650560284;
+        Tue, 07 Jun 2022 18:09:20 -0700 (PDT)
+Received: from fedora.. ([2804:14d:8084:84c6:fe26:c42d:aab9:fa8a])
+        by smtp.gmail.com with ESMTPSA id c16-20020a544e90000000b0032b1b84f4e3sm10343057oiy.22.2022.06.07.18.09.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 18:09:19 -0700 (PDT)
+From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>
+To:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        christian.koenig@amd.com,
+        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
+        Jun Lei <jun.lei@amd.com>,
+        Nicholas Choi <Nicholas.Choi@amd.com>,
+        Harrison Chiu <harrison.chiu@amd.com>,
+        Mark Yacoub <markyacoub@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
+        David Gow <davidgow@google.com>,
+        Daniel Latypov <dlatypov@google.com>, brendanhiggins@google.com
+Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>
+Subject: [RFC 2/3] drm/amd/display: Move bw_fixed macros to header file
+Date:   Tue,  7 Jun 2022 22:07:10 -0300
+Message-Id: <20220608010709.272962-3-maira.canal@usp.br>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220608010709.272962-1-maira.canal@usp.br>
+References: <20220608010709.272962-1-maira.canal@usp.br>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace the 'unsigned' with 'unsigned int' which is more accurate.
+The macros defined at bw_fixed are important mathematical definitions,
+specifying masks to get the fractional part and the maximum and minimum
+values of I64. In order to enable unit tests for bw_fixed, it is
+relevant to have access to those macros. This commit moves the macros to
+the header file, making it accessible to future unit tests.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+Signed-off-by: Maíra Canal <maira.canal@usp.br>
 ---
- drivers/pwm/pwm-atmel-tcb.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ .../gpu/drm/amd/display/dc/dml/calcs/bw_fixed.c    | 14 +-------------
+ drivers/gpu/drm/amd/display/dc/inc/bw_fixed.h      | 14 ++++++++++++++
+ 2 files changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
-index 3977a0f9d132..d6977e4e71f3 100644
---- a/drivers/pwm/pwm-atmel-tcb.c
-+++ b/drivers/pwm/pwm-atmel-tcb.c
-@@ -35,9 +35,9 @@
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/calcs/bw_fixed.c b/drivers/gpu/drm/amd/display/dc/dml/calcs/bw_fixed.c
+index 6ca288fb5fb9..d944570e5695 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/calcs/bw_fixed.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/calcs/bw_fixed.c
+@@ -26,19 +26,7 @@
+ #include "bw_fixed.h"
  
- struct atmel_tcb_pwm_device {
- 	enum pwm_polarity polarity;	/* PWM polarity */
--	unsigned div;			/* PWM clock divider */
--	unsigned duty;			/* PWM duty expressed in clk cycles */
--	unsigned period;		/* PWM period expressed in clk cycles */
-+	unsigned int div;			/* PWM clock divider */
-+	unsigned int duty;			/* PWM duty expressed in clk cycles */
-+	unsigned int period;		/* PWM period expressed in clk cycles */
+ 
+-#define MIN_I64 \
+-	(int64_t)(-(1LL << 63))
+-
+-#define MAX_I64 \
+-	(int64_t)((1ULL << 63) - 1)
+-
+-#define FRACTIONAL_PART_MASK \
+-	((1ULL << BW_FIXED_BITS_PER_FRACTIONAL_PART) - 1)
+-
+-#define GET_FRACTIONAL_PART(x) \
+-	(FRACTIONAL_PART_MASK & (x))
+-
+-static uint64_t abs_i64(int64_t arg)
++uint64_t abs_i64(int64_t arg)
+ {
+ 	if (arg >= 0)
+ 		return (uint64_t)(arg);
+diff --git a/drivers/gpu/drm/amd/display/dc/inc/bw_fixed.h b/drivers/gpu/drm/amd/display/dc/inc/bw_fixed.h
+index d1656c9d50df..064839425b96 100644
+--- a/drivers/gpu/drm/amd/display/dc/inc/bw_fixed.h
++++ b/drivers/gpu/drm/amd/display/dc/inc/bw_fixed.h
+@@ -33,12 +33,26 @@ struct bw_fixed {
+ 	int64_t value;
  };
  
- struct atmel_tcb_channel {
-@@ -85,7 +85,7 @@ static int atmel_tcb_pwm_request(struct pwm_chip *chip,
++#define MIN_I64 \
++	(int64_t)(-(1ULL << 63))
++
++#define MAX_I64 \
++	(int64_t)((1ULL << 63) - 1)
++
++#define FRACTIONAL_PART_MASK \
++	((1ULL << BW_FIXED_BITS_PER_FRACTIONAL_PART) - 1)
++
++#define GET_FRACTIONAL_PART(x) \
++	(FRACTIONAL_PART_MASK & (x))
++
+ #define BW_FIXED_MIN_I32 \
+ 	(int64_t)(-(1LL << (63 - BW_FIXED_BITS_PER_FRACTIONAL_PART)))
+ 
+ #define BW_FIXED_MAX_I32 \
+ 	(int64_t)((1ULL << (63 - BW_FIXED_BITS_PER_FRACTIONAL_PART)) - 1)
+ 
++uint64_t abs_i64(int64_t arg);
++
+ static inline struct bw_fixed bw_min2(const struct bw_fixed arg1,
+ 				      const struct bw_fixed arg2)
  {
- 	struct atmel_tcb_pwm_chip *tcbpwmc = to_tcb_chip(chip);
- 	struct atmel_tcb_pwm_device *tcbpwm;
--	unsigned cmr;
-+	unsigned int cmr;
- 	int ret;
- 
- 	tcbpwm = devm_kzalloc(chip->dev, sizeof(*tcbpwm), GFP_KERNEL);
-@@ -150,7 +150,7 @@ static void atmel_tcb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct atmel_tcb_pwm_chip *tcbpwmc = to_tcb_chip(chip);
- 	struct atmel_tcb_pwm_device *tcbpwm = tcbpwmc->pwms[pwm->hwpwm];
--	unsigned cmr;
-+	unsigned int cmr;
- 	enum pwm_polarity polarity = tcbpwm->polarity;
- 
- 	/*
-@@ -295,9 +295,9 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct atmel_tcb_pwm_device *atcbpwm = NULL;
- 	int i = 0;
- 	int slowclk = 0;
--	unsigned period;
--	unsigned duty;
--	unsigned rate = clk_get_rate(tcbpwmc->clk);
-+	unsigned int period;
-+	unsigned int duty;
-+	unsigned int rate = clk_get_rate(tcbpwmc->clk);
- 	unsigned long long min;
- 	unsigned long long max;
- 
 -- 
 2.36.1
 
