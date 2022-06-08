@@ -2,209 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B37C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EEC7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229795AbiFHEwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 00:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52874 "EHLO
+        id S230363AbiFHEwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 00:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230184AbiFHEvw (ORCPT
+        with ESMTP id S229946AbiFHEvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 00:51:52 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CEA32717AF;
-        Tue,  7 Jun 2022 18:17:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654651044; x=1686187044;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=/nNkMm22PKPf3p8/rCKaXGPuNVIxoEoPsdpm5cQPmew=;
-  b=LUNehITs6n18Jk2/zguEW3Fc8h1AWTHNOeug5ntjD5T6HHpnzjnycWeD
-   8YJ5A/GsWFUym8OuMsxdT3PgPDU7+5Idh5JPX/r8fBlLt23yjeQoTe+K5
-   FRJ1m9ByzOMtp1A3oSP1857IRLCbj7/CD3VxdzfiiiCBf6+4BLfNxwMZi
-   k=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 07 Jun 2022 18:17:21 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 18:17:20 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 7 Jun 2022 18:17:20 -0700
-Received: from hu-clew-lv.qualcomm.com (10.49.16.6) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 7 Jun 2022 18:17:20 -0700
-From:   Chris Lew <quic_clew@quicinc.com>
-To:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_clew@quicinc.com>
-Subject: [PATCH 4/4] rpmsg: glink: Add support for rpmsg_rx_done
-Date:   Tue, 7 Jun 2022 18:16:45 -0700
-Message-ID: <1654651005-15475-5-git-send-email-quic_clew@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1654651005-15475-1-git-send-email-quic_clew@quicinc.com>
-References: <1654651005-15475-1-git-send-email-quic_clew@quicinc.com>
+        Wed, 8 Jun 2022 00:51:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E83D253FDD
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:17:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654651056;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TeDZmjWnzyfSlyFkCkzDa5dQOySlKUE6Xhy3xS5xaC0=;
+        b=NV2E9F0xO+QBdPkcmXObG2ZtGn5Gt/mJT4RNTEUVmVB6+//UWLyr1tL+IPUfxWDOKZo2/V
+        zl3nzjDq90Cdz62m8W5ezRBnm/jDuth3zsbOVKaauXOq0ry0AaaHpaAJPC5Bi2SpbASOcK
+        fVQvIPk4r97wBUIqJ7yKsxWeJuO66iQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-477-klJpFXGiNfi0VZs1VHN7uw-1; Tue, 07 Jun 2022 21:11:16 -0400
+X-MC-Unique: klJpFXGiNfi0VZs1VHN7uw-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 83222101A54E;
+        Wed,  8 Jun 2022 01:11:15 +0000 (UTC)
+Received: from localhost (ovpn-12-81.pek2.redhat.com [10.72.12.81])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C1D50492C3B;
+        Wed,  8 Jun 2022 01:11:14 +0000 (UTC)
+Date:   Wed, 8 Jun 2022 09:11:10 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Rob Landley <rob@landley.net>, akpm@linux-foundation.org
+Cc:     ysato@users.sourceforge.jp, dalias@libc.org,
+        linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] sh: cast away __iomem to remove sparse warning
+Message-ID: <Yp/3Lq03+UVs9Bpv@MiWiFi-R3L-srv>
+References: <20220507013411.74277-1-bhe@redhat.com>
+ <YpS0C8tVG2E5jGSV@MiWiFi-R3L-srv>
+ <c24579a3-74e4-1dbb-6237-d9e1a01e6e09@landley.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c24579a3-74e4-1dbb-6237-d9e1a01e6e09@landley.net>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the implementation for the hooks of rpmsg_rx_done. If a client
-signals they want to hold onto a buffer with RPMSG_DEFER in the rx_cb,
-glink will move that intent to a deferred cleanup list. On the new
-rpmsg rx_done call, the glink transport will search this deferred
-cleanup list for the matching buffer and release the intent.
+On 06/07/22 at 05:56pm, Rob Landley wrote:
+> 
+> 
+> On 5/30/22 07:09, Baoquan He wrote:
+> > Hi,
+> > 
+> > On 05/07/22 at 09:34am, Baoquan He wrote:
+> >> LKP reported a sparse warning in arch/sh/kernel/crash_dump.c during
+> >> a kdump patchset reviewing:
+> >> https://lore.kernel.org/all/202204082128.JKXXDGpa-lkp@intel.com/T/#u
+> >> 
+> >> ../arch/sh/kernel/crash_dump.c:23:36: sparse: warning: incorrect type in argument 1 (different address spaces)
+> >> ../arch/sh/kernel/crash_dump.c:23:36: sparse:    expected void const *addr
+> >> ../arch/sh/kernel/crash_dump.c:23:36: sparse:    got void [noderef] __iomem *
+> >> 
+> >> This warning happened when __iomem pointer is passed into fucntion
+> >> which doesn't expect it. Casting away the __iomem can fix it.
+> > 
+> > This warning was reported by lkp during one patchset posted and
+> > reviewing. Since it's not related to the patchset, I just sent it
+> > separately so that later code change on arch/sh/kernel/crash_dump.c
+> > won't trigger the lkp warning again.
+> > 
+> > [PATCH v5 RESEND 0/3] Convert vmcore to use an iov_iter
+> > https://lore.kernel.org/all/20220408090636.560886-2-bhe@redhat.com/T/#u
+> > 
+> > Now the above patchset has been merged into linus's tree, please
+> > consider taking this patch.
+...... 
+> Tested-by: Rob Landley <rob@landley.net>
 
-Signed-off-by: Chris Lew <quic_clew@quicinc.com>
----
- drivers/rpmsg/qcom_glink_native.c | 54 ++++++++++++++++++++++++++++++++++++---
- 1 file changed, 51 insertions(+), 3 deletions(-)
+Thanks for testing, Rob.
 
-diff --git a/drivers/rpmsg/qcom_glink_native.c b/drivers/rpmsg/qcom_glink_native.c
-index 799e602113a1..db0dcc04f393 100644
---- a/drivers/rpmsg/qcom_glink_native.c
-+++ b/drivers/rpmsg/qcom_glink_native.c
-@@ -146,6 +146,7 @@ enum {
-  * @riids:	idr of all remote intents
-  * @intent_work: worker responsible for transmitting rx_done packets
-  * @done_intents: list of intents that needs to be announced rx_done
-+ * @defer_intents: list of intents held by the client released by rpmsg_rx_done
-  * @buf:	receive buffer, for gathering fragments
-  * @buf_offset:	write offset in @buf
-  * @buf_size:	size of current @buf
-@@ -174,6 +175,7 @@ struct glink_channel {
- 	struct idr riids;
- 	struct work_struct intent_work;
- 	struct list_head done_intents;
-+	struct list_head defer_intents;
- 
- 	struct glink_core_rx_intent *buf;
- 	int buf_offset;
-@@ -232,6 +234,7 @@ static struct glink_channel *qcom_glink_alloc_channel(struct qcom_glink *glink,
- 	init_completion(&channel->intent_req_comp);
- 
- 	INIT_LIST_HEAD(&channel->done_intents);
-+	INIT_LIST_HEAD(&channel->defer_intents);
- 	INIT_WORK(&channel->intent_work, qcom_glink_rx_done_work);
- 
- 	idr_init(&channel->liids);
-@@ -261,6 +264,12 @@ static void qcom_glink_channel_release(struct kref *ref)
- 			kfree(intent);
- 		}
- 	}
-+	list_for_each_entry_safe(intent, tmp, &channel->defer_intents, node) {
-+		if (!intent->reuse) {
-+			kfree(intent->data);
-+			kfree(intent);
-+		}
-+	}
- 
- 	idr_for_each_entry(&channel->liids, tmp, iid) {
- 		kfree(tmp->data);
-@@ -549,9 +558,10 @@ static void qcom_glink_rx_done_work(struct work_struct *work)
- 	spin_unlock_irqrestore(&channel->intent_lock, flags);
- }
- 
--static void qcom_glink_rx_done(struct qcom_glink *glink,
-+static void __qcom_glink_rx_done(struct qcom_glink *glink,
- 			       struct glink_channel *channel,
--			       struct glink_core_rx_intent *intent)
-+			       struct glink_core_rx_intent *intent,
-+			       bool defer)
- {
- 	int ret = -EAGAIN;
- 
-@@ -569,6 +579,14 @@ static void qcom_glink_rx_done(struct qcom_glink *glink,
- 		spin_unlock(&channel->intent_lock);
- 	}
- 
-+	/* Move intent to defer list until client calls rpmsg_rx_done */
-+	if (defer) {
-+		spin_lock(&channel->intent_lock);
-+		list_add_tail(&intent->node, &channel->defer_intents);
-+		spin_unlock(&channel->intent_lock);
-+		return;
-+	}
-+
- 	/* Schedule the sending of a rx_done indication */
- 	spin_lock(&channel->intent_lock);
- 	if (list_empty(&channel->done_intents))
-@@ -581,6 +599,28 @@ static void qcom_glink_rx_done(struct qcom_glink *glink,
- 	spin_unlock(&channel->intent_lock);
- }
- 
-+static int qcom_glink_rx_done(struct rpmsg_endpoint *ept, void *data)
-+{
-+	struct glink_channel *channel = to_glink_channel(ept);
-+	struct qcom_glink *glink = channel->glink;
-+	struct glink_core_rx_intent *intent, *tmp;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&channel->intent_lock, flags);
-+	list_for_each_entry_safe(intent, tmp, &channel->defer_intents, node) {
-+		if (intent->data == data) {
-+			list_del(&intent->node);
-+			spin_unlock_irqrestore(&channel->intent_lock, flags);
-+
-+			qcom_glink_send_rx_done(glink, channel, intent, true);
-+			return 0;
-+		}
-+	}
-+	spin_unlock_irqrestore(&channel->intent_lock, flags);
-+
-+	return -EINVAL;
-+}
-+
- /**
-  * qcom_glink_receive_version() - receive version/features from remote system
-  *
-@@ -841,6 +881,7 @@ static int qcom_glink_rx_data(struct qcom_glink *glink, size_t avail)
- 	} __packed hdr;
- 	unsigned int chunk_size;
- 	unsigned int left_size;
-+	bool rx_done_defer;
- 	unsigned int rcid;
- 	unsigned int liid;
- 	int ret = 0;
-@@ -935,7 +976,12 @@ static int qcom_glink_rx_data(struct qcom_glink *glink, size_t avail)
- 		intent->offset = 0;
- 		channel->buf = NULL;
- 
--		qcom_glink_rx_done(glink, channel, intent);
-+		if (channel->ept.rx_done && ret == RPMSG_DEFER)
-+			rx_done_defer = true;
-+		else
-+			rx_done_defer = false;
-+
-+		__qcom_glink_rx_done(glink, channel, intent, rx_done_defer);
- 	}
- 
- advance_rx:
-@@ -1212,6 +1258,7 @@ static struct rpmsg_endpoint *qcom_glink_create_ept(struct rpmsg_device *rpdev,
- 	ept->cb = cb;
- 	ept->priv = priv;
- 	ept->ops = &glink_endpoint_ops;
-+	ept->rx_done = true;
- 
- 	return ept;
- }
-@@ -1462,6 +1509,7 @@ static const struct rpmsg_endpoint_ops glink_endpoint_ops = {
- 	.sendto = qcom_glink_sendto,
- 	.trysend = qcom_glink_trysend,
- 	.trysendto = qcom_glink_trysendto,
-+	.rx_done = qcom_glink_rx_done,
- };
- 
- static void qcom_glink_rpdev_release(struct device *dev)
--- 
-2.7.4
+I guess SuperH arch has been in status of no maintenance, however some
+generic code change may involve correspondant ARCH change so that we
+have to touch arch/sh/.
+
+Hi Andrew,
+
+To avoid annoying warning when modifying crash_dump code, could you
+pick this one?
+
+Thanks
+Baoquan
 
