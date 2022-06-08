@@ -2,110 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E785CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:35:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62695CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233532AbiFHFfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53466 "EHLO
+        id S234268AbiFHFhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234199AbiFHFe6 (ORCPT
+        with ESMTP id S234072AbiFHFhj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:34:58 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08102200A7;
-        Tue,  7 Jun 2022 20:39:24 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id s12so31665549ejx.3;
-        Tue, 07 Jun 2022 20:39:24 -0700 (PDT)
+        Wed, 8 Jun 2022 01:37:39 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19ACC2FE620
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 20:04:25 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id q12-20020a17090a304c00b001e2d4fb0eb4so22575136pjl.4
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 20:04:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TIpn0h2PVrPJC3SI/KH0xb5zHLGy1ws/TaSSWL1fafE=;
-        b=ZRJirNsPmCJEJ8/xnwMXrjipNEdCoSO+YJlycAp6wr+Y+VIu9Qm0TsQ/xbl2UkI0+L
-         4WtwcGHsG9iVn4/DIpsadFXw37zZd/kzciybUhbJUVdirBgGDXwswi20O0rYsy33imxk
-         WOdvvDtoGHSR0AT1DeC5aC/zJU4qRzE9WDGZg4+yARXJ4aPFocpV1utF703vXaxXkcF8
-         2o99mSaoPk3pMZ0VXE1okpFArQCfwpN58epmZHq+KhOyf3XnBNjkKH9pB+rduYl6A+t1
-         6st4ECCjKlV3uSgIlbdKMgdHUbMOP4lsjNhBQm4/ewYKQUkQuwVd/k1SLR7fewMpO+g/
-         gsiw==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PvefmtAni39GPQod264uoahQOPR8WfahJI2QbCjzRTM=;
+        b=57hx7nQGiCeESEFjSgrPinIOOWXEsSI969rKmTYWJy1RRu6mNOSdJzZCEWF47HZNOf
+         hUdV1IyWIPzMWs58oyeyoI9tWpZPSaycUQYSrFMJylSd6rjUaUSWfRiTfNEgmMmX1j5e
+         2KfqSND7paBMqgGzf3fO6DHAiMHfZQjAVrnujpklKAfXA8g3uFsjdRk+mZ4CwSYKCc0g
+         19ToORGsWlL8Kg0rsW9vh5kAawN+k2oL1hvJuM2vEvt58fP6CwF11b08HE5ADiRnJdlH
+         3bKMiB0k6BnMqfYO54+lyh23RA0e/EUoQSdKo81wpFqmWJLYcZ/+V3lF3apSkVmr3NGM
+         HdLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TIpn0h2PVrPJC3SI/KH0xb5zHLGy1ws/TaSSWL1fafE=;
-        b=EEEXA3RYaiJi6o0uvuZoJi3ZUozJV1nktXisLztxtfl4J3UKIeQZQPyrxLDjGu/BRm
-         SEkaS2Z31MvSOChcwrQQFFLtjdNy9agZp9QPQB4SOYDOkV1svyG6iu3BTBbupWb5zR5G
-         JHlkuxUahnweg6NRS8gkjVBhTvaDs2zd0zzHiXSREsrNkjYlwZAJ5jfD48yI6U03ocQP
-         Oq9iFL3lYQ6MVODW2InpIPtHSnB9Y9KICqKmP+P1l0Nl73oY9iU+I/k9dBXAYk76MS9a
-         lyUu32tofN+hfGQoCxXRtfrzYqm1AdEaoqhERp9pDBCv8xcZ/czh4qivvQjcEfZRjBGK
-         hCQA==
-X-Gm-Message-State: AOAM532HIDNVwRxM7GaE8zyyj0JfjcSUDrVbUHbw/rSaA2IKaCK5n1Y1
-        OKevs7yVBKmK4NNp4CGt1fI4IE6GWtugg89TvxXpD/LT
-X-Google-Smtp-Source: ABdhPJwRFRiobbRMerKEWIQI1+TgMyhJlXgcDWNvSFn2bKG23OUrbLI/1rcC8WMLQLdj12I5e7ypkHrs+Lu0noqKSLg=
-X-Received: by 2002:a17:906:c156:b0:6ff:2415:fc18 with SMTP id
- dp22-20020a170906c15600b006ff2415fc18mr29466294ejc.94.1654659563312; Tue, 07
- Jun 2022 20:39:23 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PvefmtAni39GPQod264uoahQOPR8WfahJI2QbCjzRTM=;
+        b=v2DeXdsCZhRgQUwE1VVvUsmmCFYvsGbrBygQTEMUayldmpBpE2FcHNByJaHnMluBEz
+         /a17aKvXw0nwW41PsZ1L4uFeZ7KLz8PLQBCWR/qm7pnZBANpU95ckFnSZoRXMgwUC+GL
+         BqHZWZFW3oqRq+Psqmk99LmnWQJXb6Og7wqiHH1+Og7A8jgScFfaX4beZxa1x0jeSFlG
+         ZPuheMoDPV+75vK5WYR0sZZI6aQv6glGATIGC7KO3JIIov6lJ+V9NKB5gIOFePBhT2j6
+         cFEBqVzU1z0icG9W7hfK8CNZZPT1RW3AlIRyz+x3yhi/reI9853BJUWr9F6rtDPQ4bBi
+         gjiw==
+X-Gm-Message-State: AOAM53071mz8xLMg/FSGXRn+uewHB9yp88V6xVijWTChfSa5NUgUm+Nm
+        n+V0Yebuk9f5edVSN52JnbXUQQ==
+X-Google-Smtp-Source: ABdhPJz5zCvKdRhKecsj4KrzcfHj3xEMg8qfrmybU37oEmekmKozELb43gNulVypovZ97PjXyArjfw==
+X-Received: by 2002:a17:902:f605:b0:14d:9e11:c864 with SMTP id n5-20020a170902f60500b0014d9e11c864mr32142633plg.54.1654657465075;
+        Tue, 07 Jun 2022 20:04:25 -0700 (PDT)
+Received: from [10.254.59.177] ([139.177.225.254])
+        by smtp.gmail.com with ESMTPSA id fs24-20020a17090af29800b001e02073474csm15085973pjb.36.2022.06.07.20.04.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 20:04:24 -0700 (PDT)
+Message-ID: <2f60dbb0-c350-73a1-fd55-b468ec8a0707@bytedance.com>
+Date:   Wed, 8 Jun 2022 11:06:45 +0800
 MIME-Version: 1.0
-References: <20220608021050.47279-1-zhoufeng.zf@bytedance.com> <20220608021050.47279-2-zhoufeng.zf@bytedance.com>
-In-Reply-To: <20220608021050.47279-2-zhoufeng.zf@bytedance.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 7 Jun 2022 20:39:11 -0700
-Message-ID: <CAADnVQ+kcONngR5mVm53KJZJOVQhR99TzZzv4KONcVY_H1rqEQ@mail.gmail.com>
-Subject: Re: [PATCH v5 1/2] bpf: avoid grabbing spin_locks of all cpus when no
- free elems
-To:     Feng zhou <zhoufeng.zf@bytedance.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: Re: [PATCH] mm/memory-failure: don't allow to unpoison hw
+ corrupted page
+Content-Language: en-US
+To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     David Hildenbrand <david@redhat.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Wu Fengguang <fengguang.wu@intel.com>
+References: <20220604103229.3378591-1-pizhenwei@bytedance.com>
+ <20220604115616.b7d5912ac5a37db608f67b78@linux-foundation.org>
+ <584eedd3-9369-9df1-39e2-62e331abdcc0@bytedance.com>
+ <20220606043202.GA1328953@hori.linux.bs1.fc.nec.co.jp>
+ <3b58adbf-a8b2-8dba-71a7-123ba3850c10@bytedance.com>
+ <20220606091503.GA1337789@hori.linux.bs1.fc.nec.co.jp>
+ <5e7abb3f-56e7-0343-a678-749b6f5238a2@redhat.com>
+ <20220607145959.785e54c752f373bcc283732b@linux-foundation.org>
+ <20220607234306.GA1400839@hori.linux.bs1.fc.nec.co.jp>
+From:   zhenwei pi <pizhenwei@bytedance.com>
+In-Reply-To: <20220607234306.GA1400839@hori.linux.bs1.fc.nec.co.jp>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 7:11 PM Feng zhou <zhoufeng.zf@bytedance.com> wrote:
->
-> From: Feng Zhou <zhoufeng.zf@bytedance.com>
->
-> This patch use head->first in pcpu_freelist_head to check freelist
-> having free or not. If having, grab spin_lock, or check next cpu's
-> freelist.
->
-> Before patch: hash_map performance
-> ./map_perf_test 1
-> 0:hash_map_perf pre-alloc 975345 events per sec
-> 4:hash_map_perf pre-alloc 855367 events per sec
-> 12:hash_map_perf pre-alloc 860862 events per sec
-> 8:hash_map_perf pre-alloc 849561 events per sec
-> 3:hash_map_perf pre-alloc 849074 events per sec
-> 6:hash_map_perf pre-alloc 847120 events per sec
-> 10:hash_map_perf pre-alloc 845047 events per sec
-> 5:hash_map_perf pre-alloc 841266 events per sec
-> 14:hash_map_perf pre-alloc 849740 events per sec
-> 2:hash_map_perf pre-alloc 839598 events per sec
-> 9:hash_map_perf pre-alloc 838695 events per sec
-> 11:hash_map_perf pre-alloc 845390 events per sec
-> 7:hash_map_perf pre-alloc 834865 events per sec
-> 13:hash_map_perf pre-alloc 842619 events per sec
-> 1:hash_map_perf pre-alloc 804231 events per sec
-> 15:hash_map_perf pre-alloc 795314 events per sec
->
-> hash_map the worst: no free
-> ./map_perf_test 2048
 
-The commit log talks about some private patch
-you've made to map_perf_test.
-Please use numbers from the bench added in the 2nd patch.
-Also trim commit log to only relevant parts.
-ftrace dumps and numbers from all cpus are too verbose
-for commit log.
+
+On 6/8/22 07:43, HORIGUCHI NAOYA(堀口 直也) wrote:
+> On Tue, Jun 07, 2022 at 02:59:59PM -0700, Andrew Morton wrote:
+>> On Tue, 7 Jun 2022 14:36:00 +0200 David Hildenbrand <david@redhat.com> wrote:
+>>
+>>> On 06.06.22 11:15, HORIGUCHI NAOYA(堀口 直也) wrote:
+>>>>>>     [  917.864266]  <TASK>
+>>>>>>     [  917.864961]  clear_huge_page+0x147/0x270
+>>>>>>     [  917.866236]  hugetlb_fault+0x440/0xad0
+>>>>>>     [  917.867366]  handle_mm_fault+0x270/0x290
+>>>>>>     [  917.868532]  do_user_addr_fault+0x1c3/0x680
+>>>>>>     [  917.869768]  exc_page_fault+0x6c/0x160
+>>>>>>     [  917.870912]  ? asm_exc_page_fault+0x8/0x30
+>>>>>>     [  917.872082]  asm_exc_page_fault+0x1e/0x30
+>>>>>>     [  917.873220] RIP: 0033:0x7f2aeb8ba367
+>>>>>>
+>>>>>> I don't think of a workaround for this now ...
+>>>>>>
+>>>>>
+>>>>> Could you please tell me how to reproduce this issue?
+>>>>
+>>>> You are familiar with qemu-monitor-command, so the following procedure
+>>>> should work for you:
+>>>>
+>>>>    - run a process using hugepages on your VM,
+>>>>    - check the guest physical address of the hugepage (page-types.c is helpful for this),
+>>>>    - inject a MCE with virsh qemu-monitor-command on the guest physical address, then
+>>>>    - unpoison the injected physical address.
+>>>
+>>> That's triggered via debugfs / HWPOISON_INJECT, right?
+>>>
+>>> That's a DEBUG_KERNEL option, so I'm not 100% sure if we really want to
+>>> cc stable.
+> 
+> Sure, the impact of the bug is limited.
+> 
+>>
+>> Sure, it's hardly a must-have.  But let's also take the patch
+>> complexity&risk into account.  This is one dang simple patch.
+>>
+>> Or is it.  Should these things be happening outside mf_mutex?  What the
+>> heck is the role of mf_mutex anyway?
+> 
+> mf_mutex is to ensure that only one error handling thread can handle
+> the pfn at one time, but set_mce_nospec() is called outside it now.
+> So if we want to prevent the race with unmap, both of set_mce_nospec()
+> and the new kpte check might need to be done in mf_mutex.
+> 
+> - Naoya Horiguchi
+
+OK, I'll sent a v2 patch which includes:
+- this change gets protected by mf_mutex
+- use -EOPNOTSUPP instead of -EPERM
+
+By the way, I assume that the similar trace(provided by Naoya) is not a 
+same issue. It seems undissolved huge page with corrupted KPTE. I'm 
+trying to fix it ...
+
+-- 
+zhenwei pi
