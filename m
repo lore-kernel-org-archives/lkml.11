@@ -2,134 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E71C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:59:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 901E6CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:59:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232629AbiFHH6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:58:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46436 "EHLO
+        id S231185AbiFHH7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232948AbiFHH6E (ORCPT
+        with ESMTP id S233723AbiFHH6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:58:04 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B961E2264
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:27:11 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1nyq5j-0007gI-Ff; Wed, 08 Jun 2022 09:26:59 +0200
-Message-ID: <2427cef355dc1b9d1667a2c80448d2e23b97c447.camel@pengutronix.de>
-Subject: Re: [PATCH v9 5/8] PCI: imx6: Refine the regulator usage
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Richard Zhu <hongxing.zhu@nxp.com>, bhelgaas@google.com,
-        robh+dt@kernel.org, broonie@kernel.org, lorenzo.pieralisi@arm.com,
-        jingoohan1@gmail.com, festevam@gmail.com,
-        francesco.dolcini@toradex.com
-Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Date:   Wed, 08 Jun 2022 09:26:58 +0200
-In-Reply-To: <1651801629-30223-6-git-send-email-hongxing.zhu@nxp.com>
-References: <1651801629-30223-1-git-send-email-hongxing.zhu@nxp.com>
-         <1651801629-30223-6-git-send-email-hongxing.zhu@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+        Wed, 8 Jun 2022 03:58:42 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7161AA3DB
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:30:19 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 433DF1F892;
+        Wed,  8 Jun 2022 07:30:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1654673418; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=v4+TqxVbtZwZIXtnVfnrncOzdXi/qgU2Qgo7nUJEqQo=;
+        b=Rg62t8KSsA2vHNRbVidARjz4sTko9pK50CvLcA8qQ4YL1nV//XtteqhgbRHArKFsuadQ7J
+        7l4JWsiVTntYagUdKeckNO5hrq9csuIEFsgEODsADUTAGFCLxvqrxJFhjXqa12+9Q/D3XW
+        KN09Fa1P+72eNksZjo3/Wvnkcd3OPbY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1654673418;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=v4+TqxVbtZwZIXtnVfnrncOzdXi/qgU2Qgo7nUJEqQo=;
+        b=qU+xA+gTwtjeZBD0OS5OaXPWD3KPTKlK+G8b5tUFcyYMJItFaH+rDSilEezskuyiUiXAVH
+        unvveuH8u3PVBsCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 02DCF13A15;
+        Wed,  8 Jun 2022 07:30:17 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 3pJuOwlQoGKQHwAAMHmgww
+        (envelope-from <tiwai@suse.de>); Wed, 08 Jun 2022 07:30:17 +0000
+Date:   Wed, 08 Jun 2022 09:30:17 +0200
+Message-ID: <87wndrboja.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     huangwenhui <huangwenhuia@uniontech.com>
+Cc:     tiwai@suse.com, perex@perex.cz, alsa-devel@alsa-project.org,
+        kailang@realtek.com, tanureal@opensource.cirrus.com,
+        jeremy.szu@canonical.com, linux-kernel@vger.kernel.org,
+        wse@tuxedocomputers.com, hui.wang@canonical.com, sami@loone.fi,
+        cam@neo-zeon.de
+Subject: Re: [PATCH v3] ALSA: hda/realtek - Add HW8326 support
+In-Reply-To: <20220608070527.14824-1-huangwenhuia@uniontech.com>
+References: <20220608070527.14824-1-huangwenhuia@uniontech.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Freitag, dem 06.05.2022 um 09:47 +0800 schrieb Richard Zhu:
-> The driver should undo any enables it did itself. The regulator disable
-> shouldn't be basing decisions on regulator_is_enabled().
+On Wed, 08 Jun 2022 09:05:27 +0200,
+huangwenhui wrote:
 > 
-> To keep the balance of the regulator usage counter, disable the regulator
-> just behind of imx6_pcie_assert_core_reset() in resume and shutdown.
+> Added the support of new Huawei codec HW8326. The HW8326 is developed
+> by Huawei with Realtek's IP Core, and it's compatible with ALC256.
 > 
-> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-> ---
->  drivers/pci/controller/dwc/pci-imx6.c | 19 +++++++------------
->  1 file changed, 7 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-> index 7005a7910003..3ce3993d5797 100644
-> --- a/drivers/pci/controller/dwc/pci-imx6.c
-> +++ b/drivers/pci/controller/dwc/pci-imx6.c
-> @@ -369,8 +369,6 @@ static int imx6_pcie_attach_pd(struct device *dev)
->  
->  static void imx6_pcie_assert_core_reset(struct imx6_pcie *imx6_pcie)
->  {
-> -	struct device *dev = imx6_pcie->pci->dev;
-> -
->  	switch (imx6_pcie->drvdata->variant) {
->  	case IMX7D:
->  	case IMX8MQ:
-> @@ -400,14 +398,6 @@ static void imx6_pcie_assert_core_reset(struct imx6_pcie *imx6_pcie)
->  				   IMX6Q_GPR1_PCIE_REF_CLK_EN, 0 << 16);
->  		break;
->  	}
-> -
-> -	if (imx6_pcie->vpcie && regulator_is_enabled(imx6_pcie->vpcie) > 0) {
-> -		int ret = regulator_disable(imx6_pcie->vpcie);
-> -
-> -		if (ret)
-> -			dev_err(dev, "failed to disable vpcie regulator: %d\n",
-> -				ret);
-> -	}
->  }
->  
->  static unsigned int imx6_pcie_grp_offset(const struct imx6_pcie *imx6_pcie)
-> @@ -580,7 +570,7 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
->  	struct device *dev = pci->dev;
->  	int ret, err;
->  
-> -	if (imx6_pcie->vpcie && !regulator_is_enabled(imx6_pcie->vpcie)) {
-> +	if (imx6_pcie->vpcie) {
->  		ret = regulator_enable(imx6_pcie->vpcie);
->  		if (ret) {
->  			dev_err(dev, "failed to enable vpcie regulator: %d\n",
-> @@ -653,7 +643,7 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
->  	return 0;
->  
->  err_clks:
-> -	if (imx6_pcie->vpcie && regulator_is_enabled(imx6_pcie->vpcie) > 0) {
-> +	if (imx6_pcie->vpcie) {
->  		ret = regulator_disable(imx6_pcie->vpcie);
->  		if (ret)
->  			dev_err(dev, "failed to disable vpcie regulator: %d\n",
-> @@ -1026,6 +1016,9 @@ static int imx6_pcie_resume_noirq(struct device *dev)
->  		return 0;
->  
->  	imx6_pcie_assert_core_reset(imx6_pcie);
-> +	if (imx6_pcie->vpcie)
-> +		regulator_disable(imx6_pcie->vpcie);
-> +
-This one looks misplaced. Surely you want the regulator to be on when
-resuming the PCIe subsystem. Isn't this just papering over a wrong
-usage count here, because there is no regulator_disable in
-imx6_pcie_suspend_noirq, where I would expect this to happen?
+> Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
 
-Regards,
-Lucas
-
->  	imx6_pcie_init_phy(imx6_pcie);
->  	imx6_pcie_deassert_core_reset(imx6_pcie);
->  	dw_pcie_setup_rc(pp);
-> @@ -1259,6 +1252,8 @@ static void imx6_pcie_shutdown(struct platform_device *pdev)
->  
->  	/* bring down link, so bootloader gets clean state in case of reboot */
->  	imx6_pcie_assert_core_reset(imx6_pcie);
-> +	if (imx6_pcie->vpcie)
-> +		regulator_disable(imx6_pcie->vpcie);
->  }
->  
->  static const struct imx6_pcie_drvdata drvdata[] = {
+Thanks, applied now.
 
 
+Takashi
