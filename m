@@ -2,103 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D347CCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:11:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D82C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:11:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236344AbiFHKLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:11:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
+        id S236281AbiFHKLI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:11:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235990AbiFHKJq (ORCPT
+        with ESMTP id S236353AbiFHKKZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:09:46 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426D51D9B48;
-        Wed,  8 Jun 2022 02:55:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654682102; x=1686218102;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MWcjADPcy+1mXPm4mR4npKVQZi0EcX9q8P+2uwttuo0=;
-  b=MS2HQudP9ukVgRgGItxRZ3TTgcdgrRNQbIX9A6vQCDoDypIDcBoCWqf0
-   tXkypFDLe+rcSI8J6i/ZDyo/zm1Q7qbJj8ETvjq9b8jv27P4OWS+p6oH5
-   vdh0foN4OtPOo6M7fmgQPrV4zmNmeYQStL3Y1+1A78TPHemX8t+wecUhp
-   nhmS+wB8moXpwUnkLgc+Vsxo3aJHx3IzRLWZoLWGl/85z4Is/7j8qnqQ4
-   IUd5pTWGX8t/pnSoXcdMthas68yd4wFVLGAZkfCjpS2XP+/ZTRX9kVECQ
-   GgFnnU10vBiJiNaI9X4W7bw/gu1/UljOQ7wUh12/9klALHE9KfcnBdo9h
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="278019577"
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="278019577"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:55:01 -0700
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="584783570"
-Received: from bmichals-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.131])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:58 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Douglas Anderson <dianders@chromium.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
+        Wed, 8 Jun 2022 06:10:25 -0400
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3060D1F4FC2
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:55:14 -0700 (PDT)
+Received: from hatter.bewilderbeest.net (174-21-189-245.tukw.qwest.net [174.21.189.245])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 49F51516;
+        Wed,  8 Jun 2022 02:55:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1654682114;
+        bh=K00ITh9PLAuc6uSQaSvaQXWcKqLm2Zi5hLcCQu5/Dg8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WXpvEE7dTqersteTvIhJl+dZUqW4Bmk23WuPCqjq/oiHNcATCkrt/HUENuo1ClYCQ
+         hel/csTCLAJBo8vk2Rj6Pi4u2L6aiscaOS3vJnY0dHxY/YTr8uU2yj1VjKHR3MMvbw
+         vasMtjRyIxHWLZ1dQ762QUx/WwWyxbcDEifBBTYE=
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Zev Weiss <zev@bewilderbeest.net>, linux-kbuild@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v4 5/6] serial: 8250_dw: Use serial_lsr_in() in dw8250_handle_irq()
-Date:   Wed,  8 Jun 2022 12:54:30 +0300
-Message-Id: <20220608095431.18376-6-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220608095431.18376-1-ilpo.jarvinen@linux.intel.com>
-References: <20220608095431.18376-1-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH] kconfig: Add findconf script and helper program
+Date:   Wed,  8 Jun 2022 02:54:56 -0700
+Message-Id: <20220608095456.27479-1-zev@bewilderbeest.net>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dw8250_handle_irq() reads LSR under a few conditions, convert both to
-use serial_lsr_in() in order to preserve LSR flags properly across
-reads.
+scripts/findconf provides menuconfig's search functionality as a
+standalone, non-interactive command, somewhat in the spirit of
+scripts/config.  It is meant to be useful for tasks like getting a
+quick overview of symbol dependencies or determining which Kconfig
+file to edit for a given symbol, without having to fire up one of the
+interactive config programs.
 
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: Phil Edworthy <phil.edworthy@renesas.com>
-Cc: Miquel Raynal <miquel.raynal@bootlin.com>
-Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
-Fixes: aa63d786cea2 ("serial: 8250: dw: Add support for DMA flow controlling devices")
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+It accepts a single command-line flag, '-v', which causes it to also
+print the help text of each matching result.
+
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
 ---
- drivers/tty/serial/8250/8250_dw.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index f57bbd32ef11..1fae45991812 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -253,7 +253,7 @@ static int dw8250_handle_irq(struct uart_port *p)
- 	 */
- 	if (!up->dma && rx_timeout) {
- 		spin_lock_irqsave(&p->lock, flags);
--		status = p->serial_in(p, UART_LSR);
-+		status = serial_lsr_in(up);
+This works a bit differently from [gmnq]conf in that it accepts (and
+requires) arguments, but I couldn't see an easy/obvious way of passing
+command-line args through the makefile infrastructure that invokes
+those, so the wrapper script passes things to it via environment
+variables instead.  Suggestions welcome if there's a nicer way of
+achieving that.
+
+ scripts/findconf           | 22 ++++++++++++
+ scripts/kconfig/.gitignore |  1 +
+ scripts/kconfig/Makefile   |  7 +++-
+ scripts/kconfig/findconf.c | 74 ++++++++++++++++++++++++++++++++++++++
+ scripts/kconfig/lkc.h      |  1 +
+ scripts/kconfig/menu.c     |  2 +-
+ 6 files changed, 105 insertions(+), 2 deletions(-)
+ create mode 100755 scripts/findconf
+ create mode 100644 scripts/kconfig/findconf.c
+
+diff --git a/scripts/findconf b/scripts/findconf
+new file mode 100755
+index 000000000000..c59132548082
+--- /dev/null
++++ b/scripts/findconf
+@@ -0,0 +1,22 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Find Kconfig symbols matching one or more regexen.  Pass '-v' to
++# also show help text.
++
++if [ "$1" = "-v" ]; then
++	export FINDCONF_SHOW_HELP=1
++	shift
++fi
++
++if [ $# = 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
++	echo >&$(($# ? 1 : 2)) "Usage: $(basename $0) [-v] REGEX [REGEX ...]"
++	exit $((!$#))
++fi
++
++n=0
++for q in "$@"; do
++	export FINDCONF_QUERY_$((n++))="$q"
++done
++
++exec make findconfig
+diff --git a/scripts/kconfig/.gitignore b/scripts/kconfig/.gitignore
+index 500e7424b3ef..a3ea0600c731 100644
+--- a/scripts/kconfig/.gitignore
++++ b/scripts/kconfig/.gitignore
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ /conf
++/findconf
+ /[gmnq]conf
+ /[gmnq]conf-cfg
+ /qconf-moc.cc
+diff --git a/scripts/kconfig/Makefile b/scripts/kconfig/Makefile
+index b8ef0fb4bbef..99e48b2d8563 100644
+--- a/scripts/kconfig/Makefile
++++ b/scripts/kconfig/Makefile
+@@ -35,6 +35,7 @@ menuconfig-prog	:= mconf
+ nconfig-prog	:= nconf
+ gconfig-prog	:= gconf
+ xconfig-prog	:= qconf
++findconfig-prog	:= findconf
  
- 		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
- 			(void) p->serial_in(p, UART_RX);
-@@ -263,7 +263,7 @@ static int dw8250_handle_irq(struct uart_port *p)
+ define config_rule
+ PHONY += $(1)
+@@ -45,7 +46,7 @@ PHONY += build_$(1)
+ build_$(1): $(obj)/$($(1)-prog)
+ endef
  
- 	/* Manually stop the Rx DMA transfer when acting as flow controller */
- 	if (quirks & DW_UART_QUIRK_IS_DMA_FC && up->dma && up->dma->rx_running && rx_timeout) {
--		status = p->serial_in(p, UART_LSR);
-+		status = serial_lsr_in(up);
- 		if (status & (UART_LSR_DR | UART_LSR_BI)) {
- 			dw8250_writel_ext(p, RZN1_UART_RDMACR, 0);
- 			dw8250_writel_ext(p, DW_UART_DMASA, 1);
+-$(foreach c, config menuconfig nconfig gconfig xconfig, $(eval $(call config_rule,$(c))))
++$(foreach c, config menuconfig nconfig gconfig xconfig findconfig, $(eval $(call config_rule,$(c))))
+ 
+ PHONY += localmodconfig localyesconfig
+ localyesconfig localmodconfig: $(obj)/conf
+@@ -155,6 +156,10 @@ HOSTCFLAGS_parser.tab.o	:= -I $(srctree)/$(src)
+ hostprogs	+= conf
+ conf-objs	:= conf.o $(common-objs)
+ 
++# findconf: standalone non-interactive config-symbol search
++hostprogs	+= findconf
++findconf-objs	:= findconf.o $(common-objs)
++
+ # nconf: Used for the nconfig target based on ncurses
+ hostprogs	+= nconf
+ nconf-objs	:= nconf.o nconf.gui.o $(common-objs)
+diff --git a/scripts/kconfig/findconf.c b/scripts/kconfig/findconf.c
+new file mode 100644
+index 000000000000..786408c97eab
+--- /dev/null
++++ b/scripts/kconfig/findconf.c
+@@ -0,0 +1,74 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2022 Zev Weiss <zev@bewilderbeest.net>
++ *
++ * Kconfig symbol search a la carte.
++ */
++#include "lkc.h"
++
++static bool query(const char *q)
++{
++	unsigned int i;
++	const char *help;
++	struct gstr res;
++	struct symbol **sym_arr, *sym;
++	struct property *prop;
++
++	sym_arr = sym_re_search(q);
++
++	if (!sym_arr) {
++		printf("%s: no matches found.\n", q);
++		return false;
++	}
++
++	for (i = 0; sym_arr[i]; i++) {
++		sym = sym_arr[i];
++		res = str_new();
++		get_symbol_str(&res, sym, NULL);
++		printf("%s", str_get(&res));
++		str_free(&res);
++
++		if (getenv("FINDCONF_SHOW_HELP")) {
++			for_all_properties(sym, prop, P_SYMBOL) {
++				if (prop->menu) {
++					help = menu_get_help(prop->menu);
++					if (help && *help)
++						printf("%s\n", help);
++				}
++			}
++		}
++	}
++
++	free(sym_arr);
++
++	return true;
++}
++
++int main(int argc, char **argv)
++{
++	unsigned int i = 0;
++	char qvar[32];
++	bool found = false;
++
++	if (argc != 2) {
++		fprintf(stderr, "Usage: %s KCONFIG\n", argv[0]);
++		exit(1);
++	}
++
++	conf_parse(argv[1]);
++	conf_read(NULL);
++
++	for (;;) {
++		snprintf(qvar, sizeof(qvar), "FINDCONF_QUERY_%u", i++);
++		if (!getenv(qvar))
++			break;
++		found = query(getenv(qvar)) || found;
++	}
++
++	if (i == 1) {
++		fprintf(stderr, "FINDCONF_QUERY_0 not set\n");
++		return 1;
++	}
++
++	return !found;
++}
+diff --git a/scripts/kconfig/lkc.h b/scripts/kconfig/lkc.h
+index fa8c010aa683..b4730f580dee 100644
+--- a/scripts/kconfig/lkc.h
++++ b/scripts/kconfig/lkc.h
+@@ -102,6 +102,7 @@ struct menu *menu_get_root_menu(struct menu *menu);
+ struct menu *menu_get_parent_menu(struct menu *menu);
+ bool menu_has_help(struct menu *menu);
+ const char *menu_get_help(struct menu *menu);
++void get_symbol_str(struct gstr *r, struct symbol *sym, struct list_head *head);
+ struct gstr get_relations_str(struct symbol **sym_arr, struct list_head *head);
+ void menu_get_ext_help(struct menu *menu, struct gstr *help);
+ 
+diff --git a/scripts/kconfig/menu.c b/scripts/kconfig/menu.c
+index 3d6f7cba8846..4b990c73e431 100644
+--- a/scripts/kconfig/menu.c
++++ b/scripts/kconfig/menu.c
+@@ -800,7 +800,7 @@ static void get_symbol_props_str(struct gstr *r, struct symbol *sym,
+ /*
+  * head is optional and may be NULL
+  */
+-static void get_symbol_str(struct gstr *r, struct symbol *sym,
++void get_symbol_str(struct gstr *r, struct symbol *sym,
+ 		    struct list_head *head)
+ {
+ 	struct property *prop;
 -- 
-2.30.2
+2.36.1
 
