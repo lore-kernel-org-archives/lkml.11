@@ -2,126 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB59DCCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F2BCCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359312AbiFHCOy (ORCPT
+        id S1347924AbiFHCOt convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:14:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50338 "EHLO
+        Tue, 7 Jun 2022 22:14:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231328AbiFHBWu (ORCPT
+        with ESMTP id S1347030AbiFHBMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 21:22:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4AEC1957B6;
-        Tue,  7 Jun 2022 12:18:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BE3961976;
-        Tue,  7 Jun 2022 19:18:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89A80C34115;
-        Tue,  7 Jun 2022 19:18:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629493;
-        bh=ZarOxv6OC6Lb7v0F8skjQkznp1Vq8KrFhn6FrSySwWs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QGEBgJFUsqbipf/tCn/IpzP3HlBfKEunEBlY3Gz88iEvbTzdHB8xVB83OCC2LaMPp
-         zbE+7Z8zu1bz8apvB+tLXsy6q/uhe9VgAvsoPJxmOpINjQggasFk1R66bfY9WhkGCm
-         0Qgc4O4ylbZMFPCslNraHVXOYj+MdUbPNUi4Ptb4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.18 710/879] f2fs: fix to clear dirty inode in f2fs_evict_inode()
-Date:   Tue,  7 Jun 2022 19:03:48 +0200
-Message-Id: <20220607165023.462494488@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 21:12:10 -0400
+Received: from relay3.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A94F3F88
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 17:04:13 -0700 (PDT)
+Received: from omf14.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay08.hostedemail.com (Postfix) with ESMTP id 656FF20FE2;
+        Wed,  8 Jun 2022 00:04:12 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf14.hostedemail.com (Postfix) with ESMTPA id F305D34;
+        Wed,  8 Jun 2022 00:04:09 +0000 (UTC)
+Message-ID: <ff5d5283af74576f65545399851a40cb4f16a85c.camel@perches.com>
+Subject: Re: [PATCH AUTOSEL 5.15 24/51] staging: rtl8723bs: Fix alignment to
+ match open parenthesis
+From:   Joe Perches <joe@perches.com>
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Soumya Negi <soumya.negi97@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        fabioaiuto83@gmail.com, hdegoede@redhat.com,
+        straube.linux@gmail.com, linux@roeck-us.net,
+        linux-staging@lists.linux.dev
+Date:   Tue, 07 Jun 2022 17:04:08 -0700
+In-Reply-To: <20220607175552.479948-24-sashal@kernel.org>
+References: <20220607175552.479948-1-sashal@kernel.org>
+         <20220607175552.479948-24-sashal@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Rspamd-Server: rspamout05
+X-Rspamd-Queue-Id: F305D34
+X-Stat-Signature: pnfos8g8zpnt97ykr4brkpj7d7bm7d1h
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX18P40btaGeuEf3McqHiLYo0TAdcxzePTJw=
+X-HE-Tag: 1654646649-63006
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+On Tue, 2022-06-07 at 13:55 -0400, Sasha Levin wrote:
+> From: Soumya Negi <soumya.negi97@gmail.com>
+> 
+> [ Upstream commit f722d67fad290b0c960f27062adc8cf59488d0a7 ]
+> 
+> Adhere to Linux coding style. Fixes checkpatch warnings:
+> CHECK: Alignment should match open parenthesis
+> CHECK: line length of 101 exceeds 100 columns
 
-commit f2db71053dc0409fae785096ad19cce4c8a95af7 upstream.
+why should this be backported?  It's only whitespace changes.
 
-As Yanming reported in bugzilla:
+And beyond that, it's incomplete as it only realigns the second line of
+statements that span 3 lines.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215904
-
-The kernel message is shown below:
-
-kernel BUG at fs/f2fs/inode.c:825!
-Call Trace:
- evict+0x282/0x4e0
- __dentry_kill+0x2b2/0x4d0
- shrink_dentry_list+0x17c/0x4f0
- shrink_dcache_parent+0x143/0x1e0
- do_one_tree+0x9/0x30
- shrink_dcache_for_umount+0x51/0x120
- generic_shutdown_super+0x5c/0x3a0
- kill_block_super+0x90/0xd0
- kill_f2fs_super+0x225/0x310
- deactivate_locked_super+0x78/0xc0
- cleanup_mnt+0x2b7/0x480
- task_work_run+0xc8/0x150
- exit_to_user_mode_prepare+0x14a/0x150
- syscall_exit_to_user_mode+0x1d/0x40
- do_syscall_64+0x48/0x90
-
-The root cause is: inode node and dnode node share the same nid,
-so during f2fs_evict_inode(), dnode node truncation will invalidate
-its NAT entry, so when truncating inode node, it fails due to
-invalid NAT entry, result in inode is still marked as dirty, fix
-this issue by clearing dirty for inode and setting SBI_NEED_FSCK
-flag in filesystem.
-
-output from dump.f2fs:
-[print_node_info: 354] Node ID [0xf:15] is inode
-i_nid[0]                      		[0x       f : 15]
-
-Cc: stable@vger.kernel.org
-Reported-by: Ming Yan <yanming@tju.edu.cn>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/f2fs/inode.c |   16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
-
---- a/fs/f2fs/inode.c
-+++ b/fs/f2fs/inode.c
-@@ -796,8 +796,22 @@ retry:
- 		f2fs_lock_op(sbi);
- 		err = f2fs_remove_inode_page(inode);
- 		f2fs_unlock_op(sbi);
--		if (err == -ENOENT)
-+		if (err == -ENOENT) {
- 			err = 0;
-+
-+			/*
-+			 * in fuzzed image, another node may has the same
-+			 * block address as inode's, if it was truncated
-+			 * previously, truncation of inode node will fail.
-+			 */
-+			if (is_inode_flag_set(inode, FI_DIRTY_INODE)) {
-+				f2fs_warn(F2FS_I_SB(inode),
-+					"f2fs_evict_inode: inconsistent node id, ino:%lu",
-+					inode->i_ino);
-+				f2fs_inode_synced(inode);
-+				set_sbi_flag(sbi, SBI_NEED_FSCK);
-+			}
-+		}
- 	}
- 
- 	/* give more chances, if ENOMEM case */
-
+> 
+> Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
+> Link: https://lore.kernel.org/r/20220513025553.13634-1-soumya.negi97@gmail.com
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  drivers/staging/rtl8723bs/core/rtw_ap.c | 24 +++++++++++++-----------
+>  1 file changed, 13 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/staging/rtl8723bs/core/rtw_ap.c b/drivers/staging/rtl8723bs/core/rtw_ap.c
+> index 6064dd6a76b4..43cd90dc9017 100644
+> --- a/drivers/staging/rtl8723bs/core/rtw_ap.c
+> +++ b/drivers/staging/rtl8723bs/core/rtw_ap.c
+> @@ -519,12 +519,12 @@ void update_sta_info_apmode(struct adapter *padapter, struct sta_info *psta)
+>  
+>  		/*  B0 Config LDPC Coding Capability */
+>  		if (TEST_FLAG(phtpriv_ap->ldpc_cap, LDPC_HT_ENABLE_TX) &&
+> -			      GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
+> +		    GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
+>  			SET_FLAG(cur_ldpc_cap, (LDPC_HT_ENABLE_TX | LDPC_HT_CAP_TX));
+>  
+>  		/*  B7 B8 B9 Config STBC setting */
+>  		if (TEST_FLAG(phtpriv_ap->stbc_cap, STBC_HT_ENABLE_TX) &&
+> -			      GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
+> +		    GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
+>  			SET_FLAG(cur_stbc_cap, (STBC_HT_ENABLE_TX | STBC_HT_CAP_TX));
+>  	} else {
+>  		phtpriv_sta->ampdu_enable = false;
+> @@ -1064,10 +1064,12 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
+>  		);
+>  
+>  		if ((psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_CCMP) ||
+> -		     (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
+> -			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & (0x07 << 2));
+> +		    (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
+> +			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
+> +						       (0x07 << 2));
+>  		} else {
+> -			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & 0x00);
+> +			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
+> +						       0x00);
+>  		}
+>  
+>  		rtw_hal_get_def_var(
+> @@ -1115,7 +1117,7 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
+>  	pmlmepriv->htpriv.ht_option = false;
+>  
+>  	if ((psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_TKIP) ||
+> -	     (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
+> +	    (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
+>  		/* todo: */
+>  		/* ht_cap = false; */
+>  	}
+> @@ -1724,7 +1726,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+>  			pmlmepriv->num_sta_no_short_preamble--;
+>  
+>  			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
+> -				(pmlmepriv->num_sta_no_short_preamble == 0)) {
+> +			    (pmlmepriv->num_sta_no_short_preamble == 0)) {
+>  				beacon_updated = true;
+>  				update_beacon(padapter, 0xFF, NULL, true);
+>  			}
+> @@ -1762,7 +1764,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+>  			pmlmepriv->num_sta_no_short_slot_time++;
+>  
+>  			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
+> -				 (pmlmepriv->num_sta_no_short_slot_time == 1)) {
+> +			    (pmlmepriv->num_sta_no_short_slot_time == 1)) {
+>  				beacon_updated = true;
+>  				update_beacon(padapter, 0xFF, NULL, true);
+>  			}
+> @@ -1774,7 +1776,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+>  			pmlmepriv->num_sta_no_short_slot_time--;
+>  
+>  			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
+> -				 (pmlmepriv->num_sta_no_short_slot_time == 0)) {
+> +			    (pmlmepriv->num_sta_no_short_slot_time == 0)) {
+>  				beacon_updated = true;
+>  				update_beacon(padapter, 0xFF, NULL, true);
+>  			}
+> @@ -2023,7 +2025,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
+>  	start_bss_network(padapter);
+>  
+>  	if ((padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_) ||
+> -		(padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
+> +	    (padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
+>  		/* restore group key, WEP keys is restored in ips_leave() */
+>  		rtw_set_key(
+>  			padapter,
+> @@ -2061,7 +2063,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
+>  			/* pairwise key */
+>  			/* per sta pairwise key and settings */
+>  			if ((psecuritypriv->dot11PrivacyAlgrthm == _TKIP_) ||
+> -				(psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
+> +			    (psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
+>  				rtw_setstakey_cmd(padapter, psta, true, false);
+>  			}
+>  		}
 
