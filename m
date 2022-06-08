@@ -2,204 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF55CCA488
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA64C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446755AbiFHCZo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57720 "EHLO
+        id S231640AbiFHC1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446262AbiFHCOL (ORCPT
+        with ESMTP id S1446606AbiFHCU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:14:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0BC315EA57;
-        Tue,  7 Jun 2022 14:22:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05D6560C3E;
-        Tue,  7 Jun 2022 21:22:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D701C385A2;
-        Tue,  7 Jun 2022 21:22:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654636925;
-        bh=Qpqpjs4zC/NE8w1f2Kkh52Va2IoAJuZ40cSz1THeD0w=;
-        h=From:To:Cc:Subject:Date:From;
-        b=o1ag9DgNNkcfo+LOrhqqS2l97tokLEEYopFUjf2SX+zXSVuQh4hEuAw/kHJs+ouju
-         QsuU35wV5hauIOZ8QlDTV4I01+WxobWSgbgUyPKqml8xEeMA+Sf2o0F/Fi4rBqu5Nn
-         vQ/xvMJ6x6D2gLrYtegmMkCM/jNH3FZBNcJ9+TDttJalwHnU8ov4ktpyu5rHA76hEk
-         SPCCRki0bb9nWU57gCdvu8D+EQ+3CUoKDEOrMgi9q6gCgg7QDPJE7j1DhdgM/Bpk/R
-         tekMC7v2vNUGZ7agDH0X3HI3vrW29tpRWv/I1XVje5etwKlmZgfjb6bpYRJ5Wi+/Y+
-         4j0RHiuQS+iJw==
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Stefan Richter <stefanr@s5r6.in-berlin.de>
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        linux1394-devel@lists.sourceforge.net, linux-pm@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v2] firewire: ohci: Convert to generic power management
-Date:   Tue,  7 Jun 2022 16:21:57 -0500
-Message-Id: <20220607212157.343033-1-helgaas@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        Tue, 7 Jun 2022 22:20:56 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05AF7107888
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 17:14:52 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id j6so16873404pfe.13
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 17:14:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=45epDQdJCBp4DgsIx1Sz2CxwS+YHltdpTyZ3wnT8hgs=;
+        b=aQTromRtl9Y8U0lSwdvw9JG/L6+ooOtEs95fFlo72XqRmwp+oPMHpnTAvjNmGlpzcP
+         P6SsxkAWmuw0sO2drXqm1qW6y86edJ8FtkvwTqyy4Z7F6OskExf3akYJDxmxgb5UAgEV
+         8bnEHiAjLg/Jxwg5mj4zvzCh5ZXxVmBgxmlJ12LeG4M6EzrOJ8uGq1Rw/fzsJc4GBCWO
+         PMxIEj7Iii+JdU2tsKoIb/+EKDVglzEsSFNuA4D0YpNmwKdz2cUIzUAlhCMEtwzPCm4L
+         qaUeh1GXO75cY11pQH5OhdAedvysyZBHTpwZ9xYnLGd0pEetd+sadM8v5NNfj9ghO8in
+         FiCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=45epDQdJCBp4DgsIx1Sz2CxwS+YHltdpTyZ3wnT8hgs=;
+        b=5VQ9ujpbhz/XQq8aMnqU6OBx8tT8Qr164/neEgXR8YEgKYzZYfIZrJsuPfQyu8oPy5
+         QyO7gmC3W/U5ONXwocc7T5kxZ7uOwLUPY1vFw+X5B30s7pfuZktUGOaJTgyQGlRRgKW1
+         gWb0vtKi6DR4fybla4nuNCJcpGeegGoYszdXdKQIZE5xuC8cwem+94uQZ/viqupj8Hfs
+         OvD7AhSpX70qY3EHBkE0qxiW2BddEZSXoTE4eg3pz23b79EtDNxufExuyqtjJYT5zyft
+         K1th4BjLAPR/o8pUyXx63hkNk5VRB9c4w7ykSQlmPIS2UNg1lVQGhQNRgbuVPCNs/sDS
+         fD0Q==
+X-Gm-Message-State: AOAM530qSYdLkozLdffUGRTle9x3+a2jXJ860LNquMeUMkSczLjlibg/
+        nDb6ZeNUi08vom3pBXImQpY=
+X-Google-Smtp-Source: ABdhPJyp28p2GDv7dkrNLXwv8Yj9hsL5KfMbOVCvI7otC6p6OS3I+JYKTxX9fdbZfv/y1by8dd43Kw==
+X-Received: by 2002:a63:6b41:0:b0:3fe:22d6:e6aa with SMTP id g62-20020a636b41000000b003fe22d6e6aamr2305774pgc.249.1654647291916;
+        Tue, 07 Jun 2022 17:14:51 -0700 (PDT)
+Received: from penguin.lxd ([2620:0:1000:2514:216:3eff:fe31:a1ca])
+        by smtp.googlemail.com with ESMTPSA id t1-20020a63f341000000b003fc4cc19414sm13458821pgj.45.2022.06.07.17.14.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 17:14:51 -0700 (PDT)
+From:   Justin Stitt <jstitt007@gmail.com>
+To:     ndesaulniers@google.com, akpm@linux-foundation.org
+Cc:     jstitt007@gmail.com, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, nathan@kernel.org, trix@redhat.com
+Subject: [PATCH v2] include/uapi/linux/swab.h: move explicit cast outside ternary
+Date:   Tue,  7 Jun 2022 17:14:22 -0700
+Message-Id: <20220608001422.26383-1-jstitt007@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CAKwvOd=-NXR5HoHwwEUZMsCt90oaADH6XHifje9n-8S8rj9SFw@mail.gmail.com>
+References: <CAKwvOd=-NXR5HoHwwEUZMsCt90oaADH6XHifje9n-8S8rj9SFw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+A cast inside __builtin_constant_p doesn't do anything since it should evaluate
+as constant at compile time irrespective of this cast. Instead, I moved this
+cast outside the ternary to ensure the return type is as expected.
 
-Convert firewire-ohci from legacy PCI power management to the generic power
-management framework.
+For instance, if __HAVE_BUILTIN_BSWAP16__ was not defined then __swab16 is
+actually returning an `int` not a `u16` due to integer promotion as described
+by Nick in this thread. This has repercussions when building with clang
+-Wformat. This fix should solve many of these warnings.
 
-Previously firewire-ohci used legacy PCI power management, and
-pci_suspend() and pci_resume() were responsible for both device-specific
-things and generic PCI things like saving and restoring config space and
-managing power state:
-
-  pci_suspend
-    software_reset                         <-- device-specific
-    pci_save_state                         <-- generic PCI
-    pci_set_power_state                    <-- generic PCI
-    pmac_ohci_off                          <-- device-specific
-
-  pci_resume
-    pmac_ohci_on                           <-- device-specific
-    pci_set_power_state(PCI_D0)            <-- generic PCI
-    pci_restore_state                      <-- generic PCI
-    pci_enable_device                      <-- generic PCI
-    ohci_enable                            <-- device-specific
-
-Convert to generic power management where the PCI bus PM methods do the
-generic PCI things, and the driver needs only the device-specific part,
-i.e.,
-
-  suspend_devices_and_enter
-    dpm_suspend_start(PMSG_SUSPEND)
-      pci_pm_suspend                       # PCI bus .suspend() method
-        pci_suspend                        # driver->pm->suspend
-          software_reset                   <-- device-specific
-          pmac_ohci_off                    <-- device-specific
-    suspend_enter
-      dpm_suspend_noirq(PMSG_SUSPEND)
-        pci_pm_suspend_noirq               # PCI bus .suspend_noirq() method
-          pci_save_state                   <-- generic PCI
-          pci_prepare_to_sleep             <-- generic PCI
-            pci_set_power_state
-    ...
-    dpm_resume_end(PMSG_RESUME)
-      pci_pm_resume                        # PCI bus .resume() method
-        pci_restore_standard_config
-          pci_set_power_state(PCI_D0)      <-- generic PCI
-          pci_restore_state                <-- generic PCI
-        pci_resume                         # driver->pm->resume
-          pmac_ohci_on                     <-- device-specific
-          ohci_enable                      <-- device-specific
-
-[bhelgaas: commit log]
-Link: https://lore.kernel.org/r/20200720150715.624520-1-vaibhavgupta40@gmail.com
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Link: https://github.com/ClangBuiltLinux/linux/issues/378
+Suggested-by: Nathan Chancellor <nathan@kernel.org>
+Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Justin Stitt <jstitt007@gmail.com>
 ---
- drivers/firewire/ohci.c | 35 ++++++++---------------------------
- 1 file changed, 8 insertions(+), 27 deletions(-)
+ include/uapi/linux/swab.h | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/firewire/ohci.c b/drivers/firewire/ohci.c
-index 17c9d825188b..aee705132330 100644
---- a/drivers/firewire/ohci.c
-+++ b/drivers/firewire/ohci.c
-@@ -3165,8 +3165,7 @@ static int ohci_set_iso_channels(struct fw_iso_context *base, u64 *channels)
- 	return ret;
- }
- 
--#ifdef CONFIG_PM
--static void ohci_resume_iso_dma(struct fw_ohci *ohci)
-+static void __maybe_unused ohci_resume_iso_dma(struct fw_ohci *ohci)
- {
- 	int i;
- 	struct iso_context *ctx;
-@@ -3183,7 +3182,6 @@ static void ohci_resume_iso_dma(struct fw_ohci *ohci)
- 			ohci_start_iso(&ctx->base, 0, ctx->sync, ctx->tags);
- 	}
- }
--#endif
- 
- static int queue_iso_transmit(struct iso_context *ctx,
- 			      struct fw_iso_packet *packet,
-@@ -3789,39 +3787,24 @@ static void pci_remove(struct pci_dev *dev)
- 	dev_notice(&dev->dev, "removed fw-ohci device\n");
- }
- 
--#ifdef CONFIG_PM
--static int pci_suspend(struct pci_dev *dev, pm_message_t state)
-+static int __maybe_unused pci_suspend(struct device *devp)
- {
-+	struct pci_dev *dev = to_pci_dev(devp);
- 	struct fw_ohci *ohci = pci_get_drvdata(dev);
--	int err;
- 
- 	software_reset(ohci);
--	err = pci_save_state(dev);
--	if (err) {
--		ohci_err(ohci, "pci_save_state failed\n");
--		return err;
--	}
--	err = pci_set_power_state(dev, pci_choose_state(dev, state));
--	if (err)
--		ohci_err(ohci, "pci_set_power_state failed with %d\n", err);
- 	pmac_ohci_off(dev);
- 
- 	return 0;
- }
- 
--static int pci_resume(struct pci_dev *dev)
-+static int __maybe_unused pci_resume(struct device *devp)
- {
-+	struct pci_dev *dev = to_pci_dev(devp);
- 	struct fw_ohci *ohci = pci_get_drvdata(dev);
- 	int err;
- 
- 	pmac_ohci_on(dev);
--	pci_set_power_state(dev, PCI_D0);
--	pci_restore_state(dev);
--	err = pci_enable_device(dev);
--	if (err) {
--		ohci_err(ohci, "pci_enable_device failed\n");
--		return err;
--	}
- 
- 	/* Some systems don't setup GUID register on resume from ram  */
- 	if (!reg_read(ohci, OHCI1394_GUIDLo) &&
-@@ -3838,7 +3821,6 @@ static int pci_resume(struct pci_dev *dev)
- 
- 	return 0;
- }
--#endif
- 
- static const struct pci_device_id pci_table[] = {
- 	{ PCI_DEVICE_CLASS(PCI_CLASS_SERIAL_FIREWIRE_OHCI, ~0) },
-@@ -3847,15 +3829,14 @@ static const struct pci_device_id pci_table[] = {
- 
- MODULE_DEVICE_TABLE(pci, pci_table);
- 
-+static SIMPLE_DEV_PM_OPS(pci_pm_ops, pci_suspend, pci_resume);
-+
- static struct pci_driver fw_ohci_pci_driver = {
- 	.name		= ohci_driver_name,
- 	.id_table	= pci_table,
- 	.probe		= pci_probe,
- 	.remove		= pci_remove,
--#ifdef CONFIG_PM
--	.resume		= pci_resume,
--	.suspend	= pci_suspend,
--#endif
-+	.driver.pm	= &pci_pm_ops,
- };
- 
- static int __init fw_ohci_init(void)
+diff --git a/include/uapi/linux/swab.h b/include/uapi/linux/swab.h
+index f6be3f2e6fee..ab5a1283800c 100644
+--- a/include/uapi/linux/swab.h
++++ b/include/uapi/linux/swab.h
+@@ -99,10 +99,10 @@ static inline __attribute_const__ __u32 __fswahb32(__u32 val)
+  * @x: value to byteswap
+  */
+ #ifdef __HAVE_BUILTIN_BSWAP16__
+-#define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
++#define __swab16(x) (__u16)__builtin_bswap16(x)
+ #else
+ #define __swab16(x)				\
+-	(__u16)(__builtin_constant_p((__u16)(x)) ?	\
++	(__u16)(__builtin_constant_p(x) ?	\
+ 	___constant_swab16(x) :			\
+ 	__fswab16(x))
+ #endif
+@@ -112,10 +112,10 @@ static inline __attribute_const__ __u32 __fswahb32(__u32 val)
+  * @x: value to byteswap
+  */
+ #ifdef __HAVE_BUILTIN_BSWAP32__
+-#define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
++#define __swab32(x) (__u32)__builtin_bswap32(x)
+ #else
+ #define __swab32(x)				\
+-	(__builtin_constant_p((__u32)(x)) ?	\
++	(__u32)(__builtin_constant_p(x) ?	\
+ 	___constant_swab32(x) :			\
+ 	__fswab32(x))
+ #endif
+@@ -125,10 +125,10 @@ static inline __attribute_const__ __u32 __fswahb32(__u32 val)
+  * @x: value to byteswap
+  */
+ #ifdef __HAVE_BUILTIN_BSWAP64__
+-#define __swab64(x) (__u64)__builtin_bswap64((__u64)(x))
++#define __swab64(x) (__u64)__builtin_bswap64(x)
+ #else
+ #define __swab64(x)				\
+-	(__builtin_constant_p((__u64)(x)) ?	\
++	(__u64)(__builtin_constant_p(x) ?	\
+ 	___constant_swab64(x) :			\
+ 	__fswab64(x))
+ #endif
 -- 
-2.25.1
+2.30.2
 
