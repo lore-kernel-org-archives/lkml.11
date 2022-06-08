@@ -2,142 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF95C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:38:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED201CCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:39:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244296AbiFHPiw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53722 "EHLO
+        id S244428AbiFHPjL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:39:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244875AbiFHPin (ORCPT
+        with ESMTP id S244248AbiFHPjH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:38:43 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC3DDD2
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:38:38 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VFmlR9q_1654702713;
-Received: from 30.15.195.212(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0VFmlR9q_1654702713)
-          by smtp.aliyun-inc.com;
-          Wed, 08 Jun 2022 23:38:34 +0800
-Message-ID: <e34de686-4e85-bde1-9f3c-9bbc86b38627@linux.alibaba.com>
-Date:   Wed, 8 Jun 2022 23:38:33 +0800
+        Wed, 8 Jun 2022 11:39:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF59914CA27;
+        Wed,  8 Jun 2022 08:39:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B748360AEC;
+        Wed,  8 Jun 2022 15:39:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1300BC34116;
+        Wed,  8 Jun 2022 15:39:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654702742;
+        bh=nsyJF3pXdweJoPkZuCtmk2FLBqcSIdPNeR+uaAPmkd0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=K1qQ8DTPCBBnskV/dUbQ3macERVbOoszjDUywAD2ERkwPhgvDEGLjnFpgnUR18t4C
+         RGMyuR5Wwrucrbgy8Pf+xazXJYk3lOvvGv5pGLR6mh9YtZHYOu20IqRjAv5n3QlFFu
+         hZ6JwUdIy1qhQBXmp+2tUfwWe7BaxrGdDpuhAhf70st36XwV2v4A/24VvTP1ZHIBBa
+         HOD4Nz+ek1Shig3aNVsl/qAZXMDmL5equZF9oFi/XF7Z54DFGDHsJnv0hSaP27LBKj
+         7/M5acZoNzTOUQQ2+gtWusi2QLKckrBnvVVBWfqC/6rPXKwaLpb9kX7Se6unhYkjPZ
+         3Qm+zgxTU7sSw==
+Date:   Wed, 8 Jun 2022 21:08:56 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Manu Gautam <mgautam@codeaurora.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/5] phy: qcom-qmp: Add USB4 5NM QMP combo PHY
+ registers
+Message-ID: <YqDCkNB9Ss0D9PnO@matsya>
+References: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
+ <20220607213543.4057620-4-bjorn.andersson@linaro.org>
+ <d9658f54-e594-8f0e-071e-ef627285d281@linaro.org>
+ <Yp/ZkxNltUgE79nC@ripper>
+ <CAA8EJppSKfWXoNhqj+XOVV18P+uP=5fo7kaOGNWdYnN-NH8xNw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [PATCH v3 1/2] sched: Fix the check of nr_running at queue
- wakelist
-Content-Language: en-US
-To:     Valentin Schneider <vschneid@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc:     linux-kernel@vger.kernel.org
-References: <20220602040645.275555-1-dtcccc@linux.alibaba.com>
- <20220602040645.275555-2-dtcccc@linux.alibaba.com>
- <xhsmh4k0y84ah.mognet@vschneid.remote.csb>
-From:   Tianchen Ding <dtcccc@linux.alibaba.com>
-In-Reply-To: <xhsmh4k0y84ah.mognet@vschneid.remote.csb>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAA8EJppSKfWXoNhqj+XOVV18P+uP=5fo7kaOGNWdYnN-NH8xNw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/6 18:39, Valentin Schneider wrote:
-> On 02/06/22 12:06, Tianchen Ding wrote:
->> The commit 2ebb17717550 ("sched/core: Offload wakee task activation if it
->> the wakee is descheduling") checked nr_running <= 1 to avoid task
->> stacking when WF_ON_CPU. Consider the order of p->on_rq and p->on_cpu,
->> if we have WF_ON_CPU here then we must have !p->on_rq, so the deactivate
->> has happened, thus the task being alone on the rq implies nr_running==0.
->> Change the check to !cpu_rq(cpu)->nr_running to fix it.
->>
+On 08-06-22, 02:52, Dmitry Baryshkov wrote:
+> On Wed, 8 Jun 2022 at 02:02, Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
+> >
+> > On Tue 07 Jun 15:24 PDT 2022, Dmitry Baryshkov wrote:
+> >
+> > > On 08/06/2022 00:35, Bjorn Andersson wrote:
+> > > > Add all registers defines from qcom,usb4-5nm-qmp-combo.h of the msm-5.4
+> > > > kernel. Offsets are adjusted to be relative to each sub-block, as we
+> > > > describe the individual pieces in the upstream kernel and "v5_5NM" are
+> > > > injected in the defines to not collide with existing constants.
+> > > >
+> > > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > > > ---
+> > > >
+> > > > Changes since v1:
+> > > > - New patch
+> > > >
+> > > >   .../qualcomm/phy-qcom-usb4-5nm-qmp-combo.h    | 1547 +++++++++++++++++
+> > > >   1 file changed, 1547 insertions(+)
+> > > >   create mode 100644 drivers/phy/qualcomm/phy-qcom-usb4-5nm-qmp-combo.h
+> > > >
+> > > > diff --git a/drivers/phy/qualcomm/phy-qcom-usb4-5nm-qmp-combo.h b/drivers/phy/qualcomm/phy-qcom-usb4-5nm-qmp-combo.h
+> > > > new file mode 100644
+> > > > index 000000000000..7be8a50269ec
+> > > > --- /dev/null
+> > > > +++ b/drivers/phy/qualcomm/phy-qcom-usb4-5nm-qmp-combo.h
+> > > > @@ -0,0 +1,1547 @@
+> > > > +/* SPDX-License-Identifier: GPL-2.0-only */
+> > > > +/*
+> > > > + * Copyright (c) 2021, The Linux Foundation. All rights reserved.
+> > > > + */
+> > > > +
+> > > > +#ifndef PHY_QCOM_V5_5NM_QMP_COMBO_USB4_H
+> > > > +#define PHY_QCOM_V5_5NM_QMP_COMBO_USB4_H
+> > > > +
+> > > > +/* USB4-USB3-DP Combo PHY register offsets */
+> > > > +/* Module: USB43DP_COM_USB43DP_COM_USB4_USB3_DP_COM */
+> > > > +#define USB43DP_V5_5NM_COM_PHY_MODE_CTRL                           0x00
+> > > > +#define USB43DP_V5_5NM_COM_SW_RESET                                        0x04
+> > > > +#define USB43DP_V5_5NM_COM_POWER_DOWN_CTRL                         0x08
+> > > > +#define USB43DP_V5_5NM_COM_SWI_CTRL                                        0x0c
+> > > > +#define USB43DP_V5_5NM_COM_TYPEC_CTRL                                      0x10
+> > > > +#define USB43DP_V5_5NM_COM_TYPEC_PWRDN_CTRL                                0x14
+> > > > +#define USB43DP_V5_5NM_COM_DP_BIST_CFG_0                           0x18
+> > > > +#define USB43DP_V5_5NM_COM_RESET_OVRD_CTRL1                                0x1c
+> > > > +#define USB43DP_V5_5NM_COM_RESET_OVRD_CTRL2                                0x20
+> > > > +#define USB43DP_V5_5NM_COM_DBG_CLK_MUX_CTRL                                0x24
+> > > > +#define USB43DP_V5_5NM_COM_TYPEC_STATUS                                    0x28
+> > > > +#define USB43DP_V5_5NM_COM_PLACEHOLDER_STATUS                              0x2c
+> > > > +#define USB43DP_V5_5NM_COM_REVISION_ID0                                    0x30
+> > > > +#define USB43DP_V5_5NM_COM_REVISION_ID1                                    0x34
+> > > > +#define USB43DP_V5_5NM_COM_REVISION_ID2                                    0x38
+> > > > +#define USB43DP_V5_5NM_COM_REVISION_ID3                                    0x3c
+> > >
+> > > QPHY_V5_DP_COM_foo ?
+> > >
+> >
+> > My first version of the QMP patch used V5 defines and USB worked
+> > sometimes. So I hacked up a thing to dump the phy sequences of the
+> > downstream and upstream kernels, compared the magic numbers and then
+> > tried to fit suitable constants.
+> >
+> > But it obviously was a waste of time and I would have to make up a
+> > different naming scheme for the ones that doesn't match the existing
+> > constants - when we could just use the autogenerated files that exist in
+> > the downstream kernels.
 > 
-> I'd flesh this out a bit as in the below:
+> I decided that I should write more about it. My main issue with using
+> downstream tables is that we end up with tons of repetitive defines.
+> Each chip generation would bring 2-4 sets of tables, wouldn't it? This
+> can easily become an unsupported beast.
+> I'd propose to follow the opposite path. Let's split the existing
+> tables on a per-generation, per-region basis. Yes, we'd end up with
+> tens of the header files. However then when new generation arrives, we
+> can split corresponding header files on a region-by-region basis, and
+> compare each region with existing tables. If the region matches, use
+> it. If it does not, create a new header. Yes, I can do this for the
+> existing header as a continuation of the QMP split saga, if everybody
+> agrees that this is a good path.
 > 
-> """
-> The commit 2ebb17717550 ("sched/core: Offload wakee task activation if it
-> the wakee is descheduling") checked rq->nr_running <= 1 to avoid task
-> stacking when WF_ON_CPU.
+> You can ask, why do I suggest such a scheme? Because it looks like the
+> lowest common scheme. If we check downstream, we have USB/USB+DP with
+> huge autogenerated tables. Then comes UFS, which mostly follows naming
+> of the phy-qcom-qmp.h.
 > 
-> Per the ordering of writes to p->on_rq and p->on_cpu, observing p->on_cpu
-> (WF_ON_CPU) in ttwu_queue_cond() implies !p->on_rq, IOW p has gone through
-> the deactivate_task() in __schedule(), thus p has been accounted out of
-> rq->nr_running. As such, the task being the only runnable task on the rq
-> implies reading rq->nr_running == 0 at that point.
+> And the last one is a PCIe. I do not know about the sc8280xp, but for
+> the rest of the platforms we do not have register names at all. When I
+> was porting the SM8450 PCIe PHY support, I had to guess the correct
+> generation beforehand. With just 5 QSERDES_COM_ namespaces, guessing
+> is easy. If  we had separate namespaces for the UFS and for several
+> USB PHY instances, guessing would be next to impossible. And then
+> creating a correct table would also be impossible. Well, as long as we
+> do not accept tables without register names.
 > 
-> Change the check to !cpu_rq(cpu)->nr_running.
-> """
-> 
-> Also, this is lacking some mention of tests that have been run to verify
-> this isn't causing a regression. This does however make sense to me, so as
-> long as nothing gets hurt by the change:
-> 
+> Thus I think we should resort to using a single naming scheme rather
+> than following downstream here. If you dislike existing
+> QSERDES_Vn/QPHY_Vn, let's come up with something more sensible.
 
-I've run the complete test cases of unixbench and it seems no regression (which 
-is expected). The result of Pipe-based Context Switching seems to be stable when 
-I simply type "./Run" to run all cases. :-/
+Bjorn has a valid point that we should not tinker with downstream
+auto-generated headers and use as is. But Dmitry also has a good
+argument of this becoming unmanageable mess.
 
-On x86 (Intel Xeon Platinum 8269CY):
-   schbench -m 2 -t 8
+So which of the lesser devils should we deal with... Former is easy to
+do, latter involves a bit of work for kernel developers...
 
-     Latency percentiles (usec)             before         after
-         50.0000th:                            8             8
-         75.0000th:                           10            10
-         90.0000th:                           11            11
-         95.0000th:                           12            12
-         *99.0000th:                          15            13
-         99.5000th:                           16            15
-         99.9000th:                           20            18
+TBH My personal taste would be latter as that keeps the code clean... We
+have seen the versions are getting managed terribly downstream.. Maybe
+splitting the headers up is a good idea in that direction...
 
-   Unixbench with full threads (104)
-                                             before        after
-     Dhrystone 2 using register variables  3004715731    3011862938   0.24%
-     Double-Precision Whetstone              616685.8      617119.3   0.07%
-     Execl Throughput                         27162.1       27667.3   1.86%
-     File Copy 1024 bufsize 2000 maxblocks   786221.4      785871.4  -0.04%
-     File Copy 256 bufsize 500 maxblocks     209420.6      210113.6   0.33%
-     File Copy 4096 bufsize 8000 maxblocks  2340458.8     2328862.2  -0.50%
-     Pipe Throughput                      145249195.6   145535622.8   0.20%
-     Pipe-based Context Switching           3195567.7     3221686.4   0.82%
-     Process Creation                        100597.6      101347.1   0.75%
-     Shell Scripts (1 concurrent)            120943.6      120193.5  -0.62%
-     Shell Scripts (8 concurrent)             17289.7       17233.4  -0.33%
-     System Call Overhead                   5286847.6     5300604.8   0.26%
-
-On arm64 (Ampere Altra):
-   schbench -m 2 -t 8
-
-     Latency percentiles (usec)             before         after
-         50.0000th:                           14            14
-         75.0000th:                           19            19
-         90.0000th:                           22            22
-         95.0000th:                           23            23
-         *99.0000th:                          23            24
-         99.5000th:                           23            24
-         99.9000th:                           28            28
-
-   Unixbench with full threads (80)
-                                             before        after
-     Dhrystone 2 using register variables  3536273441    3536194249   0.00%
-     Double-Precision Whetstone              629406.9      629383.6   0.00%
-     Execl Throughput                         66419.3       65920.5  -0.75%
-     File Copy 1024 bufsize 2000 maxblocks  1060185.2     1063722.8   0.33%
-     File Copy 256 bufsize 500 maxblocks     317495.4      322684.5   1.63%
-     File Copy 4096 bufsize 8000 maxblocks  2350706.8     2348285.3  -0.10%
-     Pipe Throughput                      133516462.4   133542875.3   0.02%
-     Pipe-based Context Switching           3227430.6     3215356.1  -0.37%
-     Process Creation                        108958.3      108520.5  -0.40%
-     Shell Scripts (1 concurrent)            122821.4      122636.3  -0.15%
-     Shell Scripts (8 concurrent)             17456.5       17462.1   0.03%
-     System Call Overhead                   4430303.2     4429998.9  -0.01%
-
-> Reviewed-by: Valentin Schneider <vschneid@redhat.com>
-> 
-
-Thanks. Will update my patch and send v4 soon.
+Thought...?
+ 
+-- 
+~Vinod
