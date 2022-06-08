@@ -2,129 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAF6C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:31:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAF1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:31:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343509AbiFHQbN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45916 "EHLO
+        id S245204AbiFHQbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343541AbiFHQbA (ORCPT
+        with ESMTP id S245518AbiFHQbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:31:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAEE24792B
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:29:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A332461900
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 16:29:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76102C3411D;
-        Wed,  8 Jun 2022 16:29:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654705775;
-        bh=Rl+DUn/Nzlxn4nlbJanjmwhDoU4icyUwT8ssx2EkXCs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Y0iV9olUahbUYftDKWhbviAUNLNB6RMv87CvNijiYZZQUVVXNYYJT3gP7/0+lEjZB
-         hElkhcZJCfcUII6GJh8rEoRFr7BqZ0Z+F7dpPS33V/tD8SJsf2HJTZHCGGl+84O2vK
-         juvkd8yiWoboAfKsckJzf8gQMubWwBbkv5+98hJFU/cq/sgOBq5d39GRTkks/dABRL
-         /BMsME2Va5LAjG9J7Eu2+pbcdIG8aDJ1CAt2TkHtyHEKwziYeQiJ2nDitm+Dy9flHM
-         23zN5b/0zb0x/bqQWaRx9J4+s3jWcwSkl4Y2S+WnWz9jC87ceClq0BBEg6XGh4WnDA
-         nMnoxx4bx3bWA==
-Date:   Thu, 9 Jun 2022 00:20:52 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Stephen Boyd <swboyd@chromium.org>,
-        Phil Elwell <phil@raspberrypi.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Russel King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>
-Subject: Re: [PATCH] riscv: initialize jump labels before early_init_dt_scan()
-Message-ID: <YqDMZOTtmOcMlGM7@xhacker>
-References: <20220607195752.1146431-1-Jason@zx2c4.com>
+        Wed, 8 Jun 2022 12:31:02 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588EF247901
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:29:46 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id z7so27801659edm.13
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 09:29:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CF/Kh01MJWe4yp2Is0vySqOlQlpzpE6Iwf+B2aga5qA=;
+        b=WZut2aN+O7FrQyr6F7fpsB/42jTOj5SEQlDRwGORr63TNRoUveQ9N0JokW5S0THM0n
+         F8DUW61yqHq50CCU03HaPUcrLjTTu/0IHCpq4pP6j+1NQnNUcRv5b8RwtWNWrNXQMpMw
+         hdRgjDTj7zbu2o7LWBAc4nsBunSZe7jlJW641jT5LqXxPuV/xh/lkFy6rYjMLbqIrUpA
+         30xoX/kHVLR10DWZWi/1MDw5xnyqD1E2wTmZ87vLOSuvfvXUMoaW8ugkqsHvjq3Kg0PW
+         tvQTQtsyC0Uhbk0l+LUzvHdNGOheS48Uhe3nCLdVAtla+l6dV0hAeCv8t6fDLpOpvssG
+         ehqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CF/Kh01MJWe4yp2Is0vySqOlQlpzpE6Iwf+B2aga5qA=;
+        b=26R9D31c4tpODgfFFS1G0WtpKS7HauJk9OpQxiV6L+/G6ydwc+PhfVLshoJHhjXNCW
+         adev8xlKgSfHymrrH0MWacUjoTszG725PYALO9u1mjkSFiMJKKk9iBjR3bqR8OiJa0JO
+         3AMNOBhndiuScxVr5oKRSJu9EVLtCMv2aTKyG0RHzRvHVoQACDCmWRIZLDtSVXC85dMI
+         FZdwi5m72+7dAqgKmcOSlCa2gD6S+7+KRIupwN/PXpypsMLV8BO+YeKhhTkedfGsIST1
+         /pEXzpCuAMdEU/8Pi8m+g/qwH7sul7vQuVrMsDhRkgWsNStjPq6tfkjCiwrZiKOKrjPA
+         ERpw==
+X-Gm-Message-State: AOAM5331zFlBJogIT838BVTI6a3m7qepi4R37lIgJinG9mNCCb6ER+bX
+        P9VdIMGGg+9ptswHf9LT6JQxLDmUQSxmuuBWad10Vw==
+X-Google-Smtp-Source: ABdhPJxeNv5rgHdx+m7eZ866cRzZjSvPsrmu/M2z9+w5zPbzVsqv2NkliNFKahGNvHfQXDOXB3hD5eLC/r9JT2E3w1I=
+X-Received: by 2002:a05:6402:3490:b0:42f:b592:f364 with SMTP id
+ v16-20020a056402349000b0042fb592f364mr28649668edc.66.1654705784062; Wed, 08
+ Jun 2022 09:29:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220607195752.1146431-1-Jason@zx2c4.com>
+References: <20220608110734.2928245-1-tzungbi@kernel.org> <20220608110734.2928245-23-tzungbi@kernel.org>
+In-Reply-To: <20220608110734.2928245-23-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Wed, 8 Jun 2022 09:29:32 -0700
+Message-ID: <CABXOdTeJC2smg31prN6vX3cEhF89_5o8fyDCdW66D5LGTA30cQ@mail.gmail.com>
+Subject: Re: [PATCH v3 22/23] platform/chrome: cros_ec_proto: add Kunit test
+ for getting wake mask
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
+        <chrome-platform@lists.linux.dev>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 09:57:52PM +0200, Jason A. Donenfeld wrote:
-> Stephen reported that a static key warning splat appears during early
-> boot on arm64 systems that credit randomness from device trees that
-> contain an "rng-seed" property, because the dtb is parsed is called
-> before jump_label_init() during setup_arch(), which was fixed by
-> 73e2d827a501 ("arm64: Initialize jump labels before
-> setup_machine_fdt()").
-> 
-> The same basic issue applies to RISC-V as well. So this commit moves the
+On Wed, Jun 8, 2022 at 4:08 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> cros_ec_get_host_event_wake_mask() expects to receive
+> sizeof(struct ec_response_host_event_mask) from send_command().
+> The payload is valid only if the return value is positive.
+>
+> Add Kunit tests for returning 0 from send_command() in
+> cros_ec_get_host_event_wake_mask().
+>
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 
-> call to jump_label_init() just before early_init_dt_scan().
-> jump_label_init() actually requires sbi_init() to be called first for
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
 
-Moving the sbi_init() earlier has been sent out but the patch is missing
-in 5.19-rc1
-
-https://lore.kernel.org/linux-riscv/20220521143456.2759-1-jszhang@kernel.org/T/#m00c3cb5e4e360ca8d7aa10c79c10437b7307c16c
-
-
-
-> proper functioning, so it also moves that to the right place.
-> 
-> Reported-by: Stephen Boyd <swboyd@chromium.org>
-> Reported-by: Phil Elwell <phil@raspberrypi.com>
-> Cc: Ard Biesheuvel <ardb@kernel.org>
-> Cc: Russel King <linux@armlinux.org.uk>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Paul Walmsley <paul.walmsley@sifive.com>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> Fixes: f5bda35fba61 ("random: use static branch for crng_ready()")
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 > ---
->  arch/riscv/kernel/setup.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
-> index f0f36a4a0e9b..c44c81b1cfb3 100644
-> --- a/arch/riscv/kernel/setup.c
-> +++ b/arch/riscv/kernel/setup.c
-> @@ -263,13 +263,15 @@ static void __init parse_dtb(void)
->  
->  void __init setup_arch(char **cmdline_p)
->  {
-> +	early_ioremap_setup();
-> +	sbi_init();
-> +	jump_label_init();
+> No v2.  New and separated from the original series.
+>
+>  drivers/platform/chrome/cros_ec_proto_test.c | 128 +++++++++++++++++++
+>  1 file changed, 128 insertions(+)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
+> index c988ff1e2a5a..6cd136ce9e50 100644
+> --- a/drivers/platform/chrome/cros_ec_proto_test.c
+> +++ b/drivers/platform/chrome/cros_ec_proto_test.c
+> @@ -1408,6 +1408,133 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return_error(struct k
+>         }
+>  }
+>
+> +static void cros_ec_proto_test_query_all_default_wake_mask_return0(struct kunit *test)
+> +{
+> +       struct cros_ec_proto_test_priv *priv = test->priv;
+> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
+> +       struct ec_xfer_mock *mock;
+> +       int ret;
 > +
->  	parse_dtb();
->  	setup_initial_init_mm(_stext, _etext, _edata, _end);
->  
->  	*cmdline_p = boot_command_line;
->  
-> -	early_ioremap_setup();
-> -	jump_label_init();
->  	parse_early_param();
->  
->  	efi_init();
-> @@ -285,7 +287,6 @@ void __init setup_arch(char **cmdline_p)
->  	misc_mem_init();
->  
->  	init_resources();
-> -	sbi_init();
->  
->  #ifdef CONFIG_KASAN
->  	kasan_init();
-> -- 
-> 2.35.1
-> 
-> 
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+> +       /* Set some garbage bytes. */
+> +       ec_dev->host_event_wake_mask = U32_MAX;
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               struct ec_response_get_protocol_info *data;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +
+> +               /*
+> +                * Although it doesn't check the value, provides valid sizes so that
+> +                * cros_ec_query_all() allocates din and dout correctly.
+> +                */
+> +               data = (struct ec_response_get_protocol_info *)mock->o_data;
+> +               data->max_request_packet_size = 0xbe;
+> +               data->max_response_packet_size = 0xef;
+> +       }
+> +
+> +       /* For cros_ec_get_proto_info() with passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       /* For get_host_event_wake_mask(). */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       cros_ec_proto_test_query_all_pretest(test);
+> +       ret = cros_ec_query_all(ec_dev);
+> +       KUNIT_EXPECT_EQ(test, ret, 0);
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_protocol_info));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +       }
+> +
+> +       /* For cros_ec_get_proto_info() with passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command,
+> +                               EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
+> +                               EC_CMD_GET_PROTOCOL_INFO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_protocol_info));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_cmd_versions));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_cmd_versions));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
+> +       }
+> +
+> +       /* For get_host_event_wake_mask(). */
+> +       {
+> +               u32 mask;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_HOST_EVENT_GET_WAKE_MASK);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize, sizeof(struct ec_response_host_event_mask));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +
+> +               mask = ec_dev->host_event_wake_mask;
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED), 0);
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_DISCONNECTED), 0);
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_LOW), 0);
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_CRITICAL), 0);
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY), 0);
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_PD_MCU), 0);
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_STATUS), 0);
+> +       }
+> +}
+> +
+>  static void cros_ec_proto_test_release(struct device *dev)
+>  {
+>  }
+> @@ -1473,6 +1600,7 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
+>         KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep_return0),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_default_wake_mask_return_error),
+> +       KUNIT_CASE(cros_ec_proto_test_query_all_default_wake_mask_return0),
+>         {}
+>  };
+>
+> --
+> 2.36.1.255.ge46751e96f-goog
+>
