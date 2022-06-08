@@ -2,106 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C39BFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 13:08:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 323C8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 13:09:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240039AbiFHNIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 09:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40128 "EHLO
+        id S240037AbiFHNI7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 09:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239923AbiFHNIt (ORCPT
+        with ESMTP id S239974AbiFHNIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 8 Jun 2022 09:08:49 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC3525BFA4;
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2086.outbound.protection.outlook.com [40.107.21.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F0C25D82C;
         Wed,  8 Jun 2022 06:08:48 -0700 (PDT)
-Received: from mail-yb1-f180.google.com ([209.85.219.180]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MXGSU-1oG2q01o7C-00YfIY; Wed, 08 Jun 2022 15:08:46 +0200
-Received: by mail-yb1-f180.google.com with SMTP id w2so36420406ybi.7;
-        Wed, 08 Jun 2022 06:08:45 -0700 (PDT)
-X-Gm-Message-State: AOAM533ZETNMkz5kNb8uj6zF3dcDVXFL3w0SnsqoL3TDjybL+jWOeF73
-        yX0rqwjJzK+rsy8o8/S3rrWnBo4D2FJMad+zVcs=
-X-Google-Smtp-Source: ABdhPJyPAr6agm+ybv42a6+IQG9YtkbGrrN61pdQKlRReOgHwkoxQctAgFm4ahpz9ijG+yWaGNlDD7K9UznYhi7Yq18=
-X-Received: by 2002:a25:31c2:0:b0:641:660f:230f with SMTP id
- x185-20020a2531c2000000b00641660f230fmr34051688ybx.472.1654689712767; Wed, 08
- Jun 2022 05:01:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-6-tmaimon77@gmail.com>
-In-Reply-To: <20220608095623.22327-6-tmaimon77@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 8 Jun 2022 14:01:36 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2CNxijmy0AO6NEfg=hxQZn5WxgQij4JgkTjDTfZZSScA@mail.gmail.com>
-Message-ID: <CAK8P3a2CNxijmy0AO6NEfg=hxQZn5WxgQij4JgkTjDTfZZSScA@mail.gmail.com>
-Subject: Re: [PATCH v2 05/20] watchdog: npcm_wdt: Add NPCM845 watchdog support
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BdnhUvIuukzohfTgxtbWpXwlR3MZjsN1TOXbqMyetdwJWuPXXRECbeGMYRGeRWgOgorUb4AdIUJI1DbIV88jvDGsya+Bh+QRFBECdSb62gOUvaebcF9BfTyZzYY0X2UeKZ+NKxreoEQUMOQ/JGA9+VNiS5zdfj2+Njp2Z/n0b5kT6LPccMbinwODQ8Hg2sBxeyx+dae5uEzkqjjXuMXHBl0m20hTUMfFBElNSU4GfHDR19/RRjBEynKd35kCEbrT843UmOzQNdyU31jzSfFqnA3itEpQ2Wd67iF248+EOEKmBzLh2SJ7ybhq4pqQ9yMrX1UWOWt3qJqTrzpusU8KPQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zFhnqP082Ay0394vc5XMq/xJxQ6OACLoSFSjBmjD4M0=;
+ b=LttWEcamzuYud1jB2s2qIvSJXv7xl84RXguyw7WscZ25n4MgpKZRPblrROsZeNEPLPWlWETKZQHKdlODUtu7hSyWh/pyYPCAbYzaurNPXI6q41l/GDrnFNM10fgwz2ff9qgRz1pty98GzOWwVyO4ssCYjMGp0kwJLeuS3s8dVRK6IbN+RycqIZHgo5pdNcca8o9E6q+8Ckf5EHm/z6qmlMmzcHTg70eucKWm1MDi2subWn+zzKu9uuuUNBJtd0f9pRJINbU+HBwHy1vucFw2WsyZ3bCNwlE1CW5gBaNGMZw+9AO5ItyTONlHAD+RcVUtXMzTKH6+qbFu52rXdvnt1A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=wolfvision.net; dmarc=pass action=none
+ header.from=wolfvision.net; dkim=pass header.d=wolfvision.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfvision.net;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zFhnqP082Ay0394vc5XMq/xJxQ6OACLoSFSjBmjD4M0=;
+ b=I5V3kNq22SfrrlI2bSruhKrnfCjPGFmVfHuEfjvvr13r+kdpXMDFA+iSlCi/bhyoT9SVSChu0u0MfkkaGc8vUA4uIQSpzNoXEtYPxtlRQpjYjOhWokEXBhFMOFG26HSW0l2g/mm9zysvaVkZ8zn+Q/otXKYIlFLjjk/+7ENiM7Y=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=wolfvision.net;
+Received: from AM4PR0802MB2131.eurprd08.prod.outlook.com
+ (2603:10a6:200:5c::22) by VE1PR08MB4704.eurprd08.prod.outlook.com
+ (2603:10a6:802:b0::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.15; Wed, 8 Jun
+ 2022 13:08:44 +0000
+Received: from AM4PR0802MB2131.eurprd08.prod.outlook.com
+ ([fe80::248c:2539:5ba5:74f2]) by AM4PR0802MB2131.eurprd08.prod.outlook.com
+ ([fe80::248c:2539:5ba5:74f2%3]) with mapi id 15.20.5332.012; Wed, 8 Jun 2022
+ 13:08:44 +0000
+Message-ID: <5e0b908b-52c8-494e-a804-393c8aad097a@wolfvision.net>
+Date:   Wed, 8 Jun 2022 15:08:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 2/2] arm64: dts: rockchip: rock-pi-s add more peripherals
+Content-Language: en-US
+To:     =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>,
+        linux-rockchip@lists.infradead.org,
+        Sjoerd Simons <sjoerd@collabora.com>
+Cc:     kernel@collabora.com, Akash Gajjar <akash@openedev.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        gregkh <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        robert.hancock@calian.com,
-        "nathan=20Neusch=C3=A4fer?=" <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:huBQqQStfZDdfCBwbAntxePlQBHuJuWlkIZEOXlTP+7cMnlLO25
- QAMIlVpdSccZ+G82I6yJyjCmLa3Gor2QBmUiUbyGtKXR39UkX9fPoGaOd6/vDT8lnHbdvf4
- mSzK14ChIv50ilSFpQnhD7AswcFgckpo9rc2LK/sNviu9hIysCmaTop7LsDHvPNP/sJcg9P
- cdkVF8Dgnx7FPfPsrjZnw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:I6qJE0q2QEA=:+coisMcRzU0apWjkEGabQB
- OXvLYzXe3ZFAsN4DYqYQ57hM7KO1LdLWX/fU46tcnZK28u844j3gs3dDH5QpHgV8UMfAYZbvE
- dlLzDMlp1y3i3k6Jg+UozDM2BfTm5uh2nZP/fiYY+5NeygDL8d6FMVKsmC6bep0FiamkDb4It
- lfvgx04Ol/eSVlnzLJH2INyccaCFugYJ2MBlgoBjQuqncmgtFccVfzQJAM51UJOVgjlEKF7nV
- NYy4Eva43/bkI3tZ8d6wA+tTyMVg4k15vGQiUTTLdc/OfjNIycoylysgio3xi3KQsHd3BXd06
- IAJZ8DqfHrOf727g7jyfIlVffJiq4glNRokD2Xa9gktgrcVkVEz25Uu8u0vqzRkJ4lN2C8QjF
- xzFmHQ+GAr+hPaC6B5SiwMKL6ryrACKuZ79slKebmc9oPU6pGYvqUOtqAg3epHB830q0ZTfMT
- S2GfXnq1e5uueX0NHHH347ulpsnyprWUbz7iFpNf1ZiBJtzuBOVsvvrkwBvAF/oPAUM/enIAQ
- EbLR545Y0F2f3uUA/ya/bHbdHxz9yY6fnvbSaU22H9BJYAyAbRZF0f77LNb0odlzyG0fJ8hCI
- eFFdwNLx7uRyhcrdhewGTthUYDcSucBB/5vr0zc2IqRP6N+MQ8J7SCOmQs0A6/v8gZILHy//x
- e/AGcsKdxjqKlElhU8P7KgkKh+1K3MU/e/4nn6irGFwAvWNzlL0b4QkcU+horeTvP1I1y8orB
- sxUNiJ/rX+6i9Siwjx6o3DMeWDZ7KkbJpp95KQ3euz1MxuqpbqZrZTomz+wHhH7zkpQottSau
- 4Wu+Ulb2EgeHc75UyLlzGMVkwbs14x/J8OzRioWbhD0+aIp7IGeoAxlmQJAlCiBu5nzl58/1d
- Lq6egdyK1iDCGFoVrTm5ZV6DKjGEJRHfM2QeYYpeY=
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220606082629.79682-1-sjoerd@collabora.com>
+ <4731d47f-ef02-d512-c599-274f8208f845@wolfvision.net>
+ <3576f2af98a0d9e7128568777d85af3bfbab801d.camel@collabora.com>
+ <2759751.88bMQJbFj6@diego>
+From:   Michael Riesch <michael.riesch@wolfvision.net>
+In-Reply-To: <2759751.88bMQJbFj6@diego>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: ZR0P278CA0066.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:21::17) To AM4PR0802MB2131.eurprd08.prod.outlook.com
+ (2603:10a6:200:5c::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 124cdc9b-ffa4-4dc0-00b9-08da49500422
+X-MS-TrafficTypeDiagnostic: VE1PR08MB4704:EE_
+X-Microsoft-Antispam-PRVS: <VE1PR08MB4704B29970B5C44DE998DE12F2A49@VE1PR08MB4704.eurprd08.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TRKTlSaz47Pg5UuwTjxcIF00rZaOoo6gqamJFjhD/6XD6TyiBSKRCKjE0wcRUViLuHBiZ34O8aZ97C/rgK95HLSaANHgCdHwLhZ0BXn/ClayTCGyT2N2IwFRrCDynqvgosPBrqmwaUnQEDFI6vwl8N12ADEcVbCA3uIW9vVZtDGGm82fz/ZCSvjpEQueXl+ie3tYbFIv8ayvBud9Io9mEGLsQ6XfzCDmRb86p1VT/o+LmULI7hwp7Xh05u55KCKeAi4P+g1FCWDzQzKMmJwDL0lars6DJngO4ndvJOS3/1T4M4d9zX2SzCZNV1NnnwuwUHJPz4G/7WalD72Uuj0CDiXSnH+F/EyaWftBMuz9PudG2OxOxblJJPBh48uTGpXR/PZWqC/FYRihtRf/5t65MoRZw8ip7tjrh3eejFB1s8kWb6nMl2JVxt3W2uJWYYThCqzWOEdE9rTpg6TeFUjYhrBrW/CwYUP4YLFyizLeMoc0enSnJtF2K93fAJdaC2wl1O3a6y/6MZQvW1WmPsro4lzbhwjPYIjWsd3XOF3HOEcFp18RRQViWh8TEmKHR/uvkXWgGi61jW9qQumC303MVAfs4w5gLCjlPEPIcK/ijnsuKo75MrPKpipRh3ms3w6e9BJfM45Kc03cHvQuSvv3BzvseMJ61HFfQNHjPoLNVg9OgddYCU6a2qrgJqn1YJaCykz/oKaOcMFTMp1OW3XuU8RrTBZpHUJ/icH0x+jRcxs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM4PR0802MB2131.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(136003)(39840400004)(366004)(346002)(396003)(66476007)(6666004)(6506007)(316002)(8936002)(66556008)(36756003)(2616005)(66946007)(38100700002)(6512007)(31696002)(86362001)(5660300002)(31686004)(8676002)(4326008)(52116002)(7416002)(110136005)(53546011)(186003)(44832011)(54906003)(508600001)(83380400001)(41300700001)(6486002)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WlFMdnFLS3JNb2ZNMXA5WkxtQlNZcnZhTmt3Ymxua3lMNzhjd05DYk9WUGJN?=
+ =?utf-8?B?V2Yzc2ppOVF1UUo5N28zMi9PTmt0M3lFWFFEUDBmaXRsR3Z3cC9ucW5ad0FC?=
+ =?utf-8?B?aFg1ZEpzeE5uVm0xMVNQWGxSbEQ0VVNqY1dxYkJhOW5CeVNYRzcycUpqYmhn?=
+ =?utf-8?B?UWxGaEN1SGp3VlBVOGtrUWZ4RE9qc0JGYXA4QnVLVmtDMURSSThPcjBzOUJG?=
+ =?utf-8?B?bFpCaDJJUlovdXZQY281eDNXMTlKT1ZGYkRHWVFxeHhtQkxlYkR5bXhZTU9V?=
+ =?utf-8?B?UGRrNVU4alJ4cUVCMWFXQW5LbThGaitOUDhORFVydDR3azEyeXBrSVZ5MHFY?=
+ =?utf-8?B?MXlYN0lCMUNMM0FtNlRqZ3FXcGN5TDI4SFRKbVNVeFNaeGxEL3dlT2d1REEy?=
+ =?utf-8?B?VXBMQ010ZmNka1J6RGg4b3RQeGN5bi8vQXdBTlRRQy83T1J2RS9XbjRaODVk?=
+ =?utf-8?B?QWNyQ3pIVFZacndyZWdjUEphV1VTRHhMNkJ6SzkwMVcvWHd3SG9FNEQ2ZFdi?=
+ =?utf-8?B?YmNSaklodWJ6SmtWZHM3MDk1aUptN25LaVRPZVV3Z3hxY2E5OUhXeVo3OVJz?=
+ =?utf-8?B?Tyt1ajNlcmxZYTRoZFZ5SVlnOVQ0aDQrS1dMV0NPbUtreHpieGdDbkVTLzVW?=
+ =?utf-8?B?c2hnZkJJalpKU3NpN1pIajFmY1pBNEszRUtBTDRtRDlhYnZFZGZ4RUhKcU1X?=
+ =?utf-8?B?blZiaEY4NmtZOEowUGZ3WDFTQUhXbUVHTTR0bFJuRWN3QTVMbDVOK1pXekQ2?=
+ =?utf-8?B?WXl1RFZORjdIYVQrY0NzM0N3YUlxMllLdVB0U2pxaXVxdlI0VlROOTk2MU9p?=
+ =?utf-8?B?NUNkR1hSUW84bHRwMi91ZXRiWlp0QlI4Q05zWWV3cndldy8vM2Q1TU1uWHdY?=
+ =?utf-8?B?STlka1EwaFNwZkVrVjhYeGhZQmxxK1lWQ05Sc3pqKzJldVg4N0FMb0E2cksz?=
+ =?utf-8?B?MkEzUkFHdDdheUlDQXFBcWZLaTI0RnBTNUJyRnNXYjd5TVVDWTIvTHNFcFd2?=
+ =?utf-8?B?TFhlWFhDbUxSZHVPWEkvM3lKZDRwVUs4QU45aFpRTm5IS0Y5VTlUMTk1SmZK?=
+ =?utf-8?B?NlhPVGxubFl3MFNzUXNlRk9IUldPUXNtN1BPdHpnNERYdk15VDgxdjJzU1hB?=
+ =?utf-8?B?TmU5QmIrM2xBbmhNdXpjZDBmSDNYdU9oblM0QVRjSVBkdjZKaGZkTnlDZ1da?=
+ =?utf-8?B?d1VKaks5S0JHMUd0M0hLTkE1aDUwTnJBTnZnZnJZaWxwa3IwbEJqZDkwSnB0?=
+ =?utf-8?B?ZXRoaW1ONnFPUzg4UW1EZ0JPZDVxMHVVekNNYmNWQjlSVUZuOGZubk5CZ0hU?=
+ =?utf-8?B?T2EzQTcvVVE0dWcwKzc5eU9lUFBnUnhDRUdSMVJEMFp1djZQY3NHbk0vNFZy?=
+ =?utf-8?B?RnArbURLRUpWSml3MjRqTm03MTNEaHY1ME9oQ1QzMU5CVXhhVEVxUDZZd0tn?=
+ =?utf-8?B?NnJkaDFCcjJLM1hTeWNjQkF2amJaY29IMlJQazJxVDBnRno2bVBwM01US2Nq?=
+ =?utf-8?B?Wi9WQVZWQnIvc29XOEJJQVlxQTkyRTNsWHFxaUE5RjNCemtGMUw4dDI0NVpr?=
+ =?utf-8?B?OWJ3aW11UEVjb2E4VDhxM2lzSWZkeHpxS0UwY25FdXVKcXJxcWYrR0V1OENN?=
+ =?utf-8?B?cVNOS24vcHFUNHo3U2dOS0Nyem15VGt0TjFlVVoxa2NTN3oyMXZrSVlqMUgv?=
+ =?utf-8?B?U0F1MnM3VG9oV1A4elpwN1Qycy9pQWpiUTRUTk50SE1tNnluMTFIcnk0cDA2?=
+ =?utf-8?B?K0dkbmpha0VOck9UcnphTlpRSFkyOUxwNUp2ZFdUdzRoRUNUUVZIRzF6Snlh?=
+ =?utf-8?B?Z05HV3U1N0JvMGIrQk1SZVNnbFN3Q1NETWhGWE9uVFJYRDRqUUh2SlRCbW1U?=
+ =?utf-8?B?ZG9nREt2a29ZQ29lbnB1dFRiZEN2WFdKNjVUQjd3RzYwbS9oNE9oRmxpVGsw?=
+ =?utf-8?B?UFo5UHVBOUszTE5QNlByNjRJcGxZRGYvWTh5eFpJbnBURjhablRteGx5OWo5?=
+ =?utf-8?B?cGppbGp0Z3ZPaE5NR0c0Tk9heFNQdXFtQlV5WGR2TG9QVnJML0VsMkZJbG8z?=
+ =?utf-8?B?TlZFcXhrSGZ1N2lHR3ZiS3YzYkFuek0wb0NZcnBMYjVMVE9aTzRrTmdyd1ZJ?=
+ =?utf-8?B?c2x4MExkMVBPYUxhaGlEY1ZzYksrbzRGUmEwSVY1SElDRmRVcFBGOTdPSFVI?=
+ =?utf-8?B?ZFJrczc1N1Byem9sMmthczhhckRyT1JWUXBnUWtqTjlxdy9memQ5WW5Na0pX?=
+ =?utf-8?B?SGg5blNOYTZ6MDNzOGRHakF6SGlDOGNqcWNyUjN4R1E0dHBNVzRxSWlma3Ux?=
+ =?utf-8?B?Q1dSR2UxSW4wVzFoMXlJblNpRHIwOVZTMTkzVzlnenc2VDFDcUpYMDYyQUl2?=
+ =?utf-8?Q?X7ZT27ramplq4tFvIYyKhGGmZr8Gq7I2HSQUZe6qP1FkB?=
+X-MS-Exchange-AntiSpam-MessageData-1: FQq9TQJ1EAOWpLb9vquZiCNyWtbBBBOx5L8b+iAt5WLAzF7rX8/kb9b1
+X-OriginatorOrg: wolfvision.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: 124cdc9b-ffa4-4dc0-00b9-08da49500422
+X-MS-Exchange-CrossTenant-AuthSource: AM4PR0802MB2131.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2022 13:08:44.3301
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: e94ec9da-9183-471e-83b3-51baa8eb804f
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jdLJPcDfTsPgxsc9YC7QTNHCCmwJLxOkBr9s2vDOqLHCeV/gnt/NfgB1+0d+1GqOFD5CFktKLXQpIoh7NXJPJzGix/DrGXXEkLVztqiMKPE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR08MB4704
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 11:56 AM Tomer Maimon <tmaimon77@gmail.com> wrote:
->
-> Add Nuvoton BMC NPCM845 watchdog support.
-> The NPCM845 uses the same watchdog as the NPCM750.
->
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Hi all,
 
-This one should no longer be needed if the timers are compatible with the
-old ones and correctly described in the DT.
+On 6/8/22 14:19, Heiko Stübner wrote:
+> Am Mittwoch, 8. Juni 2022, 14:07:33 CEST schrieb Sjoerd Simons:
+>> Hey Michael,
+>>
+>> On Mon, 2022-06-06 at 14:00 +0200, Michael Riesch wrote:
+>>>
+>>>> +       aliases {
+>>>> +               ethernet0 = &gmac;
+>>>> +               mmc0 = &emmc;
+>>>> +               mmc1 = &sdmmc;
+>>>
+>>> Sure? emmc is at address ff49000 which is larger than sdmmc's address
+>>> ff480000. I believe the aliases should be sorted w.r.t. addresses.
+>>
+>> Do you have a reference about this sorting requirement?
 
-      Arnd
+No, not really. I did have the impression that such a convention existed...
+
+> I do believe we used that mmcx -> *mmc-device sorted by address
+> when the aliases still were in the main soc dtsi. Simply because one
+> couldn't really know what was available on a specific board
+> (no emmc for example).
+
+... and this seems to be the case indeed...
+
+> I guess now on a per-board level we could actually do that more relaxed
+> and let that be the decision of the board submitter ;-) .
+
+... but apparently the convention is not that crucial anymore :-) Just
+wanted to point it out.
+
+>> Also do you mean that mmc0 should be &sdmmc *or* that the aliases
+>> should have mmc1 listed first.
+
+FTR, I would have suggested
+
+mmc0 = &sdmmc;
+mmc1 = &emmc;
+
+according to said convention, but then I would also take a look on
+whatever any other rk3308 boards do and aim to be in sync...
+
+>> For reference the reason is that mmc0 is emmc is because it seems more
+>> logical to have the builtin devices come first (e.g. as mmcblk0) 
+
+... unless there is a good reason not to. You be the judge of that ;-)
+
+Best regards,
+Michael
+
+>> [...]
