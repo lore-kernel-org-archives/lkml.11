@@ -2,74 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEE49C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:15:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 052BFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:15:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232792AbiFHFOD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:14:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50330 "EHLO
+        id S230457AbiFHFP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:15:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233173AbiFHFNW (ORCPT
+        with ESMTP id S232904AbiFHFN3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:13:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF9A3BE139
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:19:40 -0700 (PDT)
+        Wed, 8 Jun 2022 01:13:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52743A15E5
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:19:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90B58616AA
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:17:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 166ADC3411F;
-        Wed,  8 Jun 2022 02:17:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47363B823D0
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:17:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 110B7C34114;
+        Wed,  8 Jun 2022 02:17:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654654647;
-        bh=AzhrCIWg84o+mxvFW4ZCcksLht8pFT6BvEbsGS24Tr8=;
+        s=k20201202; t=1654654622;
+        bh=ZqeGTyfh/Ani8+K+9DA5ei1T7FyK6i6XD9rV4VeyryM=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lcJwW+H3Xpd31ezTP4c5X+za/nMkEeTyF6fZNBlFXbsjsiDHFcwazSab6Hu9sWP4j
-         c20Z3TzwEMy5NxZUUHYMQPZ7qjgVOU0Drsj63zZyNOR6eHQgbgwwB8OIZkOxE5/UV6
-         +hpjBvzilOoBsDtUWhwsp3qCnEzVDodlw8I7rTm0TqpHpQj+yJEmnkDJNI2vfoG3CN
-         /u7dqLDNs7ZWAkZfdRszxsVWfvIToq8hHFSx2nJzCXVDNK5v06NHnv3G9YW9vdnesG
-         FoC4VvjRTJ0/qJakOhMOm9y0s+G18C/uiGH1G/0ijmNasqT5BiqTeNyj3IG+EY/JWb
-         KKD73eHWchMgA==
-Date:   Wed, 8 Jun 2022 02:17:23 +0000
+        b=CVw5jD9hmlhBw7cna50eKtb6BeRDtHouoqUONkWwUvYQztv3TxoS0mvnCy9XqEVN+
+         gH5gWRcVQtW8NoEhTpTp+QlmDyPb3/lbCpAEUWtNqkuNDmkhvYl5DMQQa+4yew+jlq
+         p1UNiKj4ki0Kfj5RfksRxlDEmjZjX4aUzqAoBczz5Q3sLTnGZl+70w8IKLgnmTH3GZ
+         m2NhqtJ+O3Tvdjm9Y66iXUZ11vA46jlLN0MhG22GajiM5m91pboCr8f12QVqa4YYn+
+         Y2QlDuHMd3P6d68y6srF/whAFIiHwnsSIj5XjHgQ5VsRwiaGgFkoU5aoYTueZ6dBnK
+         agh5XPsIuAP1g==
+Date:   Wed, 8 Jun 2022 02:16:58 +0000
 From:   Tzung-Bi Shih <tzungbi@kernel.org>
 To:     Guenter Roeck <groeck@google.com>
 Cc:     bleung@chromium.org, groeck@chromium.org,
         chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 14/15] platform/chrome: cros_ec_proto: return 0 on
- getting version mask success
-Message-ID: <YqAGsx6TTHTFeTNs@google.com>
+Subject: Re: [PATCH v2 08/15] platform/chrome: cros_ec_proto: handle empty
+ payload in getting proto info
+Message-ID: <YqAGmpdTfZsa7Lux@google.com>
 References: <20220607145639.2362750-1-tzungbi@kernel.org>
- <20220607145639.2362750-15-tzungbi@kernel.org>
- <CABXOdTcBauEYxOokg3PHGwYfgjAHNPGzf9mHnNFTyhcucv+rzg@mail.gmail.com>
+ <20220607145639.2362750-9-tzungbi@kernel.org>
+ <CABXOdTdx7jKLbHa3X7aOz3wUMpwWWHkncfKuRyGzonkA92Rg=w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CABXOdTcBauEYxOokg3PHGwYfgjAHNPGzf9mHnNFTyhcucv+rzg@mail.gmail.com>
+In-Reply-To: <CABXOdTdx7jKLbHa3X7aOz3wUMpwWWHkncfKuRyGzonkA92Rg=w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 12:11:23PM -0700, Guenter Roeck wrote:
+On Tue, Jun 07, 2022 at 11:47:56AM -0700, Guenter Roeck wrote:
 > On Tue, Jun 7, 2022 at 7:57 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
 > >
-> > cros_ec_get_host_command_version_mask() used to return value from
-> > send_command() which is number of bytes for input payload on success
-> > (i.e. sizeof(struct ec_response_get_cmd_versions)).
+> > cros_ec_get_proto_info() expects to receive
+> > sizeof(struct ec_response_get_protocol_info) from send_command().  The
+> > payload is valid only if the return value is positive.
 > >
-> > However, the callers don't need to know how many bytes are available.
+> > Add Kunit tests for returning 0 in send_command() and handle the case in
+> > cros_ec_get_proto_info().
 > >
-> > - Fix cros_ec_get_host_command_version_mask() to return 0 on success;
-> >   negative integers on error.
-> >
-> > - Remove the unneeded `ver_mask` initialization as the callers should
-> >   take it only if cros_ec_get_host_command_version_mask() returns 0.
-> >
-> > - Add a Kunit test: `ver_mask` has some garbage bytes from previous
-> >   EC_CMD_GET_NEXT_EVENT but there is no host sleep to make sure the
-> >   caller checks the return values correctly.
-> >
-> This should be separate patches.
+> That should be two separate patches.
 
-Ack.  Will fix in next version.
+Ack, will separate them in next version.  I put them together because I wrote
+Kunit test first to make sure the second half takes effect (somehow TDD).
+
+Could I still put the Kunit patch first (even if it introduces Kunit test
+failure)?
+
+> 
+> > Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+> > ---
+> > No v1.  New in the series.
+> >
+> >  drivers/platform/chrome/cros_ec_proto.c      |   5 +
+> >  drivers/platform/chrome/cros_ec_proto_test.c | 132 +++++++++++++++++++
+> >  2 files changed, 137 insertions(+)
+> >
+> > diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> > index 893b76703da6..6f5be9e5ede4 100644
+> > --- a/drivers/platform/chrome/cros_ec_proto.c
+> > +++ b/drivers/platform/chrome/cros_ec_proto.c
+> > @@ -314,6 +314,11 @@ static int cros_ec_get_proto_info(struct cros_ec_device *ec_dev, int devidx)
+> >                 goto exit;
+> >         }
+> >
+> > +       if (ret == 0) {
+> > +               ret = -EPROTO;
+> > +               goto exit;
+> > +       }
+> > +
+> 
+> I think you can move that into the if() statement above (which already
+> checks for ret >=0),
+> making it a special case of that situation.
+
+Nope, there is no "ret >= 0" (you could be confusing with
+cros_ec_get_host_event_wake_mask()).
+
+The result flow roughly like:
+
+ret = send_command(...);
+if (ret < 0)
+  goto exit;
+
+mapped = cros_ec_map_error(...);
+if (mapped) {
+  ...
+  goto exit;
+}
+
+if (ret == 0) {
+  ...
+  goto exit;
+}
