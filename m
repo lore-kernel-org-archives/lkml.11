@@ -2,124 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED27EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F00CCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244355AbiFHP0f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
+        id S244471AbiFHP0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244543AbiFHP0K (ORCPT
+        with ESMTP id S244751AbiFHP0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:26:10 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FAB13F439;
-        Wed,  8 Jun 2022 08:22:39 -0700 (PDT)
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nyxW0-00004u-8F; Wed, 08 Jun 2022 17:22:36 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nyxVz-000O7y-Rn; Wed, 08 Jun 2022 17:22:35 +0200
-Subject: Re: [PATCH v2 1/1] libbpf: replace typeof with __typeof__
-To:     James Hilliard <james.hilliard1@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-References: <20220608064004.1493239-1-james.hilliard1@gmail.com>
- <b05401b0-308e-03a2-af94-4ecc5322fd1f@iogearbox.net>
- <CADvTj4pUd2zH8M6BBQGVf9C3dpfhfFEN9ogwKXODj+sarzqPcg@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <3230febd-d346-8348-76e7-b9548f01cb87@iogearbox.net>
-Date:   Wed, 8 Jun 2022 17:22:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Wed, 8 Jun 2022 11:26:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE68142AB5;
+        Wed,  8 Jun 2022 08:22:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37F0360AE5;
+        Wed,  8 Jun 2022 15:22:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D62AC34116;
+        Wed,  8 Jun 2022 15:22:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654701776;
+        bh=SgYW51aN3OeqjU6+EIk8CHclo6M6cc2uvUEPUetN9AY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=p7z+0eY7ntbEVxA2gI3ZDLWM0mQwSUHKo0XnCgV0chmlHkz2P/vCANEjmqGsAdwGb
+         EoSpjHFAP8n9bDzPCEYaP1TdvsHfTZs7ZO2YCb1PhaDgWMEewk0XhfG2S7DJV8N6Zq
+         6BFFHYmv/C0EtAhNH8ykQ23VCX1LuObfUCtnf/2zRNky8BKsi3YeFoHUI0AgtoZtnU
+         /s5ocIdJDBgJaNkjIJoR2ZyE63FMuzKBldotmlU9Pd6NrsbPX3n/4O3QNinmpI+xhS
+         eF/3KfLyFpQXF2Gi5KoPPct1DqMaQ4m32g9c7heF/cNtqM6cQYwdFJN5c8DpxFzwH1
+         PF1h9+AG7Xw/A==
+Date:   Wed, 8 Jun 2022 08:22:56 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-aio@kvack.org,
+        linux-btrfs@vger.kernel.org, linux-ext4@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, cluster-devel@redhat.com,
+        linux-mm@kvack.org, linux-xfs@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
+        ocfs2-devel@oss.oracle.com, linux-mtd@lists.infradead.org,
+        virtualization@lists.linux-foundation.org,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v2 11/19] mm/migrate: Add filemap_migrate_folio()
+Message-ID: <YqC+0J9/P1siKkBk@magnolia>
+References: <20220608150249.3033815-1-willy@infradead.org>
+ <20220608150249.3033815-12-willy@infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <CADvTj4pUd2zH8M6BBQGVf9C3dpfhfFEN9ogwKXODj+sarzqPcg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26566/Wed Jun  8 10:05:45 2022)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220608150249.3033815-12-willy@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/8/22 3:04 PM, James Hilliard wrote:
-> On Wed, Jun 8, 2022 at 6:50 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 6/8/22 8:40 AM, James Hilliard wrote:
->>> It seems the gcc preprocessor breaks when typeof is used with
->>> macros.
->>>
->>> Fixes errors like:
->>> error: expected identifier or '(' before '#pragma'
->>>     106 | SEC("cgroup/bind6")
->>>         | ^~~
->>>
->>> error: expected '=', ',', ';', 'asm' or '__attribute__' before '#pragma'
->>>     114 | char _license[] SEC("license") = "GPL";
->>>         | ^~~
->>>
->>> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
->>> ---
->>> Changes v1 -> v2:
->>>     - replace typeof with __typeof__ instead of changing pragma macros
->>> ---
->>>    tools/lib/bpf/bpf_core_read.h   | 16 ++++++++--------
->>>    tools/lib/bpf/bpf_helpers.h     |  4 ++--
->>>    tools/lib/bpf/bpf_tracing.h     | 24 ++++++++++++------------
->>>    tools/lib/bpf/btf.h             |  4 ++--
->>>    tools/lib/bpf/libbpf_internal.h |  6 +++---
->>>    tools/lib/bpf/usdt.bpf.h        |  6 +++---
->>>    tools/lib/bpf/xsk.h             | 12 ++++++------
->>>    7 files changed, 36 insertions(+), 36 deletions(-)
->>>
->>> diff --git a/tools/lib/bpf/bpf_core_read.h b/tools/lib/bpf/bpf_core_read.h
->>> index fd48b1ff59ca..d3a88721c9e7 100644
->>> --- a/tools/lib/bpf/bpf_core_read.h
->>> +++ b/tools/lib/bpf/bpf_core_read.h
->>> @@ -111,7 +111,7 @@ enum bpf_enum_value_kind {
->>>    })
->>>
->>>    #define ___bpf_field_ref1(field)    (field)
->>> -#define ___bpf_field_ref2(type, field)       (((typeof(type) *)0)->field)
->>> +#define ___bpf_field_ref2(type, field)       (((__typeof__(type) *)0)->field)
->>>    #define ___bpf_field_ref(args...)                                       \
->>>        ___bpf_apply(___bpf_field_ref, ___bpf_narg(args))(args)
->>>
->>
->> Can't we just add the below?
->>
->> #ifndef typeof
->> # define typeof __typeof__
->> #endif
+On Wed, Jun 08, 2022 at 04:02:41PM +0100, Matthew Wilcox (Oracle) wrote:
+> There is nothing iomap-specific about iomap_migratepage(), and it fits
+> a pattern used by several other filesystems, so move it to mm/migrate.c,
+> convert it to be filemap_migrate_folio() and convert the iomap filesystems
+> to use it.
 > 
->  From what I can tell it's not actually missing, but rather is
-> preprocessed differently
-> as the errors seem to be macro related.
+> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
 
-Are you saying that the above suggestion wouldn't work? Do you have some more
-details? I'm mainly wondering if there's a way where we could prevent letting
-typeof() usage slip through in future given from kernel side people are used
-to it.
+LGTM
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
 
-> I did also find this change which seems related:
-> https://github.com/torvalds/linux/commit/8faf7fc597d59b142af41ddd4a2d59485f75f88a
+--D
+
+> ---
+>  fs/gfs2/aops.c          |  2 +-
+>  fs/iomap/buffered-io.c  | 25 -------------------------
+>  fs/xfs/xfs_aops.c       |  2 +-
+>  fs/zonefs/super.c       |  2 +-
+>  include/linux/iomap.h   |  6 ------
+>  include/linux/pagemap.h |  6 ++++++
+>  mm/migrate.c            | 20 ++++++++++++++++++++
+>  7 files changed, 29 insertions(+), 34 deletions(-)
 > 
->>
->> Thanks,
->> Daniel
-
+> diff --git a/fs/gfs2/aops.c b/fs/gfs2/aops.c
+> index 106e90a36583..57ff883d432c 100644
+> --- a/fs/gfs2/aops.c
+> +++ b/fs/gfs2/aops.c
+> @@ -774,7 +774,7 @@ static const struct address_space_operations gfs2_aops = {
+>  	.invalidate_folio = iomap_invalidate_folio,
+>  	.bmap = gfs2_bmap,
+>  	.direct_IO = noop_direct_IO,
+> -	.migratepage = iomap_migrate_page,
+> +	.migrate_folio = filemap_migrate_folio,
+>  	.is_partially_uptodate = iomap_is_partially_uptodate,
+>  	.error_remove_page = generic_error_remove_page,
+>  };
+> diff --git a/fs/iomap/buffered-io.c b/fs/iomap/buffered-io.c
+> index 66278a14bfa7..5a91aa1db945 100644
+> --- a/fs/iomap/buffered-io.c
+> +++ b/fs/iomap/buffered-io.c
+> @@ -489,31 +489,6 @@ void iomap_invalidate_folio(struct folio *folio, size_t offset, size_t len)
+>  }
+>  EXPORT_SYMBOL_GPL(iomap_invalidate_folio);
+>  
+> -#ifdef CONFIG_MIGRATION
+> -int
+> -iomap_migrate_page(struct address_space *mapping, struct page *newpage,
+> -		struct page *page, enum migrate_mode mode)
+> -{
+> -	struct folio *folio = page_folio(page);
+> -	struct folio *newfolio = page_folio(newpage);
+> -	int ret;
+> -
+> -	ret = folio_migrate_mapping(mapping, newfolio, folio, 0);
+> -	if (ret != MIGRATEPAGE_SUCCESS)
+> -		return ret;
+> -
+> -	if (folio_test_private(folio))
+> -		folio_attach_private(newfolio, folio_detach_private(folio));
+> -
+> -	if (mode != MIGRATE_SYNC_NO_COPY)
+> -		folio_migrate_copy(newfolio, folio);
+> -	else
+> -		folio_migrate_flags(newfolio, folio);
+> -	return MIGRATEPAGE_SUCCESS;
+> -}
+> -EXPORT_SYMBOL_GPL(iomap_migrate_page);
+> -#endif /* CONFIG_MIGRATION */
+> -
+>  static void
+>  iomap_write_failed(struct inode *inode, loff_t pos, unsigned len)
+>  {
+> diff --git a/fs/xfs/xfs_aops.c b/fs/xfs/xfs_aops.c
+> index 8ec38b25187b..5d1a995b15f8 100644
+> --- a/fs/xfs/xfs_aops.c
+> +++ b/fs/xfs/xfs_aops.c
+> @@ -570,7 +570,7 @@ const struct address_space_operations xfs_address_space_operations = {
+>  	.invalidate_folio	= iomap_invalidate_folio,
+>  	.bmap			= xfs_vm_bmap,
+>  	.direct_IO		= noop_direct_IO,
+> -	.migratepage		= iomap_migrate_page,
+> +	.migrate_folio		= filemap_migrate_folio,
+>  	.is_partially_uptodate  = iomap_is_partially_uptodate,
+>  	.error_remove_page	= generic_error_remove_page,
+>  	.swap_activate		= xfs_iomap_swapfile_activate,
+> diff --git a/fs/zonefs/super.c b/fs/zonefs/super.c
+> index bcb21aea990a..d4c3f28f34ee 100644
+> --- a/fs/zonefs/super.c
+> +++ b/fs/zonefs/super.c
+> @@ -237,7 +237,7 @@ static const struct address_space_operations zonefs_file_aops = {
+>  	.dirty_folio		= filemap_dirty_folio,
+>  	.release_folio		= iomap_release_folio,
+>  	.invalidate_folio	= iomap_invalidate_folio,
+> -	.migratepage		= iomap_migrate_page,
+> +	.migrate_folio		= filemap_migrate_folio,
+>  	.is_partially_uptodate	= iomap_is_partially_uptodate,
+>  	.error_remove_page	= generic_error_remove_page,
+>  	.direct_IO		= noop_direct_IO,
+> diff --git a/include/linux/iomap.h b/include/linux/iomap.h
+> index e552097c67e0..758a1125e72f 100644
+> --- a/include/linux/iomap.h
+> +++ b/include/linux/iomap.h
+> @@ -231,12 +231,6 @@ void iomap_readahead(struct readahead_control *, const struct iomap_ops *ops);
+>  bool iomap_is_partially_uptodate(struct folio *, size_t from, size_t count);
+>  bool iomap_release_folio(struct folio *folio, gfp_t gfp_flags);
+>  void iomap_invalidate_folio(struct folio *folio, size_t offset, size_t len);
+> -#ifdef CONFIG_MIGRATION
+> -int iomap_migrate_page(struct address_space *mapping, struct page *newpage,
+> -		struct page *page, enum migrate_mode mode);
+> -#else
+> -#define iomap_migrate_page NULL
+> -#endif
+>  int iomap_file_unshare(struct inode *inode, loff_t pos, loff_t len,
+>  		const struct iomap_ops *ops);
+>  int iomap_zero_range(struct inode *inode, loff_t pos, loff_t len,
+> diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
+> index 1caccb9f99aa..2a67c0ad7348 100644
+> --- a/include/linux/pagemap.h
+> +++ b/include/linux/pagemap.h
+> @@ -1078,6 +1078,12 @@ static inline int __must_check write_one_page(struct page *page)
+>  int __set_page_dirty_nobuffers(struct page *page);
+>  bool noop_dirty_folio(struct address_space *mapping, struct folio *folio);
+>  
+> +#ifdef CONFIG_MIGRATION
+> +int filemap_migrate_folio(struct address_space *mapping, struct folio *dst,
+> +		struct folio *src, enum migrate_mode mode);
+> +#else
+> +#define filemap_migrate_folio NULL
+> +#endif
+>  void page_endio(struct page *page, bool is_write, int err);
+>  
+>  void folio_end_private_2(struct folio *folio);
+> diff --git a/mm/migrate.c b/mm/migrate.c
+> index 785e32d0cf1b..4d8115ca93bb 100644
+> --- a/mm/migrate.c
+> +++ b/mm/migrate.c
+> @@ -784,6 +784,26 @@ int buffer_migrate_folio_norefs(struct address_space *mapping,
+>  }
+>  #endif
+>  
+> +int filemap_migrate_folio(struct address_space *mapping,
+> +		struct folio *dst, struct folio *src, enum migrate_mode mode)
+> +{
+> +	int ret;
+> +
+> +	ret = folio_migrate_mapping(mapping, dst, src, 0);
+> +	if (ret != MIGRATEPAGE_SUCCESS)
+> +		return ret;
+> +
+> +	if (folio_get_private(src))
+> +		folio_attach_private(dst, folio_detach_private(src));
+> +
+> +	if (mode != MIGRATE_SYNC_NO_COPY)
+> +		folio_migrate_copy(dst, src);
+> +	else
+> +		folio_migrate_flags(dst, src);
+> +	return MIGRATEPAGE_SUCCESS;
+> +}
+> +EXPORT_SYMBOL_GPL(filemap_migrate_folio);
+> +
+>  /*
+>   * Writeback a folio to clean the dirty state
+>   */
+> -- 
+> 2.35.1
+> 
