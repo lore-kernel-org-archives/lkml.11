@@ -2,214 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E9FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:25:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F2F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236750AbiFHKZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51974 "EHLO
+        id S236831AbiFHKZ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:25:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236593AbiFHKXQ (ORCPT
+        with ESMTP id S236730AbiFHKXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:23:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018CF1F62D0;
-        Wed,  8 Jun 2022 03:12:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8E8CB80DA1;
-        Wed,  8 Jun 2022 10:12:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9593C3411C;
-        Wed,  8 Jun 2022 10:12:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654683163;
-        bh=l+YAwT5Lngsb4fdcNuzv2q5gFCd5jD6EiSqwsTDfTGk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=EjqgUZWHuAr0cwQKq8GtDFb6lKZ/g888xVBC0+lVlrM6b1hx7E3v4HVOf1sJw56nO
-         /hosftyGtNVmb8t5IMKs/nGkBvofsEAORCmkBVgvLiirD3bMKLmKYToqfHwmqqB+8J
-         vuFVSRq1M0Go4KdQYRLImQ1fydkBjXBegwl6Bm+Gh/u/oAiKLgHLTZSbm7G84D6Gla
-         zdgHtC9qAD+sZmdtlatx4clQixV1XA5ifJOmEKkcsI9YbQzOwUrmbbCp5su1BKxgIh
-         AHMBq2BGOhj+FXOotSE810D7b31ptQh7jyjXGJLFST2Ysd+KgI5W8OIjQeqYY3gp/s
-         2fI9Saw39y14w==
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-f2cbceefb8so26569595fac.11;
-        Wed, 08 Jun 2022 03:12:43 -0700 (PDT)
-X-Gm-Message-State: AOAM5301tpqRSTQ5gyEgAUHluTKr5fDtxfIVdKFq1GbdFywutGMgThcw
-        7WNbUrwAhCpaln/j7cOGDfRAVKRvQOgryTvpNTs=
-X-Google-Smtp-Source: ABdhPJzxYxZTceIJqNDwmpmSozg43OnDPkArkQbDWCLe95GIqxVyAqbW6DGZeHBqAB2kTy8qg+6sAkBoES1ptkis2Mo=
-X-Received: by 2002:a05:6808:f88:b0:32b:d10f:cc6b with SMTP id
- o8-20020a0568080f8800b0032bd10fcc6bmr1993451oiw.228.1654683151841; Wed, 08
- Jun 2022 03:12:31 -0700 (PDT)
+        Wed, 8 Jun 2022 06:23:02 -0400
+X-Greylist: delayed 939 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Jun 2022 03:12:12 PDT
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03FDE1F5AFC;
+        Wed,  8 Jun 2022 03:12:10 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id D39571C811BA;
+        Wed,  8 Jun 2022 17:56:35 +0800 (CST)
+Received: from NTHCCAS02.nuvoton.com (10.1.9.121) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 8 Jun
+ 2022 17:56:35 +0800
+Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS02.nuvoton.com
+ (10.1.9.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 8 Jun 2022
+ 17:56:35 +0800
+Received: from taln60.nuvoton.com (10.191.1.180) by NTHCCAS01.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
+ Transport; Wed, 8 Jun 2022 17:56:35 +0800
+Received: by taln60.nuvoton.com (Postfix, from userid 10070)
+        id A85A163A4F; Wed,  8 Jun 2022 12:56:33 +0300 (IDT)
+From:   Tomer Maimon <tmaimon77@gmail.com>
+To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
+        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
+        <benjaminfair@google.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mturquette@baylibre.com>,
+        <sboyd@kernel.org>, <p.zabel@pengutronix.de>,
+        <gregkh@linuxfoundation.org>, <daniel.lezcano@linaro.org>,
+        <tglx@linutronix.de>, <wim@linux-watchdog.org>,
+        <linux@roeck-us.net>, <catalin.marinas@arm.com>, <will@kernel.org>,
+        <arnd@arndb.de>, <olof@lixom.net>, <jirislaby@kernel.org>,
+        <shawnguo@kernel.org>, <bjorn.andersson@linaro.org>,
+        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>,
+        <vkoul@kernel.org>, <biju.das.jz@bp.renesas.com>,
+        <nobuhiro1.iwamatsu@toshiba.co.jp>, <robert.hancock@calian.com>,
+        <j.neuschaefer@gmx.net>, <lkundrak@v3.sk>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 16/20] dt-bindings: arm: npcm: Add nuvoton,npcm845 GCR compatible string
+Date:   Wed, 8 Jun 2022 12:56:19 +0300
+Message-ID: <20220608095623.22327-17-tmaimon77@gmail.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220608095623.22327-1-tmaimon77@gmail.com>
+References: <20220608095623.22327-1-tmaimon77@gmail.com>
 MIME-Version: 1.0
-References: <20220607093805.1354256-1-mawupeng1@huawei.com>
- <20220607093805.1354256-6-mawupeng1@huawei.com> <99900b31-2605-2c85-a1b7-9ef2666b58da@redhat.com>
- <CAMj1kXGkzjq3koW_sgO4uzrdtwqSqzsJfT5ABYyvodf+ggXT2w@mail.gmail.com>
- <29900b05-ec44-76a2-645a-22a13399d7fd@huawei.com> <YqBzwgTgWEAx8J/C@kernel.org>
- <cd0e727d-8ad6-2d74-55f5-498394aae297@redhat.com>
-In-Reply-To: <cd0e727d-8ad6-2d74-55f5-498394aae297@redhat.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 8 Jun 2022 12:12:18 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXEKKcnPE5crMYbuFpDJBqmgjFwna84MzAZkfp-mM3B7vA@mail.gmail.com>
-Message-ID: <CAMj1kXEKKcnPE5crMYbuFpDJBqmgjFwna84MzAZkfp-mM3B7vA@mail.gmail.com>
-Subject: Re: [PATCH v3 5/6] mm: Add mirror flag back on initrd memory
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Mike Rapoport <rppt@kernel.org>, mawupeng <mawupeng1@huawei.com>,
-        corbet@lwn.net, will@kernel.org, catalin.marinas@arm.com,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        dvhart@infradead.org, andy@infradead.org,
-        akpm@linux-foundation.org, paul.walmsley@sifive.com,
-        palmer@dabbelt.com, aou@eecs.berkeley.edu, paulmck@kernel.org,
-        keescook@chromium.org, songmuchun@bytedance.com,
-        rdunlap@infradead.org, damien.lemoal@opensource.wdc.com,
-        swboyd@chromium.org, wei.liu@kernel.org, robin.murphy@arm.com,
-        anshuman.khandual@arm.com, thunder.leizhen@huawei.com,
-        wangkefeng.wang@huawei.com, gpiccoli@igalia.com,
-        chenhuacai@kernel.org, geert@linux-m68k.org, chenzhou10@huawei.com,
-        vijayb@linux.microsoft.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-mm@kvack.org, linux-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 8 Jun 2022 at 12:08, David Hildenbrand <david@redhat.com> wrote:
->
-> On 08.06.22 12:02, Mike Rapoport wrote:
-> > On Wed, Jun 08, 2022 at 03:27:09PM +0800, mawupeng wrote:
-> >>
-> >> =E5=9C=A8 2022/6/7 22:49, Ard Biesheuvel =E5=86=99=E9=81=93:
-> >>> On Tue, 7 Jun 2022 at 14:22, David Hildenbrand <david@redhat.com> wro=
-te:
-> >>>>
-> >>>> On 07.06.22 11:38, Wupeng Ma wrote:
-> >>>>> From: Ma Wupeng <mawupeng1@huawei.com>
-> >>>>>
-> >>>>> Initrd memory will be removed and then added in arm64_memblock_init=
-() and this
-> >>>>> will cause it to lose all of its memblock flags. The lost of MEMBLO=
-CK_MIRROR
-> >>>>> flag will lead to error log printed by find_zone_movable_pfns_for_n=
-odes if
-> >>>>> the lower 4G range has some non-mirrored memory.
-> >>>>>
-> >>>>> In order to solve this problem, the lost MEMBLOCK_MIRROR flag will =
-be
-> >>>>> reinstalled if the origin memblock has this flag.
-> >>>>>
-> >>>>> Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
-> >>>>> ---
-> >>>>>   arch/arm64/mm/init.c     |  9 +++++++++
-> >>>>>   include/linux/memblock.h |  1 +
-> >>>>>   mm/memblock.c            | 20 ++++++++++++++++++++
-> >>>>>   3 files changed, 30 insertions(+)
-> >>>>>
-> >>>>> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> >>>>> index 339ee84e5a61..11641f924d08 100644
-> >>>>> --- a/arch/arm64/mm/init.c
-> >>>>> +++ b/arch/arm64/mm/init.c
-> >>>>> @@ -350,9 +350,18 @@ void __init arm64_memblock_init(void)
-> >>>>>                        "initrd not fully accessible via the linear =
-mapping -- please check your bootloader ...\n")) {
-> >>>>>                        phys_initrd_size =3D 0;
-> >>>>>                } else {
-> >>>>> +                     int flags, ret;
-> >>>>> +
-> >>>>> +                     ret =3D memblock_get_flags(base, &flags);
-> >>>>> +                     if (ret)
-> >>>>> +                             flags =3D 0;
-> >>>>> +
-> >>>>>                        memblock_remove(base, size); /* clear MEMBLO=
-CK_ flags */
-> >>>>>                        memblock_add(base, size);
-> >>>>>                        memblock_reserve(base, size);
-> >>>>
-> >>>> Can you explain why we're removing+re-adding here exactly? Is it jus=
-t to
-> >>>> clear flags as the comment indicates?
-> >>>>
-> >>>
-> >>> This should only happen if the placement of the initrd conflicts with
-> >>> a mem=3D command line parameter or it is not covered by memblock for
-> >>> some other reason.
-> >>>
-> >>> IOW, this should never happen, and if re-memblock_add'ing this memory
-> >>> unconditionally is causing problems, we should fix that instead of
-> >>> working around it.
-> >>
-> >> This will happen if we use initrdmem=3D3G,100M to reserve initrd memor=
-y below
-> >> the 4G limit to test this scenario(just for testing, I have trouble to=
- boot
-> >> qemu with initrd enabled and memory below 4G are all mirror memory).
-> >>
-> >> Re-memblock_add'ing this memory unconditionally seems fine but clear a=
-ll
-> >> flags(especially MEMBLOCK_MIRROR) may lead to some error log.
-> >>
-> >>>
-> >>>> If it's really just about clearing flags, I wonder if we rather want=
- to
-> >>>> have an interface that does exactly that, and hides the way this is
-> >>>> actually implemented (obtain flags, remove, re-add ...), internally.
-> >>>>
-> >>>> But most probably there is more magic in the code and clearing flags
-> >>>> isn't all it ends up doing.
-> >>>>
-> >>>
-> >>> I don't remember exactly why we needed to clear the flags, but I thin=
-k
-> >>> it had to do with some corner case we hit when the initrd was
-> >>> partially covered.
-> >> If "mem=3D" is set in command line, memblock_mem_limit_remove_map() wi=
-ll
-> >> remove all memory block without MEMBLOCK_NOMAP. Maybe this will bring =
-the
-> >> memory back if this initrd mem has the MEMBLOCK_NOMAP flag?
-> >>
-> >> The rfc version [1] introduce and use memblock_clear_nomap() to clear =
-the
-> >> MEMBLOCK_NOMAP of this initrd memblock.
-> >> So maybe the usage of memblock_remove() is just to avoid introducing n=
-ew
-> >> function(memblock_clear_nomap)?
-> >>
-> >> Since commit 4c546b8a3469 ("memblock: add memblock_clear_nomap()") alr=
-eady
-> >> introduced memblock_clear_nomap(). Can we use this to remove flag MEMB=
-LOCK_NOMAP
-> >> to solve this problem rather than bring flag MEMBLOCK_MIRROR back?
-> >
-> > AFAICT, there are two corner cases that re-adding initrd memory covers:
-> > * initrd memory is not a part of the memory reported to memblock, eithe=
-r
-> > because of firmware weirdness or because it was cut out with mem=3D
-> > * initrd memory overlaps a NOMAP region
-> >
-> > So to make sure initrd memory is mapped properly and retains
-> > MEMBLOCK_MIRROR I think the best we can do is
-> >
-> >       memblock_add();
-> >       memblock_clear_nomap();
-> >       memblock_reserve();
->
-> Would simply detect+rejecting to boot on such setups be an option? The
-> replies so far indicate to me that this is rather a corner case than a
-> reasonable use case.
->
+Add a compatible string for Nuvoton BMC NPCM845
+global control registers (GCR).
 
-The sad reality is that mem=3D is known to be used in production for
-limiting the amount of memory that the kernel takes control of, in
-order to allow the remainder to be used in platform specific ways.
+Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Of course, there are much better ways to achieve that, but given that
-we currently support it, I don't think we can easily back that out.
+diff --git a/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml b/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
+index aad7c85e787f..94e72f25b331 100644
+--- a/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
++++ b/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
+@@ -21,6 +21,7 @@ properties:
+       - enum:
+           - nuvoton,wpcm450-gcr
+           - nuvoton,npcm750-gcr
++          - nuvoton,npcm845-gcr
+       - const: syscon
+       - const: simple-mfd
+ 
+-- 
+2.33.0
 
-I do think that there is no need to go out of our way to make this
-case work seamlessly with mirrored memory, though. So I'd prefer to
-make the remove+re-add conditional on there actually being a need to
-do so. That way, we don't break the old use case or mirrored memory,
-and whatever happens when the two are combined is DONTCARE.
