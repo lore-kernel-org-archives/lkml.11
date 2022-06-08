@@ -2,96 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB028C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 21:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30545C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 21:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234874AbiFHVsg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 17:48:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40160 "EHLO
+        id S235425AbiFHVsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 17:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236499AbiFHVsN (ORCPT
+        with ESMTP id S236502AbiFHVsT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 17:48:13 -0400
-Received: from mail-il1-f172.google.com (mail-il1-f172.google.com [209.85.166.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3426C13DCB;
-        Wed,  8 Jun 2022 14:48:12 -0700 (PDT)
-Received: by mail-il1-f172.google.com with SMTP id a15so17527032ilq.12;
-        Wed, 08 Jun 2022 14:48:12 -0700 (PDT)
+        Wed, 8 Jun 2022 17:48:19 -0400
+Received: from mail-il1-f169.google.com (mail-il1-f169.google.com [209.85.166.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5C525CA;
+        Wed,  8 Jun 2022 14:48:18 -0700 (PDT)
+Received: by mail-il1-f169.google.com with SMTP id u2so16628017iln.2;
+        Wed, 08 Jun 2022 14:48:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=Hcq2KlgFtmPr+0ri+N9W4VslZfw9d1fwhgipuxpRa8g=;
-        b=gJAW0qukB7eLS2MdlaHtnz8RUVzHHubQnA+qSXm+vbYb0NTr9m7CE4MgCAnQQpSsFP
-         aui54D/gaer2Fd+pzs4y1maOlo/4IjEc28wfv/BK7FEvj8Aj9BE+Sa4JmgvmDsDHBM0Y
-         80gY+FZ8nMot+OvHZAbKCi7Llbc2QIxIkzK5uvx1FRPNh5ZOg9e9k4OAhl+QPaVBtN14
-         WKoosOqKbJqv2MLNkeGg+sQDjxzMNEHBM4Cz96f0bnudZUBr3fX5ETc0fSdJHVn7of8Q
-         fuH19EviRBBkT14Oogo4BfceRDJteaisQ0s5ERQcszKBBsbhLhWFBZK0WTZZsGv7GYIf
-         j5QQ==
-X-Gm-Message-State: AOAM53317qoHH+cgm8Q4TTQULx4cFo5gagfXqOY3IokarwNQRAml7JuM
-        H5uXGaNbmmY9rFdsv4oN7w==
-X-Google-Smtp-Source: ABdhPJz5VAScxIaNZL+1SzgG6SCE4nbpEE7g2Xea+n0RcGQcCPtEikJXSncaEErE55oZJBLSM87wnQ==
-X-Received: by 2002:a05:6e02:2187:b0:2d3:cb8b:218c with SMTP id j7-20020a056e02218700b002d3cb8b218cmr20153917ila.28.1654724891475;
-        Wed, 08 Jun 2022 14:48:11 -0700 (PDT)
+        bh=DSD6n7SqIRrkJflyY9v16h++03DHbVndZ5fsmVluVpY=;
+        b=cwi3sgJVbGK5/a5yofj5IsJ0chGPUaZLjhDM9HLBsEAhYnt1ndpzS+0o7+wsETEDN8
+         oaVtaa4KJP99yw/CIs5x/suLSHclZDmyGBqol1FTgXtS38VKiZkcdLFdkh+5mpQCU1Jd
+         xY6Qn3W9yu+IAUM3k9ADqCpyPNRdPAHOf0ISxzN3UbMdI/FkBZT4uD3cBj5Wi4a1eGMX
+         CI0S4tHkkELzjmE86VE/cnqPDOb7R7W7r4K5C/6YAOHsbVhs6Xey+jSApsV45boTRVyq
+         kd18McEtcDogVhLONQQXLFSMag3DBKFzr7dT/YCZE+Bpq0xZa/muRvoS8aPwSOnT509T
+         W04A==
+X-Gm-Message-State: AOAM5333j6Rbz6E7rciuTDZgOzPkprql6GMRWvOzNEACvA9dMbagyaYP
+        opmmhPDwGvAQJVRVCWnz4w==
+X-Google-Smtp-Source: ABdhPJy/TjtIFK2XNa8YJamLmJFJcs1T73KDNKNmv3NgKRZb8+6pL7BKf2zfXN3uean8c2Mkm38reQ==
+X-Received: by 2002:a05:6e02:1c22:b0:2d1:abab:8806 with SMTP id m2-20020a056e021c2200b002d1abab8806mr19448897ilh.300.1654724897688;
+        Wed, 08 Jun 2022 14:48:17 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id t14-20020a5e990e000000b006695b8bb8d3sm3691144ioj.12.2022.06.08.14.48.10
+        by smtp.gmail.com with ESMTPSA id k29-20020a02661d000000b0032ead96ee5csm8452867jac.165.2022.06.08.14.48.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 14:48:11 -0700 (PDT)
-Received: (nullmailer pid 2134381 invoked by uid 1000);
+        Wed, 08 Jun 2022 14:48:17 -0700 (PDT)
+Received: (nullmailer pid 2134383 invoked by uid 1000);
         Wed, 08 Jun 2022 21:48:06 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Harsh Agarwal <quic_harshq@quicinc.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Felipe Balbi <balbi@kernel.org>, linux-kernel@vger.kernel.org,
-        quic_pkondeti@quicinc.com,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        quic_ppratap@quicinc.com, quic_jackp@quicinc.com,
-        ahalaney@redhat.com, devicetree@vger.kernel.org,
-        linux-usb@vger.kernel.org
-In-Reply-To: <1654709787-23686-2-git-send-email-quic_harshq@quicinc.com>
-References: <1654709787-23686-1-git-send-email-quic_harshq@quicinc.com> <1654709787-23686-2-git-send-email-quic_harshq@quicinc.com>
-Subject: Re: [PATCH v3 1/3] dt-bindings: usb: dwc3: Add support for multiport related properties
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com,
+        linux@roeck-us.net, linux-kernel@vger.kernel.org,
+        venture@google.com, marcel.ziswiler@toradex.com,
+        nobuhiro1.iwamatsu@toshiba.co.jp, p.zabel@pengutronix.de,
+        bjorn.andersson@linaro.org, olof@lixom.net,
+        benjaminfair@google.com, biju.das.jz@bp.renesas.com,
+        linux-serial@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        j.neuschaefer@gmx.net, will@kernel.org, lkundrak@v3.sk,
+        yuenn@google.com, wim@linux-watchdog.org,
+        devicetree@vger.kernel.org, shawnguo@kernel.org,
+        geert+renesas@glider.be, linux-watchdog@vger.kernel.org,
+        gregkh@linuxfoundation.org, sboyd@kernel.org, jirislaby@kernel.org,
+        vkoul@kernel.org, robert.hancock@calian.com,
+        daniel.lezcano@linaro.org, robh+dt@kernel.org, arnd@arndb.de,
+        linux-clk@vger.kernel.org, mturquette@baylibre.com,
+        avifishman70@gmail.com, joel@jms.id.au, tali.perry1@gmail.com,
+        tglx@linutronix.de
+In-Reply-To: <20220608095623.22327-10-tmaimon77@gmail.com>
+References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-10-tmaimon77@gmail.com>
+Subject: Re: [PATCH v2 09/20] dt-bindings: reset: npcm: add GCR syscon property
 Date:   Wed, 08 Jun 2022 15:48:06 -0600
-Message-Id: <1654724886.799944.2134380.nullmailer@robh.at.kernel.org>
+Message-Id: <1654724886.806854.2134382.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 08 Jun 2022 23:06:25 +0530, Harsh Agarwal wrote:
-> Added support for multiport, mport, num_usb2_phy and num_usb3_phy
-> properties. These properties are used to support devices having
-> a multiport controller.
+On Wed, 08 Jun 2022 12:56:12 +0300, Tomer Maimon wrote:
+> Describe syscon property that handles general
+> control registers(GCR) in Nuvoton BMC NPCM
+> reset driver.
 > 
-> Signed-off-by: Harsh Agarwal <quic_harshq@quicinc.com>
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 > ---
->  .../devicetree/bindings/usb/snps,dwc3.yaml         | 53 ++++++++++++++++++++++
->  1 file changed, 53 insertions(+)
+>  .../devicetree/bindings/reset/nuvoton,npcm-reset.yaml       | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:367:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
-./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:369:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-dtschema/dtc warnings/errors:
+Full log is available here: https://patchwork.ozlabs.org/patch/
 
-doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+rstc@f0801000: 'nuvoton,sysgcr' is a required property
+	arch/arm/boot/dts/nuvoton-npcm730-gbs.dtb
+	arch/arm/boot/dts/nuvoton-npcm730-gsj.dtb
+	arch/arm/boot/dts/nuvoton-npcm730-kudo.dtb
+	arch/arm/boot/dts/nuvoton-npcm750-evb.dtb
+	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dtb
 
