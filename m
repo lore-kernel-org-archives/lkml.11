@@ -2,155 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF42C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:16:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78720C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234967AbiFHJQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:16:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
+        id S235003AbiFHJQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235294AbiFHJOv (ORCPT
+        with ESMTP id S234922AbiFHJOS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:14:51 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC9E114A9C;
-        Wed,  8 Jun 2022 01:37:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1654677461; x=1686213461;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
+        Wed, 8 Jun 2022 05:14:18 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D89736B52
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:35:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654677307; x=1686213307;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=BXac1tY5oLI14A4oaDfSZQk4ZPprbfZvXcqjs4++k1k=;
-  b=DmEV/FwJMnK7gbpYRmuBq27LNw+YswDKDwropkSv3pa86MrG22FHUVbH
-   I2h9Pp0ZfUHQtYadlP4XKFeWF82i02drO3nepDc7KYUyABYjGLjUgIrYI
-   OEyEw+auAHWs9niUqm1+g6t2qD3a+m7XzRbxgh0k5kTCsFz8lzngHx50o
-   joyph5p0hrlpTKNNg2AUwP2lf4eTr1WS8ogBgtDu28pymsBY1SmdIKw0T
-   10y4JoVIQZqr8KB6iyyA9lwOkqscWqNIJhB9q6UhTOmNNag3a2keNcMrP
-   oMynEHbMZj6AnoWQplhpdWJ10rGfIwyTBNh2B2cMhy7+PHGLloysrD1g8
-   g==;
+  bh=pXuZA38WFCYOEgp/TFGPUQWDuJ5qHdPuNcs8ycMRM54=;
+  b=VWccGwKeVU4FfvlyOydrm/ZilSvE0M+CwpGyTrZtL66R0syzZjVcs8BC
+   hZhFj4eoATCWXO24XBnGCCFhD4L+L/ZygWs6NSLc2Wqb0uVxFEYfijj5W
+   mIchqBclzXOTaRHRMumwGEtUQCvtNYnbBaRs0WTpVzuo0g7AixlHGLOvE
+   E90uqVDQbabRBuaWKLmWshjvvR+bkmf0v5dq3t3E/BhCZriYMMTz4Z+6x
+   HlxCaViwcS1mh9HLxG/Gpb+n3fdJz2gXOKqrzHMjX/suiGe9NaUKqt0Iq
+   vuoQWuWsqlewoe0mt5UvaoGndOsSxl+E6M1M3/IKaP3x1XjmvpBd6IdOW
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="257249466"
 X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="162387214"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jun 2022 01:37:40 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 8 Jun 2022 01:37:40 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 8 Jun 2022 01:37:37 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <p.zabel@pengutronix.de>, <sre@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <linux-arm-kernel@lists.infradead.org>, <linux-pm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 2/9] dt-bindings: reset: convert Atmel/Microchip reset controller to YAML
-Date:   Wed, 8 Jun 2022 11:39:35 +0300
-Message-ID: <20220608083942.1584087-3-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
-References: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
+   d="scan'208";a="257249466"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 01:35:06 -0700
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="636677405"
+Received: from xding11-mobl.ccr.corp.intel.com ([10.254.214.239])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 01:35:02 -0700
+Message-ID: <65b77f7f89361144602dce208ba4cb32387cf330.camel@intel.com>
+Subject: Re: [PATCH v5 6/9] mm/demotion: Add support for removing node from
+ demotion memory tiers
+From:   Ying Huang <ying.huang@intel.com>
+To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>, linux-mm@kvack.org,
+        akpm@linux-foundation.org
+Cc:     Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+Date:   Wed, 08 Jun 2022 16:34:59 +0800
+In-Reply-To: <d695354e-4e7c-e0cd-603b-b585d80d5caa@linux.ibm.com>
+References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
+         <20220603134237.131362-7-aneesh.kumar@linux.ibm.com>
+         <a0a70b517bf1da920dca6082afa3fbc6aba77a67.camel@intel.com>
+         <81956d2e-0bfe-78ba-5ad0-f6c388c2190e@linux.ibm.com>
+         <06d04b6588b43ca010ec78ce0dee8127193f5562.camel@intel.com>
+         <d695354e-4e7c-e0cd-603b-b585d80d5caa@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert Atmel/Microchip reset controller to YAML.
+On Wed, 2022-06-08 at 13:59 +0530, Aneesh Kumar K V wrote:
+> On 6/8/22 1:53 PM, Ying Huang wrote:
+> > On Wed, 2022-06-08 at 13:50 +0530, Aneesh Kumar K V wrote:
+> > > On 6/8/22 12:29 PM, Ying Huang wrote:
+> > > > On Fri, 2022-06-03 at 19:12 +0530, Aneesh Kumar K.V wrote:
+> > > > > This patch adds the special string "none" as a supported memtier value
+> > > > > that we can use to remove a specific node from being using as demotion target.
+> > > > > 
+> > > > > For ex:
+> > > > > :/sys/devices/system/node/node1# cat memtier
+> > > > > 1
+> > > > > :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
+> > > > > 1-3
+> > > > > :/sys/devices/system/node/node1# echo none > memtier
+> > > > > :/sys/devices/system/node/node1#
+> > > > > :/sys/devices/system/node/node1# cat memtier
+> > > > > :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
+> > > > > 2-3
+> > > > > :/sys/devices/system/node/node1#
+> > > > 
+> > > > Do you have a practical use case for this?  What kind of memory node
+> > > > needs to be removed from memory tiers demotion/promotion?
+> > > > 
+> > > 
+> > > This came up in our internal discussion. It was mentioned that there is
+> > > a need to skip some slow memory nodes from participating in demotion.
+> > 
+> > Again, can you provide a practical use case?  Why we shouldn't demote
+> > cold pages to these slow memory nodes?  How do we use these slow memory
+> > node?  These slow memory node is slower than disk?
+> > 
+> 
+> This was discussed in the context of memory borrowed from remote machine 
+> (aka OpenCAPI memory). In such case, we would have a memory only NUMA 
+> node which we want to avoid using for demotion.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../devicetree/bindings/arm/atmel-sysregs.txt | 15 ------
- .../reset/atmel,at91sam9260-reset.yaml        | 49 +++++++++++++++++++
- 2 files changed, 49 insertions(+), 15 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
+Thanks for your information.  But why shouldn't we use them for
+demotion?  Because it's too slow?  Even slower than disks?  Or some
+other reason?
 
-diff --git a/Documentation/devicetree/bindings/arm/atmel-sysregs.txt b/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
-index 16eef600d599..ab1b352344ae 100644
---- a/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
-+++ b/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
-@@ -25,21 +25,6 @@ System Timer (ST) required properties:
- Its subnodes can be:
- - watchdog: compatible should be "atmel,at91rm9200-wdt"
- 
--RSTC Reset Controller required properties:
--- compatible: Should be "atmel,<chip>-rstc".
--  <chip> can be "at91sam9260", "at91sam9g45", "sama5d3" or "samx7"
--  it also can be "microchip,sam9x60-rstc"
--- reg: Should contain registers location and length
--- clocks: phandle to input clock.
--
--Example:
--
--	rstc@fffffd00 {
--		compatible = "atmel,at91sam9260-rstc";
--		reg = <0xfffffd00 0x10>;
--		clocks = <&clk32k>;
--	};
--
- RAMC SDRAM/DDR Controller required properties:
- - compatible: Should be "atmel,at91rm9200-sdramc", "syscon"
- 			"atmel,at91sam9260-sdramc",
-diff --git a/Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml b/Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
-new file mode 100644
-index 000000000000..34c40b875e20
---- /dev/null
-+++ b/Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
-@@ -0,0 +1,49 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/reset/atmel,at91sam9260-reset.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Atmel/Microchip System Reset Controller
-+
-+maintainers:
-+  - Claudiu Beznea <claudiu.beznea@microchip.com>
-+
-+description: |
-+  The system reset controller can be used to reset the CPU.
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - atmel,at91sam9260-rstc
-+              - atmel,at91sam9g45-rstc
-+              - atmel,sama5d3-rstc
-+              - microchip,sam9x60-rstc
-+      - items:
-+          - const: atmel,sama5d3-rstc
-+          - const: atmel,at91sam9g45-rstc
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/at91.h>
-+
-+    reset-controller@fffffd00 {
-+        compatible = "atmel,at91sam9260-rstc";
-+        reg = <0xfffffd00 0x10>;
-+        clocks = <&pmc PMC_TYPE_CORE PMC_SLOW>;
-+    };
--- 
-2.33.0
+Best Regards,
+Huang, Ying
+
 
