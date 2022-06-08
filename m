@@ -2,125 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C301CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 21:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89983C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 21:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236208AbiFHVjR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 17:39:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59754 "EHLO
+        id S234207AbiFHVkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 17:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229970AbiFHVjP (ORCPT
+        with ESMTP id S235316AbiFHVk1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 17:39:15 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C991994A6;
-        Wed,  8 Jun 2022 14:39:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654724354; x=1686260354;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZL7ybA8BtvQeDTMpYsQ1NWYM8x+gXwRC8Bzu84QZ/MA=;
-  b=RNk+tJqrirSTHHZ5tCaln1r3b0HKsewd9hu/cgGYLE9zzQe6oipqFc1P
-   g+6jXhBS/WGXEHQzelJXpoJci+P1dnpCU6VV3yr8lzJC2sdcFSQVt4Ann
-   oRjbXoZsalGQYKQwMzpN07DfkAbX7zpMW4KGtBwOwX8XfZCQsOyHeMH+W
-   Aj4YVhItYDeRXuJDimluaXjAx0tBIQk2/XOxzg/yawx9oajwnsogJVIwD
-   +FDsGMRlQNQq+BlvGAxpAMpAbHVllpnv3GkCXLgxmvFki+YM3XC81sbx2
-   l9YGkOOBOxM9joajk2SXkaevEPZemyw/Uz9WVfe3NHu6G7qeb9MBwNoPc
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="277881865"
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="277881865"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 14:39:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="637078029"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 08 Jun 2022 14:39:01 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nz3OG-000F2j-Rj;
-        Wed, 08 Jun 2022 21:39:00 +0000
-Date:   Thu, 9 Jun 2022 05:38:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v1 1/1] spi: Replace match_true() by device_match_any()
-Message-ID: <202206090508.laygQP9P-lkp@intel.com>
-References: <20220607190601.47363-1-andriy.shevchenko@linux.intel.com>
+        Wed, 8 Jun 2022 17:40:27 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18EA2B12DE
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 14:40:26 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id t2so18771630pld.4
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 14:40:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZBKWev1Rs6wuYROdIel8IsWvzj2P6ShAsqmcV/ovcGg=;
+        b=iOX8V1rvQjU+rJa/UArhmoyO8A5j582JHtbS8KEhoICNmLdqxdZ9lwUic0rhqahLe6
+         p6FRaVRER5XfQ4N1BooBCevqb+WKCVUtlWu0yGaHcSS/Rqzqcyyz73NAs2HeVCgpiwl7
+         qyDf/OOmsaE1wdI6CECAyRuvaRD8ZK2Qo74Rk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZBKWev1Rs6wuYROdIel8IsWvzj2P6ShAsqmcV/ovcGg=;
+        b=IqAV/svdrh8iesN5hV5keDxiB0tbgkeun5k+X8ZTLNgEnnPA+5DSGJK9kLrotvLSmc
+         HL7KfnHdYXyRAv6JJFqGdZVrjM4zf6iDt3mkZr0gcmaiyh3QxfO1U8g8e0KZ8ZGa8vJb
+         bstxrjDhpqHU6Of1jvooaikv7fxghEKRAc5KvB6W/sAN3rCIOUq+CL1Dkg4NCsBgB+HS
+         lzAojNdfmwmpLFydutA7WgAiX3OP01OCpCn+i/hABCT5dJBNfbVRvjbEBUzJxz0h4pED
+         hNPx4Fp0Da6iyuzqVYB5wUV3TDsbaFU3+DNt6gAYaILwaiLoFImIeqFL1RsCnZ28zqSY
+         QF1w==
+X-Gm-Message-State: AOAM530mRM0VqMmmxhNvF580u304xK5Nk+ha6+XoarxfMZUS9ExFnuoi
+        HUPyxSPWPGNQQq4m0pvwh2Y55Q==
+X-Google-Smtp-Source: ABdhPJwiDd12cCTBpPRK3Qx+yZmg4OYCNLukhEp72rnTZfahuBCeXEASHYbxM5Lfi1VPIE6ZI5K6PA==
+X-Received: by 2002:a17:902:e34b:b0:166:342f:82c6 with SMTP id p11-20020a170902e34b00b00166342f82c6mr35312017plc.29.1654724426139;
+        Wed, 08 Jun 2022 14:40:26 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id y17-20020a1709027c9100b0016223b5d228sm15176202pll.288.2022.06.08.14.40.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 14:40:25 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     Andrey Ryabinin <ryabinin.a.a@gmail.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH] kasan: test: Silence GCC 12 warnings
+Date:   Wed,  8 Jun 2022 14:40:24 -0700
+Message-Id: <20220608214024.1068451-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607190601.47363-1-andriy.shevchenko@linux.intel.com>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3431; h=from:subject; bh=f4bWuW0f1isrySVA800mMFtNGe6OzsYc2hHoaLhCD+0=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBioRdHHwaRwKKbpz1nkt1hw65Ms2PiFAooSZ7/hdvb /x/msieJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYqEXRwAKCRCJcvTf3G3AJm3yD/ wIJi5uSdbwIZpiSkKpBCwp+MzcWNoQclJTycpr4NCLKbPlepOG19bev3lzzPoAyBLUMRPvono2ZUn7 Z84NKF4HKmEHVEQpOyp3SaZ4LhWCgOeFSF5pNEngCqJNz6YJbITJf0NhsoDEpCuHeCc5kGd9XTXZpJ UU+djeG3geRtSbx2jnO6ralgR89jo02fozbjwp5ej+yVaJ2USgQ+Us1CvwufWlFSPUJbpXOcNTN21O V+Nw1zDXkv1aSORCghOHNQyREFiz466+WssNBEnq5TbsqU9TOM4VfqjRaV8Li70nxGMpXZKplxT7SD 3EXDu8JkTlX/lFQKxpdR7tBjC9+S7K988kneNgVXd1lp8hCuP1fTUNyg7KVAX+6H/Mc3iwQxsmgHMB NFC11iiiI36dIUST4xXEi+4GX2gb6FHTggQG+YIesttUPFDZH9tUbfIinkBW29tLMajecRRDA3EgPB m96Xy2mMe2qPAR1FZJxRNklTHMHZSmD2i96CJw1UsZWv9hC4NUniNGAlB7VzPkuPRK/LqLyiXvl6DU kNkrZGm1juLpUEVWVBsjMUElWb2kt0z+BHUSz/LaDv7Y3cYmXLvV9uHEDwUPKrInYZXulBc2BRwBho y4y/ZKxM8vqXVmqyAo0HoYQOzzC1qKXhumZTYLIF4SOur39wGcNJzUWy7Zcw==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+GCC 12 continues to get smarter about array accesses. The KASAN tests
+are expecting to explicitly test out-of-bounds conditions at run-time,
+so hide the variable from GCC, to avoid warnings like:
 
-I love your patch! Yet something to improve:
+../lib/test_kasan.c: In function 'ksize_uaf':
+../lib/test_kasan.c:790:61: warning: array subscript 120 is outside array bounds of 'void[120]' [-Warray-bounds]
+  790 |         KUNIT_EXPECT_KASAN_FAIL(test, ((volatile char *)ptr)[size]);
+      |                                       ~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+../lib/test_kasan.c:97:9: note: in definition of macro 'KUNIT_EXPECT_KASAN_FAIL'
+   97 |         expression; \
+      |         ^~~~~~~~~~
 
-[auto build test ERROR on broonie-spi/for-next]
-[also build test ERROR on v5.19-rc1 next-20220608]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: Andrey Konovalov <andreyknvl@gmail.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
+Cc: kasan-dev@googlegroups.com
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ lib/test_kasan.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/spi-Replace-match_true-by-device_match_any/20220608-091910
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
-config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220609/202206090508.laygQP9P-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b92436efcb7813fc481b30f2593a4907568d917a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/bbdbed23cc6f2f8e7c9d8da3bb6c78fe488747f1
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Andy-Shevchenko/spi-Replace-match_true-by-device_match_any/20220608-091910
-        git checkout bbdbed23cc6f2f8e7c9d8da3bb6c78fe488747f1
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/spi/spi.c:2670:46: error: incompatible function pointer types passing 'int (struct device *, const void *)' to parameter of type 'int (*)(struct device *, void *)' [-Werror,-Wincompatible-function-pointer-types]
-           child = device_find_child(&ctlr->dev, NULL, device_match_any);
-                                                       ^~~~~~~~~~~~~~~~
-   include/linux/device.h:905:12: note: passing argument to parameter 'match' here
-                                    int (*match)(struct device *dev, void *data));
-                                          ^
-   drivers/spi/spi.c:2689:46: error: incompatible function pointer types passing 'int (struct device *, const void *)' to parameter of type 'int (*)(struct device *, void *)' [-Werror,-Wincompatible-function-pointer-types]
-           child = device_find_child(&ctlr->dev, NULL, device_match_any);
-                                                       ^~~~~~~~~~~~~~~~
-   include/linux/device.h:905:12: note: passing argument to parameter 'match' here
-                                    int (*match)(struct device *dev, void *data));
-                                          ^
-   2 errors generated.
-
-
-vim +2670 drivers/spi/spi.c
-
-  2662	
-  2663	static ssize_t slave_show(struct device *dev, struct device_attribute *attr,
-  2664				  char *buf)
-  2665	{
-  2666		struct spi_controller *ctlr = container_of(dev, struct spi_controller,
-  2667							   dev);
-  2668		struct device *child;
-  2669	
-> 2670		child = device_find_child(&ctlr->dev, NULL, device_match_any);
-  2671		return sprintf(buf, "%s\n",
-  2672			       child ? to_spi_device(child)->modalias : NULL);
-  2673	}
-  2674	
-
+diff --git a/lib/test_kasan.c b/lib/test_kasan.c
+index c233b1a4e984..58c1b01ccfe2 100644
+--- a/lib/test_kasan.c
++++ b/lib/test_kasan.c
+@@ -131,6 +131,7 @@ static void kmalloc_oob_right(struct kunit *test)
+ 	ptr = kmalloc(size, GFP_KERNEL);
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
+ 
++	OPTIMIZER_HIDE_VAR(ptr);
+ 	/*
+ 	 * An unaligned access past the requested kmalloc size.
+ 	 * Only generic KASAN can precisely detect these.
+@@ -159,6 +160,7 @@ static void kmalloc_oob_left(struct kunit *test)
+ 	ptr = kmalloc(size, GFP_KERNEL);
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
+ 
++	OPTIMIZER_HIDE_VAR(ptr);
+ 	KUNIT_EXPECT_KASAN_FAIL(test, *ptr = *(ptr - 1));
+ 	kfree(ptr);
+ }
+@@ -171,6 +173,7 @@ static void kmalloc_node_oob_right(struct kunit *test)
+ 	ptr = kmalloc_node(size, GFP_KERNEL, 0);
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
+ 
++	OPTIMIZER_HIDE_VAR(ptr);
+ 	KUNIT_EXPECT_KASAN_FAIL(test, ptr[0] = ptr[size]);
+ 	kfree(ptr);
+ }
+@@ -191,6 +194,7 @@ static void kmalloc_pagealloc_oob_right(struct kunit *test)
+ 	ptr = kmalloc(size, GFP_KERNEL);
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
+ 
++	OPTIMIZER_HIDE_VAR(ptr);
+ 	KUNIT_EXPECT_KASAN_FAIL(test, ptr[size + OOB_TAG_OFF] = 0);
+ 
+ 	kfree(ptr);
+@@ -271,6 +275,7 @@ static void kmalloc_large_oob_right(struct kunit *test)
+ 	ptr = kmalloc(size, GFP_KERNEL);
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
+ 
++	OPTIMIZER_HIDE_VAR(ptr);
+ 	KUNIT_EXPECT_KASAN_FAIL(test, ptr[size] = 0);
+ 	kfree(ptr);
+ }
+@@ -410,6 +415,8 @@ static void kmalloc_oob_16(struct kunit *test)
+ 	ptr2 = kmalloc(sizeof(*ptr2), GFP_KERNEL);
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr2);
+ 
++	OPTIMIZER_HIDE_VAR(ptr1);
++	OPTIMIZER_HIDE_VAR(ptr2);
+ 	KUNIT_EXPECT_KASAN_FAIL(test, *ptr1 = *ptr2);
+ 	kfree(ptr1);
+ 	kfree(ptr2);
+@@ -756,6 +763,8 @@ static void ksize_unpoisons_memory(struct kunit *test)
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
+ 	real_size = ksize(ptr);
+ 
++	OPTIMIZER_HIDE_VAR(ptr);
++
+ 	/* This access shouldn't trigger a KASAN report. */
+ 	ptr[size] = 'x';
+ 
+@@ -778,6 +787,7 @@ static void ksize_uaf(struct kunit *test)
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
+ 	kfree(ptr);
+ 
++	OPTIMIZER_HIDE_VAR(ptr);
+ 	KUNIT_EXPECT_KASAN_FAIL(test, ksize(ptr));
+ 	KUNIT_EXPECT_KASAN_FAIL(test, ((volatile char *)ptr)[0]);
+ 	KUNIT_EXPECT_KASAN_FAIL(test, ((volatile char *)ptr)[size]);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.32.0
+
