@@ -2,111 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84EF5C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B8EACCA49C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236628AbiFHGED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 02:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54858 "EHLO
+        id S237885AbiFHGE4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 02:04:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234700AbiFHFtH (ORCPT
+        with ESMTP id S238718AbiFHFwB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:49:07 -0400
-Received: from EX-PRD-EDGE02.vmware.com (ex-prd-edge02.vmware.com [208.91.3.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD80F40C127;
-        Tue,  7 Jun 2022 20:24:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-    s=s1024; d=vmware.com;
-    h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
-      content-type;
-    bh=j8wwcqtmDC2RnTjeTTDk0Jan/92OOGtSGZvFDg9KNRY=;
-    b=gVT2fifgYoab+wS0x60o5zpBjKCQIUOCsx7xMEZcX1H/ZkzBa8TZGFzicI+nzm
-      ujeRUI2qijGE58QkoHkae881o3JuZHI2DVW8ew/y4Z9csLq31e3L38kd8fg8wb
-      VH/TU9QHYDt7jJjRUDUTDV1OOqxu+CQ8LZoK6tFee1+Lwi8=
-Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
- EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
- 15.1.2308.14; Tue, 7 Jun 2022 20:24:01 -0700
-Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id 7DE2623447;
-        Tue,  7 Jun 2022 20:24:07 -0700 (PDT)
-Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 7851DAA454; Tue,  7 Jun 2022 20:24:07 -0700 (PDT)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     Ronak Doshi <doshir@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 net-next 6/8] vmxnet3: limit number of TXDs used for TSO packet
-Date:   Tue, 7 Jun 2022 20:23:51 -0700
-Message-ID: <20220608032353.964-7-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20220608032353.964-1-doshir@vmware.com>
-References: <20220608032353.964-1-doshir@vmware.com>
+        Wed, 8 Jun 2022 01:52:01 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA156703F9;
+        Tue,  7 Jun 2022 20:36:13 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=chengyou@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VFj6p37_1654659370;
+Received: from 30.43.105.165(mailfrom:chengyou@linux.alibaba.com fp:SMTPD_---0VFj6p37_1654659370)
+          by smtp.aliyun-inc.com;
+          Wed, 08 Jun 2022 11:36:11 +0800
+Message-ID: <ef94d5de-da12-a894-8ff3-af7ecf9d568a@linux.alibaba.com>
+Date:   Wed, 8 Jun 2022 11:36:07 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH -next] RDMA/erdma: remove unneeded semicolon
+Content-Language: en-US
+To:     Yang Li <yang.lee@linux.alibaba.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>
+Cc:     kaishen@linux.alibaba.com, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+References: <20220608005534.76789-1-yang.lee@linux.alibaba.com>
+From:   Cheng Xu <chengyou@linux.alibaba.com>
+In-Reply-To: <20220608005534.76789-1-yang.lee@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, vmxnet3 does not have a limit on number of descriptors
-used for a TSO packet. However, with UPT, for hardware performance
-reasons, this patch limits the number of transmit descriptors to 24
-for a TSO packet.
 
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
-Acked-by: Guolin Yang <gyang@vmware.com>
----
- drivers/net/vmxnet3/vmxnet3_defs.h |  2 ++
- drivers/net/vmxnet3/vmxnet3_drv.c  | 17 +++++++++++++++++
- 2 files changed, 19 insertions(+)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
-index 415e4c9993ef..cb9dc72f2b3d 100644
---- a/drivers/net/vmxnet3/vmxnet3_defs.h
-+++ b/drivers/net/vmxnet3/vmxnet3_defs.h
-@@ -400,6 +400,8 @@ union Vmxnet3_GenericDesc {
- 
- /* max # of tx descs for a non-tso pkt */
- #define VMXNET3_MAX_TXD_PER_PKT 16
-+/* max # of tx descs for a tso pkt */
-+#define VMXNET3_MAX_TSO_TXD_PER_PKT 24
- 
- /* Max size of a single rx buffer */
- #define VMXNET3_MAX_RX_BUF_SIZE  ((1 << 14) - 1)
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index c2f99c01a130..2ee3a2e39f10 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -1061,6 +1061,23 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
- 			}
- 			tq->stats.copy_skb_header++;
- 		}
-+		if (unlikely(count > VMXNET3_MAX_TSO_TXD_PER_PKT)) {
-+			/* tso pkts must not use more than
-+			 * VMXNET3_MAX_TSO_TXD_PER_PKT entries
-+			 */
-+			if (skb_linearize(skb) != 0) {
-+				tq->stats.drop_too_many_frags++;
-+				goto drop_pkt;
-+			}
-+			tq->stats.linearized++;
-+
-+			/* recalculate the # of descriptors to use */
-+			count = VMXNET3_TXD_NEEDED(skb_headlen(skb)) + 1;
-+			if (unlikely(count > VMXNET3_MAX_TSO_TXD_PER_PKT)) {
-+				tq->stats.drop_too_many_frags++;
-+				goto drop_pkt;
-+			}
-+		}
- 		if (skb->encapsulation) {
- 			vmxnet3_prepare_inner_tso(skb, &ctx);
- 		} else {
--- 
-2.11.0
+On 6/8/22 8:55 AM, Yang Li wrote:
+> Eliminate the following coccicheck warning:
+> ./drivers/infiniband/hw/erdma/erdma_qp.c:254:3-4: Unneeded semicolon
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
+Reviewed-by: Cheng Xu <chengyou@linux.alibaba.com>
+
+Thanks.
+
+
+Jason,
+
+BTW, are this and other two patches for erdma posted today parts of
+the static checker reports which you mentioned in [1] ? If so, I think I
+should re-post the v10 patches including the fixes ?
+
+Thanks,
+Cheng Xu
+
+[1] https://lore.kernel.org/linux-rdma/20220606154754.GA645238@nvidia.com/
