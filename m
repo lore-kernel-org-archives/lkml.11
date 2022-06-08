@@ -2,120 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6984ACCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5100CCA489
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:15:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237501AbiFHHKo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:10:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
+        id S238368AbiFHHL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233795AbiFHGsv (ORCPT
+        with ESMTP id S1353663AbiFHGRl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 02:48:51 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F03F1CC638;
-        Tue,  7 Jun 2022 23:48:47 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 2586mMmW007615;
-        Wed, 8 Jun 2022 08:48:22 +0200
-Date:   Wed, 8 Jun 2022 08:48:22 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        lkp@lists.01.org, lkp@intel.com, ying.huang@intel.com,
-        feng.tang@intel.com, zhengjun.xing@linux.intel.com,
-        fengwei.yin@intel.com
-Subject: Re: [tcp]  e926147618:  stress-ng.icmp-flood.ops_per_sec -8.7%
- regression
-Message-ID: <20220608064822.GC7547@1wt.eu>
-References: <20220608060802.GA22428@xsang-OptiPlex-9020>
+        Wed, 8 Jun 2022 02:17:41 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30AB09FE6
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:03:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654668183; x=1686204183;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=9i4mMx/iK/L9JFNyh7Qsw9oNlDYVHXglo3wBtNN8FfE=;
+  b=BpY2W6N51cIQx1J02+LTpsMjqIGv+5Gl9wSqcDIb0S66tva6e8M0kE1y
+   OaZdMUH4fAf/0ncBW7jbcN2g/PslnqXQHvev4wxFWntUBq3xIo0KJorEx
+   A7hWPOk4wgjSG3w4RFNhi8SbHX0SUV29wKDpzPPP4UDiVKaJBro71aboC
+   aUiEImRY9kJkLdVqE7PQonU5Yfc7KHCuUuoTanmqUbNtoZZr9Xn3knO+g
+   8WlbT9cYXnHrcyQqrPqBbh0RBXyS6A7SeD4K+8kVcnhkjvQ38+nxuKq81
+   FgK3vlMJJLXKRuJe9Fx+LIfJ5cOCB9N0f6/Shurl4sVCF/WNsh42RXQ5K
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277936556"
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="277936556"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 23:02:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="648419441"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 07 Jun 2022 23:02:22 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nyolp-000ELd-FV;
+        Wed, 08 Jun 2022 06:02:21 +0000
+Date:   Wed, 8 Jun 2022 14:01:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [arm-integrator:kernel-in-vmalloc-v5.19-rc1 23/33]
+ arch/microblaze/include/asm/page.h:115:25: error: implicit declaration of
+ function '__virt_to_phys'; did you mean 'virt_to_pfn'?
+Message-ID: <202206081328.suY733VF-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220608060802.GA22428@xsang-OptiPlex-9020>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 02:08:02PM +0800, kernel test robot wrote:
-> 
-> 
-> Greeting,
-> 
-> FYI, we noticed a -8.7% regression of stress-ng.icmp-flood.ops_per_sec due to commit:
-> 
-> 
-> commit: e9261476184be1abd486c9434164b2acbe0ed6c2 ("tcp: dynamically allocate the perturb table used by source ports")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> in testcase: stress-ng
-> on test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz with 128G memory
-> with following parameters:
-> 
-> 	nr_threads: 100%
-> 	testtime: 60s
-> 	class: network
-> 	test: icmp-flood
-> 	cpufreq_governor: performance
-> 	ucode: 0xd000331
-> 
-> 
-> 
-> 
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> 
-> 
-> Details are as below:
-> -------------------------------------------------------------------------------------------------->
-> 
-> 
-> To reproduce:
-> 
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         sudo bin/lkp install job.yaml           # job file is attached in this email
->         bin/lkp split-job --compatible job.yaml # generate the yaml file for lkp run
->         sudo bin/lkp run generated-yaml-file
-> 
->         # if come across any failure that blocks the test,
->         # please remove ~/.lkp and /lkp dir to run from a clean state.
-> 
-> =========================================================================================
-> class/compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime/ucode:
->   network/gcc-11/performance/x86_64-rhel-8.3/100%/debian-10.4-x86_64-20200603.cgz/lkp-icl-2sp6/icmp-flood/stress-ng/60s/0xd000331
-> 
-> commit: 
->   ca7af04025 ("tcp: add small random increments to the source port")
->   e926147618 ("tcp: dynamically allocate the perturb table used by source ports")
-> 
-> ca7af0402550f9a0 e9261476184be1abd486c943416 
-> ---------------- --------------------------- 
->          %stddev     %change         %stddev
->              \          |                \  
->  5.847e+08            -8.7%  5.337e+08        stress-ng.icmp-flood.ops
->    9745088            -8.7%    8894785        stress-ng.icmp-flood.ops_per_sec
-(...)
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.19-rc1
+head:   512fc95a58c7b2e91e267db91a4ec5a54afedd01
+commit: 25049d91eb99805aaf82c2829b63b52ee8591776 [23/33] microblaze: Make virt_to_pfn() a static inline
+config: microblaze-buildonly-randconfig-r012-20220607 (https://download.01.org/0day-ci/archive/20220608/202206081328.suY733VF-lkp@intel.com/config)
+compiler: microblaze-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=25049d91eb99805aaf82c2829b63b52ee8591776
+        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
+        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.19-rc1
+        git checkout 25049d91eb99805aaf82c2829b63b52ee8591776
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=microblaze prepare
 
-I don't know much what to think about it, to be honest. We anticipated
-a possible very tiny slowdown by moving the table from static to dynamic,
-though that was not observed at all during extensive tests on real
-hardware. But it was not acceptable to keep too large a table as static
-anyway.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
->     102391 ±  2%      -8.1%      94064        stress-ng.time.involuntary_context_switches
->       3069 ±  2%      -9.6%       2775 ±  4%  stress-ng.time.percent_of_cpu_this_job_got
->       1857 ±  2%      -9.3%       1685 ±  4%  stress-ng.time.system_time
->      47.67 ±  4%     -20.9%      37.70 ±  5%  stress-ng.time.user_time
+All errors (new ones prefixed by >>):
 
-Not sure what to think about these variations, nor how they may be related.
+   In file included from arch/microblaze/include/asm/page.h:15,
+                    from include/linux/shm.h:6,
+                    from include/linux/sched.h:16,
+                    from arch/microblaze/kernel/asm-offsets.c:13:
+   arch/microblaze/include/asm/page.h: In function 'virt_to_pfn':
+>> arch/microblaze/include/asm/page.h:115:25: error: implicit declaration of function '__virt_to_phys'; did you mean 'virt_to_pfn'? [-Werror=implicit-function-declaration]
+     115 | # define __pa(x)        __virt_to_phys((unsigned long)(x))
+         |                         ^~~~~~~~~~~~~~
+   include/linux/pfn.h:20:27: note: in definition of macro 'PFN_DOWN'
+      20 | #define PFN_DOWN(x)     ((x) >> PAGE_SHIFT)
+         |                           ^
+   arch/microblaze/include/asm/page.h:120:16: note: in expansion of macro 'phys_to_pfn'
+     120 |         return phys_to_pfn(__pa(vaddr));
+         |                ^~~~~~~~~~~
+   arch/microblaze/include/asm/page.h:120:28: note: in expansion of macro '__pa'
+     120 |         return phys_to_pfn(__pa(vaddr));
+         |                            ^~~~
+   cc1: some warnings being treated as errors
+   make[2]: *** [scripts/Makefile.build:117: arch/microblaze/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1196: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
 
-Thanks,
-Willy
+
+vim +115 arch/microblaze/include/asm/page.h
+
+4b87d7a4f91d31 Michal Simek 2009-03-27  114  
+1f84e1ea0e87ad Michal Simek 2009-05-26 @115  # define __pa(x)	__virt_to_phys((unsigned long)(x))
+1f84e1ea0e87ad Michal Simek 2009-05-26  116  # define __va(x)	((void *)__phys_to_virt((unsigned long)(x)))
+1f84e1ea0e87ad Michal Simek 2009-05-26  117  
+
+:::::: The code at line 115 was first introduced by commit
+:::::: 1f84e1ea0e87ad659cd6f6a6285d50c73a8d1a24 microblaze_mmu_v2: pgalloc.h and page.h
+
+:::::: TO: Michal Simek <monstr@monstr.eu>
+:::::: CC: Michal Simek <monstr@monstr.eu>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
