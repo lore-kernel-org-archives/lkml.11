@@ -2,130 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C41C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:34:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C948C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245633AbiFHQeC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57476 "EHLO
+        id S245586AbiFHQfm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:35:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343588AbiFHQdY (ORCPT
+        with ESMTP id S245289AbiFHQfi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:33:24 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2FA30E752
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:33:21 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id u23so34079566lfc.1
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 09:33:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Nczzxga2VzTI61hjMGVwlFiToqM1MiMF50/6VC0BnkQ=;
-        b=HI9q91KmJnodakEMkkvIcxiYFhZNvzMEhXQFmkw2A+WEQNB2WvWMTR52zXEbtXiGC7
-         Eb8G/wOjNPG4o+Zf4VOC/PTnskLo2rvM/HO2McFqvH3VOfDwp1F73zj3kj2H8Y2Ty1Np
-         GOEiXuyyi8OiCcRkDb3E4hU5I8sGAQia/RdhM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nczzxga2VzTI61hjMGVwlFiToqM1MiMF50/6VC0BnkQ=;
-        b=CNfLoMUdrj2CGpmor4BRIVYozjgIkpj1srsnJ9R5jNVJipOfI/yptQTcDsnCTgiiMN
-         q/thyZfnsLFdmDiHPdnie8H4Apb/mS+wU+CdEKmvPGo/nSNTJlouTBWgonaw4oaphNlM
-         FDgWVllpHj4AtsTFe8B6EdA0xdg7tNJN0KSsmQmB2cOirdp2FGbQWbdfETWt2csu7p/q
-         8UurYyP9RNtb1naVvCx+Pj4eDu5e2gg9tgHgKBVQ+PZ4Bye7+5aC8pwN+/6tjXOoBacZ
-         OuKjxrcEYAPkWSQVWC0Sw81oMxmY2ClbE8mAZWBMyuY2JN4rCcuoz7Wz3BzeBPRvkkHj
-         2CUw==
-X-Gm-Message-State: AOAM530XZ4AtI4ewkNTrHYC4pv1JNM+ak5v9OtocPrcEmpjacRe3Yd0v
-        lxXffriaV3PaHiwaycFrwZ/XdV1jKvAcNjzqaw7DpA==
-X-Google-Smtp-Source: ABdhPJzFy7nO2qnr5fKv1EOnBJmnn8JMOGWwCMrZHyWK3WGmMlta2rubmQComAvKJH2Vek8siCSqG/+MbMYHJs8DBgA=
-X-Received: by 2002:a05:6512:3a89:b0:479:52fc:f80a with SMTP id
- q9-20020a0565123a8900b0047952fcf80amr8910198lfu.120.1654705999913; Wed, 08
- Jun 2022 09:33:19 -0700 (PDT)
+        Wed, 8 Jun 2022 12:35:38 -0400
+Received: from out199-16.us.a.mail.aliyun.com (out199-16.us.a.mail.aliyun.com [47.90.199.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADB9376F21
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:35:37 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R291e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VFmubbq_1654706132;
+Received: from localhost.localdomain(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0VFmubbq_1654706132)
+          by smtp.aliyun-inc.com;
+          Thu, 09 Jun 2022 00:35:32 +0800
+From:   Tianchen Ding <dtcccc@linux.alibaba.com>
+To:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH v4 1/2] sched: Fix the check of nr_running at queue wakelist
+Date:   Thu,  9 Jun 2022 00:35:17 +0800
+Message-Id: <20220608163518.324276-2-dtcccc@linux.alibaba.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220608163518.324276-1-dtcccc@linux.alibaba.com>
+References: <20220608163518.324276-1-dtcccc@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
- <20220607094752.1029295-12-dario.binacchi@amarulasolutions.com> <20220607105225.xw33w32en7fd4vmh@pengutronix.de>
-In-Reply-To: <20220607105225.xw33w32en7fd4vmh@pengutronix.de>
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Date:   Wed, 8 Jun 2022 18:33:08 +0200
-Message-ID: <CABGWkvozX51zeQt16bdh+edsjwqST5A11qtfxYjTvP030DnToQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 11/13] can: slcan: add ethtool support to reset
- adapter errors
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-kernel@vger.kernel.org,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marc,
+The commit 2ebb17717550 ("sched/core: Offload wakee task activation if it
+the wakee is descheduling") checked rq->nr_running <= 1 to avoid task
+stacking when WF_ON_CPU.
 
-On Tue, Jun 7, 2022 at 12:52 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->
-> On 07.06.2022 11:47:50, Dario Binacchi wrote:
-> > This patch adds a private flag to the slcan driver to switch the
-> > "err-rst-on-open" setting on and off.
-> >
-> > "err-rst-on-open" on  - Reset error states on opening command
-> >
-> > "err-rst-on-open" off - Don't reset error states on opening command
-> >                         (default)
-> >
-> > The setting can only be changed if the interface is down:
-> >
-> >     ip link set dev can0 down
-> >     ethtool --set-priv-flags can0 err-rst-on-open {off|on}
-> >     ip link set dev can0 up
-> >
-> > Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
->
-> I'm a big fan of bringing the device into a well known good state during
-> ifup. What would be the reasons/use cases to not reset the device?
+Per the ordering of writes to p->on_rq and p->on_cpu, observing p->on_cpu
+(WF_ON_CPU) in ttwu_queue_cond() implies !p->on_rq, IOW p has gone through
+the deactivate_task() in __schedule(), thus p has been accounted out of
+rq->nr_running. As such, the task being the only runnable task on the rq
+implies reading rq->nr_running == 0 at that point.
 
-Because by default either slcand and slcan_attach don't reset the error states,
-but you must use the `-f' option to do so. So,  I followed this use case.
+The benchmark result is in [1].
 
-Thanks and regards,
-Dario
->
-> Marc
->
-> --
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   | https://www.pengutronix.de  |
-> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+[1] https://lore.kernel.org/all/e34de686-4e85-bde1-9f3c-9bbc86b38627@linux.alibaba.com/
 
+Suggested-by: Valentin Schneider <vschneid@redhat.com>
+Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
+Reviewed-by: Valentin Schneider <vschneid@redhat.com>
+---
+ kernel/sched/core.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 21db6816a7bd..a4bdb2b95976 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3829,8 +3829,12 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
+ 	 * CPU then use the wakelist to offload the task activation to
+ 	 * the soon-to-be-idle CPU as the current CPU is likely busy.
+ 	 * nr_running is checked to avoid unnecessary task stacking.
++	 *
++	 * Note that we can only get here with (wakee) p->on_rq=0,
++	 * p->on_cpu can be whatever, we've done the dequeue, so
++	 * the wakee has been accounted out of ->nr_running.
+ 	 */
+-	if ((wake_flags & WF_ON_CPU) && cpu_rq(cpu)->nr_running <= 1)
++	if ((wake_flags & WF_ON_CPU) && !cpu_rq(cpu)->nr_running)
+ 		return true;
+ 
+ 	return false;
 -- 
+2.27.0
 
-Dario Binacchi
-
-Embedded Linux Developer
-
-dario.binacchi@amarulasolutions.com
-
-__________________________________
-
-
-Amarula Solutions SRL
-
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-
-T. +39 042 243 5310
-info@amarulasolutions.com
-
-www.amarulasolutions.com
