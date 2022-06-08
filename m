@@ -2,116 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56647C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19449C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239793AbiFHMke (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:40:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57500 "EHLO
+        id S239834AbiFHMoP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239512AbiFHMka (ORCPT
+        with ESMTP id S239820AbiFHMoN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:40:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B19EC2D80A9;
-        Wed,  8 Jun 2022 05:40:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BFE061975;
-        Wed,  8 Jun 2022 12:40:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F377C34116;
-        Wed,  8 Jun 2022 12:40:25 +0000 (UTC)
-Date:   Wed, 8 Jun 2022 08:40:23 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: Re: [PATCHv2 bpf 3/3] bpf: Force cookies array to follow symbols
- sorting
-Message-ID: <20220608084023.4be8ffe2@gandalf.local.home>
-In-Reply-To: <YqBynO64am32z13X@krava>
-References: <20220606184731.437300-1-jolsa@kernel.org>
-        <20220606184731.437300-4-jolsa@kernel.org>
-        <CAADnVQJA54Ra8+tV0e0KwSXAg93JRoiefDXWR-Lqatya5YWKpg@mail.gmail.com>
-        <Yp+tTsqPOuVdjpba@krava>
-        <CAADnVQJGoM9eqcODx2LGo-qLo0=O05gSw=iifRsWXgU0XWifAA@mail.gmail.com>
-        <YqBW65t+hlWNok8e@krava>
-        <YqBynO64am32z13X@krava>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Wed, 8 Jun 2022 08:44:13 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654F51760A8
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 05:44:12 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id i11so35417qvx.10
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 05:44:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=hb8MwiN3S2BS3ZcquesnHRXVBFHmUaMmZQ1CMIJfFHU=;
+        b=AIs5Z6ldkgO0SaS7vh2G4FA8/1EMqUmbtNgCkOLckKSRkywfxBetJWIZK4n9PKNArz
+         tTc9lLCoDy1OKbX1sobOqG/eHj/lb/xa+ZPQym6XcThss5W0t/gQBOk95VXdldxU04q9
+         q/jljvBZruVu34MhdmesDcdVz6J+hWmrxRRTCC7nygjyDqepEyaHKWboXm1ESfN/JYb3
+         fRJSxhSj6qKo6vyROKD1sPPy2PTBUx1ZrBBygjftm9T7aR1NLPxen0V80D2voyyYkqsN
+         gZnxnnqNJLR7Vtc71KGyzGh1TeIveIM6O2109otuCNM1QjKPGviZUSkEtWAzbqPbvrMi
+         Q8eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hb8MwiN3S2BS3ZcquesnHRXVBFHmUaMmZQ1CMIJfFHU=;
+        b=ByE2a2xT1sgGFbIwwtecLxxjXNDaDdJ00gB9IxcOcopjOBBKY8OXcdJe4+KBqa4zO+
+         +E5ScuKtQHUvLLB5SwLQyhiUQyi6SWjbv2gnZ3XFLkw1UEto6jBdj0FgWZ1QQhp98sG7
+         QAMSmxZ90Pg3dk07G0Qkbi5OeXZc7p52Cj1XBqK3C+qkOXh+GoluAKjtp7XUa5E3foFT
+         oICToxShIK6oQjbN/y02jV1jK/Vs8Syu3RfrrrTCqZFn12OgVTrBRl8pHchP+LyRB4kJ
+         cFbMoF213Js7PZIRF6JEF7Lnw5CrLRw+xcgODZ6sd8NCmE9Sl7jgKjDM4HLVNxYD9rCt
+         NZrw==
+X-Gm-Message-State: AOAM5300WSUcasyGkfEAAOtGMVJNZr4n4JMdyBsZmQ+L0pb8dmYyhYUW
+        Y6lBHgpISqorCaRYnsRa2/WQ4A==
+X-Google-Smtp-Source: ABdhPJyjNXeT1zRZttMPAb3qKmpV5xMSvQQ+B0pu2en6721A3xxw7dREAgxaFpdcIn7GAjs61tZmag==
+X-Received: by 2002:a05:6214:4104:b0:431:d89a:66bd with SMTP id kc4-20020a056214410400b00431d89a66bdmr81931579qvb.42.1654692251470;
+        Wed, 08 Jun 2022 05:44:11 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id ck9-20020a05622a230900b002f3e2435ee2sm14301132qtb.63.2022.06.08.05.44.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 05:44:11 -0700 (PDT)
+Message-ID: <5f4f48a5-03c5-f242-2095-6a4053f84de4@linaro.org>
+Date:   Wed, 8 Jun 2022 07:44:09 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] arm64: dts: qcom: sc7180: Remove ipa_fw_mem node on
+ trogdor
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>
+References: <20220517193307.3034602-1-swboyd@chromium.org>
+From:   Alex Elder <elder@linaro.org>
+In-Reply-To: <20220517193307.3034602-1-swboyd@chromium.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 8 Jun 2022 11:57:48 +0200
-Jiri Olsa <olsajiri@gmail.com> wrote:
-
-> Steven,
-> is there a reason to show '__ftrace_invalid_address___*' symbols in
-> available_filter_functions? it seems more like debug message to me
+On 5/17/22 2:33 PM, Stephen Boyd wrote:
+> We don't use this carveout on trogdor boards, and having it defined in
+> the sc7180 SoC file causes an overlap message to be printed at boot.
 > 
+>   OF: reserved mem: OVERLAP DETECTED!
+>   memory@86000000 (0x0000000086000000--0x000000008ec00000) overlaps with memory@8b700000 (0x000000008b700000--0x000000008b710000)
+> 
+> Delete the node in the trogdor dtsi file to fix the overlap problem and
+> remove the error message.
+> 
+> Cc: Alex Elder <elder@linaro.org>
+> Cc: Matthias Kaehlcke <mka@chromium.org>
+> Fixes: 310b266655a3 ("arm64: dts: qcom: sc7180: define ipa_fw_mem node")
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>   arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
+> index 732e1181af48..262224504921 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
+> @@ -42,6 +42,7 @@ charger-crit {
+>    */
+>   
+>   /delete-node/ &hyp_mem;
+> +/delete-node/ &ipa_fw_mem;
+>   /delete-node/ &xbl_mem;
+>   /delete-node/ &aop_mem;
+>   /delete-node/ &sec_apps_mem;
+> 
+> base-commit: 42226c989789d8da4af1de0c31070c96726d990c
 
-Yes, because set_ftrace_filter may be set by index. That is, if schedule is
-the 43,245th entry in available_filter_functions, then you can do:
+This is on Trogdor, which as far as I know only runs Chrome OS,
+which doesn't use the IPA firmware memory carveout.  The problem
+reported comes from the definition of the mpss_mem reserved-memory
+region in "sc7180-trogdor.dtsi", so deleting the "ipa_fw_mem" node
+in that file sounds like the right fix.
 
-  # echo 43245 > set_ftrace_filter
-  # cat set_ftrace_filter
-  schedule
-
-That index must match the array index of the entries in the function list
-internally. The reason for this is that entering a name is an O(n)
-operation, where n is the number of functions in
-available_filter_functions. If you want to enable half of those functions,
-then it takes O(n^2) to do so.
-
-I first implemented this trick to help with bisecting bad functions. That
-is, every so often a function that should be annotated with notrace, isn't
-and if it gets traced it cause the machine to reboot. To bisect this, I
-would enable half the functions at a time and enable tracing to see if it
-reboots or not, and if it does, I know that one of the half I enabled is
-the culprit, if not, it's in the other half. It would take over 5 minutes
-to enable half the functions. Where as the number trick took one second,
-not only was it O(1) per function, but it did not need to do kallsym
-lookups either. It simply enabled the function at the index.
-
-Later, libtracefs (used by trace-cmd and others) would allow regex(3)
-enabling of functions. That is, it would search available_filter_functions
-in user space, match them via normal regex, create an index of the
-functions to know where they are, and then write in those numbers to enable
-them. It's much faster than writing in strings.
-
-My original fix was to simply ignore those functions, but then it would
-make the index no longer match what got set. I noticed this while writing
-my slides for Kernel Recipes, and then fixed it.
-
-The commit you mention above even states this:
-
-      __ftrace_invalid_address___<invalid-offset>
-    
-    (showing the offset that caused it to be invalid).
-    
-    This is required for tools that use libtracefs (like trace-cmd does) that
-    scan the available_filter_functions and enable set_ftrace_filter and
-    set_ftrace_notrace using indexes of the function listed in the file (this
-    is a speedup, as enabling thousands of files via names is an O(n^2)
-    operation and can take minutes to complete, where the indexing takes less
-    than a second).
-
-In other words, having a placeholder is required to keep from breaking user
-space.
-
--- Steve
-
-
+Reviewed-by: Alex Elder <elder@linaro.org>
