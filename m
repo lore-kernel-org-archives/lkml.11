@@ -2,135 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFBD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:46:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C40BCCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237343AbiFHKqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:46:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59064 "EHLO
+        id S237421AbiFHKrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237155AbiFHKqC (ORCPT
+        with ESMTP id S237317AbiFHKrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:46:02 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC61A10D5C3;
-        Wed,  8 Jun 2022 03:45:58 -0700 (PDT)
-Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LJ3hH55gqz67jfG;
-        Wed,  8 Jun 2022 18:42:23 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 8 Jun 2022 12:45:56 +0200
-Received: from [10.47.90.54] (10.47.90.54) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 8 Jun
- 2022 11:45:55 +0100
-Message-ID: <9e981523-6032-fd24-08f9-0ef771cd1c2e@huawei.com>
-Date:   Wed, 8 Jun 2022 11:45:53 +0100
+        Wed, 8 Jun 2022 06:47:04 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0520C19D61D
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 03:46:51 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id o6so12215981plg.2
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 03:46:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8InSgeXLwfrcaHfRuxvIJANyDBCvKCk2nOrjxdkMIcU=;
+        b=SUv17aoXPEtYR5RFG2kPuj0X9X4Z+T7ixPPSpyJ/qMi9HKO+QGXlCmY4HaNknzqeiW
+         /3Iw9+p9eNacTPl+qwQyygH21Qfz3eXtDNysZGkIpNTX/MNa+KW/bLK+PlgKBPsgL01e
+         J8JQwvcdoPjQ8JH6PcMDORtMgMBeNHiCQUhmi/v3qXyEiD/SHEwToQ5lpZ8TOFeS5q3Z
+         NizlRPtwh1sd7TB9KYQhskY93DjBCpOqA2KYIeYoJ8rmuv2zp/qYh3iX/0ttpfITTrhG
+         BfQYimdYu4Vqmk+P4usEZGhxXfaScCNobq84tpJC57TSfc3uhDIp+Vsfx4e6AwO5fz8k
+         efng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8InSgeXLwfrcaHfRuxvIJANyDBCvKCk2nOrjxdkMIcU=;
+        b=qFBJkFpfNmIDLfOcORFwWFR78XLsXftRsJmL7DcUcZUT8RvRZNPlG7SMirAPADpDQR
+         3rzomXbZxvWj1zCYfb8ow7GpCm/WFp+8nFpbq+S2oU6MpWv6uBFiIjwCsPKeMlOvaWUz
+         EdsTBpaWlGZLj2WVQwyXAooKL+Z+TvLCYCiyFdrMTZGrwgPAtHI+H/ozdFN3uN1m5Lpv
+         /uZn3nps8LAHa3g9nLn4AfUd06+n4TtCGsmWlvBtK1E55BO9xJp0BYXKSly4v2ALcalL
+         pqOMV2OW+RKhsx7lmm2AyR+qHeALzgoqlW9dhd6MxbCioq/RoEhNuRgjZQtQbShu+YH2
+         Pt+Q==
+X-Gm-Message-State: AOAM530OviAh57ig7UY3AhI4OwvI//+Yvq+EszluGGGvOeujCbrTv4yj
+        r1gHOIJFKwwIsg2cgWDiLFzaCA==
+X-Google-Smtp-Source: ABdhPJzP3FzTaPpt8WBSXwyU/ycJSySOlYjXjI4sfswEsIS2jvv35dS7APubdGQ/rp83piPd54p6Fw==
+X-Received: by 2002:a17:90b:3845:b0:1e2:e175:be04 with SMTP id nl5-20020a17090b384500b001e2e175be04mr36968296pjb.50.1654685211279;
+        Wed, 08 Jun 2022 03:46:51 -0700 (PDT)
+Received: from localhost.localdomain ([61.120.150.70])
+        by smtp.gmail.com with ESMTPSA id x19-20020aa79413000000b0051be7a8c008sm10290275pfo.30.2022.06.08.03.46.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 03:46:50 -0700 (PDT)
+From:   Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+To:     miklos@szeredi.hu
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+Subject: [PATCH] fuse: add FOPEN_INVAL_ATTR
+Date:   Wed,  8 Jun 2022 18:42:02 +0800
+Message-Id: <20220608104202.19461-1-zhangjiachen.jaycee@bytedance.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v3 3/4] RISC-V: Added generic pmu-events mapfile
-To:     Nikita Shubin <nikita.shubin@maquefel.me>
-CC:     Genevieve Chan <genevieve.chan@starfivetech.com>,
-        =?UTF-8?B?Sm/Do28gTcOhcmlvIERvbWluZ29z?= 
-        <joao.mario@tecnico.ulisboa.pt>,
-        Nikita Shubin <n.shubin@yadro.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        "Namhyung Kim" <namhyung@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        "Palmer Dabbelt" <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
-        <linux-perf-users@vger.kernel.org>,
-        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>
-References: <20220607131648.29439-1-nikita.shubin@maquefel.me>
- <20220607131648.29439-4-nikita.shubin@maquefel.me>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <20220607131648.29439-4-nikita.shubin@maquefel.me>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.47.90.54]
-X-ClientProxiedBy: lhreml744-chm.china.huawei.com (10.201.108.194) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/06/2022 14:16, Nikita Shubin wrote:
-> From: João Mário Domingos <joao.mario@tecnico.ulisboa.pt>
-> 
-> The pmu-events now supports custom events for RISC-V, plus the cycle,
-> time and instret events were defined.
-> 
-> Signed-off-by: João Mário Domingos <joao.mario@tecnico.ulisboa.pt>
-> Tested-by: Nikita Shubin <n.shubin@yadro.com>
-> ---
->   tools/perf/pmu-events/arch/riscv/mapfile.csv  | 14 +++++++++++++
->   .../pmu-events/arch/riscv/riscv-generic.json  | 20 +++++++++++++++++++
->   2 files changed, 34 insertions(+)
->   create mode 100644 tools/perf/pmu-events/arch/riscv/mapfile.csv
->   create mode 100644 tools/perf/pmu-events/arch/riscv/riscv-generic.json
-> 
-> diff --git a/tools/perf/pmu-events/arch/riscv/mapfile.csv b/tools/perf/pmu-events/arch/riscv/mapfile.csv
-> new file mode 100644
-> index 000000000000..4f2aa199d9cb
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/riscv/mapfile.csv
-> @@ -0,0 +1,14 @@
-> +# Format:
-> +#	MIDR,Version,JSON/file/pathname,Type
-> +#
-> +# where
-> +#	MIDR	Processor version
+So that the fuse daemon can ask kernel to invalidate the attr cache on file
+open.
 
-ARM, no?
+Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+---
+ fs/fuse/file.c            | 4 ++++
+ include/uapi/linux/fuse.h | 2 ++
+ 2 files changed, 6 insertions(+)
 
-> +#		Variant[23:20] and Revision [3:0] should be zero.
-> +#	Version could be used to track version of JSON file
-> +#		but currently unused.
-> +#	JSON/file/pathname is the path to JSON file, relative
-> +#		to tools/perf/pmu-events/arch/riscv/.
-> +#	Type is core, uncore etc
-> +#
-> +#
-> +#Family-model,Version,Filename,EventType
-> diff --git a/tools/perf/pmu-events/arch/riscv/riscv-generic.json b/tools/perf/pmu-events/arch/riscv/riscv-generic.json
-> new file mode 100644
-> index 000000000000..013e50efad99
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/riscv/riscv-generic.json
-
-where or how are these referenced?
-
-> @@ -0,0 +1,20 @@
-> +[
-> +  {
-> +    "PublicDescription": "CPU Cycles",
-> +    "EventCode": "0x00",
-> +    "EventName": "riscv_cycles",
-> +    "BriefDescription": "CPU cycles RISC-V generic counter"
-> +  },
-> +  {
-> +    "PublicDescription": "CPU Time",
-> +      "EventCode": "0x01",
-> +      "EventName": "riscv_time",
-> +      "BriefDescription": "CPU time RISC-V generic counter"
-> +  },
-> +  {
-> +    "PublicDescription": "CPU Instructions",
-> +      "EventCode": "0x02",
-> +      "EventName": "riscv_instret",
-> +      "BriefDescription": "CPU retired instructions RISC-V generic counter"
-> +  }
-> +]
-> \ No newline at end of file
+diff --git a/fs/fuse/file.c b/fs/fuse/file.c
+index fdcec3aa7830..9609d13ec351 100644
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -213,6 +213,10 @@ void fuse_finish_open(struct inode *inode, struct file *file)
+ 		file_update_time(file);
+ 		fuse_invalidate_attr_mask(inode, FUSE_STATX_MODSIZE);
+ 	}
++
++	if (ff->open_flags & FOPEN_INVAL_ATTR)
++		fuse_invalidate_attr(inode);
++
+ 	if ((file->f_mode & FMODE_WRITE) && fc->writeback_cache)
+ 		fuse_link_write_file(file);
+ }
+diff --git a/include/uapi/linux/fuse.h b/include/uapi/linux/fuse.h
+index d6ccee961891..0b0b7d308ddb 100644
+--- a/include/uapi/linux/fuse.h
++++ b/include/uapi/linux/fuse.h
+@@ -301,6 +301,7 @@ struct fuse_file_lock {
+  * FOPEN_CACHE_DIR: allow caching this directory
+  * FOPEN_STREAM: the file is stream-like (no file position at all)
+  * FOPEN_NOFLUSH: don't flush data cache on close (unless FUSE_WRITEBACK_CACHE)
++ * FOPEN_INVAL_ATTR: invalidate the attr cache on open
+  */
+ #define FOPEN_DIRECT_IO		(1 << 0)
+ #define FOPEN_KEEP_CACHE	(1 << 1)
+@@ -308,6 +309,7 @@ struct fuse_file_lock {
+ #define FOPEN_CACHE_DIR		(1 << 3)
+ #define FOPEN_STREAM		(1 << 4)
+ #define FOPEN_NOFLUSH		(1 << 5)
++#define FOPEN_INVAL_ATTR	(1 << 6)
+ 
+ /**
+  * INIT request/reply flags
+-- 
+2.20.1
 
