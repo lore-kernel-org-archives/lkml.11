@@ -2,92 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2867FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A62BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:52:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235400AbiFHJwL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52004 "EHLO
+        id S235052AbiFHJwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:52:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235262AbiFHJvt (ORCPT
+        with ESMTP id S235504AbiFHJwC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:51:49 -0400
-Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7323DDF2E
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:21:41 -0700 (PDT)
-Received: by mail-ua1-x933.google.com with SMTP id v19so1069138uae.0
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 02:21:41 -0700 (PDT)
+        Wed, 8 Jun 2022 05:52:02 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332783FA0D2
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:22:06 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id v1so29530642ejg.13
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 02:22:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=gj53TGrcFKvg3WdH/kBUkM4Hf1Vz6A2pmV6JoIO4uQg=;
-        b=gcSeh2/XbP0fRf1MOxr9hzlled1viRBXIvwTte1bSf4dJpwUIsWSJKo1BbWJwW1fhN
-         A2rKZjSrPRqnzvSFPpJmRO3SZdVqG738atkz4iEc+oWYs5sjTbEErC1Yl+d0yoZS+YWr
-         +nJ22b4Vc/isMgBWLMEp7nD7FYrSVQUXm42Ti4oBeM33zB6+E4wLlQhauFt4V9n9pj7L
-         KxVy9xKyug/HL1HDcrEaNVonYwHt+qg1VpJDHO8+qt7exQBp7hNXkL8ZMcqsaFTjir1g
-         85YXmxDIDspO/ov0x4lSP/XICksXKVyGdTSyxrMmpe12QeNQ2NKKc6Dy+Csb4OZIyhIC
-         UtwA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=b6d5Zv3xL/KRcHb8xiVxMyuc8Dp70Lb5vZZ6lK/eQQ8=;
+        b=aWRg82jWnaqTYIJkWdAoYFsulyS+0ED8k9qWSWTafVRswt4QT/KPr/HCidmmrSSJX8
+         tfca1NHPxgMJmxYSHrD/3zNh5EPJ31fwoiCsD1K8O5c/O/8/JWOsSPzC89o6EWXn3pqP
+         gzEWvKriNebG1p7w2dC9QI4gxrEsRsuRmS/c/4Ip2KOQroKlr16Fuy4Jj9vhiJOofPMK
+         K9w0Dz7H1NZzSdze8fZB6cOPgsvaSwWUKasKI8GTMIsVTk2eKLHwG2VFP6qzKTaOHWcw
+         U5xnEL/rRNieyscQYA52PqHA4mHngv/wQInPwTpT5Z/EOOq+AJrSowSntyREp7fNuEPm
+         DzMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gj53TGrcFKvg3WdH/kBUkM4Hf1Vz6A2pmV6JoIO4uQg=;
-        b=al+hWyxtnX0Y5nGgL+NvfOaBr/2jaMPDzqkKWCVU0BzHFqYVfw//7LE00n2wYtx11Z
-         U9095jyXLjBhgfjDBGNf/1PCEi3ZQFhYTU2LVRX6tY1SNgJr95/eNWYS2hBuwcaBnOsx
-         bViqcw9bCZdGZZHlmXddbUn2ibYdY7FlFFdiKv/gd5kjlr0KBeBUBpDWn62A2M66tYBZ
-         o62STqKn2RmM1S8toLgPdnrS4URRfIOJLP+mNy1v4H5+ALNHgr+z/zqSkEk9Tu04vigj
-         QLFyqSD3rXfDK9FifLX9WZPRIF/bScVuy1yMXw73GbMVaPMUddRN6B01nv2S25YnJTHT
-         LTFQ==
-X-Gm-Message-State: AOAM5315Ixv2lfSVe782RxVfgsknmYXgb5Svyhvfp2mEZ9ET+rI9excx
-        RIvUrC+Gy2DUFqAKzaE2bKs=
-X-Google-Smtp-Source: ABdhPJyGs8DWQ8wnxJdTEW/zlBdhQNuphjeSfXyBIMlzudn7ozMmCizNULarv7m5YEryAN0jhXtMWw==
-X-Received: by 2002:a9f:3189:0:b0:35c:c458:ee11 with SMTP id v9-20020a9f3189000000b0035cc458ee11mr36371517uad.31.1654680082621;
-        Wed, 08 Jun 2022 02:21:22 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id v21-20020a056122121500b0035d31e4bb01sm2543501vkc.6.2022.06.08.02.21.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 02:21:21 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     bcm-kernel-feedback-list@broadcom.com,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Kees Cook <keescook@chromium.org>,
-        Helge Deller <deller@gmx.de>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Gareth Powell <gpowell@broadcom.com>,
-        Brian Norris <computersforpeace@gmail.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Justin Chen <justinpopo6@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] soc: bcm: brcmstb: pm: pm-arm: Fix refcount leak in brcmstb_pm_probe
-Date:   Wed,  8 Jun 2022 02:21:18 -0700
-Message-Id: <20220608092118.1463835-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220526075325.27356-1-linmq006@gmail.com>
-References: <20220526075325.27356-1-linmq006@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=b6d5Zv3xL/KRcHb8xiVxMyuc8Dp70Lb5vZZ6lK/eQQ8=;
+        b=LmK+BEMmm9Xeh9AimuMlDvrJ91dX2vMlRMQLdrf3lq+7VWt8LFVZFzIPFTpZA78MWp
+         iDU0314Ad2uXzUImdx796cnHXe3xyTEJ6Hxij9myw+Mv5j//MtUXYfEMS9PcFnOfROjM
+         lzNmIslY66teiplROK4ncex75uzlyaiSKpNlY1VEnomv99L7eDEKLyWVTPAXpjqFSt2I
+         WWofubEkkMzObmxKne905vcaiPH/jRVW+Slf5ZnZ+yITM/f/tOLm1EqiFU+Nt9yXf6n8
+         yi6hMqZ+4g/v/gw1qBWcSshEHdnqhbWOVzsCuY7W+LQq5/xceWydLbDBo4EJpNPnG4R9
+         RAqQ==
+X-Gm-Message-State: AOAM530SS61HLZZ+h1BQ12cMkZ6VO9c0fLqvISJv9QVK3iwPpLlZttay
+        bazRvenYrvndLiqUf3dA4a9Hxg==
+X-Google-Smtp-Source: ABdhPJxz145Vpj4ktqjR1qJFt+oTGwPOr1TCBpytpxOHAUmGx3AhpWrzgmr1hjNaMOMoO/gmolJmTw==
+X-Received: by 2002:a17:906:180c:b0:6fe:9a3e:3d5b with SMTP id v12-20020a170906180c00b006fe9a3e3d5bmr30464668eje.202.1654680103174;
+        Wed, 08 Jun 2022 02:21:43 -0700 (PDT)
+Received: from [192.168.0.191] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id p9-20020a170906614900b00711c7cca428sm4515540ejl.155.2022.06.08.02.21.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 02:21:42 -0700 (PDT)
+Message-ID: <0d891f54-4a81-549b-8365-fb40cd077c83@linaro.org>
+Date:   Wed, 8 Jun 2022 11:21:41 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 3/7] dt-bindings: usb: Add Type-C switch binding
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Prashant Malani <pmalani@chromium.org>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Xin Ji <xji@analogixsemi.com>
+References: <20220607190131.1647511-1-pmalani@chromium.org>
+ <20220607190131.1647511-4-pmalani@chromium.org>
+ <ba499783-1794-1c00-348a-d912c9562e1e@linaro.org>
+In-Reply-To: <ba499783-1794-1c00-348a-d912c9562e1e@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 26 May 2022 11:53:22 +0400, Miaoqian Lin <linmq006@gmail.com> wrote:
-> of_find_matching_node() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when not need anymore.
-> Add missing of_node_put() to avoid refcount leak.
+On 08/06/2022 11:18, Krzysztof Kozlowski wrote:
+>> +anyOf:
+>> +  - required:
+>> +      - mode-switch
+>> +  - required:
+>> +      - orientation-switch
+>> +
+>> +additionalProperties: true
 > 
-> In brcmstb_init_sram, it pass dn to of_address_to_resource(),
-> of_address_to_resource() will call of_find_device_by_node() to take
-> reference, so we should release the reference returned by
-> of_find_matching_node().
+> Why true? I see usb-connector has it from commit 6a0e321ea735
+> ("dt-bindings: Explicitly allow additional properties in common schemas")
+>  but that looks also weird - this is not a common schema, but a
+> complete, generic one.
 > 
-> Fixes: 0b741b8234c8 ("soc: bcm: brcmstb: Add support for S2/S3/S5 suspend states (ARM)")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
 
-Applied to https://github.com/Broadcom/stblinux/commits/drivers/fixes, thanks!
---
-Florian
+Ah, I see now, the parent device uses the additional properties. It's
+ok, skip the comment.
+
+
+Best regards,
+Krzysztof
