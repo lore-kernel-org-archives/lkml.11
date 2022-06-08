@@ -2,81 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97714C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45120C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245440AbiFHQZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44666 "EHLO
+        id S245435AbiFHQ0v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245441AbiFHQZV (ORCPT
+        with ESMTP id S245393AbiFHQ0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:25:21 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 33C9E1D30D9;
-        Wed,  8 Jun 2022 09:25:13 -0700 (PDT)
-Received: from pwmachine.home (154.pool92-186-13.dynamic.orange.es [92.186.13.154])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 4ECC120BE646;
-        Wed,  8 Jun 2022 09:25:09 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4ECC120BE646
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1654705512;
-        bh=5IubNmv2NULJZ2ZnKWCXIaqVZ3j/e0L6iFydn2hpb6Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pDNkcnRsjTZYtoKoHS3vnsqKz/PHyBxHlf1KrDBckmo+aYFG4R0QBmFchkXwwESap
-         OzVZPluc99tUgKQ3xE4H4zqSvDucir5wUoBUcYm7rOHCTeM9R7mUWwOPEYQFH9eSs4
-         /yaLTgJX0tfjvDASBT0mFjGNqgJNP67BqTudSwLg=
-From:   Francis Laniel <flaniel@linux.microsoft.com>
-To:     linux-trace-devel@vger.kernel.org
-Cc:     James Morse <james.morse@arm.com>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Francis Laniel <flaniel@linux.microsoft.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/1] arm64: Do not forget syscall when starting a new thread.
-Date:   Wed,  8 Jun 2022 17:24:46 +0100
-Message-Id: <20220608162447.666494-2-flaniel@linux.microsoft.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220608162447.666494-1-flaniel@linux.microsoft.com>
-References: <20220608162447.666494-1-flaniel@linux.microsoft.com>
+        Wed, 8 Jun 2022 12:26:43 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F288A13EAC
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:26:38 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id x5so22728324edi.2
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 09:26:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8z7UL87qNPTqb+Q3KPHmVnfDvzgXsjCKSbw/KgXuHW8=;
+        b=nuXw81uWjcRA3iwjIPUWjjPWyYPm5FPGVF8S1Tr25dWvIRloo6TQdefzttqaK/WyEv
+         6DTjUBANjKXLyWZSM7zPGHUDuAx3/9At5QmWNdQzkzuz9W8dBWd2b44Fye14M6JLxX11
+         nCVMKTBomK7opo6KD58DUr+X86bTGm4o+ETeFlELCjTEFfG99b8v9MK7m3HYHmyXZUaj
+         nPA7fuTHuwC9melcOmht9C3Y9GRhqy+Ih4i28GqZA0m8fmfkVju0bAKf+1P1S4kPqU6E
+         /RuufGpmPhphjH38kFkntEU5i4o9MM2/gaogP2sxHEjOI0t4ROZgwDgMQiaWAewu9Doc
+         0YTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8z7UL87qNPTqb+Q3KPHmVnfDvzgXsjCKSbw/KgXuHW8=;
+        b=KimOHC0RvrCRjCydWjZUUS6/wAuvEJXGhn7lyO1HRnlZc4teDrk65D9z3fTaM3djav
+         yptPEXn4uMn127VXH0Tz3+0GYWTkk/moSIsJHHqZw15dTdk6DAWZx/SkWY1IDopf/mdQ
+         CdsUY13ZoU0S4X3lc/qQwUco8+3NZddwPixLQ5q9P6xAfrvugtrmlK3z1nwBSF8mlE76
+         w3gKa/Pt6u+fy9edZVdzo8zrg3paaQdook3GfiSX+wZjdSFliEFjaxZo6hH9TM87bB/R
+         Fm2EtXrgAKmXRGKFebH3Frr0s38DVz8jJq9Ht1ztYd7Fs4VV4u4qgGZiQfNPjeozC/Sk
+         9vZg==
+X-Gm-Message-State: AOAM533obIj4rFYM1Q7d4HNxCjtLcaod3L/bIIvi1uYI2jclbCb+opPg
+        FAbzM+0ECokzEGm6t4Xkld+N0LpRmnih3wfH09BaHg==
+X-Google-Smtp-Source: ABdhPJyxupeF0svhcBIYgAv9ztnH1682B7s9bQSzLdi2vZpE3OrurGLDRapBZDFAYuEUOVSmacyWBAUNKYvd1z9W3xM=
+X-Received: by 2002:a05:6402:f14:b0:42d:f989:4a21 with SMTP id
+ i20-20020a0564020f1400b0042df9894a21mr40418553eda.168.1654705597304; Wed, 08
+ Jun 2022 09:26:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220608110734.2928245-1-tzungbi@kernel.org> <20220608110734.2928245-22-tzungbi@kernel.org>
+In-Reply-To: <20220608110734.2928245-22-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Wed, 8 Jun 2022 09:26:26 -0700
+Message-ID: <CABXOdTcoL7f68bqN5L_HSu5rk9+t+jm=-0rzHVGmoMozGro4nQ@mail.gmail.com>
+Subject: Re: [PATCH v3 21/23] platform/chrome: cros_ec_proto: return 0 on
+ getting wake mask success
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
+        <chrome-platform@lists.linux.dev>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch enables exeve*() to be traced with syscalls:sys_exit_execve
-tracepoint.
-Previous to it, by calling forget_syscall(), this tracepoint would not
-print its information as syscall is -1.
-So, this patch removes call to forget_syscall() and set regs->syscallno
-to its previous value.
+On Wed, Jun 8, 2022 at 4:08 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> cros_ec_get_host_event_wake_mask() used to return value from
+> send_command() which is number of bytes for input payload on success
+> (i.e. sizeof(struct ec_response_host_event_mask)).
+>
+> However, the callers don't need to know how many bytes are available.
+>
+> Don't return number of available bytes.  Instead, return 0 on success;
+> otherwise, negative integers on error.
+>
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 
-Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
----
- arch/arm64/include/asm/processor.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
 
-diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
-index 9e58749db21d..86eb0bfe3b38 100644
---- a/arch/arm64/include/asm/processor.h
-+++ b/arch/arm64/include/asm/processor.h
-@@ -272,8 +272,9 @@ void tls_preserve_current_state(void);
- 
- static inline void start_thread_common(struct pt_regs *regs, unsigned long pc)
- {
-+	s32 previous_syscall = regs->syscallno;
- 	memset(regs, 0, sizeof(*regs));
--	forget_syscall(regs);
-+	regs->syscallno = previous_syscall;
- 	regs->pc = pc;
- 
- 	if (system_uses_irq_prio_masking())
--- 
-2.25.1
-
+> ---
+> Changes from v2:
+> - Separate Kunit test to another patch.
+>
+> Changes from v1:
+> - Return 0 on success; otherwise, negative intergers.
+>
+>  drivers/platform/chrome/cros_ec_proto.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> index 9e95f9e4b2f8..68a411e84744 100644
+> --- a/drivers/platform/chrome/cros_ec_proto.c
+> +++ b/drivers/platform/chrome/cros_ec_proto.c
+> @@ -236,7 +236,7 @@ EXPORT_SYMBOL(cros_ec_check_result);
+>   *
+>   * @ec_dev: EC device to call
+>   * @msg: message structure to use
+> - * @mask: result when function returns >=0.
+> + * @mask: result when function returns 0.
+>   *
+>   * LOCKING:
+>   * the caller has ec_dev->lock mutex, or the caller knows there is
+> @@ -266,6 +266,7 @@ static int cros_ec_get_host_event_wake_mask(struct cros_ec_device *ec_dev, uint3
+>         if (ret > 0) {
+>                 r = (struct ec_response_host_event_mask *)msg->data;
+>                 *mask = r->mask;
+> +               ret = 0;
+>         }
+>
+>  exit:
+> --
+> 2.36.1.255.ge46751e96f-goog
+>
