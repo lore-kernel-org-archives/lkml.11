@@ -2,208 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6657CCA483
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2BE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:21:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244284AbiFHPRr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:17:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
+        id S243264AbiFHPV0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244404AbiFHPQI (ORCPT
+        with ESMTP id S245731AbiFHPUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:16:08 -0400
-Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 224CD10A9;
-        Wed,  8 Jun 2022 08:12:42 -0700 (PDT)
-Received: by mail-ua1-x936.google.com with SMTP id p3so7015367uam.12;
-        Wed, 08 Jun 2022 08:12:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=WG94p2edkIKDcgGBWYikbRM1gTNO7+P3Sh2LbeXDfqU=;
-        b=pOfM/2EUVDmuVQ7A91fzp3O+W/p+wb1GKzUYWJ/bT/oWdW2QM8uYD0H4pYI/Bv9Y69
-         nBsBQJSXR8CntPJwIGvC2XkJiTtXNnrbOFtsLhpxgoXV/2OSvpP9upgEp8/iq5e53gU8
-         jYylvrzcCksi8nH3mND+M8xqZ5l+LhvrIeAwYzqywUyXNWuOp+MAxGJl5g2BW401lOWz
-         Rsz5w3kvDZBM4Z+mBZB8BGr2++PJgbt1ZL7H36AriDmtP1j3srwz9Jb/YiXj1qgcLN7w
-         e/TzmG2Qq2t8Yvu3ldbll8ld/jiEfkCoI7phj+G9QtW1cYyWV9oCZq2uhIWb57QAuUuD
-         M86Q==
+        Wed, 8 Jun 2022 11:20:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC58113903A
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:18:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654701423;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=y8H9jGB7E9Z50aLgeVMMhOdyAwsTkxFP1izvYrfhgfg=;
+        b=RA8oGHf3moQi17BWYwf+nWOSbdXxkWLU1z+KxxJKfioDm4TnD31H5yjm4stQ9zzcddQuNY
+        fQf3cX/y1evtP7kCwRDENETKn3gNGtmZfDaEvyvRS1J0Q0JT85VlshEc7OOEX+wNpzvYCY
+        24nm6TIDSXFAZE5ZE3kGtNhL33G8Kbc=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-144-yZE0pfDoM22pRZoGQAD0hg-1; Wed, 08 Jun 2022 11:17:02 -0400
+X-MC-Unique: yZE0pfDoM22pRZoGQAD0hg-1
+Received: by mail-wm1-f71.google.com with SMTP id ay1-20020a05600c1e0100b0039c3a3fc6a4so7078502wmb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 08:17:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WG94p2edkIKDcgGBWYikbRM1gTNO7+P3Sh2LbeXDfqU=;
-        b=cfdu5FvEBCvOmInqDkDf5ZVZBuoNiXY/UFS60XjsNtgk2tEO4s358Y/81ylvMbUKzv
-         uNEBJMVSL5TPYB/VQBnHF6y/Sfe8MKd/HW5YMoktrMHzGj4nXsBjB5XeTCEl/4eKI9U/
-         fPohpban7KBIvmMkF9BlMQURzDhKiobZmqDNs4SJ2ndxPlGucTl8aA2PsfcFRARZ27NX
-         /Emg4DnhPGJindxHFU4x1O/OZgSwAl90Jj//0GmjG0oBv3iKf/sDvqK26wZeVIO++Mzb
-         HRR/DVpCp03mjV1llq4ebmTO5+n+fJojVsGjJZQ97yt5QxcFA2bcjvbpaP22zugcyYb4
-         wgUA==
-X-Gm-Message-State: AOAM532/uDJU30O3CbypSYsntytBx0M3f47GeBBnoebJLPVojLuKKlEc
-        jnBqzW60klgQMgRNtdoAWHFjqSVBW87YQYbbNRE=
-X-Google-Smtp-Source: ABdhPJz6+s2hS3jQ6SMpKkrD1/eP4KjxDzXlJbreb7w3OX8ahmGhGR0Care8jMIgSpEtyea5tkQD1mKKlvMd/mdu/Bc=
-X-Received: by 2002:ab0:2315:0:b0:378:cc65:f798 with SMTP id
- a21-20020ab02315000000b00378cc65f798mr8801120uao.60.1654701161087; Wed, 08
- Jun 2022 08:12:41 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=y8H9jGB7E9Z50aLgeVMMhOdyAwsTkxFP1izvYrfhgfg=;
+        b=Oknl6+roN8fXlfMg2cI2oLj4ntzO5DdNYxDLbtQ5Hdm88C/kARa7r9S1KcJUio4Ni0
+         mjEzPY9BSrX/UixNCFU3VZYoigAHdFT5bOm107JwI6+zQ59g9cavDf5zPo67IfqCm9Bl
+         FdRXOrFWp+RwxVr01meNeVwIUiyhyLVocK4oKHMMkRGj8Y4uu9UrYW9YJGknJfyk/41T
+         czSXSdiCCwoxgdqnf4BM2YTG1twbCEk9lAKVKwnj9ytn2XsGORftBC75BpcAlYZ4eeZS
+         DYN9llspiF6GedDMgqxnUQgbywUYFYs819DODWNqWZIEGMN54ULQFwOM9HPtsxOZu/LN
+         B7Dg==
+X-Gm-Message-State: AOAM532QdTqD13phX2/INyeahnllNthyYyQcLT6I5EWwwCSHOCOUwf3S
+        kVXd1Ljsd3OyNlN2/ySKxVYvX0hm6hmLkPz2tPIbQdXfpswcty4DsB8zN1fL/q7V2GT+zsKuPRu
+        B3HE+3NPem5LsVno7YDbivXKy
+X-Received: by 2002:a05:600c:3ba6:b0:397:5508:652d with SMTP id n38-20020a05600c3ba600b003975508652dmr64645336wms.126.1654701420809;
+        Wed, 08 Jun 2022 08:17:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzACjV0q1j/MZdf3myhyht9jNflmTjecKJCZdzLXqgYUj70QjsvLN+eY19mHafUixzLazP+zw==
+X-Received: by 2002:a05:600c:3ba6:b0:397:5508:652d with SMTP id n38-20020a05600c3ba600b003975508652dmr64645310wms.126.1654701420494;
+        Wed, 08 Jun 2022 08:17:00 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c705:ad00:db2:4c6:8f3a:2ec4? (p200300cbc705ad000db204c68f3a2ec4.dip0.t-ipconnect.de. [2003:cb:c705:ad00:db2:4c6:8f3a:2ec4])
+        by smtp.gmail.com with ESMTPSA id l13-20020a05600c4f0d00b0039c55bc2c97sm7819484wmq.16.2022.06.08.08.16.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 08:16:58 -0700 (PDT)
+Message-ID: <b27d36fe-0403-f56d-e3f1-324298f1d5ed@redhat.com>
+Date:   Wed, 8 Jun 2022 17:16:56 +0200
 MIME-Version: 1.0
-References: <20220607153139.35588-1-cgzones@googlemail.com>
- <20220608112728.b4xrdppxqmyqmtwf@wittgenstein> <CAOQ4uxipD6khNUYuZT80WUa0KOMdyyP0ia55uhmeRCLj4NBicg@mail.gmail.com>
- <20220608124808.uylo5lntzfgxxmns@wittgenstein>
-In-Reply-To: <20220608124808.uylo5lntzfgxxmns@wittgenstein>
-From:   Amir Goldstein <amir73il@gmail.com>
-Date:   Wed, 8 Jun 2022 18:12:29 +0300
-Message-ID: <CAOQ4uxjP7kC95ou56wabVhQcc2vkNcD-8usYhLhbLOoJZ-jkOw@mail.gmail.com>
-Subject: Re: [RFC PATCH] f*xattr: allow O_PATH descriptors
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>,
-        selinux@vger.kernel.org, Miklos Szeredi <mszeredi@redhat.com>,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Aleksa Sarai <cyphar@cyphar.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 3/3] mm/swap: remove swap_cache_info statistics
+Content-Language: en-US
+To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220608144031.829-1-linmiaohe@huawei.com>
+ <20220608144031.829-4-linmiaohe@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220608144031.829-4-linmiaohe@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 3:48 PM Christian Brauner <brauner@kernel.org> wrote=
-:
->
-> On Wed, Jun 08, 2022 at 03:28:52PM +0300, Amir Goldstein wrote:
-> > On Wed, Jun 8, 2022 at 2:57 PM Christian Brauner <brauner@kernel.org> w=
-rote:
-> > >
-> > > On Tue, Jun 07, 2022 at 05:31:39PM +0200, Christian G=C3=B6ttsche wro=
-te:
-> > > > From: Miklos Szeredi <mszeredi@redhat.com>
-> > > >
-> > > > Support file descriptors obtained via O_PATH for extended attribute
-> > > > operations.
-> > > >
-> > > > Extended attributes are for example used by SELinux for the securit=
-y
-> > > > context of file objects. To avoid time-of-check-time-of-use issues =
-while
-> > > > setting those contexts it is advisable to pin the file in question =
-and
-> > > > operate on a file descriptor instead of the path name. This can be
-> > > > emulated in userspace via /proc/self/fd/NN [1] but requires a procf=
-s,
-> > > > which might not be mounted e.g. inside of chroots, see[2].
-> > > >
-> > > > [1]: https://github.com/SELinuxProject/selinux/commit/7e979b56fd2ce=
-e28f647376a7233d2ac2d12ca50
-> > > > [2]: https://github.com/SELinuxProject/selinux/commit/de285252a1801=
-397306032e070793889c9466845
-> > > >
-> > > > Original patch by Miklos Szeredi <mszeredi@redhat.com>
-> > > > https://patchwork.kernel.org/project/linux-fsdevel/patch/2020050509=
-5915.11275-6-mszeredi@redhat.com/
-> > > >
-> > > > > While this carries a minute risk of someone relying on the proper=
-ty of
-> > > > > xattr syscalls rejecting O_PATH descriptors, it saves the trouble=
- of
-> > > > > introducing another set of syscalls.
-> > > > >
-> > > > > Only file->f_path and file->f_inode are accessed in these functio=
-ns.
-> > > > >
-> > > > > Current versions return EBADF, hence easy to detect the presense =
-of
-> > > > > this feature and fall back in case it's missing.
-> > > >
-> > > > CC: linux-api@vger.kernel.org
-> > > > CC: linux-man@vger.kernel.org
-> > > > Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
-> > > > ---
-> > >
-> > > I'd be somewhat fine with getxattr and listxattr but I'm worried that
-> > > setxattr/removexattr waters down O_PATH semantics even more. I don't
-> > > want O_PATH fds to be useable for operations which are semantically
-> > > equivalent to a write.
-> >
-> > It is not really semantically equivalent to a write if it works on a
-> > O_RDONLY fd already.
->
-> The fact that it works on a O_RDONLY fd has always been weird. And is
-> probably a bug. If you look at xattr_permission() you can see that it
+On 08.06.22 16:40, Miaohe Lin wrote:
+> swap_cache_info are not statistics that could be easily used to tune system
+> performance because they are not easily accessile. Also they can't provide
+> really useful info when OOM occurs. Remove these statistics can also help
+> mitigate unneeded global swap_cache_info cacheline contention.
+> 
+> Suggested-by: David Hildenbrand <david@redhat.com>
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
 
-Bug or no bug, this is the UAPI. It is not fixable anymore.
+Reviewed-by: David Hildenbrand <david@redhat.com>
 
-> checks for MAY_WRITE for set operations... setxattr() writes to disk for
-> real filesystems. I don't know how much closer to a write this can get.
->
-> In general, one semantic aberration doesn't justify piling another one
-> on top.
->
-> (And one thing that speaks for O_RDONLY is at least that it actually
-> opens the file wheres O_PATH doesn't.)
 
-Ok. I care mostly about consistent UAPI, so if you want to set the
-rule that modify f*() operations are not allowed to use O_PATH fd,
-I can live with that, although fcntl(2) may be breaking that rule, but
-fine by me.
-It's good to have consistent rules and it's good to add a new UAPI for
-new behavior.
-
-However...
-
->
-> >
-> > >
-> > > In sensitive environments such as service management/container runtim=
-es
-> > > we often send O_PATH fds around precisely because it is restricted wh=
-at
-> > > they can be used for. I'd prefer to not to plug at this string.
-> >
-> > But unless I am mistaken, path_setxattr() and syscall_fsetxattr()
-> > are almost identical w.r.t permission checks and everything else.
-> >
-> > So this change introduces nothing new that a user in said environment
-> > cannot already accomplish with setxattr().
-> >
-> > Besides, as the commit message said, doing setxattr() on an O_PATH
-> > fd is already possible with setxattr("/proc/self/$fd"), so whatever sec=
-urity
-> > hole you are trying to prevent is already wide open.
->
-> That is very much a something that we're trying to restrict for this
-> exact reason and is one of the main motivator for upgrade mask in
-> openat2(). If I want to send a O_PATH around I want it to not be
-> upgradable. Aleksa is working on upgrade masks with openat2() (see [1]
-> and part of the original patchset in [2]. O_PATH semantics don't need to
-> become weird.
->
-> [1]: https://lore.kernel.org/all/20220526130355.fo6gzbst455fxywy@senku
-> [2]: https://patchwork.ozlabs.org/project/linuxppc-dev/patch/201907280102=
-07.9781-8-cyphar@cyphar.com
-
-... thinking forward, if this patch is going to be rejected, the patch that
-will follow is *xattrat() syscalls.
-
-What will you be able to argue then?
-
-There are several *at() syscalls that modify metadata.
-fchownat(.., AT_EMPTY_PATH) is intentionally designed for this.
-
-Do you intend to try and block setxattrat()?
-Just try and block setxattrat(.., AT_EMPTY_PATH)?
-those *at() syscalls have real use cases to avoid TOCTOU races.
-Do you propose that applications will have to use fsetxattr() on an open
-file to avert races?
-
-I completely understand the idea behind upgrade masks
-for limiting f_mode, but I don't know if trying to retroactively
-change semantics of setxattr() in the move to setxattrat()
-is going to be a good idea.
-
-And forgive me if I am failing to see the big picture.
-It is certainly a possibility.
-
+-- 
 Thanks,
-Amir.
+
+David / dhildenb
+
