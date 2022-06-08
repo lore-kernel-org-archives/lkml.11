@@ -2,146 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D513C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:16:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41553CCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:16:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239283AbiFHHL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
+        id S240664AbiFHHMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:12:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237070AbiFHGEU (ORCPT
+        with ESMTP id S235703AbiFHFtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 02:04:20 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 439FB364848
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 21:59:27 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2584PxSU013355;
-        Wed, 8 Jun 2022 04:55:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=+1/08y4B9ao5+Ix448dysboe8f8SwSI3kQ6htTX0kqM=;
- b=k8rQt/jmDu/5WTG+KVvZPcZrap9gtpl+0RM3RCr73WWDJa0lq8KtOrU4VavMoo0o9lTN
- SBO45I3fgyvNkCO4e6+2c51wFxTRT/Bsg6UnZrrkihcKSFKvs3rmFOC1VFPvOjPLlm+7
- aCBkr/3uYZHnSmbD3Lpk+NcMqniQbCSwKAC4L6SsC1WpaBRzCuE7o03uZo+Ye7r2E5c/
- T5K0wLNuxD5mcmXQXjCdge4jqQkdtTQMZnVLPxSHO1NuCl5g9DNg37ygX13zsU6bBwp9
- d+SXOAtC/Lr25y4/I//IYe4ZMFS2EM+Qs1dyrJ/2wNkK1OHhRBMLIlcTZtXOxkgQDHk/ Pw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjmr40ewq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jun 2022 04:55:22 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2584aFY5018505;
-        Wed, 8 Jun 2022 04:55:22 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjmr40ewa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jun 2022 04:55:21 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2584osHU019119;
-        Wed, 8 Jun 2022 04:55:19 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03fra.de.ibm.com with ESMTP id 3gfy18uksk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jun 2022 04:55:19 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2584tHvN21889298
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 8 Jun 2022 04:55:17 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E8CC252050;
-        Wed,  8 Jun 2022 04:55:16 +0000 (GMT)
-Received: from [9.43.53.124] (unknown [9.43.53.124])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 6DF755204E;
-        Wed,  8 Jun 2022 04:55:10 +0000 (GMT)
-Message-ID: <626023e8-8443-619e-18ee-a758c37fcec2@linux.ibm.com>
-Date:   Wed, 8 Jun 2022 10:25:09 +0530
+        Wed, 8 Jun 2022 01:49:55 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04BDF1567C2;
+        Tue,  7 Jun 2022 20:26:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=rb8PtiqYu5cbp4L1/wbvkrZWp96775LgK31d20avxd0=; b=XDQVraJG6VNU51qlL2Cm9Ls3AW
+        QwUxqU1rbHT7aux/Hf7mU8uBRW+nAvn/g434eK7KcdQvxHq1XqCkXN45g0Jy0uDMpBxtcUzRZ8JYb
+        L9o9w1mjqa/kbQBQism8A7rfvU4zaxYSQVB0bLTNhZo2xNHD4NxtmLg/wNo766JpC75Lj2PXd/HJ1
+        Yu1kWx7yGd6y/F7zAVvZ2sfYrAhImlz+3cG82JXuajyGx23L1xPDzBWasTjfmgUnEycNQIzdZBJ6L
+        LRFZoUyM5iBpbcBtzAwxgjseaIER0sY7FETYccxpTBBLQskNFCTPh9rXB6RUZ+1y5o1C8fbDFcPcN
+        qQbhKTUg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nymJw-00CH9N-Dj; Wed, 08 Jun 2022 03:25:24 +0000
+Date:   Wed, 8 Jun 2022 04:25:24 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        syzbot <syzbot+dd3c97de244683533381@syzkaller.appspotmail.com>,
+        hdanton@sina.com, lenb@kernel.org, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rafael.j.wysocki@intel.com,
+        rafael@kernel.org, rjw@rjwysocki.net,
+        syzkaller-bugs@googlegroups.com, linux-usb@vger.kernel.org,
+        Linux-MM <linux-mm@kvack.org>
+Subject: Re: [syzbot] general protection fault in __device_attach
+Message-ID: <YqAWpMdi4o1IQslu@casper.infradead.org>
+References: <000000000000bb7f1c05da29b601@google.com>
+ <00000000000010b7d305e08837c8@google.com>
+ <YpnqpMYcokTwCB6u@smile.fi.intel.com>
+ <Ypor265BTdnmgwpM@rowland.harvard.edu>
+ <YpouRmanvCQeKA3S@kroah.com>
+ <Ypow1LRZ3Hau36ci@rowland.harvard.edu>
+ <Ypoyy/stICFdHauR@kroah.com>
+ <CACT4Y+bBWrLRwiowaWk8o4+XAtCHxxJiEQfiSkgM3BDut9atAw@mail.gmail.com>
+ <20220606123839.GW2146@kadam>
+ <CACT4Y+Y_kg1J00iBL=sMr5AP7U4RXuBizusvQG52few2NcJ6dg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v5 2/9] mm/demotion: Expose per node memory tier to sysfs
-Content-Language: en-US
-To:     Tim Chen <tim.c.chen@linux.intel.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
-        Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
- <20220603134237.131362-3-aneesh.kumar@linux.ibm.com>
- <fa6b575dfea7c2131ecfec0f5578d72ca4acfd95.camel@linux.intel.com>
-From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
-In-Reply-To: <fa6b575dfea7c2131ecfec0f5578d72ca4acfd95.camel@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 8U9B6P44JQMCSa2PS4QtUggjW3bkbMc7
-X-Proofpoint-GUID: 8J-WRUL6g3hUIhJM96brqIBSRlCTtmH2
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-08_01,2022-06-07_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- malwarescore=0 bulkscore=0 suspectscore=0 mlxlogscore=999 adultscore=0
- spamscore=0 priorityscore=1501 clxscore=1015 lowpriorityscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206080019
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACT4Y+Y_kg1J00iBL=sMr5AP7U4RXuBizusvQG52few2NcJ6dg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/8/22 1:45 AM, Tim Chen wrote:
-> On Fri, 2022-06-03 at 19:12 +0530, Aneesh Kumar K.V wrote:
->>
->>   
->> +static struct memory_tier *__node_get_memory_tier(int node)
->> +{
->> +	struct memory_tier *memtier;
->> +
->> +	list_for_each_entry(memtier, &memory_tiers, list) {
+On Tue, Jun 07, 2022 at 09:15:09AM +0200, Dmitry Vyukov wrote:
+> On Mon, 6 Jun 2022 at 14:39, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> >
+> > On Sat, Jun 04, 2022 at 10:32:46AM +0200, 'Dmitry Vyukov' via syzkaller-bugs wrote:
+> > > On Fri, 3 Jun 2022 at 18:12, Greg KH <gregkh@linuxfoundation.org> wrote:
+> > > >
+> > > > But again, is this a "real and able to be triggered from userspace"
+> > > > problem, or just fault-injection-induced?
+> > >
+> > > Then this is something to fix in the fault injection subsystem.
+> > > Testing systems shouldn't be reporting false positives.
+> > > What allocations cannot fail in real life? Is it <=page_size?
+> > >
+> >
+> > Apparently in 2014, anything less than *EIGHT?!!* pages succeeded!
+> >
+> > https://lwn.net/Articles/627419/
+> >
+> > I have been on the look out since that article and never seen anyone
+> > mention it changing.  I think we should ignore that and say that
+> > anything over PAGE_SIZE can fail.  Possibly we could go smaller than
+> > PAGE_SIZE...
 > 
-> We could need to map node to mem_tier quite often, if we need
-> to account memory usage at tier level.  It will be more efficient
-> to have a pointer from node (pgdat) to memtier rather
-> than doing a search through the list.
+> +linux-mm for GFP expertise re what allocations cannot possibly fail
+> and should be excluded from fault injection.
 > 
+> Interesting, thanks for the link.
 > 
-
-That is something I was actively trying to avoid. Currently all struct 
-memory_tier references are with memory_tier_lock mutex held. That 
-simplify the locking and reference counting.
-
-As of now we are able to implement all the required interfaces without 
-pgdat having pointers to struct memory_tier. We can update pgdat with 
-memtier details when we are implementing changes requiring those. We 
-could keep additional memtier->dev reference to make sure memory tiers 
-are not destroyed while other part of the kernel is referencing the 
-same. But IMHO such changes should wait till we have users for the same.
-
-
->> +		if (node_isset(node, memtier->nodelist))
->> +			return memtier;
->> +	}
->> +	return NULL;
->> +}
->> +
->>
+> PAGE_SIZE looks like a good start. Once we have the predicate in
+> place, we can refine it later when/if we have more inputs.
 > 
-> Tim
->
+> But I wonder about GFP flags. They definitely have some impact on allocations.
+> If GFP_ACCOUNT is set, all allocations can fail, right?
+> If GFP_DMA/DMA32 is set, allocations can fail, right? What about other zones?
+> If GFP_NORETRY is set, allocations can fail?
+> What about GFP_NOMEMALLOC and GFP_ATOMIC?
+> What about GFP_IO/GFP_FS/GFP_DIRECT_RECLAIM/GFP_KSWAPD_RECLAIM? At
+> least some of these need to be set for allocations to not fail? Which
+> ones?
+> Any other flags are required to be set/unset for allocations to not fail?
 
--aneesh
+I'm not the expert on page allocation, but ...
 
+I don't think GFP_ACCOUNT makes allocations fail.  It might make reclaim
+happen from within that cgroup, and it might cause an OOM kill for
+something in that cgroup.  But I don't think it makes a (low order)
+allocation more likely to fail.
+
+There's usually less memory avilable in DMA/DMA32 zones, but we have
+so few allocations from those zones, I question the utility of focusing
+testing on those allocations.
+
+GFP_ATOMIC allows access to emergency pools, so I would say _less_ likely
+to fail.  KSWAPD_RECLAIM has no effect on whether _this_ allocation
+succeeds or fails; it kicks kswapd to do reclaim, rather than doing
+reclaim directly.  DIRECT_RECLAIM definitely makes allocations more likely
+to succeed.  GFP_FS allows (direct) reclaim to happen from filesystems.
+GFP_IO allows IO to start (ie writeback can start) in order to clean
+dirty memory.
+
+Anyway, I hope somebody who knows the page allocator better than I do
+can say smarter things than this.  Even better if they can put it into
+Documentation/ somewhere ;-)
+
+https://www.kernel.org/doc/html/latest/core-api/memory-allocation.html
+exists but isn't quite enough to answer this question.
