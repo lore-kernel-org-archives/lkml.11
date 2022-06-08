@@ -2,113 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 294E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:02:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A56FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233463AbiFHFB5 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:01:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60896 "EHLO
+        id S232290AbiFHFFB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:05:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233094AbiFHFBl (ORCPT
+        with ESMTP id S233506AbiFHFEQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:01:41 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8823104C6;
-        Tue,  7 Jun 2022 18:43:48 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2ef5380669cso194218037b3.9;
-        Tue, 07 Jun 2022 18:43:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=yFX0ScDTbzbhgTtVTbyM2Jww+3EPJG7CHlISZZneC/A=;
-        b=59JWVnM5HhUO/XryciH+kETEnIMZKp6yYAI6JqVjVOPNHOdDIuMqg1oGzU1YaWrdAn
-         SVTlNO4DMVuQOOeW7p5maH9JOzxVefRCnqJ7/e5nlSaoKrohtFHZ5Tb2t+sBMaG9M/U6
-         va9m9npND9TKtvJaw0TSODomwle4QdZeCA6gy5ZzBm1I5S5qOAqbO4Tphj9jQscd9mtw
-         O4cWHQDysNF/Z/3fSoH2V8ug+iI2dZk9fzyxla2EXCynqW9qPnwAfLO311wMswIlh9TR
-         1Hf8tDXVyNUd62ftgWohvCOaWBTDd0Q8J7WYq72RlFruDlv/lXHZndbs4dhQuVwvNIrs
-         /l6Q==
-X-Gm-Message-State: AOAM530kaMI0kf9BlQ3Q/fUFE5UKVmK622sO7ZjOvrMblEsANv7KDmD+
-        debHyCItfLAv/p7b4T6RwVFIvB+xiMPWdKsefBU=
-X-Google-Smtp-Source: ABdhPJy/8H+x3FlXFOirCvhyOHm/sGzv12loESI0dHu34OYJFkJP3OB773LdV2b1aJSA777LrGPhTaCfKxI1y8+y1yI=
-X-Received: by 2002:a81:5ad6:0:b0:300:3244:341 with SMTP id
- o205-20020a815ad6000000b0030032440341mr35299576ywb.191.1654652305684; Tue, 07
- Jun 2022 18:38:25 -0700 (PDT)
+        Wed, 8 Jun 2022 01:04:16 -0400
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B9B386CB7
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:59:25 -0700 (PDT)
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220608014344epoutp0344daf8e7c83ac9535265488541bf7a93~2gct6DJPo3247732477epoutp03q
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:43:44 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220608014344epoutp0344daf8e7c83ac9535265488541bf7a93~2gct6DJPo3247732477epoutp03q
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1654652624;
+        bh=KqfS/4/IeJ632hAg/V9fsBPAEPGRQopHMhfw27hpgJI=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=rpt1BGGS40YE0Wj64lt8WWv8e/GMQU7qZEDXfM1SlesREL6rdShKj+GAsgahDRIy0
+         pG7+cbGZKD29GllzURwmkys4ecW6GUn9lyrPmVDYhzhqUxsSQROLgCJIPvYXYUTHRk
+         GqxOzxZoJwCk7n6Hvqg12Hgs93MDeaHXerpsG3PU=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20220608014343epcas2p2eb6c94e6e0cd2251c3e450aa543bf2aa~2gctV1RUE0725707257epcas2p2A;
+        Wed,  8 Jun 2022 01:43:43 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.102]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4LHqkk5Dlfz4x9Q3; Wed,  8 Jun
+        2022 01:43:42 +0000 (GMT)
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        43.F0.10028.ECEFF926; Wed,  8 Jun 2022 10:43:42 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220608014341epcas2p1bf184d852c59b35484b3c57189f1eadf~2gcr3jnZZ1607416074epcas2p12;
+        Wed,  8 Jun 2022 01:43:41 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220608014341epsmtrp243b275605ade7fdc50c7105ac7efea41~2gcr2sFGv1948519485epsmtrp2E;
+        Wed,  8 Jun 2022 01:43:41 +0000 (GMT)
+X-AuditID: b6c32a47-589ff7000000272c-96-629ffece429f
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        AD.E3.11276.DCEFF926; Wed,  8 Jun 2022 10:43:41 +0900 (KST)
+Received: from KORCO082417 (unknown [10.229.8.121]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220608014341epsmtip1896b1c38c2d57e0c13addc19484891cc~2gcrpgRQc1248812488epsmtip1Q;
+        Wed,  8 Jun 2022 01:43:41 +0000 (GMT)
+From:   "Chanho Park" <chanho61.park@samsung.com>
+To:     "'Alim Akhtar'" <alim.akhtar@samsung.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>
+Cc:     <devicetree@vger.kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <vkoul@kernel.org>,
+        <avri.altman@wdc.com>, <bvanassche@acm.org>,
+        <martin.petersen@oracle.com>, <pankaj.dubey@samsung.com>,
+        "'Bharat Uppal'" <bharat.uppal@samsung.com>
+In-Reply-To: <20220603154714.30532-4-alim.akhtar@samsung.com>
+Subject: RE: [PATCH v2 3/7] phy: samsung-ufs: add support for FSD ufs phy
+ driver
+Date:   Wed, 8 Jun 2022 10:43:41 +0900
+Message-ID: <002d01d87ad9$2ea92ac0$8bfb8040$@samsung.com>
 MIME-Version: 1.0
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220604163000.211077-1-mailhol.vincent@wanadoo.fr> <20220604163000.211077-5-mailhol.vincent@wanadoo.fr>
- <CAMuHMdXkq7+yvD=ju-LY14yOPkiiHwL6H+9G-4KgX=GJjX=h9g@mail.gmail.com>
- <CAMZ6RqLEEHOZjrMH+-GLC--jjfOaWYOPLf+PpefHwy=cLpWTYg@mail.gmail.com>
- <20220607182216.5fb1084e.max@enpas.org> <20220607150614.6248c504@kernel.org>
- <20220608014248.6e0045ae.max@enpas.org> <20220607171455.0a75020c@kernel.org>
-In-Reply-To: <20220607171455.0a75020c@kernel.org>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Wed, 8 Jun 2022 10:38:15 +0900
-Message-ID: <CAMZ6RqJhshinGuG-wVAwyTiS42ZzwBRE1mdeiPg5gwamAVAR3Q@mail.gmail.com>
-Subject: Re: [PATCH v5 4/7] can: Kconfig: add CONFIG_CAN_RX_OFFLOAD
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Max Staudt <max@enpas.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: ko
+Thread-Index: AQFSBQ9Zoh1+pG8sApsbls4ebot9jgKYKc3AAgKsrFGuLM/TEA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrJJsWRmVeSWpSXmKPExsWy7bCmme65f/OTDGZ95LZ4MG8bm8XLn1fZ
+        LK69vMBuMe3DT2aL+UfOsVr0vXjIbLHp8TVWi8u75rBZTFj1jcWi+/oONovlx/8xWSza+oXd
+        onXvEXaLnXdOMDvweVy+4u2xaVUnm8eda3vYPDYvqff4+PQWi0ffllWMHp83yXm0H+hmCuCI
+        yrbJSE1MSS1SSM1Lzk/JzEu3VfIOjneONzUzMNQ1tLQwV1LIS8xNtVVy8QnQdcvMATpbSaEs
+        MacUKBSQWFyspG9nU5RfWpKqkJFfXGKrlFqQklNgXqBXnJhbXJqXrpeXWmJlaGBgZApUmJCd
+        0fT9KUvBRZaKK7+OMTUwfmHuYuTkkBAwkXh/5B1rFyMXh5DADkaJ/6vfMUI4nxglNl18ywLh
+        fGOUuHi1iR2mpWneTjYQW0hgL6PEp6+8EEUvGCUm7bkBVsQmoC/xsmMb2FwRkLmfV3wCG8Us
+        0Mkk0X3kAhNIFaeArcSmvnVgtrBAkMSkQ3/AxrIIqEic27GXBcTmFbCU2HSwix3CFpQ4OfMJ
+        WJxZQFti2cLXUF8oSPx8uowVIi4iMbuzDSwuIuAksafvN9gVEgIPOCTuPfnNCtHgInFq92uo
+        f4QlXh3fAmVLSXx+t5cNwi6WWDrrExNEcwOjxOVtv6ASxhKznrUDg4kDaJumxPpd+iCmhICy
+        xJFbULfxSXQc/ssOEeaV6GgTgmhUlziwfToLhC0r0T3nM+sERqVZSD6bheSzWUi+mYWwawEj
+        yypGsdSC4tz01GKjAmN4dCfn525iBKdpLfcdjDPeftA7xMjEwXiIUYKDWUmEVzJ8fpIQb0pi
+        ZVVqUX58UWlOavEhRlNgWE9klhJNzgdmirySeEMTSwMTMzNDcyNTA3MlcV6vlA2JQgLpiSWp
+        2ampBalFMH1MHJxSDUyM0wLSTZ+ecM2vCLmb4zPRzNfqfdOS7E6l+FAfeevwhJiYkA2sDc+E
+        3p41sd8ybXdQbOKS0ttVWUl/Lt7ouaq3UcdaqWT/as+1h8sXrl3w4or59eRLfn8VPoUkGraJ
+        rTxyz3Tfh9+aiaLG+g0M/63yeyfOnhzur2usVBomeHNxXeuKP+VKIl1Ctg+qHz5kUNkfbjRf
+        bV8y/9e0FbVsuw4/KW0O3P/5d6vChNuTD7z8+X5lfXnjigdcTu94DX/H7J7RGq9cUfVjmvWP
+        Pjtjr+pC+5cdb44c+v4w64TQ2ux1/tu/lP2qWVEhLjhb/17D4Tm3eeVW/WrlsI/M5na6NH1K
+        a3J00LuAbbm3znu0X1ViKc5INNRiLipOBACrpkQtXAQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGIsWRmVeSWpSXmKPExsWy7bCSnO7Zf/OTDPZv0rV4MG8bm8XLn1fZ
+        LK69vMBuMe3DT2aL+UfOsVr0vXjIbLHp8TVWi8u75rBZTFj1jcWi+/oONovlx/8xWSza+oXd
+        onXvEXaLnXdOMDvweVy+4u2xaVUnm8eda3vYPDYvqff4+PQWi0ffllWMHp83yXm0H+hmCuCI
+        4rJJSc3JLEst0rdL4MpY336JseAwS8WWI89YGhifMXcxcnJICJhINM3bydbFyMUhJLCbUWLm
+        16VQCVmJZ+92sEPYwhL3W46wQhQ9Y5TYMuUvG0iCTUBf4mXHNrCEiMAeRom2eafYQRxmgclM
+        EpMavrJAtOxnlPi9q50FpIVTwFZiU986JhBbWCBAouXwXVYQm0VAReLcjr1gNbwClhKbDnax
+        Q9iCEidnPgGLMwtoS/Q+bGWEsZctfA11q4LEz6fLWCHiIhKzO9vA4iICThJ7+n6zTmAUnoVk
+        1Cwko2YhGTULSfsCRpZVjJKpBcW56bnFhgWGeanlesWJucWleel6yfm5mxjBUauluYNx+6oP
+        eocYmTgYDzFKcDArifBKhs9PEuJNSaysSi3Kjy8qzUktPsQozcGiJM57oetkvJBAemJJanZq
+        akFqEUyWiYNTqoFp8ox1QT2ex92EAt2VWs6xcf8489DBtlb4/J7ODdE3jnx4occhtbxq9jUX
+        rjk5Oy6eWcv5xylBT82kX9KqqfPP8i27N8lLdbkvXvVCwfGx9MSXhUkvtqVkfc+btP338b21
+        P7YKbFhX5vDh8QLtfJdc/iVzBeu3vO/nP19w9krBTd8/DsE7VOe8tfsWWbJxi9DBD1f68yxl
+        GXLyFmulPO15O3HNf/8f4awPfae/9yhy+qt6OXL/13vbYr/a/V3EvF38ftzKqXGbJjMq7Hi6
+        in+78rabzZzLX96tu3Gmy/rZ+nkudrymGwrvSG7VYf12btssnc3RET4mM1bGf5dwe/KyojHr
+        c13pm4aGk5yzaha1n1BiKc5INNRiLipOBAD85gRBSQMAAA==
+X-CMS-MailID: 20220608014341epcas2p1bf184d852c59b35484b3c57189f1eadf
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220603154857epcas5p4b4684d4400f4ff66f69ff5e288ef635c
+References: <20220603154714.30532-1-alim.akhtar@samsung.com>
+        <CGME20220603154857epcas5p4b4684d4400f4ff66f69ff5e288ef635c@epcas5p4.samsung.com>
+        <20220603154714.30532-4-alim.akhtar@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed. 8 juin 2022 at 09:14, Jakub Kicinski <kuba@kernel.org> wrote:
-> On Wed, 8 Jun 2022 01:43:54 +0200 Max Staudt wrote:
-> > It seems strange to me to magically build some extra features into
-> > can_dev.ko, depending on whether some other .ko files are built in that
-> > very same moment, or not. By "magically", I mean an invisible Kconfig
-> > option. This is why I think Vincent's approach is best here, by making
-> > the drivers a clearly visible subset of the RX_OFFLOAD option in
-> > Kconfig, and RX_OFFLOAD user-selectable.
->
-> Sorry for a chunked response, vger becoming unresponsive the week after
-> the merge window seems to become a tradition :/
->
-> We have a ton of "magical" / hidden Kconfigs in networking, take a look
-> at net/Kconfig. Quick grep, likely not very accurate but FWIW:
->
-> # not-hidden
-> $ git grep -c -E '(bool|tristate)..' net/Kconfig
-> net/Kconfig:23
->
-> # hidden
-> $ git grep -c -E '(bool|tristate)$' net/Kconfig
-> net/Kconfig:20
+> Subject: =5BPATCH v2 3/7=5D phy: samsung-ufs: add support for FSD ufs phy
+> driver
+>=20
+> Adds support for Tesla Full Self-Driving (FSD) ufs phy driver.
+> This SoC has different cdr lock status offset.
+>=20
+> Signed-off-by: Bharat Uppal <bharat.uppal=40samsung.com>
+> Signed-off-by: Alim Akhtar <alim.akhtar=40samsung.com>
 
-OK. So we have a proposal to make CAN_RX_OFFLOAD an hidden
-configuration. I did not consider this approach before because the CAN
-subsystem *never* relies on this and I did not really explore other
-Kbuild files.
-| $ git grep -c -E '(bool|tristate)$' net/can/Kconfig
-| <no output>
+Reviewed-by: Chanho Park <chanho61.park=40samsung.com>
 
-Before pushing my driver upstream, it was also an out of tree module
-for about one year and I relate a lot to what Max said. But Jakub
-explanations are consistent and reflect the best practices of the
-kernel development.
-Also, mainstream distribution would do an allyesconfig and ship the
-can-dev.ko with everything built in. So the lambda user would still
-have everything built-in.
+As you may know, it seems to be rebased if below patchset goes first.
+https://lore.kernel.org/linux-phy/20220607072907.127000-1-chanho61.park=40s=
+amsung.com/T/=23t
 
-I will let people continue to comment for a couple of days before
-making the final choice and sending the next version. But so far, I am
-leading toward Jakub’s idea to make it a hidden feature.
+Best Regards,
+Chanho Park
 
-> > How about making RX_OFFLOAD a separate .ko file, so we don't have
-> > various possible versions of can_dev.ko?
-> >
-> > @Vincent, I think you suggested that some time ago, IIRC?
-> >
-> > (I know, I was against a ton of little modules, but I'm changing my
-> > ways here now since it seems to help...)
->
-> A separate module wouldn't help with my objections, I don't think.
