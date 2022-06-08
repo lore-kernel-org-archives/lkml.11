@@ -2,187 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D5DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:55:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7317DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235706AbiFHJzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:55:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38270 "EHLO
+        id S235527AbiFHJyo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:54:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235553AbiFHJyp (ORCPT
+        with ESMTP id S235654AbiFHJxa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:54:45 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAAEA42B0A6;
-        Wed,  8 Jun 2022 02:26:56 -0700 (PDT)
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LJ1x56npMz684JT;
-        Wed,  8 Jun 2022 17:23:21 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 8 Jun 2022 11:26:54 +0200
-Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 8 Jun
- 2022 10:26:53 +0100
-Date:   Wed, 8 Jun 2022 10:26:51 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Sasha Levin <sashal@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "Denis Ciocca" <denis.ciocca@st.com>, <linus.walleij@linaro.org>,
-        <lars@metafoo.de>, <andy.shevchenko@gmail.com>,
-        <aardelean@deviqon.com>, <cai.huoqing@linux.dev>,
-        <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH AUTOSEL 5.18 03/68] iio: st_sensors: Add a local lock
- for protecting odr
-Message-ID: <20220608102651.000035b0@Huawei.com>
-In-Reply-To: <20220607174846.477972-3-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
-        <20220607174846.477972-3-sashal@kernel.org>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Wed, 8 Jun 2022 05:53:30 -0400
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31B942242F
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:23:25 -0700 (PDT)
+Received: by mail-vs1-xe2e.google.com with SMTP id e11so4606918vsh.13
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 02:23:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=e/0sdiSvd67y49lSu3lFcJt3wgjE4XshmW4Hj5qQkTQ=;
+        b=P+sopvTzXzbdlKLLGlNvbPg6dP8yoK1KO1VQhr8+F4oGXMSnZ0CtfGvG7u7sus2aK5
+         goaFJsZcjzpEABjSkK7uDVHykt9GYyfzSNGiCEuPtCi1vcYu8GKbGHTosvui0MhzK9dr
+         r+OmnAS7uByYYeeseem6479sJplICTUctbXaBykvWbbQc7ssLuP0cvOMj84uvYucxVh1
+         bUypmxCRL2xArWetvsK4e/yLUkg2nwdb0HkbkS6V1we6e4Z7dfJUO10GGbtWUfW/Xu4U
+         3dLUxB3wQzwIioCJovsQkCRU0ixnPZPucAlUAWDD0pr7f0OHU+M7z0yzUhugJOMq8gVa
+         CsXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=e/0sdiSvd67y49lSu3lFcJt3wgjE4XshmW4Hj5qQkTQ=;
+        b=cq/TrAG14Cbr6x0sTg9Bp3tv1AUCnE2GJlGnYKnjhoYGn+/9sUAy0lKPgM2Q1jlWHa
+         dz8PSRtiVZPN7mCXPTs4xEZ4g44hivhGXysEsclbBbPkoUe9CL0Co/E/473ynhoCYA9X
+         OPiPFpqGDOOMUiaNmGkCbUzMYFwOx3Lkhlt9tD7ri7Hm7CXmFg/5BQB/FI1ZOnSN5eRG
+         v72SVsQL1gwPwKlgxPS7Cm5204UNrS4q6j8NPT1mzbu39o3xXj2aDmIyvTI1aw8RsoAZ
+         siu3wfoHuoIaoLB7cho4KME1DwZE5HZKRMI4O0uvQ3hksAYhwjMaPDZgQYURLkmsp1K5
+         12ow==
+X-Gm-Message-State: AOAM533t+99YAVUtRLihpLJh0C9ZODckoFScoHXHEPSpCaWvUXodOGPy
+        3cOIkVCxqiA6hKAym/1sZIH9hDgi+LgETg==
+X-Google-Smtp-Source: ABdhPJzL7fPWhSa+eEh0ZKUBixmTBOfi600kfvLqXaCWWJ7+4bwDhB9LXx2IaqGxfIAH0gCTcnWR4g==
+X-Received: by 2002:a67:7083:0:b0:34b:8d5a:93f5 with SMTP id l125-20020a677083000000b0034b8d5a93f5mr13375698vsc.27.1654680203900;
+        Wed, 08 Jun 2022 02:23:23 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id g26-20020a056102245a00b00349dedb879esm2222195vss.1.2022.06.08.02.23.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 02:23:23 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     bcm-kernel-feedback-list@broadcom.com,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Christian Daudt <csd@broadcom.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ARM: bcm: Fix refcount leak in bcm_kona_smc_init
+Date:   Wed,  8 Jun 2022 02:23:20 -0700
+Message-Id: <20220608092320.1464566-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220526081325.30954-1-linmq006@gmail.com>
+References: <20220526081325.30954-1-linmq006@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhreml739-chm.china.huawei.com (10.201.108.189) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue,  7 Jun 2022 13:47:29 -0400
-Sasha Levin <sashal@kernel.org> wrote:
-
-> From: Miquel Raynal <miquel.raynal@bootlin.com>
+On Thu, 26 May 2022 12:13:25 +0400, Miaoqian Lin <linmq006@gmail.com> wrote:
+> of_find_matching_node() returns a node pointer with refcount
+> incremented, we should use of_node_put() on it when not need anymore.
+> Add missing of_node_put() to avoid refcount leak.
 > 
-> [ Upstream commit 474010127e2505fc463236470908e1ff5ddb3578 ]
-> 
-> Right now the (framework) mlock lock is (ab)used for multiple purposes:
-> 1- protecting concurrent accesses over the odr local cache
-> 2- avoid changing samplig frequency whilst buffer is running
-> 
-> Let's start by handling situation #1 with a local lock.
-> 
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Cc: Denis Ciocca <denis.ciocca@st.com>
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> Link: https://lore.kernel.org/r/20220207143840.707510-7-miquel.raynal@bootlin.com
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-
-Hi Sasha,
-
-This one is a cleanup rather than a fix. It's part of a long term move to stop
-drivers using an internal lock (which works, but limits our ability to
-change the core code).  No problem backporting it if it makes
-taking some other fix easier, but I'm not immediately seeing such a patch.
-
-Thanks,
-
-Jonathan
-
+> Fixes: b8eb35fd594a ("ARM: bcm281xx: Add L2 cache enable code")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 > ---
->  .../iio/common/st_sensors/st_sensors_core.c   | 24 ++++++++++++++-----
->  include/linux/iio/common/st_sensors.h         |  3 +++
->  2 files changed, 21 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index fa9bcdf0d190..b92de90a125c 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -71,16 +71,18 @@ static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
->  
->  int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
->  {
-> -	int err;
-> +	int err = 0;
->  	struct st_sensor_odr_avl odr_out = {0, 0};
->  	struct st_sensor_data *sdata = iio_priv(indio_dev);
->  
-> +	mutex_lock(&sdata->odr_lock);
-> +
->  	if (!sdata->sensor_settings->odr.mask)
-> -		return 0;
-> +		goto unlock_mutex;
->  
->  	err = st_sensors_match_odr(sdata->sensor_settings, odr, &odr_out);
->  	if (err < 0)
-> -		goto st_sensors_match_odr_error;
-> +		goto unlock_mutex;
->  
->  	if ((sdata->sensor_settings->odr.addr ==
->  					sdata->sensor_settings->pw.addr) &&
-> @@ -103,7 +105,9 @@ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
->  	if (err >= 0)
->  		sdata->odr = odr_out.hz;
->  
-> -st_sensors_match_odr_error:
-> +unlock_mutex:
-> +	mutex_unlock(&sdata->odr_lock);
-> +
->  	return err;
->  }
->  EXPORT_SYMBOL_NS(st_sensors_set_odr, IIO_ST_SENSORS);
-> @@ -361,6 +365,8 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
->  	struct st_sensors_platform_data *of_pdata;
->  	int err = 0;
->  
-> +	mutex_init(&sdata->odr_lock);
-> +
->  	/* If OF/DT pdata exists, it will take precedence of anything else */
->  	of_pdata = st_sensors_dev_probe(indio_dev->dev.parent, pdata);
->  	if (IS_ERR(of_pdata))
-> @@ -554,18 +560,24 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
->  		err = -EBUSY;
->  		goto out;
->  	} else {
-> +		mutex_lock(&sdata->odr_lock);
->  		err = st_sensors_set_enable(indio_dev, true);
-> -		if (err < 0)
-> +		if (err < 0) {
-> +			mutex_unlock(&sdata->odr_lock);
->  			goto out;
-> +		}
->  
->  		msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
->  		err = st_sensors_read_axis_data(indio_dev, ch, val);
-> -		if (err < 0)
-> +		if (err < 0) {
-> +			mutex_unlock(&sdata->odr_lock);
->  			goto out;
-> +		}
->  
->  		*val = *val >> ch->scan_type.shift;
->  
->  		err = st_sensors_set_enable(indio_dev, false);
-> +		mutex_unlock(&sdata->odr_lock);
->  	}
->  out:
->  	mutex_unlock(&indio_dev->mlock);
-> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-> index 22f67845cdd3..db4a1b260348 100644
-> --- a/include/linux/iio/common/st_sensors.h
-> +++ b/include/linux/iio/common/st_sensors.h
-> @@ -237,6 +237,7 @@ struct st_sensor_settings {
->   * @hw_irq_trigger: if we're using the hardware interrupt on the sensor.
->   * @hw_timestamp: Latest timestamp from the interrupt handler, when in use.
->   * @buffer_data: Data used by buffer part.
-> + * @odr_lock: Local lock for preventing concurrent ODR accesses/changes
->   */
->  struct st_sensor_data {
->  	struct iio_trigger *trig;
-> @@ -261,6 +262,8 @@ struct st_sensor_data {
->  	s64 hw_timestamp;
->  
->  	char buffer_data[ST_SENSORS_MAX_BUFFER_SIZE] ____cacheline_aligned;
-> +
-> +	struct mutex odr_lock;
->  };
->  
->  #ifdef CONFIG_IIO_BUFFER
 
+Applied to https://github.com/Broadcom/stblinux/commits/soc/next, thanks!
+--
+Florian
