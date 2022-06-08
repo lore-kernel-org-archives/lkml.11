@@ -2,82 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B8BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 069B4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235232AbiFHJoM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59020 "EHLO
+        id S235265AbiFHJoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235299AbiFHJnm (ORCPT
+        with ESMTP id S235288AbiFHJoO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:43:42 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C34071BF155;
-        Wed,  8 Jun 2022 02:10:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654679428; x=1686215428;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=eMX2xcf/+FT6Cb05u89O2IkB0tmxuxLjMOtDqe8J9zA=;
-  b=jxqwDbLe2RxKm9sh3UCLnbPpRQIsZxMt4TrK5V3Ttddep/+ayfqZSAeC
-   WSvBnh+1Pkvij4lZueXBBe3n43hdLVvsVQWiz0+tMV7WyzXDXxpkkiK6D
-   sXJK/AyLFSXW1QRL9IhWyUGftXp6Ei8kRH2VOeCJwqpeAdi7Gixo3DCqF
-   tiCMAXmjbuRd/i6m3a9KvN5ZycC9qribtv44zmlwKUcq7GcJDu/LUBwlT
-   oQcD2XwvIg6CDxe4lUEzmY47gk62XwVWuM3xwFYCea+JmvQw7XFS6wS+X
-   Hs3GjPDdYbX0JsOmHJnsrAlvql5nYjGtJOlZvfTYcJBpXmEeY2Usoqan0
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="363158274"
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="363158274"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:10:11 -0700
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="636697466"
-Received: from tower.bj.intel.com ([10.238.157.62])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:10:09 -0700
-From:   Yanfei Xu <yanfei.xu@intel.com>
-To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, namhyung@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Subject: [PATCH] perf/core: remove a meaningless pair of rcu_read_{,un}lock()
-Date:   Wed,  8 Jun 2022 17:09:38 +0800
-Message-Id: <20220608090938.2178624-1-yanfei.xu@intel.com>
-X-Mailer: git-send-email 2.32.0
+        Wed, 8 Jun 2022 05:44:14 -0400
+Received: from mail-vk1-xa2b.google.com (mail-vk1-xa2b.google.com [IPv6:2607:f8b0:4864:20::a2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42A51C0C97;
+        Wed,  8 Jun 2022 02:10:57 -0700 (PDT)
+Received: by mail-vk1-xa2b.google.com with SMTP id b81so8730886vkf.1;
+        Wed, 08 Jun 2022 02:10:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=dOhE7tBwUTzDHWJUqlLa6u3BtIc9nsfJZSTQNm4ba5s=;
+        b=iJ8scK9JvwTKON3zTMv69x4wn3FhcGd2sCC/5gGerOZqlGfFz1safQNPxQF1mBLT5u
+         Z1QauknMoPojSUEPi8EPes4qWFIsuq1204M2K1GKuC5cNSkBKxcSQStdt9VeFN/pmXlI
+         JPVikob4kmQtEh3VQxF3XNpPGs6bHwl22MgMw//vX+PxVh2Gh3sytSxB2CTiohYvndoD
+         4y2vHk4cE+gmH3xkXPkMsdpODnkLjVNzEkVjrTqKjjs6UN9jUIRwxyioEMmfFlwjOg7P
+         JkuD4gAbI86R5Jvkx2igqOsQh/f1nrDBebofmfCZEJ3a0Y3TJhWHnbrqrssiwOv7RcZN
+         qbyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dOhE7tBwUTzDHWJUqlLa6u3BtIc9nsfJZSTQNm4ba5s=;
+        b=60ev7hp6g7dzYioDKhbEYeyf2BmO7lVwtbVmewYHmG6QRpieyTxpkoM7VVPrt4Uxr1
+         Nwjzvo7QYu46HDHB5DtyLMKRXzi/1Jx/rs24FFsosCE9Cx0LX7thWoaf68DPggRvvPVq
+         a5otcLi+1Q+nuyFm69V/0008zre2oKbW8YoMgp8y5Z/sEtGJwL6gUKx2vXi4Is1jw1ot
+         EC6H9vGMZs6rHPpkfiXeNbc6yzcn26bJgrir4VPNcEILXCcZ3EOi/i3NNkppyZ7LE7Ja
+         E8Fiej4h7y0FCYXY9xojro4Hdkuf7ta49kroQC4P+Q9/cTkDBgkdVlYz4dO80xTZXk3A
+         zczA==
+X-Gm-Message-State: AOAM533onannuTldnjPx66Aj/KpjTNduZEN7H7u6509Rw/pZLeuam8PF
+        +dGzHdyT1LZEUhiz4U8ViWE=
+X-Google-Smtp-Source: ABdhPJzCXKta5zQGCjhIQCXPTCuWYd960sfiUBlkfcNP+PixBw4B5zF8JX2RhzfRKzdGn2YxPO8/Jg==
+X-Received: by 2002:a1f:adc6:0:b0:35e:588:2ece with SMTP id w189-20020a1fadc6000000b0035e05882ecemr6492212vke.27.1654679456306;
+        Wed, 08 Jun 2022 02:10:56 -0700 (PDT)
+Received: from [10.230.29.214] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id q130-20020a1f5c88000000b00351bcf78967sm3461307vkb.9.2022.06.08.02.10.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 02:10:55 -0700 (PDT)
+Message-ID: <98f4a12e-bcce-6cad-f976-a4313f9a8000@gmail.com>
+Date:   Wed, 8 Jun 2022 11:10:47 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 0/3] arm: bcmbca: add bcm6878 soc support
+Content-Language: en-US
+To:     Anand Gore <anand.gore@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     kursad.oney@broadcom.com, tomer.yacoby@broadcom.com,
+        samyon.furman@broadcom.com, dan.beygelman@broadcom.com,
+        William Zhang <william.zhang@broadcom.com>,
+        joel.peshkin@broadcom.com, Arnd Bergmann <arnd@arndb.de>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Olof Johansson <olof@lixom.net>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, soc@kernel.org
+References: <20220602221646.3127512-1-anand.gore@broadcom.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220602221646.3127512-1-anand.gore@broadcom.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Per the codes, this pair of rcu_read_{,un}lock() protects nothing.
-Let's remove it.
 
-Further, the variable "pmu" is safe as it is in the SRCU read-side
-critical scope of "pmus_srcu" and perf_pmu_unregister() delete it
-after calling synchronize_srcu.
 
-Signed-off-by: Yanfei Xu <yanfei.xu@intel.com>
----
- kernel/events/core.c | 2 --
- 1 file changed, 2 deletions(-)
+On 6/3/2022 12:16 AM, Anand Gore wrote:
+> 
+> The initial support includes a bare-bone dts
+> for dual core ARM v7  with a pl011 uart.
+> 
+> Changes in v4:
+> - Fixed subject line
+> 
+> Changes in v3:
+> - Simplify subject line
+> 
+> Changes in v2:
+> - Fix psci, GIC dts entries
+> - Remove extra empty lines
+> 
+> Anand Gore (3):
+>    ARM: dts: add dts files for bcmbca soc 6878
+>    dt-bindings: arm: add BCM6878 soc
+>    MAINTAINERS: add bcm6878 to bcmbca arch entry
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 950b25c3f210..36b0df6feab4 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -11296,9 +11296,7 @@ static struct pmu *perf_init_event(struct perf_event *event)
- 	}
- 
- again:
--	rcu_read_lock();
- 	pmu = idr_find(&pmu_idr, type);
--	rcu_read_unlock();
- 	if (pmu) {
- 		if (event->attr.type != type && type != PERF_TYPE_RAW &&
- 		    !(pmu->capabilities & PERF_PMU_CAP_EXTENDED_HW_TYPE))
+Series applied, thanks Anand!
 -- 
-2.32.0
-
+Florian
