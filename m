@@ -2,140 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE425CCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D5DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:03:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235116AbiFHG5Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 02:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46988 "EHLO
+        id S235313AbiFHG6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 02:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236221AbiFHGem (ORCPT
+        with ESMTP id S1346882AbiFHF5k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 02:34:42 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C4B192A9;
-        Tue,  7 Jun 2022 23:34:35 -0700 (PDT)
+        Wed, 8 Jun 2022 01:57:40 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96FC2F297D;
+        Tue,  7 Jun 2022 21:18:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654670077; x=1686206077;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=vPz47IFaZCFVCEfg9YG+pCrbk0tPKwdZhmLWb5+acdE=;
-  b=jFaOVy2/x0q9MQ4D9fkr03+lJgCs5P04kWZzoNFR5dPAJGov57tv/L5E
-   5gryL3p5aEvOMjo08Rv4kMEAei4rm1AELoB5bYENUl8QS+fuB1CtdSyQQ
-   9vPlEHQ/vPDi7DdvuFC5B7d4zDl1OfbiFwYC6CZif1teCgy75XuxuLXWs
-   wqWHWqZlDQrEtw39xnN45LypdOuNqBgjkmeQXX0CJbsM2R4WEjL+5a0ki
-   0aAad8nq02H2bzvBturXLaQqeBinzjbEBt+mbwbCIlNuYfHelYw10Pkp4
-   qVtQHOTPnEut0KBELla8dCCrMW6O4qqSv+QoZ9UhX/N/9gz25UQaq0ePg
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="302158675"
+  t=1654661911; x=1686197911;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hxwdLYtFn89/HjO6XjPYgmI2YT0p6JagRAg+2psMSkI=;
+  b=Pk9kTC4l/h8EuOtq2HFZaupyWzGkAKiCo0fc+f63j5wSu/hwA8RQc9dl
+   ayfgr/rB4FbrKc55W7RcHjMfcvjW5EJlQ2Rtkr7JJyXoL+uJiRqd3bQA8
+   ladigZJj1d2wnB8p9r/aM3DpI+Ylq+9JplB2vnBLktDCSnYrIRw0uvhxm
+   c30ZWQMgrNaBPRfnkIntBq1hsekpj9tV17Fp6QTygL2W6ORI9C1qrVYYc
+   l0jnOCqaF2gcpdEp+AyizmLNRgfmmMhfls/bIg9Cxm2kfJ51Z4QlH6PKG
+   BiY/RjWJtOPkIpHnLX+OZdYaHtOC68fI6YaoT56I+7j5TdtTM3UfABcxt
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277567954"
 X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="302158675"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 23:34:34 -0700
+   d="scan'208";a="277567954"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 21:18:26 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="579923896"
-Received: from zxingrtx.sh.intel.com ([10.239.159.110])
-  by orsmga007.jf.intel.com with ESMTP; 07 Jun 2022 23:34:30 -0700
-From:   zhengjun.xing@linux.intel.com
-To:     acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
-        alexander.shishkin@intel.com, jolsa@redhat.com
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        irogers@google.com, adrian.hunter@intel.com, ak@linux.intel.com,
-        kan.liang@linux.intel.com, zhengjun.xing@linux.intel.com
-Subject: [PATCH 1/2] perf vendor events intel: Rename tremontx to snowridgex
-Date:   Wed,  8 Jun 2022 14:34:38 +0800
-Message-Id: <20220608063439.1997394-1-zhengjun.xing@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+   d="scan'208";a="636539783"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by fmsmga008.fm.intel.com with ESMTP; 07 Jun 2022 21:18:24 -0700
+Date:   Wed, 8 Jun 2022 12:10:30 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Marco Pagani <marpagan@redhat.com>
+Cc:     Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>,
+        Tom Rix <trix@redhat.com>, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] fpga: altera-pr-ip: fix unsigned comparison with less
+ than zero
+Message-ID: <20220608041030.GA407787@yilunxu-OptiPlex-7050>
+References: <20220525151453.55725-1-marpagan@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220525151453.55725-1-marpagan@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+On Wed, May 25, 2022 at 05:14:52PM +0200, Marco Pagani wrote:
+> Fix the "comparison with less than zero" warning reported by
+> cppcheck for the unsigned (size_t) parameter count of the
+> alt_pr_fpga_write() function.
+> 
 
-Tremontx was an old name for Snowridgex, so rename Tremontx to Snowridgex.
+Please add the 'Fixes' tag, and resend it based on 5.19-rc1
 
-Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
----
- tools/perf/pmu-events/arch/x86/mapfile.csv                      | 2 +-
- .../pmu-events/arch/x86/{tremontx => snowridgex}/cache.json     | 0
- .../arch/x86/{tremontx => snowridgex}/floating-point.json       | 0
- .../pmu-events/arch/x86/{tremontx => snowridgex}/frontend.json  | 0
- .../pmu-events/arch/x86/{tremontx => snowridgex}/memory.json    | 0
- .../pmu-events/arch/x86/{tremontx => snowridgex}/other.json     | 0
- .../pmu-events/arch/x86/{tremontx => snowridgex}/pipeline.json  | 0
- .../arch/x86/{tremontx => snowridgex}/uncore-memory.json        | 0
- .../arch/x86/{tremontx => snowridgex}/uncore-other.json         | 0
- .../arch/x86/{tremontx => snowridgex}/uncore-power.json         | 0
- .../arch/x86/{tremontx => snowridgex}/virtual-memory.json       | 0
- 11 files changed, 1 insertion(+), 1 deletion(-)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/cache.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/floating-point.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/frontend.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/memory.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/other.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/pipeline.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/uncore-memory.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/uncore-other.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/uncore-power.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/virtual-memory.json (100%)
+Thanks,
+Yilun
 
-diff --git a/tools/perf/pmu-events/arch/x86/mapfile.csv b/tools/perf/pmu-events/arch/x86/mapfile.csv
-index f5a382421a60..9852bca98d59 100644
---- a/tools/perf/pmu-events/arch/x86/mapfile.csv
-+++ b/tools/perf/pmu-events/arch/x86/mapfile.csv
-@@ -40,7 +40,7 @@ GenuineIntel-6-8[CD],v1,tigerlake,core
- GenuineIntel-6-A7,v1,icelake,core
- GenuineIntel-6-6A,v1,icelakex,core
- GenuineIntel-6-6C,v1,icelakex,core
--GenuineIntel-6-86,v1,tremontx,core
-+GenuineIntel-6-86,v1,snowridgex,core
- GenuineIntel-6-96,v1,elkhartlake,core
- GenuineIntel-6-97,v1,alderlake,core
- GenuineIntel-6-9A,v1,alderlake,core
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/cache.json b/tools/perf/pmu-events/arch/x86/snowridgex/cache.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/cache.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/cache.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/floating-point.json b/tools/perf/pmu-events/arch/x86/snowridgex/floating-point.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/floating-point.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/floating-point.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/frontend.json b/tools/perf/pmu-events/arch/x86/snowridgex/frontend.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/frontend.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/frontend.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/memory.json b/tools/perf/pmu-events/arch/x86/snowridgex/memory.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/memory.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/memory.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/other.json b/tools/perf/pmu-events/arch/x86/snowridgex/other.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/other.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/other.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/pipeline.json b/tools/perf/pmu-events/arch/x86/snowridgex/pipeline.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/pipeline.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/pipeline.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/uncore-memory.json b/tools/perf/pmu-events/arch/x86/snowridgex/uncore-memory.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/uncore-memory.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/uncore-memory.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/uncore-other.json b/tools/perf/pmu-events/arch/x86/snowridgex/uncore-other.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/uncore-other.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/uncore-other.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/uncore-power.json b/tools/perf/pmu-events/arch/x86/snowridgex/uncore-power.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/uncore-power.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/uncore-power.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/virtual-memory.json b/tools/perf/pmu-events/arch/x86/snowridgex/virtual-memory.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/virtual-memory.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/virtual-memory.json
--- 
-2.25.1
-
+> Reviewed-by: Tom Rix <trix@redhat.com>
+> Acked-by: Xu Yilun <yilun.xu@intel.com>
+> Signed-off-by: Marco Pagani <marpagan@redhat.com>
+> ---
+> Changes v1 -> v2:
+> - Coding style fix
+> ---
+>  drivers/fpga/altera-pr-ip-core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/fpga/altera-pr-ip-core.c b/drivers/fpga/altera-pr-ip-core.c
+> index be0667968d33..df8671af4a92 100644
+> --- a/drivers/fpga/altera-pr-ip-core.c
+> +++ b/drivers/fpga/altera-pr-ip-core.c
+> @@ -108,7 +108,7 @@ static int alt_pr_fpga_write(struct fpga_manager *mgr, const char *buf,
+>  	u32 *buffer_32 = (u32 *)buf;
+>  	size_t i = 0;
+>  
+> -	if (count <= 0)
+> +	if (!count)
+>  		return -EINVAL;
+>  
+>  	/* Write out the complete 32-bit chunks */
+> -- 
+> 2.35.3
