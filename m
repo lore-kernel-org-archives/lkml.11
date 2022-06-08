@@ -2,207 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C087C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 18:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 625BCC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 18:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234645AbiFHSUD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 14:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
+        id S234194AbiFHSVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 14:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234287AbiFHSRu (ORCPT
+        with ESMTP id S234832AbiFHSTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 14:17:50 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F6E100B06
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:17:44 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id z17so6491941wmi.1
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 11:17:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8OBEITiFgGXkvExNu2dr60CBVLtLaZLG+tp2Q7CMyjg=;
-        b=QX22xBb6csNQfOnTZ2QT3ee/qAR9RbhiSn4S17tioRyWi+z5Ew8SDvQpwgtPMwu0rI
-         8He8zI5lKFhuiduYi6alQrKsNN9+BEx2+dGbWdAn5gxOAb90LU1MiIeSdvMQO5XyJEm6
-         /GfEfGlVXwB8qlKQ3x4lvhcKkwwvkwONqN2Kb0Yp1nA/nqvzztq6Hc2dKQWJYeEtoPut
-         SKVfgFny+08xq/+tRYuv153gN67uJ0ZqbiIrLjOBzBFdjIazMDp0jih1s5rcYbtazeRo
-         OH6m9rhUQbAVi248y79YPs9TuzuKvDFf85hJu7E2RRTDdGVd0mmwtp6YwcWHDsaAbUFT
-         +nMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8OBEITiFgGXkvExNu2dr60CBVLtLaZLG+tp2Q7CMyjg=;
-        b=AjfvxQWrXKS+en6iG2kZtV3WBWXQLzLcfl96Y6Ds/djtqo8JS6twDruxSetvkWGKPe
-         /8s20+rBnkEymRA5DCJEoE+PcsK9knmL/hXqPsGm2yddtFaDWIOrl/GxMsr+9Ohe1i7A
-         SIweIpL3TPsZcHgethy2a3adXWtzc5ZjEP1XgjHqyZyhInXQ0Buc0J/11cpSQyThRgOL
-         +c/r3Sre8SL5FSnlMkPnAEJAON2PU6edI9YQqfgxBfrc2aH9XIJCJDrhcsqc3UjjS1xA
-         eDRRzHMtR5pFq0tCXKYnvWdkCWtSJ37mPY+I4r/jk897Z4ONN+ZJCvI1kSF3b3j+N/i5
-         yj7Q==
-X-Gm-Message-State: AOAM533WqS2SiXPklSAP+xXvJH86X7kwZ8DkpRO+WW1Q4DsxGuhb4DbZ
-        9zJaN64Tx9ON5ZPb03SeI9LipuSBBrfLBHHGf/HVrA==
-X-Google-Smtp-Source: ABdhPJzxoLhtIiYwhNavmnixrmq6422CIJ7MOSe9r2ka3IOZ5J+nZfQMbcy9C6rUizoeBIbp/bE31iqpNY8gfjkhano=
-X-Received: by 2002:a05:600c:4ed2:b0:397:7493:53e6 with SMTP id
- g18-20020a05600c4ed200b00397749353e6mr458035wmq.61.1654712262298; Wed, 08 Jun
- 2022 11:17:42 -0700 (PDT)
+        Wed, 8 Jun 2022 14:19:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A8CA478;
+        Wed,  8 Jun 2022 11:19:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8169161BE2;
+        Wed,  8 Jun 2022 18:19:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7868C341C7;
+        Wed,  8 Jun 2022 18:19:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654712371;
+        bh=BrMt+22N41uzooUnzPUoRXnpI1kF+bmp+ST9j+9wk1U=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=StmQEqAdS/onK3x3jVjIrEPS7TE62tVZdrRl7yCCLHSUtqUl0sszeA6m8IlQMUNsA
+         NvP9xfO+4f6DpVsUlbf1p7SW00y59l0D1/aohwUdP1Rx+Aw3fUa72rTgnaXH2ZU83H
+         cAkDe0Y5m+t3lNizmtlx2uVxbXKzZBnvDSWMoorJ15pwBINXXH+G8wX2sAst40Zjua
+         Eaf5HK8xbP0FLlhBxPWDLcKebIC3jMHyhOXWNqtOvhPj5z9/w2cb4RaJ1eBhXASHvn
+         wc+WGtmUbt6NeBYy6IhVV/qOnSfCrnCFdt5r6qizloiVh1oWyc8bULajR66pSo9DRj
+         4zGyMP7SfH29Q==
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2ef5380669cso217877987b3.9;
+        Wed, 08 Jun 2022 11:19:31 -0700 (PDT)
+X-Gm-Message-State: AOAM530hdWvnvRxyK7MCL6E7R9l1l2aUROIA99QN9AERsiDXI/GpyXAi
+        6qGYvifuCqiPLRLCfenOoxe80dIbx90DlbdSGNM=
+X-Google-Smtp-Source: ABdhPJzriHyGLGwDai2rVcky87dr5my3t8HULhAS0zE1LEI+/L1Wv0eduSFTK2BSoTXq6GOLOf6KiMiv8mt8c35aPAU=
+X-Received: by 2002:a81:4a82:0:b0:2ff:94b4:b4d1 with SMTP id
+ x124-20020a814a82000000b002ff94b4b4d1mr38668766ywa.130.1654712370883; Wed, 08
+ Jun 2022 11:19:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220607165105.639716-1-kaleshsingh@google.com>
- <20220607165105.639716-5-kaleshsingh@google.com> <8735gfr0jf.wl-maz@kernel.org>
-In-Reply-To: <8735gfr0jf.wl-maz@kernel.org>
-From:   Kalesh Singh <kaleshsingh@google.com>
-Date:   Wed, 8 Jun 2022 11:17:31 -0700
-Message-ID: <CAC_TJvdKM4S1kSmr3jkOvFofjyg=ASibNqgiTJBTYP=We1S=fA@mail.gmail.com>
-Subject: Re: [PATCH v3 4/5] KVM: arm64: Allocate shared stacktrace pages
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>, Will Deacon <will@kernel.org>,
-        Quentin Perret <qperret@google.com>,
-        Fuad Tabba <tabba@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        "T.J. Mercier" <tjmercier@google.com>,
-        "Cc: Android Kernel" <kernel-team@android.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
+References: <20220608000014.3054333-1-jarkko@profian.com> <CAMj1kXFsdEq6XZ6eOuf8Ks-F4qgneVxFeLYNN_S4JaPy8koEyw@mail.gmail.com>
+In-Reply-To: <CAMj1kXFsdEq6XZ6eOuf8Ks-F4qgneVxFeLYNN_S4JaPy8koEyw@mail.gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 8 Jun 2022 11:19:19 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7NZXepczZGyV2Ti4hNSupLBoKgA64K=zJN4uVBTxN37g@mail.gmail.com>
+Message-ID: <CAPhsuW7NZXepczZGyV2Ti4hNSupLBoKgA64K=zJN4uVBTxN37g@mail.gmail.com>
+Subject: Re: [PATCH] kprobes: Enable tracing for mololithic kernel images
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Jarkko Sakkinen <jarkko@profian.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Nathaniel McCallum <nathaniel@profian.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
         Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
         Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Jones <drjones@redhat.com>,
-        Zenghui Yu <yuzenghui@huawei.com>,
-        Keir Fraser <keirf@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Marco Elver <elver@google.com>,
+        Dan Li <ashimida@linux.alibaba.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Chen Zhongjin <chenzhongjin@huawei.com>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Mark Brown <broonie@kernel.org>,
+        Luis Machado <luis.machado@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
         Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Oliver Upton <oupton@google.com>,
-        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
-        <linux-arm-kernel@lists.infradead.org>,
-        kvmarm <kvmarm@lists.cs.columbia.edu>,
-        LKML <linux-kernel@vger.kernel.org>
+        Atsushi Nemoto <anemo@mba.ocn.ne.jp>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dave Anglin <dave.anglin@bell.net>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Daniel Axtens <dja@axtens.net>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Jordan Niethe <jniethe5@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Changbin Du <changbin.du@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Liao Chang <liaochang1@huawei.com>,
+        Philipp Tomsich <philipp.tomsich@vrull.eu>,
+        Wu Caize <zepan@sipeed.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Tobias Huschle <huschle@linux.ibm.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Michael Roth <michael.roth@amd.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Aaron Tomlin <atomlin@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-modules@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 2:02 AM Marc Zyngier <maz@kernel.org> wrote:
+On Wed, Jun 8, 2022 at 9:28 AM Ard Biesheuvel <ardb@kernel.org> wrote:
 >
-> On Tue, 07 Jun 2022 17:50:46 +0100,
-> Kalesh Singh <kaleshsingh@google.com> wrote:
-> >
-> > The nVHE hypervisor can use this shared area to dump its stacktrace
-> > addresses on hyp_panic(). Symbolization and printing the stacktrace can
-> > then be handled by the host in EL1 (done in a later patch in this series).
-> >
-> > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
-> > ---
-> >  arch/arm64/include/asm/kvm_asm.h |  1 +
-> >  arch/arm64/kvm/arm.c             | 34 ++++++++++++++++++++++++++++++++
-> >  arch/arm64/kvm/hyp/nvhe/setup.c  | 11 +++++++++++
-> >  3 files changed, 46 insertions(+)
-> >
-> > diff --git a/arch/arm64/include/asm/kvm_asm.h b/arch/arm64/include/asm/kvm_asm.h
-> > index 2e277f2ed671..ad31ac68264f 100644
-> > --- a/arch/arm64/include/asm/kvm_asm.h
-> > +++ b/arch/arm64/include/asm/kvm_asm.h
-> > @@ -174,6 +174,7 @@ struct kvm_nvhe_init_params {
-> >       unsigned long hcr_el2;
-> >       unsigned long vttbr;
-> >       unsigned long vtcr;
-> > +     unsigned long stacktrace_hyp_va;
-> >  };
-> >
-> >  /* Translate a kernel address @ptr into its equivalent linear mapping */
-> > diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-> > index 400bb0fe2745..c0a936a7623d 100644
-> > --- a/arch/arm64/kvm/arm.c
-> > +++ b/arch/arm64/kvm/arm.c
-> > @@ -50,6 +50,7 @@ DEFINE_STATIC_KEY_FALSE(kvm_protected_mode_initialized);
-> >  DECLARE_KVM_HYP_PER_CPU(unsigned long, kvm_hyp_vector);
-> >
-> >  static DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
-> > +DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stacktrace_page);
+> Hello Jarkko,
 >
-> Why isn't this static, since the address is passed via the
-> kvm_nvhe_init_params block?
+> On Wed, 8 Jun 2022 at 02:02, Jarkko Sakkinen <jarkko@profian.com> wrote:
+> >
+> > Tracing with kprobes while running a monolithic kernel is currently
+> > impossible because CONFIG_KPROBES is dependent of CONFIG_MODULES.  This
+> > dependency is a result of kprobes code using the module allocator for the
+> > trampoline code.
+> >
+> > Detaching kprobes from modules helps to squeeze down the user space,
+> > e.g. when developing new core kernel features, while still having all
+> > the nice tracing capabilities.
+> >
+> > For kernel/ and arch/*, move module_alloc() and module_memfree() to
+> > module_alloc.c, and compile as part of vmlinux when either CONFIG_MODULES
+> > or CONFIG_KPROBES is enabled.  In addition, flag kernel module specific
+> > code with CONFIG_MODULES.
+> >
+> > As the result, kprobes can be used with a monolithic kernel.
+>
+> I think I may have mentioned this the previous time as well, but I
+> don't think this is the right approach.
+>
+> Kprobes uses alloc_insn_page() to allocate executable memory, but the
+> requirements for this memory are radically different compared to
+> loadable modules, which need to be within an arch-specific distance of
+> the core kernel, need KASAN backing etc etc.
 
-In the subsequent patch the host will need to read and symbolize the
-addresses that the hypervisor dumped, it's done in stacktrace.c
+I think the distance of core kernel requirement is the same for kprobe
+alloc_insn_page and modules, no?
+
+Thanks,
+Song
 
 >
-> >  unsigned long kvm_arm_hyp_percpu_base[NR_CPUS];
-> >  DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_init_params, kvm_init_params);
-> >
-> > @@ -1554,6 +1555,7 @@ static void cpu_prepare_hyp_mode(int cpu)
-> >       tcr |= (idmap_t0sz & GENMASK(TCR_TxSZ_WIDTH - 1, 0)) << TCR_T0SZ_OFFSET;
-> >       params->tcr_el2 = tcr;
-> >
-> > +     params->stacktrace_hyp_va = kern_hyp_va(per_cpu(kvm_arm_hyp_stacktrace_page, cpu));
-> >       params->pgd_pa = kvm_mmu_get_httbr();
-> >       if (is_protected_kvm_enabled())
-> >               params->hcr_el2 = HCR_HOST_NVHE_PROTECTED_FLAGS;
-> > @@ -1845,6 +1847,7 @@ static void teardown_hyp_mode(void)
-> >       free_hyp_pgds();
-> >       for_each_possible_cpu(cpu) {
-> >               free_page(per_cpu(kvm_arm_hyp_stack_page, cpu));
-> > +             free_page(per_cpu(kvm_arm_hyp_stacktrace_page, cpu));
-> >               free_pages(kvm_arm_hyp_percpu_base[cpu], nvhe_percpu_order());
-> >       }
-> >  }
-> > @@ -1936,6 +1939,23 @@ static int init_hyp_mode(void)
-> >               per_cpu(kvm_arm_hyp_stack_page, cpu) = stack_page;
-> >       }
-> >
-> > +     /*
-> > +      * Allocate stacktrace pages for Hypervisor-mode.
-> > +      * This is used by the hypervisor to share its stacktrace
-> > +      * with the host on a hyp_panic().
-> > +      */
-> > +     for_each_possible_cpu(cpu) {
-> > +             unsigned long stacktrace_page;
-> > +
-> > +             stacktrace_page = __get_free_page(GFP_KERNEL);
-> > +             if (!stacktrace_page) {
-> > +                     err = -ENOMEM;
-> > +                     goto out_err;
-> > +             }
-> > +
-> > +             per_cpu(kvm_arm_hyp_stacktrace_page, cpu) = stacktrace_page;
->
-> I have the same feeling as with the overflow stack. This is
-> potentially a huge amount of memory: on my test box, with 64k pages,
-> this is a whole 10MB that I give away for something that is only a
-> debug facility.
->
-> Can this somehow be limited? I don't see it being less than a page as
-> a problem, as the memory is always shared back with EL1 in the case of
-> pKVM (and normal KVM doesn't have that problem anyway).
->
-> Alternatively, this should be restricted to pKVM. With normal nVHE,
-> the host should be able to parse the EL2 stack directly with some
-> offsetting. Actually, this is probably the best option.
-
-In a previous approach we had something similar to what you propose
-(unwinding in el1) [1]. But doesn't work for our production use case
-with protected mode since it disabled the stage 2 protection. We could
-do the split and take a different approach for the protected and
-unprotected mode, but  I'm not sure if it is worth the extra
-complexity? If it is the memory usage you are concerned with, it could
-be reduced to half of the current stack size (page size) [2], if we
-want to retain all frames. But we could also have some max depth, say
-like 16? One downside being that it could make stack overflows more
-challenging to root cause.
+> This is why arm64, for instance, does not implement alloc_insn_page()
+> in terms of module_alloc() [and likely does not belong in this patch
+> for that reason]
 
 
-[1] https://lore.kernel.org/lkml/20220224051439.640768-8-kaleshsingh@google.com/
-[2] https://lore.kernel.org/r/CAC_TJvdCuGNEJC4M+bV6o48CSJRs_4GEUb3iiP_4ro79q=KesA@mail.gmail.com/
-
-Thanks
-Kalesh
 
 >
-> Thanks,
+> Is there any reason kprobes cannot simply use vmalloc()?
 >
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
