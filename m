@@ -2,97 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03828C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:34:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C407C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:36:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238232AbiFHLeD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 07:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44352 "EHLO
+        id S238081AbiFHLg1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 07:36:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238098AbiFHLeA (ORCPT
+        with ESMTP id S232699AbiFHLgW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 07:34:00 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9685B117656;
-        Wed,  8 Jun 2022 04:33:56 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 93C821C0BB4; Wed,  8 Jun 2022 13:33:54 +0200 (CEST)
-Date:   Wed, 8 Jun 2022 13:33:54 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        stable <stable@kernel.org>, Albert Wang <albertccwang@google.com>
-Subject: Re: [PATCH 5.10 011/452] usb: dwc3: gadget: Move null pinter check
- to proper place
-Message-ID: <20220608113354.GA9333@duo.ucw.cz>
-References: <20220607164908.521895282@linuxfoundation.org>
- <20220607164908.873134406@linuxfoundation.org>
+        Wed, 8 Jun 2022 07:36:22 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB48612DBE7
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 04:36:20 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id u8-20020a056e021a4800b002d3a5419d1bso15541421ilv.12
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 04:36:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=3oh0j0r/IvU5Q15Oq1z/arbGf3o7scCG5pylpXc2HMs=;
+        b=kUqMWRvHcNOqqnd0QL7CgnktzxUCI/GNzpHjpmEsPhCv0re7BQzHo4yc09tUOZy/SD
+         q1f6lmATn/qq/0WLVzOWBu5WhIoSpzjhf0bC8YJSqBd50VbSfpMohfwJAw9QtEdp1F5J
+         wK0ux2h4fpBhnwCXbetHgMiS6wYANYN2o3DoUL3thmh7invqOWrO4hzGtM2+U5Wip9dV
+         OcbKPwrskvedYcrBTO7BjeLlYUwVzk/UA1FuI8/Vcadw7jL24lpgETDIhbX+VPrsVPgS
+         gAuVsyozaS5SW+djbbRIRAXZPXikdfshiSjRvrCYjCre4TKTsF4ob1AkmbPOl9a+uh+3
+         B1/A==
+X-Gm-Message-State: AOAM5319xmmXUsyz40PxIYNoklhYY2zcBrtgsyoldOwE7ZekDNM49SW1
+        eI4xGkEsBaps/nV0U3eKjto36pWYLCYuI+yIF5LigYBzBnxC
+X-Google-Smtp-Source: ABdhPJzySLdxT3hV87AdUk+8VZW4dLmut3dsz1tAJysyLzzaE7t8ot8FY+D6yRCCtxLaMwIXbJ8LKk1ZllCkLoG6hgiHTzozmh0g
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="jRHKVT23PllUwdXP"
-Content-Disposition: inline
-In-Reply-To: <20220607164908.873134406@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Received: by 2002:a02:cd36:0:b0:331:56a4:7a32 with SMTP id
+ h22-20020a02cd36000000b0033156a47a32mr17967171jaq.209.1654688180167; Wed, 08
+ Jun 2022 04:36:20 -0700 (PDT)
+Date:   Wed, 08 Jun 2022 04:36:20 -0700
+In-Reply-To: <0000000000003fb2e905db20ac96@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000031695705e0ee1d58@google.com>
+Subject: Re: [syzbot] WARNING in ext4_dirty_folio
+From:   syzbot <syzbot+ecab51a4a5b9f26eeaa1@syzkaller.appspotmail.com>
+To:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, tytso@mit.edu
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+syzbot has found a reproducer for the following issue on:
 
---jRHKVT23PllUwdXP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+HEAD commit:    cf67838c4422 selftests net: fix bpf build error
+git tree:       net
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=123c2173f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=fc5a30a131480a80
+dashboard link: https://syzkaller.appspot.com/bug?extid=ecab51a4a5b9f26eeaa1
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1342d5abf00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11ecafebf00000
 
-Hi!
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+ecab51a4a5b9f26eeaa1@syzkaller.appspotmail.com
 
-> commit 3c5880745b4439ac64eccdb040e37fc1cc4c5406 upstream.
->=20
-> When dwc3_gadget_ep_cleanup_completed_requests() called to
-> dwc3_gadget_giveback() where the dwc3 lock is released, other thread is
-> able to execute. In this situation, usb_ep_disable() gets the chance to
-> clear endpoint descriptor pointer which leds to the null pointer
-> dereference problem. So needs to move the null pointer check to a proper
-> place.
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 4160 at fs/ext4/inode.c:3611 ext4_dirty_folio+0xf4/0x120 fs/ext4/inode.c:3611
+Modules linked in:
+CPU: 1 PID: 4160 Comm: syz-executor368 Not tainted 5.18.0-syzkaller-12117-gcf67838c4422 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:ext4_dirty_folio+0xf4/0x120 fs/ext4/inode.c:3611
+Code: 1b 31 ff 48 c1 eb 03 83 e3 01 89 de e8 55 bf 5b ff 84 db 0f 85 72 ff ff ff e8 48 c3 5b ff 0f 0b e9 66 ff ff ff e8 3c c3 5b ff <0f> 0b eb 88 48 89 df e8 60 83 a8 ff e9 3d ff ff ff e8 56 83 a8 ff
+RSP: 0018:ffffc90003dc7bd0 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
+RDX: ffff88801e3d3b00 RSI: ffffffff821ec114 RDI: ffffea0001c4f3a8
+RBP: ffffea0001c4f380 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000001 R12: ffff88806f147330
+R13: dffffc0000000000 R14: ffffea0001c4f300 R15: ffffea0001c4f380
+FS:  00007f6e25759700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000002000008c CR3: 0000000026be0000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ folio_mark_dirty+0xc1/0x140 mm/page-writeback.c:2723
+ unpin_user_pages_dirty_lock mm/gup.c:334 [inline]
+ unpin_user_pages_dirty_lock+0x411/0x4c0 mm/gup.c:297
+ xdp_umem_unpin_pages net/xdp/xdp_umem.c:28 [inline]
+ xdp_umem_pin_pages net/xdp/xdp_umem.c:123 [inline]
+ xdp_umem_reg net/xdp/xdp_umem.c:219 [inline]
+ xdp_umem_create+0xced/0x1180 net/xdp/xdp_umem.c:252
+ xsk_setsockopt+0x73e/0x9e0 net/xdp/xsk.c:1094
+ __sys_setsockopt+0x2db/0x6a0 net/socket.c:2259
+ __do_sys_setsockopt net/socket.c:2270 [inline]
+ __se_sys_setsockopt net/socket.c:2267 [inline]
+ __x64_sys_setsockopt+0xba/0x150 net/socket.c:2267
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f6e257c9a79
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f6e25759308 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
+RAX: ffffffffffffffda RBX: 00007f6e258534f8 RCX: 00007f6e257c9a79
+RDX: 0000000000000004 RSI: 000000000000011b RDI: 0000000000000006
+RBP: 00007f6e258534f0 R08: 0000000000200d6f R09: 0000000000000000
+R10: 0000000020000040 R11: 0000000000000246 R12: 00007f6e258534fc
+R13: 00007f6e2582029c R14: 652e79726f6d656d R15: 0000000000022000
+ </TASK>
 
-Ok, but could someone check the error handling there? There's some
-cleanup at the out label, but moved code does not jump there.
-
-Best regards,
-								Pavel
-
-> +++ b/drivers/usb/dwc3/gadget.c
-> @@ -2960,14 +2960,14 @@ static bool dwc3_gadget_endpoint_trbs_co
->  	struct dwc3		*dwc =3D dep->dwc;
->  	bool			no_started_trb =3D true;
-> =20
-> -	if (!dep->endpoint.desc)
-> -		return no_started_trb;
-> -
->  	dwc3_gadget_ep_cleanup_completed_requests(dep, event, status);
-> =20
->  	if (dep->flags & DWC3_EP_END_TRANSFER_PENDING)
->  		goto out;
-> =20
-> +	if (!dep->endpoint.desc)
-> +		return no_started_trb;
-> +
->  	if (usb_endpoint_xfer_isoc(dep->endpoint.desc) &&
->  		list_empty(&dep->started_list) &&
->  		(list_empty(&dep->pending_list) || status =3D=3D -EXDEV))
->=20
-
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---jRHKVT23PllUwdXP
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYqCJIgAKCRAw5/Bqldv6
-8uR1AJ0YQhw3nc4YH/yLBp6Q9/VM9rlTBwCfWEChQvJhSJ0kBB3UYR+O5TMNdUE=
-=mj4B
------END PGP SIGNATURE-----
-
---jRHKVT23PllUwdXP--
