@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 441D8CCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:06:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D8C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232701AbiFHJGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35210 "EHLO
+        id S233960AbiFHJGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233346AbiFHJCm (ORCPT
+        with ESMTP id S232561AbiFHJCq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:02:42 -0400
+        Wed, 8 Jun 2022 05:02:46 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5471B2171;
-        Wed,  8 Jun 2022 01:22:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C87B81B9A61;
+        Wed,  8 Jun 2022 01:22:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
         :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=M7NmYC/Iylm9myghHwqILim55SAUt9QrM+UZYk0eJlw=; b=XZpaog3/TCuODd4lbgjHUCLi7x
-        x1dw2vGYlLqy0O4P0INgyQxrgGfTRy4wEsy7726U3KdO1hlZ1TtyKX/3Q+mVrxyNhLuNilejbL6Et
-        oWr1oU29LE+lbW3FXec5SfhVL/4QSpHDTGPMwWj3jZ9/Gjgz0/wqyXCq2GrNYzJif7Z9p1hjbOCjn
-        gmw8YYviv5YBoa+N4qz/e8SdKP0r4xEGs77+sR39vn0hSvQfOJWL+OdZWvqKnac+VAms4uQsKUU3J
-        dntDUvhDQaRlJgweGC8KZQuLGbi5RVkn7T1CZiVa3anrYWZsOvgqUMgITIK9P73UMTNZQ6gIUPRpu
-        ImsT2ntg==;
+        bh=M7NmYC/Iylm9myghHwqILim55SAUt9QrM+UZYk0eJlw=; b=QCgoXq5iyQhTALtdEeT03gus84
+        /SZt2KmN/kbkkznD8mxt4fn0Z8dlxKGrNIU6z9Tq0FFIuAm+b+fcHh5xBPcmZW5rP48bfJx70ovz+
+        Td2Iggqp6r0UTr8qhNb83MALf8XIIi8vGd7tH+ajIGkQrUqXnmE5Gxa/sozhjuge09+X0FHB+kxfZ
+        h+w8V1KO/i9H0jFi+rQYS8ZfFcWqM0iUavuBA48bsfJEc1Ac2u26IYQVsTEogpcES4L2lZaukHbs9
+        tV6tFilWwqfJzX1XIwt3St+XZlrqYsXtxhfaE6WvS2uxDP092sWqRNdEPUfjUj7dTfeGSyFCuMdre
+        T1EzGpuA==;
 Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nyqmn-00BqOQ-Il; Wed, 08 Jun 2022 08:11:29 +0000
-Date:   Wed, 8 Jun 2022 01:11:29 -0700
+        id 1nyqlC-00Bppr-Jn; Wed, 08 Jun 2022 08:09:50 +0000
+Date:   Wed, 8 Jun 2022 01:09:50 -0700
 From:   Christoph Hellwig <hch@infradead.org>
 To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -38,14 +38,14 @@ Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-nfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
         ocfs2-devel@oss.oracle.com, linux-mtd@lists.infradead.org,
         virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH 03/20] mm/migrate: Convert writeout() to take a folio
-Message-ID: <YqBZsUM8j/5ntRK0@infradead.org>
+Subject: Re: [PATCH 01/20] fs: Add aops->migrate_folio
+Message-ID: <YqBZTpzF/B6kduqm@infradead.org>
 References: <20220606204050.2625949-1-willy@infradead.org>
- <20220606204050.2625949-4-willy@infradead.org>
+ <20220606204050.2625949-2-willy@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220606204050.2625949-4-willy@infradead.org>
+In-Reply-To: <20220606204050.2625949-2-willy@infradead.org>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -54,4 +54,3 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 Looks good:
 
 Reviewed-by: Christoph Hellwig <hch@lst.de>
-
