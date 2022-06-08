@@ -2,136 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D7AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:55:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E700DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244763AbiFHPzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45312 "EHLO
+        id S244734AbiFHP4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:56:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244643AbiFHPzS (ORCPT
+        with ESMTP id S244672AbiFHP4P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:55:18 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A924578B
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:55:17 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id v11-20020a17090a4ecb00b001e2c5b837ccso24174829pjl.3
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 08:55:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=qaT/kcVu0n8hYTw/I914LnAixdyMenHCzToZpD7JjS8=;
-        b=TMexpVzytSlnG/LTzKkCu96Y+sL2kVYd7ZVeJpC6kBHxQs8ETMahoZqVGelLcynZLI
-         dL3HXpQ/GdIuF7BJ7fNFFj5llT8/Hc4jEEA1ELlvcJp4c0L9OG1jWgH/OQxuiwaUiyRM
-         TQ6dp9s6Pz2O7Bcd3hOqc9LR6/MkuQBz5w8AbZCHcJAPE3iiEWpwtSOIuV22OzJuBdr2
-         TTW1j9VWgqyzKtTmxrDKbAxoYu7BORaXYjQELeSUs9xUOu432Uhfdk3G7mWr1syVpyZD
-         ZJibLkecKAJt9qst2fl/dj6dYdQG63jzCugPzmwBp9CpDI+Bq8QPPf9laUPo5sDXeLmU
-         aO2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qaT/kcVu0n8hYTw/I914LnAixdyMenHCzToZpD7JjS8=;
-        b=FImouH2NVZqtEIatO7VNOb9kkBg170N/CwJcRln1wWlX5IrvLbP14nBoQkFQ6+RfZr
-         21gmqyz+QhCnkSFiA2J5jIMdJouw0gYxVV/tx/TdR9KfEIi+7cdit1nyKxMDLKvAIRa8
-         SoaCcHOw1Cb+S4g46Sqw+e+68gJ3dINBJxo3BuSL5f7WIjxEcl9aK91FT/NmhNNzp9xX
-         lrCLtYZucZWzPe+TJhvDqlApPfPgUet3QtzTNkbR472WbkJ0ZhDl/W81N6I85iE9EWRP
-         0fgkP1WfWdECFeJzgJSQ9fCyt/i9QfOOkHRH1dvOBI+6yQO5LfGswSqIqbZL13blTwrY
-         UvhQ==
-X-Gm-Message-State: AOAM531/NYTYGW/0b0SrHQOZgzLqTydyLzrHHXWgnop3s5TpcNehXgP9
-        GURFadwY7NHCd9G4ha6YJjCeuQ==
-X-Google-Smtp-Source: ABdhPJw6oHyuJCBWen45Zc63TXT3ZYpyw9KTebzxAVR2lrKtqjPq2ziyXeh0RRRayXYjC1QXZIi87Q==
-X-Received: by 2002:a17:903:18d:b0:167:47f3:49 with SMTP id z13-20020a170903018d00b0016747f30049mr28972912plg.95.1654703716463;
-        Wed, 08 Jun 2022 08:55:16 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id o1-20020a170902778100b0015e8d4eb2d2sm14814885pll.284.2022.06.08.08.55.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 08:55:15 -0700 (PDT)
-Date:   Wed, 8 Jun 2022 09:55:12 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Bruno Goncalves <bgoncalv@redhat.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        CKI Project <cki-project@redhat.com>,
-        coresight@lists.linaro.org, Suzuki.Poulose@arm.com,
-        mathieu.poirier@linaro.org
-Subject: Re: [aarch64] [coresight_etm4x] [kernel 5.19.0-rc1] coresight-etm4x:
- probe of ARMHC500:20 failed with error -17
-Message-ID: <20220608155512.GA951633@p14s>
-References: <CA+QYu4ogiTa1V20aqxFqBrMH0z927YNNN2O=CKma+=M_8E81iQ@mail.gmail.com>
+        Wed, 8 Jun 2022 11:56:15 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E84275FE;
+        Wed,  8 Jun 2022 08:56:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654703773; x=1686239773;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TPy6InE6jWXR7bBkkkd/r5A9Hqxrd2aUIPyHv9iXLXA=;
+  b=eNTw0jx6jlSJgn+wZSTyhBtugueO4/cZoeuwv916bhsD7FYgQYsEkqnv
+   o9K4UV4DMeGOEuLNJBLTK9Lr3fS0bntXj/Jf1c6EXgvrmLa/q/9ABGIwx
+   HZmdKf+WMFrQ7Fv+Sbmst4PXpaPtgrBQPzR8sltCkw7TSTESRIwCEEWzx
+   qF4HMdoh6iiievxQkKirfgtrereF6ljm3xZEv27uI1RMXoQLiVuaR2z8t
+   IThfDpNM6Vo2I4/0nRSiNqTu7M4eWds2ucBHeaBWl9+A+0/c7ZyOLnecW
+   QXkgpuoxqrxe/q07wv3wor5oDSiErQo9j0VFGJ2YDqPDA81N8R1kLkDhj
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="363273484"
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="363273484"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 08:55:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="584967098"
+Received: from liuzhao-optiplex-7080.sh.intel.com (HELO localhost) ([10.239.160.132])
+  by fmsmga007.fm.intel.com with ESMTP; 08 Jun 2022 08:55:55 -0700
+Date:   Wed, 8 Jun 2022 23:59:41 +0800
+From:   Zhao Liu <zhao1.liu@linux.intel.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     "linux-kernel-AT-vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm-AT-vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization-AT-lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev-AT-vger.kernel.org" <netdev@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
+        Zhao Liu <zhao1.liu@linux.intel.com>
+Subject: Re: [RFC PATCH v2 0/8] virtio/vsock: experimental zerocopy receive
+Message-ID: <20220608155941.GA34797@liuzhao-OptiPlex-7080>
+References: <e37fdf9b-be80-35e1-ae7b-c9dfeae3e3db@sberdevices.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+QYu4ogiTa1V20aqxFqBrMH0z927YNNN2O=CKma+=M_8E81iQ@mail.gmail.com>
+In-Reply-To: <e37fdf9b-be80-35e1-ae7b-c9dfeae3e3db@sberdevices.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CC'ing the coresight mailing list and maintainers.
+On Fri, Jun 03, 2022 at 05:27:56AM +0000, Arseniy Krasnov wrote:
+> Date:   Fri, 3 Jun 2022 05:27:56 +0000
+> From: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+> Subject: [RFC PATCH v2 0/8] virtio/vsock: experimental zerocopy receive
+> 
+>                               INTRODUCTION
+> 
+> 	Hello, this is experimental implementation of virtio vsock zerocopy
+> receive. It was inspired by TCP zerocopy receive by Eric Dumazet. This API uses
+> same idea: call 'mmap()' on socket's descriptor, then every 'getsockopt()' will
+> fill provided vma area with pages of virtio RX buffers. After received data was
+> processed by user, pages must be freed by 'madvise()'  call with MADV_DONTNEED
+> flag set(if user won't call 'madvise()', next 'getsockopt()' will fail).
+> 
+>                                  DETAILS
+> 
+> 	Here is how mapping with mapped pages looks exactly: first page mapping
+> contains array of trimmed virtio vsock packet headers (in contains only length
+> of data on the corresponding page and 'flags' field):
+> 
+> 	struct virtio_vsock_usr_hdr {
+> 		uint32_t length;
+> 		uint32_t flags;
+> 		uint32_t copy_len;
+> 	};
+> 
+> Field  'length' allows user to know exact size of payload within each sequence
+> of pages and 'flags' allows user to handle SOCK_SEQPACKET flags(such as message
+> bounds or record bounds). Field 'copy_len' is described below in 'v1->v2' part.
+> All other pages are data pages from RX queue.
+> 
+>              Page 0      Page 1      Page N
+> 
+> 	[ hdr1 .. hdrN ][ data ] .. [ data ]
+>            |        |       ^           ^
+>            |        |       |           |
+>            |        *-------------------*
+>            |                |
+>            |                |
+>            *----------------*
+> 
+> 	Of course, single header could represent array of pages (when packet's
+> buffer is bigger than one page).So here is example of detailed mapping layout
+> for some set of packages. Lets consider that we have the following sequence  of
+> packages: 56 bytes, 4096 bytes and 8200 bytes. All pages: 0,1,2,3,4 and 5 will
+> be inserted to user's vma(vma is large enough).
+> 
+> 	Page 0: [[ hdr0 ][ hdr 1 ][ hdr 2 ][ hdr 3 ] ... ]
 
-On Wed, Jun 08, 2022 at 03:20:12PM +0200, Bruno Goncalves wrote:
-> Hello,
+Hi Arseniy, what about adding a `header` for `virtio_vsock_usr_hdr` in Page 0?
+
+Page 0 can be like this:
+
+	Page 0: [[ header for hdrs ][ hdr0 ][ hdr 1 ][ hdr 2 ][ hdr 3 ] ... ]
+
+We can store the header numbers/page numbers in this first general header:
+
+	struct virtio_vsock_general_hdr {
+		uint32_t usr_hdr_num;
+	};
+
+This usr_hdr_num represents how many pages we used here.
+At most 256 pages will be used here, and this kind of statistical information is
+useful.
+> 	Page 1: [ 56 ]
+> 	Page 2: [ 4096 ]
+> 	Page 3: [ 4096 ]
+> 	Page 4: [ 4096 ]
+> 	Page 5: [ 8 ]
 > 
-> We recently started to hit this call trace when loading the
-> coresight-etm4x module.
+> 	Page 0 contains only array of headers:
+> 	'hdr0' has 56 in length field.
+> 	'hdr1' has 4096 in length field.
+> 	'hdr2' has 8200 in length field.
+> 	'hdr3' has 0 in length field(this is end of data marker).
 > 
-> [   78.683475] coresight etm103: CPU103: etm v4.1 initialized
-> [   78.683645] sysfs: cannot create duplicate filename
-> '/devices/system/container/ACPI0004:00/ARMHC9FE:00/funnel0/connections/in:0'
-> [   78.683650] CPU: 17 PID: 2522 Comm: systemd-udevd Not tainted 5.19.0-rc1 #1
-> [   78.683653] Hardware name: HPE Apollo 70             /C01_APACHE_MB
->         , BIOS L50_5.13_1.16 07/29/2020
-> [   78.683655] Call trace:
-> [   78.683657]  dump_backtrace+0xc4/0x130
-> [   78.683665]  show_stack+0x24/0x70
-> [   78.683668]  dump_stack_lvl+0x64/0x80
-> [   78.683673]  dump_stack+0x18/0x34
-> [   78.683676]  sysfs_warn_dup+0x70/0x90
-> [   78.683681]  sysfs_do_create_link_sd+0x13c/0x144
-> [   78.683683]  sysfs_create_link_sd+0x20/0x30
-> [   78.683685]  sysfs_add_link_to_group+0x48/0x74
-> [   78.683688]  coresight_add_sysfs_link+0xa4/0x114 [coresight]
-> [   78.683705]  coresight_make_links+0x98/0xdc [coresight]
-> [   78.683714]  coresight_register+0x1d4/0x3cc [coresight]
-> [   78.683721]  etm4_probe+0x1e0/0x334 [coresight_etm4x]
-> [   78.683729]  etm4_probe_amba+0x44/0xa0 [coresight_etm4x]
-> [   78.683735]  amba_probe+0x11c/0x1b0
-> [   78.683741]  really_probe+0x19c/0x3f0
-> [   78.683747]  __driver_probe_device+0x11c/0x190
-> [   78.683749]  driver_probe_device+0x44/0xf4
-> [   78.683753]  __driver_attach+0xd8/0x1b4
-> [   78.683756]  bus_for_each_dev+0x6c/0xb0
-> [   78.683758]  driver_attach+0x30/0x40
-> [   78.683761]  bus_add_driver+0x154/0x240
-> [   78.683763]  driver_register+0x84/0x140
-> [   78.683765]  amba_driver_register+0x30/0x44
-> [   78.683768]  etm4x_init+0xd8/0x1000 [coresight_etm4x]
-> [   78.683775]  do_one_initcall+0x40/0x220
-> [   78.683778]  do_init_module+0x50/0x1f4
-> [   78.683782]  load_module+0x940/0xaf0
-> [   78.683783]  __do_sys_finit_module+0x9c/0xfc
-> [   78.683785]  __arm64_sys_finit_module+0x2c/0x40
-> [   78.683787]  invoke_syscall+0x50/0x120
-> [   78.683790]  el0_svc_common.constprop.0+0xd4/0xf4
-> [   78.683792]  do_el0_svc+0x38/0x4c
-> [   78.683794]  el0_svc+0x34/0xd0
-> [   78.683797]  el0t_64_sync_handler+0x11c/0x150
-> [   78.683799]  el0t_64_sync+0x190/0x194
-> [   78.725063] coresight-etm4x: probe of ARMHC500:20 failed with error -17
+> 	Page 1 corresponds to 'hdr0' and has only 56 bytes of data.
+> 	Page 2 corresponds to 'hdr1' and filled with data.
+> 	Page 3 corresponds to 'hdr2' and filled with data.
+> 	Page 4 corresponds to 'hdr2' and filled with data.
+> 	Page 5 corresponds to 'hdr2' and has only 8 bytes of data.
 > 
-> console log: https://s3.us-east-1.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2022/06/07/558044095/redhat:558044095_aarch64/tests/Boot_test/12104911_aarch64_1_test_console.log
+> 	This patchset also changes packets allocation way: today implementation
+> uses only 'kmalloc()' to create data buffer. Problem happens when we try to map
+> such buffers to user's vma - kernel forbids to map slab pages to user's vma(as
+> pages of "not large" 'kmalloc()' allocations are marked with PageSlab flag and
+> "not large" could be bigger than one page). So to avoid this, data buffers now
+> allocated using 'alloc_pages()' call.
 > 
-> more logs: https://datawarehouse.cki-project.org/kcidb/tests/3797753
-> cki issue tracker: https://datawarehouse.cki-project.org/issue/1261
+>                                    TESTS
 > 
-> kernel config: http://s3.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2022/06/07/558044095/redhat:558044095/redhat:558044095_aarch64/.config
+> 	This patchset updates 'vsock_test' utility: two tests for new feature
+> were added. First test covers invalid cases. Second checks valid transmission
+> case.
 > 
-> Thanks,
-> Bruno Goncalves
+>                                 BENCHMARKING
 > 
+> 	For benchmakring I've added small utility 'rx_zerocopy'. It works in
+> client/server mode. When client connects to server, server starts sending exact
+> amount of data to client(amount is set as input argument).Client reads data and
+> waits for next portion of it. Client works in two modes: copy and zero-copy. In
+> copy mode client uses 'read()' call while in zerocopy mode sequence of 'mmap()'
+> /'getsockopt()'/'madvise()' are used. Smaller amount of time for transmission 
+> is better. For server, we can set size of tx buffer and for client we can set
+> size of rx buffer or rx mapping size(in zerocopy mode). Usage of this utility
+> is quiet simple:
 > 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> For client mode:
+> 
+> ./rx_zerocopy --mode client [--zerocopy] [--rx]
+> 
+> For server mode:
+> 
+> ./rx_zerocopy --mode server [--mb] [--tx]
+> 
+> [--mb] sets number of megabytes to transfer.
+> [--rx] sets size of receive buffer/mapping in pages.
+> [--tx] sets size of transmit buffer in pages.
+> 
+> I checked for transmission of 4000mb of data. Here are some results:
+> 
+>                            size of rx/tx buffers in pages
+>                *---------------------------------------------------*
+>                |    8   |    32    |    64   |   256    |   512    |
+> *--------------*--------*----------*---------*----------*----------*
+> |   zerocopy   |   24   |   10.6   |  12.2   |   23.6   |    21    | secs to
+> *--------------*---------------------------------------------------- process
+> | non-zerocopy |   13   |   16.4   |  24.7   |   27.2   |   23.9   | 4000 mb
+> *--------------*----------------------------------------------------
+> 
+> Result in first column(where non-zerocopy works better than zerocopy) happens
+> because time, spent in 'read()' system call is smaller that time in 'getsockopt'
+> + 'madvise'. I've checked that.
+> 
+> I think, that results are not so impressive, but at least it is not worse than
+> copy mode and there is no need to allocate memory for processing date.
+> 
+>                                  PROBLEMS
+> 
+> 	Updated packet's allocation logic creates some problem: when host gets
+> data from guest(in vhost-vsock), it allocates at least one page for each packet
+> (even if packet has 1 byte payload). I think this could be resolved in several
+> ways:
+> 	1) Make zerocopy rx mode disabled by default, so if user didn't enable
+> it, current 'kmalloc()' way will be used. <<<<<<< (IMPLEMENTED IN V2)
+> 	2) Use 'kmalloc()' for "small" packets, else call page allocator. But
+> in this case, we have mix of packets, allocated in two different ways thus
+> during zerocopying to user(e.g. mapping pages to vma), such small packets will
+> be handled in some stupid way: we need to allocate one page for user, copy data
+> to it and then insert page to user's vma.
+> 
+> v1 -> v2:
+>  1) Zerocopy receive mode could be enabled/disabled(disabled by default). I
+>     didn't use generic SO_ZEROCOPY flag, because in virtio-vsock case this
+>     feature depends on transport support. Instead of SO_ZEROCOPY, AF_VSOCK
+>     layer flag was added: SO_VM_SOCKETS_ZEROCOPY, while previous meaning of
+>     SO_VM_SOCKETS_ZEROCOPY(insert receive buffers to user's vm area) now
+>     renamed to SO_VM_SOCKETS_MAP_RX.
+>  2) Packet header which is exported to user now get new field: 'copy_len'.
+>     This field handles special case:  user reads data from socket in non
+>     zerocopy way(with disabled zerocopy) and then enables zerocopy feature.
+>     In this case vhost part will switch data buffer allocation logic from
+>     'kmalloc()' to direct calls for buddy allocator. But, there could be
+>     some pending 'kmalloc()' allocated packets in socket's rx list, and then
+>     user tries to read such packets in zerocopy way, dequeue will fail,
+>     because SLAB pages could not be inserted to user's vm area. So when such
+>     packet is found during zerocopy dequeue, dequeue loop will break and
+>     'copy_len' will show size of such "bad" packet. After user detects this
+>     case, it must use 'read()/recv()' calls to dequeue such packet.
+>  3) Also may be move this features under config option?
+> 
+> Arseniy Krasnov(8)
+>  virtio/vsock: rework packet allocation logic
+>  vhost/vsock: rework packet allocation logic
+>  af_vsock: add zerocopy receive logic
+>  virtio/vsock: add transport zerocopy callback
+>  vhost/vsock: enable zerocopy callback
+>  virtio/vsock: enable zerocopy callback
+>  test/vsock: add receive zerocopy tests
+>  test/vsock: vsock rx zerocopy utility
+> 
+>  drivers/vhost/vsock.c                   | 121 +++++++++--
+>  include/linux/virtio_vsock.h            |   5 +
+>  include/net/af_vsock.h                  |   7 +
+>  include/uapi/linux/virtio_vsock.h       |   6 +
+>  include/uapi/linux/vm_sockets.h         |   3 +
+>  net/vmw_vsock/af_vsock.c                | 100 +++++++++
+>  net/vmw_vsock/virtio_transport.c        |  51 ++++-
+>  net/vmw_vsock/virtio_transport_common.c | 211 ++++++++++++++++++-
+>  tools/include/uapi/linux/virtio_vsock.h |  11 +
+>  tools/include/uapi/linux/vm_sockets.h   |   8 +
+>  tools/testing/vsock/Makefile            |   1 +
+>  tools/testing/vsock/control.c           |  34 +++
+>  tools/testing/vsock/control.h           |   2 +
+>  tools/testing/vsock/rx_zerocopy.c       | 356 ++++++++++++++++++++++++++++++++
+>  tools/testing/vsock/vsock_test.c        | 295 ++++++++++++++++++++++++++
+>  15 files changed, 1196 insertions(+), 15 deletions(-)
+> 
+> -- 
+> 2.25.1
