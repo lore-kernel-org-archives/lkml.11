@@ -2,148 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:53:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D728C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:54:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231959AbiFHEw7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 00:52:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51152 "EHLO
+        id S229947AbiFHEym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 00:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231316AbiFHEvp (ORCPT
+        with ESMTP id S233133AbiFHEyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 00:51:45 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F992717A3;
-        Tue,  7 Jun 2022 18:17:20 -0700 (PDT)
+        Wed, 8 Jun 2022 00:54:00 -0400
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC9A2AD5ED
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:26:57 -0700 (PDT)
+Received: by mail-il1-x12a.google.com with SMTP id h18so15546931ilj.7
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 18:26:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654651040; x=1686187040;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=/4WqRcJOS9PY50o3EM4s4sR3QVY+ZH5V0fBKwluwEdU=;
-  b=xPxwn/4n6JGw4mV0mAeMLhhgGiNzEAuBG7lhVTGlCyH6wzYZ4uvHM8kX
-   7C8wtIGHWtqiqf0lM2jiVs87lqCptntP15xoNP3lQDLDZwn5SPtMCVjJ2
-   kbF7KivFtM6arV5wVBMXo6N+BssC+jZm9zzQpb0Nq7JKHs+oSjPAhticA
-   I=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 18:17:20 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 18:17:20 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 7 Jun 2022 18:17:19 -0700
-Received: from hu-clew-lv.qualcomm.com (10.49.16.6) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 7 Jun 2022 18:17:19 -0700
-From:   Chris Lew <quic_clew@quicinc.com>
-To:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_clew@quicinc.com>
-Subject: [PATCH 2/4] rpmsg: char: Add support to use rpmsg_rx_done
-Date:   Tue, 7 Jun 2022 18:16:43 -0700
-Message-ID: <1654651005-15475-3-git-send-email-quic_clew@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1654651005-15475-1-git-send-email-quic_clew@quicinc.com>
-References: <1654651005-15475-1-git-send-email-quic_clew@quicinc.com>
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=49YVrS45Vywbvku0fH/A6/4OrA3D+q3WmkxQvwKqyKI=;
+        b=YOmdyo/XCMqNO17UML3ZdHuN9Y+eK2A0qal8mBEknGZF+cBgCJlturlYbL9ZdEHoPG
+         WTrIDMx4PJIPlFLyfEAbp7JT4C67ABiKveBRMPEQCJAP81hQ/Qsh2ojr0+lAAD4Uba13
+         DCjYEly/xMq0/QUKUGBt6F15z0Zlm8HzUoRBQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=49YVrS45Vywbvku0fH/A6/4OrA3D+q3WmkxQvwKqyKI=;
+        b=I0LC75bueNXv+ShKevW9yvPPZhfwmToNDPo/2ZTmCn3oa8oPynnKu9ISCD5GdIZMVb
+         NYrTFrUM4tWUu93/NoaxoLGHQHEmeqUpAOdN0kBaGMSEheZpVfp+ia7KS28chR0XWE0q
+         P6kgjip6kFUYA/cf5azcvRwJ59dc+Qz/4Q1+DlEw6qNLePok+8MKH92jLl2b0Gfu26PU
+         enMNe2JxBuZeLOsUn2yfxOLF7sTsFtnH22ArxCZokDNSLBvhR1MUmyg8e+QuyBwMUcmq
+         Bdw8kF83QnkNUkAWS67u0sZpKH+bf/PdOn/TzRpNt8gnz0b9VBgbcup5zhTwGdNGeKAc
+         TfaA==
+X-Gm-Message-State: AOAM531YY4VL6UEtDWIITdEPYdswksjj/eFanqKuwISYnbR86L7oV1Tj
+        F6hax1UbNA4DITHYLMIqLdO+dQ==
+X-Google-Smtp-Source: ABdhPJyPH9BMUHvqhr8nqs8aepqKipDR8WqhJGWgP4nJ0OJAnHfPKOMomxYffvNdfNYQpWvx1dEQCQ==
+X-Received: by 2002:a92:3609:0:b0:2c6:3595:2a25 with SMTP id d9-20020a923609000000b002c635952a25mr18461417ila.233.1654651616661;
+        Tue, 07 Jun 2022 18:26:56 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id l24-20020a026a18000000b00331a82096c2sm3087401jac.98.2022.06.07.18.26.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 18:26:56 -0700 (PDT)
+Subject: Re: [PATCH 5.18 000/879] 5.18.3-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <cb81fd66-1455-fdf6-85a1-1215c46f0c2a@linuxfoundation.org>
+Date:   Tue, 7 Jun 2022 19:26:55 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support into the rpmsg char driver to skip copying the data into an
-skb if the endpoint supports rpmsg_rx_done. If the endpoint supports
-the rx_done operation, allocate a zero sized skb and set the data to
-the buffer returned in the rx callback. When the packet is read from
-the character device, release the memory by calling rpmsg_rx_done().
+On 6/7/22 10:51 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.3 release.
+> There are 879 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 09 Jun 2022 16:48:02 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.3-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Signed-off-by: Chris Lew <quic_clew@quicinc.com>
----
- drivers/rpmsg/rpmsg_char.c | 50 ++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 48 insertions(+), 2 deletions(-)
+Compiled and booted on my test system. No dmesg regressions.
 
-diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
-index b6183d4f62a2..be62ddcf356c 100644
---- a/drivers/rpmsg/rpmsg_char.c
-+++ b/drivers/rpmsg/rpmsg_char.c
-@@ -91,8 +91,8 @@ int rpmsg_chrdev_eptdev_destroy(struct device *dev, void *data)
- }
- EXPORT_SYMBOL(rpmsg_chrdev_eptdev_destroy);
- 
--static int rpmsg_ept_cb(struct rpmsg_device *rpdev, void *buf, int len,
--			void *priv, u32 addr)
-+static int rpmsg_ept_copy_cb(struct rpmsg_device *rpdev, void *buf, int len,
-+			     void *priv, u32 addr)
- {
- 	struct rpmsg_eptdev *eptdev = priv;
- 	struct sk_buff *skb;
-@@ -113,6 +113,43 @@ static int rpmsg_ept_cb(struct rpmsg_device *rpdev, void *buf, int len,
- 	return 0;
- }
- 
-+static int rpmsg_ept_no_copy_cb(struct rpmsg_device *rpdev, void *buf, int len,
-+				void *priv, u32 addr)
-+{
-+	struct rpmsg_eptdev *eptdev = priv;
-+	struct sk_buff *skb;
-+
-+	skb = alloc_skb(0, GFP_ATOMIC);
-+	if (!skb)
-+		return -ENOMEM;
-+
-+	skb->head = buf;
-+	skb->data = buf;
-+	skb_reset_tail_pointer(skb);
-+	skb_set_end_offset(skb, len);
-+	skb_put(skb, len);
-+
-+	spin_lock(&eptdev->queue_lock);
-+	skb_queue_tail(&eptdev->queue, skb);
-+	spin_unlock(&eptdev->queue_lock);
-+
-+	/* wake up any blocking processes, waiting for new data */
-+	wake_up_interruptible(&eptdev->readq);
-+
-+	return RPMSG_DEFER;
-+}
-+
-+static int rpmsg_ept_cb(struct rpmsg_device *rpdev, void *buf, int len,
-+			void *priv, u32 addr)
-+{
-+	struct rpmsg_eptdev *eptdev = priv;
-+	rpmsg_rx_cb_t cb;
-+
-+	cb = (eptdev->ept->rx_done) ? rpmsg_ept_no_copy_cb : rpmsg_ept_copy_cb;
-+
-+	return cb(rpdev, buf, len, priv, addr);
-+}
-+
- static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
- {
- 	struct rpmsg_eptdev *eptdev = cdev_to_eptdev(inode->i_cdev);
-@@ -210,6 +247,15 @@ static ssize_t rpmsg_eptdev_read_iter(struct kiocb *iocb, struct iov_iter *to)
- 	if (copy_to_iter(skb->data, use, to) != use)
- 		use = -EFAULT;
- 
-+	if (eptdev->ept->rx_done) {
-+		rpmsg_rx_done(eptdev->ept, skb->data);
-+		/*
-+		 * Data memory is freed by rpmsg_rx_done(), reset the skb data
-+		 * pointers so kfree_skb() does not try to free a second time.
-+		 */
-+		skb->head = NULL;
-+		skb->data = NULL;
-+	}
- 	kfree_skb(skb);
- 
- 	return use;
--- 
-2.7.4
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+
+thanks,
+-- Shuah
 
