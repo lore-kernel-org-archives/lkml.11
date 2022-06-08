@@ -2,127 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A133C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:50:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50A04C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229651AbiFHHug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46660 "EHLO
+        id S229823AbiFHHvZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:51:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234238AbiFHHtB (ORCPT
+        with ESMTP id S229797AbiFHHuW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:49:01 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE41AB5272
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:14:24 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1nyptD-00052C-Iv; Wed, 08 Jun 2022 09:14:03 +0200
-Message-ID: <4efc78897fb07be99bde2921f69ae6aefd13bef2.camel@pengutronix.de>
-Subject: Re: [PATCH v9 3/8] PCI: imx6: Move imx6_pcie_clk_disable() earlier
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Richard Zhu <hongxing.zhu@nxp.com>, bhelgaas@google.com,
-        robh+dt@kernel.org, broonie@kernel.org, lorenzo.pieralisi@arm.com,
-        jingoohan1@gmail.com, festevam@gmail.com,
-        francesco.dolcini@toradex.com
-Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Date:   Wed, 08 Jun 2022 09:14:02 +0200
-In-Reply-To: <1651801629-30223-4-git-send-email-hongxing.zhu@nxp.com>
-References: <1651801629-30223-1-git-send-email-hongxing.zhu@nxp.com>
-         <1651801629-30223-4-git-send-email-hongxing.zhu@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Wed, 8 Jun 2022 03:50:22 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD37220DD;
+        Wed,  8 Jun 2022 00:16:25 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LHz431Thrz1KHnW;
+        Wed,  8 Jun 2022 15:14:11 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 8 Jun 2022 15:15:59 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 8 Jun 2022 15:15:59 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>,
+        "Sergey Senozhatsky" <senozhatsky@chromium.org>,
+        Jens Axboe <axboe@kernel.dk>, <linux-kernel@vger.kernel.org>
+CC:     <linux-block@vger.kernel.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH] zram: fix unused 'zram_wb_devops' warning
+Date:   Wed, 8 Jun 2022 15:25:34 +0800
+Message-ID: <20220608072534.68850-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Freitag, dem 06.05.2022 um 09:47 +0800 schrieb Richard Zhu:
-> Just move the imx6_pcie_clk_disable() to an earlier place without function
-> changes, since it wouldn't be only used in imx6_pcie_suspend_noirq() later.
-> 
-> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+drivers/block/zram/zram_drv.c:55:45: warning: 'zram_wb_devops' defined but not used [-Wunused-const-variable=]
 
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+Fix the above warning if CONFIG_ZRAM_WRITEBACK not enabled.
 
-> ---
->  drivers/pci/controller/dwc/pci-imx6.c | 48 +++++++++++++--------------
->  1 file changed, 24 insertions(+), 24 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-> index 1d3a8a7cafc2..9b0eac64badc 100644
-> --- a/drivers/pci/controller/dwc/pci-imx6.c
-> +++ b/drivers/pci/controller/dwc/pci-imx6.c
-> @@ -529,6 +529,30 @@ static int imx6_pcie_clk_enable(struct imx6_pcie *imx6_pcie)
->  	return ret;
->  }
->  
-> +static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
-> +{
-> +	clk_disable_unprepare(imx6_pcie->pcie);
-> +	clk_disable_unprepare(imx6_pcie->pcie_phy);
-> +	clk_disable_unprepare(imx6_pcie->pcie_bus);
-> +
-> +	switch (imx6_pcie->drvdata->variant) {
-> +	case IMX6SX:
-> +		clk_disable_unprepare(imx6_pcie->pcie_inbound_axi);
-> +		break;
-> +	case IMX7D:
-> +		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
-> +				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL,
-> +				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL);
-> +		break;
-> +	case IMX8MQ:
-> +	case IMX8MM:
-> +		clk_disable_unprepare(imx6_pcie->pcie_aux);
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +}
-> +
->  static void imx7d_pcie_wait_for_phy_pll_lock(struct imx6_pcie *imx6_pcie)
->  {
->  	u32 val;
-> @@ -961,30 +985,6 @@ static void imx6_pcie_pm_turnoff(struct imx6_pcie *imx6_pcie)
->  	usleep_range(1000, 10000);
->  }
->  
-> -static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
-> -{
-> -	clk_disable_unprepare(imx6_pcie->pcie);
-> -	clk_disable_unprepare(imx6_pcie->pcie_phy);
-> -	clk_disable_unprepare(imx6_pcie->pcie_bus);
-> -
-> -	switch (imx6_pcie->drvdata->variant) {
-> -	case IMX6SX:
-> -		clk_disable_unprepare(imx6_pcie->pcie_inbound_axi);
-> -		break;
-> -	case IMX7D:
-> -		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
-> -				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL,
-> -				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL);
-> -		break;
-> -	case IMX8MQ:
-> -	case IMX8MM:
-> -		clk_disable_unprepare(imx6_pcie->pcie_aux);
-> -		break;
-> -	default:
-> -		break;
-> -	}
-> -}
-> -
->  static int imx6_pcie_suspend_noirq(struct device *dev)
->  {
->  	struct imx6_pcie *imx6_pcie = dev_get_drvdata(dev);
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+ drivers/block/zram/zram_drv.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/drivers/block/zram/zram_drv.c b/drivers/block/zram/zram_drv.c
+index 39cd1397ed3b..fff5eb4d3f20 100644
+--- a/drivers/block/zram/zram_drv.c
++++ b/drivers/block/zram/zram_drv.c
+@@ -52,7 +52,9 @@ static unsigned int num_devices = 1;
+ static size_t huge_class_size;
+ 
+ static const struct block_device_operations zram_devops;
++#ifdef CONFIG_ZRAM_WRITEBACK
+ static const struct block_device_operations zram_wb_devops;
++#endif
+ 
+ static void zram_free_page(struct zram *zram, size_t index);
+ static int zram_bvec_read(struct zram *zram, struct bio_vec *bvec,
+-- 
+2.35.3
 
