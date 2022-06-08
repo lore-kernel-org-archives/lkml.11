@@ -2,106 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B09FAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB373C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233348AbiFHFZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:25:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45452 "EHLO
+        id S233821AbiFHF1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234669AbiFHFYy (ORCPT
+        with ESMTP id S233926AbiFHF0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:24:54 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA36A167CB
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:39:58 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id q12-20020a17090a304c00b001e2d4fb0eb4so22537712pjl.4
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 19:39:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6bOa4esw0xksLVfNdAT6B93rV/P/8VSGEKMP6EjzR0E=;
-        b=K6KpXwM81tTGGNFDdq17Lj1eMk1q3eODHH8nocGcaU9nWe7rFntrd/gnI4dJmrX5ot
-         jelT47mS9pdJT0S2PzSCrNgL5Sh63CeXCG+aYcN+ywbxrVtSsSCUllZRXU38BSZmlUri
-         DAKxKJgyjtIwfLg5ysES88sOtfU39kmTixM4U=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6bOa4esw0xksLVfNdAT6B93rV/P/8VSGEKMP6EjzR0E=;
-        b=QQ76NgZgH/cYmWyrl0XjRsh5zbGfAo0im7xmmt5dG07aREFYiaqlN0OtEt6dRsVUMY
-         DN8K+hsMdV5zxLxZ8RNMs/kkLnRteuy1pKgX6vSIhEXZq2ajCk+tSoyyt5B4wFtcYBGh
-         A4eZn+412vC8Fgpwh/QTXtDSKa1E+W+ixiSxcSnNdXnohh4BGZkH82Oubnpt0bmVDBqb
-         upy/EZtnmNCG1nLHZod1lOo1HqeM4aZi6iUW1t6ni6onp2KZl4UJrVtt4ufx+LmwuAOC
-         R90mHUXVjUX3Q8JpDFtqq5B3qLG23DlHp8MOLGCY181wWkFiBPzBCYd8Q94LUDTZ5cKw
-         A/xg==
-X-Gm-Message-State: AOAM531w1+Bo5I3ToYPcXJDmvgGn0K/ZmUEhxz6Pi1hF87W7l4S9qQUL
-        n0LmxRa/5iD9wnklARYPkdTkDA==
-X-Google-Smtp-Source: ABdhPJyJZwIgrQupdT+vh6Z2lrRhM1s6jhssKdeRPoFc/TqToiSIDBj6GM5p6VPlbfki0O4rCxkesQ==
-X-Received: by 2002:a17:90b:3a8f:b0:1e8:7669:8a2f with SMTP id om15-20020a17090b3a8f00b001e876698a2fmr16728205pjb.55.1654655998366;
-        Tue, 07 Jun 2022 19:39:58 -0700 (PDT)
-Received: from google.com ([2401:fa00:8f:203:463d:a192:6128:66e])
-        by smtp.gmail.com with ESMTPSA id 84-20020a621857000000b0050dc7628158sm13612168pfy.50.2022.06.07.19.39.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 19:39:57 -0700 (PDT)
-Date:   Wed, 8 Jun 2022 11:39:52 +0900
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     Minchan Kim <minchan@kernel.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        regressions@lists.linux.dev, Jens Axboe <axboe@kernel.dk>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Nitin Gupta <ngupta@vflare.org>
-Subject: Re: qemu-arm: zram: mkfs.ext4 : Unable to handle kernel NULL pointer
- dereference at virtual address 00000140
-Message-ID: <YqAL+HeZDk5Wug28@google.com>
-References: <CA+G9fYtVOfWWpx96fa3zzKzBPKiNu1w3FOD4j++G8MOG3Vs0EA@mail.gmail.com>
- <Yp47DODPCz0kNgE8@google.com>
- <CA+G9fYsjn0zySHU4YYNJWAgkABuJuKtHty7ELHmN-+30VYgCDA@mail.gmail.com>
- <Yp/kpPA7GdbArXDo@google.com>
+        Wed, 8 Jun 2022 01:26:50 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D555A1912EE
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:46:12 -0700 (PDT)
+X-UUID: 69da6bb4290e464fb48a30e429573fb0-20220608
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:f0791bd9-c4fe-44be-bb6a-13edab8da308,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:51
+X-CID-INFO: VERSION:1.1.5,REQID:f0791bd9-c4fe-44be-bb6a-13edab8da308,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:51
+X-CID-META: VersionHash:2a19b09,CLOUDID:1d6a05e5-2ba2-4dc1-b6c5-11feb6c769e0,C
+        OID:8b8c977f2a46,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:0,BEC:nil
+X-UUID: 69da6bb4290e464fb48a30e429573fb0-20220608
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <kuan-ying.lee@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1553078410; Wed, 08 Jun 2022 10:46:08 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Wed, 8 Jun 2022 10:46:07 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Wed, 8 Jun 2022 10:46:07 +0800
+Message-ID: <c423c281f6739b7d847e2375c65ec2a4cf839d01.camel@mediatek.com>
+Subject: Re: [PATCH v2 0/4] mm: kmemleak: store objects allocated with
+ physical address separately and check when scan
+From:   Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
+To:     Patrick Wang <patrick.wang.shcn@gmail.com>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>
+CC:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Yee Lee =?UTF-8?Q?=28=E6=9D=8E=E5=BB=BA=E8=AA=BC=29?= 
+        <Yee.Lee@mediatek.com>, <kuan-ying.lee@mediatek.com>
+Date:   Wed, 8 Jun 2022 10:46:07 +0800
+In-Reply-To: <20220603035415.1243913-1-patrick.wang.shcn@gmail.com>
+References: <20220603035415.1243913-1-patrick.wang.shcn@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yp/kpPA7GdbArXDo@google.com>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On (22/06/07 16:52), Minchan Kim wrote:
-> > rootfs: https://oebuilds.tuxbuild.com/29zhlbEc3EWq2wod9Uy964Bp27q/images/am57xx-evm/rpb-console-image-lkft-am57xx-evm-20220601222434.rootfs.ext4.gz
-> > kernel: https://builds.tuxbuild.com/29zhqJJizU2Y7Ka7ArhryUOrNDC/zImage
-> > 
-> > Boot command,
-> >  /usr/bin/qemu-system-aarch64 -cpu host,aarch64=off -machine
-> > virt-2.10,accel=kvm -nographic -net
-> > nic,model=virtio,maaacaddr=BA:DD:AD:CC:09:04 -net tap -m 2048 -monitor
-> > none -kernel kernel/zImage --append "console=ttyAMA0 root=/dev/vda rw"
-> > -hda rootfs/rpb-console-image-lkft-am57xx-evm-20220601222434.rootfs.ext4
-> > -m 4096 -smp 2
-> > 
-> > # cd /opt/kselftests/default-in-kernel/zram
-> > # ./zram.sh
-> > 
-> > Allow me sometime I will try to bisect this problem.
+On Fri, 2022-06-03 at 11:54 +0800, Patrick Wang wrote:
+> The kmemleak_*_phys() interface uses "min_low_pfn" and
+> "max_low_pfn" to check address. But on some architectures,
+> kmemleak_*_phys() is called before those two variables
+> initialized. The following steps will be taken:
 > 
-> Thanks for sharing the info. 
+> 1) Add OBJECT_PHYS flag and rbtree for the objects allocated
+>    with physical address
+> 2) Store physical address in objects if allocated with OBJECT_PHYS
+> 3) Check the boundary when scan instead of in kmemleak_*_phys()
 > 
-> I managed to work your rootfs with my local arm build
-> based on the problematic git tip. 
-> However, I couldn't suceed to reproduce it.
+> This patch set will solve:
+> https://lore.kernel.org/r/20220527032504.30341-1-yee.lee@mediatek.com
 > 
-> I needed to build zsmalloc/zram built-in instead of modules
-> Is it related? Hmm,
-> 
-> Yeah, It would be very helpful if you could help to bisect it.
+https://lore.kernel.org/r/9dd08bb5-f39e-53d8-f88d-bec598a08c93@gmail.com
 
-This looks like a NULL lock->name dereference in lockdep. I suspect
-that somehow local_lock doesn't get .dep_map initialized. Maybe running
-the kernel with CONFIG_DEBUG_LOCK_ALLOC would help us? Naresh, can you
-help us with this?
+Hi Patrick,
+
+If this patchset fix the above issue, I think we need to add
+the below fixes tag.
+
+Fixes: 23c2d497de21 ("mm: kmemleak: take a full lowmem check in
+kmemleak_*_phys()")
+
+Thanks.
+
+> 
+> v1: 
+> https://lore.kernel.org/r/20220531150823.1004101-1-patrick.wang.shcn@gmail.com
+> 
+> v1->v2:
+>  - add rbtree for the objects allocated with physical address
+>  - store physical address in objects if allocated with OBJECT_PHYS
+>  - check the upper object boundary as well and avoid duplicate check
+> 
+> Patrick Wang (4):
+>   mm: kmemleak: add OBJECT_PHYS flag for objects allocated with
+> physical
+>     address
+>   mm: kmemleak: add rbtree for objects allocated with physical
+> address
+>   mm: kmemleak: handle address stored in object based on its type
+>   mm: kmemleak: kmemleak_*_phys() set address type and check PA when
+>     scan
+> 
+>  mm/kmemleak.c | 193 ++++++++++++++++++++++++++++++++--------------
+> ----
+>  1 file changed, 123 insertions(+), 70 deletions(-)
+> 
+> -- 
+> 2.25.1
+> 
+> 
+
