@@ -2,133 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E49CCA483
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:19:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2217ACCA485
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:19:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235282AbiFHJTM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48886 "EHLO
+        id S235395AbiFHJTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234925AbiFHJOT (ORCPT
+        with ESMTP id S235358AbiFHJOz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:14:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3D3A0074
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:35:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3D2BACE250D
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:35:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 376EBC34116;
-        Wed,  8 Jun 2022 08:35:06 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="d9lj/wYk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1654677304;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=2ofgusW27VggH4uiJl3Gg2L/giOeLs4fXxTL2Qus/Oc=;
-        b=d9lj/wYkzfhdGk0IKLmgHw++MxYOZUPluy+BCcMf0a0TIFcpGg7d9he7f8qgXfQT663zAb
-        3v2lVGXgVaCKiUJbX4hhClEYfnxb7FUEc/kyHk0BdKPSz67hDNMlgFoCZp4snnY0jcyZvj
-        RBsflOgK+DdM/DxkHtXx9y5Ve4vEiBw=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 5ea47ab3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 8 Jun 2022 08:35:04 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Petr Mladek <pmladek@suse.com>
-Subject: [PATCH] random: remove rng_has_arch_random()
-Date:   Wed,  8 Jun 2022 10:34:59 +0200
-Message-Id: <20220608083459.1179854-1-Jason@zx2c4.com>
+        Wed, 8 Jun 2022 05:14:55 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE46F45C0;
+        Wed,  8 Jun 2022 01:38:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1654677484; x=1686213484;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=h5gvcaktdP9Wz9Q/VYuzzQWlFGFeRLOZtsQqdiyCDq8=;
+  b=perHRxflkk++DwQ5g3x1bZwDNc/UByISRsSnCqPI7EYKnYI4qs23OfW2
+   46KYnO/M/0rFgyQcxJp6qXdK+sRet1Hfmp0JWvrp8rStGI+hKesH7KIdC
+   8rm4lzWt5OtbcZoGbTxDndhdRPZzt5LMNt2lBBv46ETA4TPPxZnwVjD3B
+   F1LuRNC2jHikwI2P+bXKMF5iqKq+jX2scs/av36QdcprB/KNP/r9eMZV1
+   ahtQOd4270Qy5BFKUGv9mn6aGD3naT8FknAK6hI4pF3l8TIq/yztqXw+x
+   O6maC4Ls7xYQRFUZMsTdtoA5LLecd+d8/HzbPlGyyKZQJVZPLlFFPQNxH
+   w==;
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="167565087"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jun 2022 01:38:03 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 8 Jun 2022 01:38:03 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 8 Jun 2022 01:38:00 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <p.zabel@pengutronix.de>, <sre@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <linux-arm-kernel@lists.infradead.org>, <linux-pm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH v4 9/9] ARM: dts: at91: sama7g5: add reset-controller node
+Date:   Wed, 8 Jun 2022 11:39:42 +0300
+Message-ID: <20220608083942.1584087-10-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
+References: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With arch randomness being used by every distro and enabled in
-defconfigs, the distinction between rng_has_arch_random() and
-rng_is_initialized() is now rather small. In fact, the places where they
-differ are now places where paranoid users and system builders really
-don't want arch randomness to be used, in which case we should respect
-that choice, or places where arch randomness is known to be broken, in
-which case that choice is all the more important. So this commit just
-removes the function and its one user.
+Add reset controller node.
 
-Cc: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/char/random.c  | 13 -------------
- include/linux/random.h |  1 -
- lib/vsprintf.c         |  3 +--
- 3 files changed, 1 insertion(+), 16 deletions(-)
+ arch/arm/boot/dts/sama7g5.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 0b78b9c4acf5..655e327d425e 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -725,7 +725,6 @@ static void __cold _credit_init_bits(size_t bits)
-  *
-  **********************************************************************/
+diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
+index a37e3a80392d..bb6d71e6dfeb 100644
+--- a/arch/arm/boot/dts/sama7g5.dtsi
++++ b/arch/arm/boot/dts/sama7g5.dtsi
+@@ -198,6 +198,13 @@ pmc: pmc@e0018000 {
+ 			clock-names = "td_slck", "md_slck", "main_xtal";
+ 		};
  
--static bool used_arch_random;
- static bool trust_cpu __initdata = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
- static bool trust_bootloader __initdata = IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER);
- static int __init parse_trust_cpu(char *arg)
-@@ -811,7 +810,6 @@ int __init random_init(const char *command_line)
- 		crng_reseed();
- 	else if (trust_cpu)
- 		_credit_init_bits(arch_bits);
--	used_arch_random = arch_bits >= POOL_READY_BITS;
- 
- 	WARN_ON(register_pm_notifier(&pm_notifier));
- 
-@@ -820,17 +818,6 @@ int __init random_init(const char *command_line)
- 	return 0;
- }
- 
--/*
-- * Returns whether arch randomness has been mixed into the initial
-- * state of the RNG, regardless of whether or not that randomness
-- * was credited. Knowing this is only good for a very limited set
-- * of uses, such as early init printk pointer obfuscation.
-- */
--bool rng_has_arch_random(void)
--{
--	return used_arch_random;
--}
--
- /*
-  * Add device- or boot-specific data to the input pool to help
-  * initialize it.
-diff --git a/include/linux/random.h b/include/linux/random.h
-index 223b4bd584e7..20e389a14e5c 100644
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -74,7 +74,6 @@ static inline unsigned long get_random_canary(void)
- 
- int __init random_init(const char *command_line);
- bool rng_is_initialized(void);
--bool rng_has_arch_random(void);
- int wait_for_random_bytes(void);
- 
- /* Calls wait_for_random_bytes() and then calls get_random_bytes(buf, nbytes).
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index fb77f7bfd126..3c1853a9d1c0 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -769,8 +769,7 @@ static inline int __ptr_to_hashval(const void *ptr, unsigned long *hashval_out)
- 		static DECLARE_WORK(enable_ptr_key_work, enable_ptr_key_workfn);
- 		unsigned long flags;
- 
--		if (!system_unbound_wq ||
--		    (!rng_is_initialized() && !rng_has_arch_random()) ||
-+		if (!system_unbound_wq || !rng_is_initialized() ||
- 		    !spin_trylock_irqsave(&filling, flags))
- 			return -EAGAIN;
- 
++		reset_controller: reset-controller@e001d000 {
++			compatible = "microchip,sama7g5-rstc";
++			reg = <0xe001d000 0xc>, <0xe001d0e4 0x4>;
++			#reset-cells = <1>;
++			clocks = <&clk32k 0>;
++		};
++
+ 		shdwc: shdwc@e001d010 {
+ 			compatible = "microchip,sama7g5-shdwc", "syscon";
+ 			reg = <0xe001d010 0x10>;
 -- 
-2.35.1
+2.33.0
 
