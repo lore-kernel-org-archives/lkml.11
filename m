@@ -2,36 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F623CCA483
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF13C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241488AbiFHOkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 10:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53140 "EHLO
+        id S241527AbiFHOkw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 10:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241592AbiFHOkg (ORCPT
+        with ESMTP id S241674AbiFHOkh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 10:40:36 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1FE1455B4
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 07:40:31 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LJ8wt6y9Kz1K9sx;
-        Wed,  8 Jun 2022 22:38:38 +0800 (CST)
+        Wed, 8 Jun 2022 10:40:37 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89E31447A5
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 07:40:30 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LJ8ws5ZS6zgbgq;
+        Wed,  8 Jun 2022 22:38:37 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 8 Jun
- 2022 22:40:27 +0800
+ 2022 22:40:26 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <david@redhat.com>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v2 2/3] mm/swapfile: fix possible data races of inuse_pages
-Date:   Wed, 8 Jun 2022 22:40:30 +0800
-Message-ID: <20220608144031.829-3-linmiaohe@huawei.com>
+Subject: [PATCH v2 0/3] A few cleanup and fixup patches for swap
+Date:   Wed, 8 Jun 2022 22:40:28 +0800
+Message-ID: <20220608144031.829-1-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220608144031.829-1-linmiaohe@huawei.com>
-References: <20220608144031.829-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -43,39 +41,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-si->inuse_pages could still be accessed concurrently now. The plain reads
-outside si->lock critical section, i.e. swap_show and si_swapinfo, which
-results in data races. But these should be ok because they're just used
-for showing swap info.
+Hi everyone,
+This series contains a cleaup patch to remove unneeded swap_cache_info
+statistics, and two bugfix patches to avoid possible data races of
+inuse_pages and so on. More details can be found in the respective
+changelogs. Thanks!
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Reviewed-by: David Hildenbrand <david@redhat.com>
 ---
- mm/swapfile.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v2:
+  collect Reviewed-by tag per David
+  drop patch "mm/swapfile: avoid confusing swap cache statistics"
+  add a new patch to remove swap_cache_info statistics per David
+  Many thanks David for review and comment.
+---
+Miaohe Lin (3):
+  mm/swapfile: make security_vm_enough_memory_mm() work as expected
+  mm/swapfile: fix possible data races of inuse_pages
+  mm/swap: remove swap_cache_info statistics
 
-diff --git a/mm/swapfile.c b/mm/swapfile.c
-index d2bead7b8b70..3fa26f6971e9 100644
---- a/mm/swapfile.c
-+++ b/mm/swapfile.c
-@@ -2646,7 +2646,7 @@ static int swap_show(struct seq_file *swap, void *v)
- 	}
- 
- 	bytes = si->pages << (PAGE_SHIFT - 10);
--	inuse = si->inuse_pages << (PAGE_SHIFT - 10);
-+	inuse = READ_ONCE(si->inuse_pages) << (PAGE_SHIFT - 10);
- 
- 	file = si->swap_file;
- 	len = seq_file_path(swap, file, " \t\n\\");
-@@ -3265,7 +3265,7 @@ void si_swapinfo(struct sysinfo *val)
- 		struct swap_info_struct *si = swap_info[type];
- 
- 		if ((si->flags & SWP_USED) && !(si->flags & SWP_WRITEOK))
--			nr_to_be_unused += si->inuse_pages;
-+			nr_to_be_unused += READ_ONCE(si->inuse_pages);
- 	}
- 	val->freeswap = atomic_long_read(&nr_swap_pages) + nr_to_be_unused;
- 	val->totalswap = total_swap_pages + nr_to_be_unused;
+ mm/swap_state.c | 17 -----------------
+ mm/swapfile.c   | 14 +++++++++-----
+ 2 files changed, 9 insertions(+), 22 deletions(-)
+
 -- 
 2.23.0
 
