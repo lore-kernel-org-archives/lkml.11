@@ -2,79 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD92C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 21:42:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AFF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 21:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231261AbiFHVmY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 17:42:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44992 "EHLO
+        id S234539AbiFHVnw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 17:43:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231826AbiFHVmV (ORCPT
+        with ESMTP id S231722AbiFHVnq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 17:42:21 -0400
-Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2635A093;
-        Wed,  8 Jun 2022 14:42:20 -0700 (PDT)
-Received: from [192.168.0.18] (unknown [37.228.234.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id 61E305048B3;
-        Thu,  9 Jun 2022 00:41:02 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 61E305048B3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1654724463; bh=a9HRTmEUMbJXnRGdvTfjdyQcEfe9/TsPFII6KPdLTRQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=RdEG4Mc5o5qMjYyV/xbZg4dVqzLn55jwUUDyttk/Egv1lhdLzfWtcInRQfiC+65Dz
-         4AQRtzHR5OxIW1P4ogoQ/PyAF/q0tWqCXD+cK2ls1FjBtQTahPKblyTsSu8XIu84bw
-         sfwWJ1HuwSnrrg6s+FShOf8sIif+sfrPE30CGwTw=
-Message-ID: <15b5c61e-8884-940c-4df9-647bce078e29@novek.ru>
-Date:   Wed, 8 Jun 2022 22:42:17 +0100
+        Wed, 8 Jun 2022 17:43:46 -0400
+X-Greylist: delayed 1214 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Jun 2022 14:43:43 PDT
+Received: from msg-1.mailo.com (msg-1.mailo.com [213.182.54.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15AE92733
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 14:43:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailoo.org; s=mailo;
+        t=1654723379; bh=KIO51oCSFBweuGA1Msu2btlmkDy6vYub6CEmYJxxH4w=;
+        h=X-EA-Auth:Message-ID:Subject:From:To:Cc:Date:In-Reply-To:
+         References:Content-Type:MIME-Version:Content-Transfer-Encoding;
+        b=bDx4yfH5O9J40SpES1cArf5QgrRDpSgNAoMMIwMgccQj4itj658OFVp7qZWAE4hn8
+         L37MVHQNQJUw7/7LYIOpMumOgwfpSQace5VzE1Fr997+iHEXCs/PUxqaBeRUXK4Fok
+         HP3VShc8/msEIa+BU9WcIrqDZUlSISxKaqbfbphI=
+Received: by b-6.in.mailobj.net [192.168.90.16] with ESMTP
+        via proxy.mailoo.org [213.182.55.207]
+        Wed,  8 Jun 2022 23:22:59 +0200 (CEST)
+X-EA-Auth: UhNYjE+10JvU06sCLX4eJVHCBIE9YEmsIEtVZsDiqasF96VM03rc5qtn5aeyRFiRMzJkqxMheEJk4YsHAbGb7Qz2NgE5IfNzzY16N2TzQSw=
+Message-ID: <78f1adee5c6e0c3547c116d0e78fe5b70f9c15e1.camel@mailoo.org>
+Subject: Re: [PATCHv2] iommu/arm-smmu-qcom: Add debug support for TLB sync
+ timeouts
+From:   Vincent Knecht <vincent.knecht@mailoo.org>
+To:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>
+Cc:     iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, quic_guptap@quicinc.com,
+        Rob Clark <robdclark@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Date:   Wed, 08 Jun 2022 23:22:58 +0200
+In-Reply-To: <20220526041403.9984-1-quic_saipraka@quicinc.com>
+References: <20220526041403.9984-1-quic_saipraka@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v1 net-next 3/5] ptp_ocp: drop duplicate NULL check in
- ptp_ocp_detach()
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Richard Cochran <richardcochran@gmail.com>
-References: <20220608120358.81147-1-andriy.shevchenko@linux.intel.com>
- <20220608120358.81147-4-andriy.shevchenko@linux.intel.com>
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-In-Reply-To: <20220608120358.81147-4-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08.06.2022 13:03, Andy Shevchenko wrote:
-> Since platform_device_unregister() is NULL-aware, we don't need to duplicate
-> this check. Remove it and fold the rest of the code.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Acked-by: Vadim Fedorenko <vfedorenko@novek.ru>
+Le jeudi 26 mai 2022 =C3=A0 09:44 +0530, Sai Prakash Ranjan a =C3=A9crit=C2=
+=A0:
+> TLB sync timeouts can be due to various reasons such as TBU power down
+> or pending TCU/TBU invalidation/sync and so on. Debugging these often
+> require dumping of some implementation defined registers to know the
+> status of TBU/TCU operations and some of these registers are not
+> accessible in non-secure world such as from kernel and requires SMC
+> calls to read them in the secure world. So, add this debug support
+> to dump implementation defined registers for TLB sync timeout issues.
+>=20
+> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 > ---
->   drivers/ptp/ptp_ocp.c | 6 ++----
->   1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-> index 926add7be9a2..4e237f806085 100644
-> --- a/drivers/ptp/ptp_ocp.c
-> +++ b/drivers/ptp/ptp_ocp.c
-> @@ -3701,10 +3701,8 @@ ptp_ocp_detach(struct ptp_ocp *bp)
->   		serial8250_unregister_port(bp->mac_port);
->   	if (bp->nmea_port != -1)
->   		serial8250_unregister_port(bp->nmea_port);
-> -	if (bp->spi_flash)
-> -		platform_device_unregister(bp->spi_flash);
-> -	if (bp->i2c_ctrl)
-> -		platform_device_unregister(bp->i2c_ctrl);
-> +	platform_device_unregister(bp->spi_flash);
-> +	platform_device_unregister(bp->i2c_ctrl);
->   	if (bp->i2c_clk)
->   		clk_hw_unregister_fixed_rate(bp->i2c_clk);
->   	if (bp->n_irqs)
+>=20
+> Changes in v2:
+> =C2=A0* Use scm call consistently so that it works on older chipsets wher=
+e
+> =C2=A0=C2=A0 some of these regs are secure registers.
+> =C2=A0* Add device specific data to get the implementation defined regist=
+er
+> =C2=A0=C2=A0 offsets.
+>=20
+> ---
+> =C2=A0drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 161 ++++++++++++++++++=
+---
+> =C2=A0drivers/iommu/arm/arm-smmu/arm-smmu.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ |=C2=A0=C2=A0 2 +
+> =C2=A0drivers/iommu/arm/arm-smmu/arm-smmu.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ |=C2=A0=C2=A0 1 +
+> =C2=A03 files changed, 146 insertions(+), 18 deletions(-)
+
+Hi Sai, and thanks for this patch !
+
+I've encountered TLB sync timeouts with msm8939 SoC recently.
+What would be needed to add to this patch so this SoC is supported ?
+Like, where could one check the values to be used in an equivalent
+of qcom_smmu_impl0_reg_offset values for this SoC (if any change needed) ?
+Current values are not found by simply greping in downstream/vendor dtsi/dt=
+s files...
+
+
 
