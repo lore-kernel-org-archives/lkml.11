@@ -2,241 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46463C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C15CACCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236949AbiFHGER (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 02:04:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54804 "EHLO
+        id S236805AbiFHGEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 02:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234683AbiFHFtG (ORCPT
+        with ESMTP id S1345570AbiFHF4x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:49:06 -0400
-Received: from EX-PRD-EDGE02.vmware.com (ex-prd-edge02.vmware.com [208.91.3.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65EC022AE54;
-        Tue,  7 Jun 2022 20:24:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-    s=s1024; d=vmware.com;
-    h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
-      content-type;
-    bh=E5xm37JS8Q8Lp68/e8nr1z+KpVfKRYzxF6R13LBH1+Q=;
-    b=M4tgQrNic+r6hfGg1a3kJ8rZQhi3pLAIa7lyFKNVTvG83OM7IuYjfKPKcwP7Wa
-      WBjJmulXBuCnVx3dPHiD5cUtHxG+D9pphb4n/jnb5SHDlR2z9RPvFgRT/jB1Km
-      YlDUZq2vymt1JScuev/ebdD9L0lGvfedrFyQCBoafapyssM=
-Received: from sc9-mailhost2.vmware.com (10.113.161.72) by
- EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
- 15.1.2308.14; Tue, 7 Jun 2022 20:24:00 -0700
-Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost2.vmware.com (Postfix) with ESMTP id 8992520328;
-        Tue,  7 Jun 2022 20:24:06 -0700 (PDT)
-Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 82531AA454; Tue,  7 Jun 2022 20:24:06 -0700 (PDT)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     Ronak Doshi <doshir@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 net-next 5/8] vmxnet3: add command to set ring buffer sizes
-Date:   Tue, 7 Jun 2022 20:23:50 -0700
-Message-ID: <20220608032353.964-6-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20220608032353.964-1-doshir@vmware.com>
-References: <20220608032353.964-1-doshir@vmware.com>
+        Wed, 8 Jun 2022 01:56:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26ACA2945D7;
+        Tue,  7 Jun 2022 21:12:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B7C461902;
+        Wed,  8 Jun 2022 04:12:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9220C341C6;
+        Wed,  8 Jun 2022 04:12:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654661521;
+        bh=H+1MmtTtvQLsNZTrmQNlzsqkx+xHxGbkSkRUBtO1cMQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=KRmb41fbyr182sJHzxcwjxdxcL3B8RTZPEz7yItlT2aYivO23ePNfRY2ECLKyop+y
+         gkoq0NvgN6nDP5ACdXjOe9osa2Lpgep3fs17rMK6M/xa03zYmg503ay4yYFxX8PaSr
+         Ph9x1kYgG+SYvqrIQ44X0JreCP6Wh8r+5MemBTaN5zF3S7TWTcCAEOAxw7YGm0IoPY
+         FTAdyvAYhh6mJzdyDbwuq4i1/X0kyA+pJiVtLv+L71SOH03TgjFsLlOwYoMOr7HzpT
+         uS6XvU/QM2rf3Zw25GK/O8EMGcXnXJviBU0BIncFfktr9hFr3vg1E5bV9NhUWkg4fw
+         Y9hCR6G3LeS6Q==
+Received: by mail-lf1-f42.google.com with SMTP id a2so25178895lfg.5;
+        Tue, 07 Jun 2022 21:12:01 -0700 (PDT)
+X-Gm-Message-State: AOAM531yaWPeXuly/LlWqxO00zC1zt/6dt+eFWZS1o1AHOi+VA5Surec
+        dc0v057WwdGDf8hjFHQn4tl98QPZkaE2Ky8FxLI=
+X-Google-Smtp-Source: ABdhPJzJe/7j12uZOrVpl6r/1eUa9+dVSPDjLIDkUtz6kk9LZs9Ey/RjEjyXG6U7s6oL7B63aQjHbZ0lAKTa0QMZH8g=
+X-Received: by 2002:a05:6512:4019:b0:479:2d65:dd9f with SMTP id
+ br25-20020a056512401900b004792d65dd9fmr11811475lfb.275.1654661519839; Tue, 07
+ Jun 2022 21:11:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
+References: <20220608011229.2056016-1-liyupeng@zbhlos.com> <4ebf3fb3-47c8-b4b4-e9b2-630e3f540316@roeck-us.net>
+In-Reply-To: <4ebf3fb3-47c8-b4b4-e9b2-630e3f540316@roeck-us.net>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Wed, 8 Jun 2022 12:11:48 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H69N+ECH-V1VktcD2=EO-i+q1MMm0hB4FdQGyEpRoDKiw@mail.gmail.com>
+Message-ID: <CAAhV-H69N+ECH-V1VktcD2=EO-i+q1MMm0hB4FdQGyEpRoDKiw@mail.gmail.com>
+Subject: Re: [PATCH 1/1] MIPS: Loongson-3: fix compile mips cpu_hwmon as
+ module build error.
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Yupeng Li <liyupeng@zbhlos.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Jean Delvare <jdelvare@suse.com>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-hwmon@vger.kernel.org,
+        caizp2008@163.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds a new command to set ring buffer sizes. This is
-required to pass the buffer size information to passthrough devices.
-For performance reasons, with version7 and later, ring1 will contain
-only mtu size buffers (bound to 3K). Packets > 3K will use both ring1
-and ring2.
+Reviewed-by: Huacai Chen <chenhuacai@kernel.org>
 
-Also, ring sizes are round down to power of 2 and ring2 default
-size is increased to 512.
-
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
-Acked-by: Guolin Yang <gyang@vmware.com>
----
- drivers/net/vmxnet3/vmxnet3_defs.h    | 11 +++++++
- drivers/net/vmxnet3/vmxnet3_drv.c     | 57 +++++++++++++++++++++++++++--------
- drivers/net/vmxnet3/vmxnet3_ethtool.c |  7 +++++
- drivers/net/vmxnet3/vmxnet3_int.h     |  3 +-
- 4 files changed, 65 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
-index 8d626611ab2d..415e4c9993ef 100644
---- a/drivers/net/vmxnet3/vmxnet3_defs.h
-+++ b/drivers/net/vmxnet3/vmxnet3_defs.h
-@@ -99,6 +99,9 @@ enum {
- 	VMXNET3_CMD_SET_COALESCE,
- 	VMXNET3_CMD_REGISTER_MEMREGS,
- 	VMXNET3_CMD_SET_RSS_FIELDS,
-+	VMXNET3_CMD_RESERVED4,
-+	VMXNET3_CMD_RESERVED5,
-+	VMXNET3_CMD_SET_RING_BUFFER_SIZE,
- 
- 	VMXNET3_CMD_FIRST_GET = 0xF00D0000,
- 	VMXNET3_CMD_GET_QUEUE_STATUS = VMXNET3_CMD_FIRST_GET,
-@@ -743,6 +746,13 @@ enum Vmxnet3_RSSField {
- 	VMXNET3_RSS_FIELDS_ESPIP6 = 0x0020,
- };
- 
-+struct Vmxnet3_RingBufferSize {
-+	__le16             ring1BufSizeType0;
-+	__le16             ring1BufSizeType1;
-+	__le16             ring2BufSizeType1;
-+	__le16             pad;
-+};
-+
- /* If the command data <= 16 bytes, use the shared memory directly.
-  * otherwise, use variable length configuration descriptor.
-  */
-@@ -750,6 +760,7 @@ union Vmxnet3_CmdInfo {
- 	struct Vmxnet3_VariableLenConfDesc	varConf;
- 	struct Vmxnet3_SetPolling		setPolling;
- 	enum   Vmxnet3_RSSField                 setRssFields;
-+	struct Vmxnet3_RingBufferSize           ringBufSize;
- 	__le64					data[2];
- };
- 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 94ca3bc1d540..c2f99c01a130 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -2681,6 +2681,23 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
- }
- 
- static void
-+vmxnet3_init_bufsize(struct vmxnet3_adapter *adapter)
-+{
-+	struct Vmxnet3_DriverShared *shared = adapter->shared;
-+	union Vmxnet3_CmdInfo *cmdInfo = &shared->cu.cmdInfo;
-+	unsigned long flags;
-+
-+	if (!VMXNET3_VERSION_GE_7(adapter))
-+		return;
-+
-+	cmdInfo->ringBufSize = adapter->ringBufSize;
-+	spin_lock_irqsave(&adapter->cmd_lock, flags);
-+	VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
-+			       VMXNET3_CMD_SET_RING_BUFFER_SIZE);
-+	spin_unlock_irqrestore(&adapter->cmd_lock, flags);
-+}
-+
-+static void
- vmxnet3_init_coalesce(struct vmxnet3_adapter *adapter)
- {
- 	struct Vmxnet3_DriverShared *shared = adapter->shared;
-@@ -2818,6 +2835,7 @@ vmxnet3_activate_dev(struct vmxnet3_adapter *adapter)
- 		goto activate_err;
- 	}
- 
-+	vmxnet3_init_bufsize(adapter);
- 	vmxnet3_init_coalesce(adapter);
- 	vmxnet3_init_rssfields(adapter);
- 
-@@ -2991,19 +3009,29 @@ static void
- vmxnet3_adjust_rx_ring_size(struct vmxnet3_adapter *adapter)
- {
- 	size_t sz, i, ring0_size, ring1_size, comp_size;
--	if (adapter->netdev->mtu <= VMXNET3_MAX_SKB_BUF_SIZE -
--				    VMXNET3_MAX_ETH_HDR_SIZE) {
--		adapter->skb_buf_size = adapter->netdev->mtu +
--					VMXNET3_MAX_ETH_HDR_SIZE;
--		if (adapter->skb_buf_size < VMXNET3_MIN_T0_BUF_SIZE)
--			adapter->skb_buf_size = VMXNET3_MIN_T0_BUF_SIZE;
--
--		adapter->rx_buf_per_pkt = 1;
-+	/* With version7 ring1 will have only T0 buffers */
-+	if (!VMXNET3_VERSION_GE_7(adapter)) {
-+		if (adapter->netdev->mtu <= VMXNET3_MAX_SKB_BUF_SIZE -
-+					    VMXNET3_MAX_ETH_HDR_SIZE) {
-+			adapter->skb_buf_size = adapter->netdev->mtu +
-+						VMXNET3_MAX_ETH_HDR_SIZE;
-+			if (adapter->skb_buf_size < VMXNET3_MIN_T0_BUF_SIZE)
-+				adapter->skb_buf_size = VMXNET3_MIN_T0_BUF_SIZE;
-+
-+			adapter->rx_buf_per_pkt = 1;
-+		} else {
-+			adapter->skb_buf_size = VMXNET3_MAX_SKB_BUF_SIZE;
-+			sz = adapter->netdev->mtu - VMXNET3_MAX_SKB_BUF_SIZE +
-+						    VMXNET3_MAX_ETH_HDR_SIZE;
-+			adapter->rx_buf_per_pkt = 1 + (sz + PAGE_SIZE - 1) / PAGE_SIZE;
-+		}
- 	} else {
--		adapter->skb_buf_size = VMXNET3_MAX_SKB_BUF_SIZE;
--		sz = adapter->netdev->mtu - VMXNET3_MAX_SKB_BUF_SIZE +
--					    VMXNET3_MAX_ETH_HDR_SIZE;
--		adapter->rx_buf_per_pkt = 1 + (sz + PAGE_SIZE - 1) / PAGE_SIZE;
-+		adapter->skb_buf_size = min((int)adapter->netdev->mtu + VMXNET3_MAX_ETH_HDR_SIZE,
-+					    VMXNET3_MAX_SKB_BUF_SIZE);
-+		adapter->rx_buf_per_pkt = 1;
-+		adapter->ringBufSize.ring1BufSizeType0 = cpu_to_le16(adapter->skb_buf_size);
-+		adapter->ringBufSize.ring1BufSizeType1 = 0;
-+		adapter->ringBufSize.ring2BufSizeType1 = cpu_to_le16(PAGE_SIZE);
- 	}
- 
- 	/*
-@@ -3019,6 +3047,11 @@ vmxnet3_adjust_rx_ring_size(struct vmxnet3_adapter *adapter)
- 	ring1_size = (ring1_size + sz - 1) / sz * sz;
- 	ring1_size = min_t(u32, ring1_size, VMXNET3_RX_RING2_MAX_SIZE /
- 			   sz * sz);
-+	/* For v7 and later, keep ring size power of 2 for UPT */
-+	if (VMXNET3_VERSION_GE_7(adapter)) {
-+		ring0_size = rounddown_pow_of_two(ring0_size);
-+		ring1_size = rounddown_pow_of_two(ring1_size);
-+	}
- 	comp_size = ring0_size + ring1_size;
- 
- 	for (i = 0; i < adapter->num_rx_queues; i++) {
-diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-index 397b268f7bc5..ce3993282c0f 100644
---- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
-+++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-@@ -718,6 +718,13 @@ vmxnet3_set_ringparam(struct net_device *netdev,
- 	new_rx_ring2_size = min_t(u32, new_rx_ring2_size,
- 				  VMXNET3_RX_RING2_MAX_SIZE);
- 
-+	/* For v7 and later, keep ring size power of 2 for UPT */
-+	if (VMXNET3_VERSION_GE_7(adapter)) {
-+		new_tx_ring_size = rounddown_pow_of_two(new_tx_ring_size);
-+		new_rx_ring_size = rounddown_pow_of_two(new_rx_ring_size);
-+		new_rx_ring2_size = rounddown_pow_of_two(new_rx_ring2_size);
-+	}
-+
- 	/* rx data ring buffer size has to be a multiple of
- 	 * VMXNET3_RXDATA_DESC_SIZE_ALIGN
- 	 */
-diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index 5b495ef253e8..cb87731f5f1c 100644
---- a/drivers/net/vmxnet3/vmxnet3_int.h
-+++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -408,6 +408,7 @@ struct vmxnet3_adapter {
- 	dma_addr_t pm_conf_pa;
- 	dma_addr_t rss_conf_pa;
- 	bool   queuesExtEnabled;
-+	struct Vmxnet3_RingBufferSize     ringBufSize;
- 	u32    devcap_supported[8];
- 	u32    ptcap_supported[8];
- 	u32    dev_caps[8];
-@@ -449,7 +450,7 @@ struct vmxnet3_adapter {
- /* must be a multiple of VMXNET3_RING_SIZE_ALIGN */
- #define VMXNET3_DEF_TX_RING_SIZE    512
- #define VMXNET3_DEF_RX_RING_SIZE    1024
--#define VMXNET3_DEF_RX_RING2_SIZE   256
-+#define VMXNET3_DEF_RX_RING2_SIZE   512
- 
- #define VMXNET3_DEF_RXDATA_DESC_SIZE 128
- 
--- 
-2.11.0
-
+On Wed, Jun 8, 2022 at 9:41 AM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> On 6/7/22 18:12, Yupeng Li wrote:
+> >    set cpu_hwmon as a module build with loongson_sysconf, loongson_chip=
+temp
+> >    undefined error,fix cpu_hwmon compile options to be bool.Some kernel
+> >    compilation error information is as follows:
+> >
+> >    Checking missing-syscalls for N32
+> >    CALL    scripts/checksyscalls.sh
+> >    Checking missing-syscalls for O32
+> >    CALL    scripts/checksyscalls.sh
+> >    CALL    scripts/checksyscalls.sh
+> >    CHK     include/generated/compile.h
+> >    CC [M]  drivers/platform/mips/cpu_hwmon.o
+> >    Building modules, stage 2.
+> >    MODPOST 200 modules
+> > ERROR: "loongson_sysconf" [drivers/platform/mips/cpu_hwmon.ko] undefine=
+d!
+> > ERROR: "loongson_chiptemp" [drivers/platform/mips/cpu_hwmon.ko] undefin=
+ed!
+> > make[1]: *** [scripts/Makefile.modpost:92=EF=BC=9A__modpost] =E9=94=99=
+=E8=AF=AF 1
+> > make: *** [Makefile:1261=EF=BC=9Amodules] =E9=94=99=E8=AF=AF 2
+> >
+> > Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
+>
+> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+>
+> > ---
+> >   drivers/platform/mips/Kconfig | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/platform/mips/Kconfig b/drivers/platform/mips/Kcon=
+fig
+> > index d421e1482395..6b51ad01f791 100644
+> > --- a/drivers/platform/mips/Kconfig
+> > +++ b/drivers/platform/mips/Kconfig
+> > @@ -17,7 +17,7 @@ menuconfig MIPS_PLATFORM_DEVICES
+> >   if MIPS_PLATFORM_DEVICES
+> >
+> >   config CPU_HWMON
+> > -     tristate "Loongson-3 CPU HWMon Driver"
+> > +     bool "Loongson-3 CPU HWMon Driver"
+> >       depends on MACH_LOONGSON64
+> >       select HWMON
+> >       default y
+>
