@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2217ACCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 412E5CCA487
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:19:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235395AbiFHJTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48650 "EHLO
+        id S235503AbiFHJTg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:19:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235358AbiFHJOz (ORCPT
+        with ESMTP id S235283AbiFHJOu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:14:55 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE46F45C0;
-        Wed,  8 Jun 2022 01:38:04 -0700 (PDT)
+        Wed, 8 Jun 2022 05:14:50 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD63220DE;
+        Wed,  8 Jun 2022 01:37:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1654677484; x=1686213484;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=h5gvcaktdP9Wz9Q/VYuzzQWlFGFeRLOZtsQqdiyCDq8=;
-  b=perHRxflkk++DwQ5g3x1bZwDNc/UByISRsSnCqPI7EYKnYI4qs23OfW2
-   46KYnO/M/0rFgyQcxJp6qXdK+sRet1Hfmp0JWvrp8rStGI+hKesH7KIdC
-   8rm4lzWt5OtbcZoGbTxDndhdRPZzt5LMNt2lBBv46ETA4TPPxZnwVjD3B
-   F1LuRNC2jHikwI2P+bXKMF5iqKq+jX2scs/av36QdcprB/KNP/r9eMZV1
-   ahtQOd4270Qy5BFKUGv9mn6aGD3naT8FknAK6hI4pF3l8TIq/yztqXw+x
-   O6maC4Ls7xYQRFUZMsTdtoA5LLecd+d8/HzbPlGyyKZQJVZPLlFFPQNxH
-   w==;
+  t=1654677454; x=1686213454;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=BvEE6ndX/nlzSeNvhGE7/o04VQG0dcejZC4rUxuRjOA=;
+  b=qFo4NR2CnDTJUnPhxX6GTIpallqzVAV3kSpyaMujwQq1IvW5SUDunHsZ
+   ZrN0D+1rau9GDxU/m2/nu+D9Ntu+q7fwasNPZZUGM0FFefa0VEXkCwl/o
+   VJ5UK+yOGx2cGZvwdATvanU5f4P/KhwEb7lxhBJbwcabVkMJPA0wmFOaQ
+   uYaB6PK+o9zW9YFQ2UU5r2GlOeEa+UOhT8JDKgAHXyoQOwg/pW4Awgd5p
+   X3ToA6+W0DNDKalD0RQitM38NN/q/18uCY87Gcyzt9jM6E99xeUg0w2Pq
+   EUaNBGIi+O5+OL4r476GSSdsf03JZMowaLwGX3xw3OWnuBvtUw9QdUooM
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="167565087"
+   d="scan'208";a="162387197"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jun 2022 01:38:03 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jun 2022 01:37:33 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 8 Jun 2022 01:38:03 -0700
+ 15.1.2375.17; Wed, 8 Jun 2022 01:37:33 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 8 Jun 2022 01:38:00 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 8 Jun 2022 01:37:30 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
         <p.zabel@pengutronix.de>, <sre@kernel.org>, <robh+dt@kernel.org>,
@@ -46,12 +46,10 @@ To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
 CC:     <linux-arm-kernel@lists.infradead.org>, <linux-pm@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v4 9/9] ARM: dts: at91: sama7g5: add reset-controller node
-Date:   Wed, 8 Jun 2022 11:39:42 +0300
-Message-ID: <20220608083942.1584087-10-claudiu.beznea@microchip.com>
+Subject: [PATCH v4 0/9] power: reset: at91-reset: add support for sama7g5
+Date:   Wed, 8 Jun 2022 11:39:33 +0300
+Message-ID: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
-References: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -59,31 +57,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add reset controller node.
+Hi,
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- arch/arm/boot/dts/sama7g5.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
+The series adds reset controller support for SAMA7G5 SoCs. Compared with
+previous version the reset controller embedded on SAMA7G5 is able to
+reset individual on SoC devices (e.g. USB PHY controllers).
 
-diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
-index a37e3a80392d..bb6d71e6dfeb 100644
---- a/arch/arm/boot/dts/sama7g5.dtsi
-+++ b/arch/arm/boot/dts/sama7g5.dtsi
-@@ -198,6 +198,13 @@ pmc: pmc@e0018000 {
- 			clock-names = "td_slck", "md_slck", "main_xtal";
- 		};
- 
-+		reset_controller: reset-controller@e001d000 {
-+			compatible = "microchip,sama7g5-rstc";
-+			reg = <0xe001d000 0xc>, <0xe001d0e4 0x4>;
-+			#reset-cells = <1>;
-+			clocks = <&clk32k 0>;
-+		};
-+
- 		shdwc: shdwc@e001d010 {
- 			compatible = "microchip,sama7g5-shdwc", "syscon";
- 			reg = <0xe001d010 0x10>;
+Among with this I took the change and converted reset controller
+bindings to YAML (patch 2/9) and adapt reset controller nodes in
+device tree files to comply with DT specifications (patch 1/9).
+
+Thank you,
+Claudiu Beznea
+
+Changes in v4:
+- removed patch 10/10 from v3 as it has been taken though at91 tree
+
+Changes in v3:
+- use spin_lock_irqsave()/spin_unlock_irqrestore() and lock only
+  on update path
+- collected tags
+
+Changes in v2:
+- added patches 5/10 and 10/10
+- in patch 2/10 use my microchip email address
+- in patch 4/10 added "SAMA7G5_" in front of macros to cope with file
+  naming and used (GPL-2.0-only OR BSD-2-Clause)
+- in patch 6/10 documented the structure's members
+- in patch 7/10:
+	- protect access to reset->dev_base with spin lock
+	- check for valid values of reset_spec->args[0] in
+	  at91_reset_of_xlate()
+	- s/if (IS_ERR(reset->rstc_base))/if (IS_ERR(reset->dev_base))
+	- include dt-bindings/reset/sama7g5-reset.h
+	- document new added structure's members
+- collected tags
+
+Claudiu Beznea (9):
+  ARM: dts: at91: use generic name for reset controller
+  dt-bindings: reset: convert Atmel/Microchip reset controller to YAML
+  dt-bindings: reset: atmel,at91sam9260-reset: add sama7g5 bindings
+  dt-bindings: reset: add sama7g5 definitions
+  power: reset: at91-reset: document structures and enums
+  power: reset: at91-reset: add at91_reset_data
+  power: reset: at91-reset: add reset_controller_dev support
+  power: reset: at91-reset: add support for SAMA7G5
+  ARM: dts: at91: sama7g5: add reset-controller node
+
+ .../devicetree/bindings/arm/atmel-sysregs.txt |  15 --
+ .../reset/atmel,at91sam9260-reset.yaml        |  68 +++++++
+ arch/arm/boot/dts/at91sam9260.dtsi            |   2 +-
+ arch/arm/boot/dts/at91sam9261.dtsi            |   2 +-
+ arch/arm/boot/dts/at91sam9263.dtsi            |   2 +-
+ arch/arm/boot/dts/at91sam9g45.dtsi            |   2 +-
+ arch/arm/boot/dts/at91sam9n12.dtsi            |   2 +-
+ arch/arm/boot/dts/at91sam9rl.dtsi             |   2 +-
+ arch/arm/boot/dts/at91sam9x5.dtsi             |   2 +-
+ arch/arm/boot/dts/sam9x60.dtsi                |   2 +-
+ arch/arm/boot/dts/sama5d2.dtsi                |   2 +-
+ arch/arm/boot/dts/sama5d3.dtsi                |   2 +-
+ arch/arm/boot/dts/sama5d4.dtsi                |   2 +-
+ arch/arm/boot/dts/sama7g5.dtsi                |   7 +
+ drivers/power/reset/at91-reset.c              | 173 ++++++++++++++++--
+ include/dt-bindings/reset/sama7g5-reset.h     |  10 +
+ 16 files changed, 256 insertions(+), 39 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
+ create mode 100644 include/dt-bindings/reset/sama7g5-reset.h
+
 -- 
 2.33.0
 
