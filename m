@@ -2,103 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE38C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD05FCCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:33:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233327AbiFHFaL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55934 "EHLO
+        id S232674AbiFHFdn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:33:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233678AbiFHF0s (ORCPT
+        with ESMTP id S233996AbiFHFdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:26:48 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F881912C4
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:45:24 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id 187so17140687pfu.9
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 19:45:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Hk2gCK5GcL5SvSh8UzW9g4jUcY4kzzvd/IMquDVjiO4=;
-        b=c5O7ss6DupGlsVEU8Ms0R22mX91KC3Cg3PQV77Qd3ZaYVqNRwgL5voOoS6iRw8YI1g
-         1FzQa46DGufTglDq0/urPNxV6ZEq9bIq7HEYZJAKAimhh0Y+HWX3PCzwu/g9oJ2qjr+B
-         0NIWmFZ4Q6gwN4oyGaB+qEfjQ5LFeW/hzvOl4=
+        Wed, 8 Jun 2022 01:33:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDE1A182B8E
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 20:00:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654657201;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=o9McAYyWrsI7+XrO88AfsC7QgQhcnSZ/OO2ziHkinDQ=;
+        b=WpVEUo8aVTTodwvQXx0XGSQl+83nuKS9g+L7I70xsrEb6ErvLjBbW4ftqpbfSUqqrqhnl6
+        qM0ow0TxgVAGj5rPWcUKyFIc9ZDSqXT9MTGwGCFsIXw+bII8/G4k0CwBCkT5u6qv+nu8eA
+        LcNS/0xhLmPF0x4bHgSgsliWz3tJJbo=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-377-0ELA241hM_aUcmUTm3LZhA-1; Tue, 07 Jun 2022 22:56:40 -0400
+X-MC-Unique: 0ELA241hM_aUcmUTm3LZhA-1
+Received: by mail-lf1-f72.google.com with SMTP id n3-20020ac242c3000000b00473d8af3a0cso9614284lfl.21
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 19:56:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Hk2gCK5GcL5SvSh8UzW9g4jUcY4kzzvd/IMquDVjiO4=;
-        b=jVigIWXI0qsr2qTKQsFM+CxDbznEZh2poVSbXuT4jw+9ew/7iHNqYxURiVY1UNmz9W
-         vujomOS5dtioQmI9eo71xw0r8QAbWgQV/Hk5oJblaNfYuE5Dlb/NN6AvnArNRChMWkoD
-         W80JqxAiT3k5dIegQ7eH5UTYXp+gL8SwQDsny+MBjZ0FtbmHAQWeUrPA1OKHKFdnZeZs
-         kU0LvicsZtZqYgTI8o2igpuGHBLIyWiRXlMXDSaWZ289OGPj/ozfJj0zKn5ZBo/WtYDI
-         7bYiG7vNqujS3u/oZm9UEBdJW0hBULsT7krOUFtgGsEZYj3sWViHa7rHd1so+Ie009g9
-         oZvA==
-X-Gm-Message-State: AOAM532ZPgmcu2uv7RcvdKS7lEdRj1FxYyD/KKOEcKt6OUO4p5j8vZBB
-        qrjnvA3wvG+hVmb9kehPAOzf+sMxH2eMPQ==
-X-Google-Smtp-Source: ABdhPJxgKd0grAVZubtauNeLr0gM6zjTT0NhYAVYAbKmeUS7cPHPdkTquLwAiPqv/feLDELbuUEm/Q==
-X-Received: by 2002:a65:6912:0:b0:3fc:907b:e05 with SMTP id s18-20020a656912000000b003fc907b0e05mr27657009pgq.414.1654656324473;
-        Tue, 07 Jun 2022 19:45:24 -0700 (PDT)
-Received: from google.com ([2401:fa00:8f:203:463d:a192:6128:66e])
-        by smtp.gmail.com with ESMTPSA id c140-20020a624e92000000b005182e39038csm11078266pfb.38.2022.06.07.19.45.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 19:45:24 -0700 (PDT)
-Date:   Wed, 8 Jun 2022 11:45:19 +0900
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc:     Minchan Kim <minchan@kernel.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        regressions@lists.linux.dev, Jens Axboe <axboe@kernel.dk>,
-        Nitin Gupta <ngupta@vflare.org>
-Subject: Re: qemu-arm: zram: mkfs.ext4 : Unable to handle kernel NULL pointer
- dereference at virtual address 00000140
-Message-ID: <YqANP1K/6oRNCUKZ@google.com>
-References: <CA+G9fYtVOfWWpx96fa3zzKzBPKiNu1w3FOD4j++G8MOG3Vs0EA@mail.gmail.com>
- <Yp47DODPCz0kNgE8@google.com>
- <CA+G9fYsjn0zySHU4YYNJWAgkABuJuKtHty7ELHmN-+30VYgCDA@mail.gmail.com>
- <Yp/kpPA7GdbArXDo@google.com>
- <YqAL+HeZDk5Wug28@google.com>
- <YqAMmTiwcyS3Ttla@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=o9McAYyWrsI7+XrO88AfsC7QgQhcnSZ/OO2ziHkinDQ=;
+        b=5IqOZVdDJ8xLWx8Pxl1MZ/96CjQLNwQnFa1xMVobPL/ItW0CuJNhVRVNVHriYib8fm
+         bSsrXPkm+2NJN7JwZezUWOINOzIOQjan/5wZGerdpHH1zFC1oHBYefLzMpee+X84ChQe
+         fahFTk4DoLm/7hpb8VBzhT4VR3ri0B/eyn1UZdXtv2icN3DZgMEzXzqbw1ziUsYUJqkX
+         G8q5cWp5117aYER7apXw6E0iLSqHH4JzLkiBMIFe4tZDND2XFz3QtORrOT+kpsSWiDkv
+         4JSen8h9ZpEn64JweS1O/PvTM1kkeMiIemL+cpEfYF8BnWZrWgfeoPX3yZ1EAH/kJqAN
+         UZ2A==
+X-Gm-Message-State: AOAM532OtbEbMDd68wwuwr3lSmzpfBdlPoIIpkXanY3CqmYmrfpoqXAg
+        tlMV1sxXwsXFIkG4hSePGlzwpNbqW4isFwsUJ6MTSNiKPlRbPuOseTDLIsfI8MW7Ad4d6oHgW9F
+        3WZ3wexwd2fVosy4eqHgclQD3kfTHMULdpqU0u1Rz
+X-Received: by 2002:a2e:8803:0:b0:255:8be7:c03a with SMTP id x3-20020a2e8803000000b002558be7c03amr10347911ljh.487.1654656999058;
+        Tue, 07 Jun 2022 19:56:39 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxpwlVlusCpTp6NggsmnXc60yNs5Trs/9dEyzHxZAW6H40JwHlEwqZA7wMR5a30UZjsruSa2N8LBHxrE0fJAvw=
+X-Received: by 2002:a2e:8803:0:b0:255:8be7:c03a with SMTP id
+ x3-20020a2e8803000000b002558be7c03amr10347902ljh.487.1654656998884; Tue, 07
+ Jun 2022 19:56:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqAMmTiwcyS3Ttla@google.com>
+References: <CACGkMEvtV+hVdpgpkYvAmkRteYDN+2dDacrfXsYDv0ZzjJU+ag@mail.gmail.com>
+ <000000000000e7c46e05e0e6c6a1@google.com>
+In-Reply-To: <000000000000e7c46e05e0e6c6a1@google.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 8 Jun 2022 10:56:27 +0800
+Message-ID: <CACGkMEus=RMMcDk+sM8X14=AtFjK+-3p_Lo=O6tfv9H=0wXENw@mail.gmail.com>
+Subject: Re: [syzbot] INFO: task hung in add_early_randomness (2)
+To:     syzbot <syzbot+5b59d6d459306a556f54@syzkaller.appspotmail.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        linux-crypto@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux@dominikbrodowski.net, mpm@selenic.com, mst <mst@redhat.com>,
+        syzkaller-bugs@googlegroups.com,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>, yuehaibing@huawei.com
+Content-Type: multipart/mixed; boundary="000000000000a52a1005e0e6da20"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On (22/06/08 11:42), Sergey Senozhatsky wrote:
-> > This looks like a NULL lock->name dereference in lockdep. I suspect
-> > that somehow local_lock doesn't get .dep_map initialized. Maybe running
-> > the kernel with CONFIG_DEBUG_LOCK_ALLOC would help us? Naresh, can you
-> > help us with this?
-> 
-> Hmm, actually, hold on. mapping_area is per-CPU, so what happens if CPU
-> get offlined and onlined again? I don't see us re-initializing mapping_area
-> local_lock_init(&zs_map_area.lock) and so on.
+--000000000000a52a1005e0e6da20
+Content-Type: text/plain; charset="UTF-8"
 
-Something like this?
+On Wed, Jun 8, 2022 at 10:51 AM syzbot
+<syzbot+5b59d6d459306a556f54@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot tried to test the proposed patch but the build/boot failed:
+>
+> failed to apply patch:
+> checking file drivers/char/hw_random/virtio-rng.c
+> patch: **** unexpected end of file in patch
+>
+>
 
----
+It looks like something is wrong in my email client.
 
-diff --git a/mm/zsmalloc.c b/mm/zsmalloc.c
-index 9152fbde33b5..ea434a5226a3 100644
---- a/mm/zsmalloc.c
-+++ b/mm/zsmalloc.c
-@@ -1104,6 +1104,8 @@ static struct zspage *find_get_zspage(struct size_class *class)
- 
- static inline int __zs_cpu_up(struct mapping_area *area)
- {
-+	local_lock_init(&area->lock);
-+
- 	/*
- 	 * Make sure we don't leak memory if a cpu UP notification
- 	 * and zs_init() race and both call zs_cpu_up() on the same cpu
+Let's try with attachment.
+
+#syz test
+git://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
+
+--000000000000a52a1005e0e6da20
+Content-Type: application/x-patch; 
+	name="0001-virtio-rng-make-device-ready-before-making-request.patch"
+Content-Disposition: attachment; 
+	filename="0001-virtio-rng-make-device-ready-before-making-request.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_l45008iv0>
+X-Attachment-Id: f_l45008iv0
+
+RnJvbSA3Mzc2MTY1ZmM5ZmFiNzFkOWE5ZmMwZGU5MGJlMDBkYmExMjNkODc5IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPgpEYXRl
+OiBXZWQsIDggSnVuIDIwMjIgMTA6MzM6MjggKzA4MDAKU3ViamVjdDogW1BBVENIXSB2aXJ0aW8t
+cm5nOiBtYWtlIGRldmljZSByZWFkeSBiZWZvcmUgbWFraW5nIHJlcXVlc3QKQ29udGVudC10eXBl
+OiB0ZXh0L3BsYWluCgpTaWduZWQtb2ZmLWJ5OiBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQu
+Y29tPgotLS0KIGRyaXZlcnMvY2hhci9od19yYW5kb20vdmlydGlvLXJuZy5jIHwgMiArKwogMSBm
+aWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvY2hhci9o
+d19yYW5kb20vdmlydGlvLXJuZy5jIGIvZHJpdmVycy9jaGFyL2h3X3JhbmRvbS92aXJ0aW8tcm5n
+LmMKaW5kZXggZTg1NmRmN2UyODVjLi5hNmYzYThhMmFjYTYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMv
+Y2hhci9od19yYW5kb20vdmlydGlvLXJuZy5jCisrKyBiL2RyaXZlcnMvY2hhci9od19yYW5kb20v
+dmlydGlvLXJuZy5jCkBAIC0xNTksNiArMTU5LDggQEAgc3RhdGljIGludCBwcm9iZV9jb21tb24o
+c3RydWN0IHZpcnRpb19kZXZpY2UgKnZkZXYpCiAJCWdvdG8gZXJyX2ZpbmQ7CiAJfQogCisJdmly
+dGlvX2RldmljZV9yZWFkeSh2ZGV2KTsKKwogCS8qIHdlIGFsd2F5cyBoYXZlIGEgcGVuZGluZyBl
+bnRyb3B5IHJlcXVlc3QgKi8KIAlyZXF1ZXN0X2VudHJvcHkodmkpOwogCi0tIAoyLjI1LjEKCg==
+--000000000000a52a1005e0e6da20--
+
