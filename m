@@ -2,195 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2AC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 981A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245592AbiFHQlL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36016 "EHLO
+        id S245643AbiFHQlW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245574AbiFHQlJ (ORCPT
+        with ESMTP id S245603AbiFHQlU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:41:09 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 99DCEFCEF9
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:41:08 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 79CBF1424;
-        Wed,  8 Jun 2022 09:41:08 -0700 (PDT)
-Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 989C83F73B;
-        Wed,  8 Jun 2022 09:41:07 -0700 (PDT)
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     sudeep.holla@arm.com, cristian.marussi@arm.com,
-        Peter Hilber <peter.hilber@opensynergy.com>
-Subject: [PATCH v2 2/3] firmware: arm_scmi: Fix SENSOR_AXIS_NAME_GET behaviour when unsupported
-Date:   Wed,  8 Jun 2022 17:40:51 +0100
-Message-Id: <20220608164051.2326087-1-cristian.marussi@arm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220608095530.497879-2-cristian.marussi@arm.com>
-References: <20220608095530.497879-2-cristian.marussi@arm.com>
+        Wed, 8 Jun 2022 12:41:20 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2046.outbound.protection.outlook.com [40.107.92.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272EE703EE;
+        Wed,  8 Jun 2022 09:41:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CLkI1xMiDtmIZGXB+jHITJneNK4eWoij5oAr9yla74KqE4m0EklzEg+75ZCzPt+bA85SeSBlJMZhoqn7/qjKsCrFuXMYlNKUXCdraLb42MJsWEE403pB94iDxYmH7AEh6nRbkr1qFwOOkOaYt3LTXEa47hvWvyZXSOHv7wxCAyRyfxOKqjcEjNIqJGhwXLK2pKenOw3w0v6ljEHx8yCcnMGq+GGFfAuaykxdRi5cAKDa0noas94Gohq0X+dhXgtIhL522jMOnW2ls4Nq5L1qbod1K7r+mebysyHp43knTkV3z3IRWL/cYYp/WhM2541uM54scklNGC57F8xLYQMc3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BK3gAbjU3ktpcHy0PAx7UQ3kM2zL45e1nWXjhPkcTkw=;
+ b=kUTFiAGfMBLVc00Ydm9AhkfP9r1ARypJy/U4axP+dzmampQ+nK+2GeYLTaA/18Sn89vL9ILBE4mbxGDySelH0kDlAv26t3TdZnYgljEBEmTGh7ELSi2us7oLjUVxjkVySR5hRJS+M3K4c91AS1pz+BChWAN1sgdS/s1cQBRapBAWlluSUn/cLVswMqKQGgkOTHW8/5IX2CACOzxssTTuRo8PDTOR2AuRse3XvEF1vilm9Mi/MzyG2juP/Akxj6UMffToHbyPPZwXMpYDbpB/f1JvXWdd53UUKxGPVg1n6klWNSbKsYiUt52dV4bH3/zxyjK6XeGdDzkWdXHcE+yhOA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BK3gAbjU3ktpcHy0PAx7UQ3kM2zL45e1nWXjhPkcTkw=;
+ b=bbdbPh+WEeg/ZqEuRNt8FV8uz5Vr+0BGQ6W0IA1BMJGbdc0TGs9rpFkR/04/M+aU3hKXxk0CTTeIIsGnX/AM5yQbqjAZdgFVyPAlhvPRahPeD2HsTrS4KcARR0dvQCe9Bq5Mp7+minKVPp2V7vk15T0XL57lgvzi4LnMwPe0UTI=
+Received: from BN9PR03CA0389.namprd03.prod.outlook.com (2603:10b6:408:f7::34)
+ by MWHPR02MB2509.namprd02.prod.outlook.com (2603:10b6:300:40::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Wed, 8 Jun
+ 2022 16:41:16 +0000
+Received: from BN1NAM02FT011.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:408:f7:cafe::a3) by BN9PR03CA0389.outlook.office365.com
+ (2603:10b6:408:f7::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.17 via Frontend
+ Transport; Wed, 8 Jun 2022 16:41:16 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ BN1NAM02FT011.mail.protection.outlook.com (10.13.2.129) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5332.12 via Frontend Transport; Wed, 8 Jun 2022 16:41:16 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 8 Jun 2022 09:41:15 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Wed, 8 Jun 2022 09:41:15 -0700
+Envelope-to: linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org,
+ lorenzo.pieralisi@arm.com,
+ bhelgaas@google.com,
+ robh@kernel.org
+Received: from [10.140.9.2] (port=41368 helo=xhdbharatku40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <bharat.kumar.gogada@xilinx.com>)
+        id 1nyyk6-00016D-IK; Wed, 08 Jun 2022 09:41:14 -0700
+From:   Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+To:     <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+CC:     <lorenzo.pieralisi@arm.com>, <bhelgaas@google.com>,
+        <michals@xilinx.com>, <robh@kernel.org>,
+        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+Subject: [PATCH v4 0/2] Add support for Xilinx Versal CPM5 Root Port
+Date:   Wed, 8 Jun 2022 22:10:44 +0530
+Message-ID: <20220608164046.3474-1-bharat.kumar.gogada@xilinx.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 44351418-1db3-46c3-c3df-08da496db517
+X-MS-TrafficTypeDiagnostic: MWHPR02MB2509:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR02MB2509F070A0653152944FDEF6A5A49@MWHPR02MB2509.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 4te2S4jIpr4NZm2XCcParodE0qffZOrX0z+oWmYWcRCJuHcYVt8GND2zY4SA2BD9xiy0lpLIK3PYqhYEliE7ivHUN7WNerxiKpwYSm9oYCgDs43pobVBED6moJjp6CalUhjq/uBmAPZjz0hHu00vHHCkMTKnCKLmZFbvxInl0TLJI//ozYqNh/838l1s4pStAMhxpE1Jb7yGQaAoQPhGJnL3doooeDi8/Gq4WnaMxazNqf4tj7Qr2KEstBEyIr5AKxiPbX1i8/6B6on3Q5MDDc9wTMJgk+crXLrUaT4B0fukLKK/NpKWfJuoU9hFoDLkAmMBTLRDjYOnV+dvenqqq16sBqneW2LM2hWouB4xa9EW0HfjYA2WXxTVD17xrNyrptZnPfcFMLL792CVflopk2+BH6tgiUEv11b1yyK0UuIT9NCdM7KkAhHoKHPoS2BRDlMYf3KX+OEpXvSJJyaOyzknIaPe7ANfzPFZk6O/9bjdeMfVDQ45Z8fCNPTyl9bGsNlrxmau/2Zzrkq/F4klG/ewhGs/d7APcPt9a/vb4R2R7xuU18+xzPSEebln5tnv4/C68gDzIOyPWdFTs9JFumw5ublAtxrP77QbQgTGgjM2C1TeUb5ZJorH95dnD7iqp1uTFKizRMc41jsrMuO9FyWJ27kiWz+CK0tvl6Lwmugz8ReuvQkw1gbjYLu3dFlA3oAO0LJyVjs59yjwO68Urg==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(508600001)(7636003)(356005)(83380400001)(36756003)(36860700001)(40460700003)(26005)(186003)(7696005)(6666004)(47076005)(336012)(1076003)(426003)(107886003)(2616005)(5660300002)(8936002)(4744005)(70586007)(9786002)(70206006)(103116003)(82310400005)(2906002)(316002)(54906003)(110136005)(4326008)(8676002)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2022 16:41:16.3280
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 44351418-1db3-46c3-c3df-08da496db517
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT011.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR02MB2509
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Avoid to invoke SENSOR_AXIS_NAME_GET on sensors that have not declared at
-least one of their axes as supporting extended names.
+Xilinx Versal Premium series has CPM5 block which supports Root Port functioning at Gen5 speed.
 
-Since the returned list of axes supporting extended names is not
-necessarily comprising all the existing axes of the specified sensor,
-take care also to properly pick the ax descriptor from the id embedded
-in the reply.
+Xilinx Versal CPM5 has few changes with existing CPM block.
+- CPM5 has dedicated register space for control and status registers.
+- CPM5 legacy interrupt handling needs additonal register bit
+  to enable and handle legacy interrupts.
 
-Cc: Peter Hilber <peter.hilber@opensynergy.com>
-Cc: Sudeep Holla <sudeep.holla@arm.com>
-Fixes: 802b0bed011e ("firmware: arm_scmi: Add SCMI v3.1 SENSOR_AXIS_NAME_GET support")
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
----
-V1 --> v2
-- fixed missing endianity conversion
----
- drivers/firmware/arm_scmi/sensors.c | 56 +++++++++++++++++++++++------
- 1 file changed, 46 insertions(+), 10 deletions(-)
+Changes in v4:
+- Removed versioning in compatible string
+- reg property definitions are added
 
-diff --git a/drivers/firmware/arm_scmi/sensors.c b/drivers/firmware/arm_scmi/sensors.c
-index 75b9d716508e..8a93dd944c49 100644
---- a/drivers/firmware/arm_scmi/sensors.c
-+++ b/drivers/firmware/arm_scmi/sensors.c
-@@ -358,15 +358,20 @@ static int scmi_sensor_update_intervals(const struct scmi_protocol_handle *ph,
- 	return ph->hops->iter_response_run(iter);
- }
- 
-+struct scmi_apriv {
-+	bool any_axes_support_extended_names;
-+	struct scmi_sensor_info *s;
-+};
-+
- static void iter_axes_desc_prepare_message(void *message,
- 					   const unsigned int desc_index,
- 					   const void *priv)
- {
- 	struct scmi_msg_sensor_axis_description_get *msg = message;
--	const struct scmi_sensor_info *s = priv;
-+	const struct scmi_apriv *apriv = priv;
- 
- 	/* Set the number of sensors to be skipped/already read */
--	msg->id = cpu_to_le32(s->id);
-+	msg->id = cpu_to_le32(apriv->s->id);
- 	msg->axis_desc_index = cpu_to_le32(desc_index);
- }
- 
-@@ -393,12 +398,14 @@ iter_axes_desc_process_response(const struct scmi_protocol_handle *ph,
- 	u32 attrh, attrl;
- 	struct scmi_sensor_axis_info *a;
- 	size_t dsize = SCMI_MSG_RESP_AXIS_DESCR_BASE_SZ;
--	struct scmi_sensor_info *s = priv;
-+	struct scmi_apriv *apriv = priv;
- 	const struct scmi_axis_descriptor *adesc = st->priv;
- 
- 	attrl = le32_to_cpu(adesc->attributes_low);
-+	if (SUPPORTS_EXTENDED_AXIS_NAMES(attrl))
-+		apriv->any_axes_support_extended_names = true;
- 
--	a = &s->axis[st->desc_index + st->loop_idx];
-+	a = &apriv->s->axis[st->desc_index + st->loop_idx];
- 	a->id = le32_to_cpu(adesc->id);
- 	a->extended_attrs = SUPPORTS_EXTEND_ATTRS(attrl);
- 
-@@ -444,10 +451,19 @@ iter_axes_extended_name_process_response(const struct scmi_protocol_handle *ph,
- 					 void *priv)
- {
- 	struct scmi_sensor_axis_info *a;
--	const struct scmi_sensor_info *s = priv;
-+	const struct scmi_apriv *apriv = priv;
- 	struct scmi_sensor_axis_name_descriptor *adesc = st->priv;
-+	u32 axis_id = le32_to_cpu(adesc->axis_id);
-+
-+	if (axis_id >= st->max_resources)
-+		return -EPROTO;
- 
--	a = &s->axis[st->desc_index + st->loop_idx];
-+	/*
-+	 * Pick the corresponding descriptor based on the axis_id embedded
-+	 * in the reply since the list of axes supporting extended names
-+	 * can be a subset of all the axes.
-+	 */
-+	a = &apriv->s->axis[axis_id];
- 	strscpy(a->name, adesc->name, SCMI_MAX_STR_SIZE);
- 	st->priv = ++adesc;
- 
-@@ -458,21 +474,36 @@ static int
- scmi_sensor_axis_extended_names_get(const struct scmi_protocol_handle *ph,
- 				    struct scmi_sensor_info *s)
- {
-+	int ret;
- 	void *iter;
- 	struct scmi_iterator_ops ops = {
- 		.prepare_message = iter_axes_desc_prepare_message,
- 		.update_state = iter_axes_extended_name_update_state,
- 		.process_response = iter_axes_extended_name_process_response,
- 	};
-+	struct scmi_apriv apriv = {
-+		.any_axes_support_extended_names = false,
-+		.s = s,
-+	};
- 
- 	iter = ph->hops->iter_response_init(ph, &ops, s->num_axis,
- 					    SENSOR_AXIS_NAME_GET,
- 					    sizeof(struct scmi_msg_sensor_axis_description_get),
--					    s);
-+					    &apriv);
- 	if (IS_ERR(iter))
- 		return PTR_ERR(iter);
- 
--	return ph->hops->iter_response_run(iter);
-+	/*
-+	 * Do not cause whole protocol initialization failure when failing to
-+	 * get extended names for axes.
-+	 */
-+	ret = ph->hops->iter_response_run(iter);
-+	if (ret)
-+		dev_warn(ph->dev,
-+			 "Failed to get axes extended names for %s (ret:%d).\n",
-+			 s->name, ret);
-+
-+	return 0;
- }
- 
- static int scmi_sensor_axis_description(const struct scmi_protocol_handle *ph,
-@@ -486,6 +517,10 @@ static int scmi_sensor_axis_description(const struct scmi_protocol_handle *ph,
- 		.update_state = iter_axes_desc_update_state,
- 		.process_response = iter_axes_desc_process_response,
- 	};
-+	struct scmi_apriv apriv = {
-+		.any_axes_support_extended_names = false,
-+		.s = s,
-+	};
- 
- 	s->axis = devm_kcalloc(ph->dev, s->num_axis,
- 			       sizeof(*s->axis), GFP_KERNEL);
-@@ -495,7 +530,7 @@ static int scmi_sensor_axis_description(const struct scmi_protocol_handle *ph,
- 	iter = ph->hops->iter_response_init(ph, &ops, s->num_axis,
- 					    SENSOR_AXIS_DESCRIPTION_GET,
- 					    sizeof(struct scmi_msg_sensor_axis_description_get),
--					    s);
-+					    &apriv);
- 	if (IS_ERR(iter))
- 		return PTR_ERR(iter);
- 
-@@ -503,7 +538,8 @@ static int scmi_sensor_axis_description(const struct scmi_protocol_handle *ph,
- 	if (ret)
- 		return ret;
- 
--	if (PROTOCOL_REV_MAJOR(version) >= 0x3)
-+	if (PROTOCOL_REV_MAJOR(version) >= 0x3 &&
-+	    apriv.any_axes_support_extended_names)
- 		ret = scmi_sensor_axis_extended_names_get(ph, s);
- 
- 	return ret;
+
+Bharat Kumar Gogada (2):
+  dt-bindings: PCI: xilinx-cpm: Add Versal CPM5 Root Port
+  PCI: xilinx-cpm: Add support for Versal CPM5 Root Port
+
+ .../bindings/pci/xilinx-versal-cpm.yaml       | 48 +++++++++++++++++--
+ drivers/pci/controller/pcie-xilinx-cpm.c      | 33 ++++++++++++-
+ 2 files changed, 76 insertions(+), 5 deletions(-)
+
 -- 
-2.32.0
+2.17.1
 
