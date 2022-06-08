@@ -2,225 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19BF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 20:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B34EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 20:53:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233274AbiFHUvq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 16:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37434 "EHLO
+        id S230123AbiFHUxA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 16:53:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230123AbiFHUvm (ORCPT
+        with ESMTP id S231326AbiFHUwz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 16:51:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C2DF11045C
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 13:51:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654721499;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bbMyK7TZQftKTG3O3T1f3sHboTsvCwRpAGDUWPiFV1k=;
-        b=MarAa6tH1/H2ynDWOEtQooksqez0mWauMY8yDToI1lq49yRXU8wY4kBIdcUalbmLAyLvT9
-        JoAjtiRX9WjvEumDsce6DNoTq3k6/VA6ZxlmxmhOr8zMV5MoNq4FyrQIFF2Cm+WqFxdDh7
-        Sp81PDRZXoAl0DIh2cmAHPYaqgS/nHY=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-53-LoA_2CL_NFqboymF1q1PFA-1; Wed, 08 Jun 2022 16:51:37 -0400
-X-MC-Unique: LoA_2CL_NFqboymF1q1PFA-1
-Received: by mail-qk1-f198.google.com with SMTP id c8-20020a05620a268800b0069c0f1b3206so17540094qkp.18
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 13:51:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=bbMyK7TZQftKTG3O3T1f3sHboTsvCwRpAGDUWPiFV1k=;
-        b=ic7ivGB7Bfk2BGt1qsJWhtddNEO9BYujJqPU9Wz9koM3+r4Stul1+I8lvXdPxBbBkZ
-         sv0uDmZPewfNvBZAqhu76ehUXeUvzx/cQWBM6Klc29F9+lObXqgTd9Oq6fLIhxPHtKVe
-         +2VwBWC7/mtd243NI4OcSsWZg5VTTU7PaX2JPE9++6TlbymYHDlhhO0tNVhwhiHeSh6C
-         uny0d5DQyesDILP6EYDsLviPr9lfW0Rw9cwClNLR3dZVLH+1GNdEpkb0Sa8j32lRXPwu
-         mlMjZRRfl9bB0oc//timFTb9/fWoKyFHGQ/6QOHpujc8dsFG2Zhv/jNuEKKPO1Xe2/F6
-         dvIg==
-X-Gm-Message-State: AOAM530axquRTEXmJ97qdSNRk2XnfKW67zTdjFrLWbyx9LwBLXhKAYOl
-        whclTBBdoRBGtpdCern1uE59xdU9dEMG2RPuw20sm1IuaP3wyDrd50GnNJ8zJAd0Bobr1oRj924
-        eJXZBcUVtnFClnlc2bdB8XXRH
-X-Received: by 2002:a05:620a:240a:b0:6a6:b841:a635 with SMTP id d10-20020a05620a240a00b006a6b841a635mr12580520qkn.689.1654721495648;
-        Wed, 08 Jun 2022 13:51:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw563j9Ikgp8UZy2o2Gq0mZYMB0zAtGvX1GX/jgOO02fGrg6IbIAPJH0fNtTotm//aCk+tO/A==
-X-Received: by 2002:a05:620a:240a:b0:6a6:b841:a635 with SMTP id d10-20020a05620a240a00b006a6b841a635mr12580506qkn.689.1654721495392;
-        Wed, 08 Jun 2022 13:51:35 -0700 (PDT)
-Received: from [192.168.8.138] (static-71-184-137-158.bstnma.ftas.verizon.net. [71.184.137.158])
-        by smtp.gmail.com with ESMTPSA id c3-20020a05620a268300b006a6be577535sm8283564qkp.85.2022.06.08.13.51.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 13:51:34 -0700 (PDT)
-Message-ID: <f548e6d03daf6c56cd011bd1a9ce46001e93590c.camel@redhat.com>
-Subject: Re: [PATCH v2] drm/nouveau/bios: Rename prom_init() and friends
- functions
-From:   Lyude Paul <lyude@redhat.com>
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
+        Wed, 8 Jun 2022 16:52:55 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354C51C9278
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 13:52:54 -0700 (PDT)
+Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: bbeckett)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id A6A9D6601753;
+        Wed,  8 Jun 2022 21:52:52 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1654721572;
+        bh=5MPDE6PLauo4xeTXuzQqjxRuaatIiJJgaRF7Azzw0o0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RgiklC2rhICBDdiymtf1iLzRIQVPyTdJkgxZYmqfMU7E6hz1sPyzO5TQT8YntXzNG
+         +2PB79U3lWL1ynzxW+Y7HvFkuEPJTZ07Jrr6pkfJCrFnPNsFF+m8CLHfr4mAkoZ2Ax
+         xxWHVkOuRgp70oVU1qfhOFRZueOgUC+gofnLYE5dMvhkBh5bbdV4xWvBPvpltmWu6B
+         eem+hjMpegwMAL6+cmdtWAJZUPzBQKYgDr02zqbRSsW7wbzD59dhUkj8UC1saaa1tE
+         Pv5QLPxJuuk6ofmI4yOx+EsFb4auYG7M6Iy21gkGO9YZs9aZMRAeLc7AT8RhKt8IC9
+         0j5Vyq8eBTpFA==
+From:   Robert Beckett <bob.beckett@collabora.com>
+To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 08 Jun 2022 16:51:33 -0400
-In-Reply-To: <8c6e570f5e65e4f5abebc136d40d567e9af4f940.camel@redhat.com>
-References: <7e0612b61511ec8030e3b2dcbfaa7751781c8b91.1647684507.git.christophe.leroy@csgroup.eu>
-         <f6e72c6e6d9ae9019ad675081493372f745cbbf5.camel@redhat.com>
-         <8735ggeih2.fsf@mpe.ellerman.id.au>
-         <8c6e570f5e65e4f5abebc136d40d567e9af4f940.camel@redhat.com>
-Organization: Red Hat Inc.
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/8] drm/i915: add gen6 ppgtt dummy creation function
+Date:   Wed,  8 Jun 2022 20:51:25 +0000
+Message-Id: <20220608205132.438596-3-bob.beckett@collabora.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220608205132.438596-1-bob.beckett@collabora.com>
+References: <20220608205132.438596-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Alright, dim's pushing it now. sorry about that!
+Internal gem objects will soon just be volatile system memory region
+objects.
+To enable this, create a separate dummy object creation function
+for gen6 ppgtt. The object only exists as a fake object pointing to ggtt
+and gains no benefit in going via the internal backend.
+Instead, create a dummy gem object and avoid having to maintain a custom
+ops api in the internal backend, which makes later refactoring easier.
 
-On Wed, 2022-06-08 at 16:48 -0400, Lyude Paul wrote:
-> Whoops, it totally may have. Thank you for the reminder, I will double check
-> and make sure this gets pushed today
-> 
-> On Tue, 2022-06-07 at 23:00 +1000, Michael Ellerman wrote:
-> > Lyude Paul <lyude@redhat.com> writes:
-> > > Reviewed-by: Lyude Paul <lyude@redhat.com>
-> > > 
-> > > Will push to drm-misc-next
-> > 
-> > I don't see this patch in mainline or drm-misc-next, did it get lost?
-> > 
-> > cheers
-> > 
-> > > On Sat, 2022-03-19 at 11:27 +0100, Christophe Leroy wrote:
-> > > > While working at fixing powerpc headers, I ended up with the
-> > > > following error.
-> > > > 
-> > > >         drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowrom.c:48:1:
-> > > > error:
-> > > > conflicting types for 'prom_init'; have 'void *(struct nvkm_bios *,
-> > > > const
-> > > > char *)'
-> > > >         make[5]: *** [scripts/Makefile.build:288:
-> > > > drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowrom.o] Error 1
-> > > > 
-> > > > powerpc and a few other architectures have a prom_init() global
-> > > > function.
-> > > > One day or another it will conflict with the one in shadowrom.c
-> > > > 
-> > > > Those being static, they can easily be renamed. Do it.
-> > > > 
-> > > > While at it, also rename the ops structure as 'nvbios_prom' instead of
-> > > > 'nvbios_rom' in order to make it clear that it refers to the
-> > > > NV_PROM device.
-> > > > 
-> > > > Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-> > > > ---
-> > > > v2: using nvbios_prom prefix instead of nvbios_rom. Changed structure
-> > > > name
-> > > > to keep things consistant.
-> > > > 
-> > > >  drivers/gpu/drm/nouveau/nvkm/subdev/bios/priv.h    |  2 +-
-> > > >  drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadow.c  |  2 +-
-> > > >  .../gpu/drm/nouveau/nvkm/subdev/bios/shadowrom.c   | 14 +++++++------
-> > > > -
-> > > >  3 files changed, 9 insertions(+), 9 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/priv.h
-> > > > b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/priv.h
-> > > > index fac1bff1311b..cfa8a0c356dd 100644
-> > > > --- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/priv.h
-> > > > +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/priv.h
-> > > > @@ -19,7 +19,7 @@ struct nvbios_source {
-> > > >  int nvbios_extend(struct nvkm_bios *, u32 length);
-> > > >  int nvbios_shadow(struct nvkm_bios *);
-> > > >  
-> > > > -extern const struct nvbios_source nvbios_rom;
-> > > > +extern const struct nvbios_source nvbios_prom;
-> > > >  extern const struct nvbios_source nvbios_ramin;
-> > > >  extern const struct nvbios_source nvbios_acpi_fast;
-> > > >  extern const struct nvbios_source nvbios_acpi_slow;
-> > > > diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadow.c
-> > > > b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadow.c
-> > > > index 4b571cc6bc70..19188683c8fc 100644
-> > > > --- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadow.c
-> > > > +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadow.c
-> > > > @@ -171,7 +171,7 @@ nvbios_shadow(struct nvkm_bios *bios)
-> > > >         struct shadow mthds[] = {
-> > > >                 { 0, &nvbios_of },
-> > > >                 { 0, &nvbios_ramin },
-> > > > -               { 0, &nvbios_rom },
-> > > > +               { 0, &nvbios_prom },
-> > > >                 { 0, &nvbios_acpi_fast },
-> > > >                 { 4, &nvbios_acpi_slow },
-> > > >                 { 1, &nvbios_pcirom },
-> > > > diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowrom.c
-> > > > b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowrom.c
-> > > > index ffa4b395220a..39144ceb117b 100644
-> > > > --- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowrom.c
-> > > > +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowrom.c
-> > > > @@ -25,7 +25,7 @@
-> > > >  #include <subdev/pci.h>
-> > > >  
-> > > >  static u32
-> > > > -prom_read(void *data, u32 offset, u32 length, struct nvkm_bios *bios)
-> > > > +nvbios_prom_read(void *data, u32 offset, u32 length, struct nvkm_bios
-> > > > *bios)
-> > > >  {
-> > > >         struct nvkm_device *device = data;
-> > > >         u32 i;
-> > > > @@ -38,14 +38,14 @@ prom_read(void *data, u32 offset, u32 length,
-> > > > struct
-> > > > nvkm_bios *bios)
-> > > >  }
-> > > >  
-> > > >  static void
-> > > > -prom_fini(void *data)
-> > > > +nvbios_prom_fini(void *data)
-> > > >  {
-> > > >         struct nvkm_device *device = data;
-> > > >         nvkm_pci_rom_shadow(device->pci, true);
-> > > >  }
-> > > >  
-> > > >  static void *
-> > > > -prom_init(struct nvkm_bios *bios, const char *name)
-> > > > +nvbios_prom_init(struct nvkm_bios *bios, const char *name)
-> > > >  {
-> > > >         struct nvkm_device *device = bios->subdev.device;
-> > > >         if (device->card_type == NV_40 && device->chipset >= 0x4c)
-> > > > @@ -55,10 +55,10 @@ prom_init(struct nvkm_bios *bios, const char
-> > > > *name)
-> > > >  }
-> > > >  
-> > > >  const struct nvbios_source
-> > > > -nvbios_rom = {
-> > > > +nvbios_prom = {
-> > > >         .name = "PROM",
-> > > > -       .init = prom_init,
-> > > > -       .fini = prom_fini,
-> > > > -       .read = prom_read,
-> > > > +       .init = nvbios_prom_init,
-> > > > +       .fini = nvbios_prom_fini,
-> > > > +       .read = nvbios_prom_read,
-> > > >         .rw = false,
-> > > >  };
-> > > 
-> > > -- 
-> > > Cheers,
-> > >  Lyude Paul (she/her)
-> > >  Software Engineer at Red Hat
-> > 
-> 
+Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+---
+ drivers/gpu/drm/i915/gt/gen6_ppgtt.c | 43 ++++++++++++++++++++++++++--
+ 1 file changed, 40 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/gpu/drm/i915/gt/gen6_ppgtt.c b/drivers/gpu/drm/i915/gt/gen6_ppgtt.c
+index 1bb766c79dcb..f3b660cfeb7f 100644
+--- a/drivers/gpu/drm/i915/gt/gen6_ppgtt.c
++++ b/drivers/gpu/drm/i915/gt/gen6_ppgtt.c
+@@ -372,6 +372,45 @@ static const struct drm_i915_gem_object_ops pd_dummy_obj_ops = {
+ 	.put_pages = pd_dummy_obj_put_pages,
+ };
+ 
++static struct drm_i915_gem_object *
++i915_gem_object_create_dummy(struct drm_i915_private *i915, phys_addr_t size)
++{
++	static struct lock_class_key lock_class;
++	struct drm_i915_gem_object *obj;
++	unsigned int cache_level;
++
++	GEM_BUG_ON(!size);
++	GEM_BUG_ON(!IS_ALIGNED(size, PAGE_SIZE));
++
++	if (overflows_type(size, obj->base.size))
++		return ERR_PTR(-E2BIG);
++
++	obj = i915_gem_object_alloc();
++	if (!obj)
++		return ERR_PTR(-ENOMEM);
++
++	drm_gem_private_object_init(&i915->drm, &obj->base, size);
++	i915_gem_object_init(obj, &pd_dummy_obj_ops, &lock_class, 0);
++	obj->mem_flags |= I915_BO_FLAG_STRUCT_PAGE;
++
++	/*
++	 * Mark the object as volatile, such that the pages are marked as
++	 * dontneed whilst they are still pinned. As soon as they are unpinned
++	 * they are allowed to be reaped by the shrinker, and the caller is
++	 * expected to repopulate - the contents of this object are only valid
++	 * whilst active and pinned.
++	 */
++	i915_gem_object_set_volatile(obj);
++
++	obj->read_domains = I915_GEM_DOMAIN_CPU;
++	obj->write_domain = I915_GEM_DOMAIN_CPU;
++
++	cache_level = HAS_LLC(i915) ? I915_CACHE_LLC : I915_CACHE_NONE;
++	i915_gem_object_set_cache_coherency(obj, cache_level);
++
++	return obj;
++}
++
+ static struct i915_page_directory *
+ gen6_alloc_top_pd(struct gen6_ppgtt *ppgtt)
+ {
+@@ -383,9 +422,7 @@ gen6_alloc_top_pd(struct gen6_ppgtt *ppgtt)
+ 	if (unlikely(!pd))
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	pd->pt.base = __i915_gem_object_create_internal(ppgtt->base.vm.gt->i915,
+-							&pd_dummy_obj_ops,
+-							I915_PDES * SZ_4K);
++	pd->pt.base = i915_gem_object_create_dummy(ppgtt->base.vm.gt->i915, I915_PDES * SZ_4K);
+ 	if (IS_ERR(pd->pt.base)) {
+ 		err = PTR_ERR(pd->pt.base);
+ 		pd->pt.base = NULL;
 -- 
-Cheers,
- Lyude Paul (she/her)
- Software Engineer at Red Hat
+2.25.1
 
