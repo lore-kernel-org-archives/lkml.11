@@ -2,79 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8B1BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:16:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C73C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243838AbiFHPP6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:15:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44044 "EHLO
+        id S244290AbiFHPQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:16:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244428AbiFHPOg (ORCPT
+        with ESMTP id S244682AbiFHPO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:14:36 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7EBA1F0A4F;
-        Wed,  8 Jun 2022 08:07:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ezwSP2ycpO1p3eEM9FoNLAzo6tW/B/UAxq7z/I5YF+c=; b=VX18ZEOxSUcNpyBZYrsteOdpBT
-        HZTcWzeAfZ6BJYQuFjLWfCOJvTMUxk8MBr1xKoL2P60bmS4cJFpNLiXDZtftqzI+rgduxGS68DtiK
-        n2sX7U8y/70osNz3d2Xt0J6OluKnOUM3YB9Zi9fJja9GYLe+tapPXdVPaGQ3u9lSN6Xi3CMW1rzUO
-        e3CAfEEv9OEh2D7wgtx4oI2+cs3IN1VyHSrg0xW5CGtOKE5NiMzT399Egt+AxLGeudx7a3sdf9LdV
-        Mi/zih0vfnOHChkKnY+yM8XUEhW7zxYgPk9eAQTvAmT+1w3WkGykJpFbfD3mdaGEeXhyHnkHSdNZ4
-        EXPPsicA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nyxHH-00CjeB-22; Wed, 08 Jun 2022 15:07:23 +0000
-Date:   Wed, 8 Jun 2022 16:07:23 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     Baolin Wang <baolin.wang@linux.alibaba.com>,
-        0day robot <lkp@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-csky@vger.kernel.org,
-        openrisc@lists.librecores.org, linux-arch@vger.kernel.org,
-        lkp@lists.01.org, akpm@linux-foundation.org, linux-mm@kvack.org
-Subject: Re: [mm]  9b12e49e9b: BUG:Bad_page_state_in_process
-Message-ID: <YqC7K0e2FFp7vT6i@casper.infradead.org>
-References: <d35f42f7b598f629437940f941826e2cc49a97f6.1654271618.git.baolin.wang@linux.alibaba.com>
- <20220608143819.GA31193@xsang-OptiPlex-9020>
+        Wed, 8 Jun 2022 11:14:58 -0400
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B6C591570
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:10:41 -0700 (PDT)
+Received: by mail-qk1-f171.google.com with SMTP id k6so12644286qkf.4
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 08:10:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d6PtJz0BrJE/Hg+05Q61y2MGcQT6vQ+yOTNRosqppNs=;
+        b=C0Bhmg+IPNSkuViWSHiQkrV9gFQXc2eCIskZK3v8eOop/kIpX8wehKWoojbdxr4dBs
+         pydPb9qzFDRvPLIvGbAgtvUA3BGdp5pKzRPTk4lrkiKAo/GgyTKzxkSx3Y9aPSaaG7QF
+         LpLV2OVOXQeN4G3KT/xigNQDtVfu5MkIKWAZGkHIAQIRszWdpieTEDMoYKvDMGCEo4W3
+         FU7B+bnVoe+nkEmzOiCi7pfjY7QDVjfqhjYDd1by6YU6jhpz1uIzjr66ONV6e3rbxCbc
+         ACe0MBfcgJsTQ7lGqZtq9gUT/HIjlwcw0K0h7SM+ZeXb8jNc22/gvK+sTTOl8XOH4tpJ
+         +zyQ==
+X-Gm-Message-State: AOAM531k7Fwf6eVDMxTp8SAYOVxzHe+SDtZ4XqXhDbQ1asoSjidjlcHI
+        84B1XTXf9wUw2ql0paHdrRsGFnUNbX0iFg==
+X-Google-Smtp-Source: ABdhPJxuu/wxlgakW03QhduCCofYqEEe9miqE3lZpXydZEmZQwgPvFWEdadyRKSpd0Y5hax55clvSw==
+X-Received: by 2002:a05:620a:1009:b0:6a6:bca7:7f4e with SMTP id z9-20020a05620a100900b006a6bca77f4emr11043457qkj.536.1654701039644;
+        Wed, 08 Jun 2022 08:10:39 -0700 (PDT)
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
+        by smtp.gmail.com with ESMTPSA id g20-20020a05620a40d400b006a5d8d96681sm8708759qko.100.2022.06.08.08.10.39
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 08:10:39 -0700 (PDT)
+Received: by mail-yb1-f170.google.com with SMTP id e184so37005063ybf.8
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 08:10:38 -0700 (PDT)
+X-Received: by 2002:a25:d748:0:b0:65c:6b00:55af with SMTP id
+ o69-20020a25d748000000b0065c6b0055afmr34410545ybg.365.1654701038694; Wed, 08
+ Jun 2022 08:10:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220608143819.GA31193@xsang-OptiPlex-9020>
+References: <20220421212250.565456-1-john.ogness@linutronix.de>
+ <20220421212250.565456-15-john.ogness@linutronix.de> <878rrs6ft7.fsf@jogness.linutronix.de>
+ <Ymfgis0EAw0Oxoa5@alley> <Ymfwk+X0CHq6ex3s@alley> <CGME20220427070833eucas1p27a32ce7c41c0da26f05bd52155f0031c@eucas1p2.samsung.com>
+ <2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com> <Ymjy3rHRenba7r7R@alley>
+ <b6c1a8ac-c691-a84d-d3a1-f99984d32f06@samsung.com> <87fslyv6y3.fsf@jogness.linutronix.de>
+ <51dfc4a0-f6cf-092f-109f-a04eeb240655@samsung.com> <87k0b6blz2.fsf@jogness.linutronix.de>
+ <32bba8f8-dec7-78aa-f2e5-f62928412eda@samsung.com> <87y1zkkrjy.fsf@jogness.linutronix.de>
+In-Reply-To: <87y1zkkrjy.fsf@jogness.linutronix.de>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 8 Jun 2022 17:10:27 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVmoj3Tqz65VmSuVL2no4+bGC=qdB8LWoB=vyASf9vS+g@mail.gmail.com>
+Message-ID: <CAMuHMdVmoj3Tqz65VmSuVL2no4+bGC=qdB8LWoB=vyASf9vS+g@mail.gmail.com>
+Subject: Re: [PATCH printk v5 1/1] printk: extend console_lock for per-console locking
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 10:38:19PM +0800, kernel test robot wrote:
-> 
-> 
-> Greeting,
-> 
-> FYI, we noticed the following commit (built with gcc-11):
-> 
-> commit: 9b12e49e9b02bbaca8041f236a6b2fd4586d45c8 ("[RFC PATCH 3/3] mm: Add kernel PTE level pagetable pages account")
+Hi John,
 
-> [   75.338681][ T4873] BUG: Bad page state in process 444  pfn:20b066
-> [   75.338840][ T4873] page:0000000016cf0259 refcount:0 mapcount:-512 mapping:0000000000000000 index:0x0 pfn:0x20b066
+On Mon, May 2, 2022 at 3:19 PM John Ogness <john.ogness@linutronix.de> wrote:
+> On 2022-05-02, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
+> > Data written to /dev/kmsg and all kernel logs were always displayed
+> > correctly. Also data written directly to /dev/ttyAML0 is displayed
+> > properly on the console. The latter doesn't however trigger the input
+> > related activity.
+> >
+> > It looks that the data read from the uart is delivered only if other
+> > activity happens on the kernel console. If I type 'reboot' and press
+> > enter, nothing happens immediately. If I type 'date >/dev/ttyAML0' via
+> > ssh then, I only see the date printed on the console. However if I
+> > type 'date >/dev/kmsg', the the date is printed and reboot happens.
+>
+> I suppose if you login via ssh and check /proc/interrupts, then type
+> some things over serial, then check /proc/interrupts again, you will see
+> there have been no interrupts for the uart. But interrupts for other
+> devices are happening. Is this correct?
+>
+> > For comparison, here is a 't' sysrq result from the 'working' serial
+> > console (next-20220429), which happens usually 1 of 4 boots:
+> >
+> > https://pastebin.com/mp8zGFbW
+>
+> This still looks odd to me. We should be seeing a trace originating from
+> ret_from_fork+0x10/0x20 and kthread+0x118/0x11c.
+>
+> I wonder if the early creation of the thread is somehow causing
+> problems. Could you try the following patch to see if it makes a
+> difference? I would also like to see the sysrq-t output with this patch
+> applied:
 
-mapcount:-512 is PG_table.  Somebody forgot to call
-pgtable_pte_page_dtor() (or similar)
+On one board, I'm seeing a new splat during early boot, pointing to
+printk_activate_kthreads:
 
-> [   75.339041][ T4873] flags: 0x17ffffc0000000(node=0|zone=2|lastcpupid=0x1fffff)
-> [   75.339190][ T4873] raw: 0017ffffc0000000 dead000000000100 dead000000000122 0000000000000000
-> [   75.339350][ T4873] raw: 0000000000000000 0000000000000000 00000000fffffdff 0000000000000000
-> [   75.339508][ T4873] page dumped because: nonzero mapcount
-> [   75.341013][ T4873] Call Trace:
-> [   75.341080][ T4873]  <TASK>
-> [ 75.341142][ T4873] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1)) 
-> [ 75.341236][ T4873] bad_page.cold (mm/page_alloc.c:637) 
-> [ 75.341326][ T4873] free_pcppages_bulk (mm/page_alloc.c:1511) 
-> [ 75.341428][ T4873] free_unref_page (arch/x86/include/asm/irqflags.h:137 mm/page_alloc.c:3444) 
-> [ 75.341524][ T4873] __mmdrop (arch/x86/include/asm/mmu_context.h:125 (discriminator 3) kernel/fork.c:791 (discriminator 3)) 
-> [ 75.341608][ T4873] ? __mmput (arch/x86/include/asm/atomic.h:123 include/linux/atomic/atomic-instrumented.h:576 include/linux/sched/mm.h:49 kernel/fork.c:1194) 
-> [ 75.341889][ T4873] exec_mmap (fs/exec.c:1035) 
-> [ 75.341977][ T4873] begin_new_exec (fs/exec.c:1293) 
-> [ 75.342071][ T4873] ? kernel_read (fs/read_write.c:455) 
-> [ 75.342160][ T4873] load_elf_binary (fs/binfmt_elf.c:1002) 
+    Calibrating delay loop (skipped), value calculated using timer
+frequency.. 48.00 BogoMIPS (lpj=96000)
+    pid_max: default: 32768 minimum: 301
+    Mount-cache hash table entries: 4096 (order: 3, 32768 bytes, linear)
+    Mountpoint-cache hash table entries: 4096 (order: 3, 32768 bytes, linear)
+
+    =============================
+    [ BUG: Invalid wait context ]
+    5.19.0-rc1-ebisu-00802-g06a0dd60d6e4 #431 Not tainted
+    -----------------------------
+    swapper/0/1 is trying to lock:
+    ffffffc00910bac8 (base_crng.lock){....}-{3:3}, at:
+crng_make_state+0x148/0x1e4
+    other info that might help us debug this:
+    context-{5:5}
+    2 locks held by swapper/0/1:
+     #0: ffffffc008f8ae00 (console_lock){+.+.}-{0:0}, at:
+printk_activate_kthreads+0x10/0x54
+     #1: ffffffc009da4a28 (&meta->lock){....}-{2:2}, at:
+__kfence_alloc+0x378/0x5c4
+    stack backtrace:
+    CPU: 0 PID: 1 Comm: swapper/0 Not tainted
+5.19.0-rc1-ebisu-00802-g06a0dd60d6e4 #431
+    Hardware name: Renesas Ebisu-4D board based on r8a77990 (DT)
+    Call trace:
+     dump_backtrace.part.0+0x98/0xc0
+     show_stack+0x14/0x28
+     dump_stack_lvl+0xac/0xec
+     dump_stack+0x14/0x2c
+     __lock_acquire+0x388/0x10a0
+     lock_acquire+0x190/0x2c0
+     _raw_spin_lock_irqsave+0x6c/0x94
+     crng_make_state+0x148/0x1e4
+     _get_random_bytes.part.0+0x4c/0xe8
+     get_random_u32+0x4c/0x140
+     __kfence_alloc+0x460/0x5c4
+     kmem_cache_alloc_trace+0x194/0x1dc
+     __kthread_create_on_node+0x5c/0x1a8
+     kthread_create_on_node+0x58/0x7c
+     printk_start_kthread.part.0+0x34/0xa8
+     printk_activate_kthreads+0x4c/0x54
+     do_one_initcall+0xec/0x278
+     kernel_init_freeable+0x11c/0x214
+     kernel_init+0x24/0x124
+     ret_from_fork+0x10/0x20
+    rcu: Hierarchical SRCU implementation.
+    printk: console [tty0] printing thread started
+    EFI services will not be available.
+    smp: Bringing up secondary CPUs ...
+    Detected VIPT I-cache on CPU1
+    CPU1: Booted secondary processor 0x0000000001 [0x410fd034]
+    smp: Brought up 1 node, 2 CPUs
+    SMP: Total of 2 processors activated.
+
+> ---------------- BEGIN PATCH ---------------
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index 2311a0ad584a..c4362d25de22 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -3837,7 +3837,7 @@ static int __init printk_activate_kthreads(void)
+>
+>         return 0;
+>  }
+> -early_initcall(printk_activate_kthreads);
+> +late_initcall(printk_activate_kthreads);
+>
+>  #if defined CONFIG_PRINTK
+>  /* If @con is specified, only wait for that console. Otherwise wait for all. */
+> ---------------- END PATCH ---------------
+
+Doesn't seem to make much of a difference, only a slightly different
+backtrace, compared to the above:
+
+     Mount-cache hash table entries: 4096 (order: 3, 32768 bytes, linear)
+     Mountpoint-cache hash table entries: 4096 (order: 3, 32768 bytes, linear)
+    +rcu: Hierarchical SRCU implementation.
+
+     =============================
+     [ BUG: Invalid wait context ]
+    -5.19.0-rc1-ebisu-00802-g06a0dd60d6e4 #431 Not tainted
+    +5.19.0-rc1-ebisu-00802-g06a0dd60d6e4-dirty #433 Not tainted
+     -----------------------------
+     swapper/0/1 is trying to lock:
+     ffffffc00910bac8 (base_crng.lock){....}-{3:3}, at:
+crng_make_state+0x148/0x1e4
+     other info that might help us debug this:
+     context-{5:5}
+    -2 locks held by swapper/0/1:
+    - #0: ffffffc008f8ae00 (console_lock){+.+.}-{0:0}, at:
+printk_activate_kthreads+0x10/0x54
+    - #1: ffffffc009da4a28 (&meta->lock){....}-{2:2}, at:
+__kfence_alloc+0x378/0x5c4
+    +1 lock held by swapper/0/1:
+    + #0: ffffffc009da4a28 (&meta->lock){....}-{2:2}, at:
+__kfence_alloc+0x378/0x5c4
+     stack backtrace:
+    -CPU: 0 PID: 1 Comm: swapper/0 Not tainted
+5.19.0-rc1-ebisu-00802-g06a0dd60d6e4 #431
+    +CPU: 0 PID: 1 Comm: swapper/0 Not tainted
+5.19.0-rc1-ebisu-00802-g06a0dd60d6e4-dirty #433
+     Hardware name: Renesas Ebisu-4D board based on r8a77990 (DT)
+     Call trace:
+      dump_backtrace.part.0+0x98/0xc0
+    @@ -33,20 +32,14 @@ Call trace:
+      kmem_cache_alloc_trace+0x194/0x1dc
+      __kthread_create_on_node+0x5c/0x1a8
+      kthread_create_on_node+0x58/0x7c
+    - printk_start_kthread.part.0+0x34/0xa8
+    - printk_activate_kthreads+0x4c/0x54
+    + rcu_spawn_gp_kthread+0x54/0x208
+      do_one_initcall+0xec/0x278
+      kernel_init_freeable+0x11c/0x214
+      kernel_init+0x24/0x124
+      ret_from_fork+0x10/0x20
+    -rcu: Hierarchical SRCU implementation.
+    -printk: console [tty0] printing thread started
+     EFI services will not be available.
+     smp: Bringing up secondary CPUs ...
+     Detected VIPT I-cache on CPU1
+     ...
+    +printk: console [tty0] printing thread started
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
