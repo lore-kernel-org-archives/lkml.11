@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2746C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 22:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7934C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 22:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236548AbiFHWpm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 18:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32906 "EHLO
+        id S229539AbiFHWpp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 18:45:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230322AbiFHWpY (ORCPT
+        with ESMTP id S236800AbiFHWp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 18:45:24 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 170112509DE
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 15:45:23 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id e189-20020a6369c6000000b003fd31d5990fso7428429pgc.20
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 15:45:23 -0700 (PDT)
+        Wed, 8 Jun 2022 18:45:29 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 030D72504CB
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 15:45:27 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id q12-20020a056a0002ac00b0051bb2e66c91so11327999pfs.4
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 15:45:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=bMeLzNqhuJTdm9rwRjOvyOW1NIK0cUo/UeP8lk5uQQk=;
-        b=RTci0xO1Vz2BmgyGPbxy8QXpFkdH+ggaqzqeLo4Jix+zXRb8DSVHAG43bnDq8z+FjZ
-         bFtvXGvgyTmMJqGChfSf9JkiBxoWo52u2B4fyD46Hf3h2Kv8F2ZqO3b2p9F/Fz+JbLEi
-         DcIyW7+KfXcZ2YsECuT7Hnpwk46+HBI9Vb0J51B7pvaOLcfOP28Bt8FXxWzwXvZlybCQ
-         2HMeoUC/bQmTMKV8gRc5xK1QWfRNwiql78g//a4YiSbgKmLIQrdOwjXXMel1JUrTYixs
-         qY1RYUKbttjV9CpnXX67owvnSRxwvouR2wp9oVazITMEj7gqt7ZUBvC/dwZ73ZPTf5E4
-         v2rA==
+        bh=L6CG/ucwyzRbxPhEP+xskpq5cumPIfOGi6WfytIM0VI=;
+        b=EVrWDujSzZhYWScj6uvyk/wsH9irmGTL6WNySzq7huYNhDGk2RcPTI6RmAp+SHuBd9
+         tUjiNPGzPKbB+WvXlCxogt0M9Mbw8kwAjdR95DKE6qPdhzNa57z58+zWAHhnOziOHbn+
+         Zwqth5TBzimqdtVbE+W+DNFJBcTLFJwYtJL9p9msqFQXjrg3eZpLkpoTUjqIPhJ7VNGq
+         DFg32qozGkUujV/IdgRsor4H2O5y+mDXrza/czdxLHnhX8QYnZAzv4xOtaVLGnzjbKVj
+         XPpl+91Ds74ar752Cg7+9B0m+II28CnWOtVSf2z2RonRixRyR5jeyNV9/TI2siqPjny+
+         cSIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=bMeLzNqhuJTdm9rwRjOvyOW1NIK0cUo/UeP8lk5uQQk=;
-        b=U477N3ywEEH7tAwJCldsNO6hHP9q/NXrYhIflj5y8YJ3idjgF56mcbf90qHiRAYz9a
-         QFeildqmg7MbuAgo/JW9/79ydlVKd1xhHM6MGiKLsvS5e3b1k7+YtFJ/4wPrgKVpyTfx
-         iGcTK4u7Gxi0qEdkkLoW8F4Qcb+mMNHVtqGDG9W/wEP1gsZpeQxtNw7mTWDPkT+g/p0y
-         axyIMm/AEd298LWdq3rT9Nn2wu5d17mZUH8TgYhZDJpCrdErp2UYIS9W0EiJYGgcwBuK
-         dsQIvvV9wdG0eVRgvwN6AwmVZK5XYRCOvw6GXpYotYw4xveWZruG6Qz31GZQe9/PeWTt
-         FbhQ==
-X-Gm-Message-State: AOAM530YLA0vYP7B8ES3Vtn6eH0vt66WoTw0NqZU3eti3BuS/+hTf2fr
-        kSsedIRIFTgNNHoticT2ruUiuFE/y64=
-X-Google-Smtp-Source: ABdhPJxAB+hWrNgX9ONVVmSW2qP7kFPqjUnpslfLFOoCOsg6wzg7WB0oSO0Faqf1QF6xWquQUnOPTmoaVoE=
+        bh=L6CG/ucwyzRbxPhEP+xskpq5cumPIfOGi6WfytIM0VI=;
+        b=BIXpw5S0+qb7WeIiNCPZ1Tsjb1SLALY8+ibiXmtKdQCRvqaEQAialAaYsx95ieSLAt
+         nbUJOrt8fY6M3LPlJb5ZG+iAaHuGjm0vwcP5yTHcSYLfAGfUwZmpwP8TmWnIXJqSIQpu
+         SDBAgYLy43YWqFleg4CKUHdd5G/AYVEyCKGKbIsc6vCLfgvAATtAZq8YMweU+RJC0dYt
+         TwTvJdiysNFbg6YYmEnjJ0Erh/JKGnn6/QHuFUuZUA3XUsBuSPVbGx6hsrOmWOIw5xNx
+         9yiN5DAukB2wKOy3bmgvtbK9w7J2o3FQJSP00pO2HqRHrwmAmteoEJ13FwW5Kw5gaAnM
+         ATVg==
+X-Gm-Message-State: AOAM532yfux4Tsa/KcHTdAkDt9FPmOSop5m3FmRm+TVusi7KEL0RN67R
+        dBgmptg0cC4dr5fBJAWFHLrLPULYbBA=
+X-Google-Smtp-Source: ABdhPJx9WF++0c78k3640NdFplCX1fFdbExMr6dWv7IOPQRs+W4YuRh0MTHB9N/9ITqnrqr6Dd0MjFHwpsI=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1946:b0:4fe:309f:d612 with SMTP id
- s6-20020a056a00194600b004fe309fd612mr104701730pfk.10.1654728322537; Wed, 08
- Jun 2022 15:45:22 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90a:5a48:b0:1e3:4180:a218 with SMTP id
+ m8-20020a17090a5a4800b001e34180a218mr262148pji.182.1654728327551; Wed, 08 Jun
+ 2022 15:45:27 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  8 Jun 2022 22:45:13 +0000
+Date:   Wed,  8 Jun 2022 22:45:16 +0000
 In-Reply-To: <20220608224516.3788274-1-seanjc@google.com>
-Message-Id: <20220608224516.3788274-3-seanjc@google.com>
+Message-Id: <20220608224516.3788274-6-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220608224516.3788274-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH 2/5] KVM: selftests: Add x86-64 support for exception fixup
+Subject: [PATCH 5/5] KVM: selftests: Add MONITOR/MWAIT quirk test
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -67,298 +67,180 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add x86-64 support for exception fixup on single instructions, without
-forcing tests to install their own fault handlers.  Use registers r9-r11
-to flag the instruction as "safe" and pass fixup/vector information,
-i.e. introduce yet another flavor of fixup (versus the kernel's in-memory
-tables and KUT's per-CPU area) to take advantage of KVM sefltests being
-64-bit only.
+Add a test to verify the "MONITOR/MWAIT never fault" quirk, and as a
+bonus, also verify the related "MISC_ENABLES ignores ENABLE_MWAIT" quirk.
 
-Using only registers avoids the need to allocate fixup tables, ensure
-FS or GS base is valid for the guest, ensure memory is mapped into the
-guest, etc..., and also reduces the potential for recursive faults due to
-accessing memory.
-
-Providing exception fixup trivializes tests that just want to verify that
-an instruction faults, e.g. no need to track start/end using global
-labels, no need to install a dedicated handler, etc...
-
-Deliberately do not support #DE in exception fixup so that the fixup glue
-doesn't need to account for a fault with vector == 0, i.e. the vector can
-also indicate that a fault occurred.  KVM injects #DE only for esoteric
-emulation scenarios, i.e. there's very, very little value in testing #DE.
-Force any test that wants to generate #DEs to install its own handler(s).
-
-Use kvm_pv_test as a guinea pig for the new fixup, as it has a very
-straightforward use case of wanting to verify that RDMSR and WRMSR fault.
+If the "never fault" quirk is enabled, MONITOR/MWAIT should always be
+emulated as NOPs, even if they're reported as disabled in guest CPUID.
+Use the MISC_ENABLES quirk to coerce KVM into toggling the MWAIT CPUID
+enable, as KVM now disallows manually toggling CPUID bits after running
+the vCPU.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/x86_64/processor.h  | 74 +++++++++++++++++
- .../selftests/kvm/lib/x86_64/processor.c      | 17 ++++
- .../selftests/kvm/x86_64/kvm_pv_test.c        | 82 ++++---------------
- 3 files changed, 109 insertions(+), 64 deletions(-)
+ tools/testing/selftests/kvm/.gitignore        |   1 +
+ tools/testing/selftests/kvm/Makefile          |   1 +
+ .../selftests/kvm/x86_64/monitor_mwait_test.c | 127 ++++++++++++++++++
+ 3 files changed, 129 insertions(+)
+ create mode 100644 tools/testing/selftests/kvm/x86_64/monitor_mwait_test.c
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index 3fd3d58148c2..15aa076765a5 100644
---- a/tools/testing/selftests/kvm/include/x86_64/processor.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -15,6 +15,8 @@
- #include <asm/msr-index.h>
- #include <asm/prctl.h>
- 
-+#include <linux/stringify.h>
+diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
+index 0ab0e255d292..1a56522f009c 100644
+--- a/tools/testing/selftests/kvm/.gitignore
++++ b/tools/testing/selftests/kvm/.gitignore
+@@ -27,6 +27,7 @@
+ /x86_64/hyperv_svm_test
+ /x86_64/max_vcpuid_cap_test
+ /x86_64/mmio_warning_test
++/x86_64/monitor_mwait_test
+ /x86_64/platform_info_test
+ /x86_64/pmu_event_filter_test
+ /x86_64/set_boot_cpu_id
+diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+index 9a256c1f1bdf..bbbfdeb7ee9b 100644
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -56,6 +56,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_svm_test
+ TEST_GEN_PROGS_x86_64 += x86_64/kvm_clock_test
+ TEST_GEN_PROGS_x86_64 += x86_64/kvm_pv_test
+ TEST_GEN_PROGS_x86_64 += x86_64/mmio_warning_test
++TEST_GEN_PROGS_x86_64 += x86_64/monitor_mwait_test
+ TEST_GEN_PROGS_x86_64 += x86_64/platform_info_test
+ TEST_GEN_PROGS_x86_64 += x86_64/pmu_event_filter_test
+ TEST_GEN_PROGS_x86_64 += x86_64/set_boot_cpu_id
+diff --git a/tools/testing/selftests/kvm/x86_64/monitor_mwait_test.c b/tools/testing/selftests/kvm/x86_64/monitor_mwait_test.c
+new file mode 100644
+index 000000000000..b9af8e29721e
+--- /dev/null
++++ b/tools/testing/selftests/kvm/x86_64/monitor_mwait_test.c
+@@ -0,0 +1,127 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <fcntl.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/ioctl.h>
 +
- #include "../kvm_util.h"
- 
- #define NMI_VECTOR		0x02
-@@ -750,6 +752,78 @@ void vcpu_init_descriptor_tables(struct kvm_vcpu *vcpu);
- void vm_install_exception_handler(struct kvm_vm *vm, int vector,
- 			void (*handler)(struct ex_regs *));
- 
-+/* If a toddler were to say "abracadabra". */
-+#define KVM_EXCEPTION_MAGIC 0xabacadabaull
++#include "kvm_util.h"
++#include "processor.h"
 +
-+/*
-+ * KVM selftest exception fixup uses registers to coordinate with the exception
-+ * handler, versus the kernel's in-memory tables and KVM-Unit-Tests's in-memory
-+ * per-CPU data.  Using only registers avoids having to map memory into the
-+ * guest, doesn't require a valid, stable GS.base, and reduces the risk of
-+ * for recursive faults when accessing memory in the handler.  The downside to
-+ * using registers is that it restricts what registers can be used by the actual
-+ * instruction.  But, selftests are 64-bit only, making register* pressure a
-+ * minor concern.  Use r9-r11 as they are volatile, i.e. don't need* to be saved
-+ * by the callee, and except for r11 are not implicit parameters to any
-+ * instructions.  Ideally, fixup would use r8-r10 and thus avoid implicit
-+ * parameters entirely, but Hyper-V's hypercall ABI uses r8 and testing Hyper-V
-+ * is higher priority than testing non-faulting SYSCALL/SYSRET.
-+ *
-+ * Note, the fixup handler deliberately does not handle #DE, i.e. the vector
-+ * is guaranteed to be non-zero on fault.
-+ *
-+ * REGISTER INPUTS:
-+ * r9  = MAGIC
-+ * r10 = RIP
-+ * r11 = new RIP on fault
-+ *
-+ * REGISTER OUTPUTS:
-+ * r9  = exception vector (non-zero)
-+ */
-+#define KVM_ASM_SAFE(insn)					\
-+	"mov $" __stringify(KVM_EXCEPTION_MAGIC) ", %%r9\n\t"	\
-+	"lea 1f(%%rip), %%r10\n\t"				\
-+	"lea 2f(%%rip), %%r11\n\t"				\
-+	"1: " insn "\n\t"					\
-+	"mov $0, %[vector]\n\t"					\
-+	"jmp 3f\n\t"						\
-+	"2:\n\t"						\
-+	"mov  %%r9b, %[vector]\n\t"				\
-+	"3:\n\t"
++enum monitor_mwait_testcases {
++	MWAIT_QUIRK_DISABLED = BIT(0),
++	MISC_ENABLES_QUIRK_DISABLED = BIT(1),
++	MWAIT_DISABLED = BIT(2),
++};
 +
-+#define KVM_ASM_SAFE_OUTPUTS(v)	[vector] "=qm"(v)
-+#define KVM_ASM_SAFE_CLOBBERS	"r9", "r10", "r11"
-+
-+#define kvm_asm_safe(insn, inputs...)			\
-+({							\
-+	uint8_t vector;					\
-+							\
-+	asm volatile(KVM_ASM_SAFE(insn)			\
-+		     : KVM_ASM_SAFE_OUTPUTS(vector)	\
-+		     : inputs				\
-+		     : KVM_ASM_SAFE_CLOBBERS);		\
-+	vector;						\
-+})
-+
-+static inline uint8_t rdmsr_safe(uint32_t msr, uint64_t *val)
++static void guest_monitor_wait(int testcase)
 +{
-+	uint8_t vector;
-+	uint32_t a, d;
++	/*
++	 * If both MWAIT and its quirk are disabled, MONITOR/MWAIT should #UD,
++	 * in all other scenarios KVM should emulate them as nops.
++	 */
++	bool fault_wanted = (testcase & MWAIT_QUIRK_DISABLED) &&
++			    (testcase & MWAIT_DISABLED);
++	u8 vector;
 +
-+	asm volatile(KVM_ASM_SAFE("rdmsr")
-+		     : "=a"(a), "=d"(d), KVM_ASM_SAFE_OUTPUTS(vector)
-+		     : "c"(msr)
-+		     : KVM_ASM_SAFE_CLOBBERS);
++	GUEST_SYNC(testcase);
 +
-+	*val = (uint64_t)a | ((uint64_t)d << 32);
-+	return vector;
++	vector = kvm_asm_safe("monitor");
++	if (fault_wanted)
++		GUEST_ASSERT_2(vector == UD_VECTOR, testcase, vector);
++	else
++		GUEST_ASSERT_2(!vector, testcase, vector);
++
++	vector = kvm_asm_safe("monitor");
++	if (fault_wanted)
++		GUEST_ASSERT_2(vector == UD_VECTOR, testcase, vector);
++	else
++		GUEST_ASSERT_2(!vector, testcase, vector);
 +}
 +
-+static inline uint8_t wrmsr_safe(uint32_t msr, uint64_t val)
++static void guest_code(void)
 +{
-+	return kvm_asm_safe("wrmsr", "A"(val), "c"(msr));
++	guest_monitor_wait(MWAIT_DISABLED);
++
++	guest_monitor_wait(MWAIT_QUIRK_DISABLED | MWAIT_DISABLED);
++
++	guest_monitor_wait(MISC_ENABLES_QUIRK_DISABLED | MWAIT_DISABLED);
++	guest_monitor_wait(MISC_ENABLES_QUIRK_DISABLED);
++
++	guest_monitor_wait(MISC_ENABLES_QUIRK_DISABLED | MWAIT_QUIRK_DISABLED | MWAIT_DISABLED);
++	guest_monitor_wait(MISC_ENABLES_QUIRK_DISABLED | MWAIT_QUIRK_DISABLED);
++
++	GUEST_DONE();
 +}
 +
- uint64_t vm_get_page_table_entry(struct kvm_vm *vm, struct kvm_vcpu *vcpu,
- 				 uint64_t vaddr);
- void vm_set_page_table_entry(struct kvm_vm *vm, struct kvm_vcpu *vcpu,
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index 5cb73b2f9978..95db8eebcc1d 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -1079,6 +1079,20 @@ static void set_idt_entry(struct kvm_vm *vm, int vector, unsigned long addr,
- 	e->offset2 = addr >> 32;
- }
- 
-+
-+static bool kvm_fixup_exception(struct ex_regs *regs)
++int main(int argc, char *argv[])
 +{
-+	if (regs->r9 != KVM_EXCEPTION_MAGIC || regs->rip != regs->r10)
-+		return false;
++	uint64_t disabled_quirks;
++	struct kvm_vcpu *vcpu;
++	struct kvm_run *run;
++	struct kvm_vm *vm;
++	struct ucall uc;
++	int testcase;
 +
-+	if (regs->vector == DE_VECTOR)
-+		return false;
++	TEST_REQUIRE(kvm_has_cap(KVM_CAP_DISABLE_QUIRKS2));
 +
-+	regs->rip = regs->r11;
-+	regs->r9 = regs->vector;
-+	return true;
-+}
++	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
++	vcpu_clear_cpuid_feature(vcpu, X86_FEATURE_MWAIT);
 +
- void kvm_exit_unexpected_vector(uint32_t value)
- {
- 	ucall(UCALL_UNHANDLED, 1, value);
-@@ -1094,6 +1108,9 @@ void route_exception(struct ex_regs *regs)
- 		return;
- 	}
- 
-+	if (kvm_fixup_exception(regs))
-+		return;
++	run = vcpu->run;
 +
- 	kvm_exit_unexpected_vector(regs->vector);
- }
- 
-diff --git a/tools/testing/selftests/kvm/x86_64/kvm_pv_test.c b/tools/testing/selftests/kvm/x86_64/kvm_pv_test.c
-index 7ab61f3f2a20..37875e864030 100644
---- a/tools/testing/selftests/kvm/x86_64/kvm_pv_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/kvm_pv_test.c
-@@ -12,55 +12,6 @@
- #include "kvm_util.h"
- #include "processor.h"
- 
--extern unsigned char rdmsr_start;
--extern unsigned char rdmsr_end;
--
--static u64 do_rdmsr(u32 idx)
--{
--	u32 lo, hi;
--
--	asm volatile("rdmsr_start: rdmsr;"
--		     "rdmsr_end:"
--		     : "=a"(lo), "=c"(hi)
--		     : "c"(idx));
--
--	return (((u64) hi) << 32) | lo;
--}
--
--extern unsigned char wrmsr_start;
--extern unsigned char wrmsr_end;
--
--static void do_wrmsr(u32 idx, u64 val)
--{
--	u32 lo, hi;
--
--	lo = val;
--	hi = val >> 32;
--
--	asm volatile("wrmsr_start: wrmsr;"
--		     "wrmsr_end:"
--		     : : "a"(lo), "c"(idx), "d"(hi));
--}
--
--static int nr_gp;
--
--static void guest_gp_handler(struct ex_regs *regs)
--{
--	unsigned char *rip = (unsigned char *)regs->rip;
--	bool r, w;
--
--	r = rip == &rdmsr_start;
--	w = rip == &wrmsr_start;
--	GUEST_ASSERT(r || w);
--
--	nr_gp++;
--
--	if (r)
--		regs->rip = (uint64_t)&rdmsr_end;
--	else
--		regs->rip = (uint64_t)&wrmsr_end;
--}
--
- struct msr_data {
- 	uint32_t idx;
- 	const char *name;
-@@ -89,14 +40,16 @@ static struct msr_data msrs_to_test[] = {
- 
- static void test_msr(struct msr_data *msr)
- {
-+	uint64_t ignored;
-+	uint8_t vector;
++	vm_init_descriptor_tables(vm);
++	vcpu_init_descriptor_tables(vcpu);
 +
- 	PR_MSR(msr);
--	do_rdmsr(msr->idx);
--	GUEST_ASSERT(READ_ONCE(nr_gp) == 1);
- 
--	nr_gp = 0;
--	do_wrmsr(msr->idx, 0);
--	GUEST_ASSERT(READ_ONCE(nr_gp) == 1);
--	nr_gp = 0;
-+	vector = rdmsr_safe(msr->idx, &ignored);
-+	GUEST_ASSERT_1(vector == GP_VECTOR, vector);
++	while (1) {
++		vcpu_run(vcpu);
 +
-+	vector = wrmsr_safe(msr->idx, 0);
-+	GUEST_ASSERT_1(vector == GP_VECTOR, vector);
- }
- 
- struct hcall_data {
-@@ -156,12 +109,6 @@ static void pr_hcall(struct ucall *uc)
- 	pr_info("testing hcall: %s (%lu)\n", hc->name, hc->nr);
- }
- 
--static void handle_abort(struct ucall *uc)
--{
--	TEST_FAIL("%s at %s:%ld", (const char *)uc->args[0],
--		  __FILE__, uc->args[1]);
--}
--
- static void enter_guest(struct kvm_vcpu *vcpu)
- {
- 	struct kvm_run *run = vcpu->run;
-@@ -181,7 +128,9 @@ static void enter_guest(struct kvm_vcpu *vcpu)
- 			pr_hcall(&uc);
- 			break;
- 		case UCALL_ABORT:
--			handle_abort(&uc);
-+			TEST_FAIL("%s at %s:%ld, vector = %lu",
++		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
++			    "Unexpected exit reason: %u (%s),\n",
++			    run->exit_reason,
++			    exit_reason_str(run->exit_reason));
++
++		switch (get_ucall(vcpu, &uc)) {
++		case UCALL_SYNC:
++			testcase = uc.args[1];
++			break;
++		case UCALL_ABORT:
++			TEST_FAIL("%s at %s:%ld, testcase = %lx, vector = %ld",
 +				  (const char *)uc.args[0], __FILE__,
-+				  uc.args[1], uc.args[2]);
- 			return;
- 		case UCALL_DONE:
- 			return;
-@@ -191,6 +140,7 @@ static void enter_guest(struct kvm_vcpu *vcpu)
- 
- int main(void)
- {
-+	struct kvm_cpuid_entry2 *entry;
- 	struct kvm_vcpu *vcpu;
- 	struct kvm_vm *vm;
- 
-@@ -200,11 +150,15 @@ int main(void)
- 
- 	vcpu_enable_cap(vcpu, KVM_CAP_ENFORCE_PV_FEATURE_CPUID, 1);
- 
--	vcpu_clear_cpuid_entry(vcpu, KVM_CPUID_FEATURES);
-+	entry = vcpu_get_cpuid_entry(vcpu, KVM_CPUID_FEATURES);
-+	entry->eax = 0;
-+	entry->ebx = 0;
-+	entry->ecx = 0;
-+	entry->edx = 0;
-+	vcpu_set_cpuid(vcpu);
- 
- 	vm_init_descriptor_tables(vm);
- 	vcpu_init_descriptor_tables(vcpu);
--	vm_install_exception_handler(vm, GP_VECTOR, guest_gp_handler);
- 
- 	enter_guest(vcpu);
- 	kvm_vm_free(vm);
++				  uc.args[1], uc.args[2], uc.args[3]);
++			goto done;
++		case UCALL_DONE:
++			goto done;
++		default:
++			TEST_FAIL("Unknown ucall %lu", uc.cmd);
++			goto done;
++		}
++
++		disabled_quirks = 0;
++		if (testcase & MWAIT_QUIRK_DISABLED)
++			disabled_quirks |= KVM_X86_QUIRK_MWAIT_NEVER_FAULTS;
++		if (testcase & MISC_ENABLES_QUIRK_DISABLED)
++			disabled_quirks |= KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT;
++		vm_enable_cap(vm, KVM_CAP_DISABLE_QUIRKS2, disabled_quirks);
++
++		/*
++		 * If the MISC_ENABLES quirk (KVM neglects to update CPUID to
++		 * enable/disable MWAIT) is disabled, toggle the ENABLE_MWAIT
++		 * bit in MISC_ENABLES accordingly.  If the quirk is enabled,
++		 * the only valid configuration is MWAIT disabled, as CPUID
++		 * can't be manually changed after running the vCPU.
++		 */
++		if (!(testcase & MISC_ENABLES_QUIRK_DISABLED)) {
++			TEST_ASSERT(testcase & MWAIT_DISABLED,
++				    "Can't toggle CPUID features after running vCPU");
++			continue;
++		}
++
++		vcpu_set_msr(vcpu, MSR_IA32_MISC_ENABLE,
++			     (testcase & MWAIT_DISABLED) ? 0 : MSR_IA32_MISC_ENABLE_MWAIT);
++	}
++
++done:
++	kvm_vm_free(vm);
++	return 0;
++}
 -- 
 2.36.1.255.ge46751e96f-goog
 
