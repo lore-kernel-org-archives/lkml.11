@@ -2,152 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02EB7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB5CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232704AbiFHEbj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 00:31:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40124 "EHLO
+        id S231750AbiFHEmV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 00:42:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232931AbiFHEaa (ORCPT
+        with ESMTP id S233835AbiFHEjO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 00:30:30 -0400
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0ECF39B236
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:05:41 -0700 (PDT)
-Received: from epcas1p2.samsung.com (unknown [182.195.41.46])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220608020504epoutp02f72ceb29888311309e35603218ed077c~2gvWR82Rl2155721557epoutp02U
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:05:04 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220608020504epoutp02f72ceb29888311309e35603218ed077c~2gvWR82Rl2155721557epoutp02U
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1654653904;
-        bh=zV++LEuLCtfADlbIL+S4XEKvrkR3B7fzf/3W6WqqlXE=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=KE6nOKFRTAXVoN5bXm/k0P67vdubXxge6WUdNMYa4U+cPuzNvWvmoZfyMKRsGSQa9
-         XNN6PGbJk4nuFeeN3RssUSudl1XngBUSSC83dWDI7I/+IBsWdbKV06bYC3IFD342Me
-         54tIPH25LPhnA6WCtY5tEn5iFYgOfA//vk+i+W9U=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas1p4.samsung.com (KnoxPortal) with ESMTP id
-        20220608020503epcas1p453af091c62ceca012d5725ee44685fd9~2gvV6E_7r0582005820epcas1p4Q;
-        Wed,  8 Jun 2022 02:05:03 +0000 (GMT)
-Received: from epsmges1p1.samsung.com (unknown [182.195.38.243]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4LHrCM0rfNz4x9Q9; Wed,  8 Jun
-        2022 02:05:03 +0000 (GMT)
-Received: from epcas1p4.samsung.com ( [182.195.41.48]) by
-        epsmges1p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        D3.6C.10063.EC300A26; Wed,  8 Jun 2022 11:05:02 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220608020502epcas1p14911cac6731ee98fcb9c64282455caf7~2gvUqFrRa3160731607epcas1p1q;
-        Wed,  8 Jun 2022 02:05:02 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220608020502epsmtrp27109742c01b157316f7169686850bf9b~2gvUpDv7O0065500655epsmtrp2k;
-        Wed,  8 Jun 2022 02:05:02 +0000 (GMT)
-X-AuditID: b6c32a35-1dbff7000000274f-95-62a003ce46dc
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        26.66.11276.EC300A26; Wed,  8 Jun 2022 11:05:02 +0900 (KST)
-Received: from U20PB1-0435.tn.corp.samsungelectronics.net (unknown
-        [10.91.133.14]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220608020502epsmtip175c4ee626a432d6f06729d48657aa8e2~2gvUc6E5Q2678226782epsmtip1e;
-        Wed,  8 Jun 2022 02:05:02 +0000 (GMT)
-From:   Sungjong Seo <sj1557.seo@samsung.com>
-To:     linkinjeon@kernel.org
-Cc:     sj1557.seo@samsung.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] exfat: use updated exfat_chain directly during renaming
-Date:   Wed,  8 Jun 2022 11:04:08 +0900
-Message-Id: <20220608020408.2351676-1-sj1557.seo@samsung.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 8 Jun 2022 00:39:14 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27B93FE0F2;
+        Tue,  7 Jun 2022 19:30:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654655440; x=1686191440;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=sG0AzbZENUyQtpHzBixIeP6cHtFJAq/4tpTQw7wbmn0=;
+  b=FkrCxB2a8hi0DK391FdjWv3tE3CIl4NoQK0s7ANDxw/5XG0gfz4/8uMg
+   8rR/9iZuRINcEMmYuuWOPCOi8l87gpVmZSav6+WYaKBrS+EkTmWIPfr0U
+   hd45a4GYbgZ3+fLfAhlP+RfL+9+6O295+eUKa9CkMuHlJA1xoMzehPwOc
+   pue5esBllMxOxsFxtGVUgxwqBYKjUxThSilPe70Yy++0OLV/t2QicDTGj
+   ireUrGQqriS+wyq0ovVc9EVr149ha8exVD9C8Jkl18ArAegq1T1yWHeXY
+   o0xZ9o6twIX4Oql9LJn0wB98GA90w2ROdY5JQoO8BYSzeQ4KSSW5C43Ax
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="340812529"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="340812529"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 19:30:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="826684008"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 07 Jun 2022 19:30:14 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nylSY-000EB2-2P;
+        Wed, 08 Jun 2022 02:30:14 +0000
+Date:   Wed, 8 Jun 2022 10:29:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        broonie@kernel.org, robh+dt@kernel.org, quic_plai@quicinc.com,
+        bgoswami@quicinc.com, perex@perex.cz, tiwai@suse.com,
+        srinivas.kandagatla@linaro.org, quic_rohkumar@quicinc.com,
+        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        swboyd@chromium.org, judyhsiao@chromium.org, vkoul@kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: Re: [PATCH 2/2] ASoC: qcom: soundwire: Add software clock gating
+ requirement check
+Message-ID: <202206081054.vVkYPkJt-lkp@intel.com>
+References: <1654605334-32030-3-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrMJsWRmVeSWpSXmKPExsWy7bCmge555gVJBq/FLCZOW8pssWfvSRaL
-        y7vmsFls+XeE1YHFY9OqTjaPvi2rGD0+b5ILYI5qYLRJLErOyCxLVUjNS85PycxLt1UKDXHT
-        tVBSyMgvLrFVijY0NNIzNDDXMzIy0jO2jLUyMlVSyEvMTbVVqtCF6lVSKEouAKrNrSwGGpCT
-        qgcV1ytOzUtxyMovBblQrzgxt7g0L10vOT9XSaEsMacUaISSfsI3xoym599YCjbyVixbPZOt
-        gXE6dxcjJ4eEgInE+cYt7F2MXBxCAjsYJW7OmADlfGKUWLXnBRuE841R4s+NJkaYll9L5jCB
-        2EICexklls5jhihqZ5L4fayJDSTBJqAtsbxpGVCCg0NEQFJi7f1UkDCzQKTE5IuL2UFsYQEP
-        iY3P/4LZLAKqErO6DoLZvAK2EpuuzGSG2CUvMfPSd6i4oMTJmU9YIObISzRvnQ22V0JgFbvE
-        8aeL2EB2SQi4SMxeZwrRKyzx6vgWdghbSuLzu71sEHYzo0RzoxGE3cEo8XSjLESrvcT7SxYg
-        JrOApsT6XfoQFYoSO3/PhfpcUOL0tW5miAv4JN597WGF6OSV6GgTgihRkfj+YScLzNIrP64y
-        QdgeEjuXXmaBBFqsxJXfq5gnMCrMQvLXLCR/zUI4YgEj8ypGsdSC4tz01GLDAkPkCN7ECE6P
-        WqY7GCe+/aB3iJGJg/EQowQHs5IIr2T4/CQh3pTEyqrUovz4otKc1OJDjMnAkJ7ILCWanA9M
-        0Hkl8YYmxgYGRsB0Z25pbkyEsKWBiZmRiYWxpbGZkjjvqmmnE4UE0hNLUrNTUwtSi2C2MHFw
-        SjUwLbj8NypBa5It253NLHeEmBX3fn/waCfb5Mlu1j/09r9ucb289OvNXTzJb//bnAtVjFSe
-        W/VNQdLypsZ0d+6dHBqVTMm/N85Z3t1mebCD79bF62FVvu28e32nLdrnbblv6fpE618WKwOT
-        r0lNuPBO3VK57j5vJasGu/rrtfYSgrt/z7zaHKbDrKP/NqlN5f6vu58yNstd/Pj9+dnb1nn+
-        J03O+c1LLSjkfLnuQVjgUsFtFeUuzkcZvzQ4tExY7KjVbMgxU9S2K/Htqes6Mj17dPgFX99d
-        aNp3w2mTuZ4JY+eqXyWzjixgu7t9w1mxGIaaNW9PVsoVzlsZfEbK9cy+fT563JMf7o0Nb9A8
-        KxsdpMRSnJFoqMVcVJwIAGpvhhRGBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprMLMWRmVeSWpSXmKPExsWy7bCSnO455gVJBvc3SltMnLaU2WLP3pMs
-        Fpd3zWGz2PLvCKsDi8emVZ1sHn1bVjF6fN4kF8AcxWWTkpqTWZZapG+XwJXR9PwbS8FG3opl
-        q2eyNTBO5+5i5OSQEDCR+LVkDlMXIxeHkMBuRolHO9vZuhg5gBJSEgf3aUKYwhKHDxdDlLQy
-        SZz9eIkdpJdNQFtiedMyZpAaEQFJibX3U0HCzALREk1//jKC2MICHhIbn/8FK2cRUJWY1XUQ
-        zOYVsJXYdGUmM8QJ8hIzL32HigtKnJz5hAVijrxE89bZzBMY+WYhSc1CklrAyLSKUTK1oDg3
-        PbfYsMAwL7Vcrzgxt7g0L10vOT93EyM43LQ0dzBuX/VB7xAjEwfjIUYJDmYlEV7J8PlJQrwp
-        iZVVqUX58UWlOanFhxilOViUxHkvdJ2MFxJITyxJzU5NLUgtgskycXBKNTDVLj9xu/Sibffs
-        xSWMfbuyDryYpuXxmT07QeRNbAinhOklj/Ls48cf/uDhaPDednrD+5jGmo6339YZrP3nMNPy
-        CFNuQZPjjen9x1bJ/t6v++rlxfjrnXfCtu86cKTu0j/ukkvl6SKLpv/lvNngtHiK0Id1x9/8
-        jyr5o7tbWZHfXjYnK+plwDrzvluOvPenz0w+vqlkudjP5juPPvat9OdpORa7zkH5kabAI2Up
-        R0Wth1P5XAVWOc5avjBph8UtuQXn9Pa/Y3556naJWK3w/eMT5dsf+3DwHM7gUZ90tPbp8Xe7
-        wgWuc1XH6csER2sFBUeKMU/icbhaJX+p3GfCyrW/moq7vm/pLty4RZ3/46KFSizFGYmGWsxF
-        xYkAB1lNpqYCAAA=
-X-CMS-MailID: 20220608020502epcas1p14911cac6731ee98fcb9c64282455caf7
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: SVC_REQ_APPROVE
-X-ArchiveUser: EV
-CMS-TYPE: 101P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220608020502epcas1p14911cac6731ee98fcb9c64282455caf7
-References: <CGME20220608020502epcas1p14911cac6731ee98fcb9c64282455caf7@epcas1p1.samsung.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1654605334-32030-3-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order for a file to access its own directory entry set,
-exfat_inode_info(ei) has two copied values. One is ei->dir, which is
-a snapshot of exfat_chain of the parent directory, and the other is
-ei->entry, which is the offset of the start of the directory entry set
-in the parent directory.
+Hi Srinivasa,
 
-Since the parent directory can be updated after the snapshot point,
-it should be used only for accessing one's own directory entry set.
+Thank you for the patch! Yet something to improve:
 
-However, as of now, during renaming, it could try to traverse or to
-allocate clusters via snapshot values, it does not make sense.
+[auto build test ERROR on broonie-sound/for-next]
+[cannot apply to linus/master v5.19-rc1 next-20220607]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-This potential problem has been revealed when exfat_update_parent_info()
-was removed by commit d8dad2588add ("exfat: fix referencing wrong parent
-directory information after renaming"). However, I don't think it's good
-idea to bring exfat_update_parent_info() back.
+url:    https://github.com/intel-lab-lkp/linux/commits/Srinivasa-Rao-Mandadapu/Add-software-clock-gating-requirement-check/20220607-203739
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+config: i386-randconfig-a006 (https://download.01.org/0day-ci/archive/20220608/202206081054.vVkYPkJt-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b92436efcb7813fc481b30f2593a4907568d917a)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/86aa15d36b06f7b73938f00f9ad99eff75a94a94
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Srinivasa-Rao-Mandadapu/Add-software-clock-gating-requirement-check/20220607-203739
+        git checkout 86aa15d36b06f7b73938f00f9ad99eff75a94a94
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/soundwire/
 
-Instead, let's use the updated exfat_chain of parent directory diectly.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Fixes: d8dad2588add ("exfat: fix referencing wrong parent directory information after renaming")
+All errors (new ones prefixed by >>):
 
-Signed-off-by: Sungjong Seo <sj1557.seo@samsung.com>
----
- fs/exfat/namei.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+>> drivers/soundwire/qcom.c:668:6: error: use of undeclared identifier 'data'
+           if (data->sw_clk_gate_required)
+               ^
+   drivers/soundwire/qcom.c:1509:7: error: use of undeclared identifier 'data'
+                   if (data->sw_clk_gate_required)
+                       ^
+   2 errors generated.
 
-diff --git a/fs/exfat/namei.c b/fs/exfat/namei.c
-index 76acc3721951..c6eaf7e9ea74 100644
---- a/fs/exfat/namei.c
-+++ b/fs/exfat/namei.c
-@@ -1198,7 +1198,9 @@ static int __exfat_rename(struct inode *old_parent_inode,
- 		return -ENOENT;
- 	}
- 
--	exfat_chain_dup(&olddir, &ei->dir);
-+	exfat_chain_set(&olddir, EXFAT_I(old_parent_inode)->start_clu,
-+		EXFAT_B_TO_CLU_ROUND_UP(i_size_read(old_parent_inode), sbi),
-+		EXFAT_I(old_parent_inode)->flags);
- 	dentry = ei->entry;
- 
- 	ep = exfat_get_dentry(sb, &olddir, dentry, &old_bh);
+
+vim +/data +668 drivers/soundwire/qcom.c
+
+   659	
+   660	static int qcom_swrm_init(struct qcom_swrm_ctrl *ctrl)
+   661	{
+   662		u32 val;
+   663	
+   664		/* Clear Rows and Cols */
+   665		val = FIELD_PREP(SWRM_MCP_FRAME_CTRL_BANK_ROW_CTRL_BMSK, ctrl->rows_index);
+   666		val |= FIELD_PREP(SWRM_MCP_FRAME_CTRL_BANK_COL_CTRL_BMSK, ctrl->cols_index);
+   667	
+ > 668		if (data->sw_clk_gate_required)
+   669			reset_control_reset(ctrl->audio_cgcr);
+   670	
+   671		ctrl->reg_write(ctrl, SWRM_MCP_FRAME_CTRL_BANK_ADDR(0), val);
+   672	
+   673		/* Enable Auto enumeration */
+   674		ctrl->reg_write(ctrl, SWRM_ENUMERATOR_CFG_ADDR, 1);
+   675	
+   676		ctrl->intr_mask = SWRM_INTERRUPT_STATUS_RMSK;
+   677		/* Mask soundwire interrupts */
+   678		ctrl->reg_write(ctrl, SWRM_INTERRUPT_MASK_ADDR,
+   679				SWRM_INTERRUPT_STATUS_RMSK);
+   680	
+   681		/* Configure No pings */
+   682		ctrl->reg_read(ctrl, SWRM_MCP_CFG_ADDR, &val);
+   683		u32p_replace_bits(&val, SWRM_DEF_CMD_NO_PINGS, SWRM_MCP_CFG_MAX_NUM_OF_CMD_NO_PINGS_BMSK);
+   684		ctrl->reg_write(ctrl, SWRM_MCP_CFG_ADDR, val);
+   685	
+   686		ctrl->reg_write(ctrl, SWRM_MCP_BUS_CTRL, SWRM_MCP_BUS_CLK_START);
+   687		/* Configure number of retries of a read/write cmd */
+   688		if (ctrl->version > 0x01050001) {
+   689			/* Only for versions >= 1.5.1 */
+   690			ctrl->reg_write(ctrl, SWRM_CMD_FIFO_CFG_ADDR,
+   691					SWRM_RD_WR_CMD_RETRIES |
+   692					SWRM_CONTINUE_EXEC_ON_CMD_IGNORE);
+   693		} else {
+   694			ctrl->reg_write(ctrl, SWRM_CMD_FIFO_CFG_ADDR,
+   695					SWRM_RD_WR_CMD_RETRIES);
+   696		}
+   697	
+   698		/* Set IRQ to PULSE */
+   699		ctrl->reg_write(ctrl, SWRM_COMP_CFG_ADDR,
+   700				SWRM_COMP_CFG_IRQ_LEVEL_OR_PULSE_MSK |
+   701				SWRM_COMP_CFG_ENABLE_MSK);
+   702	
+   703		/* enable CPU IRQs */
+   704		if (ctrl->mmio) {
+   705			ctrl->reg_write(ctrl, SWRM_INTERRUPT_CPU_EN,
+   706					SWRM_INTERRUPT_STATUS_RMSK);
+   707		}
+   708		ctrl->slave_status = 0;
+   709		ctrl->reg_read(ctrl, SWRM_COMP_PARAMS, &val);
+   710		ctrl->rd_fifo_depth = FIELD_GET(SWRM_COMP_PARAMS_RD_FIFO_DEPTH, val);
+   711		ctrl->wr_fifo_depth = FIELD_GET(SWRM_COMP_PARAMS_WR_FIFO_DEPTH, val);
+   712	
+   713		return 0;
+   714	}
+   715	
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
