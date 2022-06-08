@@ -2,317 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBDCDC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF1CDCCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:27:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356864AbiFHCX5 (ORCPT
+        id S1381135AbiFHCYW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44678 "EHLO
+        Tue, 7 Jun 2022 22:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444856AbiFHCLV (ORCPT
+        with ESMTP id S1445089AbiFHCLx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:11:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C912626D358;
-        Tue,  7 Jun 2022 12:22:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CEBD60B08;
-        Tue,  7 Jun 2022 19:22:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BE4BC385A5;
-        Tue,  7 Jun 2022 19:22:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629744;
-        bh=gwsCLnpdtl5EqrI1mDL9MaBHP18ix+IuBL3vlzTQSzY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sQMgyyCKbEeP+dzJdsqPRRgedC2888IrVqzByj+D+ugC5hlSp7yBVrhSvis5yUiDI
-         uTSZbkDCA8mFhem3lIohM7wwj6ZggDOyZkQ8zBGCpdDvEiQKgbdKnHOtDHYNxJUk1R
-         YKd3xZejdeyG0iXxkjoo2b3aS67mDE3jqfuqib5Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tokunori Ikegami <ikegami.t@gmail.com>,
+        Tue, 7 Jun 2022 22:11:53 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A3C256;
+        Tue,  7 Jun 2022 17:11:36 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id er5so24954288edb.12;
+        Tue, 07 Jun 2022 17:11:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=VT+TJ2YPzEHYu6mfTNmRiV87DaEKHXEmDZv9wBUUtRQ=;
+        b=GEglJBzl8OexIR2XmXIjrv+3Sx+kxYIAVp6AdIhzFr16qtQ+Pq/e77w27Y4/CXX4kO
+         WAPRijgPiY7bobSDLntH5kMszmjJ2CdgUX7lycTCp+LZ8YiZ6/KiG4O3MI+z0uaXHwM7
+         Bi7pcq7N95HyMmluTB2GldmjNdFiKgIMthD3ETU1HChZ2eBi4maTmHluS5SL+qyK0mPn
+         l320QhFpBMZc+HR4h0MdMt/XbROcxuW5cZaBZ3/fMSXCkG9RHR4r2DM29tN+0FQc9Sks
+         R+atxDxJYOeVjagZqROXp1jtkKIN6JvcMSZJuMQ5oiTdmckizVw5BsIYC9PwOJv0HkV7
+         Uw0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=VT+TJ2YPzEHYu6mfTNmRiV87DaEKHXEmDZv9wBUUtRQ=;
+        b=SzzF0MqphOeBaG1RYHc4XlhJZlDdCXhQtvZjkOU4jlGYWpYQM2gln0rq4cnW6oMmHM
+         Yr0TXAZrVBFaUwXrrfAqXqZLC9NgR4B+cyNxb10jFtmfRFuleqFbtWPkspOU4RkwT7Yb
+         k8lZuG+P9YuJlZCDpf4xLpD1jc4aVAsXk97UyMXAk5CD9Se6Bkz/GUVu8iNQHJnUG9Hp
+         h2tR8MywUzDaZRKGSCRlqTzeehKuKMHn2asuJDzC/lgTwMWXa6f9PZPtST79SaDCB6Ej
+         Y4cYE2GXdUs/zQkfkDAhoBy+zW8AS0waaZYw9BsKUMFNyYk8ON8ggVkRoNrL3fuT1+NF
+         E8Bg==
+X-Gm-Message-State: AOAM5328eJdK4hFnr2Llt1t8E+M+SNVu+4itLNyeRcybkv5Bqwb7Txpx
+        BgiEY5HIAnlA3VnNtyVA6mo=
+X-Google-Smtp-Source: ABdhPJzPTDrtaU23PFJ1myspJOaO4RQMfMVyIo7KO2l7BrqW0kv/Armfp+wyKBcB7iulRGwDplacOA==
+X-Received: by 2002:a05:6402:3207:b0:42d:dba6:8ef0 with SMTP id g7-20020a056402320700b0042ddba68ef0mr36944296eda.410.1654647094506;
+        Tue, 07 Jun 2022 17:11:34 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id o19-20020a1709061b1300b006fed85c1a8fsm8434947ejg.202.2022.06.07.17.11.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 17:11:34 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Manivannan Sadhasivam <mani@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.18 800/879] mtd: cfi_cmdset_0002: Move and rename chip_check/chip_ready/chip_good_for_write
-Date:   Tue,  7 Jun 2022 19:05:18 +0200
-Message-Id: <20220607165026.079611859@linuxfoundation.org>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [PATCH v5 2/3] dt-bindings: mtd: qcom_nandc: document qcom,boot-partitions binding
+Date:   Wed,  8 Jun 2022 02:10:29 +0200
+Message-Id: <20220608001030.18813-3-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220608001030.18813-1-ansuelsmth@gmail.com>
+References: <20220608001030.18813-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tokunori Ikegami <ikegami.t@gmail.com>
+Document new qcom,boot-partition binding used to apply special
+read/write layout to boot partitions.
 
-commit 083084df578a8bdb18334f69e7b32d690aaa3247 upstream.
+QCOM apply a special layout where spare data is not protected
+by ECC for some special pages (used for boot partition). Add
+Documentation on how to declare these special pages.
 
-This is a preparation patch for the S29GL064N buffer writes fix. There
-is no functional change.
-
-Link: https://lore.kernel.org/r/b687c259-6413-26c9-d4c9-b3afa69ea124@pengutronix.de/
-Fixes: dfeae1073583("mtd: cfi_cmdset_0002: Change write buffer to check correct value")
-Signed-off-by: Tokunori Ikegami <ikegami.t@gmail.com>
-Cc: stable@vger.kernel.org
-Acked-by: Vignesh Raghavendra <vigneshr@ti.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220323170458.5608-2-ikegami.t@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/mtd/chips/cfi_cmdset_0002.c |   95 ++++++++++++------------------------
- 1 file changed, 32 insertions(+), 63 deletions(-)
+ .../devicetree/bindings/mtd/qcom,nandc.yaml   | 26 +++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
---- a/drivers/mtd/chips/cfi_cmdset_0002.c
-+++ b/drivers/mtd/chips/cfi_cmdset_0002.c
-@@ -802,21 +802,25 @@ static struct mtd_info *cfi_amdstd_setup
- }
+diff --git a/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml b/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
+index 84ad7ff30121..a0914ccb95b0 100644
+--- a/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
++++ b/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
+@@ -102,6 +102,30 @@ allOf:
+             - const: rx
+             - const: cmd
  
- /*
-- * Return true if the chip is ready.
-+ * Return true if the chip is ready and has the correct value.
-  *
-  * Ready is one of: read mode, query mode, erase-suspend-read mode (in any
-  * non-suspended sector) and is indicated by no toggle bits toggling.
-  *
-+ * Error are indicated by toggling bits or bits held with the wrong value,
-+ * or with bits toggling.
-+ *
-  * Note that anything more complicated than checking if no bits are toggling
-  * (including checking DQ5 for an error status) is tricky to get working
-  * correctly and is therefore not done	(particularly with interleaved chips
-  * as each chip must be checked independently of the others).
-  */
- static int __xipram chip_ready(struct map_info *map, struct flchip *chip,
--			       unsigned long addr)
-+			       unsigned long addr, map_word *expected)
- {
- 	struct cfi_private *cfi = map->fldrv_priv;
- 	map_word d, t;
-+	int ret;
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,ipq806x-nand
++
++    then:
++      properties:
++        qcom,boot-partitions:
++          $ref: /schemas/types.yaml#/definitions/uint32-matrix
++          items:
++            items:
++              - description: offset
++              - description: size
++          description:
++            Boot partition use a different layout where the 4 bytes of spare
++            data are not protected by ECC. Use this to declare these special
++            partitions by defining first the offset and then the size.
++
++            It's in the form of <offset1 size1 offset2 size2 offset3 ...>
++
++            Refer to the ipq8064 example on how to use this special binding.
++
+ required:
+   - compatible
+   - reg
+@@ -135,6 +159,8 @@ examples:
+         nand-ecc-strength = <4>;
+         nand-bus-width = <8>;
  
- 	if (cfi_use_status_reg(cfi)) {
- 		map_word ready = CMD(CFI_SR_DRB);
-@@ -826,57 +830,20 @@ static int __xipram chip_ready(struct ma
- 		 */
- 		cfi_send_gen_cmd(0x70, cfi->addr_unlock1, chip->start, map, cfi,
- 				 cfi->device_type, NULL);
--		d = map_read(map, addr);
-+		t = map_read(map, addr);
- 
--		return map_word_andequal(map, d, ready, ready);
-+		return map_word_andequal(map, t, ready, ready);
- 	}
- 
- 	d = map_read(map, addr);
- 	t = map_read(map, addr);
- 
--	return map_word_equal(map, d, t);
--}
--
--/*
-- * Return true if the chip is ready and has the correct value.
-- *
-- * Ready is one of: read mode, query mode, erase-suspend-read mode (in any
-- * non-suspended sector) and it is indicated by no bits toggling.
-- *
-- * Error are indicated by toggling bits or bits held with the wrong value,
-- * or with bits toggling.
-- *
-- * Note that anything more complicated than checking if no bits are toggling
-- * (including checking DQ5 for an error status) is tricky to get working
-- * correctly and is therefore not done	(particularly with interleaved chips
-- * as each chip must be checked independently of the others).
-- *
-- */
--static int __xipram chip_good(struct map_info *map, struct flchip *chip,
--			      unsigned long addr, map_word expected)
--{
--	struct cfi_private *cfi = map->fldrv_priv;
--	map_word oldd, curd;
--
--	if (cfi_use_status_reg(cfi)) {
--		map_word ready = CMD(CFI_SR_DRB);
--
--		/*
--		 * For chips that support status register, check device
--		 * ready bit
--		 */
--		cfi_send_gen_cmd(0x70, cfi->addr_unlock1, chip->start, map, cfi,
--				 cfi->device_type, NULL);
--		curd = map_read(map, addr);
--
--		return map_word_andequal(map, curd, ready, ready);
--	}
-+	ret = map_word_equal(map, d, t);
- 
--	oldd = map_read(map, addr);
--	curd = map_read(map, addr);
-+	if (!ret || !expected)
-+		return ret;
- 
--	return	map_word_equal(map, oldd, curd) &&
--		map_word_equal(map, curd, expected);
-+	return map_word_equal(map, t, *expected);
- }
- 
- static int get_chip(struct map_info *map, struct flchip *chip, unsigned long adr, int mode)
-@@ -893,7 +860,7 @@ static int get_chip(struct map_info *map
- 
- 	case FL_STATUS:
- 		for (;;) {
--			if (chip_ready(map, chip, adr))
-+			if (chip_ready(map, chip, adr, NULL))
- 				break;
- 
- 			if (time_after(jiffies, timeo)) {
-@@ -932,7 +899,7 @@ static int get_chip(struct map_info *map
- 		chip->state = FL_ERASE_SUSPENDING;
- 		chip->erase_suspended = 1;
- 		for (;;) {
--			if (chip_ready(map, chip, adr))
-+			if (chip_ready(map, chip, adr, NULL))
- 				break;
- 
- 			if (time_after(jiffies, timeo)) {
-@@ -1463,7 +1430,7 @@ static int do_otp_lock(struct map_info *
- 	/* wait for chip to become ready */
- 	timeo = jiffies + msecs_to_jiffies(2);
- 	for (;;) {
--		if (chip_ready(map, chip, adr))
-+		if (chip_ready(map, chip, adr, NULL))
- 			break;
- 
- 		if (time_after(jiffies, timeo)) {
-@@ -1695,11 +1662,11 @@ static int __xipram do_write_oneword_onc
- 		}
- 
- 		/*
--		 * We check "time_after" and "!chip_good" before checking
--		 * "chip_good" to avoid the failure due to scheduling.
-+		 * We check "time_after" and "!chip_ready" before checking
-+		 * "chip_ready" to avoid the failure due to scheduling.
- 		 */
- 		if (time_after(jiffies, timeo) &&
--		    !chip_good(map, chip, adr, datum)) {
-+		    !chip_ready(map, chip, adr, &datum)) {
- 			xip_enable(map, chip, adr);
- 			printk(KERN_WARNING "MTD %s(): software timeout\n", __func__);
- 			xip_disable(map, chip, adr);
-@@ -1707,7 +1674,7 @@ static int __xipram do_write_oneword_onc
- 			break;
- 		}
- 
--		if (chip_good(map, chip, adr, datum)) {
-+		if (chip_ready(map, chip, adr, &datum)) {
- 			if (cfi_check_err_status(map, chip, adr))
- 				ret = -EIO;
- 			break;
-@@ -1975,18 +1942,18 @@ static int __xipram do_write_buffer_wait
- 		}
- 
- 		/*
--		 * We check "time_after" and "!chip_good" before checking
--		 * "chip_good" to avoid the failure due to scheduling.
-+		 * We check "time_after" and "!chip_ready" before checking
-+		 * "chip_ready" to avoid the failure due to scheduling.
- 		 */
- 		if (time_after(jiffies, timeo) &&
--		    !chip_good(map, chip, adr, datum)) {
-+		    !chip_ready(map, chip, adr, &datum)) {
- 			pr_err("MTD %s(): software timeout, address:0x%.8lx.\n",
- 			       __func__, adr);
- 			ret = -EIO;
- 			break;
- 		}
- 
--		if (chip_good(map, chip, adr, datum)) {
-+		if (chip_ready(map, chip, adr, &datum)) {
- 			if (cfi_check_err_status(map, chip, adr))
- 				ret = -EIO;
- 			break;
-@@ -2195,7 +2162,7 @@ static int cfi_amdstd_panic_wait(struct
- 	 * If the driver thinks the chip is idle, and no toggle bits
- 	 * are changing, then the chip is actually idle for sure.
- 	 */
--	if (chip->state == FL_READY && chip_ready(map, chip, adr))
-+	if (chip->state == FL_READY && chip_ready(map, chip, adr, NULL))
- 		return 0;
- 
- 	/*
-@@ -2212,7 +2179,7 @@ static int cfi_amdstd_panic_wait(struct
- 
- 		/* wait for the chip to become ready */
- 		for (i = 0; i < jiffies_to_usecs(timeo); i++) {
--			if (chip_ready(map, chip, adr))
-+			if (chip_ready(map, chip, adr, NULL))
- 				return 0;
- 
- 			udelay(1);
-@@ -2276,13 +2243,13 @@ retry:
- 	map_write(map, datum, adr);
- 
- 	for (i = 0; i < jiffies_to_usecs(uWriteTimeout); i++) {
--		if (chip_ready(map, chip, adr))
-+		if (chip_ready(map, chip, adr, NULL))
- 			break;
- 
- 		udelay(1);
- 	}
- 
--	if (!chip_good(map, chip, adr, datum) ||
-+	if (!chip_ready(map, chip, adr, &datum) ||
- 	    cfi_check_err_status(map, chip, adr)) {
- 		/* reset on all failures. */
- 		map_write(map, CMD(0xF0), chip->start);
-@@ -2424,6 +2391,7 @@ static int __xipram do_erase_chip(struct
- 	DECLARE_WAITQUEUE(wait, current);
- 	int ret;
- 	int retry_cnt = 0;
-+	map_word datum = map_word_ff(map);
- 
- 	adr = cfi->addr_unlock1;
- 
-@@ -2478,7 +2446,7 @@ static int __xipram do_erase_chip(struct
- 			chip->erase_suspended = 0;
- 		}
- 
--		if (chip_good(map, chip, adr, map_word_ff(map))) {
-+		if (chip_ready(map, chip, adr, &datum)) {
- 			if (cfi_check_err_status(map, chip, adr))
- 				ret = -EIO;
- 			break;
-@@ -2523,6 +2491,7 @@ static int __xipram do_erase_oneblock(st
- 	DECLARE_WAITQUEUE(wait, current);
- 	int ret;
- 	int retry_cnt = 0;
-+	map_word datum = map_word_ff(map);
- 
- 	adr += chip->start;
- 
-@@ -2577,7 +2546,7 @@ static int __xipram do_erase_oneblock(st
- 			chip->erase_suspended = 0;
- 		}
- 
--		if (chip_good(map, chip, adr, map_word_ff(map))) {
-+		if (chip_ready(map, chip, adr, &datum)) {
- 			if (cfi_check_err_status(map, chip, adr))
- 				ret = -EIO;
- 			break;
-@@ -2771,7 +2740,7 @@ static int __maybe_unused do_ppb_xxlock(
- 	 */
- 	timeo = jiffies + msecs_to_jiffies(2000);	/* 2s max (un)locking */
- 	for (;;) {
--		if (chip_ready(map, chip, adr))
-+		if (chip_ready(map, chip, adr, NULL))
- 			break;
- 
- 		if (time_after(jiffies, timeo)) {
-
++        qcom,boot-partitions = <0x0 0x58a0000>;
++
+         partitions {
+           compatible = "fixed-partitions";
+           #address-cells = <1>;
+-- 
+2.36.1
 
