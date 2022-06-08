@@ -2,111 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD1CCCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA8FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:53:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230445AbiFHIxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53050 "EHLO
+        id S232181AbiFHIxt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:53:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232601AbiFHIwt (ORCPT
+        with ESMTP id S231140AbiFHIw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 04:52:49 -0400
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 014262A3065;
-        Wed,  8 Jun 2022 01:11:14 -0700 (PDT)
-Received: by mail-ej1-f41.google.com with SMTP id s12so32648938ejx.3;
-        Wed, 08 Jun 2022 01:11:14 -0700 (PDT)
+        Wed, 8 Jun 2022 04:52:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2439F2A46DD
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:11:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654675906;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wnBT58Y92YriRHNYFwkaJJZXg0dEepk6NxGeotGng9s=;
+        b=CguiZdMPoC+Rbh6/NTkNLPHHf6FEWaQpiN/k0/q5EtKZUsnVa1oBy1FEw5Ks5SpHiODiN/
+        kVl+XoI3mpXUdQCxtX1mj4n61FYaLdyhVXz59mK9Qbw4vbj8EdZSDXSFjyTGT3HLb0vkkY
+        z6gFrz1gcVC80IUh2r2y3KkbZTuK5bE=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-602-zqnrx_NMOaehSfMsnEnx9g-1; Wed, 08 Jun 2022 04:11:44 -0400
+X-MC-Unique: zqnrx_NMOaehSfMsnEnx9g-1
+Received: by mail-lj1-f199.google.com with SMTP id b26-20020a2e989a000000b002556f92fa13so3415861ljj.15
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 01:11:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=a3rjwlyE45AJ6OeyU142mWoMW1Ef/bHAk4SW+m+tkuU=;
-        b=uJF8/KjatTx1L7E0DgoF83z7jOw/InD7/RMc8BQBGMHxdobyio2V5CnYfmbGCbTGu0
-         A1ijMJ7Vf2Qa1NhbMzuo31i6tXMerUB/UJqL0Qz5CrQhEuwtH0Et8MiiIyp5ikOoDFdx
-         3PTLcG4RcOlqbcJb2tK1DN0giZu8k8dqDe9cQqm7eHL6UuoJbhUExQa+01EAPCUrQQ43
-         mYAnubqe/TFUPnGl/zDKvWQqDDyft9Es1DUozLqKw7ifDZrxoiBHjGnfLMS+LtcvSZoL
-         OXadNdcFtTmifKAkS3swKH9R+4n8xwtT/1NJrbBtnAd18Yz0lhOw8XNXLsKbjko2q11q
-         wSsQ==
-X-Gm-Message-State: AOAM5311sAX5zxJCRnOhoM60BFyicK7lHdT9dC9Q1iJAfq2x5X06GSF/
-        ipYQQtMPutFaz09T9PleAG/M6jNBEpKEQg==
-X-Google-Smtp-Source: ABdhPJwWdIWaWqRdFSCPq4aE30zMINGszIDk07yzO7IRrNUsDH0PcZ4Mhsnzl6CPDu1hsB/7AJV17A==
-X-Received: by 2002:a17:907:968a:b0:711:f093:3a84 with SMTP id hd10-20020a170907968a00b00711f0933a84mr3359465ejc.603.1654675873511;
-        Wed, 08 Jun 2022 01:11:13 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id p19-20020a056402155300b0042617ba638esm11907960edx.24.2022.06.08.01.11.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 01:11:13 -0700 (PDT)
-Message-ID: <9780cd63-5cf3-7ee0-4866-160b9de0a3e8@kernel.org>
-Date:   Wed, 8 Jun 2022 10:11:12 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wnBT58Y92YriRHNYFwkaJJZXg0dEepk6NxGeotGng9s=;
+        b=fmy/lPvsuCw+VnZRee6Ay/rw3SsjKawrBFTLfBOl2UVA+X3wM7/I+6WYfUVugwpOwK
+         fBV8OwwIMlV5uMa7plRr2hUMd1SFPAypgKT5okoTNZCMKU+api7W9+X36rWUecRkwQAl
+         sDnK38IeM/7sNvc7nuO+kdffbSlXDFOhMRaDMXEWwIIcsJkmnqIfzb+bIvt/ACNPb0YX
+         QVH2PYnXBkpJmf1/Q12ky8kd0XdEVOsjzRc738XAa1LLt3Ll8pzS7gUJz/MGVh/noJvc
+         vFOVeYZBfXKCLNwtzJYESM/eZGLLtE/W0HIsyO1lZfg2w1141RmVr/x9ny1GiCxLqW0j
+         7ytQ==
+X-Gm-Message-State: AOAM532Odq/dnoZX6/hsMPNNGayRjZ8/ZsLy+/l+Xlu4juZmoQNu5A2C
+        KmLeeRa1IUJNxJpvbmy6MxuIN0cR29Y9ou9I6OdN5XMJr1O+XloUytHoz60RTuIA8k1tDihNm+t
+        jHC1vPBHQWIWUP5JmQ1gIeFH6TzBAtVYqeB9Z8aHY
+X-Received: by 2002:a2e:bc05:0:b0:24b:212d:7521 with SMTP id b5-20020a2ebc05000000b0024b212d7521mr54616041ljf.243.1654675903266;
+        Wed, 08 Jun 2022 01:11:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyFLTmBIi19ULkbHjw6TAyJpy08J0Qcv4mWpgPuSLf8SO3gP77EMGa0hPs5LddZudYxdYh1mDiNswq8UEfjRtE=
+X-Received: by 2002:a2e:bc05:0:b0:24b:212d:7521 with SMTP id
+ b5-20020a2ebc05000000b0024b212d7521mr54616032ljf.243.1654675903108; Wed, 08
+ Jun 2022 01:11:43 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 16/36] tty/vt: consolemap: check put_user() in
- con_get_unimap()
-Content-Language: en-US
-To:     David Laight <David.Laight@ACULAB.COM>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220607104946.18710-1-jslaby@suse.cz>
- <20220607104946.18710-16-jslaby@suse.cz>
- <5bf366cc45334bb9a9c3d186ef8d6933@AcuMS.aculab.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <5bf366cc45334bb9a9c3d186ef8d6933@AcuMS.aculab.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220602005542.16489-1-chengkaitao@didiglobal.com>
+In-Reply-To: <20220602005542.16489-1-chengkaitao@didiglobal.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 8 Jun 2022 16:11:31 +0800
+Message-ID: <CACGkMEvrRmLZ6aqo8J8wxpuqWSbsa=oEOGS+g80bLQzDKv=bww@mail.gmail.com>
+Subject: Re: [PATCH] virtio-mmio: fix missing put_device() when
+ vm_cmdline_parent registration failed
+To:     chengkaitao <pilgrimtao@gmail.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, smcdef@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08. 06. 22, 10:02, David Laight wrote:
-> From: Jiri Slaby
->> Sent: 07 June 2022 11:49
->>
->> Only the return value of copy_to_user() is checked in con_get_unimap().
->> Do the same for put_user() of the count too.
->>
->> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
->> ---
->>   drivers/tty/vt/consolemap.c | 3 ++-
->>   1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
->> index 831450f2bfd1..92b5dddb00d9 100644
->> --- a/drivers/tty/vt/consolemap.c
->> +++ b/drivers/tty/vt/consolemap.c
->> @@ -813,7 +813,8 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct,
->>   	console_unlock();
->>   	if (copy_to_user(list, unilist, min(ect, ct) * sizeof(*unilist)))
->>   		ret = -EFAULT;
->> -	put_user(ect, uct);
->> +	if (put_user(ect, uct))
->> +		ret = -EFAULT;
->>   	kvfree(unilist);
->>   	return ret ? ret : (ect <= ct) ? 0 : -ENOMEM;
->>   }
-> 
-> How is the user expected to check the result of this code?
-> 
-> AFAICT -ENOMEM is returned if either kmalloc() fails or
-> the user buffer is too short?
-> Looks pretty hard to detect which.
+On Thu, Jun 2, 2022 at 9:12 AM chengkaitao <pilgrimtao@gmail.com> wrote:
+>
+> From: chengkaitao <pilgrimtao@gmail.com>
+>
+> The reference must be released when device_register(&vm_cmdline_parent)
+> failed. Add the corresponding 'put_device()' in the error handling path.
+>
+> Signed-off-by: chengkaitao <pilgrimtao@gmail.com>
 
-Agreed. The code is far from perfect. We might try to return ENOSPC and 
-watch what breaks. (And decouple the double "?:" operator as it makes 
-things only worse.)
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-> I've not looked at the effect of all the patches, but setting
-> 'ret = -ENOMEM' and breaking the loop when the array is too
-> small would simplify things.
+> ---
+>  drivers/virtio/virtio_mmio.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+> index 56128b9c46eb..1dd396d4bebb 100644
+> --- a/drivers/virtio/virtio_mmio.c
+> +++ b/drivers/virtio/virtio_mmio.c
+> @@ -688,6 +688,7 @@ static int vm_cmdline_set(const char *device,
+>         if (!vm_cmdline_parent_registered) {
+>                 err = device_register(&vm_cmdline_parent);
+>                 if (err) {
+> +                       put_device(&vm_cmdline_parent);
+>                         pr_err("Failed to register parent device!\n");
+>                         return err;
+>                 }
+> --
+> 2.14.1
+>
 
-Note that the patches try NOT to change the behavior in any way. If they 
-do, it's likely a bug. They are first front cleanup. Definitely more to 
-come. Either from me, or others -- patches welcome ;).
-
-thanks,
--- 
-js
-suse labs
