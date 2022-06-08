@@ -2,104 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21DF8CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4F4C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:21:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240023AbiFHHTR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:19:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53920 "EHLO
+        id S235816AbiFHHSw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:18:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237190AbiFHHGR (ORCPT
+        with ESMTP id S237731AbiFHHBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:06:17 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99463B3DB
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:50:08 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id kq6so26456649ejb.11
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 23:50:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Q3uqwWR5TDfVq8mIE3XSiAy0XCktsNQOd1dNc8KMqlU=;
-        b=qOACvBLytlSPu/voOY0sdKTL1YDDNSi0+JU81j2PcNE3DkvGLmP21vYDv2yz/58PUN
-         gwG/QDqTwvIweE6bVAfiYbOTUgBBbB+ja+7nkZNN6hvU8qPkPRKqcM4yOe3h9QdCCMXt
-         ufaXncTIRX3ZGLRuttTfRdEyraOLT5UI7HQp8cu6ohOJQkJ/PQkj8HgkfSHLiL7O2lq9
-         1GNPngVI2GsSpiZR4ZSfsex65ECMVbsnuooxxyuRNd0sgagcW8OdWVrySgsLQCnag29S
-         FNO92oUW1QvSS05d1rzZzPOSlOc6ykOw2MUXiaDuFZT/BJLCC8T0mNecvP87fNw4UFUN
-         2FZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Q3uqwWR5TDfVq8mIE3XSiAy0XCktsNQOd1dNc8KMqlU=;
-        b=7wTq/ze8y2se++E6XKlUyFfhD4SFi7U+JnW3YrakAfTMQFyI9RjqpkYHv2MHHvreF2
-         jn3/1WnBcALVVrZkkMQeRXvhh31/RMRwR92/vXWp+sBs2bUoq0hUmDiSAOfXbVT532t1
-         E0X+NgaHqWiUTKIapNlMo/HsA5HYXy9dUQr6tR09VRan7/AKWNNlRGvWvzl1shlokfBq
-         gBTa/G7GR6nT12MVKWvLtVmaHV57H2nT75yUBHeQx2rQuToSZgQeS7EXAZl1AdSULx58
-         7FhkE7clgwn253kZXjvWj0xOWTpaSFEJCGdJSrtlPqMLz1z3z/4TJfsIXUBXLOfoAVKM
-         05GA==
-X-Gm-Message-State: AOAM531XdgSxL/RqYdL30XUzLtWeDHQ45g4gI69mgQhhmhZyIaM2KbAQ
-        8hFaksa6rUyDKckiagP+E6PECHfdBLs=
-X-Google-Smtp-Source: ABdhPJx7gCFrR+QW3nkbkg/yiim77GsgeBcvxudU20b03iN266b+VCXaYZk8nUvYwtdIoj83yFX4Vg==
-X-Received: by 2002:a17:907:60cc:b0:6f4:ffba:489 with SMTP id hv12-20020a17090760cc00b006f4ffba0489mr30434407ejc.666.1654671007136;
-        Tue, 07 Jun 2022 23:50:07 -0700 (PDT)
-Received: from [192.168.0.253] (ip5f5abb79.dynamic.kabel-deutschland.de. [95.90.187.121])
-        by smtp.gmail.com with ESMTPSA id vj3-20020a170907130300b00705f6dab05bsm1691081ejb.183.2022.06.07.23.50.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 23:50:06 -0700 (PDT)
-Message-ID: <ded4b3f5-a9bc-4612-33cc-68bd85cb92fe@gmail.com>
-Date:   Wed, 8 Jun 2022 08:50:05 +0200
+        Wed, 8 Jun 2022 03:01:50 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D3D1B9FA8
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:45:39 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nypRR-0008Jz-JH; Wed, 08 Jun 2022 08:45:21 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nypRN-0078SQ-Eb; Wed, 08 Jun 2022 08:45:16 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nypRK-00EvFX-RE; Wed, 08 Jun 2022 08:45:14 +0200
+Date:   Wed, 8 Jun 2022 08:45:10 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Jilin Yuan <yuanjilin@cdjrlc.com>
+Cc:     thierry.reding@gmail.com, lee.jones@linaro.org,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        claudiu.beznea@microchip.com, linux-pwm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] pwm: atmel-tcb: use 'unsigned int' instead of 'unsigned'
+Message-ID: <20220608064510.23dyydxgwz6imdaw@pengutronix.de>
+References: <20220608010607.19469-1-yuanjilin@cdjrlc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: [BUG] staging: r8188eu: driver stopped working with commit ("staging:
- r8188eu: add check for kzalloc")
-Content-Language: en-US
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-References: <20220606064055.12565-1-straube.linux@gmail.com>
-From:   Michael Straube <straube.linux@gmail.com>
-In-Reply-To: <20220606064055.12565-1-straube.linux@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="mcucuprath6clvrf"
+Content-Disposition: inline
+In-Reply-To: <20220608010607.19469-1-yuanjilin@cdjrlc.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
 
-The driver does not work anymore on my system. In dmesg there is:
+--mcucuprath6clvrf
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-"r8188eu 1-4:1.0: _rtw_init_xmit_priv failed"
+On Wed, Jun 08, 2022 at 09:06:07AM +0800, Jilin Yuan wrote:
+> Replace the 'unsigned' with 'unsigned int' which is more accurate.
 
-I bisected it to commit f94b47c6bde ("staging: r8188eu: add check for 
-kzalloc").
+What was your motivation? To please checkpatch? Please mention this in
+the commit log.
 
-~/kernels/staging> git bisect bad
-f94b47c6bde624d6c07f43054087607c52054a95 is the first bad commit
+> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+> ---
+>  drivers/pwm/pwm-atmel-tcb.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
+> index 3977a0f9d132..d6977e4e71f3 100644
+> --- a/drivers/pwm/pwm-atmel-tcb.c
+> +++ b/drivers/pwm/pwm-atmel-tcb.c
+> @@ -35,9 +35,9 @@
+> =20
+>  struct atmel_tcb_pwm_device {
+>  	enum pwm_polarity polarity;	/* PWM polarity */
+> -	unsigned div;			/* PWM clock divider */
+> -	unsigned duty;			/* PWM duty expressed in clk cycles */
+> -	unsigned period;		/* PWM period expressed in clk cycles */
+> +	unsigned int div;			/* PWM clock divider */
+> +	unsigned int duty;			/* PWM duty expressed in clk cycles */
+> +	unsigned int period;		/* PWM period expressed in clk cycles */
 
-At the moment I have no time to look further into it.
+Please reindent the comments such they keep to be aligned.
 
-regards,
-Michael
+>  };
+> =20
+>  struct atmel_tcb_channel {
 
+Best regards
+Uwe
 
-dmesg after plugging in the device:
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-[15075.514705] usb 1-4: new high-speed USB device number 4 using xhci_hcd
-[15075.750717] usb 1-4: New USB device found, idVendor=0bda, 
-idProduct=8179, bcdDevice= 0.00
-[15075.750729] usb 1-4: New USB device strings: Mfr=1, Product=2, 
-SerialNumber=3
-[15075.750734] usb 1-4: Product: 802.11n NIC
-[15075.750738] usb 1-4: Manufacturer: Realtek
-[15075.750742] usb 1-4: SerialNumber: 200DB02CEF8F
-[15075.767685] Chip Version Info: 
-CHIP_8188E_Normal_Chip_TSMC_D_CUT_1T1R_RomVer(0)
-[15076.121994] EEPROM ID = 0x8129
-[15076.123218] r8188eu 1-4:1.0: _rtw_init_xmit_priv failed
-[15076.321389] usb 1-4: reset high-speed USB device number 4 using xhci_hcd
+--mcucuprath6clvrf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKgRXQACgkQwfwUeK3K
+7AlqFgf+PZnSf3d7O4232yef++gtkMCDcmr132nSH/+V0ZahVxZl5H/m6LFr0FbZ
+KsrRIzc+sNJ8EK3WZp4nnvrT1zsiHXzhO87n3n4V6nQNClzzzrxakIKtQevIenHg
+xDTbJL23lJY6pI96wt+iQqdkNAZQCIuWsH9T0QcaCYqH1eZUE3zwg9Z6ctS1fw8r
+d7Lk5vdSQOCkZTdgeAzYhv9DEvIzNr4T33q9JVVCCzAj6B0JmdSSJshJT/1LwpbJ
+uG4NKW9/wbWJFe4BidPyqqn3c5c78sGRKNmgzOVVmCdBveIVV9aEjIRWeSqnG6yt
+zIWFknEy7/PSk6I6aZsA72MRYA3D6w==
+=Vzcd
+-----END PGP SIGNATURE-----
+
+--mcucuprath6clvrf--
