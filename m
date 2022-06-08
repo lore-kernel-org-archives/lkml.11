@@ -2,141 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E20DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 18:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD44CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 18:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235806AbiFHSRD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 14:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33512 "EHLO
+        id S235919AbiFHSRG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 14:17:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234940AbiFHSOt (ORCPT
+        with ESMTP id S235124AbiFHSPJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 14:14:49 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D41192BD3;
-        Wed,  8 Jun 2022 11:14:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654712089; x=1686248089;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=f0ECl+EWbM69BrzAUjYPqWXAVEVzjHSeQH722Tvg6qo=;
-  b=Qy8839QXgbOJAjDsVNAeoncsewLy5ovCgYCLYC7+ANTLkOo6P0lEUH3D
-   lbvHdMODNFPkp9b5kUxiZ7qXMPc7nQ/Nk6KFs8Pj29wjIrrZAypH282Af
-   iLxmHR77cMBZtTZxBHiMTUfJu18RVcXc5YkRCjgUUAsDtzvLII2O6iwSD
-   a1RU+3c+YQAD7LU9aqhBqNMNf0jIaqaTjBvkEUJZtNR3cJRQ2bCbPYvGp
-   7/VAYs60NRUZsfB0UN7cvKiBrY6dgVu4ypG3+8NiSmzbJaB/OQl78BERa
-   EQqoznerY1oqiG+lXjZuAl3NcSbzsadfU7Bx4QgtynM/VjmpTkXZTVAhK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="338776156"
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="338776156"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 11:14:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="683478062"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 08 Jun 2022 11:14:43 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nz0CY-000Esr-LR;
-        Wed, 08 Jun 2022 18:14:42 +0000
-Date:   Thu, 9 Jun 2022 02:14:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Rajvi Jingar <rajvi.jingar@linux.intel.com>,
-        rafael.j.wysocki@intel.com, bhelgaas@google.com
-Cc:     kbuild-all@lists.01.org, rajvi.jingar@linux.intel.com,
-        david.e.box@linux.intel.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v6 2/2] PCI/PM: disable PTM on all devices
-Message-ID: <202206090155.uxFOFYd0-lkp@intel.com>
-References: <20220607210852.475863-2-rajvi.jingar@linux.intel.com>
+        Wed, 8 Jun 2022 14:15:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D7215FF0
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:15:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654712107;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+hANCxUkjtJekam2HLSgzp8bKfmmuJSpp+YeIM4LYb4=;
+        b=ipib/ma1b3mXQb09pTOXDR4cY8uE+rOJNXYtFmdw0b7U+M3bV0rSeXAMKj+ygAbIaz+OLz
+        pF3PD2gJnXV4tBAjTr65TPUHdYRcNUtks5R2/XVNkJe05L+x5i+N4GtLpOxcuEBkCkWUvg
+        qjMqPDPquC0bEnBOUm4bB3EUmTIcxLI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-396-6AEOjCiLNo2IBm9BLSNVjA-1; Wed, 08 Jun 2022 14:15:03 -0400
+X-MC-Unique: 6AEOjCiLNo2IBm9BLSNVjA-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EE1711C00134;
+        Wed,  8 Jun 2022 18:15:02 +0000 (UTC)
+Received: from jtoppins.rdu.csb (unknown [10.22.16.117])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8ED9E492CA3;
+        Wed,  8 Jun 2022 18:15:02 +0000 (UTC)
+From:   Jonathan Toppins <jtoppins@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     jtoppins@redhat.com, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: [net-next v2 2/2] bonding: cleanup bond_create
+Date:   Wed,  8 Jun 2022 14:14:57 -0400
+Message-Id: <03db585475d164343991f90b268d2d08fa42afb6.1654711315.git.jtoppins@redhat.com>
+In-Reply-To: <cover.1654711315.git.jtoppins@redhat.com>
+References: <cover.1654711315.git.jtoppins@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607210852.475863-2-rajvi.jingar@linux.intel.com>
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rajvi,
+Setting RLB_NULL_INDEX is not needed as this is done in bond_alb_initialize
+which is called by bond_open.
 
-Thank you for the patch! Yet something to improve:
+Also reduce the number of rtnl_unlock calls by just using the standard
+goto cleanup path.
 
-[auto build test ERROR on helgaas-pci/next]
-[also build test ERROR on linus/master v5.19-rc1 next-20220608]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+---
+ drivers/net/bonding/bond_main.c | 24 ++++++------------------
+ 1 file changed, 6 insertions(+), 18 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Rajvi-Jingar/PCI-PM-refactor-pci_pm_suspend_noirq/20220608-092412
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git next
-config: i386-randconfig-a001 (https://download.01.org/0day-ci/archive/20220609/202206090155.uxFOFYd0-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/1bf4649d5fa01aa9d1ce606461791344adfaa2ab
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Rajvi-Jingar/PCI-PM-refactor-pci_pm_suspend_noirq/20220608-092412
-        git checkout 1bf4649d5fa01aa9d1ce606461791344adfaa2ab
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/pci/pci.c: In function 'pci_save_state':
->> drivers/pci/pci.c:1677:18: error: 'struct pci_dev' has no member named 'ptm_enabled'; did you mean 'ats_enabled'?
-    1677 |         if (dev->ptm_enabled)
-         |                  ^~~~~~~~~~~
-         |                  ats_enabled
-
-
-vim +1677 drivers/pci/pci.c
-
-  1644	
-  1645	/**
-  1646	 * pci_save_state - save the PCI configuration space of a device before
-  1647	 *		    suspending
-  1648	 * @dev: PCI device that we're dealing with
-  1649	 */
-  1650	int pci_save_state(struct pci_dev *dev)
-  1651	{
-  1652		int i;
-  1653		/* XXX: 100% dword access ok here? */
-  1654		for (i = 0; i < 16; i++) {
-  1655			pci_read_config_dword(dev, i * 4, &dev->saved_config_space[i]);
-  1656			pci_dbg(dev, "saving config space at offset %#x (reading %#x)\n",
-  1657				i * 4, dev->saved_config_space[i]);
-  1658		}
-  1659		dev->state_saved = true;
-  1660	
-  1661		i = pci_save_pcie_state(dev);
-  1662		if (i != 0)
-  1663			return i;
-  1664	
-  1665		i = pci_save_pcix_state(dev);
-  1666		if (i != 0)
-  1667			return i;
-  1668	
-  1669		pci_save_ltr_state(dev);
-  1670		pci_save_dpc_state(dev);
-  1671		pci_save_aer_state(dev);
-  1672		/*
-  1673		 * PCI PM core disables PTM during suspend and saves PTM state before
-  1674		 * that to be able to restore the ptm state restored later. So PCI core
-  1675		 * needs this check to avoid double save.
-  1676		 */
-> 1677		if (dev->ptm_enabled)
-  1678			pci_save_ptm_state(dev);
-  1679		return pci_save_vc_state(dev);
-  1680	}
-  1681	EXPORT_SYMBOL(pci_save_state);
-  1682	
-
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index f85372adf042..3d427183ec8e 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -6218,45 +6218,33 @@ int bond_create(struct net *net, const char *name)
+ {
+ 	struct net_device *bond_dev;
+ 	struct bonding *bond;
+-	struct alb_bond_info *bond_info;
+-	int res;
++	int res = -ENOMEM;
+ 
+ 	rtnl_lock();
+ 
+ 	bond_dev = alloc_netdev_mq(sizeof(struct bonding),
+ 				   name ? name : "bond%d", NET_NAME_UNKNOWN,
+ 				   bond_setup, tx_queues);
+-	if (!bond_dev) {
+-		pr_err("%s: eek! can't alloc netdev!\n", name);
+-		rtnl_unlock();
+-		return -ENOMEM;
+-	}
++	if (!bond_dev)
++		goto out;
+ 
+-	/*
+-	 * Initialize rx_hashtbl_used_head to RLB_NULL_INDEX.
+-	 * It is set to 0 by default which is wrong.
+-	 */
+ 	bond = netdev_priv(bond_dev);
+-	bond_info = &(BOND_ALB_INFO(bond));
+-	bond_info->rx_hashtbl_used_head = RLB_NULL_INDEX;
+-
+ 	dev_net_set(bond_dev, net);
+ 	bond_dev->rtnl_link_ops = &bond_link_ops;
+ 
+ 	res = register_netdevice(bond_dev);
+ 	if (res < 0) {
+ 		free_netdev(bond_dev);
+-		rtnl_unlock();
+-
+-		return res;
++		goto out;
+ 	}
+ 
+ 	netif_carrier_off(bond_dev);
+ 
+ 	bond_work_init_all(bond);
+ 
++out:
+ 	rtnl_unlock();
+-	return 0;
++	return res;
+ }
+ 
+ static int __net_init bond_net_init(struct net *net)
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.27.0
+
