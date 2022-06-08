@@ -2,339 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18193C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 19:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 19:37:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231942AbiFHTgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 15:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40812 "EHLO
+        id S234479AbiFHThA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 15:37:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbiFHTgt (ORCPT
+        with ESMTP id S232971AbiFHTg4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 15:36:49 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92ABE22961E
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 12:36:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654717007; x=1686253007;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=CyjqbUXPkvUjyVdmYcFeE7jxVK8Tapn71woa6bvsIW4=;
-  b=IwV6g+dmsAv/yn5zuPwEdcdqRLyw42KzyZu39Y3nvWTj4ZnCHSl9nboP
-   1kT1iUUkBFurpCGnhxKAZspqdWroZ5qHHRpu/lQlXzNWDWUI0JwDeHJWq
-   H2mEIzu6sQvZNMMtPOXh21MbJJMXaYTb9xQvO06nf1OwjvdSRDEvCFKQn
-   myufYdWBnQaMooIC0FvcrSH0WVM273/eL+PEE4L0zcuVCN6Yp8kdUtY9T
-   TVjTsdkjlnPc8e/jxnN39oZnIz2/AgoQQ3yHF9mma0GYkwM2CuelZBwFv
-   lbTyLlbmonmfd+1fZR/1MVQxsxbEjNsDaYe2qV6CrVi2FfUJ1VQz13fCb
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="256846535"
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="256846535"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 12:36:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="683521262"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 08 Jun 2022 12:36:45 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nz1Tx-000Ewj-2m;
-        Wed, 08 Jun 2022 19:36:45 +0000
-Date:   Thu, 9 Jun 2022 03:36:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chenbo Feng <fengc@google.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Guenter Roeck <groeck@chromium.org>
-Subject: [jsarha:topic/cros-sof-v4.19 110/6555]
- net/netfilter/xt_qtaguid.c:1835:27: warning: function
- 'prdebug_full_state_locked' might be a candidate for 'gnu_printf' format
- attribute
-Message-ID: <202206090347.2RtNCOCc-lkp@intel.com>
+        Wed, 8 Jun 2022 15:36:56 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B3722BAF2;
+        Wed,  8 Jun 2022 12:36:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654717014; x=1686253014;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=BMGLT+Ddx4MESKxtVpzZX2VmGb5BvpstLY9Akv+ZHFY=;
+  b=mk1eD+UG3o9uwOax9Tktvpaw3EsVGTGQdn+O/L5ahwVUm29rLJCCZhJY
+   I33QV3/STCn2QD4v0HNbRpgdiAmvzNCVpvCSKCmuCUGdia2OX+zbDMvXb
+   QKRJsrIyRsolehk44KZ1UV8UDg9cT7d1qlxYhnhY/YpQtJlNfhA7BAReq
+   s=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 08 Jun 2022 12:36:54 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 12:36:53 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 8 Jun 2022 12:36:53 -0700
+Received: from [10.216.42.89] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 8 Jun 2022
+ 12:36:49 -0700
+Message-ID: <2e8544dc-1914-92ab-a9c6-e9093a649c49@quicinc.com>
+Date:   Thu, 9 Jun 2022 01:04:30 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [Freedreno] [PATCH] drm/msm: Switch ordering of runpm put vs
+ devfreq_idle
+Content-Language: en-US
+To:     Rob Clark <robdclark@gmail.com>
+CC:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20210927152928.831245-1-robdclark@gmail.com>
+ <f1c6fff0-a220-86d9-8572-2de3d47ab96a@codeaurora.org>
+ <CAF6AEGtRO2VdweN014JpApQ460=KxEU9uF8jf1U__Gh-bMRo7w@mail.gmail.com>
+From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
+In-Reply-To: <CAF6AEGtRO2VdweN014JpApQ460=KxEU9uF8jf1U__Gh-bMRo7w@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jsarha/linux topic/cros-sof-v4.19
-head:   d7a3e91d8d16d1ef8653deec5a1fffc4de034a0c
-commit: fe6bc43a5e8411303b6096e8976d87ae052926fd [110/6555] ANDROID: netfilter: xt_qtaguid: fix the deadlock when enable DDEBUG
-config: sh-randconfig-r005-20220608 (https://download.01.org/0day-ci/archive/20220609/202206090347.2RtNCOCc-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jsarha/linux/commit/fe6bc43a5e8411303b6096e8976d87ae052926fd
-        git remote add jsarha https://github.com/jsarha/linux
-        git fetch --no-tags jsarha topic/cros-sof-v4.19
-        git checkout fe6bc43a5e8411303b6096e8976d87ae052926fd
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash net/netfilter/
+On 6/8/2022 3:00 AM, Rob Clark wrote:
+> On Tue, Sep 28, 2021 at 7:52 AM Akhil P Oommen <akhilpo@codeaurora.org> wrote:
+>> On 9/27/2021 8:59 PM, Rob Clark wrote:
+>>> From: Rob Clark <robdclark@chromium.org>
+>>>
+>>> I've seen a few crashes like:
+>>>
+>>>       Internal error: synchronous external abort: 96000010 [#1] PREEMPT SMP
+>>>       Modules linked in: snd_seq_dummy snd_seq snd_seq_device bridge stp llc tun nf_nat_tftp nf_conntrack_tftp nf_nat_ftp nf_conntrack_ftp esp6 ah6 ip6t_REJECT ip6t_ipv6header vhost_vsock vhost vmw_vsock_virtio_transport_common vsock rfcomm algif_hash algif_skcipher af_alg uinput veth xt_cgroup xt_MASQUERADE venus_enc venus_dec videobuf2_dma_contig qcom_spmi_adc5 qcom_spmi_adc_tm5 hci_uart qcom_vadc_common cros_ec_typec qcom_spmi_temp_alarm typec btqca snd_soc_rt5682_i2c snd_soc_rt5682 snd_soc_sc7180 bluetooth snd_soc_qcom_common snd_soc_rl6231 ecdh_generic ecc venus_core v4l2_mem2mem snd_soc_lpass_sc7180 snd_soc_lpass_hdmi snd_soc_lpass_cpu snd_soc_lpass_platform snd_soc_max98357a ip6table_nat fuse iio_trig_sysfs cros_ec_lid_angle cros_ec_sensors cros_ec_sensors_core industrialio_triggered_buffer kfifo_buf cros_ec_sensorhub lzo_rle ath10k_snoc lzo_compress ath10k_core ath zram mac80211 cfg80211 ax88179_178a usbnet mii uvcvideo videobuf2_vmalloc joydev
+>>>       CPU: 3 PID: 212 Comm: A618-worker Tainted: G W 5.4.139-16300-g88d8e1285982 #1
+>>>       Hardware name: Google Pompom (rev1) with LTE (DT)
+>>>       pstate: 60c00009 (nZCv daif +PAN +UAO)
+>>>       pc : a6xx_gmu_set_oob+0x114/0x200
+>>>       lr : a6xx_gmu_set_oob+0x10c/0x200
+>>>       sp : ffffffc011b7bc20
+>>>       x29: ffffffc011b7bc20 x28: ffffffdad27c5000
+>>>       x27: 0000000000000001 x26: ffffffdad1521044
+>>>       x25: ffffffbef7498338 x24: 0000000000000018
+>>>       x23: 0000000000000002 x22: 0000000000014648
+>>>       x21: 0000033732fe638b x20: 0000000080000000
+>>>       x19: ffffffbef7433bc8 x18: 0000000040000000
+>>>       x17: 000000243508d982 x16: 000000000000b67e
+>>>       x15: 00000000000090d4 x14: 0000000000000024
+>>>       x13: 0000000000000024 x12: 0000000000017521
+>>>       x11: 0000000000000b48 x10: 0000000000326a48
+>>>       x9 : 1a130d33f6371600 x8 : ffffffc011e54648
+>>>       x7 : 614948e00005003c x6 : ffffffbe3cd17e60
+>>>       x5 : 0000000000000040 x4 : 0000000000000004
+>>>       x3 : 0000000000000000 x2 : ffffffbef7488000
+>>>       x1 : ffffffbef7488000 x0 : 0000000000000000
+>>>       Call trace:
+>>>       a6xx_gmu_set_oob+0x114/0x200
+>>>       a6xx_gmu_set_freq+0xe0/0x1fc
+>>>       msm_devfreq_target+0x80/0x13c
+>>>       msm_devfreq_idle+0x54/0x94
+>>>       retire_submit+0x170/0x254
+>>>       retire_submits+0xa4/0xdc
+>>>       retire_worker+0x1c/0x28
+>>>       kthread_worker_fn+0xf4/0x1bc
+>>>       kthread+0x140/0x158
+>>>       ret_from_fork+0x10/0x18
+>>>       Code: 52800c81 9415bbe5 f9400a68 8b160108 (b9400108)
+>>>       ---[ end trace 16b871df2482cd61 ]---
+>>>       Kernel panic - not syncing: Fatal exception
+>>>       SMP: stopping secondary CPUs
+>>>       Kernel Offset: 0x1ac1400000 from 0xffffffc010000000
+>>>       PHYS_OFFSET: 0xffffffc280000000
+>>>       CPU features: 0x88102e,2a80aa38
+>>>       Memory Limit: none
+>>>
+>>> Which smells a lot like touching hw after power collapse.  I'm not
+>>> *entirely* sure how it could have taken 66ms (the autosuspend delay)
+>>> before we get to a6xx_gmu_set_oob(), but to be safe we should move
+>>> the pm_runtime_put_autosuspend() after msm_devfreq_idle().
+>> https://elixir.bootlin.com/linux/v5.15-rc1/source/drivers/gpu/drm/msm/adreno/a6xx_gmu.c#L132
+>> We have this check in the gmu freq set path which should avoid this
+>> scenario. I might be a bit pedantic here, but I feel that the original
+>> code is more accurate. We should immediately mark last busy and put
+>> runtime_pm refcount.
+> So, I've been doing some experiments, changing the _put_autosuspend()
+> to _put_sync(), in the course of tracking down some remaining "GMU
+> OOB" timeout type issues and related badness, and discovered things
+> very quickly die with SError splats like below.  Possibly the issue is
+> that runpm has some race conditions, but I'm not sure we can trust
+> pm_runtime_get_if_in_use() quite as much as one would like..
+>
+> -----------
+> [   33.225332] CPU: 0 PID: 216 Comm: A618-worker Tainted: G        W
+>        5.4.196 #7
+> [   33.225337] Hardware name: Google Wormdingler rev1+ INX panel board (DT)
+> [   33.225343] pstate: 20c00009 (nzCv daif +PAN +UAO)
+> [   33.225353] pc : msm_readl+0x14/0x34
+> [   33.225361] lr : a6xx_gpu_busy+0x40/0x80
+> [   33.225365] sp : ffffffc011b93ad0
+> [   33.225371] x29: ffffffc011b93ad0 x28: ffffffe77cba3000
+> [   33.225377] x27: 0000000000000001 x26: ffffffe77bb4c4ac
+> [   33.225384] x25: ffffffa2f227dfa0 x24: ffffffa2f22aab28
+> [   33.225390] x23: 0000000000000000 x22: ffffffa2f22bf020
+> [   33.225397] x21: ffffffa2f22bf000 x20: ffffffc011b93b10
+> [   33.225404] x19: ffffffc011bd4110 x18: 000000000000000e
+> [   33.225410] x17: 0000000000000004 x16: 000000000000000c
+> [   33.225416] x15: 000001be3a969450 x14: 0000000000000400
+> [   33.225423] x13: 00000000000101d6 x12: 0000000034155555
+> [   33.225429] x11: 0000000000000001 x10: 0000000000000000
+> [   33.225436] x9 : 0000000100000000 x8 : ffffffc011bd4000
+> [   33.225443] x7 : 0000000000000000 x6 : 0000000000000007
+> [   33.225450] x5 : ffffffc01d8b38f0 x4 : 0000000000000000
+> [   33.225457] x3 : 00000000ffffffff x2 : 0000000000000002
+> [   33.225463] x1 : 0000000000000000 x0 : ffffffc011bd4110
+> [   33.225471] Call trace:
+> [   33.225478]  msm_readl+0x14/0x34
+> [   33.225484]  a6xx_gpu_busy+0x40/0x80
+> [   33.225490]  msm_devfreq_get_dev_status+0x70/0x1d0
+> [   33.225500]  devfreq_simple_ondemand_func+0x34/0x100
+> [   33.225510]  update_devfreq+0x50/0xe8
+> [   33.225517]  qos_notifier_call+0x2c/0x64
+> [   33.225523]  qos_max_notifier_call+0x1c/0x2c
+> [   33.225532]  notifier_call_chain+0x58/0x98
+> [   33.225539]  __blocking_notifier_call_chain+0x74/0x84
+> [   33.225545]  blocking_notifier_call_chain+0x38/0x48
+> [   33.225554]  pm_qos_update_target+0xf8/0x19c
+> [   33.225560]  freq_qos_apply+0x54/0x6c
+> [   33.225566]  apply_constraint+0x60/0x104
+> [   33.225572]  __dev_pm_qos_update_request+0xb4/0x184
+> [   33.225578]  dev_pm_qos_update_request+0x38/0x58
+> [   33.225584]  msm_devfreq_idle_work+0x34/0x40
+> [   33.225591]  kthread_worker_fn+0x144/0x1c8
+> [   33.225597]  kthread+0x140/0x284
+> [   33.225604]  ret_from_fork+0x10/0x18
+> [   33.225617] Code: f9000bf3 910003fd aa0003f3 d503201f (b9400260)
+> [   33.225623] ---[ end trace f6309767a42d0831 ]---
+> [   33.236185] SMP: stopping secondary CPUs
+> [   33.236186] Kernel Offset: 0x276b600000 from 0xffffffc010000000
+> [   33.236186] PHYS_OFFSET: 0xffffffdf80000000
+> [   33.236187] CPU features: 0x088102e,2a80aa38
+> -----------
+Any chance we are racing with system suspend here? Because, when 
+"dev->power.disable_depth > 0", pm_runtime_get_if_in_use() returns 
+-EINVAL. Then I guess we should look for a positive return value from 
+pm_runtime_get_if_in_use() before proceeding.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+-Akhil.
+>> -Akhil.
+>>
+>>> Fixes: 9bc95570175a ("drm/msm: Devfreq tuning")
+>>> Signed-off-by: Rob Clark <robdclark@chromium.org>
+>>> ---
+>>>    drivers/gpu/drm/msm/msm_gpu.c | 6 +++---
+>>>    1 file changed, 3 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+>>> index d1a16642ecd5..2b2bbe7499e6 100644
+>>> --- a/drivers/gpu/drm/msm/msm_gpu.c
+>>> +++ b/drivers/gpu/drm/msm/msm_gpu.c
+>>> @@ -667,9 +667,6 @@ static void retire_submit(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
+>>>
+>>>        msm_submit_retire(submit);
+>>>
+>>> -     pm_runtime_mark_last_busy(&gpu->pdev->dev);
+>>> -     pm_runtime_put_autosuspend(&gpu->pdev->dev);
+>>> -
+>>>        spin_lock_irqsave(&ring->submit_lock, flags);
+>>>        list_del(&submit->node);
+>>>        spin_unlock_irqrestore(&ring->submit_lock, flags);
+>>> @@ -683,6 +680,9 @@ static void retire_submit(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
+>>>        mutex_unlock(&gpu->active_lock);
+>>>
+>>>        msm_gem_submit_put(submit);
+>>> +
+>>> +     pm_runtime_mark_last_busy(&gpu->pdev->dev);
+>>> +     pm_runtime_put_autosuspend(&gpu->pdev->dev);
+>>>    }
+>>>
+>>>    static void retire_submits(struct msm_gpu *gpu)
+>>>
 
-All warnings (new ones prefixed by >>):
-
-    1812 |         MT_DEBUG("qtaguid[%d]: left %d\n", par->hooknum, res);
-         |         ^~~~~~~~
-   include/linux/compiler.h:25:39: warning: ignoring attribute 'section ("_ftrace_annotated_branch")' because it conflicts with previous 'section ("_ftrace_branch")' [-Wattributes]
-      25 |                         static struct ftrace_likely_data                \
-         |                                       ^~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:69:30: note: in definition of macro '__trace_if'
-      69 |                 ______r = !!(cond);                                     \
-         |                              ^~~~
-   include/linux/dynamic_debug.h:126:9: note: in expansion of macro 'if'
-     126 |         if (DYNAMIC_DEBUG_BRANCH(descriptor))                   \
-         |         ^~
-   include/linux/compiler.h:45:26: note: in expansion of macro '__branch_check__'
-      45 | #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-         |                          ^~~~~~~~~~~~~~~~
-   include/linux/dynamic_debug.h:115:9: note: in expansion of macro 'likely'
-     115 |         likely(descriptor.flags & _DPRINTK_FLAGS_PRINT)
-         |         ^~~~~~
-   include/linux/dynamic_debug.h:126:13: note: in expansion of macro 'DYNAMIC_DEBUG_BRANCH'
-     126 |         if (DYNAMIC_DEBUG_BRANCH(descriptor))                   \
-         |             ^~~~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:340:9: note: in expansion of macro 'dynamic_pr_debug'
-     340 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~~
-   net/netfilter/xt_qtaguid_internal.h:44:25: note: in expansion of macro 'pr_debug'
-      44 |                         pr_debug(__VA_ARGS__);              \
-         |                         ^~~~~~~~
-   net/netfilter/xt_qtaguid_internal.h:52:23: note: in expansion of macro 'MSK_DEBUG'
-      52 | #define MT_DEBUG(...) MSK_DEBUG(MDEBUG_MASK, __VA_ARGS__)
-         |                       ^~~~~~~~~
-   net/netfilter/xt_qtaguid.c:1812:9: note: in expansion of macro 'MT_DEBUG'
-    1812 |         MT_DEBUG("qtaguid[%d]: left %d\n", par->hooknum, res);
-         |         ^~~~~~~~
-   include/linux/compiler.h:64:25: note: previous declaration here
-      64 |                         ______f = {                                     \
-         |                         ^~~~~~~
-   include/linux/compiler.h:56:23: note: in expansion of macro '__trace_if'
-      56 | #define if(cond, ...) __trace_if( (cond , ## __VA_ARGS__) )
-         |                       ^~~~~~~~~~
-   include/linux/dynamic_debug.h:126:9: note: in expansion of macro 'if'
-     126 |         if (DYNAMIC_DEBUG_BRANCH(descriptor))                   \
-         |         ^~
-   include/linux/printk.h:340:9: note: in expansion of macro 'dynamic_pr_debug'
-     340 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~~
-   net/netfilter/xt_qtaguid_internal.h:44:25: note: in expansion of macro 'pr_debug'
-      44 |                         pr_debug(__VA_ARGS__);              \
-         |                         ^~~~~~~~
-   net/netfilter/xt_qtaguid_internal.h:52:23: note: in expansion of macro 'MSK_DEBUG'
-      52 | #define MT_DEBUG(...) MSK_DEBUG(MDEBUG_MASK, __VA_ARGS__)
-         |                       ^~~~~~~~~
-   net/netfilter/xt_qtaguid.c:1812:9: note: in expansion of macro 'MT_DEBUG'
-    1812 |         MT_DEBUG("qtaguid[%d]: left %d\n", par->hooknum, res);
-         |         ^~~~~~~~
-   In file included from include/linux/printk.h:336,
-                    from include/linux/kernel.h:14,
-                    from include/linux/bitmap.h:10,
-                    from include/linux/inetdevice.h:7,
-                    from net/netfilter/xt_qtaguid.c:18:
-   net/netfilter/xt_qtaguid.c:1812:47: error: 'struct xt_action_param' has no member named 'hooknum'
-    1812 |         MT_DEBUG("qtaguid[%d]: left %d\n", par->hooknum, res);
-         |                                               ^~
-   include/linux/dynamic_debug.h:128:38: note: in definition of macro 'dynamic_pr_debug'
-     128 |                                    ##__VA_ARGS__);              \
-         |                                      ^~~~~~~~~~~
-   net/netfilter/xt_qtaguid_internal.h:44:25: note: in expansion of macro 'pr_debug'
-      44 |                         pr_debug(__VA_ARGS__);              \
-         |                         ^~~~~~~~
-   net/netfilter/xt_qtaguid_internal.h:52:23: note: in expansion of macro 'MSK_DEBUG'
-      52 | #define MT_DEBUG(...) MSK_DEBUG(MDEBUG_MASK, __VA_ARGS__)
-         |                       ^~~~~~~~~
-   net/netfilter/xt_qtaguid.c:1812:9: note: in expansion of macro 'MT_DEBUG'
-    1812 |         MT_DEBUG("qtaguid[%d]: left %d\n", par->hooknum, res);
-         |         ^~~~~~~~
-   In file included from include/linux/file.h:9,
-                    from net/netfilter/xt_qtaguid.c:17:
-   net/netfilter/xt_qtaguid.c: In function 'prdebug_full_state_locked':
-   include/linux/compiler.h:25:39: warning: ignoring attribute 'section ("_ftrace_annotated_branch")' because it conflicts with previous 'section ("_ftrace_branch")' [-Wattributes]
-      25 |                         static struct ftrace_likely_data                \
-         |                                       ^~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:69:30: note: in definition of macro '__trace_if'
-      69 |                 ______r = !!(cond);                                     \
-         |                              ^~~~
-   net/netfilter/xt_qtaguid.c:1827:9: note: in expansion of macro 'if'
-    1827 |         if (!unlikely(qtaguid_debug_mask & DDEBUG_MASK))
-         |         ^~
-   include/linux/compiler.h:48:26: note: in expansion of macro '__branch_check__'
-      48 | #  define unlikely(x)   (__branch_check__(x, 0, __builtin_constant_p(x)))
-         |                          ^~~~~~~~~~~~~~~~
-   net/netfilter/xt_qtaguid.c:1827:14: note: in expansion of macro 'unlikely'
-    1827 |         if (!unlikely(qtaguid_debug_mask & DDEBUG_MASK))
-         |              ^~~~~~~~
-   include/linux/compiler.h:64:25: note: previous declaration here
-      64 |                         ______f = {                                     \
-         |                         ^~~~~~~
-   include/linux/compiler.h:56:23: note: in expansion of macro '__trace_if'
-      56 | #define if(cond, ...) __trace_if( (cond , ## __VA_ARGS__) )
-         |                       ^~~~~~~~~~
-   net/netfilter/xt_qtaguid.c:1827:9: note: in expansion of macro 'if'
-    1827 |         if (!unlikely(qtaguid_debug_mask & DDEBUG_MASK))
-         |         ^~
->> net/netfilter/xt_qtaguid.c:1835:27: warning: function 'prdebug_full_state_locked' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
-    1835 |                           fmt_buff, args);
-         |                           ^~~~~~~~
-   In file included from include/linux/file.h:9,
-                    from net/netfilter/xt_qtaguid.c:17:
-   include/linux/compiler.h:25:39: warning: ignoring attribute 'section ("_ftrace_annotated_branch")' because it conflicts with previous 'section ("_ftrace_branch")' [-Wattributes]
-      25 |                         static struct ftrace_likely_data                \
-         |                                       ^~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:69:30: note: in definition of macro '__trace_if'
-      69 |                 ______r = !!(cond);                                     \
-         |                              ^~~~
-   include/linux/dynamic_debug.h:126:9: note: in expansion of macro 'if'
-     126 |         if (DYNAMIC_DEBUG_BRANCH(descriptor))                   \
-         |         ^~
-   include/linux/compiler.h:45:26: note: in expansion of macro '__branch_check__'
-      45 | #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-         |                          ^~~~~~~~~~~~~~~~
-   include/linux/dynamic_debug.h:115:9: note: in expansion of macro 'likely'
-     115 |         likely(descriptor.flags & _DPRINTK_FLAGS_PRINT)
-         |         ^~~~~~
-   include/linux/dynamic_debug.h:126:13: note: in expansion of macro 'DYNAMIC_DEBUG_BRANCH'
-     126 |         if (DYNAMIC_DEBUG_BRANCH(descriptor))                   \
-         |             ^~~~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:340:9: note: in expansion of macro 'dynamic_pr_debug'
-     340 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~~
-   net/netfilter/xt_qtaguid.c:1837:9: note: in expansion of macro 'pr_debug'
-    1837 |         pr_debug("%s", buff);
-         |         ^~~~~~~~
-   include/linux/compiler.h:64:25: note: previous declaration here
-      64 |                         ______f = {                                     \
-         |                         ^~~~~~~
-   include/linux/compiler.h:56:23: note: in expansion of macro '__trace_if'
-      56 | #define if(cond, ...) __trace_if( (cond , ## __VA_ARGS__) )
-         |                       ^~~~~~~~~~
-   include/linux/dynamic_debug.h:126:9: note: in expansion of macro 'if'
-     126 |         if (DYNAMIC_DEBUG_BRANCH(descriptor))                   \
-         |         ^~
-   include/linux/printk.h:340:9: note: in expansion of macro 'dynamic_pr_debug'
-     340 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~~
-   net/netfilter/xt_qtaguid.c:1837:9: note: in expansion of macro 'pr_debug'
-    1837 |         pr_debug("%s", buff);
-         |         ^~~~~~~~
-   include/linux/compiler.h:25:39: warning: ignoring attribute 'section ("_ftrace_annotated_branch")' because it conflicts with previous 'section ("_ftrace_branch")' [-Wattributes]
-      25 |                         static struct ftrace_likely_data                \
-         |                                       ^~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:69:30: note: in definition of macro '__trace_if'
-      69 |                 ______r = !!(cond);                                     \
-         |                              ^~~~
-   include/linux/dynamic_debug.h:126:9: note: in expansion of macro 'if'
-     126 |         if (DYNAMIC_DEBUG_BRANCH(descriptor))                   \
-         |         ^~
-   include/linux/compiler.h:45:26: note: in expansion of macro '__branch_check__'
-      45 | #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-         |                          ^~~~~~~~~~~~~~~~
-   include/linux/dynamic_debug.h:115:9: note: in expansion of macro 'likely'
-     115 |         likely(descriptor.flags & _DPRINTK_FLAGS_PRINT)
-         |         ^~~~~~
-   include/linux/dynamic_debug.h:126:13: note: in expansion of macro 'DYNAMIC_DEBUG_BRANCH'
-     126 |         if (DYNAMIC_DEBUG_BRANCH(descriptor))                   \
-         |             ^~~~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:340:9: note: in expansion of macro 'dynamic_pr_debug'
-     340 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~~
-   net/netfilter/xt_qtaguid.c:1853:9: note: in expansion of macro 'pr_debug'
-    1853 |         pr_debug("qtaguid: %s(): }\n", __func__);
-         |         ^~~~~~~~
-   include/linux/compiler.h:64:25: note: previous declaration here
-      64 |                         ______f = {                                     \
-         |                         ^~~~~~~
-   include/linux/compiler.h:56:23: note: in expansion of macro '__trace_if'
-      56 | #define if(cond, ...) __trace_if( (cond , ## __VA_ARGS__) )
-         |                       ^~~~~~~~~~
-   include/linux/dynamic_debug.h:126:9: note: in expansion of macro 'if'
-     126 |         if (DYNAMIC_DEBUG_BRANCH(descriptor))                   \
-         |         ^~
-   include/linux/printk.h:340:9: note: in expansion of macro 'dynamic_pr_debug'
-     340 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~~
-   net/netfilter/xt_qtaguid.c:1853:9: note: in expansion of macro 'pr_debug'
-    1853 |         pr_debug("qtaguid: %s(): }\n", __func__);
-         |         ^~~~~~~~
-   net/netfilter/xt_qtaguid.c: In function 'qtaguid_ctrl_proc_start':
-   include/linux/compiler.h:25:39: warning: ignoring attribute 'section ("_ftrace_annotated_branch")' because it conflicts with previous 'section ("_ftrace_branch")' [-Wattributes]
-      25 |                         static struct ftrace_likely_data                \
-         |                                       ^~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:69:30: note: in definition of macro '__trace_if'
-      69 |                 ______r = !!(cond);                                     \
-         |                              ^~~~
-   net/netfilter/xt_qtaguid.c:1895:9: note: in expansion of macro 'if'
-    1895 |         if (unlikely(module_passive))
-         |         ^~
-   include/linux/compiler.h:48:26: note: in expansion of macro '__branch_check__'
-      48 | #  define unlikely(x)   (__branch_check__(x, 0, __builtin_constant_p(x)))
-         |                          ^~~~~~~~~~~~~~~~
-   net/netfilter/xt_qtaguid.c:1895:13: note: in expansion of macro 'unlikely'
-    1895 |         if (unlikely(module_passive))
-         |             ^~~~~~~~
-   include/linux/compiler.h:64:25: note: previous declaration here
-      64 |                         ______f = {                                     \
-
-
-vim +1835 net/netfilter/xt_qtaguid.c
-
-cead6bffca84b2 JP Abgrall  2011-06-20  1815  
-cead6bffca84b2 JP Abgrall  2011-06-20  1816  #ifdef DDEBUG
-fe6bc43a5e8411 Chenbo Feng 2017-03-23  1817  /*
-fe6bc43a5e8411 Chenbo Feng 2017-03-23  1818   * This function is not in xt_qtaguid_print.c because of locks visibility.
-fe6bc43a5e8411 Chenbo Feng 2017-03-23  1819   * The lock of sock_tag_list must be aquired before calling this function
-fe6bc43a5e8411 Chenbo Feng 2017-03-23  1820   */
-fe6bc43a5e8411 Chenbo Feng 2017-03-23  1821  static void prdebug_full_state_locked(int indent_level, const char *fmt, ...)
-cead6bffca84b2 JP Abgrall  2011-06-20  1822  {
-cead6bffca84b2 JP Abgrall  2011-06-20  1823  	va_list args;
-cead6bffca84b2 JP Abgrall  2011-06-20  1824  	char *fmt_buff;
-cead6bffca84b2 JP Abgrall  2011-06-20  1825  	char *buff;
-cead6bffca84b2 JP Abgrall  2011-06-20  1826  
-cead6bffca84b2 JP Abgrall  2011-06-20 @1827  	if (!unlikely(qtaguid_debug_mask & DDEBUG_MASK))
-cead6bffca84b2 JP Abgrall  2011-06-20  1828  		return;
-cead6bffca84b2 JP Abgrall  2011-06-20  1829  
-cead6bffca84b2 JP Abgrall  2011-06-20  1830  	fmt_buff = kasprintf(GFP_ATOMIC,
-cead6bffca84b2 JP Abgrall  2011-06-20  1831  			     "qtaguid: %s(): %s {\n", __func__, fmt);
-cead6bffca84b2 JP Abgrall  2011-06-20  1832  	BUG_ON(!fmt_buff);
-cead6bffca84b2 JP Abgrall  2011-06-20  1833  	va_start(args, fmt);
-cead6bffca84b2 JP Abgrall  2011-06-20  1834  	buff = kvasprintf(GFP_ATOMIC,
-cead6bffca84b2 JP Abgrall  2011-06-20 @1835  			  fmt_buff, args);
-cead6bffca84b2 JP Abgrall  2011-06-20  1836  	BUG_ON(!buff);
-cead6bffca84b2 JP Abgrall  2011-06-20  1837  	pr_debug("%s", buff);
-cead6bffca84b2 JP Abgrall  2011-06-20  1838  	kfree(fmt_buff);
-cead6bffca84b2 JP Abgrall  2011-06-20  1839  	kfree(buff);
-cead6bffca84b2 JP Abgrall  2011-06-20  1840  	va_end(args);
-cead6bffca84b2 JP Abgrall  2011-06-20  1841  
-cead6bffca84b2 JP Abgrall  2011-06-20  1842  	prdebug_sock_tag_tree(indent_level, &sock_tag_tree);
-cead6bffca84b2 JP Abgrall  2011-06-20  1843  
-cead6bffca84b2 JP Abgrall  2011-06-20  1844  	spin_lock_bh(&uid_tag_data_tree_lock);
-cead6bffca84b2 JP Abgrall  2011-06-20  1845  	prdebug_uid_tag_data_tree(indent_level, &uid_tag_data_tree);
-cead6bffca84b2 JP Abgrall  2011-06-20  1846  	prdebug_proc_qtu_data_tree(indent_level, &proc_qtu_data_tree);
-cead6bffca84b2 JP Abgrall  2011-06-20  1847  	spin_unlock_bh(&uid_tag_data_tree_lock);
-cead6bffca84b2 JP Abgrall  2011-06-20  1848  
-cead6bffca84b2 JP Abgrall  2011-06-20  1849  	spin_lock_bh(&iface_stat_list_lock);
-cead6bffca84b2 JP Abgrall  2011-06-20  1850  	prdebug_iface_stat_list(indent_level, &iface_stat_list);
-cead6bffca84b2 JP Abgrall  2011-06-20  1851  	spin_unlock_bh(&iface_stat_list_lock);
-cead6bffca84b2 JP Abgrall  2011-06-20  1852  
-cead6bffca84b2 JP Abgrall  2011-06-20  1853  	pr_debug("qtaguid: %s(): }\n", __func__);
-cead6bffca84b2 JP Abgrall  2011-06-20  1854  }
-cead6bffca84b2 JP Abgrall  2011-06-20  1855  #else
-fe6bc43a5e8411 Chenbo Feng 2017-03-23  1856  static void prdebug_full_state_locked(int indent_level, const char *fmt, ...) {}
-cead6bffca84b2 JP Abgrall  2011-06-20  1857  #endif
-cead6bffca84b2 JP Abgrall  2011-06-20  1858  
-
-:::::: The code at line 1835 was first introduced by commit
-:::::: cead6bffca84b298691c58da076022a82af7e6be ANDROID: netfilter: xt_qtaguid: add qtaguid matching module
-
-:::::: TO: JP Abgrall <jpa@google.com>
-:::::: CC: Guenter Roeck <groeck@chromium.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
