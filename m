@@ -2,63 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56E3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:56:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC34EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229724AbiFHI42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:56:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36310 "EHLO
+        id S233235AbiFHI4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:56:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232747AbiFHIzv (ORCPT
+        with ESMTP id S232844AbiFHI4K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 04:55:51 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31D703CA2DA
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:16:32 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id A687C1E80D76;
-        Wed,  8 Jun 2022 16:16:04 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id b--a_qBEjzwe; Wed,  8 Jun 2022 16:16:02 +0800 (CST)
-Received: from localhost.localdomain.localdomain (unknown [219.141.250.2])
-        (Authenticated sender: xupengfei@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id DE6C51E80CB8;
-        Wed,  8 Jun 2022 16:16:01 +0800 (CST)
-From:   XU pengfei <xupengfei@nfschina.com>
-To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com
-Cc:     linux-kernel@vger.kernel.org, XU pengfei <xupengfei@nfschina.com>
-Subject: [PATCH] x86: replace_intsrc_all function removes unused return values
-Date:   Wed,  8 Jun 2022 16:16:25 +0800
-Message-Id: <20220608081625.82731-1-xupengfei@nfschina.com>
-X-Mailer: git-send-email 2.18.2
+        Wed, 8 Jun 2022 04:56:10 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261E43CE26A;
+        Wed,  8 Jun 2022 01:17:01 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id gc3-20020a17090b310300b001e33092c737so17663214pjb.3;
+        Wed, 08 Jun 2022 01:17:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=uXWd6WbC1oEIWUajb+rsLU01lmMR9fnUGGnxnBKpIQQ=;
+        b=CrD/NH4RFJBD+dFkyRvfIoI2Ja9h/UOBGE/OBRHYSbXf14a2qYBv3ZeRQFR1BSJXxD
+         zVJC9dnM1wIKokvTQLIlCtkqg/nG2X1fagE9I7Y0zdHJ+LVFrKqFyBoPAsnYjSek0PS+
+         V7bV/OtulILSoS4T3BBrHMnJbzuyZdwLWrN5+abiWsi95evQsYPchdas5n4ONtHh+tPl
+         GAQkpB91JT1ew/+sjDEoXvEWI/YtNXk4NZKRUMzOovEpDgGINnS4t/Lute56NrhCdKrL
+         JoYHkR/ai8058vv4W6rvN8qtft0c7YCtgQpQg6vm4nBU42rNBrBlXcl6ad2mJXaK4XVl
+         VWqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=uXWd6WbC1oEIWUajb+rsLU01lmMR9fnUGGnxnBKpIQQ=;
+        b=4TS8Y1aHEls/j5WXPZke+7pa8cJbRuWTCWt0MT3XlpmHInsFkxvXusqg9ahepgxiNf
+         COfhTjTZt1KhIyVGEYceTXRQNaFt1wdaoE6QXEcvSxBNVJq4eYSf2NbK+nv8aqSzG+Od
+         LdvEfUQN6s+WH5SvJ4WaiSlSOReNb4Dt9CcbwjbjHKA0PzGSJAQYk0tmZJogyVy1Pt+w
+         EI8Pv+m/xCr8UnJ9bWkv11XsqsPRuakWgctgLeCfAw3hR1RLceWDNhvMcnpLRWhqztU5
+         eqUcdJD8gjVX7Ea3KrDtp1hylJvISPUFR7yODydFXvc0i7lMa9pPcfnJuDCD9y2usdso
+         rzAQ==
+X-Gm-Message-State: AOAM530hSJlNetaPkiYZbUw/xPyt3nX0wv/ZWFR3ZIOjuFijsOcCAvsK
+        ww7WYe6R9hTflsFVLIihiOw=
+X-Google-Smtp-Source: ABdhPJzCy4C7RNLq89pgAEoLgAgwWAPUJQYu2aDD1XEwAXjvT6qdvzjsF+lWhAs7QQ8H0X68EbTUdw==
+X-Received: by 2002:a17:902:c651:b0:164:127:cdfd with SMTP id s17-20020a170902c65100b001640127cdfdmr33739845pls.154.1654676220368;
+        Wed, 08 Jun 2022 01:17:00 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id q12-20020a056a00150c00b0050dc762818dsm4514177pfu.103.2022.06.08.01.16.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 01:16:59 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     bcm-kernel-feedback-list@broadcom.com,
+        William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     florian.fainelli@broadcom.com, dan.beygelman@broadcom.com,
+        joel.peshkin@broadcom.com, philippe.reynes@softathome.com,
+        kursad.oney@broadcom.com, tomer.yacoby@broadcom.com,
+        samyon.furman@broadcom.com, anand.gore@broadcom.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] arm64: dts: add dts files for bcmbca SoC bcm4912
+Date:   Wed,  8 Jun 2022 01:16:58 -0700
+Message-Id: <20220608081658.1450367-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220528005654.13809-3-william.zhang@broadcom.com>
+References: <20220528005654.13809-1-william.zhang@broadcom.com> <20220528005654.13809-3-william.zhang@broadcom.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change the return value of the replace_intsrc_all function to
-void to reduce eAX register calls . 
+On Fri, 27 May 2022 17:56:52 -0700, William Zhang <william.zhang@broadcom.com> wrote:
+> Add dts for ARMv8 based broadband SoC BCM4912. bcm4912.dtsi is the
+> SoC description dts header and bcm94912.dts is a simple dts file for
+> Broadcom BCM94912 Reference board that only enable the UART port.
+> 
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+> ---
 
-Signed-off-by: XU pengfei <xupengfei@nfschina.com>
----
- arch/x86/kernel/mpparse.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/x86/kernel/mpparse.c b/arch/x86/kernel/mpparse.c
-index fed721f90116..bb2ae610163f 100644
---- a/arch/x86/kernel/mpparse.c
-+++ b/arch/x86/kernel/mpparse.c
-@@ -723,7 +723,7 @@ static
- inline void __init check_irq_src(struct mpc_intsrc *m, int *nr_m_spare) {}
- #endif /* CONFIG_X86_IO_APIC */
- 
--static int  __init replace_intsrc_all(struct mpc_table *mpc,
-+static void  __init replace_intsrc_all(struct mpc_table *mpc,
- 					unsigned long mpc_new_phys,
- 					unsigned long mpc_new_length)
- {
--- 
-2.18.2
-
+Applied to https://github.com/Broadcom/stblinux/commits/devicetree-arm64/next, thanks!
+--
+Florian
