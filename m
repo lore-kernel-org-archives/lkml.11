@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C00C9CCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB9DCCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:15:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244308AbiFHPOY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:14:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55820 "EHLO
+        id S244475AbiFHPOi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243525AbiFHPMW (ORCPT
+        with ESMTP id S243520AbiFHPMW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 8 Jun 2022 11:12:22 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F502F677;
-        Wed,  8 Jun 2022 08:05:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23DF51580;
+        Wed,  8 Jun 2022 08:04:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:To:From:Sender:
-        Reply-To:Cc:Content-Type:Content-ID:Content-Description;
-        bh=+wB/nqOESlmBKGsPGGPvPk+1JR7GdqX/FHAB3WXgdkI=; b=RNFSUCreMEUz8c9RdJFErzY9Oq
-        EKV47HQd1TVXLX0ekY7V6SwObNC7KGrbTOousoXYSZDcH2dMldeK+cVGzqvmLl3TqgY3+/WoiiQeG
-        NhHbQw8iawjh1njiisBBaWAK4tFuAcYRs0WE0rungjaQqcICzYIE+aXMXEGW1ojCLD0TxsvJyBpgX
-        JGgMIkng/FB3p8d8uDWIUqZDKR0EO1CLYOBg799oqrwJ5+1nxI+O9kabupy9IfMWMbS6kOoJ41Gl/
-        7AwH2qxEWH7TL3S+rf3YHCJmnfU1peJMtru9bn6Kiscb1WP4uQ7Xmy0uWWJHioThqLRXwVvC94WLc
-        EOLZk+ww==;
+        MIME-Version:Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=rgqoGQEPuGySXdQMGxM8jwQfjueapzW0nSo9VnuwjIc=; b=abPFe16yTSqRoZ8mtpEcykWTsp
+        gC7b3qW+iZYlBBV0Z4nLU+1qVb+u9n9uLU07M00D0/tvJH40ZtXGoJY99/0KA8TZNDwzvicV6zE75
+        L2/hLKARFAk0JKGmYbhmADfZF/k5UpwwqiZiI6MW+VDlRcupg4mi2YzenuzZ2es/YRSfoaTLVEdYf
+        n+C0YowC3ziOx2BsDsTSHjxz7542GDmOcf1Gy8Oz4xMRTHW8Jsb99szyuLGfz97A2EyX0H3b5GPeQ
+        FE6QTbLmAPPn4HRN/F4OVG/jPpctv96fhoM7yt5LTp8e45VxHBuR5k8zGDthyyULiHX62GbvhgY9/
+        i8JEu6wg==;
 Received: from [2001:4bb8:190:726c:66c4:f635:4b37:bdda] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nyxEy-00DtIM-Cn; Wed, 08 Jun 2022 15:05:00 +0000
+        id 1nyxEs-00DtE0-4T; Wed, 08 Jun 2022 15:04:54 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.com>,
         Dave Kleikamp <shaggy@kernel.org>, linux-ext4@vger.kernel.org,
         linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
         jfs-discussion@lists.sourceforge.net
-Subject: [PATCH 2/5] jfs: stop using the nobh helper
-Date:   Wed,  8 Jun 2022 17:04:48 +0200
-Message-Id: <20220608150451.1432388-3-hch@lst.de>
+Subject: remove the nobh helpers
+Date:   Wed,  8 Jun 2022 17:04:46 +0200
+Message-Id: <20220608150451.1432388-1-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220608150451.1432388-1-hch@lst.de>
-References: <20220608150451.1432388-1-hch@lst.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
@@ -46,65 +44,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The nobh mode is an obscure feature to save lowlevel for large memory
-32-bit configurations while trading for much slower performance and
-has been long obsolete.  Switch to the regular buffer head based helpers
-instead.
+Hi all,
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- fs/jfs/inode.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+this series (against the pagecache for-next branch) removes the nobh
+helpers which are a variant of the "normal" buffer head helpers with
+special tradeoffs for machines with a lot of highmem, and thus rather
+obsolete.  They pass xfstests, or in case of jfs at least get as far
+as the baseline.
 
-diff --git a/fs/jfs/inode.c b/fs/jfs/inode.c
-index 259326556ada6..d1ec920aa030a 100644
---- a/fs/jfs/inode.c
-+++ b/fs/jfs/inode.c
-@@ -301,13 +301,25 @@ static int jfs_write_begin(struct file *file, struct address_space *mapping,
- {
- 	int ret;
- 
--	ret = nobh_write_begin(mapping, pos, len, pagep, fsdata, jfs_get_block);
-+	ret = block_write_begin(mapping, pos, len, pagep, jfs_get_block);
- 	if (unlikely(ret))
- 		jfs_write_failed(mapping, pos + len);
- 
- 	return ret;
- }
- 
-+static int jfs_write_end(struct file *file, struct address_space *mapping,
-+		loff_t pos, unsigned len, unsigned copied, struct page *page,
-+		void *fsdata)
-+{
-+	int ret;
-+
-+	ret = generic_write_end(file, mapping, pos, len, copied, page, fsdata);
-+	if (ret < len)
-+		jfs_write_failed(mapping, pos + len);
-+	return ret;
-+}
-+
- static sector_t jfs_bmap(struct address_space *mapping, sector_t block)
- {
- 	return generic_block_bmap(mapping, block, jfs_get_block);
-@@ -346,7 +358,7 @@ const struct address_space_operations jfs_aops = {
- 	.writepage	= jfs_writepage,
- 	.writepages	= jfs_writepages,
- 	.write_begin	= jfs_write_begin,
--	.write_end	= nobh_write_end,
-+	.write_end	= jfs_write_end,
- 	.bmap		= jfs_bmap,
- 	.direct_IO	= jfs_direct_IO,
- };
-@@ -399,7 +411,7 @@ void jfs_truncate(struct inode *ip)
- {
- 	jfs_info("jfs_truncate: size = 0x%lx", (ulong) ip->i_size);
- 
--	nobh_truncate_page(ip->i_mapping, ip->i_size, jfs_get_block);
-+	block_truncate_page(ip->i_mapping, ip->i_size, jfs_get_block);
- 
- 	IWRITE_LOCK(ip, RDWRLOCK_NORMAL);
- 	jfs_truncate_nolock(ip, ip->i_size);
--- 
-2.30.2
+This might not be as nice as an actual iomap conversion, but already
+removes some hairy code in the way of removing ->writepage.
 
+Diffstat:
+ Documentation/filesystems/ext2.rst |    2 
+ fs/buffer.c                        |  324 -------------------------------------
+ fs/ext2/ext2.h                     |    1 
+ fs/ext2/inode.c                    |   51 -----
+ fs/ext2/namei.c                    |   10 -
+ fs/ext2/super.c                    |    6 
+ fs/jfs/inode.c                     |   18 +-
+ fs/mpage.c                         |   47 -----
+ include/linux/buffer_head.h        |    8 
+ include/linux/mpage.h              |    2 
+ 10 files changed, 29 insertions(+), 440 deletions(-)
