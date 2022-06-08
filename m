@@ -2,155 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47C0DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EAB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232381AbiFHIuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:50:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55908 "EHLO
+        id S232429AbiFHIvM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:51:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232384AbiFHItu (ORCPT
+        with ESMTP id S231599AbiFHIuu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 04:49:50 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69167CDFD
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:06:54 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 258837w0022441;
-        Wed, 8 Jun 2022 08:04:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=OsOMP2pddvT34VMihhk9HBu9kF1H0WfO+h43RB+Rm3A=;
- b=dKE4Da97Kx8o+li2nVSML/NLPOeqXir3+wjxeTj7YUf6qwSYYaeiuTWj4P18cjEdJGAV
- jwmkyUlg3HHeMfYBfDXvMLYa2ydpE5LhXMaUPc4q+jlN5Pcsk+QQkfVWGQ7Q4GF1SJO2
- eT8hXjRvUHTxpt06B7k+2hlVeqW80x8NT8G/9FwkPdjnO8oG4wQR8sc3hIZZ6jxyl8Id
- Z8Z9ZL1Y6T74dtdTXEAQ2dcotL0Nin/QOlpUr+UiAtZaKUYaS/Uj/0B4XmO+up7tCab4
- YteeLFasCzSC1OLPz360LjkHMvNAr6c6UmFjSVLmRhx1CAf/lkBoDkAuGupk2H5E4quI tQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjnyejdpa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jun 2022 08:04:40 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2586S7H6013236;
-        Wed, 8 Jun 2022 08:04:38 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjnyejdmf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jun 2022 08:04:38 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2587a5OG017679;
-        Wed, 8 Jun 2022 08:04:35 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3gfy19cue7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jun 2022 08:04:34 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25884WRj16515396
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 8 Jun 2022 08:04:32 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8273C5204F;
-        Wed,  8 Jun 2022 08:04:32 +0000 (GMT)
-Received: from [9.43.53.124] (unknown [9.43.53.124])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id A490E5204E;
-        Wed,  8 Jun 2022 08:04:27 +0000 (GMT)
-Message-ID: <52b0bb03-a6f6-b68e-49a6-e6d37fe4eaa2@linux.ibm.com>
-Date:   Wed, 8 Jun 2022 13:34:26 +0530
+        Wed, 8 Jun 2022 04:50:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8B72E68A;
+        Wed,  8 Jun 2022 01:07:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32082B82586;
+        Wed,  8 Jun 2022 08:07:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98D2CC34116;
+        Wed,  8 Jun 2022 08:07:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654675676;
+        bh=xgUnZ05DgSsN3m66jVL3rwkvg0bAunJZ88E9ubfR8DQ=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=VBU9apM/0BsrA2dIoHjVqqTDtcRcczQYLPQk0wXRAzBpR16ob+3K/3VTiWbOKS4sc
+         u8SyHlyun5DSW0ei/G1bGysX/I/Axw/er2S7XmDePbpUGKfNBFgS5UcaScJ8JtTdRm
+         fCH2UL2Qd+s7ZPtTsIzROFgtU8z33Yh5jet3XLWebv8HPU3jbb0Kb1rK9LvMsIY3dR
+         FZMWr/bR3gMjDPYcd81LZcAn564nMrqy0weDmdDubCLTtNUlGexyPJOtm9f4T8W8e4
+         5WndBN28e4rUrE50rLegqVBMozlqF0mhFFgTX4/o63saEC5/FqRQfniDI3t/ODYW4Q
+         IT9qxiOYp9Bcg==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v5 1/9] mm/demotion: Add support for explicit memory tiers
-Content-Language: en-US
-To:     Ying Huang <ying.huang@intel.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
- <20220603134237.131362-2-aneesh.kumar@linux.ibm.com>
- <92649c9a6e0b6931b34aeaaf22c0a1e874484b7f.camel@linux.intel.com>
- <f5480a57-4335-d982-8462-d4465369082d@linux.ibm.com>
- <71a0734bc918b7a6cf75b0b411b7b6a87f0bda92.camel@intel.com>
-From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
-In-Reply-To: <71a0734bc918b7a6cf75b0b411b7b6a87f0bda92.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: NFeuMQN_JsKr2J3mVmjNAEo31Rajt9tS
-X-Proofpoint-ORIG-GUID: Qqr03HE60P0T-PywrolsftA5Kh_B3bd3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-08_02,2022-06-07_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- bulkscore=0 impostorscore=0 lowpriorityscore=0 spamscore=0 suspectscore=0
- clxscore=1015 malwarescore=0 adultscore=0 mlxscore=0 phishscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206080035
+Subject: Re: [v1,1/1] wifi: rtw88: use %*ph to print small buffer
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220603125648.46873-1-andriy.shevchenko@linux.intel.com>
+References: <20220603125648.46873-1-andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <165467567290.10728.2279936435083170860.kvalo@kernel.org>
+Date:   Wed,  8 Jun 2022 08:07:54 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/8/22 11:40 AM, Ying Huang wrote:
-> On Wed, 2022-06-08 at 10:07 +0530, Aneesh Kumar K V wrote:
->> On 6/8/22 12:13 AM, Tim Chen wrote:
->> ...
->>
->>>>
->>>> +
->>>> +static void memory_tier_device_release(struct device *dev)
->>>> +{
->>>> +	struct memory_tier *tier = to_memory_tier(dev);
->>>> +
->>>
->>> Do we need some ref counts on memory_tier?
->>> If there is another device still using the same memtier,
->>> free below could cause problem.
->>>
->>>> +	kfree(tier);
->>>> +}
->>>> +
->>>>
->>> ...
->>
->> The lifecycle of the memory_tier struct is tied to the sysfs device life
->> time. ie, memory_tier_device_relese get called only after the last
->> reference on that sysfs dev object is released. Hence we can be sure
->> there is no userspace that is keeping one of the memtier related sysfs
->> file open.
->>
->> W.r.t other memory device sharing the same memtier, we unregister the
->> sysfs device only when the memory tier nodelist is empty. That is no
->> memory device is present in this memory tier.
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> Use %*ph format to print small buffer as hex string.
 > 
-> memory_tier isn't only used by user space.  It is used inside kernel
-> too.  If some kernel code get a pointer to struct memory_tier, we need
-> to guarantee the pointer will not be freed under us. 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Acked-by: Ping-Ke Shih <pkshih@realtek.com>
 
-As mentioned above current patchset avoid doing that.
+Patch applied to wireless-next.git, thanks.
 
-> And as Tim pointed
-> out, we need to use it in hot path (for statistics), so some kind of rcu
-> lock may be good.
-> 
+d38c9df53ad6 wifi: rtw88: use %*ph to print small buffer
 
-Sure when those statistics code get added, we can add the relevant kref 
-and locking details.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20220603125648.46873-1-andriy.shevchenko@linux.intel.com/
 
--aneesh
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
