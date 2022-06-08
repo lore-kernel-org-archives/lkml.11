@@ -2,131 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E05C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 13:51:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF83FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 13:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240916AbiFHNvL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 09:51:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34986 "EHLO
+        id S240940AbiFHNvS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 09:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240883AbiFHNvJ (ORCPT
+        with ESMTP id S240883AbiFHNvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 09:51:09 -0400
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE5F60B81;
-        Wed,  8 Jun 2022 06:51:08 -0700 (PDT)
-Received: by mail-ot1-x32f.google.com with SMTP id l9-20020a056830268900b006054381dd35so15149508otu.4;
-        Wed, 08 Jun 2022 06:51:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=wHbY50ZTzu8/ZmvcBIt4klKz62u58DeLSPRJmz7e5BU=;
-        b=pHRYhZ0lV/NG3MMMx2RE5SbK5r+JpQyMMEwrMqpfyPjIhXhcpI7UfcuhUC1MYAz2xO
-         wNqFMFUb+6VxxcHf9m4eUfwZqRimnP6M34t8RTg6toc3BmFP025k3LPHqzihhN8wZqvV
-         XEWBOlxygZhbXSeLNJQxxMU0Ey+C5CTy0nOO+yrPqk42TntRIjiqKywtfwU22YkQUBcS
-         2F7Jex3ljrpCx5cdUjIylSJJFzCSDOWoyVwVRBglcUPk87OxEaAsBjzqc1AccFSblHTs
-         EVoGPZS8KF6OPHmAxBqpfZf6Hln5/NB1MO9LZo6m+O8R9U7lk1Fm/TScY2Icjq2gin3l
-         2YKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=wHbY50ZTzu8/ZmvcBIt4klKz62u58DeLSPRJmz7e5BU=;
-        b=Onvqvk2Uyx7kZTE5615SlfAjGe1IVBSRMF77WjTf+Xkh5QyqumijVnj7a05wtJYKKZ
-         nTJgUWD7yFD93txQrtZlYT2MFV96lWSoowdST2sEcmDHF5FUew/URHynWhGlYMa2/TN6
-         u81fmFv6T9Oz8GwYKwbp9AEBzgitz5czkj46fClKTIzJG9OrMA4BjnMfpQsuEKmymlWt
-         W+XtRtZndLn6HVGQx9JaLQgJ477PCLXhezU963+3r1n0SBY+VXGLG9trGzG+S873Ksyi
-         Nt4meU8LqmSxU/S84rq8SLFXhqDAbi+r3qFj0hRVTUe3L0VNORx7pK+AAa0nwxanF5WH
-         TT3w==
-X-Gm-Message-State: AOAM533AHrtaL3ZIz8QlsC4LaT9tmSOIkphzWADXIZfzPRfIJvBfJQvp
-        T7YMniR+wSP9wkf08wzP/qg=
-X-Google-Smtp-Source: ABdhPJyNg71Vl5cWr4WG02/OelvT5mL9X4GgO9FOkzRYxSfVb5GncqTkDx5cf0QzCYEMzlrPrUtjqA==
-X-Received: by 2002:a05:6830:3152:b0:60b:830e:2683 with SMTP id c18-20020a056830315200b0060b830e2683mr14613653ots.263.1654696268036;
-        Wed, 08 Jun 2022 06:51:08 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id m11-20020a4aedcb000000b00415a9971cfcsm10879646ooh.38.2022.06.08.06.51.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 06:51:07 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <078a7fab-2dec-2cde-f530-794156b57d7d@roeck-us.net>
-Date:   Wed, 8 Jun 2022 06:51:05 -0700
+        Wed, 8 Jun 2022 09:51:16 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4050B62BEA;
+        Wed,  8 Jun 2022 06:51:13 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id B8DBF21AA6;
+        Wed,  8 Jun 2022 13:51:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1654696271; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EdG9PlC0R8OmQU19nk71zBCMMuRv8NZuw8mGqBcI480=;
+        b=K2HoctTtt/KhX6+mXecsJdmxEuLMLk9zl0bFw6P8GQqwSvXX6slsZPsrN89QwI/uB+DzRk
+        2rc7JqmJgkntQCiSgzz+t+cOxr+UxCJIiMua+TwkAugUiSC+51i12hZ9WImmy5T6lsX3QU
+        4J2vUnC1M74rqwRGtY9bdo+zosQvGM8=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9363713A15;
+        Wed,  8 Jun 2022 13:51:11 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Oi8kI0+poGKUZQAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Wed, 08 Jun 2022 13:51:11 +0000
+Date:   Wed, 8 Jun 2022 15:51:10 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     shisiyuan <shisiyuan19870131@gmail.com>
+Cc:     tj@kernel.org, hannes@cmpxchg.org, lizefan@huawei.com,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        shisiyuan <shisiyuan@xiaomi.com>
+Subject: Re: [PATCH] cgroup: handle cset multiidentity issue when migration
+Message-ID: <20220608135110.GA19399@blackbody.suse.cz>
+References: <1654187688-27411-1-git-send-email-shisiyuan@xiaomi.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
-References: <20220607164934.766888869@linuxfoundation.org>
- <YqB1e83SqynwHqQZ@debian>
- <CADVatmNFdgXpD+fJq6Yu-7877WPbPcsg4aD0vppLPj_hCJ9Ngw@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 5.15 000/667] 5.15.46-rc1 review
-In-Reply-To: <CADVatmNFdgXpD+fJq6Yu-7877WPbPcsg4aD0vppLPj_hCJ9Ngw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1654187688-27411-1-git-send-email-shisiyuan@xiaomi.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/8/22 04:11, Sudip Mukherjee wrote:
-> Hi Greg,
-> 
-> On Wed, Jun 8, 2022 at 11:10 AM Sudip Mukherjee
-> <sudipm.mukherjee@gmail.com> wrote:
->>
->> Hi Greg,
->>
->> On Tue, Jun 07, 2022 at 06:54:25PM +0200, Greg Kroah-Hartman wrote:
->>> This is the start of the stable review cycle for the 5.15.46 release.
->>> There are 667 patches in this series, all will be posted as a response
->>> to this one.  If anyone has any issues with these being applied, please
->>> let me know.
->>>
->>> Responses should be made by Thu, 09 Jun 2022 16:48:02 +0000.
->>> Anything received after that time might be too late.
->>
->> Build test (gcc version 11.3.1 20220606):
->> mips: 62 configs -> no failure
->> arm: 99 configs -> no failure
->> arm64: 3 configs -> no failure
->> x86_64: 4 configs -> no failure
->> alpha allmodconfig -> no failure
->> csky allmodconfig -> no failure
->> riscv allmodconfig -> no failure
->> s390 allmodconfig -> no failure
->> xtensa allmodconfig -> no failure
-> 
-> I did not mention powerpc allmodconfig failed to build as I have just
-> started building that arch and I did not have a good build to know if
-> its a new failure or not.
-> 
+Hello.
 
-It is not new with gcc 11.3 and binutils 2.38. I currently use gcc 11.2.0
-combined with binutils 2.36.1 for building powerpc images (binutils 2.37
-won't work, at least not with gcc 11.2).
+On Fri, Jun 03, 2022 at 12:34:48AM +0800, shisiyuan <shisiyuan19870131@gmail.com> wrote:
+> Bug code flow:
+> cset X's initial refcount is 1.
+> 1. cgroup_attach_task()
+> 2. [For thread1]
+>    cgroup_migrate_add_src()
+>    [For thread2]
+>    cgroup_migrate_add_src()
+>      cset X is thread2's src_cset , ref->2,
+>      and its mg_preload_node is added to
+>      mgctx->preloaded_src_csets.
+> 3. cgroup_migrate_prepare_dst()
+>    [For thread1]
+>    find_css_set()
+>      cset X is thread1's dst_cset, ref->3
+>    put_css_set()
+>      ref->2 because cset X's mg_preload_node is not
+>      empty(already in mgctx->preloaded_src_csets).
+>    [For thread2]
+>    find_css_cset()
+>      cset X is also thread2's dst_cset, ref->3
+>      then drop src_cset, ref->1
+> [cgroup_free] ref->0
+> 4. cgroup_migrate_execute
+>    [For thread1]
+>    ref -> 0xc0000000(UAF)
 
-Guenter
+I'm trying to understand when this happens.
+You migrate a process with two threads while one of them exits?
 
-> But It failed with the error:
-> {standard input}: Assembler messages:
-> {standard input}:255: Error: unrecognized opcode: `dssall'
-> make[2]: *** [scripts/Makefile.build:288: arch/powerpc/mm/mmu_context.o] Error 1
-> 
-> and will need - d51f86cfd8e3 ("powerpc/mm: Switch obsolete dssall to .long")
-> 
+This should be properly synchronized with cgroup_threadgroup_rwsem, so I
+don't understand where does the [cgroup_free] between 3. and 4. come
+from.
 
-With this patch applied, at least the affected file builds with gcc 11.3 /
-binutils 2.38. I have not tried to build the entire image, though, with that
-combination.
+Do you have a reproducer for this?
 
-Guenter
+Thanks,
+Michal
