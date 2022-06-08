@@ -2,157 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CDC9CCA48A
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 768FFCCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:01:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234389AbiFHGBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 02:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
+        id S234603AbiFHGBZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 02:01:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348355AbiFHF6T (ORCPT
+        with ESMTP id S237407AbiFHFvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:58:19 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4AA23F230
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 21:26:51 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id w2-20020a17090ac98200b001e0519fe5a8so17264669pjt.4
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 21:26:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MG06AiedEDpBT2ELwumy/meoTwkYbia36HrYS8TF6uo=;
-        b=RRzuKyw+GsxX729knO443eK1Cb/n1vec65Mt6DNmQgk08vY02SwL3T047DqjeR+sqQ
-         E0kuPTBKwvIogPYc7wepPiLUU7am5myRKp9wli/oFPlrxhd0vR2ZjoH5jjjf2FY5rPTO
-         z0VxhfSu4uqPWsrg4Xkanxpn/DgwZJk+kUzb2Cmxp4+2p3vuYamZVsstThpw3XwIEyx1
-         wFfo0EEWjrUs/woL3zYNwt+aRyFLxj6ZV2j+qvtzu2xRVopNr+tLNkc3+Mw6VEPw9IMF
-         jNZYf7XpZdgTHb1XAa7tGiHFtIw4AD09hIRZJj/cdedBNeuxUS5E6Ar8pgAXMXS4NWLi
-         ZHSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MG06AiedEDpBT2ELwumy/meoTwkYbia36HrYS8TF6uo=;
-        b=4CXMqxUB7frPhNuC0a+OAPyg82yyOI2XkDEgMQVUk84TitxcVFaG90wVJlgIItGdbx
-         NQ6liHYTZ66aUDWBTTjyZl7+gaPfKYsAq1YeaIYt067Z7+nYmqqHvmMm6hN39aGKE/BH
-         B3l3cX8I1ovUZ7MB1N7c/XUsLXJ3VsQRg3h7zmTwS0Ri/4P2RnizEEaSCZJcu8TXIGeg
-         qGSJ5j6Tu1UqcLxK4lNBi70H60uMkZT5r48x78Tw92qtUTq0jhhdXUUWrC0lqkP61rMw
-         cBECIKI0gDp61+1NiFFIYUgem6rGsgfO6GO+yVGA3z7IseQgJLLdk2lcKck63adD70au
-         dWhQ==
-X-Gm-Message-State: AOAM532QR2mRM5uDi7yLxBQhwQfUx9/QOI2VpwoWn0w86YPv4254V62a
-        aFgFrvWmvB88lnUk0HxVHf884w==
-X-Google-Smtp-Source: ABdhPJxhenWzpCxoyOV165belZOoCBZNw8Vl+91wVvYo9oJ+aOjy9oUisF4XXuRkg9u3eKrx2jQ65g==
-X-Received: by 2002:a17:902:bf07:b0:167:6daa:f49c with SMTP id bi7-20020a170902bf0700b001676daaf49cmr17808997plb.9.1654662410264;
-        Tue, 07 Jun 2022 21:26:50 -0700 (PDT)
-Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.224])
-        by smtp.gmail.com with ESMTPSA id k20-20020a17090aaa1400b001dc37aef4ffsm12723060pjq.48.2022.06.07.21.26.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 21:26:49 -0700 (PDT)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com
-Cc:     linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        songmuchun@bytedance.com,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH] sched/fair: combine detach into dequeue when migrating task
-Date:   Wed,  8 Jun 2022 12:26:05 +0800
-Message-Id: <20220608042605.60720-1-zhouchengming@bytedance.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 8 Jun 2022 01:51:10 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2471AB63E
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 20:30:44 -0700 (PDT)
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220608033042epoutp026c08fafe826f564831279bacbff35595~2h6ICOlRj0536705367epoutp02N
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 03:30:42 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220608033042epoutp026c08fafe826f564831279bacbff35595~2h6ICOlRj0536705367epoutp02N
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1654659043;
+        bh=svUnNcvZi8FnB/eO2kX+puEXSJbtaaVEi8Nbh0KTMmw=;
+        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
+        b=iR6WGEBciq5CM+3mCwZaRaFf/60z2JEB7pKrhNEuGuJqovdQpYwJYazso+vO1TpB1
+         5RzElJ04GcM/4VT6lG+9LfMKaVf3uW9LBX7A3rkx8Fa1KBnXwztS9IMISNmhniOZZm
+         SVGl2SIZk1bNXAQ2fSytBubHzydiBT4SkOVfut/c=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20220608033042epcas2p3f91c1864435e7c11cce0b8953655c6b9~2h6Hg0tKA0952709527epcas2p3a;
+        Wed,  8 Jun 2022 03:30:42 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.102]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4LHt6872Lzz4x9Q7; Wed,  8 Jun
+        2022 03:30:40 +0000 (GMT)
+X-AuditID: b6c32a46-f8bff70000002624-4e-62a017e02523
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        E7.6C.09764.0E710A26; Wed,  8 Jun 2022 12:30:40 +0900 (KST)
+Mime-Version: 1.0
+Subject: Re: [PATCH v2 2/5] dt-bindings: phy: Add ARTPEC-8 PCIe phy
+Reply-To: wangseok.lee@samsung.com
+Sender: Wangseok Lee <wangseok.lee@samsung.com>
+From:   Wangseok Lee <wangseok.lee@samsung.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Wangseok Lee <wangseok.lee@samsung.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "kishon@ti.com" <kishon@ti.com>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
+        "lars.persson@axis.com" <lars.persson@axis.com>
+CC:     "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
+        "kw@linux.com" <kw@linux.com>,
+        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
+        "kernel@axis.com" <kernel@axis.com>,
+        Moon-Ki Jun <moonki.jun@samsung.com>,
+        Sang Min Kim <hypmean.kim@samsung.com>,
+        Dongjin Yang <dj76.yang@samsung.com>,
+        Yeeun Kim <yeeun119.kim@samsung.com>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+In-Reply-To: <45aa26be-625e-47eb-c21f-92497e60b6dd@linaro.org>
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20220608033040epcms2p5807e0bf6528ba9f6b24863e9f2244c84@epcms2p5>
+Date:   Wed, 08 Jun 2022 12:30:40 +0900
+X-CMS-MailID: 20220608033040epcms2p5807e0bf6528ba9f6b24863e9f2244c84
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrEJsWRmVeSWpSXmKPExsWy7bCmme4D8QVJBj8WmFssacqweHlI02L+
+        kXOsFrtnLGeymDn1DLPF80OzmC0+tahaXHjaw2bxctY9Nou9r7eyWzT0/Ga1OPLmI7PF/uMr
+        mSwu75rDZnF23nE2iwmrvrFYvPn9gt3i3OJMi9a9R9gtdt45wWxx5/BZFotfW/8wOYh5rJm3
+        htHj+roAjwWbSj02repk87hzbQ+bx5Mr05k8Ni+p9+jbsorR4/iN7UwenzfJBXBFZdtkpCam
+        pBYppOYl56dk5qXbKnkHxzvHm5oZGOoaWlqYKynkJeam2iq5+AToumXmAP2opFCWmFMKFApI
+        LC5W0rezKcovLUlVyMgvLrFVSi1IySkwL9ArTswtLs1L18tLLbEyNDAwMgUqTMjOmDKplb3g
+        pFXFj7mzWRsY2y27GDk5JARMJP7ce8bexcjFISSwg1Hi0o+zQA4HB6+AoMTfHcIgprCAs0TL
+        0mCQciEBJYkda+Yxg9jCAvoS11d0s4LYbAK6Ev8Wv2QDGSMisI5ZYveNtWAzmQWOsEjcaf/O
+        DrGMV2JG+1MWCFtaYvvyrYwgNqeAncT1kz+hajQkfizrZYawRSVurn7LDmO/PzafEcIWkWi9
+        dxaqRlDiwc/dUHEpiQVPDrFC2NUS+//+ZoKwGxgl+u+ngjwjAXT1juvGIGFeAV+JrXtmgZWz
+        CKhK3J9zHOo0F4nL9z+CjWQW0JZYtvA1M0grs4CmxPpd+hBTlCWO3GKBeaph4292dDazAJ9E
+        x+G/cPEd855AHaMmMW/lTuYJjMqzEOE8C8muWQi7FjAyr2IUSy0ozk1PLTYqMIJHbXJ+7iZG
+        cGLXctvBOOXtB71DjEwcjIcYJTiYlUR4JcPnJwnxpiRWVqUW5ccXleakFh9iNAX6ciKzlGhy
+        PjC35JXEG5pYGpiYmRmaG5kamCuJ83qlbEgUEkhPLEnNTk0tSC2C6WPi4JRqYJKNO8X9R6qu
+        xP8Zg/C3J7Ok/ePWPthdK/LZZ0Fd0uUdmyJ0dBuXelm5Fivb6H7KeaTcKHBoStmko02/HGWt
+        hIVWPgl1SrWoeKK/OsFuBUfBCf2ZCaaiOeZnp5z3WrOwmF1LmEkq5nvjJe0Zfj5ruK+wWBjW
+        ryp6pXuyMObT3mOVahMvXGoXXajFnTTxVlT3pEf7iy9/9d26TWNFZ0CAyQ6j5W0hnTrT+dtj
+        lKojf7lG+m66sXj3XO/bLss2zubt0A5Z+PCnS0+DoMi5hrpK5RiTXXXXJFyvRxrwXFyW9DJ3
+        5Qbbq0+4tzsFfT3qd7S4+s+tj0+Xe5dmijVPVrCtPDvbxYPfbOqvjYt/lWyTUGIpzkg01GIu
+        Kk4EAOS03Zx1BAAA
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220603015431epcms2p6203908cebe6a320854136559a32b54cb
+References: <45aa26be-625e-47eb-c21f-92497e60b6dd@linaro.org>
+        <20220603015431epcms2p6203908cebe6a320854136559a32b54cb@epcms2p6>
+        <20220603023158epcms2p6949f6cd93926b9e811e1b4d52fbef91b@epcms2p6>
+        <CGME20220603015431epcms2p6203908cebe6a320854136559a32b54cb@epcms2p5>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When we are migrating task out of the CPU, we can combine detach
-into dequeue_entity() to save the independent detach_entity_cfs_rq()
-in migrate_task_rq_fair().
-
-This optimization is like combining DO_ATTACH in the enqueue_entity()
-when migrating task to the CPU.
-
-So we don't have to traverse the CFS tree twice to do these load
-detach and propagation.
-
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
----
- kernel/sched/fair.c | 33 ++++++++++++++++++++++-----------
- 1 file changed, 22 insertions(+), 11 deletions(-)
-
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index e0cd4052e32f..1db7c97a5fe6 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -3896,6 +3896,7 @@ static void detach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
- #define UPDATE_TG	0x1
- #define SKIP_AGE_LOAD	0x2
- #define DO_ATTACH	0x4
-+#define DO_DETACH	0x8
- 
- /* Update task and its cfs_rq load average */
- static inline void update_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
-@@ -3913,7 +3914,14 @@ static inline void update_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
- 	decayed  = update_cfs_rq_load_avg(now, cfs_rq);
- 	decayed |= propagate_entity_load_avg(se);
- 
--	if (!se->avg.last_update_time && (flags & DO_ATTACH)) {
-+	if (flags & DO_DETACH) {
-+		/*
-+		 * DO_DETACH means we're here from dequeue_entity()
-+		 * and we are migrating task out of the CPU.
-+		 */
-+		detach_entity_load_avg(cfs_rq, se);
-+		update_tg_load_avg(cfs_rq);
-+	} else if (!se->avg.last_update_time && (flags & DO_ATTACH)) {
- 
- 		/*
- 		 * DO_ATTACH means we're here from enqueue_entity().
-@@ -4426,6 +4434,14 @@ static __always_inline void return_cfs_rq_runtime(struct cfs_rq *cfs_rq);
- static void
- dequeue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
- {
-+	int action = UPDATE_TG;
-+
-+	/*
-+	 * If we are migrating task from the CPU, detach load_avg when dequeue.
-+	 */
-+	if (entity_is_task(se) && task_of(se)->on_rq == TASK_ON_RQ_MIGRATING)
-+		action |= DO_DETACH;
-+
- 	/*
- 	 * Update run-time statistics of the 'current'.
- 	 */
-@@ -4440,7 +4456,7 @@ dequeue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
- 	 *   - For group entity, update its weight to reflect the new share
- 	 *     of its group cfs_rq.
- 	 */
--	update_load_avg(cfs_rq, se, UPDATE_TG);
-+	update_load_avg(cfs_rq, se, action);
- 	se_update_runnable(se);
- 
- 	update_stats_dequeue_fair(cfs_rq, se, flags);
-@@ -6940,15 +6956,10 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
- 		se->vruntime -= min_vruntime;
- 	}
- 
--	if (p->on_rq == TASK_ON_RQ_MIGRATING) {
--		/*
--		 * In case of TASK_ON_RQ_MIGRATING we in fact hold the 'old'
--		 * rq->lock and can modify state directly.
--		 */
--		lockdep_assert_rq_held(task_rq(p));
--		detach_entity_cfs_rq(&p->se);
--
--	} else {
-+	/*
-+	 * In case of TASK_ON_RQ_MIGRATING we already detach in dequeue_entity.
-+	 */
-+	if (p->on_rq != TASK_ON_RQ_MIGRATING) {
- 		/*
- 		 * We are supposed to update the task to "current" time, then
- 		 * its up to date and ready to go to new CPU/cfs_rq. But we
--- 
-2.36.1
-
+On=C2=A006/06/2022=C2=A019:16,=C2=A0Krzysztof=C2=A0Kozlowski=C2=A0wrote:=0D=
+=0A>=C2=A0On=C2=A003/06/2022=C2=A004:31,=C2=A0Wangseok=C2=A0Lee=C2=A0wrote:=
+=0D=0A>>=C2=A0Add=C2=A0description=C2=A0to=C2=A0support=C2=A0Axis,=C2=A0ART=
+PEC-8=C2=A0SoC.=0D=0A>>=C2=A0ARTPEC-8=C2=A0is=C2=A0the=C2=A0SoC=C2=A0platfo=
+rm=C2=A0of=C2=A0Axis=C2=A0Communications=0D=0A>>=C2=A0and=C2=A0PCIe=C2=A0ph=
+y=C2=A0is=C2=A0designed=C2=A0based=C2=A0on=C2=A0SAMSUNG=C2=A0PHY.=0D=0A>=C2=
+=A0=0D=0A>=C2=A0This=C2=A0does=C2=A0not=C2=A0look=C2=A0like=C2=A0wrapped=C2=
+=A0in=C2=A0Linux=C2=A0commit=C2=A0style.=0D=0A>=C2=A0https://protect2.firee=
+ye.com/v1/url?k=3Dc73ae309-a6470b4e-c73b6846-74fe485fff30-d00b7249c2c0a970&=
+q=3D1&e=3Db8b33895-af3d-42ce-80ac-4835057078e7&u=3Dhttps%3A%2F%2Felixir.boo=
+tlin.com%2Flinux%2Fv5.18-rc4%2Fsource%2FDocumentation%2Fprocess%2Fsubmittin=
+g-patches.rst%23L586=0D=0A>=C2=A0=0D=0A=C2=A0=0D=0AOk,=C2=A0i=C2=A0will=C2=
+=A0fix=C2=A0it.=0D=0A=C2=A0=0D=0A>>=C2=A0=0D=0A>>=C2=A0changes=C2=A0since=
+=C2=A0v1=C2=A0:=0D=0A>>=C2=A0-'make=C2=A0dt_binding_check'=C2=A0result=C2=
+=A0improvement=0D=0A>>=C2=A0-Add=C2=A0the=C2=A0missing=C2=A0property=C2=A0l=
+ist=0D=0A>>=C2=A0-Align=C2=A0the=C2=A0indentation=C2=A0of=C2=A0continued=C2=
+=A0lines/entries=0D=0A>>=C2=A0=0D=0A>>=C2=A0Signed-off-by:=C2=A0Wangseok=C2=
+=A0Lee=C2=A0<wangseok.lee=40samsung.com>=0D=0A>>=C2=A0---=0D=0A>>=C2=A0=C2=
+=A0.../bindings/phy/axis,artpec8-pcie-phy.yaml=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=7C=C2=A070=C2=A0++++++++++++++++++++++=0D=0A>>=C2=A0=
+=C2=A01=C2=A0file=C2=A0changed,=C2=A070=C2=A0insertions(+)=0D=0A>>=C2=A0=C2=
+=A0create=C2=A0mode=C2=A0100644=C2=A0Documentation/devicetree/bindings/phy/=
+axis,artpec8-pcie-phy.yaml=0D=0A>>=C2=A0=0D=0A>>=C2=A0diff=C2=A0--git=C2=A0=
+a/Documentation/devicetree/bindings/phy/axis,artpec8-pcie-phy.yaml=C2=A0b/D=
+ocumentation/devicetree/bindings/phy/axis,artpec8-pcie-phy.yaml=0D=0A>>=C2=
+=A0new=C2=A0file=C2=A0mode=C2=A0100644=0D=0A>>=C2=A0index=C2=A00000000..ab9=
+766f=0D=0A>>=C2=A0---=C2=A0/dev/null=0D=0A>>=C2=A0+++=C2=A0b/Documentation/=
+devicetree/bindings/phy/axis,artpec8-pcie-phy.yaml=0D=0A>>=C2=A0=40=40=C2=
+=A0-0,0=C2=A0+1,70=C2=A0=40=40=0D=0A>>=C2=A0+=23=C2=A0SPDX-License-Identifi=
+er:=C2=A0GPL-2.0-only=C2=A0OR=C2=A0BSD-2-Clause=0D=0A>>=C2=A0+%YAML=C2=A01.=
+2=0D=0A>>=C2=A0+---=0D=0A>>=C2=A0+=24id:=C2=A0https://protect2.fireeye.com/=
+v1/url?k=3D8784225c-e6f9ca1b-8785a913-74fe485fff30-b4af51b9b3670f43&q=3D1&e=
+=3Db8b33895-af3d-42ce-80ac-4835057078e7&u=3Dhttp%3A%2F%2Fdevicetree.org%2Fs=
+chemas%2Fphy%2Faxis%2Cartpec8-pcie-phy.yaml%23=0D=0A>>=C2=A0+=24schema:=C2=
+=A0https://protect2.fireeye.com/v1/url?k=3Df78efaf3-96f312b4-f78f71bc-74fe4=
+85fff30-583950d45c073877&q=3D1&e=3Db8b33895-af3d-42ce-80ac-4835057078e7&u=
+=3Dhttp%3A%2F%2Fdevicetree.org%2Fmeta-schemas%2Fcore.yaml%23=0D=0A>>=C2=A0+=
+=0D=0A>>=C2=A0+title:=C2=A0ARTPEC-8=C2=A0SoC=C2=A0PCIe=C2=A0PHY=C2=A0Device=
+=C2=A0Tree=C2=A0Bindings=0D=0A>=C2=A0=0D=0A>=C2=A0Same=C2=A0comment=C2=A0as=
+=C2=A0patch=C2=A0=231.=0D=0A>=C2=A0=0D=0A=C2=A0=0D=0AI=C2=A0will=C2=A0remov=
+e=C2=A0'Device=C2=A0Tree=C2=A0Bindings'.=0D=0A=C2=A0=0D=0A>>=C2=A0+=0D=0A>>=
+=C2=A0+maintainers:=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0Jesper=C2=A0Nilsson=C2=
+=A0<jesper.nilsson=40axis.com>=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+properties:=0D=
+=0A>>=C2=A0+=C2=A0=C2=A0compatible:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0c=
+onst:=C2=A0axis,artpec8-pcie-phy=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0r=
+eg:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0items:=0D=0A>>=C2=A0+=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0description:=C2=A0PHY=C2=A0registers.=0D=0A>=
+>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0description:=C2=A0PHY=C2=
+=A0coding=C2=A0sublayer=C2=A0registers.=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=
+=C2=A0reg-names:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0items:=0D=0A>>=C2=A0=
++=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0phy=0D=0A>>=C2=A0+=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0pcs=0D=0A>>=C2=A0+=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0=22=23phy-cells=22:=0D=0A>>=C2=A0+=C2=A0=C2=A0=
+=C2=A0=C2=A0const:=C2=A00=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0clocks:=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0items:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0-=C2=A0description:=C2=A0PCIe=C2=A0PHY=C2=A0reference=
+=C2=A0clock=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0clock-names:=0D=0A>>=
+=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0items:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0ref_clk=0D=0A>=C2=A0=0D=0A>=C2=A0Same=C2=
+=A0comment=C2=A0as=C2=A0patch=C2=A0=231.=0D=0A>=C2=A0=0D=0A=C2=A0=0D=0AOk,=
+=C2=A0remove=C2=A0_clk.=0D=0A=C2=A0=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=
+=A0num-lanes:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0const:=C2=A02=0D=0A>>=
+=C2=A0+=0D=0A>>=C2=A0+required:=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0compatible=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0reg=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0reg-=
+names=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0=22=23phy-cells=22=0D=0A>>=C2=A0+=C2=
+=A0=C2=A0-=C2=A0clocks=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0clock-names=0D=0A>>=
+=C2=A0+=C2=A0=C2=A0-=C2=A0num-lanes=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+additional=
+Properties:=C2=A0false=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+examples:=0D=0A>>=C2=A0=
++=C2=A0=C2=A0-=C2=A0=7C=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=23include=C2=
+=A0<dt-bindings/interrupt-controller/irq.h>=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=
+=A0=C2=A0=23include=C2=A0<dt-bindings/interrupt-controller/arm-gic.h>=0D=0A=
+>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0artpec8=C2=A0=7B=0D=0A>=C2=
+=A0=0D=0A>=C2=A0Same=C2=A0comment=C2=A0as=C2=A0patch=C2=A0=231.=0D=0A>=C2=
+=A0=0D=0A>=C2=A0=0D=0A=C2=A0=0D=0AOk,=C2=A0modity=C2=A0to=C2=A0'soc'.=0D=0A=
+=C2=A0=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=23add=
+ress-cells=C2=A0=3D=C2=A0<2>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=23size-cells=C2=A0=3D=C2=A0<2>;=0D=0A>>=C2=A0+=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0pcie_phy:=C2=A0pcie-phy=4016c80000=
+=C2=A0=7B=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0compatible=C2=A0=3D=C2=A0=22axis,artpec8-pcie-phy=22;=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0reg=C2=A0=3D=C2=A0<0x0=C2=A00x16c80000=C2=A00x0=C2=A00x2000>,=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<0x0=C2=A00x16c90000=C2=A00=
+x0=C2=A00x1000>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0reg-names=C2=A0=3D=C2=A0=22phy=22,=C2=A0=22pc=
+s=22;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=23phy-cells=C2=A0=3D=C2=A0<0>;=0D=0A>>=C2=A0+=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0clocks=C2=A0=
+=3D=C2=A0<&clock_cmu_fsys=C2=A053>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0clock-names=C2=A0=3D=C2=A0=
+=22ref_clk=22;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0num-lanes=C2=A0=3D=C2=A0<2>;=0D=0A>>=C2=A0+=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=7D;=0D=0A>>=C2=A0+=C2=A0=C2=
+=A0=C2=A0=C2=A0=7D;=0D=0A>>=C2=A0+...=0D=0A>=C2=A0=0D=0A>=C2=A0=0D=0A>=C2=
+=A0Best=C2=A0regards,=0D=0A>=C2=A0Krzysztof=0D=0A=0D=0AThank=20you=20for=20=
+kindness=20reivew.=0D=0A=0D=0ABest=20regards,=0D=0AWangseok=20Lee
