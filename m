@@ -2,73 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9430EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:15:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E09C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232745AbiFHFPo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:15:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50956 "EHLO
+        id S233722AbiFHFQg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:16:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233647AbiFHFOa (ORCPT
+        with ESMTP id S233320AbiFHFQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:14:30 -0400
+        Wed, 8 Jun 2022 01:16:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09102283B5B;
-        Tue,  7 Jun 2022 19:15:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CAB83A2B92
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:19:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48F426168C;
-        Wed,  8 Jun 2022 02:15:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41F91C34114;
-        Wed,  8 Jun 2022 02:14:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D62E60AD8
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:17:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACC66C34115;
+        Wed,  8 Jun 2022 02:17:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654654500;
-        bh=c/e1sOuA6klxiqnvWzptb4rhAJvuaJyK44XprMYbx7g=;
+        s=k20201202; t=1654654636;
+        bh=dFIQHND7/de6ERt33/EJw1YFoRsUBtTJPGMBARvM1fw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JLzWQ5iZ3/vo9igWNi5FbPs6CCf6CMH4O53OXKPt90FmBxfc3uxQYmaRHd2Fxomdp
-         9KOwzbZgrbPX/wLlMhB+FAIVbQINGcxxJk/pjbS3WdeXp+0eCFpg9XaW2onviNHx1d
-         LGhYQ5el6S96YLSFKanX06ZDdP7WlTxic7804QA1lUqW4e6fMrnSfaREEMwPYLv4Mq
-         cVxevY5fP1O3lrZIIRwaONobX59/7uUiDONaSyV72WNXmajfJpL96eH+mFNNATPDO/
-         akkrbRCbEy7RtVXeM36xY4rBJQadGIHJ2+gl9KEJbT8jhR4hIL0oWIQGbRU/3a+MjA
-         aKrOZKCvyVAJg==
-Date:   Wed, 8 Jun 2022 10:14:52 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Marcel Ziswiler <marcel@ziswiler.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Fabio Estevam <festevam@denx.de>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Li Yang <leoyang.li@nxp.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Marek Vasut <marex@denx.de>,
-        Matthias Schiffer <matthias.schiffer@tq-group.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Tim Harvey <tharvey@gateworks.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] dt-bindings: arm: fsl: correct 1g vs. 1gb in
- toradex,colibri-imx6ull-*
-Message-ID: <20220608021452.GA254723@dragon>
-References: <20220506145720.291735-1-marcel@ziswiler.com>
+        b=nYSHXrCZEtji0UMMxEA6ZIX76EWxraIEyNwA/Tk6tJAJ5ewGG2PmwN4+EXBHz1EX4
+         vcfD1HCPwGljjiQ5kYe1rhOUPU4F2kEHrJKKLeCh6M9SJkwr5tP8PnL3fWeOpSV27l
+         n0Jew4dSxH/FjA8pWHoiBak3gqfnJscuynFcC3i5/YseJTX0Di9CKCWEcGl/PLWZWg
+         2SfkkbhF26U+YERsW+R02lHSaxt6We1a2uuWsW9Z92bFwHSGE0r1cnw0ORiVBQ8qXp
+         4uZwzmTJaQaF/hbXpWgmzMwg01pCjbZjuCzL0YLUHahWxN1tZ8fpeaqn9QqUIcVw3F
+         NaVKcAdQ6YU8A==
+Date:   Wed, 8 Jun 2022 02:17:13 +0000
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     Guenter Roeck <groeck@google.com>
+Cc:     bleung@chromium.org, groeck@chromium.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 12/15] platform/chrome: use krealloc() for `din` and
+ `dout`
+Message-ID: <YqAGqZgauTnn76KD@google.com>
+References: <20220607145639.2362750-1-tzungbi@kernel.org>
+ <20220607145639.2362750-13-tzungbi@kernel.org>
+ <CABXOdTebXS3c823jWYx9r8mU4LwNfhLo833s7_krK4JW0fSgUw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220506145720.291735-1-marcel@ziswiler.com>
+In-Reply-To: <CABXOdTebXS3c823jWYx9r8mU4LwNfhLo833s7_krK4JW0fSgUw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 04:57:20PM +0200, Marcel Ziswiler wrote:
-> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On Tue, Jun 07, 2022 at 12:06:23PM -0700, Guenter Roeck wrote:
+> On Tue, Jun 7, 2022 at 7:57 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+> >
+> > Use krealloc() to re-allocate `din` and `dout`.  Don't use devm variant
+> > because the two buffers could be re-allocated multiple times during
+> > runtime.  Their life cycles aren't quite aligned to the device's.
 > 
-> Correct 1G vs. 1GB typo.
-> 
-> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> While this saves a few lines of code, it is runtime-expensive:
+> krealloc() copies the old data, which is a waste of time/resources.
+> Maybe it would be better to just use kfree() followed by kzalloc().
 
-Applied, thanks!
+Ack.  I wasn't aware of the memcpy().  Let's don't use it.
+
+> > @@ -469,9 +469,9 @@ static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev,
+> >   */
+> >  int cros_ec_query_all(struct cros_ec_device *ec_dev)
+> >  {
+> > -       struct device *dev = ec_dev->dev;
+> >         u32 ver_mask = 0;
+> >         int ret;
+> > +       u8 *din, *dout;
+> >
+> >         /* First try sending with proto v3. */
+> >         if (!cros_ec_get_proto_info(ec_dev, CROS_EC_DEV_EC_INDEX)) {
+> > @@ -492,21 +492,15 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+> >                 }
+> >         }
+> >
+> > -       devm_kfree(dev, ec_dev->din);
+> > -       devm_kfree(dev, ec_dev->dout);
+> > -
+> > -       ec_dev->din = devm_kzalloc(dev, ec_dev->din_size, GFP_KERNEL);
+> > -       if (!ec_dev->din) {
+> > -               ret = -ENOMEM;
+> > -               goto exit;
+> > -       }
+> > +       din = krealloc(ec_dev->din, ec_dev->din_size, GFP_KERNEL);
+> > +       if (!din)
+> > +               return -ENOMEM;
+> 
+> I would suggest assigning the values directly; the new variables don't
+> really add value.
+
+checkpatch.pl generated a warning for it.  See [1].
+
+Will remove the krealloc()s anyway.
+
+[1]: https://github.com/torvalds/linux/commit/972fdea2e6ece7578915d386a5447bc78d3fb8b8
