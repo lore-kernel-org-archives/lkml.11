@@ -2,123 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B9A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E29BDC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:57:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239547AbiFHM5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47364 "EHLO
+        id S239788AbiFHM5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239510AbiFHM52 (ORCPT
+        with ESMTP id S239543AbiFHM5b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:57:28 -0400
-X-Greylist: delayed 930 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Jun 2022 05:57:25 PDT
-Received: from linderud.pw (linderud.dev [163.172.10.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC2123A00E;
-        Wed,  8 Jun 2022 05:57:24 -0700 (PDT)
-Received: from linderud.pw (localhost [127.0.0.1])
-        by linderud.pw (Postfix) with ESMTP id 85067C0273;
-        Wed,  8 Jun 2022 14:32:46 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linderud.pw;
-        s=linderud; t=1654691566;
-        bh=M3XueMVFe7gOTM1GQj/+FxeEg3x7aocLkX7oHxmpKcA=;
-        h=From:To:Cc:Subject:Date;
-        b=KMQ+jTr9zGswdqCgz7EFNCXBQN8V1/e15wofI/Hy9Im+KwV/gaKnl+swjxYb8wcA7
-         pj2SQgx+rsp6F5NmCnZlwBXGootjC6hC83SXFcGoG6neoPCXpLkFZjkpsOethxMs6k
-         Xp1aG6U9X63Eab82633iTJnmEF44Cba1F/6LUHmibeN45AP7zq7Qcagvi67RbenzG6
-         ytNlPcQqnfEniXwIGBWrMIRU1uSzY3qk5OtXuQQZdoN4Ei1foCrQAmSfD6QltKOuYV
-         iJh25G5ZxR/OxphnSHsjU4kUpxOGzPNETgFP+wX7mdJEIABYaa7TI9KlH7mZqgmoz7
-         WQRbOFhGqenM1Q/UmMXhtRba14wEjt7Y5QV7SEyBSq9rYezRG1VuzhpUhcn9qIsltc
-         GaWj5RZLpa5REHZY3/VoRmlq/uSrUx4y1pcmphvNvbmLRXOhjUS3Faa4YQHOFv7hgR
-         EhPYo001tQ8o1u1uZKZFQpRMS1UQGFVkShCV3hHGPDinPpuA9mx/3PjsSdedj+4JfC
-         103QklHmgraPCzmj724lAjFULiNf4a39XVNzQyQAyPty6QX9KbunQBttRK7p+Q+rdK
-         pi7+Gm/FHDAuPJGt+AMjIdJJTvnfhiVyEpPH5b4YLHiSWtXc6jl/0d/a8eaemHkhp7
-         09ZYoru9vETf8eljjE9M3QO0=
-Received: from localhost (101.81-167-132.customer.lyse.net [81.167.132.101])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: morten)
-        by linderud.pw (Postfix) with ESMTPSA id 40FDDC0077;
-        Wed,  8 Jun 2022 14:32:46 +0200 (CEST)
-From:   Morten Linderud <morten@linderud.pw>
-Cc:     Morten Linderud <morten@linderud.pw>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] tpm/eventlog: Don't abort tpm_read_log on faulty ACPI address
-Date:   Wed,  8 Jun 2022 14:31:08 +0200
-Message-Id: <20220608123109.678343-1-morten@linderud.pw>
-X-Mailer: git-send-email 2.36.1
+        Wed, 8 Jun 2022 08:57:31 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2479D1C2051
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 05:57:28 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LJ6f04PDDz1KBns;
+        Wed,  8 Jun 2022 20:55:36 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 8 Jun 2022 20:57:25 +0800
+Subject: Re: [PATCH v1 5/5] mm, hwpoison: enable memory error handling on 1GB
+ hugepage
+To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>
+CC:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Liu Shixin <liushixin2@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+References: <20220602050631.771414-1-naoya.horiguchi@linux.dev>
+ <20220602050631.771414-6-naoya.horiguchi@linux.dev>
+ <ff58b65d-e55d-04c0-e26d-3c92830b5912@huawei.com>
+ <20220608061635.GA1413099@hori.linux.bs1.fc.nec.co.jp>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <5743855d-8f22-0d82-56c0-1ab61ad431b7@huawei.com>
+Date:   Wed, 8 Jun 2022 20:57:24 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <20220608061635.GA1413099@hori.linux.bs1.fc.nec.co.jp>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tpm_read_log_acpi() should return -ENODEV when no eventlog from the ACPI
-table is found. If the firmware vendor includes an invalid log address
-we are unable to map from the ACPI memory and the function returns -EIO
-which would abort discovery of the eventlog.
+On 2022/6/8 14:16, HORIGUCHI NAOYA(堀口 直也) wrote:
+> On Tue, Jun 07, 2022 at 10:11:24PM +0800, Miaohe Lin wrote:
+>> On 2022/6/2 13:06, Naoya Horiguchi wrote:
+>>> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+>>>
+>>> Now error handling code is prepared, so remove the blocking code and
+>>> enable memory error handling on 1GB hugepage.
+>>>
+>>
+>> I'm nervous about this change. It seems there are many code paths not awared of pud swap entry.
+>> I browsed some of them:
+>> apply_to_pud_range called from apply_to_page_range:
+>>
+>> apply_to_pud_range:
+>> 	next = pud_addr_end(addr, end);
+>> 	if (pud_none(*pud) && !create)
+>> 		continue;
+>> 	if (WARN_ON_ONCE(pud_leaf(*pud)))
+>> 		return -EINVAL;
+>> 	if (!pud_none(*pud) && WARN_ON_ONCE(pud_bad(*pud))) {
+>> 		if (!create)
+>> 			continue;
+>> 		pud_clear_bad(pud);
+>> 	}
+>> 	err = apply_to_pmd_range(mm, pud, addr, next,
+>> 				 fn, data, create, mask);
+>>
+>> For !pud_present case, it will mostly reach apply_to_pmd_range and call pmd_offset on it. And invalid
+>> pointer will be de-referenced.
+> 
+> apply_to_pmd_range() has BUG_ON(pud_huge(*pud)) and apply_to_pte_range() has
+> BUG_ON(pmd_huge(*pmd)), so this page table walking code seems to not expect
+> to handle pmd/pud level mapping.
 
-This change ensure we always return -ENODEV in tpm_read_log_acpi() and
-fallback to the EFI configuration table.
+Yes, you're right. These functions are not intended to handle pmd/pud level mapping.
 
-The following hardware was used to test this issue:
-    Framework Laptop (Pre-production)
-    BIOS: INSYDE Corp, Revision: 3.2
-    TPM Device: NTC, Firmware Revision: 7.2
+> 
+>>
+>> Another example might be copy_pud_range and so on. So I think it might not be prepared to enable the
+>> 1GB hugepage or all of these places should be fixed?
+> 
+> I think that most of page table walker for user address space should first
+> check is_vm_hugetlb_page() and call hugetlb specific walking code for vma
+> with VM_HUGETLB.
+> copy_page_range() is a good example.  It calls copy_hugetlb_page_range()
+> for vma with VM_HUGETLB and the function should support hwpoison entry.
+> But I feel that I need testing for confirmation.
 
-Dump of the faulty ACPI TPM2 table:
-    [000h 0000   4]                    Signature : "TPM2"    [Trusted Platform Module hardware interface Table]
-    [004h 0004   4]                 Table Length : 0000004C
-    [008h 0008   1]                     Revision : 04
-    [009h 0009   1]                     Checksum : 2B
-    [00Ah 0010   6]                       Oem ID : "INSYDE"
-    [010h 0016   8]                 Oem Table ID : "TGL-ULT"
-    [018h 0024   4]                 Oem Revision : 00000002
-    [01Ch 0028   4]              Asl Compiler ID : "ACPI"
-    [020h 0032   4]        Asl Compiler Revision : 00040000
+Sorry, I missed it should be called from hugetlb variants.
 
-    [024h 0036   2]               Platform Class : 0000
-    [026h 0038   2]                     Reserved : 0000
-    [028h 0040   8]              Control Address : 0000000000000000
-    [030h 0048   4]                 Start Method : 06 [Memory Mapped I/O]
+> 
+> And I'm not sure that all other are prepared for non-present pud-mapping,
+> so I'll need somehow code inspection and testing for each.
 
-    [034h 0052  12]            Method Parameters : 00 00 00 00 00 00 00 00 00 00 00 00
-    [040h 0064   4]           Minimum Log Length : 00010000
-    [044h 0068   8]                  Log Address : 000000004053D000
+I browsed the code again, there still might be some problematic code paths:
 
-Signed-off-by: Morten Linderud <morten@linderud.pw>
+1.For follow_pud_mask, !pud_present will mostly reach follow_pmd_mask(). This can be
+called for hugetlb page. (Note gup_pud_range is fixed at 15494520b776 ("mm: fix gup_pud_range"))
 
----
+2.Even for huge_pte_alloc, pud_offset will be called in pud_alloc. So pudp will be an invalid pointer.
+And it will be de-referenced later.
 
-v2: Tweak commit message and opt to return -ENODEV instead of loosening up the
-    if condition in tpm_read_log()
+I hope I'm not miss something again this time. ;)
 
----
- drivers/char/tpm/eventlog/acpi.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> Thanks,
+> Naoya Horiguchi
 
-diff --git a/drivers/char/tpm/eventlog/acpi.c b/drivers/char/tpm/eventlog/acpi.c
-index 1b18ce5ebab1..2b15d6eebd69 100644
---- a/drivers/char/tpm/eventlog/acpi.c
-+++ b/drivers/char/tpm/eventlog/acpi.c
-@@ -136,8 +136,12 @@ int tpm_read_log_acpi(struct tpm_chip *chip)
- 
- 	ret = -EIO;
- 	virt = acpi_os_map_iomem(start, len);
--	if (!virt)
-+	if (!virt) {
-+		dev_warn(&chip->dev, "%s: Failed to map ACPI memory\n", __func__);
-+		/* try EFI log next */
-+		ret = -ENODEV;
- 		goto err;
-+	}
- 
- 	memcpy_fromio(log->bios_event_log, virt, len);
- 
--- 
-2.36.1
+Thanks!
+
+> 
+
