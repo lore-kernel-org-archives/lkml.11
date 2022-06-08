@@ -2,105 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A70A3CCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:16:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9142C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242604AbiFHHMx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:12:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44610 "EHLO
+        id S243068AbiFHHM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347064AbiFHGNB (ORCPT
+        with ESMTP id S1353003AbiFHGQZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 02:13:01 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4123CC366F;
-        Tue,  7 Jun 2022 22:39:55 -0700 (PDT)
-X-UUID: 4d1341d6bf1b4c72b87222a3247d5988-20220608
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:79cb48ab-0312-40dc-8802-87df0af67eee,OB:0,LO
-        B:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:90
-X-CID-INFO: VERSION:1.1.5,REQID:79cb48ab-0312-40dc-8802-87df0af67eee,OB:0,LOB:
-        10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:90
-X-CID-META: VersionHash:2a19b09,CLOUDID:d8d5967e-c8dc-403a-96e8-6237210dceee,C
-        OID:932e8ed994a5,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: 4d1341d6bf1b4c72b87222a3247d5988-20220608
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <guodong.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1449899651; Wed, 08 Jun 2022 13:39:16 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 8 Jun 2022 13:39:14 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 8 Jun 2022 13:39:13 +0800
-From:   Guodong Liu <guodong.liu@mediatek.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@kernel.org>
-CC:     Sean Wang <sean.wang@mediatek.com>,
-        Zhiyong Tao <zhiyong.tao@mediatek.com>,
-        =?UTF-8?q?N=EDcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
-        <nfraprado@collabora.com>, <linux-gpio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Guodong Liu <guodong.liu@mediatek.com>
-Subject: [PATCH v1 0/4] pinctrl: mediatek: add driver support driving and resistance property  on mt8192
-Date:   Wed, 8 Jun 2022 13:39:05 +0800
-Message-ID: <20220608053909.1252-1-guodong.liu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 8 Jun 2022 02:16:25 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAEB128C2E;
+        Tue,  7 Jun 2022 22:57:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654667852; x=1686203852;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=TRO3yMYxgaq8AuJJz5Yh1/P8fYb+bn8NnBoj5lR68G4=;
+  b=OdDWAe+vFg33YKBz6m5XSX3U3JoQy+15OLXb/ETYXCPv2lfQV7qevmBx
+   o/D0+Q6oP8ComIiFlJd/5yo6X/dL+5+L1pN80RJhqaO5SB1I4AdRcB6GK
+   E0k1bCX3yuXjiDQKwd6Sj7fSb6K8daLKGlAfGgTAglW4iiGjqYc6K4DVw
+   U=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 22:57:32 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 22:57:31 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 7 Jun 2022 22:57:30 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 7 Jun 2022 22:57:24 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
+        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
+        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>, <vkoul@kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v2 1/2] soundwire: qcom: Add flag for software clock gating check
+Date:   Wed, 8 Jun 2022 11:27:03 +0530
+Message-ID: <1654667824-3760-2-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1654667824-3760-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1654667824-3760-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Patch 1 make driver consistent with "drive-strength" properties
-  description of  pinctrl-mt8192.yaml
+Add flag in qcom_swrm_data private data structure for validating
+software colck gating control requirement.
 
-Patch 2 make driver consistent with "mediatek,drive-strength-adv"
-  description pinctrl-mt8192.yaml, however, "mediatek,drive-strength-adv"
-  description of pinctrl-mt8192.yaml needs to be synchronize a little bit.
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+---
+ drivers/soundwire/qcom.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Patch 3 Since the bias-pull-{up,down} is generic properties, make
-  driver to be used for setting type {PUPD/R1/R0 , PU/PD, PU/PD/RSEL}.
-
-Patch 4 Remove some pins definitions not support PUPD/R1/R0.
-
-Please see the following for detailed  description 
-
-Patch 1 provides generic driving setup, which support 2/4/6/8/10/12/14/16mA
-  driving.
-
-Patch 2 provides I2C pins specific driving setup property, can support
-  0.125/0.25/0.5/1mA adjustment, and also support driving setup with
-  unit microamp.
-
-Patch 3 provides I2C pins pull up/down type which is RSEL. It can support
-  RSEL define or si unit value(ohm) to set different resistance
-
-Patch 4 Remove pin definitions that do not support the R0 & R1 pinconfig
-  property
-
-Guodong Liu (4):
-  pinctrl: add generic driving setup property on mt8192
-  pinctrl: add drive for I2C related pins on mt8192
-  pinctrl: mediatek: add rsel setting on mt8192
-  pinctrl: mediatek: fix the pinconf definition of some GPIO pins
-
- drivers/pinctrl/mediatek/pinctrl-mt8192.c | 295 ++++++++++++----------
- 1 file changed, 163 insertions(+), 132 deletions(-)
-
+diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+index a3fccf0..38c3bf5 100644
+--- a/drivers/soundwire/qcom.c
++++ b/drivers/soundwire/qcom.c
+@@ -181,6 +181,7 @@ struct qcom_swrm_ctrl {
+ struct qcom_swrm_data {
+ 	u32 default_cols;
+ 	u32 default_rows;
++	bool sw_clk_gate_required;
+ };
+ 
+ static const struct qcom_swrm_data swrm_v1_3_data = {
 -- 
-2.25.5
+2.7.4
 
