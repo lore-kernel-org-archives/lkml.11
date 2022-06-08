@@ -2,96 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F2EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 427E8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:51:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238345AbiFHLvP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 07:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51064 "EHLO
+        id S238356AbiFHLvb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 07:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238098AbiFHLvO (ORCPT
+        with ESMTP id S238098AbiFHLv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 07:51:14 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2941836309
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 04:51:12 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id p8so14661492qtx.9
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 04:51:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=X4i2wcMbj/iWDHa3EccSTYi9vrb0LsIcyhzTI3HD25Q=;
-        b=gsR4szaWJqjvWE20hC5hdfEdaxUcjxcYJWQqrstzu4xxiTmXOv1uhEqH0Okl+ii3Ck
-         Lxef7EMPhgXETK+39Oomq7CiHlc9QXAZ9Q3min+qE8uvoxeAHzNxYWnvSZ6d5dGx9QUa
-         sA3NRfIvZxYWbZI9xNZMXnviqL0VAlBULrWwqYf8avL3S7es7vDW2mzqTTlwvH8ibOe4
-         +HkvVFr/RHlpoe+jaKSCsAmNTp8XoLAfDusH+jQPmjWGF6HGX3NFx4xovfK/EEHQ2/x+
-         JVqwFibZxcwmbq2gu2XmaZ48HbBclMXCQEEIsE8/FrM401B3QryTk3eoboK04USp54o0
-         IFaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=X4i2wcMbj/iWDHa3EccSTYi9vrb0LsIcyhzTI3HD25Q=;
-        b=jCyPEQt5JhhXYD6glyMCPRRrymEnE31iMLJjoq0+uapPWvRHauaVOljh8HGHS+7FOu
-         BTvdI+S/toql9o6dyn/H+q/tulhl5vGvzqO/kxyGvUdvEh1F9TMibD0+H50hybxtKBWT
-         7J5KNRGs9ulhw43Wwim5V9crYnjXyQaSqptgXlLSiDVXr2JDhdmlCD5AVMVqV0WH2CdV
-         cbhij7OtgMSj7vd7skARVxAfARQOwQC7v4s7D9v0TjY9T46dLCNiqvfI1y9zHwrvDCq+
-         kBWMapZcJkWkGxllQ8Y8gRLAOMNoTieegZ1Psku63IgrsWhhWJ7pXZI3tsxXcVyunxTs
-         wmMw==
-X-Gm-Message-State: AOAM533NPIEbk9seij5ef3jc2kA4PhbbuerCgpV5an6oV5RPF/hoRNQj
-        hLj2oBPYNmeWZygABxw4x2FYqw==
-X-Google-Smtp-Source: ABdhPJyZ2SrePTFTfrAgIOolAeN1EAiF69BUfge2N/rLjt5z3WvnFKKO59sV3Ew1Izh2kefnWEK40A==
-X-Received: by 2002:a05:622a:11c5:b0:304:d8cd:2058 with SMTP id n5-20020a05622a11c500b00304d8cd2058mr24463295qtk.324.1654689071139;
-        Wed, 08 Jun 2022 04:51:11 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id r14-20020ac87eee000000b00304ee3372dfsm5188546qtc.45.2022.06.08.04.51.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 04:51:10 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1nyuDN-003ehg-Dq; Wed, 08 Jun 2022 08:51:09 -0300
-Date:   Wed, 8 Jun 2022 08:51:09 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Cheng Xu <chengyou@linux.alibaba.com>
-Cc:     Yang Li <yang.lee@linux.alibaba.com>,
-        Leon Romanovsky <leon@kernel.org>, kaishen@linux.alibaba.com,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH -next] RDMA/erdma: remove unneeded semicolon
-Message-ID: <20220608115109.GJ3932382@ziepe.ca>
-References: <20220608005534.76789-1-yang.lee@linux.alibaba.com>
- <ef94d5de-da12-a894-8ff3-af7ecf9d568a@linux.alibaba.com>
+        Wed, 8 Jun 2022 07:51:29 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3991567C7;
+        Wed,  8 Jun 2022 04:51:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654689088; x=1686225088;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SagvKZQEJ2pNnaIJVkZeYl9QuT+5kEEO307X9m8u5cc=;
+  b=ek9+2Plc/F1SKCYZybtiL73ydG+3Z0E/9x1Ki9VUpJI8Km/Ypp/NRr54
+   /aZFS1cxKasD7oRv7KalVqcU8AQtVPrqVUK1W+TQP3ELM1jKCLvd4hZhh
+   mwLME5rY8SbrYuJ6rlgiXDVKLEahp35MNewrEXKiF/j8ieCduU9/3xKOn
+   aSMzgP10pD+VSgfAqpY5RdNM+0tmSkxIjpIjfBO+H/MQ8G2vfYzHD+/YF
+   mzwDutYUTw730n6EnCVlDemOoMWgfrel86/GYzwQAGqPooxLSYm+dhK1Y
+   JxkT0oPPXWdDIgI3hJy2EmjdV9EdCJ57RPQJNFgWbz8mooHvSOn2WJ3iy
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="257299706"
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="257299706"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 04:51:28 -0700
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="648571840"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 04:51:27 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nyuBW-000Wjj-Hm;
+        Wed, 08 Jun 2022 14:49:14 +0300
+Date:   Wed, 8 Jun 2022 14:49:14 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-spi@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH v1 2/2] spi: Use device_find_first_child() instead of
+ custom approach
+Message-ID: <YqCMunw+2WHIinOP@smile.fi.intel.com>
+References: <20220607202058.8304-1-andriy.shevchenko@linux.intel.com>
+ <20220607202058.8304-2-andriy.shevchenko@linux.intel.com>
+ <YqCJsRqrCRiIBm1P@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ef94d5de-da12-a894-8ff3-af7ecf9d568a@linux.alibaba.com>
+In-Reply-To: <YqCJsRqrCRiIBm1P@kroah.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 11:36:07AM +0800, Cheng Xu wrote:
-> 
-> 
-> On 6/8/22 8:55 AM, Yang Li wrote:
-> > Eliminate the following coccicheck warning:
-> > ./drivers/infiniband/hw/erdma/erdma_qp.c:254:3-4: Unneeded semicolon
+On Wed, Jun 08, 2022 at 01:36:17PM +0200, Greg Kroah-Hartman wrote:
+> On Tue, Jun 07, 2022 at 11:20:58PM +0300, Andy Shevchenko wrote:
+> > We have already a helper to get the first child device, use it and
+> > drop custom approach.
 > > 
-> > Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> > Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > ---
+> >  drivers/spi/spi.c | 9 ++-------
+> >  1 file changed, 2 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+> > index ea09d1b42bf6..87dc8773108b 100644
+> > --- a/drivers/spi/spi.c
+> > +++ b/drivers/spi/spi.c
+> > @@ -2613,11 +2613,6 @@ int spi_slave_abort(struct spi_device *spi)
+> >  }
+> >  EXPORT_SYMBOL_GPL(spi_slave_abort);
+> >  
+> > -static int match_true(struct device *dev, void *data)
+> > -{
+> > -	return 1;
+> > -}
+> > -
+> >  static ssize_t slave_show(struct device *dev, struct device_attribute *attr,
+> >  			  char *buf)
+> >  {
+> > @@ -2625,7 +2620,7 @@ static ssize_t slave_show(struct device *dev, struct device_attribute *attr,
+> >  						   dev);
+> >  	struct device *child;
+> >  
+> > -	child = device_find_child(&ctlr->dev, NULL, match_true);
+> > +	child = device_find_first_child(&ctlr->dev);
+> >  	return sprintf(buf, "%s\n",
+> >  		       child ? to_spi_device(child)->modalias : NULL);
+> >  }
 > 
-> Reviewed-by: Cheng Xu <chengyou@linux.alibaba.com>
+> Horrible naming convention asside, what is this really showing?  I do
+> not see this documented in Documentation/ABI/ anywhere, so can it just
+> be dropped entirely?
 > 
-> Thanks.
+> Ah, it's in Documentation/spi/spi-summary.rst not where it belongs...
 > 
+> Looks like "any" of the child devices could match here, so it's just
+> finding the first one by default.  So you aren't explicitly asking for
+> the real first device, you could return the last one as well, and it
+> would still work as there is just "one" device in this list from what I
+> can tell.
 > 
-> Jason,
-> 
-> BTW, are this and other two patches for erdma posted today parts of
-> the static checker reports which you mentioned in [1] ? If so, I think I
-> should re-post the v10 patches including the fixes ?
+> So is does this really deserve a new driver core api call?
 
-Yes, and I would wait for a week or so because this is just the first
-day.
+As I said I noticed more places like this (*) and the problem is that I can't
+simply use device_match_any() because of the different prototype.
 
-Jason
+I agree that all thing should be using _any instead of _first.
+
+*) e.g. ptp_ocp.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
