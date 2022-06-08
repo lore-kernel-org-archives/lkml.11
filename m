@@ -2,117 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD8F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:35:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A91DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:35:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231210AbiFHIfg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33508 "EHLO
+        id S230222AbiFHIcb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:32:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230480AbiFHIch (ORCPT
+        with ESMTP id S230014AbiFHIbE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 04:32:37 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1F51D08A6
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:53:59 -0700 (PDT)
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com [209.85.221.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 8F6E53F19F
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 07:53:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1654674824;
-        bh=Vg4qwAHVWngxhO+NcKoiKt+xyqhFoSxezJOs33bH8X8=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=JUp3sJwqQvqWZIDsDZqcAnYU6w6nGLL5m4K9g5sJLBJCapy8QY42Kz44CPSCHSZaV
-         8fVNLszX8LFIDonApt0CCAlEmQfUzh4DzCopzllAyn4cVJoCL8Etu+gCcAiTp189Wu
-         ubL4ijUyvxCbB5hIZBiz7Fgqm4GayuMdE7B1tW6V4PVItKuWTTBJOy4qk/Up1edsbk
-         NpQulnG2HTI9PN1cnuTbB8dxXYoHgCSYjf/CyrG3dQiXdxQo/TwjjImQAK5YqxXc5u
-         cZrqrL3wy/apHswUNGngkv3pDTX28KTutBn+28+2OplIVlNfYNCCCiE3Tbo68xxsF2
-         geKad9nO3idZw==
-Received: by mail-wr1-f69.google.com with SMTP id p10-20020adfaa0a000000b0020c4829af5fso4510628wrd.16
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 00:53:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Vg4qwAHVWngxhO+NcKoiKt+xyqhFoSxezJOs33bH8X8=;
-        b=mDsCTKGgQPnFyhNzyC7TXLJZdeo12SKE5dAPYaBFUWEBJM2kHNuwwcucvEOSIBaQxn
-         Sdng5HOSETT06diVzKM9FDEhOk7PBk0+07OWpijjtw+AQjM9+W3E+13CNMk/pnTSSlz5
-         NgIQpeLCZAMeP6XM12e+0OzUHu1R5E8XYH07Qz8YKirJo3mG74bx4ivof6Elc6zRFTc0
-         ClRElJHtV1Jk842zkfycvFDXItQiC6D43uTmGSaDa7L/X2NdLQUPJUjEcXVS03gOBRyR
-         y94XM0axtIeN5CLPMj3r++f3ILjupcr/Ha/6X0r+oV2pK7rXMND7lKEXUHG85IrP9JSR
-         CyeA==
-X-Gm-Message-State: AOAM532YaodvYzXu9Xr+5Ahojqrz4zlm/neCZE3Ankf0hDk0brl6ZGqr
-        La9BvfYfmkWIoXsaL5amxFl0SJk3bNUD/9+lru+EFQ04oab2gSWpI+us2ACFTElvPgYzUv9eta7
-        KnYuLRd4NksvoFfSoPgTf4mQ01O+Pu67xYI1gwZpih9hUCWNn8ZhmaqvzAQ==
-X-Received: by 2002:a5d:6790:0:b0:217:1567:d319 with SMTP id v16-20020a5d6790000000b002171567d319mr19865794wru.16.1654674823972;
-        Wed, 08 Jun 2022 00:53:43 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxf7YVGkv76qA2GcyuIyqsdWfvW8bxj9SujV8l1BvFPdrXYuRdPB9zB1XoIk6WYCABfrZfQVzpmNeyk7eTJsww=
-X-Received: by 2002:a5d:6790:0:b0:217:1567:d319 with SMTP id
- v16-20020a5d6790000000b002171567d319mr19865762wru.16.1654674823636; Wed, 08
- Jun 2022 00:53:43 -0700 (PDT)
+        Wed, 8 Jun 2022 04:31:04 -0400
+Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FAC1CE7B8
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:53:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1654671960; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=bvBVBp311UrrA3YEXD3M4S9ESkLApb49rsbhfGG8twXJaPM5FGXZEuIkyjKV/qliv4jDa9vpL2y3P8sWLD3CTijGlUjH0N9FLel+k0IdcwWZ/mS1oauxGgIr/5MA62+ilVBZVPReB88NbzKPmtaBQrwTOpDwNa+qlhmCKH3MeVw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1654671960; h=Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=bwLNTfaNNmXUu3sy1HadN8NYZVEx7VSfxP8UHGZMLLA=; 
+        b=fmnIHZUjzhMAZTajRK/wUl5YYDW4NxfsHfCceBaEcGVQWhduF4H+9MHWuQcA8EbYm3qHiJy7WQjAMCoiau68k3TCFQdm1zOwpsRhm5TYDTgsBeoKKpv0CVvCXsqGNeDB3jatLlI7trDtrWR2YDQ4OCEhtgP3WwsjXVFzF70x4D0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=icenowy.me;
+        spf=pass  smtp.mailfrom=uwu@icenowy.me;
+        dmarc=pass header.from=<uwu@icenowy.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1654671960;
+        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Reply-To;
+        bh=bwLNTfaNNmXUu3sy1HadN8NYZVEx7VSfxP8UHGZMLLA=;
+        b=GXTl4vKL53A4jWqTuURNFn9gezZrfZok8N+u7O9RFmYEcm8rNb8uSOP6nof9hn39
+        8qx6fm11SglYz3ThP5ObLBlFhH8O16B76O29CmNhVwrcN3qrLzbL+G5NJ2z0qnACGsg
+        8kxyu7p/svDe3nUba14D6n9jW11+Wj6JVuecp0jo=
+Received: from edelgard.icenowy.me (59.41.163.66 [59.41.163.66]) by mx.zohomail.com
+        with SMTPS id 1654671958834763.4225983678638; Wed, 8 Jun 2022 00:05:58 -0700 (PDT)
+From:   Icenowy Zheng <uwu@icenowy.me>
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bin Liu <b-liu@ti.com>
+Cc:     linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-usb@vger.kernel.org,
+        Icenowy Zheng <icenowy@aosc.io>
+Subject: [PATCH 7/7] ARM: suniv: f1c100s: enable USB on Lichee Pi Nano
+Date:   Wed,  8 Jun 2022 15:04:52 +0800
+Message-Id: <20220608070452.338006-8-uwu@icenowy.me>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220608070452.338006-1-uwu@icenowy.me>
+References: <20220608070452.338006-1-uwu@icenowy.me>
 MIME-Version: 1.0
-References: <20220608070527.14824-1-huangwenhuia@uniontech.com> <87wndrboja.wl-tiwai@suse.de>
-In-Reply-To: <87wndrboja.wl-tiwai@suse.de>
-From:   Jeremy Szu <jeremy.szu@canonical.com>
-Date:   Wed, 8 Jun 2022 15:53:32 +0800
-Message-ID: <CAKzWQkySkKccnmSx_2fKT9QvPfwBOV36Mc-pt3KQR0NO1QkQ2w@mail.gmail.com>
-Subject: Re: [PATCH v3] ALSA: hda/realtek - Add HW8326 support
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     huangwenhui <huangwenhuia@uniontech.com>, tiwai@suse.com,
-        perex@perex.cz, alsa-devel@alsa-project.org, kailang@realtek.com,
-        tanureal@opensource.cirrus.com, linux-kernel@vger.kernel.org,
-        wse@tuxedocomputers.com, hui.wang@canonical.com, sami@loone.fi,
-        cam@neo-zeon.de
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-and better to follow the order to easy to find the codec once the list
-growing next time, e.g.
+From: Icenowy Zheng <icenowy@aosc.io>
 
-@@ -651,6 +651,7 @@ static const struct hda_vendor_id hda_vendor_ids[] = {
-        { 0x1095, "Silicon Image" },
-        { 0x10de, "Nvidia" },
-        { 0x10ec, "Realtek" },
-+       { 0x19e5, "Huawei" },
-        { 0x1102, "Creative" },
-        { 0x1106, "VIA" },
-        { 0x111d, "IDT" },
+Lichee Pi Nano has a Micro-USB connector, with its D+, D- pins connected
+to the USB pins of the SoC and ID pin connected to PE2 GPIO.
 
-to
+Enable the USB functionality.
 
-       { 0x14f1, "Conexant" },
-        { 0x17e8, "Chrontel" },
-        { 0x1854, "LG" },
-+       { 0x19e5, "Huawei" },
-        { 0x1aec, "Wolfson Microelectronics" },
-        { 0x1af4, "QEMU" },
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+---
+ .../arm/boot/dts/suniv-f1c100s-licheepi-nano.dts | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-and so on.
-
-
-On Wed, Jun 8, 2022 at 3:30 PM Takashi Iwai <tiwai@suse.de> wrote:
->
-> On Wed, 08 Jun 2022 09:05:27 +0200,
-> huangwenhui wrote:
-> >
-> > Added the support of new Huawei codec HW8326. The HW8326 is developed
-> > by Huawei with Realtek's IP Core, and it's compatible with ALC256.
-> >
-> > Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
->
-> Thanks, applied now.
->
->
-> Takashi
-
-
-
+diff --git a/arch/arm/boot/dts/suniv-f1c100s-licheepi-nano.dts b/arch/arm/boot/dts/suniv-f1c100s-licheepi-nano.dts
+index 04e59b8381cb..1935d8c8855b 100644
+--- a/arch/arm/boot/dts/suniv-f1c100s-licheepi-nano.dts
++++ b/arch/arm/boot/dts/suniv-f1c100s-licheepi-nano.dts
+@@ -6,6 +6,8 @@
+ /dts-v1/;
+ #include "suniv-f1c100s.dtsi"
+ 
++#include <dt-bindings/gpio/gpio.h>
++
+ / {
+ 	model = "Lichee Pi Nano";
+ 	compatible = "licheepi,licheepi-nano", "allwinner,suniv-f1c100s";
+@@ -50,8 +52,22 @@ flash@0 {
+ 	};
+ };
+ 
++&otg_sram {
++	status = "okay";
++};
++
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_pe_pins>;
+ 	status = "okay";
+ };
++
++&usb_otg {
++	dr_mode = "otg";
++	status = "okay";
++};
++
++&usbphy {
++	usb0_id_det-gpio = <&pio 4 2 GPIO_ACTIVE_HIGH>; /* PE2 */
++	status = "okay";
++};
 -- 
-Sincerely,
-Jeremy Su
+2.36.0
+
