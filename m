@@ -2,127 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41553CCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:16:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240664AbiFHHMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32990 "EHLO
+        id S240900AbiFHHMO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:12:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235703AbiFHFtz (ORCPT
+        with ESMTP id S1348754AbiFHGNo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:49:55 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04BDF1567C2;
-        Tue,  7 Jun 2022 20:26:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=rb8PtiqYu5cbp4L1/wbvkrZWp96775LgK31d20avxd0=; b=XDQVraJG6VNU51qlL2Cm9Ls3AW
-        QwUxqU1rbHT7aux/Hf7mU8uBRW+nAvn/g434eK7KcdQvxHq1XqCkXN45g0Jy0uDMpBxtcUzRZ8JYb
-        L9o9w1mjqa/kbQBQism8A7rfvU4zaxYSQVB0bLTNhZo2xNHD4NxtmLg/wNo766JpC75Lj2PXd/HJ1
-        Yu1kWx7yGd6y/F7zAVvZ2sfYrAhImlz+3cG82JXuajyGx23L1xPDzBWasTjfmgUnEycNQIzdZBJ6L
-        LRFZoUyM5iBpbcBtzAwxgjseaIER0sY7FETYccxpTBBLQskNFCTPh9rXB6RUZ+1y5o1C8fbDFcPcN
-        qQbhKTUg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nymJw-00CH9N-Dj; Wed, 08 Jun 2022 03:25:24 +0000
-Date:   Wed, 8 Jun 2022 04:25:24 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        syzbot <syzbot+dd3c97de244683533381@syzkaller.appspotmail.com>,
-        hdanton@sina.com, lenb@kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rafael.j.wysocki@intel.com,
-        rafael@kernel.org, rjw@rjwysocki.net,
-        syzkaller-bugs@googlegroups.com, linux-usb@vger.kernel.org,
-        Linux-MM <linux-mm@kvack.org>
-Subject: Re: [syzbot] general protection fault in __device_attach
-Message-ID: <YqAWpMdi4o1IQslu@casper.infradead.org>
-References: <000000000000bb7f1c05da29b601@google.com>
- <00000000000010b7d305e08837c8@google.com>
- <YpnqpMYcokTwCB6u@smile.fi.intel.com>
- <Ypor265BTdnmgwpM@rowland.harvard.edu>
- <YpouRmanvCQeKA3S@kroah.com>
- <Ypow1LRZ3Hau36ci@rowland.harvard.edu>
- <Ypoyy/stICFdHauR@kroah.com>
- <CACT4Y+bBWrLRwiowaWk8o4+XAtCHxxJiEQfiSkgM3BDut9atAw@mail.gmail.com>
- <20220606123839.GW2146@kadam>
- <CACT4Y+Y_kg1J00iBL=sMr5AP7U4RXuBizusvQG52few2NcJ6dg@mail.gmail.com>
+        Wed, 8 Jun 2022 02:13:44 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982D4B57A7;
+        Tue,  7 Jun 2022 22:39:56 -0700 (PDT)
+X-UUID: 9885111550404f2aa16e878c57adf705-20220608
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:2b56b550-4f2b-40b8-96d1-9afecf826f22,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:95
+X-CID-INFO: VERSION:1.1.5,REQID:2b56b550-4f2b-40b8-96d1-9afecf826f22,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
+        ION:quarantine,TS:95
+X-CID-META: VersionHash:2a19b09,CLOUDID:4c7c0ce5-2ba2-4dc1-b6c5-11feb6c769e0,C
+        OID:2f1a4db7bcc6,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:0,BEC:nil
+X-UUID: 9885111550404f2aa16e878c57adf705-20220608
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <guodong.liu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 2035992676; Wed, 08 Jun 2022 13:39:41 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 8 Jun 2022 13:39:40 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 8 Jun 2022 13:39:38 +0800
+From:   Guodong Liu <guodong.liu@mediatek.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@kernel.org>
+CC:     Sean Wang <sean.wang@mediatek.com>,
+        Zhiyong Tao <zhiyong.tao@mediatek.com>,
+        =?UTF-8?q?N=EDcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
+        <nfraprado@collabora.com>, <linux-gpio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Guodong Liu <guodong.liu@mediatek.com>
+Subject: [PATCH v1 2/4] pinctrl: add drive for I2C related pins on mt8192
+Date:   Wed, 8 Jun 2022 13:39:07 +0800
+Message-ID: <20220608053909.1252-3-guodong.liu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220608053909.1252-1-guodong.liu@mediatek.com>
+References: <20220608053909.1252-1-guodong.liu@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACT4Y+Y_kg1J00iBL=sMr5AP7U4RXuBizusvQG52few2NcJ6dg@mail.gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 09:15:09AM +0200, Dmitry Vyukov wrote:
-> On Mon, 6 Jun 2022 at 14:39, Dan Carpenter <dan.carpenter@oracle.com> wrote:
-> >
-> > On Sat, Jun 04, 2022 at 10:32:46AM +0200, 'Dmitry Vyukov' via syzkaller-bugs wrote:
-> > > On Fri, 3 Jun 2022 at 18:12, Greg KH <gregkh@linuxfoundation.org> wrote:
-> > > >
-> > > > But again, is this a "real and able to be triggered from userspace"
-> > > > problem, or just fault-injection-induced?
-> > >
-> > > Then this is something to fix in the fault injection subsystem.
-> > > Testing systems shouldn't be reporting false positives.
-> > > What allocations cannot fail in real life? Is it <=page_size?
-> > >
-> >
-> > Apparently in 2014, anything less than *EIGHT?!!* pages succeeded!
-> >
-> > https://lwn.net/Articles/627419/
-> >
-> > I have been on the look out since that article and never seen anyone
-> > mention it changing.  I think we should ignore that and say that
-> > anything over PAGE_SIZE can fail.  Possibly we could go smaller than
-> > PAGE_SIZE...
-> 
-> +linux-mm for GFP expertise re what allocations cannot possibly fail
-> and should be excluded from fault injection.
-> 
-> Interesting, thanks for the link.
-> 
-> PAGE_SIZE looks like a good start. Once we have the predicate in
-> place, we can refine it later when/if we have more inputs.
-> 
-> But I wonder about GFP flags. They definitely have some impact on allocations.
-> If GFP_ACCOUNT is set, all allocations can fail, right?
-> If GFP_DMA/DMA32 is set, allocations can fail, right? What about other zones?
-> If GFP_NORETRY is set, allocations can fail?
-> What about GFP_NOMEMALLOC and GFP_ATOMIC?
-> What about GFP_IO/GFP_FS/GFP_DIRECT_RECLAIM/GFP_KSWAPD_RECLAIM? At
-> least some of these need to be set for allocations to not fail? Which
-> ones?
-> Any other flags are required to be set/unset for allocations to not fail?
+This patch provides the advanced drive raw data setting version
+for I2C used pins on mt8192
 
-I'm not the expert on page allocation, but ...
+Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
+---
+ drivers/pinctrl/mediatek/pinctrl-mt8192.c | 31 +++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
 
-I don't think GFP_ACCOUNT makes allocations fail.  It might make reclaim
-happen from within that cgroup, and it might cause an OOM kill for
-something in that cgroup.  But I don't think it makes a (low order)
-allocation more likely to fail.
+diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8192.c b/drivers/pinctrl/mediatek/pinctrl-mt8192.c
+index 9faf7001369d..d11ff5519e1e 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-mt8192.c
++++ b/drivers/pinctrl/mediatek/pinctrl-mt8192.c
+@@ -1259,6 +1259,32 @@ static const struct mtk_pin_field_calc mt8192_pin_r1_range[] = {
+ 	PIN_FIELD_BASE(205, 205, 8, 0x0070, 0x10, 5, 1),
+ };
+ 
++static const struct mtk_pin_field_calc mt8192_pin_drv_adv_range[] = {
++	PIN_FIELD_BASE(89, 89, 2, 0x0040, 0x10, 0, 5),
++	PIN_FIELD_BASE(90, 90, 2, 0x0040, 0x10, 5, 5),
++
++	PIN_FIELD_BASE(118, 118, 4, 0x0040, 0x10, 0, 3),
++	PIN_FIELD_BASE(119, 119, 4, 0x0040, 0x10, 18, 3),
++	PIN_FIELD_BASE(120, 120, 4, 0x0040, 0x10, 15, 3),
++	PIN_FIELD_BASE(121, 121, 4, 0x0050, 0x10, 3, 3),
++	PIN_FIELD_BASE(122, 122, 4, 0x0040, 0x10, 12, 3),
++	PIN_FIELD_BASE(123, 123, 4, 0x0050, 0x10, 0, 3),
++	PIN_FIELD_BASE(124, 124, 4, 0x0040, 0x10, 9, 3),
++	PIN_FIELD_BASE(125, 125, 4, 0x0040, 0x10, 27, 3),
++	PIN_FIELD_BASE(139, 139, 4, 0x0040, 0x10, 6, 3),
++	PIN_FIELD_BASE(140, 140, 4, 0x0040, 0x10, 24, 3),
++	PIN_FIELD_BASE(141, 141, 4, 0x0040, 0x10, 3, 3),
++	PIN_FIELD_BASE(142, 142, 4, 0x0040, 0x10, 21, 3),
++	PIN_FIELD_BASE(160, 160, 7, 0x0030, 0x10, 0, 3),
++	PIN_FIELD_BASE(161, 161, 7, 0x0030, 0x10, 3, 3),
++	PIN_FIELD_BASE(200, 200, 8, 0x0010, 0x10, 3, 3),
++	PIN_FIELD_BASE(201, 201, 8, 0x0010, 0x10, 9, 3),
++	PIN_FIELD_BASE(202, 202, 5, 0x0020, 0x10, 0, 3),
++	PIN_FIELD_BASE(203, 203, 5, 0x0020, 0x10, 3, 3),
++	PIN_FIELD_BASE(204, 204, 8, 0x0010, 0x10, 0, 3),
++	PIN_FIELD_BASE(205, 205, 8, 0x0010, 0x10, 6, 3),
++};
++
+ static const struct mtk_pin_field_calc mt8192_pin_e1e0en_range[] = {
+ 	PIN_FIELD_BASE(118, 118, 4, 0x0040, 0x10, 0, 1),
+ 	PIN_FIELD_BASE(119, 119, 4, 0x0040, 0x10, 18, 1),
+@@ -1357,6 +1383,7 @@ static const struct mtk_pin_reg_calc mt8192_reg_cals[PINCTRL_PIN_REG_MAX] = {
+ 	[PINCTRL_PIN_REG_R1] = MTK_RANGE(mt8192_pin_r1_range),
+ 	[PINCTRL_PIN_REG_DRV_EN] = MTK_RANGE(mt8192_pin_e1e0en_range),
+ 	[PINCTRL_PIN_REG_DRV_E0] = MTK_RANGE(mt8192_pin_e0_range),
++	[PINCTRL_PIN_REG_DRV_ADV]	= MTK_RANGE(mt8192_pin_drv_adv_range),
+ 	[PINCTRL_PIN_REG_DRV_E1] = MTK_RANGE(mt8192_pin_e1_range),
+ };
+ 
+@@ -1376,8 +1403,8 @@ static const struct mtk_pin_soc mt8192_data = {
+ 	.drive_get	= mtk_pinconf_drive_get_rev1,
+ 	.adv_pull_get = mtk_pinconf_adv_pull_get,
+ 	.adv_pull_set = mtk_pinconf_adv_pull_set,
+-	.adv_drive_get = mtk_pinconf_adv_drive_get,
+-	.adv_drive_set = mtk_pinconf_adv_drive_set,
++	.adv_drive_get	= mtk_pinconf_adv_drive_get_raw,
++	.adv_drive_set	= mtk_pinconf_adv_drive_set_raw,
+ };
+ 
+ static const struct of_device_id mt8192_pinctrl_of_match[] = {
+-- 
+2.25.5
 
-There's usually less memory avilable in DMA/DMA32 zones, but we have
-so few allocations from those zones, I question the utility of focusing
-testing on those allocations.
-
-GFP_ATOMIC allows access to emergency pools, so I would say _less_ likely
-to fail.  KSWAPD_RECLAIM has no effect on whether _this_ allocation
-succeeds or fails; it kicks kswapd to do reclaim, rather than doing
-reclaim directly.  DIRECT_RECLAIM definitely makes allocations more likely
-to succeed.  GFP_FS allows (direct) reclaim to happen from filesystems.
-GFP_IO allows IO to start (ie writeback can start) in order to clean
-dirty memory.
-
-Anyway, I hope somebody who knows the page allocator better than I do
-can say smarter things than this.  Even better if they can put it into
-Documentation/ somewhere ;-)
-
-https://www.kernel.org/doc/html/latest/core-api/memory-allocation.html
-exists but isn't quite enough to answer this question.
