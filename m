@@ -2,154 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A54C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8603FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:50:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239719AbiFHMuV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:50:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39740 "EHLO
+        id S239756AbiFHMu3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239701AbiFHMtz (ORCPT
+        with ESMTP id S239732AbiFHMt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:49:55 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793901A0AD9;
-        Wed,  8 Jun 2022 05:49:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1654692584; x=1686228584;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=P46A/HLCcBellPLyCR/hDuNj3WtIwUmFCC+4ZNYe5rg=;
-  b=W/FOZf8x7CnevjfJR7Uwo6CWv4F2e+vYU6XKIiGkCKpUZ976/mBlYPDU
-   Y2B6ekhNmcI7S2rBiWzDgSeuaJeshzVVIrwuGXWLfFa3YkTYm7TStlFtn
-   ploCmIW5J4qs/A5njlAIhbflTOfNwxRCKkg7oo5MCPBqjxF7WSLOL6XYK
-   /9I9e+fw5kuOyx4vfU6DpPkPU82mcH5OdMHsIWpphaWqiO2nQjl/bCtDm
-   jbwUBQv2qRK9YtBd96vxxFNAL4/i2M2uTjfMXV6P/g+Z+Ch+rLIEjwWuK
-   OnIVknxI1Y5jfqK68XEFHjKijjwex4ogA+9rwHHHpGDm3/psCbOpfGCH7
-   g==;
-X-IronPort-AV: E=Sophos;i="5.91,286,1647298800"; 
-   d="scan'208";a="24330554"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 08 Jun 2022 14:49:32 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Wed, 08 Jun 2022 14:49:32 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Wed, 08 Jun 2022 14:49:32 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1654692572; x=1686228572;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=P46A/HLCcBellPLyCR/hDuNj3WtIwUmFCC+4ZNYe5rg=;
-  b=DGwIGYrSBlczcQ+tUCI8Tgiq3yu5G/X+k/7F2D/51iAIFQEfmsdBDRhl
-   9j52m+ryXV0wHsSgl7HzOlmzikEC8DprKOGSXyHqRqGvUHjyl6MlO5cD2
-   K7edR9b1ZEz3++AHPp/woo5csM/iqVlFYBza8dPzXA3VRWWD+7JnwzgXD
-   ZvFTipfuw9/mLR6C0GVPc5uYiKjBr0R28SV4c1TuNa5VCNSzFVJDFxd2m
-   WjCt0woPVvylTdczFyuTYepH7bZE4TONRANfeYAL5FCsUlzMHbW1RSRu4
-   Jg3SDPp/9Wf+cHDYMYc7vxLvtRBgNPEh/IofuPaIrEXhzhRVZbO8DGffN
-   w==;
-X-IronPort-AV: E=Sophos;i="5.91,286,1647298800"; 
-   d="scan'208";a="24330553"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 08 Jun 2022 14:49:32 +0200
-Received: from localhost.localdomain (SCHIFFERM-M2.tq-net.de [10.121.49.136])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 301DA280072;
-        Wed,  8 Jun 2022 14:49:32 +0200 (CEST)
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Lyude Paul <lyude@redhat.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [PATCH 9/9] Input: synaptics-rmi4 - drop useless gotos in rmi_f34v7_do_reflash()
-Date:   Wed,  8 Jun 2022 14:48:08 +0200
-Message-Id: <20220608124808.51402-10-matthias.schiffer@ew.tq-group.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220608124808.51402-1-matthias.schiffer@ew.tq-group.com>
-References: <20220608124808.51402-1-matthias.schiffer@ew.tq-group.com>
+        Wed, 8 Jun 2022 08:49:58 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F63119EC18;
+        Wed,  8 Jun 2022 05:49:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654692595; x=1686228595;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=2qiqbShlAjmZQPFhGeQzPf5Qtr1YDsIAej0EOKyS+XQ=;
+  b=Ui/+RtvwFuocJRq6Ugz+kM7l1hvBoaSP6LxaFJSfsLprZIgyU6bUaViF
+   CBqxv/Cl8dz83nf1c3PHtoupP09CKejut2/EB9awLVaAzv6+aTNuVjJwR
+   w6mr9Fro3EaXqBhWyXupSmPGIMD/Km5bGhkv2Z9PVhMXdIzb222wp7YFM
+   byOr5cx9fip5euHAFO3UWicLY+4y1RU3MeBCHMbzp5IrivxXr7QQGIqZB
+   lFbkWHcF8YWjFI0dZUx9+OnLvPKkwiNISiCyp3OjXGU458LQfQUBjbHkI
+   MrrAeE9q7q4DJtHGXbNR+QjxKj4POffkVP1pwdFxH3TYf5ODZk9N85AZ9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="257315562"
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="257315562"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 05:49:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="826958435"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga006.fm.intel.com with ESMTP; 08 Jun 2022 05:49:48 -0700
+Received: from [10.252.211.65] (kliang2-MOBL.ccr.corp.intel.com [10.252.211.65])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id EE749580B9E;
+        Wed,  8 Jun 2022 05:49:46 -0700 (PDT)
+Message-ID: <59b85c65-198c-5147-bbc6-818ce2234b6c@linux.intel.com>
+Date:   Wed, 8 Jun 2022 08:49:45 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 2/2] perf vendor events intel: Update event list for
+ Snowridgex
+Content-Language: en-US
+To:     zhengjun.xing@linux.intel.com, acme@kernel.org,
+        peterz@infradead.org, mingo@redhat.com,
+        alexander.shishkin@intel.com, jolsa@redhat.com
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        irogers@google.com, adrian.hunter@intel.com, ak@linux.intel.com
+References: <20220608063439.1997394-1-zhengjun.xing@linux.intel.com>
+ <20220608063439.1997394-2-zhengjun.xing@linux.intel.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <20220608063439.1997394-2-zhengjun.xing@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Returning directly makes the code clearer.
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
----
- drivers/input/rmi4/rmi_f34v7.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/input/rmi4/rmi_f34v7.c b/drivers/input/rmi4/rmi_f34v7.c
-index f16c67eb6cc6..886557b01eba 100644
---- a/drivers/input/rmi4/rmi_f34v7.c
-+++ b/drivers/input/rmi4/rmi_f34v7.c
-@@ -1039,19 +1039,19 @@ int rmi_f34v7_do_reflash(struct f34_data *f34, const struct firmware *fw)
- 
- 	ret = rmi_f34v7_parse_image_info(f34);
- 	if (ret < 0)
--		goto fail;
-+		return ret;
- 
- 	ret = rmi_f34v7_check_bl_config_size(f34);
- 	if (ret < 0)
--		goto fail;
-+		return ret;
- 
- 	ret = rmi_f34v7_erase_all(f34);
- 	if (ret < 0)
--		goto fail;
-+		return ret;
- 
- 	ret = rmi_f34v7_write_partition_table(f34);
- 	if (ret < 0)
--		goto fail;
-+		return ret;
- 	dev_info(&f34->fn->dev, "%s: Partition table programmed\n", __func__);
- 
- 	/*
-@@ -1067,7 +1067,7 @@ int rmi_f34v7_do_reflash(struct f34_data *f34, const struct firmware *fw)
- 
- 	ret = rmi_f34v7_write_firmware(f34);
- 	if (ret < 0)
--		goto fail;
-+		return ret;
- 
- 	dev_info(&f34->fn->dev, "Writing config (%d bytes)...\n",
- 		 f34->v7.img.ui_config.size);
-@@ -1075,14 +1075,14 @@ int rmi_f34v7_do_reflash(struct f34_data *f34, const struct firmware *fw)
- 	f34->v7.config_area = v7_UI_CONFIG_AREA;
- 	ret = rmi_f34v7_write_ui_config(f34);
- 	if (ret < 0)
--		goto fail;
-+		return ret;
- 
- 	if (f34->v7.has_display_cfg && f34->v7.img.contains_display_cfg) {
- 		dev_info(&f34->fn->dev, "Writing display config...\n");
- 
- 		ret = rmi_f34v7_write_dp_config(f34);
- 		if (ret < 0)
--			goto fail;
-+			return ret;
- 	}
- 
- 	if (f34->v7.has_guest_code && f34->v7.img.contains_guest_code) {
-@@ -1090,11 +1090,10 @@ int rmi_f34v7_do_reflash(struct f34_data *f34, const struct firmware *fw)
- 
- 		ret = rmi_f34v7_write_guest_code(f34);
- 		if (ret < 0)
--			goto fail;
-+			return ret;
- 	}
- 
--fail:
--	return ret;
-+	return 0;
- }
- 
- static int rmi_f34v7_enter_flash_prog(struct f34_data *f34)
--- 
-2.25.1
+On 6/8/2022 2:34 AM, zhengjun.xing@linux.intel.com wrote:
+>       {
+> -        "BriefDescription": "write requests to memory controller. Derived from unc_m_cas_count.wr",
+> +        "BriefDescription": "All DRAM write CAS commands issued",
+>           "Counter": "0,1,2,3",
+>           "CounterType": "PGMABLE",
+>           "EventCode": "0x04",
+> -        "EventName": "LLC_MISSES.MEM_WRITE",
 
+The old convertor tool creates many alias to replace the event in the 
+event list. The LLC_MISSES.MEM_WRITE event is one of them.
+There is no problem to add the original event name. But I think we 
+should keep both alias and the original name, in case someone already 
+used the alias in their script.
+
+
+> +        "EventName": "UNC_M_CAS_COUNT.WR",
+>           "PerPkg": "1",
+> -        "ScaleUnit": "64Bytes",
+>           "UMask": "0x30",
+>           "Unit": "iMC"
+>       },
+
+Thanks,
+Kan
