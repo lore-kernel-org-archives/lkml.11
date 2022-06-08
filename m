@@ -2,135 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE24CCA49E
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F06C04E83
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235269AbiFHGCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 02:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33682 "EHLO
+        id S235914AbiFHGDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 02:03:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350027AbiFHF7U (ORCPT
+        with ESMTP id S1346201AbiFHF5S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:59:20 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92692F1831
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 21:40:43 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2583gIIT018059;
-        Wed, 8 Jun 2022 04:38:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=Lcpl/hu2wCLqkPkKh95mnc/bj3H++s7UjMpYnZ0eA2U=;
- b=jf5LTrJ1mWLlJvxXKUsot1rKHW/nB0mp3n2/q39azOjM2MUvlJBxxE/3UHo2ODOPTJ35
- XB3uYRNyzacc3wkqmTbgSyvL+V9cCSB1aD9C7dta9D+rRKx/fVtQaFHShY3udos8ReTe
- laGoArfQQjwS62F0dQBzsM7/U/EFOVP1PgW1WYC/jjA4mcCPYiq4EmkeXWGN/pU9AxVI
- Smhq+aPSS22OZMbTKdM/1Qf3K7eCZ5wAW0ovN9n+vE4/izawUlf6aUBZ6pWIuDs3Mjln
- 9p8nu9ulx0mHPsIIsIaOE56FIzCPeYJiNikzwijfBk3o1RKjK3snax2ieNUEnuOS91jn mQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjm3c0v8j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jun 2022 04:38:11 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2584NqwG002666;
-        Wed, 8 Jun 2022 04:38:11 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjm3c0v7r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jun 2022 04:38:10 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2584LvpR016888;
-        Wed, 8 Jun 2022 04:38:08 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma06ams.nl.ibm.com with ESMTP id 3gfxnhvmn8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jun 2022 04:38:08 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2584c6qI20447578
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 8 Jun 2022 04:38:06 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EC0F152050;
-        Wed,  8 Jun 2022 04:38:05 +0000 (GMT)
-Received: from [9.43.53.124] (unknown [9.43.53.124])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 280105204E;
-        Wed,  8 Jun 2022 04:37:58 +0000 (GMT)
-Message-ID: <f5480a57-4335-d982-8462-d4465369082d@linux.ibm.com>
-Date:   Wed, 8 Jun 2022 10:07:57 +0530
+        Wed, 8 Jun 2022 01:57:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D952C22A614
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 21:16:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654661817;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=14PU+0VYcV8svYcSqS/GiFfOTLmCGexoD/N9x+kbBRI=;
+        b=eTqNSQMJwMxlbIO3RUy7VHBE9tgq81LGe9IUyBb+kNjVy/ZqCL8SNVCa+HCABY2whtnFJy
+        0O53cY2D1xe+DHAx2mEgwsGZYJLK5EaLiwXd07LuyyLAF42v1OFZ+v5BnLaEQKJEhS4C+M
+        hK+7HpG+dT5eM8X3hwWKsVqvtFrkUnc=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-179-C_SxIESRN56w1hKoozyTTQ-1; Wed, 08 Jun 2022 00:16:54 -0400
+X-MC-Unique: C_SxIESRN56w1hKoozyTTQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0E53A800882;
+        Wed,  8 Jun 2022 04:16:54 +0000 (UTC)
+Received: from localhost (ovpn-12-81.pek2.redhat.com [10.72.12.81])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2D457404E4C2;
+        Wed,  8 Jun 2022 04:16:52 +0000 (UTC)
+Date:   Wed, 8 Jun 2022 12:16:47 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc:     catalin.marinas@arm.com, will@kernel.org,
+        akpm@linux-foundation.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        hch@infradead.org, arnd@arndb.de, anshuman.khandual@arm.com
+Subject: Re: [PATCH v5 2/6] mm: ioremap: Use more sensibly name in
+ ioremap_prot()
+Message-ID: <YqAir8uTUziObhHn@MiWiFi-R3L-srv>
+References: <20220607125027.44946-1-wangkefeng.wang@huawei.com>
+ <20220607125027.44946-3-wangkefeng.wang@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v5 1/9] mm/demotion: Add support for explicit memory tiers
-Content-Language: en-US
-To:     Tim Chen <tim.c.chen@linux.intel.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
-        Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
- <20220603134237.131362-2-aneesh.kumar@linux.ibm.com>
- <92649c9a6e0b6931b34aeaaf22c0a1e874484b7f.camel@linux.intel.com>
-From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
-In-Reply-To: <92649c9a6e0b6931b34aeaaf22c0a1e874484b7f.camel@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: odQegtFdMQwT5etSdPBJ-IP0pQSGG7DP
-X-Proofpoint-GUID: uA45QuyrJme5pNVVqxOvY6jsTXknm344
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-08_01,2022-06-07_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- mlxlogscore=999 spamscore=0 clxscore=1015 mlxscore=0 lowpriorityscore=0
- phishscore=0 impostorscore=0 adultscore=0 priorityscore=1501
- malwarescore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206080019
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607125027.44946-3-wangkefeng.wang@huawei.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/8/22 12:13 AM, Tim Chen wrote:
-...
-
->>
->> +
->> +static void memory_tier_device_release(struct device *dev)
->> +{
->> +	struct memory_tier *tier = to_memory_tier(dev);
->> +
+On 06/07/22 at 08:50pm, Kefeng Wang wrote:
+> Use more meaningful and sensibly naming phys_addr
+> instead addr in ioremap_prot().
 > 
-> Do we need some ref counts on memory_tier?
-> If there is another device still using the same memtier,
-> free below could cause problem.
+> Suggested-by: Andrew Morton <akpm@linux-foundation.org>
+> Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+>  include/asm-generic/io.h |  3 ++-
+>  mm/ioremap.c             | 14 ++++++++------
+>  2 files changed, 10 insertions(+), 7 deletions(-)
 > 
->> +	kfree(tier);
->> +}
->> +
->>
-> ...
+> diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
+> index 7ce93aaf69f8..b76379628a02 100644
+> --- a/include/asm-generic/io.h
+> +++ b/include/asm-generic/io.h
+> @@ -964,7 +964,8 @@ static inline void iounmap(volatile void __iomem *addr)
+>  #elif defined(CONFIG_GENERIC_IOREMAP)
+>  #include <linux/pgtable.h>
+>  
+> -void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot);
+> +void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
+> +			   unsigned long prot);
+>  void iounmap(volatile void __iomem *addr);
+>  
+>  static inline void __iomem *ioremap(phys_addr_t addr, size_t size)
+> diff --git a/mm/ioremap.c b/mm/ioremap.c
+> index 5fe598ecd9b7..2d754b48d230 100644
+> --- a/mm/ioremap.c
+> +++ b/mm/ioremap.c
+> @@ -11,20 +11,21 @@
+>  #include <linux/io.h>
+>  #include <linux/export.h>
+>  
+> -void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot)
+> +void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
+> +			   unsigned long prot)
+>  {
+>  	unsigned long offset, vaddr;
+>  	phys_addr_t last_addr;
+>  	struct vm_struct *area;
+>  
+>  	/* Disallow wrap-around or zero size */
+> -	last_addr = addr + size - 1;
+> -	if (!size || last_addr < addr)
+> +	last_addr = phys_addr + size - 1;
+> +	if (!size || last_addr < phys_addr)
+>  		return NULL;
+>  
+>  	/* Page-align mappings */
+> -	offset = addr & (~PAGE_MASK);
+> -	addr -= offset;
+> +	offset = phys_addr & (~PAGE_MASK);
+                 ~~~ use offset_in_page() instead?
 
-The lifecycle of the memory_tier struct is tied to the sysfs device life 
-time. ie, memory_tier_device_relese get called only after the last 
-reference on that sysfs dev object is released. Hence we can be sure 
-there is no userspace that is keeping one of the memtier related sysfs 
-file open.
+Other than this nitpick, this looks good to me.
 
-W.r.t other memory device sharing the same memtier, we unregister the
-sysfs device only when the memory tier nodelist is empty. That is no 
-memory device is present in this memory tier.
+Reviewed-by: Baoquan He <bhe@redhat.com>
 
--aneesh
+> +	phys_addr -= offset;
+>  	size = PAGE_ALIGN(size + offset);
+>  
+>  	area = get_vm_area_caller(size, VM_IOREMAP,
+> @@ -33,7 +34,8 @@ void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot)
+>  		return NULL;
+>  	vaddr = (unsigned long)area->addr;
+>  
+> -	if (ioremap_page_range(vaddr, vaddr + size, addr, __pgprot(prot))) {
+> +	if (ioremap_page_range(vaddr, vaddr + size, phys_addr,
+> +			       __pgprot(prot))) {
+>  		free_vm_area(area);
+>  		return NULL;
+>  	}
+> -- 
+> 2.35.3
+> 
+> 
+
