@@ -2,80 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 715D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:41:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AAC0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:43:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236862AbiFHKlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:41:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38718 "EHLO
+        id S236901AbiFHKnU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:43:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236591AbiFHKlV (ORCPT
+        with ESMTP id S236591AbiFHKnN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:41:21 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642481D8809;
-        Wed,  8 Jun 2022 03:41:16 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=chengyou@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VFlnOFv_1654684873;
-Received: from 30.43.105.165(mailfrom:chengyou@linux.alibaba.com fp:SMTPD_---0VFlnOFv_1654684873)
-          by smtp.aliyun-inc.com;
-          Wed, 08 Jun 2022 18:41:14 +0800
-Message-ID: <47f97387-5587-3f81-1407-3e1d943025cb@linux.alibaba.com>
-Date:   Wed, 8 Jun 2022 18:41:12 +0800
+        Wed, 8 Jun 2022 06:43:13 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B1923BF8;
+        Wed,  8 Jun 2022 03:43:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 89EAFCE2788;
+        Wed,  8 Jun 2022 10:43:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7744EC34116;
+        Wed,  8 Jun 2022 10:43:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654684988;
+        bh=hIFwJKRqtr0PqOyjIt5Wcaczq5LJLzov/k92/HzuLY0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BU4C8kMyh8XB2Ct5R5cjwIoc9SSwwU5RYTNmHuohfUp//YOak3azYq13ZUgeDAfyT
+         NS9863Sqh51gg3e9brI0TcTaViz93oj2JpqAqHj52qGW/wzkOUYe4GLYpHOk53hCBa
+         Lo+tBf71RV4QW2VDEQ6MqEtVt+RcMe1hYhuSHYYM=
+Date:   Wed, 8 Jun 2022 12:43:06 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 16/36] tty/vt: consolemap: check put_user() in
+ con_get_unimap()
+Message-ID: <YqB9OvE+5SXKXbS1@kroah.com>
+References: <20220607104946.18710-1-jslaby@suse.cz>
+ <20220607104946.18710-16-jslaby@suse.cz>
+ <8ad44d3b-449f-4a30-1a4c-dffd43bbbd1@linux.intel.com>
+ <e9f35a26-8f5b-f585-2e8c-19690bf3c770@kernel.org>
+ <CAHp75VfPi=BMzw4x2tTv2S5Wa0y6vvB3HUY6GyF3t_ddg_YUGA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [PATCH -next] RDMA/erdma: remove unneeded semicolon
-Content-Language: en-US
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Yang Li <yang.lee@linux.alibaba.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>, kaishen@linux.alibaba.com,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-References: <20220608005534.76789-1-yang.lee@linux.alibaba.com>
- <ef94d5de-da12-a894-8ff3-af7ecf9d568a@linux.alibaba.com>
- <YqBWrU27/wNsLU/u@unreal>
-From:   Cheng Xu <chengyou@linux.alibaba.com>
-In-Reply-To: <YqBWrU27/wNsLU/u@unreal>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VfPi=BMzw4x2tTv2S5Wa0y6vvB3HUY6GyF3t_ddg_YUGA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 6/8/22 3:58 PM, Leon Romanovsky wrote:
-> On Wed, Jun 08, 2022 at 11:36:07AM +0800, Cheng Xu wrote:
->>
->>
->> On 6/8/22 8:55 AM, Yang Li wrote:
->>> Eliminate the following coccicheck warning:
->>> ./drivers/infiniband/hw/erdma/erdma_qp.c:254:3-4: Unneeded semicolon
->>>
->>> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
->>> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
->>
->> Reviewed-by: Cheng Xu <chengyou@linux.alibaba.com>
->>
->> Thanks.
->>
->>
->> Jason,
->>
->> BTW, are this and other two patches for erdma posted today parts of
->> the static checker reports which you mentioned in [1] ? If so, I think I
->> should re-post the v10 patches including the fixes ?
+On Wed, Jun 08, 2022 at 12:38:49PM +0200, Andy Shevchenko wrote:
+> On Wed, Jun 8, 2022 at 10:56 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+> > On 07. 06. 22, 16:19, Ilpo Järvinen wrote:
+> > > On Tue, 7 Jun 2022, Jiri Slaby wrote:
 > 
-> Yes, the fixes need to be squashed into the relevant patches.
+> ...
 > 
-> Thanks
+> > > Doesn't this fix something?
+> >
+> > If you mean a Fixes tag, this is pre-git.
 > 
+> You may use history.git [1] for pregit SHAs.
+> 
+> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/
 
-Get it, thanks.
-Cheng Xu
+Please don't, it just does not matter.
 
->>
->> Thanks,
->> Cheng Xu
->>
->> [1] https://lore.kernel.org/linux-rdma/20220606154754.GA645238@nvidia.com/
+thanks,
+
+greg k-h
