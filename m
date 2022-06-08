@@ -2,100 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E09C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:16:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7210BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233722AbiFHFQg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39958 "EHLO
+        id S233139AbiFHFRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:17:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233320AbiFHFQK (ORCPT
+        with ESMTP id S233923AbiFHFQt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:16:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CAB83A2B92
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:19:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D62E60AD8
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:17:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACC66C34115;
-        Wed,  8 Jun 2022 02:17:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654654636;
-        bh=dFIQHND7/de6ERt33/EJw1YFoRsUBtTJPGMBARvM1fw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nYSHXrCZEtji0UMMxEA6ZIX76EWxraIEyNwA/Tk6tJAJ5ewGG2PmwN4+EXBHz1EX4
-         vcfD1HCPwGljjiQ5kYe1rhOUPU4F2kEHrJKKLeCh6M9SJkwr5tP8PnL3fWeOpSV27l
-         n0Jew4dSxH/FjA8pWHoiBak3gqfnJscuynFcC3i5/YseJTX0Di9CKCWEcGl/PLWZWg
-         2SfkkbhF26U+YERsW+R02lHSaxt6We1a2uuWsW9Z92bFwHSGE0r1cnw0ORiVBQ8qXp
-         4uZwzmTJaQaF/hbXpWgmzMwg01pCjbZjuCzL0YLUHahWxN1tZ8fpeaqn9QqUIcVw3F
-         NaVKcAdQ6YU8A==
-Date:   Wed, 8 Jun 2022 02:17:13 +0000
-From:   Tzung-Bi Shih <tzungbi@kernel.org>
-To:     Guenter Roeck <groeck@google.com>
-Cc:     bleung@chromium.org, groeck@chromium.org,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 12/15] platform/chrome: use krealloc() for `din` and
- `dout`
-Message-ID: <YqAGqZgauTnn76KD@google.com>
-References: <20220607145639.2362750-1-tzungbi@kernel.org>
- <20220607145639.2362750-13-tzungbi@kernel.org>
- <CABXOdTebXS3c823jWYx9r8mU4LwNfhLo833s7_krK4JW0fSgUw@mail.gmail.com>
+        Wed, 8 Jun 2022 01:16:49 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F8E3C7802
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:21:07 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LHr065K4vz16JVb;
+        Wed,  8 Jun 2022 09:55:18 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 8 Jun 2022 09:55:36 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 8 Jun 2022 09:55:36 +0800
+From:   Ke Liu <liuke94@huawei.com>
+To:     <joro@8bytes.org>
+CC:     <will@kernel.org>, <iommu@lists.linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>, Ke Liu <liuke94@huawei.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>
+Subject: [PATCH v2] iommu: Directly use ida_alloc()/free()
+Date:   Wed, 8 Jun 2022 02:16:55 +0000
+Message-ID: <20220608021655.1538087-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABXOdTebXS3c823jWYx9r8mU4LwNfhLo833s7_krK4JW0fSgUw@mail.gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 12:06:23PM -0700, Guenter Roeck wrote:
-> On Tue, Jun 7, 2022 at 7:57 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
-> >
-> > Use krealloc() to re-allocate `din` and `dout`.  Don't use devm variant
-> > because the two buffers could be re-allocated multiple times during
-> > runtime.  Their life cycles aren't quite aligned to the device's.
-> 
-> While this saves a few lines of code, it is runtime-expensive:
-> krealloc() copies the old data, which is a waste of time/resources.
-> Maybe it would be better to just use kfree() followed by kzalloc().
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove().
 
-Ack.  I wasn't aware of the memcpy().  Let's don't use it.
+Signed-off-by: Ke Liu <liuke94@huawei.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+v2 subject change to iommu
+---
+ drivers/iommu/iommu.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> > @@ -469,9 +469,9 @@ static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev,
-> >   */
-> >  int cros_ec_query_all(struct cros_ec_device *ec_dev)
-> >  {
-> > -       struct device *dev = ec_dev->dev;
-> >         u32 ver_mask = 0;
-> >         int ret;
-> > +       u8 *din, *dout;
-> >
-> >         /* First try sending with proto v3. */
-> >         if (!cros_ec_get_proto_info(ec_dev, CROS_EC_DEV_EC_INDEX)) {
-> > @@ -492,21 +492,15 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
-> >                 }
-> >         }
-> >
-> > -       devm_kfree(dev, ec_dev->din);
-> > -       devm_kfree(dev, ec_dev->dout);
-> > -
-> > -       ec_dev->din = devm_kzalloc(dev, ec_dev->din_size, GFP_KERNEL);
-> > -       if (!ec_dev->din) {
-> > -               ret = -ENOMEM;
-> > -               goto exit;
-> > -       }
-> > +       din = krealloc(ec_dev->din, ec_dev->din_size, GFP_KERNEL);
-> > +       if (!din)
-> > +               return -ENOMEM;
-> 
-> I would suggest assigning the values directly; the new variables don't
-> really add value.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 847ad47a2dfd..cdc86c39954e 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -600,7 +600,7 @@ static void iommu_group_release(struct kobject *kobj)
+ 	if (group->iommu_data_release)
+ 		group->iommu_data_release(group->iommu_data);
+ 
+-	ida_simple_remove(&iommu_group_ida, group->id);
++	ida_free(&iommu_group_ida, group->id);
+ 
+ 	if (group->default_domain)
+ 		iommu_domain_free(group->default_domain);
+@@ -641,7 +641,7 @@ struct iommu_group *iommu_group_alloc(void)
+ 	INIT_LIST_HEAD(&group->devices);
+ 	INIT_LIST_HEAD(&group->entry);
+ 
+-	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
++	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
+ 	if (ret < 0) {
+ 		kfree(group);
+ 		return ERR_PTR(ret);
+@@ -651,7 +651,7 @@ struct iommu_group *iommu_group_alloc(void)
+ 	ret = kobject_init_and_add(&group->kobj, &iommu_group_ktype,
+ 				   NULL, "%d", group->id);
+ 	if (ret) {
+-		ida_simple_remove(&iommu_group_ida, group->id);
++		ida_free(&iommu_group_ida, group->id);
+ 		kobject_put(&group->kobj);
+ 		return ERR_PTR(ret);
+ 	}
+-- 
+2.25.1
 
-checkpatch.pl generated a warning for it.  See [1].
-
-Will remove the krealloc()s anyway.
-
-[1]: https://github.com/torvalds/linux/commit/972fdea2e6ece7578915d386a5447bc78d3fb8b8
