@@ -2,515 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11500C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:50:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 876E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:51:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231361AbiFHEus (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 00:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59060 "EHLO
+        id S229948AbiFHEvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 00:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232052AbiFHEsi (ORCPT
+        with ESMTP id S232388AbiFHEuA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 00:48:38 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F3B23F20A
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:10:08 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id h188so26227886oia.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 18:10:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5p+YY8gybAKuQcsMVh2MWy7OP9yApdl+Art1AWfbko4=;
-        b=l0vH6uF2Kay4roGyviEB6yUha0FWjErNM5oSVGGa9GYxycj69SewTV4S+exXuVIrld
-         tcD0oVt97q4NnrQ5WUbOxoLgD4uHd7K17nmo5pC4oWCihLwe+aKT9zNj1UfumIkGSOlf
-         rf4sVKhsJk/0rM7laRh6sJCKrmmSak6qTexnX1kIp+46qQTQcoZJcituYmW4kFuZzgmP
-         /B+yOZkotlB2O62UuGVKIqpoUDKLgf8cY2afKSv0a5RoOmHK3DhECgn2ywgfS7dIZQE0
-         +jkUg+eQ3NZKl2t5LuPU0qgMZnpdm7x8eMxgUAVEuh9MZzLoDuiT90QO8FRB46Ex65fd
-         D9kA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5p+YY8gybAKuQcsMVh2MWy7OP9yApdl+Art1AWfbko4=;
-        b=8ADK7+KcNh844EkUA6/nUDkgjlc/QT5TDmyFXZzM7CnEa5MIqjMaU1Tuifn4TJNbTG
-         rdh1KpoIv61TUUaOqgd1qBrY3tum8WLYer+5NhbW8s9Ukz8LCGz7Mc76cDjtOAxJIfKi
-         Q2gagQThWi7N08ipiksL7M8e6RPg2Y7QtG7qoot0HWKmVq+70ZS9apzgTh4oZfrq+g4E
-         NJ5CXHfGj+Lrkjy7R80EbOdOJlxgkUXkWngsEggcdDwADCLmGsqGIV/pWNqrG1xICYm6
-         2uubVPx6eqiNswtsydtH6166n+NV9z1KtD9HhdNRWDuQvG40NQaBKODC5Tnmq8roNwlw
-         h7aw==
-X-Gm-Message-State: AOAM532r+M3xWQUQyCnFFtzIuk+f8f8SHPXwGtdZ/uBbAHqBOrJ+2Xts
-        8OYEhTr+rp2aSJw2lj87FE07zQ==
-X-Google-Smtp-Source: ABdhPJzAtEy3VpvtGd8JE19u4+8me6FEpwHjaGKdRGUz1fqMacKFsUnOWNFd1Awi6hzS+5tNdeA1Ow==
-X-Received: by 2002:a05:6808:bc7:b0:32b:1c5a:d8b1 with SMTP id o7-20020a0568080bc700b0032b1c5ad8b1mr1000182oik.185.1654650578632;
-        Tue, 07 Jun 2022 18:09:38 -0700 (PDT)
-Received: from fedora.. ([2804:14d:8084:84c6:fe26:c42d:aab9:fa8a])
-        by smtp.gmail.com with ESMTPSA id c16-20020a544e90000000b0032b1b84f4e3sm10343057oiy.22.2022.06.07.18.09.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 18:09:38 -0700 (PDT)
-From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>
-To:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        christian.koenig@amd.com,
-        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
-        Jun Lei <jun.lei@amd.com>,
-        Nicholas Choi <Nicholas.Choi@amd.com>,
-        Harrison Chiu <harrison.chiu@amd.com>,
-        Mark Yacoub <markyacoub@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
-        David Gow <davidgow@google.com>,
-        Daniel Latypov <dlatypov@google.com>, brendanhiggins@google.com
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>
-Subject: [RFC 3/3] drm/amd/display: Introduce KUnit tests to the bw_fixed library
-Date:   Tue,  7 Jun 2022 22:07:11 -0300
-Message-Id: <20220608010709.272962-4-maira.canal@usp.br>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220608010709.272962-1-maira.canal@usp.br>
-References: <20220608010709.272962-1-maira.canal@usp.br>
+        Wed, 8 Jun 2022 00:50:00 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB33B128C02;
+        Tue,  7 Jun 2022 18:14:27 -0700 (PDT)
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 2581BA8I031282;
+        Wed, 8 Jun 2022 10:11:11 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 2581BA8I031282
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1654650671;
+        bh=FJ3d90hFDqNnz9JEYs7jnADjBvnY8aZMKAyphj9j8FQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=yjghWcWwYRMxitZyUL2cfl8eITvmxadWxCDw0SbMcpKz2MyXGgJ+ly1TSPq/ZOREo
+         15X7U57MtiIJ+iw69dnAG2fAVfXzNOtbxwf/6fsGjoLa/8F5vr95LcwUQLlvI5+OoY
+         fPcdFnEwctsFeXpUQ6wup9+sWM7YqSYTye0Zj7BP8MsqCJS5CQR8+XNgPWbJqBhnJN
+         dFLjZewr5F69CjZd7dvtgN1BNxa6sh8+ntRjJnhWohhJ7gEz66HKzCSyEXX5kzNaH/
+         74n+TtbTuy6Fnxp9SSGg/pv+cO68yI3uwqcxTojgsCEUQTIe+L22RaS4ERoNLgZ74p
+         ckqlw5FGFWH3g==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Wang Yugui <wangyugui@e16-tech.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Subject: [PATCH v3] scripts/check-local-export: avoid 'wait $!' for process substitution
+Date:   Wed,  8 Jun 2022 10:11:00 +0900
+Message-Id: <20220608011100.486735-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Magali Lemes <magalilemes00@gmail.com>
+Bash 4.4, released in 2016, supports 'wait $!' to check the exit status
+of a process substitution, but it seems too new.
 
-The bw_fixed library performs a lot of the mathematical operations
-involving fixed-point arithmetic and the conversion of integers to
-fixed-point representation.
+Some people using older bash versions (on CentOS 7, Ubuntu 16.04, etc.)
+reported an error like this:
 
-As fixed-point representation is the base foundation of the DML calcs
-operations, this unit tests intend to assure the proper functioning of
-the basic mathematical operations of fixed-point arithmetic, such as
-multiplication, conversion from fractional to fixed-point number, and more.
+  ./scripts/check-local-export: line 54: wait: pid 17328 is not a child of this shell
 
-Co-developed-by: Tales Aparecida <tales.aparecida@gmail.com>
-Signed-off-by: Tales Aparecida <tales.aparecida@gmail.com>
-Signed-off-by: Magali Lemes <magalilemes00@gmail.com>
-Co-developed-by: Maíra Canal <maira.canal@usp.br>
-Signed-off-by: Maíra Canal <maira.canal@usp.br>
+I used the process substitution to avoid a pipeline, which executes each
+command in a subshell. If the while-loop is executed in the subshell
+context, variable changes within are lost after the subshell terminates.
+
+Fortunately, Bash 4.2, released in 2011, supports the 'lastpipe' option,
+which runs the last element of a pipeline in the current shell process.
+
+Also, set 'pipefail' to catch errors from ${NM}.
+
+Add the bash requirement to Documentation/process/changes.rst.
+
+Fixes: 31cb50b5590f ("kbuild: check static EXPORT_SYMBOL* by script instead of modpost")
+Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Reported-by: Michael Ellerman <mpe@ellerman.id.au>
+Reported-by: Wang Yugui <wangyugui@e16-tech.com>
+Tested-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Acked-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
- .../drm/amd/display/amdgpu_dm/tests/Kconfig   |  12 +
- .../drm/amd/display/amdgpu_dm/tests/Makefile  |   4 +
- .../amdgpu_dm/tests/calcs/bw_fixed_test.c     | 322 ++++++++++++++++++
- .../amd/display/amdgpu_dm/tests/dml_test.c    |   3 +
- .../amd/display/amdgpu_dm/tests/dml_test.h    |   8 +
- 5 files changed, 349 insertions(+)
- create mode 100644 drivers/gpu/drm/amd/display/amdgpu_dm/tests/calcs/bw_fixed_test.c
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/tests/Kconfig b/drivers/gpu/drm/amd/display/amdgpu_dm/tests/Kconfig
-index bd1d971d4452..540b2f79f971 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/tests/Kconfig
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/tests/Kconfig
-@@ -2,6 +2,18 @@
- menu "DML Unit Tests"
- 	depends on DRM_AMD_DC && KUNIT=m
+Changes in v3:
+  - Add "TODO:" to the comment block (Nick)
+
+Changes in v2:
+  - Add bash to Documentation/process/changes.rst
+
+ Documentation/process/changes.rst | 12 +++++++++++
+ scripts/check-local-export        | 36 ++++++++++++++++++-------------
+ 2 files changed, 33 insertions(+), 15 deletions(-)
+
+diff --git a/Documentation/process/changes.rst b/Documentation/process/changes.rst
+index 34415ae1af1b..19c286c23786 100644
+--- a/Documentation/process/changes.rst
++++ b/Documentation/process/changes.rst
+@@ -32,6 +32,7 @@ you probably needn't concern yourself with pcmciautils.
+ GNU C                  5.1              gcc --version
+ Clang/LLVM (optional)  11.0.0           clang --version
+ GNU make               3.81             make --version
++bash                   4.2              bash --version
+ binutils               2.23             ld -v
+ flex                   2.5.35           flex --version
+ bison                  2.0              bison --version
+@@ -84,6 +85,12 @@ Make
  
-+config BW_FIXED_KUNIT_TEST
-+	bool "Enable unit tests for dml/calcs/bw_fixed" if !DML_KUNIT_TEST
-+	default y if DML_KUNIT_TEST
-+	help
-+		Enables unit tests for the dml/calcs/bw_fixed. Only useful for kernel
-+		devs running KUnit.
-+
-+		For more information on KUnit and unit tests in general please refer to
-+		the KUnit documentation in Documentation/dev-tools/kunit/.
-+
-+		If unsure, say N.
-+
- config DISPLAY_MODE_LIB_KUNIT_TEST
- 	bool "Enable unit tests for dml/display_mode_lib" if !DML_KUNIT_TEST
- 	default y if DML_KUNIT_TEST
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/tests/Makefile b/drivers/gpu/drm/amd/display/amdgpu_dm/tests/Makefile
-index 53b38e340564..23109e51cf32 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/tests/Makefile
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/tests/Makefile
-@@ -5,6 +5,10 @@
+ You will need GNU make 3.81 or later to build the kernel.
  
- DML_TESTS = dml_test.o
++Bash
++----
++
++Some bash scripts are used for the kernel build.
++Bash 4.2 or newer is needed.
++
+ Binutils
+ --------
  
-+ifdef CONFIG_BW_FIXED_KUNIT_TEST
-+DML_TESTS += calcs/bw_fixed_test.o
-+endif
-+
- ifdef CONFIG_DISPLAY_MODE_LIB_KUNIT_TEST
- DML_TESTS += display_mode_lib_test.o
- endif
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/tests/calcs/bw_fixed_test.c b/drivers/gpu/drm/amd/display/amdgpu_dm/tests/calcs/bw_fixed_test.c
-new file mode 100644
-index 000000000000..344c1517745e
---- /dev/null
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/tests/calcs/bw_fixed_test.c
-@@ -0,0 +1,322 @@
-+// SPDX-License-Identifier: MIT
-+/*
-+ * KUnit tests for dml/calcs/bw_fixed.h
-+ *
-+ * Copyright (C) 2022, Magali Lemes <magalilemes00@gmail.com>
-+ * Copyright (C) 2022, Maíra Canal <mairacanal@riseup.net>
-+ * Copyright (C) 2022, Tales Aparecida <tales.aparecida@gmail.com>
-+ */
-+
-+#include <kunit/test.h>
-+#include "../../../dc/inc/bw_fixed.h"
-+#include "../dml_test.h"
-+
-+/**
-+ * DOC: Unit tests for AMDGPU DML calcs/bw_fixed.h
-+ *
-+ * bw_fixed.h performs a lot of the mathematical operations involving
-+ * fixed-point arithmetic and the conversion of integers to fixed-point
-+ * representation.
-+ *
-+ * As fixed-point representation is the base foundation of the DML calcs
-+ * operations, these tests intend to assure the proper functioning of the
-+ * basic mathematical operations of fixed-point arithmetic, such as
-+ * multiplication, conversion from fractional to fixed-point number, and more.
-+ *
-+ */
-+
-+static void abs_i64_test(struct kunit *test)
-+{
-+	KUNIT_EXPECT_EQ(test, 0ULL, abs_i64(0LL));
-+
-+	/* Argument type limits */
-+	KUNIT_EXPECT_EQ(test, (uint64_t)MAX_I64, abs_i64(MAX_I64));
-+	KUNIT_EXPECT_EQ(test, (uint64_t)MAX_I64 + 1, abs_i64(MIN_I64));
-+}
-+
-+static void bw_int_to_fixed_nonconst_test(struct kunit *test)
-+{
-+	struct bw_fixed res;
-+
-+	/* Add BW_FIXED_BITS_PER_FRACTIONAL_PART trailing 0s to binary number */
-+	res = bw_int_to_fixed_nonconst(1000);          /* 0x3E8 */
-+	KUNIT_EXPECT_EQ(test, 16777216000, res.value); /* 0x3E8000000 */
-+
-+	res = bw_int_to_fixed_nonconst(-1000);          /* -0x3E8 */
-+	KUNIT_EXPECT_EQ(test, -16777216000, res.value); /* -0x3E8000000 */
-+
-+	res = bw_int_to_fixed_nonconst(0LL);
-+	KUNIT_EXPECT_EQ(test, 0, res.value);
-+
-+	/**
-+	 * Test corner cases, as the function's argument has to be an int64_t
-+	 * between BW_FIXED_MIN_I32 and BW_FIXED_MAX_I32.
-+	 */
-+	res = bw_int_to_fixed_nonconst(BW_FIXED_MAX_I32 - 1);  /* 0x7FFFFFFFFE */
-+	KUNIT_EXPECT_EQ(test, 9223372036821221376, res.value); /* 0x7FFFFFFFFE000000 */
-+
-+	res = bw_int_to_fixed_nonconst(BW_FIXED_MIN_I32 + 1);   /* -0x7FFFFFFFFF */
-+	KUNIT_EXPECT_EQ(test, -9223372036837998592, res.value); /* -0x7FFFFFFFFF000000 */
-+}
-+
-+static void bw_frc_to_fixed_test(struct kunit *test)
-+{
-+	struct bw_fixed res;
-+
-+	/* Extreme scenarios */
-+
-+	/* A fraction of N/N should result in "1.0" */
-+	res = bw_frc_to_fixed(MAX_I64, MAX_I64);
-+	KUNIT_EXPECT_EQ(test, 1LL << BW_FIXED_BITS_PER_FRACTIONAL_PART, res.value);
-+
-+	res = bw_frc_to_fixed(1, MAX_I64);
-+	KUNIT_EXPECT_EQ(test, 0LL, res.value);
-+
-+	res = bw_frc_to_fixed(0, MAX_I64);
-+	KUNIT_EXPECT_EQ(test, 0LL, res.value);
-+
-+	/* Turn a repeating decimal to the fixed-point representation */
-+
-+	/* A repeating decimal that doesn't round up the LSB */
-+	res = bw_frc_to_fixed(4, 3);
-+	KUNIT_EXPECT_EQ(test, 22369621LL, res.value);     /* 0x1555555 */
-+
-+	res = bw_frc_to_fixed(-4, 3);
-+	KUNIT_EXPECT_EQ(test, -22369621LL, res.value);    /* -0x1555555 */
-+
-+	res = bw_frc_to_fixed(99999997, 100000000);
-+	KUNIT_EXPECT_EQ(test, 16777215LL, res.value);     /* 0x0FFFFFF */
-+
-+	/* A repeating decimal that rounds up the MSB */
-+	res = bw_frc_to_fixed(5, 3);
-+	KUNIT_EXPECT_EQ(test, 27962027LL, res.value);     /* 0x1AAAAAB */
-+
-+	res = bw_frc_to_fixed(-5, 3);
-+	KUNIT_EXPECT_EQ(test, -27962027LL, res.value);    /* -0x1AAAAAB */
-+
-+	res = bw_frc_to_fixed(99999998, 100000000);
-+	KUNIT_EXPECT_EQ(test, 1LL << BW_FIXED_BITS_PER_FRACTIONAL_PART, res.value);
-+
-+	/* Turn a terminating decimal to the fixed-point representation */
-+	res = bw_frc_to_fixed(62609, 100);
-+	KUNIT_EXPECT_EQ(test, 10504047165LL, res.value);  /* 0X272170A3D */
-+
-+	res = bw_frc_to_fixed(-62609, 100);
-+	KUNIT_EXPECT_EQ(test, -10504047165LL, res.value); /* -0X272170A3D */
-+}
-+
-+static void bw_floor2_test(struct kunit *test)
-+{
-+	struct bw_fixed arg;
-+	struct bw_fixed significance;
-+	struct bw_fixed res;
-+
-+	/* Round 10 down to the nearest multiple of 3 */
-+	arg.value = 10;
-+	significance.value = 3;
-+	res = bw_floor2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, 9, res.value);
-+
-+	/* Round 10 down to the nearest multiple of 5 */
-+	arg.value = 10;
-+	significance.value = 5;
-+	res = bw_floor2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, 10, res.value);
-+
-+	/* Round 100 down to the nearest multiple of 7 */
-+	arg.value = 100;
-+	significance.value = 7;
-+	res = bw_floor2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, 98, res.value);
-+
-+	/* Round an integer down to its nearest multiple should return itself */
-+	arg.value = MAX_I64;
-+	significance.value = MAX_I64;
-+	res = bw_floor2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, MAX_I64, res.value);
-+
-+	arg.value = MIN_I64;
-+	significance.value = MIN_I64;
-+	res = bw_floor2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, MIN_I64, res.value);
-+
-+	/* Value is a multiple of significance, result should be value */
-+	arg.value = MAX_I64;
-+	significance.value = MIN_I64 + 1;
-+	res = bw_floor2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, MAX_I64, res.value);
-+
-+	/* Round 0 down to the nearest multiple of any number should return 0 */
-+	arg.value = 0;
-+	significance.value = MAX_I64;
-+	res = bw_floor2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, 0, res.value);
-+
-+	arg.value = 0;
-+	significance.value = MIN_I64;
-+	res = bw_floor2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, 0, res.value);
-+}
-+
-+static void bw_ceil2_test(struct kunit *test)
-+{
-+	struct bw_fixed arg;
-+	struct bw_fixed significance;
-+	struct bw_fixed res;
-+
-+	/* Round 10 up to the nearest multiple of 3 */
-+	arg.value = 10;
-+	significance.value = 3;
-+	res = bw_ceil2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, 12, res.value);
-+
-+	/* Round 10 up to the nearest multiple of 5 */
-+	arg.value = 10;
-+	significance.value = 5;
-+	res = bw_ceil2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, 10, res.value);
-+
-+	/* Round 100 up to the nearest multiple of 7 */
-+	arg.value = 100;
-+	significance.value = 7;
-+	res = bw_ceil2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, 105, res.value);
-+
-+	/* Round an integer up to its nearest multiple should return itself */
-+	arg.value = MAX_I64;
-+	significance.value = MAX_I64;
-+	res = bw_ceil2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, MAX_I64, res.value);
-+
-+	arg.value = MIN_I64 + 1;
-+	significance.value = MIN_I64 + 1;
-+	res = bw_ceil2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, MIN_I64 + 1, res.value);
-+
-+	/* Value is a multiple of significance, result should be value */
-+	arg.value = MAX_I64;
-+	significance.value = MIN_I64 + 1;
-+	res = bw_ceil2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, MAX_I64, res.value);
-+
-+	/* Round 0 up to the nearest multiple of any number should return 0 */
-+	arg.value = 0;
-+	significance.value = MAX_I64;
-+	res = bw_ceil2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, 0, res.value);
-+
-+	arg.value = 0;
-+	significance.value = MIN_I64;
-+	res = bw_ceil2(arg, significance);
-+	KUNIT_EXPECT_EQ(test, 0, res.value);
-+}
-+
-+static void bw_mul_test(struct kunit *test)
-+{
-+	struct bw_fixed arg1;
-+	struct bw_fixed arg2;
-+	struct bw_fixed res;
-+	struct bw_fixed ans;
-+
-+	/* Extreme scenario */
-+	arg1.value = MAX_I64;
-+	arg2.value = MIN_I64;
-+	res = bw_mul(arg1, arg2);
-+	KUNIT_EXPECT_EQ(test, BW_FIXED_MAX_I32 + 1, res.value);
-+
-+	/* Testing multiplication property: x * 1 = x */
-+	arg1.value = 1;
-+	arg2.value = MAX_I64;
-+	res = bw_mul(arg1, arg2);
-+	KUNIT_EXPECT_EQ(test, BW_FIXED_MAX_I32 + 1, res.value);
-+
-+	arg1.value = 1;
-+	arg2.value = MIN_I64;
-+	res = bw_mul(arg1, arg2);
-+	KUNIT_EXPECT_EQ(test, BW_FIXED_MIN_I32, res.value);
-+
-+	/* Testing multiplication property: x * 0 = 0 */
-+	arg1.value = 0;
-+	arg2.value = 0;
-+	res = bw_mul(arg1, arg2);
-+	KUNIT_EXPECT_EQ(test, 0, res.value);
-+
-+	arg1.value = 0;
-+	arg2.value = MAX_I64;
-+	res = bw_mul(arg1, arg2);
-+	KUNIT_EXPECT_EQ(test, 0, res.value);
-+
-+	arg1.value = 0;
-+	arg2.value = MIN_I64;
-+	res = bw_mul(arg1, arg2);
-+	KUNIT_EXPECT_EQ(test, 0, res.value);
-+
-+	/* Testing multiplication between integers */
-+	res = bw_mul(bw_int_to_fixed(8), bw_int_to_fixed(10));
-+	KUNIT_EXPECT_EQ(test, 1342177280LL, res.value); /* 0x50000000 */
-+
-+	res = bw_mul(bw_int_to_fixed(10), bw_int_to_fixed(5));
-+	KUNIT_EXPECT_EQ(test, 838860800LL, res.value); /* 0x32000000 */
-+
-+	res = bw_mul(bw_int_to_fixed(-10), bw_int_to_fixed(7));
-+	KUNIT_EXPECT_EQ(test, -1174405120LL, res.value); /* -0x46000000 */
-+
-+	/* Testing multiplication between fractions and integers */
-+	res = bw_mul(bw_frc_to_fixed(4, 3), bw_int_to_fixed(3));
-+	ans = bw_int_to_fixed(4);
-+
-+	/**
-+	 * As bw_frc_to_fixed(4, 3) didn't round up the fixed-point representation,
-+	 * the ans must be subtrated by 1.
-+	 */
-+	KUNIT_EXPECT_EQ(test, ans.value - 1, res.value);
-+
-+	res = bw_mul(bw_frc_to_fixed(5, 3), bw_int_to_fixed(3));
-+	ans = bw_int_to_fixed(5);
-+
-+	/**
-+	 * As bw_frc_to_fixed(5, 3) rounds up the fixed-point representation,
-+	 * the ans must be added by 1.
-+	 */
-+	KUNIT_EXPECT_EQ(test, ans.value + 1, res.value);
-+}
-+
-+static struct kunit_case bw_fixed_test_cases[] = {
-+	KUNIT_CASE(abs_i64_test),
-+	KUNIT_CASE(bw_int_to_fixed_nonconst_test),
-+	KUNIT_CASE(bw_frc_to_fixed_test),
-+	KUNIT_CASE(bw_floor2_test),
-+	KUNIT_CASE(bw_ceil2_test),
-+	KUNIT_CASE(bw_mul_test),
-+	{  }
-+};
-+
-+static struct kunit_suite bw_fixed_test_suite = {
-+	.name = "dml-calcs-bw-fixed",
-+	.test_cases = bw_fixed_test_cases,
-+};
-+
-+static struct kunit_suite *bw_fixed_test_suites[] = { &bw_fixed_test_suite, NULL };
-+
-+int bw_fixed_test_init(void)
-+{
-+	pr_info("===> Running calcs/bw_fixed KUnit Tests");
-+	pr_info("**********************************************************");
-+	pr_info("**   NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   **");
-+	pr_info("**                                                      **");
-+	pr_info("** calcs/bw_fixed KUnit Tests are being run. This means **");
-+	pr_info("** that this is a TEST kernel and should not be used    **");
-+	pr_info("** for production.                                      **");
-+	pr_info("**                                                      **");
-+	pr_info("** If you see this message and you are not debugging    **");
-+	pr_info("** the kernel, report this immediately to your vendor!  **");
-+	pr_info("**                                                      **");
-+	pr_info("**********************************************************");
-+
-+	return __kunit_test_suites_init(bw_fixed_test_suites);
-+}
-+
-+void bw_fixed_test_exit(void)
-+{
-+	return __kunit_test_suites_exit(bw_fixed_test_suites);
-+}
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/tests/dml_test.c b/drivers/gpu/drm/amd/display/amdgpu_dm/tests/dml_test.c
-index 9a5d47597c10..98ae4e8cd952 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/tests/dml_test.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/tests/dml_test.c
-@@ -13,11 +13,14 @@
-  */
- int amdgpu_dml_test_init(void)
- {
-+	bw_fixed_test_init();
- 	display_mode_lib_test_init();
-+
- 	return 0;
- }
+@@ -362,6 +369,11 @@ Make
  
- void amdgpu_dml_test_exit(void)
- {
- 	display_mode_lib_test_exit();
-+	bw_fixed_test_exit();
- }
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/tests/dml_test.h b/drivers/gpu/drm/amd/display/amdgpu_dm/tests/dml_test.h
-index 2786db9d0e87..d8fe38abd9bc 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/tests/dml_test.h
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/tests/dml_test.h
-@@ -2,6 +2,14 @@
- #ifndef DML_TEST_H_
- #define DML_TEST_H_
+ - <ftp://ftp.gnu.org/gnu/make/>
  
-+#if defined (CONFIG_BW_FIXED_KUNIT_TEST)
-+int bw_fixed_test_init(void);
-+void bw_fixed_test_exit(void);
-+#else
-+static inline int bw_fixed_test_init(void) { return 0; }
-+static inline void bw_fixed_test_exit(void) { }
-+#endif
++Bash
++----
 +
- #if defined (CONFIG_DISPLAY_MODE_LIB_KUNIT_TEST)
- int display_mode_lib_test_init(void);
- void display_mode_lib_test_exit(void);
++- <ftp://ftp.gnu.org/gnu/bash/>
++
+ Binutils
+ --------
+ 
+diff --git a/scripts/check-local-export b/scripts/check-local-export
+index da745e2743b7..6ccc2f467416 100755
+--- a/scripts/check-local-export
++++ b/scripts/check-local-export
+@@ -8,11 +8,31 @@
+ 
+ set -e
+ 
++# catch errors from ${NM}
++set -o pipefail
++
++# Run the last element of a pipeline in the current shell.
++# Without this, the while-loop would be executed in a subshell, and
++# the changes made to 'symbol_types' and 'export_symbols' would be lost.
++shopt -s lastpipe
++
+ declare -A symbol_types
+ declare -a export_symbols
+ 
+ exit_code=0
+ 
++# If there is no symbol in the object, ${NM} (both GNU nm and llvm-nm) shows
++# 'no symbols' diagnostic (but exits with 0). It is harmless and hidden by
++# '2>/dev/null'. However, it suppresses real error messages as well. Add a
++# hand-crafted error message here.
++#
++# TODO:
++# Use --quiet instead of 2>/dev/null when we upgrade the minimum version of
++# binutils to 2.37, llvm to 13.0.0.
++# Then, the following line will be really simple:
++#   ${NM} --quiet ${1} |
++
++{ ${NM} ${1} 2>/dev/null || { echo "${0}: ${NM} failed" >&2; false; } } |
+ while read value type name
+ do
+ 	# Skip the line if the number of fields is less than 3.
+@@ -37,21 +57,7 @@ do
+ 	if [[ ${name} == __ksymtab_* ]]; then
+ 		export_symbols+=(${name#__ksymtab_})
+ 	fi
+-
+-	# If there is no symbol in the object, ${NM} (both GNU nm and llvm-nm)
+-	# shows 'no symbols' diagnostic (but exits with 0). It is harmless and
+-	# hidden by '2>/dev/null'. However, it suppresses real error messages
+-	# as well. Add a hand-crafted error message here.
+-	#
+-	# Use --quiet instead of 2>/dev/null when we upgrade the minimum version
+-	# of binutils to 2.37, llvm to 13.0.0.
+-	#
+-	# Then, the following line will be really simple:
+-	#   done < <(${NM} --quiet ${1})
+-done < <(${NM} ${1} 2>/dev/null || { echo "${0}: ${NM} failed" >&2; false; } )
+-
+-# Catch error in the process substitution
+-wait $!
++done
+ 
+ for name in "${export_symbols[@]}"
+ do
 -- 
-2.36.1
+2.32.0
 
