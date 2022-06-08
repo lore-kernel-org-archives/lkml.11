@@ -2,96 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 132AFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:27:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F7F2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:27:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239198AbiFHM1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44960 "EHLO
+        id S239201AbiFHM1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:27:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239180AbiFHM06 (ORCPT
+        with ESMTP id S239160AbiFHM1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:26:58 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B3B184845;
-        Wed,  8 Jun 2022 05:26:54 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 258AWS13010581;
-        Wed, 8 Jun 2022 12:26:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2021-07-09; bh=gGlz3Xh4fMvnsBn24mDsLniCAW1xIzKldQYRF4hoszE=;
- b=Wo6GeMF981XG1B6wF082NcFuruHywIngJ5vIr9xS1YP2b9LeI0vjL4DawEFadrDdWGOz
- XlTWUJ85HuCTfW4bdYi+Vq1Y4eYV8SDOXoqqO7MEZP9EKRnssp7DK1wnCvTJyS4GHKNW
- rzfCpzrMMyJwuei2T6gh1nlAd1+ugKoHc1xrxsqCOFMWAQJLX9heScaBTtlTQP2GwPaK
- eGxNpASHMwZ3fOYERfMsc2581ZlY/RZegUcU+Ukoa1bees8jjzhZ2AWt0JmqgS9cbgS9
- mQcj5U5WvPwM2ogES9OlrBp0Pn0hyVaBGJaZT1tFre1QdrYJ/o7CE6a5rtONUgLWX3xO ng== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3ghvs3bqrd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 08 Jun 2022 12:26:47 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 258CAL4J029684;
-        Wed, 8 Jun 2022 12:26:47 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gfwu40reu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 08 Jun 2022 12:26:47 +0000
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 258CQkwi029417;
-        Wed, 8 Jun 2022 12:26:46 GMT
-Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gfwu40ree-1;
-        Wed, 08 Jun 2022 12:26:46 +0000
-From:   Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-To:     jikos@kernel.org, benjamin.tissoires@redhat.com, eudean@arista.com
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dan.carpenter@oracle.com, harshit.m.mogalapalli@oracle.com
-Subject: [PATCH] HID: cp2112: prevent a buffer overflow in cp2112_xfer()
-Date:   Wed,  8 Jun 2022 05:26:09 -0700
-Message-Id: <20220608122609.70861-1-harshit.m.mogalapalli@oracle.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 8 Jun 2022 08:27:39 -0400
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3556B2383F8;
+        Wed,  8 Jun 2022 05:27:38 -0700 (PDT)
+Received: by mail-wr1-f51.google.com with SMTP id q26so17786771wra.1;
+        Wed, 08 Jun 2022 05:27:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=olXSHoK0AVfUatuPzpksjr3kjUvIgoKcvlcJNQWKpqg=;
+        b=ChxkkUQRoDL6yMY9Y9uRxuDS1I3u95QMzjFt4BpH/dj5UC3Z9kGOc9Aa1H+JjFyJZH
+         pcB6krn8VjkViWJWFP/2hA68Ng9SNXs40Z4xxU18rPgEf7MI6xPeRhn8lF8SG/iL1jXs
+         x915nfB9pYP31GTz3bdR1brc1PNH7KQCmo7Dr4dNIZo4I9nv2gpcLxcfVCZuFLT6A3Wg
+         aezL3FjjhGn1UHQsExyMCAO+fPhFVTmOT8CODEIf6qzlf/S24Nc1nBmV2Sl5rL+qDre4
+         JHT5z3YXj5eg0rTfk65HDTMZvaNAJDelXbmjQ5Mt5THSFp0CgHQ/q9PqnIKNvRsLlj81
+         4Zdg==
+X-Gm-Message-State: AOAM530Lwqw12cxrNCdrmcl/9J2SSQGFIb2tvfNCs6W4heLBHpcA9UQ2
+        yH6N1zCyo19Pnjcy76NKBUE=
+X-Google-Smtp-Source: ABdhPJyDnp51cvsxq0KnEnlHaLonX92SKXnq8QCyunTkm09ZTePIxCWrkyJMGc8CFXoQUJkJQd2Lpg==
+X-Received: by 2002:a05:6000:1ac8:b0:218:4187:aab6 with SMTP id i8-20020a0560001ac800b002184187aab6mr14902511wry.236.1654691256539;
+        Wed, 08 Jun 2022 05:27:36 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id p15-20020a05600c358f00b003973ea7e725sm35966983wmq.0.2022.06.08.05.27.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 05:27:36 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 12:27:34 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     "K . Y . Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        linux-hyperv@vger.kernel.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] clocksource: hyper-v: unexport __init-annotated
+ hv_init_clocksource()
+Message-ID: <20220608122734.m25chzpwbr5ancnm@liuwe-devbox-debian-v2>
+References: <20220606050238.4162200-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: Ir0h6eEqx-nPpZSZtiKT0-4OL6USv3By
-X-Proofpoint-GUID: Ir0h6eEqx-nPpZSZtiKT0-4OL6USv3By
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606050238.4162200-1-masahiroy@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Smatch warnings:
-drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy()
-'data->block[1]' too small (33 vs 255)
-drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy() 'buf' too
-small (64 vs 255)
+On Mon, Jun 06, 2022 at 02:02:38PM +0900, Masahiro Yamada wrote:
+> EXPORT_SYMBOL and __init is a bad combination because the .init.text
+> section is freed up after the initialization. Hence, modules cannot
+> use symbols annotated __init. The access to a freed symbol may end up
+> with kernel panic.
+> 
+> modpost used to detect it, but it has been broken for a decade.
+> 
+> Recently, I fixed modpost so it started to warn it again, then this
+> showed up in linux-next builds.
+> 
+> There are two ways to fix it:
+> 
+>   - Remove __init
+>   - Remove EXPORT_SYMBOL
+> 
+> I chose the latter for this case because the only in-tree call-site,
+> arch/x86/kernel/cpu/mshyperv.c is never compiled as modular.
+> (CONFIG_HYPERVISOR_GUEST is boolean)
+> 
+> Fixes: dd2cb348613b ("clocksource/drivers: Continue making Hyper-V clocksource ISA agnostic")
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-The 'read_length' variable is provided by 'data->block[0]' which comes
-from user and it(read_length) can take a value between 0-255. Add an
-upper bound to 'read_length' variable to prevent a buffer overflow in
-memcpy().
-
-Fixes: 542134c0375b ("HID: cp2112: Fix I2C_BLOCK_DATA transactions")
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
----
- drivers/hid/hid-cp2112.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/hid/hid-cp2112.c b/drivers/hid/hid-cp2112.c
-index ece147d1a278..1e16b0fa310d 100644
---- a/drivers/hid/hid-cp2112.c
-+++ b/drivers/hid/hid-cp2112.c
-@@ -790,6 +790,11 @@ static int cp2112_xfer(struct i2c_adapter *adap, u16 addr,
- 		data->word = le16_to_cpup((__le16 *)buf);
- 		break;
- 	case I2C_SMBUS_I2C_BLOCK_DATA:
-+		if (read_length > I2C_SMBUS_BLOCK_MAX) {
-+			ret = -EINVAL;
-+			goto power_normal;
-+		}
-+
- 		memcpy(data->block + 1, buf, read_length);
- 		break;
- 	case I2C_SMBUS_BLOCK_DATA:
--- 
-2.31.1
-
+Applied to hyperv-fixes. Thanks.
