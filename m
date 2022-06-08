@@ -2,81 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EBB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8800AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229610AbiFHH7v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52832 "EHLO
+        id S229680AbiFHIBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:01:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232853AbiFHH6D (ORCPT
+        with ESMTP id S230012AbiFHIBb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:58:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400071E224B;
-        Wed,  8 Jun 2022 00:26:55 -0700 (PDT)
+        Wed, 8 Jun 2022 04:01:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB1623B949
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:34:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C022B81B34;
-        Wed,  8 Jun 2022 07:26:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67D5CC34116;
-        Wed,  8 Jun 2022 07:26:52 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="i5WuCreL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1654673210;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xy/dSaTkB1MEzXO6teAWxD6nuIOwQZ+wyMxL9CGuVac=;
-        b=i5WuCreLPX3OvDS2aEN0rSVqXMlyM18E2T2/oSjh8PeGqrBpUNWEJUKqDd0GcOLd5f6hUS
-        twxqhGLvtzSibXZ2pRzCXW0caczJn6gP0TCrZlX6jVGYsQPrWy7SI8JxJx0a8Z1MA3MNuK
-        QQxS/QoGzxQTWT3A/S6qaMBDJ6YH/cs=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id fb4e7973 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 8 Jun 2022 07:26:50 +0000 (UTC)
-Received: by mail-yb1-f177.google.com with SMTP id p13so35051300ybm.1;
-        Wed, 08 Jun 2022 00:26:49 -0700 (PDT)
-X-Gm-Message-State: AOAM533J+z71AWgV+wqGVw+NhwyhZsFRFzdp/6MIxila6K7m8Rbj7eSK
-        wGcz6AOlkklEUy/aF1trBbNP6Y58Euru0Ix6/hI=
-X-Google-Smtp-Source: ABdhPJzmhFBMe6ueh331IGLDLj115e3CDB7Nh/74/+y0XiaEwrEsF3wXXxEAbW6hUVjApDax3EVT2qwT/s19uRgRHJw=
-X-Received: by 2002:a25:4017:0:b0:664:524:210b with SMTP id
- n23-20020a254017000000b006640524210bmr1410230yba.235.1654673208978; Wed, 08
- Jun 2022 00:26:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220607164908.521895282@linuxfoundation.org> <20220607164908.572141803@linuxfoundation.org>
- <Yp+KxkkTctBDLJTA@arm.com> <CAMj1kXEtFVWgTgKh+vV2oi-mgqfzVJnqJpTneM9mwTEC3+Nasg@mail.gmail.com>
-In-Reply-To: <CAMj1kXEtFVWgTgKh+vV2oi-mgqfzVJnqJpTneM9mwTEC3+Nasg@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 8 Jun 2022 09:26:38 +0200
-X-Gmail-Original-Message-ID: <CAHmME9p1k0-veubZD1647_35WA7PwhVbP8gCmgSRKCP-GJqANg@mail.gmail.com>
-Message-ID: <CAHmME9p1k0-veubZD1647_35WA7PwhVbP8gCmgSRKCP-GJqANg@mail.gmail.com>
-Subject: Re: [PATCH 5.10 001/452] arm64: Initialize jump labels before setup_machine_fdt()
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "# 3.4.x" <stable@vger.kernel.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Stephen Boyd <swboyd@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B992E614FC
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 07:34:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22DD2C34116;
+        Wed,  8 Jun 2022 07:34:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654673645;
+        bh=zUAriSoqt7X75BSYiptDA8HT+jFpatA1VwWFOOuCHJU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qEaE9E6N5v30L8JQ3VERoWqoGcxl8hjBVPm9K5ojoQJfgnnWatnqWxG4DP8/xS08Y
+         owgC1hj6TgQHhVZmWYY07U4Hr4n7znTtDHnqs84R3TKN5D6JAaOti4R2JeDo4yPd86
+         LGx2N9NpwuDbOuk+nao/8IwB8iIyRqwtRG1NSmDkbd7OU9NHPkZV+kM/RMaGs7GksU
+         o5Nvb/O3ljrUr4Y+aY6Z2Ub4n7QZPPuwSFhI+7WsT+gkooyreYBFNJwr9iysfWhfIw
+         lIcr5/Utb29CLYN2QUa/09Zn+YLbk6pfaNGBlRvSY2C1yAReeyCxIEnhV1qnGHK51b
+         pSCFuLuNYzfuQ==
+Received: from ip-185-104-136-29.ptr.icomera.net ([185.104.136.29] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nyqCY-00GWcs-UT; Wed, 08 Jun 2022 08:34:03 +0100
+Date:   Wed, 08 Jun 2022 08:33:59 +0100
+Message-ID: <87k09rzk0o.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     mark.rutland@arm.com, broonie@kernel.org, will@kernel.org,
+        qperret@google.com, tabba@google.com, surenb@google.com,
+        tjmercier@google.com, kernel-team@android.com,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Jones <drjones@redhat.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Keir Fraser <keirf@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Oliver Upton <oupton@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/5] KVM: arm64: Add hypervisor overflow stack
+In-Reply-To: <20220607165105.639716-4-kaleshsingh@google.com>
+References: <20220607165105.639716-1-kaleshsingh@google.com>
+        <20220607165105.639716-4-kaleshsingh@google.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.104.136.29
+X-SA-Exim-Rcpt-To: kaleshsingh@google.com, mark.rutland@arm.com, broonie@kernel.org, will@kernel.org, qperret@google.com, tabba@google.com, surenb@google.com, tjmercier@google.com, kernel-team@android.com, james.morse@arm.com, alexandru.elisei@arm.com, suzuki.poulose@arm.com, catalin.marinas@arm.com, mhiramat@kernel.org, ast@kernel.org, madvenka@linux.microsoft.com, peterz@infradead.org, drjones@redhat.com, yuzenghui@huawei.com, wangkefeng.wang@huawei.com, keirf@google.com, ardb@kernel.org, oupton@google.com, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ard,
+On Tue, 07 Jun 2022 17:50:45 +0100,
+Kalesh Singh <kaleshsingh@google.com> wrote:
+> 
+> Allocate and switch to 16-byte aligned secondary stack on overflow. This
+> provides us stack space to better handle overflows; and is used in
+> a subsequent patch to dump the hypervisor stacktrace.
+> 
+> Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+> ---
+>  arch/arm64/kernel/stacktrace.c | 3 +++
+>  arch/arm64/kvm/hyp/nvhe/host.S | 9 ++-------
+>  2 files changed, 5 insertions(+), 7 deletions(-)
+> 
+> diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+> index a84e38d41d38..f346b4c66f1c 100644
+> --- a/arch/arm64/kernel/stacktrace.c
+> +++ b/arch/arm64/kernel/stacktrace.c
+> @@ -242,4 +242,7 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+>  
+>  	unwind(task, &state, consume_entry, cookie);
+>  }
+> +#else /* __KVM_NVHE_HYPERVISOR__ */
+> +DEFINE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], overflow_stack)
+> +	__aligned(16);
 
-This thread here is about stable review. Catalin mentioned to Greg
-that the arm64 patch isn't required any more. I also mentioned the
-same to Greg yesterday when it was in queue. Either way, what happens
-in 5.19 no longer has any effect on stable any more, since it's been
-reverted in stable. Therefore, I kindly ask you not to start yet
-*another* thread about the same topic we've been discussing over the
-last day. There are already 7 discussions about exactly the same
-thing; no need to make another. Let's resume working on this all
-today.
+Does this need to be a whole page? With 64kB pages, this is
+potentially a lot of memory for something that will hardly ever be
+used. The rest of the kernel limits this to 4kB, which seems more
+reasonable. There is no guard page anyway, so PAGE_SIZE doesn't
+provide any extra protection.
 
-Jason
+>  #endif /* !__KVM_NVHE_HYPERVISOR__ */
+> diff --git a/arch/arm64/kvm/hyp/nvhe/host.S b/arch/arm64/kvm/hyp/nvhe/host.S
+> index ea6a397b64a6..4e3032a244e1 100644
+> --- a/arch/arm64/kvm/hyp/nvhe/host.S
+> +++ b/arch/arm64/kvm/hyp/nvhe/host.S
+> @@ -177,13 +177,8 @@ SYM_FUNC_END(__host_hvc)
+>  	b	hyp_panic
+>  
+>  .L__hyp_sp_overflow\@:
+> -	/*
+> -	 * Reset SP to the top of the stack, to allow handling the hyp_panic.
+> -	 * This corrupts the stack but is ok, since we won't be attempting
+> -	 * any unwinding here.
+> -	 */
+> -	ldr_this_cpu	x0, kvm_init_params + NVHE_INIT_STACK_HYP_VA, x1
+> -	mov	sp, x0
+> +	/* Switch to the overflow stack */
+> +	adr_this_cpu sp, overflow_stack + PAGE_SIZE, x0
+>  
+>  	b	hyp_panic_bad_stack
+>  	ASM_BUG()
+> -- 
+> 2.36.1.255.ge46751e96f-goog
+> 
+> 
+
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
