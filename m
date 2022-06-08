@@ -2,89 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE011C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:24:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C19F8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:26:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239187AbiFHMYE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56570 "EHLO
+        id S239301AbiFHM0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:26:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239180AbiFHMYA (ORCPT
+        with ESMTP id S239210AbiFHMZ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:24:00 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7A71F187E;
-        Wed,  8 Jun 2022 05:23:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654691034; x=1686227034;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ogrZ4q/o6zXk4o+X+qsQgG9Jvd4n3nuZ6xC2HGV8zrk=;
-  b=kvBLEWJsGPQDfk7TE0f9NvqrnEJmCsp1v7u35ztFYtsinNzYllYIWB39
-   8ag/ONIAg4jW5XCCYxmpWFnJEoHQaFoKTSVDeHHgcaRoztaV2EjSC0I5K
-   y4an3DpC5Ct0rCex/xN03ts7MurRaNNK86wBTqedUqOY0BRLJyg4RklwK
-   XlUEWcfW6DXAkues4wqKh3yf23oZxhmWNhQ+CNsa8mbPnVvysKnNUopoP
-   aDvdlAVOS0QALZoGI/zy2rdVR0Deazo1rkYDS9PrGo4ES0z6MuEKrOsQs
-   1JshFS1adeyZN8rDquLl5VY4Pv7DcvsZ1e/ofmTH34MaD/r3ZDkdMsh/R
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="256707085"
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="256707085"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 05:23:31 -0700
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="580034303"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 05:23:30 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nyuid-000X0F-EK;
-        Wed, 08 Jun 2022 15:23:27 +0300
-Date:   Wed, 8 Jun 2022 15:23:27 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v1 2/2] spi: Use device_find_first_child() instead of
- custom approach
-Message-ID: <YqCUv2tSwzALSVsm@smile.fi.intel.com>
-References: <20220607202058.8304-1-andriy.shevchenko@linux.intel.com>
- <20220607202058.8304-2-andriy.shevchenko@linux.intel.com>
- <YqCJsRqrCRiIBm1P@kroah.com>
- <YqCMunw+2WHIinOP@smile.fi.intel.com>
- <YqCQFFRXyaaQNSWv@kroah.com>
+        Wed, 8 Jun 2022 08:25:59 -0400
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60FBF23D9B0;
+        Wed,  8 Jun 2022 05:25:34 -0700 (PDT)
+Received: by mail-wr1-f49.google.com with SMTP id v14so1898489wra.5;
+        Wed, 08 Jun 2022 05:25:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=miroqaPLT+voTbrWIvYlkPFyflXhDq+fnt6QQ2RQNKA=;
+        b=HTLvpujmf14Aj3HpgMRl97djw/cX4dkiqrnR/xiCaI3A2c7K4bm5i1Qv2x96Nyt9W7
+         ubXFQsOuHWnQDoPjE0Y6va6bu/7HdLnPaHcyuL3pML/muvqt1hqua2il715BSydzFuTe
+         o3xu1GqtmZgWBwvzH/HArLKmhB6K4SOU6kRq1SGy7fNHl9bcytH4zB5D/medMhNlukSp
+         N7LW8y2uevefUHLO164gGn/bqjnqeeajFtqczzo4ZaMChkz48mEiNzkxvabFjKyh+QMJ
+         di//FM+evpqCRWfS9jb4cHZs2OJ973UOeQdoOpeaRhKGdZswwklb5W6FgWgBDy0lV+go
+         DSTg==
+X-Gm-Message-State: AOAM532Xd2IeMWbG8ijWAvaoPPlGb+4mMvUQtFXnB/xAwfi+fXcz/+72
+        xnuK1jlbWwbaolP711qSkr5o7xRzS0Y=
+X-Google-Smtp-Source: ABdhPJxMDHUyb6xW2jhwtjjT8glIqcx+uDz3PJG6GG31C1Nhr2KjTeHHQsG1AvjE982+/fGqJ8jojA==
+X-Received: by 2002:a05:6000:170a:b0:215:6799:782c with SMTP id n10-20020a056000170a00b002156799782cmr26315518wrc.38.1654691132655;
+        Wed, 08 Jun 2022 05:25:32 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id l14-20020adfe58e000000b002117ef160fbsm20973946wrm.21.2022.06.08.05.25.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 05:25:31 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 12:25:29 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     Saurabh Sengar <ssengar@linux.microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Saurabh Singh Sengar <ssengar@microsoft.com>
+Subject: Re: [RESEND PATCH v2] Drivers: hv: vmbus: Don't assign VMbus channel
+ interrupts to isolated CPUs
+Message-ID: <20220608122529.ub4knslhufwwsmhn@liuwe-devbox-debian-v2>
+References: <1653637439-23060-1-git-send-email-ssengar@linux.microsoft.com>
+ <BY3PR21MB30338E99CC13116ECAB27BD7D7DB9@BY3PR21MB3033.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YqCQFFRXyaaQNSWv@kroah.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <BY3PR21MB30338E99CC13116ECAB27BD7D7DB9@BY3PR21MB3033.namprd21.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 02:03:32PM +0200, Greg Kroah-Hartman wrote:
-> On Wed, Jun 08, 2022 at 02:49:14PM +0300, Andy Shevchenko wrote:
+On Sat, May 28, 2022 at 01:11:21PM +0000, Michael Kelley (LINUX) wrote:
+> From: Saurabh Sengar <ssengar@linux.microsoft.com> Sent: Friday, May 27, 2022 12:44 AM
+> > 
+> > When initially assigning a VMbus channel interrupt to a CPU, don’t choose
+> > a managed IRQ isolated CPU (as specified on the kernel boot line with
+> > parameter 'isolcpus=managed_irq,<#cpu>'). Also, when using sysfs to change
+> > the CPU that a VMbus channel will interrupt, don't allow changing to a
+> > managed IRQ isolated CPU.
+> > 
+> > Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+> > ---
+[...]
+> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
 
-...
-
-> Why not exactly?  match_true() above and device_match_any() have the
-> same signature from what I can tell:
-> 	static int match_true(struct device *dev, void *data)
-> 	int device_match_any(struct device *dev, const void *unused)
-> 
-> What am I missing, the const?
-
-Yep! Compiler is very unhappy about it.
-
-> > I agree that all thing should be using _any instead of _first.
-> 
-> Yes, so let's fix it please, don't propagate bad patterns.
-
-Will do, thanks!
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Applied to hyperv-fixes. Thanks.
