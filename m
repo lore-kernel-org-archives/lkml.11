@@ -2,106 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF0CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 17:27:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFDD9C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 17:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231998AbiFHR1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 13:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
+        id S231548AbiFHR2X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 13:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232535AbiFHR1D (ORCPT
+        with ESMTP id S231459AbiFHR2J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 13:27:03 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F7044B1FE
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 10:24:57 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id y16so17050800ili.13
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 10:24:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PxDHLMbJGF1owInS1P62PcKBFVUxfaTCqLJGBkURXio=;
-        b=NWQvZlCaFl4ev3AHkiIjWn7DpPpA/YGVIyZ3INP/rq0bB0FmZ/lF0tlT5w3PVjnD9j
-         HFtr+bfbBjsMpHiR0FCPUfH2i3CP9tmcWLnaXbaOvPi9yiPfad+ea2XUXcdY4q+oFH+D
-         DK8YOLOF5LqyySYK0IyaeXiyo5YYBYaVL4rFEtcvtaA8dVHfVGeF57AWN7xXPAGy4l/7
-         F6kb7bVnURpfI5omVoXyGMPYRByn0kz8qfiscjTYRkUdAmdmRBPt6+ti3zT/hpNAGcJt
-         7FifBVcLhjWa3hSnCGyE7bdoK91ef3ZubT+YbtqLOoaeZZm4+khVtvEupPpNMzSwewau
-         93Pw==
+        Wed, 8 Jun 2022 13:28:09 -0400
+Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA8213586C;
+        Wed,  8 Jun 2022 10:26:43 -0700 (PDT)
+Received: by mail-pg1-f181.google.com with SMTP id f65so9329940pgc.7;
+        Wed, 08 Jun 2022 10:26:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PxDHLMbJGF1owInS1P62PcKBFVUxfaTCqLJGBkURXio=;
-        b=LDv1IdiUEDdUInHI0HbdLbMd1hJlIjQ5bcpKuCmjCkRKYT9gMvL+lNKCHsVbANo0h1
-         OmpvlQn7MqolMoLqHnxgqVbCjurJCOg+P+y0lNLSkjRM2Be0k0FwhfHStRcpbXHLMqqI
-         i82v5FV/dk8HLNNlv+QgD3NzzZUQrnGLRo2H11ekW7ruxF6+5c10R36X9HwK4s+UOZz9
-         jgYT2h9IStQMLDV2Z2XO9xVmn3s3kmYI3V0gitNZYTcI99HSnHWO7K3qxJNQP6neNPZp
-         rXGNcaK/5fMCnOAZM2wKhEqN0hUZJ0pe370LOpQQW3/42LmTyB2HCEL4/KJQrzvWfUbM
-         lfgg==
-X-Gm-Message-State: AOAM5307XL/3yVCBO63dqDdOYh7YTaV86FV8vRResWxe53XWVf/3qsG5
-        RQUqksVCm+jA9DzEX02x89ULftDLaJ4e9eRx230=
-X-Google-Smtp-Source: ABdhPJxkLaD1dwYdQRmEIZrk58IzhaQn5SrfYBQSPh/SdHNBCe4LFP/mPXVNu9ckhLxMfhCHQK8FrQ37Cl0ojC39+j0=
-X-Received: by 2002:a05:6e02:1c88:b0:2d1:87ea:18c with SMTP id
- w8-20020a056e021c8800b002d187ea018cmr19763313ill.321.1654709096662; Wed, 08
- Jun 2022 10:24:56 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vdq4x2cK2Kxb7bPLAXT0rRqzYQf9uH8WQ9IJlchFrLc=;
+        b=jRFKiT1kHAmJTYJo2KyTn5ixFFyDjuFa6fxsl1WNSKLzhgNMDMOAi6WTiuKex7secK
+         O6Gd/25v/L9ZGBaw3PJHmWaOZoWfKq+6z4Y4gU25o8vz/XIQuPEIbTs2oah4IP/+Xs3R
+         mwe7tNnruEIRRzH/xAjbSaS5DU8a0x31WFh2UbNKZBYusnp4byTSIq9wyGmli/T/gtEr
+         md6BytTdEaK8ss4WC5+529einlHqxdK3qCO3RZgBqIOIpT3l8DZlqZ1kcB04U3kQEwH7
+         RbBsHsMxATaWjuqn/fSKEuF6rXGwgvzl9ZYMD628qvcYgL1bJrP9wcEUAP4VmnyPsSqV
+         5Lqw==
+X-Gm-Message-State: AOAM531RTOV1FyEIOHqez0JU1MEJTzS2fW5eq5woT6oYsPjKhMfviyVQ
+        /VcVzxXcJsYH9w0Mzd3z5/0=
+X-Google-Smtp-Source: ABdhPJy2XkL1wjH+iK3e6e2Hx2QMmfgjTy/wyGK/xCsPzQDJHM5fZRi20ssFAqNOW/TkC9QwcpHNxQ==
+X-Received: by 2002:a05:6a00:1344:b0:51b:ed0d:dbbd with SMTP id k4-20020a056a00134400b0051bed0ddbbdmr26197497pfu.45.1654709202923;
+        Wed, 08 Jun 2022 10:26:42 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:1cb7:9e5d:5ca4:2a39? ([2620:15c:211:201:1cb7:9e5d:5ca4:2a39])
+        by smtp.gmail.com with ESMTPSA id p5-20020a62d005000000b0050dc762813csm3282490pfg.22.2022.06.08.10.26.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 10:26:42 -0700 (PDT)
+Message-ID: <d7a72f92-15c9-1d58-c711-83c47444094e@acm.org>
+Date:   Wed, 8 Jun 2022 10:26:40 -0700
 MIME-Version: 1.0
-References: <20220608150008.57629-1-1030steven@gmail.com> <3193fcc9-c672-19d9-a2e2-ad67809dd20b@infradead.org>
-In-Reply-To: <3193fcc9-c672-19d9-a2e2-ad67809dd20b@infradead.org>
-From:   =?UTF-8?B?6b6N5biG6LuS?= <1030steven@gmail.com>
-Date:   Thu, 9 Jun 2022 01:24:45 +0800
-Message-ID: <CAEZ6PjwamdjavX_AvsFmRasE7W1cnc10dpPqSzxhvzEKm4i5Aw@mail.gmail.com>
-Subject: Re: [PATCH] sched/pelt: Fix bracket typo
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, Benjamin Segall <bsegall@google.com>,
-        mgorman@suse.de, bristot@redhat.com, vschneid@redhat.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 2/4] dma-iommu: Add iommu_dma_opt_mapping_size()
+Content-Language: en-US
+To:     John Garry <john.garry@huawei.com>,
+        damien.lemoal@opensource.wdc.com, joro@8bytes.org, will@kernel.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, hch@lst.de,
+        m.szyprowski@samsung.com, robin.murphy@arm.com
+Cc:     linux-scsi@vger.kernel.org, linux-doc@vger.kernel.org,
+        liyihang6@hisilicon.com, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org
+References: <1654507822-168026-1-git-send-email-john.garry@huawei.com>
+ <1654507822-168026-3-git-send-email-john.garry@huawei.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <1654507822-168026-3-git-send-email-john.garry@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 11:33 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->
->
->
-> On 6/8/22 08:00, Steven Lung wrote:
-> > The second bracket describing the range is inverted, this patch
-> > will fix it.
-> >
-> > Signed-off-by: Steven Lung <1030steven@gmail.com>
-> > ---
-> >  kernel/sched/pelt.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/kernel/sched/pelt.c b/kernel/sched/pelt.c
-> > index 0f3107682..ed82cfba9 100644
-> > --- a/kernel/sched/pelt.c
-> > +++ b/kernel/sched/pelt.c
-> > @@ -233,7 +233,7 @@ ___update_load_sum(u64 now, struct sched_avg *sa,
-> >   * When syncing *_avg with *_sum, we must take into account the current
-> >   * position in the PELT segment otherwise the remaining part of the segment
-> >   * will be considered as idle time whereas it's not yet elapsed and this will
-> > - * generate unwanted oscillation in the range [1002..1024[.
->
-> Is the above the same as                   range [1002..1024).
-> ?  I.e. 1002-1023 inclusive (or 1024 excluded)?
->
-> > + * generate unwanted oscillation in the range [1002..1024].
-> >   *
-> >   * The max value of *_sum varies with the position in the time segment and is
-> >   * equals to :
->
-> --
-> ~Randy
+On 6/6/22 02:30, John Garry via iommu wrote:
+> +unsigned long iova_rcache_range(void)
+> +{
+> +	return PAGE_SIZE << (IOVA_RANGE_CACHE_MAX_SIZE - 1);
+> +}
 
-In the patch that the author submitted[1] for this comment, he
-mentioned that the value 1024 can be obtained.
-So I think we should use brackets instead of parenthesis.
+My understanding is that iova cache entries may be smaller than 
+IOVA_RANGE_CACHE_MAX_SIZE and hence that even if code that uses the DMA 
+mapping API respects this limit that a cache miss can still happen.
 
-[1]: https://lore.kernel.org/all/20200506155301.14288-1-vincent.guittot@linaro.org/T/#u
+Thanks,
 
---
-Steven
+Bart.
