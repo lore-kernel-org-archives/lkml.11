@@ -2,85 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A499C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 23:34:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF596C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 23:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233450AbiFHXel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 19:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42098 "EHLO
+        id S233342AbiFHXe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 19:34:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232971AbiFHXe2 (ORCPT
+        with ESMTP id S233489AbiFHXez (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 19:34:28 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C7312295F
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 16:34:23 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VFoWqnQ_1654731259;
-Received: from localhost.localdomain(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0VFoWqnQ_1654731259)
-          by smtp.aliyun-inc.com;
-          Thu, 09 Jun 2022 07:34:20 +0800
-From:   Tianchen Ding <dtcccc@linux.alibaba.com>
-To:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH RESEND v4 1/2] sched: Fix the check of nr_running at queue wakelist
-Date:   Thu,  9 Jun 2022 07:34:11 +0800
-Message-Id: <20220608233412.327341-2-dtcccc@linux.alibaba.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220608233412.327341-1-dtcccc@linux.alibaba.com>
-References: <20220608233412.327341-1-dtcccc@linux.alibaba.com>
+        Wed, 8 Jun 2022 19:34:55 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D54716A276;
+        Wed,  8 Jun 2022 16:34:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
+        MIME-Version:Date:Message-ID:content-disposition;
+        bh=x9c5o5XgezQf9D1LfsqIL78gxzpEYVR1h8VzU25lTjc=; b=XrTFkKpYpoUSWv4ATu6NRiKEF3
+        3Bj3KlHb8ku0JYiT6RD3F0zFFwkpKQx2j+zk1XpFudXT/Dpf6DgaePz0baHs2Z2Rde86Bl2+HbRKT
+        dOBGAyioIKVQUSBpAArpVE+eFPYvNOeq92mWe/oWxLBq8zXwOQZsihWMFiSmhyvDOUX60Okq17mUe
+        2V1GypBMwftFVJCopyu2bhHOoD/nQ5YopiwsR+bYm0WFvYRDnomyZf6y6zQzjq27f3ocNomZNEs4h
+        /G/Q1i1oBcOB//dnUUG76jygsg/g5e4ghL72gmeKDiTrq8zDCXJN0nyDb9Dca1VnG2gpw2ChM9Cyr
+        5uNKw7QA==;
+Received: from s0106ac1f6bb1ecac.cg.shawcable.net ([70.73.163.230] helo=[192.168.11.155])
+        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <logang@deltatee.com>)
+        id 1nz5C7-002E5A-RG; Wed, 08 Jun 2022 17:34:36 -0600
+Message-ID: <31d462be-c5c9-c895-0760-6b4a5cedfd14@deltatee.com>
+Date:   Wed, 8 Jun 2022 17:34:34 -0600
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Kent Overstreet <kent.overstreet@gmail.com>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, pmladek@suse.com,
+        rostedt@goodmis.org, linux-pci@vger.kernel.org
+References: <20220608211146.GA422296@bhelgaas>
+ <d5d0cc2e-79e1-3248-0f55-8f1afd21f926@gmail.com>
+From:   Logan Gunthorpe <logang@deltatee.com>
+In-Reply-To: <d5d0cc2e-79e1-3248-0f55-8f1afd21f926@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.73.163.230
+X-SA-Exim-Rcpt-To: kent.overstreet@gmail.com, helgaas@kernel.org, linux-kernel@vger.kernel.org, pmladek@suse.com, rostedt@goodmis.org, linux-pci@vger.kernel.org
+X-SA-Exim-Mail-From: logang@deltatee.com
+Subject: Re: [PATCH v3 29/33] PCI/P2PDMA: Convert to printbuf
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit 2ebb17717550 ("sched/core: Offload wakee task activation if it
-the wakee is descheduling") checked rq->nr_running <= 1 to avoid task
-stacking when WF_ON_CPU.
 
-Per the ordering of writes to p->on_rq and p->on_cpu, observing p->on_cpu
-(WF_ON_CPU) in ttwu_queue_cond() implies !p->on_rq, IOW p has gone through
-the deactivate_task() in __schedule(), thus p has been accounted out of
-rq->nr_running. As such, the task being the only runnable task on the rq
-implies reading rq->nr_running == 0 at that point.
 
-The benchmark result is in [1].
+On 2022-06-08 17:24, Kent Overstreet wrote:
+> On 6/8/22 17:11, Bjorn Helgaas wrote:
+>> [+cc Logan, maintainer of p2pdma.c]
+>>
+>> On Sat, Jun 04, 2022 at 03:30:38PM -0400, Kent Overstreet wrote:
+>>> This converts from seq_buf to printbuf. We're using printbuf in external
+>>> buffer mode, so it's a direct conversion, aside from some trivial
+>>> refactoring in cpu_show_meltdown() to make the code more consistent.
+>>
+>> cpu_show_meltdown() doesn't appear in p2pdma.c.  Leftover from another
+>> patch?  Maybe from 27/33 ("powerpc: Convert to printbuf")?
+>>
+>> I'm not opposed to this, but it would be nice to say what the benefit
+>> is.  How is printbuf better than seq_buf?  It's not obvious from the
+>> patch how this is better/safer/shorter/etc.
+>>
+>> Even the cover letter [1] is not very clear about the benefit.  Yes, I
+>> see it has something to do with improving buffer management, and I
+>> know from experience that's a pain.  Concrete examples of typical
+>> printbuf usage and bugs that printbufs avoid would be helpful.
+> 
+> Take a look at the vsprintf.c conversion if you want to see big
+> improvements. Also, %pf() is another thing that's going to enable a lot
+> more improvements.
 
-[1] https://lore.kernel.org/all/e34de686-4e85-bde1-9f3c-9bbc86b38627@linux.alibaba.com/
+IMHO I'm not sure how these benefits are a result of what looks largely
+like a rewrite and rename of seq_buf... Seems to me like it should be
+possible to stick with seq_buf and add features to it instead of doing a
+replace and remove. As I understand the kernel community, that is always
+the preferred practice and would certainly reduce a lot of churn in this
+series. But I haven't looked at the entire series and it's not really
+something I'm responsible for, so take my opinion with a grain of salt.
 
-Suggested-by: Valentin Schneider <vschneid@redhat.com>
-Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
-Reviewed-by: Valentin Schneider <vschneid@redhat.com>
----
- kernel/sched/core.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+>> I guess "external buffer mode" means we use an existing buffer (on the
+>> stack in this case) instead of allocating a buffer from the heap [2]?
+>> And we do that for performance (i.e., we know the max size) and to
+>> avoid sleeping to alloc?
+> 
+> I did it that way because I didn't want to touch unrelated code more
+> than was necessary - just doing a direct conversion. Heap allocation
+> would probably make sense here, but it's not my code.
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 21db6816a7bd..a4bdb2b95976 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3829,8 +3829,12 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
- 	 * CPU then use the wakelist to offload the task activation to
- 	 * the soon-to-be-idle CPU as the current CPU is likely busy.
- 	 * nr_running is checked to avoid unnecessary task stacking.
-+	 *
-+	 * Note that we can only get here with (wakee) p->on_rq=0,
-+	 * p->on_cpu can be whatever, we've done the dequeue, so
-+	 * the wakee has been accounted out of ->nr_running.
- 	 */
--	if ((wake_flags & WF_ON_CPU) && cpu_rq(cpu)->nr_running <= 1)
-+	if ((wake_flags & WF_ON_CPU) && !cpu_rq(cpu)->nr_running)
- 		return true;
- 
- 	return false;
--- 
-2.27.0
+It was changed to a heap allocation recently because my pending patch
+set will add a path where this code is called in an atomic context and
+cannot sleep. Simplest solution was stack allocation instead of tracking
+GFP context for the atomic path.
+
+Logan
 
