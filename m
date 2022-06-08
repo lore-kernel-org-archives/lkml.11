@@ -2,136 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E68ECC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96991C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:16:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241808AbiFHHMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:12:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59684 "EHLO
+        id S242270AbiFHHMs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:12:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243146AbiFHGvO (ORCPT
+        with ESMTP id S1354246AbiFHGT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 02:51:14 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E1517DDCC
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:42:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654670562; x=1686206562;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Jb5Q9Xorlzkgr5sm1kTa2c32QeDSwnsiMBz2O49CaLE=;
-  b=fBC7l95KaVGahUWADJqLf71dXMxBk+1Tgolrdqq6VlV+/jie6oYVqrGp
-   oZasi6YW6mnLy24NAhZQbjz4xUko1fWKXyAXz36uuduLbEm11txeS+DcX
-   J1QrxJFjMzXUi95VdvKP7PyhOeS1B9Mx3q8Opm2AcOMnRXZhdkH7Vd98i
-   a//HchoNXd2PGNcOUZYGVU2bG5ANv7HNvq5p3X3fxpDqfZPiz1rkgzF8r
-   XsCT+RV6cqZbgwn2j3A7gC1g4nL+7IM1ZOeWplXCCFtXUj0LX1GU+Phii
-   FIgxIf/3dWZIJAFH7hSSrTuOpQXhVK9iNYTk6A49d/s90nD/rMdwu7cck
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="363136883"
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="363136883"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 23:42:41 -0700
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="636616169"
-Received: from xding11-mobl.ccr.corp.intel.com ([10.254.214.239])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 23:42:36 -0700
-Message-ID: <052e3ba49bf815393ca4b51650134faee0d70feb.camel@intel.com>
-Subject: Re: [PATCH v5 2/9] mm/demotion: Expose per node memory tier to sysfs
-From:   Ying Huang <ying.huang@intel.com>
-To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-Date:   Wed, 08 Jun 2022 14:42:33 +0800
-In-Reply-To: <626023e8-8443-619e-18ee-a758c37fcec2@linux.ibm.com>
-References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
-         <20220603134237.131362-3-aneesh.kumar@linux.ibm.com>
-         <fa6b575dfea7c2131ecfec0f5578d72ca4acfd95.camel@linux.intel.com>
-         <626023e8-8443-619e-18ee-a758c37fcec2@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Wed, 8 Jun 2022 02:19:29 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCD56C0F2;
+        Tue,  7 Jun 2022 23:08:10 -0700 (PDT)
+X-UUID: efd8e6b4c3644a57a5177a5a0af2c4d8-20220608
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:5a595033-16fc-4f68-a927-42d1d11102db,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:2a19b09,CLOUDID:eda50de5-2ba2-4dc1-b6c5-11feb6c769e0,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: efd8e6b4c3644a57a5177a5a0af2c4d8-20220608
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw02.mediatek.com
+        (envelope-from <irui.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 773079768; Wed, 08 Jun 2022 14:08:05 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 8 Jun 2022 14:08:04 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 8 Jun 2022 14:08:02 +0800
+From:   Irui Wang <irui.wang@mediatek.com>
+To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>
+CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Tomasz Figa <tfiga@chromium.org>, <xia.jiang@mediatek.com>,
+        <maoguang.meng@mediatek.com>, kyrie wu <kyrie.wu@mediatek.com>,
+        <srv_heupstream@mediatek.com>
+Subject: [V2,2/2] media: media: jpegenc: set bit mask for jpegenc
+Date:   Wed, 8 Jun 2022 14:07:55 +0800
+Message-ID: <20220608060755.2213-3-irui.wang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220608060755.2213-1-irui.wang@mediatek.com>
+References: <20220608060755.2213-1-irui.wang@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-06-08 at 10:25 +0530, Aneesh Kumar K V wrote:
-> On 6/8/22 1:45 AM, Tim Chen wrote:
-> > On Fri, 2022-06-03 at 19:12 +0530, Aneesh Kumar K.V wrote:
-> > > 
-> > >   
-> > > 
-> > > 
-> > > 
-> > > +static struct memory_tier *__node_get_memory_tier(int node)
-> > > +{
-> > > +	struct memory_tier *memtier;
-> > > +
-> > > +	list_for_each_entry(memtier, &memory_tiers, list) {
-> > 
-> > We could need to map node to mem_tier quite often, if we need
-> > to account memory usage at tier level.  It will be more efficient
-> > to have a pointer from node (pgdat) to memtier rather
-> > than doing a search through the list.
-> > 
-> > 
-> 
-> That is something I was actively trying to avoid. Currently all struct 
-> memory_tier references are with memory_tier_lock mutex held. That 
-> simplify the locking and reference counting.
-> 
-> As of now we are able to implement all the required interfaces without 
-> pgdat having pointers to struct memory_tier. We can update pgdat with 
-> memtier details when we are implementing changes requiring those. We 
-> could keep additional memtier->dev reference to make sure memory tiers 
-> are not destroyed while other part of the kernel is referencing the 
-> same. But IMHO such changes should wait till we have users for the same.
+From: kyrie wu <kyrie.wu@mediatek.com>
 
-No.  We need a convenient way to access memory tier information from
-inside the kernel.  For example, from nid to memory tier rank, this is
-needed by migrate_misplaced_page() to do statistics too, iterate all
-nodes of a memory tier, etc.
+set jpeg encode DMA bit mask to support 34bits
+iova space(16GB) that the mt8186 iommu HW support.
+Whole the iova range separate to 0~4G/4G~8G/8G~12G/12G~16G,
+regarding which iova range jpgenc actually locate, it
+depends on the dma-ranges property of vdec dtsi node.
 
-And, "allowed" field of struct demotion_nodes (introduced in [7/9] is
-per-memory tier instead of per-node.  Please move it to struct
-memory_tier.  And we just need a convenient way to access it.
+Signed-off-by: kyrie wu <kyrie.wu@mediatek.com>
+---
+ drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-All these are not complex, unless you insist to use memory_tier_lock and
-device liftcycle to manage this in-kernel data structure.
-
-Best Regards,
-Huang, Ying
-
-> > > +		if (node_isset(node, memtier->nodelist))
-> > > +			return memtier;
-> > > +	}
-> > > +	return NULL;
-> > > +}
-> > > +
-> > > 
-> > 
-> > Tim
-> > 
-> 
-> -aneesh
-> 
-
+diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+index bc5b0a0168ec..87685a62a5c2 100644
+--- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
++++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+@@ -1369,6 +1369,9 @@ static int mtk_jpeg_probe(struct platform_device *pdev)
+ 	jpeg->vdev->device_caps = V4L2_CAP_STREAMING |
+ 				  V4L2_CAP_VIDEO_M2M_MPLANE;
+ 
++	if (of_get_property(pdev->dev.of_node, "dma-ranges", NULL))
++		dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(34));
++
+ 	ret = video_register_device(jpeg->vdev, VFL_TYPE_VIDEO, -1);
+ 	if (ret) {
+ 		v4l2_err(&jpeg->v4l2_dev, "Failed to register video device\n");
+-- 
+2.18.0
 
