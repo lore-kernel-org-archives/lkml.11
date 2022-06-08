@@ -2,97 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF84C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:35:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7DB8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244059AbiFHPdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59836 "EHLO
+        id S244382AbiFHPiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244443AbiFHPdp (ORCPT
+        with ESMTP id S244140AbiFHPh4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:33:45 -0400
-Received: from smtp15.bhosted.nl (smtp15.bhosted.nl [IPv6:2a02:9e0:8000::26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E958D266C
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:33:43 -0700 (PDT)
+        Wed, 8 Jun 2022 11:37:56 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE262144BCA
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:37:54 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id o8so1038129wro.3
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 08:37:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=protonic.nl; s=202111;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc:to:from:
-         from;
-        bh=sgOi0wZt64PvzV9T5wbU6JWnzoPTwGt8hGmYzxvQxks=;
-        b=XhApxaLiOKxmY7hz7GCGsdSFSBwfcy172V0MF8dc3NEUeoWVLgLHjCsguV4DEXCaSRcf/E1VadzjN
-         qGknx8qlia51glFKSXpDO2rRf3KY+uij7yYXwDptqaWRL9ZxJFZPDhJxT6eeCDTOtBob6Lwfu0Aco8
-         c6MB3JV2S7dXkDh8j6NrR7/SvQPutEIo1lCk8L+bObgEE2m0mRSqucQC3p4CRXY/AIf8XFQLzq3E0b
-         MbRznsiP9w+F2VFRZ/dAVDqRNQxIv25kVwS1WWzfWs94A93FADRvpF6Ts6/oqUKp7fsmF1o2SHaeU0
-         VrCZM+z9UyBhWL/KFIWkCUeoqGtzVrQ==
-X-MSG-ID: 5f31577c-e740-11ec-b450-0050569d3a82
-From:   David Jander <david@protonic.nl>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        David Jander <david@protonic.nl>
-Subject: [PATCH v2] spi: <linux/spi/spi.h>: Add missing documentation for struct members
-Date:   Wed,  8 Jun 2022 17:33:09 +0200
-Message-Id: <20220608153309.2899565-1-david@protonic.nl>
-X-Mailer: git-send-email 2.32.0
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6XNNQkZKgPmssLAHf6MSlgF2aV4I+1BVjg1Utoy07+0=;
+        b=HXs2FloXoibOAI7Toe0jNUVVkb3f+HdHUGKRmblAbS/t4Oaf4WUwTVDeyKMa0Hphv0
+         h2+n/AMIuQ/ulg7nH5oF7XD8r/xbWblUvA5GIxHtucs6fYM84zejc6N3HSOHb7om20EH
+         LpitoCSLxUUEto84nfA5BGBAKEaul0m8l/vAU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=6XNNQkZKgPmssLAHf6MSlgF2aV4I+1BVjg1Utoy07+0=;
+        b=DKy39qAMfvV8R2c5LS4pSQi8YbDjJ6eMR0iLY38ojyHM8VrU5GfQwCGVD2CRL5ZnNK
+         BNoYm7rCvss0cHb+bbLJrM+qcqX4vpEUchMtBTZVvIrHKvDRdQU/d8+JbNuYdS9bciVw
+         GMJD6tjMGrujzayt6NP0n2KYcDUYs4jGilBjODOQHOyp506FjdBlk5dxwMHsBkVOtaXP
+         RcFA+l1g9jwjn8LT3FbIAbDwujk8OJzxPpHl6SqERaOVtuB6SlVaTv8ClwJseZzkqSw4
+         gpedYRMp9Gh4obBhBs4VT7ZhpRkqj6ErUiUfyWUoSJDMxbfizy9n4kqoFWMRGto97DEF
+         UiEQ==
+X-Gm-Message-State: AOAM531lsDLC6K0ME+83hoD2TAY0WmDeWW2wbc2E8mTettwuMgC5TKZT
+        YigzZuZO2d/t2aFcrFS0izJ+ibz6u0+XBg==
+X-Google-Smtp-Source: ABdhPJwu+sLbb5doHOWv5pv89T/OItjdaE9EfmW31UNw7lpDTQOiqnbgFHnjs28fNpl9FZnUib3UHw==
+X-Received: by 2002:a5d:4a4c:0:b0:210:27dd:e57 with SMTP id v12-20020a5d4a4c000000b0021027dd0e57mr32933633wrs.655.1654702673146;
+        Wed, 08 Jun 2022 08:37:53 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id a7-20020a05600c224700b0039c693a54ecsm24886wmm.23.2022.06.08.08.37.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 08:37:52 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 17:37:50 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Daniel Thompson <daniel.thompson@linaro.org>
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Lucas Stach <l.stach@pengutronix.de>
+Subject: Re: [RESEND PATCH v3] drm/cma-helper: Describe what a "contiguous
+ chunk" actually means
+Message-ID: <YqDCTrlPmDZQei8Q@phenom.ffwll.local>
+Mail-Followup-To: Daniel Thompson <daniel.thompson@linaro.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>
+References: <20220608135821.1153346-1-daniel.thompson@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220608135821.1153346-1-daniel.thompson@linaro.org>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes these "make htmldocs" warnings:
+On Wed, Jun 08, 2022 at 02:58:21PM +0100, Daniel Thompson wrote:
+> Since it's inception in 2012 it has been understood that the DRM GEM CMA
+> helpers do not depend on CMA as the backend allocator. In fact the first
+> bug fix to ensure the cma-helpers work correctly with an IOMMU backend
+> appeared in 2014. However currently the documentation for
+> drm_gem_cma_create() talks about "a contiguous chunk of memory" without
+> making clear which address space it will be a contiguous part of.
+> Additionally the CMA introduction is actively misleading because it only
+> contemplates the CMA backend.
+> 
+> This matters because when the device accesses the bus through an IOMMU
+> (and don't use the CMA backend) then the allocated memory is contiguous
+> only in the IOVA space. This is a significant difference compared to the
+> CMA backend and the behaviour can be a surprise even to someone who does
+> a reasonable level of code browsing (but doesn't find all the relevant
+> function pointers ;-) ).
+> 
+> Improve the kernel doc comments accordingly.
+> 
+> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+> Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+> ---
+> 
+> Notes:
+>     Am I Cc:ing the correct reviewers/maintainers with this patch? There
+>     has been no negative feedback but I've been rebasing and re-posting it
+>     for three kernel cycles now. Do I need to queue it somewhere special or
+>     get it in front of someone specific?
 
-include/linux/spi/spi.h:82: warning: Function parameter or member 'syncp' not described in 'spi_statistics'
-include/linux/spi/spi.h:213: warning: Function parameter or member 'pcpu_statistics' not described in 'spi_device'
-include/linux/spi/spi.h:676: warning: Function parameter or member 'pcpu_statistics' not described in 'spi_controller'
+Occasionally stuff falls through a few too many cracks, that's all. We
+have tons of committers for drm-misc (and Lucas is one of them), but
+sometimes they shy away from pushing themselves and others see the r-b and
+assume it's already handled, and then it doesn't move :-/
 
-Fixes: 6598b91b5ac3 ("spi: spi.c: Convert statistics to per-cpu u64_stats_t")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: David Jander <david@protonic.nl>
----
-v2:
- - Correct patch subject line style
- - Add the text of the actual warnings that are being fixed
- - Add a Fixes: tag
----
- include/linux/spi/spi.h | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Anyway I pushed it now, thanks for your patch.
+-Daniel
 
-diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-index eac8d3caf954..2e63b4935deb 100644
---- a/include/linux/spi/spi.h
-+++ b/include/linux/spi/spi.h
-@@ -35,7 +35,8 @@ extern struct bus_type spi_bus_type;
- 
- /**
-  * struct spi_statistics - statistics for spi transfers
-- * @lock:          lock protecting this structure
-+ * @syncp:         seqcount to protect members in this struct for per-cpu udate
-+ *                 on 32-bit systems
-  *
-  * @messages:      number of spi-messages handled
-  * @transfers:     number of spi_transfers handled
-@@ -155,7 +156,7 @@ extern int spi_delay_exec(struct spi_delay *_delay, struct spi_transfer *xfer);
-  * @cs_inactive: delay to be introduced by the controller after CS is
-  *	deasserted. If @cs_change_delay is used from @spi_transfer, then the
-  *	two delays will be added up.
-- * @statistics: statistics for the spi_device
-+ * @pcpu_statistics: statistics for the spi_device
-  *
-  * A @spi_device is used to interchange data between an SPI slave
-  * (usually a discrete chip) and CPU memory.
-@@ -439,7 +440,7 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
-  * @max_native_cs: When cs_gpiods is used, and this field is filled in,
-  *	spi_register_controller() will validate all native CS (including the
-  *	unused native CS) against this value.
-- * @statistics: statistics for the spi_controller
-+ * @pcpu_statistics: statistics for the spi_controller
-  * @dma_tx: DMA transmit channel
-  * @dma_rx: DMA receive channel
-  * @dummy_rx: dummy receive buffer for full-duplex devices
+>     
+>     Either way...
+>     
+>     This RESEND is unaltered (except for collecting tags) and is rebased on
+>     v5.19-rc1.
+>     
+>     RESEND for v5.18-rc3
+>     - Unaltered but rebased on v5.18-rc3
+>     
+>     Changes in v3:
+>     - Rebased on v5.17-rc2
+>     - Minor improvements to wording.
+>     
+>     Changes in v2:
+>     - Oops. I did a final proof read and accidentally committed these
+>       changes as a seperate patch. This means that v1 contains only
+>       one tenth of the actual patch. This is fixed in v2. Many apologies
+>       for the noise!
+> 
+>  drivers/gpu/drm/drm_gem_cma_helper.c | 39 +++++++++++++++++++++-------
+>  1 file changed, 29 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/drm_gem_cma_helper.c b/drivers/gpu/drm/drm_gem_cma_helper.c
+> index f36734c2c9e1..42abee9a0f4f 100644
+> --- a/drivers/gpu/drm/drm_gem_cma_helper.c
+> +++ b/drivers/gpu/drm/drm_gem_cma_helper.c
+> @@ -26,12 +26,22 @@
+>  /**
+>   * DOC: cma helpers
+>   *
+> - * The Contiguous Memory Allocator reserves a pool of memory at early boot
+> - * that is used to service requests for large blocks of contiguous memory.
+> + * The DRM GEM/CMA helpers are a means to provide buffer objects that are
+> + * presented to the device as a contiguous chunk of memory. This is useful
+> + * for devices that do not support scatter-gather DMA (either directly or
+> + * by using an intimately attached IOMMU).
+>   *
+> - * The DRM GEM/CMA helpers use this allocator as a means to provide buffer
+> - * objects that are physically contiguous in memory. This is useful for
+> - * display drivers that are unable to map scattered buffers via an IOMMU.
+> + * Despite the name, the DRM GEM/CMA helpers are not hardwired to use the
+> + * Contiguous Memory Allocator (CMA).
+> + *
+> + * For devices that access the memory bus through an (external) IOMMU then
+> + * the buffer objects are allocated using a traditional page-based
+> + * allocator and may be scattered through physical memory. However they
+> + * are contiguous in the IOVA space so appear contiguous to devices using
+> + * them.
+> + *
+> + * For other devices then the helpers rely on CMA to provide buffer
+> + * objects that are physically contiguous in memory.
+>   *
+>   * For GEM callback helpers in struct &drm_gem_object functions, see likewise
+>   * named functions with an _object_ infix (e.g., drm_gem_cma_object_vmap() wraps
+> @@ -111,8 +121,14 @@ __drm_gem_cma_create(struct drm_device *drm, size_t size, bool private)
+>   * @drm: DRM device
+>   * @size: size of the object to allocate
+>   *
+> - * This function creates a CMA GEM object and allocates a contiguous chunk of
+> - * memory as backing store.
+> + * This function creates a CMA GEM object and allocates memory as backing store.
+> + * The allocated memory will occupy a contiguous chunk of bus address space.
+> + *
+> + * For devices that are directly connected to the memory bus then the allocated
+> + * memory will be physically contiguous. For devices that access through an
+> + * IOMMU, then the allocated memory is not expected to be physically contiguous
+> + * because having contiguous IOVAs is sufficient to meet a devices DMA
+> + * requirements.
+>   *
+>   * Returns:
+>   * A struct drm_gem_cma_object * on success or an ERR_PTR()-encoded negative
+> @@ -162,9 +178,12 @@ EXPORT_SYMBOL_GPL(drm_gem_cma_create);
+>   * @size: size of the object to allocate
+>   * @handle: return location for the GEM handle
+>   *
+> - * This function creates a CMA GEM object, allocating a physically contiguous
+> - * chunk of memory as backing store. The GEM object is then added to the list
+> - * of object associated with the given file and a handle to it is returned.
+> + * This function creates a CMA GEM object, allocating a chunk of memory as
+> + * backing store. The GEM object is then added to the list of object associated
+> + * with the given file and a handle to it is returned.
+> + *
+> + * The allocated memory will occupy a contiguous chunk of bus address space.
+> + * See drm_gem_cma_create() for more details.
+>   *
+>   * Returns:
+>   * A struct drm_gem_cma_object * on success or an ERR_PTR()-encoded negative
+> 
+> base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+> --
+> 2.35.1
+> 
+
 -- 
-2.32.0
-
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
