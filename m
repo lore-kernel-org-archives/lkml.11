@@ -2,105 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D58CCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:46:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D8FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359184AbiFHCqd (ORCPT
+        id S1384623AbiFHCqx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38464 "EHLO
+        Tue, 7 Jun 2022 22:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390486AbiFHCka (ORCPT
+        with ESMTP id S1447217AbiFHCl2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:40:30 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF4B2533F5
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:22:46 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id 67-20020a1c1946000000b00397382b44f4so10157394wmz.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:22:46 -0700 (PDT)
+        Tue, 7 Jun 2022 22:41:28 -0400
+Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48851912FC
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 17:21:00 -0700 (PDT)
+Received: by mail-vs1-xe36.google.com with SMTP id e11so3728393vsh.13
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 17:21:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=I0TYj0aY/TkdqOtA53I+eFE0LIyvHOAIiCLx8hJBREw=;
-        b=e40+dm/Z0W0bIfob5pTvP0J2RyA4XpxF11pWtEW7puVHQEiUnWvd2CVD5XctVds9Bn
-         PShLixF5Z4+GFBxqf2YR+q4TKyj0YAyTh8B08UoCUcVGBEeXJw3LB3TDHcgY0OphiaBw
-         BeuKOWXH2i+K+No4ln5jeT/AJUK5T9VEOcG8dUQckKV3KbXWODCdTYeGYur0rCBwOLoT
-         rKutET82TgGy2BgoaxPWUnW8sGs6P4YskJacxjyO7dDtvzcbFv1zJoPmg+MuHPjFSbt/
-         RweF/zHNN6q+a6d0MWPovexRLYenU/ASh1h0PWKSbW10Qc96jNP5Nk2Ls3O4zqDzQnL6
-         fOZA==
+         :cc;
+        bh=HcoQknaUmHCf5NNiXv3gVYmAHiag+xrcpWJjWHvdOZg=;
+        b=El5lVxwUAtp3lYdRS44FJh/m5iar83RYu20Tydqw/TogWEAsetBxn8OJEoJ4NbUDYw
+         5SZ18TwrkYHP+tIY4Qi0UQ0ohj5187hpUqw5K/NApRm6tafb74zy30i3RhTxpSAyyEBA
+         wekj3031y/gM+0TLAC59s856hYDsl+SwB5L67Axrvr3jh3I9KsROUiMYMY+x/wS5PRAV
+         RWMZ6cEjDE9+gffEit8/6ip0ISJn8QzjSuKESMbHEI2nqlConWUAcRbFzJdvBlW5S8k2
+         iT7K2XjiuBzL3Ycg6O9EjbPmXlUXDCakvQpFZeTE9MsjPTcjY38elYLNAFjYPuRnmKIV
+         oUMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=I0TYj0aY/TkdqOtA53I+eFE0LIyvHOAIiCLx8hJBREw=;
-        b=urrRMNjwJGTk0IaEctLoYSkvtax23HVD8gpiUOwmgtkrn0ZKea4fJcQUi0m4sn5bCX
-         vD3qAatM7uOfGmVD+9Cg6N4+UpY7CPaq6Vl8Nzhw+fq56QLYXdferH7IkpQ+Et/rqMjr
-         hxl1bah84FEZU0sJxTAFuFhAA3iz+RxQncAX28U7x6j4E5lvFHWU2NNyXrY/0DtxH51o
-         7rjL527Lf0wzYSgBwjx5qvJKmANRdYd5qVss93nftm8nRScqvNxqitR2KHnMsXAJKMLL
-         QYRSYgubuwMqhorYdp48TuUg+fcrLfmtg8r+pdFYdK6BIPjLhHJsmQfn03KrztQLDYuJ
-         lPZQ==
-X-Gm-Message-State: AOAM5312ewyS9UQl6gpQDvoPeiwQCXJljBBMkoSMi4awBStKRJfz7owV
-        N18s2y9T5i6LWhbmjhKvUVZzCk/DFTXICX4xqkQY
-X-Google-Smtp-Source: ABdhPJyYw/U5+gWoypUqkMl2O59z0OyPFHm7PAW4ahOWZ6+WyOnqtBiiwAIn75Yllh4b0x6DATOkqoiYJsazfLTYCeU=
-X-Received: by 2002:a05:600c:414e:b0:397:55aa:ccc0 with SMTP id
- h14-20020a05600c414e00b0039755aaccc0mr61566727wmm.51.1654636964669; Tue, 07
- Jun 2022 14:22:44 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=HcoQknaUmHCf5NNiXv3gVYmAHiag+xrcpWJjWHvdOZg=;
+        b=GSmqy5MW6A7Uy8Lyk+OODdGAHGhFcREAq6wg6dflQFBXbqHLE1aCDEQrxzm9ejLEpA
+         elF/DfqLPDx+8zqqlU5yfEGTzlcn5C+YH5F808FrovbsXrHcmJT07hPZOZ3k/wOcoKhI
+         AFklnK0QslUuJRbq68/3Kep5VlfE8KghkEDBRdBQTY03OkZhNHrGyJVkP2isV8m5LzaC
+         7CauFM8PIPlIQaXiVaerAjh8fuGFMK3lmNqesJ4+/qrRSUg3Q4841hQGp0ruRopThKhj
+         W82WohA6FGAySJt59Ke+8YostN78kYYJfowA8Jp9dMol6+YhiiXa/hm3l/TRJt+nx4+Y
+         rIkg==
+X-Gm-Message-State: AOAM530zgcotkD1pL7TteIPvNtrjiH8TmEtnuVmpHB7PU0lXmypSYCuf
+        qkGOty7P7eGBaKm8ZiyLbqBvWAFiKA3RAE4nKTjArw==
+X-Google-Smtp-Source: ABdhPJwR83OdverZPBwh+fyBA6W0CyLaD3ErYLyAqZbzFrJhTaO/fdBcoruij3Q+OjCh5eilVSpJLRhHQB+HdqCVSuE=
+X-Received: by 2002:a05:6102:1356:b0:34b:bc70:7b44 with SMTP id
+ j22-20020a056102135600b0034bbc707b44mr6576079vsl.22.1654647658820; Tue, 07
+ Jun 2022 17:20:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220217142133.72205-1-cgzones@googlemail.com> <20220217142133.72205-4-cgzones@googlemail.com>
-In-Reply-To: <20220217142133.72205-4-cgzones@googlemail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 7 Jun 2022 17:22:34 -0400
-Message-ID: <CAHC9VhRatc13ZsBSsjZeGtBfz0ouUGL9n0LTjbQtuZtYv2M43w@mail.gmail.com>
-Subject: Re: [PATCH 5/5] selinux: drop unnecessary NULL check
-To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
-Cc:     selinux@vger.kernel.org,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        Serge Hallyn <serge@hallyn.com>,
-        Austin Kim <austin.kim@lge.com>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+References: <YnWRVd5slCy5H0fC@creeky> <20220507015646.5377-1-hdanton@sina.com>
+ <CAOUHufY=xAvDKSaV8vybgObXPBEsPqqS7R3+T_-6ix7bUvQc6w@mail.gmail.com>
+ <YnweYF9E5mt2HIwV@creeky> <CAOUHufZ_kBF+f3_RE9p8itJ8YN86cbEq9oXHCt+e1qw2Q-b8Zw@mail.gmail.com>
+ <YpR/cpU+V9Dovj1p@creeky>
+In-Reply-To: <YpR/cpU+V9Dovj1p@creeky>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Tue, 7 Jun 2022 18:20:22 -0600
+Message-ID: <CAOUHufawX4Xsq7UV9NQPwvUp2+3ZV95u8ZDLR-VKRTibS-Qn9w@mail.gmail.com>
+Subject: Re: Alpha: rare random memory corruption/segfault in user space bisected
+To:     Michael Cree <mcree@orcon.net.nz>
+Cc:     Linux-MM <linux-mm@kvack.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Hillf Danton <hdanton@sina.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 9:22 AM Christian G=C3=B6ttsche
-<cgzones@googlemail.com> wrote:
+On Mon, May 30, 2022 at 2:25 AM Michael Cree <mcree@orcon.net.nz> wrote:
 >
-> Commit e3489f8974e1 ("selinux: kill selinux_sb_get_mnt_opts()")
-> introduced a NULL check on the context after a successful call to
-> security_sid_to_context().  This is on the one hand redundant after
-> checking for success and on the other hand insufficient on an actual
-> NULL pointer, since the context is passed to seq_escape() leading to a
-> call of strlen() on it.
+> On Mon, May 23, 2022 at 02:56:12PM -0600, Yu Zhao wrote:
+> > On Wed, May 11, 2022 at 2:37 PM Michael Cree <mcree@orcon.net.nz> wrote:
+> > >
+> > > On Sat, May 07, 2022 at 11:27:15AM -0700, Yu Zhao wrote:
+> > > > On Fri, May 6, 2022 at 6:57 PM Hillf Danton <hdanton@sina.com> wrote:
+> > > > >
+> > > > > On Sat, 7 May 2022 09:21:25 +1200 Michael Cree wrote:
+> > > > > > Alpha kernel has been exhibiting rare and random memory
+> > > > > > corruptions/segaults in user space since the 5.9.y kernel.  First seen
+> > > > > > on the Debian Ports build daemon when running 5.10.y kernel resulting
+> > > > > > in the occasional (one or two a day) build failures with gcc ICEs either
+> > > > > > due to self detected corrupt memory structures or segfaults.  Have been
+> > > > > > running 5.8.y kernel without such problems for over six months.
+> > > > > >
+> > > > > > Tried bisecting last year but went off track with incorrect good/bad
+> > > > > > determinations due to rare nature of bug.  After trying a 5.16.y kernel
+> > > > > > early this year and seen the bug is still present retried the bisection
+> > > > > > and have got to:
+> > > > > >
+> > > > > > aae466b0052e1888edd1d7f473d4310d64936196 is the first bad commit
+> > > > > > commit aae466b0052e1888edd1d7f473d4310d64936196
+> > > > > > Author: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+> > > > > > Date:   Tue Aug 11 18:30:50 2020 -0700
+> > > > > >
+> > > > > >     mm/swap: implement workingset detection for anonymous LRU
+> > > >
+> > > > This commit seems innocent to me. While not ruling out anything, i.e.,
+> > > > this commit, compiler, qemu, userspace itself, etc., my wild guess is
+> > > > the problem is memory barrier related. Two lock/unlock pairs, which
+> > > > imply two full barriers, were removed. This is not a small deal on
+> > > > Alpha, since it imposes no constraints on cache coherency, AFAIK.
+> > > >
+> > > > Can you please try the attached patch on top of this commit? Thanks!
+> > >
+> > > Thanks, I have that running now for a day without any problem showing
+> > > up, but that's not long enough to be sure it has fixed the problem. Will
+> > > get back to you after another day or two of testing.
+> >
+> > Any luck? Thanks!
 >
-> Reported by Clang analyzer:
->
->     In file included from security/selinux/hooks.c:28:
->     In file included from ./include/linux/tracehook.h:50:
->     In file included from ./include/linux/memcontrol.h:13:
->     In file included from ./include/linux/cgroup.h:18:
->     ./include/linux/seq_file.h:136:25: warning: Null pointer passed as 1s=
-t argument to string length function [unix.cstring.NullArg]
->             seq_escape_mem(m, src, strlen(src), flags, esc);
->                                    ^~~~~~~~~~~
->
-> Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
-> ---
->  security/selinux/hooks.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Sorry for the delay in replying.  Testing has taken longer due to an
+> unexpected hitch.  The patch proved to be good but for a double check I
+> retested the above commit without the patch but it now won't fail which
+> calls into question whether aae466b0052e188 is truly the bad commit. I
+> have gone back to the prior bad commit in the bisection (25788738eb9c)
+> and it failed again confirming it is bad.  So it looks like the first
+> bad commit is somewhere between aae466b0052e188 and 25788738eb9c (a
+> total of five commits inclusive, four if we take aae466b0052e188 as
+> good) and I am now building 471e78cc7687337abd1 and will test that.
 
-I was waiting for Nick to reply, but he never did, and this looks good
-to me so I just merged it into selinux/next.  Thanks for your patience
-Christian.
+No worries. Thanks for the update.
 
---=20
-paul-moore.com
+Were swap devices used when the ICEs happened? If so,
+1) What kind of swap devices, e.g., zram, block device, etc.?
+2) aae466b0052e188 might have made the kernel swap more frequently and
+thus the problem easier to reproduce. Assuming this is the case, then
+setting swappiness to 200 might help reproduce the problem.
