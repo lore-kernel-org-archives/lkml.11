@@ -2,202 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 313ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:19:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4980DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234337AbiFHJTn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:19:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48130 "EHLO
+        id S234487AbiFHJTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234780AbiFHJNz (ORCPT
+        with ESMTP id S235607AbiFHJPH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:13:55 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133371B31A7
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:34:36 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id v1so29297391ejg.13
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 01:34:36 -0700 (PDT)
+        Wed, 8 Jun 2022 05:15:07 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A411E44C4;
+        Wed,  8 Jun 2022 01:39:57 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id cx11so17988377pjb.1;
+        Wed, 08 Jun 2022 01:39:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=BOGJ0hmYd1E/cDWBfcReTmcYR/z3qD5M/WAMgLhHLXY=;
-        b=EQ5vhjjTXKriPWdW/xzhMglRMdU1gDSb0TYJz3AlO+fenefTMuLkvTd/NUHXe+ohAz
-         NO8KjUUhEOZ0rSLGXFbhS0uRc8Dkih9VgCuVpScxz2uPN9xwNvztuq+RoAY+SK2B4mHU
-         UvcxD11mjCO/neA1MArxoem3PEnrRSOaRrSofICNYelNbuNaSB4c0pVCaN3Nk0GuUf8S
-         HfeAsnP5F1XJjs+OD9uqA9zrMrRIjeyNN8++Ljue777xDTzoencU3zpawjc9sy06KIDx
-         aepMUpR54z1jXKG5wguw+Tu5aLMa9xPnd6SWIhmpJ+tDaYjRb+PEUmh+GempuQ+L8yBI
-         KGGQ==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=JASAiT3vXh0ZJKWH+RJe3v1twmK34V/YWwlarnk5/x0=;
+        b=mzh5bNGbHr3vGSP7PJBL66nAkjOZ/q2p2L8puGTWPsHBE8qiaedY6T1LYAjy/dViU2
+         MIOWg+tV9Id8u1JadoTwdlMJTkOXPbATkDPz22j48vXFBm+UERMywzJuHCK+wvwxkrEo
+         2lple/TzyYJ9gkFxugOXyrvoHHWnrzaY4PLDqr8YiH1qP5pq1LAo+nfdaLNgQxyEE5/U
+         5M1a9q9Io3KBHQgg/e8YQk3u60XyR6LJGnxNTnU36cvpLQyS07qWRNhBW6bIFTMr6T1C
+         XktI+luDD4TbwmretCKI+ZJESgm2qvlqjpu77Ore4mLokpYo3RBvjPVr/julwkwlBz/D
+         rS8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=BOGJ0hmYd1E/cDWBfcReTmcYR/z3qD5M/WAMgLhHLXY=;
-        b=E9FwwJrHVH2V3p9zjUfofV+lz1AOZfOPZvyoySnXe0FLqkDHJZBnbDh7r1nzY2X7ZZ
-         i7AFkLNIdRiTP8qcrxjtqPubMaUcB3sPliFWf6TEq+AO2uxaca+og4FhGUyHZkZHlVCb
-         qk00x3v8+7b5GRMFZ3pQuEbZ3F38fMuJ63/+JX4MYEQq+OHZZ4+/zEX46rCciS1bMttv
-         dblrOhTk19WI0i+vu0dU+cLPQd2EICyo8T2u3m3OrKqOy0jekjJr1T1Zw0IyxWP0/uHu
-         K3xYr9jDQBPYrNApD4B03YGLJNhY+w/JNxtdJYvauVu9t8iqX62iG/ZxUjzYGhOkmRfN
-         7xjw==
-X-Gm-Message-State: AOAM5327oy5/ouOg84FIrjWPtcJwvXrgTBQui7ZzZTh8qgJDs3QMd2w3
-        7MIj2v6a/2M9ysSf4/a00NdaKw==
-X-Google-Smtp-Source: ABdhPJwXeGcDpZp8OoIEmODFuqgEUDhqHrM5X63C012jpMDiVPnRaPyZ3MACjWHtloT3WRSre4i/MQ==
-X-Received: by 2002:a17:906:9d01:b0:711:dc5d:c8a5 with SMTP id fn1-20020a1709069d0100b00711dc5dc8a5mr8558506ejc.432.1654677274596;
-        Wed, 08 Jun 2022 01:34:34 -0700 (PDT)
-Received: from [192.168.0.189] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id de46-20020a1709069bee00b0070f6855b90bsm6323281ejc.170.2022.06.08.01.34.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 01:34:34 -0700 (PDT)
-Message-ID: <1345050e-b6a4-64be-1359-8d31d88769ab@linaro.org>
-Date:   Wed, 8 Jun 2022 10:34:33 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=JASAiT3vXh0ZJKWH+RJe3v1twmK34V/YWwlarnk5/x0=;
+        b=WXZznnKjnHdqn8aOMrPBuMwzv3wN01OriIMAV2kbyrGTDltIzp1EnofpXbboLKJcfq
+         CZ9gC3rSdet9WGkncQE5jUlw5c1bEHzNYlaUaIlheOqSiOUKBvlgUHK/JtcinGKM1XLF
+         ao0TsjgEyDgzrA6YW4tjee7A3W8U+GU6XrNUu237KT70tymnk0PWCYZyH04PHJQ2Bkyk
+         Su/IUsYw1K21A843cPBcjvdcQauUdsmAnf6hAUuFE3TIxelwB4HHS3pe5HEGrWPL2F+g
+         vSX12ERJl1JxZEso5GE1M2nLeMXzXzwZ50hVsn1kVoqC/PWW1boss2KNiKxu6o9mtEGI
+         ipdg==
+X-Gm-Message-State: AOAM531/sRgiXNJGRRrfLPRKu8Wvyn/o34lgWJobXRHimV7/MPaCLJ9s
+        w2F+SacQ5xYd1ONVjI0ini8=
+X-Google-Smtp-Source: ABdhPJz6h8AXUH2LJZjDhTb51xavtnq5fJGuXMz/UJjlqctNAsIAqj4tOG3352gD8ob9z1b304PQ+Q==
+X-Received: by 2002:a17:90a:9741:b0:1e8:a001:5caa with SMTP id i1-20020a17090a974100b001e8a0015caamr8765872pjw.231.1654677597383;
+        Wed, 08 Jun 2022 01:39:57 -0700 (PDT)
+Received: from localhost (subs02-180-214-232-66.three.co.id. [180.214.232.66])
+        by smtp.gmail.com with ESMTPSA id u5-20020a170903108500b00161f9e72233sm13800249pld.261.2022.06.08.01.39.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 01:39:56 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 15:39:54 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Linux ARM <linux-arm-kernel@lists.infradead.org>
+Cc:     =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org
+Subject: virt_to_phys outside array bounds warning (GCC 12.1.0)
+Message-ID: <YqBgWoXQmzVczRDo@debian.me>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 1/3] dt-bindings: mfd: atmel,flexcom: Convert to
- json-schema
-Content-Language: en-US
-To:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        krzysztof.kozlowski+dt@linaro.org, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com
-References: <20220607144740.14937-1-kavyasree.kotagiri@microchip.com>
- <20220607144740.14937-2-kavyasree.kotagiri@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220607144740.14937-2-kavyasree.kotagiri@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/06/2022 16:47, Kavyasree Kotagiri wrote:
-> Convert the Atmel flexcom device tree bindings to json schema.
-> 
-> Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-> ---
-> v1 -> v2:
->  - Fix title.
-> 
->  .../bindings/mfd/atmel,flexcom.yaml           | 97 +++++++++++++++++++
->  .../devicetree/bindings/mfd/atmel-flexcom.txt | 63 ------------
->  2 files changed, 97 insertions(+), 63 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
->  delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml b/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
-> new file mode 100644
-> index 000000000000..05cb6ebb4b2a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
-> @@ -0,0 +1,97 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/mfd/atmel,flexcom.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Atmel Flexcom (Flexible Serial Communication Unit)
-> +
-> +maintainers:
-> +  - Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-> +
-> +description:
-> +  The Atmel Flexcom is just a wrapper which embeds a SPI controller,
-> +  an I2C controller and an USART. Only one function can be used at a
-> +  time and is chosen at boot time according to the device tree.
-> +
-> +properties:
-> +  compatible:
-> +    const: atmel,sama5d2-flexcom
+Hi everyone,
 
-Same comment applies as before... Your previous set was better here and
-for some reason you decided to change it. This should be enum so you
-avoid useless change next patch.
+When cross-compiling arm 5.19-rc1 kernel using GCC 12.1.0 (armv7 with neon
+fpu, multi_v7_defconfig), I got outside array bounds warning pointing to
+virt_to_phys() macro:
 
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 1
-> +
-> +  ranges:
-> +    description:
-> +      One range for the full I/O register region. (including USART,
-> +      TWI and SPI registers).
-> +    items:
-> +      maxItems: 3
-> +
-> +  atmel,flexcom-mode:
-> +    description: |
-> +      Specifies the flexcom mode as follows:
-> +      1: USART
-> +      2: SPI
-> +      3: I2C.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [1, 2, 3]
-> +
-> +patternProperties:
-> +  "^serial@[0-9a-f]+$":
-> +    description: See atmel-usart.txt for details of USART bindings.
-> +    type: object
-> +
-> +  "^spi@[0-9a-f]+$":
-> +    description: See ../spi/spi_atmel.txt for details of SPI bindings.
-> +    type: object
-> +
-> +  "^i2c@[0-9a-f]+$":
-> +    description: See ../i2c/i2c-at91.txt for details of I2C bindings.
-> +    type: object
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - "#address-cells"
-> +  - "#size-cells"
-> +  - ranges
-> +  - atmel,flexcom-mode
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    flx0: flexcom@f8034000 {
-> +          compatible = "atmel,sama5d2-flexcom";
-> +          reg = <0xf8034000 0x200>;
-> +          clocks = <&flx0_clk>;
-> +          #address-cells = <1>;
-> +          #size-cells = <1>;
-> +          ranges = <0x0 0xf8034000 0x800>;
-> +          atmel,flexcom-mode = <2>;
-> +
-> +          spi0: spi@400 {
-> +                compatible = "atmel,at91rm9200-spi";
-> +                reg = <0x400 0x200>;
-> +                interrupts = <19 4 7>;
+  DTC     arch/arm/boot/dts/am335x-evm.dtb
+In file included from ./arch/arm/include/asm/page.h:163,
+                 from ./arch/arm/include/asm/thread_info.h:14,
+                 from ./include/linux/thread_info.h:60,
+                 from ./include/asm-generic/preempt.h:5,
+                 from ./arch/arm/include/generated/asm/preempt.h:1,
+                 from ./include/linux/preempt.h:78,
+                 from ./include/linux/spinlock.h:55,
+                 from ./include/linux/wait.h:9,
+                 from ./include/linux/wait_bit.h:8,
+                 from ./include/linux/fs.h:6,
+                 from ./include/linux/proc_fs.h:10,
+                 from ./include/linux/efi.h:19,
+                 from arch/arm/kernel/setup.c:7:
+In function 'request_standard_resources',
+    inlined from 'setup_arch' at arch/arm/kernel/setup.c:1158:2:
+./arch/arm/include/asm/memory.h:311:22: warning: array subscript -1 is outside array bounds of 'char[2147483647]' [-Warray-bounds]
+  311 | #define virt_to_phys virt_to_phys
+arch/arm/kernel/setup.c:855:31: note: in expansion of macro 'virt_to_phys'
+  855 |         kernel_code.end     = virt_to_phys(__init_begin - 1);
+      |                               ^~~~~~~~~~~~
+In file included from ./include/linux/pid_namespace.h:7,
+                 from ./include/linux/ptrace.h:10,
+                 from ./include/linux/elfcore.h:11,
+                 from ./include/linux/crash_core.h:6,
+                 from ./include/linux/kexec.h:18,
+                 from arch/arm/kernel/setup.c:20:
+./include/linux/mm.h: In function 'setup_arch':
+./include/linux/mm.h:2500:21: note: at offset -1 into object '__init_begin' of size [0, 2147483647]
+ 2500 |         extern char __init_begin[], __init_end[];
+      |                     ^~~~~~~~~~~~
+In function 'request_standard_resources',
+    inlined from 'setup_arch' at arch/arm/kernel/setup.c:1158:2:
+./arch/arm/include/asm/memory.h:311:22: warning: array subscript -1 is outside array bounds of 'char[2147483647]' [-Warray-bounds]
+  311 | #define virt_to_phys virt_to_phys
+arch/arm/kernel/setup.c:857:31: note: in expansion of macro 'virt_to_phys'
+  857 |         kernel_data.end     = virt_to_phys(_end - 1);
+      |                               ^~~~~~~~~~~~
+In file included from ./arch/arm/include/asm/sections.h:5,
+                 from ./include/linux/interrupt.h:21,
+                 from ./include/linux/rtc.h:17,
+                 from ./include/linux/efi.h:20:
+./include/asm-generic/sections.h: In function 'setup_arch':
+./include/asm-generic/sections.h:41:13: note: at offset -1 into object '_end' of size [0, 2147483647]
+   41 | extern char _end[];
+      |             ^~~~
 
-as pointed - looks like a IRQ flag
+Thanks.
 
-> +                pinctrl-names = "default";
-> +                pinctrl-0 = <&pinctrl_flx0_default>;
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +                clocks = <&flx0_clk>;
-> +                clock-names = "spi_clk";
-> +                atmel,fifo-size = <32>;
-> +          };
-> +    };
+Reported-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-
-
-Best regards,
-Krzysztof
+-- 
+An old man doll... just what I always wanted! - Clara
