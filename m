@@ -2,195 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3050CCA487
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E20CCA488
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236206AbiFHGDl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 02:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33628 "EHLO
+        id S237092AbiFHGEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 02:04:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347875AbiFHF6I (ORCPT
+        with ESMTP id S243016AbiFHFyK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:58:08 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77FBE1B781D;
-        Tue,  7 Jun 2022 21:25:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654662310; x=1686198310;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7HhJfLtFr/RjjhFXAUcR5+dY7fCMgUryDbCuqE84jTs=;
-  b=J3JGYRoT0cEzQQkEPrFs1eOGormoqsdy7MQCWEMlw2BzkihV0j64udVu
-   ZNkFni26zeRg8NPgz1Nrd3FjNRN/pNTbxK1yV8yFSx2LScuDiAfNUCaPd
-   aUEjBktHffFZ7FNBl7xMmVQjL9G9/D3aIOvoZ2Ys4PhaxAtm2OHRHbVql
-   J6bvjPEnx93HzQBbQ3UJrhPQw+EPVc2C9JfrDfykA/vDbdRKXvNHNV+tV
-   vI0QMV/fsECq6zyDxP9FCZTkxzW6n7guUG7/6f+KbYXZHAHkAXPA8vt6p
-   GuR/RpN3zNYQjAY38PczL7R8xriSlyOxofvnnx4sgwC+1nxHHStN+ZAfi
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277569589"
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="277569589"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 21:25:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="670339911"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by FMSMGA003.fm.intel.com with ESMTP; 07 Jun 2022 21:25:08 -0700
-Date:   Wed, 8 Jun 2022 12:17:14 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     keliu <liuke94@huawei.com>
-Cc:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] fpga: Directly use ida_alloc()/free()
-Message-ID: <20220608041714.GA421343@yilunxu-OptiPlex-7050>
-References: <20220527085915.2798928-1-liuke94@huawei.com>
- <20220528154355.GA183426@yilunxu-OptiPlex-7050>
+        Wed, 8 Jun 2022 01:54:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62BD39181A;
+        Tue,  7 Jun 2022 20:50:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDDF6B82581;
+        Wed,  8 Jun 2022 03:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AB779C341C0;
+        Wed,  8 Jun 2022 03:50:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654660213;
+        bh=Pzo1qS4dLFSya8BwxSFVdwOB54vrcuvErReAICds9fY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=syi90ZlEgUbERqFzV0dDHhLN/LWp+rvL+/8bP53VfwWZ7arlMd1Hr4CdND6rKENQT
+         zPOznWHwelRQrF2zQ+DuQrhyZQiweN4uPkbFqjV5q+svkKKKeHT1VMyNutDEdUlra+
+         Ek9V8nYU5syFlpYCEu2JvzZjOUgjEf02eKF4WS6XLRJ+8AJIkSKkV23XFD5lgdeG+v
+         WvGj78P5yh6pH6O9G47sJWG+OV3Wqit/OnOsfhwuXcrZs9ti1nUrIS/t8di1iyT2le
+         L2luGV7woWYaPZJ687/xCUAGzJ+ZVvBJnw55K6/dolLs0d17Gbm3x0Js19v6JPYvSX
+         90FI+TioPzTJg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 92A3CE737F4;
+        Wed,  8 Jun 2022 03:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220528154355.GA183426@yilunxu-OptiPlex-7050>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: dsa: lantiq_gswip: Fix refcount leak in
+ gswip_gphy_fw_list
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165466021359.10912.7788070039284246103.git-patchwork-notify@kernel.org>
+Date:   Wed, 08 Jun 2022 03:50:13 +0000
+References: <20220605072335.11257-1-linmq006@gmail.com>
+In-Reply-To: <20220605072335.11257-1-linmq006@gmail.com>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     hauke@hauke-m.de, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 28, 2022 at 11:43:55PM +0800, Xu Yilun wrote:
-> On Fri, May 27, 2022 at 08:59:15AM +0000, keliu wrote:
-> > Use ida_alloc()/ida_free() instead of deprecated
-> > ida_simple_get()/ida_simple_remove() .
-> > 
-> > Signed-off-by: keliu <liuke94@huawei.com>
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Sun,  5 Jun 2022 11:23:34 +0400 you wrote:
+> Every iteration of for_each_available_child_of_node() decrements
+> the reference count of the previous node.
+> when breaking early from a for_each_available_child_of_node() loop,
+> we need to explicitly call of_node_put() on the gphy_fw_np.
+> Add missing of_node_put() to avoid refcount leak.
 > 
-> Acked-by: Xu Yilun <yilun.xu@intel.com>
-
-Applied to for-next.
-
-Thanks,
-Yilun
-
+> Fixes: 14fceff4771e ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 > 
-> > ---
-> >  drivers/fpga/dfl.c         | 4 ++--
-> >  drivers/fpga/fpga-bridge.c | 6 +++---
-> >  drivers/fpga/fpga-mgr.c    | 6 +++---
-> >  drivers/fpga/fpga-region.c | 6 +++---
-> >  4 files changed, 11 insertions(+), 11 deletions(-)
-> > 
-> > diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-> > index 599bb21d86af..2dff0c626cc6 100644
-> > --- a/drivers/fpga/dfl.c
-> > +++ b/drivers/fpga/dfl.c
-> > @@ -342,7 +342,7 @@ static void release_dfl_dev(struct device *dev)
-> >  	if (ddev->mmio_res.parent)
-> >  		release_resource(&ddev->mmio_res);
-> >  
-> > -	ida_simple_remove(&dfl_device_ida, ddev->id);
-> > +	ida_free(&dfl_device_ida, ddev->id);
-> >  	kfree(ddev->irqs);
-> >  	kfree(ddev);
-> >  }
-> > @@ -360,7 +360,7 @@ dfl_dev_add(struct dfl_feature_platform_data *pdata,
-> >  	if (!ddev)
-> >  		return ERR_PTR(-ENOMEM);
-> >  
-> > -	id = ida_simple_get(&dfl_device_ida, 0, 0, GFP_KERNEL);
-> > +	id = ida_alloc(&dfl_device_ida, GFP_KERNEL);
-> >  	if (id < 0) {
-> >  		dev_err(&pdev->dev, "unable to get id\n");
-> >  		kfree(ddev);
-> > diff --git a/drivers/fpga/fpga-bridge.c b/drivers/fpga/fpga-bridge.c
-> > index 16f2b164a178..727704431f61 100644
-> > --- a/drivers/fpga/fpga-bridge.c
-> > +++ b/drivers/fpga/fpga-bridge.c
-> > @@ -342,7 +342,7 @@ fpga_bridge_register(struct device *parent, const char *name,
-> >  	if (!bridge)
-> >  		return ERR_PTR(-ENOMEM);
-> >  
-> > -	id = ida_simple_get(&fpga_bridge_ida, 0, 0, GFP_KERNEL);
-> > +	id = ida_alloc(&fpga_bridge_ida, GFP_KERNEL);
-> >  	if (id < 0) {
-> >  		ret = id;
-> >  		goto error_kfree;
-> > @@ -375,7 +375,7 @@ fpga_bridge_register(struct device *parent, const char *name,
-> >  	return bridge;
-> >  
-> >  error_device:
-> > -	ida_simple_remove(&fpga_bridge_ida, id);
-> > +	ida_free(&fpga_bridge_ida, id);
-> >  error_kfree:
-> >  	kfree(bridge);
-> >  
-> > @@ -407,7 +407,7 @@ static void fpga_bridge_dev_release(struct device *dev)
-> >  {
-> >  	struct fpga_bridge *bridge = to_fpga_bridge(dev);
-> >  
-> > -	ida_simple_remove(&fpga_bridge_ida, bridge->dev.id);
-> > +	ida_free(&fpga_bridge_ida, bridge->dev.id);
-> >  	kfree(bridge);
-> >  }
-> >  
-> > diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
-> > index d49a9ce34568..2955a21beebe 100644
-> > --- a/drivers/fpga/fpga-mgr.c
-> > +++ b/drivers/fpga/fpga-mgr.c
-> > @@ -622,7 +622,7 @@ fpga_mgr_register_full(struct device *parent, const struct fpga_manager_info *in
-> >  	if (!mgr)
-> >  		return ERR_PTR(-ENOMEM);
-> >  
-> > -	id = ida_simple_get(&fpga_mgr_ida, 0, 0, GFP_KERNEL);
-> > +	id = ida_alloc(&fpga_mgr_ida, GFP_KERNEL);
-> >  	if (id < 0) {
-> >  		ret = id;
-> >  		goto error_kfree;
-> > @@ -661,7 +661,7 @@ fpga_mgr_register_full(struct device *parent, const struct fpga_manager_info *in
-> >  	return mgr;
-> >  
-> >  error_device:
-> > -	ida_simple_remove(&fpga_mgr_ida, id);
-> > +	ida_free(&fpga_mgr_ida, id);
-> >  error_kfree:
-> >  	kfree(mgr);
-> >  
-> > @@ -785,7 +785,7 @@ static void fpga_mgr_dev_release(struct device *dev)
-> >  {
-> >  	struct fpga_manager *mgr = to_fpga_manager(dev);
-> >  
-> > -	ida_simple_remove(&fpga_mgr_ida, mgr->dev.id);
-> > +	ida_free(&fpga_mgr_ida, mgr->dev.id);
-> >  	kfree(mgr);
-> >  }
-> >  
-> > diff --git a/drivers/fpga/fpga-region.c b/drivers/fpga/fpga-region.c
-> > index b0ac18de4885..18bcaa1926dd 100644
-> > --- a/drivers/fpga/fpga-region.c
-> > +++ b/drivers/fpga/fpga-region.c
-> > @@ -202,7 +202,7 @@ fpga_region_register_full(struct device *parent, const struct fpga_region_info *
-> >  	if (!region)
-> >  		return ERR_PTR(-ENOMEM);
-> >  
-> > -	id = ida_simple_get(&fpga_region_ida, 0, 0, GFP_KERNEL);
-> > +	id = ida_alloc(&fpga_region_ida, GFP_KERNEL);
-> >  	if (id < 0) {
-> >  		ret = id;
-> >  		goto err_free;
-> > @@ -234,7 +234,7 @@ fpga_region_register_full(struct device *parent, const struct fpga_region_info *
-> >  	return region;
-> >  
-> >  err_remove:
-> > -	ida_simple_remove(&fpga_region_ida, id);
-> > +	ida_free(&fpga_region_ida, id);
-> >  err_free:
-> >  	kfree(region);
-> >  
-> > @@ -283,7 +283,7 @@ static void fpga_region_dev_release(struct device *dev)
-> >  {
-> >  	struct fpga_region *region = to_fpga_region(dev);
-> >  
-> > -	ida_simple_remove(&fpga_region_ida, region->dev.id);
-> > +	ida_free(&fpga_region_ida, region->dev.id);
-> >  	kfree(region);
-> >  }
-> >  
-> > -- 
-> > 2.25.1
+> [...]
+
+Here is the summary with links:
+  - net: dsa: lantiq_gswip: Fix refcount leak in gswip_gphy_fw_list
+    https://git.kernel.org/netdev/net/c/0737e018a05e
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
