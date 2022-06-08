@@ -2,143 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A2ECCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:10:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236207AbiFHKKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35874 "EHLO
+        id S236231AbiFHKKJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:10:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236993AbiFHKJ3 (ORCPT
+        with ESMTP id S236271AbiFHKIT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:09:29 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 56D48131F38
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:54:01 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4A12D1424;
-        Wed,  8 Jun 2022 02:54:01 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BA25A3F73B;
-        Wed,  8 Jun 2022 02:53:59 -0700 (PDT)
-Message-ID: <2860f381-24e8-2950-388a-b984c4eb51f2@arm.com>
-Date:   Wed, 8 Jun 2022 11:53:42 +0200
+        Wed, 8 Jun 2022 06:08:19 -0400
+X-Greylist: delayed 538 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Jun 2022 02:51:38 PDT
+Received: from mail.parknet.co.jp (mail.parknet.co.jp [210.171.160.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 001ED62EE;
+        Wed,  8 Jun 2022 02:51:37 -0700 (PDT)
+Received: from ibmpc.myhome.or.jp (server.parknet.ne.jp [210.171.168.39])
+        by mail.parknet.co.jp (Postfix) with ESMTPSA id CCA6A2051589;
+        Wed,  8 Jun 2022 18:42:36 +0900 (JST)
+Received: from devron.myhome.or.jp (foobar@devron.myhome.or.jp [192.168.0.3])
+        by ibmpc.myhome.or.jp (8.16.1/8.16.1/Debian-3) with ESMTPS id 2589gZHG171264
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 8 Jun 2022 18:42:36 +0900
+Received: from devron.myhome.or.jp (foobar@localhost [127.0.0.1])
+        by devron.myhome.or.jp (8.16.1/8.16.1/Debian-3) with ESMTPS id 2589gZFp099261
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 8 Jun 2022 18:42:35 +0900
+Received: (from hirofumi@localhost)
+        by devron.myhome.or.jp (8.16.1/8.16.1/Submit) id 2589gXI5099260;
+        Wed, 8 Jun 2022 18:42:33 +0900
+From:   OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Lennart Poettering <lennart@poettering.net>,
+        linux-kernel@vger.kernel.org, Colin Walters <walters@verbum.org>,
+        Peter Jones <pjones@redhat.com>,
+        Alberto Ruiz <aruiz@redhat.com>,
+        Christian Kellner <ckellner@redhat.com>,
+        Chung-Chiang Cheng <cccheng@synology.com>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Alexander Larsson <alexl@redhat.com>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 0/4] fat: add support for the renameat2
+ RENAME_EXCHANGE flag
+References: <20220601173204.1372569-1-javierm@redhat.com>
+        <05bfb010-6b00-edb1-0e28-889a2ff71503@redhat.com>
+Date:   Wed, 08 Jun 2022 18:42:33 +0900
+In-Reply-To: <05bfb010-6b00-edb1-0e28-889a2ff71503@redhat.com> (Javier
+        Martinez Canillas's message of "Wed, 8 Jun 2022 09:56:46 +0200")
+Message-ID: <87ilpbtrsm.fsf@mail.parknet.co.jp>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/29.0.50 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-Subject: Re: [PATCH v10 2/7] sched/fair: Decay task PELT values during wakeup
- migration
-To:     Vincent Donnefort <vdonnefort@google.com>, peterz@infradead.org,
-        mingo@redhat.com, vincent.guittot@linaro.org
-Cc:     linux-kernel@vger.kernel.org, morten.rasmussen@arm.com,
-        chris.redpath@arm.com, qperret@google.com, tao.zhou@linux.dev,
-        kernel-team@android.com
-References: <20220607123254.565579-1-vdonnefort@google.com>
- <20220607123254.565579-3-vdonnefort@google.com>
-Content-Language: en-US
-In-Reply-To: <20220607123254.565579-3-vdonnefort@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/06/2022 14:32, Vincent Donnefort wrote:
-> From: Vincent Donnefort <vincent.donnefort@arm.com>
+Javier Martinez Canillas <javierm@redhat.com> writes:
 
-[...]
+> Hello OGAWA,
+>
+> On 6/1/22 19:32, Javier Martinez Canillas wrote:
+>> Hello,
+>> 
+>> The series adds support for the renameat2 system call RENAME_EXCHANGE flag
+>> (which allows to atomically replace two paths) to the vfat filesystem code.
+>> 
+>> There are many use cases for this, but we are particularly interested in
+>> making possible for vfat filesystems to be part of OSTree [0] deployments.
+>> 
+>> Currently OSTree relies on symbolic links to make the deployment updates
+>> an atomic transactional operation. But RENAME_EXCHANGE could be used [1]
+>> to achieve a similar level of robustness when using a vfat filesystem.
+>> 
+>> Patch #1 is just a preparatory patch to introduce the RENAME_EXCHANGE
+>> support, patch #2 moves some code blocks in vfat_rename() to a set of
+>> helper functions, that can be reused by tvfat_rename_exchange() that's
+>> added by patch #3 and finally patch #4 adds some kselftests to test it.
+>> 
+>
+> I think that addressed all the issues you pointed out in v3, please let me
+> know if there's anything else that is needed for this patch series.
+>
+> Would these be merged by you or should I ping someone else? I'm not
+> that familiar with how filesystem patches make into the mainline tree.
 
-> To that end, we need sched_clock_cpu() but it is a costly function. Limit
-> the usage to the case where the source CPU is idle as we know this is when
-> the clock is having the biggest risk of being outdated. In this such case,
+Sorry, it is just the my issue. I was traveling latest week, so is not
+reviewing yet. I'll do soon.
 
-s/In this such case/in such a case
-
-> let's call it cfs_idle_lag the delta time between the rq_clock_pelt value
-> at rq idle and cfs_rq idle.
-
-s/it cfs_idle_lag the delta time between the rq_clock_pelt value at rq
-idle and cfs_rq idle./the delta time between the rq_clock_pelt value
-> at rq idle and cfs_rq idle cfs_idle_lag?
-
- And rq_idle_lag the delta between "now" and
-> the rq_clock_pelt at rq idle.
-> 
-
---->
-
-> The estimated PELT clock is then:
-> 
->    last_update_time (the cfs_rq's last_update_time)
->    + cfs_idle_lag (delta between cfs_rq's update and rq's update>    + rq_idle_lag (delta between rq's update and now)
-> 
->   last_update_time = cfs_rq_clock_pelt()
->                    = rq_clock_pelt() - cfs->throttled_clock_pelt_time
-> 
->   cfs_idle_lag = rq_clock_pelt()@rq_idle -
->                  rq_clock_pelt()@cfs_rq_idle
-> 
->   rq_idle_lag = sched_clock_cpu() - rq_clock()@rq_idle
-> 
-> The rq_clock_pelt() from last_update_time being the same as
-> rq_clock_pelt()@cfs_rq_idle, we can write:
-> 
->   estimation = rq_clock_pelt()@rq_idle - cfs->throttled_clock_pelt_time +
->                sched_clock_cpu() - rq_clock()@rq_idle
-> 
-> The clocks being not accessible without the rq lock taken, some timestamps
-> are created:
-> 
->       rq_clock_pelt()@rq_idle        is rq->clock_pelt_idle
->       rq_clock()@rq_idle             is rq->enter_idle
->       cfs->throttled_clock_pelt_time is cfs_rq->throttled_pelt_idle
-> 
-
-<--- ^^^
-
-This whole block seems to be the same information as the comment block
-in migrate_se_pelt_lag(). But you haven't updated it in v10. Maybe you
-can get rid of this here and point to the comment block in
-migrate_se_pelt_lag() from here instead to guarantee consistency?
-Otherwise they should be in sync.
-
-[...]
-
-> +	/*
-> +	 * Estimated "now" is: last_update_time + cfs_idle_lag + rq_idle_lag, where:
-> +	 *
-> +	 *   last_update_time (the cfs_rq's last_update_time)
-> +	 *	= cfs_rq_clock_pelt()@cfs_rq_idle
-> +	 *      = rq_clock_pelt()@cfs_rq_idle
-> +	 *        - cfs->throttled_clock_pelt_time@cfs_rq_idle
-> +	 *
-> +	 *   cfs_idle_lag (delta between cfs_rq's update and rq's update)
-
-Isn't this:            (delta between rq's update and cfs_rq's update) ?
-
-> +	 *      = rq_clock_pelt()@rq_idle - rq_clock_pelt()@cfs_rq_idle
-> +	 *
-> +	 *   rq_idle_lag (delta between rq's update and now)
-
-Isn't this:              (delta between now and rq's update) ?
-
-> +	 *      = sched_clock_cpu() - rq_clock()@rq_idle
-> +	 *
-> +	 * We can then write:
-> +	 *
-> +	 *    now = rq_clock_pelt()@rq_idle - cfs->throttled_clock_pelt_time +
-> +	 *          sched_clock_cpu() - rq_clock()@rq_idle
-> +	 * Where:
-> +	 *      rq_clock_pelt()@rq_idle        is rq->clock_pelt_idle
-> +	 *      rq_clock()@rq_idle             is rq->clock_idle
-                                         is rq->clock_pelt_idle
-                                         is rq->clock_idle
-
-> +	 *      cfs->throttled_clock_pelt_time@cfs_rq_idle is
-> +	 *      cfs_rq->throttled_pelt_idle
-                                          is cfs_rq->throttled_pelt_idle
-
-Maybe align the `is foo` for readability?
-
-[...]
+Thanks.
+-- 
+OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
