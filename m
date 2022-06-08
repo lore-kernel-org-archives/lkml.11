@@ -2,190 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF5AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:48:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C85C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:49:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230128AbiFHHsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:48:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58494 "EHLO
+        id S231830AbiFHHsW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:48:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237468AbiFHHkr (ORCPT
+        with ESMTP id S237476AbiFHHhr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:40:47 -0400
-Received: from smtpproxy21.qq.com (smtpbg704.qq.com [203.205.195.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5BC021CBD5
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:06:19 -0700 (PDT)
-X-QQ-mid: bizesmtp76t1654671930tcqh2wch
-Received: from localhost.localdomain ( [113.57.152.160])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 08 Jun 2022 15:05:29 +0800 (CST)
-X-QQ-SSF: 01400000002000B0I000B00A0000000
-X-QQ-FEAT: Lg5IqoGaTUj+Jv1EON9RGjqiv08mFbfEn3gIo2fJsUawWGDYA4lbJRDncNbtv
-        UxTBCsinV/qZSjo8ykrzPYCRg2HKMD4bFyIoCGvjocGkNpGqKLlmqoY1aIm6faNK8Gz24TZ
-        jg4sXduMjZa8cpVJ4tXnKGLyUz3zu0ovxYX6IC+tuF8ykgVUWJzOiwokWpBz2w2alWaoUC4
-        jKyHR+yTFls/8hu2gaBhrQhHSPeboYr4j5jnJPhvW6n4V0qX1OGaRsJ6iXZjGIXyW9Ys96K
-        KZAqW1dtJu3sMSkrG+OtPaTfZIH6r4Fk5d+YG/9rDQwxLO0FiNIKxsy8Ks5b/MVYwXKFQCp
-        OfR0OyL6hNZtwvpmG2v0NclCv4to7SwqRF0pyiY
-X-QQ-GoodBg: 2
-From:   huangwenhui <huangwenhuia@uniontech.com>
-To:     tiwai@suse.com, perex@perex.cz
-Cc:     jeremy.szu@canonical.com, hui.wang@canonical.com,
-        wse@tuxedocomputers.com, cam@neo-zeon.de, kailang@realtek.com,
-        tanureal@opensource.cirrus.com, sami@loone.fi,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        huangwenhui <huangwenhuia@uniontech.com>
-Subject: [PATCH v3] ALSA: hda/realtek - Add HW8326 support
-Date:   Wed,  8 Jun 2022 15:05:27 +0800
-Message-Id: <20220608070527.14824-1-huangwenhuia@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Wed, 8 Jun 2022 03:37:47 -0400
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7821A8982;
+        Tue,  7 Jun 2022 23:59:26 -0700 (PDT)
+Received: by mail-ej1-f42.google.com with SMTP id q1so39553094ejz.9;
+        Tue, 07 Jun 2022 23:59:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6L+/2EIAxea4kViaA/IdkacEwVmHWh6HS95u1xeSr+U=;
+        b=Gko/HYitHiW/i/0v4abJmnStDx9U7mqCECwOXh6r/sxKlVtox5FMWkgwz3Dr8bB+ko
+         Va8Ks2+CGIQa0gMAB0ybfI3cdFn6vzV9h0ihjwx1yLXZmFgT/MXOjEmGIjJdZdNq6/VH
+         zz7/gT5G4ctaCiw8vf3OzH31hliRk8Ju+NXpDSOL8uNHaMBzUUmpRf4pdvO/5XaGdtyL
+         hgO2Um4aCSCyNiRzUZiNDqZ5qfUQ7O4yo/jqVr1giyMaAYQ2ySFtKYq4lnPYUvBNxYY7
+         cdS9Ghi4GLQM9O/w7/YCn8sDbKeioLGfPFBNwtqNwtjcGBjdnoOr7zvgdx9+m1hOvft1
+         nkyQ==
+X-Gm-Message-State: AOAM532maShtQ6fT/5ewGeKLdbJXPIsT4i2WCSrS0PNBH68N/Suv6WxZ
+        TYL10hM4jDh1brb9M3+t9WX9qU9lWeb0bQ==
+X-Google-Smtp-Source: ABdhPJxcSMgcDfu8TlWaOXJ0PI9FIP2DBFbiPC/rOvMaoR7eLQN2qrUz87r5hG+1yt4oLohcrRFknA==
+X-Received: by 2002:a17:907:7f91:b0:6ff:c1a:2e8e with SMTP id qk17-20020a1709077f9100b006ff0c1a2e8emr28995921ejc.70.1654671564953;
+        Tue, 07 Jun 2022 23:59:24 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id nd28-20020a170907629c00b00706c50870a0sm207013ejc.194.2022.06.07.23.59.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 23:59:24 -0700 (PDT)
+Message-ID: <54049291-db20-a536-0615-cc3b56ceb3a3@kernel.org>
+Date:   Wed, 8 Jun 2022 08:59:23 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 10/36] tty/vt: consolemap: introduce UNI_*() macros
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220607104946.18710-1-jslaby@suse.cz>
+ <20220607104946.18710-10-jslaby@suse.cz>
+ <2e2623a0-4b9f-f15d-78e0-d6e335bdcdff@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <2e2623a0-4b9f-f15d-78e0-d6e335bdcdff@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign3
-X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added the support of new Huawei codec HW8326. The HW8326 is developed
-by Huawei with Realtek's IP Core, and it's compatible with ALC256.
+On 07. 06. 22, 15:47, Ilpo Järvinen wrote:
+> On Tue, 7 Jun 2022, Jiri Slaby wrote:
+> 
+>> The code currently does shift, OR, and AND logic directly in the code.
+>> It is not much obvious what happens there. Therefore define four macros
+>> for that purpose and use them in the code. We use GENMASK() so that it
+>> is clear which bits serve what purpose:
+>> - UNI_GLYPH: bits  0.. 5
+>> - UNI_ROW:   bits  6..10
+>> - UNI_DIR:   bits 11..31
+>>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> ---
+>>   drivers/tty/vt/consolemap.c | 21 +++++++++++++--------
+>>   1 file changed, 13 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+>> index 016c1a0b4290..e5fd225e87bd 100644
+>> --- a/drivers/tty/vt/consolemap.c
+>> +++ b/drivers/tty/vt/consolemap.c
+>> @@ -190,6 +190,11 @@ static int inv_translate[MAX_NR_CONSOLES];
+>>   #define UNI_DIR_ROWS	32U
+>>   #define UNI_ROW_GLYPHS	64U
+>>   
+>> +#define UNI_DIR(uni)		( (uni)                   >> 11)
+>> +#define UNI_ROW(uni)		(((uni) & GENMASK(10, 6)) >>  6)
+> 
+> This is opencoding what FIELD_GET() does. Maybe just define these as
+> masks and use FIELD_GET in the code below.
 
-Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
----
- sound/hda/hdac_device.c       |  1 +
- sound/pci/hda/patch_realtek.c | 14 ++++++++++++++
- 2 files changed, 15 insertions(+)
+Ah, great -- I was thinking there should be something for that purpose 
+already, but didn't find this. But let's define these UNI_* macros using 
+appropriate FIELD_GET(). (And not using FIELD_GET() in the code.)
 
-diff --git a/sound/hda/hdac_device.c b/sound/hda/hdac_device.c
-index 3e9e9ac804f6..775474f00141 100644
---- a/sound/hda/hdac_device.c
-+++ b/sound/hda/hdac_device.c
-@@ -651,6 +651,7 @@ static const struct hda_vendor_id hda_vendor_ids[] = {
- 	{ 0x1095, "Silicon Image" },
- 	{ 0x10de, "Nvidia" },
- 	{ 0x10ec, "Realtek" },
-+	{ 0x19e5, "Huawei" },
- 	{ 0x1102, "Creative" },
- 	{ 0x1106, "VIA" },
- 	{ 0x111d, "IDT" },
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index f3ad454b3fbf..cd1281691767 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -443,6 +443,7 @@ static void alc_fill_eapd_coef(struct hda_codec *codec)
- 	case 0x10ec0245:
- 	case 0x10ec0255:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 	case 0x10ec0257:
- 	case 0x10ec0282:
- 	case 0x10ec0283:
-@@ -580,6 +581,7 @@ static void alc_shutup_pins(struct hda_codec *codec)
- 	switch (codec->core.vendor_id) {
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 	case 0x10ec0283:
- 	case 0x10ec0286:
- 	case 0x10ec0288:
-@@ -3247,6 +3249,7 @@ static void alc_disable_headset_jack_key(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x48, 0x0);
- 		alc_update_coef_idx(codec, 0x49, 0x0045, 0x0);
- 		break;
-@@ -3275,6 +3278,7 @@ static void alc_enable_headset_jack_key(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x48, 0xd011);
- 		alc_update_coef_idx(codec, 0x49, 0x007f, 0x0045);
- 		break;
-@@ -4910,6 +4914,7 @@ static void alc_headset_mode_unplugged(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5025,6 +5030,7 @@ static void alc_headset_mode_mic_in(struct hda_codec *codec, hda_nid_t hp_pin,
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x45, 0xc489);
- 		snd_hda_set_pin_ctl_cache(codec, hp_pin, 0);
- 		alc_process_coef_fw(codec, coef0256);
-@@ -5175,6 +5181,7 @@ static void alc_headset_mode_default(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x1b, 0x0e4b);
- 		alc_write_coef_idx(codec, 0x45, 0xc089);
- 		msleep(50);
-@@ -5274,6 +5281,7 @@ static void alc_headset_mode_ctia(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5388,6 +5396,7 @@ static void alc_headset_mode_omtp(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5489,6 +5498,7 @@ static void alc_determine_headset_type(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x1b, 0x0e4b);
- 		alc_write_coef_idx(codec, 0x06, 0x6104);
- 		alc_write_coefex_idx(codec, 0x57, 0x3, 0x09a3);
-@@ -5783,6 +5793,7 @@ static void alc255_set_default_jack_type(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, alc256fw);
- 		break;
- 	}
-@@ -6385,6 +6396,7 @@ static void alc_combo_jack_hp_jd_restart(struct hda_codec *codec)
- 	case 0x10ec0236:
- 	case 0x10ec0255:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_update_coef_idx(codec, 0x1b, 0x8000, 1 << 15); /* Reset HP JD */
- 		alc_update_coef_idx(codec, 0x1b, 0x8000, 0 << 15);
- 		break;
-@@ -10095,6 +10107,7 @@ static int patch_alc269(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		spec->codec_variant = ALC269_TYPE_ALC256;
- 		spec->shutup = alc256_shutup;
- 		spec->init_hook = alc256_init;
-@@ -11545,6 +11558,7 @@ static const struct hda_device_id snd_hda_id_realtek[] = {
- 	HDA_CODEC_ENTRY(0x10ec0b00, "ALCS1200A", patch_alc882),
- 	HDA_CODEC_ENTRY(0x10ec1168, "ALC1220", patch_alc882),
- 	HDA_CODEC_ENTRY(0x10ec1220, "ALC1220", patch_alc882),
-+	HDA_CODEC_ENTRY(0x19e58326, "HW8326", patch_alc269),
- 	{} /* terminator */
- };
- MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_realtek);
+>> +#define UNI_GLYPH(uni)		( (uni) & GENMASK( 5, 0))
+thanks,
 -- 
-2.20.1
-
-
-
+js
+suse labs
