@@ -2,120 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78720C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F784C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:16:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235003AbiFHJQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34104 "EHLO
+        id S235027AbiFHJQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:16:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234922AbiFHJOS (ORCPT
+        with ESMTP id S235093AbiFHJOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:14:18 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D89736B52
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:35:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654677307; x=1686213307;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=pXuZA38WFCYOEgp/TFGPUQWDuJ5qHdPuNcs8ycMRM54=;
-  b=VWccGwKeVU4FfvlyOydrm/ZilSvE0M+CwpGyTrZtL66R0syzZjVcs8BC
-   hZhFj4eoATCWXO24XBnGCCFhD4L+L/ZygWs6NSLc2Wqb0uVxFEYfijj5W
-   mIchqBclzXOTaRHRMumwGEtUQCvtNYnbBaRs0WTpVzuo0g7AixlHGLOvE
-   E90uqVDQbabRBuaWKLmWshjvvR+bkmf0v5dq3t3E/BhCZriYMMTz4Z+6x
-   HlxCaViwcS1mh9HLxG/Gpb+n3fdJz2gXOKqrzHMjX/suiGe9NaUKqt0Iq
-   vuoQWuWsqlewoe0mt5UvaoGndOsSxl+E6M1M3/IKaP3x1XjmvpBd6IdOW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="257249466"
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="257249466"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 01:35:06 -0700
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="636677405"
-Received: from xding11-mobl.ccr.corp.intel.com ([10.254.214.239])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 01:35:02 -0700
-Message-ID: <65b77f7f89361144602dce208ba4cb32387cf330.camel@intel.com>
-Subject: Re: [PATCH v5 6/9] mm/demotion: Add support for removing node from
- demotion memory tiers
-From:   Ying Huang <ying.huang@intel.com>
-To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-Date:   Wed, 08 Jun 2022 16:34:59 +0800
-In-Reply-To: <d695354e-4e7c-e0cd-603b-b585d80d5caa@linux.ibm.com>
-References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
-         <20220603134237.131362-7-aneesh.kumar@linux.ibm.com>
-         <a0a70b517bf1da920dca6082afa3fbc6aba77a67.camel@intel.com>
-         <81956d2e-0bfe-78ba-5ad0-f6c388c2190e@linux.ibm.com>
-         <06d04b6588b43ca010ec78ce0dee8127193f5562.camel@intel.com>
-         <d695354e-4e7c-e0cd-603b-b585d80d5caa@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Wed, 8 Jun 2022 05:14:30 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE871D82F4;
+        Wed,  8 Jun 2022 01:36:10 -0700 (PDT)
+X-UUID: b566a5b6eae447c9897858eace2fbdea-20220608
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:0d5b83aa-2477-46cd-b412-e843e534e382,OB:0,LO
+        B:20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:95
+X-CID-INFO: VERSION:1.1.5,REQID:0d5b83aa-2477-46cd-b412-e843e534e382,OB:0,LOB:
+        20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:95
+X-CID-META: VersionHash:2a19b09,CLOUDID:ac2415e5-2ba2-4dc1-b6c5-11feb6c769e0,C
+        OID:ab9fe7398c47,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:0,BEC:nil
+X-UUID: b566a5b6eae447c9897858eace2fbdea-20220608
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 788356503; Wed, 08 Jun 2022 16:36:03 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Wed, 8 Jun 2022 16:36:02 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Wed, 8 Jun 2022 16:36:02 +0800
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Benson Leung <bleung@chromium.org>,
+        "Guenter Roeck" <groeck@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        Kees Cook <keescook@chromium.org>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>
+CC:     <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <chrome-platform@lists.linux.dev>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <weishunc@google.com>
+Subject: [PATCH v2 1/9] dt-binding: remoteproc: mediatek: Support dual-core SCP
+Date:   Wed, 8 Jun 2022 16:35:45 +0800
+Message-ID: <20220608083553.8697-2-tinghan.shen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220608083553.8697-1-tinghan.shen@mediatek.com>
+References: <20220608083553.8697-1-tinghan.shen@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-06-08 at 13:59 +0530, Aneesh Kumar K V wrote:
-> On 6/8/22 1:53 PM, Ying Huang wrote:
-> > On Wed, 2022-06-08 at 13:50 +0530, Aneesh Kumar K V wrote:
-> > > On 6/8/22 12:29 PM, Ying Huang wrote:
-> > > > On Fri, 2022-06-03 at 19:12 +0530, Aneesh Kumar K.V wrote:
-> > > > > This patch adds the special string "none" as a supported memtier value
-> > > > > that we can use to remove a specific node from being using as demotion target.
-> > > > > 
-> > > > > For ex:
-> > > > > :/sys/devices/system/node/node1# cat memtier
-> > > > > 1
-> > > > > :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
-> > > > > 1-3
-> > > > > :/sys/devices/system/node/node1# echo none > memtier
-> > > > > :/sys/devices/system/node/node1#
-> > > > > :/sys/devices/system/node/node1# cat memtier
-> > > > > :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
-> > > > > 2-3
-> > > > > :/sys/devices/system/node/node1#
-> > > > 
-> > > > Do you have a practical use case for this?  What kind of memory node
-> > > > needs to be removed from memory tiers demotion/promotion?
-> > > > 
-> > > 
-> > > This came up in our internal discussion. It was mentioned that there is
-> > > a need to skip some slow memory nodes from participating in demotion.
-> > 
-> > Again, can you provide a practical use case?  Why we shouldn't demote
-> > cold pages to these slow memory nodes?  How do we use these slow memory
-> > node?  These slow memory node is slower than disk?
-> > 
-> 
-> This was discussed in the context of memory borrowed from remote machine 
-> (aka OpenCAPI memory). In such case, we would have a memory only NUMA 
-> node which we want to avoid using for demotion.
+The MT8195 SCP co-processor is a dual-core RISC-V MCU.
 
-Thanks for your information.  But why shouldn't we use them for
-demotion?  Because it's too slow?  Even slower than disks?  Or some
-other reason?
+Add a new property to reference the sibling core and to assign
+core id to SCP nodes. Also add a new compatile for the driver of
+SCP 2nd core.
 
-Best Regards,
-Huang, Ying
+Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+---
+ .../devicetree/bindings/remoteproc/mtk,scp.yaml     | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
+index eec3b9c4c713..4576ff9b1f2d 100644
+--- a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
++++ b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
+@@ -20,6 +20,7 @@ properties:
+       - mediatek,mt8186-scp
+       - mediatek,mt8192-scp
+       - mediatek,mt8195-scp
++      - mediatek,mt8195-scp-dual
+ 
+   reg:
+     description:
+@@ -57,6 +58,17 @@ properties:
+   memory-region:
+     maxItems: 1
+ 
++  mediatek,scp-core:
++    $ref: "/schemas/types.yaml#/definitions/phandle-array"
++    description:
++      Reference to the sibling SCP core. This is required to
++      enable support for dual-core SCP.
++    items:
++      - items:
++          - description: Phandle of sibling SCP node.
++          - description: Core id of this SCP node
++            enum: [0, 1]
++
+ required:
+   - compatible
+   - reg
+@@ -115,6 +127,7 @@ examples:
+         reg-names = "sram", "cfg", "l1tcm";
+         clocks = <&infracfg CLK_INFRA_SCPSYS>;
+         clock-names = "main";
++        mediatek,scp-core = <&scp_dual 0>;
+ 
+         cros_ec {
+             mediatek,rpmsg-name = "cros-ec-rpmsg";
+-- 
+2.18.0
 
