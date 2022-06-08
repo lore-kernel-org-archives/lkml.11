@@ -2,112 +2,330 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3912C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B31D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:30:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232777AbiFHF2c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52338 "EHLO
+        id S233226AbiFHFaH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233792AbiFHF2P (ORCPT
+        with ESMTP id S233985AbiFHF2V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:28:15 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE2D1775C1
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:42:42 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id gd1so17362193pjb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 19:42:42 -0700 (PDT)
+        Wed, 8 Jun 2022 01:28:21 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE91137C76;
+        Tue,  7 Jun 2022 19:52:57 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id be31so31149295lfb.10;
+        Tue, 07 Jun 2022 19:52:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eACAcP76K1gXeQHMPXfrh6MRwMHogkqclcM3ucohxaU=;
-        b=DtL5BKl38TK1JmQCoo9VNTuilRXtIQQb8aA+2j5JWDKkTJMcHWV5I4ayrf85wEAp/D
-         +SPamuT0V/GS1H3+TGA7bsJrj/vQJTAzHMhmUFqbAjw6QppecD8ydZLJWGxGusTbuS3B
-         DrmzebuZhbfui1ZylFkqA44lBIOUX+RiD7kEk=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=BI8cyUkiseZ6PPtOnXzhSkA0pyub0JYKY0CWFua4rTg=;
+        b=L+xbdkhNvNDEHULysuGF+Mx7AlPUHX4fUbsF0kfVsrgqdj2S71m91lgloZXazUL3RB
+         rPPq2uPj2h0UdaIBTZKJsBwh4kdHxSD0mdql9GLpv6K9inlf9BRWMEH+lbKeh0GiW5x/
+         qYhn8yqM6GuX+3uIG1eGUUVV/gGrQAC8xfytItYvUU0V5QSWWEyr4OgLdm91Gd2IGcH9
+         rXkEogb+m8ifZWcMgKRrdxZl0DZptlb5PpZ5XbDJauL/FeBdEC+2FQaq33pddV/4Nv6V
+         htYG4OLxCvGYae3v5LSPm/Ib9JkHmMX6OyB1yVtrZBEs7boLMzjTtKrY7Oq0IzOdlE5r
+         +9Zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eACAcP76K1gXeQHMPXfrh6MRwMHogkqclcM3ucohxaU=;
-        b=fUw32q+Q7c6tFXyhNDTf05XFpnDdb9ODdxXkppjy2mSurHv2AUnn87rG8juRqZwT6c
-         KnZnUiLnEuAspJ926S3ocVBhXgUra/I5wbpXPSPOBvAbFlxlzY7AmI3yZb1szwc/Xfeg
-         RRc1ydgao+sNctSoA4T+pc1x8Rfn6QOXvqjNbXfbzCXz+MLGP0uGZ6oxc5VEAp1iEY6o
-         rXuAkjFyqRoD5YMvOQKKRoKL/w+WEfdpHG68iJ/L4SdA9Y7uSJLY7Jd+2jqNDk69RbVE
-         /R6MSHLXE0yg8hFAR7BAWOCm+i5qh+J7ZfqsbHrx5VSn/YlI3+hzh9yTGZgTLkd66NYg
-         vrWw==
-X-Gm-Message-State: AOAM5337THlFqPKSK7GYmQKHxED1Aio8bKpvaw1p8eRIo6oBp5XarCxH
-        ywB0Xgi617/7qx9HzZFIJl+PoQ==
-X-Google-Smtp-Source: ABdhPJzYCcpDtcoi5LZAO+0GSYALVef0pXg5v/EV8ii/oeXqYV5OV4RF4wJ5iDiynw1qdkxhjkSp7A==
-X-Received: by 2002:a17:902:6bc6:b0:166:3c39:50a1 with SMTP id m6-20020a1709026bc600b001663c3950a1mr31493176plt.36.1654656158650;
-        Tue, 07 Jun 2022 19:42:38 -0700 (PDT)
-Received: from google.com ([2401:fa00:8f:203:463d:a192:6128:66e])
-        by smtp.gmail.com with ESMTPSA id n7-20020aa78a47000000b0051bb61c0eacsm13512317pfa.20.2022.06.07.19.42.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 19:42:38 -0700 (PDT)
-Date:   Wed, 8 Jun 2022 11:42:33 +0900
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     Minchan Kim <minchan@kernel.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        regressions@lists.linux.dev, Jens Axboe <axboe@kernel.dk>,
-        Nitin Gupta <ngupta@vflare.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>
-Subject: Re: qemu-arm: zram: mkfs.ext4 : Unable to handle kernel NULL pointer
- dereference at virtual address 00000140
-Message-ID: <YqAMmTiwcyS3Ttla@google.com>
-References: <CA+G9fYtVOfWWpx96fa3zzKzBPKiNu1w3FOD4j++G8MOG3Vs0EA@mail.gmail.com>
- <Yp47DODPCz0kNgE8@google.com>
- <CA+G9fYsjn0zySHU4YYNJWAgkABuJuKtHty7ELHmN-+30VYgCDA@mail.gmail.com>
- <Yp/kpPA7GdbArXDo@google.com>
- <YqAL+HeZDk5Wug28@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=BI8cyUkiseZ6PPtOnXzhSkA0pyub0JYKY0CWFua4rTg=;
+        b=wexkp0Qpa8i7qZnrQahG0YrRT5PcHlABfPuKCpDXDgEmSsaCwUB0AXtMzxx0EvlRkh
+         da1voTekQwfXWerVSCayRbWqBvAv7tCxNKUmqAa5qbab0EGq3BHXszEPSQNapKedCy39
+         yfe8fDgkX0zhqKxOywS7vifZi5GUsgiP8s3npEZTtkMzaSwWbbT0wCdFTh432TJN4cg6
+         2dhHlMMIt8+pnvgNV0V4J0nQ8XKdIzdAlu7Mcmp3xov0VN8/nA8ze13U0yHGlsmlpoMb
+         KuKWjeGXu4TSQtIB1rwxI5kePaeX+2Y8L5DWCyRYn2vKdqqWlPmzrQY7cr80LjDXF+Qu
+         Ckig==
+X-Gm-Message-State: AOAM530LmUabViCap5pnBHY2tWRqkUIjMoVRssKKBmM+RCH+/c0SdX41
+        kOuU1UWRHtkNM6VU6geToc/9g/ZWZ38oLScYhVY=
+X-Google-Smtp-Source: ABdhPJy5XZ3uo5WLLTVFBq8lc62CYb9i9+NtOLbSgnpqRIK5Oop7EVbfQkNkCc6nem9+z5uVedCK4eRXtBPTWBqpxQg=
+X-Received: by 2002:a05:6512:2251:b0:478:fc67:b09f with SMTP id
+ i17-20020a056512225100b00478fc67b09fmr19895053lfu.196.1654656775857; Tue, 07
+ Jun 2022 19:52:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqAL+HeZDk5Wug28@google.com>
+References: <1654581161-12349-1-git-send-email-u0084500@gmail.com>
+ <1654581161-12349-2-git-send-email-u0084500@gmail.com> <96ecca0b-b65c-749d-d66b-33443cacf2e4@linaro.org>
+In-Reply-To: <96ecca0b-b65c-749d-d66b-33443cacf2e4@linaro.org>
+From:   ChiYuan Huang <u0084500@gmail.com>
+Date:   Wed, 8 Jun 2022 10:52:44 +0800
+Message-ID: <CADiBU39BTr9FjtXgBe55aOTHNVotHfC1n=aHrH3XAcVoWkk8sA@mail.gmail.com>
+Subject: Re: [PATCH 1/4] dt-binding: mfd: Add Richtek RT5120 PMIC support
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Mark Brown <broonie@kernel.org>, dmitry.torokhov@gmail.com,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        cy_huang <cy_huang@richtek.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        linux-input@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On (22/06/08 11:39), Sergey Senozhatsky wrote:
-> On (22/06/07 16:52), Minchan Kim wrote:
-> > > rootfs: https://oebuilds.tuxbuild.com/29zhlbEc3EWq2wod9Uy964Bp27q/images/am57xx-evm/rpb-console-image-lkft-am57xx-evm-20220601222434.rootfs.ext4.gz
-> > > kernel: https://builds.tuxbuild.com/29zhqJJizU2Y7Ka7ArhryUOrNDC/zImage
-> > > 
-> > > Boot command,
-> > >  /usr/bin/qemu-system-aarch64 -cpu host,aarch64=off -machine
-> > > virt-2.10,accel=kvm -nographic -net
-> > > nic,model=virtio,maaacaddr=BA:DD:AD:CC:09:04 -net tap -m 2048 -monitor
-> > > none -kernel kernel/zImage --append "console=ttyAMA0 root=/dev/vda rw"
-> > > -hda rootfs/rpb-console-image-lkft-am57xx-evm-20220601222434.rootfs.ext4
-> > > -m 4096 -smp 2
-> > > 
-> > > # cd /opt/kselftests/default-in-kernel/zram
-> > > # ./zram.sh
-> > > 
-> > > Allow me sometime I will try to bisect this problem.
-> > 
-> > Thanks for sharing the info. 
-> > 
-> > I managed to work your rootfs with my local arm build
-> > based on the problematic git tip. 
-> > However, I couldn't suceed to reproduce it.
-> > 
-> > I needed to build zsmalloc/zram built-in instead of modules
-> > Is it related? Hmm,
-> > 
-> > Yeah, It would be very helpful if you could help to bisect it.
-> 
-> This looks like a NULL lock->name dereference in lockdep. I suspect
-> that somehow local_lock doesn't get .dep_map initialized. Maybe running
-> the kernel with CONFIG_DEBUG_LOCK_ALLOC would help us? Naresh, can you
-> help us with this?
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> =E6=96=BC 2022=E5=B9=
+=B46=E6=9C=887=E6=97=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=887:52=E5=AF=AB=
+=E9=81=93=EF=BC=9A
+>
+> On 07/06/2022 07:52, cy_huang wrote:
+> > From: ChiYuan Huang <cy_huang@richtek.com>
+> >
+> > Add Richtek RT5120 PMIC devicetree document.
+> >
+> > Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+> > ---
+> >  .../devicetree/bindings/mfd/richtek,rt5120.yaml    | 180 +++++++++++++=
+++++++++
+> >  1 file changed, 180 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/mfd/richtek,rt512=
+0.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/mfd/richtek,rt5120.yaml =
+b/Documentation/devicetree/bindings/mfd/richtek,rt5120.yaml
+> > new file mode 100644
+> > index 00000000..376bf73
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/mfd/richtek,rt5120.yaml
+> > @@ -0,0 +1,180 @@
+> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/mfd/richtek,rt5120.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Richtek RT5120 PMIC
+> > +
+> > +maintainers:
+> > +  - ChiYuan Huang <cy_huang@richtek.com>
+> > +
+> > +description: |
+> > +  The RT5120 provides four high-efficiency buck converters and one LDO=
+ voltage
+> > +  regulator. The device is targeted at providingthe processor voltage,=
+ memory,
+> > +  I/O, and peripheral rails in home entertainment devices. The I2C int=
+erface is
+> > +  used for dynamic voltage scaling of the processor voltage, power rai=
+ls on/off
+> > +  sequence control, operation mode selection.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - richtek,rt5120
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +
+> > +  interrupt-controller: true
+> > +
+> > +  "#interrupt-cells":
+> > +    const: 1
+> > +
+> > +  wakeup-source: true
+> > +
+> > +  richtek,enable-undervolt-hiccup:
+> > +    type: boolean
+> > +    description: |
+> > +      If used, under voltage protection trigger hiccup behavior, else =
+latchup as
+> > +      default
+> > +
+> > +  richtek,enable-overvolt-hiccup:
+> > +    type: boolean
+> > +    description:
+> > +      Like as 'enable-uv-hiccup', it configures over voltage protectio=
+n to
+> > +      hiccup, else latchup as default
+> > +
+> > +  vin1-supply:
+> > +    description: phandle for buck1 input power source
+> > +
+> > +  vin2-supply:
+> > +    description: phandle for buck2 input power source
+> > +
+> > +  vin3-supply:
+> > +    description: phandle for buck3 input power source
+> > +
+> > +  vin4-supply:
+> > +    description: phandle for buck4 input power source
+> > +
+> > +  vinldo-supply:
+> > +    description: phandle for ldo input power source
+> > +
+> > +  regulators:
+> > +    type: object
+> > +
+> > +    patternProperties:
+> > +      "^buck[1-4]$":
+> > +        type: object
+> > +        $ref: /schemas/regulator/regulator.yaml#
+> > +
+> > +        properties:
+> > +          regulator-allowed-modes:
+> > +            description: |
+> > +              Used to specify the allowed buck converter operating mod=
+e
+> > +              mode mapping:
+> > +                0: auto mode
+> > +                1: force pwm mode
+> > +            items:
+> > +              enum: [0, 1]
+> > +
+> > +        unevaluatedProperties: false
+>
+> Better to put it after '$ref' for readability.
+OK, Fix in next
+>
+> > +
+> > +      "^(ldo|exten)$":
+> > +        type: object
+> > +        $ref: /schemas/regulator/regulator.yaml#
+>
+> You need here unevaluatedProperties:false as well (for the ldo/exten
+> properties)
+Fix in next.
+>
+> > +
+> > +    additionalProperties: false
+> > +
+> > +  powerkey:
+> > +    type: object
+> > +    description:
+> > +      The power key driver may be optional. If not used, change node s=
+tatus to
+> > +      'disabled'
+>
+> This description is not helpful, does not describe the hardware. Please
+> describe hardware, not Devicetree usage.
+That's because it's a PMIC. Power key is also connected to it.
+For power key press, all power rails will start to power up.
+But in the application, there may be other PMIC that's also connected
+to power key.
+That's why this power key driver may need to be optional.
+One system only need one driver to report the power key status.
 
-Hmm, actually, hold on. mapping_area is per-CPU, so what happens if CPU
-get offlined and onlined again? I don't see us re-initializing mapping_area
-local_lock_init(&zs_map_area.lock) and so on.
+Currently in some linux OS, it uses the auto module loading mechanism.
+All kernel module files may be all the same, but it uses the
+devicetree to decide how many devices
+need to be declared. Since RT5120 power key device may be optional,
+following by mfd_add_device, if of_node is
+found, and status is "disabled", the sub device would be skipped.
+
+Actually, I'm also confused about it. There may be three ways to implement =
+it
+1. not to build this kernel module -> seems to violate my above application
+2. Use one boolean property to decide power key cell need to be used or not=
+??
+3. like as now, use the node status to decide it.
+
+Is there the better way to do it?
+>
+> > +
+> > +    properties:
+> > +      compatible:
+> > +        enum:
+> > +          - richtek,rt5120-pwrkey
+> > +
+> > +    required:
+> > +      - compatible
+> > +
+> > +    additionalProperties: false
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - interrupts
+> > +  - '#interrupt-cells'
+> > +  - interrupt-controller
+> > +  - regulators
+> > +  - powerkey
+>
+> You wrote powerkey is optional... so the node should not be required, rig=
+ht?
+Yes, required. Please refer to the above explanation.
+>
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/interrupt-controller/irq.h>
+> > +
+> > +    i2c {
+> > +      #address-cells =3D <1>;
+> > +      #size-cells =3D <0>;
+> > +
+> > +      pmic@62 {
+> > +        compatible =3D "richtek,rt5120";
+> > +        reg =3D <0x62>;
+> > +        interrupts-extended =3D <&gpio_intc 32 IRQ_TYPE_LEVEL_LOW>;
+> > +        interrupt-controller;
+> > +        #interrupt-cells =3D <1>;
+> > +        wakeup-source;
+> > +
+> > +        regulators {
+> > +          buck1 {
+> > +            regulator-name =3D "rt5120-buck1";
+> > +            regulator-min-microvolt =3D <600000>;
+> > +            regulator-max-microvolt =3D <1393750>;
+> > +            regulator-allowed-modes =3D <0 1>;
+> > +            regulator-boot-on;
+> > +          };
+> > +          buck2 {
+> > +            regulator-name =3D "rt5120-buck2";
+> > +            regulator-min-microvolt =3D <1100000>;
+> > +            regulator-max-microvolt =3D <1100000>;
+> > +            regulator-allowed-modes =3D <0 1>;
+> > +            regulator-always-on;
+> > +          };
+> > +          buck3 {
+> > +            regulator-name =3D "rt5120-buck3";
+> > +            regulator-min-microvolt =3D <1800000>;
+> > +            regulator-max-microvolt =3D <1800000>;
+> > +            regulator-allowed-modes =3D <0 1>;
+> > +            regulator-always-on;
+> > +          };
+> > +          buck4 {
+> > +            regulator-name =3D "rt5120-buck4";
+> > +            regulator-min-microvolt =3D <3300000>;
+> > +            regulator-max-microvolt =3D <3300000>;
+> > +            regulator-allowed-modes =3D <0 1>;
+> > +            regulator-always-on;
+> > +          };
+> > +          ldo {
+> > +            regulator-name =3D "rt5120-ldo";
+> > +            regulator-min-microvolt =3D <1800000>;
+> > +            regulator-max-microvolt =3D <1800000>;
+> > +            regulator-always-on;
+> > +          };
+> > +          exten {
+> > +            regulator-name =3D "rt5120-exten";
+> > +            regulator-min-microvolt =3D <3000000>;
+> > +            regulator-max-microvolt =3D <3000000>;
+> > +            regulator-always-on;
+> > +          };
+> > +        };
+> > +        powerkey {
+> > +                status =3D "okay";
+>
+> Messed up indentation. No need for status in examples.
+Fix in next.
+>
+> > +                compatible =3D "richtek,rt5120-pwrkey";
+> > +        };
+> > +      };
+> > +    };
+>
+>
+> Best regards,
+> Krzysztof
