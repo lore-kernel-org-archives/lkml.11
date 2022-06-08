@@ -2,203 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC45C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:17:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 364A0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245315AbiFHQRk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36828 "EHLO
+        id S245345AbiFHQTO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245277AbiFHQRi (ORCPT
+        with ESMTP id S245309AbiFHQTL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:17:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0A0169E33;
-        Wed,  8 Jun 2022 09:17:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AFED3B82616;
-        Wed,  8 Jun 2022 16:17:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B961C3411D;
-        Wed,  8 Jun 2022 16:17:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654705054;
-        bh=mAAwuvSjxA6CBOGMlU9li3MF2JwHl56SFaFLEK3/gC4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iO4yWQBvE/HN/7DZZsMFEjTRCDnfRW8LmwBh4QY8rmyLgyWxGl8KFqkIzgwrkADC9
-         Hj8JIx8Ts8GpW5tuL3+RsWY+xN0gB0PuQnLlUYTNvbbs3cT493iUiO49DVKWyVcL+X
-         Vx6Ef4+L9XbaFbouJEAW7CmE1QvYkY6J0XJFGDma/kiPICzUWL7xhXki3l4uKzHdRU
-         slNFSVCR52TJyg+qK9qoiTdTQ2WiAb1OM4UrtMKYrohsmVMJLodYwJ5yqgwz3rhBz3
-         kUChQ1a+iL5iqraoDBEGroeDpTOddzX3XhdkR9Md5dwdkzI+1J+VtDRKzj+osYYLS3
-         U5GlwFSypb0Bw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nyyN8-0004hS-8X; Wed, 08 Jun 2022 18:17:30 +0200
-Date:   Wed, 8 Jun 2022 18:17:30 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
+        Wed, 8 Jun 2022 12:19:11 -0400
+X-Greylist: delayed 414 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Jun 2022 09:19:09 PDT
+Received: from mxout2.routing.net (mxout2.routing.net [IPv6:2a03:2900:1:a::b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC126544;
+        Wed,  8 Jun 2022 09:19:08 -0700 (PDT)
+Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
+        by mxout2.routing.net (Postfix) with ESMTP id D081B615FC;
+        Wed,  8 Jun 2022 16:12:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
+        s=20200217; t=1654704731;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qYmY2rTo7o5Beu+qZkDIwFeFpZXzyT2M2MGeMmcfTYw=;
+        b=B3pebneiJU78nIOfVKb8WZ57cQ7wXTtysHkKZL2AS1S0YZ5owgPFErTtG4xKUKK+lnfWy+
+        B/grMRDKiV6Ws7QH9KFA25oaREvWC5rdImSDcpxJU98X1Bs5FrKOdfDDiOMI7OHzSQfJXn
+        NWh1wGMnDfilyRtgxXUgL3pntWqRnD0=
+Received: from frank-G5.. (fttx-pool-80.245.76.43.bambit.de [80.245.76.43])
+        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 0A01910021A;
+        Wed,  8 Jun 2022 16:12:11 +0000 (UTC)
+From:   Frank Wunderlich <linux@fw-web.de>
+To:     linux-rockchip@lists.infradead.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/4] arm64: dts: qcom: sc8280x: Add reference device
-Message-ID: <YqDLmsrAkI1OnHqd@hovoldconsulting.com>
-References: <20220607214113.4057684-1-bjorn.andersson@linaro.org>
- <20220607214113.4057684-4-bjorn.andersson@linaro.org>
+        Heiko Stuebner <heiko@sntech.de>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org
+Subject: [PATCH 2/2] arm64: dts: rockchip: add RTC to BPI-R2 Pro
+Date:   Wed,  8 Jun 2022 18:11:49 +0200
+Message-Id: <20220608161150.58919-3-linux@fw-web.de>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220608161150.58919-1-linux@fw-web.de>
+References: <20220608161150.58919-1-linux@fw-web.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607214113.4057684-4-bjorn.andersson@linaro.org>
+Content-Transfer-Encoding: 8bit
+X-Mail-ID: 107985d7-91f1-4c4e-83fd-ac336a1c9307
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 02:41:12PM -0700, Bjorn Andersson wrote:
-> Add basic support for the SC8280XP reference device, which allows it to
-> boot to a shell (using EFIFB) with functional storage (UFS), USB,
-> keyboard, touchpad, touchscreen, backlight and remoteprocs.
-> 
-> The PMICs are, per socinfo, reused from other platforms. But given that
-> the address of the PMICs doesn't match other cases and that it's
-> desirable to label things according to the schematics a new dtsi file is
-> created to represent the reference combination of PMICs.
+From: Frank Wunderlich <frank-w@public-files.de>
 
-nit: missing p in "sc8280xp" in Subject.
+Add devicetree node for hym8563 rtc to Bananapi R2 Pro board.
 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->  arch/arm64/boot/dts/qcom/Makefile            |   1 +
->  arch/arm64/boot/dts/qcom/sc8280xp-crd.dts    | 423 +++++++++++++++++++
->  arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi | 108 +++++
->  3 files changed, 532 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+---
+ .../boot/dts/rockchip/rk3568-bpi-r2-pro.dts   | 23 +++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
+index 40cf2236c0b6..7e5b3947e28f 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
+@@ -389,6 +389,23 @@ regulator-state-mem {
+ 	};
+ };
  
-> +	vreg_misc_3p3: misc-3p3-regulator {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "VREG_MISC_3P3";
-> +
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +
-> +		gpio = <&pmc8280_1_gpios 0 GPIO_ACTIVE_HIGH>;
++&i2c3 {
++	status = "okay";
++
++	hym8563: hym8563@51 {
++		compatible = "haoyu,hym8563";
++		reg = <0x51>;
++		#clock-cells = <0>;
++		clock-frequency = <32768>;
++		clock-output-names = "rtcic_32kout";
++		interrupt-parent = <&gpio0>;
++		interrupts = <RK_PD3 IRQ_TYPE_EDGE_FALLING>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&hym8563_int>;
++		wakeup-source;
++	};
++};
++
+ &i2c5 {
+ 	/* pin 3 (SDA) + 4 (SCL) of header con2 */
+ 	status = "disabled";
+@@ -411,6 +428,12 @@ green_led_pin: green-led-pin {
+ 		};
+ 	};
+ 
++	hym8563 {
++		hym8563_int: hym8563-int {
++			rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
+ 	pmic {
+ 		pmic_int: pmic_int {
+ 			rockchip,pins =
+-- 
+2.34.1
 
-The PMIC gpios are 1-based, so this should be
-
-		gpio = <&pmc8280_1_gpios 1 GPIO_ACTIVE_HIGH>;
-
-or the regulator fails to probe.
-
-> +		enable-active-high;
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&misc_3p3_reg_en>;
-> +
-> +		regulator-boot-on;
-> +		regulator-always-on;
-> +	};
-> +
-> +	reserved-memory {
-> +	};
-> +};
-
-> +&qup0_i2c4 {
-> +       status = "okay";
-
-Please move the status property last throughout here too.
-
-> +       clock-frequency = <400000>;
-> +
-> +       pinctrl-names = "default";
-> +       pinctrl-0 = <&qup0_i2c4_default>, <&ts0_default>;
-> +
-> +       hid@10 {
-
-I've changed this to use the more descriptive name "touchscreen".
-
-> +               compatible = "hid-over-i2c";
-> +               reg = <0x10>;
-> +               hid-descr-addr = <0x1>;
-> +                       
-> +               interrupts-extended = <&tlmm 175 IRQ_TYPE_LEVEL_LOW>;
-> +       };
-> +};
-
-> +&qup2_i2c5 {
-> +       status = "okay";
-> +       clock-frequency = <400000>;
-> +
-> +       pinctrl-names = "default";
-> +       pinctrl-0 = <&qup2_i2c5_default>, <&kybd_default>, <&tpad_default>;
-> +
-> +       hid@15 {
-
-And this to "touchpad@15"
-
-> +               compatible = "hid-over-i2c";
-> +               reg = <0x15>;
-> +               hid-descr-addr = <0x1>;
-> +
-> +               interrupts-extended = <&tlmm 182 IRQ_TYPE_LEVEL_LOW>;
-> +       };
-> +
-> +       hid@68 {
-
-And keyboard@68
-
-Sure these are multifunction devices, but this is the primary function.
-
-> +               compatible = "hid-over-i2c";
-> +               reg = <0x68>;
-> +               hid-descr-addr = <0x1>;
-> +
-> +               interrupts-extended = <&tlmm 104 IRQ_TYPE_LEVEL_LOW>;
-> +       };
-> +};
-
-> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
-> new file mode 100644
-> index 000000000000..36ed7d808ab8
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
-
-> +	pmc8280c: pmic@2 {
-> +		compatible = "qcom,pm8350c", "qcom,spmi-pmic";
-> +		reg = <0x2 SPMI_USID>;
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		pmc8280c_gpios: gpio@8800 {
-> +			compatible = "qcom,pm8350c-gpio", "qcom,spmi-gpio";
-> +			reg = <0x8800>;
-> +			gpio-controller;
-> +			gpio-ranges = <&pmc8280c_gpios 0 0 9>;
-> +			#gpio-cells = <2>;
-> +			interrupt-controller;
-> +			#interrupt-cells = <2>;
-> +		};
-> +
-> +		pmc8280c_lpg: lpg@e800 {
-
-I renamed the node (and label suffix) "pwm" when I noticed that the
-binding had changed in mainline.
-
-Since this device is used as a PWM provider I guess that's a better
-name?
-
-> +			compatible = "qcom,pm8350c-pwm";
-> +			reg = <0xe800>;
-> +
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +
-> +			#pwm-cells = <2>;
-> +
-> +			status = "disabled";
-> +		};
-> +	};
-
-Johan
