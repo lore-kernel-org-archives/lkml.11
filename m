@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51749C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C7FFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231281AbiFHKUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34340 "EHLO
+        id S236512AbiFHKVF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:21:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237278AbiFHKT1 (ORCPT
+        with ESMTP id S237006AbiFHKTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:19:27 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD5947061
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 03:07:08 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id h23so29372147ejj.12
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 03:07:08 -0700 (PDT)
+        Wed, 8 Jun 2022 06:19:04 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DDE34BB8
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 03:06:21 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id u12so40450877eja.8
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 03:06:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=uwozKY9IoRm2unnovWBUEXcVhf9p+HCIyh3s3hKT5vQ=;
-        b=n0VfOVvrrkIOalvK8xRLNFd+esu27i0xirYjW+RFkVQgVZkWh64Mdjk79XeqZN+QCx
-         JnHT3RcjJr3UaQPb6LgQ3RZk0rjuRV+faz3KnWChGXk6G9EUxkgeHDb4Qw/tf6LSNq9D
-         SuVcBOGqn5ZgSCpdMmNVyJYTALMQvU2itIy+wujWAr/Y1hMKkg0xg7Pbx5JqzNFJeSvI
-         oa09wBRQbWLCuTNSxXg2tg7FWkoZbnRc+p7wdumlA7HhZoXgPHvTTljGVEneASCRNrkm
-         F1HUPHlWw9SHP9ATOsCLyR7lcAVMk6kMkLkIJwROq3UooMafbV6X7xialLi4KFOLeo8e
-         kTyA==
+        bh=3J02Cy+NQfGm8eV9KXhCD+MqMYdiX+58OLIgnc/8epc=;
+        b=IMJozpnrngI0y4iXwqWP72b84kfB4aNdhVQEbM8V/kkVCEolj6yjfMGAfBxkFB1cNQ
+         xQNoHORJyBpbstcHefYhvnN2pvdrhUXXseBwJ0ONtoIi02CV9fa7yedi6l54sewGvk8j
+         TN3TIX5Hejet+8VZroyCyUobF3JFKxK/iEApe/3CSgLAB3Po09mYcdpCLf+ZvjEPKGyl
+         DqZfgw00JleReC4QKzzWGH7wFevd7z305S6FE1TaMTmmjwN4JvBFRfbr34UI8HZiCXGy
+         Fev4FGzYiRF/p4JYukVG3FNQqICash3M96PZ5mqEj+LVVPQuga/aSPhYcHdYYAd+C895
+         BrLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=uwozKY9IoRm2unnovWBUEXcVhf9p+HCIyh3s3hKT5vQ=;
-        b=4wmwfF1o4hqMPkOVomz9T+tjKkUZZ/9kUbpQ5qfuek2z69jNiU+dbj4Eq5NypDzeJa
-         2J2Yl9R5uyt2FWf1/ot90WvjfYEpH6fmU7Rb3Qj7cRN8it9katfHtsxVKwPMU+JEqVbD
-         p/5LYgbSWiW/eE6yth8UPyrQeeSvJDLhE71RgbXlQpoH380weKQ3JUpxMSLNLlx8kRCT
-         hLm0iy1oHx4hY2PipdkOCDu/i94OD3TmIYj26i0XSUp6rCFOAqs3gj1S2ZcXieotLyIy
-         /PzWgZSq6kJN6IemWvGkevaORHc5joddM5fMVZ/uxzDR8nGz8AGekkFjwzftLNFIWiMF
-         rVSQ==
-X-Gm-Message-State: AOAM533UhzgcYCzW8cJw+WoCGywhAhgwH1Y2WCjn5ZgiaTC92g1NB76l
-        BBCftrNRjNwoHSWXm027J2cblA==
-X-Google-Smtp-Source: ABdhPJzDQJRXBOzErKRVkLtw792RnQ9hYbK6BqKk+RLDWlTglkhS2dUR49w+HXT/bwY07t0Tq6uriw==
-X-Received: by 2002:a17:906:9f1c:b0:711:cdda:a01f with SMTP id fy28-20020a1709069f1c00b00711cddaa01fmr14516948ejc.372.1654682827093;
-        Wed, 08 Jun 2022 03:07:07 -0700 (PDT)
+        bh=3J02Cy+NQfGm8eV9KXhCD+MqMYdiX+58OLIgnc/8epc=;
+        b=lGiAQRAJt5X5a7Ae5LzjNtsd8y+iVsl0+lcawO4DYF852ywIjFbQ1m4jpKJq3gd01l
+         nfk8qhMACgwP2NKEksfPGgLWk+1bOdvTxXDNTsaVba3zIIXCauuAzsOBbu110PYnmeEb
+         roKRULBu9g+uLHiXrMxB4rGZo9XbPWAVK31NAMwDf9CRlgI0rNMDMXo128ZiMJ2IIjut
+         pPlOSXUe1hbbqgwgJ5ioRZWJB9Ntcv02vGfwadQRghhw0nlB8vj/5wemXGm8bIqgEraP
+         rC3EYTyWpimDwmSexKTUxwKeokiM3yR4zvjm49YM15yLnera3p0CZz7F1uxCUujdhZzE
+         Eb9w==
+X-Gm-Message-State: AOAM531dYxJLj3hhZCD5dMEe+XOTYHZnyKyUbQ5XMtlRnfCgrpxU8O3y
+        5436t4OVGyqfSZPtBq+WjF4sfg==
+X-Google-Smtp-Source: ABdhPJxsAIrFE3btqqb5RrORPvxSxuVZHyAl3KpL5wCgHxpsvLqD8dGERxMUjIqaeaFK4tHV94VjMw==
+X-Received: by 2002:a17:906:4785:b0:6fe:f8ac:2494 with SMTP id cw5-20020a170906478500b006fef8ac2494mr30359804ejc.199.1654682779982;
+        Wed, 08 Jun 2022 03:06:19 -0700 (PDT)
 Received: from [192.168.0.191] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id ay25-20020a056402203900b0042cf43e1937sm12020228edb.75.2022.06.08.03.07.05
+        by smtp.gmail.com with ESMTPSA id q1-20020a1709066ac100b006feed212f50sm8856606ejs.184.2022.06.08.03.06.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 03:07:06 -0700 (PDT)
-Message-ID: <3aa70c91-d6d7-e2eb-9c45-a1fb0a5751ca@linaro.org>
-Date:   Wed, 8 Jun 2022 12:07:04 +0200
+        Wed, 08 Jun 2022 03:06:19 -0700 (PDT)
+Message-ID: <bf4284de-6c20-a378-99f6-439e6abcbbd5@linaro.org>
+Date:   Wed, 8 Jun 2022 12:06:17 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v2 10/20] ARM: dts: nuvoton: add reset syscon property
+Subject: Re: [PATCH v2 09/20] dt-bindings: reset: npcm: add GCR syscon
+ property
 Content-Language: en-US
 To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
         tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
@@ -74,9 +75,9 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-watchdog@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
 References: <20220608095623.22327-1-tmaimon77@gmail.com>
- <20220608095623.22327-11-tmaimon77@gmail.com>
+ <20220608095623.22327-10-tmaimon77@gmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220608095623.22327-11-tmaimon77@gmail.com>
+In-Reply-To: <20220608095623.22327-10-tmaimon77@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -84,10 +85,59 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 08/06/2022 11:56, Tomer Maimon wrote:
-> Add nuvoton,sysgcr syscon property to the reset
-> node to handle the general control registers.
+> Describe syscon property that handles general
+> control registers(GCR) in Nuvoton BMC NPCM
+> reset driver.
 
-Wrong wrapping.
+I already asked about this.
+
+Could you please implement the comments you receive? It's not just one,
+it's several of them have to be repeated.
+
+> 
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> ---
+>  .../devicetree/bindings/reset/nuvoton,npcm-reset.yaml       | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/reset/nuvoton,npcm-reset.yaml b/Documentation/devicetree/bindings/reset/nuvoton,npcm-reset.yaml
+> index 0998f481578d..c6bbc1589ab9 100644
+> --- a/Documentation/devicetree/bindings/reset/nuvoton,npcm-reset.yaml
+> +++ b/Documentation/devicetree/bindings/reset/nuvoton,npcm-reset.yaml
+> @@ -19,6 +19,10 @@ properties:
+>    '#reset-cells':
+>      const: 2
+>  
+> +  nuvoton,sysgcr:
+> +    $ref: "/schemas/types.yaml#/definitions/phandle"
+
+Skip quotes.
+
+> +    description: a phandle to access GCR registers.
+> +
+>    nuvoton,sw-reset-number:
+>      $ref: /schemas/types.yaml#/definitions/uint32
+>      minimum: 1
+> @@ -31,6 +35,7 @@ required:
+>    - compatible
+>    - reg
+>    - '#reset-cells'
+> +  - nuvoton,sysgcr
+
+Aren't you breaking existing DTBs?
+
+>  
+>  additionalProperties: false
+>  
+> @@ -41,6 +46,7 @@ examples:
+>          compatible = "nuvoton,npcm750-reset";
+>          reg = <0xf0801000 0x70>;
+>          #reset-cells = <2>;
+> +        nuvoton,sysgcr = <&gcr>;
+>          nuvoton,sw-reset-number = <2>;
+>      };
+>  
+
 
 Best regards,
 Krzysztof
