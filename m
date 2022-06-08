@@ -2,77 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 13:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D457C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 13:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240875AbiFHN6r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 09:58:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40256 "EHLO
+        id S240832AbiFHN7W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 09:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240530AbiFHN6l (ORCPT
+        with ESMTP id S241015AbiFHN7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 09:58:41 -0400
-X-Greylist: delayed 402 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Jun 2022 06:58:37 PDT
-Received: from giacobini.uberspace.de (giacobini.uberspace.de [185.26.156.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92FDA2AB23A
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 06:58:35 -0700 (PDT)
-Received: (qmail 27567 invoked by uid 990); 8 Jun 2022 13:51:52 -0000
-Authentication-Results: giacobini.uberspace.de;
-        auth=pass (plain)
-From:   Soenke Huster <soenke.huster@eknoes.de>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Soenke Huster <soenke.huster@eknoes.de>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] Bluetooth: RFCOMM: Use skb_trim to trim checksum
-Date:   Wed,  8 Jun 2022 15:51:06 +0200
-Message-Id: <20220608135105.146452-1-soenke.huster@eknoes.de>
-X-Mailer: git-send-email 2.36.1
+        Wed, 8 Jun 2022 09:59:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87CD2BBBE3;
+        Wed,  8 Jun 2022 06:59:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD7AA61B0C;
+        Wed,  8 Jun 2022 13:59:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 150EBC34116;
+        Wed,  8 Jun 2022 13:59:04 +0000 (UTC)
+Date:   Wed, 8 Jun 2022 09:59:03 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Yonghong Song <yhs@fb.com>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>
+Subject: Re: [PATCH] tracing/kprobes: Check whether get_kretprobe() returns
+ NULL in kretprobe_dispatcher()
+Message-ID: <20220608095903.79c0b5d9@gandalf.local.home>
+In-Reply-To: <CAADnVQLhP1++YSGXrDTRPU6LR98Qkb5dNrcO1zs8HTUhTr9yHw@mail.gmail.com>
+References: <165366693881.797669.16926184644089588731.stgit@devnote2>
+        <0204f480-cdb0-e49f-9034-602eced02966@iogearbox.net>
+        <7619DB57-C39B-4A49-808C-7ACF12D58592@goodmis.org>
+        <d28e1548-98fb-a533-4fdc-ae4f4568fb75@iogearbox.net>
+        <20220608091017.0596dade@gandalf.local.home>
+        <CAADnVQLhP1++YSGXrDTRPU6LR98Qkb5dNrcO1zs8HTUhTr9yHw@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Bar: /
-X-Rspamd-Report: BAYES_HAM(-2.970374) R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) SUSPICIOUS_RECIPS(1.5)
-X-Rspamd-Score: -0.070374
-Received: from unknown (HELO unkown) (::1)
-        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Wed, 08 Jun 2022 15:51:52 +0200
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the skb helper instead of direct manipulation. This fixes the
-following page fault, when connecting my Android phone:
+On Wed, 8 Jun 2022 06:57:00 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-    BUG: unable to handle page fault for address: ffffed1021de29ff
-    #PF: supervisor read access in kernel mode
-    #PF: error_code(0x0000) - not-present page
-    RIP: 0010:rfcomm_run+0x831/0x4040 (net/bluetooth/rfcomm/core.c:1751)
+> you missed Davem's presentation at KR about importance of delegation.
+> You need watch it:
+> https://youtu.be/ELPENQrtUas?t=9085
 
-Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
----
- net/bluetooth/rfcomm/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+It's on my TODO list.
 
-diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
-index 7324764384b6..7360e905d045 100644
---- a/net/bluetooth/rfcomm/core.c
-+++ b/net/bluetooth/rfcomm/core.c
-@@ -1747,8 +1747,8 @@ static struct rfcomm_session *rfcomm_recv_frame(struct rfcomm_session *s,
- 	type = __get_type(hdr->ctrl);
- 
- 	/* Trim FCS */
--	skb->len--; skb->tail--;
--	fcs = *(u8 *)skb_tail_pointer(skb);
-+	skb_trim(skb, skb->len - 1);
-+	fcs = *(skb->data + skb->len);
- 
- 	if (__check_fcs(skb->data, type, fcs)) {
- 		BT_ERR("bad checksum in packet");
--- 
-2.36.1
-
+-- Steve
