@@ -2,118 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C4D8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:14:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9328AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:15:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243250AbiFHPOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55876 "EHLO
+        id S244301AbiFHPPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242253AbiFHPLj (ORCPT
+        with ESMTP id S244341AbiFHPOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:11:39 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5C449A29D;
-        Wed,  8 Jun 2022 08:03:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=q19bl1GOrWdHTjgYDxhLJRg+W/+5czLjAL7VLyDzJ34=; b=mOBypxFOwS2n9s6NktrO3VOYBD
-        likaXqlN3jNEex1YWhAf5cX91oZKdOnyG+duJz3qLtijE+NyRnwVurkL0T91QfLi8D9sSQy09sG5r
-        Ym9AVhk5LO+yyQVj2g07a7Bn//PUeUxTNML3BWHOIRvkm7UttV7M2QnXImNESMTelDpw59g/UCbxW
-        24KiC0/3GOAODjYTTCyQ55cdTz2s29QYwsetmbpkcxS+y/86CU7jaFgS33h8YpDJnfq8G/cz6blQc
-        9oooMmL5H8ST+2VshTWzwRHw6FgNxJ66MFOCbzmtWOHkd7ciMFL1qsVw/5+BYRyJohk4ptXPd6+0k
-        krKUX0Hw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nyxCu-00CjFc-Qs; Wed, 08 Jun 2022 15:02:52 +0000
-From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
-To:     linux-fsdevel@vger.kernel.org
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-aio@kvack.org, linux-btrfs@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        cluster-devel@redhat.com, linux-mm@kvack.org,
-        linux-xfs@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-ntfs-dev@lists.sourceforge.net, ocfs2-devel@oss.oracle.com,
-        linux-mtd@lists.infradead.org,
-        virtualization@lists.linux-foundation.org,
-        Christoph Hellwig <hch@lst.de>
-Subject: [PATCH v2 12/19] btrfs: Convert btrfs_migratepage to migrate_folio
-Date:   Wed,  8 Jun 2022 16:02:42 +0100
-Message-Id: <20220608150249.3033815-13-willy@infradead.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220608150249.3033815-1-willy@infradead.org>
-References: <20220608150249.3033815-1-willy@infradead.org>
+        Wed, 8 Jun 2022 11:14:30 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6492612F36B
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:07:10 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id h5so28815601wrb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 08:07:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jR5ucCRD1ctjVwCehTL8/SWrd6GdcH9zFkM7ubCwloY=;
+        b=r9pPqM8xpt4wuylBRff/ucXvli/IL8AT6e5ujPXj7W0sxQShSi4vSzFvBPtleE/arT
+         52P2pGJSMAtvjESFWTEk4YQzjof7UsrgznsJZmD5q8OvLGZHMpf/dv84svtTinZcmLIF
+         eU86GhRZ/CuwERlgwHQiEV/5jtye/wcpYdF9kLH0JLg2mflhmrwEaj86qxueENn3Ae2Z
+         uuQR+j8GxrWQnEjTiho8wBGVU6DVTd4aiRfKTM6mBh3/ZZXM2fs6faBcw0he9XDEQZkz
+         LbmO6pqkZk5PwmTJX2ANZesI6XiSbfuLnrNu3klX79FWXV2/Mhx5V3LvMC65yrAux3Xk
+         Wjpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jR5ucCRD1ctjVwCehTL8/SWrd6GdcH9zFkM7ubCwloY=;
+        b=WPu9InFeTIjdBiLheZGGyBza96YXUSIaet1KiPJ+HErWdtSjY8KUWv6IsXj+oVy7ba
+         te9DNkz26yMN/6O4BqNiB84AvJc4/GyRC52pTw1HYpeZaIWjTI8ismXh0Y34OYqCX5mk
+         cpMkgdfszm8rn2GU4//gJmB3yKqjXUicL8x5l5RKod1MEP3vJ+Ov5qL9a3YdSsyGrcDC
+         B/RvwQXBqovkOpLocYMBYJyJXc3Y5VZSEaiBbXCKdm9Te8TeRiidhT9fTAzVSTZoFg2t
+         uR57Rg5vMVs61A9bCBz/dGeDpzvYqhBizCU5+gq26+6jnPnxer1l+Cdk7YttOgwz+xye
+         HqYA==
+X-Gm-Message-State: AOAM533IwOh063fQjt0KCh2McI9daGR+VpEQm6QTjIuSXYT/BmbMKrUf
+        alAC7qQCBt+sj8AsYUqRZ8qlUg==
+X-Google-Smtp-Source: ABdhPJzrABVEahqOXkCw0qRSD5dcC11oiJcuHfkbfmFnxlBzYOua2IJdBPwEY/KsP8iILy5/KZwxQg==
+X-Received: by 2002:a5d:624e:0:b0:210:a42:f29d with SMTP id m14-20020a5d624e000000b002100a42f29dmr33145631wrv.615.1654700828851;
+        Wed, 08 Jun 2022 08:07:08 -0700 (PDT)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id x4-20020adfffc4000000b0021018642ff8sm21453128wrs.76.2022.06.08.08.07.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 08:07:08 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 16:07:06 +0100
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Stephen Kitt <steve@sk2.org>
+Cc:     "Lee, Chun-Yi" <jlee@suse.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Cezary Jackiewicz <cezary.jackiewicz@gmail.com>,
+        Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ibm-acpi-devel@lists.sourceforge.net
+Subject: Re: [PATCH 4/4] platform/x86: thinkpad_acpi: Use backlight helper
+Message-ID: <20220608150706.fjuaalab5kzapc47@maple.lan>
+References: <20220607184635.1127913-1-steve@sk2.org>
+ <20220607184635.1127913-5-steve@sk2.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607184635.1127913-5-steve@sk2.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use filemap_migrate_folio() to do the bulk of the work, and then copy
-the ordered flag across if needed.
+On Tue, Jun 07, 2022 at 08:46:35PM +0200, Stephen Kitt wrote:
+> Instead of retrieving the backlight brightness in struct
+> backlight_properties manually, and then checking whether the backlight
+> should be on at all, use backlight_get_brightness() which does all
+> this and insulates this from future changes.
+> 
+> Signed-off-by: Stephen Kitt <steve@sk2.org>
+> Cc: Henrique de Moraes Holschuh <hmh@hmh.eng.br>
+> Cc: Hans de Goede <hdegoede@redhat.com>
+> Cc: Mark Gross <markgross@kernel.org>
+> Cc: ibm-acpi-devel@lists.sourceforge.net
+> Cc: platform-driver-x86@vger.kernel.org
 
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
----
- fs/btrfs/inode.c | 26 +++++++++-----------------
- 1 file changed, 9 insertions(+), 17 deletions(-)
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 
-diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
-index 81737eff92f3..5f41d869c648 100644
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -8255,30 +8255,24 @@ static bool btrfs_release_folio(struct folio *folio, gfp_t gfp_flags)
- }
- 
- #ifdef CONFIG_MIGRATION
--static int btrfs_migratepage(struct address_space *mapping,
--			     struct page *newpage, struct page *page,
-+static int btrfs_migrate_folio(struct address_space *mapping,
-+			     struct folio *dst, struct folio *src,
- 			     enum migrate_mode mode)
- {
--	int ret;
-+	int ret = filemap_migrate_folio(mapping, dst, src, mode);
- 
--	ret = migrate_page_move_mapping(mapping, newpage, page, 0);
- 	if (ret != MIGRATEPAGE_SUCCESS)
- 		return ret;
- 
--	if (page_has_private(page))
--		attach_page_private(newpage, detach_page_private(page));
--
--	if (PageOrdered(page)) {
--		ClearPageOrdered(page);
--		SetPageOrdered(newpage);
-+	if (folio_test_ordered(src)) {
-+		folio_clear_ordered(src);
-+		folio_set_ordered(dst);
- 	}
- 
--	if (mode != MIGRATE_SYNC_NO_COPY)
--		migrate_page_copy(newpage, page);
--	else
--		migrate_page_states(newpage, page);
- 	return MIGRATEPAGE_SUCCESS;
- }
-+#else
-+#define btrfs_migrate_folio NULL
- #endif
- 
- static void btrfs_invalidate_folio(struct folio *folio, size_t offset,
-@@ -11422,9 +11416,7 @@ static const struct address_space_operations btrfs_aops = {
- 	.direct_IO	= noop_direct_IO,
- 	.invalidate_folio = btrfs_invalidate_folio,
- 	.release_folio	= btrfs_release_folio,
--#ifdef CONFIG_MIGRATION
--	.migratepage	= btrfs_migratepage,
--#endif
-+	.migrate_folio	= btrfs_migrate_folio,
- 	.dirty_folio	= filemap_dirty_folio,
- 	.error_remove_page = generic_error_remove_page,
- 	.swap_activate	= btrfs_swap_activate,
--- 
-2.35.1
 
+Daniel.
