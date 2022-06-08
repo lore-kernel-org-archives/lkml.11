@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F31C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8042C43334
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245576AbiFHQ2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:28:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58704 "EHLO
+        id S245668AbiFHQ2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:28:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245143AbiFHQ2H (ORCPT
+        with ESMTP id S245176AbiFHQ2I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:28:07 -0400
+        Wed, 8 Jun 2022 12:28:08 -0400
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E201FD9C9;
-        Wed,  8 Jun 2022 09:28:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32841FE4FF;
+        Wed,  8 Jun 2022 09:28:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Cc:To:From:content-disposition;
-        bh=6Vkeh6rAlHW/X/6dpPN/qr4LppXBSj/dDsDAYd6JEKk=; b=jYNt0eAlkIQO/1/rgoGT804axE
-        jlCS62BGwks0k2Vj6fYsoj/DNRh7eRcxtPSHGHDoGTG+2tyLy7yPwff0lZz4bX6m3EjF7N7wB8kDi
-        BWhH5pOREGEaxbavsbD0Em9glWqZ8HRq6+g94ziDYLrqK2SIn7mRUq9tsY/G/5Zq3uPHLPwnJOx+d
-        L0P7j2pP3Adx1fbypHVwga6M4g2u4O5oq6YnlJ0czsT/4Cf5Vs/w4v+l66EC2DNTJXZGXv/BpzqIe
-        /yAVolXNTGkOu551/tiO2/ZxzWneF5txlx+zYavXXnaQc2mNN4T9yyP35rDc3VcFaKijXt+POF5US
-        CHKBZiRQ==;
+        bh=h96dBIKEAm/DsfIwdPq6LxyO+XAba9V5/jkC7qhftCQ=; b=svRIwObpXGVgaFkKi8XlFSQCMa
+        Im7WRRlOb5pZtuN+RiJ3U5q5lABEijSvZ+EbE+Csp9VWXGZofjeAG3WJchdfP3a2sDXUQ2jrzAFVi
+        CiDACUlFxslzMuioYJQxhf9FpkJNOjwvEMrBofb0V2zeJk0Vs3vduAp6ot2gDIrYDL/lOxxXEiolT
+        shTb03osbhliuKnjvVQHbw+x3NIUumXedediRQuyU8N1JX7qYLe0YQ69J4hA7sM7hFPbnCYHm9XcI
+        zh+RqmmxHRdt7a63wRNArUjscQgss1dTt9A0AyGHnO+5Q1IKXa/qcJCeyNyHIDh5+J0qnakhGgAJe
+        9BbnlHbw==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
         by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1nyyXK-0026n8-HO; Wed, 08 Jun 2022 10:28:03 -0600
+        id 1nyyXN-0026n9-0T; Wed, 08 Jun 2022 10:28:05 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1nyyXG-000bdM-F6; Wed, 08 Jun 2022 10:27:58 -0600
+        id 1nyyXH-000bdV-3L; Wed, 08 Jun 2022 10:27:59 -0600
 From:   Logan Gunthorpe <logang@deltatee.com>
 To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
         Song Liu <song@kernel.org>
@@ -43,8 +43,8 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         David Sloan <David.Sloan@eideticom.com>,
         Logan Gunthorpe <logang@deltatee.com>,
         Christoph Hellwig <hch@lst.de>
-Date:   Wed,  8 Jun 2022 10:27:48 -0600
-Message-Id: <20220608162756.144600-4-logang@deltatee.com>
+Date:   Wed,  8 Jun 2022 10:27:51 -0600
+Message-Id: <20220608162756.144600-7-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220608162756.144600-1-logang@deltatee.com>
 References: <20220608162756.144600-1-logang@deltatee.com>
@@ -53,62 +53,75 @@ Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 172.16.1.31
 X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, buczek@molgen.mpg.de, guoqing.jiang@linux.dev, xni@redhat.com, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com, hch@lst.de
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v4 03/11] md/raid5-ppl: Drop unused argument from ppl_handle_flush_request()
+Subject: [PATCH v4 06/11] md/raid5-cache: Drop RCU usage of conf->log
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ppl_handle_flush_request() takes an struct r5log argument but doesn't
-use it. It has no buisiness taking this argument as it is only used
-by raid5-cache and has no way to derference it anyway. Remove
-the argument.
+The only place that uses RCU to access conf->log is in
+r5l_log_disk_error(). This function is mostly used in the IO path
+and once with mddev_lock() held in raid5_change_consistency_policy().
 
-No functional changes intended.
+It is known that the IO will be suspended before the log is freed and
+r5l_log_exit() is called with the mddev_lock() held.
+
+This should mean that conf->log can not be freed while the function is
+being called, so the RCU protection is not necessary. Drop the
+rcu_read_lock() as well as the synchronize_rcu() and
+rcu_assign_pointer() usage.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/md/raid5-log.h | 4 ++--
- drivers/md/raid5-ppl.c | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/md/raid5-cache.c | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/md/raid5-log.h b/drivers/md/raid5-log.h
-index 270ced4f770f..c8332502669e 100644
---- a/drivers/md/raid5-log.h
-+++ b/drivers/md/raid5-log.h
-@@ -41,7 +41,7 @@ void ppl_write_stripe_run(struct r5conf *conf);
- void ppl_stripe_write_finished(struct stripe_head *sh);
- int ppl_modify_log(struct r5conf *conf, struct md_rdev *rdev, bool add);
- void ppl_quiesce(struct r5conf *conf, int quiesce);
--int ppl_handle_flush_request(struct r5l_log *log, struct bio *bio);
-+int ppl_handle_flush_request(struct bio *bio);
- extern struct md_sysfs_entry ppl_write_hint;
+diff --git a/drivers/md/raid5-cache.c b/drivers/md/raid5-cache.c
+index ca8fc317da95..b1fc65e113f8 100644
+--- a/drivers/md/raid5-cache.c
++++ b/drivers/md/raid5-cache.c
+@@ -1590,18 +1590,13 @@ void r5l_quiesce(struct r5l_log *log, int quiesce)
  
- static inline bool raid5_has_log(struct r5conf *conf)
-@@ -108,7 +108,7 @@ static inline int log_handle_flush_request(struct r5conf *conf, struct bio *bio)
- 	if (conf->log)
- 		ret = r5l_handle_flush_request(conf->log, bio);
- 	else if (raid5_has_ppl(conf))
--		ret = ppl_handle_flush_request(conf->log, bio);
-+		ret = ppl_handle_flush_request(bio);
- 
- 	return ret;
- }
-diff --git a/drivers/md/raid5-ppl.c b/drivers/md/raid5-ppl.c
-index 0a2e4806b1ec..db49edec362a 100644
---- a/drivers/md/raid5-ppl.c
-+++ b/drivers/md/raid5-ppl.c
-@@ -679,7 +679,7 @@ void ppl_quiesce(struct r5conf *conf, int quiesce)
- 	}
- }
- 
--int ppl_handle_flush_request(struct r5l_log *log, struct bio *bio)
-+int ppl_handle_flush_request(struct bio *bio)
+ bool r5l_log_disk_error(struct r5conf *conf)
  {
- 	if (bio->bi_iter.bi_size == 0) {
- 		bio_endio(bio);
+-	struct r5l_log *log;
+-	bool ret;
+-	/* don't allow write if journal disk is missing */
+-	rcu_read_lock();
+-	log = rcu_dereference(conf->log);
++	struct r5l_log *log = conf->log;
+ 
++	/* don't allow write if journal disk is missing */
+ 	if (!log)
+-		ret = test_bit(MD_HAS_JOURNAL, &conf->mddev->flags);
++		return test_bit(MD_HAS_JOURNAL, &conf->mddev->flags);
+ 	else
+-		ret = test_bit(Faulty, &log->rdev->flags);
+-	rcu_read_unlock();
+-	return ret;
++		return test_bit(Faulty, &log->rdev->flags);
+ }
+ 
+ #define R5L_RECOVERY_PAGE_POOL_SIZE 256
+@@ -3148,7 +3143,7 @@ int r5l_init_log(struct r5conf *conf, struct md_rdev *rdev)
+ 	spin_lock_init(&log->stripe_in_journal_lock);
+ 	atomic_set(&log->stripe_in_journal_count, 0);
+ 
+-	rcu_assign_pointer(conf->log, log);
++	conf->log = log;
+ 
+ 	set_bit(MD_HAS_JOURNAL, &conf->mddev->flags);
+ 	return 0;
+@@ -3171,7 +3166,6 @@ void r5l_exit_log(struct r5conf *conf)
+ 	struct r5l_log *log = conf->log;
+ 
+ 	conf->log = NULL;
+-	synchronize_rcu();
+ 
+ 	/* Ensure disable_writeback_work wakes up and exits */
+ 	wake_up(&conf->mddev->sb_wait);
 -- 
 2.30.2
 
