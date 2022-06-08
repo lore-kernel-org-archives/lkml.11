@@ -2,105 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BD1C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 13:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D503DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 13:46:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240727AbiFHNpU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 09:45:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34528 "EHLO
+        id S240723AbiFHNqF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 09:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240603AbiFHNpP (ORCPT
+        with ESMTP id S240860AbiFHNp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 09:45:15 -0400
-Received: from mail-io1-f43.google.com (mail-io1-f43.google.com [209.85.166.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11FC49C2E2;
-        Wed,  8 Jun 2022 06:45:13 -0700 (PDT)
-Received: by mail-io1-f43.google.com with SMTP id 134so12574349iou.12;
-        Wed, 08 Jun 2022 06:45:13 -0700 (PDT)
+        Wed, 8 Jun 2022 09:45:59 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5C4279C11;
+        Wed,  8 Jun 2022 06:45:52 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id y19so41577977ejq.6;
+        Wed, 08 Jun 2022 06:45:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NSdLO2hwc6gApB99u/8axPIg7znZ9rABRELorqWsHlQ=;
+        b=cHM8fPNmR54d0HizUEb5n05LBKW9qncZzsdp+Hku/LayRA3hvCST+p7Fym+tkMj8Xt
+         2pnCMsJh23PGNy3s/Ana+27NXFSlmdL45KGdr3CXG19nfqVlKrJ0Q2y+GUvcZrLC7lj8
+         i6MpeJ/JukYMHu6HXpbGxvbt3LuD7V1o6/cJ6PY/jy8bnKYfstIi7wF7GzAVVznQD2tG
+         RActwGf0/GQIYGHHHPXVrECgUnBoiFhHeQMn9oLlB3ZbMtZ1yGMn9L/qiFssv0K3JCul
+         Txi8flPmGQKm3vGxrBs2XWB11Gtm8NWxyk2eQk8zzrujnwm/YJGzvfu9JQm6VnAyyGAz
+         eIOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=wTTvlPBhL0R4VGrImadF6/peV4pBTwvdmzGU+XrZruE=;
-        b=OEq9XMCQGuowZhKqmuCAal7cGi6ms4hse0C90ofHDhqo3lzOmYKKrTz8d5JC4eR7L5
-         +0fLOuiYG1d4e2rFWh4P2xwbYE6QBDDqFoSfFPtYgjUFuVmvyjWPr8nHk6vU8bOeSfgH
-         FNBNS857IygPtHxgYpn9E2WI+ugjxkvNBm5WGLGz/c1ZN2Jwv/cRSXIIB5yDAAUGJCkW
-         VJJe4q9gkUrD+cbrWUvTXvXzmiTAexkKVleAv5OUn7UsivyfF9ugJ8+FblXyRmDL2LJk
-         K3zJWX6Fd/sXAzKAaQIQlo5jgC4Ri5l4SxBk93B/UkzhGC98iRWLQT/sQZvwuM7yzs8M
-         BXfA==
-X-Gm-Message-State: AOAM532enjpkgJgg1viwlx6dDGuj1wahdDW/dwlmSM1I2HVk857Laz6F
-        Tze9KrNAG5a7E7re1AXpPQ==
-X-Google-Smtp-Source: ABdhPJzXC7b2axuL8VqcV+jcp6rJGpBavEB0PfCW3q7lAr4J3Dzn0kGXXRomqn4DlodahC0axmuGvw==
-X-Received: by 2002:a6b:cf13:0:b0:668:bda0:f300 with SMTP id o19-20020a6bcf13000000b00668bda0f300mr16208468ioa.89.1654695912193;
-        Wed, 08 Jun 2022 06:45:12 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id p4-20020a056638216400b003315a20c6e1sm7862407jak.9.2022.06.08.06.45.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 06:45:11 -0700 (PDT)
-Received: (nullmailer pid 1272088 invoked by uid 1000);
-        Wed, 08 Jun 2022 13:45:07 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Icenowy Zheng <uwu@icenowy.me>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Chen-Yu Tsai <wens@csie.org>, linux-phy@lists.infradead.org,
-        Bin Liu <b-liu@ti.com>, linux-usb@vger.kernel.org,
-        Vinod Koul <vkoul@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        devicetree@vger.kernel.org
-In-Reply-To: <20220608070452.338006-3-uwu@icenowy.me>
-References: <20220608070452.338006-1-uwu@icenowy.me> <20220608070452.338006-3-uwu@icenowy.me>
-Subject: Re: [PATCH 2/7] dt-bindings: phy: add binding document for Allwinner F1C100s USB PHY
-Date:   Wed, 08 Jun 2022 07:45:07 -0600
-Message-Id: <1654695907.384174.1272087.nullmailer@robh.at.kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NSdLO2hwc6gApB99u/8axPIg7znZ9rABRELorqWsHlQ=;
+        b=6hCxy0u06ICxA2YdD848+EpcKMPIbQnVygPP4KyybIBcwqOJkevXd2Q+pzGCztdeEn
+         q+2RVHeryal7ctTeYiRkDLx1z3WreZNYP9Leg4/+iCriR2EyZSWF79p/F+VtnKxFeV3G
+         BkLKK+FBQn6e9mzc6xhcTi13eTHaRNzbbBM3axT1nYwV7GHZssoNzyEcDTvryoydvrQx
+         1aS3/qHsf6ItErFOuG57NYWhsmp+lGh5mqbHHanyfSf3bybkLKhYWpACH3m+0vLK2vMk
+         4Y9SP7dpJcU3ll63G0NGVU83cR2VUzOFB6u/jzX4Xmi32aVnrDoUGgi05gjYlh2HSQ8I
+         RWdA==
+X-Gm-Message-State: AOAM530Xn6r8iVdjmFYTNbFHj8oSNcEU2f3SD+nv+LLW8R7FAJk8OVvF
+        KS4DhJtBJSUc9MEr4mJJFsiZL5LM5Qfbs5E1BeaLcYpWLJp0iw==
+X-Google-Smtp-Source: ABdhPJxdAgQLgv4Y7iW7Q9tSkS4LWbeyWmQ0jijWqcVLHF5CfUfjZ2skbLtltjxnC30hwn1PG2uNVtJDSQibMprBI1U=
+X-Received: by 2002:a17:906:d550:b0:704:7ba6:9854 with SMTP id
+ cr16-20020a170906d55000b007047ba69854mr31055717ejc.579.1654695950609; Wed, 08
+ Jun 2022 06:45:50 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220608122917.2892953-1-david@protonic.nl>
+In-Reply-To: <20220608122917.2892953-1-david@protonic.nl>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 8 Jun 2022 15:45:14 +0200
+Message-ID: <CAHp75Vffx8EbQ48+B-LOKxE3-JA6kuPMZwacA-=y-kqScQHfbQ@mail.gmail.com>
+Subject: Re: [PATCH] include: linux: spi: spi.h: Add missing documentation for
+ struct members
+To:     David Jander <david@protonic.nl>
+Cc:     Mark Brown <broonie@kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 08 Jun 2022 15:04:47 +0800, Icenowy Zheng wrote:
-> Allwinner F1C100s has the most simple USB PHY among all Allwinner SoCs,
-> because it has only one OTG USB controller, no host-only OHCI/EHCI
-> controllers.
-> 
-> Add a binding document for it.
-> 
-> Signed-off-by: Icenowy Zheng <uwu@icenowy.me>
-> ---
->  .../phy/allwinner,suniv-f1c100s-usb-phy.yaml  | 83 +++++++++++++++++++
->  1 file changed, 83 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/phy/allwinner,suniv-f1c100s-usb-phy.yaml
-> 
+On Wed, Jun 8, 2022 at 2:56 PM David Jander <david@protonic.nl> wrote:
+>
+> Fixes "make htmldocs" warnings.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Can you provide the warnings?
 
-yamllint warnings/errors:
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
 
-dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/phy/allwinner,suniv-f1c100s-usb-phy.example.dts:19:18: fatal error: dt-bindings/clock/suniv-f1c100s-ccu.h: No such file or directory
-   19 |         #include <dt-bindings/clock/suniv-f1c100s-ccu.h>
-      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-compilation terminated.
-make[1]: *** [scripts/Makefile.lib:383: Documentation/devicetree/bindings/phy/allwinner,suniv-f1c100s-usb-phy.example.dtb] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1404: dt_binding_check] Error 2
+Perhaps a Fixes tag?
 
-doc reference errors (make refcheckdocs):
+> Signed-off-by: David Jander <david@protonic.nl>
 
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+-- 
+With Best Regards,
+Andy Shevchenko
