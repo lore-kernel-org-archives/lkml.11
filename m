@@ -2,112 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4F4C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC6FCCA486
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:21:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235816AbiFHHSw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
+        id S243583AbiFHHUQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237731AbiFHHBu (ORCPT
+        with ESMTP id S243513AbiFHHNK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:01:50 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D3D1B9FA8
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:45:39 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nypRR-0008Jz-JH; Wed, 08 Jun 2022 08:45:21 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nypRN-0078SQ-Eb; Wed, 08 Jun 2022 08:45:16 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nypRK-00EvFX-RE; Wed, 08 Jun 2022 08:45:14 +0200
-Date:   Wed, 8 Jun 2022 08:45:10 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>
-Cc:     thierry.reding@gmail.com, lee.jones@linaro.org,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        claudiu.beznea@microchip.com, linux-pwm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pwm: atmel-tcb: use 'unsigned int' instead of 'unsigned'
-Message-ID: <20220608064510.23dyydxgwz6imdaw@pengutronix.de>
-References: <20220608010607.19469-1-yuanjilin@cdjrlc.com>
+        Wed, 8 Jun 2022 03:13:10 -0400
+Received: from progateway7-pub.mail.pro1.eigbox.com (gproxy5-pub.mail.unifiedlayer.com [67.222.38.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0241D5A81
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:54:27 -0700 (PDT)
+Received: from cmgw14.mail.unifiedlayer.com (unknown [10.0.90.129])
+        by progateway7.mail.pro1.eigbox.com (Postfix) with ESMTP id A5B521004BCAB
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 06:54:26 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id ypaEnap4gVu7HypaEng9kk; Wed, 08 Jun 2022 06:54:26 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=c4hu/Txl c=1 sm=1 tr=0 ts=62a047a2
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=JPEYwPQDsx4A:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=8xn-XnASv_xJIdzKHaYA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=5dfKONdblHjdBslHU2mah9l5cXjLql8ZtrIBSDMIHQ8=; b=qfjunzTQN13EAJJoBuxwpTqpBr
+        EJylvvdftqLlq9SzxSo9VB25CYzZDIvwxG3ZNRruMosfs0RRIkQLS1UDLGKJsUOLC+KqQcajxqo60
+        1Sbvm6z5Mp66tyUpRYHq1X1+NfxPDCG9havqum7qs50Gy9nYg2yeu0ekALJJiNzgWrPO1fE7MPW4x
+        2o669sCndCiKjzd5FpA6K190X/QnTgusMW1QzlrsOmHZCiQEg2fXDsW/7NW0PJ236rGZpEkaTdpVY
+        CHTlp16lCTY5lxv/MXIkgLk5ia9UyeOqEZiUV8LBiPP+hfjVgXdfIbR8I1dnTdrcshr9hmDFKCWRx
+        wKQ2B5vA==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:54284 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <re@w6rz.net>)
+        id 1nypaD-000JhA-6O;
+        Wed, 08 Jun 2022 00:54:25 -0600
+Subject: Re: [PATCH 5.18 000/879] 5.18.3-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220607165002.659942637@linuxfoundation.org>
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <d5bfd615-cd17-03a0-ee2a-83ce9acd8b91@w6rz.net>
+Date:   Tue, 7 Jun 2022 23:54:23 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mcucuprath6clvrf"
-Content-Disposition: inline
-In-Reply-To: <20220608010607.19469-1-yuanjilin@cdjrlc.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nypaD-000JhA-6O
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:54284
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 6/7/22 9:51 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.3 release.
+> There are 879 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 09 Jun 2022 16:48:02 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.3-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
---mcucuprath6clvrf
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-On Wed, Jun 08, 2022 at 09:06:07AM +0800, Jilin Yuan wrote:
-> Replace the 'unsigned' with 'unsigned int' which is more accurate.
+Tested-by: Ron Economos <re@w6rz.net>
 
-What was your motivation? To please checkpatch? Please mention this in
-the commit log.
-
-> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
-> ---
->  drivers/pwm/pwm-atmel-tcb.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
->=20
-> diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
-> index 3977a0f9d132..d6977e4e71f3 100644
-> --- a/drivers/pwm/pwm-atmel-tcb.c
-> +++ b/drivers/pwm/pwm-atmel-tcb.c
-> @@ -35,9 +35,9 @@
-> =20
->  struct atmel_tcb_pwm_device {
->  	enum pwm_polarity polarity;	/* PWM polarity */
-> -	unsigned div;			/* PWM clock divider */
-> -	unsigned duty;			/* PWM duty expressed in clk cycles */
-> -	unsigned period;		/* PWM period expressed in clk cycles */
-> +	unsigned int div;			/* PWM clock divider */
-> +	unsigned int duty;			/* PWM duty expressed in clk cycles */
-> +	unsigned int period;		/* PWM period expressed in clk cycles */
-
-Please reindent the comments such they keep to be aligned.
-
->  };
-> =20
->  struct atmel_tcb_channel {
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---mcucuprath6clvrf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKgRXQACgkQwfwUeK3K
-7AlqFgf+PZnSf3d7O4232yef++gtkMCDcmr132nSH/+V0ZahVxZl5H/m6LFr0FbZ
-KsrRIzc+sNJ8EK3WZp4nnvrT1zsiHXzhO87n3n4V6nQNClzzzrxakIKtQevIenHg
-xDTbJL23lJY6pI96wt+iQqdkNAZQCIuWsH9T0QcaCYqH1eZUE3zwg9Z6ctS1fw8r
-d7Lk5vdSQOCkZTdgeAzYhv9DEvIzNr4T33q9JVVCCzAj6B0JmdSSJshJT/1LwpbJ
-uG4NKW9/wbWJFe4BidPyqqn3c5c78sGRKNmgzOVVmCdBveIVV9aEjIRWeSqnG6yt
-zIWFknEy7/PSk6I6aZsA72MRYA3D6w==
-=Vzcd
------END PGP SIGNATURE-----
-
---mcucuprath6clvrf--
