@@ -2,90 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8866C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD72C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:22:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231204AbiFHFWU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58280 "EHLO
+        id S233239AbiFHFWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233570AbiFHFVr (ORCPT
+        with ESMTP id S233374AbiFHFVh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:21:47 -0400
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725B8158962
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:38:46 -0700 (PDT)
-Received: by mail-ot1-x32f.google.com with SMTP id g13-20020a9d6b0d000000b0060b13026e0dso14218274otp.8
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 19:38:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=seHIkk6akkyF7CqpwiNW+0WVZl9SkWhR+b/C+2qe9G4=;
-        b=YOK0HcWAA90YodJ2nL05eBhKnHKJXgatVghFjMzOLBeY1sO5XlswkS3tJx5kaP+cq8
-         suzLXkqWriK1TtM5RyuKk7dlUms0biHQSVFubv9pd/lZ4ICHLX3jIZcWhj5dQRY7KOhQ
-         4ygfWNfkBaNSLhxl7blJ1A/0MP4kSfJFSYzACHbNWt2lBMuPcRdWGA+7kyGqaV+qkk8b
-         3Y3UCQA39cbugLFYyUAdFWpFsju0CFIyOO9TY/V5nRn/NjvSkDKyFtG6k8deDQ+DLl+i
-         /h1JDHTv1Zf2WN6KHBMakK3bufIDewRW1DlTP+qPYaNmZHSbiKPRQEdDs6XsKe8vDfJ6
-         3Xow==
+        Wed, 8 Jun 2022 01:21:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7A8A8271A94
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:50:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654656616;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hoU/O6w4YUxRgQevDzGWElcceiZ5d1yaMFWFpbdwK/w=;
+        b=I0BQ566MC2XU/6BQF7zKJZY0U8Xsk73Vc4ZZ8Bf+vXzVxHXy2qYi6BgvgVR397k4umlbrA
+        YSc930TE8D4d9kZrCxL1mAmmPH/8UGkUjtCpLvd3H+3yiMy5GY/Tk/jtFl5iVPL/McbCQj
+        U2Ct37V9XS4yqCW38cZfyQSwOCRPaG8=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-185-6_qHXYHkNLKuR14fEobOlg-1; Tue, 07 Jun 2022 22:50:15 -0400
+X-MC-Unique: 6_qHXYHkNLKuR14fEobOlg-1
+Received: by mail-lj1-f200.google.com with SMTP id g13-20020a2eb5cd000000b00255ac505e62so874458ljn.1
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 19:50:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=seHIkk6akkyF7CqpwiNW+0WVZl9SkWhR+b/C+2qe9G4=;
-        b=J/4dOSNz5zhzwGr6e4FAuJsRRar0jNDYK2ixt2B39bTpYU++VxwLwopKZqzRv9OWLY
-         R4nyczuLjwFp92D6SoWaZEcdIqgeTg3tLbxNq7jri6Kg+M97KXiCZXT+ZlDp9E0T9jN9
-         //NFjp0DZJ1p+7iavdOq/gd2R/7pbmCOkgaeGnUGVozOJL26zdlRPZ1jffBGiS3AMgmJ
-         OHNsZliGsNp246tDGgaeuHBL1Ie4If/CSG7+M3tAaBzJa8TP33UDgAiCMKaY/1tJ6N7C
-         JtWC0WuhES2ob9cJCPbtBrUsmDS4A5N1TLc1KJiW1D2qtvpMdO6dGb0PIJMUDCnsHKsr
-         ScRg==
-X-Gm-Message-State: AOAM530nrbvrS2dB8qsOHjf2k4hB0HsAsCCJB5jRKazTym71Px+Y14vJ
-        qy61Dl2/ciGfBeJ6t7N3u9kPj39OSyOvO1z5
-X-Google-Smtp-Source: ABdhPJwN579Dw9mL+NEXRXZaW2uFpTDJdVCKJLuPfabUSx+mjo9tNzxNHAigIK7k4SvU6sPAnbQIKg==
-X-Received: by 2002:a05:6830:919:b0:60a:fe63:e321 with SMTP id v25-20020a056830091900b0060afe63e321mr13208882ott.227.1654655925801;
-        Tue, 07 Jun 2022 19:38:45 -0700 (PDT)
-Received: from debianmain ([190.236.207.56])
-        by smtp.gmail.com with ESMTPSA id eg21-20020a056870989500b000f31e826f15sm9015107oab.24.2022.06.07.19.38.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 19:38:45 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 21:38:43 -0500
-From:   Rommel Rodriguez Perez <alrodperez@gmail.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: r8188eu: Add blank line after declarations
-Message-ID: <YqALs/7VkGsYUngw@debianmain.debian.pc.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hoU/O6w4YUxRgQevDzGWElcceiZ5d1yaMFWFpbdwK/w=;
+        b=t+GYakarjG+icWWG6GM3rfseK8EeJJoBYduHsTuLbPL+p7ZNNGiaJpugHGVFu8XnTD
+         mBy+4AQvlwhq14zL6DC8W6DNLqcqXCKZhLwJXx4qesRoz5xucvAiVB1exNutVBewxcSy
+         rVuOBhujvlqx43FJ92JJdpdJHoeewLeYZUXjZOEEsERpLxpkT2GhBRS6rr/gHMEovQeD
+         lmkCWivfvyXHqKRdWUzmvv6edjv1N66eo1SyId5FLYlRdJYvfhIDu7DjdtyUJ3FFl4Ic
+         DONMP2mn3+MGTaIDA+5fMX+i89JvKicHY2XJvku/JPdm2acpB/y1xHFi3c0CyDQH0vZT
+         qbhA==
+X-Gm-Message-State: AOAM531pv81ONl1NXFhdXx3ib16cQ4HNCtYzolNRgp7mEtsTE/8j093z
+        lnXzC12OLYjeb7akzicPS57xOn/xgoORFOBsmKTDy5+YXDNp2UR8Ud5CEvVC+meXO5d9U3tlFsO
+        vV/WhIbjVZZ4SC9oSSNmk8On3wV7QR6vbvi3+SMfJ
+X-Received: by 2002:a05:6512:3130:b0:479:385f:e2ac with SMTP id p16-20020a056512313000b00479385fe2acmr10304382lfd.575.1654656613666;
+        Tue, 07 Jun 2022 19:50:13 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy/wfYs6HkHvDClc0YAeZNLik8QgxxmOJ07fcWIYgWskZhjMfRl7qmsfjJQ28CN49VdSzGUpv/CZ6BO3tueZYs=
+X-Received: by 2002:a05:6512:3130:b0:479:385f:e2ac with SMTP id
+ p16-20020a056512313000b00479385fe2acmr10304377lfd.575.1654656613505; Tue, 07
+ Jun 2022 19:50:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <CACGkMEt_e59wRotUo9D1UqubAhe+txy0GF=r1BYBVdND8-uKbA@mail.gmail.com>
+ <0000000000002cccbd05e0e69570@google.com>
+In-Reply-To: <0000000000002cccbd05e0e69570@google.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 8 Jun 2022 10:50:02 +0800
+Message-ID: <CACGkMEvtV+hVdpgpkYvAmkRteYDN+2dDacrfXsYDv0ZzjJU+ag@mail.gmail.com>
+Subject: Re: [syzbot] INFO: task hung in add_early_randomness (2)
+To:     syzbot <syzbot+5b59d6d459306a556f54@syzkaller.appspotmail.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        linux-crypto@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux@dominikbrodowski.net, mpm@selenic.com, mst <mst@redhat.com>,
+        syzkaller-bugs@googlegroups.com,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>, yuehaibing@huawei.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds a blank line after the variable declarations,
-it should remove a checkpatch.pl warning and improve readability.
+On Wed, Jun 8, 2022 at 10:37 AM syzbot
+<syzbot+5b59d6d459306a556f54@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot tried to test the proposed patch but the build/boot failed:
+>
+> failed to apply patch:
+> checking file drivers/char/hw_random/virtio-rng.c
+> patch: **** unexpected end of file in patch
+>
 
-checkpatch output:
+Copy-paste error :(
 
-WARNING: Missing a blank line after declarations
+Let's try this:
 
-Signed-off-by: Rommel Rodriguez Perez <alrodperez@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_ieee80211.c | 1 +
- 1 file changed, 1 insertion(+)
+#syz test
+git://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
 
-diff --git a/drivers/staging/r8188eu/core/rtw_ieee80211.c b/drivers/staging/r8188eu/core/rtw_ieee80211.c
-index 385a9ed8eff7..bc8543ea2e66 100644
---- a/drivers/staging/r8188eu/core/rtw_ieee80211.c
-+++ b/drivers/staging/r8188eu/core/rtw_ieee80211.c
-@@ -1048,6 +1048,7 @@ static int rtw_get_cipher_info(struct wlan_network *pnetwork)
- 	unsigned char *pbuf;
- 	int group_cipher = 0, pairwise_cipher = 0, is8021x = 0;
- 	int ret = _FAIL;
+diff --git a/drivers/char/hw_random/virtio-rng.c
+b/drivers/char/hw_random/virtio-rng.c
+index e856df7e285c..a6f3a8a2aca6 100644
+--- a/drivers/char/hw_random/virtio-rng.c
++++ b/drivers/char/hw_random/virtio-rng.c
+@@ -159,6 +159,8 @@ static int probe_common(struct virtio_device *vdev)
+                goto err_find;
+        }
+
++       virtio_device_ready(vdev);
 +
- 	pbuf = rtw_get_wpa_ie(&pnetwork->network.IEs[12], &wpa_ielen, pnetwork->network.IELength - 12);
- 
- 	if (pbuf && (wpa_ielen > 0)) {
--- 
-2.30.2
+        /* we always have a pending entropy request */
+        request_entropy(vi);
+
+--
 
