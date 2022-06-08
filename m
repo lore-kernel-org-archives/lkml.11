@@ -2,116 +2,363 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE9CACCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D095AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233264AbiFHI5u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:57:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52100 "EHLO
+        id S230089AbiFHI55 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:57:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232459AbiFHI5A (ORCPT
+        with ESMTP id S232728AbiFHI5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 04:57:00 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED7A3D7D56
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:17:46 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2E79D5C00F1;
-        Wed,  8 Jun 2022 04:17:46 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Wed, 08 Jun 2022 04:17:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1654676266; x=1654762666; bh=GtRc427glM
-        /xP+8OThEKlx0/YlIMe1xhil9qzlof6uo=; b=gDaY8oQp8EdDym0ZVsDATk6Rru
-        yTw1tuwn0z7s2Y1u8pfcW4qj4Gqe8Z2lLTELYhpctsXlWLs+HhVN8ahqiMqzLu6N
-        wNDK/u2YkQIeUxIMWqTAhjQ8X7UOHAve3sdj9hDw5bylw48yPaU0J+SYfx1D7FGc
-        tc4yzXSGZ7Z7HcQlqXGn/62M3GruEBCzN53yckhs7RwX23Xy8GAq41bB5L7Rof/4
-        WpKgsIm/dpO7ToSzhBoyCKGrqLiRK+AOknSq4U2yc9SG4CLhLBrAa/69C6gMm0PZ
-        OBNhngHOHhjMJXbDDRHkva09OCa38wXJsgExHDTK1x5ZTDYgs6Zeee5ZKRkQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; t=1654676266; x=1654762666; bh=GtRc427glM/xP+8OThEKlx0/YlIM
-        e1xhil9qzlof6uo=; b=AGyygz+lHO9sUkNOUZjTrm4CSBm9UVQl//Q0srCGn9Mu
-        Sv0mdlM14QricV3ulFFdJpf76XRQA2MEG6YZIBU/GncfTdjy+xLooVcgkoVr4ZWA
-        VP1jgoFQDxJDReQzZ+mMR/MrhAq9DTBM0264jC50eNSKXuVaEH2MywG9tDE2JloD
-        LKLoE/x+pG/dCDtA2gupx/KqDiAqBAkECPbjfuxI/y0TJ7QS7nutrdQHqy9/XKlq
-        A64Dnk2pRwk3YoDJJc5gjXy3A3pR51zAQXBfQHmxSbiyfB4/oEj3DxpNLUYH+FY1
-        +zzB2ZPWE1BpmIfzW1R+jV58qcfQcrV5imMZKqD3NQ==
-X-ME-Sender: <xms:KVugYrBhtEsvjQ83PwCyZVhuizaVwRfC-BE6EQryKNGRUe_azzySuA>
-    <xme:KVugYhjUx0Gbn--fnuVgPRw3Z9Qm6WCZfxys0b49R8tzTqvipupqMkUhluMzzaney
-    FQ24e9HQxvIGNs7XMY>
-X-ME-Received: <xmr:KVugYmk2I9jH152C7XSWkyFIoIBSVSU6okFRZkrFmuVz4kMGRpR48li79JEGwK0B4bIkp1VCi3qj74jnAoKiBSriQxLMJL-3LA8orpg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddtjecutefuodetggdotefrodftvfcurf
-    hrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpeffhffvvefukfhfgggtuggjsehgtderredttddunecuhfhrohhmpeforgigihhmvgcu
-    tfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrthhtvg
-    hrnhepleejuefggeevteelveekteffgeduveeiteeiueegueegiedvtdejjedvfeeftefg
-    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:KlugYtzsjyWFZHtwq4nBoQKmUIChQzp9CzSRZzBlcJOU8xMhNfb2iw>
-    <xmx:KlugYgRGKaxcSCIXdsjbS_Uzl5LfB68sWZVppBz-fsoZ97_StW4XRA>
-    <xmx:KlugYgYEEefynSBSM6oufriJY4EaHhAkV02T0oxROWYSmhXtabHj_w>
-    <xmx:KlugYp_8KZoGXj8SNLcjz_H5RuNbATJ_JlSw3bC8DNsZgKwV7ziOvw>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 8 Jun 2022 04:17:45 -0400 (EDT)
-Date:   Wed, 8 Jun 2022 10:17:44 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
-Cc:     javierm@redhat.com, davidgow@google.com, dlatypov@google.com,
-        tzimmermann@suse.de, maarten.lankhorst@linux.intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        kunit-dev@googlegroups.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm/doc: Add KUnit documentation
-Message-ID: <20220608081744.fchecz4epcjwz6iw@houat>
-References: <20220606180940.43371-1-jose.exposito89@gmail.com>
+        Wed, 8 Jun 2022 04:57:05 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA543A79F9
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:18:12 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id v19so26003082edd.4
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 01:18:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=lJu7f90/17ENJHeOodBXtuPNJTJFwuBT63hP1IT/OVM=;
+        b=URFGorMQpl7AiTcT3K116o61q9Gw1Y7xbs78/Alh1ddhW11RceAO4V1vXAGLgvAOo3
+         vTkyPvv6PixhUafKVvDPwTFWLsodkgkdeRV+0+jFbNFA84vmZoYWCV6KEFIjMXbMPSNH
+         gSZN0INIfu1cMqJXbOi4rTRsloGUfW66DDjejdAVAislEBy0PAynv4Z83ZJkRdN8K+JM
+         0obFFCuI4Fia/umvnbxgdQTe5Y4rbG6y6CX3LFqH7JNIo260JFq2BG1iszyRjKSYfbbT
+         Vyv4AiBeCF+955lwvB3K+a6CM9WUW4fwylQbgfOnZ2d2QiB1ehBa9Rgfvw55HwvU4JcZ
+         RGQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=lJu7f90/17ENJHeOodBXtuPNJTJFwuBT63hP1IT/OVM=;
+        b=7N4w5G/nyT01jtjZ4kYlyavqtdgRc1uNLi/FpIsCbFnJVrw1jFzJtVfDnQPNDA6TAj
+         fR4oZSU0Lxje61DqUMx1X0eZBbIaiEEn/+52TVw9D5W9vam7qkRWPj+JxGuI/o3UXmC2
+         9sy8WPfvm5hB2hVkDyivrcor/RFtq0CzOI9u+hKWXWWdyVPehDw0ozi923IYD4SLL9iG
+         Ehptfg0PsHwMPJoj/r9bPUqo6przctymiyoS//aROrGQPbARqkoYiqmPRRDdbLTY4qeu
+         MTNZ2/RGBfV/WykVv2AjaB7v07TL+3txy7pyXYHEHrbHz0ZKgyoskieXojTQMip5INGk
+         nxJg==
+X-Gm-Message-State: AOAM533qfPO4VP/3H+mMghJowapkRdERutIYgYvRmWMIrNOoOm2P+V1i
+        ADrZGBbqu14sqedqAPjsLgfpUg==
+X-Google-Smtp-Source: ABdhPJxnCzCjUnvhxXYiotWtcKQPuPZvHbxx4DCOkLs+hjD7cVT2yw+SkYky4cMjJ5JGiQe7NhFbQw==
+X-Received: by 2002:aa7:db02:0:b0:42d:c3ba:9c86 with SMTP id t2-20020aa7db02000000b0042dc3ba9c86mr37852819eds.337.1654676284100;
+        Wed, 08 Jun 2022 01:18:04 -0700 (PDT)
+Received: from [192.168.0.189] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id l1-20020a1709060e0100b006fec4ee28d0sm7301486eji.189.2022.06.08.01.18.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 01:18:03 -0700 (PDT)
+Message-ID: <79443fb4-5c09-a33f-594d-71ac93cc0317@linaro.org>
+Date:   Wed, 8 Jun 2022 10:18:02 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="5vpnlnj62jed3kce"
-Content-Disposition: inline
-In-Reply-To: <20220606180940.43371-1-jose.exposito89@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 2/4] arm64: dts: qcom: add SC8280XP platform
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>
+Cc:     Jassi Brar <jassisinghbrar@gmail.com>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220607214113.4057684-1-bjorn.andersson@linaro.org>
+ <20220607214113.4057684-3-bjorn.andersson@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220607214113.4057684-3-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 07/06/2022 23:41, Bjorn Andersson wrote:
+> Introduce initial support for the Qualcomm SC8280XP platform, aka 8cx
+> Gen 3. This initial contribution supports SMP, CPUfreq, CPU cluster
+> idling, GCC, TLMM, SMMU, RPMh regulators, power-domains and clocks,
+> interconnects, some QUPs, UFS, remoteprocs, USB, watchdog, LLCC and
+> tsens.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>  arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 2195 ++++++++++++++++++++++++
+>  1 file changed, 2195 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> new file mode 100644
+> index 000000000000..4143813643ad
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> @@ -0,0 +1,2195 @@
+> +// SPDX-License-Identifier: BSD-3-Clause
+> +/*
+> + * Copyright (c) 2021, The Linux Foundation. All rights reserved.
+> + * Copyright (c) 2022, Linaro Limited
+> + */
+> +
+> +#include <dt-bindings/clock/qcom,gcc-sc8280xp.h>
+> +#include <dt-bindings/clock/qcom,rpmh.h>
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +#include <dt-bindings/interconnect/qcom,sc8280xp.h>
+> +#include <dt-bindings/mailbox/qcom-ipcc.h>
+> +#include <dt-bindings/power/qcom-rpmpd.h>
+> +#include <dt-bindings/soc/qcom,rpmh-rsc.h>
+> +#include <dt-bindings/thermal/thermal.h>
+> +
+> +/ {
+> +	interrupt-parent = <&intc>;
+> +
+> +	#address-cells = <2>;
+> +	#size-cells = <2>;
+> +
+> +	clocks {
+> +		xo_board: xo-board {
 
---5vpnlnj62jed3kce
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+xo-board-clk
 
-On Mon, Jun 06, 2022 at 08:09:40PM +0200, Jos=E9 Exp=F3sito wrote:
-> Explain how to run the KUnit tests present in the DRM subsystem and
-> clarify why the UML-only options were not added to the configuration
-> file present in drivers/gpu/drm/.kunitconfig [1] [2].
->=20
-> [1] https://lore.kernel.org/dri-devel/CABVgOSn8i=3DLO5p7830h2XU1Jgg0KrN0q=
-TnxkOMhf1oTgxjaKKw@mail.gmail.com/
-> [2] https://lore.kernel.org/dri-devel/CAGS_qxqpiCim_sy1LDK7PLwVgWf-LKW+uN=
-FTGM=3DT7ydk-dYcEw@mail.gmail.com/
->=20
-> Signed-off-by: Jos=E9 Exp=F3sito <jose.exposito89@gmail.com>
+> +			compatible = "fixed-clock";
+> +			#clock-cells = <0>;
+> +			clock-frequency = <38400000>;
 
-Reviewed-by: Maxime Ripard <maxime@cerno.tech>
+The clock is probably on the board, so the frequency should be rather
+defined in DTS.
 
-Thanks!
-Maxime
+> +		};
+> +
+> +		sleep_clk: sleep-clk {
+> +			compatible = "fixed-clock";
+> +			#clock-cells = <0>;
+> +			clock-frequency = <32764>;
+> +		};
+> +	};
 
---5vpnlnj62jed3kce
-Content-Type: application/pgp-signature; name="signature.asc"
+(...)
 
------BEGIN PGP SIGNATURE-----
+> +
+> +		qup1: geniqup@ac0000 {
+> +			compatible = "qcom,geni-se-qup";
+> +			reg = <0 0x00ac0000 0 0x6000>;
+> +			clocks = <&gcc GCC_QUPV3_WRAP_1_M_AHB_CLK>,
+> +				 <&gcc GCC_QUPV3_WRAP_1_S_AHB_CLK>;
+> +			clock-names = "m-ahb", "s-ahb";
+> +			iommus = <&apps_smmu 0x83 0>;
+> +
+> +			#address-cells = <2>;
+> +			#size-cells = <2>;
+> +			ranges;
+> +
+> +			status = "disabled";
+> +		};
+> +
+> +		ufs_mem_hc: ufshc@1d84000 {
 
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYqBbKAAKCRDj7w1vZxhR
-xZ70APwPJij4R6yEOlpggjHukEShwxdvrYDRgpKiNl7JodU3EwEAjjDHB0auYWvF
-S1fDhBvGr9bIkgvbs3aUY4i4PSWnxQs=
-=zzPn
------END PGP SIGNATURE-----
+Just "ufs" as node name.
 
---5vpnlnj62jed3kce--
+> +			compatible = "qcom,sc8280xp-ufshc", "qcom,ufshc",
+> +				     "jedec,ufs-2.0";
+> +			reg = <0 0x01d84000 0 0x3000>;
+> +			interrupts = <GIC_SPI 265 IRQ_TYPE_LEVEL_HIGH>;
+> +			phys = <&ufs_mem_phy_lanes>;
+> +			phy-names = "ufsphy";
+> +			lanes-per-direction = <2>;
+> +			#reset-cells = <1>;
+> +			resets = <&gcc GCC_UFS_PHY_BCR>;
+> +			reset-names = "rst";
+> +
+> +			power-domains = <&gcc UFS_PHY_GDSC>;
+> +			required-opps = <&rpmhpd_opp_nom>;
+> +
+> +			iommus = <&apps_smmu 0xe0 0x0>;
+> +
+> +			clocks = <&gcc GCC_UFS_PHY_AXI_CLK>
+> +				 <&gcc GCC_AGGRE_UFS_PHY_AXI_CLK>,
+> +				 <&gcc GCC_UFS_PHY_AHB_CLK>,
+> +				 <&gcc GCC_UFS_PHY_UNIPRO_CORE_CLK>,
+> +				 <&rpmhcc RPMH_CXO_CLK>,
+> +				 <&gcc GCC_UFS_PHY_TX_SYMBOL_0_CLK>,
+> +				 <&gcc GCC_UFS_PHY_RX_SYMBOL_0_CLK>,
+> +				 <&gcc GCC_UFS_PHY_RX_SYMBOL_1_CLK>;
+> +			clock-names = "core_clk",
+> +				      "bus_aggr_clk",
+> +				      "iface_clk",
+> +				      "core_clk_unipro",
+> +				      "ref_clk",
+> +				      "tx_lane0_sync_clk",
+> +				      "rx_lane0_sync_clk",
+> +				      "rx_lane1_sync_clk";
+> +			freq-table-hz = <75000000 300000000>,
+> +					<0 0>,
+> +					<0 0>,
+> +					<75000000 300000000>,
+> +					<0 0>,
+> +					<0 0>,
+> +					<0 0>,
+> +					<0 0>;
+> +			status = "disabled";
+> +		};
+> +
+> +		ufs_mem_phy: phy@1d87000 {
+> +			compatible = "qcom,sc8280xp-qmp-ufs-phy";
+> +			reg = <0 0x01d87000 0 0xe10>;
+> +			#address-cells = <2>;
+> +			#size-cells = <2>;
+> +			ranges;
+> +			clock-names = "ref",
+> +				      "ref_aux";
+> +			clocks = <&rpmhcc RPMH_CXO_CLK>,
+> +				 <&gcc GCC_UFS_PHY_PHY_AUX_CLK>;
+> +
+> +			resets = <&ufs_mem_hc 0>;
+> +			reset-names = "ufsphy";
+> +			status = "disabled";
+> +
+> +			ufs_mem_phy_lanes: phy@1d87400 {
+> +				reg = <0 0x01d87400 0 0x108>,
+> +				      <0 0x01d87600 0 0x1e0>,
+> +				      <0 0x01d87c00 0 0x1dc>,
+> +				      <0 0x01d87800 0 0x108>,
+> +				      <0 0x01d87a00 0 0x1e0>;
+> +				#phy-cells = <0>;
+> +				#clock-cells = <0>;
+> +			};
+> +		};
+> +
+> +		ufs_card_hc: ufshc@1da4000 {
+
+node name: ufs
+
+> +			compatible = "qcom,sc8280xp-ufshc", "qcom,ufshc",
+> +				     "jedec,ufs-2.0";
+> +			reg = <0 0x01da4000 0 0x3000>;
+> +			interrupts = <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>;
+> +			phys = <&ufs_card_phy_lanes>;
+> +			phy-names = "ufsphy";
+> +			lanes-per-direction = <2>;
+> +			#reset-cells = <1>;
+> +			resets = <&gcc GCC_UFS_CARD_BCR>;
+> +			reset-names = "rst";
+> +
+> +			power-domains = <&gcc UFS_CARD_GDSC>;
+> +
+> +			iommus = <&apps_smmu 0x4a0 0x0>;
+> +
+> +			clocks = <&gcc GCC_UFS_CARD_AXI_CLK>,
+> +				 <&gcc GCC_AGGRE_UFS_CARD_AXI_CLK>,
+> +				 <&gcc GCC_UFS_CARD_AHB_CLK>,
+> +				 <&gcc GCC_UFS_CARD_UNIPRO_CORE_CLK>,
+> +				 <&rpmhcc RPMH_CXO_CLK>,
+> +				 <&gcc GCC_UFS_CARD_TX_SYMBOL_0_CLK>,
+> +				 <&gcc GCC_UFS_CARD_RX_SYMBOL_0_CLK>,
+> +				 <&gcc GCC_UFS_CARD_RX_SYMBOL_1_CLK>;
+> +			clock-names = "core_clk",
+> +				      "bus_aggr_clk",
+> +				      "iface_clk",
+> +				      "core_clk_unipro",
+> +				      "ref_clk",
+> +				      "tx_lane0_sync_clk",
+> +				      "rx_lane0_sync_clk",
+> +				      "rx_lane1_sync_clk";
+> +			freq-table-hz = <75000000 300000000>,
+> +					<0 0>,
+> +					<0 0>,
+> +					<75000000 300000000>,
+> +					<0 0>,
+> +					<0 0>,
+> +					<0 0>,
+> +					<0 0>;
+> +			status = "disabled";
+> +		};
+> +
+> +		ufs_card_phy: phy@1da7000 {
+> +			compatible = "qcom,sc8280xp-qmp-ufs-phy";
+> +			reg = <0 0x01da7000 0 0xe10>;
+> +			#address-cells = <2>;
+> +			#size-cells = <2>;
+> +			ranges;
+> +			clock-names = "ref",
+> +				      "ref_aux";
+> +			clocks = <&gcc GCC_UFS_1_CARD_CLKREF_CLK>,
+> +				 <&gcc GCC_UFS_CARD_PHY_AUX_CLK>;
+> +
+> +			resets = <&ufs_card_hc 0>;
+> +			reset-names = "ufsphy";
+> +			status = "disabled";
+> +
+> +			ufs_card_phy_lanes: phy@1da7400 {
+> +				reg = <0 0x01da7400 0 0x108>,
+> +				      <0 0x01da7600 0 0x1e0>,
+> +				      <0 0x01da7c00 0 0x1dc>,
+> +				      <0 0x01da7800 0 0x108>,
+> +				      <0 0x01da7a00 0 0x1e0>;
+> +				#phy-cells = <0>;
+> +				#clock-cells = <0>;
+> +			};
+> +		};
+> +
+> +		tcsr_mutex: hwlock@1f40000 {
+> +			compatible = "qcom,tcsr-mutex";
+> +			reg = <0x0 0x01f40000 0x0 0x20000>;
+> +			#hwlock-cells = <1>;
+> +		};
+> +
+> +		usb_0_hsphy: phy@88e5000 {
+> +			compatible = "qcom,sc8280xp-usb-hs-phy",
+> +				     "qcom,usb-snps-hs-5nm-phy";
+> +			reg = <0 0x088e5000 0 0x400>;
+> +			status = "disabled";
+
+status goes to the end
+
+> +			#phy-cells = <0>;
+> +
+> +			clocks = <&gcc GCC_USB2_HS0_CLKREF_CLK>;
+> +			clock-names = "ref";
+> +
+> +			resets = <&gcc GCC_QUSB2PHY_PRIM_BCR>;
+> +		};
+> +
+> +		usb_2_hsphy0: phy@88e7000 {
+> +			compatible = "qcom,sc8280xp-usb-hs-phy",
+> +				     "qcom,usb-snps-hs-5nm-phy";
+> +			reg = <0 0x088e7000 0 0x400>;
+> +			status = "disabled";
+
+ditto
+
+> +			#phy-cells = <0>;
+> +
+> +			clocks = <&gcc GCC_USB2_HS0_CLKREF_CLK>;
+> +			clock-names = "ref";
+> +
+> +			resets = <&gcc GCC_QUSB2PHY_HS0_MP_BCR>;
+> +		};
+> +
+> +		usb_2_hsphy1: phy@88e8000 {
+> +			compatible = "qcom,sc8280xp-usb-hs-phy",
+> +				     "qcom,usb-snps-hs-5nm-phy";
+> +			reg = <0 0x088e8000 0 0x400>;
+> +			status = "disabled";
+
+ditto
+
+> +			#phy-cells = <0>;
+> +
+> +			clocks = <&gcc GCC_USB2_HS1_CLKREF_CLK>;
+> +			clock-names = "ref";
+> +
+> +			resets = <&gcc GCC_QUSB2PHY_HS1_MP_BCR>;
+> +		};
+> +
+> +		usb_2_hsphy2: phy@88e9000 {
+> +			compatible = "qcom,sc8280xp-usb-hs-phy",
+> +				     "qcom,usb-snps-hs-5nm-phy";
+> +			reg = <0 0x088e9000 0 0x400>;
+> +			status = "disabled";
+
+ditto and so on
+
+Best regards,
+Krzysztof
