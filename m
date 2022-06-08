@@ -2,90 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D6ABC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:24:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B943CCCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238153AbiFHLYz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 07:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
+        id S238195AbiFHL1N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 07:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238132AbiFHLYx (ORCPT
+        with ESMTP id S238186AbiFHL1K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 07:24:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23D412C97E;
-        Wed,  8 Jun 2022 04:24:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A0C0B8271E;
-        Wed,  8 Jun 2022 11:24:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49EFAC34116;
-        Wed,  8 Jun 2022 11:24:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654687490;
-        bh=gxuRxmn8LltL6EShbwujtTGcPs590C9dPrlLHgw8yFA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=J0+PV/9eBcimatHw1QFoUGvheIowOl9qq2FFyDOD3cBHqgEbBeyHUC+D8j0XdXd2m
-         A4Oh7V1PRqZmIqrvBAK8ejapVyycZ/IKBraDQYigEjf6T/CqPLsNezjNag0ZfqtTty
-         aIjaUe6Uj9XoGrW5cL3sQQ29XZL8QxiNYNyBZ+LYg7KdZKdnYHLZCtM0J2OyYGwm7w
-         w7Tw2ky3wrcHAwtFIzPFBc0eTDadiv1XVUTxNAD9L+EkZRnvFv8+8wYwRaGrDTlIC+
-         GrMAk0Ju6QNB2YQaNUnm8z0+OWcmZvkbNZAObcbgx7Ui2cCkJ9VmwAqK442Yuxkblg
-         27fSaQaECCi5Q==
-Date:   Wed, 8 Jun 2022 12:24:43 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Jiaxin Yu <jiaxin.yu@mediatek.com>
-Cc:     robh+dt@kernel.org, angelogioacchino.delregno@collabora.com,
-        aaronyu@google.com, matthias.bgg@gmail.com, trevor.wu@mediatek.com,
-        tzungbi@google.com, julianbraha@gmail.com,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH v6 2/8] ASoC: mediatek: mt8186: add platform driver
-Message-ID: <YqCG+9YkuXsDeh/I@sirena.org.uk>
-References: <20220607142046.28060-1-jiaxin.yu@mediatek.com>
- <20220607142046.28060-3-jiaxin.yu@mediatek.com>
+        Wed, 8 Jun 2022 07:27:10 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B097163292
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 04:27:09 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id bg6so21007061ejb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 04:27:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PlJbn4bNHTDXfVbeqo+RJ46MdRo3S8OzIqiYf3bCFFg=;
+        b=w6oCeuCW85F2bY1la+P9McwrVJ5T4BrvQFtejLtN2xdcKqmI+dQG1SXjuh4aKYKix3
+         t8yMpqn9Tk5DkkDC10nGdgnGjkcLd84YsBiEKTj6rOHwY2lYoe/U8q2RLUG3umMv0fDQ
+         D8uxW+0D5+c4+xMghq7bk6589UqbK/4o9AbGGqAmZBWY3t2yA3vSAV0JhrUQL6np4+YO
+         y9a9NLAzPMyw9SHJb0W6cvsPvXMzvJ8hkEOOCzgy5zHil9KEaekFbBe3XQdhrF7dmHl4
+         lBix3meAPRSUmnZmCz41HRJ8fBw5NP5/gmNP/vwaqRZchKD2gN7sZi3TqKlx+Qeexiuq
+         p02g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PlJbn4bNHTDXfVbeqo+RJ46MdRo3S8OzIqiYf3bCFFg=;
+        b=aK21RppvpUJSh6BJIBWoXxolBAuJ9mq63RWUwEyh7CxZBU1i6W//G9z08CQ5MrvaKE
+         yWOFEABVdg6ulYkyXBt9VRBAchSUeNtrDtX2aXwZ9NesotqjXlf7DTS+ifh4HfHcFDyk
+         5W/fTaI8rqjAXfWF0/bGzr6F0E2WMkSxoO61DNl5uTU+Tqy1w+0im1us/dk57l+ylY6E
+         CGGJlo3msHzCyektp7ze06IWd7LQ0nknSbz60XYRnfqENNdIrLEWliByZPt8kXOwLKlA
+         34exY5cZcjlMiPbSUjT3vDu7ckUr3tSLqaiwoAYiJQtlM8Ej1/FJyc8zB3b4KKpy31uL
+         pR2Q==
+X-Gm-Message-State: AOAM53261rlfQnuiHB/nHMIrODIx0XYqwjo+3CqKPR+yGYb8ZwBv6IDr
+        Er1/eQYMa/ArJayfm0kmm3Y/ySs49iFNSw==
+X-Google-Smtp-Source: ABdhPJz+lXqy1j4v0OdkAe6JJbzQVDU2J9eFaz4d6ri4ThGwuFuF1m+OsQfkXsek6qRGnIa9uNiEOQ==
+X-Received: by 2002:a17:906:216:b0:711:f623:8bb0 with SMTP id 22-20020a170906021600b00711f6238bb0mr2200799ejd.174.1654687627761;
+        Wed, 08 Jun 2022 04:27:07 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id g12-20020a056402424c00b00431962fe5d4sm2729956edb.77.2022.06.08.04.27.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 04:27:07 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "Ivan T. Ivanov" <ivan.ivanov@linaro.org>,
+        Kumar Gala <galak@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 2/2] ARM: dts: qcom: pm8841: add required thermal-sensor-cells
+Date:   Wed,  8 Jun 2022 13:27:02 +0200
+Message-Id: <20220608112702.80873-2-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220608112702.80873-1-krzysztof.kozlowski@linaro.org>
+References: <20220608112702.80873-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ETWoB/2pglKUOdqk"
-Content-Disposition: inline
-In-Reply-To: <20220607142046.28060-3-jiaxin.yu@mediatek.com>
-X-Cookie: Never give an inch!
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The PM8841 temperature sensor has to define thermal-sensor-cells.
 
---ETWoB/2pglKUOdqk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Fixes: dab8134ca072 ("ARM: dts: qcom: Add PM8841 functions device nodes")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ arch/arm/boot/dts/qcom-pm8841.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Tue, Jun 07, 2022 at 10:20:40PM +0800, Jiaxin Yu wrote:
+diff --git a/arch/arm/boot/dts/qcom-pm8841.dtsi b/arch/arm/boot/dts/qcom-pm8841.dtsi
+index 2caf71eacb52..b5cdde034d18 100644
+--- a/arch/arm/boot/dts/qcom-pm8841.dtsi
++++ b/arch/arm/boot/dts/qcom-pm8841.dtsi
+@@ -24,6 +24,7 @@ temp-alarm@2400 {
+ 			compatible = "qcom,spmi-temp-alarm";
+ 			reg = <0x2400>;
+ 			interrupts = <4 0x24 0 IRQ_TYPE_EDGE_RISING>;
++			#thermal-sensor-cells = <0>;
+ 		};
+ 	};
+ 
+-- 
+2.34.1
 
-> +obj-$(CONFIG_SND_SOC_MT8186) += snd-soc-mt8186-afe.o
-> +obj-$(CONFIG_SND_SOC_MT8186_MT6366_DA7219_MAX98357) += mt8186-mt6366-da7219-max98357.o
-> +obj-$(CONFIG_SND_SOC_MT8186_MT6366_RT1019_RT5682S) += mt8186-mt6366-rt1019-rt5682s.o
-
-This breaks bisection - these drivers are being added to the build here
-but the relevant source files aren't added until later on in the series
-so the commits in between won't build when the relevant Kconfig options
-are selected.  The Makefile and Kconfig updates should be moved into the
-driver patches.
-
---ETWoB/2pglKUOdqk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKghvsACgkQJNaLcl1U
-h9B4mwf9HGDlHmNk1TjFP832KkIO385bqzgKxTOtgibu1i5TUutnTN3f36lv+FUc
-IIi+QaUpFHyArXuTY9vK8ucB4JU4Lv2uPXSngImJwTCIFhcOxgnKymFYhrTXoyPN
-Vjd45Su/+rD0FtSZfyoltQ55n/InkmXhSSM+YnPdAef1fyyRneTXE/XQUf9jGacR
-hIxq2HvnVFk/ts/N6U29ebBTDjISvCax0YUBBhbw494r1QTKFMSRIdSZ9ETOQeep
-WtxnWuVmFNm8WhWK5Fgl2cSCI+NmJ1XvlwJSUsTTf6ogdifjwYF+PyzlqEaVpddT
-0HyYM/5R86UhVW1MY9AqJ1yR4Wg8Wg==
-=2c29
------END PGP SIGNATURE-----
-
---ETWoB/2pglKUOdqk--
