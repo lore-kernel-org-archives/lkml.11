@@ -2,100 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB5C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC2FCCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238233AbiFHLgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 07:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55372 "EHLO
+        id S238252AbiFHLhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 07:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238090AbiFHLg1 (ORCPT
+        with ESMTP id S238102AbiFHLhN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 07:36:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D390012DBE7;
-        Wed,  8 Jun 2022 04:36:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 8 Jun 2022 07:37:13 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE593BBFC;
+        Wed,  8 Jun 2022 04:37:11 -0700 (PDT)
+Received: from localhost.localdomain (unknown [103.15.253.108])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9E0EB82725;
-        Wed,  8 Jun 2022 11:36:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E59C1C34116;
-        Wed,  8 Jun 2022 11:36:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654688181;
-        bh=dP9Oy9WgkXliN2Ot6SgwXyz2r0kt7Q/vFTkP+WlQgx4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AaIGMkPng8ojejS7t6MKm/Ln1HkuE+bxJhOpqA4XVLVC9p6BXaisvA/Ah/aC1T8c5
-         /DjroI2fuvLlbeN0ynkfuRqaXrIGJyVZxYGvEcuW4tnAHrtf8r1jtVmX6Xrk5UdJPm
-         CLQi8Nh8qaPMUwbm56W9WGQUdBzBRrIFjevoNGVY=
-Date:   Wed, 8 Jun 2022 13:36:17 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v1 2/2] spi: Use device_find_first_child() instead of
- custom approach
-Message-ID: <YqCJsRqrCRiIBm1P@kroah.com>
-References: <20220607202058.8304-1-andriy.shevchenko@linux.intel.com>
- <20220607202058.8304-2-andriy.shevchenko@linux.intel.com>
+        (Authenticated sender: shreeya)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 561CD66017E5;
+        Wed,  8 Jun 2022 12:37:07 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1654688230;
+        bh=Sirt+uLFS1Q/aJAoqeMCgbjoXjgaef+e/EKDmiOX09s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=RNod0FU21qvG1HhUblIJ8Q/SmSLx3iBjxEv/xBEprOaSsJSTQDKsFh0ERzkGbOTfA
+         1fq0PPEyTXORScsUSj2UM4OGjy7aH6DYWfzSoXlNbJRfZ6rrbj/ZShFeAvOLQVJ/a0
+         DRKUYfDKowm1WJJBej/YfrK2/KGojt0agYGBVnaxjdSRQySDMHhAvxI7dK7j1gd74E
+         kbPsaeIjhu0v/5snB+0XuT/McDW+VwfXGy2MB1wjIpSgiSB4dSnGNyNEmHXNU+g69K
+         uThprhod42gGJr3z4tU64b1ZkYpH7fyXdx6S0Z6m0nXWES71SKH4wOzMY1IwqrzC7q
+         KDHY5VJ3q45oQ==
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        Zhigang.Shi@liteon.com, krisman@collabora.com
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        alvaro.soliverez@collabora.com, andy.shevchenko@gmail.com,
+        digetx@gmail.com, Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH v5 0/2] Add LTRF216A Driver
+Date:   Wed,  8 Jun 2022 17:05:51 +0530
+Message-Id: <20220608113553.32083-1-shreeya.patel@collabora.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607202058.8304-2-andriy.shevchenko@linux.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 11:20:58PM +0300, Andy Shevchenko wrote:
-> We have already a helper to get the first child device, use it and
-> drop custom approach.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/spi/spi.c | 9 ++-------
->  1 file changed, 2 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-> index ea09d1b42bf6..87dc8773108b 100644
-> --- a/drivers/spi/spi.c
-> +++ b/drivers/spi/spi.c
-> @@ -2613,11 +2613,6 @@ int spi_slave_abort(struct spi_device *spi)
->  }
->  EXPORT_SYMBOL_GPL(spi_slave_abort);
->  
-> -static int match_true(struct device *dev, void *data)
-> -{
-> -	return 1;
-> -}
-> -
->  static ssize_t slave_show(struct device *dev, struct device_attribute *attr,
->  			  char *buf)
->  {
-> @@ -2625,7 +2620,7 @@ static ssize_t slave_show(struct device *dev, struct device_attribute *attr,
->  						   dev);
->  	struct device *child;
->  
-> -	child = device_find_child(&ctlr->dev, NULL, match_true);
-> +	child = device_find_first_child(&ctlr->dev);
->  	return sprintf(buf, "%s\n",
->  		       child ? to_spi_device(child)->modalias : NULL);
->  }
+This patchset adds support for ltrf216a Ambient Light Sensor
+and documents the DT bindings for the same.
 
-Horrible naming convention asside, what is this really showing?  I do
-not see this documented in Documentation/ABI/ anywhere, so can it just
-be dropped entirely?
 
-Ah, it's in Documentation/spi/spi-summary.rst not where it belongs...
+Changes in v5
+  - Add power management support.
+  - Add reset functionality.
+  - Use readx_poll_timeout() to get data.
+  - Cleanup some of the redundant code.
+  - Update int_time_fac after I2C write is successful.
+  - Rename mutex to lock.
+  - Use Reverse Xmas tree pattern for all variable definitions.
+  - Improve error handling messages and add error codes.
+  - Add one more MODULE_AUTHOR.
+  - Remove cleardata which was reading data for infrared light.
+  - Remove patch for deprecated vendor prefix [PATCH v4 3/3].
+  - Remove deprecated string from DT binding document.
 
-Looks like "any" of the child devices could match here, so it's just
-finding the first one by default.  So you aren't explicitly asking for
-the real first device, you could return the last one as well, and it
-would still work as there is just "one" device in this list from what I
-can tell.
+Changes in v4
+  - Add more descriptive comment for mutex lock
+  - Fix mutex locking in read_raw()
+  - Use i2c_smbus_read_i2c_block_data()
 
-So is does this really deserve a new driver core api call?
+Changes in v3
+  - Use u16 instead of u8 for int_time_fac
+  - Reorder headers in ltrf216a.c file
+  - Remove int_time_mapping table and use int_time_available
+  - Fix indentation in the bindings file.
 
-thanks,
+Changes in v2
+  - Add support for 25ms and 50ms integration time.
+  - Rename some of the macros as per names given in datasheet
+  - Add a comment for the mutex lock
+  - Use read_avail callback instead of attributes and set the
+    appropriate _available bit.
+  - Use FIELD_PREP() at appropriate places.
+  - Add a constant lookup table for integration time and reg val
+  - Use BIT() macro for magic numbers.
+  - Improve error handling at few places.
+  - Use get_unaligned_le24() and div_u64()
+  - Use probe_new() callback and devm functions
+  - Return errors in probe using dev_err_probe()
+  - Use DEFINE_SIMPLE_DEV_PM_OPS()
+  - Correct the formula for lux to use 0.45 instead of 0.8
+  - Add interrupt and power supply property in DT bindings
+  - Add vendor prefix name as per the alphabetical order.
 
-greg k-h
+
+Shreeya Patel (2):
+  dt-bindings: Document ltrf216a light sensor bindings
+  iio: light: Add support for ltrf216a sensor
+
+ .../bindings/iio/light/liteon,ltrf216a.yaml   |  50 ++
+ drivers/iio/light/Kconfig                     |  10 +
+ drivers/iio/light/Makefile                    |   1 +
+ drivers/iio/light/ltrf216a.c                  | 441 ++++++++++++++++++
+ 4 files changed, 502 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
+ create mode 100644 drivers/iio/light/ltrf216a.c
+
+-- 
+2.30.2
+
