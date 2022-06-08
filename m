@@ -2,80 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 826B8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 22:55:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F15CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 22:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233820AbiFHWzE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 18:55:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37384 "EHLO
+        id S232392AbiFHW5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 18:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231620AbiFHWya (ORCPT
+        with ESMTP id S231620AbiFHW5d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 18:54:30 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748AF625A
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 15:54:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654728862; x=1686264862;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=hi7TghKYdYkjm4GjlEn/LxQ5ri3t6qc1FEgYaMhqY6E=;
-  b=RfAbIhS263aipRCauLfY1irhYCsxo5D8Ic3Ye7oB+dVBZ59qdT+XWxEn
-   pF38cq1KcO8N/YKWs6rZ++0hTBoWzD9xanKXSnwruHRvD3h+cQ8GPIi77
-   ck/BodQa6o5NnwN7ZVWiW8b7dmKRDwVuuHoowtwLXJZ+on1eq/fhWNVOY
-   3hFVEGZ1keGVRehAC1QwO1r3y6G8Yl7X0y2dpDBepxtfF58ybVR2E69j8
-   sFj/w3Bywui+d953ABpu5kzzW0uiXcwrZJ4cAsEosqsl/DmGIT6pCotmT
-   iA/nuNomNYy/DhN9CcYUNh674O2S4kj5V52RqcEGAp4pYlHoMT1EGzT6H
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="277898598"
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="277898598"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 15:54:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="615605908"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 08 Jun 2022 15:54:06 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nz4Yv-000FCL-JB;
-        Wed, 08 Jun 2022 22:54:05 +0000
-Date:   Thu, 9 Jun 2022 06:53:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [jpoimboe:reserve-brk-2 1/1] ld.lld: warning: section type mismatch
- for .brk_reservation
-Message-ID: <202206090620.HpoizvXw-lkp@intel.com>
+        Wed, 8 Jun 2022 18:57:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3447981E
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 15:57:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5AED7B82AC0
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 22:57:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8C84C34116;
+        Wed,  8 Jun 2022 22:57:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654729047;
+        bh=mzp8Yvqgh77sLpM5RG27L0HnoG7RYKGHw8dSZJRvpCk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KP4lY+aTYqYmLAWToFFs2Z3ZN/FKmkEriopLPxFHxmopoF4zbvGBX0cUmY2iriuve
+         HD8q19wzSKb6oitxmQvT/zWwTGsNoOHWQKuzjRyzLHcGGKZqPg1qajv97tFrcJxBEP
+         GBQZNvoP8RRJDQ546xgGKXrenKIu11cBIVanA1DeDO2vaj71iYEiE32hCzNAQpv5FP
+         g4M3IuovwFMJrtj9I6N0TnKK2xxd6Z23tyEXXGVtH9J5xCWiMIGQDfsMxqA1+CYST/
+         UdjZNvv7yO+CixXdqfWRhGq8XDTSGgk/bYQpOly7XqkhTknztVWJTSsqksPWqwbI41
+         JALnmvdKSFuwg==
+Date:   Wed, 8 Jun 2022 15:57:24 -0700
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Joe Damato <jdamato@fastly.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        jiangshanlai@gmail.com, bp@suse.de, brgerst@gmail.com
+Subject: Re: [PATCH] x86/mm: Fix RESERVE_BRK() for older binutils
+Message-ID: <20220608225724.2drhxj5pt2w5gbaf@treble>
+References: <a802eefebee4d2c01f479a7d3f2008fdd32ce270.1654702810.git.jpoimboe@kernel.org>
+ <CALALjgy6=Ebi-k-YrSsEozW3Yy4KJGWLiH_5M8i4neEd9ozj_A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+In-Reply-To: <CALALjgy6=Ebi-k-YrSsEozW3Yy4KJGWLiH_5M8i4neEd9ozj_A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git reserve-brk-2
-head:   a802eefebee4d2c01f479a7d3f2008fdd32ce270
-commit: a802eefebee4d2c01f479a7d3f2008fdd32ce270 [1/1] x86/mm: Fix RESERVE_BRK() for older binutils
-config: x86_64-randconfig-a001 (https://download.01.org/0day-ci/archive/20220609/202206090620.HpoizvXw-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b92436efcb7813fc481b30f2593a4907568d917a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git/commit/?id=a802eefebee4d2c01f479a7d3f2008fdd32ce270
-        git remote add jpoimboe https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git
-        git fetch --no-tags jpoimboe reserve-brk-2
-        git checkout a802eefebee4d2c01f479a7d3f2008fdd32ce270
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Thu, Jun 09, 2022 at 01:12:09AM +0300, Joe Damato wrote:
+> I applied the patch on top of commit 58f9d52ff689 ("Merge tag
+> 'net-5.19-rc1' of
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net") and the kernel
+> now builds successfully for me.
+> 
+> The resulting kernel boots fine on the machine, as well.
+> 
+> Tested-by: Joe Damato <jdamato@fastly.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
+Thanks.  Unfortunately, the LLVM linker doesn't like the patch...
 
 >> ld.lld: warning: section type mismatch for .brk_reservation
    >>> arch/x86/built-in.a(kernel/setup.o):(.brk_reservation): SHT_PROGBITS
@@ -93,5 +79,4 @@ All warnings (new ones prefixed by >>):
    >>> output section .brk: SHT_NOBITS
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Josh
