@@ -2,75 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F8D1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:56:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235601AbiFHJ4K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34186 "EHLO
+        id S235546AbiFHJ4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235573AbiFHJzt (ORCPT
+        with ESMTP id S235581AbiFHJzm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:55:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 284AB24F2F;
-        Wed,  8 Jun 2022 02:28:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF7ADB8261A;
-        Wed,  8 Jun 2022 09:28:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22A42C341C0;
-        Wed,  8 Jun 2022 09:28:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654680531;
-        bh=wOVr/dCNZRUfPSwMKEqJLx2UBk01tuUU75xmtsI1B0Q=;
-        h=From:To:Cc:Subject:Date:From;
-        b=r9UxDHNEYlVWkZOPxRH6/ovMv7Lphv18/HAcUU6owe+Ec/pIeGiNW9c1YhmMIM7Jb
-         0DnndUrpkfpr65b7w0vU3JwN2OACu0o+He3L5JCtYUIkoM3bkgIgBtHotCtHNTnzbH
-         GVCegA0V9268mLWJLHwuGp6BMrhm5CasTzdJZXlfOAY8rA778cWvfhe/faI3p6svYy
-         Glru8LgrtAE0uGXeinddoq26itBnC8QeiuuR6zZp8kCdN7hPKbFsImm0+Jy2XGbc8m
-         NZn3G4exFCaNqy/7cMMIfBYT8S9Nk89+vNljxi6oT/JmYGq7H+0AUKsE3JCeguAXeJ
-         s0hPy3C364jEg==
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: [GIT PULL] tpmdd updates for v5.19-rc2
-Date:   Wed,  8 Jun 2022 12:26:46 +0300
-Message-Id: <20220608092646.3074700-1-jarkko@kernel.org>
-X-Mailer: git-send-email 2.36.1
+        Wed, 8 Jun 2022 05:55:42 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC32A1275B
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:28:50 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id x5so21158545edi.2
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 02:28:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tYlyFzass8h6qw1uVJCGkyhUXjbk3smDlrzXeVxT2u0=;
+        b=nkmMdQf5gBkPPQncIiRbX4OmocdVvb04QgoCyoOvb8/BiZwuwtHzO3RYNw51QcVBLn
+         FUDNeSqLLD0qO2q19UR6R3rElVE/6r+TzOl8iFFLxMGm+f9TKQKPmS9CjnbvO4KEaxI9
+         jh1wHL6AsGDk2UTWVzk6V6D5Yie/8QFRJ3me7cKSRKv7+q9LE9L1KGKbADEBUDnyevjO
+         dcoTdsctg5XxZ89ef8k9GYLUvvZSeXpYS79pvU3vGvVXxDvHlyQcqEP/V6Y89LA3RQb1
+         ndcc/WGZ7LAgsabiri48VMWywJfIz1fEJb8CYw7jZzOYumL5/Qt60W3Ghlr5GznqczUM
+         nReA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tYlyFzass8h6qw1uVJCGkyhUXjbk3smDlrzXeVxT2u0=;
+        b=ygVuay+A0HbIQTfdhLi2RTnrxW/UeZfSfQb7pAe8r6dbuZdL3ytahh0YkoAiNCQrsJ
+         rEVvuJNKsBLoSGtNcEaGTFTbT8Sxm5dWrzw7PHKhC2UxTEI/RFO3xCpf7x6cD258h0jF
+         Sp6dq+1yKZmn1J+AKx9wLa9t+wfNb9PxYmj1EhNwNUOEJ7d2eS50MLK+4yJhP5mmTLFU
+         lsXu/5gPo5DDtVHX1KBJv6uAGW7+uRskbu4RyBNJ7ebxiUV/jLoFv1p01UHIFHqT/cw/
+         Ogrx+vUcb8NM0lrGTWcQWEhHNsSKt0o8hBcunJoZtlBcuePYtaeXLv8uN5GwOWlpOELF
+         LX1g==
+X-Gm-Message-State: AOAM533fzjxNoZFUIkLTZ8qjj8yyDL4YNyP47z+WfcDcJ1J7UXjA+rfE
+        ZxM4bY8dYG5JieyooSYJkX35CA==
+X-Google-Smtp-Source: ABdhPJxSvoedkDPLE3K7WO2Ng7V7WDi6E5/s8bE2TvqYyjk3hC0W2h/BYjqHyqu0LAowzu3WzqtrZA==
+X-Received: by 2002:a05:6402:c44:b0:431:52cc:f933 with SMTP id cs4-20020a0564020c4400b0043152ccf933mr18473131edb.41.1654680529297;
+        Wed, 08 Jun 2022 02:28:49 -0700 (PDT)
+Received: from [192.168.0.191] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id o13-20020a17090608cd00b006fedcb78854sm8876898eje.164.2022.06.08.02.28.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 02:28:48 -0700 (PDT)
+Message-ID: <e8f8f42b-9df3-d9a1-893e-0f972e27ef80@linaro.org>
+Date:   Wed, 8 Jun 2022 11:28:47 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: virt_to_phys outside array bounds warning (GCC 12.1.0)
+Content-Language: en-US
+To:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Cc:     =?UTF-8?Q?Beno=c3=aet_Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org
+References: <YqBgWoXQmzVczRDo@debian.me>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <YqBgWoXQmzVczRDo@debian.me>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 9886142c7a2226439c1e3f7d9b69f9c7094c3ef6:
+On 08/06/2022 10:39, Bagas Sanjaya wrote:
+> Hi everyone,
+> 
+> When cross-compiling arm 5.19-rc1 kernel using GCC 12.1.0 (armv7 with neon
+> fpu, multi_v7_defconfig), I got outside array bounds warning pointing to
+> virt_to_phys() macro:
+> 
 
-  Merge tag 'input-for-v5.19-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input (2022-06-07 15:00:29 -0700)
+Thanks for the report!
 
-are available in the Git repository at:
+I think this was already reported:
+https://lore.kernel.org/all/CAK8P3a3X0UwQiVNZqvGmSKi8BX6zg=k07+9Q3rDGqHVkc8Hdsg@mail.gmail.com/
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/ tags/tpmdd-next-v5.19-rc2
+Anyway, for the future:
+I don't think the CC list matches the problem. Please bisect this issue
+(since it is reproducible build time, it should be straightforward) to
+find offending commit and then Cc responsible people and maintainers
+(scripts/get_maintainer.pl). Ccing half-random people might not get
+necessary attention.
 
-for you to fetch changes up to 967a4b757b51164a3dc3307234fcb48b7be2745b:
-
-  KEYS: trusted: tpm2: Fix migratable logic (2022-06-08 12:13:26 +0300)
-
-----------------------------------------------------------------
-A bug fix for migratable (whether or not a key is tied to the TPM chip
-soldered to the machine) handling for TPM2 trusted keys.
-
-----------------------------------------------------------------
-david.safford@gmail.com (1):
-      KEYS: trusted: tpm2: Fix migratable logic
-
- security/keys/trusted-keys/trusted_tpm2.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Best regards,
+Krzysztof
