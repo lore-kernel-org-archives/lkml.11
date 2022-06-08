@@ -2,169 +2,408 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C40C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC3ECCA482
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233894AbiFHGAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 02:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33640 "EHLO
+        id S234104AbiFHGBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 02:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350798AbiFHF7e (ORCPT
+        with ESMTP id S237266AbiFHFut (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:59:34 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5626D20A5E2
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 21:46:07 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2583Q2OC004968;
-        Wed, 8 Jun 2022 04:41:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=rJ6WQDvo/ghYzvKy2CXcM9QlclDOXoOl2dxAYdwMlz8=;
- b=KTQFE8GSa5W244tRx2pd/l8ZqUsfbtlXIUW4C8GQYFcrJYNayDLlxcWSgKSBxZkvt89G
- ktsBL0OaqoEKzw8VzFncKTpLZ6mu2ztjioEiBLMkGwOzUTDAOCt4Y5KnsaUdSClR68MY
- oDKuedJPQWLUzK7qg8y0NOD6IRIavRONrxGaBWM01pjqXK8+ibj0gaxXDvokOhvxuRS1
- 3z97L1n8zk0KFobRGiZdPp1M9huSDMdx8TxVw6WInEuSsCYvTSfs+w2azkMuFxJ+Q+rH
- xZUQLf4ZvqjdzfAl1I2uEheYK+pTBYUz/tVeGlKpNgOiR2X9QGSMtzE2mqw5VL2pvsW5 YA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjkv116mc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jun 2022 04:41:42 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2584QnsJ032205;
-        Wed, 8 Jun 2022 04:41:42 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjkv116kh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jun 2022 04:41:41 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2584JurH006904;
-        Wed, 8 Jun 2022 04:41:39 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma01fra.de.ibm.com with ESMTP id 3gfy19bkny-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jun 2022 04:41:39 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2584fbm946924056
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 8 Jun 2022 04:41:37 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4E1C85204E;
-        Wed,  8 Jun 2022 04:41:37 +0000 (GMT)
-Received: from [9.43.53.124] (unknown [9.43.53.124])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id E1DF252050;
-        Wed,  8 Jun 2022 04:41:30 +0000 (GMT)
-Message-ID: <21b95ac3-4b3c-3455-93c6-8257fcbff527@linux.ibm.com>
-Date:   Wed, 8 Jun 2022 10:11:29 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: RFC: Memory Tiering Kernel Interfaces (v3)
-Content-Language: en-US
-To:     Tim Chen <tim.c.chen@linux.intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
-        Ying Huang <ying.huang@intel.com>
-Cc:     Wei Xu <weixugc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>, Linux MM <linux-mm@kvack.org>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-References: <CAAPL-u-dFp7PwPH6DfbYdnY8xaGsHz3tRQ0CPGVkiqURvdN8=A@mail.gmail.com>
- <c453491b-6dc1-a008-d6f4-3c806eebd2ef@linux.ibm.com>
- <CAAPL-u_NwJuxWe7Wfn3A1sut+QwEmoZh2QUBQKNPq4bU=NjybA@mail.gmail.com>
- <1281d918c07b05ac82aee290018ad08d212e0aaa.camel@intel.com>
- <20220530135043.00001e88@Huawei.com>
- <d99836a86fea8a975ba207d1c874ee062836004d.camel@linux.intel.com>
-From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
-In-Reply-To: <d99836a86fea8a975ba207d1c874ee062836004d.camel@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: v_hnSuXru5-wSsQvbeDNUH7gYzDTmtde
-X-Proofpoint-ORIG-GUID: SYNUJXIZhqU9pu86pYCOxFy7_gM2EE7O
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-08_01,2022-06-07_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- impostorscore=0 clxscore=1015 malwarescore=0 bulkscore=0 spamscore=0
- adultscore=0 phishscore=0 mlxscore=0 suspectscore=0 mlxlogscore=999
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206080019
+        Wed, 8 Jun 2022 01:50:49 -0400
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE87927CD7F
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 20:30:27 -0700 (PDT)
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220608033025epoutp039f22f3bc8e376830701bcfce1f9628f4~2h53iKaDd0369103691epoutp03X
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 03:30:25 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220608033025epoutp039f22f3bc8e376830701bcfce1f9628f4~2h53iKaDd0369103691epoutp03X
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1654659025;
+        bh=guH8loHJxxbGUUwZG4XzfpB4NPSIv0UYz2OMW4d7Gvc=;
+        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
+        b=ceJMBmjVNIG28HHI7cjGQNgrt/Khgj/T5siC4axjYJ96rpdPSjgjg9HUykpw7j0uI
+         ga09fKaQLgiSsV37ynQkHreVynpHn1XOvzU8Jxepi3/fZwP1WXmQ8Dp0hcBARGkjn6
+         XkFhz7JTqjpL/Q5+YFUKpMDWt6muwN0/rjNQ3tqY=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20220608033024epcas2p31aed9e5e988b727bc7e7078b168ebbdd~2h52naSmc0952709527epcas2p3z;
+        Wed,  8 Jun 2022 03:30:24 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.100]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4LHt5q0F4mz4x9QF; Wed,  8 Jun
+        2022 03:30:23 +0000 (GMT)
+X-AuditID: b6c32a45-a79ff70000002755-69-62a017cedbbb
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        CC.CE.10069.EC710A26; Wed,  8 Jun 2022 12:30:22 +0900 (KST)
+Mime-Version: 1.0
+Subject: Re: [PATCH v2 1/5] dt-bindings: pci: Add ARTPEC-8 PCIe controller
+Reply-To: wangseok.lee@samsung.com
+Sender: Wangseok Lee <wangseok.lee@samsung.com>
+From:   Wangseok Lee <wangseok.lee@samsung.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Wangseok Lee <wangseok.lee@samsung.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "kishon@ti.com" <kishon@ti.com>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
+        "lars.persson@axis.com" <lars.persson@axis.com>
+CC:     "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
+        "kw@linux.com" <kw@linux.com>,
+        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
+        "kernel@axis.com" <kernel@axis.com>,
+        Moon-Ki Jun <moonki.jun@samsung.com>,
+        Sang Min Kim <hypmean.kim@samsung.com>,
+        Dongjin Yang <dj76.yang@samsung.com>,
+        Yeeun Kim <yeeun119.kim@samsung.com>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+In-Reply-To: <0ad94a8f-eec7-ab76-3b2d-99d4d3fbf21b@linaro.org>
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20220608033022epcms2p8874fe3a5c8c56bfe85e8e8fb0261efca@epcms2p8>
+Date:   Wed, 08 Jun 2022 12:30:22 +0900
+X-CMS-MailID: 20220608033022epcms2p8874fe3a5c8c56bfe85e8e8fb0261efca
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA11Te0xTZxzdvV9fwGouFfVbXRxeghHKo7cD+rGAg6FLdTMimDi3LHgtd4CU
+        26YtOjFxDaNzMlDMgrBuK7AqaEEKDEaFMZPCYAnSzcmEOV5RUBAfczM4oJi1tOiy/05Ofuf8
+        zvkeAiCa4okFOaye0bK0iuT5c77rDkORznXVB6QOezw6W5iNZhxhqKrHyUWdlXU4+qL8CkB3
+        HCaA/ioKRb9MlfDQjGmMh7pm2/jIULLIRT33HgF0ue8Cjq51fMVDA+Y+HiqzznHQvcVpPnJa
+        cpCxq4ePLo38BNBI9wAHLbS58KS1igZzA6YYakxVVLfkK1qsJ3iKkevf8xSTgxW44tuzHylO
+        tloxRd9wO674u2VDqv+7uQnZDJ3JaIMZVqnOzGGzEsm30jNSMmLjpFQkFY/kZDBL5zGJ5Na3
+        UyPfzFG5O5LBh2hVvptKpXU6MnpLgladr2eCs9U6fSLJaDJVGrkmSkfn6fLZrCiW0b9GSaWy
+        WPfg/txsi6WIr5lrwT58YGkDBqy2ESvG/ASQiIGlTZX8YsxfICLsGHRNmPBiTCAQEoFwyb7a
+        M7Oa2AHLhx/jHiwiSGhvMAMvHw2Hzn/G9WAeEQmfWmZ4Hp8gohHAzuGLy6aA6OHAkeNP+N5t
+        Qlh5fIrjxethe13bcgo/Ygusma7hevnN8J/aUuDFa+Dv9ff5K/hhb5UvdRA0jg34ZgLhxHyn
+        jxfD6kmHz+covLy0iHuxAYOnxhlPMehObR961UMLiZ2w1ty3HIdDhEJjcYUv2la4ODi6LAWE
+        BNbWzAKPFBBh0NYR7XUJgT03OCulDM2L/P9jQKyCn3YvPePt5klfmE3QfOESKMNCTM8P2vSf
+        Xabnu6oxYMXWMhpdXhajk2moZ7erVOe1YMvvPXybHfv8/p9RDgwXYA4MCgAZJHxpb9UBkTCT
+        PlLAaNUZ2nwVo3Ngse6Wp4F4jVLt/jCsPoOKiZfGxMVRclmsVE6uE+7IbKJFRBatZ3IZRsNo
+        V3S4wE9swFv3266c2275oOTj3yruTHQNpqal+626HnZEkj7y8jdE681XAo7VjLlct3ptw49k
+        GbY9nySMFilLTK4NAfM/fp1LyULgkDV9gH9Ge03V3lZ/pjACHTxpbDp/6wHnh7tjsVffeb/g
+        EHE6TDIbdy6idS/lZIK+VIb+uk/8R6BlqvRmuHUTlbYQDMuTnD+P14GUwGntDfZJMre9YufF
+        6LldR7nSF16/eywc7eIULNQvJUnE7D6JY3RCFLDnsIu6KptxRq0H/casjm3Dp572px0cHO/f
+        XJjSnPy4/rDfbYGkZsG6e0KJTjhab0tn1L1lzQ/b522hu+Xbk+Th71W88eLG5AjWQHJ02TQV
+        DrQ6+l+nvOhReAQAAA==
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220603015431epcms2p6203908cebe6a320854136559a32b54cb
+References: <0ad94a8f-eec7-ab76-3b2d-99d4d3fbf21b@linaro.org>
+        <20220603015431epcms2p6203908cebe6a320854136559a32b54cb@epcms2p6>
+        <20220603022353epcms2p5d83a4a7d95584ce6a65a63356cd46e76@epcms2p5>
+        <CGME20220603015431epcms2p6203908cebe6a320854136559a32b54cb@epcms2p8>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/8/22 12:55 AM, Tim Chen wrote:
-> On Mon, 2022-05-30 at 13:50 +0100, Jonathan Cameron wrote:
->>
->>> When discussed offline, Tim Chen pointed out that with the proposed
->>> interface, it's unconvenient to know the position of a given memory tier
->>> in all memory tiers.  We must sort "rank" of all memory tiers to know
->>> that.  "possible" file can be used for that.  Although "possible" file
->>> can be generated with a shell script, it's more convenient to show it
->>> directly.
->>>
->>> Another way to address the issue is to add memtierN/pos for each memory
->>> tier as suggested by Tim.  It's readonly and will show position of
->>> "memtierN" in all memory tiers.  It's even better to show the relative
->>> postion to the default memory tier (DRAM with CPU). That is, the
->>> position of DRAM memory tier is 0.
->>>
->>> Unlike memory tier device ID or rank, the position is relative and
->>> dynamic.
->>
->> Hi,
->>
->> I'm unconvinced.  This is better done with a shell script than
->> by adding ABI we'll have to live with for ever..
->>
->> I'm no good at shell scripting but this does the job
->> grep "" tier*/rank | sort -n -k 2 -t :
->>
->> tier2/rank:50
->> tier0/rank:100
->> tier1/rank:200
->> tier3/rank:240
->>
->> I'm sure someone more knowledgeable will do it in a simpler fashion still.
->>
->>
-> 
-> You can argue that
-> 
-> $ cat /sys/devices/system/cpu/cpu1/topology/core_siblings
-> f
-> $ cat /sys/devices/system/cpu/cpu1/topology/core_siblings_list
-> 0-3
-> 
-> provide exactly the same information and we should get rid of
-> core_siblings_list.  I think core_siblings_list exists to make
-> it easier for a human, so he/she doesn't have to parse the mask,
-> or write a script to find out the ids of CPUs who are siblings.
-> 
-> I think in the same spirit, having an interface to allow a
-> human to quickly see the hierachical relationship of tiers
-> relative to each other is helpful.
-> 
-
-We can add that later if we find applications requiring this. I kind of 
-have the feeling that we are adding too much based on possible ways 
-memory tiers could be used in the future. For now we can look at doing 
-bare minimum to address the current constraints and drive more user 
-visible changes later based on application requirements.
-
--aneesh
-
+On=C2=A006/06/2022=C2=A019:12,=C2=A0Krzysztof=C2=A0Kozlowski=C2=A0wrote:=0D=
+=0A>=C2=A0On=C2=A003/06/2022=C2=A004:23,=C2=A0Wangseok=C2=A0Lee=C2=A0wrote:=
+=0D=0A>>=C2=A0Add=C2=A0description=C2=A0to=C2=A0support=C2=A0Axis,=C2=A0ART=
+PEC-8=C2=A0SoC.=0D=0A>>=C2=A0ARTPEC-8=C2=A0is=C2=A0the=C2=A0SoC=C2=A0platfo=
+rm=C2=A0of=C2=A0Axis=C2=A0Communications=0D=0A>>=C2=A0and=C2=A0PCIe=C2=A0co=
+ntroller=C2=A0is=C2=A0designed=C2=A0based=C2=A0on=C2=A0Design-Ware=C2=A0PCI=
+e=C2=A0controller.=0D=0A>>=C2=A0=0D=0A>>=C2=A0changes=C2=A0since=C2=A0v1=C2=
+=A0:=0D=0A>=C2=A0=0D=0A>=C2=A0Changelog=C2=A0goes=C2=A0after=C2=A0---=C2=A0=
+.=0D=0A>=C2=A0=0D=0A=C2=A0=0D=0AOk,=C2=A0i=C2=A0check=C2=A0the=C2=A0linux=
+=C2=A0commit=C2=A0style.=0D=0AI=C2=A0will=C2=A0fix=C2=A0it.=0D=0A=C2=A0=0D=
+=0A>>=C2=A0-'make=C2=A0dt_binding_check'=C2=A0result=C2=A0improvement=0D=0A=
+>>=C2=A0-Add=C2=A0the=C2=A0missing=C2=A0property=C2=A0list=0D=0A>>=C2=A0-Al=
+ign=C2=A0the=C2=A0indentation=C2=A0of=C2=A0continued=C2=A0lines/entries=0D=
+=0A>>=C2=A0=0D=0A>>=C2=A0Signed-off-by:=C2=A0Wangseok=C2=A0Lee=C2=A0<wangse=
+ok.lee=40samsung.com>=0D=0A>>=C2=A0---=0D=0A>>=C2=A0=C2=A0.../bindings/pci/=
+axis,artpec8-pcie-ep.yaml=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=7C=C2=A0108=C2=A0++++++++++++++++++=0D=0A>>=C2=A0=C2=A0.../devicetre=
+e/bindings/pci/axis,artpec8-pcie.yaml=C2=A0=7C=C2=A0123=C2=A0++++++++++++++=
++++++++=0D=0A>>=C2=A0=C2=A02=C2=A0files=C2=A0changed,=C2=A0231=C2=A0inserti=
+ons(+)=0D=0A>>=C2=A0=C2=A0create=C2=A0mode=C2=A0100644=C2=A0Documentation/d=
+evicetree/bindings/pci/axis,artpec8-pcie-ep.yaml=0D=0A>>=C2=A0=C2=A0create=
+=C2=A0mode=C2=A0100644=C2=A0Documentation/devicetree/bindings/pci/axis,artp=
+ec8-pcie.yaml=0D=0A>>=C2=A0=0D=0A>>=C2=A0diff=C2=A0--git=C2=A0a/Documentati=
+on/devicetree/bindings/pci/axis,artpec8-pcie-ep.yaml=C2=A0b/Documentation/d=
+evicetree/bindings/pci/axis,artpec8-pcie-ep.yaml=0D=0A>>=C2=A0new=C2=A0file=
+=C2=A0mode=C2=A0100644=0D=0A>>=C2=A0index=C2=A00000000..3512e38=0D=0A>>=C2=
+=A0---=C2=A0/dev/null=0D=0A>>=C2=A0+++=C2=A0b/Documentation/devicetree/bind=
+ings/pci/axis,artpec8-pcie-ep.yaml=0D=0A>>=C2=A0=40=40=C2=A0-0,0=C2=A0+1,10=
+8=C2=A0=40=40=0D=0A>>=C2=A0+=23=C2=A0SPDX-License-Identifier:=C2=A0(GPL-2.0=
+-only=C2=A0OR=C2=A0BSD-2-Clause)=0D=0A>>=C2=A0+%YAML=C2=A01.2=0D=0A>>=C2=A0=
++---=0D=0A>>=C2=A0+=24id:=C2=A0https://protect2.fireeye.com/v1/url?k=3D6948=
+615e-08c37447-6949ea11-74fe485cbfec-fea93affd4665d88&q=3D1&e=3D501044d4-19c=
+b-42be-bca2-b59852a39c26&u=3Dhttp%3A%2F%2Fdevicetree.org%2Fschemas%2Fpci%2F=
+axis%2Cartpec8-pcie-ep.yaml%23=0D=0A>>=C2=A0+=24schema:=C2=A0https://protec=
+t2.fireeye.com/v1/url?k=3D629fe254-0314f74d-629e691b-74fe485cbfec-f3d83f3fc=
+a174eef&q=3D1&e=3D501044d4-19cb-42be-bca2-b59852a39c26&u=3Dhttp%3A%2F%2Fdev=
+icetree.org%2Fmeta-schemas%2Fcore.yaml%23=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+titl=
+e:=C2=A0ARTPEC-8=C2=A0SoC=C2=A0PCIe=C2=A0Controller=C2=A0Device=C2=A0Tree=
+=C2=A0Bindings=0D=0A>=C2=A0=0D=0A>=C2=A0s/Device=C2=A0Tree=C2=A0Bindings//=
+=0D=0A>=0D=0A=C2=A0=0D=0AI=C2=A0will=C2=A0remove=C2=A0it.=0D=0A=C2=A0=0D=0A=
+>>=C2=A0+=0D=0A>>=C2=A0+maintainers:=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0Jespe=
+r=C2=A0Nilsson=C2=A0<jesper.nilsson=40axis.com>=0D=0A>>=C2=A0+=0D=0A>>=C2=
+=A0+description:=C2=A0=7C+=0D=0A>>=C2=A0+=C2=A0=C2=A0This=C2=A0PCIe=C2=A0en=
+d-point=C2=A0controller=C2=A0is=C2=A0based=C2=A0on=C2=A0the=C2=A0Synopsys=
+=C2=A0DesignWare=C2=A0PCIe=C2=A0IP=0D=0A>>=C2=A0+=C2=A0=C2=A0and=C2=A0thus=
+=C2=A0inherits=C2=A0all=C2=A0the=C2=A0common=C2=A0properties=C2=A0defined=
+=C2=A0in=C2=A0snps,dw-pcie-ep.yaml.=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+allOf:=0D=
+=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0=24ref:=C2=A0/schemas/pci/snps,dw-pcie-ep.ya=
+ml=23=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+properties:=0D=0A>>=C2=A0+=C2=A0=C2=A0co=
+mpatible:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0const:=C2=A0axis,artpec8-pc=
+ie-ep=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0reg:=0D=0A>>=C2=A0+=C2=A0=C2=
+=A0=C2=A0=C2=A0items:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=
+=C2=A0description:=C2=A0Data=C2=A0Bus=C2=A0Interface=C2=A0(DBI)=C2=A0regist=
+ers.=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0description:=
+=C2=A0Data=C2=A0Bus=C2=A0Interface=C2=A0(DBI2)=C2=A0registers.=0D=0A>>=C2=
+=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0description:=C2=A0PCIe=C2=A0=
+address=C2=A0space=C2=A0region.=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0re=
+g-names:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0items:=0D=0A>>=C2=A0+=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0dbi=0D=0A>>=C2=A0+=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0dbi2=0D=0A>>=C2=A0+=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0addr_space=0D=0A>>=C2=A0+=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0interrupts:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=
+=A0maxItems:=C2=A01=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0interrupts-nam=
+es:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0items:=0D=0A>>=C2=A0+=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0intr=0D=0A>=C2=A0=0D=0A>=C2=A0Re=
+move=C2=A0the=C2=A0interrupts-names=C2=A0entirely,=C2=A0no=C2=A0need=C2=A0f=
+or=C2=A0single=C2=A0item=C2=A0with=0D=0A>=C2=A0generic=C2=A0name.=0D=0A>=C2=
+=A0=0D=0A>=C2=A0=0D=0A=C2=A0=0D=0AI=C2=A0will=C2=A0remove=C2=A0it.=0D=0A=C2=
+=A0=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0clocks:=0D=0A>=C2=A0+=C2=A0=C2=
+=A0=C2=A0=C2=A0items:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=
+=C2=A0description:=C2=A0PIPE=C2=A0clock,=C2=A0used=C2=A0by=C2=A0the=C2=A0co=
+ntroller=C2=A0to=C2=A0clock=C2=A0the=C2=A0PIPE=0D=0A>>=C2=A0+=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0description:=C2=A0PCIe=C2=A0dbi=C2=A0clock,=
+=C2=A0ungated=C2=A0version=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0-=C2=A0description:=C2=A0PCIe=C2=A0master=C2=A0clock,=C2=A0ungated=C2=A0=
+version=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0descriptio=
+n:=C2=A0PCIe=C2=A0slave=C2=A0clock,=C2=A0ungated=C2=A0version=0D=0A>>=C2=A0=
++=0D=0A>>=C2=A0+=C2=A0=C2=A0clock-names:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=
+=C2=A0items:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const=
+:=C2=A0pipe_clk=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0co=
+nst:=C2=A0dbi_clk=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0=
+const:=C2=A0mstr_clk=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=
+=A0const:=C2=A0slv_clk=0D=0A>=C2=A0=C2=A0=0D=0A>=C2=A0Remove=C2=A0=22_clk=
+=22=C2=A0suffix=C2=A0from=C2=A0all=C2=A0entries.=0D=0A>=C2=A0=0D=0A=C2=A0=
+=0D=0AOk.=0D=0A=C2=A0=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0phys:=0D=0A>=
+>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0maxItems:=C2=A01=0D=0A>>=C2=A0+=0D=0A>>=C2=
+=A0+=C2=A0=C2=A0phy-names:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0items:=0D=
+=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0pcie_phy=
+=0D=0A>=C2=A0=0D=0A>=C2=A0Remove=C2=A0the=C2=A0phy-names=C2=A0entirely,=C2=
+=A0no=C2=A0need=C2=A0for=C2=A0single=C2=A0item=C2=A0with=C2=A0generic=C2=A0=
+name.=0D=0A>=C2=A0=0D=0A=C2=A0=0D=0AOk.=0D=0A=C2=A0=0D=0A>>=C2=A0+=0D=0A>>=
+=C2=A0+=C2=A0=C2=A0num-lanes:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0const:=
+=C2=A02=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+required:=0D=0A>=C2=A0=0D=0A>=C2=A0My=
+=C2=A0comment=C2=A0was=C2=A0not=C2=A0applied=C2=A0here,=C2=A0so=C2=A0please=
+=C2=A0fix=C2=A0it.=0D=0A>=C2=A0=C2=A0=0D=0A>=C2=A0=0D=0A=C2=A0=0D=0AOk,=C2=
+=A0i=C2=A0miss=C2=A0compatible..=0D=0A=C2=A0=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=
+=A0reg=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0reg-names=0D=0A>>=C2=A0+=C2=A0=C2=
+=A0-=C2=A0interrupts=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0interrupt-names=0D=0A=
+>>=C2=A0+=C2=A0=C2=A0-=C2=A0clocks=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0clock-n=
+ames=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0phys=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=
+=A0num-lanes=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+unevaluatedProperties:=C2=A0false=
+=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+examples:=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0=
+=7C=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=23include=C2=A0<dt-bindings/inte=
+rrupt-controller/irq.h>=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=23include=C2=
+=A0<dt-bindings/interrupt-controller/arm-gic.h>=0D=0A>>=C2=A0+=0D=0A>>=C2=
+=A0+=C2=A0=C2=A0=C2=A0=C2=A0artpec8=C2=A0=7B=0D=0A>=C2=A0=0D=0A>=C2=A0Gener=
+ic=C2=A0nodes=C2=A0please.=C2=A0Did=C2=A0you=C2=A0see=C2=A0=22artpec8=22=C2=
+=A0or=C2=A0something=C2=A0like=C2=A0this=C2=A0in=0D=0A>=C2=A0any=C2=A0DTS?=
+=0D=0A>=C2=A0=0D=0A=C2=A0=0D=0AOk,=C2=A0i=C2=A0will=C2=A0modify=C2=A0to=C2=
+=A0'soc'.=0D=0A=C2=A0=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=23address-cells=C2=A0=3D=C2=A0<2>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=23size-cells=C2=A0=3D=C2=A0<2>;=0D=0A>>=
+=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0pcie_ep:=C2=A0pcie-e=
+p=4017200000=C2=A0=7B=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0compatible=C2=A0=3D=C2=A0=22axis,artpec8-p=
+cie-ep=22;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0reg=C2=A0=3D=C2=A0<0x0=C2=A00x17200000=C2=A00x0=C2=
+=A00x1000>,=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<0x0=C2=A00x172=
+01000=C2=A00x0=C2=A00x1000>,=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0<0x2=C2=A00x00000000=C2=A00x6=C2=A00x00000000>;=0D=0A>>=C2=A0+=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0reg-names=C2=
+=A0=3D=C2=A0=22dbi=22,=C2=A0=22dbi2=22,=C2=A0=22addr_space=22;=0D=0A>>=C2=
+=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=23interrupt-cells=C2=A0=3D=C2=A0<1>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0interrupts=C2=A0=3D=
+=C2=A0<GIC_SPI=C2=A0115=C2=A0IRQ_TYPE_LEVEL_HIGH>;=0D=0A>>=C2=A0+=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0interrupt-na=
+mes=C2=A0=3D=C2=A0=22intr=22;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0clocks=C2=A0=3D=C2=A0<&clock_cmu_=
+fsys=C2=A039>,=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0<&clock_cmu_fsys=C2=A038>,=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0<&clock_cmu_fsys=C2=A037>,=0D=0A>>=C2=A0+=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<&clock_cmu_fsys=C2=A036>;=0D=0A>=
+>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0clock-names=C2=A0=3D=C2=A0=22pipe_clk=22,=C2=A0=22dbi_clk=22,=C2=A0=
+=22mstr_clk=22,=C2=A0=22slv_clk=22;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0phys=C2=A0=3D=C2=A0<&pcie_p=
+hy>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0phy-names=C2=A0=3D=C2=A0=22pcie_phy=22;=0D=0A>>=C2=A0+=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0num-la=
+nes=C2=A0=3D=C2=A0<2>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0bus-range=C2=A0=3D=C2=A0<0x00=C2=A00xff=
+>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0num-ib-windows=C2=A0=3D=C2=A0<16>;=0D=0A>>=C2=A0+=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0num-ob-windo=
+ws=C2=A0=3D=C2=A0<16>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=7D;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=7D;=0D=0A>=C2=A0=0D=
+=0A>=C2=A0=0D=0A>>=C2=A0+...=0D=0A>>=C2=A0diff=C2=A0--git=C2=A0a/Documentat=
+ion/devicetree/bindings/pci/axis,artpec8-pcie.yaml=C2=A0b/Documentation/dev=
+icetree/bindings/pci/axis,artpec8-pcie.yaml=0D=0A>>=C2=A0new=C2=A0file=C2=
+=A0mode=C2=A0100644=0D=0A>>=C2=A0index=C2=A00000000..945a061=0D=0A>>=C2=A0-=
+--=C2=A0/dev/null=0D=0A>>=C2=A0+++=C2=A0b/Documentation/devicetree/bindings=
+/pci/axis,artpec8-pcie.yaml=0D=0A>>=C2=A0=40=40=C2=A0-0,0=C2=A0+1,123=C2=A0=
+=40=40=0D=0A>>=C2=A0+=23=C2=A0SPDX-License-Identifier:=C2=A0(GPL-2.0-only=
+=C2=A0OR=C2=A0BSD-2-Clause)=0D=0A>>=C2=A0+%YAML=C2=A01.2=0D=0A>>=C2=A0+---=
+=0D=0A>>=C2=A0+=24id:=C2=A0https://protect2.fireeye.com/v1/url?k=3D1de15b04=
+-7c6a4e1d-1de0d04b-74fe485cbfec-aaaa8e4e3891e6f9&q=3D1&e=3D501044d4-19cb-42=
+be-bca2-b59852a39c26&u=3Dhttp%3A%2F%2Fdevicetree.org%2Fschemas%2Fpci%2Faxis=
+%2Cartpec8-pcie.yaml%23=0D=0A>>=C2=A0+=24schema:=C2=A0https://protect2.fire=
+eye.com/v1/url?k=3D66c233a3-074926ba-66c3b8ec-74fe485cbfec-9eadff8200c7df97=
+&q=3D1&e=3D501044d4-19cb-42be-bca2-b59852a39c26&u=3Dhttp%3A%2F%2Fdevicetree=
+.org%2Fmeta-schemas%2Fcore.yaml%23=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+title:=C2=
+=A0Artpec-8=C2=A0SoC=C2=A0PCIe=C2=A0Controller=C2=A0Device=C2=A0Tree=C2=A0B=
+indings=0D=0A>=C2=A0=0D=0A>=C2=A0Ditto=0D=0A>=C2=A0=0D=0A=C2=A0=0D=0AOk.=0D=
+=0A=C2=A0=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+maintainers:=0D=0A>>=C2=A0+=C2=A0=C2=
+=A0-=C2=A0Jesper=C2=A0Nilsson=C2=A0<jesper.nilsson=40axis.com>=0D=0A>>=C2=
+=A0+=0D=0A>>=C2=A0+description:=C2=A0=7C+=0D=0A>>=C2=A0+=C2=A0=C2=A0This=C2=
+=A0PCIe=C2=A0host=C2=A0controller=C2=A0is=C2=A0based=C2=A0on=C2=A0the=C2=A0=
+Synopsys=C2=A0DesignWare=C2=A0PCIe=C2=A0IP=0D=0A>>=C2=A0+=C2=A0=C2=A0and=C2=
+=A0thus=C2=A0inherits=C2=A0all=C2=A0the=C2=A0common=C2=A0properties=C2=A0de=
+fined=C2=A0in=C2=A0snps,dw-pcie.yaml.=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+allOf:=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0=24ref:=C2=A0/schemas/pci/snps,dw-pcie.ya=
+ml=23=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+properties:=0D=0A>>=C2=A0+=C2=A0=C2=A0co=
+mpatible:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0const:=C2=A0axis,artpec8-pc=
+ie=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0reg:=0D=0A>>=C2=A0+=C2=A0=C2=A0=
+=C2=A0=C2=A0items:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=
+=A0description:=C2=A0Data=C2=A0Bus=C2=A0Interface=C2=A0(DBI)=C2=A0registers=
+.=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0description:=C2=
+=A0External=C2=A0Local=C2=A0Bus=C2=A0interface=C2=A0(ELBI)=C2=A0registers.=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0description:=C2=
+=A0PCIe=C2=A0configuration=C2=A0space=C2=A0region.=0D=0A>>=C2=A0+=0D=0A>>=
+=C2=A0+=C2=A0=C2=A0reg-names:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0items:=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0dbi=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0elbi=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0confi=
+g=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0device_type:=0D=0A>>=C2=A0+=C2=
+=A0=C2=A0=C2=A0=C2=A0items:=0D=0A>=C2=A0=0D=0A>=C2=A0It's=C2=A0not=C2=A0a=
+=C2=A0list,=C2=A0but=C2=A0just=C2=A0a=C2=A0string.=C2=A0No=C2=A0need=C2=A0f=
+or=C2=A0items.=0D=0A>=C2=A0=0D=0A=C2=A0=0D=0AOk.=0D=0A=C2=A0=0D=0A>>=C2=A0+=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0pci=0D=0A>>=C2=A0+=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0ranges:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0ma=
+xItems:=C2=A02=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0num-lanes:=0D=0A>>=
+=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0const:=C2=A02=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=
+=C2=A0=C2=A0interrupts:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0maxItems:=C2=
+=A01=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0interrupts-names:=0D=0A>>=C2=
+=A0+=C2=A0=C2=A0=C2=A0=C2=A0items:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0-=C2=A0const:=C2=A0intr=0D=0A>=C2=A0=0D=0A>=C2=A0Remove=C2=A0en=
+tire=C2=A0property.=0D=0A>=C2=A0=0D=0A=C2=A0=0D=0AOk.=0D=0A=C2=A0=0D=0A>>=
+=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0clocks:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=
+=C2=A0items:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0descr=
+iption:=C2=A0PIPE=C2=A0clock,=C2=A0used=C2=A0by=C2=A0the=C2=A0controller=C2=
+=A0to=C2=A0clock=C2=A0the=C2=A0PIPE=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0-=C2=A0description:=C2=A0PCIe=C2=A0dbi=C2=A0clock,=C2=A0ungated=
+=C2=A0version=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0desc=
+ription:=C2=A0PCIe=C2=A0master=C2=A0clock,=C2=A0=C2=A0ungated=C2=A0version=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0description:=C2=
+=A0PCIe=C2=A0slave=C2=A0clock,=C2=A0ungated=C2=A0version=0D=0A>>=C2=A0+=0D=
+=0A>>=C2=A0+=C2=A0=C2=A0clock-names:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=
+items:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=
+=A0pipe_clk=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=
+=C2=A0dbi_clk=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0cons=
+t:=C2=A0mstr_clk=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0c=
+onst:=C2=A0slv_clk=0D=0A>=C2=A0=0D=0A>=C2=A0Remove=C2=A0suffix.=0D=0A>=C2=
+=A0=0D=0A=0D=0AOk.=0D=0A=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0phys:=0D=
+=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0maxItems:=C2=A01=0D=0A>>=C2=A0+=0D=0A>>=
+=C2=A0+=C2=A0=C2=A0phy-names:=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0items:=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0pcie_=
+phy=0D=0A>=C2=A0=0D=0A>=C2=A0Remove=C2=A0entire=C2=A0property.=0D=0A>=C2=A0=
+=0D=0A=C2=A0=0D=0AOk.=0D=0A=C2=A0=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+required:=0D=
+=0A>=C2=A0=0D=0A>=C2=A0Previous=C2=A0comment=C2=A0not=C2=A0applied.=0D=0A>=
+=C2=A0=0D=0A=C2=A0=0D=0AOk.=0D=0A=C2=A0=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0re=
+g=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0reg-names=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=
+=A0device_type=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0ranges=0D=0A>>=C2=A0+=C2=A0=
+=C2=A0-=C2=A0num-lanes=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0interrupts=0D=0A>>=
+=C2=A0+=C2=A0=C2=A0-=C2=A0interrupt-names=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0=
+clocks=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0clock-names=0D=0A>>=C2=A0+=C2=A0=C2=
+=A0-=C2=A0phys=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0phy-names=0D=0A>>=C2=A0+=0D=
+=0A>>=C2=A0+unevaluatedProperties:=C2=A0false=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=
+examples:=0D=0A>>=C2=A0+=C2=A0=C2=A0-=C2=A0=7C=0D=0A>>=C2=A0+=C2=A0=C2=A0=
+=C2=A0=C2=A0=23include=C2=A0<dt-bindings/interrupt-controller/irq.h>=0D=0A>=
+>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=23include=C2=A0<dt-bindings/interrupt-cont=
+roller/arm-gic.h>=0D=0A>>=C2=A0+=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0artp=
+ec8=C2=A0=7B=0D=0A>=C2=A0=0D=0A>=C2=A0Same=C2=A0as=C2=A0previous=C2=A0patch=
+.=0D=0A>=C2=A0=0D=0A=C2=A0=0D=0AI=C2=A0will=C2=A0modify=C2=A0to=C2=A0'soc'.=
+=0D=0A=C2=A0=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=23address-cells=C2=A0=3D=C2=A0<2>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=23size-cells=C2=A0=3D=C2=A0<2>;=0D=0A>>=C2=A0+=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0pcie:=C2=A0pcie=4017200000=C2=
+=A0=7B=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0compatible=C2=A0=3D=C2=A0=22axis,artpec8-pcie=22;=0D=0A>>=
+=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0reg=C2=A0=3D=C2=A0<0x0=C2=A00x17200000=C2=A00x0=C2=A00x1000>,=0D=0A>>=
+=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<0x0=C2=A00x16ca0000=C2=A00x0=C2=
+=A00x2000>,=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<0x7=C2=A00x000=
+1e000=C2=A00x0=C2=A00x2000>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0reg-names=C2=A0=3D=C2=A0=22dbi=22=
+,=C2=A0=22elbi=22,=C2=A0=22config=22;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=23address-cells=C2=A0=
+=3D=C2=A0<3>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=23size-cells=C2=A0=3D=C2=A0<2>;=0D=0A>>=C2=A0+=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0dev=
+ice_type=C2=A0=3D=C2=A0=22pci=22;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0ranges=C2=A0=3D=C2=A0</*=C2=A0=
+non-prefetchable=C2=A0memory=C2=A0*/=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A00x83000000=C2=A00x0=C2=A00x0000000=C2=A00x=
+2=C2=A00x00000000=C2=A00x5=C2=A00x00000000=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/*=C2=A0downstream=C2=A0I/O=C2=A0*/=
+=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A00x8=
+1000000=C2=A00x0=C2=A00x0000000=C2=A00x7=C2=A00x00000000=C2=A00x0=C2=A00x00=
+010000>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0num-lanes=C2=A0=3D=C2=A0<2>;=0D=0A>>=C2=A0+=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0bus-range=C2=
+=A0=3D=C2=A0<0x00=C2=A00xff>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0interrupts=C2=A0=3D=C2=A0<GIC_SPI=
+=C2=A0115=C2=A0IRQ_TYPE_LEVEL_HIGH>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0interrupt-names=C2=A0=3D=C2=
+=A0=22intr=22;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=23interrupt-cells=C2=A0=3D=C2=A0<1>;=0D=0A>>=C2=
+=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0clocks=C2=A0=3D=C2=A0<&cmu_fsys=C2=A039>,=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<&cmu_fsys=C2=A038>,=0D=0A>>=C2=A0+=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<&cmu_fsys=C2=A037>,=0D=0A>=
+>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<&cmu_fsys=C2=
+=A036>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0clock-names=C2=A0=3D=C2=A0=22pipe_clk=22,=C2=A0=22dbi_=
+clk=22,=C2=A0=22mstr_clk=22,=C2=A0=22slv_clk=22;=0D=0A>>=C2=A0+=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0phys=C2=A0=3D=
+=C2=A0<&pcie_phy>;=0D=0A>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0phy-names=C2=A0=3D=C2=A0=22pcie_phy=22;=0D=0A=
+>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=7D;=0D=0A>>=C2=A0=
++=C2=A0=C2=A0=C2=A0=C2=A0=7D;=0D=0A>>=C2=A0+...=0D=0A>=C2=A0=0D=0A>=C2=A0=
+=0D=0A>=C2=A0Best=C2=A0regards,=0D=0A>=C2=A0Krzysztof=0D=0A=0D=0AThank=20yo=
+u=20for=20kindness=20reivew.=0D=0A=0D=0ABest=20regards,=0D=0AWangseok=20Lee
