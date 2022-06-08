@@ -2,83 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE08DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD1CCCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229964AbiFHIwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:52:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
+        id S230445AbiFHIxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232516AbiFHIv5 (ORCPT
+        with ESMTP id S232601AbiFHIwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 04:51:57 -0400
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58B026EEB5
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:09:29 -0700 (PDT)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-f2e0a41009so26290096fac.6
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 01:09:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=+MMD21NPgOfS4IM7Z40OZnUQr5CdKWtzJx16Y8c5lj4=;
-        b=nLkPwpCsFWCdSyyriJWdU7K9NnAY9DMXz2vxLPoilFBQnN5Vf7Jr17b5AI4FryypkC
-         CBEPZ+OYSWkAm3gTy3Wi4TfmB+mWRclLHrwGywod8DusEz2uz3E0TSdxBPNDSILCc2Yq
-         Ujqutye6DLuW1jMagA4OzYN7furJcYnH4HB9vuVouxIIy6kXuOAZZz3sYkpNV112rGXe
-         bfoZfllXWX9/yiEXlDsShmfFd+zStw64GNtZKta+boKiIRvuH+UioiOT0E3ypS4ZRwKK
-         T8D47ikdDZG00SmnFtJpCw63/kge7mHD9fyy16mJXoTF9NISSDTId2RWuurS1zKs1P3t
-         Tn3w==
+        Wed, 8 Jun 2022 04:52:49 -0400
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 014262A3065;
+        Wed,  8 Jun 2022 01:11:14 -0700 (PDT)
+Received: by mail-ej1-f41.google.com with SMTP id s12so32648938ejx.3;
+        Wed, 08 Jun 2022 01:11:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=+MMD21NPgOfS4IM7Z40OZnUQr5CdKWtzJx16Y8c5lj4=;
-        b=EZreYyxpT7cyZqgKjxkn+IBd2Qg0IxvK1knUyRuCs33Pz7KydI/+TaQHZrcdyv/gvZ
-         FHkIwofXv7wTC936YtxLCt6WtsBssC0FaD6kffOq3R+5wk8SPX14suvR9AAgCD6RWIbq
-         62w86PAcIFONEljVENoyMUYlyMMppPYu9AgSlJJowF6fLUBxOO2epvmLw1RdX6M/5r1z
-         dylewE/QQnFGIqTSmyDcN6ha7u6bSvrNx9eEY8wBiYrubiOqtX76dBdwIKSkwybSeUib
-         2ccD4WQii+yw64eBf9N0yhXzaHFWwmCJ5jE/yFZJiJSAIcYszfJ0u26jDXQeJWfFJ4VG
-         rptg==
-X-Gm-Message-State: AOAM531fsIns5avjJFh2AIklAvPb1cA5LdBXojEZWUJqbvxzO4CuY3fC
-        SukjMoZBXByLCcm67mcGl/PBUYGSG7Ck2X73
-X-Google-Smtp-Source: ABdhPJx9i9bRAxE/hgST/uEDns41HlY0VQPP2LJmKUBRajjCi+cPxt/fmt3SUADALQO7okgUyrAkyQ==
-X-Received: by 2002:a17:90b:304:b0:1e3:4285:ce1e with SMTP id ay4-20020a17090b030400b001e34285ce1emr37276571pjb.71.1654675344879;
-        Wed, 08 Jun 2022 01:02:24 -0700 (PDT)
-Received: from [192.168.0.24] ([88.126.57.132])
-        by smtp.gmail.com with ESMTPSA id q16-20020a170902dad000b0015e8d4eb1c6sm14166232plx.16.2022.06.08.01.02.17
+        bh=a3rjwlyE45AJ6OeyU142mWoMW1Ef/bHAk4SW+m+tkuU=;
+        b=uJF8/KjatTx1L7E0DgoF83z7jOw/InD7/RMc8BQBGMHxdobyio2V5CnYfmbGCbTGu0
+         A1ijMJ7Vf2Qa1NhbMzuo31i6tXMerUB/UJqL0Qz5CrQhEuwtH0Et8MiiIyp5ikOoDFdx
+         3PTLcG4RcOlqbcJb2tK1DN0giZu8k8dqDe9cQqm7eHL6UuoJbhUExQa+01EAPCUrQQ43
+         mYAnubqe/TFUPnGl/zDKvWQqDDyft9Es1DUozLqKw7ifDZrxoiBHjGnfLMS+LtcvSZoL
+         OXadNdcFtTmifKAkS3swKH9R+4n8xwtT/1NJrbBtnAd18Yz0lhOw8XNXLsKbjko2q11q
+         wSsQ==
+X-Gm-Message-State: AOAM5311sAX5zxJCRnOhoM60BFyicK7lHdT9dC9Q1iJAfq2x5X06GSF/
+        ipYQQtMPutFaz09T9PleAG/M6jNBEpKEQg==
+X-Google-Smtp-Source: ABdhPJwWdIWaWqRdFSCPq4aE30zMINGszIDk07yzO7IRrNUsDH0PcZ4Mhsnzl6CPDu1hsB/7AJV17A==
+X-Received: by 2002:a17:907:968a:b0:711:f093:3a84 with SMTP id hd10-20020a170907968a00b00711f0933a84mr3359465ejc.603.1654675873511;
+        Wed, 08 Jun 2022 01:11:13 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id p19-20020a056402155300b0042617ba638esm11907960edx.24.2022.06.08.01.11.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 01:02:24 -0700 (PDT)
-Message-ID: <7c6cd8c3-dc1f-5130-19d5-00443ee56bdd@gmail.com>
-Date:   Wed, 8 Jun 2022 10:02:08 +0200
+        Wed, 08 Jun 2022 01:11:13 -0700 (PDT)
+Message-ID: <9780cd63-5cf3-7ee0-4866-160b9de0a3e8@kernel.org>
+Date:   Wed, 8 Jun 2022 10:11:12 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH] MAINTAINERS: Update BCM2711/BCM2835 maintainer
+Subject: Re: [PATCH 16/36] tty/vt: consolemap: check put_user() in
+ con_get_unimap()
 Content-Language: en-US
-To:     Nicolas Saenz Julienne <nsaenz@kernel.org>, f.fainelli@gmail.com
-Cc:     stefan.wahren@i2se.com, bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220603073012.30979-1-nsaenz@kernel.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220603073012.30979-1-nsaenz@kernel.org>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220607104946.18710-1-jslaby@suse.cz>
+ <20220607104946.18710-16-jslaby@suse.cz>
+ <5bf366cc45334bb9a9c3d186ef8d6933@AcuMS.aculab.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <5bf366cc45334bb9a9c3d186ef8d6933@AcuMS.aculab.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 6/3/2022 9:30 AM, Nicolas Saenz Julienne wrote:
-> I haven't been able to find time to maintain BCM2711/BCM2835 these last
-> months, so it's only fair to pass the baton to Florian who's been doing
-> the work.
+On 08. 06. 22, 10:02, David Laight wrote:
+> From: Jiri Slaby
+>> Sent: 07 June 2022 11:49
+>>
+>> Only the return value of copy_to_user() is checked in con_get_unimap().
+>> Do the same for put_user() of the count too.
+>>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> ---
+>>   drivers/tty/vt/consolemap.c | 3 ++-
+>>   1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+>> index 831450f2bfd1..92b5dddb00d9 100644
+>> --- a/drivers/tty/vt/consolemap.c
+>> +++ b/drivers/tty/vt/consolemap.c
+>> @@ -813,7 +813,8 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct,
+>>   	console_unlock();
+>>   	if (copy_to_user(list, unilist, min(ect, ct) * sizeof(*unilist)))
+>>   		ret = -EFAULT;
+>> -	put_user(ect, uct);
+>> +	if (put_user(ect, uct))
+>> +		ret = -EFAULT;
+>>   	kvfree(unilist);
+>>   	return ret ? ret : (ect <= ct) ? 0 : -ENOMEM;
+>>   }
 > 
-> Signed-off-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
-> ---
+> How is the user expected to check the result of this code?
+> 
+> AFAICT -ENOMEM is returned if either kmalloc() fails or
+> the user buffer is too short?
+> Looks pretty hard to detect which.
 
-Applied to maintainers/fixes, thanks Nicolas for your time as a maintainer!
+Agreed. The code is far from perfect. We might try to return ENOSPC and 
+watch what breaks. (And decouple the double "?:" operator as it makes 
+things only worse.)
+
+> I've not looked at the effect of all the patches, but setting
+> 'ret = -ENOMEM' and breaking the loop when the array is too
+> small would simplify things.
+
+Note that the patches try NOT to change the behavior in any way. If they 
+do, it's likely a bug. They are first front cleanup. Definitely more to 
+come. Either from me, or others -- patches welcome ;).
+
+thanks,
 -- 
-Florian
+js
+suse labs
