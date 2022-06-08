@@ -2,124 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D630ACCA485
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 13:06:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C39BFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 13:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239953AbiFHNG2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 09:06:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56966 "EHLO
+        id S240039AbiFHNIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 09:08:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239907AbiFHNG0 (ORCPT
+        with ESMTP id S239923AbiFHNIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 09:06:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DA5221BF08F
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 06:06:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654693582;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=USUlEZ1UMdOAkVgNJKy6bNhyk03F1F+22jSwcfgVGi0=;
-        b=UoJHHshZaUShraxSBVjI9WRQAg6Q8lBYAs+8JFhFch1f8CMfyCw5VlBsPzd0X33miW+LTV
-        n+tFAzMZNP2w2mf/RoLa1qgjKmsiAzj7xWGHz0ugiGJ3JHWu1q5zh2oMRdIe+6x9O6Sb7q
-        dIDTMPpWOFo8ML+JcvJ3jH62YcKv8sA=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-607-YADtNoBMOtqxSImCtUTI6w-1; Wed, 08 Jun 2022 09:06:21 -0400
-X-MC-Unique: YADtNoBMOtqxSImCtUTI6w-1
-Received: by mail-qt1-f198.google.com with SMTP id g14-20020ac87d0e000000b00304c6e43d12so16144043qtb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 06:06:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=USUlEZ1UMdOAkVgNJKy6bNhyk03F1F+22jSwcfgVGi0=;
-        b=wBsBSUWG7e0xAeoUbLzt9orNjOPjXN8qsrtZPLVPBeFidf6pKN2BZBcsUrEureAoQ8
-         NH2Jqkf9dN+O1CHGj2uWgRQ7qhcw8B/lsovFtxjbR7lQ6cOozHiL/aoQVZoQaLz0y83i
-         xk6no5t1WxEDoleovBvVBBbLdDhKxRr+NTHVZNk3+4SC7u3/bjYvMAUxQ79F9H5aUG+z
-         LFzFlCcyA5CHL5W8+Glrm/V2KhAD410NdFs0Q2X/QHYJVeZ3GFHdYqOoWMDZ2czpUhfL
-         CwdvHS89XESjXUS9gOiU5KBqxY/U7PnxxjBX4Z7TC+Kc7lj6sEYJsnv9dC/nlxhldURY
-         +KzA==
-X-Gm-Message-State: AOAM530G+XoLomOhg9tWRcBi17Mp+4Xpb+ebcWEFlA3Ve7DbJ29ZlBHz
-        Hi0kTqtUF57mBhKVnSQx193432r8LniQ7jgQgnGdK9qnkTRwHVAeAcQen+PuZOdCz3pLMhJA0vU
-        m9w0jsxpAlOESPOFSQPUprWuq
-X-Received: by 2002:a05:622a:1013:b0:305:3c:232e with SMTP id d19-20020a05622a101300b00305003c232emr2957089qte.180.1654693580923;
-        Wed, 08 Jun 2022 06:06:20 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzmMXLqnBI6Og+4P0GHsdMp3mdyP17UTS82rMH1Kp6fTALPnxZvoiZs7I0UncTVXHO0B2TwhQ==
-X-Received: by 2002:a05:622a:1013:b0:305:3c:232e with SMTP id d19-20020a05622a101300b00305003c232emr2957043qte.180.1654693580507;
-        Wed, 08 Jun 2022 06:06:20 -0700 (PDT)
-Received: from optiplex-fbsd (c-73-182-255-193.hsd1.nh.comcast.net. [73.182.255.193])
-        by smtp.gmail.com with ESMTPSA id v10-20020a05620a440a00b0069fc13ce217sm4216712qkp.72.2022.06.08.06.06.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 06:06:20 -0700 (PDT)
-Date:   Wed, 8 Jun 2022 09:06:17 -0400
-From:   Rafael Aquini <aquini@redhat.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-aio@kvack.org,
-        linux-btrfs@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, cluster-devel@redhat.com,
-        linux-mm@kvack.org, linux-xfs@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
-        ocfs2-devel@oss.oracle.com, linux-mtd@lists.infradead.org,
-        virtualization@lists.linux-foundation.org,
-        Minchan Kim <minchan@kernel.org>
-Subject: Re: [PATCH 15/20] balloon: Convert to migrate_folio
-Message-ID: <YqCeyZO77Oi1wvxt@optiplex-fbsd>
-References: <20220606204050.2625949-1-willy@infradead.org>
- <20220606204050.2625949-16-willy@infradead.org>
- <e4d017a4-556d-bb5f-9830-a8843591bc8d@redhat.com>
- <Yp9fj/Si2qyb61Y3@casper.infradead.org>
- <Yp+lU55H4igaV3pB@casper.infradead.org>
- <36cc5e2b-b768-ce1c-fa30-72a932587289@redhat.com>
+        Wed, 8 Jun 2022 09:08:49 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC3525BFA4;
+        Wed,  8 Jun 2022 06:08:48 -0700 (PDT)
+Received: from mail-yb1-f180.google.com ([209.85.219.180]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MXGSU-1oG2q01o7C-00YfIY; Wed, 08 Jun 2022 15:08:46 +0200
+Received: by mail-yb1-f180.google.com with SMTP id w2so36420406ybi.7;
+        Wed, 08 Jun 2022 06:08:45 -0700 (PDT)
+X-Gm-Message-State: AOAM533ZETNMkz5kNb8uj6zF3dcDVXFL3w0SnsqoL3TDjybL+jWOeF73
+        yX0rqwjJzK+rsy8o8/S3rrWnBo4D2FJMad+zVcs=
+X-Google-Smtp-Source: ABdhPJyPAr6agm+ybv42a6+IQG9YtkbGrrN61pdQKlRReOgHwkoxQctAgFm4ahpz9ijG+yWaGNlDD7K9UznYhi7Yq18=
+X-Received: by 2002:a25:31c2:0:b0:641:660f:230f with SMTP id
+ x185-20020a2531c2000000b00641660f230fmr34051688ybx.472.1654689712767; Wed, 08
+ Jun 2022 05:01:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <36cc5e2b-b768-ce1c-fa30-72a932587289@redhat.com>
+References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-6-tmaimon77@gmail.com>
+In-Reply-To: <20220608095623.22327-6-tmaimon77@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 8 Jun 2022 14:01:36 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2CNxijmy0AO6NEfg=hxQZn5WxgQij4JgkTjDTfZZSScA@mail.gmail.com>
+Message-ID: <CAK8P3a2CNxijmy0AO6NEfg=hxQZn5WxgQij4JgkTjDTfZZSScA@mail.gmail.com>
+Subject: Re: [PATCH v2 05/20] watchdog: npcm_wdt: Add NPCM845 watchdog support
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        gregkh <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        robert.hancock@calian.com,
+        "nathan=20Neusch=C3=A4fer?=" <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:huBQqQStfZDdfCBwbAntxePlQBHuJuWlkIZEOXlTP+7cMnlLO25
+ QAMIlVpdSccZ+G82I6yJyjCmLa3Gor2QBmUiUbyGtKXR39UkX9fPoGaOd6/vDT8lnHbdvf4
+ mSzK14ChIv50ilSFpQnhD7AswcFgckpo9rc2LK/sNviu9hIysCmaTop7LsDHvPNP/sJcg9P
+ cdkVF8Dgnx7FPfPsrjZnw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:I6qJE0q2QEA=:+coisMcRzU0apWjkEGabQB
+ OXvLYzXe3ZFAsN4DYqYQ57hM7KO1LdLWX/fU46tcnZK28u844j3gs3dDH5QpHgV8UMfAYZbvE
+ dlLzDMlp1y3i3k6Jg+UozDM2BfTm5uh2nZP/fiYY+5NeygDL8d6FMVKsmC6bep0FiamkDb4It
+ lfvgx04Ol/eSVlnzLJH2INyccaCFugYJ2MBlgoBjQuqncmgtFccVfzQJAM51UJOVgjlEKF7nV
+ NYy4Eva43/bkI3tZ8d6wA+tTyMVg4k15vGQiUTTLdc/OfjNIycoylysgio3xi3KQsHd3BXd06
+ IAJZ8DqfHrOf727g7jyfIlVffJiq4glNRokD2Xa9gktgrcVkVEz25Uu8u0vqzRkJ4lN2C8QjF
+ xzFmHQ+GAr+hPaC6B5SiwMKL6ryrACKuZ79slKebmc9oPU6pGYvqUOtqAg3epHB830q0ZTfMT
+ S2GfXnq1e5uueX0NHHH347ulpsnyprWUbz7iFpNf1ZiBJtzuBOVsvvrkwBvAF/oPAUM/enIAQ
+ EbLR545Y0F2f3uUA/ya/bHbdHxz9yY6fnvbSaU22H9BJYAyAbRZF0f77LNb0odlzyG0fJ8hCI
+ eFFdwNLx7uRyhcrdhewGTthUYDcSucBB/5vr0zc2IqRP6N+MQ8J7SCOmQs0A6/v8gZILHy//x
+ e/AGcsKdxjqKlElhU8P7KgkKh+1K3MU/e/4nn6irGFwAvWNzlL0b4QkcU+horeTvP1I1y8orB
+ sxUNiJ/rX+6i9Siwjx6o3DMeWDZ7KkbJpp95KQ3euz1MxuqpbqZrZTomz+wHhH7zkpQottSau
+ 4Wu+Ulb2EgeHc75UyLlzGMVkwbs14x/J8OzRioWbhD0+aIp7IGeoAxlmQJAlCiBu5nzl58/1d
+ Lq6egdyK1iDCGFoVrTm5ZV6DKjGEJRHfM2QeYYpeY=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 11:59:31AM +0200, David Hildenbrand wrote:
-> On 07.06.22 21:21, Matthew Wilcox wrote:
-> > On Tue, Jun 07, 2022 at 03:24:15PM +0100, Matthew Wilcox wrote:
-> >> On Tue, Jun 07, 2022 at 09:36:21AM +0200, David Hildenbrand wrote:
-> >>> On 06.06.22 22:40, Matthew Wilcox (Oracle) wrote:
-> >>>>  const struct address_space_operations balloon_aops = {
-> >>>> -	.migratepage = balloon_page_migrate,
-> >>>> +	.migrate_folio = balloon_migrate_folio,
-> >>>>  	.isolate_page = balloon_page_isolate,
-> >>>>  	.putback_page = balloon_page_putback,
-> >>>>  };
-> >>>
-> >>> I assume you're working on conversion of the other callbacks as well,
-> >>> because otherwise, this ends up looking a bit inconsistent and confusing :)
-> >>
-> >> My intention was to finish converting aops for the next merge window.
-> >>
-> >> However, it seems to me that we goofed back in 2016 by merging
-> >> commit bda807d44454.  isolate_page() and putback_page() should
-> >> never have been part of address_space_operations.
-> >>
-> >> I'm about to embark on creating a new migrate_operations struct
-> >> for drivers to use that contains only isolate/putback/migrate.
-> >> No filesystem uses isolate/putback, so those can just be deleted.
-> >> Both migrate_operations & address_space_operations will contain a
-> >> migrate callback.
-> 
-> That makes sense to me. I wonder if there was a design
-> decision/discussion behind that. CCing Rafael.
+On Wed, Jun 8, 2022 at 11:56 AM Tomer Maimon <tmaimon77@gmail.com> wrote:
 >
+> Add Nuvoton BMC NPCM845 watchdog support.
+> The NPCM845 uses the same watchdog as the NPCM750.
+>
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 
-None that I recollect. If memory still serves me, I think the idea behind
-bda807d44454 and friends was to provide a generic way to allow page
-mobility for drivers without adding complexity to the page isolation / putback
-paths, and since the migration callback was already part of the aops struct
-those new callbacks just followed suit.
+This one should no longer be needed if the timers are compatible with the
+old ones and correctly described in the DT.
 
-
--- Rafael
-
+      Arnd
