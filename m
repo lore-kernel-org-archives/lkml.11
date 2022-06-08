@@ -2,74 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50A04C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:51:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 834C8CCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229823AbiFHHvZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:51:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52010 "EHLO
+        id S230072AbiFHHvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229797AbiFHHuW (ORCPT
+        with ESMTP id S232296AbiFHHvO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:50:22 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD37220DD;
-        Wed,  8 Jun 2022 00:16:25 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LHz431Thrz1KHnW;
-        Wed,  8 Jun 2022 15:14:11 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 8 Jun 2022 15:15:59 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 8 Jun 2022 15:15:59 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>,
-        "Sergey Senozhatsky" <senozhatsky@chromium.org>,
-        Jens Axboe <axboe@kernel.dk>, <linux-kernel@vger.kernel.org>
-CC:     <linux-block@vger.kernel.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH] zram: fix unused 'zram_wb_devops' warning
-Date:   Wed, 8 Jun 2022 15:25:34 +0800
-Message-ID: <20220608072534.68850-1-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
+        Wed, 8 Jun 2022 03:51:14 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F502BF7
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:16:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654672614; x=1686208614;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=KlqO8nPRQRaOPy3EhxLg2Le/QPz9uVGA3SU1z+o5YCI=;
+  b=R7ihEf5hCyhV+CxQqJILWydjXb13ci3XgcZAhKVRHuBprBUqWfZyDnKK
+   7n+6VnQKB8YgI1WiXpB3k52NyH8y60imoXLiDPNO4xrQnGCR7IozxBDQb
+   LoBEw98X/qTKiuQZ5G5l8HvnxkhBBuhWAx5jNnHaKUvqMhxgCnQDTTpxB
+   fJSv9GxtO2NVhmomebEbhltSouzsNXedlZC71/mUtgSXOPp1+0XP6hP47
+   BiZt8X0/jvLyWVQfhhB2k2ZHNIOY985mfPstdcMVy8oPJiZ8teFThURri
+   9lTshDaBzn5R7GLUKw4hl1qg+b24zAxLaqIZKXOPZFXiNpphCTDOInVld
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="257237974"
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="257237974"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 00:16:54 -0700
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="636631905"
+Received: from xding11-mobl.ccr.corp.intel.com ([10.254.214.239])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 00:16:48 -0700
+Message-ID: <604403db000ced33f997688ce82eaa43ed6c8bbe.camel@intel.com>
+Subject: Re: [RFC PATCH v4 1/7] mm/demotion: Add support for explicit memory
+ tiers
+From:   Ying Huang <ying.huang@intel.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     Greg Thelen <gthelen@google.com>, Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+Date:   Wed, 08 Jun 2022 15:16:46 +0800
+In-Reply-To: <20220527122528.129445-2-aneesh.kumar@linux.ibm.com>
+References: <CAAPL-u-dFp7PwPH6DfbYdnY8xaGsHz3tRQ0CPGVkiqURvdN8=A@mail.gmail.com>
+         <20220527122528.129445-1-aneesh.kumar@linux.ibm.com>
+         <20220527122528.129445-2-aneesh.kumar@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-drivers/block/zram/zram_drv.c:55:45: warning: 'zram_wb_devops' defined but not used [-Wunused-const-variable=]
+On Fri, 2022-05-27 at 17:55 +0530, Aneesh Kumar K.V wrote:
 
-Fix the above warning if CONFIG_ZRAM_WRITEBACK not enabled.
+[snip]
 
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- drivers/block/zram/zram_drv.c | 2 ++
- 1 file changed, 2 insertions(+)
+> 
+> +static int __init memory_tier_init(void)
+> +{
+> +	int ret;
+> +
+> +	ret = subsys_system_register(&memory_tier_subsys, memory_tier_attr_groups);
+> +	if (ret)
+> +		panic("%s() failed to register subsystem: %d\n", __func__, ret);
 
-diff --git a/drivers/block/zram/zram_drv.c b/drivers/block/zram/zram_drv.c
-index 39cd1397ed3b..fff5eb4d3f20 100644
---- a/drivers/block/zram/zram_drv.c
-+++ b/drivers/block/zram/zram_drv.c
-@@ -52,7 +52,9 @@ static unsigned int num_devices = 1;
- static size_t huge_class_size;
- 
- static const struct block_device_operations zram_devops;
-+#ifdef CONFIG_ZRAM_WRITEBACK
- static const struct block_device_operations zram_wb_devops;
-+#endif
- 
- static void zram_free_page(struct zram *zram, size_t index);
- static int zram_bvec_read(struct zram *zram, struct bio_vec *bvec,
--- 
-2.35.3
+I don't think we should go panic for failing to register subsys and
+device for memory tiers.  Just pr_err() should be enough.
+
+Best Regards,
+Huang, Ying
+
+> +
+> +	/*
+> +	 * Register only default memory tier to hide all empty
+> +	 * memory tier from sysfs.
+> +	 */
+> +	ret = register_memory_tier(DEFAULT_MEMORY_TIER);
+> +	if (ret)
+> +		panic("%s() failed to register memory tier: %d\n", __func__, ret);
+> +
+> +	/*
+> +	 * CPU only nodes are not part of memoty tiers.
+> +	 */
+> +	memory_tiers[DEFAULT_MEMORY_TIER]->nodelist = node_states[N_MEMORY];
+> +
+> +	return 0;
+> +}
+> +subsys_initcall(memory_tier_init);
+> +
+> +#endif	/* CONFIG_TIERED_MEMORY */
+
 
