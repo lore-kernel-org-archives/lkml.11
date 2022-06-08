@@ -2,725 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCA9CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:00:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244673AbiFHQAj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:00:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41716 "EHLO
+        id S244676AbiFHQBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:01:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232893AbiFHQAf (ORCPT
+        with ESMTP id S244646AbiFHQBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:00:35 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79FDB3CA48;
-        Wed,  8 Jun 2022 09:00:33 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id fu3so40859779ejc.7;
-        Wed, 08 Jun 2022 09:00:33 -0700 (PDT)
+        Wed, 8 Jun 2022 12:01:50 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB94115CB4
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:01:43 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id 15so18724931pfy.3
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 09:01:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aihxIc5SO349stMIX7gpxqiPA3y82iFQ8y4BNhtME10=;
-        b=kBd/zhobcVVzR+Y3k/PRQ0ipl1paL4xEBhVngktlqJqRiduI+Ab1Qap0nMSAgTuP0w
-         +JaRxTGqW8Vwhn1bRpGNopJQX13Tzg5k8gzhEAlbN/ieD1cwi1rGZP9WMO4l8Ol7knua
-         sfPS8wLnEHwAckK9zn49PsV8cV/FxNvELfQhMFx32ovvL1uVaxZ3N4TamjwSU//2HlGI
-         rTwUyL/8gwqlN5WXKh99XR8eyUabxRCzREo+p5593P9xkKAUXvn7VZOx1qWSK3FI51ME
-         0hLFehLDm4spRu/p+HFnGUA7zUIF69Yo/RXc/0o9qGmZZxDSxTtghj64FsQPPBDXPpdy
-         pIpQ==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LeJNBwVypsDaHqUgIqimlROAW7mu+bPC1d5HEcwRpvQ=;
+        b=Teu5cyfnYPbr7uT/ShpogpHQXBLyCTusIjkw9kGxDV8yxdr/79ADs7o5HOnxe9rwEC
+         ARdBMF5Q8tbWStHl3XY6se1Lf9k/R91efCPmXufsfpMedPpJLIn53yJiO4pq6zySsbLq
+         vgISwYeXXgcSYh3DpN8t6tSiHGl62SlUr3RgM8PH8jPEfSv+hsqAjgZCmabB3eC8v9z+
+         u+Ic1itts2HcU0halHybHiiVckFZyaMVt6uivmkzo2tkP2daB8eUY/GaW4EJs0slYhxl
+         Wo+RbiJKXE7ZSPK8s6VyXFRVgBMj41Hi7glisJXN+GGEA+mbHbbyV4/QN1ISC+V2otS1
+         9oKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aihxIc5SO349stMIX7gpxqiPA3y82iFQ8y4BNhtME10=;
-        b=TTbW6zvMhZmcdfrSKGUYF5JMD2ahS2zlbhvw4R1ygUnBpivivd7PWoG5epo0tLjpXy
-         xABvJKVIVC4MX6Q8FWYd3+rMICS858kHHAaxyca7JnRMD1Tq/r9uDOcuVHG1uauKoVM8
-         k6rzQFTuQXq62wU9+ljaMpnMlUz7eSDdyS3Eece79TkTtoyVtBKSqOcwGxZwvMYK/cih
-         gv/k66pTaLDE6u+GS78d22n3kfBEbdX+seJLVGubF+TE0xf+fmCCuuBfx0PUtvUHoOjR
-         Wn6YV9kV0GwX02/Mohxp2qPKCHWIaK3WuysQPGQeNxrqiNTyRwnk+EGX3PGA5DOI9Eg3
-         uUpg==
-X-Gm-Message-State: AOAM5310xFf4ZlxP4inT1uYRFcCllQ9KZf10CfBf8y5dO+ifrD3nNx9t
-        RS/55xL9IU5wpl01K60vT7Eba+MlgCaK03lP9Uw=
-X-Google-Smtp-Source: ABdhPJwyUyPuY751GfKVIqbY8V1Ln3v0wl0W6Xj98WxRCTsWLIo/Q24q2CO+afGeR6OX3OJZ4pIvnpwjVIafXsKiR0g=
-X-Received: by 2002:a17:906:d9d9:b0:710:f2ae:b455 with SMTP id
- qk25-20020a170906d9d900b00710f2aeb455mr20995359ejb.77.1654704031598; Wed, 08
- Jun 2022 09:00:31 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LeJNBwVypsDaHqUgIqimlROAW7mu+bPC1d5HEcwRpvQ=;
+        b=IKon26Mh6JDYpvoaSx46R+JnvoG5Pu4ODQREN4qbL9oWtyEepAA2DE2ncy+tUzb1pH
+         RJB5fxnDfjL2tylqdmga9l+bclIZhb+vGmFw9ehBpf2pPxpePrjp4tXacpHnBDi/Hub3
+         HLdVdzSGW2kVUexlZivpisoZUtt0g+2vljOkmUwq7Rb/VdaquNtcb4vJ8lXrFQcfbo3w
+         E/fFOBWFt3a2rFRKojLU8mRltviczSRifFAyifPKjfERG9jiRApJGJVrPoBGLY29P326
+         UKOIFUO2K5jOHEX5L8Cycf9Qtwb77INZgi7Q+vUBEDiaKfcUjIO2NuY/f+mzbbQvbAHu
+         K50Q==
+X-Gm-Message-State: AOAM531b1lKpzN7o3vYbCha/cmB02tG5moYvSYwivzXs5V5aAuy1wy8j
+        +bbuEXvid4BnCUIRTU1IuEtpAw==
+X-Google-Smtp-Source: ABdhPJxr4aFzDSm2gR3L5oc1+Z0R77JVGx1LTOJD+08ZU36kuuWiZ6CxKRr3EAWOadaRHx0+LfJrpg==
+X-Received: by 2002:a63:305:0:b0:3fc:7f18:8d7 with SMTP id 5-20020a630305000000b003fc7f1808d7mr30349801pgd.186.1654704102947;
+        Wed, 08 Jun 2022 09:01:42 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id je21-20020a170903265500b00163b02822bdsm14834409plb.160.2022.06.08.09.01.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 09:01:42 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 16:01:38 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Andrew Jones <drjones@redhat.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Oliver Upton <oupton@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 048/144] KVM: selftests: Rename 'struct vcpu' to
+ 'struct kvm_vcpu'
+Message-ID: <YqDH4m0TxLcK5Brw@google.com>
+References: <20220603004331.1523888-1-seanjc@google.com>
+ <20220603004331.1523888-49-seanjc@google.com>
+ <20220608151815.7mwlj3eppwmujaow@gator>
 MIME-Version: 1.0
-References: <20220608091238.403897-1-cosmin.tanislav@analog.com> <20220608091238.403897-3-cosmin.tanislav@analog.com>
-In-Reply-To: <20220608091238.403897-3-cosmin.tanislav@analog.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 8 Jun 2022 17:59:54 +0200
-Message-ID: <CAHp75Vdvng-fxt-p2bHJiF8i967eh1o_MUgDFN_odhW0sLu69A@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] iio: adc: ad4130: add AD4130 driver
-To:     Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220608151815.7mwlj3eppwmujaow@gator>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 12:19 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
->
-> AD4130-8 is an ultra-low power, high precision, measurement solution for
-> low bandwidth battery operated applications.
->
-> The fully integrated AFE (Analog Front-End) includes a multiplexer for up
-> to 16 single-ended or 8 differential inputs, PGA (Programmable Gain
-> Amplifier), 24-bit Sigma-Delta ADC, on-chip reference and oscillator,
-> selectable filter options, smart sequencer, sensor biasing and excitation
-> options, diagnostics, and a FIFO buffer.
-
-I believe we may gain a few LoCs by slightly bending the rule of 80.
-Also see below.
-
-...
-
-> +static const unsigned int ad4130_reg_size[] = {
-> +       [AD4130_STATUS_REG] = 1,
-> +       [AD4130_ADC_CONTROL_REG] = 2,
-> +       [AD4130_DATA_REG] = 3,
-> +       [AD4130_IO_CONTROL_REG] = 2,
-> +       [AD4130_VBIAS_REG] = 2,
-> +       [AD4130_ID_REG] = 1,
-> +       [AD4130_ERROR_REG] = 2,
-> +       [AD4130_ERROR_EN_REG] = 2,
-
-> +       [AD4130_CHANNEL_X_REG(0) ...
-> +        AD4130_CHANNEL_X_REG(AD4130_MAX_CHANNELS)] = 3,
-
-One line?
-
-> +       [AD4130_CONFIG_X_REG(0) ...
-> +        AD4130_CONFIG_X_REG(AD4130_MAX_SETUPS)] = 2,
-
-Ditto.
-
-> +       [AD4130_FILTER_X_REG(0) ...
-> +        AD4130_FILTER_X_REG(AD4130_MAX_SETUPS)] = 3,
-
-Ditto.
-
-> +       [AD4130_FIFO_CONTROL_REG] = 3,
-> +       [AD4130_FIFO_STATUS_REG] = 1,
-> +};
-
-...
-
-> +enum ad4130_iout {
-> +       AD4130_IOUT_OFF,
-> +       AD4130_IOUT_10000NA,
-> +       AD4130_IOUT_20000NA,
-> +       AD4130_IOUT_50000NA,
-> +       AD4130_IOUT_100000NA,
-> +       AD4130_IOUT_150000NA,
-> +       AD4130_IOUT_200000NA,
-> +       AD4130_IOUT_100NA,
-> +       AD4130_IOUT_MAX,
-
-No comma for MAX if it's not a hardware (datasheet) name.
-
-> +};
-...
-
-> +struct ad4130_setup_info {
-> +       unsigned int                    iout0_val;
-> +       unsigned int                    iout1_val;
-> +       unsigned int                    burnout;
-> +       unsigned int                    pga;
-> +       unsigned int                    fs;
-
-> +       bool                            ref_bufp;
-> +       bool                            ref_bufm;
-> +       u32                             ref_sel;
-
-Moving this member before booleans might save a few bytes (depending
-on how enum will be optimized by the compiler).
-
-> +       enum ad4130_filter_mode         filter_mode;
-> +};
-
-...
-
-> +struct ad4130_state {
-> +       struct spi_device               *spi;
-> +       struct regmap                   *regmap;
-
-Put the one that is mostly used in the code, the first. In such cases
-the pointer arithmetics will be no-op at compile time.
-
-> +       struct spi_message      fifo_msg;
-> +       struct spi_transfer     fifo_xfer[2];
-> +
-> +       /*
-> +        * DMA (thus cache coherency maintenance) requires the
-> +        * transfer buffers to live in their own cache lines.
-> +        */
-> +       u8                      reset_buf[AD4130_RESET_BUF_SIZE] __aligned(IIO_DMA_MINALIGN);
-> +       u8                      reg_write_tx_buf[4];
-> +       u8                      reg_read_tx_buf[1];
-> +       u8                      reg_read_rx_buf[3];
-> +       u8                      fifo_tx_buf[2];
-> +       u8                      fifo_rx_buf[AD4130_FIFO_SIZE *
-> +                                           AD4130_FIFO_MAX_SAMPLE_SIZE];
-> +};
-
-...
-
-> +       *size = ad4130_reg_size[reg];
-> +       if (!*size)
-> +               return -EINVAL;
-
-Is this check necessary?
-
-...
-
-> +       switch (size) {
-> +       case 3:
-> +               *val = get_unaligned_be24(st->reg_read_rx_buf);
-> +               break;
-> +       case 2:
-> +               *val = get_unaligned_be16(st->reg_read_rx_buf);
-> +               break;
-> +       case 1:
-> +               *val = st->reg_read_rx_buf[0];
-> +               break;
-> +       default:
-
-> +               ret = -EINVAL;
-> +               break;
-
-Direct return.
-
-> +       }
-> +
-> +       return 0;
-
-...
-
-> +static void ad4130_gpio_set(struct gpio_chip *gc, unsigned int offset,
-> +                           int value)
-> +{
-> +       struct ad4130_state *st = gpiochip_get_data(gc);
-> +       unsigned int real_offset = st->gpio_offsets[offset];
-
-Can't you use valid_mask instead of this additional array? In such a
-case the real offset can be got by the number of the set bit, no?
-
-> +       unsigned int mask = FIELD_PREP(AD4130_IO_CONTROL_GPIO_DATA_MASK,
-> +                                      BIT(real_offset));
-> +
-> +       regmap_update_bits(st->regmap, AD4130_IO_CONTROL_REG, mask,
-> +                          value ? mask : 0);
-> +}
-
-...
-
-> +       for (i = 0; i < AD4130_MAX_SETUPS; i++) {
-> +               struct ad4130_slot_info *slot_info = &st->slots_info[i];
-> +
-> +               /* Immediately accept a matching setup info. */
-
-> +               if (!memcmp(target_setup_info, &slot_info->setup,
-> +                           sizeof(*target_setup_info))) {
-
-Instead, you may use crc32 and save it, the matching will be much faster.
-
-The example, where it's done for the same purposes (to compare later)
-https://elixir.bootlin.com/linux/latest/source/drivers/acpi/scan.c#L659
-
-> +                       *slot = i;
-> +                       return 0;
-> +               }
-> +
-> +               /* Ignore all setups which are used by enabled channels. */
-> +               if (slot_info->enabled_channels)
-> +                       continue;
-> +
-> +               /* Find the least used slot. */
-
-Have you considered to use
-https://elixir.bootlin.com/linux/latest/source/include/linux/list_lru.h
-?
-
-> +               if (*slot == AD4130_INVALID_SLOT ||
-> +                   slot_info->channels < st->slots_info[*slot].channels)
-> +                       *slot = i;
-> +       }
-
-...
-
-> +       /*
-> +        * The following cases need to be handled.
-> +        *
-> +        * 1. Enabled and linked channel with setup changes:
-> +        *    - Find slot. If not possible, return error.
-
-a slot
-
-> +        *    - Unlink channel from current slot.
-> +        *    - If slot has channels linked to it, unlink all channels, and
-
-the slot
-
-> +        *      write the new setup to it.
-> +        *    - Link channel to new slot.
-> +        *
-> +        * 2. Soon to be enabled and unlinked channel:
-> +        *    - Find slot. If not possible, return error.
-
-a slot
-
-> +        *    - If slot has channels linked to it, unlink all channels, and
-
-the slot
-
-> +        *      write the new setup to it.
-> +        *    - Link channel to slot.
-
-the slot
-
-> +        *
-> +        * 3. Disabled and linked channel with setup changes:
-> +        *    - Unlink channel from current slot.
-> +        *
-> +        * 4. Soon to be enabled and linked channel:
-> +        * 5. Disabled and unlinked channel with setup changes:
-> +        *    - Do nothing.
-> +        */
-
-...
-
-> +       if (!on_enable && !chan_info->enabled) {
-> +               if (chan_info->slot != AD4130_INVALID_SLOT)
-> +                       /* Case 3 */
-> +                       ad4130_unlink_channel(st, channel);
-> +
-> +               /* Case 3 & 5 */
-
-Cases
-
-> +               return 0;
-> +       }
-> +
-> +       /* Case 1 & 2 */
-
-Cases
-
-...
-
-> +       const struct ad4130_filter_config *filter_config =
-> +               &ad4130_filter_configs[filter_mode];
-
-One line? Or even a helper, since you are using this more than once.
-
-...
-
-> +       dividend = filter_config->fs_max * filter_config->odr_div *
-> +                  ((u64)val * NANO + val2);
-
-One line.
-
-...
-
-> +               *val = st->bipolar ? -(1 << (chan->scan_type.realbits - 1)) : 0;
-
-BIT() ?
-
-...
-
-> +       /*
-> +        * When the chip enters FIFO mode, IRQ polarity is inversed.
-
-inverted ?
-
-> +        * See datasheet pages: 65, FIFO Watermark Interrupt section,
-> +        * and 71, Bit Descriptions for STATUS Register, RDYB.
-> +        */
-
-...
-
-> +       /*
-> +        * update_scan_mode is not called in the disable path, disable all
-
-->update_scan_mode() ?
-
-> +        * channels here.
-> +        */
-
-...
-
-> +       switch (ref_sel) {
-> +       case AD4130_REF_REFIN1:
-> +               ret = regulator_get_voltage(st->regulators[2].consumer);
-> +               break;
-> +       case AD4130_REF_REFIN2:
-> +               ret = regulator_get_voltage(st->regulators[3].consumer);
-> +               break;
-> +       case AD4130_REF_AVDD_AVSS:
-> +               ret = regulator_get_voltage(st->regulators[0].consumer);
-> +               break;
-> +       case AD4130_REF_REFOUT_AVSS:
-> +               ret = st->int_ref_uv;
-> +               break;
-> +       default:
-> +               ret = -EINVAL;
-> +               break;
-> +       }
-
-> +       if (ret < 0)
-> +               return dev_err_probe(dev, ret, "Cannot use reference %u\n",
-> +                                    ref_sel);
-
-Can it be moved to the caller where it would cleaner to use, I think?
-As a good side effect the all above will be shortened to just return directly.
-
-> +       return ret;
-
-...
-
-> +       fwnode_property_read_u32(child, "adi,excitation-current-0-nanoamps",
-> +                                &current_na);
-
-One line?
-
-...
-
-> +               return dev_err_probe(dev, ret,
-> +                                    "Invalid excitation current %unA\n",
-> +                                    current_na);
-
-Ditto or two lines?
-
-...
-
-> +       fwnode_property_read_u32(child, "adi,excitation-current-1-nanoamps",
-> +                                &current_na);
-
-Ditto. Moreover you can shorten the name of temporary variable to
-something like tmp since it makes no sense to have a custom name for
-many options.
-
-...
-
-> +               return dev_err_probe(dev, ret,
-> +                                    "Invalid excitation current %unA\n",
-> +                                    current_na);
-
-One line?
-
-...
-
-> +       fwnode_property_read_u32(child, "adi,burnout-current-nanoamps",
-> +                                &current_na);
-
-Ditto.
-
-...
-
-> +               return dev_err_probe(dev, ret,
-> +                                    "Invalid burnout current %unA\n",
-> +                                    current_na);
-
-Ditto.
-
-...
-
-> +       fwnode_property_read_u32(child, "adi,reference-select",
-> +                                &setup_info->ref_sel);
-
-Ditto.
-
-...
-
-> +               return dev_err_probe(dev, -EINVAL,
-> +                                    "Invalid reference selected %u\n",
-> +                                    setup_info->ref_sel);
-
-Ditto.
-
-...
-
-> +       ret = ad4130_get_ref_voltage(st, setup_info->ref_sel);
-> +       if (ret < 0)
-> +               return ret;
-> +
-> +       return 0;
-
-In all cases what does the positive return value mean?
-If there is no meaning, drop all these ' < 0' parts and esp. here use simply
-
-return ad4130_get_ref_voltage(...);
-
-...
-
-> +               return dev_err_probe(dev, -EINVAL,
-> +                                    "Invalid diffreential channel %u\n", pin);
-
-One line?
-
-...
-
-> +               return dev_err_probe(dev, -EINVAL,
-> +                                    "Pin %u already used with fn %u\n", pin,
-> +                                    st->pins_fn[pin]);
-
-2 lines?
-
-...
-
-> +static int ad4130_validate_diff_channels(struct ad4130_state *st,
-> +                                        u32 *pins, unsigned int len)
-> +{
-> +       unsigned int i;
-
-> +       int ret = 0;
-
-Useless assignment.
-
-> +
-> +       for (i = 0; i < len; i++) {
-> +               ret = ad4130_validate_diff_channel(st, pins[i]);
-> +               if (ret)
-
-> +                       break;
-
-Useless. Return immediately.
-
-> +       }
-> +
-> +       return ret;
-> +}
-
-...
-
-> +               return dev_err_probe(dev, -EINVAL,
-> +                                    "Invalid excitation pin %u\n", pin);
-
-One line?
-
-...
-
-> +               return dev_err_probe(dev, -EINVAL,
-> +                                    "Pin %u already used with fn %u\n", pin,
-> +                                    st->pins_fn[pin]);
-
-One or two lines?
-
-...
-
-> +               return dev_err_probe(dev, -EINVAL, "Invalid vbias pin %u\n",
-> +                                    pin);
-
-Ditto.
-
-...
-
-> +               return dev_err_probe(dev, -EINVAL,
-> +                                    "Pin %u already used with fn %u\n", pin,
-> +                                    st->pins_fn[pin]);
-
-Ditto.
-
-...
-
-> +       unsigned int i;
-> +       int ret = 0;
-> +
-> +       for (i = 0; i < st->num_vbias_pins; i++) {
-> +               ret = ad4130_validate_vbias_pin(st, pins[i]);
-> +               if (ret)
-> +                       break;
-> +       }
-> +
-> +       return ret;
-
-As per above comments.
-
-...
-
-> +       ret = fwnode_property_read_u32_array(child, "diff-channels", pins,
-> +                                            ARRAY_SIZE(pins));
-
-One line?
-
-...
-
-> +       fwnode_property_read_u32(child, "adi,excitation-pin-0",
-> +                                &chan_info->iout0);
-
-Ditto.
-
-...
-
-> +       fwnode_property_read_u32(child, "adi,excitation-pin-1",
-> +                                &chan_info->iout1);
-
-Ditto.
-
-...
-
-> +       bool int_clk_out = false;
-
-Why is this assignment needed?
-
-...
-
-> +               return dev_err_probe(dev, PTR_ERR(st->mclk),
-> +                                    "Failed to get mclk\n");
-
-One line?
-
-...
-
-> +       if (st->int_pin_sel == AD4130_INT_PIN_DOUT)
-> +               return dev_err_probe(dev, -EINVAL,
-> +                                    "Cannot use DOUT as interrupt pin\n");
-
-Ditto.
-
-...
-
-> +       int_clk_out = device_property_read_bool(dev, "adi,int-clk-out");
-> +       if (st->mclk && int_clk_out)
-> +               return dev_err_probe(dev, -EINVAL,
-> +                                    "Cannot expose internal clock\n");
-
-Ditto.
-
-...
-
-> +       if (ext_clk_freq != AD4130_MCLK_FREQ_153_6KHZ &&
-> +           ext_clk_freq != AD4130_MCLK_FREQ_76_8KHZ)
-
-> +               return dev_err_probe(dev, -EINVAL,
-> +                                    "Invalid external clock frequency %u\n",
-> +                                    ext_clk_freq);
-
-2 lines?
-
-...
-
-> +       if (st->int_pin_sel == AD4130_INT_PIN_CLK &&
-> +           st->mclk_sel != AD4130_MCLK_76_8KHZ)
-> +               return dev_err_probe(dev, -EINVAL,
-> +                                    "Invalid clock %u for interrupt pin %u\n",
-> +                                    st->mclk_sel, st->int_pin_sel);
-
-2 lines?
-
-...
-
-> +               if (ret > AD4130_MAX_ANALOG_PINS)
-> +                       return dev_err_probe(dev, -EINVAL,
-> +                                            "Too many vbias pins %u\n", ret);
-
-One line?
-
-...
-
-> +               if (ret)
-> +                       return dev_err_probe(dev, ret,
-> +                                            "Failed to read vbias pins\n");
-
-Ditto.
-
-
-> +               for (j = 0; j < AD4130_MAX_PGA; j++) {
-> +                       unsigned int pow = resolution + j - st->bipolar;
-
-> +                       unsigned int nv = div_u64((((u64)ret * NANO) >>
-> +                                                  pow), MILLI);
-
-It will be much better if you make it on one line. Moreover, it seems
-it's ivariamt to the loop, why it's inside the loop?
-
-> +                       st->scale_tbls[i][j][0] = 0;
-> +                       st->scale_tbls[i][j][1] = nv;
-> +               }
-
-...
-
-> +       unsigned long rate = AD4130_MCLK_FREQ_76_8KHZ;
-
-Please move it closer to the alternative assignments so all of them
-will be closer to each other for better code reading and
-understanding. It also applies to ither similar places in the code.
-
-...
-
-> +       ret = devm_add_action_or_reset(dev, ad4130_clk_disable_unprepare,
-> +                                      st->mclk);
-
-One line?
-
-...
-
-> +       val = FIELD_PREP(AD4130_IO_CONTROL_INT_PIN_SEL_MASK, st->int_pin_sel);
-> +       for (i = 0; i < st->num_gpios; i++)
-> +               val |= BIT(st->gpio_offsets[i]);
-
-valid_mask reinvention?
-
-...
-
-> +       ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(st->regulators),
-> +                                     st->regulators);
-
-One line?
-
-> +       if (ret)
-> +               return dev_err_probe(dev, ret,
-> +                                    "Failed to get regulators\n");
-
-Ditto.
-
-> +       ret = regulator_bulk_enable(ARRAY_SIZE(st->regulators), st->regulators);
-> +       if (ret)
-> +               return dev_err_probe(dev, ret,
-> +                                    "Failed to enable regulators\n");
-
-Ditto.
-
-> +       ret = devm_add_action_or_reset(dev, ad4130_disable_regulators, st);
-> +       if (ret)
-> +               return dev_err_probe(dev, ret,
-> +                                    "Failed to add regulators disable action\n");
-
-Ditto.
-
-...
-
-Why below magic is needed? Maybe one line comment?
-
-> +       if (st->irq_trigger & IRQF_TRIGGER_RISING)
-> +               st->inv_irq_trigger = IRQF_TRIGGER_FALLING;
-> +       else if (st->irq_trigger & IRQF_TRIGGER_FALLING)
-> +               st->inv_irq_trigger = IRQF_TRIGGER_RISING;
-> +       else
-> +               return dev_err_probe(dev, -EINVAL, "Invalid irq flags: %u\n",
-> +                                    st->irq_trigger);
-
-One line?
-
-...
-
-> +static const struct of_device_id ad4130_of_match[] = {
-> +       {
-> +               .compatible = "adi,ad4130",
-> +       },
-> +       { },
-
-No comma for terminator entry.
-
-> +};
-
--- 
-With Best Regards,
-Andy Shevchenko
+On Wed, Jun 08, 2022, Andrew Jones wrote:
+> On Fri, Jun 03, 2022 at 12:41:55AM +0000, Sean Christopherson wrote:
+> > Rename 'struct vcpu' to 'struct kvm_vcpu' to align with 'struct kvm_vm'
+> > in the selftest, and to give readers a hint that the struct is specific
+> > to KVM.
+> 
+> I'm not completely sold on this change. I don't mind that the selftest
+> vcpu struct isn't named the same as the KVM vcpu struct, since they're
+> different structs.
+
+I don't care about about matching KVM's internal naming exactly, but I do care
+about not having a bare "vcpu", it makes searching for usage a pain because it's
+impossible to differentiate between instances of the struct and variables of the
+same name without additional qualifiers.
+
+> I also don't mind avoiding 'kvm_' prefixes in "KVM selftests" (indeed I
+> wonder if we really need the kvm_ prefix for the vm struct).
+
+Same as above, "struct vm *vm" will drive me bonkers :-)
+
+> If we do need prefixes for the kvm selftest framework code to avoid
+> collisions with test code, then maybe we should invent something else, rather
+> than use the somewhat ambiguous 'kvm', which could also collide with stuff in
+> the kvm uapi.
+
+Potential collisions with the KVM uAPI is a feature of sorts, e.g. tests shouldn't
+be redefining kvm_* structures (I'd prefer _tests_ not use kvm_* at all, and only
+use kvm_* in the library), and I gotta imagine KVM would break at least one real
+world userspace if it defined "kvm_vcpu".
+
+That said, I don't have a super strong preference for kvm_ versus something else,
+though I think it will be difficult to come up with something that's unique,
+intuitive, and doesn't look like a typo.
