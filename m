@@ -2,216 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDDE7CCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:20:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61F21C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236389AbiFHKUV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:20:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
+        id S236493AbiFHKUa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:20:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237008AbiFHKTE (ORCPT
+        with ESMTP id S236850AbiFHKSv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:19:04 -0400
-Received: from mailout2.hostsharing.net (mailout2.hostsharing.net [IPv6:2a01:37:3000::53df:4ee9:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE22A15A875;
-        Wed,  8 Jun 2022 03:06:18 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by mailout2.hostsharing.net (Postfix) with ESMTPS id 02DB410189E0A;
-        Wed,  8 Jun 2022 11:56:58 +0200 (CEST)
-Received: from localhost (unknown [89.246.108.87])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id D4542621B6E1;
-        Wed,  8 Jun 2022 11:56:57 +0200 (CEST)
-X-Mailbox-Line: From 78ad73b93adb59edfa2d68e44a9fcfea65e98131 Mon Sep 17 00:00:00 2001
-Message-Id: <78ad73b93adb59edfa2d68e44a9fcfea65e98131.1654680790.git.lukas@wunner.de>
-In-Reply-To: <cover.1654680790.git.lukas@wunner.de>
-References: <cover.1654680790.git.lukas@wunner.de>
-From:   Lukas Wunner <lukas@wunner.de>
-Date:   Wed, 8 Jun 2022 11:52:11 +0200
-Subject: [PATCH net v2 1/1] net: phy: Don't trigger state machine while in
- suspend
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>
-Cc:     netdev@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Ferry Toth <fntoth@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org
+        Wed, 8 Jun 2022 06:18:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC7ED120A1
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 03:05:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654682721;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wz+Ze0Cgd0YCjeuy2qnvuOXb2LvyK0B5KAWLdIayw2s=;
+        b=RnXAXMjtkXS5JKck/POcdDZAor5QFovnYHup1EX1w74eTPhZ6b8t9BpqRpuHHZ8CwVwKNH
+        BZ6WN3HYggndPoNhkC3rNjWE1xNJA48Ccbe/qWyenTAUunaROZc0gGk88R7VsohB+MbIWC
+        O4vGkVeYO9+yE/jxHWgjykcBDuvJ44I=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-651-wRff_zSXMi27iIH1CINJcQ-1; Wed, 08 Jun 2022 06:05:20 -0400
+X-MC-Unique: wRff_zSXMi27iIH1CINJcQ-1
+Received: by mail-wm1-f69.google.com with SMTP id bg40-20020a05600c3ca800b00394779649b1so14181654wmb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 03:05:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=wz+Ze0Cgd0YCjeuy2qnvuOXb2LvyK0B5KAWLdIayw2s=;
+        b=SYkhK8UgTCRs7GCfC4z3u5exjYX3sue3tYsd1SkC6t8QOcnAP4S1o+zUafjDwNL2c6
+         dKT0xoHyoen3vyQ9UJPbYvD6JKCFGWT5aIP1TRt4mhdyFzlaGQWYlqYxCCYiJGab7hhP
+         kCdDeqU6EjkjlUzbaIpKIOi0LupTfDlvVXaMbU+qMJXx25YzTQVUetAR64hV2/hrj2Rg
+         BsI65UazCBvsBnToBX46dydJ6x2aCv8nx0xzdoyIYfLWaYtDTOjIrFJ834coDU8xW/hu
+         eK7wYNn58zGl6xNUe935YZR3zHRZcC4FGrYMHUdq+ybU+61vZJwhtPVYrB+2nMjBLxuu
+         IVFQ==
+X-Gm-Message-State: AOAM533snfSCpSdU1zx0Kn/Dt4uMjgKh6+b6c8JgiNxiZgLW2j5oCvMi
+        yWBbsHbfynTnDTzh+mLgjpJ+3pAqGHp4iKixP1LvDspj2apnZJbGHFYzTE6Y23OCAz8QItMdf5f
+        EVVMbT2j4QOki9t3S0a/WEsp2
+X-Received: by 2002:a5d:414d:0:b0:213:be00:a35 with SMTP id c13-20020a5d414d000000b00213be000a35mr25965657wrq.97.1654682719316;
+        Wed, 08 Jun 2022 03:05:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwLGuQwmVMW4pZZeGZ95ClHIeCii1CvGlFxu5BCC6E0yllfRq4Y9hUs1iWS3i9Ns9v/po+j9Q==
+X-Received: by 2002:a5d:414d:0:b0:213:be00:a35 with SMTP id c13-20020a5d414d000000b00213be000a35mr25965636wrq.97.1654682719016;
+        Wed, 08 Jun 2022 03:05:19 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c705:ad00:db2:4c6:8f3a:2ec4? (p200300cbc705ad000db204c68f3a2ec4.dip0.t-ipconnect.de. [2003:cb:c705:ad00:db2:4c6:8f3a:2ec4])
+        by smtp.gmail.com with ESMTPSA id y6-20020adfee06000000b0021004d7d75asm21147724wrn.84.2022.06.08.03.05.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 03:05:17 -0700 (PDT)
+Message-ID: <56f013a8-b585-4683-a998-83ea0dc53d95@redhat.com>
+Date:   Wed, 8 Jun 2022 12:05:16 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 2/4] mm/migration: remove unneeded lock page and
+ PageMovable check
+Content-Language: en-US
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     ying.huang@intel.com, hch@lst.de, dhowells@redhat.com,
+        cl@linux.com, linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, mike.kravetz@oracle.com,
+        naoya.horiguchi@nec.com, Minchan Kim <minchan@kernel.org>
+References: <20220425132723.34824-1-linmiaohe@huawei.com>
+ <20220425132723.34824-3-linmiaohe@huawei.com>
+ <525298ad-5e6a-2f8d-366d-4dcb7eebd093@redhat.com>
+ <f5f933dc-450c-f3ac-34e6-d6dc1d901efd@huawei.com>
+ <4cf144a9-fff5-d993-4fcb-7f2dfa6e71bb@redhat.com>
+ <924de987-202b-a97e-e6d2-6bdab530f190@huawei.com>
+ <c566dc2c-fc70-e410-5272-767fa28cbba4@redhat.com>
+ <025d0dc8-a446-b720-14a8-97c041055f48@huawei.com>
+ <143ab5dd-85a9-3338-53b7-e46c9060b20e@redhat.com>
+ <6ba7e2bd-28c1-53ff-a6b7-072c79714dee@huawei.com>
+ <0724b4c4-15f6-e429-f945-f57c619c7270@redhat.com>
+ <7ca676a9-1f51-47f7-0245-d041d075a440@huawei.com>
+ <f6eb98ae-965b-d705-6f7d-c2ee69ce5141@redhat.com>
+ <a96fab6c-f986-797f-aeb1-5fb8a1b5a4b8@huawei.com>
+ <059fe8fe-bd89-477f-2430-277bb738525b@redhat.com>
+ <4b13e16e-1b66-d49a-da0b-7b29c0be8ace@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <4b13e16e-1b66-d49a-da0b-7b29c0be8ace@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Upon system sleep, mdio_bus_phy_suspend() stops the phy_state_machine(),
-but subsequent interrupts may retrigger it:
+On 07.06.22 04:20, Miaohe Lin wrote:
+> On 2022/6/2 16:47, David Hildenbrand wrote:
+>> On 02.06.22 09:40, Miaohe Lin wrote:
+>>> On 2022/6/1 18:31, David Hildenbrand wrote:
+>>>> On 31.05.22 14:37, Miaohe Lin wrote:
+>>>>> On 2022/5/31 19:59, David Hildenbrand wrote:
+>>>>>> Sorry for the late reply, was on vacation.
+>>>>>
+>>>>> That's all right. Hope you have a great time. ;)
+>>>>>
+>>>>>>
+>>>>>>>>>
+>>>>>>>>> But for isolated page, PageLRU is cleared. So when the isolated page is released, __clear_page_lru_flags
+>>>>>>>>> won't be called. So we have to clear the PG_active and PG_unevictable here manully. So I think
+>>>>>>>>> this code block works. Or am I miss something again?
+>>>>>>>>
+>>>>>>>> Let's assume the following: page as freed by the owner and we enter
+>>>>>>>> unmap_and_move().
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> #1: enter unmap_and_move() // page_count is 1
+>>>>>>>> #2: enter isolate_movable_page() // page_count is 1
+>>>>>>>> #2: get_page_unless_zero() // page_count is now 2
+>>>>>>>> #1: if (page_count(page) == 1) { // does not trigger
+>>>>>>>> #2: put_page(page); // page_count is now 1
+>>>>>>>> #1: put_page(page); // page_count is now 0 -> freed
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> #1 will trigger __put_page() -> __put_single_page() ->
+>>>>>>>> __page_cache_release() will not clear the flags because it's not an LRU
+>>>>>>>> page at that point in time, right (-> isolated)?
+>>>>>>>
+>>>>>>> Sorry, you're right. I thought the old page will be freed via putback_lru_page which will
+>>>>>>> set PageLRU back instead of put_page directly. So if the above race occurs, PG_active and
+>>>>>>> PG_unevictable will remain set while page goes to the buddy and check_free_page will complain
+>>>>>>> about it. But it seems this is never witnessed?
+>>>>>>
+>>>>>> Maybe
+>>>>>>
+>>>>>> a) we were lucky so far and didn't trigger it
+>>>>>> b) the whole code block is dead code because we are missing something
+>>>>>> c) we are missing something else :)
+>>>>>
+>>>>> I think I found the things we missed in another email [1].
+>>>>> [1]: https://lore.kernel.org/all/948ea45e-3b2b-e16c-5b8c-4c34de0ea593@huawei.com/
+>>>>>
+>>>>> Paste the main content of [1] here:
+>>>>>
+>>>>> "
+>>>>> There are 3 cases in unmap_and_move:
+>>>>>
+>>>>> 1.page is freed through "if (page_count(page) == 1)" code block. This works
+>>>>> as PG_active and PG_unevictable are cleared here.
+>>>>>
+>>>>> 2. Failed to migrate the page. The page won't be release so we don't care about it.
+>>>>
+>>>> Right, page is un-isolated.
+>>>>
+>>>>>
+>>>>> 3. The page is migrated successfully. The PG_active and PG_unevictable are cleared
+>>>>> via folio_migrate_flags():
+>>>>>
+>>>>> 	if (folio_test_clear_active(folio)) {
+>>>>> 		VM_BUG_ON_FOLIO(folio_test_unevictable(folio), folio);
+>>>>> 		folio_set_active(newfolio);
+>>>>> 	} else if (folio_test_clear_unevictable(folio))
+>>>>> 		folio_set_unevictable(newfolio);
+>>>>
+>>>> Right.
+>>>>
+>>>>>
+>>>>> For the above race case, the page won't be freed through "if (page_count(page) == 1)" code block.
+>>>>> It will just be migrated and freed via put_page() after folio_migrate_flags() having cleared PG_active
+>>>>> and PG_unevictable.
+>>>>> "
+>>>>> Or Am I miss something again? :)
+>>>>
+>>>> For #1, I'm still not sure what would happen on a speculative reference.
+>>>>
+>>>> It's worth summarizing that
+>>>>
+>>>> a) free_pages_prepare() will clear both flags via page->flags &=
+>>>> ~PAGE_FLAGS_CHECK_AT_PREP;
+>>>>
+>>>> b) free_pages_prepare() will bail out if any flag is set in
+>>>> check_free_page().
+>>>>
+>>>> As we've never seen b) in the wild, this certainly has low priority, and
+>>>> maybe it really cannot happen right now.
+>>>>
+>>>> However, maybe really allowing these flags to be set when freeing the
+>>>> page and removing the "page_count(page) == 1" case from migration code
+>>>> would be the clean thing to do.
+>>>
+>>> IMHO, check_free_page is used to catch possible problem. There's the comment of PAGE_FLAGS_CHECK_AT_FREE:
+>>>
+>>> /*
+>>>  * Flags checked when a page is freed.  Pages being freed should not have
+>>>  * these flags set.  If they are, there is a problem.
+>>>  */
+>>> #define PAGE_FLAGS_CHECK_AT_FREE
+>>>
+>>> There might be an assumption: when page is freed, it shouldn't be an active or unevictable page. It should be
+>>> inactive and evictable. So allowing these flags to be set when freeing the page might not be a good idea?
+>>
+>> Yeah, and we'd be lifting that restriction because there is good reason
+>> to do so.
+>>
+>> Maybe we *could* special case for isolated pages; however, that adds
+>> runtime overhead. Of course, we could perform different checks for e.g.,
+>> DEBUG_VM vs !DEBUG_VM.
+> 
+> I found there is one assumption about PG_active and PG_unevictable, i.e. in __folio_clear_lru_flags:
+> 
+> 	/* this shouldn't happen, so leave the flags to bad_page() */
+> 	if (folio_test_active(folio) && folio_test_unevictable(folio))
+> 		return;
+> 
+> If PG_active and PG_unevictable are both set, this case will be caught in the bad_page() via check_free_page().
+> There might be some other assumptions about PG_active and PG_unevictable. So I think it's not safe to lift that
+> restriction.
+> 
+> But maybe we could limit this check within DEBUG_VM as you suggested. Am I supposed to do it?
 
-They may have been left enabled to facilitate wakeup and are not
-quiesced until the ->suspend_noirq() phase.  Unwanted interrupts may
-hence occur between mdio_bus_phy_suspend() and dpm_suspend_noirq(),
-as well as between dpm_resume_noirq() and mdio_bus_phy_resume().
+Well, if you want, you can look into ways of cleaning that up and
+removing the "if there is more than one reference, the owner hasn't
+freed the page" condition, because there are corner cases where the
+owner might have freed the page but speculative references keep the
+refcount temporarily incremented.
 
-Retriggering the phy_state_machine() through an interrupt is not only
-undesirable for the reason given in mdio_bus_phy_suspend() (freezing it
-midway with phydev->lock held), but also because the PHY may be
-inaccessible after it's suspended:  Accesses to USB-attached PHYs are
-blocked once usb_suspend_both() clears the can_submit flag and PHYs on
-PCI network cards may become inaccessible upon suspend as well.
-
-Amend phy_interrupt() to avoid triggering the state machine if the PHY
-is suspended.  Signal wakeup instead if the attached net_device or its
-parent has been configured as a wakeup source.  (Those conditions are
-identical to mdio_bus_phy_may_suspend().)  Postpone handling of the
-interrupt until the PHY has resumed.
-
-Before stopping the phy_state_machine() in mdio_bus_phy_suspend(),
-wait for a concurrent phy_interrupt() to run to completion.  That is
-necessary because phy_interrupt() may have checked the PHY's suspend
-status before the system sleep transition commenced and it may thus
-retrigger the state machine after it was stopped.
-
-Likewise, after re-enabling interrupt handling in mdio_bus_phy_resume(),
-wait for a concurrent phy_interrupt() to complete to ensure that
-interrupts which it postponed are properly rerun.
-
-Link: https://lore.kernel.org/netdev/a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com/
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
----
- drivers/net/phy/phy.c        | 23 +++++++++++++++++++++++
- drivers/net/phy/phy_device.c | 23 +++++++++++++++++++++++
- include/linux/phy.h          |  6 ++++++
- 3 files changed, 52 insertions(+)
-
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index ef62f357b76d..8d3ee3a6495b 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -31,6 +31,7 @@
- #include <linux/io.h>
- #include <linux/uaccess.h>
- #include <linux/atomic.h>
-+#include <linux/suspend.h>
- #include <net/netlink.h>
- #include <net/genetlink.h>
- #include <net/sock.h>
-@@ -976,6 +977,28 @@ static irqreturn_t phy_interrupt(int irq, void *phy_dat)
- 	struct phy_driver *drv = phydev->drv;
- 	irqreturn_t ret;
- 
-+	/* Wakeup interrupts may occur during a system sleep transition.
-+	 * Postpone handling until the PHY has resumed.
-+	 */
-+	if (IS_ENABLED(CONFIG_PM_SLEEP) && phydev->irq_suspended) {
-+		struct net_device *netdev = phydev->attached_dev;
-+
-+		if (netdev) {
-+			struct device *parent = netdev->dev.parent;
-+
-+			if (netdev->wol_enabled)
-+				pm_system_wakeup();
-+			else if (device_may_wakeup(&netdev->dev))
-+				pm_wakeup_dev_event(&netdev->dev, 0, true);
-+			else if (parent && device_may_wakeup(parent))
-+				pm_wakeup_dev_event(parent, 0, true);
-+		}
-+
-+		phydev->irq_rerun = 1;
-+		disable_irq_nosync(irq);
-+		return IRQ_HANDLED;
-+	}
-+
- 	mutex_lock(&phydev->lock);
- 	ret = drv->handle_interrupt(phydev);
- 	mutex_unlock(&phydev->lock);
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 431a8719c635..46acddd865a7 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -278,6 +278,15 @@ static __maybe_unused int mdio_bus_phy_suspend(struct device *dev)
- 	if (phydev->mac_managed_pm)
- 		return 0;
- 
-+	/* Wakeup interrupts may occur during the system sleep transition when
-+	 * the PHY is inaccessible. Set flag to postpone handling until the PHY
-+	 * has resumed. Wait for concurrent interrupt handler to complete.
-+	 */
-+	if (phy_interrupt_is_valid(phydev)) {
-+		phydev->irq_suspended = 1;
-+		synchronize_irq(phydev->irq);
-+	}
-+
- 	/* We must stop the state machine manually, otherwise it stops out of
- 	 * control, possibly with the phydev->lock held. Upon resume, netdev
- 	 * may call phy routines that try to grab the same lock, and that may
-@@ -315,6 +324,20 @@ static __maybe_unused int mdio_bus_phy_resume(struct device *dev)
- 	if (ret < 0)
- 		return ret;
- no_resume:
-+	if (phy_interrupt_is_valid(phydev)) {
-+		phydev->irq_suspended = 0;
-+		synchronize_irq(phydev->irq);
-+
-+		/* Rerun interrupts which were postponed by phy_interrupt()
-+		 * because they occurred during the system sleep transition.
-+		 */
-+		if (phydev->irq_rerun) {
-+			phydev->irq_rerun = 0;
-+			enable_irq(phydev->irq);
-+			irq_wake_thread(phydev->irq, phydev);
-+		}
-+	}
-+
- 	if (phydev->attached_dev && phydev->adjust_link)
- 		phy_start_machine(phydev);
- 
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 508f1149665b..b09f7d36cff2 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -572,6 +572,10 @@ struct macsec_ops;
-  * @mdix_ctrl: User setting of crossover
-  * @pma_extable: Cached value of PMA/PMD Extended Abilities Register
-  * @interrupts: Flag interrupts have been enabled
-+ * @irq_suspended: Flag indicating PHY is suspended and therefore interrupt
-+ *                 handling shall be postponed until PHY has resumed
-+ * @irq_rerun: Flag indicating interrupts occurred while PHY was suspended,
-+ *             requiring a rerun of the interrupt handler after resume
-  * @interface: enum phy_interface_t value
-  * @skb: Netlink message for cable diagnostics
-  * @nest: Netlink nest used for cable diagnostics
-@@ -626,6 +630,8 @@ struct phy_device {
- 
- 	/* Interrupts are enabled */
- 	unsigned interrupts:1;
-+	unsigned irq_suspended:1;
-+	unsigned irq_rerun:1;
- 
- 	enum phy_state state;
- 
 -- 
-2.35.2
+Thanks,
+
+David / dhildenb
 
