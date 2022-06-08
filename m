@@ -2,131 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7416EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:46:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC5E2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:46:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234823AbiFHHqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:46:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33368 "EHLO
+        id S229774AbiFHHqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:46:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237553AbiFHHhs (ORCPT
+        with ESMTP id S234320AbiFHHi5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:37:48 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955121182A
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:00:39 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id c14so18039408pgu.13
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 00:00:39 -0700 (PDT)
+        Wed, 8 Jun 2022 03:38:57 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19EC20E51D
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:05:51 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id h19so25842861edj.0
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 00:05:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:reply-to:mime-version
-         :content-transfer-encoding;
-        bh=Rzd5jHVZ1Np2+0gV097PKobFo2Ug2yArAiRpCWznZks=;
-        b=aLh0VWbB1Fj/q9OJtWN0VqMIl/GoZOK4jFT0+fWjl/fewag+xCXgldmWOywnmXnyqw
-         k8/+znBJuxwpoV0OzzFobfCWhSWi8eH4mMXPOyQU7mE5uYTLAAKAITieF0WVsO4bus3G
-         V4IPKt2znoV5C1/Fey9GH83Ylso9UA8dzOtxM9CF6wOqtbf/AYcbMJaZy6mYf/uMxeGR
-         FUkmE2CTFLX4KmlYwK+KA/6tiQL5llBBT7+g/R3yLFy/dLXYnhlapm9jJnxs4oWHyHgz
-         uA96F2sTLMvBTaqRNfEIyfnyfmzpDmFV1uili7dTguU4bT/sdEx6ycAiISjicOZPMF7B
-         IkiQ==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=vDAg7S7CLadJKFThkv78KBFq9JEWVoDrYZeGQAzsD5c=;
+        b=iEmsI3iUtwrJDESbXNbCVS2pUxkNtUVmUfQTeKINMxqEx9+dO8MgfeNX6LY1kUam7f
+         cntuD8lEmom+Vxn+cF5KKvTT6GbcuWzgvy82rpWRg59hsYzICrjsjLJlo/3y2ORtNMhU
+         aSQp3ENcnczs4XzL9kjgd30EVe+X35NjJjQP5Nvqxrnx1+ulByongC9Muxr1VIbBBsnb
+         93b+Jpgul3GeXutgiAtwGxgH+Fl7o4EAaf/pa2lYkJdTrukWDRXpkAmMsF533e+BkZ2b
+         3bpCiEeowpBBiwJzWvEZg/RD4K05wKa4jWY7xyfG2NRAmnr7wG+trJi4jJeJgYfYBxHx
+         NLbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :mime-version:content-transfer-encoding;
-        bh=Rzd5jHVZ1Np2+0gV097PKobFo2Ug2yArAiRpCWznZks=;
-        b=zVRSsJTPiPM+n+cd8bLw7Oe9vtZI213kULI/wU7db4I29s3uplCiDXtLSn4X/Tpwfu
-         q9pzCjPV2WaAOK4BilSP+QPttpvM8ZJB+CCGR1pFBu6LzVCJfuqFNkoGtoyvtWGrdwb3
-         mEDquyBNTgm3zE9VQBvo0hmQSgkYuyaVZSRcSEze1/K//7nXGVPukj79zDkg2qwujCRt
-         IrNcnS016dWVqQoxxoavwi0VHXgHl2FbHXYkTfemedmW4fE+Q+4uWo5hRFOF3VB62Ywf
-         dYkv8WimbHigYuB1hCwqmt4GpjZDTc5DPielJWagKZPUohu9OgdoY5JBtCti5Ln8Ri1A
-         el+Q==
-X-Gm-Message-State: AOAM5331bpGmyJMN9lxVhKAjMJZOSITO7guLVw1e1k6RWko28tEpT5v7
-        sWLh5frdpXPZVc8+efGJ7Yq0O6oLtPr+NJuh
-X-Google-Smtp-Source: ABdhPJyJlGe2LEF3l0HaSM5jSYhC48UeQi8mEwKBpio4r4vYBKy5lMZOyvXD9jCH+FG/RDs4YsVOKg==
-X-Received: by 2002:a05:6a00:a16:b0:518:ffe0:7229 with SMTP id p22-20020a056a000a1600b00518ffe07229mr68508072pfh.49.1654671638648;
-        Wed, 08 Jun 2022 00:00:38 -0700 (PDT)
-Received: from KASONG-MB0.tencent.com ([103.7.29.31])
-        by smtp.gmail.com with ESMTPSA id e18-20020a170902ed9200b001675991fb7fsm8396425plj.55.2022.06.08.00.00.36
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Wed, 08 Jun 2022 00:00:38 -0700 (PDT)
-From:   Kairui Song <ryncsn@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Eric Biederman <ebiederm@xmission.com>, x86@kernel.org,
-        kexec@lists.infradead.org, Kairui Song <kasong@tencent.com>
-Subject: [PATCH 0/2] x86/mpparse, kexec: Fix kdump/kexec kernel panic with MPTABLE and x2apic
-Date:   Wed,  8 Jun 2022 14:43:46 +0800
-Message-Id: <20220608064348.66402-1-ryncsn@gmail.com>
-X-Mailer: git-send-email 2.35.2
-Reply-To: Kairui Song <kasong@tencent.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=vDAg7S7CLadJKFThkv78KBFq9JEWVoDrYZeGQAzsD5c=;
+        b=bAPr32CL75opE+mX70+lyfmx4dm8hZvTNlvxPKL5LOnMQU7XVPYB0D7lxGUWYS87+c
+         8JH9YBVlBwIR5xeNh8Pv90FCvMWmdGkmVPJOtrHXNonSt/n/7taSb+U2tPDqAU8cxvoA
+         PuzIWnHuAA2u9uoi1y3Zbxo814np31Ne2aEEQD2jb3l5T4fNFGtcG2l80xILaPGDySn4
+         AFBigjmkyH6mAiM/InWqQ532DaExyPXPOoAkY7eSVycc8qTTdAK5p2wXboxj10nbdJhM
+         o/iq9HBDgquB+DbQ9Hz8bGZpvx+sRP/5FbO97Fi8TCyP5q17A1CLdGwmuDNLdHT9HbsS
+         RhMQ==
+X-Gm-Message-State: AOAM533Z3rPr6QL7l7QePurQecuyeZZCKVDWZgFP9mBecD6wEtwJqDG6
+        4NqWkLYx1VjTATPRskkJSlvdULAEcTmPfQ==
+X-Google-Smtp-Source: ABdhPJwl/bFoFqYf0T0M49mkcsr9UXbwPzcWabsJFz0mVIhs2N73IbjO2w/q2c+39Uzq77VaTd4e9w==
+X-Received: by 2002:a05:6402:35d0:b0:42e:1a76:67ae with SMTP id z16-20020a05640235d000b0042e1a7667aemr34054145edc.311.1654671918491;
+        Wed, 08 Jun 2022 00:05:18 -0700 (PDT)
+Received: from [192.168.0.188] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id l4-20020a170906644400b006feb047502bsm8710249ejn.151.2022.06.08.00.05.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 00:05:17 -0700 (PDT)
+Message-ID: <912e86a9-63cf-9d22-2259-193e7212ad7b@linaro.org>
+Date:   Wed, 8 Jun 2022 09:05:16 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 4/4] input: misc: rt5120: Add power key support
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     cy_huang <u0084500@gmail.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee.jones@linaro.org,
+        broonie@kernel.org, dmitry.torokhov@gmail.com
+Cc:     lgirdwood@gmail.com, cy_huang@richtek.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-input@vger.kernel.org
+References: <1654581161-12349-1-git-send-email-u0084500@gmail.com>
+ <1654581161-12349-5-git-send-email-u0084500@gmail.com>
+ <b37a1a32-056e-cb25-f53a-3028a4d90ece@linaro.org>
+In-Reply-To: <b37a1a32-056e-cb25-f53a-3028a4d90ece@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kairui Song <kasong@tencent.com>
+On 08/06/2022 09:03, Krzysztof Kozlowski wrote:
+> On 07/06/2022 07:52, cy_huang wrote:
+>> From: ChiYuan Huang <cy_huang@richtek.com>
+>>
+>> Add RT5120 PMIC power key support.
+>>
+>> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+>> ---
+>>  drivers/input/misc/Kconfig         |   9 +++
+>>  drivers/input/misc/Makefile        |   1 +
+>>  drivers/input/misc/rt5120-pwrkey.c | 115 +++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 125 insertions(+)
+>>  create mode 100644 drivers/input/misc/rt5120-pwrkey.c
+>>
+>> diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
+>> index dd5227c..9c0d814 100644
+>> --- a/drivers/input/misc/Kconfig
+>> +++ b/drivers/input/misc/Kconfig
+>> @@ -881,6 +881,15 @@ config INPUT_SC27XX_VIBRA
+>>  	  To compile this driver as a module, choose M here. The module will
+>>  	  be called sc27xx_vibra.
+>>  
+>> +config INPUT_RT5120_PWRKEY
+>> +	tristate "RT5120 PMIC power key support"
+>> +	depends on MFD_RT5120
+>> +	help
+>> +	  This enables support for RT5120 PMIC power key driver.
+>> +
+>> +	  To compile this driver as a module, choose M here. the module will
+>> +	  be called rt5120-pwerkey.
+>> +
+>>  config INPUT_STPMIC1_ONKEY
+>>  	tristate "STPMIC1 PMIC Onkey support"
+>>  	depends on MFD_STPMIC1
+>> diff --git a/drivers/input/misc/Makefile b/drivers/input/misc/Makefile
+>> index b92c53a..164ea20 100644
+>> --- a/drivers/input/misc/Makefile
+>> +++ b/drivers/input/misc/Makefile
+>> @@ -68,6 +68,7 @@ obj-$(CONFIG_INPUT_RAVE_SP_PWRBUTTON)	+= rave-sp-pwrbutton.o
+>>  obj-$(CONFIG_INPUT_RB532_BUTTON)	+= rb532_button.o
+>>  obj-$(CONFIG_INPUT_REGULATOR_HAPTIC)	+= regulator-haptic.o
+>>  obj-$(CONFIG_INPUT_RETU_PWRBUTTON)	+= retu-pwrbutton.o
+>> +obj-$(CONFIG_INPUT_RT5120_PWRKEY)	+= rt5120-pwrkey.o
+>>  obj-$(CONFIG_INPUT_AXP20X_PEK)		+= axp20x-pek.o
+>>  obj-$(CONFIG_INPUT_GPIO_ROTARY_ENCODER)	+= rotary_encoder.o
+>>  obj-$(CONFIG_INPUT_RK805_PWRKEY)	+= rk805-pwrkey.o
+>> diff --git a/drivers/input/misc/rt5120-pwrkey.c b/drivers/input/misc/rt5120-pwrkey.c
+>> new file mode 100644
+>> index 00000000..42bd2f3
+>> --- /dev/null
+>> +++ b/drivers/input/misc/rt5120-pwrkey.c
+>> @@ -0,0 +1,115 @@
+>> +// SPDX-License-Identifier: GPL-2.0+
+>> +
+>> +#include <linux/bits.h>
+>> +#include <linux/input.h>
+>> +#include <linux/interrupt.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/module.h>
+>> +#include <linux/mod_devicetable.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/regmap.h>
+>> +
+>> +#define RT5120_REG_INTSTAT	0x1E
+>> +#define RT5120_PWRKEYSTAT_MASK	BIT(7)
+>> +
+>> +struct rt5120_priv {
+>> +	struct regmap *regmap;
+>> +	struct input_dev *input;
+>> +	int press_irq;
+>> +	int release_irq;
+>> +};
+>> +
+>> +static irqreturn_t rt5120_pwrkey_handler(int irq, void *devid)
+>> +{
+>> +	struct rt5120_priv *priv = devid;
+>> +	unsigned int stat;
+>> +	bool is_pressed;
+>> +	int ret;
+>> +
+>> +	ret = regmap_read(priv->regmap, RT5120_REG_INTSTAT, &stat);
+>> +	if (ret)
+>> +		return IRQ_NONE;
+>> +
+>> +	is_pressed = !(stat & RT5120_PWRKEYSTAT_MASK);
+>> +
+>> +	if ((is_pressed && irq == priv->press_irq) ||
+>> +	    (!is_pressed  && irq == priv->release_irq)) {
+>> +		input_report_key(priv->input, KEY_POWER, is_pressed);
+>> +		input_sync(priv->input);
+>> +	}
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +static int rt5120_pwrkey_probe(struct platform_device *pdev)
+>> +{
+>> +	struct rt5120_priv *priv;
+>> +	int ret;
+>> +
+>> +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+>> +	if (!priv)
+>> +		return -ENOMEM;
+>> +
+>> +	priv->regmap = dev_get_regmap(pdev->dev.parent, NULL);
+>> +	if (!priv->regmap) {
+>> +		dev_err(&pdev->dev, "Failed to init regmap\n");
+>> +		return -ENODEV;
+>> +	}
+>> +
+>> +	priv->press_irq = platform_get_irq_byname(pdev, "pwrkey-press");
+>> +	if (priv->press_irq < 0)
+>> +		return priv->press_irq;
+>> +
+>> +	priv->release_irq = platform_get_irq_byname(pdev, "pwrkey-release");
+>> +	if (priv->release_irq < 0)
+>> +		return priv->release_irq;
+> 
+> Not described in the bindings. All properties need to be documented.
 
-Following kernel panic is observed when doing kdump/kexec on
-qemu-kvm VMs that uses MPTABLE, not ACPI MADT, and supports x2apic:
+Hm, it seems it is coming from the parent device, dynamically, so looks ok.
 
-  Intel MultiProcessor Specification v1.4
-  MPTABLE: OEM ID: BOCHSCPU
-  MPTABLE: Product ID: 0.1
-  MPTABLE: APIC at: 0xFEE00000
-  BUG: unable to handle page fault for address: ffffffffff5fc020
-  #PF: supervisor read access in kernel mode
-  #PF: error_code(0x0000) - not-present page
-  PGD 25e15067 P4D 25e15067 PUD 25e17067 PMD 25e18067 PTE 0
-  Oops: 0000 [#1] SMP NOPTI
-  CPU: 0 PID: 0 Comm: swapper Not tainted 5.14.10-300.fc35.x86_64 #1
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
-  RIP: 0010:native_apic_mem_read+0x2/0x10
-  Code: 14 25 20 cd e3 82 c3 90 bf 30 08 00 00 ff 14 25 18 cd e3 82 c3 cc cc cc 89 ff 89 b7 00 c0 5f ff c3 0f 1f 80 00 00 00 00 89 ff <8b> 87 00 c0 5f ff c3 0f 1f 80 00 00 00 0
-  RSP: 0000:ffffffff82e03e18 EFLAGS: 00010046
-  RAX: ffffffff81064840 RBX: ffffffffff240b6c RCX: ffffffff82f17428
-  RDX: c0000000ffffdfff RSI: 00000000ffffdfff RDI: 0000000000000020
-  RBP: ffff888023200000 R08: 0000000000000000 R09: ffffffff82e03c50
-  R10: ffffffff82e03c48 R11: ffffffff82f47468 R12: ffffffffff240b40
-  R13: ffffffffff200b30 R14: 0000000000000000 R15: 00000000000000d4
-  FS:  0000000000000000(0000) GS:ffffffff8365b000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: ffffffffff5fc020 CR3: 0000000025e10000 CR4: 00000000000006b0
-  Call Trace:
-   ? read_apic_id+0x15/0x30
-   ? register_lapic_address+0x76/0x97
-   ? default_get_smp_config+0x28b/0x42d
-   ? dmi_check_system+0x1c/0x60
-   ? acpi_boot_init+0x1d/0x4c3
-   ? setup_arch+0xb37/0xc2a
-   ? slab_is_available+0x5/0x10
-   ? start_kernel+0x61/0x980
-   ? load_ucode_bsp+0x4c/0xcd
-   ? secondary_startup_64_no_verify+0xc2/0xcb
-  Modules linked in:
-  CR2: ffffffffff5fc020
-  random: get_random_bytes called from oops_exit+0x35/0x60 with crng_init=0
-  ---[ end trace c9e569df3bdbefd3 ]---
 
-It turns out MPTABLE doesn't play well with pre-enabled x2apic mode,
-this series extend the apic driver interface and let MPTABLE parse
-probe the driver properly.
-
-This can be easily reproduced with qemu-kvm, use -no-acpi and enable
-x2apic, so x2apic with MPTABLE will be in use, then trigger kdump/kexec.
-
-Kairui Song (2):
-  x86, apic: add a more generic early_probe
-  x86/mpparse, kexec: probe apic driver early for x2apic
-
- arch/x86/include/asm/apic.h           |  6 ++++++
- arch/x86/kernel/apic/probe_64.c       | 16 ++++++++++++++++
- arch/x86/kernel/apic/x2apic_cluster.c |  8 +++++++-
- arch/x86/kernel/apic/x2apic_phys.c    |  8 +++++++-
- arch/x86/kernel/mpparse.c             |  4 +++-
- 5 files changed, 39 insertions(+), 3 deletions(-)
-
--- 
-2.35.2
-
+Best regards,
+Krzysztof
