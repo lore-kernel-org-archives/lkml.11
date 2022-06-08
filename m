@@ -2,96 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6669C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A1AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241460AbiFHOgW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 10:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32910 "EHLO
+        id S241483AbiFHOgb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 10:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241005AbiFHOgU (ORCPT
+        with ESMTP id S241005AbiFHOgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 10:36:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A811357B35
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 07:36:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4603961B8D
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 14:36:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72E65C34116;
-        Wed,  8 Jun 2022 14:36:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654698978;
-        bh=3X/DXsxcjpI4dcOp06iuY7OHxEhJeva0tl/x5kqZNTc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=kvgyY5tPMuBKazQ1rsSeiTlLEgM7pOQbKk3OZrfsjTayj9VjfQLathntsNzpLe7IQ
-         sQcG7S13+c/yk5fdZiy6uQUM2Pnqma96Mba5XlE9v5LkIXiRCPuKFh2kMtp/lXp43b
-         pzgng15w19lX2igNCtSNLSDAnxLY2rtpcXCNR4BdkMemgbXQ2zLE8BB1mNehqAcfpG
-         2FcGP/36mynBoLIg5JXl216sycbq5X5WjByCoOLP15KPsx/+v+8JSY2zyX6xoNocpT
-         5Q/ZPvf3cScMCmF8Yu440CgcgjQt4h62v2kk8y2N1IVlEYF+4SJllGNDBoEt74AXhw
-         JlQvUTR796oSg==
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Stefan Richter <stefanr@s5r6.in-berlin.de>
-Cc:     linux1394-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH] MAINTAINERS: Mark linux1394-devel as subscribers-only
-Date:   Wed,  8 Jun 2022 09:36:14 -0500
-Message-Id: <20220608143614.398128-1-helgaas@kernel.org>
+        Wed, 8 Jun 2022 10:36:25 -0400
+Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB4235D657;
+        Wed,  8 Jun 2022 07:36:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=hNRcY
+        edXWJStsYzsJqJCSjMPXwEroJLu2AmA8UpFdZI=; b=aqW+LtPQRrRZLwEo6zwRR
+        jfZhnIL5iSBlDM8VmdwxX8ZPkPI/38wuPKAvZOkvFv3kGSxRiQH8XYD9Dd8VvezC
+        xGduaKQmylfhieA7+XI4HWYlO0Dvq5juO1mFnark3GofRwDdAZrkjmTImYN2HjIx
+        +wXyWsOlIy2K0/SzsQ9In0=
+Received: from localhost.localdomain (unknown [123.112.69.106])
+        by smtp3 (Coremail) with SMTP id G9xpCgCHZF29s6BiAhfvHg--.26185S4;
+        Wed, 08 Jun 2022 22:35:49 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     jejb@linux.ibm.com, jarkko@kernel.org, zohar@linux.ibm.com,
+        dhowells@redhat.com, jmorris@namei.org, serge@hallyn.com
+Cc:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH v2] KEYS: trusted: Fix memory leak in tpm2_key_encode()
+Date:   Wed,  8 Jun 2022 22:35:37 +0800
+Message-Id: <20220608143537.670675-1-niejianglei2021@163.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: G9xpCgCHZF29s6BiAhfvHg--.26185S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7urWxGF17XFWDJrWkCFy7trb_yoW8KF47pF
+        ZxKF13XrW29ry3Ary3JF4SvFWSkw1rGF42gws2g397GasxJFsrKFy2yr4Ygr13AFWFgw15
+        ZFWDZFWUuFWqqr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRID7fUUUUU=
+X-Originating-IP: [123.112.69.106]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiFQUajF5mLINbvQAAs3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+tpm2_key_encode() allocates a memory chunk from scratch with kmalloc(),
+but it is never freed, which leads to a memory leak. Free the memory
+chunk with kfree() in the return path.
 
-The linux1394-devel mailing list rejects messages from non-subscribers, so
-mark it as such:
-
-  Your message has been rejected, probably because you are not
-  subscribed to the mailing list and the list's policy is to prohibit
-  non-members from posting to it.  If you think that your messages are
-  being rejected in error, contact the mailing list owner at
-  linux1394-devel-owner@lists.sourceforge.net.
-
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
 ---
- MAINTAINERS | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ security/keys/trusted-keys/trusted_tpm2.c | 24 +++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a6d3bd9d2a8d..9d5a24d9187b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7697,7 +7697,7 @@ F:	sound/firewire/
- FIREWIRE MEDIA DRIVERS (firedtv)
- M:	Stefan Richter <stefanr@s5r6.in-berlin.de>
- L:	linux-media@vger.kernel.org
--L:	linux1394-devel@lists.sourceforge.net
-+L:	linux1394-devel@lists.sourceforge.net (subscribers-only)
- S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mchehab/linux-media.git
- F:	drivers/media/firewire/
-@@ -7706,14 +7706,14 @@ FIREWIRE SBP-2 TARGET
- M:	Chris Boot <bootc@bootc.net>
- L:	linux-scsi@vger.kernel.org
- L:	target-devel@vger.kernel.org
--L:	linux1394-devel@lists.sourceforge.net
-+L:	linux1394-devel@lists.sourceforge.net (subscribers-only)
- S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/nab/lio-core-2.6.git master
- F:	drivers/target/sbp/
+diff --git a/security/keys/trusted-keys/trusted_tpm2.c b/security/keys/trusted-keys/trusted_tpm2.c
+index 0165da386289..6fd426212386 100644
+--- a/security/keys/trusted-keys/trusted_tpm2.c
++++ b/security/keys/trusted-keys/trusted_tpm2.c
+@@ -32,6 +32,7 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
+ 			   struct trusted_key_options *options,
+ 			   u8 *src, u32 len)
+ {
++	int err;
+ 	const int SCRATCH_SIZE = PAGE_SIZE;
+ 	u8 *scratch = kmalloc(SCRATCH_SIZE, GFP_KERNEL);
+ 	u8 *work = scratch, *work1;
+@@ -57,8 +58,10 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
+ 		unsigned char bool[3], *w = bool;
+ 		/* tag 0 is emptyAuth */
+ 		w = asn1_encode_boolean(w, w + sizeof(bool), true);
+-		if (WARN(IS_ERR(w), "BUG: Boolean failed to encode"))
+-			return PTR_ERR(w);
++		if (WARN(IS_ERR(w), "BUG: Boolean failed to encode")) {
++			err = PTR_ERR(w);
++			goto out;
++		}
+ 		work = asn1_encode_tag(work, end_work, 0, bool, w - bool);
+ 	}
  
- FIREWIRE SUBSYSTEM
- M:	Stefan Richter <stefanr@s5r6.in-berlin.de>
--L:	linux1394-devel@lists.sourceforge.net
-+L:	linux1394-devel@lists.sourceforge.net (subscribers-only)
- S:	Maintained
- W:	http://ieee1394.wiki.kernel.org/
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/ieee1394/linux1394.git
+@@ -69,8 +72,10 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
+ 	 * trigger, so if it does there's something nefarious going on
+ 	 */
+ 	if (WARN(work - scratch + pub_len + priv_len + 14 > SCRATCH_SIZE,
+-		 "BUG: scratch buffer is too small"))
+-		return -EINVAL;
++		 "BUG: scratch buffer is too small")) {
++		err = -EINVAL;
++		goto out;
++	}
+ 
+ 	work = asn1_encode_integer(work, end_work, options->keyhandle);
+ 	work = asn1_encode_octet_string(work, end_work, pub, pub_len);
+@@ -79,10 +84,17 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
+ 	work1 = payload->blob;
+ 	work1 = asn1_encode_sequence(work1, work1 + sizeof(payload->blob),
+ 				     scratch, work - scratch);
+-	if (WARN(IS_ERR(work1), "BUG: ASN.1 encoder failed"))
+-		return PTR_ERR(work1);
++	if (WARN(IS_ERR(work1), "BUG: ASN.1 encoder failed")) {
++		err = -EINVAL;
++		goto out;
++	}
++	kfree(scratch);
+ 
+ 	return work1 - payload->blob;
++
++out:
++	kfree(scratch);
++	return err;
+ }
+ 
+ struct tpm2_key_context {
 -- 
 2.25.1
 
