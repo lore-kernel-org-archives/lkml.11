@@ -2,99 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DEBBC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:49:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF86C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:49:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231448AbiFHItK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53034 "EHLO
+        id S232366AbiFHItu convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:49:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231268AbiFHIss (ORCPT
+        with ESMTP id S231733AbiFHItb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 04:48:48 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3653317529;
-        Wed,  8 Jun 2022 01:06:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1654675579; x=1686211579;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=nPz0elsgpG0Rgm6MSWEv4NaWObr+3SGeXQnA+z0CNRk=;
-  b=tYD7emkPrwgCGN15HeuVaIrPT2H27ojDfBFruqhpv8CgXZs7UHCT2Mic
-   GzH4E3CiWgQkpIUiU8GB0yS+x1XCIiDVvrtCBA9Qh6gGLYZhl8JJ5b/QG
-   1nuxuzZq/kXk0qFBbCKe9NsWZCiA95gqwf4ru4RK0ZDHxGy8poJhOf5oV
-   bjYZdUdz7cg6e0MP3iZylBkDSrjQpI2yUN+ifvcr/meVqJyM3ioKxvkhw
-   gix6eifC+QX/258Nt9F4/XOgr9aZojDIX3xZpVnu/biD2imxRE0UNgS2F
-   9HMuciQeBpxtw8QcH5SfkXXVOLzsbI9A5f6llcNyQcHjMicge+Lx9gtuv
-   w==;
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="167231899"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jun 2022 01:05:57 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 8 Jun 2022 01:05:56 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 8 Jun 2022 01:05:53 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [RESEND][PATCH net-next] net: macb: change return type for gem_ptp_set_one_step_sync()
-Date:   Wed, 8 Jun 2022 11:08:18 +0300
-Message-ID: <20220608080818.1495044-1-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        Wed, 8 Jun 2022 04:49:31 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B119622C2D7
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:06:33 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-26-kLYbn_LXNMeR_Z6g1CkFtw-1; Wed, 08 Jun 2022 09:02:31 +0100
+X-MC-Unique: kLYbn_LXNMeR_Z6g1CkFtw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Wed, 8 Jun 2022 09:02:30 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Wed, 8 Jun 2022 09:02:30 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Jiri Slaby' <jslaby@suse.cz>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 16/36] tty/vt: consolemap: check put_user() in
+ con_get_unimap()
+Thread-Topic: [PATCH 16/36] tty/vt: consolemap: check put_user() in
+ con_get_unimap()
+Thread-Index: AQHYelzbvgE+yO9BWkaH8hQ5VjstKK1FJorQ
+Date:   Wed, 8 Jun 2022 08:02:30 +0000
+Message-ID: <5bf366cc45334bb9a9c3d186ef8d6933@AcuMS.aculab.com>
+References: <20220607104946.18710-1-jslaby@suse.cz>
+ <20220607104946.18710-16-jslaby@suse.cz>
+In-Reply-To: <20220607104946.18710-16-jslaby@suse.cz>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-gem_ptp_set_one_step_sync() always returns zero thus change its return
-type to void.
+From: Jiri Slaby
+> Sent: 07 June 2022 11:49
+> 
+> Only the return value of copy_to_user() is checked in con_get_unimap().
+> Do the same for put_user() of the count too.
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> ---
+>  drivers/tty/vt/consolemap.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+> index 831450f2bfd1..92b5dddb00d9 100644
+> --- a/drivers/tty/vt/consolemap.c
+> +++ b/drivers/tty/vt/consolemap.c
+> @@ -813,7 +813,8 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct,
+>  	console_unlock();
+>  	if (copy_to_user(list, unilist, min(ect, ct) * sizeof(*unilist)))
+>  		ret = -EFAULT;
+> -	put_user(ect, uct);
+> +	if (put_user(ect, uct))
+> +		ret = -EFAULT;
+>  	kvfree(unilist);
+>  	return ret ? ret : (ect <= ct) ? 0 : -ENOMEM;
+>  }
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/net/ethernet/cadence/macb_ptp.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+How is the user expected to check the result of this code?
 
-diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
-index 9559c16078f9..e6cb20aaa76a 100644
---- a/drivers/net/ethernet/cadence/macb_ptp.c
-+++ b/drivers/net/ethernet/cadence/macb_ptp.c
-@@ -434,7 +434,7 @@ int gem_get_hwtst(struct net_device *dev, struct ifreq *rq)
- 		return 0;
- }
- 
--static int gem_ptp_set_one_step_sync(struct macb *bp, u8 enable)
-+static void gem_ptp_set_one_step_sync(struct macb *bp, u8 enable)
- {
- 	u32 reg_val;
- 
-@@ -444,8 +444,6 @@ static int gem_ptp_set_one_step_sync(struct macb *bp, u8 enable)
- 		macb_writel(bp, NCR, reg_val | MACB_BIT(OSSMODE));
- 	else
- 		macb_writel(bp, NCR, reg_val & ~MACB_BIT(OSSMODE));
+AFAICT -ENOMEM is returned if either kmalloc() fails or
+the user buffer is too short?
+Looks pretty hard to detect which.
+
+I've not looked at the effect of all the patches, but setting
+'ret = -ENOMEM' and breaking the loop when the array is too
+small would simplify things.
+
+	David
+
 -
--	return 0;
- }
- 
- int gem_set_hwtst(struct net_device *dev, struct ifreq *ifr, int cmd)
-@@ -468,8 +466,7 @@ int gem_set_hwtst(struct net_device *dev, struct ifreq *ifr, int cmd)
- 	case HWTSTAMP_TX_OFF:
- 		break;
- 	case HWTSTAMP_TX_ONESTEP_SYNC:
--		if (gem_ptp_set_one_step_sync(bp, 1) != 0)
--			return -ERANGE;
-+		gem_ptp_set_one_step_sync(bp, 1);
- 		tx_bd_control = TSTAMP_ALL_FRAMES;
- 		break;
- 	case HWTSTAMP_TX_ON:
--- 
-2.34.1
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
