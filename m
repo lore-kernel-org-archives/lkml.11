@@ -2,134 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C43D8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:57:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232657AbiFHH4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:56:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43578 "EHLO
+        id S231938AbiFHH5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:57:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233022AbiFHHzZ (ORCPT
+        with ESMTP id S231565AbiFHHys (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:55:25 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65B11A048A;
-        Wed,  8 Jun 2022 00:24:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654673068; x=1686209068;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=n6ZzcLPLeuptMeqjzTvwmiJodh+6qVPTBoekvS/R3Pk=;
-  b=B/41e0HX++2sRmVG/e8GUSATjv4wZQ5Mdtts7lXDOnHZwYoqWBsRkvrD
-   uSuhfzlFnOIjcilvvtiFrKWAwSqBC3vXI7J2VZ5+B/k7tv0t3HhQS+H7d
-   LIoqXX2y/8WE6IOthXOVo+as5VtPoguFj5+brLUqACyBhbLBEvgNI6F++
-   opsjKQ36WSGkTPZU21QIO0SG15ODm5w12Qmk4joN3qSBAN6LUxnbpURZC
-   fGmFfXYKhNWb9CYQO9Xhkt1MfqUch4gnL4VOQpqOcqrk/fKHGnkQyp7JA
-   UpvSYagR1KZfWnNtFeh4yIlYVr7+wm9ps/Ltx9raHbr0LF6D34YiOq9qG
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277632430"
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="277632430"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 00:23:53 -0700
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="636636736"
-Received: from bmichals-mobl.ger.corp.intel.com ([10.252.57.131])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 00:23:52 -0700
-Date:   Wed, 8 Jun 2022 10:23:45 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 12/36] tty/vt: consolemap: use sizeof(*pointer) instead
- of sizeof(type)
-In-Reply-To: <37ced336-ac77-4c8f-1142-1f55c01383ca@suse.cz>
-Message-ID: <b2df9240-2b47-6fe3-4a65-3bdfcb961e4@linux.intel.com>
-References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-12-jslaby@suse.cz> <8c809bd0-552d-8027-a1a7-96b77369d06e@linux.intel.com> <37ced336-ac77-4c8f-1142-1f55c01383ca@suse.cz>
+        Wed, 8 Jun 2022 03:54:48 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054A11D81AC
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:23:55 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nyq2V-0006tM-78; Wed, 08 Jun 2022 09:23:39 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id EC4F88EA76;
+        Wed,  8 Jun 2022 07:21:24 +0000 (UTC)
+Date:   Wed, 8 Jun 2022 09:21:24 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 2/3] net: phy: dp83td510: add cable testing
+ support
+Message-ID: <20220608072124.epd6zq6r4ttl6du4@pengutronix.de>
+References: <20220608071749.3818602-1-o.rempel@pengutronix.de>
+ <20220608071749.3818602-3-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1026436096-1654673033=:1676"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="aodkzja2s5fdzm6x"
+Content-Disposition: inline
+In-Reply-To: <20220608071749.3818602-3-o.rempel@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-1026436096-1654673033=:1676
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+--aodkzja2s5fdzm6x
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 7 Jun 2022, Jiri Slaby wrote:
+On 08.06.2022 09:17:48, Oleksij Rempel wrote:
+> Cable testing was tested in different HW configurations and cables:
+> - SJA1105 + DP83TD510
+> - ASIX + DP83TD510
+> - STM32MP1 + DP83TD510
+>=20
+> Results provided by this PHY should be interpreted with grain of sold.
+                                                                   ^^^^
+                                                                   salt
+> For example testing unshielded and shielded twisted pair may give
+> different results. Nevertheless, it still can be usable.
+>=20
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-> On 07. 06. 22, 16:00, Ilpo Järvinen wrote:
-> > On Tue, 7 Jun 2022, Jiri Slaby wrote:
-> > 
-> > > It is preferred to use sizeof(*pointer) instead of sizeof(type). First,
-> > > the type of the variable can change and one needs not change the former
-> > > (unlike the latter). Second, the latter is error-prone due to (u16),
-> > > (u16 *), and (u16 **) mixture here.
-> > > 
-> > > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> > 
-> > Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > 
-> > This seems fine but see the comments below which are not directly related
-> > to the change itself.
-> > 
-> > > ---
-> > >   drivers/tty/vt/consolemap.c | 23 ++++++++++++-----------
-> > >   1 file changed, 12 insertions(+), 11 deletions(-)
-> > > 
-> > > diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-> > > index 097ab7d01f8b..79a62dcca046 100644
-> > > --- a/drivers/tty/vt/consolemap.c
-> > > +++ b/drivers/tty/vt/consolemap.c
-> > > @@ -251,12 +251,12 @@ static void set_inverse_trans_unicode(struct vc_data
-> > > *conp,
-> > >   		return;
-> > >   	q = p->inverse_trans_unicode;
-> > >   	if (!q) {
-> > > -		q = p->inverse_trans_unicode =
-> > > -			kmalloc_array(MAX_GLYPH, sizeof(u16), GFP_KERNEL);
-> > > +		q = p->inverse_trans_unicode = kmalloc_array(MAX_GLYPH,
-> > > +				sizeof(*q), GFP_KERNEL);
-> > >   		if (!q)
-> > >   			return;
-> > >   	}
-> > > -	memset(q, 0, MAX_GLYPH * sizeof(u16));
-> > > +	memset(q, 0, MAX_GLYPH * sizeof(*q));
-> > 
-> > Convert kmalloc_array into kcalloc and place memset() into else branch?
-> 
-> IMO, the way it is now is more obvious.
+Marc
 
-Fair enough.
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-> > > @@ -514,11 +514,12 @@ con_insert_unipair(struct uni_pagedict *p, u_short
-> > > unicode, u_short fontpos)
-> > >   	n = UNI_ROW(unicode);
-> > >   	p2 = p1[n];
-> > >   	if (!p2) {
-> > > -		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(u16),
-> > > GFP_KERNEL);
-> > > +		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(*p2),
-> > > +				GFP_KERNEL);
-> > >   		if (!p2)
-> > >   			return -ENOMEM;
-> > >   		/* No glyphs for the characters (yet) */
-> > > -		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(u16));
-> > > +		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(*p2));
-> > 
-> > This could have been kcalloc'ed.
-> 
-> Why would you zero it before setting it to 0xff?
+--aodkzja2s5fdzm6x
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Yes, nevermind that. I obviously completely missed the fact it wasn't 
-memsetting to zero.
+-----BEGIN PGP SIGNATURE-----
 
--- 
- i.
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKgTfEACgkQrX5LkNig
+010vdwf/bDkW4meDh4hBrBPhJembo+zcC64ORWdIN9AFn5p64e8hrm29IBmoJ/pV
+Vxz90aHP2bz8eC10T2IwghV44QRSIaIfwHrdfEtgxHPB4wNE/gnGwLMWJ7oCObC/
+vIES+M2t9aRq9Wt+8ELn66SnN8txWHhprQZu9ZkYX76ihMR2nMcNt3xIywBpXPJZ
+8CEui29oMcyt9qVA24EpKQqTafRQvjPmCiBKy8zqrFSPZ0jn4ZbbU0/2l67grGWn
+hrbQBnSAwU17eiKkQ/cYyEC0moul2Ut/nSXT5wTOBeAFt7v+Kei8/Ksq9wFKo6P0
+h34KLOBRppih7JdT5BPSd5jDrVxsdg==
+=+uWu
+-----END PGP SIGNATURE-----
 
---8323329-1026436096-1654673033=:1676--
+--aodkzja2s5fdzm6x--
