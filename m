@@ -2,166 +2,283 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 996B5C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF088C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241857AbiFHOmG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 10:42:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58630 "EHLO
+        id S241868AbiFHOmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 10:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241677AbiFHOl0 (ORCPT
+        with ESMTP id S241823AbiFHOl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 10:41:26 -0400
-X-Greylist: delayed 91453 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Jun 2022 07:41:17 PDT
-Received: from forward500j.mail.yandex.net (forward500j.mail.yandex.net [IPv6:2a02:6b8:0:801:2::110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B9B33F307;
-        Wed,  8 Jun 2022 07:41:17 -0700 (PDT)
-Received: from myt5-ca6a6e6c0c8f.qloud-c.yandex.net (myt5-ca6a6e6c0c8f.qloud-c.yandex.net [IPv6:2a02:6b8:c12:3b1a:0:640:ca6a:6e6c])
-        by forward500j.mail.yandex.net (Yandex) with ESMTP id E12756CB67AF;
-        Wed,  8 Jun 2022 17:41:14 +0300 (MSK)
-Received: from myt6-016ca1315a73.qloud-c.yandex.net (myt6-016ca1315a73.qloud-c.yandex.net [2a02:6b8:c12:4e0e:0:640:16c:a131])
-        by myt5-ca6a6e6c0c8f.qloud-c.yandex.net (mxback/Yandex) with ESMTP id jHhEC4bm6W-fBg4bMNT;
-        Wed, 08 Jun 2022 17:41:14 +0300
-X-Yandex-Fwd: 2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1654699274;
-        bh=kbcWG7z8hVYH/9ji+sJIvTclsAnw9XhdMRAxX2veCeY=;
-        h=In-Reply-To:Subject:Cc:To:From:References:Date:Message-ID;
-        b=d+FYZIQfI623WY4DWp0DvX/qyw9CAjhvrgGyXVEBveQVm2xFf/8wfbjM0Ve6JjP5c
-         I+W0AufQYClhW2qe6tNXClkucR4AUecvdGN+aEsB1dIg0PBObMWJn3Aemclkq7/nKU
-         +sRET8c3nyVnamnYBb9Gi8jp/vrWG+ausqsvvH8Y=
-Authentication-Results: myt5-ca6a6e6c0c8f.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
-Received: by myt6-016ca1315a73.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id biE6ZnHqZS-fAMuNMp1;
-        Wed, 08 Jun 2022 17:41:10 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-Date:   Wed, 8 Jun 2022 17:41:07 +0300
-From:   Nikita Shubin <nikita.shubin@maquefel.me>
-To:     John Garry <john.garry@huawei.com>
-Cc:     Genevieve Chan <genevieve.chan@starfivetech.com>,
-        =?UTF-8?B?Sm/Do28g?= =?UTF-8?B?TcOhcmlv?= Domingos 
-        <joao.mario@tecnico.ulisboa.pt>,
-        Nikita Shubin <n.shubin@yadro.com>,
+        Wed, 8 Jun 2022 10:41:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD12A15A846
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 07:41:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45319B8284D
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 14:41:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD6EBC3411E;
+        Wed,  8 Jun 2022 14:41:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654699281;
+        bh=MpWpEZ+ppbvkk302IXxgp9fwXlIo7bKW5n05qijy2DM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lrXfoEZL+Tt2te+tWWtnsLvUbA3kean2UGiSFsq//R3ym5jD9nxrq/PGjONNjy+NN
+         JH2uywlCoFmpLYEmFEL7FcYgLT7KLO+cnjdcXk4uXKqKneT9XS7Asva+L641ih8Cqa
+         pV4sYGua34fb2KNMWKPEIpZ8PqISa4J1dU3b6JjtTvA9es44XLD51XxfV8jmt49yuR
+         rtO9r5mDxoQM21Xmb/Or2i/nQChmXq60Is97awFXu6KtCD4rWhGNJzrNS7g2ZvYISd
+         OXdafWHt1TeWxigmmDgPv1aepigvX9T7Hw7BNtx25k3mzquWdC6FRYhEKrdfKbJKvk
+         W6cEFLb43zzuA==
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        "Namhyung Kim" <namhyung@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        "Palmer Dabbelt" <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>,
-        Atish Patra <atishp@atishpatra.org>
-Subject: Re: [PATCH v3 3/4] RISC-V: Added generic pmu-events mapfile
-Message-ID: <20220608174107.7b94e545@redslave.neermore.group>
-In-Reply-To: <9e981523-6032-fd24-08f9-0ef771cd1c2e@huawei.com>
-References: <20220607131648.29439-1-nikita.shubin@maquefel.me>
-        <20220607131648.29439-4-nikita.shubin@maquefel.me>
-        <9e981523-6032-fd24-08f9-0ef771cd1c2e@huawei.com>
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Phil Auld <pauld@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Yu Liao <liaoyu15@huawei.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Subject: [PATCH 10/20] context_tracking: Take NMI eqs entrypoints over RCU
+Date:   Wed,  8 Jun 2022 16:40:27 +0200
+Message-Id: <20220608144037.1765000-11-frederic@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220608144037.1765000-1-frederic@kernel.org>
+References: <20220608144037.1765000-1-frederic@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello, John.
+The RCU dynticks counter is going to be merged into the context tracking
+subsystem. Prepare with moving the NMI extended quiescent states
+entrypoints to context tracking. For now those are dumb redirection to
+existing RCU calls.
 
-On Wed, 8 Jun 2022 11:45:53 +0100
-John Garry <john.garry@huawei.com> wrote:
+Acked-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Cc: Boqun Feng <boqun.feng@gmail.com>
+Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Cc: Yu Liao<liaoyu15@huawei.com>
+Cc: Phil Auld <pauld@redhat.com>
+Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
+Cc: Alex Belits <abelits@marvell.com>
+---
+ Documentation/RCU/Design/Requirements/Requirements.rst |  2 +-
+ arch/Kconfig                                           |  2 +-
+ arch/arm64/kernel/entry-common.c                       |  8 ++++----
+ include/linux/context_tracking_irq.h                   |  4 ++++
+ include/linux/hardirq.h                                |  4 ++--
+ kernel/context_tracking.c                              | 10 ++++++++++
+ kernel/entry/common.c                                  |  4 ++--
+ kernel/extable.c                                       |  4 ++--
+ kernel/trace/trace.c                                   |  2 +-
+ 9 files changed, 27 insertions(+), 13 deletions(-)
 
-> On 07/06/2022 14:16, Nikita Shubin wrote:
-> > From: Jo=C3=A3o M=C3=A1rio Domingos <joao.mario@tecnico.ulisboa.pt>
-> >=20
-> > The pmu-events now supports custom events for RISC-V, plus the
-> > cycle, time and instret events were defined.
-> >=20
-> > Signed-off-by: Jo=C3=A3o M=C3=A1rio Domingos <joao.mario@tecnico.ulisbo=
-a.pt>
-> > Tested-by: Nikita Shubin <n.shubin@yadro.com>
-> > ---
-> >   tools/perf/pmu-events/arch/riscv/mapfile.csv  | 14 +++++++++++++
-> >   .../pmu-events/arch/riscv/riscv-generic.json  | 20
-> > +++++++++++++++++++ 2 files changed, 34 insertions(+)
-> >   create mode 100644 tools/perf/pmu-events/arch/riscv/mapfile.csv
-> >   create mode 100644
-> > tools/perf/pmu-events/arch/riscv/riscv-generic.json
-> >=20
-> > diff --git a/tools/perf/pmu-events/arch/riscv/mapfile.csv
-> > b/tools/perf/pmu-events/arch/riscv/mapfile.csv new file mode 100644
-> > index 000000000000..4f2aa199d9cb
-> > --- /dev/null
-> > +++ b/tools/perf/pmu-events/arch/riscv/mapfile.csv
-> > @@ -0,0 +1,14 @@
-> > +# Format:
-> > +#	MIDR,Version,JSON/file/pathname,Type
-> > +#
-> > +# where
-> > +#	MIDR	Processor version =20
->=20
-> ARM, no?
-
-I've messed with --cc-cmd badly and didn't include every one in cover
-letter, sorry for that, attaching link to cover letter:
-
-https://lore.kernel.org/all/20220607131648.29439-1-nikita.shubin@maquefel.m=
-e/
-
-They are ARM inspired indeed.
-
-
->=20
-> > +#		Variant[23:20] and Revision [3:0] should be zero.
-> > +#	Version could be used to track version of JSON file
-> > +#		but currently unused.
-> > +#	JSON/file/pathname is the path to JSON file, relative
-> > +#		to tools/perf/pmu-events/arch/riscv/.
-> > +#	Type is core, uncore etc
-> > +#
-> > +#
-> > +#Family-model,Version,Filename,EventType
-> > diff --git a/tools/perf/pmu-events/arch/riscv/riscv-generic.json
-> > b/tools/perf/pmu-events/arch/riscv/riscv-generic.json new file mode
-> > 100644 index 000000000000..013e50efad99
-> > --- /dev/null
-> > +++ b/tools/perf/pmu-events/arch/riscv/riscv-generic.json =20
->=20
-> where or how are these referenced?
-
-Currently they are not referenced in this version of series at all,
-their purpose is to be used like "ArchStdEvent".
-
-Through any RISCV implementation should have at least these 3 events.
-
-Yours,
-Nikita Shubin.
-
->=20
-> > @@ -0,0 +1,20 @@
-> > +[
-> > +  {
-> > +    "PublicDescription": "CPU Cycles",
-> > +    "EventCode": "0x00",
-> > +    "EventName": "riscv_cycles",
-> > +    "BriefDescription": "CPU cycles RISC-V generic counter"
-> > +  },
-> > +  {
-> > +    "PublicDescription": "CPU Time",
-> > +      "EventCode": "0x01",
-> > +      "EventName": "riscv_time",
-> > +      "BriefDescription": "CPU time RISC-V generic counter"
-> > +  },
-> > +  {
-> > +    "PublicDescription": "CPU Instructions",
-> > +      "EventCode": "0x02",
-> > +      "EventName": "riscv_instret",
-> > +      "BriefDescription": "CPU retired instructions RISC-V generic
-> > counter"
-> > +  }
-> > +]
-> > \ No newline at end of file =20
->=20
+diff --git a/Documentation/RCU/Design/Requirements/Requirements.rst b/Documentation/RCU/Design/Requirements/Requirements.rst
+index 2a657fd2bca3..ac323f2af19b 100644
+--- a/Documentation/RCU/Design/Requirements/Requirements.rst
++++ b/Documentation/RCU/Design/Requirements/Requirements.rst
+@@ -1847,7 +1847,7 @@ normal interrupts. One way that this can happen is for code that
+ directly invokes ct_irq_enter() and ct_irq_exit() to be called
+ from an NMI handler. This astonishing fact of life prompted the current
+ code structure, which has ct_irq_enter() invoking
+-rcu_nmi_enter() and ct_irq_exit() invoking rcu_nmi_exit().
++ct_nmi_enter() and ct_irq_exit() invoking ct_nmi_exit().
+ And yes, I also learned of this requirement the hard way.
+ 
+ Loadable Modules
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 888f9725b20b..a1150a190bf6 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -792,7 +792,7 @@ config HAVE_CONTEXT_TRACKING_USER_OFFSTACK
+ 
+ 	  - Critical entry code isn't preemptible (or better yet:
+ 	    not interruptible).
+-	  - No use of RCU read side critical sections, unless rcu_nmi_enter()
++	  - No use of RCU read side critical sections, unless ct_nmi_enter()
+ 	    got called.
+ 	  - No use of instrumentation, unless instrumentation_begin() got
+ 	    called.
+diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
+index a1490e8bf5d4..b8fcdd777a8a 100644
+--- a/arch/arm64/kernel/entry-common.c
++++ b/arch/arm64/kernel/entry-common.c
+@@ -161,7 +161,7 @@ static void noinstr arm64_enter_nmi(struct pt_regs *regs)
+ 	__nmi_enter();
+ 	lockdep_hardirqs_off(CALLER_ADDR0);
+ 	lockdep_hardirq_enter();
+-	rcu_nmi_enter();
++	ct_nmi_enter();
+ 
+ 	trace_hardirqs_off_finish();
+ 	ftrace_nmi_enter();
+@@ -182,7 +182,7 @@ static void noinstr arm64_exit_nmi(struct pt_regs *regs)
+ 		lockdep_hardirqs_on_prepare(CALLER_ADDR0);
+ 	}
+ 
+-	rcu_nmi_exit();
++	ct_nmi_exit();
+ 	lockdep_hardirq_exit();
+ 	if (restore)
+ 		lockdep_hardirqs_on(CALLER_ADDR0);
+@@ -199,7 +199,7 @@ static void noinstr arm64_enter_el1_dbg(struct pt_regs *regs)
+ 	regs->lockdep_hardirqs = lockdep_hardirqs_enabled();
+ 
+ 	lockdep_hardirqs_off(CALLER_ADDR0);
+-	rcu_nmi_enter();
++	ct_nmi_enter();
+ 
+ 	trace_hardirqs_off_finish();
+ }
+@@ -218,7 +218,7 @@ static void noinstr arm64_exit_el1_dbg(struct pt_regs *regs)
+ 		lockdep_hardirqs_on_prepare(CALLER_ADDR0);
+ 	}
+ 
+-	rcu_nmi_exit();
++	ct_nmi_exit();
+ 	if (restore)
+ 		lockdep_hardirqs_on(CALLER_ADDR0);
+ }
+diff --git a/include/linux/context_tracking_irq.h b/include/linux/context_tracking_irq.h
+index 62f62bbd1a50..c50b5670c4a5 100644
+--- a/include/linux/context_tracking_irq.h
++++ b/include/linux/context_tracking_irq.h
+@@ -7,11 +7,15 @@ void ct_irq_enter(void);
+ void ct_irq_exit(void);
+ void ct_irq_enter_irqson(void);
+ void ct_irq_exit_irqson(void);
++void ct_nmi_enter(void);
++void ct_nmi_exit(void);
+ #else
+ static inline void ct_irq_enter(void) { }
+ static inline void ct_irq_exit(void) { }
+ static inline void ct_irq_enter_irqson(void) { }
+ static inline void ct_irq_exit_irqson(void) { }
++static inline void ct_nmi_enter(void) { }
++static inline void ct_nmi_exit(void) { }
+ #endif
+ 
+ #endif
+diff --git a/include/linux/hardirq.h b/include/linux/hardirq.h
+index 76878b357ffa..345cdbe9c1b7 100644
+--- a/include/linux/hardirq.h
++++ b/include/linux/hardirq.h
+@@ -124,7 +124,7 @@ extern void rcu_nmi_exit(void);
+ 	do {							\
+ 		__nmi_enter();					\
+ 		lockdep_hardirq_enter();			\
+-		rcu_nmi_enter();				\
++		ct_nmi_enter();				\
+ 		instrumentation_begin();			\
+ 		ftrace_nmi_enter();				\
+ 		instrumentation_end();				\
+@@ -143,7 +143,7 @@ extern void rcu_nmi_exit(void);
+ 		instrumentation_begin();			\
+ 		ftrace_nmi_exit();				\
+ 		instrumentation_end();				\
+-		rcu_nmi_exit();					\
++		ct_nmi_exit();					\
+ 		lockdep_hardirq_exit();				\
+ 		__nmi_exit();					\
+ 	} while (0)
+diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
+index 5845ddd4c88c..5f72300e92e1 100644
+--- a/kernel/context_tracking.c
++++ b/kernel/context_tracking.c
+@@ -55,6 +55,16 @@ void ct_irq_exit_irqson(void)
+ {
+ 	rcu_irq_exit_irqson();
+ }
++
++noinstr void ct_nmi_enter(void)
++{
++	rcu_nmi_enter();
++}
++
++noinstr void ct_nmi_exit(void)
++{
++	rcu_nmi_exit();
++}
+ #endif /* #ifdef CONFIG_CONTEXT_TRACKING_IDLE */
+ 
+ #ifdef CONFIG_CONTEXT_TRACKING_USER
+diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+index 9a89386696ba..256fb950a603 100644
+--- a/kernel/entry/common.c
++++ b/kernel/entry/common.c
+@@ -449,7 +449,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
+ 	__nmi_enter();
+ 	lockdep_hardirqs_off(CALLER_ADDR0);
+ 	lockdep_hardirq_enter();
+-	rcu_nmi_enter();
++	ct_nmi_enter();
+ 
+ 	instrumentation_begin();
+ 	trace_hardirqs_off_finish();
+@@ -469,7 +469,7 @@ void noinstr irqentry_nmi_exit(struct pt_regs *regs, irqentry_state_t irq_state)
+ 	}
+ 	instrumentation_end();
+ 
+-	rcu_nmi_exit();
++	ct_nmi_exit();
+ 	lockdep_hardirq_exit();
+ 	if (irq_state.lockdep)
+ 		lockdep_hardirqs_on(CALLER_ADDR0);
+diff --git a/kernel/extable.c b/kernel/extable.c
+index bda5e9761541..71f482581cab 100644
+--- a/kernel/extable.c
++++ b/kernel/extable.c
+@@ -114,7 +114,7 @@ int kernel_text_address(unsigned long addr)
+ 
+ 	/* Treat this like an NMI as it can happen anywhere */
+ 	if (no_rcu)
+-		rcu_nmi_enter();
++		ct_nmi_enter();
+ 
+ 	if (is_module_text_address(addr))
+ 		goto out;
+@@ -127,7 +127,7 @@ int kernel_text_address(unsigned long addr)
+ 	ret = 0;
+ out:
+ 	if (no_rcu)
+-		rcu_nmi_exit();
++		ct_nmi_exit();
+ 
+ 	return ret;
+ }
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 85e519cc0af9..c096da6ea121 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -3102,7 +3102,7 @@ void __trace_stack(struct trace_array *tr, unsigned int trace_ctx,
+ 	}
+ 
+ 	/*
+-	 * When an NMI triggers, RCU is enabled via rcu_nmi_enter(),
++	 * When an NMI triggers, RCU is enabled via ct_nmi_enter(),
+ 	 * but if the above rcu_is_watching() failed, then the NMI
+ 	 * triggered someplace critical, and ct_irq_enter() should
+ 	 * not be called from NMI.
+-- 
+2.25.1
 
