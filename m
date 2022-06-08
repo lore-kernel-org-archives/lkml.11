@@ -2,123 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC2DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:16:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF42C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:16:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234908AbiFHJQg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58910 "EHLO
+        id S234967AbiFHJQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:16:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235091AbiFHJOa (ORCPT
+        with ESMTP id S235294AbiFHJOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:14:30 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B94213FBE7;
-        Wed,  8 Jun 2022 01:36:09 -0700 (PDT)
-X-UUID: 048a3eaa67b9411fa163e65141b652ba-20220608
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:cdb083ea-238d-44b5-b0c2-5e1e28fce40f,OB:0,LO
-        B:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:90
-X-CID-INFO: VERSION:1.1.5,REQID:cdb083ea-238d-44b5-b0c2-5e1e28fce40f,OB:0,LOB:
-        10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:90
-X-CID-META: VersionHash:2a19b09,CLOUDID:b27c9f7e-c8dc-403a-96e8-6237210dceee,C
-        OID:049188456f91,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: 048a3eaa67b9411fa163e65141b652ba-20220608
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 285445624; Wed, 08 Jun 2022 16:36:03 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Wed, 8 Jun 2022 16:36:02 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 8 Jun 2022 16:36:02 +0800
-From:   Tinghan Shen <tinghan.shen@mediatek.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Benson Leung <bleung@chromium.org>,
-        "Guenter Roeck" <groeck@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        Kees Cook <keescook@chromium.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>
-CC:     <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <chrome-platform@lists.linux.dev>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <weishunc@google.com>
-Subject: [PATCH v2 3/9] remoteproc: mediatek: Add SCP core 1 register definitions
-Date:   Wed, 8 Jun 2022 16:35:47 +0800
-Message-ID: <20220608083553.8697-4-tinghan.shen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220608083553.8697-1-tinghan.shen@mediatek.com>
-References: <20220608083553.8697-1-tinghan.shen@mediatek.com>
+        Wed, 8 Jun 2022 05:14:51 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC9E114A9C;
+        Wed,  8 Jun 2022 01:37:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1654677461; x=1686213461;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=BXac1tY5oLI14A4oaDfSZQk4ZPprbfZvXcqjs4++k1k=;
+  b=DmEV/FwJMnK7gbpYRmuBq27LNw+YswDKDwropkSv3pa86MrG22FHUVbH
+   I2h9Pp0ZfUHQtYadlP4XKFeWF82i02drO3nepDc7KYUyABYjGLjUgIrYI
+   OEyEw+auAHWs9niUqm1+g6t2qD3a+m7XzRbxgh0k5kTCsFz8lzngHx50o
+   joyph5p0hrlpTKNNg2AUwP2lf4eTr1WS8ogBgtDu28pymsBY1SmdIKw0T
+   10y4JoVIQZqr8KB6iyyA9lwOkqscWqNIJhB9q6UhTOmNNag3a2keNcMrP
+   oMynEHbMZj6AnoWQplhpdWJ10rGfIwyTBNh2B2cMhy7+PHGLloysrD1g8
+   g==;
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="162387214"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jun 2022 01:37:40 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 8 Jun 2022 01:37:40 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 8 Jun 2022 01:37:37 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <p.zabel@pengutronix.de>, <sre@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <linux-arm-kernel@lists.infradead.org>, <linux-pm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v4 2/9] dt-bindings: reset: convert Atmel/Microchip reset controller to YAML
+Date:   Wed, 8 Jun 2022 11:39:35 +0300
+Message-ID: <20220608083942.1584087-3-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
+References: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add MT8195 SCP core 1 related register definitions.
+Convert Atmel/Microchip reset controller to YAML.
 
-Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/remoteproc/mtk_common.h | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ .../devicetree/bindings/arm/atmel-sysregs.txt | 15 ------
+ .../reset/atmel,at91sam9260-reset.yaml        | 49 +++++++++++++++++++
+ 2 files changed, 49 insertions(+), 15 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
 
-diff --git a/drivers/remoteproc/mtk_common.h b/drivers/remoteproc/mtk_common.h
-index 73e8adf00de3..5582f4207fbf 100644
---- a/drivers/remoteproc/mtk_common.h
-+++ b/drivers/remoteproc/mtk_common.h
-@@ -47,6 +47,7 @@
- #define MT8192_SCP2SPM_IPC_CLR		0x4094
- #define MT8192_GIPC_IN_SET		0x4098
- #define MT8192_HOST_IPC_INT_BIT		BIT(0)
-+#define MT8195_CORE1_HOST_IPC_INT_BIT	BIT(4)
+diff --git a/Documentation/devicetree/bindings/arm/atmel-sysregs.txt b/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
+index 16eef600d599..ab1b352344ae 100644
+--- a/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
++++ b/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
+@@ -25,21 +25,6 @@ System Timer (ST) required properties:
+ Its subnodes can be:
+ - watchdog: compatible should be "atmel,at91rm9200-wdt"
  
- #define MT8192_CORE0_SW_RSTN_CLR	0x10000
- #define MT8192_CORE0_SW_RSTN_SET	0x10004
-@@ -60,6 +61,26 @@
- 
- #define MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS		GENMASK(7, 4)
- 
-+#define MT8195_CPU1_SRAM_PD			0x1084
-+#define MT8195_SSHUB2APMCU_IPC_SET		0x4088
-+#define MT8195_SSHUB2APMCU_IPC_CLR		0x408C
-+#define MT8195_CORE1_SW_RSTN_CLR		0x20000
-+#define MT8195_CORE1_SW_RSTN_SET		0x20004
-+#define MT8195_CORE1_MEM_ATT_PREDEF		0x20008
-+#define MT8195_CORE1_WDT_IRQ			0x20030
-+#define MT8195_CORE1_WDT_CFG			0x20034
+-RSTC Reset Controller required properties:
+-- compatible: Should be "atmel,<chip>-rstc".
+-  <chip> can be "at91sam9260", "at91sam9g45", "sama5d3" or "samx7"
+-  it also can be "microchip,sam9x60-rstc"
+-- reg: Should contain registers location and length
+-- clocks: phandle to input clock.
+-
+-Example:
+-
+-	rstc@fffffd00 {
+-		compatible = "atmel,at91sam9260-rstc";
+-		reg = <0xfffffd00 0x10>;
+-		clocks = <&clk32k>;
+-	};
+-
+ RAMC SDRAM/DDR Controller required properties:
+ - compatible: Should be "atmel,at91rm9200-sdramc", "syscon"
+ 			"atmel,at91sam9260-sdramc",
+diff --git a/Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml b/Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
+new file mode 100644
+index 000000000000..34c40b875e20
+--- /dev/null
++++ b/Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
+@@ -0,0 +1,49 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/reset/atmel,at91sam9260-reset.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+#define MT8195_SEC_CTRL				0x85000
-+#define MT8195_CORE_OFFSET_ENABLE_D		BIT(13)
-+#define MT8195_CORE_OFFSET_ENABLE_I		BIT(12)
-+#define MT8195_L2TCM_OFFSET_RANGE_0_LOW		0x850b0
-+#define MT8195_L2TCM_OFFSET_RANGE_0_HIGH	0x850b4
-+#define MT8195_L2TCM_OFFSET			0x850d0
-+#define SCP_SRAM_REMAP_LOW			0
-+#define SCP_SRAM_REMAP_HIGH			1
-+#define SCP_SRAM_REMAP_OFFSET			2
-+#define SCP_SRAM_REMAP_SIZE			3
++title: Atmel/Microchip System Reset Controller
 +
- #define SCP_FW_VER_LEN			32
- #define SCP_SHARE_BUFFER_SIZE		288
- 
++maintainers:
++  - Claudiu Beznea <claudiu.beznea@microchip.com>
++
++description: |
++  The system reset controller can be used to reset the CPU.
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - enum:
++              - atmel,at91sam9260-rstc
++              - atmel,at91sam9g45-rstc
++              - atmel,sama5d3-rstc
++              - microchip,sam9x60-rstc
++      - items:
++          - const: atmel,sama5d3-rstc
++          - const: atmel,at91sam9g45-rstc
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/at91.h>
++
++    reset-controller@fffffd00 {
++        compatible = "atmel,at91sam9260-rstc";
++        reg = <0xfffffd00 0x10>;
++        clocks = <&pmc PMC_TYPE_CORE PMC_SLOW>;
++    };
 -- 
-2.18.0
+2.33.0
 
