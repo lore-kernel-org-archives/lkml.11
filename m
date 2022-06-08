@@ -2,194 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE4C3C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23DE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:45:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237148AbiFHKo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51624 "EHLO
+        id S237184AbiFHKpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236870AbiFHKoY (ORCPT
+        with ESMTP id S237155AbiFHKpR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:44:24 -0400
-X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Jun 2022 03:44:22 PDT
-Received: from proxmox1.postmarketos.org (proxmox1.postmarketos.org [IPv6:2a01:4f8:a0:821d::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 315A812D172;
-        Wed,  8 Jun 2022 03:44:22 -0700 (PDT)
-Received: from [192.168.0.33] (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net [81.96.50.79])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 8 Jun 2022 06:45:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600D86A407
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 03:45:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by proxmox1.postmarketos.org (Postfix) with ESMTPSA id B972514009C;
-        Wed,  8 Jun 2022 10:25:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=postmarketos.org;
-        s=donut; t=1654683902;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QzmXENU7s14JgyqydKEh7VchsTErwIFffsmGrZ6wfH4=;
-        b=Fq+3VF03/b5siWKm7/IKQFQyJc2S1qH0JEok+wV9QQIVPgAKmWf1a1lw7PIn/6cdDtVZqm
-        FdPYSRzyW938m4/98+1qf9YIIrN3cvdRjbhU1jtWYctNKXpdtfMJn5SGJO/E9aoSFDqdMq
-        AqqbyY3AiT8UU8FpO+7Np3oI/M/EuWo=
-Message-ID: <c5c7e071-a645-39a2-c3dc-897173e8c971@postmarketos.org>
-Date:   Wed, 8 Jun 2022 11:25:02 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 538F260DDF
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 10:45:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60062C34116;
+        Wed,  8 Jun 2022 10:45:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654685108;
+        bh=eRVrxw2TtDyOfO8gMWB1zIDrWzECqh2i9AYfRsqK6Hk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=J3oZWf32QmN9uDJsIiHuUTFynEfYTOa1VnGwHnfllpgzxF7HurwOAgMNfPpQHycxQ
+         4IPqpl3lWWUQbdF3YWN8aj3OGKzrK0Ua1rTeuxLDcki8UUMuJ1Js1ovfnHcG6wqaHE
+         OI6lmEVVS36JRlIeXqLvsR6iPZpUJYHZgpyJaIwc=
+Date:   Wed, 8 Jun 2022 12:45:06 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     Martin Kaiser <lists@kaiser.cx>,
+        Michael Straube <straube.linux@gmail.com>,
+        phil@philpotter.co.uk, Larry.Finger@lwfinger.net,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [BUG] staging: r8188eu: driver stopped working with commit
+ ("staging: r8188eu: add check for kzalloc")
+Message-ID: <YqB9siuACKQMKXhv@kroah.com>
+References: <20220606064055.12565-1-straube.linux@gmail.com>
+ <ded4b3f5-a9bc-4612-33cc-68bd85cb92fe@gmail.com>
+ <20220608092731.hz26q37fhmrhipmj@viti.kaiser.cx>
+ <01d6737a-9e2d-c009-4e24-c2c54b39b80c@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 5.18 579/879] pinctrl/rockchip: support deferring other
- gpio params
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-References: <20220607165002.659942637@linuxfoundation.org>
- <20220607165019.660801561@linuxfoundation.org>
-From:   Caleb Connolly <kc@postmarketos.org>
-In-Reply-To: <20220607165019.660801561@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <01d6737a-9e2d-c009-4e24-c2c54b39b80c@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
-
-This commit contains a bug which was fixed in commit
-42d90a1e5caf ("pinctrl/rockchip: support setting input-enable param")
-
-It uses bitwise OR to check non-bitwise values (see below).
-
-
-On 07/06/2022 18:01, Greg Kroah-Hartman wrote:
-> From: Caleb Connolly <kc@postmarketos.org>
+On Wed, Jun 08, 2022 at 12:34:45PM +0300, Pavel Skripkin wrote:
+> Hi Martin,
 > 
-> [ Upstream commit 8ce5ef64546850294b021497046588a7abcebe96 ]
+> On 6/8/22 12:27, Martin Kaiser wrote:
+> > Hi Michael & Phil,
+> > 
+> > Thus wrote Michael Straube (straube.linux@gmail.com):
+> > 
+> > > The driver does not work anymore on my system. In dmesg there is:
+> > 
+> > > "r8188eu 1-4:1.0: _rtw_init_xmit_priv failed"
+> > 
+> > > I bisected it to commit f94b47c6bde ("staging: r8188eu: add check for
+> > > kzalloc").
+> > 
+> > > ~/kernels/staging> git bisect bad
+> > > f94b47c6bde624d6c07f43054087607c52054a95 is the first bad commit
+> > 
+> > > At the moment I have no time to look further into it.
+> > 
+> > See also
+> > 
+> > https://lore.kernel.org/linux-staging/YoyU4zXf45UpF1Tq@kroah.com/T/#mb5e56a285b8eb1ebb0e798462fc388cb02b4a7cc
+> > 
+> > Phil said in
+> > 
+> > https://lore.kernel.org/linux-staging/YoyU4zXf45UpF1Tq@kroah.com/T/#m7a21d460b2569f6b59965ecc3298a6337fa3458a
+> > 
 > 
-> Add support for deferring other params like PIN_CONFIG_INPUT_ENABLE.
-> This will be used to add support for PIN_CONFIG_INPUT_ENABLE to the
-> driver.
+> There is the posted patch [1]. I also have to apply it every time I want to
+> test smth.
 > 
-> Fixes: e7165b1dff06 ("pinctrl/rockchip: add a queue for deferred pin output settings on probe")
-> Fixes: 59dd178e1d7c ("gpio/rockchip: fetch deferred output settings on probe")
-> Signed-off-by: Caleb Connolly <kc@postmarketos.org>
-> Link: https://lore.kernel.org/r/20220328005005.72492-2-kc@postmarketos.org
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->   drivers/gpio/gpio-rockchip.c       | 24 ++++++++-----
->   drivers/pinctrl/pinctrl-rockchip.c | 54 ++++++++++++++++--------------
->   drivers/pinctrl/pinctrl-rockchip.h |  7 ++--
->   3 files changed, 50 insertions(+), 35 deletions(-)
+> [1] https://lore.kernel.org/all/20220521204741.921-1-phil@philpotter.co.uk/
 
-[snip]
+That patch is in linux-next and will be sent to Linus later this week.
 
-> @@ -2143,6 +2144,25 @@ static int rockchip_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
->   		param = pinconf_to_config_param(configs[i]);
->   		arg = pinconf_to_config_argument(configs[i]);
->   
-> +		if (param == (PIN_CONFIG_OUTPUT | PIN_CONFIG_INPUT_ENABLE)) {
-Should be if (param == PIN_CONFIG_OUTPUT || param == PIN_CONFIG_INPUT_ENABLE) {
-> +			/*
-> +			 * Check for gpio driver not being probed yet.
-> +			 * The lock makes sure that either gpio-probe has completed
-> +			 * or the gpio driver hasn't probed yet.
-> +			 */
-> +			mutex_lock(&bank->deferred_lock);
-> +			if (!gpio || !gpio->direction_output) {
-> +				rc = rockchip_pinconf_defer_pin(bank, pin - bank->pin_base, param,
-> +								arg);
-> +				mutex_unlock(&bank->deferred_lock);
-> +				if (rc)
-> +					return rc;
-> +
-> +				break;
-> +			}
-> +			mutex_unlock(&bank->deferred_lock);
-> +		}
-> +
->   		switch (param) {
->   		case PIN_CONFIG_BIAS_DISABLE:
->   			rc =  rockchip_set_pull(bank, pin - bank->pin_base,
-> @@ -2171,22 +2191,6 @@ static int rockchip_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
->   			if (rc != RK_FUNC_GPIO)
->   				return -EINVAL;
->   
-> -			/*
-> -			 * Check for gpio driver not being probed yet.
-> -			 * The lock makes sure that either gpio-probe has completed
-> -			 * or the gpio driver hasn't probed yet.
-> -			 */
-> -			mutex_lock(&bank->deferred_lock);
-> -			if (!gpio || !gpio->direction_output) {
-> -				rc = rockchip_pinconf_defer_output(bank, pin - bank->pin_base, arg);
-> -				mutex_unlock(&bank->deferred_lock);
-> -				if (rc)
-> -					return rc;
-> -
-> -				break;
-> -			}
-> -			mutex_unlock(&bank->deferred_lock);
-> -
->   			rc = gpio->direction_output(gpio, pin - bank->pin_base,
->   						    arg);
->   			if (rc)
-> @@ -2500,7 +2504,7 @@ static int rockchip_pinctrl_register(struct platform_device *pdev,
->   			pdesc++;
->   		}
->   
-> -		INIT_LIST_HEAD(&pin_bank->deferred_output);
-> +		INIT_LIST_HEAD(&pin_bank->deferred_pins);
->   		mutex_init(&pin_bank->deferred_lock);
->   	}
->   
-> @@ -2763,7 +2767,7 @@ static int rockchip_pinctrl_remove(struct platform_device *pdev)
->   {
->   	struct rockchip_pinctrl *info = platform_get_drvdata(pdev);
->   	struct rockchip_pin_bank *bank;
-> -	struct rockchip_pin_output_deferred *cfg;
-> +	struct rockchip_pin_deferred *cfg;
->   	int i;
->   
->   	of_platform_depopulate(&pdev->dev);
-> @@ -2772,9 +2776,9 @@ static int rockchip_pinctrl_remove(struct platform_device *pdev)
->   		bank = &info->ctrl->pin_banks[i];
->   
->   		mutex_lock(&bank->deferred_lock);
-> -		while (!list_empty(&bank->deferred_output)) {
-> -			cfg = list_first_entry(&bank->deferred_output,
-> -					       struct rockchip_pin_output_deferred, head);
-> +		while (!list_empty(&bank->deferred_pins)) {
-> +			cfg = list_first_entry(&bank->deferred_pins,
-> +					       struct rockchip_pin_deferred, head);
->   			list_del(&cfg->head);
->   			kfree(cfg);
->   		}
-> diff --git a/drivers/pinctrl/pinctrl-rockchip.h b/drivers/pinctrl/pinctrl-rockchip.h
-> index 91f10279d084..98a01a616da6 100644
-> --- a/drivers/pinctrl/pinctrl-rockchip.h
-> +++ b/drivers/pinctrl/pinctrl-rockchip.h
-> @@ -171,7 +171,7 @@ struct rockchip_pin_bank {
->   	u32				toggle_edge_mode;
->   	u32				recalced_mask;
->   	u32				route_mask;
-> -	struct list_head		deferred_output;
-> +	struct list_head		deferred_pins;
->   	struct mutex			deferred_lock;
->   };
->   
-> @@ -247,9 +247,12 @@ struct rockchip_pin_config {
->   	unsigned int		nconfigs;
->   };
->   
-> -struct rockchip_pin_output_deferred {
-> +enum pin_config_param;
-> +
-> +struct rockchip_pin_deferred {
->   	struct list_head head;
->   	unsigned int pin;
-> +	enum pin_config_param param;
->   	u32 arg;
->   };
->   
+thanks,
+
+greg k-h
