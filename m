@@ -2,162 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F29D3C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:07:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:09:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234038AbiFHJHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51616 "EHLO
+        id S232816AbiFHJJD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233690AbiFHJFi (ORCPT
+        with ESMTP id S233783AbiFHJHK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:05:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB833B60B6
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:24:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58755B82606
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:24:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 101F1C341C6
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:24:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654676675;
-        bh=mb7wSkN8jvPB+WAq0VUpI6GigZN7Y0LbxGtiI8+txLQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Xnsxzz+qUz80qbBBvqQ+QCiV4RqU8h3TGG4nVvp4LCbzKxe6zoYLmXJBLOUQOvnCz
-         9KpMrhHVNXZ3/88PXbYvKx+I2OTfOzbs69G5yzIbcwqk/29cYiJLU9yo4MpEYO5Y8P
-         FQ+1PGPPyXdQ2OPfl55sH5M3Tcf5PN2+6yaPIhCac0sgFNwek11PaWmSnDBb0EFXlv
-         x/fsIYUg8zWQiRqJifZzEPaE7VPeJglyVK7ujgl21SURCAIzNYY9wa3pnoE7YYKFGH
-         C35i5Vv4fILkwPyEsKQA68VkM1Np7sxgowlLUrD8pcaCxZZxFaskJXTcAU8oCMXx2t
-         LIUgmnipytxfg==
-Received: by mail-oi1-f174.google.com with SMTP id s124so9043117oia.0
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 01:24:34 -0700 (PDT)
-X-Gm-Message-State: AOAM531Dqas4bgKcU7nPMfA+8HodTRI9hsjZ3Kl8N7OkleGOkSy4/Kqq
-        dqDHO/iza7Im7gpM/leYLL/JDoRzUAI7EqIKpcw=
-X-Google-Smtp-Source: ABdhPJw03BDzzvLonfN/ypOZmks1XwcawN8XKZuO6awjwAHnNx3Lys+ui40b1XzgJzTd1I4qjM1PG7zKththQ/kYyQw=
-X-Received: by 2002:a05:6808:300e:b0:32c:425e:df34 with SMTP id
- ay14-20020a056808300e00b0032c425edf34mr1722849oib.126.1654676674178; Wed, 08
- Jun 2022 01:24:34 -0700 (PDT)
+        Wed, 8 Jun 2022 05:07:10 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767E4101915
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:25:09 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25888rON020142;
+        Wed, 8 Jun 2022 08:24:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=n8YORMICtcoEXTgTlEMkLLrxOJq2wW8tJfHevJnl+N8=;
+ b=GDeKjKqoZhFWfT7mL5+blzBjwS5YYR/PJkUTQI7Ojn0bqEwz6YE4ZjjXZfNyv8rUKCCf
+ k0nJKIwGT12MJNTdKP78ZyqOYsIyJFNuq37plndq6vdLweENV94CO8Hot07jMD2ajgH8
+ PXtmUbv/LNWPymo83ePbGVsisBFhC40JKz0ccp1DSX+soM497a16GH5Arau9avVEx4+g
+ aTkizcib1++5WsKzOV9dg2IG4A/Gy+RyOpjGIzaQ5wmIhsIxe3l3Ycneh0FGgr3ye23n
+ qPCl9Pox5Hb2i/okXz/MT1F32rOgIUE0zxWDuCshzWsWRxBOfABobvXXjHi4VIg6RrV2 SA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjr0mra70-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Jun 2022 08:24:50 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2588DT6L007042;
+        Wed, 8 Jun 2022 08:24:50 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjr0mra68-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Jun 2022 08:24:49 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2588JwuB025071;
+        Wed, 8 Jun 2022 08:24:47 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma03ams.nl.ibm.com with ESMTP id 3gfy19cv8w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Jun 2022 08:24:47 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2588OSsL22741320
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 8 Jun 2022 08:24:28 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 12A895204E;
+        Wed,  8 Jun 2022 08:24:45 +0000 (GMT)
+Received: from [9.43.53.124] (unknown [9.43.53.124])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 78D5152050;
+        Wed,  8 Jun 2022 08:24:39 +0000 (GMT)
+Message-ID: <b4ea5d02-40d9-9928-1094-9befed7ae4ff@linux.ibm.com>
+Date:   Wed, 8 Jun 2022 13:54:38 +0530
 MIME-Version: 1.0
-References: <20220607100210.683136-1-Jason@zx2c4.com>
-In-Reply-To: <20220607100210.683136-1-Jason@zx2c4.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 8 Jun 2022 10:24:23 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGxdT=yNNdu8q2dvTZgVuiiZqbZvxnS5pwAp8VgnYh8UQ@mail.gmail.com>
-Message-ID: <CAMj1kXGxdT=yNNdu8q2dvTZgVuiiZqbZvxnS5pwAp8VgnYh8UQ@mail.gmail.com>
-Subject: Re: [PATCH] random: do not use jump labels before they are initialized
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Phil Elwell <phil@raspberrypi.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC PATCH v4 1/7] mm/demotion: Add support for explicit memory
+ tiers
+Content-Language: en-US
+To:     Ying Huang <ying.huang@intel.com>, linux-mm@kvack.org,
+        akpm@linux-foundation.org
+Cc:     Greg Thelen <gthelen@google.com>, Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+References: <CAAPL-u-dFp7PwPH6DfbYdnY8xaGsHz3tRQ0CPGVkiqURvdN8=A@mail.gmail.com>
+ <20220527122528.129445-1-aneesh.kumar@linux.ibm.com>
+ <20220527122528.129445-2-aneesh.kumar@linux.ibm.com>
+ <604403db000ced33f997688ce82eaa43ed6c8bbe.camel@intel.com>
+From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+In-Reply-To: <604403db000ced33f997688ce82eaa43ed6c8bbe.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: nmOCLq0ZUk4nnP_msbBOQTEgj7rag_i0
+X-Proofpoint-ORIG-GUID: 7vBFHH2_ZDmACl9Qr52T_s72RjWl9TLR
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-08_02,2022-06-07_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 malwarescore=0 adultscore=0 phishscore=0 bulkscore=0
+ lowpriorityscore=0 impostorscore=0 mlxlogscore=999 clxscore=1015
+ mlxscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206080035
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022 at 12:04, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> [ I would like to pursue fixing this more directly first before actually
->   merging this, but I thought I'd send this to the list now anyway as a
->   the "backup" plan. If I can't figure out how to make headway on the
->   main plan in the next few days, it'll be easy to just do this. ]
->
-> Stephen reported that a static key warning splat appears during early
-> boot on systems that credit randomness from device trees that contain an
-> "rng-seed" property, because because setup_machine_fdt() is called
-> before jump_label_init() during setup_arch():
->
->  static_key_enable_cpuslocked(): static key '0xffffffe51c6fcfc0' used before call to jump_label_init()
->  WARNING: CPU: 0 PID: 0 at kernel/jump_label.c:166 static_key_enable_cpuslocked+0xb0/0xb8
->  Modules linked in:
->  CPU: 0 PID: 0 Comm: swapper Not tainted 5.18.0+ #224 44b43e377bfc84bc99bb5ab885ff694984ee09ff
->  pstate: 600001c9 (nZCv dAIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->  pc : static_key_enable_cpuslocked+0xb0/0xb8
->  lr : static_key_enable_cpuslocked+0xb0/0xb8
->  sp : ffffffe51c393cf0
->  x29: ffffffe51c393cf0 x28: 000000008185054c x27: 00000000f1042f10
->  x26: 0000000000000000 x25: 00000000f10302b2 x24: 0000002513200000
->  x23: 0000002513200000 x22: ffffffe51c1c9000 x21: fffffffdfdc00000
->  x20: ffffffe51c2f0831 x19: ffffffe51c6fcfc0 x18: 00000000ffff1020
->  x17: 00000000e1e2ac90 x16: 00000000000000e0 x15: ffffffe51b710708
->  x14: 0000000000000066 x13: 0000000000000018 x12: 0000000000000000
->  x11: 0000000000000000 x10: 00000000ffffffff x9 : 0000000000000000
->  x8 : 0000000000000000 x7 : 61632065726f6665 x6 : 6220646573752027
->  x5 : ffffffe51c641d25 x4 : ffffffe51c13142c x3 : ffff0a00ffffff05
->  x2 : 40000000ffffe003 x1 : 00000000000001c0 x0 : 0000000000000065
->  Call trace:
->   static_key_enable_cpuslocked+0xb0/0xb8
->   static_key_enable+0x2c/0x40
->   crng_set_ready+0x24/0x30
->   execute_in_process_context+0x80/0x90
->   _credit_init_bits+0x100/0x154
->   add_bootloader_randomness+0x64/0x78
->   early_init_dt_scan_chosen+0x140/0x184
->   early_init_dt_scan_nodes+0x28/0x4c
->   early_init_dt_scan+0x40/0x44
->   setup_machine_fdt+0x7c/0x120
->   setup_arch+0x74/0x1d8
->   start_kernel+0x84/0x44c
->   __primary_switched+0xc0/0xc8
->  ---[ end trace 0000000000000000 ]---
->  random: crng init done
->  Machine model: Google Lazor (rev1 - 2) with LTE
->
-> A trivial fix went in to address this on arm64, 73e2d827a501 ("arm64:
-> Initialize jump labels before setup_machine_fdt()"). But it appears that
-> fixing it on other platforms might not be so trivial. Instead, defer the
-> setting of the static branch until later in the boot process.
->
-> Fixes: f5bda35fba61 ("random: use static branch for crng_ready()")
-> Reported-by: Stephen Boyd <swboyd@chromium.org>
-> Cc: Ard Biesheuvel <ardb@kernel.org>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Phil Elwell <phil@raspberrypi.com>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+On 6/8/22 12:46 PM, Ying Huang wrote:
+> On Fri, 2022-05-27 at 17:55 +0530, Aneesh Kumar K.V wrote:
+> 
+> [snip]
+> 
+>>
+>> +static int __init memory_tier_init(void)
+>> +{
+>> +	int ret;
+>> +
+>> +	ret = subsys_system_register(&memory_tier_subsys, memory_tier_attr_groups);
+>> +	if (ret)
+>> +		panic("%s() failed to register subsystem: %d\n", __func__, ret);
+> 
+> I don't think we should go panic for failing to register subsys and
+> device for memory tiers.  Just pr_err() should be enough.
+> 
 
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+So you are suggesting we continue to work with memory tiers with no 
+userspace interface?
 
-> ---
->  drivers/char/random.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/char/random.c b/drivers/char/random.c
-> index 4862d4d3ec49..f9a020ec08b9 100644
-> --- a/drivers/char/random.c
-> +++ b/drivers/char/random.c
-> @@ -650,7 +650,8 @@ static void __cold _credit_init_bits(size_t bits)
->
->         if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
->                 crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
-> -               execute_in_process_context(crng_set_ready, &set_ready);
-> +               if (static_key_initialized)
-> +                       execute_in_process_context(crng_set_ready, &set_ready);
->                 wake_up_interruptible(&crng_init_wait);
->                 kill_fasync(&fasync, SIGIO, POLL_IN);
->                 pr_notice("crng init done\n");
-> @@ -779,6 +780,14 @@ int __init random_init(const char *command_line)
->         unsigned int i, arch_bytes;
->         unsigned long entropy;
->
-> +       /*
-> +        * If we were initialized by the bootloader before jump labels are
-> +        * initialized, then we should enable the static branch here, where
-> +        * it's guaranteed that jump labels have been initialized.
-> +        */
-> +       if (!static_branch_likely(&crng_is_ready) && crng_init >= CRNG_READY)
-> +               crng_set_ready(NULL);
-> +
->  #if defined(LATENT_ENTROPY_PLUGIN)
->         static const u8 compiletime_seed[BLAKE2S_BLOCK_SIZE] __initconst __latent_entropy;
->         _mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
-> --
-> 2.35.1
->
+>> +
+>> +	/*
+>> +	 * Register only default memory tier to hide all empty
+>> +	 * memory tier from sysfs.
+>> +	 */
+>> +	ret = register_memory_tier(DEFAULT_MEMORY_TIER);
+>> +	if (ret)
+>> +		panic("%s() failed to register memory tier: %d\n", __func__, ret);
+>> +
+>> +	/*
+>> +	 * CPU only nodes are not part of memoty tiers.
+>> +	 */
+>> +	memory_tiers[DEFAULT_MEMORY_TIER]->nodelist = node_states[N_MEMORY];
+>> +
+>> +	return 0;
+>> +}
+>> +subsys_initcall(memory_tier_init);
+>> +
+>> +#endif	/* CONFIG_TIERED_MEMORY */
+> 
+> 
+
