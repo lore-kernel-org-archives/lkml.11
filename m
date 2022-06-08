@@ -2,122 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95DDACCA482
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:17:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B80CCA486
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230472AbiFHIRD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58394 "EHLO
+        id S230452AbiFHIRl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:17:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231759AbiFHIP3 (ORCPT
+        with ESMTP id S230454AbiFHIQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 04:15:29 -0400
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4EE362ED0;
-        Wed,  8 Jun 2022 00:44:15 -0700 (PDT)
-Received: by mail-ed1-f49.google.com with SMTP id c2so25884369edf.5;
-        Wed, 08 Jun 2022 00:44:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6d//xLMZewJABqjk9QF8SiDnR9wNTei67iI7EwN0sFs=;
-        b=5y6MAFkU9tZWqfaonH4bxUiQSBZKYz+tFXGcwlfbMjDOzmoED7bkcM+cCKm4hXmKDD
-         26CF7DouWcjj+BQPedtKXDGAK4wiqX8EtMTrBBMysbV+g286zsM/AebFEub9zfmGgrED
-         6vxnMtGT5xIonC+VpnuUs8FfWs7xhKkhXSGDZeN6eMkjSzro0W53qCCfMkbmnASwkL58
-         K8lEQpyJTLxqHRHAqsjxY+nTwvoKvDE37XMjr4PWXAV0kLWYx8pbgOwUOcK39t3msauv
-         8TtMIZmNkATN/GuHaAtxU3LSSfTINYI1Zhn1/Y8qjIrHKFSl6QH36rJA3MAe9RytKUPz
-         GfaQ==
-X-Gm-Message-State: AOAM532q/YyDCVPNNrj0LJOncuIoJkjRv8J1gUG8ea+hojsQY+NNLfr2
-        mFZj9UY8WmfV1ZflbvRIleU=
-X-Google-Smtp-Source: ABdhPJxyyFTKvGz9kEQLpR9zJPuDnKAaz/raw6uJkYYmoQi0Ai2zJzPLHXoSEa09sAApFS1eSJc/cg==
-X-Received: by 2002:a05:6402:40d4:b0:430:97a9:fa53 with SMTP id z20-20020a05640240d400b0043097a9fa53mr24886638edb.158.1654674254041;
-        Wed, 08 Jun 2022 00:44:14 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id s4-20020a1709067b8400b006f3ef214ddfsm7067295ejo.69.2022.06.08.00.44.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 00:44:13 -0700 (PDT)
-Message-ID: <5a1a600a-5a1f-d93b-e854-2586c412e505@kernel.org>
-Date:   Wed, 8 Jun 2022 09:44:12 +0200
+        Wed, 8 Jun 2022 04:16:08 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC3A65C2
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:44:52 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1nyqMr-0002o3-H8; Wed, 08 Jun 2022 09:44:41 +0200
+Message-ID: <323f9352fcf22c040417b16e57647695a48c1395.camel@pengutronix.de>
+Subject: Re: [PATCH v9 7/8] PCI: imx6: Move the phy driver callbacks to the
+ proper places
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Richard Zhu <hongxing.zhu@nxp.com>, bhelgaas@google.com,
+        robh+dt@kernel.org, broonie@kernel.org, lorenzo.pieralisi@arm.com,
+        jingoohan1@gmail.com, festevam@gmail.com,
+        francesco.dolcini@toradex.com
+Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Date:   Wed, 08 Jun 2022 09:44:40 +0200
+In-Reply-To: <1651801629-30223-8-git-send-email-hongxing.zhu@nxp.com>
+References: <1651801629-30223-1-git-send-email-hongxing.zhu@nxp.com>
+         <1651801629-30223-8-git-send-email-hongxing.zhu@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 33/36] tty/vt: consolemap: change refcount only if needed
- in con_do_clear_unimap()
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220607104946.18710-1-jslaby@suse.cz>
- <20220607104946.18710-33-jslaby@suse.cz>
- <ce9f52c5-4b46-77a8-8dd4-1de787e5b8b@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <ce9f52c5-4b46-77a8-8dd4-1de787e5b8b@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07. 06. 22, 17:31, Ilpo Järvinen wrote:
-> On Tue, 7 Jun 2022, Jiri Slaby wrote:
+Am Freitag, dem 06.05.2022 um 09:47 +0800 schrieb Richard Zhu:
+> To make it more reasonable, move the phy_power_on/phy_init callbacks to
+> the proper places.
+> - move the phy_power_on() out of imx6_pcie_clk_enable().
+> - move the phy_init() out of imx6_pcie_deassert_core_reset().
 > 
->> con_do_clear_unimap() currently decreases and increases refcount of old
->> dictionary in a back and forth fashion. This makes the code really hard
->> to follow. Decrease the refcount only if everything went well and we
->> really allocated a new one and decoupled from the old dictionary.
->>
->> I sincerelly hope I did not make a mistake in this (ill) logic.
->>
->> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> In order to save power consumption, turn off the clocks and regulators when
+> the imx6_pcie_host_init() return error.
 > 
-> It seems fine:
+> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+> ---
+>  drivers/pci/controller/dwc/pci-imx6.c | 77 +++++++++++++++++++++------
+>  1 file changed, 61 insertions(+), 16 deletions(-)
 > 
-> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> 
-> One unrelated comment below for additional cleanup opportunity.
-> 
->> ---
->>   drivers/tty/vt/consolemap.c | 13 +++++++------
->>   1 file changed, 7 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
->> index 01b7e49f1f91..4d8efe74315c 100644
->> --- a/drivers/tty/vt/consolemap.c
->> +++ b/drivers/tty/vt/consolemap.c
->> @@ -535,22 +535,23 @@ static int con_do_clear_unimap(struct vc_data *vc)
->>   {
->>   	struct uni_pagedict *old = *vc->vc_uni_pagedir_loc;
->>   
->> -	if (!old || --old->refcount) {
->> +	if (!old || old->refcount > 1) {
->>   		struct uni_pagedict *new = kzalloc(sizeof(*new), GFP_KERNEL);
->> -		if (!new) {
->> -			if (old)
->> -				old->refcount++;
->> +		if (!new)
->>   			return -ENOMEM;
->> -		}
->> +
->>   		new->refcount = 1;
->>   		*vc->vc_uni_pagedir_loc = new;
->> +
->> +		if (old)
->> +			old->refcount--;
->>   	} else {
->>   		if (old == dflt)
->>   			dflt = NULL;
-> 
-> This seems unnecessary as con_release_unimap() already does it.
+> diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+> index d122c12193a6..f0ffd9011975 100644
+> --- a/drivers/pci/controller/dwc/pci-imx6.c
+> +++ b/drivers/pci/controller/dwc/pci-imx6.c
+> @@ -497,14 +497,6 @@ static int imx6_pcie_clk_enable(struct imx6_pcie *imx6_pcie)
+>  		goto err_ref_clk;
+>  	}
+>  
+> -	switch (imx6_pcie->drvdata->variant) {
+> -	case IMX8MM:
+> -		if (phy_power_on(imx6_pcie->phy))
+> -			dev_err(dev, "unable to power on PHY\n");
+> -		break;
+> -	default:
+> -		break;
+> -	}
+>  	/* allow the clocks to stabilize */
+>  	usleep_range(200, 500);
+>  	return 0;
+> @@ -597,10 +589,7 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
+>  	switch (imx6_pcie->drvdata->variant) {
+>  	case IMX8MQ:
+>  		reset_control_deassert(imx6_pcie->pciephy_reset);
+> -		break;
+>  	case IMX8MM:
+> -		if (phy_init(imx6_pcie->phy))
+> -			dev_err(dev, "waiting for phy ready timeout!\n");
 
-Good point -- the code is real mess... Now, the mess is more apparent, 
-at least ;).
+This looks fishy. You now fall-through from the 8MQ case to the 8MM
+case, just to break there. Please move the 8MM case down to the 6QP
+case that also doesn't need to do anything here.
 
-I will create a separate patch for this.
+>  		break;
+>  	case IMX7D:
+>  		reset_control_deassert(imx6_pcie->pciephy_reset);
+> @@ -918,15 +907,38 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
+>  
+>  	imx6_pcie_assert_core_reset(imx6_pcie);
+>  	imx6_pcie_init_phy(imx6_pcie);
+> +	if (imx6_pcie->phy != NULL) {
 
-thanks,
--- 
-js
-suse labs
+Same comment as on the last patch: drop the "!= NULL".
+
+> +		ret = phy_power_on(imx6_pcie->phy);
+> +		if (ret) {
+> +			dev_err(dev, "pcie phy power up failed.\n");
+> +			return ret;
+> +		}
+> +	}
+> +
+>  	ret = imx6_pcie_deassert_core_reset(imx6_pcie);
+>  	if (ret < 0) {
+>  		dev_err(dev, "pcie host init failed: %d.\n", ret);
+> -		return ret;
+> +		goto err_exit0;
+
+This label is not very descriptive. Please rename to something like
+err_phy_off or something like that.
+
+> +	} else if (imx6_pcie->phy != NULL) {
+
+The else path isn't needed here. If there was an error you already
+moved the contol flow to the error label. So drop the else and again
+have this block under a simple "if (imx6_pcie->phy)" statement.
+
+> +		ret = phy_init(imx6_pcie->phy);
+> +		if (ret) {
+> +			dev_err(dev, "waiting for phy ready timeout!\n");
+> +			goto err_exit1;
+
+Again, please give those labels a more descriptive name.
+
+All of the above comments also apply to the changes in
+imx6_pcie_resume_noirq.
+
+Regards,
+Lucas
+
+> +		}
+>  	}
+>  
+>  	imx6_setup_phy_mpll(imx6_pcie);
+>  
+>  	return 0;
+> +
+> +err_exit1:
+> +	imx6_pcie_clk_disable(imx6_pcie);
+> +	if (imx6_pcie->vpcie)
+> +		regulator_disable(imx6_pcie->vpcie);
+> +err_exit0:
+> +	if (imx6_pcie->phy != NULL)
+> +		phy_power_off(imx6_pcie->phy);
+> +	return ret;
+>  }
+>  
+>  static const struct dw_pcie_host_ops imx6_pcie_host_ops = {
+> @@ -1031,14 +1043,47 @@ static int imx6_pcie_resume_noirq(struct device *dev)
+>  		regulator_disable(imx6_pcie->vpcie);
+>  
+>  	imx6_pcie_init_phy(imx6_pcie);
+> -	imx6_pcie_deassert_core_reset(imx6_pcie);
+> -	dw_pcie_setup_rc(pp);
+> +	if (imx6_pcie->phy != NULL) {
+> +		ret = phy_power_on(imx6_pcie->phy);
+> +		if (ret) {
+> +			dev_err(dev, "pcie phy power up failed.\n");
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	ret = imx6_pcie_deassert_core_reset(imx6_pcie);
+> +	if (ret < 0) {
+> +		dev_err(dev, "pcie deassert core reset failed: %d.\n", ret);
+> +		goto err_exit0;
+> +	} else if (imx6_pcie->phy != NULL) {
+> +		ret = phy_init(imx6_pcie->phy);
+> +		if (ret) {
+> +			dev_err(dev, "pcie phy init failed.\n");
+> +			goto err_exit1;
+> +		}
+> +	}
+>  
+> +	dw_pcie_setup_rc(pp);
+>  	ret = imx6_pcie_start_link(imx6_pcie->pci);
+> -	if (ret < 0)
+> -		dev_info(dev, "pcie link is down after resume.\n");
+> +	if (ret < 0) {
+> +		/*
+> +		 * Return ret directly, since there are error exit
+> +		 * handle in imx6_pcie_start_link()
+> +		 */
+> +		dev_err(dev, "pcie link is down after resume.\n");
+> +		return ret;
+> +	}
+>  
+>  	return 0;
+> +
+> +err_exit1:
+> +	imx6_pcie_clk_disable(imx6_pcie);
+> +	if (imx6_pcie->vpcie)
+> +		regulator_disable(imx6_pcie->vpcie);
+> +err_exit0:
+> +	if (imx6_pcie->phy != NULL)
+> +		phy_power_off(imx6_pcie->phy);
+> +	return ret;
+>  }
+>  #endif
+>  
+
+
