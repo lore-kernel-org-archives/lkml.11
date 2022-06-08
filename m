@@ -2,106 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC78CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3403CCA48A
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233492AbiFHHOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:14:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
+        id S1344034AbiFHHOm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:14:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354250AbiFHGT3 (ORCPT
+        with ESMTP id S1354388AbiFHGTd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 02:19:29 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9C8DE1;
-        Tue,  7 Jun 2022 23:08:06 -0700 (PDT)
-X-UUID: 0084f9c2ca414a3a959b14f369d2d3b3-20220608
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:5b54c150-ffe8-485f-a08f-d28329a3ab5c,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:2000987e-c8dc-403a-96e8-6237210dceee,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 0084f9c2ca414a3a959b14f369d2d3b3-20220608
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-        (envelope-from <irui.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1360473414; Wed, 08 Jun 2022 14:08:02 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 8 Jun 2022 14:08:01 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 8 Jun 2022 14:08:00 +0800
-From:   Irui Wang <irui.wang@mediatek.com>
-To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tzung-Bi Shih <tzungbi@chromium.org>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Tomasz Figa <tfiga@chromium.org>, <xia.jiang@mediatek.com>,
-        <maoguang.meng@mediatek.com>, kyrie wu <kyrie.wu@mediatek.com>,
-        <srv_heupstream@mediatek.com>
-Subject: [V2,1/2] media: media: jpegenc: add mediatek,mt8186-jpgenc compatible
-Date:   Wed, 8 Jun 2022 14:07:54 +0800
-Message-ID: <20220608060755.2213-2-irui.wang@mediatek.com>
+        Wed, 8 Jun 2022 02:19:33 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DAFE2058;
+        Tue,  7 Jun 2022 23:09:39 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id f65so7786752pgc.7;
+        Tue, 07 Jun 2022 23:09:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5XPLdEjhOMoKfPO/4HrcmUy4dcFm1Nhd2plHLfQ24R8=;
+        b=IQuHLDlbIjp9DRwZU/OIR7MWti2kse/Nurh507vTWHUe3/erAaXfyISuSWL+fUD7i7
+         2ayOLC7Gj42Lu/sgu0DMPvlBmZlVf+BM4wkFYtEUTY6Jqb3Yds1APmCl93nEubCX33jP
+         QGaB/ZTVmKrx4aE1mx5tcCVGMyizFvHQLdv5xaVTJ12yXGUN1eh8xChRHZdEPmr8Rr/E
+         do5+xgQpIFQD2ly1A43X+qPR7/h3rJBX7Ch3KlgKR8lzOOooOhwhqEouzZ9BSUZ5WYJe
+         7EuGQcrwa8fHeV7eP/SfJ97Ti3TUPBf+hE+U+y0qZpz/mLh0LJhXd8Ww9YTawcDPtJE+
+         OKDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5XPLdEjhOMoKfPO/4HrcmUy4dcFm1Nhd2plHLfQ24R8=;
+        b=vD+DCwlQgybdvlGD/wkxFYuqI7meZFGAcCULHDgei/ZfUzGEv4DukcGzoIwYRcAp38
+         xwspBJ2a80SdktefWsfxKLJCIVc2RKrmNN4wrkPWk8QF7Y0P8TRTC5DWbGZt/JM6L8kL
+         VWFsQ7d7dbB0HweYw08iGKdups1DvuWoaL0ipkIDT2q7o42Fm/1lrjg3SgL2+t7hsZFZ
+         ocfNYRmYubdwDYzTUbCBy4sY4PiNLER96ggtFuGz8m+uMK97tOnLEy8UikWbnHqhBSpC
+         ugF6+wSq1rV/h2Hb8rHb0eKXGIsmTu8fFma1iyq4pHsh3PZFf2SXiksYvBO10lFAoLs9
+         xteQ==
+X-Gm-Message-State: AOAM531AW3FR5NrY2t6pLEowzonNIR+QG3r4K7BW5/kC/GPBmyApyd3J
+        rXxEilMRNACvwhsvUn7q4r1d9Sbj2zJcLxRGVtEe0g==
+X-Google-Smtp-Source: ABdhPJxsG8KPgBeOiJI4hS9gvx8TWMr04L/5uTmyUY3hJG1NJLpVPAoDPEROSaIapoiX49Od4nzglw==
+X-Received: by 2002:a63:5723:0:b0:3fd:d8b4:c19f with SMTP id l35-20020a635723000000b003fdd8b4c19fmr10089040pgb.137.1654668579316;
+        Tue, 07 Jun 2022 23:09:39 -0700 (PDT)
+Received: from localhost.localdomain ([116.128.244.169])
+        by smtp.gmail.com with ESMTPSA id u5-20020a17090a400500b001e30a63ca3asm13193671pjc.2.2022.06.07.23.09.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 23:09:38 -0700 (PDT)
+From:   luoxueqin <luoxueqin66@gmail.com>
+X-Google-Original-From: luoxueqin <937225041@qq.com>
+To:     wim@linux-watchdog.org, linux@roeck-us.net
+Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luoxueqin <luoxueqin@kylinos.cn>
+Subject: [PATCH -next] watchdog:Fix typo in comment
+Date:   Wed,  8 Jun 2022 14:09:33 +0800
+Message-Id: <20220608060933.13062-1-937225041@qq.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220608060755.2213-1-irui.wang@mediatek.com>
-References: <20220608060755.2213-1-irui.wang@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kyrie wu <kyrie.wu@mediatek.com>
+From: luoxueqin <luoxueqin@kylinos.cn>
 
-Add mediatek,mt8186-jpgenc compatible to binding document.
+Spelling mistake in comment.
 
-MT8186 iommu support 0~16GB iova. We separate it to four banks:
-0~4G; 4G~8G; 8G~12G; 12G~16G.
-
-The "dma-ranges" could be used to adjust the bank we locate.
-If we don't set this property. The default range always is 0~4G.
-
-Signed-off-by: kyrie wu <kyrie.wu@mediatek.com>
+Signed-off-by: luoxueqin <luoxueqin@kylinos.cn>
 ---
- .../devicetree/bindings/media/mediatek-jpeg-encoder.yaml    | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/watchdog/pc87413_wdt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml
-index 8bfdfdfaba59..4fd390c042a9 100644
---- a/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml
-+++ b/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml
-@@ -18,6 +18,7 @@ properties:
-       - enum:
-           - mediatek,mt2701-jpgenc
-           - mediatek,mt8183-jpgenc
-+          - mediatek,mt8186-jpgenc
-       - const: mediatek,mtk-jpgenc
-   reg:
-     maxItems: 1
-@@ -42,6 +43,11 @@ properties:
-       Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for details.
-       Ports are according to the HW.
+diff --git a/drivers/watchdog/pc87413_wdt.c b/drivers/watchdog/pc87413_wdt.c
+index 9f9a340427fc..c7f745caf203 100644
+--- a/drivers/watchdog/pc87413_wdt.c
++++ b/drivers/watchdog/pc87413_wdt.c
+@@ -442,7 +442,7 @@ static long pc87413_ioctl(struct file *file, unsigned int cmd,
+ 	}
+ }
  
-+  dma-ranges:
-+    maxItems: 1
-+    description: |
-+      Describes the physical address space of IOMMU maps to memory.
-+
- required:
-   - compatible
-   - reg
+-/* -- Notifier funtions -----------------------------------------*/
++/* -- Notifier functions -----------------------------------------*/
+ 
+ /**
+  *	pc87413_notify_sys:
 -- 
-2.18.0
+2.25.1
 
