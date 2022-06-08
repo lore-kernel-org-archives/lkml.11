@@ -2,130 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA24C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:11:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F6DFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:13:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233369AbiFHFLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:11:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35834 "EHLO
+        id S232781AbiFHFNq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:13:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232740AbiFHFLK (ORCPT
+        with ESMTP id S232709AbiFHFNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:11:10 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09FB182BB5;
-        Tue,  7 Jun 2022 19:13:07 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id h1so16368282plf.11;
-        Tue, 07 Jun 2022 19:13:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aOhxeGinTiqFY3sUnjKmPhDdExpM8Y03nOU4Qw10yiE=;
-        b=Li31Gb4SobqbS4ApZbx4EUHpxHobSXV/5wd2xwHT1FtrUuNMpOzZHY3cA8mChO6RoG
-         rcthPK3+5CtfBR9QSF3BwVnu17M3NfnQFFOM75X5XsXNykpR0Hs9JRRTz0AF4BzcobJc
-         tDDtldyzWMKkZdL848+hhRPDkUgBEh+K11/8UNaZh15l8Mkf+aqcOWQX3X4XIV6rEF1Q
-         oa+w/Me4w4IJqTBVHzNQGVEk0pfR/2zGmnFurTy7Lo092yA3AUBPVECxlG6pE3OI3zOT
-         9qEtsMIZzgy12KUc8PvRRkIAhhluW9VELyaM2O57zM6cgGTzzqSJ3RA3Ww/Kn57QnYLR
-         UPYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aOhxeGinTiqFY3sUnjKmPhDdExpM8Y03nOU4Qw10yiE=;
-        b=pARbE4S7c5v0nBz07iTpFMwv/xdTBMamCv94Qhux3UnszJNpZuQet9oHOyrtqoG4Td
-         0MYDIUMFzrGMCk1+tIanrbMgP/KzoZO+Sd47uHZqmbP8vn+Wk05zqOk3k1L1S0uMOdvy
-         Nf4OTD+C2dozgcO9wVOeCRnbJF6D1soBkgzh7AonDaDWSW6h/mCSomDiK9uSkbJl+YER
-         meTiIGbwx4tWm+uOpzOCoQbKeFgcGdQt+CfBuIIzlUSiJknRPSbjvGYxFkJaV2ULCf8e
-         +9CvBb6mEcabIRPdxaHEixGIYkXid132Qo3i1Jh2qL3byrAl+FXiejxKjOeUAXehnL5Q
-         jglQ==
-X-Gm-Message-State: AOAM531WNS1vtdDGGK6jLiUAKctFjsvLMbkX5tcPt158u/P4BQ6xx6ze
-        53p4fgx+OIhITXT80g21td4=
-X-Google-Smtp-Source: ABdhPJw8hMfR0tua4m0SEy1S1OgXeIbF4V5PkGrQfPsgWsUMmhqUCsQ6BqkO13wWMhARAgs9aXN46w==
-X-Received: by 2002:a17:902:d504:b0:167:756a:f992 with SMTP id b4-20020a170902d50400b00167756af992mr15834566plg.160.1654654386690;
-        Tue, 07 Jun 2022 19:13:06 -0700 (PDT)
-Received: from localhost.localdomain ([47.242.114.172])
-        by smtp.gmail.com with ESMTPSA id s22-20020a170902a51600b001677841e9c2sm5335063plq.119.2022.06.07.19.13.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 19:13:06 -0700 (PDT)
-From:   Chuang <nashuiliang@gmail.com>
-Cc:     Chuang Wang <nashuiliang@gmail.com>, stable@vger.kernel.org,
-        Jingren Zhou <zhoujingren@didiglobal.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Jessica Yu <jeyu@kernel.org>, Ingo Molnar <mingo@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] kprobes: Rollback kprobe flags on failed arm_kprobe
-Date:   Wed,  8 Jun 2022 10:12:45 +0800
-Message-Id: <20220608021245.33575-1-nashuiliang@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 8 Jun 2022 01:13:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A2B83BE108
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:19:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12C1DB823D2
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:17:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3602C34114;
+        Wed,  8 Jun 2022 02:17:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654654656;
+        bh=JbX9uyByw0LnSxHvXxEqaqP/lr8AVeM95L2qB/4wUp8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=m97Lj18UPzw6bhgJ2Rskd450+GImKwwmJBkIC+Zqc7evsb4wVe/WL6Xnln7XHmsqd
+         jCzV5/+bCtCSqjzFFI/AAla4sT4xjxF0G6+KQJmr+jovIX/IqTOUASVkVFXeu3pQyK
+         IxMz7nxy+Y5yrIcdbCqvap2uKpiHdVg4Te/dE8JEUArADTkahQoPNMSmujiO/mbHC2
+         LH8UsBnywNOm1bq5suQEZb73pN4hw1EMW+p9kO9WEm/0/tUODRNQn3DjR/kRBFgYZd
+         vgwWm9KvqYJy7XVmFeCnhzLAFItjmEzcsW/NR0dkvYYpEfT3uqdXY7pX7nsWNeq4P0
+         rt3N6tcZgpVxg==
+Date:   Wed, 8 Jun 2022 02:17:33 +0000
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     Guenter Roeck <groeck@google.com>
+Cc:     bleung@chromium.org, groeck@chromium.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 15/15] platform/chrome: cros_ec_proto: return 0 on
+ getting wake mask success
+Message-ID: <YqAGvRpdUaFb6Vpx@google.com>
+References: <20220607145639.2362750-1-tzungbi@kernel.org>
+ <20220607145639.2362750-16-tzungbi@kernel.org>
+ <CABXOdTcYD6L6vnfNJwYROo1ynGqkabdbpm8JjvvosjtYGV1xow@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABXOdTcYD6L6vnfNJwYROo1ynGqkabdbpm8JjvvosjtYGV1xow@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuang Wang <nashuiliang@gmail.com>
+On Tue, Jun 07, 2022 at 12:12:25PM -0700, Guenter Roeck wrote:
+> On Tue, Jun 7, 2022 at 7:57 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+> >
+> > cros_ec_get_host_event_wake_mask() used to return value from
+> > send_command() which is number of bytes for input payload on success
+> > (i.e. sizeof(struct ec_response_host_event_mask)).
+> >
+> > However, the callers don't need to know how many bytes are available.
+> >
+> > - Fix cros_ec_get_host_event_wake_mask() to return 0 on success;
+> >   negative integers on error.
+> >
+> > - Add a Kunit test for guarding if send_command() returns 0 in
+> >   get_host_event_wake_mask().
+> >
+> Please split into two patches.
 
-In aggrprobe scenes, if arm_kprobe() returns an error(e.g. livepatch and
-kprobe are using the same function X), kprobe flags, while has been
-modified to ~KPROBE_FLAG_DISABLED, is not rollled back.
-
-Then, __disable_kprobe() will be failed in __unregister_kprobe_top(),
-the kprobe list will be not removed from aggrprobe, memory leaks or
-illegal pointers will be caused.
-
-WARN disarm_kprobe:
- Failed to disarm kprobe-ftrace at 00000000c729fdbc (-2)
- RIP: 0010:disarm_kprobe+0xcc/0x110
- Call Trace:
-  __disable_kprobe+0x78/0x90
-  __unregister_kprobe_top+0x13/0x1b0
-  ? _cond_resched+0x15/0x30
-  unregister_kprobes+0x32/0x80
-  unregister_kprobe+0x1a/0x20
-
-Illegal Pointers:
- BUG: unable to handle kernel paging request at 0000000000656369
- RIP: 0010:__get_valid_kprobe+0x69/0x90
- Call Trace:
-  register_kprobe+0x30/0x60
-  __register_trace_kprobe.part.7+0x8b/0xc0
-  create_local_trace_kprobe+0xd2/0x130
-  perf_kprobe_init+0x83/0xd0
-
-Fixes: 12310e343755 ("kprobes: Propagate error from arm_kprobe_ftrace()")
-Cc: stable@vger.kernel.org
-Signed-off-by: Jingren Zhou <zhoujingren@didiglobal.com>
-Signed-off-by: Chuang Wang <nashuiliang@gmail.com>
-
----
-v1->v2:
-- Supplement commit information: fixline, Cc stable
-
- kernel/kprobes.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-index f214f8c088ed..c11c79e05a4c 100644
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -2422,8 +2422,11 @@ int enable_kprobe(struct kprobe *kp)
- 	if (!kprobes_all_disarmed && kprobe_disabled(p)) {
- 		p->flags &= ~KPROBE_FLAG_DISABLED;
- 		ret = arm_kprobe(p);
--		if (ret)
-+		if (ret) {
- 			p->flags |= KPROBE_FLAG_DISABLED;
-+			if (p != kp)
-+				kp->flags |= KPROBE_FLAG_DISABLED;
-+		}
- 	}
- out:
- 	mutex_unlock(&kprobe_mutex);
--- 
-2.34.1
-
+Ack.
