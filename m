@@ -2,154 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CE0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:21:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E8DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:21:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234925AbiFHJVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:21:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58268 "EHLO
+        id S233788AbiFHJVM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:21:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235289AbiFHJTP (ORCPT
+        with ESMTP id S235335AbiFHJTS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:19:15 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4272383C6;
-        Wed,  8 Jun 2022 01:41:47 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-e656032735so26419869fac.0;
-        Wed, 08 Jun 2022 01:41:46 -0700 (PDT)
+        Wed, 8 Jun 2022 05:19:18 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE34E2504E3
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:42:04 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id p8so17765292pfh.8
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 01:42:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=SXmj6b+DkfLw5itmWk4/FOZXu0aiY0xTFwHQz3P20xg=;
-        b=WdYBN8CGdrIXxQzK0GPeVgw2MzDlTQbjZImmiSCIjEzItPZCLwSrJunmeLbwAI5ikm
-         7UpERZ2fzajMjBN38noWZM/RUcDEMPoazkYxmDCZ/piF6SB6ltAhCk3muTBLBmfff+up
-         1ySlRhC1vAawc4shHJYJl8WtvyOFfF7pyOD2RMHst5fPRND+9bgFXKQhUs4eFuzF83pL
-         TH7AybGjXUB/CPMHa+NdXiymNtTHvTNSi9Ff/1E1P5OvPjJCNNfhkrNJDXwi4zpqetk1
-         kyOe8mqAmriJNKLHM0imih+M6yAeZIA/mFxwR6SZyk+XLKohGvYt0P+D4aZX/5GXgoaR
-         obRw==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oKrDn7j6iEauiUWOiZHjxCbYJ+SMcnBM09Okw3jAyWg=;
+        b=hkP12yBv/qdVHlLRTYmfWbnNdUzR7SIEXiNK5tBfZg8wZEqvBbsaYa48xIl9gAun0V
+         5goeucy3rfgPiKHksq4o4pjbCT4LnsLg3Um1mnXSUBVU1nfNUE4782N8yG069J9ETuuh
+         L0BccRWgphC+21aMuQHWuPdkjFkQrZtC4xyMzLYp7R/koc2WhuOuuT5HzwIPBry0vOkp
+         7yvg55NmSxos6hJ5Yz59RfBKzSuv0MuoAPyb9vGEh65FfBJ2kvANH+TeVZniMFmwvs38
+         tKX0OCVm4NZEI2fDx7t56RE3qlOXqGro7NYpT3LXuxEIXfv02zkRr7Nqzu5WLdcy8NAD
+         P22A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=SXmj6b+DkfLw5itmWk4/FOZXu0aiY0xTFwHQz3P20xg=;
-        b=XlmxD4uFJ3X5WhoTEiCn0+s+2JaYcVK42fDK6N5iKvZd1JWKt1YrU3TxMVvpMeOrLn
-         RKXOiw+xJz+4CyKOZMPkkU+fWDex3qrmU3KTvul+oYv+LL2uRz0qONySfqRrTJ44+YvX
-         lUTspEvTrAhb7BdVdF3Ji661bOyV6FylHqhxViOGts3cjHz9IjLWrTz+jb73uLR98sro
-         yYwJ809nx35LNQjVsWy5yrEE7BKOsw4GObcTHX/KjK5DrRakHh0N1e/E35LSErsqAOT2
-         ilocDKkanXIUxXG54K7hcxLd8qw84qFZSBbHrHbRmm4NYPvMrxSWCtBuG8Akng07AWpC
-         KYaw==
-X-Gm-Message-State: AOAM532tfNMeo1xHmQ71vS9vGTm5AKM/ljQoe6b2qWrX7GY14wlFx21J
-        G98IA3RujJ1LfLERlTiWgQrE8g0XgTA0hA==
-X-Google-Smtp-Source: ABdhPJxAOK47geI2yEq8uUzL6jVlujBVSQkzoXkWwANZs743d3DkA34VEE/uGgrzp5MCNfVJU/Fzyg==
-X-Received: by 2002:a17:90a:4897:b0:1c7:5fce:cbcd with SMTP id b23-20020a17090a489700b001c75fcecbcdmr71830734pjh.45.1654677696141;
-        Wed, 08 Jun 2022 01:41:36 -0700 (PDT)
-Received: from localhost.localdomain ([2402:7500:479:837b:38ad:1ae9:1239:b178])
-        by smtp.gmail.com with ESMTPSA id q4-20020a170902f34400b0015e8d4eb263sm13902217ple.173.2022.06.08.01.41.31
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 08 Jun 2022 01:41:35 -0700 (PDT)
-From:   cy_huang <u0084500@gmail.com>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lee.jones@linaro.org, daniel.thompson@linaro.org,
-        jingoohan1@gmail.com
-Cc:     pavel@ucw.cz, deller@gmx.de, cy_huang@richtek.com,
-        lucas_tsai@richtek.com, devicetree@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] backlight: rt4831: Apply ocp level from devicetree
-Date:   Wed,  8 Jun 2022 16:41:14 +0800
-Message-Id: <1654677674-15417-3-git-send-email-u0084500@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1654677674-15417-1-git-send-email-u0084500@gmail.com>
-References: <1654677674-15417-1-git-send-email-u0084500@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oKrDn7j6iEauiUWOiZHjxCbYJ+SMcnBM09Okw3jAyWg=;
+        b=qHGW+VxioX6L4LPe20FPsKzv53TicWEU1DmeEmUYadSVUc/ogvMZi7eCe0VdiXc/Kj
+         MGMNIq6SbMUlCuUuUrChTWo7RQ9H1roCF51HFu6e+KOotRyLtXKwHWHzfxBkEW02Fe21
+         LaOrfMpRPBveG+suEP4S8eTsCLyXR7wbm/t/rWpuhI9nCIrRkuuEg4YgTvqXptMd97Gb
+         nVtLzdI+HYkeVY3bwURziS0DNvQZ1f5FgoJ8Eb6duUxdm68bGjSmb+VCQEuqXlZsJXRK
+         6zr5SOMBQm01t/thS8ElSdxnnmLQyz6VWAbByDwX2lknm0SJz2XIUJdej5rPoau3Afsa
+         Q/Tw==
+X-Gm-Message-State: AOAM531s9T4opg0idlcmQKoFm4oNFfdKDTSkvj2QgpBxfmF4H5tVhbUv
+        iZvzUECMC+x0Wu5sw0eHQrNzkQ==
+X-Google-Smtp-Source: ABdhPJzD1keYHphMNOiKsYQv/uGAH59sWQMWaVZCHRdHyPa3OQHK25sHTNNqEyRTEKJGpDKla7rOBA==
+X-Received: by 2002:a63:90c1:0:b0:3fc:7de1:b2b9 with SMTP id a184-20020a6390c1000000b003fc7de1b2b9mr28895736pge.440.1654677724237;
+        Wed, 08 Jun 2022 01:42:04 -0700 (PDT)
+Received: from always-T480.www.tendawifi.com ([139.177.225.254])
+        by smtp.gmail.com with ESMTPSA id u30-20020a63b55e000000b003fc136f9a7dsm2180975pgo.38.2022.06.08.01.42.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 01:42:03 -0700 (PDT)
+From:   zhenwei pi <pizhenwei@bytedance.com>
+To:     akpm@linux-foundation.org, naoya.horiguchi@nec.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        zhenwei pi <pizhenwei@bytedance.com>
+Subject: [PATCH v2 0/1] mm/memory-failure: don't allow to unpoison hw corrupted page
+Date:   Wed,  8 Jun 2022 16:43:55 +0800
+Message-Id: <20220608084356.40894-1-pizhenwei@bytedance.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChiYuan Huang <cy_huang@richtek.com>
+v1 -> v2:
+- this change gets protected by mf_mutex
+- use -EOPNOTSUPP instead of -EPERM 
 
-Add 'richtek,bled-ocp-microamp' property parsing in
-device_property_init function.
+v1:
+- check KPTE to avoid to unpoison hardware corrupted page
 
-This value may configure prior to the kernel driver. If it's not specified in
-devicetree, keep the original setting. Else, use clamp to align the
-value in min/max range and also roundup to choose the best selector.
+zhenwei pi (1):
+  mm/memory-failure: don't allow to unpoison hw corrupted page
 
-Reported-by: Lucas Tsai <lucas_tsai@richtek.com>
-Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
----
-Since v2:
-- Prase the 'richtek,bled-ocp-microamp', clamp the value in min/max range, and
-  roundup to get the best selector.
+ mm/memory-failure.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
----
- drivers/video/backlight/rt4831-backlight.c | 33 +++++++++++++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/video/backlight/rt4831-backlight.c b/drivers/video/backlight/rt4831-backlight.c
-index 42155c7..8c2001b 100644
---- a/drivers/video/backlight/rt4831-backlight.c
-+++ b/drivers/video/backlight/rt4831-backlight.c
-@@ -12,6 +12,7 @@
- #define RT4831_REG_BLCFG	0x02
- #define RT4831_REG_BLDIML	0x04
- #define RT4831_REG_ENABLE	0x08
-+#define RT4831_REG_BLOPT2	0x11
- 
- #define RT4831_BLMAX_BRIGHTNESS	2048
- 
-@@ -23,6 +24,11 @@
- #define RT4831_BLDIML_MASK	GENMASK(2, 0)
- #define RT4831_BLDIMH_MASK	GENMASK(10, 3)
- #define RT4831_BLDIMH_SHIFT	3
-+#define RT4831_BLOCP_MASK	GENMASK(1, 0)
-+
-+#define RT4831_BLOCP_MINUA	900000
-+#define RT4831_BLOCP_MAXUA	1800000
-+#define RT4831_BLOCP_STEPUA	300000
- 
- struct rt4831_priv {
- 	struct device *dev;
-@@ -85,7 +91,7 @@ static int rt4831_parse_backlight_properties(struct rt4831_priv *priv,
- {
- 	struct device *dev = priv->dev;
- 	u8 propval;
--	u32 brightness;
-+	u32 brightness, ocp_uA;
- 	unsigned int val = 0;
- 	int ret;
- 
-@@ -120,6 +126,31 @@ static int rt4831_parse_backlight_properties(struct rt4831_priv *priv,
- 	if (ret)
- 		return ret;
- 
-+	/*
-+	 * This OCP level is used to protect and limit the inductor current.
-+	 * If inductor peak current reach the level, low-side MOSFET will be
-+	 * turned off. Meanwhile, the output channel current may be limited.
-+	 * To match the configured channel current, the inductor chosen must
-+	 * be higher than the OCP level.
-+	 *
-+	 * Not like the OVP level, the default 21V can be used in the most
-+	 * application. But if the chosen OCP level is smaller than needed,
-+	 * it will also affect the backlight channel output current to be
-+	 * smaller than the register setting.
-+	 */
-+	ret = device_property_read_u32(dev, "richtek,bled-ocp-microamp",
-+				       &ocp_uA);
-+	if (!ret) {
-+		ocp_uA = clamp_val(ocp_uA, RT4831_BLOCP_MINUA,
-+				   RT4831_BLOCP_MAXUA);
-+		val = roundup(ocp_uA - RT4831_BLOCP_MINUA,
-+			      RT4831_BLOCP_STEPUA);
-+		ret = regmap_update_bits(priv->regmap, RT4831_REG_BLOPT2,
-+					 RT4831_BLOCP_MASK, val);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	ret = device_property_read_u8(dev, "richtek,channel-use", &propval);
- 	if (ret) {
- 		dev_err(dev, "richtek,channel-use DT property missing\n");
 -- 
-2.7.4
+2.20.1
 
