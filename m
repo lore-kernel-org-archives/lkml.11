@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9146AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B00B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244944AbiFHQ5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:57:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52990 "EHLO
+        id S231755AbiFHQ5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:57:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343830AbiFHQyY (ORCPT
+        with ESMTP id S1343850AbiFHQyb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:54:24 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9353C8834
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:51:37 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id n10so42664783ejk.5
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 09:51:37 -0700 (PDT)
+        Wed, 8 Jun 2022 12:54:31 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA8973C9661
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:51:38 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id gl15so28761732ejb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 09:51:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=IHEZAJdjR8GiF2rcZjyRDsrMR8WF0LYSErHxMnZ6s20=;
-        b=MZKbWtENK8RJ8mhEjef9zX1yTSZS9BgXM713QnAIg2L5afXoz8jXYkkuBHY/6qGvq2
-         Xe/QJ8v++KscQsY1vp5+FFXyjT5O8ONPWQHFmXAXNoZICKoiCOJhQrjDn+sSrZffVhnr
-         COMtwcIGOuyD8SJi3niX6Nfuh82Vs1jbao2PA=
+        bh=s1QllzXGCUo8JTE+hOZVBSnNVj6x3XTlbwu5/oui3J8=;
+        b=PkT9jSzS4isGLZXYztnm7o7vihYHoIHdoouV2PmxWHm+ZtkDJguI+SyPGHfY3BlHN0
+         eex2ws/05yiq4L48cvhQazSfP/UoXuMi+2wqtFGQAWA+C6Cu9CdGYqxHroe3UBakK7Mv
+         wEzRRXTa/ZhUMrwFiKB0Sd8oI4DuYGM3i1pF8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IHEZAJdjR8GiF2rcZjyRDsrMR8WF0LYSErHxMnZ6s20=;
-        b=kngJyN6hufuoajw9cbYfyBaLz3H2XM4RSASftAtIeRXy3f+bPTBf5uuuU8WJraudYQ
-         cfmutCZuAVYnpRvStdPYcBQocc2945j+prPaGKGJWlEk1mV+a/lBnnDkSuvXV/XIlX/K
-         EzzS/6UAUS34OZ29M3iTzp2+cHHgNqsOBT9ZT9xDUqLA1sWOxKEidBa6NlX8eDGVCInd
-         8XCyT4TyJRQk3r4ewSsb+WqrPyfAlpRIaAAHtZ5W66RLJejiET4ZMo1ILUN78vo/qSFg
-         a6VJERTyIyuRYTp34IFdrLUL61JrvzjoM1ObUScCP3EH4Xlos0fcFP6Ewik1s880XGQN
-         AT4Q==
-X-Gm-Message-State: AOAM533Wm7e1rg6f1NCROVATtEfovXVKn1rEen1ExUl25GXtA+6QtU+E
-        vRj/20jlWefCx00r0VSUR5TgWZX22ba9kQ==
-X-Google-Smtp-Source: ABdhPJz1QODapFEAg4YigkTF2RHGdIx+/6uauzW1WsQ+9FsAAZvY0lK1/PlsjrZhGolAZLbjarVnZA==
-X-Received: by 2002:a17:906:4a83:b0:70b:156f:9098 with SMTP id x3-20020a1709064a8300b0070b156f9098mr31951137eju.109.1654707095099;
-        Wed, 08 Jun 2022 09:51:35 -0700 (PDT)
+        bh=s1QllzXGCUo8JTE+hOZVBSnNVj6x3XTlbwu5/oui3J8=;
+        b=XhYJPgO+s2UrOF8YvgoOyN5mHiSQDE7mlqhfH760xLx1Xo/xeE+iyYl5EeIbAVGoBR
+         PUmORT6n7HxK63rWqX77e6T7Yhy1V81JDdboPMAECNlW4FRHOPSdt0xd4c+aXl2wdmsK
+         qm44HeTRHawj0ZLLLd2ilR4jYN3Dc3va8jaT5gUQDhLx4lE68uubPZKT2iUBoW2RIHJB
+         14p93pMNAqNRutz7OyUPeYjixBUCxAOmP9R3UCUPaWF17GwrBa3GizGWjcUVvzov0dLu
+         jN7VHTFXHleyTs8dwapYgMXyQqcpYpGQ5YSbDa81LqY1dN6G3yYxsOccP1BMSTCjjHk0
+         gsPw==
+X-Gm-Message-State: AOAM531oazsjoZHdaXGtEA2Eq84RGdrgRY+XpLR5554mmQTOu1MY8Q1x
+        ArQ/sY3OuJZi6JdTKhNM4QfQGzG6LmfWHg==
+X-Google-Smtp-Source: ABdhPJxJpwfsJG+G/dyZuB393+fk2YFC3C7TABhD1j9gPxpe7Tw5UdZQXyQmWlzzVjmkyyTU0PEJbw==
+X-Received: by 2002:a17:907:9482:b0:6f5:171d:f7f5 with SMTP id dm2-20020a170907948200b006f5171df7f5mr33336054ejc.68.1654707098018;
+        Wed, 08 Jun 2022 09:51:38 -0700 (PDT)
 Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id c22-20020a17090654d600b0070587f81bcfsm9569071ejp.19.2022.06.08.09.51.33
+        by smtp.gmail.com with ESMTPSA id c22-20020a17090654d600b0070587f81bcfsm9569071ejp.19.2022.06.08.09.51.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 09:51:34 -0700 (PDT)
+        Wed, 08 Jun 2022 09:51:37 -0700 (PDT)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
@@ -52,14 +52,18 @@ Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
         Dario Binacchi <dario.binacchi@amarulasolutions.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         Paolo Abeni <pabeni@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 08/13] can: slcan: send the open command to the adapter
-Date:   Wed,  8 Jun 2022 18:51:11 +0200
-Message-Id: <20220608165116.1575390-9-dario.binacchi@amarulasolutions.com>
+Subject: [PATCH v2 10/13] can: slcan: move driver into separate sub directory
+Date:   Wed,  8 Jun 2022 18:51:13 +0200
+Message-Id: <20220608165116.1575390-11-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220608165116.1575390-1-dario.binacchi@amarulasolutions.com>
 References: <20220608165116.1575390-1-dario.binacchi@amarulasolutions.com>
@@ -69,40 +73,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In case the bitrate has been set via ip tool, this patch changes the
-driver to send the open command ("O\r") to the adapter.
+This patch moves the slcan driver into a separate directory, a later
+patch will add more files.
 
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-
 ---
 
-Changes in v2:
-- Improve the commit message.
+(no changes since v1)
 
- drivers/net/can/slcan.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/can/Makefile                        | 2 +-
+ drivers/net/can/slcan/Makefile                  | 6 ++++++
+ drivers/net/can/{slcan.c => slcan/slcan-core.c} | 0
+ 3 files changed, 7 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/can/slcan/Makefile
+ rename drivers/net/can/{slcan.c => slcan/slcan-core.c} (100%)
 
-diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index 8561bcee81ba..ec682715ce99 100644
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -461,8 +461,15 @@ static int slc_open(struct net_device *dev)
- 	 * can.bittiming.bitrate is 0, causing open_candev() to fail.
- 	 * So let's set to a fake value.
- 	 */
--	if (sl->can.bittiming.bitrate == 0)
-+	if (sl->can.bittiming.bitrate == 0) {
- 		sl->can.bittiming.bitrate = -1UL;
-+	} else {
-+		err = slcan_transmit_cmd(sl, "O\r");
-+		if (err) {
-+			netdev_err(dev, "failed to send open command 'O\\r'\n");
-+			return err;
-+		}
-+	}
+diff --git a/drivers/net/can/Makefile b/drivers/net/can/Makefile
+index 0af85983634c..210354df273c 100644
+--- a/drivers/net/can/Makefile
++++ b/drivers/net/can/Makefile
+@@ -5,7 +5,7 @@
  
- 	err = open_candev(dev);
- 	if (err) {
+ obj-$(CONFIG_CAN_VCAN)		+= vcan.o
+ obj-$(CONFIG_CAN_VXCAN)		+= vxcan.o
+-obj-$(CONFIG_CAN_SLCAN)		+= slcan.o
++obj-$(CONFIG_CAN_SLCAN)		+= slcan/
+ 
+ obj-y				+= dev/
+ obj-y				+= rcar/
+diff --git a/drivers/net/can/slcan/Makefile b/drivers/net/can/slcan/Makefile
+new file mode 100644
+index 000000000000..2e84f7bf7617
+--- /dev/null
++++ b/drivers/net/can/slcan/Makefile
+@@ -0,0 +1,6 @@
++# SPDX-License-Identifier: GPL-2.0
++
++obj-$(CONFIG_CAN_SLCAN) += slcan.o
++
++slcan-objs :=
++slcan-objs += slcan-core.o
+diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan/slcan-core.c
+similarity index 100%
+rename from drivers/net/can/slcan.c
+rename to drivers/net/can/slcan/slcan-core.c
 -- 
 2.32.0
 
