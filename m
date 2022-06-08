@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A0F6CCA48A
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:14:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C4D8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:14:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243917AbiFHPOF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56230 "EHLO
+        id S243250AbiFHPOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:14:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242452AbiFHPLq (ORCPT
+        with ESMTP id S242253AbiFHPLj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:11:46 -0400
+        Wed, 8 Jun 2022 11:11:39 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 971DD4A0031;
-        Wed,  8 Jun 2022 08:03:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5C449A29D;
+        Wed,  8 Jun 2022 08:03:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=XR+RIMaPRstxhE5d9sK6W/lLAxJj8y6CMlZq/dw3i2g=; b=PinZio6D0unRMLA2LkVJ0ptTFG
-        VrnAnp0fToz0SSUq+txImmnD3LXbPrTgnBlZV++pGdop4Cn2WGlRLHpKuS+kybl2tUCz9v7CkzcI7
-        M7dlh9co51ybg0sfqiCvyfJ+qCDVgLM04IACEtw5v5qim5kAOU7n37rbZwVisvIb02sc/ZVnklOXA
-        Z5Yog62jbLrAe6tbGbP1arO8LqW6WhxyWv31XFNHQTwJmoW7cJQZQo66HOCZ0qKa0oTcQqQUR6I7N
-        YxEdTY90TszBiIe5Yx9ka66db2HDnsKgnuyFmp91lyFFjiAr/Y42M1z5fpXGH6DEdv5iEQaT18DjE
-        zFSSPGRQ==;
+        bh=q19bl1GOrWdHTjgYDxhLJRg+W/+5czLjAL7VLyDzJ34=; b=mOBypxFOwS2n9s6NktrO3VOYBD
+        likaXqlN3jNEex1YWhAf5cX91oZKdOnyG+duJz3qLtijE+NyRnwVurkL0T91QfLi8D9sSQy09sG5r
+        Ym9AVhk5LO+yyQVj2g07a7Bn//PUeUxTNML3BWHOIRvkm7UttV7M2QnXImNESMTelDpw59g/UCbxW
+        24KiC0/3GOAODjYTTCyQ55cdTz2s29QYwsetmbpkcxS+y/86CU7jaFgS33h8YpDJnfq8G/cz6blQc
+        9oooMmL5H8ST+2VshTWzwRHw6FgNxJ66MFOCbzmtWOHkd7ciMFL1qsVw/5+BYRyJohk4ptXPd6+0k
+        krKUX0Hw==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nyxCu-00CjFW-Ik; Wed, 08 Jun 2022 15:02:52 +0000
+        id 1nyxCu-00CjFc-Qs; Wed, 08 Jun 2022 15:02:52 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-fsdevel@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
@@ -38,11 +38,10 @@ Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         linux-ntfs-dev@lists.sourceforge.net, ocfs2-devel@oss.oracle.com,
         linux-mtd@lists.infradead.org,
         virtualization@lists.linux-foundation.org,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Christoph Hellwig <hch@lst.de>
-Subject: [PATCH v2 09/19] nfs: Convert to migrate_folio
-Date:   Wed,  8 Jun 2022 16:02:39 +0100
-Message-Id: <20220608150249.3033815-10-willy@infradead.org>
+Subject: [PATCH v2 12/19] btrfs: Convert btrfs_migratepage to migrate_folio
+Date:   Wed,  8 Jun 2022 16:02:42 +0100
+Message-Id: <20220608150249.3033815-13-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220608150249.3033815-1-willy@infradead.org>
 References: <20220608150249.3033815-1-willy@infradead.org>
@@ -52,90 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use a folio throughout this function.  migrate_page() will be converted
-later.
+Use filemap_migrate_folio() to do the bulk of the work, and then copy
+the ordered flag across if needed.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Acked-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- fs/nfs/file.c     |  4 +---
- fs/nfs/internal.h |  6 ++++--
- fs/nfs/write.c    | 16 ++++++++--------
- 3 files changed, 13 insertions(+), 13 deletions(-)
+ fs/btrfs/inode.c | 26 +++++++++-----------------
+ 1 file changed, 9 insertions(+), 17 deletions(-)
 
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index 2d72b1b7ed74..549baed76351 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -533,9 +533,7 @@ const struct address_space_operations nfs_file_aops = {
- 	.write_end = nfs_write_end,
- 	.invalidate_folio = nfs_invalidate_folio,
- 	.release_folio = nfs_release_folio,
--#ifdef CONFIG_MIGRATION
--	.migratepage = nfs_migrate_page,
--#endif
-+	.migrate_folio = nfs_migrate_folio,
- 	.launder_folio = nfs_launder_folio,
- 	.is_dirty_writeback = nfs_check_dirty_writeback,
- 	.error_remove_page = generic_error_remove_page,
-diff --git a/fs/nfs/internal.h b/fs/nfs/internal.h
-index 8f8cd6e2d4db..437ebe544aaf 100644
---- a/fs/nfs/internal.h
-+++ b/fs/nfs/internal.h
-@@ -578,8 +578,10 @@ void nfs_clear_pnfs_ds_commit_verifiers(struct pnfs_ds_commit_info *cinfo)
- #endif
- 
- #ifdef CONFIG_MIGRATION
--extern int nfs_migrate_page(struct address_space *,
--		struct page *, struct page *, enum migrate_mode);
-+int nfs_migrate_folio(struct address_space *, struct folio *dst,
-+		struct folio *src, enum migrate_mode);
-+#else
-+#define nfs_migrate_folio NULL
- #endif
- 
- static inline int
-diff --git a/fs/nfs/write.c b/fs/nfs/write.c
-index 1c706465d090..649b9e633459 100644
---- a/fs/nfs/write.c
-+++ b/fs/nfs/write.c
-@@ -2119,27 +2119,27 @@ int nfs_wb_page(struct inode *inode, struct page *page)
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index 81737eff92f3..5f41d869c648 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -8255,30 +8255,24 @@ static bool btrfs_release_folio(struct folio *folio, gfp_t gfp_flags)
  }
  
  #ifdef CONFIG_MIGRATION
--int nfs_migrate_page(struct address_space *mapping, struct page *newpage,
--		struct page *page, enum migrate_mode mode)
-+int nfs_migrate_folio(struct address_space *mapping, struct folio *dst,
-+		struct folio *src, enum migrate_mode mode)
+-static int btrfs_migratepage(struct address_space *mapping,
+-			     struct page *newpage, struct page *page,
++static int btrfs_migrate_folio(struct address_space *mapping,
++			     struct folio *dst, struct folio *src,
+ 			     enum migrate_mode mode)
  {
- 	/*
--	 * If PagePrivate is set, then the page is currently associated with
-+	 * If the private flag is set, the folio is currently associated with
- 	 * an in-progress read or write request. Don't try to migrate it.
- 	 *
- 	 * FIXME: we could do this in principle, but we'll need a way to ensure
- 	 *        that we can safely release the inode reference while holding
--	 *        the page lock.
-+	 *        the folio lock.
- 	 */
--	if (PagePrivate(page))
-+	if (folio_test_private(src))
- 		return -EBUSY;
+-	int ret;
++	int ret = filemap_migrate_folio(mapping, dst, src, mode);
  
--	if (PageFsCache(page)) {
-+	if (folio_test_fscache(src)) {
- 		if (mode == MIGRATE_ASYNC)
- 			return -EBUSY;
--		wait_on_page_fscache(page);
-+		folio_wait_fscache(src);
+-	ret = migrate_page_move_mapping(mapping, newpage, page, 0);
+ 	if (ret != MIGRATEPAGE_SUCCESS)
+ 		return ret;
+ 
+-	if (page_has_private(page))
+-		attach_page_private(newpage, detach_page_private(page));
+-
+-	if (PageOrdered(page)) {
+-		ClearPageOrdered(page);
+-		SetPageOrdered(newpage);
++	if (folio_test_ordered(src)) {
++		folio_clear_ordered(src);
++		folio_set_ordered(dst);
  	}
  
--	return migrate_page(mapping, newpage, page, mode);
-+	return migrate_page(mapping, &dst->page, &src->page, mode);
+-	if (mode != MIGRATE_SYNC_NO_COPY)
+-		migrate_page_copy(newpage, page);
+-	else
+-		migrate_page_states(newpage, page);
+ 	return MIGRATEPAGE_SUCCESS;
  }
++#else
++#define btrfs_migrate_folio NULL
  #endif
  
+ static void btrfs_invalidate_folio(struct folio *folio, size_t offset,
+@@ -11422,9 +11416,7 @@ static const struct address_space_operations btrfs_aops = {
+ 	.direct_IO	= noop_direct_IO,
+ 	.invalidate_folio = btrfs_invalidate_folio,
+ 	.release_folio	= btrfs_release_folio,
+-#ifdef CONFIG_MIGRATION
+-	.migratepage	= btrfs_migratepage,
+-#endif
++	.migrate_folio	= btrfs_migrate_folio,
+ 	.dirty_folio	= filemap_dirty_folio,
+ 	.error_remove_page = generic_error_remove_page,
+ 	.swap_activate	= btrfs_swap_activate,
 -- 
 2.35.1
 
