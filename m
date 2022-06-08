@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B50FEC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9117CCA47A
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 20:53:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234795AbiFHUxf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 16:53:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42520 "EHLO
+        id S235194AbiFHUxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 16:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233888AbiFHUw6 (ORCPT
+        with ESMTP id S231691AbiFHUxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 16:52:58 -0400
+        Wed, 8 Jun 2022 16:53:00 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22A31CB715
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 13:52:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45661CAD00
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 13:52:58 -0700 (PDT)
 Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id D0F276601801;
-        Wed,  8 Jun 2022 21:52:54 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 31E376601809;
+        Wed,  8 Jun 2022 21:52:56 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654721575;
-        bh=fNrnNmjm8O3impsJ3FwNrPFJIw42pnJblFgr2kI6zEE=;
+        s=mail; t=1654721576;
+        bh=r6lF+wb4oVIUvBtEdpQAsS/+HQWGO3JeX6KjqiaMQi0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X1jsSDV9qIkW0k9U0wTK98H2ECth5LgLSSwPXgE1gQmREyqzW39tKU/XzXHXuT5Hs
-         QXji+EM4q9zv5jgMedjv4I3DR+DcC7pHZGZlve4cVqqEAJL6rvBF3qe1B52PMGpiBz
-         dOxQ4mN7VuvWCcqkhzxpmF34dPpxf/oyLUsVa9DglQXVxmSdphL+uC18TRoCoc68CF
-         7wI9IV6iwpRNlSAZhG/6Z/nUMSpy27towMbvA5J0T2kPMVvim49B/RBgluej92WKmS
-         MxUgyVAyNle+H56W3h0R0/j3a7nWZ3bscibDXsSl7V7b3Hw0kitVI7/JrcEkraORok
-         pRc3BwpRgyZ8Q==
+        b=F0HAuM23UJf5E7QHrXaIFFVXkx6DchpY6GZh5Av4142EiJOa4Abh+fqgLTjtcz5G9
+         3cA1QvXRosGUsg6WuYQuZ9c8ZvE+G4slTkLGhMiSqFL48+eLcVXBPGgSg9Oiv5Mak+
+         WJSuyOvbfYAmsKRN4NBTjX4DrsTdKFqWrw8QTVNwkjN355F9z2AmDhNe6HPQ3JnRN1
+         xEYMkHfDJAAu+HJDYm8rPQjhFJ/AUGwxDTj05WwPR20V5ZTD9pe6ahRyx3/+gmALe2
+         RnN2nNMNDpTgYFuzsrE1itZB4YFTVLNwo+tiqnh7ikMrozPpUDMidpgu6XVdf9cIE+
+         FEepQ6N0I/DRA==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -44,9 +44,9 @@ Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
         Matthew Auld <matthew.auld@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/8] drm/i915: allow volatile buffers to use ttm pool allocator
-Date:   Wed,  8 Jun 2022 20:51:27 +0000
-Message-Id: <20220608205132.438596-5-bob.beckett@collabora.com>
+Subject: [PATCH v2 6/8] drm/i915/gem: further fix mman selftest
+Date:   Wed,  8 Jun 2022 20:51:29 +0000
+Message-Id: <20220608205132.438596-7-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220608205132.438596-1-bob.beckett@collabora.com>
 References: <20220608205132.438596-1-bob.beckett@collabora.com>
@@ -56,42 +56,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Internal/volatile buffers should not be shmem backed.
-If a volatile buffer is requested, allow ttm to use the pool allocator
-to provide volatile pages as backing.
-Fix i915_ttm_shrink to handle !is_shmem volatile buffers by purging.
+In commit 450cede7f380 ("drm/i915/gem: Fix the mman selftest") we fixed up
+the mman selftest to allocate user buffers via smem only if we have lmem,
+otherwise it uses internal buffers.
+
+As the commit message asserts, we should only be using buffers that
+userland should be able to create.
+Internal buffers are not intended to be used by userland.
+
+Instead, fix the code to always create buffers from smem.
+In the case of integrated, this will create them from the shmem non-ttm
+backend, which is fine.
+
+This also fixes up the code to allow conversion of internal backend to
+ttm without breaking this test.
 
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_ttm.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ .../gpu/drm/i915/gem/selftests/i915_gem_mman.c  | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-index 27d59639177f..8edce04a0509 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-@@ -309,7 +309,8 @@ static struct ttm_tt *i915_ttm_tt_create(struct ttm_buffer_object *bo,
- 		page_flags |= TTM_TT_FLAG_ZERO_ALLOC;
+diff --git a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
+index 5bc93a1ce3e3..ee2ad1281f97 100644
+--- a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
++++ b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
+@@ -594,17 +594,12 @@ static enum i915_mmap_type default_mapping(struct drm_i915_private *i915)
+ }
  
- 	caching = i915_ttm_select_tt_caching(obj);
--	if (i915_gem_object_is_shrinkable(obj) && caching == ttm_cached) {
-+	if (i915_gem_object_is_shrinkable(obj) && caching == ttm_cached &&
-+	    !i915_gem_object_is_volatile(obj)) {
- 		page_flags |= TTM_TT_FLAG_EXTERNAL |
- 			      TTM_TT_FLAG_EXTERNAL_MAPPABLE;
- 		i915_tt->is_shmem = true;
-@@ -531,9 +532,9 @@ static int i915_ttm_shrink(struct drm_i915_gem_object *obj, unsigned int flags)
- 	if (!bo->ttm || bo->resource->mem_type != TTM_PL_SYSTEM)
- 		return 0;
+ static struct drm_i915_gem_object *
+-create_sys_or_internal(struct drm_i915_private *i915,
+-		       unsigned long size)
++create_sys(struct drm_i915_private *i915, unsigned long size)
+ {
+-	if (HAS_LMEM(i915)) {
+-		struct intel_memory_region *sys_region =
+-			i915->mm.regions[INTEL_REGION_SMEM];
++	struct intel_memory_region *sys_region =
++		i915->mm.regions[INTEL_REGION_SMEM];
  
--	GEM_BUG_ON(!i915_tt->is_shmem);
-+	GEM_BUG_ON(!i915_tt->is_shmem && obj->mm.madv != I915_MADV_DONTNEED);
+-		return __i915_gem_object_create_user(i915, size, &sys_region, 1);
+-	}
+-
+-	return i915_gem_object_create_internal(i915, size);
++	return __i915_gem_object_create_user(i915, size, &sys_region, 1);
+ }
  
--	if (!i915_tt->filp)
-+	if (i915_tt->is_shmem && !i915_tt->filp)
- 		return 0;
+ static bool assert_mmap_offset(struct drm_i915_private *i915,
+@@ -615,7 +610,7 @@ static bool assert_mmap_offset(struct drm_i915_private *i915,
+ 	u64 offset;
+ 	int ret;
  
- 	ret = ttm_bo_wait_ctx(bo, &ctx);
+-	obj = create_sys_or_internal(i915, size);
++	obj = create_sys(i915, size);
+ 	if (IS_ERR(obj))
+ 		return expected && expected == PTR_ERR(obj);
+ 
+@@ -717,7 +712,7 @@ static int igt_mmap_offset_exhaustion(void *arg)
+ 	}
+ 
+ 	/* Fill the hole, further allocation attempts should then fail */
+-	obj = create_sys_or_internal(i915, PAGE_SIZE);
++	obj = create_sys(i915, PAGE_SIZE);
+ 	if (IS_ERR(obj)) {
+ 		err = PTR_ERR(obj);
+ 		pr_err("Unable to create object for reclaimed hole\n");
 -- 
 2.25.1
 
