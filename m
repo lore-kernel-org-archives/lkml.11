@@ -2,99 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8EEC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F3ECCA47B
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 18:21:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234217AbiFHSTw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 14:19:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49170 "EHLO
+        id S234371AbiFHSUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 14:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235323AbiFHSR7 (ORCPT
+        with ESMTP id S234259AbiFHSUZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 14:17:59 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70692B41E9;
-        Wed,  8 Jun 2022 11:17:49 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id g205so19009484pfb.11;
-        Wed, 08 Jun 2022 11:17:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=zet8osd5nLPQz3oBe73Zqkjg49dA/mLJAWeA5oyZgNc=;
-        b=gznNOJx2q3HHwRU/vXMQEhXkx0ZDe/ClZSgZE90leL4se9+z/rkgkJgci31UnXxqGa
-         pSFmDAV+KQ/m0lAMBWDv3BwEjRWzkjNkczSWMGqRWANlHNVeAjLbvNv0VgtsJLSZFaGN
-         rMAoXzurC+ksXW9ifq1N61vUpBNDSLW1nOSoKqMt80o1qHIHevYxhH5ChyCyOijuVeWd
-         EcMVG1uhwm6qQyQ1La9YqKhGs5KvevA4t1771Q28WgXIZufuh+ZH1bAfQIZuJyQuOCfA
-         aTA2d14H9NmsmkTlbDpT6b2bvvDTPgr6XjYiwsQLbapk21aix6tYegOmkO/0RdZxEdOv
-         cyxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:content-transfer-encoding;
-        bh=zet8osd5nLPQz3oBe73Zqkjg49dA/mLJAWeA5oyZgNc=;
-        b=gT1xishbNPccgz3YPsVz1KtzAX8GVpn31QPBu5VtMP2f2dFd9oQJXBt8LsyIjM0c1h
-         UVC2ZdDnUPYkoj2y/2g2WRxO9nAm5FaEDKz/NlgqwrFG+5DFxjKX3GOcHOgVpxHqw1Wx
-         u88LTDAQ/DEoi+AUDTtxbV6+B8Ff6IOcHscbpnh0/m/SNJuc8hebtq0myt8ey9US3Nyl
-         aA7Ak9Cs1kwH2VjDGbnMYFMmi+etl+H3TJMXHP780ijEMVJWH6uTCxdN08QXYhbSaSnK
-         ZSSLky2rZkeUiwKhwSnJ/2DD10GOmirEL+w4skwlagkdQr8sAQlN/kec0PPLiw0rBde8
-         0wuQ==
-X-Gm-Message-State: AOAM5307kRr49s5bJjQC6it1HCAaVfUfTn21vKTjgrXUASnwpfipi5G0
-        PDCR8JFryqthvIHwhYxr6wr4bn4s1WAT5w==
-X-Google-Smtp-Source: ABdhPJw4IBP98O87UVzcQWYGyt8VGxGjhv1L2/x8qSb8M+AC7+L/IJaBTKiibfNreq0M0hhTyIOeyA==
-X-Received: by 2002:a05:6a02:19c:b0:3aa:1bf8:7388 with SMTP id bj28-20020a056a02019c00b003aa1bf87388mr30944392pgb.455.1654712267938;
-        Wed, 08 Jun 2022 11:17:47 -0700 (PDT)
-Received: from Sauravs-MacBook-Air.local ([106.212.247.119])
-        by smtp.gmail.com with ESMTPSA id o3-20020a625a03000000b0050dc7628142sm15375484pfb.28.2022.06.08.11.17.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 11:17:47 -0700 (PDT)
-Date:   Wed, 8 Jun 2022 23:47:42 +0530
-From:   Saurav Girepunje <saurav.girepunje@gmail.com>
-To:     b-liu@ti.com, gregkh@linuxfoundation.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     saurav.girepunje@hotmail.com
-Subject: [PATCH] usb: musb: remove schedule work called after flush
-Message-ID: <YqDnxkWZV2KfZh5q@Sauravs-MacBook-Air.local>
+        Wed, 8 Jun 2022 14:20:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A71E2DEE;
+        Wed,  8 Jun 2022 11:20:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6AF28B82991;
+        Wed,  8 Jun 2022 18:20:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30BE5C385A5;
+        Wed,  8 Jun 2022 18:20:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654712415;
+        bh=BUWGuywNHkaCDQ8pgh0VMb6Aq1LPMmddJGqt/zmBRgc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=YCah+PueDKgwfNOWXcjcTQQDxtQUpvl8d5r4re5UgYnytsCMyXVgQXqkSvERMPs2A
+         I1rlM6IGON8cFEXwkczBZcq6Gpu2N1zSGsOtRNV/t1ouHl1V3+K6V6yUCzEHZp5M8B
+         194IEzYPhcp9iksUVmLJ5Lukgp8S+Y0xa8Wr3ZlCAkXwd+PDxYpZpGSY/2W0HKiOm5
+         6WpyXu2RzUb5mjAqAx5vWNsoojEd9YUGGrC+IE2jYqzD/C69OwyZ2Elf0FP0x47lNG
+         NSMl1v/BI8fegL4bMjEADVjkoGif6EhhlLQJDPBoRttWnbLnO+k7gRPVXnJAk66uXR
+         q7Kbw2Gohis5w==
+Received: by mail-yb1-f169.google.com with SMTP id r82so37830141ybc.13;
+        Wed, 08 Jun 2022 11:20:15 -0700 (PDT)
+X-Gm-Message-State: AOAM531jihGsiPxHjDyAK2qu4pdR3ixSUqt7s0I2q89oo6/BRKr53s0w
+        8/0LVd2XQvnavyGgeUfhmTW5Opm6dcfPlZVvAlM=
+X-Google-Smtp-Source: ABdhPJycIGSKO1BWbMab4Gr73BuZG3S8DS1FzEmzvpaWStCmCEswnc3obpq/OgVaJT/eSIY6l0zC85LUiAgu9IVu2Mc=
+X-Received: by 2002:a25:31c2:0:b0:641:660f:230f with SMTP id
+ x185-20020a2531c2000000b00641660f230fmr35700307ybx.472.1654712414321; Wed, 08
+ Jun 2022 11:20:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20220607090206.19830-1-arnd@kernel.org> <20220608110116.12e5c2e6@kernel.org>
+In-Reply-To: <20220608110116.12e5c2e6@kernel.org>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 8 Jun 2022 20:19:55 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2+Y=dpFUSb+_u3sCdJ0kpkEF5JgAFP0T6CSDjrTFAusQ@mail.gmail.com>
+Message-ID: <CAK8P3a2+Y=dpFUSb+_u3sCdJ0kpkEF5JgAFP0T6CSDjrTFAusQ@mail.gmail.com>
+Subject: Re: [PATCH] au1000_eth: stop using virt_to_bus()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+        Manuel Lauss <manuel.lauss@gmail.com>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In musb_remove() cancel_delayed_work_sync(&musb->irq_work)
-is called which flush the irq_work work queue.
+On Wed, Jun 8, 2022 at 8:01 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue,  7 Jun 2022 11:01:46 +0200 Arnd Bergmann wrote:
+> > From: Arnd Bergmann <arnd@arndb.de>
+> >
+> > The conversion to the dma-mapping API in linux-2.6.11 was incomplete
+> > and left a virt_to_bus() call around. There have been a number of
+> > fixes for DMA mapping API abuse in this driver, but this one always
+> > slipped through.
+> >
+> > Change it to just use the existing dma_addr_t pointer, and make it
+> > use the correct types throughout the driver to make it easier to
+> > understand the virtual vs dma address spaces.
+> >
+> > Cc: Manuel Lauss <manuel.lauss@gmail.com>
+> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>
+> Hi Arnd, this can go via net-next, right? The changes are simple
+> enough, we can try to slip them into -rc2 if necessary.
 
-After cancel delayed work, musb_remove() call
-musb_gadget_cleanup->usb_del_gadget_udc->usb_del_gadget
-->usb_gadget_remove_driver->usb_gadget_udc_stop->udc
-->gadget->ops->udc_stop(udc->gadget);
+It's probably fine either way. I hope to get the CONFIG_VIRT_TO_BUS
+removal into v5.20, and if the final patch of that series comes before
+this one, there will be a trivial bisection problem on mips/au1000, so
+having it merged now would help.
 
-Where musb_gadget_stop() call "schedule_delayed_work(&musb->irq_work, 0)”
-which is already cancel/flush.
-
-So remove the schedule_delayed_work(&musb->irq_work, 0);
-from musb_gadget_stop function.
-
-Signed-off-by: Saurav Girepunje <saurav.girepunje@gmail.com>
----
- drivers/usb/musb/musb_gadget.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/usb/musb/musb_gadget.c b/drivers/usb/musb/musb_gadget.c
-index 51274b87f46c..daada4b66a92 100644
---- a/drivers/usb/musb/musb_gadget.c
-+++ b/drivers/usb/musb/musb_gadget.c
-@@ -1910,8 +1910,6 @@ static int musb_gadget_stop(struct usb_gadget *g)
- 	 */
-
- 	/* Force check of devctl register for PM runtime */
--	schedule_delayed_work(&musb->irq_work, 0);
--
- 	pm_runtime_mark_last_busy(musb->controller);
- 	pm_runtime_put_autosuspend(musb->controller);
-
---
-2.33.0
-
+        Arnd
