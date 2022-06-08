@@ -2,108 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A53C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D16FBCCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234907AbiFHJS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56032 "EHLO
+        id S235137AbiFHJSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:18:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235332AbiFHJOy (ORCPT
+        with ESMTP id S235101AbiFHJOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:14:54 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A77D11099F;
-        Wed,  8 Jun 2022 01:37:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1654677473; x=1686213473;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=SxzqUFLbDjsgliBmUQUwC7ztm+S2UVv9h6KqdGI813I=;
-  b=VpVZJ0s3EK7cux8Hphg6viwkAaZJ1b2gwE08cts0JPe6M4x7zoWWqoZk
-   c+304LxXSr+Zvyq1QslYsfG7nfMdgOLQDnbZDSXhAGp+lUaQP7QOrdNxB
-   WrkDT1vsueUR0V4lXb9VATA21kezoEZWbHFZPWWn+VJEVO7rfr9v/v/YB
-   kBLPrrkZFDwNshc01YnQZPUxNvvDnWy1n6tr0DC7NeLZYQClYWdB4pWo/
-   DClSwIJXYLz8t3Zx+aAj93/+sBcNzXqnkvZYi2Gtlry9ljX2F6jCutxY1
-   eseRwiu9v4D3eM5TtA/G1eAQn+HOG2p9jbIACxszWnmpg0dZRWSznmlfr
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="99077620"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jun 2022 01:37:52 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 8 Jun 2022 01:37:50 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 8 Jun 2022 01:37:47 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <p.zabel@pengutronix.de>, <sre@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <linux-arm-kernel@lists.infradead.org>, <linux-pm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v4 5/9] power: reset: at91-reset: document structures and enums
-Date:   Wed, 8 Jun 2022 11:39:38 +0300
-Message-ID: <20220608083942.1584087-6-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
-References: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
+        Wed, 8 Jun 2022 05:14:30 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42301E7348;
+        Wed,  8 Jun 2022 01:36:10 -0700 (PDT)
+X-UUID: 09d8dafa31464edba8697fe29c733233-20220608
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:238cc072-fe5f-4b93-8438-131e46df9dcf,OB:10,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:95
+X-CID-INFO: VERSION:1.1.5,REQID:238cc072-fe5f-4b93-8438-131e46df9dcf,OB:10,LOB
+        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:95
+X-CID-META: VersionHash:2a19b09,CLOUDID:3d2515e5-2ba2-4dc1-b6c5-11feb6c769e0,C
+        OID:ab9fe7398c47,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:0,BEC:nil
+X-UUID: 09d8dafa31464edba8697fe29c733233-20220608
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 484781445; Wed, 08 Jun 2022 16:36:04 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Wed, 8 Jun 2022 16:36:03 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Wed, 8 Jun 2022 16:36:03 +0800
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Benson Leung <bleung@chromium.org>,
+        "Guenter Roeck" <groeck@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        Kees Cook <keescook@chromium.org>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>
+CC:     <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <chrome-platform@lists.linux.dev>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <weishunc@google.com>
+Subject: [PATCH v2 8/9] remoteproc: mediatek: Wait SCP core 1 probe done
+Date:   Wed, 8 Jun 2022 16:35:52 +0800
+Message-ID: <20220608083553.8697-9-tinghan.shen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220608083553.8697-1-tinghan.shen@mediatek.com>
+References: <20220608083553.8697-1-tinghan.shen@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document structures and enums.
+SCP core 1 driver probing must finish before start loading SCP core 1
+image. Add a simple flag checking mechanism when preparing SCP core 1
+subdevice.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
 ---
- drivers/power/reset/at91-reset.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/remoteproc/mtk_common.h |  1 +
+ drivers/remoteproc/mtk_scp.c    | 38 ++++++++++++++++++++++++++++++++-
+ 2 files changed, 38 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/power/reset/at91-reset.c b/drivers/power/reset/at91-reset.c
-index 64def79d557a..e62798750b6b 100644
---- a/drivers/power/reset/at91-reset.c
-+++ b/drivers/power/reset/at91-reset.c
-@@ -39,6 +39,17 @@
- #define AT91_RSTC_URSTIEN	BIT(4)		/* User Reset Interrupt Enable */
- #define AT91_RSTC_ERSTL		GENMASK(11, 8)	/* External Reset Length */
+diff --git a/drivers/remoteproc/mtk_common.h b/drivers/remoteproc/mtk_common.h
+index 67b41866a100..89f9e53a5879 100644
+--- a/drivers/remoteproc/mtk_common.h
++++ b/drivers/remoteproc/mtk_common.h
+@@ -153,6 +153,7 @@ struct mtk_scp {
  
-+/**
-+ * enum reset_type - reset types
-+ * @RESET_TYPE_GENERAL:		first power-up reset
-+ * @RESET_TYPE_WAKEUP:		return from backup mode
-+ * @RESET_TYPE_WATCHDOG:	watchdog fault
-+ * @RESET_TYPE_SOFTWARE:	processor reset required by software
-+ * @RESET_TYPE_USER:		NRST pin detected low
-+ * @RESET_TYPE_CPU_FAIL:	CPU clock failure detection
-+ * @RESET_TYPE_XTAL_FAIL:	32KHz crystal failure dectection fault
-+ * @RESET_TYPE_ULP2:		ULP2 reset
-+ */
- enum reset_type {
- 	RESET_TYPE_GENERAL	= 0,
- 	RESET_TYPE_WAKEUP	= 1,
-@@ -50,6 +61,15 @@ enum reset_type {
- 	RESET_TYPE_ULP2		= 8,
+ 	struct rproc_subdev *rpmsg_subdev;
+ 	struct rproc_subdev *dual_subdev;
++	int dual_probe_done;
  };
  
-+/**
-+ * struct at91_reset - AT91 reset specific data structure
-+ * @rstc_base:		base address for system reset
-+ * @ramc_base:		array with base addresses of RAM controllers
-+ * @sclk:		slow clock
-+ * @nb:			reset notifier block
-+ * @args:		SoC specific system reset arguments
-+ * @ramc_lpr:		SDRAM Controller Low Power Register
-+ */
- struct at91_reset {
- 	void __iomem *rstc_base;
- 	void __iomem *ramc_base[2];
+ /**
+diff --git a/drivers/remoteproc/mtk_scp.c b/drivers/remoteproc/mtk_scp.c
+index d0e9e19e251f..b66bee4beb4d 100644
+--- a/drivers/remoteproc/mtk_scp.c
++++ b/drivers/remoteproc/mtk_scp.c
+@@ -937,6 +937,7 @@ static struct mtk_scp *scp_dual_get(struct mtk_scp *scp)
+ 	struct device *dev = scp->dev;
+ 	struct device_node *np;
+ 	struct platform_device *dual_pdev;
++	struct mtk_scp *scp_dual;
+ 
+ 	np = of_parse_phandle(dev->of_node, "mediatek,scp-core", 0);
+ 	dual_pdev = of_find_device_by_node(np);
+@@ -947,7 +948,11 @@ static struct mtk_scp *scp_dual_get(struct mtk_scp *scp)
+ 		return NULL;
+ 	}
+ 
+-	return platform_get_drvdata(dual_pdev);
++	scp_dual = platform_get_drvdata(dual_pdev);
++	if (!scp_dual)
++		put_device(&dual_pdev->dev);
++
++	return scp_dual;
+ }
+ 
+ static void scp_dual_put(struct mtk_scp *scp)
+@@ -955,6 +960,33 @@ static void scp_dual_put(struct mtk_scp *scp)
+ 	put_device(scp->dev);
+ }
+ 
++static int scp_dual_rproc_prepare(struct rproc_subdev *subdev)
++{
++	struct scp_subdev_core *subdev_core = to_subdev_core(subdev);
++	struct mtk_scp *scp = subdev_core->main_scp;
++	unsigned long timeout;
++
++	timeout = jiffies + msecs_to_jiffies(100);
++	while (1) {
++		struct mtk_scp *scp_dual = scp_dual_get(scp);
++
++		if (scp_dual && scp_dual->dual_probe_done) {
++			scp_dual_put(scp_dual);
++			break;
++		}
++
++		if (scp_dual && !scp_dual->dual_probe_done)
++			scp_dual_put(scp_dual);
++
++		if (time_after(jiffies, timeout)) {
++			dev_err(scp->dev, "scp-dual probe timeout\n");
++			return -ETIMEDOUT;
++		}
++	}
++
++	return 0;
++}
++
+ static int scp_dual_rproc_start(struct rproc_subdev *subdev)
+ {
+ 	struct scp_subdev_core *subdev_core = to_subdev_core(subdev);
+@@ -1014,6 +1046,7 @@ static struct rproc_subdev *scp_dual_create_subdev(struct mtk_scp *scp)
+ 
+ 	subdev_core->main_scp = scp;
+ 	subdev_core->scp_dual_wdt_timeout = scp_dual_wdt_handler;
++	subdev_core->subdev.prepare = scp_dual_rproc_prepare;
+ 	subdev_core->subdev.start = scp_dual_rproc_start;
+ 	subdev_core->subdev.stop = scp_dual_rproc_stop;
+ 
+@@ -1155,6 +1188,9 @@ static int scp_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto remove_subdev;
+ 
++	if (core_id == SCP_CORE_1)
++		scp->dual_probe_done = 1;
++
+ 	return 0;
+ 
+ remove_subdev:
 -- 
-2.33.0
+2.18.0
 
