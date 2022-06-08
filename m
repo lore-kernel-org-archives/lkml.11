@@ -2,131 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD44CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A971CCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 18:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235919AbiFHSRG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 14:17:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
+        id S236123AbiFHSRZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 14:17:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235124AbiFHSPJ (ORCPT
+        with ESMTP id S234901AbiFHSOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 14:15:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D7215FF0
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:15:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654712107;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+hANCxUkjtJekam2HLSgzp8bKfmmuJSpp+YeIM4LYb4=;
-        b=ipib/ma1b3mXQb09pTOXDR4cY8uE+rOJNXYtFmdw0b7U+M3bV0rSeXAMKj+ygAbIaz+OLz
-        pF3PD2gJnXV4tBAjTr65TPUHdYRcNUtks5R2/XVNkJe05L+x5i+N4GtLpOxcuEBkCkWUvg
-        qjMqPDPquC0bEnBOUm4bB3EUmTIcxLI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-396-6AEOjCiLNo2IBm9BLSNVjA-1; Wed, 08 Jun 2022 14:15:03 -0400
-X-MC-Unique: 6AEOjCiLNo2IBm9BLSNVjA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EE1711C00134;
-        Wed,  8 Jun 2022 18:15:02 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.16.117])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8ED9E492CA3;
-        Wed,  8 Jun 2022 18:15:02 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     jtoppins@redhat.com, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: [net-next v2 2/2] bonding: cleanup bond_create
-Date:   Wed,  8 Jun 2022 14:14:57 -0400
-Message-Id: <03db585475d164343991f90b268d2d08fa42afb6.1654711315.git.jtoppins@redhat.com>
-In-Reply-To: <cover.1654711315.git.jtoppins@redhat.com>
-References: <cover.1654711315.git.jtoppins@redhat.com>
+        Wed, 8 Jun 2022 14:14:47 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3711A2BD3
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:14:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654712086; x=1686248086;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=zoVhbVSww6vgXA0XEhlME76soUKAgYb99ZfQdPe51Ys=;
+  b=Hs0DOlwNGZnQigsVEKcTeGmOu3VGhoe8/RtWYEtTiegiK2PQg0/fmud3
+   qDJWzZVOtGFqztR8zPI6urOHhK4Jech+ie/0TIeOQm/mTF+r2rb/D8yPD
+   ZlHfyyQePkCZBw8IcgvqCHI2tvtVa2KmAtLmv/TuL2sSm/e73cyCSp1b7
+   mlkmfzFk0FnbIoWRe8KenEvjcgUvD4MAHoO+EN9ihE3LkT+KmVIWD4ZEb
+   kSoUA0YWbFXb7Zy50AAcDqUTyy5a/oIDSdLp0CMZzd+K9ZzqKin/5CRtb
+   E62K/3fUC3O3BXB5ps2s1lyM0AgAiFC6vRFudwHtJXMncXU47uxEMwfOV
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="341092827"
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="341092827"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 11:14:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="555520428"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 08 Jun 2022 11:14:43 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nz0CY-000Esz-NX;
+        Wed, 08 Jun 2022 18:14:42 +0000
+Date:   Thu, 9 Jun 2022 02:14:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: drivers/net/wireless/ath/ath10k/htt.h:1677:2: warning: field  within
+ 'struct htt_tx_fetch_ind' is less aligned than 'union
+ htt_tx_fetch_ind::(anonymous at
+ drivers/net/wireless/ath/ath10k/htt.h:1677:2)' and is usually due to 'struct
+ htt_tx_fetch_ind' being...
+Message-ID: <202206090102.3HEgdeVW-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Setting RLB_NULL_INDEX is not needed as this is done in bond_alb_initialize
-which is called by bond_open.
+Hi Kees,
 
-Also reduce the number of rtnl_unlock calls by just using the standard
-goto cleanup path.
+FYI, the error/warning still remains.
 
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
- drivers/net/bonding/bond_main.c | 24 ++++++------------------
- 1 file changed, 6 insertions(+), 18 deletions(-)
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   9886142c7a2226439c1e3f7d9b69f9c7094c3ef6
+commit: fa7845cfd53f3b1d3f60efa55db89805595bc045 treewide: Replace open-coded flex arrays in unions
+date:   8 months ago
+config: arm-randconfig-c002-20220607 (https://download.01.org/0day-ci/archive/20220609/202206090102.3HEgdeVW-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b92436efcb7813fc481b30f2593a4907568d917a)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=fa7845cfd53f3b1d3f60efa55db89805595bc045
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout fa7845cfd53f3b1d3f60efa55db89805595bc045
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/mtd/spi-nor/ drivers/net/wireless/ath/ath10k/ drivers/nfc/nfcmrvl/ fs/quota/
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index f85372adf042..3d427183ec8e 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -6218,45 +6218,33 @@ int bond_create(struct net *net, const char *name)
- {
- 	struct net_device *bond_dev;
- 	struct bonding *bond;
--	struct alb_bond_info *bond_info;
--	int res;
-+	int res = -ENOMEM;
- 
- 	rtnl_lock();
- 
- 	bond_dev = alloc_netdev_mq(sizeof(struct bonding),
- 				   name ? name : "bond%d", NET_NAME_UNKNOWN,
- 				   bond_setup, tx_queues);
--	if (!bond_dev) {
--		pr_err("%s: eek! can't alloc netdev!\n", name);
--		rtnl_unlock();
--		return -ENOMEM;
--	}
-+	if (!bond_dev)
-+		goto out;
- 
--	/*
--	 * Initialize rx_hashtbl_used_head to RLB_NULL_INDEX.
--	 * It is set to 0 by default which is wrong.
--	 */
- 	bond = netdev_priv(bond_dev);
--	bond_info = &(BOND_ALB_INFO(bond));
--	bond_info->rx_hashtbl_used_head = RLB_NULL_INDEX;
--
- 	dev_net_set(bond_dev, net);
- 	bond_dev->rtnl_link_ops = &bond_link_ops;
- 
- 	res = register_netdevice(bond_dev);
- 	if (res < 0) {
- 		free_netdev(bond_dev);
--		rtnl_unlock();
--
--		return res;
-+		goto out;
- 	}
- 
- 	netif_carrier_off(bond_dev);
- 
- 	bond_work_init_all(bond);
- 
-+out:
- 	rtnl_unlock();
--	return 0;
-+	return res;
- }
- 
- static int __net_init bond_net_init(struct net *net)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from drivers/net/wireless/ath/ath10k/mac.c:8:
+   In file included from drivers/net/wireless/ath/ath10k/mac.h:11:
+   In file included from drivers/net/wireless/ath/ath10k/core.h:18:
+   drivers/net/wireless/ath/ath10k/htt.h:721:34: warning: field prefix within 'struct htt_rx_indication' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           struct htt_rx_indication_prefix prefix;
+                                           ^
+   drivers/net/wireless/ath/ath10k/htt.h:742:34: warning: field prefix within 'struct htt_rx_indication_hl' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication_hl' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           struct htt_rx_indication_prefix prefix;
+                                           ^
+>> drivers/net/wireless/ath/ath10k/htt.h:1677:2: warning: field  within 'struct htt_tx_fetch_ind' is less aligned than 'union htt_tx_fetch_ind::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1677:2)' and is usually due to 'struct htt_tx_fetch_ind' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           union {
+           ^
+   drivers/net/wireless/ath/ath10k/htt.h:1815:2: warning: field  within 'struct htt_resp' is less aligned than 'union htt_resp::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1815:2)' and is usually due to 'struct htt_resp' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           union {
+           ^
+   drivers/net/wireless/ath/ath10k/mac.c:5942:22: warning: parameter 'changed_flags' set but not used [-Wunused-but-set-parameter]
+                                       unsigned int changed_flags,
+                                                    ^
+   5 warnings generated.
+--
+   In file included from drivers/net/wireless/ath/ath10k/debug.c:14:
+   In file included from drivers/net/wireless/ath/ath10k/core.h:18:
+   drivers/net/wireless/ath/ath10k/htt.h:721:34: warning: field prefix within 'struct htt_rx_indication' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           struct htt_rx_indication_prefix prefix;
+                                           ^
+   drivers/net/wireless/ath/ath10k/htt.h:742:34: warning: field prefix within 'struct htt_rx_indication_hl' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication_hl' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           struct htt_rx_indication_prefix prefix;
+                                           ^
+>> drivers/net/wireless/ath/ath10k/htt.h:1677:2: warning: field  within 'struct htt_tx_fetch_ind' is less aligned than 'union htt_tx_fetch_ind::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1677:2)' and is usually due to 'struct htt_tx_fetch_ind' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           union {
+           ^
+   drivers/net/wireless/ath/ath10k/htt.h:1815:2: warning: field  within 'struct htt_resp' is less aligned than 'union htt_resp::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1815:2)' and is usually due to 'struct htt_resp' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           union {
+           ^
+   4 warnings generated.
+--
+   In file included from drivers/net/wireless/ath/ath10k/ce.c:8:
+   In file included from drivers/net/wireless/ath/ath10k/hif.h:11:
+   In file included from drivers/net/wireless/ath/ath10k/core.h:18:
+   drivers/net/wireless/ath/ath10k/htt.h:721:34: warning: field prefix within 'struct htt_rx_indication' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           struct htt_rx_indication_prefix prefix;
+                                           ^
+   drivers/net/wireless/ath/ath10k/htt.h:742:34: warning: field prefix within 'struct htt_rx_indication_hl' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication_hl' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           struct htt_rx_indication_prefix prefix;
+                                           ^
+>> drivers/net/wireless/ath/ath10k/htt.h:1677:2: warning: field  within 'struct htt_tx_fetch_ind' is less aligned than 'union htt_tx_fetch_ind::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1677:2)' and is usually due to 'struct htt_tx_fetch_ind' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           union {
+           ^
+   drivers/net/wireless/ath/ath10k/htt.h:1815:2: warning: field  within 'struct htt_resp' is less aligned than 'union htt_resp::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1815:2)' and is usually due to 'struct htt_resp' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           union {
+           ^
+   drivers/net/wireless/ath/ath10k/ce.c:127:1: warning: unused function 'ath10k_get_ring_byte' [-Wunused-function]
+   ath10k_get_ring_byte(unsigned int offset,
+   ^
+   drivers/net/wireless/ath/ath10k/ce.c:212:1: warning: unused function 'ath10k_ce_shadow_dest_ring_write_index_set' [-Wunused-function]
+   ath10k_ce_shadow_dest_ring_write_index_set(struct ath10k *ar,
+   ^
+   drivers/net/wireless/ath/ath10k/ce.c:449:20: warning: unused function 'ath10k_ce_error_intr_enable' [-Wunused-function]
+   static inline void ath10k_ce_error_intr_enable(struct ath10k *ar,
+                      ^
+   7 warnings generated.
+
+
+vim +1677 drivers/net/wireless/ath/ath10k/htt.h
+
+  1670	
+  1671	struct htt_tx_fetch_ind {
+  1672		u8 pad0;
+  1673		__le16 fetch_seq_num;
+  1674		__le32 token;
+  1675		__le16 num_resp_ids;
+  1676		__le16 num_records;
+> 1677		union {
+  1678			/* ath10k_htt_get_tx_fetch_ind_resp_ids() */
+  1679			DECLARE_FLEX_ARRAY(__le32, resp_ids);
+  1680			DECLARE_FLEX_ARRAY(struct htt_tx_fetch_record, records);
+  1681		};
+  1682	} __packed;
+  1683	
+
 -- 
-2.27.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
