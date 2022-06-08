@@ -2,192 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 373A0CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C31CACCA47B
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238453AbiFHGFR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 02:05:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58464 "EHLO
+        id S234897AbiFHGFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 02:05:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347994AbiFHF6O (ORCPT
+        with ESMTP id S1347007AbiFHF5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:58:14 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A368D43BE64;
-        Tue,  7 Jun 2022 21:37:34 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Wed, 8 Jun 2022 01:57:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1DE0D213AE4
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 21:19:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654661949;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sjie14sl+UUWdfLUeHqpm3M+18uxVtV8OsIS9/gQLdg=;
+        b=J+botJCGuUPgC08bPQFnQMD+vAZTZTfRpNlN+q1/dB88vFlTxQIEMVQQQt7DmcUKcNZfkd
+        CxNorDHOrhes/4Y9Gq1sl45iKN9CIZEIlWhpiNgfx43LW86jqD4wEMXkZOEIBN14lzJTIj
+        iuSvY5MlT6BcbnRivRal9QWZSp20ux8=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-638-vLs6zPBvNQGuXCS4wHjl9Q-1; Wed, 08 Jun 2022 00:19:05 -0400
+X-MC-Unique: vLs6zPBvNQGuXCS4wHjl9Q-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id BC28D1F9C5;
-        Wed,  8 Jun 2022 04:37:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1654663052; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=5b0LCcjxt2G2c58tf8D2HlEk4AjfaFqov/aOlpz/9ps=;
-        b=Clad6PfPBjwlU+3zwJgEWSQiKzQeeiKfI0l2WATAP3iDRom/7TNf8QKUIMnNN3n4yTPqfe
-        +EGmk/r/ijLOE0BZ46sVNoUtsYFNhKfey1U+7wgTQbgWaOb83AoIUq+LpWMaB1yBIpojVw
-        QEHhxwnX2bcmSQwV4qlNaRrW9WTAqlc=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 657F813A15;
-        Wed,  8 Jun 2022 04:37:32 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id KylBF4wnoGIEYAAAMHmgww
-        (envelope-from <jgross@suse.com>); Wed, 08 Jun 2022 04:37:32 +0000
-From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>, Wei Liu <wei.liu@kernel.org>,
-        Paul Durrant <paul@xen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH Resend] xen/netback: do some code cleanup
-Date:   Wed,  8 Jun 2022 06:37:26 +0200
-Message-Id: <20220608043726.9380-1-jgross@suse.com>
-X-Mailer: git-send-email 2.35.3
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 645143C02B6D;
+        Wed,  8 Jun 2022 04:19:05 +0000 (UTC)
+Received: from localhost (ovpn-12-81.pek2.redhat.com [10.72.12.81])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1357440CF8E8;
+        Wed,  8 Jun 2022 04:19:03 +0000 (UTC)
+Date:   Wed, 8 Jun 2022 12:18:59 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc:     catalin.marinas@arm.com, will@kernel.org,
+        akpm@linux-foundation.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        hch@infradead.org, arnd@arndb.de, anshuman.khandual@arm.com
+Subject: Re: [PATCH v5 4/6] mm: ioremap: Add ioremap/iounmap_allowed()
+Message-ID: <YqAjM9+4jjWXbQty@MiWiFi-R3L-srv>
+References: <20220607125027.44946-1-wangkefeng.wang@huawei.com>
+ <20220607125027.44946-5-wangkefeng.wang@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607125027.44946-5-wangkefeng.wang@huawei.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove some unused macros and functions, make local functions static.
+On 06/07/22 at 08:50pm, Kefeng Wang wrote:
+> Add special hook for architecture to verify addr, size or prot
+> when ioremap() or iounmap(), which will make the generic ioremap
+> more useful.
+> 
+>   ioremap_allowed() return a bool,
+>     - true means continue to remap
+>     - false means skip remap and return directly
+>   iounmap_allowed() return a bool,
+>     - true means continue to vunmap
+>     - false code means skip vunmap and return directly
+> 
+> Meanwhile, only vunmap the address when it is in vmalloc area
+> as the generic ioremap only returns vmalloc addresses.
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Acked-by: Wei Liu <wei.liu@kernel.org>
----
- drivers/net/xen-netback/common.h    | 12 ------------
- drivers/net/xen-netback/interface.c | 16 +---------------
- drivers/net/xen-netback/netback.c   |  4 +++-
- drivers/net/xen-netback/rx.c        |  2 +-
- 4 files changed, 5 insertions(+), 29 deletions(-)
+LGTM,
 
-diff --git a/drivers/net/xen-netback/common.h b/drivers/net/xen-netback/common.h
-index d9dea4829c86..8174d7b2966c 100644
---- a/drivers/net/xen-netback/common.h
-+++ b/drivers/net/xen-netback/common.h
-@@ -48,7 +48,6 @@
- #include <linux/debugfs.h>
- 
- typedef unsigned int pending_ring_idx_t;
--#define INVALID_PENDING_RING_IDX (~0U)
- 
- struct pending_tx_info {
- 	struct xen_netif_tx_request req; /* tx request */
-@@ -82,8 +81,6 @@ struct xenvif_rx_meta {
- /* Discriminate from any valid pending_idx value. */
- #define INVALID_PENDING_IDX 0xFFFF
- 
--#define MAX_BUFFER_OFFSET XEN_PAGE_SIZE
--
- #define MAX_PENDING_REQS XEN_NETIF_TX_RING_SIZE
- 
- /* The maximum number of frags is derived from the size of a grant (same
-@@ -367,11 +364,6 @@ void xenvif_free(struct xenvif *vif);
- int xenvif_xenbus_init(void);
- void xenvif_xenbus_fini(void);
- 
--int xenvif_schedulable(struct xenvif *vif);
--
--int xenvif_queue_stopped(struct xenvif_queue *queue);
--void xenvif_wake_queue(struct xenvif_queue *queue);
--
- /* (Un)Map communication rings. */
- void xenvif_unmap_frontend_data_rings(struct xenvif_queue *queue);
- int xenvif_map_frontend_data_rings(struct xenvif_queue *queue,
-@@ -394,7 +386,6 @@ int xenvif_dealloc_kthread(void *data);
- irqreturn_t xenvif_ctrl_irq_fn(int irq, void *data);
- 
- bool xenvif_have_rx_work(struct xenvif_queue *queue, bool test_kthread);
--void xenvif_rx_action(struct xenvif_queue *queue);
- void xenvif_rx_queue_tail(struct xenvif_queue *queue, struct sk_buff *skb);
- 
- void xenvif_carrier_on(struct xenvif *vif);
-@@ -403,9 +394,6 @@ void xenvif_carrier_on(struct xenvif *vif);
- void xenvif_zerocopy_callback(struct sk_buff *skb, struct ubuf_info *ubuf,
- 			      bool zerocopy_success);
- 
--/* Unmap a pending page and release it back to the guest */
--void xenvif_idx_unmap(struct xenvif_queue *queue, u16 pending_idx);
--
- static inline pending_ring_idx_t nr_pending_reqs(struct xenvif_queue *queue)
- {
- 	return MAX_PENDING_REQS -
-diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
-index 8e035374a370..fb32ae82d9b0 100644
---- a/drivers/net/xen-netback/interface.c
-+++ b/drivers/net/xen-netback/interface.c
-@@ -69,7 +69,7 @@ void xenvif_skb_zerocopy_complete(struct xenvif_queue *queue)
- 	wake_up(&queue->dealloc_wq);
- }
- 
--int xenvif_schedulable(struct xenvif *vif)
-+static int xenvif_schedulable(struct xenvif *vif)
- {
- 	return netif_running(vif->dev) &&
- 		test_bit(VIF_STATUS_CONNECTED, &vif->status) &&
-@@ -177,20 +177,6 @@ irqreturn_t xenvif_interrupt(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
--int xenvif_queue_stopped(struct xenvif_queue *queue)
--{
--	struct net_device *dev = queue->vif->dev;
--	unsigned int id = queue->id;
--	return netif_tx_queue_stopped(netdev_get_tx_queue(dev, id));
--}
--
--void xenvif_wake_queue(struct xenvif_queue *queue)
--{
--	struct net_device *dev = queue->vif->dev;
--	unsigned int id = queue->id;
--	netif_tx_wake_queue(netdev_get_tx_queue(dev, id));
--}
--
- static u16 xenvif_select_queue(struct net_device *dev, struct sk_buff *skb,
- 			       struct net_device *sb_dev)
- {
-diff --git a/drivers/net/xen-netback/netback.c b/drivers/net/xen-netback/netback.c
-index d93814c14a23..fc61a4418737 100644
---- a/drivers/net/xen-netback/netback.c
-+++ b/drivers/net/xen-netback/netback.c
-@@ -112,6 +112,8 @@ static void make_tx_response(struct xenvif_queue *queue,
- 			     s8       st);
- static void push_tx_responses(struct xenvif_queue *queue);
- 
-+static void xenvif_idx_unmap(struct xenvif_queue *queue, u16 pending_idx);
-+
- static inline int tx_work_todo(struct xenvif_queue *queue);
- 
- static inline unsigned long idx_to_pfn(struct xenvif_queue *queue,
-@@ -1418,7 +1420,7 @@ static void push_tx_responses(struct xenvif_queue *queue)
- 		notify_remote_via_irq(queue->tx_irq);
- }
- 
--void xenvif_idx_unmap(struct xenvif_queue *queue, u16 pending_idx)
-+static void xenvif_idx_unmap(struct xenvif_queue *queue, u16 pending_idx)
- {
- 	int ret;
- 	struct gnttab_unmap_grant_ref tx_unmap_op;
-diff --git a/drivers/net/xen-netback/rx.c b/drivers/net/xen-netback/rx.c
-index dbac4c03d21a..8df2c736fd23 100644
---- a/drivers/net/xen-netback/rx.c
-+++ b/drivers/net/xen-netback/rx.c
-@@ -486,7 +486,7 @@ static void xenvif_rx_skb(struct xenvif_queue *queue)
- 
- #define RX_BATCH_SIZE 64
- 
--void xenvif_rx_action(struct xenvif_queue *queue)
-+static void xenvif_rx_action(struct xenvif_queue *queue)
- {
- 	struct sk_buff_head completed_skbs;
- 	unsigned int work_done = 0;
--- 
-2.35.3
+Reviewed-by: Baoquan He <bhe@redhat.com>
+
+> 
+> Acked-by: Andrew Morton <akpm@linux-foundation.org>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+>  include/asm-generic/io.h | 26 ++++++++++++++++++++++++++
+>  mm/ioremap.c             | 11 ++++++++++-
+>  2 files changed, 36 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
+> index b76379628a02..db5b890eaff7 100644
+> --- a/include/asm-generic/io.h
+> +++ b/include/asm-generic/io.h
+> @@ -964,6 +964,32 @@ static inline void iounmap(volatile void __iomem *addr)
+>  #elif defined(CONFIG_GENERIC_IOREMAP)
+>  #include <linux/pgtable.h>
+>  
+> +/*
+> + * Arch code can implement the following two hooks when using GENERIC_IOREMAP
+> + * ioremap_allowed() return a bool,
+> + *   - true means continue to remap
+> + *   - false means skip remap and return directly
+> + * iounmap_allowed() return a bool,
+> + *   - true means continue to vunmap
+> + *   - false means skip vunmap and return directly
+> + */
+> +#ifndef ioremap_allowed
+> +#define ioremap_allowed ioremap_allowed
+> +static inline bool ioremap_allowed(phys_addr_t phys_addr, size_t size,
+> +				   unsigned long prot)
+> +{
+> +	return true;
+> +}
+> +#endif
+> +
+> +#ifndef iounmap_allowed
+> +#define iounmap_allowed iounmap_allowed
+> +static inline bool iounmap_allowed(void *addr)
+> +{
+> +	return true;
+> +}
+> +#endif
+> +
+>  void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
+>  			   unsigned long prot);
+>  void iounmap(volatile void __iomem *addr);
+> diff --git a/mm/ioremap.c b/mm/ioremap.c
+> index e1d008e8f87f..8652426282cc 100644
+> --- a/mm/ioremap.c
+> +++ b/mm/ioremap.c
+> @@ -28,6 +28,9 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
+>  	phys_addr -= offset;
+>  	size = PAGE_ALIGN(size + offset);
+>  
+> +	if (!ioremap_allowed(phys_addr, size, prot))
+> +		return NULL;
+> +
+>  	area = get_vm_area_caller(size, VM_IOREMAP,
+>  			__builtin_return_address(0));
+>  	if (!area)
+> @@ -47,6 +50,12 @@ EXPORT_SYMBOL(ioremap_prot);
+>  
+>  void iounmap(volatile void __iomem *addr)
+>  {
+> -	vunmap((void *)((unsigned long)addr & PAGE_MASK));
+> +	void *vaddr = (void *)((unsigned long)addr & PAGE_MASK);
+> +
+> +	if (!iounmap_allowed(vaddr))
+> +		return;
+> +
+> +	if (is_vmalloc_addr(vaddr))
+> +		vunmap(vaddr);
+>  }
+>  EXPORT_SYMBOL(iounmap);
+> -- 
+> 2.35.3
+> 
+> 
 
