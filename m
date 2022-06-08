@@ -2,92 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5340C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:24:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE011C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239126AbiFHMYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
+        id S239187AbiFHMYE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:24:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239170AbiFHMXx (ORCPT
+        with ESMTP id S239180AbiFHMYA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:23:53 -0400
-Received: from gentwo.de (gentwo.de [IPv6:2a02:c206:2048:5042::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79A11CB732
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 05:23:48 -0700 (PDT)
-Received: by gentwo.de (Postfix, from userid 1001)
-        id C9AE5B0029F; Wed,  8 Jun 2022 14:23:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gentwo.de; s=default;
-        t=1654691025; bh=Dqp3UNZj24AihPQbByxI29k6/zx3njIxMdo6IGXPy4A=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=ujq/NsBN4f0T6gznoVp6PlGaQMBDlQVXP0U56PC162ToLv7txeNrHW2UW73VPeUT1
-         ne7iMf0eYih60b1+yMn/0VP8aTcN2ELBvVUrsFUiIk/hY6qzZDGJzuijhBdybh4cRd
-         6/L8sReQ6x+ekTtn+OceroBP+uOfCIVDM4TQvjhtyZrhsp87MqSyQYhDyr5rNRijko
-         WHzO7LZYFHlSP8rXs91vP9MPFR09gQXLH+lMpPqlRZIWnsU4q4eyFEgWPltUgtzL8R
-         KTabq93Yc+y4Bik++2awsEha6MLGP0N9rQZov/NbLU7B2Kyi4tPQm2iwHV+6tZ7Wxl
-         XE7qEQKuG/0JQ==
-Received: from localhost (localhost [127.0.0.1])
-        by gentwo.de (Postfix) with ESMTP id C5DACB0005A;
-        Wed,  8 Jun 2022 14:23:45 +0200 (CEST)
-Date:   Wed, 8 Jun 2022 14:23:45 +0200 (CEST)
-From:   Christoph Lameter <cl@gentwo.de>
-To:     Rongwei Wang <rongwei.wang@linux.alibaba.com>
-cc:     David Rientjes <rientjes@google.com>, songmuchun@bytedance.com,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>, akpm@linux-foundation.org,
-        vbabka@suse.cz, roman.gushchin@linux.dev, iamjoonsoo.kim@lge.com,
-        penberg@kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] mm/slub: fix the race between validate_slab and
- slab_free
-In-Reply-To: <29723aaa-5e28-51d3-7f87-9edf0f7b9c33@linux.alibaba.com>
-Message-ID: <alpine.DEB.2.22.394.2206081417370.465021@gentwo.de>
-References: <20220529081535.69275-1-rongwei.wang@linux.alibaba.com> <YpNa4tB/jfW3MDyi@n2.us-central1-a.c.spheric-algebra-350919.internal> <ac9ba68f-9ee2-1611-9ff8-b486ed9c4df0@google.com> <alpine.DEB.2.22.394.2206021712530.2924@gentwo.de>
- <9794df4f-3ffe-4e99-0810-a1346b139ce8@linux.alibaba.com> <alpine.DEB.2.22.394.2206071411460.375438@gentwo.de> <29723aaa-5e28-51d3-7f87-9edf0f7b9c33@linux.alibaba.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Wed, 8 Jun 2022 08:24:00 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7A71F187E;
+        Wed,  8 Jun 2022 05:23:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654691034; x=1686227034;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ogrZ4q/o6zXk4o+X+qsQgG9Jvd4n3nuZ6xC2HGV8zrk=;
+  b=kvBLEWJsGPQDfk7TE0f9NvqrnEJmCsp1v7u35ztFYtsinNzYllYIWB39
+   8ag/ONIAg4jW5XCCYxmpWFnJEoHQaFoKTSVDeHHgcaRoztaV2EjSC0I5K
+   y4an3DpC5Ct0rCex/xN03ts7MurRaNNK86wBTqedUqOY0BRLJyg4RklwK
+   XlUEWcfW6DXAkues4wqKh3yf23oZxhmWNhQ+CNsa8mbPnVvysKnNUopoP
+   aDvdlAVOS0QALZoGI/zy2rdVR0Deazo1rkYDS9PrGo4ES0z6MuEKrOsQs
+   1JshFS1adeyZN8rDquLl5VY4Pv7DcvsZ1e/ofmTH34MaD/r3ZDkdMsh/R
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="256707085"
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="256707085"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 05:23:31 -0700
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="580034303"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 05:23:30 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nyuid-000X0F-EK;
+        Wed, 08 Jun 2022 15:23:27 +0300
+Date:   Wed, 8 Jun 2022 15:23:27 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-spi@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH v1 2/2] spi: Use device_find_first_child() instead of
+ custom approach
+Message-ID: <YqCUv2tSwzALSVsm@smile.fi.intel.com>
+References: <20220607202058.8304-1-andriy.shevchenko@linux.intel.com>
+ <20220607202058.8304-2-andriy.shevchenko@linux.intel.com>
+ <YqCJsRqrCRiIBm1P@kroah.com>
+ <YqCMunw+2WHIinOP@smile.fi.intel.com>
+ <YqCQFFRXyaaQNSWv@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqCQFFRXyaaQNSWv@kroah.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 8 Jun 2022, Rongwei Wang wrote:
+On Wed, Jun 08, 2022 at 02:03:32PM +0200, Greg Kroah-Hartman wrote:
+> On Wed, Jun 08, 2022 at 02:49:14PM +0300, Andy Shevchenko wrote:
 
-> If available, I think document the issue and warn this incorrect behavior is
-> OK. But it still prints a large amount of confusing messages, and disturbs us?
+...
 
-Correct it would be great if you could fix this in a way that does not
-impact performance.
+> Why not exactly?  match_true() above and device_match_any() have the
+> same signature from what I can tell:
+> 	static int match_true(struct device *dev, void *data)
+> 	int device_match_any(struct device *dev, const void *unused)
+> 
+> What am I missing, the const?
 
-> > are current operations on the slab being validated.
-> And I am trying to fix it in following way. In a short, these changes only
-> works under the slub debug mode, and not affects the normal mode (I'm not
-> sure). It looks not elegant enough. And if all approve of this way, I can
-> submit the next version.
+Yep! Compiler is very unhappy about it.
 
+> > I agree that all thing should be using _any instead of _first.
+> 
+> Yes, so let's fix it please, don't propagate bad patterns.
 
->
-> Anyway, thanks for your time:).
-> -wrw
->
-> @@ -3304,7 +3300,7 @@ static void __slab_free(struct kmem_cache *s,
-struct
-> slab *slab,
->
->  {
->         void *prior;
-> -       int was_frozen;
-> +       int was_frozen, to_take_off = 0;
->         struct slab new;
+Will do, thanks!
 
-to_take_off has the role of !n ? Why is that needed?
+-- 
+With Best Regards,
+Andy Shevchenko
 
-> -       do {
-> -               if (unlikely(n)) {
-> +               spin_lock_irqsave(&n->list_lock, flags);
-> +               ret = free_debug_processing(s, slab, head, tail, cnt, addr);
-
-Ok so the idea is to take the lock only if kmem_cache_debug. That looks
-ok. But it still adds a number of new branches etc to the free loop.
-
-Some performance tests would be useful.
 
