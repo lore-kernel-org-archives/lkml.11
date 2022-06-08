@@ -2,113 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3596C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 994F9CCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241262AbiFHOXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 10:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33096 "EHLO
+        id S241263AbiFHOY3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 10:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241217AbiFHOXm (ORCPT
+        with ESMTP id S241217AbiFHOY0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 10:23:42 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DFCD3EAA1;
-        Wed,  8 Jun 2022 07:23:39 -0700 (PDT)
-Received: from mail-ot1-f51.google.com ([209.85.210.51]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MFJfN-1nwzNb2gEz-00FlZo; Wed, 08 Jun 2022 16:10:58 +0200
-Received: by mail-ot1-f51.google.com with SMTP id g13-20020a9d6b0d000000b0060b13026e0dso15182192otp.8;
-        Wed, 08 Jun 2022 07:10:57 -0700 (PDT)
-X-Gm-Message-State: AOAM533LIUmsm9H3Oclhp+0JrCNN0SnsNPvBkfUnyChgHsXTQ3vpfWxU
-        tgtQLLcJcIOXrI4k0jyn0vbkfjw820R/YHO48s0=
-X-Google-Smtp-Source: ABdhPJwBT4Iode5kOKhC76/FZM6vkNDd0mUj8egQXTxe3D51vB8jwlVp5dbu3aMS3GpdoWhsQFTccyumCawBGfz8KvY=
-X-Received: by 2002:a25:e64b:0:b0:663:ffad:eac5 with SMTP id
- d72-20020a25e64b000000b00663ffadeac5mr3074976ybh.550.1654696033002; Wed, 08
- Jun 2022 06:47:13 -0700 (PDT)
+        Wed, 8 Jun 2022 10:24:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E004617E;
+        Wed,  8 Jun 2022 07:24:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7345961A97;
+        Wed,  8 Jun 2022 14:24:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DCEAC34116;
+        Wed,  8 Jun 2022 14:24:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654698263;
+        bh=lfp5MteEMqeLmLkwvI2zA+stynTrMoOeGm+VdRjMKTs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=aLyPcHIYueMqC4wvgXch1zV6fD4XJaRffBi+pbVw+kDKsnkr2/Zv49N/E7JSWAqXV
+         qpLkUCptxy39RQ9Wi2/YPOKnwj1yLfypQmGVZd+0CzTPV85Wjg8YxiCtcZPW60xcK5
+         ORjpVu1mlqaVKLT80OdMq3ebKgdKZSGrqcnAF3ZCw2T/L9eDKitrmGqGRqjeN1OvB7
+         /3wILjBffvDBZSBLIjzhUwlfFNZK5kS0eRi/z6mCktfemcZF6GZMqE+u09d1qpwGCB
+         RfSvr8jdo+Gy7mQ0FCiQop0wUW7BH7luCgBRA1TLG0wHF+rT+V5T7Q9OizsyfSBQkt
+         lgKZyiMOUJTSw==
+Date:   Wed, 8 Jun 2022 09:24:19 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Stefan Richter <stefanr@s5r6.in-berlin.de>
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        linux1394-devel@lists.sourceforge.net, linux-pm@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v2] firewire: ohci: Convert to generic power management
+Message-ID: <20220608142419.GA396923@bhelgaas>
 MIME-Version: 1.0
-References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-4-tmaimon77@gmail.com>
- <CAK8P3a1fDDk2kWMoxFjxoZT6dD5vfNzmNO+sMhV-GrZkpGkPow@mail.gmail.com> <CAP6Zq1hxjDvzkwt3Jf7DVM_iB4EeYBdb3RzjjAjyr5mhD9==Lw@mail.gmail.com>
-In-Reply-To: <CAP6Zq1hxjDvzkwt3Jf7DVM_iB4EeYBdb3RzjjAjyr5mhD9==Lw@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 8 Jun 2022 15:46:56 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2bjvLaVTcpPNe0D72KGf7ScYAy2mwjd1YzUnEzQvFMmg@mail.gmail.com>
-Message-ID: <CAK8P3a2bjvLaVTcpPNe0D72KGf7ScYAy2mwjd1YzUnEzQvFMmg@mail.gmail.com>
-Subject: Re: [PATCH v2 03/20] tty: serial: 8250: Add NPCM845 UART support
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        gregkh <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        "nathan=20Neusch=C3=A4fer?=" <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:IvI6t25nEeC7uQyVShm8Xea/jy+s3Ia7twmziy0F3KXXxZyMY2g
- Om30T+nymXvHEE5XGhWbm3ydgVzPssF30UgMfFvwlfg1t+J+zBpKgVSqaFnHLEOsoKlDjPX
- mtrD048yFgRAXfKpGch0FgvHi4jY+2LLS67Am9ECqOsxxZ+2p7Qmgs4rVrfcOh0WBOm9oAo
- LSL9pg6m4fVati5/eGX6A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:4B3QsBhfvQk=:72Po+NrhmMPtafCLD97ceq
- rWExdYzhSn1FoaOxH1lI1sd3XgPWv27bi7KRxOJaMLM8LPhC/Zvkj3drYFrpFxjDxPp1cyAZW
- ijLBeJ7w94ka1j+5L0b81Xr+TTirWmisu0QiS2DxOxTmJchwNAgVMqczgHFM8ZpLZmV5KgcZ/
- YnN5ASgoV6EbEYhO0Y7xkyAY4+v8vFgwizwnge628dUTd2mLPVTEDH5/AlNExEobgAH6nkkq4
- klbyKT0GUKGabQav0i5f6ZRkCSMFSdwhve2YL9d1gQRDgKENbBfhZQ27upRuj0vuC8xi/9xzG
- W5cB3opJd7Aa8ClCrP8o8joaXVfrYdzAMJ4VTFssRDnH1jyAZMjk0XTxejnI/wF82nd9/j53u
- baqN+LKNMPlDyD4JY+CQCH2jiF+pk4UPTDz3mFj6UfFl+1sqbDlN9iEnaquJF9Npy4VCjunhN
- 6rwd/9gbwZYOEZkYUmCdsNV6QeCK+aSZ0fQ/GGEFp+SBLiqWg/Vj/fOnv/WDlznc+nBaKUomM
- 4/9zo8jnhRYAu+ivyHB70tliY3ICSh2jRE7JjN5IzCkqyLip8IZFLdOlZivOx88dSa60M7Pdl
- CCVYHt3RMvMldEbH+XuGOHEgLPAGiqTZryaRpSicOeTEBc/5lHhHwgvqW+P1M3vAPcmMr9axd
- paNsRB1MfgRyxDffDLp03rH9BNBdnH9QijyHRqWSvbwO7cVdgenCyXpU5KFvO6aIcgMSeNcBg
- N1lpU0wT4J2tiE4/cQ/CYDl8UNemDdCcOr4wo3hiB737MWGSukPEWGq+zKiLiSYjplwJn4uTr
- 7SGlPusJGQJFpnw2J8v90s22O8bcw5RaDVZcBlZL8U2dJ8tG92jAiUurWpyc4vtz0ZDdyez5O
- giy2ak4nbaFYK1Q9NoEw==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607212157.343033-1-helgaas@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 3:40 PM Tomer Maimon <tmaimon77@gmail.com> wrote:
->
-> Sorry but Just to clarify, This patch should not be applied and the
-> NPCM8XX UART should use nuvoton,npcm750-uart compatible in the device
-> tree?
->
-> Because I thought that in your comment a few weeks ago
-> https://www.spinics.net/lists/linux-serial/msg48179.html
->
-> We need only to modify the compatible string in the device tree as we
-> did in V2 patchset
-> https://www.spinics.net/lists/arm-kernel/msg986480.html
+On Tue, Jun 07, 2022 at 04:21:57PM -0500, Bjorn Helgaas wrote:
+> From: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+> 
+> Convert firewire-ohci from legacy PCI power management to the generic power
+> management framework.
+> 
+> Previously firewire-ohci used legacy PCI power management, and
+> pci_suspend() and pci_resume() were responsible for both device-specific
+> things and generic PCI things like saving and restoring config space and
+> managing power state:
+> 
+>   pci_suspend
+>     software_reset                         <-- device-specific
+>     pci_save_state                         <-- generic PCI
+>     pci_set_power_state                    <-- generic PCI
+>     pmac_ohci_off                          <-- device-specific
+> 
+>   pci_resume
+>     pmac_ohci_on                           <-- device-specific
+>     pci_set_power_state(PCI_D0)            <-- generic PCI
+>     pci_restore_state                      <-- generic PCI
+>     pci_enable_device                      <-- generic PCI
+>     ohci_enable                            <-- device-specific
+> 
+> Convert to generic power management where the PCI bus PM methods do the
+> generic PCI things, and the driver needs only the device-specific part,
+> i.e.,
+> 
+>   suspend_devices_and_enter
+>     dpm_suspend_start(PMSG_SUSPEND)
+>       pci_pm_suspend                       # PCI bus .suspend() method
+>         pci_suspend                        # driver->pm->suspend
+>           software_reset                   <-- device-specific
+>           pmac_ohci_off                    <-- device-specific
+>     suspend_enter
+>       dpm_suspend_noirq(PMSG_SUSPEND)
+>         pci_pm_suspend_noirq               # PCI bus .suspend_noirq() method
+>           pci_save_state                   <-- generic PCI
+>           pci_prepare_to_sleep             <-- generic PCI
+>             pci_set_power_state
+>     ...
+>     dpm_resume_end(PMSG_RESUME)
+>       pci_pm_resume                        # PCI bus .resume() method
+>         pci_restore_standard_config
+>           pci_set_power_state(PCI_D0)      <-- generic PCI
+>           pci_restore_state                <-- generic PCI
+>         pci_resume                         # driver->pm->resume
+>           pmac_ohci_on                     <-- device-specific
+>           ohci_enable                      <-- device-specific
 
-Yes, this is correct: with the DT file from v2, the driver no longer needs to be
-changed, it will just match the fallback value.
+I want to point out that this changes the ordering of pmac_ohci_off()
+with respect to pci_save_state() and pci_set_power_state().
+Previously we did those as:
 
-       Arnd
+  pci_save_state
+  pci_set_power_state
+  pmac_ohci_off
+
+and after this patch it would be:
+
+  pmac_ohci_off
+  pci_save_state
+  pci_set_power_state
+
+The ordering of pmac_ohci_on() in the resume path is similarly
+changed.
+
+I don't know what pmac_ohci_off() and pmac_ohci_on() do, so I don't
+know whether this is an issue.  In general, drivers don't need to do
+anything after their device is put in D3hot, but maybe firewire-ohci
+is unique in this way.
+
+> [bhelgaas: commit log]
+> Link: https://lore.kernel.org/r/20200720150715.624520-1-vaibhavgupta40@gmail.com
+> Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> ---
+>  drivers/firewire/ohci.c | 35 ++++++++---------------------------
+>  1 file changed, 8 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/firewire/ohci.c b/drivers/firewire/ohci.c
+> index 17c9d825188b..aee705132330 100644
+> --- a/drivers/firewire/ohci.c
+> +++ b/drivers/firewire/ohci.c
+> @@ -3165,8 +3165,7 @@ static int ohci_set_iso_channels(struct fw_iso_context *base, u64 *channels)
+>  	return ret;
+>  }
+>  
+> -#ifdef CONFIG_PM
+> -static void ohci_resume_iso_dma(struct fw_ohci *ohci)
+> +static void __maybe_unused ohci_resume_iso_dma(struct fw_ohci *ohci)
+>  {
+>  	int i;
+>  	struct iso_context *ctx;
+> @@ -3183,7 +3182,6 @@ static void ohci_resume_iso_dma(struct fw_ohci *ohci)
+>  			ohci_start_iso(&ctx->base, 0, ctx->sync, ctx->tags);
+>  	}
+>  }
+> -#endif
+>  
+>  static int queue_iso_transmit(struct iso_context *ctx,
+>  			      struct fw_iso_packet *packet,
+> @@ -3789,39 +3787,24 @@ static void pci_remove(struct pci_dev *dev)
+>  	dev_notice(&dev->dev, "removed fw-ohci device\n");
+>  }
+>  
+> -#ifdef CONFIG_PM
+> -static int pci_suspend(struct pci_dev *dev, pm_message_t state)
+> +static int __maybe_unused pci_suspend(struct device *devp)
+>  {
+> +	struct pci_dev *dev = to_pci_dev(devp);
+>  	struct fw_ohci *ohci = pci_get_drvdata(dev);
+> -	int err;
+>  
+>  	software_reset(ohci);
+> -	err = pci_save_state(dev);
+> -	if (err) {
+> -		ohci_err(ohci, "pci_save_state failed\n");
+> -		return err;
+> -	}
+> -	err = pci_set_power_state(dev, pci_choose_state(dev, state));
+> -	if (err)
+> -		ohci_err(ohci, "pci_set_power_state failed with %d\n", err);
+>  	pmac_ohci_off(dev);
+>  
+>  	return 0;
+>  }
+>  
+> -static int pci_resume(struct pci_dev *dev)
+> +static int __maybe_unused pci_resume(struct device *devp)
+>  {
+> +	struct pci_dev *dev = to_pci_dev(devp);
+>  	struct fw_ohci *ohci = pci_get_drvdata(dev);
+>  	int err;
+>  
+>  	pmac_ohci_on(dev);
+> -	pci_set_power_state(dev, PCI_D0);
+> -	pci_restore_state(dev);
+> -	err = pci_enable_device(dev);
+> -	if (err) {
+> -		ohci_err(ohci, "pci_enable_device failed\n");
+> -		return err;
+> -	}
+>  
+>  	/* Some systems don't setup GUID register on resume from ram  */
+>  	if (!reg_read(ohci, OHCI1394_GUIDLo) &&
+> @@ -3838,7 +3821,6 @@ static int pci_resume(struct pci_dev *dev)
+>  
+>  	return 0;
+>  }
+> -#endif
+>  
+>  static const struct pci_device_id pci_table[] = {
+>  	{ PCI_DEVICE_CLASS(PCI_CLASS_SERIAL_FIREWIRE_OHCI, ~0) },
+> @@ -3847,15 +3829,14 @@ static const struct pci_device_id pci_table[] = {
+>  
+>  MODULE_DEVICE_TABLE(pci, pci_table);
+>  
+> +static SIMPLE_DEV_PM_OPS(pci_pm_ops, pci_suspend, pci_resume);
+> +
+>  static struct pci_driver fw_ohci_pci_driver = {
+>  	.name		= ohci_driver_name,
+>  	.id_table	= pci_table,
+>  	.probe		= pci_probe,
+>  	.remove		= pci_remove,
+> -#ifdef CONFIG_PM
+> -	.resume		= pci_resume,
+> -	.suspend	= pci_suspend,
+> -#endif
+> +	.driver.pm	= &pci_pm_ops,
+>  };
+>  
+>  static int __init fw_ohci_init(void)
+> -- 
+> 2.25.1
+> 
