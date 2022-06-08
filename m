@@ -2,154 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAEDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:59:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E697AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:07:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230013AbiFHD7s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 23:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57920 "EHLO
+        id S231493AbiFHEGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 00:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231666AbiFHD6I (ORCPT
+        with ESMTP id S234825AbiFHEFB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 23:58:08 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210422509CB
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:09:47 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id r12-20020a056830448c00b0060aec7b7a54so14106975otv.5
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 18:09:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TH0uwVgHZAwq0jKJ2rY7rr0n6nybjWr8m8j939NAcUE=;
-        b=qqCZGsFj3WTgMs3F8eplwxhY8tlcCpyszawL420QxCE1KGOlb2XREx+0YHhA/DXDht
-         y6FTG7VikxjZzWmeWN6N7dhQM6c04xnY1Y9LYsQa0IHup3PFgpYPGjBz949gatfecqpi
-         UTKgVldl/uVChP2nADj5fLDq6mcJx1CAkykZRO+OF6G0E/S+cXNXjIZRZYjb71pMMMQu
-         BR4xCLhM2SA+nS2/WaI7iPZmaNvV1DOWF24hrKmioPRzxxEm7vDUUV1peqgLyn8ZlhgR
-         Hn5h/IxgLHkgxbj9VkurqF+8cQfRShUn2s3hqev+lUZXCEtavv3dWnsflftx7KmbvLnC
-         k0Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TH0uwVgHZAwq0jKJ2rY7rr0n6nybjWr8m8j939NAcUE=;
-        b=BfsZekbHDH0R690zWzmBtR4jbemyDNUJAfVLCEMZblBmiQQwaqScntGFg/CKqbAbA9
-         AlFFqMvcmV9SlJ/RG4AkHSZ6Qfp1VS1lkAB2x8CksjHOD5rixbbhDTzfahK67t/rSsD2
-         CrpQRLQKkE4dl8o5x42k+0i5RjYbKYg/bEpIX/U095BP6/NhZpLLEEGxHsixCnjc3wMr
-         UaJA9AlU2iww7rjHSWGhIK6otJ+HOtxX221GqnqdFIdSAYrqC42elUo8xufBpj0LpwPH
-         M/vZImRCUN5UjzOA7X+V3zQj2TPnDXn1HWhELqpVawBOxBlvRBPUoF5Wsmz+mqDwJcDe
-         o3uA==
-X-Gm-Message-State: AOAM530OtYwW5J+hdOmSBMe6JxCTZ6zblUZ1rsU51oJYVVYadzdIfMk5
-        oYuya6KQwe1q11YP8JBMvChxLg==
-X-Google-Smtp-Source: ABdhPJzuiHfBdj/hVttQ2zZajzaYxynowqNPbS/D5BqnB7NeOLdkb2qK7wfnz1fb68HTl5Wobxs8vA==
-X-Received: by 2002:a05:6830:1456:b0:60b:f7b9:fc49 with SMTP id w22-20020a056830145600b0060bf7b9fc49mr6437094otp.260.1654650560284;
-        Tue, 07 Jun 2022 18:09:20 -0700 (PDT)
-Received: from fedora.. ([2804:14d:8084:84c6:fe26:c42d:aab9:fa8a])
-        by smtp.gmail.com with ESMTPSA id c16-20020a544e90000000b0032b1b84f4e3sm10343057oiy.22.2022.06.07.18.09.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 18:09:19 -0700 (PDT)
-From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>
-To:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        christian.koenig@amd.com,
-        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
-        Jun Lei <jun.lei@amd.com>,
-        Nicholas Choi <Nicholas.Choi@amd.com>,
-        Harrison Chiu <harrison.chiu@amd.com>,
-        Mark Yacoub <markyacoub@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
-        David Gow <davidgow@google.com>,
-        Daniel Latypov <dlatypov@google.com>, brendanhiggins@google.com
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>
-Subject: [RFC 2/3] drm/amd/display: Move bw_fixed macros to header file
-Date:   Tue,  7 Jun 2022 22:07:10 -0300
-Message-Id: <20220608010709.272962-3-maira.canal@usp.br>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220608010709.272962-1-maira.canal@usp.br>
-References: <20220608010709.272962-1-maira.canal@usp.br>
+        Wed, 8 Jun 2022 00:05:01 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B459D280B38;
+        Tue,  7 Jun 2022 18:20:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654651243; x=1686187243;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=XP965/7Bk9hC69Vm9y/5UnoOjQlNM4Qp3cNQ0BDnpE8=;
+  b=eUIaB1UNX+L9I6uT7S5Grk5YVBFPUMvyirJ8Am0QbbbnTsWYiDKPc2tA
+   OIAcaIbcHEUvqgoe4AOiAOBwHBp3X8a6G2xPaMSAVjRa+zKPTGpv7zghS
+   3p+JUhODnBvADLmw1ecw8hX6YNeXwpWgzgHEKKRA/BZEnyezSpWP38kwj
+   /aA2fjpU7zemKFk+4xPAx+SksRC8cx5mQaYi4gvgvL9tju0LM2v+lz6Xw
+   O73RtpsyDdy9nrtua9ATxRTj0q1oZhcLIBuHOKYqhl2w0iPnQid+HiyQb
+   wmcJ2AsZ9f196ok2Ba3mXiyJXlL3ud74C/b6Kgb95fKxLfscn2fKj3V6q
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="259837820"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="259837820"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 18:20:26 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="648333474"
+Received: from sqa-gate.sh.intel.com (HELO embargo.tsp.org) ([10.239.48.212])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 18:20:24 -0700
+From:   Yuan Yao <yuan.yao@intel.com>
+To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Kai Huang <kai.huang@intel.com>,
+        Yuan Yao <yuan.yao@linux.intel.com>
+Subject: [PATCH 1/1] KVM: x86/mmu: Set memory encryption "value", not "mask", in shadow PDPTRs
+Date:   Wed,  8 Jun 2022 09:20:15 +0800
+Message-Id: <20220608012015.19566-1-yuan.yao@intel.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The macros defined at bw_fixed are important mathematical definitions,
-specifying masks to get the fractional part and the maximum and minimum
-values of I64. In order to enable unit tests for bw_fixed, it is
-relevant to have access to those macros. This commit moves the macros to
-the header file, making it accessible to future unit tests.
+Assign shadow_me_value, not shadow_me_mask, to PAE root entries,
+a.k.a. shadow PDPTRs, when host memory encryption is supported.  The
+"mask" is the set of all possible memory encryption bits, e.g. MKTME
+KeyIDs, whereas "value" holds the actual value that needs to be
+stuffed into host page tables.
 
-Signed-off-by: Maíra Canal <maira.canal@usp.br>
+Using shadow_me_mask results in a failed VM-Entry due to setting
+reserved PA bits in the PDPTRs, and ultimately causes an OOPS due to
+physical addresses with non-zero MKTME bits sending to_shadow_page()
+into the weeds:
+
+set kvm_intel.dump_invalid_vmcs=1 to dump internal KVM state.
+BUG: unable to handle page fault for address: ffd43f00063049e8
+PGD 86dfd8067 P4D 0
+Oops: 0000 [#1] PREEMPT SMP
+RIP: 0010:mmu_free_root_page+0x3c/0x90 [kvm]
+ kvm_mmu_free_roots+0xd1/0x200 [kvm]
+ __kvm_mmu_unload+0x29/0x70 [kvm]
+ kvm_mmu_unload+0x13/0x20 [kvm]
+ kvm_arch_destroy_vm+0x8a/0x190 [kvm]
+ kvm_put_kvm+0x197/0x2d0 [kvm]
+ kvm_vm_release+0x21/0x30 [kvm]
+ __fput+0x8e/0x260
+ ____fput+0xe/0x10
+ task_work_run+0x6f/0xb0
+ do_exit+0x327/0xa90
+ do_group_exit+0x35/0xa0
+ get_signal+0x911/0x930
+ arch_do_signal_or_restart+0x37/0x720
+ exit_to_user_mode_prepare+0xb2/0x140
+ syscall_exit_to_user_mode+0x16/0x30
+ do_syscall_64+0x4e/0x90
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: e54f1ff244ac ("KVM: x86/mmu: Add shadow_me_value and repurpose shadow_me_mask")
+Signed-off-by: Yuan Yao <yuan.yao@intel.com>
+Reviewed-by: Kai Huang <kai.huang@intel.com>
 ---
- .../gpu/drm/amd/display/dc/dml/calcs/bw_fixed.c    | 14 +-------------
- drivers/gpu/drm/amd/display/dc/inc/bw_fixed.h      | 14 ++++++++++++++
- 2 files changed, 15 insertions(+), 13 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/calcs/bw_fixed.c b/drivers/gpu/drm/amd/display/dc/dml/calcs/bw_fixed.c
-index 6ca288fb5fb9..d944570e5695 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/calcs/bw_fixed.c
-+++ b/drivers/gpu/drm/amd/display/dc/dml/calcs/bw_fixed.c
-@@ -26,19 +26,7 @@
- #include "bw_fixed.h"
- 
- 
--#define MIN_I64 \
--	(int64_t)(-(1LL << 63))
--
--#define MAX_I64 \
--	(int64_t)((1ULL << 63) - 1)
--
--#define FRACTIONAL_PART_MASK \
--	((1ULL << BW_FIXED_BITS_PER_FRACTIONAL_PART) - 1)
--
--#define GET_FRACTIONAL_PART(x) \
--	(FRACTIONAL_PART_MASK & (x))
--
--static uint64_t abs_i64(int64_t arg)
-+uint64_t abs_i64(int64_t arg)
- {
- 	if (arg >= 0)
- 		return (uint64_t)(arg);
-diff --git a/drivers/gpu/drm/amd/display/dc/inc/bw_fixed.h b/drivers/gpu/drm/amd/display/dc/inc/bw_fixed.h
-index d1656c9d50df..064839425b96 100644
---- a/drivers/gpu/drm/amd/display/dc/inc/bw_fixed.h
-+++ b/drivers/gpu/drm/amd/display/dc/inc/bw_fixed.h
-@@ -33,12 +33,26 @@ struct bw_fixed {
- 	int64_t value;
- };
- 
-+#define MIN_I64 \
-+	(int64_t)(-(1ULL << 63))
-+
-+#define MAX_I64 \
-+	(int64_t)((1ULL << 63) - 1)
-+
-+#define FRACTIONAL_PART_MASK \
-+	((1ULL << BW_FIXED_BITS_PER_FRACTIONAL_PART) - 1)
-+
-+#define GET_FRACTIONAL_PART(x) \
-+	(FRACTIONAL_PART_MASK & (x))
-+
- #define BW_FIXED_MIN_I32 \
- 	(int64_t)(-(1LL << (63 - BW_FIXED_BITS_PER_FRACTIONAL_PART)))
- 
- #define BW_FIXED_MAX_I32 \
- 	(int64_t)((1ULL << (63 - BW_FIXED_BITS_PER_FRACTIONAL_PART)) - 1)
- 
-+uint64_t abs_i64(int64_t arg);
-+
- static inline struct bw_fixed bw_min2(const struct bw_fixed arg1,
- 				      const struct bw_fixed arg2)
- {
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index efe5a3dca1e0..6bd144f1e60c 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3411,7 +3411,7 @@ static int mmu_alloc_direct_roots(struct kvm_vcpu *vcpu)
+ 			root = mmu_alloc_root(vcpu, i << (30 - PAGE_SHIFT),
+ 					      i << 30, PT32_ROOT_LEVEL, true);
+ 			mmu->pae_root[i] = root | PT_PRESENT_MASK |
+-					   shadow_me_mask;
++					   shadow_me_value;
+ 		}
+ 		mmu->root.hpa = __pa(mmu->pae_root);
+ 	} else {
 -- 
-2.36.1
+2.27.0
 
