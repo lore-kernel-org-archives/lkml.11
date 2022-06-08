@@ -2,58 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2893EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF9D1CCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234445AbiFHJYW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50132 "EHLO
+        id S234682AbiFHJY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:24:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234878AbiFHJWo (ORCPT
+        with ESMTP id S234886AbiFHJWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:22:44 -0400
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC63D32342A;
-        Wed,  8 Jun 2022 01:43:36 -0700 (PDT)
-Subject: Re: [dm-devel] [PATCH AUTOSEL 5.18 35/68] md: don't unregister
- sync_thread with reconfig_mutex held
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1654677814;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Wed, 8 Jun 2022 05:22:46 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6EAD2F1F1A
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:43:40 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 4B05821BE9;
+        Wed,  8 Jun 2022 08:43:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1654677819; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Zu6nKSkRxLEOxSVDZbtX8PO1w6q5KHD+W/v4musC33A=;
-        b=H5QnT5HUH7i8I4gAKCsZqofCw7uMFdFdEJhP4nPR0tp4WLC2/3dlvGUguc9mf1qRLnV9QZ
-        /LYpk8ZV7P947RRfgU9pGXQh1Sm7nK6HiURai4MDCl4JBHke5SnIs83HRgrmXK4Q8l3Xmb
-        +5Sb45wpRmmdkpb3j0XS+b9d1reaLAw=
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>, snitzer@kernel.org,
-        linux-raid@vger.kernel.org, Song Liu <song@kernel.org>,
-        dm-devel@redhat.com, Donald Buczek <buczek@molgen.mpg.de>,
-        agk@redhat.com
-References: <20220607174846.477972-1-sashal@kernel.org>
- <20220607174846.477972-35-sashal@kernel.org>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Guoqing Jiang <guoqing.jiang@linux.dev>
-Message-ID: <f369ed06-d268-6fa9-f4aa-e9f5cd5ce53a@linux.dev>
-Date:   Wed, 8 Jun 2022 16:43:26 +0800
-MIME-Version: 1.0
-In-Reply-To: <20220607174846.477972-35-sashal@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+        bh=u0sV8NHqSNM4yoTWP03NbeaNn0eM7HssoUu4/drfrSk=;
+        b=nRQqPkfNO5AcW2flbkCiNjkXO06pq59uVO9XiLYJImBJKWk6dkE44zwcGnijgAcADJfgVz
+        JGcu7cKhZaF7fghxCwcLW2X60PPBA0+AIuBfvc5S1scKn8Atc1KbI8IlfxPYQ0jmbEENFf
+        BcfCbB3N9iORiPJeZfBKcPi0fCtJSAU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1654677819;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=u0sV8NHqSNM4yoTWP03NbeaNn0eM7HssoUu4/drfrSk=;
+        b=GNGxCUfnkA1SPjWSfosCMVq3vQZizD49kjLn+rsv8LSphgrI/IxzpMHljs8tmpJjtNd6d8
+        i2HnhXMNTXTMxnBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0D58413AD9;
+        Wed,  8 Jun 2022 08:43:39 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Hm+MAjthoGJyRwAAMHmgww
+        (envelope-from <tiwai@suse.de>); Wed, 08 Jun 2022 08:43:39 +0000
+Date:   Wed, 08 Jun 2022 10:43:38 +0200
+Message-ID: <87czfjbl51.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     huangwenhui <huangwenhuia@uniontech.com>
+Cc:     tiwai@suse.com, perex@perex.cz, alsa-devel@alsa-project.org,
+        kailang@realtek.com, tanureal@opensource.cirrus.com,
+        jeremy.szu@canonical.com, linux-kernel@vger.kernel.org,
+        wse@tuxedocomputers.com, hui.wang@canonical.com, sami@loone.fi,
+        cam@neo-zeon.de
+Subject: Re: [PATCH v4] ALSA: hda/realtek - Add HW8326 support
+In-Reply-To: <20220608082357.26898-1-huangwenhuia@uniontech.com>
+References: <20220608082357.26898-1-huangwenhuia@uniontech.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed, 08 Jun 2022 10:23:57 +0200,
+huangwenhui wrote:
+> 
+> Added the support of new Huawei codec HW8326. The HW8326 is developed
+> by Huawei with Realtek's IP Core, and it's compatible with ALC256.
+> 
+> Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
 
-Pls drop this one from all stable kernel versions since it caused 
-regression.
+OK, I applied this one instead of v3.
 
-Thanks,
-Guoqing
+BTW, at the next time, it'd be appreciated to put what you've changed
+between pervious revision.  See
+Documentation/process/submitting-patches.rst for details, e.g. check
+"The canonical patch format" section.
+
+
+thanks,
+
+Takashi
