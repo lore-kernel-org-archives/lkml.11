@@ -2,135 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A12C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4907C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:11:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236087AbiFHKLX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:11:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36806 "EHLO
+        id S236247AbiFHKLf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:11:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236448AbiFHKKe (ORCPT
+        with ESMTP id S236456AbiFHKKe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 8 Jun 2022 06:10:34 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A798D62FC
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:55:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 59B211F98D4
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:55:48 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 294221424;
-        Wed,  8 Jun 2022 02:55:46 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3857C14BF;
+        Wed,  8 Jun 2022 02:55:48 -0700 (PDT)
 Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 631B43F73B;
-        Wed,  8 Jun 2022 02:55:45 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4C8CA3F73B;
+        Wed,  8 Jun 2022 02:55:47 -0700 (PDT)
 From:   Cristian Marussi <cristian.marussi@arm.com>
 To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     sudeep.holla@arm.com, cristian.marussi@arm.com
-Subject: [PATCH 1/3] firmware: arm_scmi: Review BASE protocol string-buffers sizes
-Date:   Wed,  8 Jun 2022 10:55:28 +0100
-Message-Id: <20220608095530.497879-1-cristian.marussi@arm.com>
+Cc:     sudeep.holla@arm.com, cristian.marussi@arm.com,
+        Peter Hilber <peter.hilber@opensynergy.com>
+Subject: [PATCH 3/3] firmware: arm_scmi: Use preferred strscpy to handle strings
+Date:   Wed,  8 Jun 2022 10:55:30 +0100
+Message-Id: <20220608095530.497879-3-cristian.marussi@arm.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220608095530.497879-1-cristian.marussi@arm.com>
+References: <20220608095530.497879-1-cristian.marussi@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SCMI Base protocol agent_name/vendor_id/sub_vendor_id are defined by the
-specification as NULL-terminated ASCII strings up to 16-bytes in length.
+Remove strlcpy calls used to collect short domain names of SCMI resources
+in favour of the preferred strscpy; while doing that change also the used
+count argument of strscpy to make always use of SCMI_SHORT_NAME_MAX_SIZE
+while dealing with short domain names, so as to limit the possibility that
+an ill-formed non-NULL terminated short reply from the SCMI platform
+firmware can leak stale content laying in the underlying transport shared
+memory area.
 
-The underlying buffers and message descriptors are currently bigger than
-needed; resize them to fit only the strictly needed 16 bytes.
-
-While at that, convert Base protocol strings handling routines to use the
-preferred strscpy.
-
-Fixes: b260fccaebdc2 ("firmware: arm_scmi: Add SCMI v3.1 protocol extended names support")
+Cc: Peter Hilber <peter.hilber@opensynergy.com>
+Cc: Sudeep Holla <sudeep.holla@arm.com>
+Fixes: ca64b719a1e66 ("firmware: arm_scmi: use strlcpy to ensure NULL-terminated strings")
 Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
 ---
- drivers/firmware/arm_scmi/base.c      | 8 ++++----
- drivers/firmware/arm_scmi/protocols.h | 2 --
- include/linux/scmi_protocol.h         | 9 +++++----
- 3 files changed, 9 insertions(+), 10 deletions(-)
+ drivers/firmware/arm_scmi/clock.c   | 2 +-
+ drivers/firmware/arm_scmi/perf.c    | 2 +-
+ drivers/firmware/arm_scmi/power.c   | 2 +-
+ drivers/firmware/arm_scmi/reset.c   | 2 +-
+ drivers/firmware/arm_scmi/sensors.c | 4 ++--
+ drivers/firmware/arm_scmi/voltage.c | 2 +-
+ 6 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/firmware/arm_scmi/base.c b/drivers/firmware/arm_scmi/base.c
-index d0ac96da1ddf..a52f084a6a87 100644
---- a/drivers/firmware/arm_scmi/base.c
-+++ b/drivers/firmware/arm_scmi/base.c
-@@ -36,7 +36,7 @@ struct scmi_msg_resp_base_attributes {
- 
- struct scmi_msg_resp_base_discover_agent {
- 	__le32 agent_id;
--	u8 name[SCMI_MAX_STR_SIZE];
-+	u8 name[SCMI_SHORT_NAME_MAX_SIZE];
- };
- 
- 
-@@ -119,7 +119,7 @@ scmi_base_vendor_id_get(const struct scmi_protocol_handle *ph, bool sub_vendor)
- 
- 	ret = ph->xops->do_xfer(ph, t);
- 	if (!ret)
--		memcpy(vendor_id, t->rx.buf, size);
-+		strscpy(vendor_id, t->rx.buf, size);
- 
- 	ph->xops->xfer_put(ph, t);
- 
-@@ -276,7 +276,7 @@ static int scmi_base_discover_agent_get(const struct scmi_protocol_handle *ph,
- 	ret = ph->xops->do_xfer(ph, t);
+diff --git a/drivers/firmware/arm_scmi/clock.c b/drivers/firmware/arm_scmi/clock.c
+index 1a718faa4192..c7a83f6e38e5 100644
+--- a/drivers/firmware/arm_scmi/clock.c
++++ b/drivers/firmware/arm_scmi/clock.c
+@@ -153,7 +153,7 @@ static int scmi_clock_attributes_get(const struct scmi_protocol_handle *ph,
  	if (!ret) {
- 		agent_info = t->rx.buf;
--		strlcpy(name, agent_info->name, SCMI_MAX_STR_SIZE);
-+		strscpy(name, agent_info->name, SCMI_SHORT_NAME_MAX_SIZE);
+ 		u32 latency = 0;
+ 		attributes = le32_to_cpu(attr->attributes);
+-		strlcpy(clk->name, attr->name, SCMI_MAX_STR_SIZE);
++		strscpy(clk->name, attr->name, SCMI_SHORT_NAME_MAX_SIZE);
+ 		/* clock_enable_latency field is present only since SCMI v3.1 */
+ 		if (PROTOCOL_REV_MAJOR(version) >= 0x2)
+ 			latency = le32_to_cpu(attr->clock_enable_latency);
+diff --git a/drivers/firmware/arm_scmi/perf.c b/drivers/firmware/arm_scmi/perf.c
+index c1f701623058..bbb0331801ff 100644
+--- a/drivers/firmware/arm_scmi/perf.c
++++ b/drivers/firmware/arm_scmi/perf.c
+@@ -252,7 +252,7 @@ scmi_perf_domain_attributes_get(const struct scmi_protocol_handle *ph,
+ 			dom_info->mult_factor =
+ 					(dom_info->sustained_freq_khz * 1000) /
+ 					dom_info->sustained_perf_level;
+-		strlcpy(dom_info->name, attr->name, SCMI_MAX_STR_SIZE);
++		strscpy(dom_info->name, attr->name, SCMI_SHORT_NAME_MAX_SIZE);
  	}
  
  	ph->xops->xfer_put(ph, t);
-@@ -375,7 +375,7 @@ static int scmi_base_protocol_init(const struct scmi_protocol_handle *ph)
- 	int id, ret;
- 	u8 *prot_imp;
- 	u32 version;
--	char name[SCMI_MAX_STR_SIZE];
-+	char name[SCMI_SHORT_NAME_MAX_SIZE];
- 	struct device *dev = ph->dev;
- 	struct scmi_revision_info *rev = scmi_revision_area_get(ph);
+diff --git a/drivers/firmware/arm_scmi/power.c b/drivers/firmware/arm_scmi/power.c
+index 964882cc8747..356e83631664 100644
+--- a/drivers/firmware/arm_scmi/power.c
++++ b/drivers/firmware/arm_scmi/power.c
+@@ -122,7 +122,7 @@ scmi_power_domain_attributes_get(const struct scmi_protocol_handle *ph,
+ 		dom_info->state_set_notify = SUPPORTS_STATE_SET_NOTIFY(flags);
+ 		dom_info->state_set_async = SUPPORTS_STATE_SET_ASYNC(flags);
+ 		dom_info->state_set_sync = SUPPORTS_STATE_SET_SYNC(flags);
+-		strlcpy(dom_info->name, attr->name, SCMI_MAX_STR_SIZE);
++		strscpy(dom_info->name, attr->name, SCMI_SHORT_NAME_MAX_SIZE);
+ 	}
+ 	ph->xops->xfer_put(ph, t);
  
-diff --git a/drivers/firmware/arm_scmi/protocols.h b/drivers/firmware/arm_scmi/protocols.h
-index 73304af5ec4a..c679f3fb8718 100644
---- a/drivers/firmware/arm_scmi/protocols.h
-+++ b/drivers/firmware/arm_scmi/protocols.h
-@@ -24,8 +24,6 @@
+diff --git a/drivers/firmware/arm_scmi/reset.c b/drivers/firmware/arm_scmi/reset.c
+index a420a9102094..673f3eb498f4 100644
+--- a/drivers/firmware/arm_scmi/reset.c
++++ b/drivers/firmware/arm_scmi/reset.c
+@@ -116,7 +116,7 @@ scmi_reset_domain_attributes_get(const struct scmi_protocol_handle *ph,
+ 		dom_info->latency_us = le32_to_cpu(attr->latency);
+ 		if (dom_info->latency_us == U32_MAX)
+ 			dom_info->latency_us = 0;
+-		strlcpy(dom_info->name, attr->name, SCMI_MAX_STR_SIZE);
++		strscpy(dom_info->name, attr->name, SCMI_SHORT_NAME_MAX_SIZE);
+ 	}
  
- #include <asm/unaligned.h>
+ 	ph->xops->xfer_put(ph, t);
+diff --git a/drivers/firmware/arm_scmi/sensors.c b/drivers/firmware/arm_scmi/sensors.c
+index 58fe4f0175be..42efaee27b7c 100644
+--- a/drivers/firmware/arm_scmi/sensors.c
++++ b/drivers/firmware/arm_scmi/sensors.c
+@@ -412,7 +412,7 @@ iter_axes_desc_process_response(const struct scmi_protocol_handle *ph,
+ 	attrh = le32_to_cpu(adesc->attributes_high);
+ 	a->scale = S32_EXT(SENSOR_SCALE(attrh));
+ 	a->type = SENSOR_TYPE(attrh);
+-	strscpy(a->name, adesc->name, SCMI_MAX_STR_SIZE);
++	strscpy(a->name, adesc->name, SCMI_SHORT_NAME_MAX_SIZE);
  
--#define SCMI_SHORT_NAME_MAX_SIZE	16
--
- #define PROTOCOL_REV_MINOR_MASK	GENMASK(15, 0)
- #define PROTOCOL_REV_MAJOR_MASK	GENMASK(31, 16)
- #define PROTOCOL_REV_MAJOR(x)	((u16)(FIELD_GET(PROTOCOL_REV_MAJOR_MASK, (x))))
-diff --git a/include/linux/scmi_protocol.h b/include/linux/scmi_protocol.h
-index 1c58646ba381..704111f63993 100644
---- a/include/linux/scmi_protocol.h
-+++ b/include/linux/scmi_protocol.h
-@@ -13,8 +13,9 @@
- #include <linux/notifier.h>
- #include <linux/types.h>
+ 	if (a->extended_attrs) {
+ 		unsigned int ares = le32_to_cpu(adesc->resolution);
+@@ -633,7 +633,7 @@ iter_sens_descr_process_response(const struct scmi_protocol_handle *ph,
+ 			    SUPPORTS_AXIS(attrh) ?
+ 			    SENSOR_AXIS_NUMBER(attrh) : 0,
+ 			    SCMI_MAX_NUM_SENSOR_AXIS);
+-	strscpy(s->name, sdesc->name, SCMI_MAX_STR_SIZE);
++	strscpy(s->name, sdesc->name, SCMI_SHORT_NAME_MAX_SIZE);
  
--#define SCMI_MAX_STR_SIZE	64
--#define SCMI_MAX_NUM_RATES	16
-+#define SCMI_MAX_STR_SIZE		64
-+#define SCMI_SHORT_NAME_MAX_SIZE	16
-+#define SCMI_MAX_NUM_RATES		16
+ 	/*
+ 	 * If supported overwrite short name with the extended
+diff --git a/drivers/firmware/arm_scmi/voltage.c b/drivers/firmware/arm_scmi/voltage.c
+index 97df6d3dd131..5de93f637bd4 100644
+--- a/drivers/firmware/arm_scmi/voltage.c
++++ b/drivers/firmware/arm_scmi/voltage.c
+@@ -233,7 +233,7 @@ static int scmi_voltage_descriptors_get(const struct scmi_protocol_handle *ph,
+ 		v = vinfo->domains + dom;
+ 		v->id = dom;
+ 		attributes = le32_to_cpu(resp_dom->attr);
+-		strlcpy(v->name, resp_dom->name, SCMI_MAX_STR_SIZE);
++		strscpy(v->name, resp_dom->name, SCMI_SHORT_NAME_MAX_SIZE);
  
- /**
-  * struct scmi_revision_info - version information structure
-@@ -36,8 +37,8 @@ struct scmi_revision_info {
- 	u8 num_protocols;
- 	u8 num_agents;
- 	u32 impl_ver;
--	char vendor_id[SCMI_MAX_STR_SIZE];
--	char sub_vendor_id[SCMI_MAX_STR_SIZE];
-+	char vendor_id[SCMI_SHORT_NAME_MAX_SIZE];
-+	char sub_vendor_id[SCMI_SHORT_NAME_MAX_SIZE];
- };
- 
- struct scmi_clock_info {
+ 		/*
+ 		 * If supported overwrite short name with the extended one;
 -- 
 2.32.0
 
