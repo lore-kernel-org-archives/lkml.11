@@ -2,175 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 306C2CCA481
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC0DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232602AbiFHHFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54950 "EHLO
+        id S234165AbiFHHHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:07:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349849AbiFHF7J (ORCPT
+        with ESMTP id S1353326AbiFHGRC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:59:09 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 109F027F475;
-        Tue,  7 Jun 2022 21:39:00 -0700 (PDT)
-X-UUID: 4bcf0fc150254110924ef8c2554b7888-20220608
-X-CID-P-RULE: Spam_GS6885AD
-X-CID-O-INFO: VERSION:1.1.5,REQID:98151ce4-7812-4724-a823-5b479187f885,OB:20,L
-        OB:10,IP:0,URL:25,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS6885
-        AD,ACTION:quarantine,TS:115
-X-CID-INFO: VERSION:1.1.5,REQID:98151ce4-7812-4724-a823-5b479187f885,OB:20,LOB
-        :10,IP:0,URL:25,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D
-        ,ACTION:quarantine,TS:115
-X-CID-META: VersionHash:2a19b09,CLOUDID:6aa0947e-c8dc-403a-96e8-6237210dceee,C
-        OID:1047e9c84de5,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: 4bcf0fc150254110924ef8c2554b7888-20220608
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1257175741; Wed, 08 Jun 2022 12:38:56 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 8 Jun 2022 12:38:55 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 8 Jun 2022 12:38:55 +0800
-From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
-CC:     <matthias.bgg@gmail.com>, <airlied@linux.ie>,
-        <angelogioacchino.delregno@collabora.com>, <pavel@ucw.cz>,
-        <nancy.lin@mediatek.com>, <ck.hu@mediatek.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Subject: [RESEND v5 1/3] dt-bindings: mediatek: add vdosys1 RDMA definition for mt8195
-Date:   Wed, 8 Jun 2022 12:38:50 +0800
-Message-ID: <20220608043852.4980-2-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220608043852.4980-1-rex-bc.chen@mediatek.com>
-References: <20220608043852.4980-1-rex-bc.chen@mediatek.com>
+        Wed, 8 Jun 2022 02:17:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 783A8A7773
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:01:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654668062;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=K4EmZpbnZG2iGxtLA1wEpmaCgsZIV0Qp3tq0M8QVlG4=;
+        b=DihhrCFO6AdlIwEntGZL6BB+Be0eBj45gPwGJhDjF5lPaNml1xLYQjry6LjkX9UtoqrCOj
+        QkfK/1/wnFw0ptVszLhrjxU7Vur6OlHsWxljaJlv+tv/V27rdYI9HiYqnvfUJzfIiagOrX
+        1zT0sphgMDOvccv0LMzYNYPedvurwKY=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-121-jCCVW_x6MwO_8T-Pz9_zeA-1; Wed, 08 Jun 2022 02:00:53 -0400
+X-MC-Unique: jCCVW_x6MwO_8T-Pz9_zeA-1
+Received: by mail-wr1-f72.google.com with SMTP id c7-20020adfa707000000b002184d715e69so1368772wrd.10
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 23:00:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=K4EmZpbnZG2iGxtLA1wEpmaCgsZIV0Qp3tq0M8QVlG4=;
+        b=fzqxINEEoK5yxikv9Zr56o6xPMTUE/z606V9SoLCM7mHxSd661aQ3eTaWP3OC5D49t
+         XSjzx6bq4NWAHS4LsbarJofvXgOb5WEWw/8ta+oo5S6IbVRUCUeZGEx42BzDKHH9ymaY
+         TkPIy1Wr2UofJkSXMFELbaPThjH9v9QatfL0t9ZiYfB+f3uTPE2TS+HnduWjq1W0StmG
+         VOtbbTNfhBnt3w3k9P5RW/imLutiem9MB7/I4GyK4GOLFx7REXZNAxbdrWXFdk9T5IgA
+         C+6Wfni1f2Mi0Ao/+xQ57Z6F8mu+QykVRiF+DJ8QnL7ijBsZHHsXqzk+l0a3MyScLkFn
+         ai3Q==
+X-Gm-Message-State: AOAM531nN3OyIyhks/zDFtc/QqIght3KuTMWmFPHoUD6HSL1T7DkNH3I
+        EGgnCSdULbYaDgv8us3dHkiS1JIzg7o7Mc5oeTC0Sl4QuW6Ix2JWNsrQiHU607IjHyh36LOIuM/
+        xZTiw3WsL/PGqaJsCTkNqOoTn
+X-Received: by 2002:adf:9cc2:0:b0:20f:e59a:ec41 with SMTP id h2-20020adf9cc2000000b0020fe59aec41mr31401240wre.124.1654668052538;
+        Tue, 07 Jun 2022 23:00:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwHQplGnELB+79hF5tZieuRC/jNvYpvm+mt9Ta1KGoefr17nHK6bc6qds9St+Vp2bqRhwe1fg==
+X-Received: by 2002:adf:9cc2:0:b0:20f:e59a:ec41 with SMTP id h2-20020adf9cc2000000b0020fe59aec41mr31401201wre.124.1654668052305;
+        Tue, 07 Jun 2022 23:00:52 -0700 (PDT)
+Received: from [192.168.0.3] (ip-109-42-114-66.web.vodafone.de. [109.42.114.66])
+        by smtp.gmail.com with ESMTPSA id h12-20020a05600c2cac00b0039749256d74sm27609665wmc.2.2022.06.07.23.00.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 23:00:51 -0700 (PDT)
+Message-ID: <7350ca00-2dbe-f92c-ee28-9b0438051171@redhat.com>
+Date:   Wed, 8 Jun 2022 08:00:48 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Content-Language: en-US
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, pasic@linux.ibm.com,
+        pbonzini@redhat.com, corbet@lwn.net, jgg@nvidia.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220606203325.110625-1-mjrosato@linux.ibm.com>
+ <20220606203325.110625-21-mjrosato@linux.ibm.com>
+From:   Thomas Huth <thuth@redhat.com>
+Subject: Re: [PATCH v9 20/21] KVM: s390: add KVM_S390_ZPCI_OP to manage guest
+ zPCI devices
+In-Reply-To: <20220606203325.110625-21-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Nancy.Lin" <nancy.lin@mediatek.com>
+On 06/06/2022 22.33, Matthew Rosato wrote:
+> The KVM_S390_ZPCI_OP ioctl provides a mechanism for managing
+> hardware-assisted virtualization features for s390x zPCI passthrough.
+> Add the first 2 operations, which can be used to enable/disable
+> the specified device for Adapter Event Notification interpretation.
+> 
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>   Documentation/virt/kvm/api.rst | 47 +++++++++++++++++++
+>   arch/s390/kvm/kvm-s390.c       | 16 +++++++
+>   arch/s390/kvm/pci.c            | 85 ++++++++++++++++++++++++++++++++++
+>   arch/s390/kvm/pci.h            |  2 +
+>   include/uapi/linux/kvm.h       | 31 +++++++++++++
+>   5 files changed, 181 insertions(+)
 
-Add vdosys1 RDMA definition.
-
-Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
-Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- .../display/mediatek/mediatek,mdp-rdma.yaml   | 88 +++++++++++++++++++
- 1 file changed, 88 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
-
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
-new file mode 100644
-index 000000000000..dd12e2ff685c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
-@@ -0,0 +1,88 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/display/mediatek/mediatek,mdp-rdma.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek MDP RDMA
-+
-+maintainers:
-+  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
-+  - Philipp Zabel <p.zabel@pengutronix.de>
-+
-+description:
-+  The MediaTek MDP RDMA stands for Read Direct Memory Access.
-+  It provides real time data to the back-end panel driver, such as DSI,
-+  DPI and DP_INTF.
-+  It contains one line buffer to store the sufficient pixel data.
-+  RDMA device node must be siblings to the central MMSYS_CONFIG node.
-+  For a description of the MMSYS_CONFIG binding, see
-+  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml for details.
-+
-+properties:
-+  compatible:
-+    const: mediatek,mt8195-vdo1-rdma
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: RDMA Clock
-+
-+  iommus:
-+    maxItems: 1
-+
-+  mediatek,gce-client-reg:
-+    description:
-+      The register of display function block to be set by gce. There are 4 arguments,
-+      such as gce node, subsys id, offset and register size. The subsys id that is
-+      mapping to the register of display function blocks is defined in the gce header
-+      include/dt-bindings/gce/<chip>-gce.h of each chips.
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    items:
-+      items:
-+        - description: phandle of GCE
-+        - description: GCE subsys id
-+        - description: register offset
-+        - description: register size
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - power-domains
-+  - clocks
-+  - iommus
-+  - mediatek,gce-client-reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/mt8195-clk.h>
-+    #include <dt-bindings/power/mt8195-power.h>
-+    #include <dt-bindings/gce/mt8195-gce.h>
-+    #include <dt-bindings/memory/mt8195-memory-port.h>
-+
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        rdma@1c104000 {
-+            compatible = "mediatek,mt8195-vdo1-rdma";
-+            reg = <0 0x1c104000 0 0x1000>;
-+            interrupts = <GIC_SPI 495 IRQ_TYPE_LEVEL_HIGH 0>;
-+            clocks = <&vdosys1 CLK_VDO1_MDP_RDMA0>;
-+            power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
-+            iommus = <&iommu_vdo M4U_PORT_L2_MDP_RDMA0>;
-+            mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0x4000 0x1000>;
-+        };
-+    };
--- 
-2.18.0
+Reviewed-by: Thomas Huth <thuth@redhat.com>
 
