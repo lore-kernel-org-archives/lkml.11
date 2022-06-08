@@ -2,125 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6FACCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FFEBCCA47E
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444718AbiFHCY7 (ORCPT
+        id S1389505AbiFHCYs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:24:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57108 "EHLO
+        Tue, 7 Jun 2022 22:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446032AbiFHCNx (ORCPT
+        with ESMTP id S1445990AbiFHCNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:13:53 -0400
-X-Greylist: delayed 8565 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 14:05:51 PDT
-Received: from 11.mo583.mail-out.ovh.net (11.mo583.mail-out.ovh.net [46.105.47.167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC5823B883E
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:05:50 -0700 (PDT)
-Received: from player789.ha.ovh.net (unknown [10.111.172.1])
-        by mo583.mail-out.ovh.net (Postfix) with ESMTP id 232DB240A5
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 21:05:46 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player789.ha.ovh.net (Postfix) with ESMTPSA id 0ABE62B5538A1;
-        Tue,  7 Jun 2022 21:05:39 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-107S001d1b159e1-d9b9-415e-a5e3-929fdc4f1981,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-Date:   Tue, 7 Jun 2022 23:05:37 +0200
-From:   Stephen Kitt <steve@sk2.org>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm: shmobile: Use backlight helper
-Message-ID: <20220607230537.70020736@heffalump.sk2.org>
-In-Reply-To: <20220607183132.1123648-1-steve@sk2.org>
-References: <20220607183132.1123648-1-steve@sk2.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Tue, 7 Jun 2022 22:13:50 -0400
+Received: from qproxy6-pub.mail.unifiedlayer.com (qproxy6-pub.mail.unifiedlayer.com [69.89.23.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0736420BE6
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 17:12:52 -0700 (PDT)
+Received: from outbound-ss-761.bluehost.com (outbound-ss-761.bluehost.com [74.220.211.250])
+        by qproxy6.mail.unifiedlayer.com (Postfix) with ESMTP id 060068032891
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:12:50 +0000 (UTC)
+Received: from cmgw10.mail.unifiedlayer.com (unknown [10.0.90.125])
+        by progateway8.mail.pro1.eigbox.com (Postfix) with ESMTP id 300291005DDC0
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:12:49 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id yjJYn2vaOvL44yjJYnJifB; Wed, 08 Jun 2022 00:12:49 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=ZebYiuZA c=1 sm=1 tr=0 ts=629fe981
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=JPEYwPQDsx4A:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=RudyytyL_DxIq4wlthoA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:
+        Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=AFc4b+RBT46WI3QejiWcwvr+sEfKp2r/9zyP6eQJ2qM=; b=oEg/9GyhqVPg4k0DLQciPL3Xkc
+        ckOu+Xb2obXE9Wi4V6TbRLgNIrD/lDb1WUXCezHAqDMgkHgOZ+WUeIWd0i75tordp4AGUROc7JQuU
+        xoecucEXfTz0Fh0Fz0+Cfxf2gUPuZKIGwMD24zPLOR1jdlYHNcaDKcYyKNSElvy8sidB6KU8Rfqz6
+        V+25T79pRabnb6OBcYGjRXC/bweh3t6bXgmeAGPRvOK+T/je97vaqWNVZ2Jux6LvoSy1pfMUoDwds
+        lbVTDbUO7S1OTLJSed8qdxh4qKmbIuA5HsG9Utes1OjyRTGgRYIzQokTVE3WzHSSptUMuOHGbWIQ6
+        Nyv3h2wA==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:54124 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <re@w6rz.net>)
+        id 1nyjJY-002WuX-AZ;
+        Tue, 07 Jun 2022 18:12:48 -0600
+Subject: Re: [GIT PULL] RISC-V Patches for the 5.19 Merge Window, Part 1
+To:     =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <mhng-3cfe92b5-a83a-4642-9b9e-8416ae717fd6@palmer-ri-x1c9>
+ <d7c8ee82-ce85-5d55-2865-4b610c9d3b9d@w6rz.net> <827324415.0ifERbkFSE@diego>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <06c46bde-5d3f-9123-93b4-9e0f3824ac3a@w6rz.net>
+Date:   Tue, 7 Jun 2022 17:12:47 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Feru9=Sd25PWm2MN7avRzyO";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Ovh-Tracer-Id: 13666454546270291590
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudehjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvvefukfgjfhfogggtsehgtdefreertddvnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpefgueduteelfeduieejvdekgefhhfeihfeludekieduheejvdetjeehudekgeeiveenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejkeelrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekfe
+In-Reply-To: <827324415.0ifERbkFSE@diego>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nyjJY-002WuX-AZ
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:54124
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 4
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/Feru9=Sd25PWm2MN7avRzyO
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 6/7/22 4:36 PM, Heiko Stübner wrote:
+> Hi Ron,
+>
+> Am Dienstag, 7. Juni 2022, 22:46:52 CEST schrieb Ron Economos:
+>> On 5/31/22 10:13 AM, Palmer Dabbelt wrote:
+>>> The following changes since commit 9282d0996936c5fbf877c0d096a3feb456c878ad:
+>>>
+>>>     csky: Move to generic ticket-spinlock (2022-05-11 11:50:15 -0700)
+>>>
+>>> are available in the Git repository at:
+>>>
+>>>     git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.19-mw0
+>>>
+>>> for you to fetch changes up to 7699f7aacf3ebfee51c670b6f796b2797f0f7487:
+>>>
+>>>     RISC-V: Prepare dropping week attribute from arch_kexec_apply_relocations[_add] (2022-05-30 16:04:37 -0700)
+>>>
+>>> ----------------------------------------------------------------
+>>> RISC-V Patches for the 5.19 Merge Window, Part 1
+>>>
+>>> * Support for the Svpbmt extension, which allows memory attributes to be
+>>>     encoded in pages.
+>>>
+>>>
+>>> Heiko Stuebner (12):
+>>>         riscv: integrate alternatives better into the main architecture
+>>>         riscv: allow different stages with alternatives
+>>>         riscv: implement module alternatives
+>>>         riscv: implement ALTERNATIVE_2 macro
+>>>         riscv: extend concatenated alternatives-lines to the same length
+>>>         riscv: prevent compressed instructions in alternatives
+>>>         riscv: move boot alternatives to after fill_hwcap
+>>>         riscv: Fix accessing pfn bits in PTEs for non-32bit variants
+>>>         riscv: add RISC-V Svpbmt extension support
+>>>         riscv: remove FIXMAP_PAGE_IO and fall back to its default value
+>>>         riscv: don't use global static vars to store alternative data
+>>>         riscv: add memory-type errata for T-Head
+>>>
+>> An issue was found on the HiFive Unmatched with the 5.19-rc1 kernel. The
+>> following warning occurs during boot:
+>>
+>> riscv64 kernel:
+>> ----------------------------------------------------------------
+>> riscv64 kernel: WARNING: Missing the following errata may cause
+>> potential issues
+>> riscv64 kernel:         SiFive Errata[0]:cip-453
+>> riscv64 kernel:         SiFive Errata[1]:cip-1200
+>> riscv64 kernel: Please enable the corresponding Kconfig to apply them
+>> riscv64 kernel:
+>> ----------------------------------------------------------------
+>>
+>> I've manually bisected the problem to this commit:
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ff689fd21cb13098305bae3f8d0c0065df2e2fc1
+> hmm, on first glance I can't really see how that specific commit would
+> affect Sifive erratas. Patches directly before this one did change
+> alternative / errata things though.
+>
+> (1) From looking at your output, it seems at least CONFIG_ERRATA_SIFIVE
+> is enabled as the general sifive errata code is running, but are the
+> individual erratas also still enabled in your config?
+> They're default=y forever and weren't touched by the svpbmt series,
+> but it'd be nice to know how the config looks, to see if the Kconfig
+> settings are strange somewhere
+>
+>
+> (2) Going from the list on
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/log/?h=ff689fd21cb13098305bae3f8d0c0065df2e2fc1
+>
+> could you maybe check if it's really working with the parent of the
+> commit you found. (i.e. patches before the svpbmt addition).
+>
+> Also just to be sure, it still works correctly with 5.18, right?
+>
+>
+> Thanks
+> Heiko
+>
+>
+Yes, that commit was surprising. I also thought it would have been one 
+of the previous "alternatives" commits. But I tested them all, and the 
+warning only appears with the "add RISC-V Svpbmt extension support" 
+commit. In other words, "git checkout 100631b" works fine, but "git 
+checkout ff689fd" does not.
 
-On Tue,  7 Jun 2022 20:31:32 +0200, Stephen Kitt <steve@sk2.org> wrote:
-> backlight_properties.fb_blank is deprecated. The states it represents
-> are handled by other properties; but instead of accessing those
-> properties directly, drivers should use the helpers provided by
-> backlight.h.
+I have these settings in my .config:
 
-Apologies for the misleading boilerplate, this patch came about as a result
-of cleaning up fb_blank usage but doesn't involve fb_blank itself.
+CONFIG_ERRATA_SIFIVE=y
+CONFIG_ERRATA_SIFIVE_CIP_453=y
+CONFIG_ERRATA_SIFIVE_CIP_1200=y
 
-> Instead of retrieving the backlight brightness in struct
-> backlight_properties manually, and then checking whether the backlight
-> should be on at all, use backlight_get_brightness() which does all
-> this and insulates this from future changes.
->=20
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
-> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-> Cc: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: dri-devel@lists.freedesktop.org
-> ---
->  drivers/gpu/drm/shmobile/shmob_drm_backlight.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
->=20
-> diff --git a/drivers/gpu/drm/shmobile/shmob_drm_backlight.c
-> b/drivers/gpu/drm/shmobile/shmob_drm_backlight.c index
-> f6628a5ee95f..794573badfe8 100644 ---
-> a/drivers/gpu/drm/shmobile/shmob_drm_backlight.c +++
-> b/drivers/gpu/drm/shmobile/shmob_drm_backlight.c @@ -18,11 +18,7 @@ static
-> int shmob_drm_backlight_update(struct backlight_device *bdev) struct
-> shmob_drm_connector *scon =3D bl_get_data(bdev); struct shmob_drm_device
-> *sdev =3D scon->connector.dev->dev_private; const struct
-> shmob_drm_backlight_data *bdata =3D &sdev->pdata->backlight;
-> -	int brightness =3D bdev->props.brightness;
-> -
-> -	if (bdev->props.power !=3D FB_BLANK_UNBLANK ||
-> -	    bdev->props.state & BL_CORE_SUSPENDED)
-> -		brightness =3D 0;
-> +	int brightness =3D backlight_get_brightness(bdev);
-> =20
->  	return bdata->set_brightness(brightness);
->  }
->=20
-> base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
-> --=20
-> 2.30.2
->=20
+CONFIG_RISCV_ALTERNATIVE=y
 
---Sig_/Feru9=Sd25PWm2MN7avRzyO
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+I've uploaded the complete .config file here:
 
------BEGIN PGP SIGNATURE-----
+https://www.w6rz.net/config-5.19-rc1
 
-iQIzBAEBCgAdFiEEnPVX/hPLkMoq7x0ggNMC9Yhtg5wFAmKfvaEACgkQgNMC9Yht
-g5yyqg//ZNax+mVnhXwYHAewRdmpO5KPLpY2tlkWgmNnYTqSJY4Q9Tl/zTJy1gFE
-z2vfpM2i/9u9D6dNOnX2l3CzZf2fyfiv/HpuIlPbHPflW9/vfyaD+Mjuo8voa6Vq
-4aoXjOR6jGBnTyNqcYjsFsTOUG9IZB4IEEpwP8YzJsaEnud+jRR1/+9/4OOJNFxX
-m61GfvE6aLZHTqeT2yHHWUcKCF0TI/0m1NfYWR50Uw6vy1Ih6M2yOdnDK6SuJnpG
-oEZ6j2qcTTzyL9wiq8Vwa2C9qE1qpgkitfOqbc+r1eRKFYh1dFMwgUrPovrL+7Bu
-1jQZtgtwYRB/FRnwdvGL/GwWvOpHoBuYocRJemoytUdfVYd5W5wkb4zpfrwBfxUE
-vFnJZqKL9yCR36MRyEs/UP7PbSJzxaH+GELP+BVoaHrrIe3GKEGTRzoHJGJm70Kf
-Df1+GvfeSnifOY/0uhH9Rq+0xvynvqgRyovLeLcnX9+x4HQ7xl3MsmZamlQ0UgDl
-cFgg7DTECV/VeLUmK0xT7LwFELd4LOQ+3Boys20qMo7QAwM4+FSuLPPxfZei9HUl
-+baOJZ9yrn3R6eal+uyeTTPP/o/jZutqjbbmR5rXkBFReKsSksc9v/ddcFC8gmRF
-gkfb0pq2m9/X5YGaQrfDffMNYdiXGuUARJUnxMhRP+kexEAnLXw=
-=9c/g
------END PGP SIGNATURE-----
+It's based on a modified version of the Ubuntu 22.04 config file.
 
---Sig_/Feru9=Sd25PWm2MN7avRzyO--
+Linux 5.18 (including 5.18.2) is fine (with the same .config).
+
+You can also find me on irc.libera.chat #riscv with nick drmpeg.
+
+Ron
+
