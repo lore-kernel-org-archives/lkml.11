@@ -2,176 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1ACC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A050EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:52:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232448AbiFHIvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:51:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55268 "EHLO
+        id S232625AbiFHIv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231288AbiFHIvI (ORCPT
+        with ESMTP id S231599AbiFHIvO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 04:51:08 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B32491AFAD4;
-        Wed,  8 Jun 2022 01:08:22 -0700 (PDT)
-X-UUID: 3c3a4f0d82bf45c38212bc910e100c7c-20220608
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:8d42f104-f239-479f-95c7-ff76915e1037,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:79af13e5-2ba2-4dc1-b6c5-11feb6c769e0,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:-5,EDM:-3,IP:nil,URL:1,File:ni
-        l,QS:0,BEC:nil
-X-UUID: 3c3a4f0d82bf45c38212bc910e100c7c-20220608
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <guodong.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 2025737687; Wed, 08 Jun 2022 16:08:15 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 8 Jun 2022 16:08:14 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 8 Jun 2022 16:08:13 +0800
-Message-ID: <1332454e2733d48fdf2396bcaed37bc3e33616b5.camel@mediatek.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: pinctrl: mt8192: Switch
- drive-strength-adv for -microamp
-From:   Guodong Liu <guodong.liu@mediatek.com>
-To:     "=?ISO-8859-1?Q?N=EDcolas?= F. R. A. Prado" <nfraprado@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-CC:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, <kernel@collabora.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>
-Date:   Wed, 8 Jun 2022 16:08:13 +0800
-In-Reply-To: <20220531221954.160036-2-nfraprado@collabora.com>
-References: <20220531221954.160036-1-nfraprado@collabora.com>
-         <20220531221954.160036-2-nfraprado@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 8 Jun 2022 04:51:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886A91F0A4F;
+        Wed,  8 Jun 2022 01:08:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FBCA615BA;
+        Wed,  8 Jun 2022 08:02:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB481C34116;
+        Wed,  8 Jun 2022 08:02:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654675352;
+        bh=hff+p9zArgrmQROBhByJgUoot02ijHcUk2SxTMWafGU=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=QEoqHaABFoBzHKVseuF6OsuPJsNrsLIBzbvMYwUNMKRb0lT3LcMEVlTGmjjQB7uWE
+         +BjKvnjdu9YlJposcmoqzV1yX4sjCHqN0PTUbO2OiXr/zOAyGq/XopnjoeuexBMIvb
+         jjCcbZMOYr4I1mOgL8gawoWk9gX3Td1M+mNx7u56r1Osc8TeOqadQcawuiRNKSpsFx
+         77O2CNerHGhNV3E6IlQr1PTb1XzV95V9xzblIm/PblIJ26fExnAWsgRozgkaNMjrf2
+         ITcCjEmzZTW0te5uu4scQg7PbI++NORxEMq5JoOCyOtqwIVMsZlvmgW03LJ7Yfc9Ma
+         sxxez4xy4w9jg==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
+Cc:     cgel.zte@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] staging: wfx: Remove redundant NULL check before release_firmware() call
+References: <20220606014237.290466-1-chi.minghao@zte.com.cn>
+        <5637060.DvuYhMxLoT@pc-42>
+Date:   Wed, 08 Jun 2022 11:02:27 +0300
+In-Reply-To: <5637060.DvuYhMxLoT@pc-42> (=?utf-8?B?IkrDqXLDtG1l?=
+ Pouiller"'s message of "Mon,
+        06 Jun 2022 08:36:37 +0200")
+Message-ID: <87leu7shv0.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-MTK:  N
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------Original Message-----
-From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
->, kernel@collabora.com, Nícolas F. R. A. Prado <
-nfraprado@collabora.com>, Krzysztof Kozlowski <
-krzysztof.kozlowski+dt@linaro.org>, Matthias Brugger <
-matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Sean Wang <
-sean.wang@mediatek.com>, devicetree@vger.kernel.org, 
-linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, 
-linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
-Subject: [PATCH v2 1/2] dt-bindings: pinctrl: mt8192: Switch drive-
-strength-adv for -microamp
-Date: Tue, 31 May 2022 18:19:53 -0400
+J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com> writes:
 
-Commit e5fabbe43f3f ("pinctrl: mediatek: paris: Support generic
-PIN_CONFIG_DRIVE_STRENGTH_UA") added support for using
-drive-strength-microamp instead of mediatek,drive-strength-adv.
+> On Monday 6 June 2022 03:42:37 CEST cgel.zte@gmail.com wrote:
+>> From: Minghao Chi <chi.minghao@zte.com.cn>
+>>=20
+>> release_firmware() checks for NULL pointers internally so checking
+>> before calling it is redundant.
+>>=20
+>> Reported-by: Zeal Robot <zealci@zte.com.cn>
+>> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 
-Since there aren't any users of mediatek,drive-strength-adv on mt8192
-yet, remove this property and add drive-strength-microamp in its place,
-which has a clearer meaning.
+[...]
 
-While at it, add a new 'if' block to validate that drive-strength and
-drive-strength-microamp aren't used together, since they're mutually
-exclusive.
+> Signed-off-by: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
 
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: AngeloGioacchino Del Regno <
-angelogiocchino.delregno@collabora.com>
----
+I'll change this to Acked-by, s-o-b should be used only when you are
+part of patch distribution:
 
-Changes in v2:
-- Added 'if' block to make drive-strength and drive-strength-microamp
-  mutually exclusive
-- Changed commit title to be more precise
-- Dropped Fixes tag
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html#when=
+-to-use-acked-by-cc-and-co-developed-by
 
- .../bindings/pinctrl/pinctrl-mt8192.yaml      | 35 ++++++-------------
- 1 file changed, 10 insertions(+), 25 deletions(-)
+And please edit your quotes, otherwise using patchwork will be painful.
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-
-mt8192.yaml b/Documentation/devicetree/bindings/pinctrl/pinctrl-
-mt8192.yaml
-index c90a132fbc79..c8092b218f2f 100644
---- a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8192.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8192.yaml
-@@ -80,31 +80,8 @@ patternProperties:
-               dt-bindings/pinctrl/mt65xx.h. It can only support
-2/4/6/8/10/12/14/16mA in mt8192.
-             enum: [2, 4, 6, 8, 10, 12, 14, 16]
- 
--          mediatek,drive-strength-adv:
--            description: |
--              Describe the specific driving setup property.
--              For I2C pins, the existing generic driving setup can
-only support
--              2/4/6/8/10/12/14/16mA driving. But in specific driving
-setup, they
--              can support 0.125/0.25/0.5/1mA adjustment. If we enable
-specific
--              driving setup, the existing generic setup will be
-disabled.
--              The specific driving setup is controlled by E1E0EN.
--              When E1=0/E0=0, the strength is 0.125mA.
--              When E1=0/E0=1, the strength is 0.25mA.
--              When E1=1/E0=0, the strength is 0.5mA.
--              When E1=1/E0=1, the strength is 1mA.
--              EN is used to enable or disable the specific driving
-setup.
--              Valid arguments are described as below:
--              0: (E1, E0, EN) = (0, 0, 0)
--              1: (E1, E0, EN) = (0, 0, 1)
--              2: (E1, E0, EN) = (0, 1, 0)
--              3: (E1, E0, EN) = (0, 1, 1)
--              4: (E1, E0, EN) = (1, 0, 0)
--              5: (E1, E0, EN) = (1, 0, 1)
--              6: (E1, E0, EN) = (1, 1, 0)
--              7: (E1, E0, EN) = (1, 1, 1)
--              So the valid arguments are from 0 to 7.
--            $ref: /schemas/types.yaml#/definitions/uint32
--            enum: [0, 1, 2, 3, 4, 5, 6, 7]
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Can't remove mediatek,drive-strength-adv property, I2C pins will ofter
-use this property
-
-+          drive-strength-microamp:
-+            enum: [125, 250, 500, 1000]
- 
-           mediatek,pull-up-adv:
-             description: |
-@@ -138,6 +115,14 @@ patternProperties:
-         required:
-           - pinmux
- 
-+        allOf:
-+          - if:
-+              required:
-+                - drive-strength-microamp
-+            then:
-+              properties:
-+                drive-strength: false
-+
-         additionalProperties: false
- 
-Property drive-strength-microamp and drive-strength aren't exclusive,
-just i2c pins support drive-strength-microamp property .
-
- allOf:
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
