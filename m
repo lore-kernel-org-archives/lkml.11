@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0ED3CCA489
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:28:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E733CCA48E
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:28:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245619AbiFHQ2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
+        id S245168AbiFHQ2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:28:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245168AbiFHQ2H (ORCPT
+        with ESMTP id S245178AbiFHQ2I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:28:07 -0400
+        Wed, 8 Jun 2022 12:28:08 -0400
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6659C1FE3A7;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00AB01FE8C2;
         Wed,  8 Jun 2022 09:28:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Cc:To:From:content-disposition;
-        bh=bUpZA46sZ11cw7jxGZ4w7Z7/qydqr8hAOH9KDD+fmoQ=; b=MBeHV/M5l/YxQx4I1r41O7dup1
-        fRpplw19z4K5TvfpcMv0UTdkpg07qzMCc+/hxBz5Q/nBYLsoPiYDZwjtYazefqKm+WeJPE/1BvrfG
-        HZd/hR25qGA6dQ6INYaWuSwEj89aoSosE/bY87pCn82Ikk/BvhFjcjaOq6+PhpsMMj/V+uvEKiPIs
-        l/CA5La7RKgdHqmpMohIxO/uep0lhWDU7bc46eYZyRug8XCHrJEqZhlEXv5lzGEgO9OxuDwHBEJqM
-        ReAXTGHVLotloIJ1Ws2TyWiD1wGE46ZBcdA99eqedtvHst0KNmBvx509cCOU+ZjP7yfM7sA2pNN0K
-        ScvV6uwg==;
+        bh=MiCPhTWWfi3d1Han0tZIW/P4zdztR1K7Ax/z77ioJXs=; b=Ikr+r7qGi3R7CGGV5QudeUQyj0
+        aiv3j6f0hDZssW68VZ/cb6ff7X4zqa2lnU1P+3qfx4lGOH4BywiZhQs7OiG4yDtKyFjKihYkYyiUN
+        Ho4RbMKkl7e9BNNC96dAFz22E6WZBElOc5vhehSGMQEaLnJwyXtReKHDCiaQQ/D93prb8UYizX5IH
+        3cHoYn/f5NFmTJ+5nkZoaHkA5KyoOgkgiLEPxvyxxSxeB5PtiltCfgGuzni+02Y813BTT1JRGPZ39
+        wOA/GkPP6NJ2Am5Bmbhe9S1UJj8LaE4I5efueiePh3kaLME5hv/6e09rNuKnT3iPbGV6szqw/2juV
+        H97nIw3Q==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
         by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1nyyXL-0026n5-Ca; Wed, 08 Jun 2022 10:28:05 -0600
+        id 1nyyXN-0026n5-Ft; Wed, 08 Jun 2022 10:28:06 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1nyyXH-000bdl-VA; Wed, 08 Jun 2022 10:28:00 -0600
+        id 1nyyXG-000bdS-Pt; Wed, 08 Jun 2022 10:27:59 -0600
 From:   Logan Gunthorpe <logang@deltatee.com>
 To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
         Song Liu <song@kernel.org>
@@ -43,8 +43,8 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         David Sloan <David.Sloan@eideticom.com>,
         Logan Gunthorpe <logang@deltatee.com>,
         Christoph Hellwig <hch@lst.de>
-Date:   Wed,  8 Jun 2022 10:27:55 -0600
-Message-Id: <20220608162756.144600-11-logang@deltatee.com>
+Date:   Wed,  8 Jun 2022 10:27:50 -0600
+Message-Id: <20220608162756.144600-6-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220608162756.144600-1-logang@deltatee.com>
 References: <20220608162756.144600-1-logang@deltatee.com>
@@ -53,74 +53,59 @@ Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 172.16.1.31
 X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, buczek@molgen.mpg.de, guoqing.jiang@linux.dev, xni@redhat.com, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com, hch@lst.de
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v4 10/11] md: Ensure resync is reported after it starts
+Subject: [PATCH v4 05/11] md/raid5-cache: Take mddev_lock in r5c_journal_mode_show()
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 07layouts test in mdadm fails on some systems. The failure
-presents itself as the backup file not being removed before the next
-layout is grown into:
+The mddev->lock spinlock doesn't protect against the removal of
+conf->log in r5l_exit_log() so conf->log may be freed before it
+is used.
 
-  mdadm: /dev/md0: cannot create backup file /tmp/md-test-backup:
-      File exists
-
-This is because the background mdadm process, which is responsible for
-cleaning up this backup file gets into an infinite loop waiting for
-the reshape to start. mdadm checks the mdstat file if a reshape is
-going and, if it is not, it waits for an event on the file or times
-out in 5 seconds. On faster machines, the reshape may complete before
-the 5 seconds times out, and thus the background mdadm process loops
-waiting for a reshape to start that has already occurred.
-
-mdadm reads the mdstat file to start, but mdstat does not report that the
-reshape has begun, even though it has indeed begun. So the mdstat_wait()
-call (in mdadm) which polls on the mdstat file won't ever return until
-timing out.
-
-The reason mdstat reports the reshape has started is due to an issue
-in status_resync(). recovery_active is subtracted from curr_resync which
-will result in a value of zero for the first chunk of reshaped data, and
-the resulting read will report no reshape in progress.
-
-To fix this, if "resync - recovery_active" is an overloaded value, force
-the value to be MD_RESYNC_ACTIVE so the code reports a resync in progress.
+To fix this, take the mddev_lock() insteaad of the mddev->lock spinlock.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/md/md.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/md/raid5-cache.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/md/md.c b/drivers/md/md.c
-index 42923832c077..ec46b83adf29 100644
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -8022,10 +8022,20 @@ static int status_resync(struct seq_file *seq, struct mddev *mddev)
- 		if (test_bit(MD_RECOVERY_DONE, &mddev->recovery))
- 			/* Still cleaning up */
- 			resync = max_sectors;
--	} else if (resync > max_sectors)
-+	} else if (resync > max_sectors) {
- 		resync = max_sectors;
--	else
-+	} else {
- 		resync -= atomic_read(&mddev->recovery_active);
-+		if (resync < MD_RESYNC_ACTIVE) {
-+			/*
-+			 * Resync has started, but the subtraction has
-+			 * yielded one of the special values. Force it
-+			 * to active to ensure the status reports an
-+			 * active resync.
-+			 */
-+			resync = MD_RESYNC_ACTIVE;
-+		}
-+	}
+diff --git a/drivers/md/raid5-cache.c b/drivers/md/raid5-cache.c
+index 83c184eddbda..ca8fc317da95 100644
+--- a/drivers/md/raid5-cache.c
++++ b/drivers/md/raid5-cache.c
+@@ -2534,12 +2534,13 @@ static ssize_t r5c_journal_mode_show(struct mddev *mddev, char *page)
+ 	struct r5conf *conf;
+ 	int ret;
  
- 	if (resync == MD_RESYNC_NONE) {
- 		if (test_bit(MD_RESYNCING_REMOTE, &mddev->recovery)) {
+-	spin_lock(&mddev->lock);
++	ret = mddev_lock(mddev);
++	if (ret)
++		return ret;
++
+ 	conf = mddev->private;
+-	if (!conf || !conf->log) {
+-		spin_unlock(&mddev->lock);
+-		return 0;
+-	}
++	if (!conf || !conf->log)
++		goto out_unlock;
+ 
+ 	switch (conf->log->r5c_journal_mode) {
+ 	case R5C_JOURNAL_MODE_WRITE_THROUGH:
+@@ -2557,7 +2558,9 @@ static ssize_t r5c_journal_mode_show(struct mddev *mddev, char *page)
+ 	default:
+ 		ret = 0;
+ 	}
+-	spin_unlock(&mddev->lock);
++
++out_unlock:
++	mddev_unlock(mddev);
+ 	return ret;
+ }
+ 
 -- 
 2.30.2
 
