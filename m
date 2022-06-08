@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C67CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B45FCCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:28:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245642AbiFHQ2l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:28:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58896 "EHLO
+        id S245595AbiFHQ2f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:28:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245167AbiFHQ2H (ORCPT
+        with ESMTP id S245175AbiFHQ2I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:28:07 -0400
+        Wed, 8 Jun 2022 12:28:08 -0400
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2521FE4E8;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDFF1FE3A1;
         Wed,  8 Jun 2022 09:28:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Cc:To:From:content-disposition;
-        bh=L1YSyIwmt/8wrOpuPigujjiYrhfSTXHie0bjSBKX4FM=; b=WU51Y3yyNVIN9vWBu2qJuimVTC
-        HHLz9k1olcviSeNoQtowcHRIcGQxs8wrOSC+ryZTU2GJs/bpOe1gZCo9/9S/ILYm2+GyULFBv9OHE
-        ecL5rAHtHXcHOYd8n9vUZbNGFGkpsyikDLluA3EB8JJXeTRcGXf6GN6u8HDO5i5qGdSlUxFkXY3jN
-        Sk2bMBsn1bzrbKM2tY+52kz8yXRZJSQqwA7kM3tp+cDUFXuQ1Tpdi7X9tDAED3hHoCqJjWaC5pFXu
-        FkT8AkQvwAzzC0fpP5NpJn1yw0WiTbm2rhSh8VVhsd0O3mZKM6FmzUwNulDYCz2i4yRTFjJH2+eYR
-        BWrnsUZw==;
+        bh=2iC/DhYpZqhmpjorAsKUu3U7W7d5kbCBkXcAE2Xm6JI=; b=kLSG2JpF4zu10xTSS7hzwnG3Ol
+        AzAlD1uV1U2F+ASkcvxJWEt7cVQc8XxVgonMdBNMb/6UN3lr25HRDc8D8TWZooe5X0qOzL3AoNeRs
+        i9S4K1SuzocX3S2NTZqUYriEr4RXb6MA0SIJuEQxcW+aAkf9uOzbC26COzI8vpFCQ0ynCQro5bpuS
+        rfhjVYyjU03o1Vv4cuOhjuR3GxGEEvVaOAwvX3wcoRzPe8VxhGj12F2+ApV718oZZysR6WaTkV3Cj
+        XhOXHR0/g4B7/P2YblTaCSjr3JdQHTL6W8hi1+EjPakZGOpsJetsE77M2LoHbcfBZfvBPo6RqhVgK
+        APaaUqNQ==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
         by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1nyyXM-0026n7-P3; Wed, 08 Jun 2022 10:28:05 -0600
+        id 1nyyXL-0026n8-CK; Wed, 08 Jun 2022 10:28:05 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1nyyXH-000bdc-DL; Wed, 08 Jun 2022 10:27:59 -0600
+        id 1nyyXI-000bdp-5v; Wed, 08 Jun 2022 10:28:00 -0600
 From:   Logan Gunthorpe <logang@deltatee.com>
 To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
         Song Liu <song@kernel.org>
@@ -43,8 +43,8 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         David Sloan <David.Sloan@eideticom.com>,
         Logan Gunthorpe <logang@deltatee.com>,
         Christoph Hellwig <hch@lst.de>
-Date:   Wed,  8 Jun 2022 10:27:53 -0600
-Message-Id: <20220608162756.144600-9-logang@deltatee.com>
+Date:   Wed,  8 Jun 2022 10:27:56 -0600
+Message-Id: <20220608162756.144600-12-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220608162756.144600-1-logang@deltatee.com>
 References: <20220608162756.144600-1-logang@deltatee.com>
@@ -53,50 +53,48 @@ Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 172.16.1.31
 X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, buczek@molgen.mpg.de, guoqing.jiang@linux.dev, xni@redhat.com, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com, hch@lst.de
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v4 08/11] md/raid5-cache: Annotate pslot with __rcu notation
+Subject: [PATCH v4 11/11] md: Notify sysfs sync_completed in md_reap_sync_thread()
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-radix_tree_lookup_slot() and radix_tree_replace_slot() API expect the
-slot returned and looked up to be marked with __rcu. Otherwise
-sparse warnings are generated:
+The mdadm test 07layouts randomly produces a kernel hung task deadlock.
+The deadlock is caused by the suspend_lo/suspend_hi files being set by
+the mdadm background process during reshape and not being cleared
+because the process hangs. (Leaving aside the issue of the fragility of
+freezing kernel tasks by buggy userspace processes...)
 
-  drivers/md/raid5-cache.c:2939:23: warning: incorrect type in
-			assignment (different address spaces)
-  drivers/md/raid5-cache.c:2939:23:    expected void **pslot
-  drivers/md/raid5-cache.c:2939:23:    got void [noderef] __rcu **
+When the background mdadm process hangs it, is waiting (without a
+timeout) on a change to the sync_completed file signalling that the
+reshape has completed. The process is woken up a couple times when
+the reshape finishes but it is woken up before MD_RECOVERY_RUNNING
+is cleared so sync_completed_show() reports 0 instead of "none".
+
+To fix this, notify the sysfs file in md_reap_sync_thread() after
+MD_RECOVERY_RUNNING has been cleared. This wakes up mdadm and causes
+it to continue and write to suspend_lo/suspend_hi to allow IO to
+continue.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/md/raid5-cache.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/md/md.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/md/raid5-cache.c b/drivers/md/raid5-cache.c
-index ca57b5fac599..b2e6016934ee 100644
---- a/drivers/md/raid5-cache.c
-+++ b/drivers/md/raid5-cache.c
-@@ -2637,7 +2637,7 @@ int r5c_try_caching_write(struct r5conf *conf,
- 	int i;
- 	struct r5dev *dev;
- 	int to_cache = 0;
--	void **pslot;
-+	void __rcu **pslot;
- 	sector_t tree_index;
- 	int ret;
- 	uintptr_t refcount;
-@@ -2804,7 +2804,7 @@ void r5c_finish_stripe_write_out(struct r5conf *conf,
- 	int i;
- 	int do_wakeup = 0;
- 	sector_t tree_index;
--	void **pslot;
-+	void __rcu **pslot;
- 	uintptr_t refcount;
- 
- 	if (!log || !test_bit(R5_InJournal, &sh->dev[sh->pd_idx].flags))
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index ec46b83adf29..6e583f41caff 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -9476,6 +9476,7 @@ void md_reap_sync_thread(struct mddev *mddev, bool reconfig_mutex_held)
+ 	wake_up(&resync_wait);
+ 	/* flag recovery needed just to double check */
+ 	set_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
++	sysfs_notify_dirent_safe(mddev->sysfs_completed);
+ 	sysfs_notify_dirent_safe(mddev->sysfs_action);
+ 	md_new_event();
+ 	if (mddev->event_work.func)
 -- 
 2.30.2
 
