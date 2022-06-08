@@ -2,263 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA38C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C644EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232830AbiFHEnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 00:43:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41638 "EHLO
+        id S232484AbiFHEn6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 00:43:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231529AbiFHEmO (ORCPT
+        with ESMTP id S229597AbiFHEhe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 00:42:14 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C95414780;
-        Tue,  7 Jun 2022 19:34:18 -0700 (PDT)
-X-UUID: d0c4507de4df4791bd72f8ff104955c9-20220608
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:c312a6f2-4170-4211-b8d3-77a887bc844b,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:2a19b09,CLOUDID:4db28e7e-c8dc-403a-96e8-6237210dceee,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: d0c4507de4df4791bd72f8ff104955c9-20220608
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1403095489; Wed, 08 Jun 2022 10:23:10 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 8 Jun 2022 10:23:08 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Wed, 8 Jun 2022 10:23:08 +0800
-Message-ID: <358331497a5ff431d46bfea9c5c9dcadfaaa9a63.camel@mediatek.com>
-Subject: Re: [PATCH v10 18/21] drm/mediatek: Add mt8195 Embedded DisplayPort
- driver
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Guillaume Ranquet <granquet@baylibre.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        "Daniel Vetter" <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chunfeng Yun =?UTF-8?Q?=28=E4=BA=91=E6=98=A5=E5=B3=B0=29?= 
-        <Chunfeng.Yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, "Helge Deller" <deller@gmx.de>,
-        Jitao Shi =?UTF-8?Q?=28=E7=9F=B3=E8=AE=B0=E6=B6=9B=29?= 
-        <jitao.shi@mediatek.com>
-CC:     Markus Schneider-Pargmann <msp@baylibre.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
+        Wed, 8 Jun 2022 00:37:34 -0400
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404903E1C57
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:24:44 -0700 (PDT)
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220608021709epoutp032aaf92c72955ad5ffe20110775444b2a~2g55SaGEj3201432014epoutp03P
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:17:09 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220608021709epoutp032aaf92c72955ad5ffe20110775444b2a~2g55SaGEj3201432014epoutp03P
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1654654629;
+        bh=YsxxJh3jyxEwSbPFZB5N8FabmeSNHiS+F1nRFzSyN/c=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=fW9UXTlLsOx8CUmrvk68VjC0AF/JfQQtNLvLmmmNw4QGf4m4IED4ZK83gSY5lzJYf
+         3yaen4gvSIXMgJKLfjRfB8EN0yYKhoUl0CXLhZYYEDeFRU0vObEwOxac4orM3WBwkW
+         lW1ptHW6DO5cbByYjkt574+02gWD9mLMY5pb0ogw=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
+        20220608021708epcas2p4a9366159637c54a705583cda2af6cffe~2g54xtGW61290612906epcas2p4G;
+        Wed,  8 Jun 2022 02:17:08 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.92]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4LHrTH6b1lz4x9Pp; Wed,  8 Jun
+        2022 02:17:07 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        85.C7.10028.3A600A26; Wed,  8 Jun 2022 11:17:07 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220608021707epcas2p12c3217dca29441c5c03c2c9cd102ae21~2g53yzDon1805318053epcas2p1K;
+        Wed,  8 Jun 2022 02:17:07 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220608021707epsmtrp12f25343d6c7c6e284c7c4bc0a37a60dd~2g53x5xIK2303123031epsmtrp1T;
+        Wed,  8 Jun 2022 02:17:07 +0000 (GMT)
+X-AuditID: b6c32a47-589ff7000000272c-b8-62a006a30124
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        65.08.11276.3A600A26; Wed,  8 Jun 2022 11:17:07 +0900 (KST)
+Received: from KORCO082417 (unknown [10.229.8.121]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220608021707epsmtip29fd738ec30b73ae952cb7c97c35b3e37~2g53fysAP2450424504epsmtip2b;
+        Wed,  8 Jun 2022 02:17:07 +0000 (GMT)
+From:   "Chanho Park" <chanho61.park@samsung.com>
+To:     "'Alim Akhtar'" <alim.akhtar@samsung.com>,
         <linux-arm-kernel@lists.infradead.org>,
-        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
-        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>
-Date:   Wed, 8 Jun 2022 10:23:08 +0800
-In-Reply-To: <8af7938ae9244e4b7caf62e0c6ce0bcdddc13889.camel@mediatek.com>
-References: <20220523104758.29531-1-granquet@baylibre.com>
-         <20220523104758.29531-19-granquet@baylibre.com>
-         <0bd8b0c66b9e2a1b63280e7eab63048bee7fe786.camel@mediatek.com>
-         <8af7938ae9244e4b7caf62e0c6ce0bcdddc13889.camel@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>
+Cc:     <devicetree@vger.kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <vkoul@kernel.org>,
+        <avri.altman@wdc.com>, <bvanassche@acm.org>,
+        <martin.petersen@oracle.com>, <pankaj.dubey@samsung.com>,
+        "'Bharat Uppal'" <bharat.uppal@samsung.com>
+In-Reply-To: <20220603154714.30532-7-alim.akhtar@samsung.com>
+Subject: RE: [PATCH v2 6/7] ufs: host: ufs-exynos: add support for fsd ufs
+ hci
+Date:   Wed, 8 Jun 2022 11:17:07 +0900
+Message-ID: <003501d87add$da15c310$8e414930$@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: ko
+Thread-Index: AQFSBQ9Zoh1+pG8sApsbls4ebot9jgJEDvu0Ahy3giCuLqahsA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrOJsWRmVeSWpSXmKPExsWy7bCmhe5itgVJBtNOm1g8mLeNzeLlz6ts
+        FtdeXmC3mPbhJ7PF/CPnWC36Xjxkttj0+BqrxeVdc9gsJqz6xmLRfX0Hm8Xy4/+YLBZt/cJu
+        0br3CLvFzjsnmB34PC5f8fbYtKqTzePOtT1sHpuX1Ht8fHqLxaNvyypGj8+b5DzaD3QzBXBE
+        ZdtkpCampBYppOYl56dk5qXbKnkHxzvHm5oZGOoaWlqYKynkJeam2iq5+AToumXmAJ2tpFCW
+        mFMKFApILC5W0rezKcovLUlVyMgvLrFVSi1IySkwL9ArTswtLs1L18tLLbEyNDAwMgUqTMjO
+        +DnhPFNBj1rFkU+XWBsYJyt0MXJySAiYSLSdOsEIYgsJ7GCUOPSIs4uRC8j+xChxcfUOVgjn
+        G6PEkXULmboYOcA6DuxRhYjvZZRYPec0O4TzAqj79WE2kFFsAvoSLzu2gXWLgIz9vOITC4jD
+        LNDJJNF95AITSBWngK3E2tU32UFsYYEAiW+nWsC6WQRUJPadbgCL8wpYSmw/dpARwhaUODnz
+        CQuIzSygLbFs4WtmiCcUJH4+XcYKEReRmN3ZxgxyqoiAk8SBLwogeyUE7nBIXJs8lRWi3kXi
+        69d9LBC2sMSr41vYIWwpiZf9bVB2scTSWZ+YIJobGCUub/vFBpEwlpj1rJ0RZAGzgKbE+l36
+        kGBRljhyC+o0PomOw3/ZIcK8Eh1tQhCN6hIHtk+H2ior0T3nM+sERqVZSB6bheSxWUiemYWw
+        awEjyypGsdSC4tz01GKjAmN4ZCfn525iBKdoLfcdjDPeftA7xMjEwXiIUYKDWUmEVzJ8fpIQ
+        b0piZVVqUX58UWlOavEhRlNgUE9klhJNzgdmibySeEMTSwMTMzNDcyNTA3MlcV6vlA2JQgLp
+        iSWp2ampBalFMH1MHJxSDUz7JZcWBe99/KpoTuDzKfeSObftDT1x+rLx6zBTCyl36W36M3J3
+        THNz3BroLDWrwVXJ8PR/js4zJdt3v56wbb96uKNJanxLusbVFr8QtoiMEMNtbKFFn09d2MSz
+        Ok9wRn7xg6qc8seG7+S/Tr23sPnUjnfRs9YcOGTuZibJ1bX90vONGg8TVB49lzr85PreZGY3
+        n/t3fE+dCJqdt8Cl5keVxX7PydUMXr3h167NXT0/0URKO72ma79pbca3w0c/sXyZuEn4w8sN
+        3U5mCl02HC5uZ3haekvWZVXkhF3YZpcVKX1LTu/n1ZV3Yy+0r05kds0zidBK5/Z7/Zwt/4xb
+        0F97+3dben8YvNz4a9X3gCNKLMUZiYZazEXFiQDkc+yWWgQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrCIsWRmVeSWpSXmKPExsWy7bCSvO5itgVJBuvmilg8mLeNzeLlz6ts
+        FtdeXmC3mPbhJ7PF/CPnWC36Xjxkttj0+BqrxeVdc9gsJqz6xmLRfX0Hm8Xy4/+YLBZt/cJu
+        0br3CLvFzjsnmB34PC5f8fbYtKqTzePOtT1sHpuX1Ht8fHqLxaNvyypGj8+b5DzaD3QzBXBE
+        cdmkpOZklqUW6dslcGV8+LOdreCFasXZdxdYGhhfy3cxcnBICJhIHNij2sXIxSEksJtRYvK8
+        y8xdjJxAcVmJZ+92sEPYwhL3W46wQhQ9Y5Q4/OoHC0iCTUBf4mXHNrCEiMAeRom2eafYQRxm
+        gclMEpMavrJAtOxnlJi/aw8rSAungK3E2tU3weYKC/hJbP+1nQ3EZhFQkdh3ugEszitgKbH9
+        2EFGCFtQ4uTMJ2DrmAW0JXoftjLC2MsWvoa6VUHi59NlrBBxEYnZnW3MIL+JCDhJHPiiMIFR
+        eBaSSbOQTJqFZNIsJN0LGFlWMUqmFhTnpucWGxYY5qWW6xUn5haX5qXrJefnbmIER6yW5g7G
+        7as+6B1iZOJgPMQowcGsJMIrGT4/SYg3JbGyKrUoP76oNCe1+BCjNAeLkjjvha6T8UIC6Ykl
+        qdmpqQWpRTBZJg5OqQamOYXVMcy27sw3L3/flzVL/qUUd8OG7pSow5bTwmwj9zyZorzyJ5Pd
+        hA1ZrLXqNXfPlKmkLpKdq3i+1Ek+LGlHN29kvu7xXp8t/mv83rIFy88SjNhqdjb2x75IMf8f
+        tQ5+F5kYQgJX/wpYHJPttfit560l/3m8LP0sqxeUCa3l+HnGbB7vhL27osvaW1jkrj+pWd5c
+        5vFAf375RQbJsgg9v8snDc20FWtMem/4JITty3Iorb572yaM91Zru92H6QuPhLDNNRD2Or5z
+        75yrgscCAw8cPtouu6Xl0LqPWn+uup7qdg+ztep/HbeSUfSKcUBuFccFEdVS9sdF3psuJGpo
+        TFm/ODz9mco/O7ayV0osxRmJhlrMRcWJAOzqsylHAwAA
+X-CMS-MailID: 20220608021707epcas2p12c3217dca29441c5c03c2c9cd102ae21
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220603154907epcas5p40d236cecf8d4a574d44d9a2b66f2caf0
+References: <20220603154714.30532-1-alim.akhtar@samsung.com>
+        <CGME20220603154907epcas5p40d236cecf8d4a574d44d9a2b66f2caf0@epcas5p4.samsung.com>
+        <20220603154714.30532-7-alim.akhtar@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Rex:
+> Subject: =5BPATCH v2 6/7=5D ufs: host: ufs-exynos: add support for fsd uf=
+s hci
+>=20
+> Adds support of UFS HCI which is found in Tesla Full Self-Driving (FSD)
+> SoC.
+>=20
+> Signed-off-by: Bharat Uppal <bharat.uppal=40samsung.com>
+> Signed-off-by: Alim Akhtar <alim.akhtar=40samsung.com>
+> ---
+>  drivers/ufs/host/ufs-exynos.c =7C 138 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 138 insertions(+)
+>=20
+> diff --git a/drivers/ufs/host/ufs-exynos.c b/drivers/ufs/host/ufs-exynos.=
+c
+> index cc128aff8871..7e0ab8a8662e 100644
+> --- a/drivers/ufs/host/ufs-exynos.c
+> +++ b/drivers/ufs/host/ufs-exynos.c
+> =40=40 -1474,6 +1474,102 =40=40 static int exynosauto_ufs_vh_init(struct =
+ufs_hba
+> *hba)
+>  	return 0;
+>  =7D
+>=20
+> +static int fsd_ufs_pre_link(struct exynos_ufs *ufs) =7B
+> +	int i;
+> +	struct ufs_hba *hba =3D ufs->hba;
+> +
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(0x9514), 1000000000L / ufs-
+> >mclk_rate);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(0x201), 0x12);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(0x200), 0x40);
+> +
+> +	for_each_ufs_tx_lane(ufs, i) =7B
+> +		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0xAA, i), 1000000000L /
+> ufs->mclk_rate);
 
-On Tue, 2022-06-07 at 20:24 +0800, Rex-BC Chen wrote:
-> On Tue, 2022-06-07 at 14:21 +0800, CK Hu wrote:
-> > Hi, Rex:
-> > 
-> > On Mon, 2022-05-23 at 12:47 +0200, Guillaume Ranquet wrote:
-> > > From: Markus Schneider-Pargmann <msp@baylibre.com>
-> > > 
-> > > This patch adds a DisplayPort driver for the Mediatek mt8195 SoC.
-> > > 
-> > > It supports the mt8195, the embedded DisplayPort units. It offers
-> > > DisplayPort 1.4 with up to 4 lanes.
-> > > 
-> > > The driver creates a child device for the phy. The child device
-> > > will
-> > > never exist without the parent being active. As they are sharing
-> > > a
-> > > register range, the parent passes a regmap pointer to the child
-> > > so
-> > > that
-> > > both can work with the same register range. The phy driver sets
-> > > device
-> > > data that is read by the parent to get the phy device that can be
-> > > used
-> > > to control the phy properties.
-> > > 
-> > > This driver is based on an initial version by
-> > > Jason-JH.Lin <jason-jh.lin@mediatek.com>.
-> > > 
-> > > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> > > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> > > ---
-> > 
-> > [snip]
-> > 
-> > > +
-> > > +static irqreturn_t mtk_dp_hpd_event_thread(int hpd, void *dev)
-> > > +{
-> > > +	struct mtk_dp *mtk_dp = dev;
-> > > +	int event;
-> > > +	u8 buf[DP_RECEIVER_CAP_SIZE] = {};
-> > > +
-> > > +	event = mtk_dp_plug_state(mtk_dp) ? connector_status_connected
-> > > :
-> > > +						  connector_status_disc
-> > > onnected;
-> > > +
-> > > +	if (event < 0)
-> > 
-> > event is always > 0, isn't it?
-> > 
-> 
-> Hello CK,
-> 
-> ok, I will move this to dp patch.
-> 
-> > > +		return IRQ_HANDLED;
-> > > +
-> > > +	if (mtk_dp->drm_dev) {
-> > > +		dev_info(mtk_dp->dev, "drm_helper_hpd_irq_event\n");
-> > > +		drm_helper_hpd_irq_event(mtk_dp->bridge.dev);
-> > 
-> > I think this ISR would come once. If bridge has not attached, the
-> > drm
-> > core would lost this event. Maybe you should enable eDP hardware
-> > after
-> > bridge attached or send this event when attached.
-> > 
-> 
-> for edp patch, I will move it to (mtk_dp_bridge_attach).
-> for dp patch, I will add it back.
+Use NSEC_PER_SEC and DIV_ROUND_UP as well.
 
-I find out that mtk_dp_poweron() is in top of mtk_dp_bridge_attach().
-If move mtk_dp_poweron() to bottom of mtk_dp_bridge_attach(), mtk_dp-
->drm_dev would not be NULL here. So we could drop this checking.
+> +		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0x8F, i), 0x3F);
+> +	=7D
+> +
+> +	for_each_ufs_rx_lane(ufs, i) =7B
+> +		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0x12, i), 1000000000L /
+> ufs->mclk_rate);
+> +		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0x5C, i), 0x38);
+> +		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0x0F, i), 0x0);
+> +		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0x65, i), 0x1);
+> +		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0x69, i), 0x1);
+> +		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0x21, i), 0x0);
+> +		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0x22, i), 0x0);
+> +	=7D
+> +
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(0x200), 0x0);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(0x9536), 0x4E20);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(0x9564), 0x2e820183);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_LOCAL_TX_LCC_ENABLE), 0x0);
+> +
+> +	exynos_ufs_establish_connt(ufs);
+> +
+> +	return 0;
+> +=7D
+> +
+> +static int fsd_ufs_post_link(struct exynos_ufs *ufs) =7B
+> +	int i;
+> +	struct ufs_hba *hba =3D ufs->hba;
+> +	u32 hw_cap_min_tactivate;
+> +	u32 peer_rx_min_actv_time_cap;
+> +	u32 max_rx_hibern8_time_cap;
+> +
+> +	ufshcd_dme_get(hba, UIC_ARG_MIB_SEL(0x8F, 4),
+> +			&hw_cap_min_tactivate); /* HW Capability of
+> MIN_TACTIVATE */
+> +	ufshcd_dme_get(hba, UIC_ARG_MIB(0x15A8),
+> +			&peer_rx_min_actv_time_cap);    /* PA_TActivate */
+> +	ufshcd_dme_get(hba, UIC_ARG_MIB(0x15A7),
+> +			&max_rx_hibern8_time_cap);      /* PA_Hibern8Time */
+> +
+> +	if (peer_rx_min_actv_time_cap >=3D hw_cap_min_tactivate)
+> +		ufshcd_dme_peer_set(hba, UIC_ARG_MIB(0x15A8),
+> +					peer_rx_min_actv_time_cap + 1);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(0x15A7), max_rx_hibern8_time_cap +
+> 1);
+> +
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(0x9529), 0x01);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(0x15A4), 0xFA);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(0x9529), 0x00);
+> +
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(0x200), 0x40);
+> +
+> +	for_each_ufs_rx_lane(ufs, i) =7B
+> +		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0x35, i), 0x05);
+> +		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0x73, i), 0x01);
+> +		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0x41, i), 0x02);
+> +		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0x42, i), 0xAC);
+> +	=7D
+> +
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(0x200), 0x0);
+> +
+> +	return 0;
+> +=7D
+> +
+> +static int fsd_ufs_pre_pwr_change(struct exynos_ufs *ufs,
+> +					struct ufs_pa_layer_attr *pwr)
+> +=7B
+> +	struct ufs_hba *hba =3D ufs->hba;
+> +
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_TXTERMINATION), 0x1);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_RXTERMINATION), 0x1);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(DL_FC0PROTTIMEOUTVAL), 8064);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(DL_TC0REPLAYTIMEOUTVAL), 28224);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(DL_AFC0REQTIMEOUTVAL), 20160);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_PWRMODEUSERDATA0), 12000);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_PWRMODEUSERDATA1), 32000);
+> +	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_PWRMODEUSERDATA2), 16000);
 
-> 
-> > > +	}
-> > > +
-> > > +	if (mtk_dp->train_info.cable_state_change) {
-> > 
-> > Executing this thread imply cable_state_change = true, so drop
-> > cable_state_change.
-> > 
-> 
-> In mtk_dp_hpd_isr_handler(), there is another irq
-> "MTK_DP_HPD_INTERRUPT" which means the sink devices give a interrupt
-> to
-> source device. it's not about connected status, so I think we still
-> need this.
+If you set custom pwrmode setting, you'll need to set UFSHCD_QUIRK_SKIP_DEF=
+_UNIPRO_TIMEOUT_SETTING.
 
-In bottom of mtk_dp_hpd_isr_handler(), the code is:
+> +
+> +	unipro_writel(ufs, 8064, 0x7888);
+> +	unipro_writel(ufs, 28224, 0x788C);
+> +	unipro_writel(ufs, 20160, 0x7890);
 
-+	train_info->cable_state_change = true;
-+
-+	return IRQ_WAKE_THREAD;
+Duplicated setting with above dme_set calls. (DL_FC0PROTTIMEOUTVAL / DL_TC0=
+REPLAYTIMEOUTVAL / DL_AFC0REQTIMEOUTVAL)
+Unipro registers are mirrored and you can use unipro_* APIs but need to cho=
+ose one of them.
 
-This thread is called only when return IRQ_WAKE_THREAD, and before
-return IRQ_WAKE_THREAD, train_info->cable_state_change is always set to
-true. So in this thread, train_info->cable_state_change must be true.
+> +	unipro_writel(ufs, 12000, 0x78B8);
+> +	unipro_writel(ufs, 32000, 0x78BC);
+> +	unipro_writel(ufs, 16000, 0x78C0);
 
-Regards,
-CK
+Put some documents the register as DME_POWERMODE_REQ_REMOTEL2TIMER0/1/2 or =
+use macro for them.
 
-> 
-> > > +		mtk_dp->train_info.cable_state_change = false;
-> > > +
-> > > +		mtk_dp->train_state = MTK_DP_TRAIN_STATE_STARTUP;
-> > > +
-> > > +		if (!mtk_dp->train_info.cable_plugged_in ||
-> > > +		    !mtk_dp_plug_state(mtk_dp)) {
-> > 
-> > I do not like two variable to present one thing. If
-> > 
-> > mtk_dp->train_info.cable_plugged_in = false
-> > and
-> > mtk_dp_plug_state(mtk_dp) = ture
-> > 
-> > What does this mean? I think this mean 'now' is connected because
-> > cable_plugged_in is old information and mtk_dp_plug_state() is
-> > current
-> > information.
-> > 
-> > But I would like to keep cable_plugged_in and drop
-> > mtk_dp_plug_state()
-> > because cable_plugged_in would be changed in isr and it would be
-> > the
-> > same as mtk_dp_plug_state().
-> > 
-> > Regards,
-> > CK
-> > 
-> 
-> ok, I will drop this.
-> 
-> BRs,
-> Rex
-> 
-> > > +			mtk_dp_video_mute(mtk_dp, true);
-> > > +
-> > > +			mtk_dp_initialize_priv_data(mtk_dp);
-> > > +			mtk_dp_set_idle_pattern(mtk_dp, true);
-> > > +			if (mtk_dp->has_fec)
-> > > +				mtk_dp_fec_enable(mtk_dp, false);
-> > > +
-> > > +			mtk_dp_update_bits(mtk_dp,
-> > > MTK_DP_TOP_PWR_STATE,
-> > > +					   DP_PWR_STATE_BANDGAP_TPLL,
-> > > +					   DP_PWR_STATE_MASK);
-> > > +		} else {
-> > > +			mtk_dp_update_bits(mtk_dp,
-> > > MTK_DP_TOP_PWR_STATE,
-> > > +					   DP_PWR_STATE_BANDGAP_TPLL_LA
-> > > NE,
-> > > +					   DP_PWR_STATE_MASK);
-> > > +			drm_dp_read_dpcd_caps(&mtk_dp->aux, buf);
-> > > +			mtk_dp->train_info.link_rate =
-> > > +				min_t(int, mtk_dp->max_linkrate,
-> > > +				      buf[mtk_dp->max_linkrate]);
-> > > +			mtk_dp->train_info.lane_count =
-> > > +				min_t(int, mtk_dp->max_lanes,
-> > > +				      drm_dp_max_lane_count(buf));
-> > > +		}
-> > > +	}
-> > > +
-> > > +	if (mtk_dp->train_info.irq_status & MTK_DP_HPD_INTERRUPT) {
-> > > +		dev_dbg(mtk_dp->dev, "MTK_DP_HPD_INTERRUPT\n");
-> > > +		mtk_dp->train_info.irq_status &= ~MTK_DP_HPD_INTERRUPT;
-> > > +		mtk_dp_hpd_sink_event(mtk_dp);
-> > > +	}
-> > > +
-> > > +	return IRQ_HANDLED;
-> > > +}
-> > > +
-> > 
-> > 
-> 
-> 
+Best Regards,
+Chanho Park
 
