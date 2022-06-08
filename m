@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEDA5C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D00EFCCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 08:33:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232009AbiFHIcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 04:32:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55000 "EHLO
+        id S232198AbiFHIdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 04:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230031AbiFHIbE (ORCPT
+        with ESMTP id S231646AbiFHIbW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 04:31:04 -0400
+        Wed, 8 Jun 2022 04:31:22 -0400
 Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAC11D0BF8
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39843BC3E6
         for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:53:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1654671921; cv=none; 
+ARC-Seal: i=1; a=rsa-sha256; t=1654671954; cv=none; 
         d=zohomail.com; s=zohoarc; 
-        b=CBvX57e4YlSIDQpfnjPuKmjuLD3PVw7IH00/pg5gB/ZIRzj9lzL/Yh87wFG9Y3885B2jk9hJ3N7t+1YZZyuifB76fgxLHW4Q1p153ffvl+yN6dvvZvQulAI17HvxMlK/KI1+Zy7mnnjlSpZk2f1esIpdOyBFYCBXsadfH2qkBZU=
+        b=QBYaXVSrh0KHPaoowHgjYi0kdMbKz9bfxBVEjUFYqcf8Bv+wgjTHbquhmw5vHzoqSXf+TGUJ5f3ItBmiD96AfyryitQ46fUgfLwIe0HvZzqL0DboR9ys6+5VBJ9TNKRv/4nmg3UJ8YDgkwEPUTc2m/JTFvUdb0Igrz8Xv5gu7Yw=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1654671921; h=Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=fAPXMZVtetQtonlC7+xF0w9Gl7sJR8Jiaxw+KPYWZCs=; 
-        b=WVgdwcBKeVWAjZiDVgz+ePUSizrKtrgToLHPeoCGVDtjerJN7Xq4K3mFLtGB7ukyiBU2OwhlGt799bfRmaCYrlxEdI3TJztZCy36ncErtKWKozq0S41u1kVrGNoJU4qAND7zrPTsUvDHDzPgRQzTht6OcQUCZpSlNACWgiCLroY=
+        t=1654671954; h=Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=bK+qygT/W8e7IdMMhLssT6sOTIHj4DjaVCfrAGmo3wY=; 
+        b=GqG8SBbImRgbseNAloTdvbc0H4UilPdE75MRoH1taHqrXPebJTd26jXsgf50nnhfRvVbWzGWQVdkHePb7KSyq8nFBqg6eLASVY2dNg1EQIQLCk44SF1FmWMhGNRJw2SgXGCH6javF4pXkpgXOUGevPmC+Ps9AhcmEvaTpEJn0Rg=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
         dkim=pass  header.i=icenowy.me;
         spf=pass  smtp.mailfrom=uwu@icenowy.me;
         dmarc=pass header.from=<uwu@icenowy.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1654671921;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1654671954;
         s=zmail; d=icenowy.me; i=uwu@icenowy.me;
         h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Reply-To;
-        bh=fAPXMZVtetQtonlC7+xF0w9Gl7sJR8Jiaxw+KPYWZCs=;
-        b=cVmwm18fXkrsNvg4P/LMGAD9oFvgNao9WPetXbyJ3wdp4m4l3+rdt3ygNa7lD5qZ
-        gj5DTSVqSbk27ltdNJeRujVREMHc9RTtPfsx5ntM3PYmbZ+u/JldYAZWbQNfSbHeH5+
-        TVr55F2ktLUb4swqXr1ubfaB9EejqXCYKImHNjMo=
+        bh=bK+qygT/W8e7IdMMhLssT6sOTIHj4DjaVCfrAGmo3wY=;
+        b=EIQ6oOQk03dtkmAYYWCnH09Ex0X5yuigfdvdPWL53oPg5rAxSm0GGIVXAsWEesAG
+        qNIz4lceQ9oXGQiDS0Fecr5q+3SioH4bTppeCuL4yfYPQTQx/kZcPS+5XWoFteGNflu
+        vsfBNqT6Yx12CXQYIg72dZ6d7U4Ne71w7IFeHyuY=
 Received: from edelgard.icenowy.me (59.41.163.66 [59.41.163.66]) by mx.zohomail.com
-        with SMTPS id 1654671919691727.7602971052912; Wed, 8 Jun 2022 00:05:19 -0700 (PDT)
+        with SMTPS id 1654671953211498.9764845551447; Wed, 8 Jun 2022 00:05:53 -0700 (PDT)
 From:   Icenowy Zheng <uwu@icenowy.me>
 To:     Kishon Vijay Abraham I <kishon@ti.com>,
         Vinod Koul <vkoul@kernel.org>,
@@ -46,10 +46,10 @@ To:     Kishon Vijay Abraham I <kishon@ti.com>,
 Cc:     linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-sunxi@lists.linux.dev, linux-usb@vger.kernel.org,
-        Icenowy Zheng <uwu@icenowy.me>
-Subject: [PATCH 2/7] dt-bindings: phy: add binding document for Allwinner F1C100s USB PHY
-Date:   Wed,  8 Jun 2022 15:04:47 +0800
-Message-Id: <20220608070452.338006-3-uwu@icenowy.me>
+        Icenowy Zheng <icenowy@aosc.io>
+Subject: [PATCH 6/7] ARM: suniv: add USB-related device nodes
+Date:   Wed,  8 Jun 2022 15:04:51 +0800
+Message-Id: <20220608070452.338006-7-uwu@icenowy.me>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220608070452.338006-1-uwu@icenowy.me>
 References: <20220608070452.338006-1-uwu@icenowy.me>
@@ -60,107 +60,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allwinner F1C100s has the most simple USB PHY among all Allwinner SoCs,
-because it has only one OTG USB controller, no host-only OHCI/EHCI
-controllers.
+From: Icenowy Zheng <icenowy@aosc.io>
 
-Add a binding document for it.
+The suniv SoC has a USB OTG controller and a USB PHY like other
+Allwinner SoCs.
 
-Signed-off-by: Icenowy Zheng <uwu@icenowy.me>
+Add their device tree node.
+
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
 ---
- .../phy/allwinner,suniv-f1c100s-usb-phy.yaml  | 83 +++++++++++++++++++
- 1 file changed, 83 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/phy/allwinner,suniv-f1c100s-usb-phy.yaml
+ arch/arm/boot/dts/suniv-f1c100s.dtsi | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/phy/allwinner,suniv-f1c100s-usb-phy.yaml b/Documentation/devicetree/bindings/phy/allwinner,suniv-f1c100s-usb-phy.yaml
-new file mode 100644
-index 000000000000..180fa8840bf7
---- /dev/null
-+++ b/Documentation/devicetree/bindings/phy/allwinner,suniv-f1c100s-usb-phy.yaml
-@@ -0,0 +1,83 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/phy/allwinner,suniv-f1c100s-usb-phy.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/arch/arm/boot/dts/suniv-f1c100s.dtsi b/arch/arm/boot/dts/suniv-f1c100s.dtsi
+index 0edc1724407b..a01541ba42c5 100644
+--- a/arch/arm/boot/dts/suniv-f1c100s.dtsi
++++ b/arch/arm/boot/dts/suniv-f1c100s.dtsi
+@@ -133,6 +133,32 @@ mmc1: mmc@1c10000 {
+ 			#size-cells = <0>;
+ 		};
+ 
++		usb_otg: usb@1c13000 {
++			compatible = "allwinner,suniv-f1c100s-musb";
++			reg = <0x01c13000 0x0400>;
++			clocks = <&ccu CLK_BUS_OTG>;
++			resets = <&ccu RST_BUS_OTG>;
++			interrupts = <26>;
++			interrupt-names = "mc";
++			phys = <&usbphy 0>;
++			phy-names = "usb";
++			extcon = <&usbphy 0>;
++			allwinner,sram = <&otg_sram 1>;
++			status = "disabled";
++		};
 +
-+title: Allwinner F1C100s USB PHY Device Tree Bindings
++		usbphy: phy@1c13400 {
++			compatible = "allwinner,suniv-f1c100s-usb-phy";
++			reg = <0x01c13400 0x10>;
++			reg-names = "phy_ctrl";
++			clocks = <&ccu CLK_USB_PHY0>;
++			clock-names = "usb0_phy";
++			resets = <&ccu RST_USB_PHY0>;
++			reset-names = "usb0_reset";
++			#phy-cells = <1>;
++			status = "disabled";
++		};
 +
-+maintainers:
-+  - Chen-Yu Tsai <wens@csie.org>
-+  - Maxime Ripard <mripard@kernel.org>
-+
-+properties:
-+  "#phy-cells":
-+    const: 1
-+
-+  compatible:
-+    const: allwinner,suniv-f1c100s-usb-phy
-+
-+  reg:
-+    maxItems: 1
-+    description: PHY Control registers
-+
-+  reg-names:
-+    const: phy_ctrl
-+
-+  clocks:
-+    maxItems: 1
-+    description: USB OTG PHY bus clock
-+
-+  clock-names:
-+    const: usb0_phy
-+
-+  resets:
-+    maxItems: 1
-+    description: USB OTG reset
-+
-+  reset-names:
-+    const: usb0_reset
-+
-+  usb0_id_det-gpios:
-+    maxItems: 1
-+    description: GPIO to the USB OTG ID pin
-+
-+  usb0_vbus_det-gpios:
-+    maxItems: 1
-+    description: GPIO to the USB OTG VBUS detect pin
-+
-+  usb0_vbus_power-supply:
-+    description: Power supply to detect the USB OTG VBUS
-+
-+  usb0_vbus-supply:
-+    description: Regulator controlling USB OTG VBUS
-+
-+required:
-+  - "#phy-cells"
-+  - compatible
-+  - clocks
-+  - clock-names
-+  - reg
-+  - reg-names
-+  - resets
-+  - reset-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/clock/suniv-f1c100s-ccu.h>
-+    #include <dt-bindings/reset/suniv-f1c100s-ccu.h>
-+
-+    phy@1c13400 {
-+        compatible = "allwinner,suniv-f1c100s-usb-phy";
-+        reg = <0x01c13400 0x10>;
-+        reg-names = "phy_ctrl";
-+        clocks = <&ccu CLK_USB_PHY0>;
-+        clock-names = "usb0_phy";
-+        resets = <&ccu RST_USB_PHY0>;
-+        reset-names = "usb0_reset";
-+        #phy-cells = <1>;
-+        usb0_id_det-gpios = <&pio 4 2 GPIO_ACTIVE_HIGH>;
-+    };
+ 		ccu: clock@1c20000 {
+ 			compatible = "allwinner,suniv-f1c100s-ccu";
+ 			reg = <0x01c20000 0x400>;
 -- 
 2.36.0
 
