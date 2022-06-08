@@ -2,101 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 559E1C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A6AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233981AbiFHFdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48122 "EHLO
+        id S233170AbiFHFee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:34:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234023AbiFHFdY (ORCPT
+        with ESMTP id S233912AbiFHFd1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:33:24 -0400
-Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5ED0F2A8938;
-        Tue,  7 Jun 2022 20:00:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=55rL/
-        8+u+QDxUibK3Ff+8lesiAblAVPkbmExdrwsXfg=; b=dFYbY7AT6Lfit+gyHZSrT
-        WyOO1/iDneqIGtne0jlzyA7YRERDocaDDSDt68wdd04AzvAO0AE3PwslK0ZKzXWO
-        /OckntlXewtygVQ+LB2Gzku38QFkgB8qFZbQMxOkHOD6aNw9QY+OG5pfcWLkebUy
-        INUq/ct9M+BjKaoQpdCN14=
-Received: from localhost.localdomain (unknown [123.112.69.106])
-        by smtp2 (Coremail) with SMTP id GtxpCgC3KgCcEKBiolEjHg--.26179S4;
-        Wed, 08 Jun 2022 10:59:51 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     jejb@linux.ibm.com, jarkko@kernel.org, zohar@linux.ibm.com,
-        dhowells@redhat.com, jmorris@namei.org, serge@hallyn.com
-Cc:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH] security:trusted_tpm2: Fix memory leak in tpm2_key_encode()
-Date:   Wed,  8 Jun 2022 10:59:38 +0800
-Message-Id: <20220608025938.447908-1-niejianglei2021@163.com>
+        Wed, 8 Jun 2022 01:33:27 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD35283E88
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 20:00:23 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LHsQp0vGHz16Jj7;
+        Wed,  8 Jun 2022 11:00:02 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 8 Jun 2022 11:00:20 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 8 Jun 2022 11:00:19 +0800
+From:   Ke Liu <liuke94@huawei.com>
+To:     <scott.branden@broadcom.com>
+CC:     <bcm-kernel-feedback-list@broadcom.com>, <arnd@arndb.de>,
+        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
+        Ke Liu <liuke94@huawei.com>
+Subject: [PATCH] misc: bcm-vk: Directly use ida_alloc()/free()
+Date:   Wed, 8 Jun 2022 03:19:27 +0000
+Message-ID: <20220608031927.1704412-1-liuke94@huawei.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GtxpCgC3KgCcEKBiolEjHg--.26179S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7urWxGF17Wr1ftF1kZw4ktFb_yoW8Zr4fpF
-        ZxKF13XrZF9F9rAry3JF4SvF43C3s5GrW7Wwsru39rGasxJFsxtFy7Ar4Ygr17AFWSqw15
-        AFWDZFWUuFWqqr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRID7fUUUUU=
-X-Originating-IP: [123.112.69.106]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiPgcajFxBsmbZUwAAss
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tpm2_key_encode() allocates a memory chunk from scratch with kmalloc(),
-but it is never freed, which leads to a memory leak. Free the memory
-chunk with kfree() in the return path.
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove().
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Signed-off-by: Ke Liu <liuke94@huawei.com>
 ---
- security/keys/trusted-keys/trusted_tpm2.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/misc/bcm-vk/bcm_vk_dev.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/security/keys/trusted-keys/trusted_tpm2.c b/security/keys/trusted-keys/trusted_tpm2.c
-index 0165da386289..dc9efd6c8b14 100644
---- a/security/keys/trusted-keys/trusted_tpm2.c
-+++ b/security/keys/trusted-keys/trusted_tpm2.c
-@@ -57,8 +57,10 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
- 		unsigned char bool[3], *w = bool;
- 		/* tag 0 is emptyAuth */
- 		w = asn1_encode_boolean(w, w + sizeof(bool), true);
--		if (WARN(IS_ERR(w), "BUG: Boolean failed to encode"))
-+		if (WARN(IS_ERR(w), "BUG: Boolean failed to encode")) {
-+			kfree(scratch);
- 			return PTR_ERR(w);
-+		}
- 		work = asn1_encode_tag(work, end_work, 0, bool, w - bool);
+diff --git a/drivers/misc/bcm-vk/bcm_vk_dev.c b/drivers/misc/bcm-vk/bcm_vk_dev.c
+index a16b99bdaa13..a3a82ebbc699 100644
+--- a/drivers/misc/bcm-vk/bcm_vk_dev.c
++++ b/drivers/misc/bcm-vk/bcm_vk_dev.c
+@@ -1401,7 +1401,7 @@ static int bcm_vk_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		bcm_vk_tty_set_irq_enabled(vk, i);
  	}
  
-@@ -69,8 +71,10 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
- 	 * trigger, so if it does there's something nefarious going on
- 	 */
- 	if (WARN(work - scratch + pub_len + priv_len + 14 > SCRATCH_SIZE,
--		 "BUG: scratch buffer is too small"))
-+		 "BUG: scratch buffer is too small")) {
-+		kfree(scratch);
- 		return -EINVAL;
-+	}
+-	id = ida_simple_get(&bcm_vk_ida, 0, 0, GFP_KERNEL);
++	id = ida_alloc(&bcm_vk_ida, GFP_KERNEL);
+ 	if (id < 0) {
+ 		err = id;
+ 		dev_err(dev, "unable to get id\n");
+@@ -1500,7 +1500,7 @@ static int bcm_vk_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	misc_device->name = NULL;
  
- 	work = asn1_encode_integer(work, end_work, options->keyhandle);
- 	work = asn1_encode_octet_string(work, end_work, pub, pub_len);
-@@ -79,8 +83,10 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
- 	work1 = payload->blob;
- 	work1 = asn1_encode_sequence(work1, work1 + sizeof(payload->blob),
- 				     scratch, work - scratch);
--	if (WARN(IS_ERR(work1), "BUG: ASN.1 encoder failed"))
-+	if (WARN(IS_ERR(work1), "BUG: ASN.1 encoder failed")) {
-+		kfree(scratch);
- 		return PTR_ERR(work1);
-+	}
+ err_ida_remove:
+-	ida_simple_remove(&bcm_vk_ida, id);
++	ida_free(&bcm_vk_ida, id);
  
- 	return work1 - payload->blob;
- }
+ err_irq:
+ 	for (i = 0; i < vk->num_irqs; i++)
+@@ -1573,7 +1573,7 @@ static void bcm_vk_remove(struct pci_dev *pdev)
+ 	if (misc_device->name) {
+ 		misc_deregister(misc_device);
+ 		kfree(misc_device->name);
+-		ida_simple_remove(&bcm_vk_ida, vk->devid);
++		ida_free(&bcm_vk_ida, vk->devid);
+ 	}
+ 	for (i = 0; i < vk->num_irqs; i++)
+ 		devm_free_irq(&pdev->dev, pci_irq_vector(pdev, i), vk);
 -- 
 2.25.1
 
