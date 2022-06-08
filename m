@@ -2,93 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B35C2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 19:28:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C962CCCA47A
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 19:29:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235437AbiFHT2A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 15:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57100 "EHLO
+        id S235451AbiFHT3J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 15:29:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235427AbiFHT16 (ORCPT
+        with ESMTP id S235491AbiFHT3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 15:27:58 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9F51B7814
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 12:27:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=rhbHZ5VaGmUyTCleUDguhQAkaOJovJzetkNMfx1Ybes=; b=IYkHOWHEH2izaqISQwtGzkZIrO
-        OcfJr28cmAbWZ1TxYXHl/8vMSWQrQWiRqg/UTdvLWdPHfKlnTGxJS/YDgM2Ed/8o5PnrGSPw9Kewb
-        u7ovIfbFi0iEaB5yCuuODNlXVHA9jnD/VstRu2w4Zv8QXEiSAsSB3LUyzSFrvUKeKaekFw28SwNuB
-        J02PIHq6N2NzUOQzn8IPFF8USSTeHc+PJ48tBZ0fZy6IsKACSSkIVzSaDUzyPwZ0gwGo5MBi0FZ6+
-        lu/lDq8NFrAwm57vGWnvKfvNjzHfsjbcdUrJ2qV1fnWwpzZ5V2j13KSko35Qas4AsRoh/MzW5fYUM
-        dS2gu1JQ==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nz1LF-00CuP8-QK; Wed, 08 Jun 2022 19:27:46 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9B9E4300222;
-        Wed,  8 Jun 2022 21:27:42 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 60E7D201E482B; Wed,  8 Jun 2022 21:27:42 +0200 (CEST)
-Date:   Wed, 8 Jun 2022 21:27:42 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     =?utf-8?B?6b6N5biG6LuS?= <1030steven@gmail.com>
-Cc:     Randy Dunlap <rdunlap@infradead.org>, mingo@redhat.com,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org,
-        Benjamin Segall <bsegall@google.com>, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] sched/pelt: Fix bracket typo
-Message-ID: <YqD4LiEcxpHTrTVp@hirez.programming.kicks-ass.net>
-References: <20220608150008.57629-1-1030steven@gmail.com>
- <3193fcc9-c672-19d9-a2e2-ad67809dd20b@infradead.org>
- <CAEZ6PjwamdjavX_AvsFmRasE7W1cnc10dpPqSzxhvzEKm4i5Aw@mail.gmail.com>
+        Wed, 8 Jun 2022 15:29:07 -0400
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8751B1E716B
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 12:29:05 -0700 (PDT)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-f2cd424b9cso28468491fac.7
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 12:29:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to;
+        bh=5vvwrgdknn1K9gJFkCVHoS1UOMpaiXh3dfNKyE3vHCA=;
+        b=Hd5jcwosS+DHrHrSRvsp1DiAbCxUrFWV4Ys2JHKBdh4xlpDyW7BhzoIfKfDx5gjQXM
+         1mW+SikjxugwKvDlj4Tgp4hFCUdMfAORPCneDm8IwpDuvRUsynDdRTIVK3kwSK3+KRHw
+         5rMCTq+XO6A0kbgcSWlQN+lUXklGV8Tcp6KxI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to;
+        bh=5vvwrgdknn1K9gJFkCVHoS1UOMpaiXh3dfNKyE3vHCA=;
+        b=bRhTNfN/lT8hqPgTiFB4Afc5VpiI5yxFrnSoSqAD5SfxGSUYs8pr3D9BlS7k/xNTHZ
+         byGleuFzVa8E1ZUkeDpAxx1dtdajy45g9iQEstnDNlmD2YOQLemlFGnXNRIoonMmmB4D
+         UADZ7wAZRoAZBGUIwHKrFrnKo+npl8leqUZrMXPrZC7gPhvcPKXZaQlK/afaTC3iuuRe
+         9nVoMVX9Bvv8gkvlD2ZSW5rkhVJgFHGkdQFrca76SZd6I3U8G8kI7gI+kUEwB7SXxBpD
+         61Is2IDnNMwd2etzR4tNWGnsFXPmo1peB+Y++dJ7bpH7ADT48D/Mm8goAQzxag5lHBT8
+         2Exw==
+X-Gm-Message-State: AOAM533WybfsSQg3puvkvNXkQz6uk1LdPntjOC2kWYpAGBD8EpM7HOGF
+        DA03qb3K7i0pYNdOisGtLrXiwn2XkgEq1wqRWHJSpQ==
+X-Google-Smtp-Source: ABdhPJwfbQOhuoavwnKuPwNYfxx7ThIu71YX1w2/3eSgITORUdWupWunN82u7ED3ykn9MRwPBeCHP/wkwS4CsJQhctI=
+X-Received: by 2002:a05:6870:240d:b0:f1:b878:e97c with SMTP id
+ n13-20020a056870240d00b000f1b878e97cmr3169953oap.193.1654716544865; Wed, 08
+ Jun 2022 12:29:04 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 8 Jun 2022 12:29:04 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAEZ6PjwamdjavX_AvsFmRasE7W1cnc10dpPqSzxhvzEKm4i5Aw@mail.gmail.com>
+In-Reply-To: <1654696929-20205-3-git-send-email-quic_srivasam@quicinc.com>
+References: <1654696929-20205-1-git-send-email-quic_srivasam@quicinc.com> <1654696929-20205-3-git-send-email-quic_srivasam@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 8 Jun 2022 12:29:04 -0700
+Message-ID: <CAE-0n53EY1eKqnVLhU__e7t63BbVoKz++6aijOpEw0k5Cxa8-w@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] ASoC: qcom: soundwire: Add software clock gating
+ requirement check
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, alsa-devel@alsa-project.org,
+        bgoswami@quicinc.com, bjorn.andersson@linaro.org,
+        broonie@kernel.org, devicetree@vger.kernel.org,
+        judyhsiao@chromium.org, lgirdwood@gmail.com,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        perex@perex.cz, quic_plai@quicinc.com, quic_rohkumar@quicinc.com,
+        robh+dt@kernel.org, srinivas.kandagatla@linaro.org, tiwai@suse.com,
+        vkoul@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 01:24:45AM +0800, 龍帆軒 wrote:
-> On Wed, Jun 8, 2022 at 11:33 PM Randy Dunlap <rdunlap@infradead.org> wrote:
-> >
-> >
-> >
-> > On 6/8/22 08:00, Steven Lung wrote:
-> > > The second bracket describing the range is inverted, this patch
-> > > will fix it.
-> > >
-> > > Signed-off-by: Steven Lung <1030steven@gmail.com>
-> > > ---
-> > >  kernel/sched/pelt.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/kernel/sched/pelt.c b/kernel/sched/pelt.c
-> > > index 0f3107682..ed82cfba9 100644
-> > > --- a/kernel/sched/pelt.c
-> > > +++ b/kernel/sched/pelt.c
-> > > @@ -233,7 +233,7 @@ ___update_load_sum(u64 now, struct sched_avg *sa,
-> > >   * When syncing *_avg with *_sum, we must take into account the current
-> > >   * position in the PELT segment otherwise the remaining part of the segment
-> > >   * will be considered as idle time whereas it's not yet elapsed and this will
-> > > - * generate unwanted oscillation in the range [1002..1024[.
-> >
-> > Is the above the same as                   range [1002..1024).
-> > ?  I.e. 1002-1023 inclusive (or 1024 excluded)?
+Quoting Srinivasa Rao Mandadapu (2022-06-08 07:02:09)
+> Validate software clock gating required or not and do software
+> clock gating on hclk if soundwire is operational and keep it
+> running by adding flag in private dat structure.
+> This is to avoid conflict between older architectures,
+> where software clock gating is not required and on latest
+> architectues, where software clock gating is mandatory.
 
-> In the patch that the author submitted[1] for this comment, he
-> mentioned that the value 1024 can be obtained.
-> So I think we should use brackets instead of parenthesis.
+This talks about software clock gating but the code is getting a reset
+and asserting it. Is that because the power on reset value of the clock
+gating is to have hardware clock gating disabled, but some earlier code
+is enabling hardware clock gating?
 
-Yeah, IIRC the value is fundamentally [0,1] (*scale) there. Therefore
-the patch as proposed makes sense to me.
+>
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> ---
+>  drivers/soundwire/qcom.c | 27 ++++++++++++++++++++-------
+>  1 file changed, 20 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+> index 38c3bf5..ebd7479 100644
+> --- a/drivers/soundwire/qcom.c
+> +++ b/drivers/soundwire/qcom.c
+> @@ -659,7 +665,8 @@ static int qcom_swrm_init(struct qcom_swrm_ctrl *ctrl)
+>         val = FIELD_PREP(SWRM_MCP_FRAME_CTRL_BANK_ROW_CTRL_BMSK, ctrl->rows_index);
+>         val |= FIELD_PREP(SWRM_MCP_FRAME_CTRL_BANK_COL_CTRL_BMSK, ctrl->cols_index);
+>
+> -       reset_control_reset(ctrl->audio_cgcr);
+> +       if (ctrl->audio_cgcr)
+> +               reset_control_reset(ctrl->audio_cgcr);
+>
+>         ctrl->reg_write(ctrl, SWRM_MCP_FRAME_CTRL_BANK_ADDR(0), val);
+>
+> @@ -1494,7 +1506,8 @@ static int __maybe_unused swrm_runtime_resume(struct device *dev)
+>                 qcom_swrm_get_device_status(ctrl);
+>                 sdw_handle_slave_status(&ctrl->bus, ctrl->status);
+>         } else {
+> -               reset_control_reset(ctrl->audio_cgcr);
+> +               if (ctrl->audio_cgcr)
+> +                       reset_control_reset(ctrl->audio_cgcr);
+
+reset_control_reset() is a no-op if the pointer is NULL so the if
+condition is not necessary in the above two statements.
