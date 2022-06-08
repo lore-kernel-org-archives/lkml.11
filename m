@@ -2,166 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62993CCA49A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84EF5C43334
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235570AbiFHGDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 02:03:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58466 "EHLO
+        id S236628AbiFHGED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 02:04:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345327AbiFHF4r (ORCPT
+        with ESMTP id S234700AbiFHFtH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:56:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E631CB730;
-        Tue,  7 Jun 2022 21:06:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79246618F2;
-        Wed,  8 Jun 2022 04:06:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA0C9C3411D;
-        Wed,  8 Jun 2022 04:06:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654661187;
-        bh=k2YvI5mx6ozTvjV13zYboBk4CqBDfNXpGFZG8ZqvpbI=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=uYI4EvztyHZFbqXpZuPM2C0hhE9dvRgbuhU6uz6AeXo2xt3cSTCXbwKjKI2/rfXmM
-         bpn00cYcCQt40Jza9DZ403b2oWItNc2LQfFxnXn5QmT0g2TpAlvgAoAi1NEOqggrPb
-         18ZZhmHlDv/eBZFjF3rVkSEORP6NPsJ28u51lJ9hksUUoDdvpgIW+z5gCrKI+m5pzQ
-         hhvl7WOEeeTzv3Q8z6AJkR8C8Qe0xhoWXnaSuhSvsLus0L7eJnXL5xTKS6/P1RLqF2
-         SaRo5JCZIkXt+ads4eup6kwBXFp5WtR2J8wxiEB5MlkYc+JkYZl3ubY0E7uo2AtZdf
-         RLk09soiGuZNA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 5C2BC5C04B1; Tue,  7 Jun 2022 21:06:27 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 21:06:27 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
-Cc:     "frederic@kernel.org" <frederic@kernel.org>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] rcu/nocb: Avoid polling when myrdp->nocb_head_rdp
- list is empty
-Message-ID: <20220608040627.GL1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220607075057.909070-1-qiang1.zhang@intel.com>
- <20220607161620.GH1790663@paulmck-ThinkPad-P17-Gen-1>
- <PH0PR11MB5880551F642B1490CEFA65A8DAA49@PH0PR11MB5880.namprd11.prod.outlook.com>
- <20220608005513.GK1790663@paulmck-ThinkPad-P17-Gen-1>
- <PH0PR11MB588014C2451C2E65E583924DDAA49@PH0PR11MB5880.namprd11.prod.outlook.com>
+        Wed, 8 Jun 2022 01:49:07 -0400
+Received: from EX-PRD-EDGE02.vmware.com (ex-prd-edge02.vmware.com [208.91.3.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD80F40C127;
+        Tue,  7 Jun 2022 20:24:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+    s=s1024; d=vmware.com;
+    h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
+      content-type;
+    bh=j8wwcqtmDC2RnTjeTTDk0Jan/92OOGtSGZvFDg9KNRY=;
+    b=gVT2fifgYoab+wS0x60o5zpBjKCQIUOCsx7xMEZcX1H/ZkzBa8TZGFzicI+nzm
+      ujeRUI2qijGE58QkoHkae881o3JuZHI2DVW8ew/y4Z9csLq31e3L38kd8fg8wb
+      VH/TU9QHYDt7jJjRUDUTDV1OOqxu+CQ8LZoK6tFee1+Lwi8=
+Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
+ EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
+ 15.1.2308.14; Tue, 7 Jun 2022 20:24:01 -0700
+Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
+        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id 7DE2623447;
+        Tue,  7 Jun 2022 20:24:07 -0700 (PDT)
+Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
+        id 7851DAA454; Tue,  7 Jun 2022 20:24:07 -0700 (PDT)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 net-next 6/8] vmxnet3: limit number of TXDs used for TSO packet
+Date:   Tue, 7 Jun 2022 20:23:51 -0700
+Message-ID: <20220608032353.964-7-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20220608032353.964-1-doshir@vmware.com>
+References: <20220608032353.964-1-doshir@vmware.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR11MB588014C2451C2E65E583924DDAA49@PH0PR11MB5880.namprd11.prod.outlook.com>
+Content-Type: text/plain
+Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 01:01:31AM +0000, Zhang, Qiang1 wrote:
-> On Wed, Jun 08, 2022 at 12:41:28AM +0000, Zhang, Qiang1 wrote:
-> > On Tue, Jun 07, 2022 at 03:50:57PM +0800, Zqiang wrote:
-> > > Currently, If the 'rcu_nocb_poll' bootargs is enable, all rcuog 
-> > > kthreads enter polling mode. however, due to only insert CPU's rdp 
-> > > which belong to rcu_nocb_mask to 'nocb_head_rdp' list or all CPU's 
-> > > rdp served by rcuog kthread have been de-offloaded, these cause the 
-> > > 'nocb_head_rdp' list served by rcuog kthread is empty, when the 
-> > > 'nocb_head_rdp' is empty, the rcuog kthread in polling mode not 
-> > > actually do anything. fix it by exiting polling mode when the 
-> > > 'nocb_head_rdp'list is empty, otherwise entering polling mode.
-> > > 
-> > > Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-> > >
-> > >This looks a bit more plausible, but what have you done to test this?
-> > 
-> > Yes , I have only tested as follows and I added two trace events.
-> > 
-> > +                      trace_rcu_nocb_wake(rcu_state.name, cpu, 
-> > + TPS("EnterNoPoll"));
-> >                         
-> > rcu_wait(READ_ONCE(my_rdp->nocb_toggling_rdp));
-> > +                       trace_rcu_nocb_wake(rcu_state.name, cpu, 
-> > + TPS("ExitNoPoll"));
-> > 
-> > runqemu kvm slirp nographic qemuparams="-m 2048 -smp 4" 
-> > bootparams="rcu_nocbs=2,3 rcutree.dump_tree=1 rcu_nocb_poll 
-> > rcutorture.nocbs_nthreads=4 rcutorture.test_boost=0" -d
-> 
-> >To exercise your change, could you please also add an appropriate value for the rcutorture.nocbs_nthreads kernel boot parameter?  Without that boot parameter, your kernel will not actually offload or deoffload any CPUs.
-> 
-> I have set ' rcutorture.nocbs_nthreads=4 ' in bootargs.
+Currently, vmxnet3 does not have a limit on number of descriptors
+used for a TSO packet. However, with UPT, for hardware performance
+reasons, this patch limits the number of transmit descriptors to 24
+for a TSO packet.
 
-I see it now, apologies for my confusion!
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+---
+ drivers/net/vmxnet3/vmxnet3_defs.h |  2 ++
+ drivers/net/vmxnet3/vmxnet3_drv.c  | 17 +++++++++++++++++
+ 2 files changed, 19 insertions(+)
 
-							Thanx, Paul
+diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
+index 415e4c9993ef..cb9dc72f2b3d 100644
+--- a/drivers/net/vmxnet3/vmxnet3_defs.h
++++ b/drivers/net/vmxnet3/vmxnet3_defs.h
+@@ -400,6 +400,8 @@ union Vmxnet3_GenericDesc {
+ 
+ /* max # of tx descs for a non-tso pkt */
+ #define VMXNET3_MAX_TXD_PER_PKT 16
++/* max # of tx descs for a tso pkt */
++#define VMXNET3_MAX_TSO_TXD_PER_PKT 24
+ 
+ /* Max size of a single rx buffer */
+ #define VMXNET3_MAX_RX_BUF_SIZE  ((1 << 14) - 1)
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index c2f99c01a130..2ee3a2e39f10 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1061,6 +1061,23 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 			}
+ 			tq->stats.copy_skb_header++;
+ 		}
++		if (unlikely(count > VMXNET3_MAX_TSO_TXD_PER_PKT)) {
++			/* tso pkts must not use more than
++			 * VMXNET3_MAX_TSO_TXD_PER_PKT entries
++			 */
++			if (skb_linearize(skb) != 0) {
++				tq->stats.drop_too_many_frags++;
++				goto drop_pkt;
++			}
++			tq->stats.linearized++;
++
++			/* recalculate the # of descriptors to use */
++			count = VMXNET3_TXD_NEEDED(skb_headlen(skb)) + 1;
++			if (unlikely(count > VMXNET3_MAX_TSO_TXD_PER_PKT)) {
++				tq->stats.drop_too_many_frags++;
++				goto drop_pkt;
++			}
++		}
+ 		if (skb->encapsulation) {
+ 			vmxnet3_prepare_inner_tso(skb, &ctx);
+ 		} else {
+-- 
+2.11.0
 
-> >An alternative approach is to run rcutorture scenario TREE01.
-> 
-> I will also use TREE01 for testing
-> 
-> Thanks
-> Zqiang
-> 
-> >
-> >							Thanx, Paul
-> 
-> > Thanks
-> > Zqiang
-> > 
-> > >
-> > >							Thanx, Paul
-> > >
-> > > ---
-> > >  v1->v2:
-> > >  Move rcu_nocb_poll flags check from rdp_offload_toggle() to 
-> > > rcu_nocb_rdp_offload/deoffload(), avoid unnecessary setting of 
-> > > rdp_gp->nocb_gp_sleep flags, because when rcu_nocb_poll is set  the 
-> > > rdp_gp->nocb_gp_sleep is not used.
-> > > 
-> > >  kernel/rcu/tree_nocb.h | 16 ++++++++++------
-> > >  1 file changed, 10 insertions(+), 6 deletions(-)
-> > > 
-> > > diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h index
-> > > fa8e4f82e60c..2a52c9abc681 100644
-> > > --- a/kernel/rcu/tree_nocb.h
-> > > +++ b/kernel/rcu/tree_nocb.h
-> > > @@ -698,10 +698,14 @@ static void nocb_gp_wait(struct rcu_data *my_rdp)
-> > >  				   TPS("WakeBypassIsDeferred"));
-> > >  	}
-> > >  	if (rcu_nocb_poll) {
-> > > -		/* Polling, so trace if first poll in the series. */
-> > > -		if (gotcbs)
-> > > -			trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("Poll"));
-> > > -		schedule_timeout_idle(1);
-> > > +		if (list_empty(&my_rdp->nocb_head_rdp)) {
-> > > +			rcu_wait(READ_ONCE(my_rdp->nocb_toggling_rdp));
-> > > +		} else {
-> > > +			/* Polling, so trace if first poll in the series. */
-> > > +			if (gotcbs)
-> > > +				trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("Poll"));
-> > > +			schedule_timeout_idle(1);
-> > > +		}
-> > >  	} else if (!needwait_gp) {
-> > >  		/* Wait for callbacks to appear. */
-> > >  		trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("Sleep")); @@ 
-> > > -1030,7
-> > > +1034,7 @@ static long rcu_nocb_rdp_deoffload(void *arg)
-> > >  
-> > >  	mutex_lock(&rdp_gp->nocb_gp_kthread_mutex);
-> > >  	if (rdp_gp->nocb_gp_kthread) {
-> > > -		if (wake_gp)
-> > > +		if (wake_gp || rcu_nocb_poll)
-> > >  			wake_up_process(rdp_gp->nocb_gp_kthread);
-> > >  
-> > >  		/*
-> > > @@ -1152,7 +1156,7 @@ static long rcu_nocb_rdp_offload(void *arg)
-> > >  	 *      rcu_nocb_unlock()         rcu_nocb_unlock()
-> > >  	 */
-> > >  	wake_gp = rdp_offload_toggle(rdp, true, flags);
-> > > -	if (wake_gp)
-> > > +	if (wake_gp || rcu_nocb_poll)
-> > >  		wake_up_process(rdp_gp->nocb_gp_kthread);
-> > >  	swait_event_exclusive(rdp->nocb_state_wq,
-> > >  			      rcu_segcblist_test_flags(cblist, SEGCBLIST_KTHREAD_CB) &&
-> > > --
-> > > 2.25.1
-> > > 
