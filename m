@@ -2,69 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B25BDCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3991C43334
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:03:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236342AbiFHHAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:00:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35098 "EHLO
+        id S236140AbiFHHAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354639AbiFHGTm (ORCPT
+        with ESMTP id S1352188AbiFHGPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 02:19:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A2F19297;
-        Tue,  7 Jun 2022 23:15:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 8 Jun 2022 02:15:43 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470242DB331
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 22:48:03 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A58BBB81FC9;
-        Wed,  8 Jun 2022 06:15:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4F60C34116;
-        Wed,  8 Jun 2022 06:15:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654668955;
-        bh=ryIOVG2/H44ZWlE3JtU1m7wD6c6zOxENtCDNvDozD+I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=S3tDaUKg6m5er2DxG2+5A+y5EZr/hY/Hn2B/KshYvMNIe4/tAI5wPxNU1vgiGKDPb
-         keG0PnPkF54J3SjwpBN+axJzS9GVZkL7qccSj7Tc68U6xAuAKdGQD2WUCaWGblEJ8W
-         ZSfUzLn4ymUhI4Tj9pX0VmdPooaXGYculIsbUV40=
-Date:   Wed, 8 Jun 2022 08:15:52 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Joe Perches <joe@perches.com>
-Cc:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Soumya Negi <soumya.negi97@gmail.com>,
-        fabioaiuto83@gmail.com, hdegoede@redhat.com,
-        straube.linux@gmail.com, linux@roeck-us.net,
-        linux-staging@lists.linux.dev
-Subject: Re: [PATCH AUTOSEL 5.15 24/51] staging: rtl8723bs: Fix alignment to
- match open parenthesis
-Message-ID: <YqA+mOYUNcYj59Cy@kroah.com>
-References: <20220607175552.479948-1-sashal@kernel.org>
- <20220607175552.479948-24-sashal@kernel.org>
- <ff5d5283af74576f65545399851a40cb4f16a85c.camel@perches.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ff5d5283af74576f65545399851a40cb4f16a85c.camel@perches.com>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 1B7C31F8E2;
+        Wed,  8 Jun 2022 05:39:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1654666743; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3mZ/PXfjVKtorPmVsSMY5YoBOKNZzD+HSU3DLcMJGYY=;
+        b=X5Bb6ThAXhKHsAUr59jwzgmqfC5U2RHTqUtgVOilgFGzAYWGRKHSuda7zVXCLaLILExOmq
+        /EKYkR4p98z2+8F8eL124XgYY1asa158JycyWJdY2BDUiYERZWeF32h5gKad/ky7bBu/2R
+        IUQnNAkpIkgROXf6y2xAMAM+HTjkdCE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1654666743;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3mZ/PXfjVKtorPmVsSMY5YoBOKNZzD+HSU3DLcMJGYY=;
+        b=VyiFuKAGH1WQ0h4f49zhQq3wnRT/jofAXWxKJ9OHU8T6F5AzGnTMXoltjYm9Rsfz7nNwI1
+        VGmKjTDtU4EVvpBQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D48C713638;
+        Wed,  8 Jun 2022 05:39:02 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id TtSxMvY1oGJzcAAAMHmgww
+        (envelope-from <tiwai@suse.de>); Wed, 08 Jun 2022 05:39:02 +0000
+Date:   Wed, 08 Jun 2022 07:39:02 +0200
+Message-ID: <877d5rd895.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     huangwenhui <huangwenhuia@uniontech.com>
+Cc:     tiwai@suse.com, perex@perex.cz, alsa-devel@alsa-project.org,
+        kailang@realtek.com, tanureal@opensource.cirrus.com,
+        jeremy.szu@canonical.com, linux-kernel@vger.kernel.org,
+        wse@tuxedocomputers.com, hui.wang@canonical.com, sami@loone.fi,
+        cam@neo-zeon.de
+Subject: Re: [PATCH] ALSA: hda/realtek - Add HW8326 support
+In-Reply-To: <20220608011227.15994-1-huangwenhuia@uniontech.com>
+References: <20220608011227.15994-1-huangwenhuia@uniontech.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 05:04:08PM -0700, Joe Perches wrote:
-> On Tue, 2022-06-07 at 13:55 -0400, Sasha Levin wrote:
-> > From: Soumya Negi <soumya.negi97@gmail.com>
-> > 
-> > [ Upstream commit f722d67fad290b0c960f27062adc8cf59488d0a7 ]
-> > 
-> > Adhere to Linux coding style. Fixes checkpatch warnings:
-> > CHECK: Alignment should match open parenthesis
-> > CHECK: line length of 101 exceeds 100 columns
+On Wed, 08 Jun 2022 03:12:27 +0200,
+huangwenhui wrote:
 > 
-> why should this be backported?  It's only whitespace changes.
+> Added the support of new Huawei codec HW8326.
+> 
+> Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
 
-Good catch, it should not.
+Please give more description, as mentioned in the previous post, but
+*in the patch itself*.  If it's compatible with the existing ALC256,
+describe it there.
+
+Also, when you post a newer version of the patch, add v2 prefix to the
+subject, e.g.
+  [PATCH v2] ALSA: hda/realtek - Add HW8326 support
+(Of course at the next respin, it'll be v3 :)
+
 
 thanks,
 
-greg k-h
+Takashi
