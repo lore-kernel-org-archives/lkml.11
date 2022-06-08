@@ -2,220 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1979FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D4EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237462AbiFHKbM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:31:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44872 "EHLO
+        id S237482AbiFHKbT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:31:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238132AbiFHK3x (ORCPT
+        with ESMTP id S237817AbiFHK30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:29:53 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C1E8A074
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 03:21:58 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id u12so40527520eja.8
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 03:21:57 -0700 (PDT)
+        Wed, 8 Jun 2022 06:29:26 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED56B14FC95
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 03:18:54 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id n28so26409303edb.9
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 03:18:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=+bPvkCIqs6A3Lw8cRRemx4/EkW0G1asPn8kHboHtVJY=;
-        b=wDIlVKTWdiWhZ8wBWJY6cKiaQFw8rDj207bvbTp/h11ey3tP6nET1Ax/CdHjZfLIEV
-         bWnJx67yUwmZnAjjjd5Pnmh8VhMfnKk9ZGg+xoCyY9GLA3nn7mGO8lVMAqq0oiDn/3Gb
-         RdEmlcoDLk/NATza/gALLbwlAadFQrZRy9MfXKJk8j2q4AuOEEZ+zY7bealsPyXM8b4Y
-         ih+WRBDp4jQzRDyApQ0uO+L54w+TGVWPyUYM9CH3Ot8Y/Q0bHkVx4jxyiDXFnpuvcBiT
-         7waY/rXX63WmY9xsunaYaDRWKXRiJMMbWedZPkAKAn6m/lwDnhiKftwSsfbgmiXgBvuN
-         pGIA==
+        d=fairphone.com; s=fair;
+        h=mime-version:content-transfer-encoding:date:message-id:cc:subject
+         :from:to:references:in-reply-to;
+        bh=1iFwdNwk1v1dXl+OlTTXTF6c13xKzPVa4F0ip2ie7ak=;
+        b=R6Uj/kR8aNyvL0If9eAlU2L/SUtOV5vbaXXSJFGtExUlkvqNZfxVvmdTgFsQ2NrLSZ
+         21SvpF0O2oQsiB3ERybUBhuX+g5mUi59un0dmQmQcIXLHAjENToLjRBcMdT5c8KnwF/l
+         OAcw77biYKlFRWFNGJNZ7g49tOP/menfHXBrYYEOkT9bUxg2ULaWA71hlUqLo6DR5N/C
+         gVw6MbDS3N9hd+cmM0kkcGo0j41mjf+SgBTzXJEV9kD9Ym8pCwBJE6j7dN88aep9b1hG
+         VG1OUsbuJw+ajdmB9uv7irEt3xbvfXdi4+8xdunJe2Wyz1HJe65nXgiRky1iBon5EOFc
+         aJtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+bPvkCIqs6A3Lw8cRRemx4/EkW0G1asPn8kHboHtVJY=;
-        b=Jp3czPCD+QHtsCAr4ZE0x9CiFPKsnHAOieLPPgdvDeMlUPMBj1r/cX0JeghgRXWxhY
-         P+3oeqdf6HpWmsux9mDoQQte7lIKW97AkAFYtMBJ2UbDsXL9W07c/RYgrUyD7Ur+t+RM
-         Lqn2z2sMQWUeNpZZuX4GuIIqwH6hby5PJwG7iledg94P3qoEiZNclPVU5ebvETzfk45I
-         emRHg+O4PjLugUb2xiAZo5hzq8qPJavREojKL1ONaM5VELnyUyM9jjiS0uQx/VxZYXHc
-         NdjgmQ1cwPWVyhNA551wctvDYHSLJ8JidMrN3m+oxAgSn8v+5QgQ7Z3/QOdloePDC7Sj
-         KO/Q==
-X-Gm-Message-State: AOAM532mJY36Fw8LN+pcZR0iZJ/InLa/3EnvIqv+FH4uGkjn+YN3Q6jw
-        zv2yMO52Y7oVQXF3pE7rgKFgjw==
-X-Google-Smtp-Source: ABdhPJw4saSPhMUohzNzjdscZN0KDbM9WKgE0UI3Y2mk91NtDGFQsXLJsTcltgv6Da2VMwekYNeMFA==
-X-Received: by 2002:a17:906:8416:b0:705:6a1b:e8ef with SMTP id n22-20020a170906841600b007056a1be8efmr30244309ejx.614.1654683716491;
-        Wed, 08 Jun 2022 03:21:56 -0700 (PDT)
-Received: from [192.168.0.191] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id g3-20020aa7dd83000000b0042bc5a536edsm11883683edv.28.2022.06.08.03.21.54
+        h=x-gm-message-state:mime-version:content-transfer-encoding:date
+         :message-id:cc:subject:from:to:references:in-reply-to;
+        bh=1iFwdNwk1v1dXl+OlTTXTF6c13xKzPVa4F0ip2ie7ak=;
+        b=kVTzPz/yMolSteDBiYU3RiwnGNf9Anc2kUmFrhw3Lt5DjdcSLFL6hKrl0dW1CS77p3
+         OlRope5Ks+mw6TNekVhwvhgC2UFq7OCrlQ0/nZWAEL0Wgiid8gUsS8dw5Gfw7pRwUEeH
+         cEJgfIBsievt5JH/pgzv/SLJXK4Hmt6wXSqJiqxp9vAfs7350Lw4ye6NdyMmDxf3LEnA
+         hejUepoA3gEk5FVcDoVr2kIfkWD0WqA1OQoc/1ugLkr2Ex++SKu4S0ec6ZHUxLNn8mpu
+         v+yYaa/zMTCbN/NuU5RLql3IH+wXGMMLykyeIZyNvZGJFUOGjt+79WrJRIm1YoDRy0UI
+         XOgw==
+X-Gm-Message-State: AOAM532fB3MK1aja0mVdwp66gpEMpmANTJ1l3FzDieOW3mDyUMZAOxUz
+        5CzgcJVZv4xz9h0oGK8yrdSkhQ==
+X-Google-Smtp-Source: ABdhPJwhTP+Sm/YUUUagKijKOaUv4aAkFfndIn3NiT0GJBAk3tk/3OR0q9VUBiGxUlwsgKfu44pDNw==
+X-Received: by 2002:a05:6402:11c7:b0:42e:c47a:ffdf with SMTP id j7-20020a05640211c700b0042ec47affdfmr29844951edw.113.1654683533557;
+        Wed, 08 Jun 2022 03:18:53 -0700 (PDT)
+Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
+        by smtp.gmail.com with ESMTPSA id h9-20020a1709063b4900b007043b29dfd9sm8894340ejf.89.2022.06.08.03.18.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 03:21:55 -0700 (PDT)
-Message-ID: <24ad8ba0-4244-1159-328d-12d0e67951e1@linaro.org>
-Date:   Wed, 8 Jun 2022 12:21:54 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 18/20] arm64: dts: nuvoton: Add initial NPCM8XX device
- tree
-Content-Language: en-US
-To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
-        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
-        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
-        sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
-        bjorn.andersson@linaro.org, geert+renesas@glider.be,
-        marcel.ziswiler@toradex.com, vkoul@kernel.org,
-        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220608095623.22327-1-tmaimon77@gmail.com>
- <20220608095623.22327-19-tmaimon77@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220608095623.22327-19-tmaimon77@gmail.com>
+        Wed, 08 Jun 2022 03:18:53 -0700 (PDT)
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Date:   Wed, 08 Jun 2022 12:18:52 +0200
+Message-Id: <CKKOCWP2NYO5.GH08U776B1KU@otso>
+Cc:     <~postmarketos/upstreaming@lists.sr.ht>,
+        <phone-devel@vger.kernel.org>,
+        "Konrad Dybcio" <konrad.dybcio@somainline.org>,
+        "Marijn Suijten" <marijn.suijten@somainline.org>,
+        "AngeloGioacchino Del Regno" 
+        <angelogioacchino.delregno@somainline.org>,
+        "Song Qiang" <songqiang1304521@gmail.com>,
+        "Lars-Peter Clausen" <lars@metafoo.de>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        "Andy Gross" <agross@kernel.org>,
+        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
+        "Liam Girdwood" <lgirdwood@gmail.com>,
+        "Mark Brown" <broonie@kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>
+Subject: Re: [PATCH 3/5] proximity: vl53l0x: Handle the VDD regulator
+From:   "Luca Weiss" <luca.weiss@fairphone.com>
+To:     "Markuss Broks" <markuss.broks@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <jic23@kernel.org>
+X-Mailer: aerc 0.9.0
+References: <20220523175344.5845-1-markuss.broks@gmail.com>
+ <20220523175344.5845-4-markuss.broks@gmail.com>
+In-Reply-To: <20220523175344.5845-4-markuss.broks@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/06/2022 11:56, Tomer Maimon wrote:
-> This adds initial device tree support for the
-> Nuvoton NPCM845 Board Management controller (BMC) SoC family.
-> 
-> The NPCM845 based quad-core Cortex-A35 ARMv8 architecture and
-> have various peripheral IPs.
-> 
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Hi Markuss,
+
+On Mon May 23, 2022 at 7:53 PM CEST, Markuss Broks wrote:
+> Handle the regulator supplying the VDD pin of VL53L0X.
+>
+> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
 > ---
->  arch/arm64/boot/dts/Makefile                  |   1 +
->  .../dts/nuvoton/nuvoton-common-npcm8xx.dtsi   | 197 ++++++++++++++++++
->  .../boot/dts/nuvoton/nuvoton-npcm845.dtsi     |  76 +++++++
->  3 files changed, 274 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi
->  create mode 100644 arch/arm64/boot/dts/nuvoton/nuvoton-npcm845.dtsi
-> 
-> diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
-> index 1ba04e31a438..7b107fa7414b 100644
-> --- a/arch/arm64/boot/dts/Makefile
-> +++ b/arch/arm64/boot/dts/Makefile
-> @@ -19,6 +19,7 @@ subdir-y += lg
->  subdir-y += marvell
->  subdir-y += mediatek
->  subdir-y += microchip
-> +subdir-y += nuvoton
->  subdir-y += nvidia
->  subdir-y += qcom
->  subdir-y += realtek
-> diff --git a/arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi b/arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi
-> new file mode 100644
-> index 000000000000..97e108c50760
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi
-> @@ -0,0 +1,197 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Copyright (c) 2021 Nuvoton Technology tomer.maimon@nuvoton.com
+>  drivers/iio/proximity/vl53l0x-i2c.c | 37 +++++++++++++++++++++++++++++
+>  1 file changed, 37 insertions(+)
+>
+> diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/=
+vl53l0x-i2c.c
+> index 12a3e2eff464..8581a873919f 100644
+> --- a/drivers/iio/proximity/vl53l0x-i2c.c
+> +++ b/drivers/iio/proximity/vl53l0x-i2c.c
+> @@ -43,6 +43,7 @@
+>  struct vl53l0x_data {
+>  	struct i2c_client *client;
+>  	struct completion completion;
+> +	struct regulator *vdd_supply;
+>  };
+> =20
+>  static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
+> @@ -192,10 +193,31 @@ static const struct iio_info vl53l0x_info =3D {
+>  	.read_raw =3D vl53l0x_read_raw,
+>  };
+> =20
+> +static void vl53l0x_power_off(void *_data)
+> +{
+> +	struct vl53l0x_data *data =3D _data;
 > +
-> +#include <dt-bindings/clock/nuvoton,npcm8xx-clock.h>
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +#include <dt-bindings/interrupt-controller/irq.h>
+> +	regulator_disable(data->vdd_supply);
+> +}
 > +
-> +/ {
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
-> +	interrupt-parent = <&gic>;
+> +static int vl53l0x_power_on(struct vl53l0x_data *data)
+> +{
+> +	int ret;
 > +
-> +	/* external reference clock */
-> +	clk_refclk: clk-refclk {
-> +		compatible = "fixed-clock";
-> +		#clock-cells = <0>;
-> +		clock-frequency = <25000000>;
-
-Ignored comment.
-
-> +		clock-output-names = "refclk";
-> +	};
+> +	ret =3D regulator_enable(data->vdd_supply);
+> +	if (ret)
+> +		return ret;
 > +
-> +	/* external reference clock for cpu. float in normal operation */
-> +	clk_sysbypck: clk-sysbypck {
-> +		compatible = "fixed-clock";
-> +		#clock-cells = <0>;
-> +		clock-frequency = <1000000000>;
-
-Ignored comment.
-
-> +		clock-output-names = "sysbypck";
-> +	};
+> +	usleep_range(3200, 5000);
 > +
-> +	/* external reference clock for MC. float in normal operation */
-> +	clk_mcbypck: clk-mcbypck {
-> +		compatible = "fixed-clock";
-> +		#clock-cells = <0>;
-> +		clock-frequency = <1050000000>;
-> +		clock-output-names = "mcbypck";
-> +	};
+> +	return 0;
+> +}
 > +
-> +	soc {
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		compatible = "simple-bus";
-> +		interrupt-parent = <&gic>;
-> +		ranges;
+>  static int vl53l0x_probe(struct i2c_client *client)
+>  {
+>  	struct vl53l0x_data *data;
+>  	struct iio_dev *indio_dev;
+> +	int error;
+> =20
+>  	indio_dev =3D devm_iio_device_alloc(&client->dev, sizeof(*data));
+>  	if (!indio_dev)
+> @@ -210,6 +232,21 @@ static int vl53l0x_probe(struct i2c_client *client)
+>  				     I2C_FUNC_SMBUS_BYTE_DATA))
+>  		return -EOPNOTSUPP;
+> =20
+> +	data->vdd_supply =3D devm_regulator_get_optional(&client->dev, "vdd");
+> +	if (IS_ERR(data->vdd_supply))
+> +		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
+> +				     "Unable to get VDD regulator\n");
+
+It looks like this optional regulator is not actually optional.
+
+[    1.919995] vl53l0x-i2c 1-0029: error -ENODEV: Unable to get VDD regulat=
+or
+
+When using devm_regulator_get instead, a dummy regulator gets returned
+which I think is what we want here:
+
+[    1.905518] vl53l0x-i2c 1-0029: supply vdd not found, using dummy regula=
+tor
+
+Can you fix this up or should I send a patch?
+
+Regards
+Luca
+
+
 > +
-> +		gcr: gcr@f0800000 {
-
-Ignored comment.
-
-> +			compatible = "nuvoton,npcm845-gcr", "syscon",
-> +				"simple-mfd";
-
-This is not a simple-mfd... I see original bindings defined it that way,
-but why? I think they should be corrected - remove simple-mfd from the
-bindings and DTS.
-
-
-> +			reg = <0x0 0xf0800000 0x0 0x1000>;
-> +		};
+> +	error =3D vl53l0x_power_on(data);
+> +	if (error)
+> +		return dev_err_probe(&client->dev, error,
+> +				     "Failed to power on the chip\n");
 > +
-> +		gic: interrupt-controller@dfff9000 {
-> +			compatible = "arm,gic-400";
-> +			reg = <0x0 0xdfff9000 0x0 0x1000>,
-> +			      <0x0 0xdfffa000 0x0 0x2000>,
-> +			      <0x0 0xdfffc000 0x0 0x2000>,
-> +			      <0x0 0xdfffe000 0x0 0x2000>;
-> +			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
-> +			#interrupt-cells = <3>;
-> +			interrupt-controller;
-> +			#address-cells = <0>;
-> +			ppi-partitions {
-> +				ppi_cluster0: interrupt-partition-0 {
-> +					affinity = <&cpu0 &cpu1 &cpu2 &cpu3>;
-> +				};
-> +			};
-> +		};
-> +	};
+> +	error =3D devm_add_action_or_reset(&client->dev, vl53l0x_power_off, dat=
+a);
+> +	if (error)
+> +		return dev_err_probe(&client->dev, error,
+> +				     "Failed to install poweroff action\n");
 > +
-> +	ahb {
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		compatible = "simple-bus";
-> +		interrupt-parent = <&gic>;
-> +		ranges;
-> +
-> +		rstc: rstc@f0801000 {
+>  	indio_dev->name =3D "vl53l0x";
+>  	indio_dev->info =3D &vl53l0x_info;
+>  	indio_dev->channels =3D vl53l0x_channels;
+> --=20
+> 2.36.1
 
-Ignored comment.
-
-Four comments from v1 ignored in this patch alone.
-
-I'll stop reviewing, it is a waste of my time.
-
-NAK for this change.
-
-Best regards,
-Krzysztof
