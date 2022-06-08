@@ -2,46 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89FEBCCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:06:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6231CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233900AbiFHJGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38896 "EHLO
+        id S234170AbiFHJGq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233502AbiFHJDF (ORCPT
+        with ESMTP id S232431AbiFHJDM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:03:05 -0400
+        Wed, 8 Jun 2022 05:03:12 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 474C51CA5CF;
-        Wed,  8 Jun 2022 01:22:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E0E17568A;
+        Wed,  8 Jun 2022 01:22:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
         :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=M7NmYC/Iylm9myghHwqILim55SAUt9QrM+UZYk0eJlw=; b=Cpz2dmkD6/IlhBDYO7S5JMhRau
-        9fVEf3Lzxf9uPszpeqFJyME73K48PKk/ybD2zlmA3UtHerDQ9jfpO6mHpCLL+OIjpMVJ/fULN4RJZ
-        GZxzr5VKIoLcLv4aCAI/06v+ClCZx8SguXOP13kVVFKQAYlluzdEe8J9WZyfBeTeQfidsF33thNUe
-        je+ufCFEnbLltrsfVgnzqqY0FUi9w3I321TEMpQgHl9gXIKR8oCqaokbN5TXMMzLE/A6Ozk/TEmmH
-        gqSWVvVDPTrR7Bg2BGyJvHp33jFAKJ0Cyrf0YLKBCbkJvTOxV8gjqZ1F591JinRckDC0dMC76VMOs
-        GwWeQxsA==;
+        bh=M7NmYC/Iylm9myghHwqILim55SAUt9QrM+UZYk0eJlw=; b=uWRRPV9KcWC5GZyLeg72wrVPcV
+        d2Es+zQ5G2bz+iDCx9jxlIZ4447mlBlqNoPDYb3O93nEr+1LyvA+rxtAw2TMYr0dPQZ9HxPAHhfWB
+        DCTTSNhJblOGweHs+CQdq+Ssnan2v/3RMqwBIeotDQmSqzv1NU/30QoFNupM4CwnZY7F/IbDQUtwX
+        VGFk7zx+BpB5oLGK/dGg1UNjs0P0DeeapOFfN7qJGnXEUdMIf+4TR4piCWXslfOdQs0WP6sxLJP/r
+        NG9NQzPIL9u23QXetWJj5e92K6vEuufojvFmOPM8FN4wOPW+xruj+DJ6yhv75Cvm6VCAlXylKJe6t
+        2LahBrjA==;
 Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nyqco-00BnsU-Lx; Wed, 08 Jun 2022 08:01:10 +0000
-Date:   Wed, 8 Jun 2022 01:01:10 -0700
+        id 1nyqxF-00BvQJ-NI; Wed, 08 Jun 2022 08:22:17 +0000
+Date:   Wed, 8 Jun 2022 01:22:17 -0700
 From:   Christoph Hellwig <hch@infradead.org>
 To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        linux-mm@kvack.org, linux-nilfs@vger.kernel.org
-Subject: Re: [PATCH 02/10] buffer: Convert clean_bdev_aliases() to use
- filemap_get_folios()
-Message-ID: <YqBXRiyJtkL+V77R@infradead.org>
-References: <20220605193854.2371230-1-willy@infradead.org>
- <20220605193854.2371230-3-willy@infradead.org>
+        linux-block@vger.kernel.org, linux-aio@kvack.org,
+        linux-btrfs@vger.kernel.org, linux-ext4@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, cluster-devel@redhat.com,
+        linux-mm@kvack.org, linux-xfs@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
+        ocfs2-devel@oss.oracle.com, linux-mtd@lists.infradead.org,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH 20/20] mm/folio-compat: Remove migration compatibility
+ functions
+Message-ID: <YqBcOfiduNfPpYYE@infradead.org>
+References: <20220606204050.2625949-1-willy@infradead.org>
+ <20220606204050.2625949-21-willy@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220605193854.2371230-3-willy@infradead.org>
+In-Reply-To: <20220606204050.2625949-21-willy@infradead.org>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
