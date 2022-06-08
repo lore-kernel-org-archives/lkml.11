@@ -2,112 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F8D1CCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:51:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 699D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:51:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244523AbiFHPve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55388 "EHLO
+        id S244559AbiFHPvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:51:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230186AbiFHPvX (ORCPT
+        with ESMTP id S239819AbiFHPvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:51:23 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E12FB7DF7;
-        Wed,  8 Jun 2022 08:51:20 -0700 (PDT)
-Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LJBSc3wMMz67mgD;
-        Wed,  8 Jun 2022 23:47:44 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Wed, 8 Jun 2022 17:51:16 +0200
-Received: from [10.47.90.54] (10.47.90.54) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 8 Jun
- 2022 16:51:15 +0100
-Message-ID: <cf544be3-5c83-044d-95a7-62dd3695a3cc@huawei.com>
-Date:   Wed, 8 Jun 2022 16:51:14 +0100
+        Wed, 8 Jun 2022 11:51:25 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0689112FB05;
+        Wed,  8 Jun 2022 08:51:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654703484; x=1686239484;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=J9gVhWmRkrARQ+vF0CS/Zkh9G25iczH9M7T6+0LTHwA=;
+  b=oKkqBnP3wjW1YvdNq/BfTlcA49KaEjexypqPxpr8AlkXwOhTht/ORCAU
+   r2HuKsa5O8bQ4hyd0/Ji9pZW5SSNrdAbapXqVCgk4rXJ5VlliTPG2Es/k
+   +4gj+3IupNB+aXglY05Al13tojFQjRSfnlN6Fp47iiracc8hj0xeFsu8G
+   yTVxboIMvUDP9Ps/HKgLqjglSpsjc6/SPoy/lvspUtIhOL9n28qq4CzpU
+   aGIVZ4wakLcyaqxVaGgjMxJ+YdfhzCgZogmccesD1/tUc5dTtcxa62Vzq
+   sSdHriM4/EYuEtBnSzwd9zzm6tjUcvxiOuYSC5sfvg4EruTrLgUiAsGqD
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="275706633"
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="275706633"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 08:51:21 -0700
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="609715710"
+Received: from pandeyvi-mobl1.amr.corp.intel.com (HELO [10.213.185.165]) ([10.213.185.165])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 08:51:19 -0700
+Message-ID: <90a49c5c-7433-cec4-cb86-1424209a54e4@linux.intel.com>
+Date:   Wed, 8 Jun 2022 10:39:21 -0500
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v3 3/4] RISC-V: Added generic pmu-events mapfile
-To:     Nikita Shubin <nikita.shubin@maquefel.me>
-CC:     Genevieve Chan <genevieve.chan@starfivetech.com>,
-        =?UTF-8?B?Sm/Do28gTcOhcmlvIERvbWluZ29z?= 
-        <joao.mario@tecnico.ulisboa.pt>,
-        Nikita Shubin <n.shubin@yadro.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        "Namhyung Kim" <namhyung@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        "Palmer Dabbelt" <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>,
-        Atish Patra <atishp@atishpatra.org>
-References: <20220607131648.29439-1-nikita.shubin@maquefel.me>
- <20220607131648.29439-4-nikita.shubin@maquefel.me>
- <9e981523-6032-fd24-08f9-0ef771cd1c2e@huawei.com>
- <20220608174107.7b94e545@redslave.neermore.group>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <20220608174107.7b94e545@redslave.neermore.group>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH v3 1/2] soundwire: qcom: Add flag for software clock
+ gating check
+Content-Language: en-US
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        broonie@kernel.org, robh+dt@kernel.org, quic_plai@quicinc.com,
+        bgoswami@quicinc.com, perex@perex.cz, tiwai@suse.com,
+        srinivas.kandagatla@linaro.org, quic_rohkumar@quicinc.com,
+        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        swboyd@chromium.org, judyhsiao@chromium.org, vkoul@kernel.org
+References: <1654696929-20205-1-git-send-email-quic_srivasam@quicinc.com>
+ <1654696929-20205-2-git-send-email-quic_srivasam@quicinc.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <1654696929-20205-2-git-send-email-quic_srivasam@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.90.54]
-X-ClientProxiedBy: lhreml744-chm.china.huawei.com (10.201.108.194) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/06/2022 15:41, Nikita Shubin wrote:
->>> mat:
->>> +#	MIDR,Version,JSON/file/pathname,Type
->>> +#
->>> +# where
->>> +#	MIDR	Processor version
->> ARM, no?
 
-I'm just saying that MIDR is for ARM, so please ensure that this term is 
-correct for riscv
 
-> I've messed with --cc-cmd badly and didn't include every one in cover
-> letter, sorry for that, attaching link to cover letter:
-> 
-> https://lore.kernel.org/all/20220607131648.29439-1-nikita.shubin@maquefel.me/
-> 
-> They are ARM inspired indeed.
-> 
-> 
->>> +#		Variant[23:20] and Revision [3:0] should be zero.
->>> +#	Version could be used to track version of JSON file
->>> +#		but currently unused.
->>> +#	JSON/file/pathname is the path to JSON file, relative
->>> +#		to tools/perf/pmu-events/arch/riscv/.
->>> +#	Type is core, uncore etc
->>> +#
->>> +#
->>> +#Family-model,Version,Filename,EventType
->>> diff --git a/tools/perf/pmu-events/arch/riscv/riscv-generic.json
->>> b/tools/perf/pmu-events/arch/riscv/riscv-generic.json new file mode
->>> 100644 index 000000000000..013e50efad99
->>> --- /dev/null
->>> +++ b/tools/perf/pmu-events/arch/riscv/riscv-generic.json
->> where or how are these referenced?
-> Currently they are not referenced in this version of series at all,
+On 6/8/22 09:02, Srinivasa Rao Mandadapu wrote:
+> Add flag in qcom_swrm_data private data structure for validating
+> software colck gating control requirement.
 
-ok, right, so a general kernel policy is not to include code which is 
-not referenced.
+typo: clock
 
-> their purpose is to be used like "ArchStdEvent".
 > 
-> Through any RISCV implementation should have at least these 3 events.
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> ---
+>  drivers/soundwire/qcom.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+> index a3fccf0..38c3bf5 100644
+> --- a/drivers/soundwire/qcom.c
+> +++ b/drivers/soundwire/qcom.c
+> @@ -181,6 +181,7 @@ struct qcom_swrm_ctrl {
+>  struct qcom_swrm_data {
+>  	u32 default_cols;
+>  	u32 default_rows;
+> +	bool sw_clk_gate_required;
 
-Thanks,
-John
+I would have used a different split between patches, where the flag and
+functionality is introduced, and a second patch where this flag would be
+set for a specific platform.
+
+>  };
+>  
+>  static const struct qcom_swrm_data swrm_v1_3_data = {
