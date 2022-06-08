@@ -2,110 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A91C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BCD4CCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:16:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238717AbiFHHLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:11:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53042 "EHLO
+        id S239642AbiFHHMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:12:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233060AbiFHGSZ (ORCPT
+        with ESMTP id S1354413AbiFHGTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 02:18:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1EBEA19CED2
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:03:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654668129;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UsmRmrmyC0YlUnFIqRRJkIZ3ojsOtC4OxRQHrbODTWU=;
-        b=Tjb77YBezB5HtWDIgiElPXSw6MxMt2Cgt9bdnRGg/t1ZmFvTNm5Fti1zulqiiv2Yo/GQGo
-        Rq4GKFooiKgh440+iH89S/eSJuHmwCBifCZ+5TgnaLbWldB2UV1Wo0VZhimNMuqnQdVMlj
-        HSPi0kLsz/QVYdom+h3f8jKIZ2v87z4=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-370-_1-_uCFpMtmZH3briLCSmg-1; Wed, 08 Jun 2022 02:02:06 -0400
-X-MC-Unique: _1-_uCFpMtmZH3briLCSmg-1
-Received: by mail-wm1-f69.google.com with SMTP id bi22-20020a05600c3d9600b0039c4144992cso5652545wmb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 23:02:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=UsmRmrmyC0YlUnFIqRRJkIZ3ojsOtC4OxRQHrbODTWU=;
-        b=GPJN+1Qkte6rfw1ELCSf6fNxTASRTE1FcKW8MuR8XA433OyNeF27Cjp7daeIXKVi+Z
-         E7qTkCTgGdIwZ0zIQfo6QINGD74cGVy9/oRrda1Y8waxy8FPnwi1Aj+mNOLyQuZzn4R+
-         fdkLx46g4FQIGL8Bdb40UdSL0XyGiXi39pKYtc6p08VbOWBejkfKy6jIr29EeUzQpTRh
-         KXTRyebY6lp6T0b84nm6AEqkzOpR9lZ8jCgHmVM+PQi3M0AFAhmEMmiYbhnzOmSsb9Pc
-         0Ub4Nvk8XrKeFgjlzWOtV/V6kExOmplanIH/6ca+dNFtUAcgOCyyduVZMMtKC3DjrLxP
-         Lb8w==
-X-Gm-Message-State: AOAM5305PiPOLIS5tVeTp3ddONN6Yf55Wsr2TqfxlnF/i+r98P8vyjH5
-        uVU528n6jsEOgOWfhxStvyAB97GqedpBaHH9vTXg7blV/CYYrzCwbJ8yf+NQobWbQk8IODeuU8u
-        mKg3ET5d9dLQ350GZ4xDeK0al
-X-Received: by 2002:a05:6000:147:b0:214:7d6e:cb1d with SMTP id r7-20020a056000014700b002147d6ecb1dmr24578582wrx.650.1654668125066;
-        Tue, 07 Jun 2022 23:02:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxHgUMf0DiGTalylNFpQjB5EiBfIrRc71DZVAGtXhPU6EUyeZBdyPoZS/71mmMYC1pA8jBi1g==
-X-Received: by 2002:a05:6000:147:b0:214:7d6e:cb1d with SMTP id r7-20020a056000014700b002147d6ecb1dmr24578561wrx.650.1654668124893;
-        Tue, 07 Jun 2022 23:02:04 -0700 (PDT)
-Received: from [192.168.0.3] (ip-109-42-114-66.web.vodafone.de. [109.42.114.66])
-        by smtp.gmail.com with ESMTPSA id x14-20020adff0ce000000b00210396b2eaesm24124187wro.45.2022.06.07.23.02.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 23:02:04 -0700 (PDT)
-Message-ID: <1bdd501e-01f6-a0fb-86f3-49ec19ec5bcf@redhat.com>
-Date:   Wed, 8 Jun 2022 08:02:02 +0200
+        Wed, 8 Jun 2022 02:19:34 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52229F826E
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:10:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=M7NmYC/Iylm9myghHwqILim55SAUt9QrM+UZYk0eJlw=; b=h42SDWHqUOya+eSDpvhVeQpEt2
+        9ADF4krKMF5jdcrgjvBXITCwTRhrZLZ6iYaUQuXQpJ7Zr1vLIcbQdR7H7LkIe28W4msLY52phPlVO
+        ejROhrPY9RwSUZIZY8L0WBTZE87iomsOLmFbpe0b2r27VHzf7Ewm/K/cvAuY0CmYrLkyDN37kSuHf
+        VV4a/Bpp0PZBw16E7ISflbGGLngQVZoyVaAXXR+iFt3bpruMbYb3ANKjZuCm8prPfjGUhdzvqQ5EM
+        3DMORyiKzN2N+Irm2ujvktgrv/NMEOlNsLBoL7q6I2vTwMAXDnkiJtCWJJ/hpzep39Ia37mhLIEx9
+        m9S7Uhsg==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nyotO-00BFHv-GV; Wed, 08 Jun 2022 06:10:10 +0000
+Date:   Tue, 7 Jun 2022 23:10:10 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc:     catalin.marinas@arm.com, will@kernel.org,
+        akpm@linux-foundation.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        hch@infradead.org, arnd@arndb.de, anshuman.khandual@arm.com
+Subject: Re: [PATCH v5 4/6] mm: ioremap: Add ioremap/iounmap_allowed()
+Message-ID: <YqA9Qg959W/INdh/@infradead.org>
+References: <20220607125027.44946-1-wangkefeng.wang@huawei.com>
+ <20220607125027.44946-5-wangkefeng.wang@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v9 21/21] MAINTAINERS: additional files related kvm s390
- pci passthrough
-Content-Language: en-US
-To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, pasic@linux.ibm.com,
-        pbonzini@redhat.com, corbet@lwn.net, jgg@nvidia.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-References: <20220606203325.110625-1-mjrosato@linux.ibm.com>
- <20220606203325.110625-22-mjrosato@linux.ibm.com>
-From:   Thomas Huth <thuth@redhat.com>
-In-Reply-To: <20220606203325.110625-22-mjrosato@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607125027.44946-5-wangkefeng.wang@huawei.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/06/2022 22.33, Matthew Rosato wrote:
-> Add entries from the s390 kvm subdirectory related to pci passthrough.
-> 
-> Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> ---
->   MAINTAINERS | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a6d3bd9d2a8d..3dd8657f5482 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -17454,6 +17454,7 @@ M:	Eric Farman <farman@linux.ibm.com>
->   L:	linux-s390@vger.kernel.org
->   L:	kvm@vger.kernel.org
->   S:	Supported
-> +F:	arch/s390/kvm/pci*
->   F:	drivers/vfio/pci/vfio_pci_zdev.c
->   F:	include/uapi/linux/vfio_zdev.h
->   
+Looks good:
 
-Reviewed-by: Thomas Huth <thuth@redhat.com>
-
+Reviewed-by: Christoph Hellwig <hch@lst.de>
