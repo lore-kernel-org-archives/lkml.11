@@ -2,235 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 718BAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC98CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:12:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243092AbiFHPLI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:11:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55918 "EHLO
+        id S243666AbiFHPMC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:12:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243371AbiFHPK2 (ORCPT
+        with ESMTP id S243230AbiFHPLJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:10:28 -0400
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7F246F8CE;
-        Wed,  8 Jun 2022 08:01:17 -0700 (PDT)
-Received: by mail-yb1-f172.google.com with SMTP id p13so36971739ybm.1;
-        Wed, 08 Jun 2022 08:01:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hna+hKCo48NcMl7Pqd/5P+UyLOQ1wF88gpvnodTJhxE=;
-        b=vlsS08/X13NCCoVNEOmpS71IBzxKuXi6flyI8AcfeeYWsWD/ztcSRvgl1Tsni97Fy7
-         QkEhN0mLSgYJExsGaITnwHmGMoJthSziLUAba15/TlVhwC0WhNa8iwkY73lsmZswROuH
-         +rhfgX9pypo4uV64UijL45J0Vl1i7Bd5JwzJ9zmGe2dhVbX1R2TspTSOoBF8X76teXzP
-         8DNuV0KCXQkfzCij5+Ql9h0CAcKGVtM/LasWL7HuJ3KnbdIBov/OJA3wsuhpF4kEi+O9
-         B4j9EJcvnQFU8w/px8Yzrwfj6ANa8tovdUPwQw+iA+7DLshQ10g3yBCGplqsYtzR8cDQ
-         AAgg==
-X-Gm-Message-State: AOAM531jyaKTiKqRuT/tZdlg/N2S+bqehl07TxqGkenAdsyYkENSg+31
-        ebj5j+EjBeNzNHUcDWoXex025nYdBQLWgNa6ZMU=
-X-Google-Smtp-Source: ABdhPJwqalQMdxMy/pZcDZhBH1xedB7nhZhOlo0yW6lp9BXwx4h5qG3Bba3YMzpLPF7jDA8EKVOjRHlndcGghrEojUg=
-X-Received: by 2002:a5b:4a:0:b0:663:7c5b:a5ba with SMTP id e10-20020a5b004a000000b006637c5ba5bamr16536948ybp.81.1654700476488;
- Wed, 08 Jun 2022 08:01:16 -0700 (PDT)
+        Wed, 8 Jun 2022 11:11:09 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1223FBBE5;
+        Wed,  8 Jun 2022 08:03:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description;
+        bh=z93Cnt+g7bn8Rks2qPHkqYOXC3V0vuJ4otfYMlwXMI0=; b=A8DhNIxJJ669f/qkcLeDGf72ZN
+        VH8LAA48msbBnAVr0E+7FelEvxIN6WeTVVsY3+XbJ3JFz8o4YxHui00x1Y70h4ocWwm1rEhwBIjKN
+        KqmXwNooNqQHQTU0PGaJX9VSpy4TIudFD2m7wXi5brVUZ9sATYKFon0A8unvko2wdijgsEP55z5gw
+        LICUf+6yA08O9mkZ2CoaqXjq3c6UpqxZ4JALyMMrvUsNOS/irI5NCXGs3fXnIssRB78QjoY8+rsu6
+        2JldLt7koSxVP03aOcqMPx4vsCCm76xYnTTjxDObf8Wn4Fx8tpZC1OJvSXomcGoxR7FYaLBgr8kSN
+        KwIQrhwQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nyxCv-00CjFm-8u; Wed, 08 Jun 2022 15:02:53 +0000
+From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
+To:     linux-fsdevel@vger.kernel.org
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-aio@kvack.org, linux-btrfs@vger.kernel.org,
+        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
+        cluster-devel@redhat.com, linux-mm@kvack.org,
+        linux-xfs@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-ntfs-dev@lists.sourceforge.net, ocfs2-devel@oss.oracle.com,
+        linux-mtd@lists.infradead.org,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH v2 17/19] secretmem: Convert to migrate_folio
+Date:   Wed,  8 Jun 2022 16:02:47 +0100
+Message-Id: <20220608150249.3033815-18-willy@infradead.org>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220608150249.3033815-1-willy@infradead.org>
+References: <20220608150249.3033815-1-willy@infradead.org>
 MIME-Version: 1.0
-References: <20220608142723.103523089@infradead.org> <20220608144516.172460444@infradead.org>
-In-Reply-To: <20220608144516.172460444@infradead.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 8 Jun 2022 17:01:05 +0200
-Message-ID: <CAJZ5v0gW-zD8Mgghy70f3rFz0QoozCwZ9idyrqtFgA6SWHK5XQ@mail.gmail.com>
-Subject: Re: [PATCH 04/36] cpuidle,intel_idle: Fix CPUIDLE_FLAG_IRQ_ENABLE
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
-        vgupta@kernel.org,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        ulli.kroll@googlemail.com,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        bcain@quicinc.com, Huacai Chen <chenhuacai@kernel.org>,
-        kernel@xen0n.name, Geert Uytterhoeven <geert@linux-m68k.org>,
-        sammy@sammy.net, Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        dinguyen@kernel.org, jonas@southpole.se,
-        stefan.kristiansson@saunalahti.fi,
-        Stafford Horne <shorne@gmail.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        David Miller <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        anton.ivanov@cambridgegreys.com,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, acme@kernel.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        jolsa@kernel.org, namhyung@kernel.org,
-        Juergen Gross <jgross@suse.com>, srivatsa@csail.mit.edu,
-        amakhalov@vmware.com, pv-drivers@vmware.com,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>, chris@zankel.net,
-        jcmvbkbc@gmail.com, "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        lpieralisi@kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Anup Patel <anup@brainfault.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Petr Mladek <pmladek@suse.com>, senozhatsky@chromium.org,
-        John Ogness <john.ogness@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        quic_neeraju@quicinc.com, Josh Triplett <josh@joshtriplett.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Benjamin Segall <bsegall@google.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        vschneid@redhat.com, jpoimboe@kernel.org,
-        linux-alpha@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-snps-arc@lists.infradead.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        openrisc@lists.librecores.org,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-s390@vger.kernel.org,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-perf-users@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>, rcu@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 4:47 PM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> Commit c227233ad64c ("intel_idle: enable interrupts before C1 on
-> Xeons") wrecked intel_idle in two ways:
->
->  - must not have tracing in idle functions
->  - must return with IRQs disabled
->
-> Additionally, it added a branch for no good reason.
->
-> Fixes: c227233ad64c ("intel_idle: enable interrupts before C1 on Xeons")
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+This is little more than changing the types over; there's no real work
+being done in this function.
 
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+---
+ mm/secretmem.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-And do I think correctly that this can be applied without the rest of
-the series?
+diff --git a/mm/secretmem.c b/mm/secretmem.c
+index 1c7f1775b56e..658a7486efa9 100644
+--- a/mm/secretmem.c
++++ b/mm/secretmem.c
+@@ -133,9 +133,8 @@ static const struct file_operations secretmem_fops = {
+ 	.mmap		= secretmem_mmap,
+ };
+ 
+-static int secretmem_migratepage(struct address_space *mapping,
+-				 struct page *newpage, struct page *page,
+-				 enum migrate_mode mode)
++static int secretmem_migrate_folio(struct address_space *mapping,
++		struct folio *dst, struct folio *src, enum migrate_mode mode)
+ {
+ 	return -EBUSY;
+ }
+@@ -149,7 +148,7 @@ static void secretmem_free_folio(struct folio *folio)
+ const struct address_space_operations secretmem_aops = {
+ 	.dirty_folio	= noop_dirty_folio,
+ 	.free_folio	= secretmem_free_folio,
+-	.migratepage	= secretmem_migratepage,
++	.migrate_folio	= secretmem_migrate_folio,
+ };
+ 
+ static int secretmem_setattr(struct user_namespace *mnt_userns,
+-- 
+2.35.1
 
-> ---
->  drivers/idle/intel_idle.c |   48 +++++++++++++++++++++++++++++++++++-----------
->  1 file changed, 37 insertions(+), 11 deletions(-)
->
-> --- a/drivers/idle/intel_idle.c
-> +++ b/drivers/idle/intel_idle.c
-> @@ -129,21 +137,37 @@ static unsigned int mwait_substates __in
->   *
->   * Must be called under local_irq_disable().
->   */
-> +
-> -static __cpuidle int intel_idle(struct cpuidle_device *dev,
-> -                               struct cpuidle_driver *drv, int index)
-> +static __always_inline int __intel_idle(struct cpuidle_device *dev,
-> +                                       struct cpuidle_driver *drv, int index)
->  {
->         struct cpuidle_state *state = &drv->states[index];
->         unsigned long eax = flg2MWAIT(state->flags);
->         unsigned long ecx = 1; /* break on interrupt flag */
->
-> -       if (state->flags & CPUIDLE_FLAG_IRQ_ENABLE)
-> -               local_irq_enable();
-> -
->         mwait_idle_with_hints(eax, ecx);
->
->         return index;
->  }
->
-> +static __cpuidle int intel_idle(struct cpuidle_device *dev,
-> +                               struct cpuidle_driver *drv, int index)
-> +{
-> +       return __intel_idle(dev, drv, index);
-> +}
-> +
-> +static __cpuidle int intel_idle_irq(struct cpuidle_device *dev,
-> +                                   struct cpuidle_driver *drv, int index)
-> +{
-> +       int ret;
-> +
-> +       raw_local_irq_enable();
-> +       ret = __intel_idle(dev, drv, index);
-> +       raw_local_irq_disable();
-> +
-> +       return ret;
-> +}
-> +
->  /**
->   * intel_idle_s2idle - Ask the processor to enter the given idle state.
->   * @dev: cpuidle device of the target CPU.
-> @@ -1801,6 +1824,9 @@ static void __init intel_idle_init_cstat
->                 /* Structure copy. */
->                 drv->states[drv->state_count] = cpuidle_state_table[cstate];
->
-> +               if (cpuidle_state_table[cstate].flags & CPUIDLE_FLAG_IRQ_ENABLE)
-> +                       drv->states[drv->state_count].enter = intel_idle_irq;
-> +
->                 if ((disabled_states_mask & BIT(drv->state_count)) ||
->                     ((icpu->use_acpi || force_use_acpi) &&
->                      intel_idle_off_by_default(mwait_hint) &&
->
->
