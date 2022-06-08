@@ -2,126 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9937DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1ADCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:43:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233770AbiFHFnO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:43:14 -0400
+        id S234145AbiFHFnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:43:23 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233906AbiFHFlR (ORCPT
+        with ESMTP id S233595AbiFHFm4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:41:17 -0400
-Received: from EX-PRD-EDGE01.vmware.com (ex-prd-edge01.vmware.com [208.91.3.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE27D408F12;
-        Tue,  7 Jun 2022 20:24:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-    s=s1024; d=vmware.com;
-    h=from:to:cc:subject:date:message-id:mime-version:content-type;
-    bh=1BUi8d5EMlZl/6FL5lU4CcT+7fh78Kg9w0myO9YPw44=;
-    b=t/YdP0N7G0KLNXkFy7MZlPc94BdVX3mEXUKsA2yVexppkt0Mw3L6uDXLeMkNe2
-      cc5J71eRmbmSJvRLGn4ID4UHWJeFrP620CogO8D3oGJoJ8D1eVGQ+m2SLZ/LyE
-      cgoeZxoo52l/odIOEzM6KrVCBxH6CSEm3nJc2rvCW5MV5u4=
-Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
- EX-PRD-EDGE01.vmware.com (10.188.245.6) with Microsoft SMTP Server id
- 15.1.2308.20; Tue, 7 Jun 2022 20:23:42 -0700
-Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id CF895202DC;
-        Tue,  7 Jun 2022 20:23:57 -0700 (PDT)
-Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id C87B3AA454; Tue,  7 Jun 2022 20:23:57 -0700 (PDT)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     Ronak Doshi <doshir@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 net-next 0/8] vmxnet3: upgrade to version 7
-Date:   Tue, 7 Jun 2022 20:23:45 -0700
-Message-ID: <20220608032353.964-1-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
+        Wed, 8 Jun 2022 01:42:56 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF71E140E6
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 20:15:09 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id i18-20020a926d12000000b002d1b13b896cso14958332ilc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 20:15:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=my0rk8z/GOJ43WqWCVtp9xPE8Ztlbnwblm3qHdmpM54=;
+        b=ijLulpDjAor87aRDj08/eH8fj0MMruq2G1e0tKKtnJ4YR5zMExdwvbCndXgt0AX+0A
+         v4avNz6QRSYC8D05s5pDVYf7a/ISjsEH3ISxDOyEuokIfTdxrpPqJ7YIRlmT3NHg5HdD
+         gDdswniUpzd1jzSjhv6l1iacYNTA06TQNpaG0xC2gRdTnQKIMbRs6OZqdrhEqPS10Yll
+         C7v3CwDqw9SopKIh+xrFxqmg6DXXKTTXlOzc5b63jjuC6jDIBI1RghQcBr0wG0EHl+Z/
+         117ev+Uj/avwmhh8iJK+AEctYgnkCE22Vyi4uhBek0VRmfq3MTy4GS7jzCq8hsMq04J3
+         VsUA==
+X-Gm-Message-State: AOAM530/S2yRB3UwL0S9LH9EUYNuFvJO1UnH3+AU7IDz114kffJtA9IP
+        zgC/JvtSXfXlFKjPCsV5myXOpbJw2XdSjXG4w7CFQ+J292cI
+X-Google-Smtp-Source: ABdhPJyDAHTZEqVZpAdPEsRA1tWIDLDO1YkbVcpsVw8DKrB6ladOIZSYZjLdMQ+C1zhzwGLq/5AjZkFGwdHA1V+LelZ+/7mstGCC
 MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX-PRD-EDGE01.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
+X-Received: by 2002:a05:6e02:1ca8:b0:2d4:455:88aa with SMTP id
+ x8-20020a056e021ca800b002d4045588aamr14561882ill.303.1654658109343; Tue, 07
+ Jun 2022 20:15:09 -0700 (PDT)
+Date:   Tue, 07 Jun 2022 20:15:09 -0700
+In-Reply-To: <CACGkMEus=RMMcDk+sM8X14=AtFjK+-3p_Lo=O6tfv9H=0wXENw@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d5113205e0e71c8f@google.com>
+Subject: Re: [syzbot] INFO: task hung in add_early_randomness (2)
+From:   syzbot <syzbot+5b59d6d459306a556f54@syzkaller.appspotmail.com>
+To:     herbert@gondor.apana.org.au, jasowang@redhat.com,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux@dominikbrodowski.net, mpm@selenic.com, mst@redhat.com,
+        syzkaller-bugs@googlegroups.com, xuanzhuo@linux.alibaba.com,
+        yuehaibing@huawei.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vmxnet3 emulation has recently added several new features including
-support for uniform passthrough(UPT). To make UPT work vmxnet3 has
-to be enhanced as per the new specification. This patch series
-extends the vmxnet3 driver to leverage these new features.
+Hello,
 
-Compatibility is maintained using existing vmxnet3 versioning mechanism as
-follows:
- - new features added to vmxnet3 emulation are associated with new vmxnet3
-   version viz. vmxnet3 version 7.
- - emulation advertises all the versions it supports to the driver.
- - during initialization, vmxnet3 driver picks the highest version number
- supported by both the emulation and the driver and configures emulation
- to run at that version.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-In particular, following changes are introduced:
+Reported-and-tested-by: syzbot+5b59d6d459306a556f54@syzkaller.appspotmail.com
 
-Patch 1:
-  This patch introduces utility macros for vmxnet3 version 7 comparison
-  and updates Copyright information.
+Tested on:
 
-Patch 2:
-  This patch adds new capability registers to fine control enablement of
-  individual features based on emulation and passthrough.
+commit:         bd8bb9ae vdpa: ifcvf: set pci driver data in probe
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8d4cbb773055caee
+dashboard link: https://syzkaller.appspot.com/bug?extid=5b59d6d459306a556f54
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1731eaf7f00000
 
-Patch 3:
-  This patch adds support for large passthrough BAR register.
-
-Patch 4:
-  This patch adds support for out of order rx completion processing.
-
-Patch 5:
-  This patch introduces new command to set ring buffer sizes to pass this
-  information to the hardware.
-
-Patch 6:
-  For better performance, hardware has a requirement to limit number of TSO
-  descriptors. This patch adds that support.
-
-Patch 7:
-  With vmxnet3 version 7, new descriptor fields are used to indicate
-  encapsulation offload.
-
-Patch 8:
-  With all vmxnet3 version 7 changes incorporated in the vmxnet3 driver,
-  with this patch, the driver can configure emulation to run at vmxnet3
-  version 7.
-
-Changes in v2->v3:
- - use correct byte ordering for ringBufSize
-
-Changes in v2:
- - use local rss_fields variable for the rss capability checks in patch 2
-
-Ronak Doshi (8):
-  vmxnet3: prepare for version 7 changes
-  vmxnet3: add support for capability registers
-  vmxnet3: add support for large passthrough BAR register
-  vmxnet3: add support for out of order rx completion
-  vmxnet3: add command to set ring buffer sizes
-  vmxnet3: limit number of TXDs used for TSO packet
-  vmxnet3: use ext1 field to indicate encapsulated packet
-  vmxnet3: update to version 7
-
- drivers/net/vmxnet3/Makefile          |   2 +-
- drivers/net/vmxnet3/upt1_defs.h       |   2 +-
- drivers/net/vmxnet3/vmxnet3_defs.h    |  80 ++++++++--
- drivers/net/vmxnet3/vmxnet3_drv.c     | 291 ++++++++++++++++++++++++++++++----
- drivers/net/vmxnet3/vmxnet3_ethtool.c | 116 ++++++++++++--
- drivers/net/vmxnet3/vmxnet3_int.h     |  24 ++-
- 6 files changed, 457 insertions(+), 58 deletions(-)
-
--- 
-2.11.0
-
+Note: testing is done by a robot and is best-effort only.
