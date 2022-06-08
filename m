@@ -2,133 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B06C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:46:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF51CCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231934AbiFHHqp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45986 "EHLO
+        id S230370AbiFHHrC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:47:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240315AbiFHHiS (ORCPT
+        with ESMTP id S237563AbiFHHhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:38:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6EEB1C2D56
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:04:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654671861;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TBjmir8iDGZC/kDjtwTXCxIWSk19ldp3h7objj82UrQ=;
-        b=CZvtWjpcK832gefgHb9DK8Ie4Eqi0PbffAtihs2Pqe/+w38XxOXVGw+AAMNWF7LGYEC/sz
-        Obmy0m2rjqFmgdhGfwXxEDrj9PB4qz3TEE/+Qy9lDxsM+yfBx1gBDmu5m5f7EdwoCaqdSr
-        8dfRArf3f9hbiAKW/wNkVHidNCdKFA0=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-616-Mw-qPlKMMlaLY4Vq0STvZg-1; Wed, 08 Jun 2022 03:04:18 -0400
-X-MC-Unique: Mw-qPlKMMlaLY4Vq0STvZg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A723E1C0512E;
-        Wed,  8 Jun 2022 07:04:17 +0000 (UTC)
-Received: from localhost (ovpn-12-81.pek2.redhat.com [10.72.12.81])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D0BAF2166B26;
-        Wed,  8 Jun 2022 07:04:16 +0000 (UTC)
-Date:   Wed, 8 Jun 2022 15:04:11 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     catalin.marinas@arm.com, will@kernel.org,
-        akpm@linux-foundation.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        hch@infradead.org, arnd@arndb.de, anshuman.khandual@arm.com
-Subject: Re: [PATCH v5 2/6] mm: ioremap: Use more sensibly name in
- ioremap_prot()
-Message-ID: <YqBJ69yExnm6O4n9@MiWiFi-R3L-srv>
-References: <20220607125027.44946-1-wangkefeng.wang@huawei.com>
- <20220607125027.44946-3-wangkefeng.wang@huawei.com>
+        Wed, 8 Jun 2022 03:37:48 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 439F938BE1
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:00:45 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id u18so16870814plb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 00:00:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references:reply-to
+         :mime-version:content-transfer-encoding;
+        bh=0Y71+75qvfs0BWzL6gBfrDn2lzjlHUL6hjQyt+wNtxI=;
+        b=lFEEkahv8QX0NmHlMpbpwU3DLBoViwvS4Bkf2xwRJvGyqHFcvwgcjk+29VrBH/HQ0Y
+         u0vev6U6R6NGWWY+5hhqbnvFYCLMBjlbwCUdjeEmeV0BjtdobRy6VRHrADqEiQkC5/CN
+         4TbqzIu9w0iAUgpRStiIJANJO5mYmsnsmuRmNSyCSrkPUkR38bgV3oGaenT8prRz4wQV
+         wFRYSLtZ/+LseV5K4es+xa5RfcL3ueOtoSi9HJGtCtDhF5dlrKNfvlTiegxbbiCk4vCb
+         qGsNB986MXJUCxJnXwRLo9xxzl/LSoh7xEfFLlQKUD35OPJYxdViOcXpsgMnRnEXaXtm
+         HgEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:reply-to:mime-version:content-transfer-encoding;
+        bh=0Y71+75qvfs0BWzL6gBfrDn2lzjlHUL6hjQyt+wNtxI=;
+        b=HyafTWjL8U4LN7CdaU5KDPd9wLsd6V3mmP+5G04R37a+iu9lRd4ieEdn68jbUaWshp
+         OYzsBdkTpz46/cdzuNLcTQ5C6iEN9gzR4dbXOHtglpyJoc9zUjDJOQOHRd3GYXOStqse
+         gECP1bUSws2yqMCGcErmVYpZmN0rbGT0HrVOQBAGRqAg6hcCJ2te5zXPBgqhAW/YiEaw
+         KOMNAKyMZ3ccv0HEHRHe9ldc33KHmaUmpAsGQvMGzbmx6yg9ZkgFRIh+GoyWNfqMMPu0
+         G6jsKV/Bm5LI4msxfdJ+nLBpsCmagSetrlHvoP4bgvfx/fYz4MZYaoJ7qdQThFaSxvZZ
+         nR9w==
+X-Gm-Message-State: AOAM532eBYVTsOOxNnWFtZGhww+5VvgyafKPJ8BdBWV4n55C375EXXLU
+        bdvfkDcwFJnC9vl1d07DIQgK3pjNXCiqAh8x
+X-Google-Smtp-Source: ABdhPJx7+Tm4FFC4r7PiYQy5839YKi2Ajm/KYt944nHUrPqCBYGoBDa99piJ/g1V0Xo5JM25LyktVw==
+X-Received: by 2002:a17:902:f687:b0:167:58bb:c43f with SMTP id l7-20020a170902f68700b0016758bbc43fmr22706267plg.136.1654671644069;
+        Wed, 08 Jun 2022 00:00:44 -0700 (PDT)
+Received: from KASONG-MB0.tencent.com ([103.7.29.31])
+        by smtp.gmail.com with ESMTPSA id e18-20020a170902ed9200b001675991fb7fsm8396425plj.55.2022.06.08.00.00.41
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Wed, 08 Jun 2022 00:00:43 -0700 (PDT)
+From:   Kairui Song <ryncsn@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Eric Biederman <ebiederm@xmission.com>, x86@kernel.org,
+        kexec@lists.infradead.org, Kairui Song <kasong@tencent.com>
+Subject: [PATCH 2/2] x86/mpparse, kexec: probe apic driver early for x2apic
+Date:   Wed,  8 Jun 2022 14:43:48 +0800
+Message-Id: <20220608064348.66402-3-ryncsn@gmail.com>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220608064348.66402-1-ryncsn@gmail.com>
+References: <20220608064348.66402-1-ryncsn@gmail.com>
+Reply-To: Kairui Song <kasong@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607125027.44946-3-wangkefeng.wang@huawei.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/07/22 at 08:50pm, Kefeng Wang wrote:
-> Use more meaningful and sensibly naming phys_addr
-                          ~~ sensible, typo
-                          and please fix the subject too.
-> instead addr in ioremap_prot().
-> 
-> Suggested-by: Andrew Morton <akpm@linux-foundation.org>
-> Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-> ---
->  include/asm-generic/io.h |  3 ++-
->  mm/ioremap.c             | 14 ++++++++------
->  2 files changed, 10 insertions(+), 7 deletions(-)
-> 
-> diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
-> index 7ce93aaf69f8..b76379628a02 100644
-> --- a/include/asm-generic/io.h
-> +++ b/include/asm-generic/io.h
-> @@ -964,7 +964,8 @@ static inline void iounmap(volatile void __iomem *addr)
->  #elif defined(CONFIG_GENERIC_IOREMAP)
->  #include <linux/pgtable.h>
->  
-> -void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot);
-> +void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
-> +			   unsigned long prot);
->  void iounmap(volatile void __iomem *addr);
->  
->  static inline void __iomem *ioremap(phys_addr_t addr, size_t size)
-> diff --git a/mm/ioremap.c b/mm/ioremap.c
-> index 5fe598ecd9b7..2d754b48d230 100644
-> --- a/mm/ioremap.c
-> +++ b/mm/ioremap.c
-> @@ -11,20 +11,21 @@
->  #include <linux/io.h>
->  #include <linux/export.h>
->  
-> -void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot)
-> +void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
-> +			   unsigned long prot)
->  {
->  	unsigned long offset, vaddr;
->  	phys_addr_t last_addr;
->  	struct vm_struct *area;
->  
->  	/* Disallow wrap-around or zero size */
-> -	last_addr = addr + size - 1;
-> -	if (!size || last_addr < addr)
-> +	last_addr = phys_addr + size - 1;
-> +	if (!size || last_addr < phys_addr)
->  		return NULL;
->  
->  	/* Page-align mappings */
-> -	offset = addr & (~PAGE_MASK);
-> -	addr -= offset;
-> +	offset = phys_addr & (~PAGE_MASK);
-> +	phys_addr -= offset;
->  	size = PAGE_ALIGN(size + offset);
->  
->  	area = get_vm_area_caller(size, VM_IOREMAP,
-> @@ -33,7 +34,8 @@ void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot)
->  		return NULL;
->  	vaddr = (unsigned long)area->addr;
->  
-> -	if (ioremap_page_range(vaddr, vaddr + size, addr, __pgprot(prot))) {
-> +	if (ioremap_page_range(vaddr, vaddr + size, phys_addr,
-> +			       __pgprot(prot))) {
->  		free_vm_area(area);
->  		return NULL;
->  	}
-> -- 
-> 2.35.3
-> 
-> 
+From: Kairui Song <kasong@tencent.com>
+
+Following kernel panic is observed when doing kdump/kexec on
+virtual machines that uses MPTABLE, not ACPI MADT, and supports x2apic:
+
+  Intel MultiProcessor Specification v1.4
+  MPTABLE: OEM ID: BOCHSCPU
+  MPTABLE: Product ID: 0.1
+  MPTABLE: APIC at: 0xFEE00000
+  BUG: unable to handle page fault for address: ffffffffff5fc020
+  #PF: supervisor read access in kernel mode
+  #PF: error_code(0x0000) - not-present page
+  PGD 25e15067 P4D 25e15067 PUD 25e17067 PMD 25e18067 PTE 0
+  Oops: 0000 [#1] SMP NOPTI
+  CPU: 0 PID: 0 Comm: swapper Not tainted 5.14.10-300.fc35.x86_64 #1
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
+  RIP: 0010:native_apic_mem_read+0x2/0x10
+  Code: 14 25 20 cd e3 82 c3 90 bf 30 08 00 00 ff 14 25 18 cd e3 82 c3 cc cc cc 89 ff 89 b7 00 c0 5f ff c3 0f 1f 80 00 00 00 00 89 ff <8b> 87 00 c0 5f ff c3 0f 1f 80 00 00 00 0
+  RSP: 0000:ffffffff82e03e18 EFLAGS: 00010046
+  RAX: ffffffff81064840 RBX: ffffffffff240b6c RCX: ffffffff82f17428
+  RDX: c0000000ffffdfff RSI: 00000000ffffdfff RDI: 0000000000000020
+  RBP: ffff888023200000 R08: 0000000000000000 R09: ffffffff82e03c50
+  R10: ffffffff82e03c48 R11: ffffffff82f47468 R12: ffffffffff240b40
+  R13: ffffffffff200b30 R14: 0000000000000000 R15: 00000000000000d4
+  FS:  0000000000000000(0000) GS:ffffffff8365b000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: ffffffffff5fc020 CR3: 0000000025e10000 CR4: 00000000000006b0
+  Call Trace:
+   ? read_apic_id+0x15/0x30
+   ? register_lapic_address+0x76/0x97
+   ? default_get_smp_config+0x28b/0x42d
+   ? dmi_check_system+0x1c/0x60
+   ? acpi_boot_init+0x1d/0x4c3
+   ? setup_arch+0xb37/0xc2a
+   ? slab_is_available+0x5/0x10
+   ? start_kernel+0x61/0x980
+   ? load_ucode_bsp+0x4c/0xcd
+   ? secondary_startup_64_no_verify+0xc2/0xcb
+  Modules linked in:
+  CR2: ffffffffff5fc020
+  random: get_random_bytes called from oops_exit+0x35/0x60 with crng_init=0
+  ---[ end trace c9e569df3bdbefd3 ]---
+
+The panic happens within following init code:
+setup_arch()
+  ....
+  check_x2apic()     <-- x2apic is enabled by first kernel before kexec,
+                         this set x2apic_mode = 1, make sure later probes
+                         will recognize pre-enabled x2apic.
+  ....
+  acpi_boot_init();  <-- If ACPI MADT is in use, this will switch apic driver
+                         to x2apic, but it will do nothing with MPTABLE.
+  x86_dtb_init();
+  get_smp_config();
+    default_get_smp_config();  <-- MPTABLE setup.
+      check_physptr();
+        smp_read_mpc();
+          register_lapic_address(); <-- * panic here *
+  init_apic_mappings();
+  ....
+
+The problem here is MPTABLE setup calls register_lapic_address(), which
+is still using apic_flat driver, and access the apic MMIO interface. But
+the address is never mapped for pre-enabled x2apic, since commit
+0450193bffed6 ("x86, x2apic: Don't map lapic addr for preenabled x2apic systems"),
+then it panics.
+
+Simply map it won't work either, in x2apic mode the MMIO interface is
+not usable (Intel SDM Volume 3A 10.12.2), later setups will still fail with
+other errors. So it needs do a proper apic driver probe and switch to
+x2apic driver to perform MSR operation instead.
+
+Such issue is currently only seen with kdump/kexec, kernel enabled the
+x2apic in first kernel and kept it enabled to 2nd kernel.
+
+This can be easily reproduced with qemu-kvm, use -no-acpi and enable
+x2apic, so x2apic with MPTABLE will be in use, then trigger kdump/kexec.
+
+Signed-off-by: Kairui Song <kasong@tencent.com>
+---
+ arch/x86/kernel/mpparse.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/mpparse.c b/arch/x86/kernel/mpparse.c
+index fed721f90116..7658c8184e8c 100644
+--- a/arch/x86/kernel/mpparse.c
++++ b/arch/x86/kernel/mpparse.c
+@@ -202,8 +202,10 @@ static int __init smp_read_mpc(struct mpc_table *mpc, unsigned early)
+ 		return 0;
+ 
+ 	/* Initialize the lapic mapping */
+-	if (!acpi_lapic)
++	if (!acpi_lapic) {
++		apic_early_probe();
+ 		register_lapic_address(mpc->lapic);
++	}
+ 
+ 	if (early)
+ 		return 1;
+-- 
+2.35.2
 
