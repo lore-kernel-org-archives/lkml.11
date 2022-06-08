@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0266FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B36C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:50:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243461AbiFHOt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 10:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58634 "EHLO
+        id S243551AbiFHOuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 10:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242454AbiFHOrN (ORCPT
+        with ESMTP id S242403AbiFHOrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 10:47:13 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B7481F89AD;
-        Wed,  8 Jun 2022 07:46:58 -0700 (PDT)
+        Wed, 8 Jun 2022 10:47:09 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3F41E04AF;
+        Wed,  8 Jun 2022 07:46:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=lz2MUgDITA4yYb0U+PMz5bsqmEWyVbYbLXt1grP5wdc=; b=E4ma1UJky4lYLkF7WsmuwBiBAR
-        ZNOCNP37EHcDipS0h5pGpc7Z83q2l0F9r1qoT2IwS4JaVORLNk9Y8kD1/G4PQ/WPrdROyQRafl+bw
-        8kEHexR7OAoHvsHpcXrvfDNKNmCb7vZaRmG5jCMjvkiVnlyjOoCZYPiCN2YUEe0s+KCLCMKw1lusn
-        c//k/ch+ZMfy68BfHEU9q/SBuHFmKkFeZQNGD+V4Ey9G51j7RCAyIzKlUBl1/EhiN9VFEuwMKKqHS
-        exZwnsJXFjdzNoY07XCZXRHpvxrUSpp80Ad7Sk+AHygZ2w1HtBhHyFFImsUsvO1nkQsZm+y1UkgzW
-        W9tgnQAA==;
+        bh=72Sb3LM19KDQn37emviwOKsQWcEROOYn6vEWI6g4O0g=; b=EIStTNEvIWCOhCtVS6i/K7y72k
+        Z2/y8QVivxbrQMzv70rV/xYI1TqoeKXswIk5VnUpw0+4RhgOORQAEqSaWWFcpGN/Ozze52Ug5i0sI
+        TleRT/9YHz6wiGFbGNdRNWgltUsVvJQ/VjZwME/1FoaZpc7a2ndwOU/eD8GtMnigWvtYOtoQbNZbT
+        YAEGoBE1YPDvgKLkfYqGdKYI7530FqsneWIVYclJ5CEXvPE38a9eC2TbKb0SOYjj+vs7v40/yoQE7
+        k4NN68jbT7q4/PIwEPV2vzemhXOOO98Uy9H+Lq6ErhVJIdH1jDJG5a7zOOPhARBO9XvArNFyyMFwC
+        hXw9kkBw==;
 Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nywx6-0066Du-Ry; Wed, 08 Jun 2022 14:46:34 +0000
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nywx6-00ChZo-GT; Wed, 08 Jun 2022 14:46:32 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 24894302F5E;
-        Wed,  8 Jun 2022 16:46:24 +0200 (CEST)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id EDD48302F4D;
+        Wed,  8 Jun 2022 16:46:23 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id CB17620C119BB; Wed,  8 Jun 2022 16:46:18 +0200 (CEST)
-Message-ID: <20220608144518.199614455@infradead.org>
+        id C09F920C119B6; Wed,  8 Jun 2022 16:46:18 +0200 (CEST)
+Message-ID: <20220608144518.010587032@infradead.org>
 User-Agent: quilt/0.66
-Date:   Wed, 08 Jun 2022 16:27:59 +0200
+Date:   Wed, 08 Jun 2022 16:27:56 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     peterz@infradead.org
 Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
@@ -99,7 +99,7 @@ Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
         linux-clk@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         linux-tegra@vger.kernel.org, linux-arch@vger.kernel.org,
         rcu@vger.kernel.org
-Subject: [PATCH 36/36] cpuidle,clk: Remove trace_.*_rcuidle()
+Subject: [PATCH 33/36] cpuidle,omap3: Use WFI for omap3_pm_idle()
 References: <20220608142723.103523089@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -107,44 +107,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-OMAP was the one and only user.
+arch_cpu_idle() is a very simple idle interface and exposes only a
+single idle state and is expected to not require RCU and not do any
+tracing/instrumentation.
+
+As such, omap_sram_idle() is not a valid implementation. Replace it
+with the simple (shallow) omap3_do_wfi() call. Leaving the more
+complicated idle states for the cpuidle driver.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- drivers/clk/clk.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/mach-omap2/pm34xx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -978,12 +978,12 @@ static void clk_core_disable(struct clk_
- 	if (--core->enable_count > 0)
+--- a/arch/arm/mach-omap2/pm34xx.c
++++ b/arch/arm/mach-omap2/pm34xx.c
+@@ -294,7 +294,7 @@ static void omap3_pm_idle(void)
+ 	if (omap_irq_pending())
  		return;
  
--	trace_clk_disable_rcuidle(core);
-+	trace_clk_disable(core);
- 
- 	if (core->ops->disable)
- 		core->ops->disable(core->hw);
- 
--	trace_clk_disable_complete_rcuidle(core);
-+	trace_clk_disable_complete(core);
- 
- 	clk_core_disable(core->parent);
+-	omap_sram_idle();
++	omap3_do_wfi();
  }
-@@ -1037,12 +1037,12 @@ static int clk_core_enable(struct clk_co
- 		if (ret)
- 			return ret;
  
--		trace_clk_enable_rcuidle(core);
-+		trace_clk_enable(core);
- 
- 		if (core->ops->enable)
- 			ret = core->ops->enable(core->hw);
- 
--		trace_clk_enable_complete_rcuidle(core);
-+		trace_clk_enable_complete(core);
- 
- 		if (ret) {
- 			clk_core_disable(core->parent);
+ #ifdef CONFIG_SUSPEND
 
 
