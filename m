@@ -2,82 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E20CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BAE5CCA48A
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237092AbiFHGEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 02:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44716 "EHLO
+        id S236004AbiFHGDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 02:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243016AbiFHFyK (ORCPT
+        with ESMTP id S1347902AbiFHF6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:54:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62BD39181A;
-        Tue,  7 Jun 2022 20:50:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EDDF6B82581;
-        Wed,  8 Jun 2022 03:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AB779C341C0;
-        Wed,  8 Jun 2022 03:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654660213;
-        bh=Pzo1qS4dLFSya8BwxSFVdwOB54vrcuvErReAICds9fY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=syi90ZlEgUbERqFzV0dDHhLN/LWp+rvL+/8bP53VfwWZ7arlMd1Hr4CdND6rKENQT
-         zPOznWHwelRQrF2zQ+DuQrhyZQiweN4uPkbFqjV5q+svkKKKeHT1VMyNutDEdUlra+
-         Ek9V8nYU5syFlpYCEu2JvzZjOUgjEf02eKF4WS6XLRJ+8AJIkSKkV23XFD5lgdeG+v
-         WvGj78P5yh6pH6O9G47sJWG+OV3Wqit/OnOsfhwuXcrZs9ti1nUrIS/t8di1iyT2le
-         L2luGV7woWYaPZJ687/xCUAGzJ+ZVvBJnw55K6/dolLs0d17Gbm3x0Js19v6JPYvSX
-         90FI+TioPzTJg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 92A3CE737F4;
-        Wed,  8 Jun 2022 03:50:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 8 Jun 2022 01:58:08 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD404227CD9
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 21:25:21 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id p6-20020a05600c1d8600b0039c630b8d96so106411wms.1
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 21:25:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dIB9Zoi6oSsV28Eb5tHcA3tLyAqAFY8VH40TtTHLgNU=;
+        b=LOFTU1tYU5/Z1f5XGipGNjbflsQWOwUgwu5h05VFcytZtP6op926WHFJR1SVt38ubI
+         AB/A4U9bs9IbmGfiD6URbfkNTLnb2KDBmrK4vZfn/PgyMissRkPgpPxv1/1o0eRg8W87
+         pa/JX6Z1LLCNJFWBO4ShyFK+OUJ2ls/8hW1eRI32wlViSokKJybJZkCXb3AfHmDgFOJN
+         EjeX8IpEvE23MxI7GBvzLNmXyrST6KbVrs6Kg2pQ4Q4THJorFLIzgr/smOKfwZ7XWpO+
+         +ul/IUFaVxun47PvYKcUxLOMOWTOoVHpnE3MgGZufyZG2wwCIY4NGDf+PEmNST5GXdk4
+         W/mA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dIB9Zoi6oSsV28Eb5tHcA3tLyAqAFY8VH40TtTHLgNU=;
+        b=IrZ5Wu3FxnQjcL/hZtmso7CGG62b2kAkYf/LqfvwCUuPdUn9z9s1hiijNfAPu/ltXG
+         DEiAWN1eHEfcaK0OTn0UMJUENmx8365S8ZAY83crb20NPiXrjEezKDbfX1gp6I8g47GF
+         +tAnhthSLLIaikt68wNmIvrsAUB41VSfbWbjnnOxnwu8XtZxt6IzUIKlJ0IIL/XZLyFS
+         GWeQ/ETWHrfrBoBiVzIGz8kvkb9WWOYDc2R9Czm1T2Vo1t2IwRIvHXgffj07WmxygK9o
+         01CDmjwWrWAJFzdLCqo66MmagR2O9CBuKQwMAFGyMG6Qdyjc2pe0E6JbZEoQyoD2popK
+         Otgg==
+X-Gm-Message-State: AOAM5302uXWADiVlI6p7Yx+lBkpiEZCDLWqKXtNvuCBNc+H4l56zX3g4
+        5EGFIxhVi8VDTAZrYFocSS4ivIqgkKv0lVZZVHKdafY7LOuDuQ==
+X-Google-Smtp-Source: ABdhPJxq7M69jQtimnYFsucGxQbS4qbMg3gTWP97of3HmIV//mhzGdHJ2pfrWPDz3n3UVRArNL1vVl/iFRZblKmK8YI=
+X-Received: by 2002:a05:600c:5112:b0:397:53f5:e15b with SMTP id
+ o18-20020a05600c511200b0039753f5e15bmr32914425wms.93.1654662320293; Tue, 07
+ Jun 2022 21:25:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: dsa: lantiq_gswip: Fix refcount leak in
- gswip_gphy_fw_list
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165466021359.10912.7788070039284246103.git-patchwork-notify@kernel.org>
-Date:   Wed, 08 Jun 2022 03:50:13 +0000
-References: <20220605072335.11257-1-linmq006@gmail.com>
-In-Reply-To: <20220605072335.11257-1-linmq006@gmail.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     hauke@hauke-m.de, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220608000251.55271-1-heinrich.schuchardt@canonical.com>
+In-Reply-To: <20220608000251.55271-1-heinrich.schuchardt@canonical.com>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Wed, 8 Jun 2022 09:54:21 +0530
+Message-ID: <CAAhSdy2Brfc-Pz3wmZxwocQr1g5TpWWWVVhmeCYbEj5t=3NcKA@mail.gmail.com>
+Subject: Re: [PATCH 1/1] riscv: enable Docker requirements in defconfig
+To:     Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Atish Patra <atishp@rivosinc.com>, Guo Ren <guoren@kernel.org>,
+        Mayuresh Chitale <mchitale@ventanamicro.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Wed, Jun 8, 2022 at 5:33 AM Heinrich Schuchardt
+<heinrich.schuchardt@canonical.com> wrote:
+>
+> The defconfig kernel should be able to run Docker.
+>
+> Enable the missing settings according to [1].
+> make savedefconfig eliminates CONFIG_STACKTRACE
+> which is enabled by default.
+>
+> Many of the settings are also needed to run a defconfig kernel
+> on default distro installations or to run snaps.
+>
+> [1] https://github.com/moby/moby/blob/master/contrib/check-config.sh
+>
+> Signed-off-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Looks good to me.
 
-On Sun,  5 Jun 2022 11:23:34 +0400 you wrote:
-> Every iteration of for_each_available_child_of_node() decrements
-> the reference count of the previous node.
-> when breaking early from a for_each_available_child_of_node() loop,
-> we need to explicitly call of_node_put() on the gphy_fw_np.
-> Add missing of_node_put() to avoid refcount leak.
-> 
-> Fixes: 14fceff4771e ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> 
-> [...]
+Reviewed-by: Anup Patel <anup@brainfault.org>
 
-Here is the summary with links:
-  - net: dsa: lantiq_gswip: Fix refcount leak in gswip_gphy_fw_list
-    https://git.kernel.org/netdev/net/c/0737e018a05e
+Regards,
+Anup
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> ---
+> Cf. [PATCH] arm64: Enable docker support in defconfig
+> https://lore.kernel.org/lkml/20220606140103.32779-1-vincenzo.frascino@arm.com/
+> ---
+>  arch/riscv/configs/defconfig | 65 +++++++++++++++++++++++++++++++++++-
+>  1 file changed, 64 insertions(+), 1 deletion(-)
+>
+> diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+> index 0cc17db8aaba..d4fffcd3cc05 100644
+> --- a/arch/riscv/configs/defconfig
+> +++ b/arch/riscv/configs/defconfig
+> @@ -6,8 +6,18 @@ CONFIG_BPF_SYSCALL=y
+>  CONFIG_IKCONFIG=y
+>  CONFIG_IKCONFIG_PROC=y
+>  CONFIG_CGROUPS=y
+> +CONFIG_MEMCG=y
+> +CONFIG_BLK_CGROUP=y
+>  CONFIG_CGROUP_SCHED=y
+>  CONFIG_CFS_BANDWIDTH=y
+> +CONFIG_RT_GROUP_SCHED=y
+> +CONFIG_CGROUP_PIDS=y
+> +CONFIG_CGROUP_FREEZER=y
+> +CONFIG_CGROUP_HUGETLB=y
+> +CONFIG_CPUSETS=y
+> +CONFIG_CGROUP_DEVICE=y
+> +CONFIG_CGROUP_CPUACCT=y
+> +CONFIG_CGROUP_PERF=y
+>  CONFIG_CGROUP_BPF=y
+>  CONFIG_NAMESPACES=y
+>  CONFIG_USER_NS=y
+> @@ -28,9 +38,11 @@ CONFIG_KVM=m
+>  CONFIG_JUMP_LABEL=y
+>  CONFIG_MODULES=y
+>  CONFIG_MODULE_UNLOAD=y
+> +CONFIG_BLK_DEV_THROTTLING=y
+>  CONFIG_NET=y
+>  CONFIG_PACKET=y
+>  CONFIG_UNIX=y
+> +CONFIG_XFRM_USER=m
+>  CONFIG_INET=y
+>  CONFIG_IP_MULTICAST=y
+>  CONFIG_IP_ADVANCED_ROUTER=y
+> @@ -38,7 +50,43 @@ CONFIG_IP_PNP=y
+>  CONFIG_IP_PNP_DHCP=y
+>  CONFIG_IP_PNP_BOOTP=y
+>  CONFIG_IP_PNP_RARP=y
+> +CONFIG_INET_ESP=m
+> +CONFIG_NETFILTER=y
+> +CONFIG_BRIDGE_NETFILTER=m
+> +CONFIG_NF_CONNTRACK=m
+> +CONFIG_NF_CONNTRACK_FTP=m
+> +CONFIG_NF_CONNTRACK_TFTP=m
+> +CONFIG_NETFILTER_XT_MARK=m
+> +CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=m
+> +CONFIG_NETFILTER_XT_MATCH_CONNTRACK=m
+> +CONFIG_NETFILTER_XT_MATCH_IPVS=m
+> +CONFIG_IP_VS=m
+> +CONFIG_IP_VS_PROTO_TCP=y
+> +CONFIG_IP_VS_PROTO_UDP=y
+> +CONFIG_IP_VS_RR=m
+> +CONFIG_IP_VS_NFCT=y
+> +CONFIG_NF_LOG_ARP=m
+> +CONFIG_NF_LOG_IPV4=m
+> +CONFIG_IP_NF_IPTABLES=m
+> +CONFIG_IP_NF_FILTER=m
+> +CONFIG_IP_NF_TARGET_REJECT=m
+> +CONFIG_IP_NF_NAT=m
+> +CONFIG_IP_NF_TARGET_MASQUERADE=m
+> +CONFIG_IP_NF_TARGET_REDIRECT=m
+> +CONFIG_IP_NF_MANGLE=m
+> +CONFIG_NF_LOG_IPV6=m
+> +CONFIG_IP6_NF_IPTABLES=m
+> +CONFIG_IP6_NF_MATCH_IPV6HEADER=m
+> +CONFIG_IP6_NF_FILTER=m
+> +CONFIG_IP6_NF_TARGET_REJECT=m
+> +CONFIG_IP6_NF_MANGLE=m
+> +CONFIG_BRIDGE=m
+> +CONFIG_BRIDGE_VLAN_FILTERING=y
+> +CONFIG_VLAN_8021Q=m
+> +CONFIG_NET_SCHED=y
+> +CONFIG_NET_CLS_CGROUP=m
+>  CONFIG_NETLINK_DIAG=y
+> +CONFIG_CGROUP_NET_PRIO=y
+>  CONFIG_NET_9P=y
+>  CONFIG_NET_9P_VIRTIO=y
+>  CONFIG_PCI=y
+> @@ -57,7 +105,15 @@ CONFIG_SCSI_VIRTIO=y
+>  CONFIG_ATA=y
+>  CONFIG_SATA_AHCI=y
+>  CONFIG_SATA_AHCI_PLATFORM=y
+> +CONFIG_MD=y
+> +CONFIG_BLK_DEV_DM=m
+> +CONFIG_DM_THIN_PROVISIONING=m
+>  CONFIG_NETDEVICES=y
+> +CONFIG_DUMMY=m
+> +CONFIG_MACVLAN=m
+> +CONFIG_IPVLAN=m
+> +CONFIG_VXLAN=m
+> +CONFIG_VETH=m
+>  CONFIG_VIRTIO_NET=y
+>  CONFIG_MACB=y
+>  CONFIG_E1000E=y
+> @@ -105,7 +161,11 @@ CONFIG_RPMSG_CTRL=y
+>  CONFIG_RPMSG_VIRTIO=y
+>  CONFIG_EXT4_FS=y
+>  CONFIG_EXT4_FS_POSIX_ACL=y
+> +CONFIG_EXT4_FS_SECURITY=y
+> +CONFIG_BTRFS_FS=m
+> +CONFIG_BTRFS_FS_POSIX_ACL=y
+>  CONFIG_AUTOFS4_FS=y
+> +CONFIG_OVERLAY_FS=m
+>  CONFIG_MSDOS_FS=y
+>  CONFIG_VFAT_FS=y
+>  CONFIG_TMPFS=y
+> @@ -119,6 +179,10 @@ CONFIG_ROOT_NFS=y
+>  CONFIG_9P_FS=y
+>  CONFIG_NLS_CODEPAGE_437=y
+>  CONFIG_NLS_ISO8859_1=m
+> +CONFIG_SECURITY=y
+> +CONFIG_SECURITY_SELINUX=y
+> +CONFIG_SECURITY_APPARMOR=y
+> +CONFIG_DEFAULT_SECURITY_DAC=y
+>  CONFIG_CRYPTO_USER_API_HASH=y
+>  CONFIG_CRYPTO_DEV_VIRTIO=y
+>  CONFIG_PRINTK_TIME=y
+> @@ -137,7 +201,6 @@ CONFIG_DEBUG_SPINLOCK=y
+>  CONFIG_DEBUG_MUTEXES=y
+>  CONFIG_DEBUG_RWSEMS=y
+>  CONFIG_DEBUG_ATOMIC_SLEEP=y
+> -CONFIG_STACKTRACE=y
+>  CONFIG_DEBUG_LIST=y
+>  CONFIG_DEBUG_PLIST=y
+>  CONFIG_DEBUG_SG=y
+> --
+> 2.36.1
+>
+>
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
