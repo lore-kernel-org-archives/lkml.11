@@ -2,245 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38675C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:13:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E36C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245227AbiFHQNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:13:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43652 "EHLO
+        id S245219AbiFHQOA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245187AbiFHQNk (ORCPT
+        with ESMTP id S245206AbiFHQN6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:13:40 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2D8D8D36
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:13:38 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id fu3so40931382ejc.7
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 09:13:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UJW5PXvVdEwE0T70Irkxa5WekVJL3N0yIkXVXlVvJX4=;
-        b=IKdRSGMYjDtk/Ff+Y3vj8CHRQ7xdW1cnj+jYmjGhlEzhCu7xbQWVYCFSKe5ukhgx4o
-         1ohsrzszgk5aGZH6fOksVjbiWBnV1PLQ/MyGUtwyNoNO3EkyhbyxT9bHXthQd3odk1dP
-         cKZyJDBKrwtY3ePIu5rzEjT0yaF5oYSPS6U1z0Ygdlb/mcpm6SoMGtAGKq0F4n3habhg
-         cSE3eFG7EqSPW13DItMzTYonzo91GaXTrTlUV1wKlRxxbBto1Re7J4C6vMr0xuUkYmpE
-         eytRz3c1rpRVqZByIfYY3qFekhjYNHh4Pfv0yZ3hSykrJ7tnSIxaQxOWh5+zpaArGU/V
-         FLaQ==
+        Wed, 8 Jun 2022 12:13:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D48DEE443C
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:13:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654704835;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=V6/KVFYBezL5r8u9gDn3/M/o65ARGjiSjwNuOA5jmSE=;
+        b=bfX/CiA8ZgV4u0tRW0N7bcmVL4idr93qg2mD1jKm79Q7JTAPimf5xci70kkTkcdreG4vjg
+        /PtDdtgEO8CyDLB0FDi15Um/ItGAgiWmzOGoMKu2dYbA3q4In8gMiO1hL9NJaR5eR7n1QV
+        2NfhcVNswVx/sa1tbBQDriDKj/O2F6s=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-627-3J0tnilNPd-uX5BYmpN_Xw-1; Wed, 08 Jun 2022 12:13:54 -0400
+X-MC-Unique: 3J0tnilNPd-uX5BYmpN_Xw-1
+Received: by mail-wr1-f71.google.com with SMTP id p8-20020a5d4588000000b0021033f1f79aso4986839wrq.5
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 09:13:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UJW5PXvVdEwE0T70Irkxa5WekVJL3N0yIkXVXlVvJX4=;
-        b=8OoZkqkBQgn35qy4QiZlpghJ096/DWHuPak6dUh7rOet6G9bvnt8922S++0Ih/xybo
-         Fxwk6RWikPRpyJdRKEMpSFbUQuPB06MItHjPGAXKlD9zb0iqud+NHvwSMJ/GEzQHRtvt
-         +R9l+vAvFKhS+2L9B+MCWDN4WOfvAOtRsm7VeJ2WgFPU4WlGXS9I1+71LVcXOzR1ZnbU
-         b8pQk/0NjCjD8vETNtSYtuoF7Qp3lK9BUcdff0E9ACqUgvRZFNlk4vPrLIjtP4/y0hFh
-         mTLu9r0s/Ee67avqqdb78b4xML953dx5VTt0e7iEwa8yK7i34wSRG/KkEo0nl3BB+1d5
-         WGNw==
-X-Gm-Message-State: AOAM531D6OFkoJiR5QywZhStBXkRzbzPcsO/WTu/FVwrKcEKyP0HJ6gP
-        HQ6E5GoXT+rayc0D3Zi66gZNb+6s/wZ6mq3J6xJRpA==
-X-Google-Smtp-Source: ABdhPJxSVb/1m5UsWH1NoJ7H8cB1Jdw/pYZXx5gMJdTqIcaMUAGx8Btj4XYutdVzOpyvypZ2Yp5l+kIpeEpJ7uxE3z0=
-X-Received: by 2002:a17:906:4d50:b0:70d:afd4:1e63 with SMTP id
- b16-20020a1709064d5000b0070dafd41e63mr28190727ejv.618.1654704816852; Wed, 08
- Jun 2022 09:13:36 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=V6/KVFYBezL5r8u9gDn3/M/o65ARGjiSjwNuOA5jmSE=;
+        b=mKARM1wlVujON1xMzhsy8P/sRKPkmCoyCU5MQ19mJSYzfTIr9vXnpEiX8njIJWhXf9
+         Y084AFuN5nRpbddMWGjobwRUaFHLRRqiayYmAuURo+JHsE2UthoMqdbJKN15Vf/4ZQHq
+         7sysMPL/UisPo86Ikrw4iUTPUC/63fZPvu6aMnT+Q6I4fJo8JfoauOLd6s/TAz0Dp1AU
+         s6MeXMqj6Q8Bqz+vQX+wv693zdgjH6GMnF4uJzUIQJ5JiEk320ZVvBUF91tOhW5CH8AJ
+         gvDyR3LS6fipRSamx/EDDKON0XazWSXm3QtL9GhjnlHBkpAC2B785ggBvhNcFI0Zg4i2
+         bYHw==
+X-Gm-Message-State: AOAM530vQcjgDqyoCbWWChYk1JfKheWmqjeQ75JJdZid1maRRiVt0LZp
+        Mk39RLlRKlSGQtozDIrCsIHnAl9MJzZ8bgGP2sVe+pestfrsZdursysMfVHsCx/rgW+s1Qw2IiP
+        SSMx1fS43Bu/3EqLYMbqWvmwn
+X-Received: by 2002:a05:6000:18a8:b0:212:ae71:a3f6 with SMTP id b8-20020a05600018a800b00212ae71a3f6mr32955041wri.635.1654704833168;
+        Wed, 08 Jun 2022 09:13:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwp6W60XuDhi1wHmd7D6q1nJKUu0UVfAuRkXbrvd5t24utVbdoCL1xFF3/INal2nX6xkKu0aQ==
+X-Received: by 2002:a05:6000:18a8:b0:212:ae71:a3f6 with SMTP id b8-20020a05600018a800b00212ae71a3f6mr32955019wri.635.1654704832964;
+        Wed, 08 Jun 2022 09:13:52 -0700 (PDT)
+Received: from gator (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
+        by smtp.gmail.com with ESMTPSA id bi11-20020a05600c3d8b00b0039c3ecdca66sm16717698wmb.23.2022.06.08.09.13.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 09:13:52 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 18:13:50 +0200
+From:   Andrew Jones <drjones@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Oliver Upton <oupton@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 093/144] KVM: selftests: Track kvm_vcpu object in
+ tsc_scaling_sync
+Message-ID: <20220608161350.abq5hqr6t3wu5q52@gator>
+References: <20220603004331.1523888-1-seanjc@google.com>
+ <20220603004331.1523888-94-seanjc@google.com>
 MIME-Version: 1.0
-References: <20220608110734.2928245-1-tzungbi@kernel.org> <20220608110734.2928245-9-tzungbi@kernel.org>
-In-Reply-To: <20220608110734.2928245-9-tzungbi@kernel.org>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Wed, 8 Jun 2022 09:13:25 -0700
-Message-ID: <CABXOdTcDig=fRGjPDVOsXt5t7nz6C8GAL7ZzKXDNZ1V0kYcy1w@mail.gmail.com>
-Subject: Re: [PATCH v3 08/23] platform/chrome: cros_ec_proto: add Kunit tests
- for getting proto info
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
-        <chrome-platform@lists.linux.dev>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220603004331.1523888-94-seanjc@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 4:08 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
->
-> cros_ec_get_proto_info() expects to receive
-> sizeof(struct ec_response_get_protocol_info) from send_command().  The
-> payload is valid only if the return value is positive.
->
-> Add Kunit tests for returning 0 from send_command() in
-> cros_ec_get_proto_info().
->
-> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
-
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
-
+On Fri, Jun 03, 2022 at 12:42:40AM +0000, Sean Christopherson wrote:
+> Track the added 'struct kvm_vcpu' object in tsc_scaling_sync instead of
+> relying purely on the VM + vcpu_id combination.  Ideally, the test
+> wouldn't need to manually manage vCPUs, but the need to invoke a per-VM
+> ioctl before creating vCPUs is not handled by the selftests framework,
+> at least not yet...
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
 > ---
-> No v2.  New and separated from the original series.
->
->  drivers/platform/chrome/cros_ec_proto_test.c | 132 +++++++++++++++++++
->  1 file changed, 132 insertions(+)
->
-> diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
-> index 8b16666c1657..1378ac90e1cb 100644
-> --- a/drivers/platform/chrome/cros_ec_proto_test.c
-> +++ b/drivers/platform/chrome/cros_ec_proto_test.c
-> @@ -407,6 +407,71 @@ static void cros_ec_proto_test_query_all_no_pd_return_error(struct kunit *test)
->         }
->  }
->
-> +static void cros_ec_proto_test_query_all_no_pd_return0(struct kunit *test)
-> +{
-> +       struct cros_ec_proto_test_priv *priv = test->priv;
-> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
-> +       struct ec_xfer_mock *mock;
-> +       int ret;
-> +
-> +       /* Set some garbage bytes. */
-> +       ec_dev->max_passthru = 0xbf;
-> +
-> +       /* For cros_ec_get_proto_info() without passthru. */
-> +       {
-> +               struct ec_response_get_protocol_info *data;
-> +
-> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +
-> +               /*
-> +                * Although it doesn't check the value, provides valid sizes so that
-> +                * cros_ec_query_all() allocates din and dout correctly.
-> +                */
-> +               data = (struct ec_response_get_protocol_info *)mock->o_data;
-> +               data->max_request_packet_size = 0xbe;
-> +               data->max_response_packet_size = 0xef;
-> +       }
-> +
-> +       /* For cros_ec_get_proto_info() with passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +       }
-> +
-> +       cros_ec_proto_test_query_all_pretest(test);
-> +       ret = cros_ec_query_all(ec_dev);
-> +       KUNIT_EXPECT_EQ(test, ret, 0);
-> +
-> +       /* For cros_ec_get_proto_info() without passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
-> +                               sizeof(struct ec_response_get_protocol_info));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-> +       }
-> +
-> +       /* For cros_ec_get_proto_info() with passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command,
-> +                               EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
-> +                               EC_CMD_GET_PROTOCOL_INFO);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
-> +                               sizeof(struct ec_response_get_protocol_info));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-> +
-> +               KUNIT_EXPECT_EQ(test, ec_dev->max_passthru, 0);
-> +       }
-> +}
-> +
->  static void cros_ec_proto_test_query_all_legacy_normal_v3_return_error(struct kunit *test)
+>  .../selftests/kvm/x86_64/tsc_scaling_sync.c     | 17 ++++++++++-------
+>  1 file changed, 10 insertions(+), 7 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/kvm/x86_64/tsc_scaling_sync.c b/tools/testing/selftests/kvm/x86_64/tsc_scaling_sync.c
+> index f0083d8cfe98..b7cd5c47fc53 100644
+> --- a/tools/testing/selftests/kvm/x86_64/tsc_scaling_sync.c
+> +++ b/tools/testing/selftests/kvm/x86_64/tsc_scaling_sync.c
+> @@ -46,38 +46,41 @@ static void guest_code(void)
+>  
+>  static void *run_vcpu(void *_cpu_nr)
 >  {
->         struct cros_ec_proto_test_priv *priv = test->priv;
-> @@ -472,6 +537,71 @@ static void cros_ec_proto_test_query_all_legacy_normal_v3_return_error(struct ku
->         }
->  }
->
-> +static void cros_ec_proto_test_query_all_legacy_normal_v3_return0(struct kunit *test)
-> +{
-> +       struct cros_ec_proto_test_priv *priv = test->priv;
-> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
-> +       struct ec_xfer_mock *mock;
-> +       int ret;
-> +
-> +       /* For cros_ec_get_proto_info() without passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +       }
-> +
-> +       /* For cros_ec_host_command_proto_query_v2(). */
-> +       {
-> +               struct ec_response_hello *data;
-> +
-> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +
-> +               data = (struct ec_response_hello *)mock->o_data;
-> +               data->out_data = 0xa1b2c3d4;
-> +       }
-> +
-> +       cros_ec_proto_test_query_all_pretest(test);
-> +       ret = cros_ec_query_all(ec_dev);
-> +       KUNIT_EXPECT_EQ(test, ret, 0);
-> +
-> +       /* For cros_ec_get_proto_info() without passthru. */
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
-> +                               sizeof(struct ec_response_get_protocol_info));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-> +       }
-> +
-> +       /* For cros_ec_host_command_proto_query_v2(). */
-> +       {
-> +               struct ec_params_hello *data;
-> +
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_HELLO);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize, sizeof(struct ec_response_hello));
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(*data));
-> +
-> +               data = (struct ec_params_hello *)mock->i_data;
-> +               KUNIT_EXPECT_EQ(test, data->in_data, 0xa0b0c0d0);
-> +
-> +               KUNIT_EXPECT_EQ(test, ec_dev->proto_version, 2);
-> +               KUNIT_EXPECT_EQ(test, ec_dev->max_request, EC_PROTO2_MAX_PARAM_SIZE);
-> +               KUNIT_EXPECT_EQ(test, ec_dev->max_response, EC_PROTO2_MAX_PARAM_SIZE);
-> +               KUNIT_EXPECT_EQ(test, ec_dev->max_passthru, 0);
-> +               KUNIT_EXPECT_PTR_EQ(test, ec_dev->pkt_xfer, NULL);
-> +               KUNIT_EXPECT_EQ(test, ec_dev->din_size, EC_PROTO2_MSG_BYTES);
-> +               KUNIT_EXPECT_EQ(test, ec_dev->dout_size, EC_PROTO2_MSG_BYTES);
-> +       }
-> +}
-> +
->  static void cros_ec_proto_test_query_all_legacy_xfer_error(struct kunit *test)
->  {
->         struct cros_ec_proto_test_priv *priv = test->priv;
-> @@ -999,7 +1129,9 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
->         KUNIT_CASE(cros_ec_proto_test_check_result),
->         KUNIT_CASE(cros_ec_proto_test_query_all_normal),
->         KUNIT_CASE(cros_ec_proto_test_query_all_no_pd_return_error),
-> +       KUNIT_CASE(cros_ec_proto_test_query_all_no_pd_return0),
->         KUNIT_CASE(cros_ec_proto_test_query_all_legacy_normal_v3_return_error),
-> +       KUNIT_CASE(cros_ec_proto_test_query_all_legacy_normal_v3_return0),
->         KUNIT_CASE(cros_ec_proto_test_query_all_legacy_xfer_error),
->         KUNIT_CASE(cros_ec_proto_test_query_all_legacy_return_error),
->         KUNIT_CASE(cros_ec_proto_test_query_all_legacy_data_error),
-> --
+> -	unsigned long cpu = (unsigned long)_cpu_nr;
+> +	unsigned long vcpu_id = (unsigned long)_cpu_nr;
+>  	unsigned long failures = 0;
+>  	static bool first_cpu_done;
+> +	struct kvm_vcpu *vcpu;
+>  
+>  	/* The kernel is fine, but vm_vcpu_add_default() needs locking */
+>  	pthread_spin_lock(&create_lock);
+>  
+> -	vm_vcpu_add_default(vm, cpu, guest_code);
+> +	vm_vcpu_add_default(vm, vcpu_id, guest_code);
+> +	vcpu = vcpu_get(vm, vcpu_id);
+>  
+>  	if (!first_cpu_done) {
+>  		first_cpu_done = true;
+> -		vcpu_set_msr(vm, cpu, MSR_IA32_TSC, TEST_TSC_OFFSET);
+> +		vcpu_set_msr(vm, vcpu->id, MSR_IA32_TSC, TEST_TSC_OFFSET);
+>  	}
+>  
+>  	pthread_spin_unlock(&create_lock);
+>  
+>  	for (;;) {
+> -		volatile struct kvm_run *run = vcpu_state(vm, cpu);
+> +		volatile struct kvm_run *run = vcpu->run;
+>                  struct ucall uc;
+>  
+> -                vcpu_run(vm, cpu);
+> +		vcpu_run(vm, vcpu->id);
+>                  TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+>                              "Got exit_reason other than KVM_EXIT_IO: %u (%s)\n",
+>                              run->exit_reason,
+>                              exit_reason_str(run->exit_reason));
+>  
+> -                switch (get_ucall(vm, cpu, &uc)) {
+> +		switch (get_ucall(vm, vcpu->id, &uc)) {
+
+The two changes above show that this file had some space vs. tab issues.
+I just checked and these two lines weren't the only ones, so I guess we
+can add cleaning up whitespace of x86_64/tsc_scaling_sync.c to the rainy
+day TODO.
+
+Thanks,
+drew
+
+>                  case UCALL_DONE:
+>  			goto out;
+>  
+>                  case UCALL_SYNC:
+> -			printf("Guest %ld sync %lx %lx %ld\n", cpu, uc.args[2], uc.args[3], uc.args[2] - uc.args[3]);
+> +			printf("Guest %d sync %lx %lx %ld\n", vcpu->id,
+> +			       uc.args[2], uc.args[3], uc.args[2] - uc.args[3]);
+>  			failures++;
+>  			break;
+>  
+> -- 
 > 2.36.1.255.ge46751e96f-goog
->
+> 
+
