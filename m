@@ -2,86 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53609CCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:34:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7111EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:36:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241308AbiFHOeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 10:34:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
+        id S241254AbiFHOgI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 10:36:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241254AbiFHOeS (ORCPT
+        with ESMTP id S241005AbiFHOgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 10:34:18 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131E93D670D
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 07:34:17 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id p10so28625548wrg.12
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 07:34:17 -0700 (PDT)
+        Wed, 8 Jun 2022 10:36:03 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB864C7AD
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 07:35:59 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id f9so7339144plg.0
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 07:35:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=google.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=smuYMl0mhH56tDeHdXWNQOJZvruGPXatNdGHlD7YYTs=;
-        b=lh/wsibIUywoWWz5yLN1RVAdkgCCFrBp+/s6WpZdSKwBaZHa3wcoks5skuKZz30cfP
-         nSZWTrzWnqLrVP1W2Wk7qG5pXrVup+/0Wwy1s6utotmkgIgACXZfPb+9Y79qoUfX+oJ9
-         ExKOMgNgf/jN6HJ6ywgE+i/QHy5irCgS3+L230B7vEM9DAXccGChvXIK5jIi7Z+x71Cc
-         b0iNAVnZ9lvEzXnIlIjF1NlS2vyBb2eyTgxDgDrBW9qowNQ0Zwq9SSLVLFmfM2NmFXQo
-         UOvufvy+J2IzDSJrbR/BjQxjf1cfYIk5QRwc+J6D2AYq1DnctbL2XqJq/7cEZA+q/GF6
-         73QA==
+        bh=sM0vOKDLuM2x2RGbr6R+WhU1WWlFw1qcwPB+NSg5ZHw=;
+        b=ko20Wf2JiZcVDdP5ORLDqH5pV/VsUw6wkNmHKdQozby+SJ3T6C5fskDheWX12bDXCJ
+         N+FQPua/+3TyfhjSHvTn1wRv0yc8nBU3ae9xXRfy6Y+U/tt0fnBt95SFHGWvxzVzxK/N
+         OgFVuSzrQuOfq49/KiA9i5VnFpd+5OWPBgxbu1Nt0PUmbPe2xZjHEo7+ZM+79bA1VZkL
+         xCyBOIFAutdc9RKxzHKFt0ut1l3fPOrtusEaZY+sHv6m9e3cZLqEaiAXq2boyb55NHho
+         JJHcgrDgeFnt/lHI/UtBD15D6WceAZ+RWSfG/kwp8Eg/Xpgin2tZ22BZ7DonSvSHfHe6
+         6o0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=smuYMl0mhH56tDeHdXWNQOJZvruGPXatNdGHlD7YYTs=;
-        b=3uaXcEH9s2i2Wl0Vigw+CyppEOF6c2iXA/uJ/3ucpohO3SqocZE6HS+pF2nVphU+JI
-         JEE6r4zPXq5FCf8XB2RoI8KfA/keud26vdQuEVDxeaCQus0OR9syp5vlVVsBDGdN/GOV
-         U1E0SScIM6toYMubKdA0jX75aSPTNrs80RGeN89qDhijBPP0qSjD8xMmMja/Lpv6DxEI
-         35V3RjiWhAhM62XUg9ndmEmnkP9zU/5YdZkRSmcYwIHT6t5qYhXLpDhIVOTATYu9t5Ih
-         xddptFjzqmJb6p+RPA7sWBV4bj5q2PJ50Jv5SFsz2Srw8EChhHmQeLKUBG/8trdoJfXc
-         TY6Q==
-X-Gm-Message-State: AOAM533TOklDZaLkB1+okb/5eLcG7fmpKA2GfDx2aZQWOC6uSLdObIv+
-        t5OyFqp/v1k6wXOhr79pv+K9Ew==
-X-Google-Smtp-Source: ABdhPJzA4yH9/T+sa0NpsuRjmT5XXk943o+/qsHi0qHrpaB16l7/vjdk7u5BWNDdUZEneCaB74mdag==
-X-Received: by 2002:adf:f390:0:b0:218:4de4:510c with SMTP id m16-20020adff390000000b002184de4510cmr10350628wro.475.1654698855460;
-        Wed, 08 Jun 2022 07:34:15 -0700 (PDT)
-Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
-        by smtp.gmail.com with ESMTPSA id bp3-20020a5d5a83000000b0020cff559b1dsm21061219wrb.47.2022.06.08.07.34.14
+        bh=sM0vOKDLuM2x2RGbr6R+WhU1WWlFw1qcwPB+NSg5ZHw=;
+        b=tOHj10vSbrT7nVNAi0EUfm919pfxi0zlBpBNSNcuT6NhUMRYvPrO26ffMbTv0Y2BQ/
+         gFGFxsDr6V3YxU3TSEKF+wt+XHCFUoKb56UsDRR0lnuaC7AKrZ78CsJhedGU/1pRr9/G
+         pVAf48QXikd4hPYZ48tNl2EexEmLQhOZZbj0a2/BYpd4Oyz/QaJ+kgi2PpA4yd6czjqD
+         qieIv4qL7sIaSxgeVKUA78LqhR+kFCILe29ix0KJaoDk476NZR35WhmsJfy5aTQ/TA4F
+         oocJAtjsgj610J9abiPOkHufMrm8mgSuhfc/FhNTG/gw+NfFQ3MTS2vmUr8jhhaBqxgM
+         LQXA==
+X-Gm-Message-State: AOAM531E9/FuXWEQNlqp1jkWLCMgeR+ZGR3KPJqzKR62UQwNzIs6ohLG
+        wVgZIn/70R8OOSJkyVXXGVuG2w==
+X-Google-Smtp-Source: ABdhPJxJAqZcmDfalnGoe0B/xnu7nRMEbGz+uHvJu+Sj7j8FrGcHTLMVInI/TL1CUggwLMU/04AX6Q==
+X-Received: by 2002:a17:902:7005:b0:163:ffe7:32eb with SMTP id y5-20020a170902700500b00163ffe732ebmr34934970plk.18.1654698958908;
+        Wed, 08 Jun 2022 07:35:58 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id h1-20020a655181000000b003fbaae74971sm15021736pgq.72.2022.06.08.07.35.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 07:34:14 -0700 (PDT)
-Date:   Wed, 8 Jun 2022 15:34:12 +0100
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/4] backlight: ipaq_micro: Use backlight helper
-Message-ID: <20220608143412.rbhk4ne7jwubzz6g@maple.lan>
-References: <20220607190925.1134737-1-steve@sk2.org>
- <20220607190925.1134737-4-steve@sk2.org>
+        Wed, 08 Jun 2022 07:35:58 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 14:35:55 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vasant Karasulli <vkarasulli@suse.de>
+Cc:     linux-kernel@vger.kernel.org, jroedel@suse.de, kvm@vger.kernel.org,
+        bp@alien8.de, x86@kernel.org, thomas.lendacky@amd.com
+Subject: Re: [PATCH v6 2/4] x86/tests: Add tests for AMD SEV-ES #VC handling
+ Add KUnit based tests to validate Linux's VC handling for instructions cpuid
+ and wbinvd. These tests: 1. install a kretprobe on the #VC handler
+ (sev_es_ghcb_hv_call, to access GHCB before/after the resulting VMGEXIT). 2.
+ trigger an NAE by executing either cpuid or wbinvd. 3. check that the
+ kretprobe was hit with the right exit_code available in GHCB.
+Message-ID: <YqCzy5Kngj+OgD2h@google.com>
+References: <20220318094532.7023-1-vkarasulli@suse.de>
+ <20220318094532.7023-3-vkarasulli@suse.de>
+ <Ykzrb1uyPZ2AKWos@google.com>
+ <YqBivtMl74FGmz7r@vasant-suse>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220607190925.1134737-4-steve@sk2.org>
+In-Reply-To: <YqBivtMl74FGmz7r@vasant-suse>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 09:09:24PM +0200, Stephen Kitt wrote:
-> Instead of retrieving the backlight brightness in struct
-> backlight_properties manually, and then checking whether the backlight
-> should be on at all, use backlight_get_brightness() which does all
-> this and insulates this from future changes.
+On Wed, Jun 08, 2022, Vasant Karasulli wrote:
+> On Mi 06-04-22 01:22:55, Sean Christopherson wrote:
+> > > +	if (ret) {
+> > > +		kunit_info(test, "Could not register kretprobe. Skipping.");
+> > > +		goto out;
+> > > +	}
+> > > +
+> > > +	test->priv = kunit_kzalloc(test, sizeof(u64), GFP_KERNEL);
+> >
+> > Allocating 8 bytes and storing the pointer an 8-byte field is rather pointless :-)
+> >
 > 
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Daniel Thompson <daniel.thompson@linaro.org>
-> Cc: Jingoo Han <jingoohan1@gmail.com>
-> Cc: Helge Deller <deller@gmx.de>
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-fbdev@vger.kernel.org
+> Actually it's necessary to allocate memory to test->priv before using according to
+> https://www.kernel.org/doc/html/latest/dev-tools/kunit/tips.html
 
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-
-
-Daniel.
+If priv points at structure of some form, sure, but you're storing a simple value.
