@@ -2,95 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8712DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 19:44:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFBFEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 19:46:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235610AbiFHToJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 15:44:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45792 "EHLO
+        id S232647AbiFHTqF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 15:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbiFHToH (ORCPT
+        with ESMTP id S229725AbiFHTqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 15:44:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD4191D301;
-        Wed,  8 Jun 2022 12:44:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B9B4B82854;
-        Wed,  8 Jun 2022 19:44:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4DD7C34116;
-        Wed,  8 Jun 2022 19:44:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654717444;
-        bh=Att+LqdhkR6w/JyFVjxPin4t9B1Qqk8zksop2M3yoj8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Nq3SaUPBWVYNiopPrkgm6eDiyhlBOZsSTK/5xx78esOq/woDQckQdcj8P+q6ufBj+
-         7rSsDrEMr+9BSDAarl4LD1DaDJu+3TukkqouN0P9vt1oz5Nq3Sbgh4A/eUfKEY9b2u
-         vXFCftlrH1lGKM6CGqOUArXSc+MS2tmmWrwxhkqtbCZ8x37SkGQAsEczSKxlRhBQ6q
-         qGflCyw3mGK1URxVSRl+fv8zHRNUZIPL9HNXJgjfLNCDiB+MpwbQF9uwLWU/t+Zo4+
-         CBoJVx8ufpjQ94+VDKRxvHEO5kep9XcyodJO67+77gozKDv5Ts/1V4K0AyVVwtjczM
-         ma37tfySR5Czg==
-Date:   Wed, 8 Jun 2022 21:43:59 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        dave.hansen@linux.intel.com
-Subject: Re: [PATCH v1 1/1] MAINTAINERS: Update Synopsys DesingWare I2C to
- Supported
-Message-ID: <YqD7/3e03Us//r9W@kunai>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        dave.hansen@linux.intel.com
-References: <20220530120247.70582-1-andriy.shevchenko@linux.intel.com>
+        Wed, 8 Jun 2022 15:46:03 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D7C2755B8
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 12:46:01 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id 25so28203679edw.8
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 12:46:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BhtzZ9/+YJ8kUb1nFAroKIyulEyrhISYonq+AswBPr0=;
+        b=TcmsN9mOlA8bP2rZnnucTbbVTFpfHrbBTVeCL/Pi1vlWrTzL5v327k8N9s5oN9q0WY
+         ZKDjqXOfAw1qGniZ7H5FXu4txkapnU15nG6VG93XcpVhPMMSZOLrwsHwfZnzNuST7sad
+         /5szK7e4nkKLsKiIH7Tq9qY45jhAL/JhE1NA8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BhtzZ9/+YJ8kUb1nFAroKIyulEyrhISYonq+AswBPr0=;
+        b=EytSWwTnQu7flpsxzx49gxBVYaVqZWvfbtJGov4NslX8W/ShavvHQ725enRoHbsL69
+         tV2Z/HD3nPFA1aDlCxg86Ekz3GkOe4Y7JwqWXQBW7JHvhlEhdlAzB7tdctYXIEbEZ0gG
+         noM2jXP7Qwm9A9TQQPAGU5i/tMU5Pq78EhqXaQ8uPK1NBsw8dH2obpplLzXyRZK1aDz+
+         LIWtC/Omsd9l8s4xTv6Uv5OZatMV2CNwuPuQlVVFr9vyi7MpEW57gT/qFIfHTV3xQAUe
+         PKOpsxW95D7pUsitZe6m+fbL4IdR7sVDU2GjCqkf17RVHB+K9ckM6na4EBp8eNNLaiAi
+         AbDw==
+X-Gm-Message-State: AOAM5338XSYjK+F+vBdLMLsQJHO5GnAG2dylJ08dutj8LqyvxpPG/rwC
+        9WTcDjgQArAbwJWeXfMNhiAH47RX27c8e8TG
+X-Google-Smtp-Source: ABdhPJz8qZKiPMleb/7ARvJNqyLoLJvrX+CySsPcW4864jhRdTtgduMlb67iZvrVSrJLyVXhIO0kQA==
+X-Received: by 2002:aa7:c054:0:b0:433:2d3b:10ed with SMTP id k20-20020aa7c054000000b004332d3b10edmr3303325edo.211.1654717559977;
+        Wed, 08 Jun 2022 12:45:59 -0700 (PDT)
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com. [209.85.128.54])
+        by smtp.gmail.com with ESMTPSA id pk16-20020a170906d7b000b006fee526ed72sm9380728ejb.217.2022.06.08.12.45.59
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 12:45:59 -0700 (PDT)
+Received: by mail-wm1-f54.google.com with SMTP id r123-20020a1c2b81000000b0039c1439c33cso11609302wmr.5
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 12:45:59 -0700 (PDT)
+X-Received: by 2002:a05:600c:42c6:b0:39c:4bfd:a4a9 with SMTP id
+ j6-20020a05600c42c600b0039c4bfda4a9mr850467wme.8.1654717201668; Wed, 08 Jun
+ 2022 12:40:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="njmDEJOs1bnqM/32"
-Content-Disposition: inline
-In-Reply-To: <20220530120247.70582-1-andriy.shevchenko@linux.intel.com>
+References: <20220606202109.1306034-1-ankur.a.arora@oracle.com>
+ <CAHk-=wh89D_69JZtB0MNKbrTM4dPJisK6E0yFKH-hA++F13mzw@mail.gmail.com>
+ <87k09s1pgo.fsf@oracle.com> <CAHk-=wj9En-BC4t7J9xFZOws5ShwaR9yor7FxHZr8CTVyEP_+Q@mail.gmail.com>
+ <877d5rt0uz.fsf@oracle.com>
+In-Reply-To: <877d5rt0uz.fsf@oracle.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 8 Jun 2022 12:39:45 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgGjmCwyrs4Druy26rUddoWj29PjAKRZD=q0pzfVNioDg@mail.gmail.com>
+Message-ID: <CAHk-=wgGjmCwyrs4Druy26rUddoWj29PjAKRZD=q0pzfVNioDg@mail.gmail.com>
+Subject: Re: [PATCH v3 00/21] huge page clearing optimizations
+To:     Ankur Arora <ankur.a.arora@oracle.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>,
+        Jason Gunthorpe <jgg@nvidia.com>, jon.grimm@amd.com,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Joao Martins <joao.m.martins@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Jun 8, 2022 at 12:25 PM Ankur Arora <ankur.a.arora@oracle.com> wrote:
+>
+> But, even on x86, AFAICT gigantic pages could straddle MAX_SECTION_BITS?
+> An arch specific clear_huge_page() code could, however handle 1GB pages
+> via some kind of static loop around (30 - MAX_SECTION_BITS).
 
---njmDEJOs1bnqM/32
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Even if gigantic pages straddle that area, it simply shouldn't matter.
 
-On Mon, May 30, 2022 at 03:02:47PM +0300, Andy Shevchenko wrote:
-> The actual status of the code is Supported (from x86 perspective).
->=20
-> Reported-by: dave.hansen@linux.intel.com
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+The only reason that MAX_SECTION_BITS matters is for the 'struct page *' lookup.
 
-Fixed typo in $subject and applied to for-current, thanks!
+And the only reason for *that* is because of HIGHMEM.
 
+So it's all entirely silly and pointless on any sane architecture, I think.
 
---njmDEJOs1bnqM/32
-Content-Type: application/pgp-signature; name="signature.asc"
+> We'll need a preemption point there for CONFIG_PREEMPT_VOLUNTARY
+> as well, right?
 
------BEGIN PGP SIGNATURE-----
+Ahh, yes.  I should have looked at the code, and not just gone by my
+"PREEMPT_NONE vs PREEMPT" thing that entirely forgot about how we
+split that up.
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKg+/8ACgkQFA3kzBSg
-KbZacBAAlMZzFnT7WhlvQ4sADHG9K3CvaGswKJQ58EbAvVFiIsvxSLBx6Hpf8WEb
-9ZVhrBiNB87WRx9EvOxyV3t7DuJZBznCUo9RGzQQVOageYz79MdfvLbwpg8sa00Z
-keCkbzYYGQ8gV6wCc+gD34lX6eBvmB/esq39Nep9YXsFhEHLd+BVBUriPkaGWd5t
-Mdu8UuwLR3HvvyG8sUy5rzWIpCbkigDDfIVc7OV8lwNpItjPcVFSvbwzc6g02uvm
-yMxmnLV0bXcTmPMWelMIjHmT8zPtoW/VgAAOa73fjPzdfSCD6jEy5wRrbfHYbj4I
-caPHHgnGfculHnF0wJWVs/FMi+F9F8NspWOe5eHMaATm1uS6Kerpm3iICTDXWIRw
-hWSz9e8pnThIHqsZcLfIgpe/X4hLHKKQlpxtvr1iJ1RQHBJ6Xko3b8HgEnshO1ls
-Cg7XVrSVxyjzTUpgvQ4kB/qh11szghDYsmCT2fj009Rlj6pt3Z4Fertim19p8fR/
-jlwhova2Ydcz61/cbxO1IlppfdfB/Hrtsf6wk/f7jwHiYSw+1WG2snBwRbbElpxp
-jEAGWBTU5pVLgn/ntDbQPmUL4YiR1WMrVp+dUQyhFbNmLsSZDEVHJixeCIygW0y0
-faSLS9p+BZ8KTBdQmsbr17X1fLKkj8ZahsCiTHjDEBqi6AcOn28=
-=1k/a
------END PGP SIGNATURE-----
+> Just one minor point -- seems to me that the choice of nontemporal or
+> temporal might have to be based on a hint to clear_huge_page().
 
---njmDEJOs1bnqM/32--
+Quite possibly. But I'd prefer that  as a separate "look, this
+improves numbers by X%" thing from the whole "let's make the
+clear_huge_page() interface at least sane".
+
+                 Linus
