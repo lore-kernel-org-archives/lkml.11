@@ -2,102 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10B4EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:16:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C0E0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235850AbiFHKQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
+        id S235688AbiFHKQG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:16:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236492AbiFHKMs (ORCPT
+        with ESMTP id S236312AbiFHKOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:12:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C3D5F68;
-        Wed,  8 Jun 2022 02:58:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6700CCE2748;
-        Wed,  8 Jun 2022 09:58:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 730E6C3411C;
-        Wed,  8 Jun 2022 09:58:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654682293;
-        bh=FcJ8Di2tEi7J9mL1kUYDLPSlQ/etsnhAYzuqiYLHspg=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=oLv93pnlM5mEtu4/ho0CsYmNpR45IoFG+CHaYiZnEe9m4CBxPEmqOFnVYN1wqBDEx
-         jjCb2oe0VCEO752zZTkl7gSY5ImbSbk14KoQ4YQVkyw8oCLL6is66rwycRV6bjLPFQ
-         eHnMG6+t0yArDfiWTGi1kHqGw/XmcOVdGzsiO0TPb+b+/ncL54MqF7htThYUFpl/SC
-         JHhrx3l/erbi+nRH6BrmX7nXhhuUju2zCRvgYYtCQy6mLjO+vmNw8eqah70qhheZ8K
-         O4LMY6injcdWA15JGvYU5bVxzl7K9M/xU6t2sXg7tueNhL0kgU0KlX7Vr516jzBK7u
-         uBKYI0WHx/eIw==
-Date:   Wed, 8 Jun 2022 11:58:09 +0200 (CEST)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-cc:     linux-doc@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        kernel test robot <lkp@intel.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        =?ISO-8859-15?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>,
-        Nikolai Kondrashov <spbnick@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        llvm@lists.linux.dev, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] HID: uclogic: properly format kernel-doc comment for
- hid_dbg() wrappers
-In-Reply-To: <20220604020711.252312-1-bagasdotme@gmail.com>
-Message-ID: <nycvar.YFH.7.76.2206081157590.10851@cbobk.fhfr.pm>
-References: <20220604020711.252312-1-bagasdotme@gmail.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Wed, 8 Jun 2022 06:14:53 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A6632264459;
+        Wed,  8 Jun 2022 03:02:48 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 009ED143D;
+        Wed,  8 Jun 2022 03:02:48 -0700 (PDT)
+Received: from [10.162.41.25] (unknown [10.162.41.25])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 491583F800;
+        Wed,  8 Jun 2022 03:02:35 -0700 (PDT)
+Message-ID: <1c1a384e-3d58-0434-3ab1-61160cd00970@arm.com>
+Date:   Wed, 8 Jun 2022 15:32:28 +0530
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 3/6] mm: Ratelimited mirrored memory related warning
+ messages
+Content-Language: en-US
+To:     Wupeng Ma <mawupeng1@huawei.com>, corbet@lwn.net, will@kernel.org,
+        ardb@kernel.org, catalin.marinas@arm.com
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        dvhart@infradead.org, andy@infradead.org, rppt@kernel.org,
+        akpm@linux-foundation.org, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu, paulmck@kernel.org,
+        keescook@chromium.org, songmuchun@bytedance.com,
+        rdunlap@infradead.org, damien.lemoal@opensource.wdc.com,
+        swboyd@chromium.org, wei.liu@kernel.org, robin.murphy@arm.com,
+        david@redhat.com, thunder.leizhen@huawei.com,
+        wangkefeng.wang@huawei.com, gpiccoli@igalia.com,
+        chenhuacai@kernel.org, geert@linux-m68k.org, chenzhou10@huawei.com,
+        vijayb@linux.microsoft.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-mm@kvack.org, linux-riscv@lists.infradead.org
+References: <20220607093805.1354256-1-mawupeng1@huawei.com>
+ <20220607093805.1354256-4-mawupeng1@huawei.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <20220607093805.1354256-4-mawupeng1@huawei.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 4 Jun 2022, Bagas Sanjaya wrote:
 
-> Running kernel-doc script on drivers/hid/hid-uclogic-params.c, it found
-> 6 warnings for hid_dbg() wrapper functions below:
-> 
-> drivers/hid/hid-uclogic-params.c:48: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Dump tablet interface pen parameters with hid_dbg(), indented with one tab.
-> drivers/hid/hid-uclogic-params.c:48: warning: missing initial short description on line:
->  * Dump tablet interface pen parameters with hid_dbg(), indented with one tab.
-> drivers/hid/hid-uclogic-params.c:48: info: Scanning doc for function Dump
-> drivers/hid/hid-uclogic-params.c:80: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Dump tablet interface frame parameters with hid_dbg(), indented with two
-> drivers/hid/hid-uclogic-params.c:80: warning: missing initial short description on line:
->  * Dump tablet interface frame parameters with hid_dbg(), indented with two
-> drivers/hid/hid-uclogic-params.c:80: info: Scanning doc for function Dump
-> drivers/hid/hid-uclogic-params.c:105: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Dump tablet interface parameters with hid_dbg().
-> drivers/hid/hid-uclogic-params.c:105: warning: missing initial short description on line:
->  * Dump tablet interface parameters with hid_dbg().
-> 
-> One of them is reported by kernel test robot.
-> 
-> Fix these warnings by properly format kernel-doc comment for these
-> functions.
-> 
-> Link: https://lore.kernel.org/linux-doc/202205272033.XFYlYj8k-lkp@intel.com/
-> Fixes: a228809fa6f39c ("HID: uclogic: Move param printing to a function")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Tested-by: Randy Dunlap <rdunlap@infradead.org>
-> Tested-by: José Expósito <jose.exposito89@gmail.com>
-> Acked-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Nikolai Kondrashov <spbnick@gmail.com>
-> Cc: Jiri Kosina <jikos@kernel.org>
-> Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> Cc: llvm@lists.linux.dev
-> Cc: linux-input@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-Applied, thanks.
+On 6/7/22 15:08, Wupeng Ma wrote:
+> From: Ma Wupeng <mawupeng1@huawei.com>
+> 
+> If system has mirrored memory, memblock will try to allocate mirrored
+> memory firstly and fallback to non-mirrored memory when fails, but if with
+> limited mirrored memory or some numa node without mirrored memory, lots of
+> warning message about memblock allocation will occur.
+> 
+> This patch ratelimit the warning message to avoid a very long print during
+> bootup.
+> 
+> Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
+> ---
+>  mm/memblock.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/mm/memblock.c b/mm/memblock.c
+> index e4f03a6e8e56..b1d2a0009733 100644
+> --- a/mm/memblock.c
+> +++ b/mm/memblock.c
+> @@ -327,7 +327,7 @@ static phys_addr_t __init_memblock memblock_find_in_range(phys_addr_t start,
+>  					    NUMA_NO_NODE, flags);
+>  
+>  	if (!ret && (flags & MEMBLOCK_MIRROR)) {
+> -		pr_warn("Could not allocate %pap bytes of mirrored memory\n",
+> +		pr_warn_ratelimited("Could not allocate %pap bytes of mirrored memory\n",
+>  			&size);
+>  		flags &= ~MEMBLOCK_MIRROR;
+>  		goto again;
+> @@ -1384,7 +1384,7 @@ phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
+>  
+>  	if (flags & MEMBLOCK_MIRROR) {
+>  		flags &= ~MEMBLOCK_MIRROR;
+> -		pr_warn("Could not allocate %pap bytes of mirrored memory\n",
+> +		pr_warn_ratelimited("Could not allocate %pap bytes of mirrored memory\n",
+>  			&size);
+>  		goto again;
+>  	}
 
--- 
-Jiri Kosina
-SUSE Labs
-
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
