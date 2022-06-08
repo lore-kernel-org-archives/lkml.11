@@ -2,174 +2,406 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5112DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D79CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237562AbiFHKt3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45576 "EHLO
+        id S237600AbiFHKtl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237468AbiFHKtV (ORCPT
+        with ESMTP id S237563AbiFHKta (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:49:21 -0400
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140078.outbound.protection.outlook.com [40.107.14.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0600843EE3
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 03:49:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eEndmwzVYu+N0FnkPVuNiXdW0h1eLMSc4qduE28RfXvg6hQexdcKMwbFzAzQZtxNPe6RajK0CdrZjUF8orZQxZUS58tDQlcH5MbIQSV8gSBHT2PLBTWqqiUrbVoQ3XKS0pbGOfuzfCh/9kZZbxfURgGRpdEfeoSotU7gC2vKIM17mf1BZPD5FSZ8cU9VmEt3hylaYAxjEgdKGmterOlySN6L5s+KG+75WThzvc7kzAB+nrtALOcE6RL2rD/EanNtkzyFVTvYIQGq9deVjBbo9TptIpi6DlMa8ZCLbPlSUtIcqSw+Ktlv0GYuLObOYXVCTWZVqbkFCjdfKNm9KxYVFw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OsRXW7xtv1bAxTm0xBCzA5MSUAkJG+wbwzO+2VgbD2k=;
- b=YgXWLdgy/sfEbFnCichmlHHFHfBKGdD0zdQnapPyh2TPlOVmCFNLfYcWJbLiLClfwIKnJ5qIPvjwXfC/LGOr6AlNzohi3QRy+T96U52qmDuLJMCDBevpU2hAgbVPbQAMPZ1aduGg+QqDJZYARK1AGCdC/aVGYIIQPZ6TY4EeU9rKFSbCCTjSmwUE7DZDCMgOkaZL7OkaZundMhEAU5QQoQl1c7qbo+u3MLnKNDTkekMB/O4nghNoNmFLNkvMugNC7gCo3PFt24RuNTzaC65EiSIoiuDV8nOA///a+rY7ICbe99YMpphEB+OEyPdl4NEszoky2Ds0QhJ62/hb1kjZ/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OsRXW7xtv1bAxTm0xBCzA5MSUAkJG+wbwzO+2VgbD2k=;
- b=X8I5G1B4ar95V1x1j/GoEo0iHKNDzXNBMgOZUs0rdiJLOTftOmAJmR309rNBxQXY9xskz02SgNMQtWDx2LgOoozABNywhLV7QZ6kwoOaxsTciJEByayl3dhsBzGOPcLKjd7XHs8vcvhfpwP022nc5LS5Z0ggoTDe/aGHhmhrUNM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM7PR04MB7046.eurprd04.prod.outlook.com (2603:10a6:20b:113::22)
- by AS8PR04MB8977.eurprd04.prod.outlook.com (2603:10a6:20b:42c::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Wed, 8 Jun
- 2022 10:49:17 +0000
-Received: from AM7PR04MB7046.eurprd04.prod.outlook.com
- ([fe80::3c82:f63b:711a:502]) by AM7PR04MB7046.eurprd04.prod.outlook.com
- ([fe80::3c82:f63b:711a:502%6]) with mapi id 15.20.5314.019; Wed, 8 Jun 2022
- 10:49:16 +0000
-From:   Liu Ying <victor.liu@nxp.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Lucas Stach <l.stach@pengutronix.de>
-Subject: [PATCH] irqchip/irq-imx-irqsteer: Get/put PM runtime in ->irq_unmask()/irq_mask()
-Date:   Wed,  8 Jun 2022 18:50:57 +0800
-Message-Id: <20220608105057.2607812-1-victor.liu@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR01CA0179.apcprd01.prod.exchangelabs.com
- (2603:1096:4:28::35) To AM7PR04MB7046.eurprd04.prod.outlook.com
- (2603:10a6:20b:113::22)
+        Wed, 8 Jun 2022 06:49:30 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C7041DC864
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 03:49:28 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id r3so16264656ilt.8
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 03:49:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ei5iSV8pPuCr8hbUHw/Tok7pBNeC03H/aj7DggndzyQ=;
+        b=ZqtYV1INIbCdBZUgjGdRMi7txqhmi7Ks3Qle+74N7pxJqHq3jsjQU0NbheNkMJetET
+         hlC5ZLRFZARAEPIMQn/52suO1vSdeeCdbOHJxKIRBA6uqsEfeeSYRNTRrFyKXUIObeSq
+         DBPdGOcss35Ykg3K93i2aa/L9zvSVa78DWWE3kt47Bny9juvXr5VWbirxCfXRsGFAv52
+         nINJ7SrWh4CNhb8pv+U7bJgXuTW9L9F2krSFta1jYL3yFa7OfObwa0aKToxIRAmaxoMf
+         0AsBjm+ZRZbcGGVmUwoRXu+Dw4qixqXY31mc/2CHdtf64MBjEOCdcdJH3uBYGjdXaYhl
+         xT9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ei5iSV8pPuCr8hbUHw/Tok7pBNeC03H/aj7DggndzyQ=;
+        b=FOEh9iwnw3tKztUzMQPDa/V6lybs4ijFTD5nLFvrQxOpBVFtDWDiZ/i8olTvo2Encq
+         gS69TDmyRL+ubXTTgFGp51/DE2zOUR05cxM7+1IKGPx6QlrfTuef67uxeySvhvfXVkDk
+         ZXCZhM9fPt5Lk/t1Rw26Bt/QKP69pX6Pfu9VKds0tY6YaC014mFHiKhCyT66VT2dvspn
+         /hl8vz7ZD61nFFiEAfhm3yStSpd9h8VbJ2cUGfQYRgF2ChECU8NGDTkHewT+ABuvDwzs
+         jjigoKDJBhaZUjgS+eVTd45P7Zxw4cVot/L9RbJprdXqODLEtTCVHQNqa0RXX/9tNYmc
+         RxOg==
+X-Gm-Message-State: AOAM533z8EG8nQ5sx5VOTefuaFAoHBwhB6nLFmth3cd32EWCKv6YM+YD
+        Sq1+vnA0ggubT9/21wGM7BD9tHTgNtvi1n1v979P7EHKn312JQ==
+X-Google-Smtp-Source: ABdhPJy5JbtBBdC8isp5pdYCNujAdsrxp8ALyTqM8OXb8HRjNp5wkfHElynjjll2Sc9EeocQsitA84ghTueHAtZep+c=
+X-Received: by 2002:a05:6e02:2190:b0:2d3:c951:20e4 with SMTP id
+ j16-20020a056e02219000b002d3c95120e4mr18312306ila.216.1654685367712; Wed, 08
+ Jun 2022 03:49:27 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 720db5c4-f102-47da-6d68-08da493c8890
-X-MS-TrafficTypeDiagnostic: AS8PR04MB8977:EE_
-X-Microsoft-Antispam-PRVS: <AS8PR04MB89776D9E0934C70D8136C77D98A49@AS8PR04MB8977.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QDaVkMt0nMiCeNGxF1H+sgKi5MxsjB2ZPcYVM0txc0O4gdjemNxYMVeW1p9E4bbYlKAWBTmMpMB4moXTB6vZ+0dVrxBsiMV3OcuQw+1jHC/0IIbbM37XkIdFosZxA3V4u1TWH5vocStH2cUZ3aKlBcyDQREFHhIg6LkcubZO29brnrvTpwLmhAMAmARVNqtXFN8zt2mYnqI8oGhQ4QpfrEZAT0qXUsxbtePlkw8wwz5LcqeNmS2OkNxkHUE89SEFRwv24AgJesiEUwvqp3cQbGitsmxdBo1p7dLB/TSK0fZY9i2RLHl0lub3lUQsACnNdcPeQh+OQhFEsLavVLVb3Rw5emOCd6vqrglfUGWDEEn9qqKBHKP90SC7Xtc1KoBh0MnsDvoO44Ze5H9N61VxlZBzbcw1NDsj9sQYKJCp2GKS/R7/Kto4Eu/5Ufj/nyhjFcypy9Wb8OqwXDoGj/frmiFt/lav74khTuO5miW+A3zs/bD0mUtiGupoLCLZvhF5IskSReeCFN3an1AXA39IymmKKvxkz0GFPchlvq8e35iyakSknN/oh7PbVEw/Yyp3sJOSLwfsLkxzFwVpKeayIZVDCpHO1ohG8gYXhWNxJN8vAoQeKyR/xGWhbCq6DHtXCiZrddB6nyltO5jEFCq7oVz/+zLO/ul6X19DI5o7XuPlIN4+YE8geHdfo2+AzYmcSaDrz5ONwBbmKbahKVI3sg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB7046.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(8936002)(36756003)(316002)(8676002)(66946007)(66476007)(66556008)(4326008)(6666004)(6506007)(52116002)(54906003)(508600001)(2906002)(6486002)(38100700002)(38350700002)(2616005)(86362001)(26005)(6512007)(1076003)(186003)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?63s5qDr64uwB4Y5GFws0GM6SOV5rLb4ZRsKkWZdkmJQzDFWi5ce8ooO7IDTP?=
- =?us-ascii?Q?5znIAf4Garguae30vzOhcdchZAqHvRlbP3Hh9FNGffyYaxttgTxlX7p6Tj4U?=
- =?us-ascii?Q?5wcxN8e0VR4o521LFs8pLYYv5IOQWsJd1JjAGNteP8jq7ALSqbf7xUkQgPqC?=
- =?us-ascii?Q?fSuiFjK0RklGlDhMvnrgEHx2gAyL0z/kCy/BOGYroukDJXOjy5xdl5rlsDEm?=
- =?us-ascii?Q?Xc/tSrITnrnPqfh2x8hNwvtukm5QbckhFbtYQ3jSQham0XgfbM9Z+PO07nC2?=
- =?us-ascii?Q?jw90NS76cFjFSW6C3r/K/wcQp5GUwCWamg8JUAoK///QEhGTtApVzf1315as?=
- =?us-ascii?Q?04T8n49VO1xwdf8rqE1QuTcgL3JpKXdL578iXXBhCRvxxl/9wlADQUlcjqAH?=
- =?us-ascii?Q?wLTJ2WNSe8zkuf75Hr4E8AVlpZQVS6l5td39FDiF5YcbOUW54+dorQ5eAWz4?=
- =?us-ascii?Q?ClVhiHYJI/Y07SNcFf68GIuN8HeADNEZtkKuGWnrrz3BSgUnYZMoNR9NeipN?=
- =?us-ascii?Q?1sFvbC4on3rbztkog8tRT0qkMD8zfMXzniO6+SyvrRo4guKAOyFjglBFXGBB?=
- =?us-ascii?Q?6L134HikrSXKaBdL6+0REUMLATF3RvV9yj4CmzOxFB+2UkRFOZE+1+qLxx+3?=
- =?us-ascii?Q?PSEsscvkkg7VSmwF5TZTmmv5TSMG39oRL1I3/bEQhBLV3fRm7le+2o5xDH4D?=
- =?us-ascii?Q?m8zLiXMwpVrfAA/XAwHAVQrzjqyZ/ZZWMCR67rfACwnJ6TAW13fDnvAIB+7u?=
- =?us-ascii?Q?X0hB4IBsBQeCZerZtvFtsncS2jvc8ul4cuhhY0JYliO/bSipqJJmzbMoKQKL?=
- =?us-ascii?Q?Ph9TkPkhV4n4jxJNSsPvcTkUU4+c63r8WGhJ5/HvA+XU4OZGZeOHsdHMLqOh?=
- =?us-ascii?Q?mAJAviSpYGAR8YHabNW84JmCtEy++48DDmnbT+OhTj9JqPqRQ+Km0AfcryOK?=
- =?us-ascii?Q?a+gLO4ftQBF0Q65Nz3j8COqDAv/9qal+rpPbrsxhKSB+fhPrrWbsv54C3Mu1?=
- =?us-ascii?Q?fhJLHt/jKXLDn9v262FF8JSPA6J4YqzXwEcqj258dXAATXTWLNdK7+rrAqvi?=
- =?us-ascii?Q?KD11wRal2cp+SDYCnchCEhyr5hTLMRix1MomuErsN40Q+g7o/PVtSSZ95MZm?=
- =?us-ascii?Q?lAZ2NZ2rMaxC6XC+b2wHhfDLTIkLYHFqLSR427/23ySu104gWDp4Uk56pstz?=
- =?us-ascii?Q?slf8jii3oV5/tsZPZSU/IGBhy+wAc++Gcn5kgs9Z4I96Kt8k4lTxpNFPvDs5?=
- =?us-ascii?Q?nZGnbVMLvvkvyhT/PC5RWY+KgyeGs8XN7ROiOeQj9vCZFVJ+IXcHHuOABSc1?=
- =?us-ascii?Q?7m12WihnY+0oh4pflmAgndaxvUj45uKvAentRp/FHd3MlReoEnbednLiFB9j?=
- =?us-ascii?Q?u2701XZy98IW/1zPaQcJ+voL5FMXaDo0zMwQJK71rT/+QRe+NQUQtDndwbSK?=
- =?us-ascii?Q?JRKeh7WV4YX46O89QaFj2WgYjF/pHBeLq607PaUTn3Gx0+aQ4jW7DYC39Yda?=
- =?us-ascii?Q?R6nUAEcI4gTaOo+Au+GGXZeMWZYCb+/KKY1yxp4xKcSSUjelwTuUOzk7sFiX?=
- =?us-ascii?Q?CdtLCEfb7QyGSMXGoSvIR5ivYylakXj2zDCdtUncSuBqta16CboAe6biLyX2?=
- =?us-ascii?Q?y58Ai+4FGEoWQW8Ru4nvkL4KS8VkaSoTmUsoOSZTN7oBg/NRpKxcmp4OG3G9?=
- =?us-ascii?Q?0JkxhbvHrRjb75t9q7HyU6XPp3K911RpRlE/mgz0q+axv3Vn5YUPP2mZE8zm?=
- =?us-ascii?Q?7qJ/ABlgPA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 720db5c4-f102-47da-6d68-08da493c8890
-X-MS-Exchange-CrossTenant-AuthSource: AM7PR04MB7046.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2022 10:49:16.7033
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WbIIKyGVf+Mtx8pxVH7anO2ELFlGVRaw2QrKQLoIckp6f8PSIDZ3qIu7+eTfhAxzWkTAsl5NJ/T+ofwGq13hOQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8977
+References: <20220325132126.61949-1-zhangjiachen.jaycee@bytedance.com>
+ <CAJfpeguESQm1KsQLyoMRTevLttV8N8NTGsb2tRbNS1AQ_pNAww@mail.gmail.com>
+ <CAFQAk7ibzCn8OD84-nfg6_AePsKFTu9m7pXuQwcQP5OBp7ZCag@mail.gmail.com>
+ <CAJfpegsbaz+RRcukJEOw+H=G3ft43vjDMnJ8A24JiuZFQ24eHA@mail.gmail.com>
+ <CAFQAk7hakYNfBaOeMKRmMPTyxFb2xcyUTdugQG1D6uZB_U1zBg@mail.gmail.com> <Ymfu8fGbfYi4FxQ4@miu.piliscsaba.redhat.com>
+In-Reply-To: <Ymfu8fGbfYi4FxQ4@miu.piliscsaba.redhat.com>
+From:   Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+Date:   Wed, 8 Jun 2022 18:49:16 +0800
+Message-ID: <CAFQAk7g9=7wtKR3oH3s+YApQJTD4OrvcRoh+K0Tk1E=mnnP4hQ@mail.gmail.com>
+Subject: Re: [External] Re: Re: Re: [RFC PATCH] fuse: support cache
+ revalidation in writeback_cache mode
+To:     Miklos Szeredi <miklos@szeredi.hu>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xie Yongji <xieyongji@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that runtime PM support was added in this driver, we have
-to enable power before accessing irqchip registers.  And, after
-the access is done, we should disable power.  This patch calls
-pm_runtime_get_sync() in ->irq_unmask() and pm_runtime_put() in
-->irq_mask() to make sure power is managed for the register access.
+On Tue, Apr 26, 2022 at 9:09 PM Miklos Szeredi <miklos@szeredi.hu> wrote:
+>
+> On Mon, Apr 25, 2022 at 09:52:44PM +0800, Jiachen Zhang wrote:
+>
+> > Some users may want both the high performance of writeback mode and a
+> > little bit more consistency among FUSE mounts. In the current
+> > writeback mode implementation, users of one FUSE mount can never see
+> > the file expansion done by other FUSE mounts.
+>
+> Okay.
+>
+> Here's a preliminary patch that you could try.
+>
+> Thanks,
+> Miklos
+>
 
-Fixes: 4730d2233311 ("irqchip/imx-irqsteer: Add runtime PM support")
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Cc: Lucas Stach <l.stach@pengutronix.de>
-Signed-off-by: Liu Ying <victor.liu@nxp.com>
----
- drivers/irqchip/irq-imx-irqsteer.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Hi, Miklos,
 
-diff --git a/drivers/irqchip/irq-imx-irqsteer.c b/drivers/irqchip/irq-imx-irqsteer.c
-index 96230a04ec23..a5eabe71e8ab 100644
---- a/drivers/irqchip/irq-imx-irqsteer.c
-+++ b/drivers/irqchip/irq-imx-irqsteer.c
-@@ -45,11 +45,14 @@ static int imx_irqsteer_get_reg_index(struct irqsteer_data *data,
- 
- static void imx_irqsteer_irq_unmask(struct irq_data *d)
- {
-+	struct device *dev = d->domain->dev;
- 	struct irqsteer_data *data = d->chip_data;
- 	int idx = imx_irqsteer_get_reg_index(data, d->hwirq);
- 	unsigned long flags;
- 	u32 val;
- 
-+	pm_runtime_get_sync(dev);
-+
- 	raw_spin_lock_irqsave(&data->lock, flags);
- 	val = readl_relaxed(data->regs + CHANMASK(idx, data->reg_num));
- 	val |= BIT(d->hwirq % 32);
-@@ -59,6 +62,7 @@ static void imx_irqsteer_irq_unmask(struct irq_data *d)
- 
- static void imx_irqsteer_irq_mask(struct irq_data *d)
- {
-+	struct device *dev = d->domain->dev;
- 	struct irqsteer_data *data = d->chip_data;
- 	int idx = imx_irqsteer_get_reg_index(data, d->hwirq);
- 	unsigned long flags;
-@@ -69,6 +73,8 @@ static void imx_irqsteer_irq_mask(struct irq_data *d)
- 	val &= ~BIT(d->hwirq % 32);
- 	writel_relaxed(val, data->regs + CHANMASK(idx, data->reg_num));
- 	raw_spin_unlock_irqrestore(&data->lock, flags);
-+
-+	pm_runtime_put(dev);
- }
- 
- static const struct irq_chip imx_irqsteer_irq_chip = {
--- 
-2.25.1
+Thanks for the patch, and sorry for the late reply. I have already
+tried on an older
+kernel version based on the same idea of your patch, and it works fine for some
+simple manual tests. I still have some questions about this patch.
 
+> ---
+>  fs/fuse/dir.c             |   35 ++++++++++++++++++++++-------------
+>  fs/fuse/file.c            |   17 +++++++++++++++--
+>  fs/fuse/fuse_i.h          |   14 +++++++++++++-
+>  fs/fuse/inode.c           |   32 +++++++++++++++++++++++++++-----
+>  include/uapi/linux/fuse.h |    5 +++++
+>  5 files changed, 82 insertions(+), 21 deletions(-)
+>
+> --- a/include/uapi/linux/fuse.h
+> +++ b/include/uapi/linux/fuse.h
+> @@ -194,6 +194,7 @@
+>   *  - add FUSE_SECURITY_CTX init flag
+>   *  - add security context to create, mkdir, symlink, and mknod requests
+>   *  - add FUSE_HAS_INODE_DAX, FUSE_ATTR_DAX
+> + *  - add FUSE_WRITEBACK_CACHE_V2 init flag
+>   */
+>
+>  #ifndef _LINUX_FUSE_H
+> @@ -353,6 +354,9 @@ struct fuse_file_lock {
+>   * FUSE_SECURITY_CTX:  add security context to create, mkdir, symlink, and
+>   *                     mknod
+>   * FUSE_HAS_INODE_DAX:  use per inode DAX
+> + * FUSE_WRITEBACK_CACHE_V2:
+> + *                     - allow time/size to be refreshed if no pending write
+> + *                     - time/size not cached for falocate/copy_file_range
+>   */
+>  #define FUSE_ASYNC_READ                (1 << 0)
+>  #define FUSE_POSIX_LOCKS       (1 << 1)
+> @@ -389,6 +393,7 @@ struct fuse_file_lock {
+>  /* bits 32..63 get shifted down 32 bits into the flags2 field */
+>  #define FUSE_SECURITY_CTX      (1ULL << 32)
+>  #define FUSE_HAS_INODE_DAX     (1ULL << 33)
+> +#define FUSE_WRITEBACK_CACHE_V2        (1ULL << 34)
+>
+>  /**
+>   * CUSE INIT request/reply flags
+> --- a/fs/fuse/inode.c
+> +++ b/fs/fuse/inode.c
+> @@ -222,19 +222,37 @@ void fuse_change_attributes_common(struc
+>  u32 fuse_get_cache_mask(struct inode *inode)
+>  {
+>         struct fuse_conn *fc = get_fuse_conn(inode);
+> +       struct fuse_inode *fi = get_fuse_inode(inode);
+>
+>         if (!fc->writeback_cache || !S_ISREG(inode->i_mode))
+>                 return 0;
+>
+> +       /*
+> +        * In writeback_cache_v2 mode if all the following conditions are met,
+> +        * then allow the attributes to be refreshed:
+> +        *
+> +        * - inode is not dirty (I_DIRTY_INODE)
+> +        * - inode is not in the process of being written (I_SYNC)
+> +        * - inode has no dirty pages (I_DIRTY_PAGES)
+> +        * - inode does not have any page writeback in progress
+> +        *
+> +        * Note: checking PAGECACHE_TAG_WRITEBACK is not sufficient in fuse,
+> +        * since inode can appear to have no PageWriteback pages, yet still have
+> +        * outstanding write request.
+> +        */
+> +       if (fc->writeback_cache_v2 && !(inode->i_state & (I_DIRTY | I_SYNC)) &&
+> +           RB_EMPTY_ROOT(&fi->writepages))
+> +               return 0;
+> +
+
+Do we need to lock the inode between this cleanness checking and attr updating?
+There may be writes between the two procedures and we should not update the
+attributes in such cases.
+
+>         return STATX_MTIME | STATX_CTIME | STATX_SIZE;
+>  }
+>
+> -void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
+> -                           u64 attr_valid, u64 attr_version)
+> +void fuse_change_attributes_mask(struct inode *inode, struct fuse_attr *attr,
+> +                                u64 attr_valid, u64 attr_version,
+> +                                u32 cache_mask)
+>  {
+>         struct fuse_conn *fc = get_fuse_conn(inode);
+>         struct fuse_inode *fi = get_fuse_inode(inode);
+> -       u32 cache_mask;
+>         loff_t oldsize;
+>         struct timespec64 old_mtime;
+>
+> @@ -244,7 +262,7 @@ void fuse_change_attributes(struct inode
+>          * may update i_size.  In these cases trust the cached value in the
+>          * inode.
+>          */
+> -       cache_mask = fuse_get_cache_mask(inode);
+> +       cache_mask |= fuse_get_cache_mask(inode);
+
+Could we get the cache_mask only based on the fuse_get_cache_mask()
+ in fuse_change_attributes()? Why the fuse_get_cache_mask() should
+be called multiple times in fuse_dentry_revalidate() and
+fuse_do_setattr() cases?
+
+>         if (cache_mask & STATX_SIZE)
+>                 attr->size = i_size_read(inode);
+>
+> @@ -1153,6 +1171,10 @@ static void process_init_reply(struct fu
+>                                 fc->async_dio = 1;
+>                         if (flags & FUSE_WRITEBACK_CACHE)
+>                                 fc->writeback_cache = 1;
+> +                       if (flags & FUSE_WRITEBACK_CACHE_V2) {
+> +                               fc->writeback_cache = 1;
+> +                               fc->writeback_cache_v2 = 1;
+> +                       }
+>                         if (flags & FUSE_PARALLEL_DIROPS)
+>                                 fc->parallel_dirops = 1;
+>                         if (flags & FUSE_HANDLE_KILLPRIV)
+> @@ -1234,7 +1256,7 @@ void fuse_send_init(struct fuse_mount *f
+>                 FUSE_ABORT_ERROR | FUSE_MAX_PAGES | FUSE_CACHE_SYMLINKS |
+>                 FUSE_NO_OPENDIR_SUPPORT | FUSE_EXPLICIT_INVAL_DATA |
+>                 FUSE_HANDLE_KILLPRIV_V2 | FUSE_SETXATTR_EXT | FUSE_INIT_EXT |
+> -               FUSE_SECURITY_CTX;
+> +               FUSE_SECURITY_CTX | FUSE_WRITEBACK_CACHE_V2;
+>  #ifdef CONFIG_FUSE_DAX
+>         if (fm->fc->dax)
+>                 flags |= FUSE_MAP_ALIGNMENT;
+> --- a/fs/fuse/dir.c
+> +++ b/fs/fuse/dir.c
+> @@ -213,6 +213,7 @@ static int fuse_dentry_revalidate(struct
+>                 FUSE_ARGS(args);
+>                 struct fuse_forget_link *forget;
+>                 u64 attr_version;
+> +               u32 cache_mask;
+>
+>                 /* For negative dentries, always do a fresh lookup */
+>                 if (!inode)
+> @@ -230,6 +231,7 @@ static int fuse_dentry_revalidate(struct
+>                         goto out;
+>
+>                 attr_version = fuse_get_attr_version(fm->fc);
+> +               cache_mask = fuse_get_cache_mask(inode);
+>
+>                 parent = dget_parent(entry);
+>                 fuse_lookup_init(fm->fc, &args, get_node_id(d_inode(parent)),
+> @@ -259,9 +261,9 @@ static int fuse_dentry_revalidate(struct
+>                         goto invalid;
+>
+>                 forget_all_cached_acls(inode);
+> -               fuse_change_attributes(inode, &outarg.attr,
+> -                                      entry_attr_timeout(&outarg),
+> -                                      attr_version);
+> +               fuse_change_attributes_mask(inode, &outarg.attr,
+> +                                           entry_attr_timeout(&outarg),
+> +                                           attr_version, cache_mask);
+>                 fuse_change_entry_timeout(entry, &outarg);
+>         } else if (inode) {
+>                 fi = get_fuse_inode(inode);
+> @@ -836,16 +838,23 @@ static int fuse_symlink(struct user_name
+>
+>  void fuse_flush_time_update(struct inode *inode)
+>  {
+> -       int err = sync_inode_metadata(inode, 1);
+> +       struct fuse_conn *fc = get_fuse_conn(inode);
+> +       int err;
+>
+> -       mapping_set_error(inode->i_mapping, err);
+> +       if (!fc->writeback_cache_v2) {
+> +               err = sync_inode_metadata(inode, 1);
+> +               mapping_set_error(inode->i_mapping, err);
+> +       }
+>  }
+>
+>  static void fuse_update_ctime_in_cache(struct inode *inode)
+>  {
+>         if (!IS_NOCMTIME(inode)) {
+> +               struct fuse_conn *fc = get_fuse_conn(inode);
+> +
+>                 inode->i_ctime = current_time(inode);
+> -               mark_inode_dirty_sync(inode);
+> +               if (!fc->writeback_cache_v2)
+> +                       mark_inode_dirty_sync(inode);
+>                 fuse_flush_time_update(inode);
+>         }
+>  }
+> @@ -1065,7 +1074,7 @@ static void fuse_fillattr(struct inode *
+>  }
+>
+>  static int fuse_do_getattr(struct inode *inode, struct kstat *stat,
+> -                          struct file *file)
+> +                          struct file *file, u32 cache_mask)
+>  {
+>         int err;
+>         struct fuse_getattr_in inarg;
+> @@ -1100,9 +1109,9 @@ static int fuse_do_getattr(struct inode
+>                         fuse_make_bad(inode);
+>                         err = -EIO;
+>                 } else {
+> -                       fuse_change_attributes(inode, &outarg.attr,
+> -                                              attr_timeout(&outarg),
+> -                                              attr_version);
+> +                       fuse_change_attributes_mask(inode, &outarg.attr,
+> +                                                   attr_timeout(&outarg),
+> +                                                   attr_version, cache_mask);
+>                         if (stat)
+>                                 fuse_fillattr(inode, &outarg.attr, stat);
+>                 }
+> @@ -1131,7 +1140,7 @@ static int fuse_update_get_attr(struct i
+>
+>         if (sync) {
+>                 forget_all_cached_acls(inode);
+> -               err = fuse_do_getattr(inode, stat, file);
+> +               err = fuse_do_getattr(inode, stat, file, cache_mask);
+>         } else if (stat) {
+>                 generic_fillattr(&init_user_ns, inode, stat);
+>                 stat->mode = fi->orig_i_mode;
+> @@ -1277,7 +1286,7 @@ static int fuse_perm_getattr(struct inod
+>                 return -ECHILD;
+>
+>         forget_all_cached_acls(inode);
+> -       return fuse_do_getattr(inode, NULL, NULL);
+> +       return fuse_do_getattr(inode, NULL, NULL, 0);
+>  }
+>
+>  /*
+> @@ -1833,7 +1842,7 @@ static int fuse_setattr(struct user_name
+>                          * ia_mode calculation may have used stale i_mode.
+>                          * Refresh and recalculate.
+>                          */
+> -                       ret = fuse_do_getattr(inode, NULL, file);
+> +                       ret = fuse_do_getattr(inode, NULL, file, 0);
+>                         if (ret)
+>                                 return ret;
+>
+> --- a/fs/fuse/file.c
+> +++ b/fs/fuse/file.c
+> @@ -2949,6 +2949,19 @@ static int fuse_writeback_range(struct i
+>         return err;
+>  }
+>
+> +static void fuse_update_time(struct file *file)
+> +{
+> +       struct inode *inode = file_inode(file);
+> +       struct fuse_conn *fc = get_fuse_conn(inode);
+> +
+> +       if (!IS_NOCMTIME(inode)) {
+> +               if (fc->writeback_cache_v2)
+> +                       inode->i_mtime = inode->i_ctime = current_time(inode);
+> +               else
+> +                       file_update_time(file);
+> +       }
+> +}
+> +
+>  static long fuse_file_fallocate(struct file *file, int mode, loff_t offset,
+>                                 loff_t length)
+>  {
+> @@ -3021,7 +3034,7 @@ static long fuse_file_fallocate(struct f
+>         /* we could have extended the file */
+>         if (!(mode & FALLOC_FL_KEEP_SIZE)) {
+>                 if (fuse_write_update_attr(inode, offset + length, length))
+> -                       file_update_time(file);
+> +                       fuse_update_time(file);
+>         }
+>
+>         if (mode & (FALLOC_FL_PUNCH_HOLE | FALLOC_FL_ZERO_RANGE))
+> @@ -3135,7 +3148,7 @@ static ssize_t __fuse_copy_file_range(st
+>                                    ALIGN_DOWN(pos_out, PAGE_SIZE),
+>                                    ALIGN(pos_out + outarg.size, PAGE_SIZE) - 1);
+>
+> -       file_update_time(file_out);
+> +       fuse_update_time(file_out);
+
+To avoid setting I_DIRTY_SYNC in writeback_cache_v2 mode, maybe we should
+replace all file_update_time() in fuse by fuse_update_time().
+
+There are also file_update_time()s in fuse_page_mkwrite(),
+fuse_cache_write_iter(),
+and fuse_finish_open().
+
+
+>         fuse_write_update_attr(inode_out, pos_out + outarg.size, outarg.size);
+>
+>         err = outarg.size;
+> --- a/fs/fuse/fuse_i.h
+> +++ b/fs/fuse/fuse_i.h
+> @@ -654,6 +654,9 @@ struct fuse_conn {
+>         /* show legacy mount options */
+>         unsigned int legacy_opts_show:1;
+>
+> +       /* Improved writeback cache policy */
+> +       unsigned writeback_cache_v2:1;
+> +
+>         /*
+>          * fs kills suid/sgid/cap on write/chown/trunc. suid is killed on
+>          * write/trunc only if caller did not have CAP_FSETID.  sgid is killed
+> @@ -1049,8 +1052,17 @@ void fuse_init_symlink(struct inode *ino
+>  /**
+>   * Change attributes of an inode
+>   */
+> +void fuse_change_attributes_mask(struct inode *inode, struct fuse_attr *attr,
+> +                                u64 attr_valid, u64 attr_version,
+> +                                u32 cache_mask);
+> +
+> +static inline
+>  void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
+> -                           u64 attr_valid, u64 attr_version);
+> +                           u64 attr_valid, u64 attr_version)
+> +{
+> +       return fuse_change_attributes_mask(inode, attr,
+> +                                          attr_valid, attr_version, 0);
+> +}
+>
+>  void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
+>                                    u64 attr_valid, u32 cache_mask);
+
+Also, maybe we can add a FOPEN_INVAL_ATTR flag [1] to invalidate the
+attr cache on
+file open. With the writeback v2 patch and FOPEN_INVAL_ATTR, the close-to-open
+consistency revalidations can be implemented in user-space fuse daemons.
+
+[1] https://lore.kernel.org/linux-fsdevel/20220608104202.19461-1-zhangjiachen.jaycee@bytedance.com/
+
+Thanks,
+Jiachen
