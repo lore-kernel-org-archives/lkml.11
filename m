@@ -2,137 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B404C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 20:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA170C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 20:17:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232138AbiFHUOZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 16:14:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45560 "EHLO
+        id S229897AbiFHURV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 16:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230058AbiFHUOW (ORCPT
+        with ESMTP id S229515AbiFHURR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 16:14:22 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C225106578
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 13:14:19 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2ff7b90e635so221142727b3.5
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 13:14:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=N8K5cZqw0Zv6ga4Y9aVmpphL86F2VWeXaDyWt7dTz8k=;
-        b=mW8rKXvAYlKK1N6/RtDgQk7Sf3Vpm8JbGsmqS2kfwORJDgQUO4/CMHxoBLWWVZwuFE
-         +cSc1D3+RJnSDgsn5EZ62UqoVOfcLwGoYAldYSlSpfcuXEnimEGd5FkPzUH4ayy0sQyX
-         XPbYa3XZ8x+PBISfpG7fcSW4R20LF92Mb12Icx1fk7s2DWOF2ibh0UjXYU9kVv3Jq+Eg
-         dA0fJUZfKWwUayscnLdK/8k7627URN7Dl4d+1nNCDacNQXzxNIT+/Ii8G609qpLLEhof
-         DMAf72puGtsJpVTgrpjhSeuZq5ZNlHOcv9wg9Yj1TcKEJWb/y9IPHYwP157jKZYq69/B
-         1xMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=N8K5cZqw0Zv6ga4Y9aVmpphL86F2VWeXaDyWt7dTz8k=;
-        b=uRWDctgWUVlivGmrDUsHovMTkj5vbQ8DUlF3emIjl+veRTnmygI41WucgkaAE0a8f0
-         zOze+m1rA10L/rdwiaPrzMhJ+RG8hUgLZRKBvX8GabAWbKTY/vU1MYxwJ2TLseeLJ/aN
-         6R9NJU0NMbGHm1O25ZNm54DAy4VdbP1vBM3zM5XQ09UkOqUuxkxgGLhkkyE9O2EwMlPD
-         EwT3HexNzM26/4kiCAIfnCawZrHQJFoAwaYawx1Zn2RTG5dBC09rFULbVA481rME8rZ3
-         /ZldCCIdkOuyHQ5JKNQLZO649NwsI0on6ygd2xh9pMY7klqrDAvlLhVB7WTanwHXMVDS
-         z7rQ==
-X-Gm-Message-State: AOAM530j30dgGeDAkvalMmuba8lbeqy3r1dbsqZp06UPuGn7lHe2FTus
-        SCSWBmf/gzjz32MAy4cH51rsThWTRn+RolYqnWiaXg==
-X-Google-Smtp-Source: ABdhPJzi1mdMC4ZOzU6Z9pRPUOwuv0+Sb7MhJT3BJzYbXHGCTrS8hdzOQ2vCgEOFRVLVOP6yE53kZO+qLX/5sKVwWqw=
-X-Received: by 2002:a81:6357:0:b0:30f:dbe5:b8ff with SMTP id
- x84-20020a816357000000b0030fdbe5b8ffmr37301344ywb.67.1654719258298; Wed, 08
- Jun 2022 13:14:18 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220608150008.57629-1-1030steven@gmail.com> <3193fcc9-c672-19d9-a2e2-ad67809dd20b@infradead.org>
- <F0C192DB-6043-4629-A009-DCB4BA33A9A9@gmail.com>
-In-Reply-To: <F0C192DB-6043-4629-A009-DCB4BA33A9A9@gmail.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Wed, 8 Jun 2022 22:14:06 +0200
-Message-ID: <CAKfTPtCr0PiharzDecxdC1u2NnRz_qttQieH568_Q8szdVGpSg@mail.gmail.com>
-Subject: Re: [PATCH] sched/pelt: Fix bracket typo
-To:     =?UTF-8?B?6b6N5biG6LuS?= <1030steven@gmail.com>
-Cc:     Randy Dunlap <rdunlap@infradead.org>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, vschneid@redhat.com,
+        Wed, 8 Jun 2022 16:17:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D227228E1D;
+        Wed,  8 Jun 2022 13:17:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C8EA61CC0;
+        Wed,  8 Jun 2022 20:17:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C972C3411C;
+        Wed,  8 Jun 2022 20:17:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654719434;
+        bh=EquiZEmGpaGk9Hi66098V9Sqwcoq46fARusu9O2QJ/s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sPio/qZ9D16pdwZJMpNek54aMJ+Dfem3MsatJLwYrtKgUdW/4gGd46VOeEXsAwTrH
+         RqINva74s4v7sDjhdDqJQ4+nM/Dq6EWQD54OTvFkRid315TgGteGTUABv7APtTXjiR
+         l1eMxUOfco9nj5ABFbOpi2rUS1ZWLZ6QVp1StXjp3a0O/WidERGkAT8YaVyYmuTcrf
+         Pz9otFdc8uyOPrrip5m1zGEmrq9ITogvNfs+ghyCIBBmv2+tuLH4VI+s8wRRpWp2dC
+         8FLhWW8C2gdQLqXLnl97/JBkDBhEbhCY1+vLHyr7u7X/cm/APwtNO6wxW3Ogl5SgYT
+         eEjkwRS5XoBqA==
+Date:   Wed, 8 Jun 2022 22:17:11 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] i2c: npcm7xx: barco-p50-gpio: Add check for
+ platform_driver_register
+Message-ID: <YqEDx3S9z1y12mfS@kunai>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>, avifishman70@gmail.com,
+        tmaimon77@gmail.com, tali.perry1@gmail.com, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, openbmc@lists.ozlabs.org,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220526094100.1494193-1-jiasheng@iscas.ac.cn>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ssq14js36jhNveXs"
+Content-Disposition: inline
+In-Reply-To: <20220526094100.1494193-1-jiasheng@iscas.ac.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 8 Jun 2022 at 18:30, =E9=BE=8D=E5=B8=86=E8=BB=92 <1030steven@gmail.=
-com> wrote:
->
->
-> Randy Dunlap <rdunlap@infradead.org> =E6=96=BC 2022=E5=B9=B46=E6=9C=888=
-=E6=97=A5 =E4=B8=8B=E5=8D=8811:33 =E5=AF=AB=E9=81=93=EF=BC=9A
->
->
->
-> On 6/8/22 08:00, Steven Lung wrote:
->
-> The second bracket describing the range is inverted, this patch
-> will fix it.
->
-> Signed-off-by: Steven Lung <1030steven@gmail.com>
-> ---
-> kernel/sched/pelt.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/sched/pelt.c b/kernel/sched/pelt.c
-> index 0f3107682..ed82cfba9 100644
-> --- a/kernel/sched/pelt.c
-> +++ b/kernel/sched/pelt.c
-> @@ -233,7 +233,7 @@ ___update_load_sum(u64 now, struct sched_avg *sa,
->  * When syncing *_avg with *_sum, we must take into account the current
->  * position in the PELT segment otherwise the remaining part of the segme=
-nt
->  * will be considered as idle time whereas it's not yet elapsed and this =
-will
-> - * generate unwanted oscillation in the range [1002..1024[.
->
->
-> Is the above the same as                   range [1002..1024).
-> ?  I.e. 1002-1023 inclusive (or 1024 excluded)?
 
-yes, 1024 was excluded from the range because we reached 1024 when
-period_contrib =3D=3D 1024 but when period_contrib =3D=3D 1024 we decayed a=
-nd
-period_contrib becomes 0 and the load_avg went down to 1002.
+--ssq14js36jhNveXs
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Before the changes, the load_avg  for default weight was
-1024*(LOAD_AVG_MAX-1024+period_contrib)/LOAD_AVG_MAX
-if period_contrib =3D=3D 0 ie the beg of the window we've got a load_avg of=
- 1002
-if period_contrib =3D=3D 1023 ie the end of the window we've got a load of
-int(1023.97)=3D=3D1023
+On Thu, May 26, 2022 at 05:41:00PM +0800, Jiasheng Jiang wrote:
+> As platform_driver_register() could fail, it should be better
+> to deal with the return value in order to maintain the code
+> consisitency.
+>=20
+> Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller drive=
+r")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-In French, we use [1002..1024[ but english version is [1002..1024)
+Applied to for-current, thanks! But what is with the "barco-p50-gpio:"
+in the $subject?
 
->
-> + * generate unwanted oscillation in the range [1002..1024].
->  *
->  * The max value of *_sum varies with the position in the time segment an=
-d is
->  * equals to :
->
->
-> --
-> ~Randy
->
->
-> In the patch that the author submitted[1] for this comment, he mentioned =
-that the value 1024 can be obtained.
-> So I think we should use brackets instead of parenthesis.
->
-> [1]: https://lore.kernel.org/all/20200506155301.14288-1-vincent.guittot@l=
-inaro.org/T/#u
->
-> --
-> Steven
->
+
+--ssq14js36jhNveXs
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKhA8MACgkQFA3kzBSg
+KbYR8Q/+Kk7ypQngwMr+zLMeL4dcpbFw/Lwkywizw+7PgPtQNucwWQnhHz5Yc6gp
+8ukBBDb/Zfvu5BxQvrAnLxlJOvfUGg6sQbcexRfsDR16CEfVKTYBaM9WCp2KggHH
+xiO4vgHK656o5B6d84N3R0T/CXM3OmNQ0Cy60oNSczPC1xf8PwUWqXovX/Sl5USd
+0I6mUeYO6cGg+k56ECDLD+QdEK/neGPUKVU6WHmlaj4u7BXtE+TzLV1P3yNJB+lz
+aHILnAicIB8UuTeY7D9UCvMhCXKW4T7VoHW0lE5FhBK/uOGnJD/vbUXcsQM6r7zQ
+o7JyDbjliUqo/EkSBHwEACzWWAqH5Vjg/VSu2jM1B0GWetGuWhnUr/bQ4lwKITlu
+6lo4GqxPQwnFUerVtbuhQC9QPs/gr5WK8b1EB9FlXCDo6VfJDnA6TmH0T8aSl3vz
+c1Pe9Ut+6fbjiwcCME7GebC3gYh4EB2uGWA4jgn5v8leEkXBZZ6byaAPpRR/xDIo
+3SocXQBDdWFzXu4UdQYDq63y6x6CIswj08ZKHwW/AlQy/XY18pBnF7Y6cXi6Tb7E
+LdLsGhTW2vrC7dBcHgdfM5hXWDCX0twBwU/f2givvpWPehoYTUN/k8HQ8vZu6x/0
+RimrFe1hNRBCU4cv+DzJVb/EcssE4i+V51w3Oe0KKx3XO3w03+M=
+=ENlH
+-----END PGP SIGNATURE-----
+
+--ssq14js36jhNveXs--
