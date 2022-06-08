@@ -2,210 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71D18C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66353C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245126AbiFHQM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
+        id S245074AbiFHQNb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:13:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245050AbiFHQMx (ORCPT
+        with ESMTP id S245190AbiFHQNZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:12:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D6242EDF;
-        Wed,  8 Jun 2022 09:12:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 348DAB82615;
-        Wed,  8 Jun 2022 16:12:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0110C341CF;
-        Wed,  8 Jun 2022 16:12:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654704766;
-        bh=sPGKDjlNYa4MR2u/HdIgrLdEoGRguN2WqLZlFp878w8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=lByU8V8gKdKuGHwNFQ31BBmJTai90bm5fUqFEuBSsaa6btiPhIfz95tJkBi8S9AIO
-         vLz1pK/O2Drl1qSdBQGZEmUkLncmcYqPhY9ojMDcrzj/PoJiylIyB4jQ9TBj1LO7vf
-         E86TLeP7UlVOK/pvkh9gFUxUARll4qyH/h3l61Hb/qa/HAroJ4DVv/04sAyose4z+R
-         l1ezd9XxnR9NMDmViM7wkjScWiuMoHbc3tRttrKQSPMAUuuKANW9byaxXyqnJEWEMK
-         r9QIP0eljUMwKGt9NkqaB84zEOMLtwxSikm7jaOAlUIlC3KnM2nQNlDbedyjaUizAv
-         KmhijBJg1bgVQ==
-Received: by mail-yb1-f179.google.com with SMTP id g201so9480065ybf.12;
-        Wed, 08 Jun 2022 09:12:46 -0700 (PDT)
-X-Gm-Message-State: AOAM532dcsgCHnpAC6ITzTX8wYTwyCHGbuLBPuaWxKyH7jd3UJGirvA3
-        g601s4vKkyIXCMR+16nifS2IuLZzTBgWyFtfD+4=
-X-Google-Smtp-Source: ABdhPJzo2KFde92icAvNQAhts5Ivj5Z3Zxtv6YtGuJhZFN0HTgsP9YMJk/IQIjq/wQ9d9NGuy7Qoa0yG3TY53Ynahlk=
-X-Received: by 2002:a25:a242:0:b0:651:a78d:4636 with SMTP id
- b60-20020a25a242000000b00651a78d4636mr35602450ybi.9.1654704765774; Wed, 08
- Jun 2022 09:12:45 -0700 (PDT)
+        Wed, 8 Jun 2022 12:13:25 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A7BFC2ED6;
+        Wed,  8 Jun 2022 09:13:24 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id 129so19345794pgc.2;
+        Wed, 08 Jun 2022 09:13:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PcBQko4cpGjmgYpYJRhuhnU2CSYO7hE4kC+caWY2rnA=;
+        b=oQZ6Co7un7vNnnwo0MWy3/ll0w9QKyta6veSEP9n7/tptqGD5afT3k9XtWSF0cUNxa
+         PFePEj206aHCS0VFJr4mngObgh30ya1yOEdYiTL5fjvEDedlSFshElmJse3S4N8Cject
+         exb21c7IF+GpPNoiLQQMWN2hSJRWYUjr6SYRZYhvEPUXCxr0fB6MbkPZijyJLBRo1Cbx
+         zXgh5vgWZ6QZDoSb3tmnDFMdaXCV9Olq4yvHOR89B/tSoJoHHUa7QuPXuFahfLtp/78F
+         j0e77VxpwNKNdVk8JZ9USyXz4Vp5L2a0x8afZdBoD4+w5nTrF3YJLec/E/pXN8W6X+F6
+         FtUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PcBQko4cpGjmgYpYJRhuhnU2CSYO7hE4kC+caWY2rnA=;
+        b=AI/mWkSmusi/4wXr+PphuTYvSpl2fjQFwf4hGfINeEpHEqTPUvqlKd96kqyHv2fKu8
+         pY/oDVOPIvu+9hyAXLnjK8HHNW9DbwE5SPKp78C6BBKPX3dTq4mxduBY9JWaAmq3niM6
+         KRESrGA/16N/R9NT2lIw3HcebREc0tEREeVpIpbbOycm9Z/6nzY3Katx2iR2T/Ao4egz
+         245s3AvN3X7/yos4q/Y9GPvcC9W6k8XDUxt/REsza2hNSYz9vgVa38lV9mNeDGFr5Hml
+         W6OGP9nwBL9J3JVHwK4/RyMl8O/hQdYHeyzNCR+cx64NDvXhuHGjeG/iCvVRcCYj4HTT
+         +kng==
+X-Gm-Message-State: AOAM531P2+paXDeYTR2LwNpAqkHSgcwiKCyl3z9P/aeQNhQJmnwqGtc9
+        GAWKG41Y+cqHJE0K7qBGYcI=
+X-Google-Smtp-Source: ABdhPJwdj4TeVR34T3U2JQQQVLO5VGGvV0SXi0bl8R1KnEsKJMkgXRtIFUWA4fiWZ+faIzjfjfHbSg==
+X-Received: by 2002:aa7:8691:0:b0:51c:db9:4073 with SMTP id d17-20020aa78691000000b0051c0db94073mr18712151pfo.72.1654704803766;
+        Wed, 08 Jun 2022 09:13:23 -0700 (PDT)
+Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
+        by smtp.gmail.com with ESMTPSA id cp15-20020a170902e78f00b0015e8d4eb213sm14972161plb.93.2022.06.08.09.13.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 09:13:22 -0700 (PDT)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2] drm/msm: Switch ordering of runpm put vs devfreq_idle
+Date:   Wed,  8 Jun 2022 09:13:34 -0700
+Message-Id: <20220608161334.2140611-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220608000014.3054333-1-jarkko@profian.com> <CAJF2gTQgCn2CyZ4+VBqEEBT2b4+1KxoEXxrd+Ritk=58+U8EFA@mail.gmail.com>
- <YqAy0qjI4Lktk/uJ@iki.fi> <20220608232115.ccd4399f4a1d133e9b65c2a9@kernel.org>
-In-Reply-To: <20220608232115.ccd4399f4a1d133e9b65c2a9@kernel.org>
-From:   Song Liu <song@kernel.org>
-Date:   Wed, 8 Jun 2022 09:12:34 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6iUieQvA6KqzSLgtxmjkVSWCuVwNA338DATb_myHxo7w@mail.gmail.com>
-Message-ID: <CAPhsuW6iUieQvA6KqzSLgtxmjkVSWCuVwNA338DATb_myHxo7w@mail.gmail.com>
-Subject: Re: [PATCH] kprobes: Enable tracing for mololithic kernel images
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Jarkko Sakkinen <jarkko@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Jarkko Sakkinen <jarkko@profian.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Marco Elver <elver@google.com>,
-        Dan Li <ashimida@linux.alibaba.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Mark Brown <broonie@kernel.org>,
-        Luis Machado <luis.machado@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Atsushi Nemoto <anemo@mba.ocn.ne.jp>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dave Anglin <dave.anglin@bell.net>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Daniel Axtens <dja@axtens.net>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jordan Niethe <jniethe5@gmail.com>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Changbin Du <changbin.du@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Liao Chang <liaochang1@huawei.com>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>,
-        Wu Caize <zepan@sipeed.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Tobias Huschle <huschle@linux.ibm.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Michael Roth <michael.roth@amd.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-modules@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 7:21 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
-> Hi Jarkko,
->
-> On Wed, 8 Jun 2022 08:25:38 +0300
-> Jarkko Sakkinen <jarkko@kernel.org> wrote:
->
-> > On Wed, Jun 08, 2022 at 10:35:42AM +0800, Guo Ren wrote:
-> > > .
-> > >
-> > > On Wed, Jun 8, 2022 at 8:02 AM Jarkko Sakkinen <jarkko@profian.com> wrote:
-> > > >
-> > > > Tracing with kprobes while running a monolithic kernel is currently
-> > > > impossible because CONFIG_KPROBES is dependent of CONFIG_MODULES.  This
-> > > > dependency is a result of kprobes code using the module allocator for the
-> > > > trampoline code.
-> > > >
-> > > > Detaching kprobes from modules helps to squeeze down the user space,
-> > > > e.g. when developing new core kernel features, while still having all
-> > > > the nice tracing capabilities.
-> > > >
-> > > > For kernel/ and arch/*, move module_alloc() and module_memfree() to
-> > > > module_alloc.c, and compile as part of vmlinux when either CONFIG_MODULES
-> > > > or CONFIG_KPROBES is enabled.  In addition, flag kernel module specific
-> > > > code with CONFIG_MODULES.
-> > > >
-> > > > As the result, kprobes can be used with a monolithic kernel.
-> > > It's strange when MODULES is n, but vmlinux still obtains module_alloc.
-> > >
-> > > Maybe we need a kprobe_alloc, right?
-> >
-> > Perhaps not the best name but at least it documents the fact that
-> > they use the same allocator.
-> >
-> > Few years ago I carved up something "half-way there" for kprobes,
-> > and I used the name text_alloc() [*].
-> >
-> > [*] https://lore.kernel.org/all/20200724050553.1724168-1-jarkko.sakkinen@linux.intel.com/
->
-> Yeah, I remember that. Thank you for updating your patch!
-> I think the idea (split module_alloc() from CONFIG_MODULE) is good to me.
-> If module support maintainers think this name is not good, you may be
-> able to rename it as text_alloc() and make the module_alloc() as a
-> wrapper of it.
+From: Rob Clark <robdclark@chromium.org>
 
-IIUC, most users of module_alloc() use it to allocate memory for text, except
-that module code uses it for both text and data. Therefore, I guess calling it
-text_alloc() is not 100% accurate until we change the module code (to use
-a different API to allocate memory for data).
+I've seen a few crashes like:
 
-Thanks,
-Song
+    CPU: 0 PID: 216 Comm: A618-worker Tainted: G        W         5.4.196 #7
+    Hardware name: Google Wormdingler rev1+ INX panel board (DT)
+    pstate: 20c00009 (nzCv daif +PAN +UAO)
+    pc : msm_readl+0x14/0x34
+    lr : a6xx_gpu_busy+0x40/0x80
+    sp : ffffffc011b93ad0
+    x29: ffffffc011b93ad0 x28: ffffffe77cba3000
+    x27: 0000000000000001 x26: ffffffe77bb4c4ac
+    x25: ffffffa2f227dfa0 x24: ffffffa2f22aab28
+    x23: 0000000000000000 x22: ffffffa2f22bf020
+    x21: ffffffa2f22bf000 x20: ffffffc011b93b10
+    x19: ffffffc011bd4110 x18: 000000000000000e
+    x17: 0000000000000004 x16: 000000000000000c
+    x15: 000001be3a969450 x14: 0000000000000400
+    x13: 00000000000101d6 x12: 0000000034155555
+    x11: 0000000000000001 x10: 0000000000000000
+    x9 : 0000000100000000 x8 : ffffffc011bd4000
+    x7 : 0000000000000000 x6 : 0000000000000007
+    x5 : ffffffc01d8b38f0 x4 : 0000000000000000
+    x3 : 00000000ffffffff x2 : 0000000000000002
+    x1 : 0000000000000000 x0 : ffffffc011bd4110
+    Call trace:
+     msm_readl+0x14/0x34
+     a6xx_gpu_busy+0x40/0x80
+     msm_devfreq_get_dev_status+0x70/0x1d0
+     devfreq_simple_ondemand_func+0x34/0x100
+     update_devfreq+0x50/0xe8
+     qos_notifier_call+0x2c/0x64
+     qos_max_notifier_call+0x1c/0x2c
+     notifier_call_chain+0x58/0x98
+     __blocking_notifier_call_chain+0x74/0x84
+     blocking_notifier_call_chain+0x38/0x48
+     pm_qos_update_target+0xf8/0x19c
+     freq_qos_apply+0x54/0x6c
+     apply_constraint+0x60/0x104
+     __dev_pm_qos_update_request+0xb4/0x184
+     dev_pm_qos_update_request+0x38/0x58
+     msm_devfreq_idle_work+0x34/0x40
+     kthread_worker_fn+0x144/0x1c8
+     kthread+0x140/0x284
+     ret_from_fork+0x10/0x18
+    Code: f9000bf3 910003fd aa0003f3 d503201f (b9400260)
+    ---[ end trace f6309767a42d0831 ]---
 
->
-> Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-> for kprobe side.
->
-> Thank you,
->
-> --
-> Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Which smells a lot like touching hw after power collapse.  This seems
+a bit like a race/timing issue elsewhere, as pm_runtime_get_if_in_use()
+in a6xx_gpu_busy() should have kept us from touching hw if it wasn't
+powered.
+
+But, we've seen cases where the idle_work scheduled by
+msm_devfreq_idle() ends up racing with the resume path.  Which, again,
+shouldn't be a problem other than unnecessary freq changes.
+
+v2. Only move the runpm _put_autosuspend, and not the _mark_last_busy()
+
+Fixes: 9bc95570175a ("drm/msm: Devfreq tuning")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Link: https://lore.kernel.org/r/20210927152928.831245-1-robdclark@gmail.com
+---
+ drivers/gpu/drm/msm/msm_gpu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+index eb8a6663f309..244511f85044 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.c
++++ b/drivers/gpu/drm/msm/msm_gpu.c
+@@ -672,7 +672,6 @@ static void retire_submit(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
+ 	msm_submit_retire(submit);
+ 
+ 	pm_runtime_mark_last_busy(&gpu->pdev->dev);
+-	pm_runtime_put_autosuspend(&gpu->pdev->dev);
+ 
+ 	spin_lock_irqsave(&ring->submit_lock, flags);
+ 	list_del(&submit->node);
+@@ -686,6 +685,8 @@ static void retire_submit(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
+ 		msm_devfreq_idle(gpu);
+ 	mutex_unlock(&gpu->active_lock);
+ 
++	pm_runtime_put_autosuspend(&gpu->pdev->dev);
++
+ 	msm_gem_submit_put(submit);
+ }
+ 
+-- 
+2.36.1
+
