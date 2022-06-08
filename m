@@ -2,99 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A960CCA47A
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 19:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81171C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 20:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235729AbiFHT5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 15:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53360 "EHLO
+        id S235745AbiFHUCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 16:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiFHT5w (ORCPT
+        with ESMTP id S233542AbiFHUCt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 15:57:52 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD5B3DDC2
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 12:57:51 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id w13-20020a17090a780d00b001e8961b355dso7660588pjk.5
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 12:57:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KCcIdF4bqdmfr8ubKRfkXyFIonUIza6ThNxpED8m3mo=;
-        b=EOXfKPxvRILHWhdHwsHEIz0IgPWoErm0CvypbNn+YmMYE1wCIOPFYQLM5Pjk0r5j0U
-         7DrOiTQ6TZhE6eK6wCbVnTHJtVCvCSUXWFSyv81DNZrUaFNqIJysBDGR36/AQmBX7E3G
-         Hl019QYZtmfuD77J90sL9H6QrAHCb0CaQPp9M1MNrjF5UfnRLIxbj/hCs0VRSpHP07wk
-         d51WaCUhggbI59F99DCRy6t0iH2OGmoau9fUJp4sWnj+b1qN1xA1ZAPhTI3p+EnLSvQW
-         DnTo1Aox2U8y8UuHD8AhXUre45jrt46WN9rUhy+NIceq3Lq6KFII62VO8LTRhy324N/I
-         Zzpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KCcIdF4bqdmfr8ubKRfkXyFIonUIza6ThNxpED8m3mo=;
-        b=i7hcwo8+6DY8QA1ix2N5p3EfkASqKjV7HUEi4xhG1vQH+AhXTTjD2Ybjm+nEil4DuK
-         kObsjCXYn9z7dPj1LjOMC2M+pKGJDx7tCofQjx6O/5wcvIYLETbnRWmrTZgXistyB1h3
-         1EiPJu5KKVcgamMSWuKZgeMuyOFsucUUOgO4u9kIjxhPxfTdBYBMLctGL3nHjgq4rQul
-         07QeYrPAQiunSB51PHX7oa7+5/PrTRTLLDnrl+x4al4sidhP2XrAUmfgCQ9Yjtwm7noS
-         onE8AvVpnwV0n60vCLYyqdAPgTuio3pYyAcIvHTKJPan2dzmmH/h4qcawGZR0rQtS9tO
-         fFyg==
-X-Gm-Message-State: AOAM5310yJN1RMh1P6IHZs9eNa++bDAvrX856j4gGff8WZgM/6ifRL/4
-        CECln2moqpLlqpuJAFbE9LEs4A==
-X-Google-Smtp-Source: ABdhPJzme/8tg/Dp9s2wqqCOyNvtCvz6tGbPMASz1ZpKobwC+W6OShIKP4aG0TVY5OF8A9rtobE7Lw==
-X-Received: by 2002:a17:90b:180b:b0:1e3:2844:5f63 with SMTP id lw11-20020a17090b180b00b001e328445f63mr883477pjb.164.1654718270681;
-        Wed, 08 Jun 2022 12:57:50 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id gq20-20020a17090b105400b001e26da0d28csm14332578pjb.32.2022.06.08.12.57.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 12:57:49 -0700 (PDT)
-Date:   Wed, 8 Jun 2022 19:57:45 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vasant Karasulli <vkarasulli@suse.de>
-Cc:     linux-kernel@vger.kernel.org, jroedel@suse.de, kvm@vger.kernel.org,
-        bp@alien8.de, x86@kernel.org, thomas.lendacky@amd.com
-Subject: Re: [PATCH v6 2/4] x86/tests: Add tests for AMD SEV-ES #VC handling
- Add KUnit based tests to validate Linux's VC handling for instructions cpuid
- and wbinvd. These tests: 1. install a kretprobe on the #VC handler
- (sev_es_ghcb_hv_call, to access GHCB before/after the resulting VMGEXIT). 2.
- trigger an NAE by executing either cpuid or wbinvd. 3. check that the
- kretprobe was hit with the right exit_code available in GHCB.
-Message-ID: <YqD/ObG9ae9YQVNy@google.com>
-References: <20220318094532.7023-1-vkarasulli@suse.de>
- <20220318094532.7023-3-vkarasulli@suse.de>
- <Ykzrb1uyPZ2AKWos@google.com>
- <YqBivtMl74FGmz7r@vasant-suse>
- <YqCzy5Kngj+OgD2h@google.com>
- <YqDD/0IWnoMXEAWg@vasant-suse>
+        Wed, 8 Jun 2022 16:02:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7170714558E;
+        Wed,  8 Jun 2022 13:02:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC7FD61C58;
+        Wed,  8 Jun 2022 20:02:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 896EBC34116;
+        Wed,  8 Jun 2022 20:02:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654718567;
+        bh=fOeilYXwytop+oGSxZ1LqPitweKw68M3Rw2KIU8vzW0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KpDtqJLFoIYj0hsVC8Ekj5EWaFS0g5ZLwt8d2tznwf1HudmIsPXYf8ZtLbxnoTSJj
+         s9C7zzlEG/fxaeF/PtJtrlI8InnG2wAU9cQ7+dsH0h7+/xGuVlH2T4RPo4IffqgV1a
+         OG8vwUe5pXdMRJmEZuZdUt2B4Cal8S+obznxqDwaIMx7r/Ltwy+qtrwxvQxbS8EZJv
+         vY4PilVsyphA7hyGUxisisQITnOa0geUFOO3HGCIQB0k/vRrfxgLje0jGKf9S+w7js
+         fUcqCz6j+au7l+yVXVO+26HYC25c3siZ9YvKsAL4klx+bkcdpN+1UQrLf65G8/IeFP
+         ooT6J0ruZLnEQ==
+Date:   Wed, 8 Jun 2022 22:02:43 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Tyrone Ting <warp5tw@gmail.com>
+Cc:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        andriy.shevchenko@linux.intel.com, jarkko.nikula@linux.intel.com,
+        semen.protsenko@linaro.org, jie.deng@intel.com, jsd@semihalf.com,
+        sven@svenpeter.dev, lukas.bulwahn@gmail.com, olof@lixom.net,
+        arnd@arndb.de, tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
+        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
+        kfting@nuvoton.com, openbmc@lists.ozlabs.org,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 1/5] dt-bindings: i2c: npcm: support NPCM845
+Message-ID: <YqEAY2jUQC8itp6h@kunai>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Tyrone Ting <warp5tw@gmail.com>, avifishman70@gmail.com,
+        tmaimon77@gmail.com, tali.perry1@gmail.com, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        andriy.shevchenko@linux.intel.com, jarkko.nikula@linux.intel.com,
+        semen.protsenko@linaro.org, jie.deng@intel.com, jsd@semihalf.com,
+        sven@svenpeter.dev, lukas.bulwahn@gmail.com, olof@lixom.net,
+        arnd@arndb.de, tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
+        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
+        kfting@nuvoton.com, openbmc@lists.ozlabs.org,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220525032341.3182-1-warp5tw@gmail.com>
+ <20220525032341.3182-2-warp5tw@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="eOEfobvHUxMla7mI"
 Content-Disposition: inline
-In-Reply-To: <YqDD/0IWnoMXEAWg@vasant-suse>
+In-Reply-To: <20220525032341.3182-2-warp5tw@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022, Vasant Karasulli wrote:
-> On Mi 08-06-22 14:35:55, Sean Christopherson wrote:
-> > On Wed, Jun 08, 2022, Vasant Karasulli wrote:
-> > > On Mi 06-04-22 01:22:55, Sean Christopherson wrote:
-> > > > > +	if (ret) {
-> > > > > +		kunit_info(test, "Could not register kretprobe. Skipping.");
-> > > > > +		goto out;
-> > > > > +	}
-> > > > > +
-> > > > > +	test->priv = kunit_kzalloc(test, sizeof(u64), GFP_KERNEL);
-> > > >
-> > > > Allocating 8 bytes and storing the pointer an 8-byte field is rather pointless :-)
-> > > >
-> > >
-> > > Actually it's necessary to allocate memory to test->priv before using according to
-> > > https://www.kernel.org/doc/html/latest/dev-tools/kunit/tips.html
-> >
-> > If priv points at structure of some form, sure, but you're storing a simple value.
-> 
-> Yes, I agree. The reason it was done this way I guess is that type of priv is a
-> void pointer and storing a u64 value results in a compiler warning:
-> cast from pointer to integer of different size [-Wpointer-to-int-cast].
 
-An intermediate cast to "unsigned long" should make that go away.
+--eOEfobvHUxMla7mI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, May 25, 2022 at 11:23:37AM +0800, Tyrone Ting wrote:
+> From: Tyrone Ting <kfting@nuvoton.com>
+>=20
+> Add compatible and nuvoton,sys-mgr description for NPCM i2c module.
+>=20
+> Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+
+Applied to for-next, thanks!
+
+
+--eOEfobvHUxMla7mI
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKhAGMACgkQFA3kzBSg
+KbbPwA//TUBjvk1YsaJncMxAWQA5U+8iQHievylO34AceXllsye/+zAPEOTWm2mb
+N4kNNtvmOVHDiQrJF/tUJJCbp1PlxH5Lu5PA7sntMTiDb6l51IFtWe42eUDBbQcN
+cgc4vx9DLG+0qFV0cXcQ4F/V1AkhZFvoAmbLKr4vbjLSHjtkhTcOBWHBuClfZg++
+/B+9knOKF7+HbEv9aqK4huU6BoAf3j9eCHwqTu2OlrxQQ/oC3/ttDC6EOENpJf/I
+S43JXxY33G1nknOnWJBT74v64uCuuumjTHREqBUkmCF0v72Pfp9qW02AZ3t5ArJF
+Re2hPKn9Mq1NZECeD02D8hvFyFv0llD1vSSs8M6Y3L2y1PmWYxaHNyUqzzYP5voO
+sS9XyUWTjOTjHHSl0V7eORM84HGPXpunY3AM6qhM8ut8cgTw85Yz4zBfGliyeG21
+iX5iArRTy4rr0Aw+AntRSPgTk3BnZFHvPZUDtnQPeD18lT+MZlMcFYy4f3WzUfCQ
+RzlxhCAxegRNgrxQoEhYtONLMkRrgxfNvXv2GNKb8zXPc9B6N3ZhcW90JdkYZ4nS
+8YANTox5TOwJSfHu2VkW3IYS+ISFrvVXeeKLg9Fd6YmYoUUR1WFoPW380WurxnxF
+ABt/X1CT8zmP65TZk83v75V3m56QRF0VFkaTRZO0Wl0SPNU6iJ8=
+=r/Nu
+-----END PGP SIGNATURE-----
+
+--eOEfobvHUxMla7mI--
