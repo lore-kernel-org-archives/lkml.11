@@ -2,159 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A17FEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:53:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA5CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229961AbiFHDxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 23:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47454 "EHLO
+        id S232157AbiFHD4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 23:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232732AbiFHDwH (ORCPT
+        with ESMTP id S235270AbiFHDzO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 23:52:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E869014558D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:00:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BEC7617E8
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:59:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9947C34114;
-        Wed,  8 Jun 2022 00:59:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654649999;
-        bh=D+/cKxFdXXKx+rm/kxaUmCwap5ETjW9x8xpDXmTcQQM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=je5O+awFbTyfOxhQBKCKgT6KUCvzk1zrl2ki+WWoJlGB3WoakY8kOWcAlGtEs+0lN
-         +uKv/jLSwQTIJTdhP2SsC68UV0Qi6gYqJUZ+FCqCIqiROCmwgIdrUBFMNz7UI0ZLhR
-         jJxzFjprih6WDNmaQVpNNQrXjbeeChE9DiwBlUiBckgzEYerBML9//WuFxjoGO92D8
-         BEuKn5JF2ARN+aigmlrQ9aa+gETkCVxSjdwreATidURwRPU6yvUiI5f02Emylpxx6t
-         f3a8G3gOXBQ3MNtuyVu3rF/c1nNBzpy9r4adZhFXhcHec5u/kr10dLLrMAsbjBcztB
-         e5nefTOBMIb0A==
-Date:   Tue, 7 Jun 2022 17:59:56 -0700
-From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     Andrew Cooper <Andrew.Cooper3@citrix.com>
-Cc:     Joe Damato <jdamato@fastly.com>, "x86@kernel.org" <x86@kernel.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jiangshanlai@gmail.com" <jiangshanlai@gmail.com>,
-        "bp@suse.de" <bp@suse.de>, "brgerst@gmail.com" <brgerst@gmail.com>
-Subject: Re: 5.19-rc1 x86 build failure
-Message-ID: <20220608005956.hzvx3fapdmp25oun@treble>
-References: <CALALjgwSm07Cnbm6WaK74ZSs4wJ7hs4B3wLOe7h4Y-7sJ5cUWg@mail.gmail.com>
- <74fdda90-f015-5cb9-a2d2-137baf090c59@citrix.com>
+        Tue, 7 Jun 2022 23:55:14 -0400
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 9C5A223A021;
+        Tue,  7 Jun 2022 18:03:14 -0700 (PDT)
+Received: by ajax-webmail-mail-app3 (Coremail) ; Wed, 8 Jun 2022 09:02:10
+ +0800 (GMT+08:00)
+X-Originating-IP: [106.117.78.144]
+Date:   Wed, 8 Jun 2022 09:02:10 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Eric Dumazet" <edumazet@google.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, jreuter@yaina.de,
+        "Ralf Baechle" <ralf@linux-mips.org>,
+        "David Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>, netdev <netdev@vger.kernel.org>,
+        linux-hams@vger.kernel.org, thomas@osterried.de
+Subject: Re: [PATCH v2] net: ax25: Fix deadlock caused by skb_recv_datagram
+ in ax25_recvmsg
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <CANn89iJoOvG=KrouTpe+bgAVf=mYtxE1D3m542UF96XwxKEVsQ@mail.gmail.com>
+References: <20220607142337.78458-1-duoming@zju.edu.cn>
+ <CANn89iJoOvG=KrouTpe+bgAVf=mYtxE1D3m542UF96XwxKEVsQ@mail.gmail.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <74fdda90-f015-5cb9-a2d2-137baf090c59@citrix.com>
+Message-ID: <3c463bfd.58476.18140d5501a.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cC_KCgDHa7gS9Z9itGG0AQ--.38641W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgsPAVZdtaGKPwAAst
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 12:42:33PM +0000, Andrew Cooper wrote:
-> On 07/06/2022 13:19, Joe Damato wrote:
-> >   96                            .pushsection .brk_reservation,"aw",@nobits
-> >   97                            .brk.early_pgt_alloc:
-> >   98 ???? 00000000              .skip ((2 * 3) * ((1UL) << 12))
-> > ****  Error: missing ')'
-> > ****  Error: missing ')'
-> > ****  Error: missing ')'
-> > ****  Error: junk at end of line, first unrecognized character is `U'
-> >   98      0000
-> >  100                            .popsection
-> >
-> > This comes from arch/x86/mm/init.c, which has the following code:
-> >
-> > RESERVE_BRK(early_pgt_alloc, INIT_PGT_BUF_SIZE);
-> >
-> > wherein INIT_PGT_BUF_SIZE (via PAGE_SIZE) has a "1UL" which makes the
-> > assembler unhappy.
-> >
-> > I don't really know what the correct way to fix this is; it seems that the
-> > macro _AC should handle this if ASSEMBLY is defined, IIUC, but that does
-> > not seem to be the case at this point in init.c.
-> >
-> > Perhaps I am doing something incorrect during the build process causing
-> > this to happen?
-> 
-> The problem is that _AC() is evaluated in C context (so gains the UL/ULL
-> suffix), and the C'd string is fed directly into the assembler (where
-> older binutils doesn't tolerate the suffix).
-> 
-> Short of having a _PAGE_SIZE which is an explicitly non-AC()'d constant,
-> I'm not sure what to suggest.  Ideally, you'd want to temporarily define
-> __ASSEMBLY__ around the expansion of __stringify(), but I don't think
-> that's possible as RESERVE_BRK() is a macro itself.
-
-Joe, what version of binutils do you have?
-
-We can fix this by taking a completely different approach: define the
-variable in C and just do the "nobits" in the linker script, like below.
-I can work up a proper patch tomorrow.
-
-
-diff --git a/arch/x86/include/asm/setup.h b/arch/x86/include/asm/setup.h
-index 7590ac2570b9..4704184a2d78 100644
---- a/arch/x86/include/asm/setup.h
-+++ b/arch/x86/include/asm/setup.h
-@@ -108,19 +108,11 @@ extern unsigned long _brk_end;
- void *extend_brk(size_t size, size_t align);
- 
- /*
-- * Reserve space in the brk section.  The name must be unique within the file,
-+ * Reserve space in the .brk section.  The name must be unique within vmlinux,
-  * and somewhat descriptive.  The size is in bytes.
-- *
-- * The allocation is done using inline asm (rather than using a section
-- * attribute on a normal variable) in order to allow the use of @nobits, so
-- * that it doesn't take up any space in the vmlinux file.
-  */
- #define RESERVE_BRK(name, size)						\
--	asm(".pushsection .brk_reservation,\"aw\",@nobits\n\t"		\
--	    ".brk." #name ":\n\t"					\
--	    ".skip " __stringify(size) "\n\t"				\
--	    ".size .brk." #name ", " __stringify(size) "\n\t"		\
--	    ".popsection\n\t")
-+	char __brk_##name[size] __section(".brk_reservation");
- 
- extern void probe_roms(void);
- #ifdef __i386__
-@@ -133,12 +125,16 @@ asmlinkage void __init x86_64_start_reservations(char *real_mode_data);
- 
- #endif /* __i386__ */
- #endif /* _SETUP */
--#else
--#define RESERVE_BRK(name,sz)				\
--	.pushsection .brk_reservation,"aw",@nobits;	\
--.brk.name:						\
--1:	.skip sz;					\
--	.size .brk.name,.-1b;				\
-+
-+#else  /* __ASSEMBLY */
-+
-+#define RESERVE_BRK(name, size)				\
-+	.pushsection .brk_reservation, "aw";		\
-+__brk_##name:						\
-+1:	.skip size;					\
-+	.size __brk_##name, . - 1b;			\
- 	.popsection
-+
- #endif /* __ASSEMBLY__ */
-+
- #endif /* _ASM_X86_SETUP_H */
-diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
-index 91831b9d8aa8..f105b8aa055e 100644
---- a/arch/x86/kernel/vmlinux.lds.S
-+++ b/arch/x86/kernel/vmlinux.lds.S
-@@ -392,7 +392,7 @@ SECTIONS
- 	__end_of_kernel_reserve = .;
- 
- 	. = ALIGN(PAGE_SIZE);
--	.brk : AT(ADDR(.brk) - LOAD_OFFSET) {
-+	.brk (NOLOAD) : AT(ADDR(.brk) - LOAD_OFFSET) {
- 		__brk_base = .;
- 		. += 64 * 1024;		/* 64k alignment slop space */
- 		*(.brk_reservation)	/* areas brk users have reserved */
+SGVsbG8sCgpPbiBUdWUsIDcgSnVuIDIwMjIgMTA6MDY6MjcgLTA3MDAgRXJpYyBEdW1hemV0IHdy
+b3RlOgoKPiBPbiBUdWUsIEp1biA3LCAyMDIyIGF0IDc6MjQgQU0gRHVvbWluZyBaaG91IDxkdW9t
+aW5nQHpqdS5lZHUuY24+IHdyb3RlOgo+ID4KPiA+IFRoZSBza2JfcmVjdl9kYXRhZ3JhbSgpIGlu
+IGF4MjVfcmVjdm1zZygpIHdpbGwgaG9sZCBsb2NrX3NvY2sKPiA+IGFuZCBibG9jayB1bnRpbCBp
+dCByZWNlaXZlcyBhIHBhY2tldCBmcm9tIHRoZSByZW1vdGUuIElmIHRoZSBjbGllbnQKPiA+IGRv
+ZXNuYHQgY29ubmVjdCB0byBzZXJ2ZXIgYW5kIGNhbGxzIHJlYWQoKSBkaXJlY3RseSwgaXQgd2ls
+bCBub3QKPiA+IHJlY2VpdmUgYW55IHBhY2tldHMgZm9yZXZlci4gQXMgYSByZXN1bHQsIHRoZSBk
+ZWFkbG9jayB3aWxsIGhhcHBlbi4KPiA+Cj4gPiBUaGUgZmFpbCBsb2cgY2F1c2VkIGJ5IGRlYWRs
+b2NrIGlzIHNob3duIGJlbG93Ogo+ID4KPiA+IFsgIDM2OS42MDY5NzNdIElORk86IHRhc2sgYXgy
+NV9kZWFkbG9jazoxNTcgYmxvY2tlZCBmb3IgbW9yZSB0aGFuIDI0NSBzZWNvbmRzLgo+ID4gWyAg
+MzY5LjYwODkxOV0gImVjaG8gMCA+IC9wcm9jL3N5cy9rZXJuZWwvaHVuZ190YXNrX3RpbWVvdXRf
+c2VjcyIgZGlzYWJsZXMgdGhpcyBtZXNzYWdlLgo+ID4gWyAgMzY5LjYxMzA1OF0gQ2FsbCBUcmFj
+ZToKPiA+IFsgIDM2OS42MTMzMTVdICA8VEFTSz4KPiA+IFsgIDM2OS42MTQwNzJdICBfX3NjaGVk
+dWxlKzB4MmY5LzB4YjIwCj4gPiBbICAzNjkuNjE1MDI5XSAgc2NoZWR1bGUrMHg0OS8weGIwCj4g
+PiBbICAzNjkuNjE1NzM0XSAgX19sb2NrX3NvY2srMHg5Mi8weDEwMAo+ID4gWyAgMzY5LjYxNjc2
+M10gID8gZGVzdHJveV9zY2hlZF9kb21haW5zX3JjdSsweDIwLzB4MjAKPiA+IFsgIDM2OS42MTc5
+NDFdICBsb2NrX3NvY2tfbmVzdGVkKzB4NmUvMHg3MAo+ID4gWyAgMzY5LjYxODgwOV0gIGF4MjVf
+YmluZCsweGFhLzB4MjEwCj4gPiBbICAzNjkuNjE5NzM2XSAgX19zeXNfYmluZCsweGNhLzB4ZjAK
+PiA+IFsgIDM2OS42MjAwMzldICA/IGRvX2Z1dGV4KzB4YWUvMHgxYjAKPiA+IFsgIDM2OS42MjAz
+ODddICA/IF9feDY0X3N5c19mdXRleCsweDdjLzB4MWMwCj4gPiBbICAzNjkuNjIwNjAxXSAgPyBm
+cHJlZ3NfYXNzZXJ0X3N0YXRlX2NvbnNpc3RlbnQrMHgxOS8weDQwCj4gPiBbICAzNjkuNjIwNjEz
+XSAgX194NjRfc3lzX2JpbmQrMHgxMS8weDIwCj4gPiBbICAzNjkuNjIxNzkxXSAgZG9fc3lzY2Fs
+bF82NCsweDNiLzB4OTAKPiA+IFsgIDM2OS42MjI0MjNdICBlbnRyeV9TWVNDQUxMXzY0X2FmdGVy
+X2h3ZnJhbWUrMHg0Ni8weGIwCj4gPiBbICAzNjkuNjIzMzE5XSBSSVA6IDAwMzM6MHg3ZjQzYzhh
+YThhZjcKPiA+IFsgIDM2OS42MjQzMDFdIFJTUDogMDAyYjowMDAwN2Y0M2M4MTk3ZWY4IEVGTEFH
+UzogMDAwMDAyNDYgT1JJR19SQVg6IDAwMDAwMDAwMDAwMDAwMzEKPiA+IFsgIDM2OS42MjU3NTZd
+IFJBWDogZmZmZmZmZmZmZmZmZmZkYSBSQlg6IDAwMDAwMDAwMDAwMDAwMDAgUkNYOiAwMDAwN2Y0
+M2M4YWE4YWY3Cj4gPiBbICAzNjkuNjI2NzI0XSBSRFg6IDAwMDAwMDAwMDAwMDAwMTAgUlNJOiAw
+MDAwNTU3NjhlMjAyMWQwIFJESTogMDAwMDAwMDAwMDAwMDAwNQo+ID4gWyAgMzY5LjYyODU2OV0g
+UkJQOiAwMDAwN2Y0M2M4MTk3ZjAwIFIwODogMDAwMDAwMDAwMDAwMDAxMSBSMDk6IDAwMDA3ZjQz
+YzgxOTg3MDAKPiA+IFsgIDM2OS42MzAyMDhdIFIxMDogMDAwMDAwMDAwMDAwMDAwMCBSMTE6IDAw
+MDAwMDAwMDAwMDAyNDYgUjEyOiAwMDAwN2ZmZjg0NWU2YWZlCj4gPiBbICAzNjkuNjMyMjQwXSBS
+MTM6IDAwMDA3ZmZmODQ1ZTZhZmYgUjE0OiAwMDAwN2Y0M2M4MTk3ZmMwIFIxNTogMDAwMDdmNDNj
+ODE5ODcwMAo+ID4KPiA+IFRoaXMgcGF0Y2ggbW92ZXMgdGhlIHNrYl9yZWN2X2RhdGFncmFtKCkg
+YmVmb3JlIGxvY2tfc29jaygpIGluIG9yZGVyCj4gPiB0aGF0IG90aGVyIGZ1bmN0aW9ucyB0aGF0
+IG5lZWQgbG9ja19zb2NrIGNvdWxkIGJlIGV4ZWN1dGVkLgo+ID4KPiA+IFN1Z2dlc3RlZC1ieTog
+VGhvbWFzIE9zdGVycmllZCA8dGhvbWFzQG9zdGVycmllZC5kZT4KPiA+IFNpZ25lZC1vZmYtYnk6
+IER1b21pbmcgWmhvdSA8ZHVvbWluZ0B6anUuZWR1LmNuPgo+ID4gUmVwb3J0ZWQtYnk6IFRob21h
+cyBIYWJldHMgPHRob21hc0BAaGFiZXRzLnNlPgo+ID4gLS0tCj4gPiBDaGFuZ2VzIGluIHYyOgo+
+ID4gICAtIE1ha2UgY29tbWl0IG1lc3NhZ2VzIGNsZWFyZXIuCj4gPgo+ID4gIG5ldC9heDI1L2Fm
+X2F4MjUuYyB8IDExICsrKysrKy0tLS0tCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9u
+cygrKSwgNSBkZWxldGlvbnMoLSkKPiA+Cj4gPiBkaWZmIC0tZ2l0IGEvbmV0L2F4MjUvYWZfYXgy
+NS5jIGIvbmV0L2F4MjUvYWZfYXgyNS5jCj4gPiBpbmRleCA5NTM5M2JiMjc2MC4uMDJjZDYwODc1
+MTIgMTAwNjQ0Cj4gPiAtLS0gYS9uZXQvYXgyNS9hZl9heDI1LmMKPiA+ICsrKyBiL25ldC9heDI1
+L2FmX2F4MjUuYwo+ID4gQEAgLTE2NjUsNiArMTY2NSwxMSBAQCBzdGF0aWMgaW50IGF4MjVfcmVj
+dm1zZyhzdHJ1Y3Qgc29ja2V0ICpzb2NrLCBzdHJ1Y3QgbXNnaGRyICptc2csIHNpemVfdCBzaXpl
+LAo+ID4gICAgICAgICBpbnQgY29waWVkOwo+ID4gICAgICAgICBpbnQgZXJyID0gMDsKPiA+Cj4g
+PiArICAgICAgIC8qIE5vdyB3ZSBjYW4gdHJlYXQgYWxsIGFsaWtlICovCj4gPiArICAgICAgIHNr
+YiA9IHNrYl9yZWN2X2RhdGFncmFtKHNrLCBmbGFncywgJmVycik7Cj4gPiArICAgICAgIGlmICgh
+c2tiKQo+ID4gKyAgICAgICAgICAgICAgIGdvdG8gZG9uZTsKPiA+ICsKPiAKPiBTbyBhdCB0aGlz
+IHBvaW50IHdlIGhhdmUgc2tiPXNvbWV0aGluZy4gVGhpcyBtZWFucyB0aGF0IHRoZSBmb2xsb3dp
+bmcKPiBicmFuY2ggd2lsbCBsZWFrIGl0Lgo+IAo+IGlmIChzay0+c2tfdHlwZSA9PSBTT0NLX1NF
+UVBBQ0tFVCAmJiBzay0+c2tfc3RhdGUgIT0gVENQX0VTVEFCTElTSEVEKSB7Cj4gICAgIGVyciA9
+ICAtRU5PVENPTk47Cj4gICAgIGdvdG8gb3V0OyAgICAvLyBza2Igd2lsbCBiZSBsZWFrZWQKPiB9
+Cj4gCgpUaGFuayB5b3VyIGZvciBwb2ludGluZyBvdXQgdGhlIHByb2JsZW0hCkkgd2lsbCBhZGQg
+c2tiX2ZyZWVfZGF0YWdyYW0oKSBiZWZvcmUgZ290byBvdXQgaW4gb3JkZXIgdG8gbWl0aWdhdGUg
+dGhlIG1lbW9yeSBsZWFrLgoKICAgICAgICBpZiAoc2stPnNrX3R5cGUgPT0gU09DS19TRVFQQUNL
+RVQgJiYgc2stPnNrX3N0YXRlICE9IFRDUF9FU1RBQkxJU0hFRCkgewogICAgICAgICAgICAgICAg
+ZXJyID0gIC1FTk9UQ09OTjsKKyAgICAgICAgICAgICAgIHNrYl9mcmVlX2RhdGFncmFtKHNrLCBz
+a2IpOwogICAgICAgICAgICAgICAgZ290byBvdXQ7CiAgICAgICAgfQoKQmVzdCByZWdhcmRzLApE
+dW9taW5nIFpob3UKCg==
