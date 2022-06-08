@@ -2,111 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 338E2CCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:48:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7643BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239508AbiFHMsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:48:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33180 "EHLO
+        id S239563AbiFHMsZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:48:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230261AbiFHMsB (ORCPT
+        with ESMTP id S239514AbiFHMsT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:48:01 -0400
-Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 077EEBC9B;
-        Wed,  8 Jun 2022 05:47:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=LvqB+oCn++tayjaTVT
-        UBZXPkGSvkcgZKDldpZZY9yS8=; b=VBm9IRZqrjQMnsWOoil6bShC0ooCRYhb7j
-        VLEpL/PeIbHgWz0AP5twjtd9xakdtQTNIdjwdZwaSYPtHwPMQc34I5/C3f+wdtYj
-        2aphTboobzoNVqtgOpR/sFx3YeXjXipSQYrvl9WHB/S8h9Ju60xceH8M6WCrWM+0
-        8CqeXHGhs=
-Received: from localhost.localdomain (unknown [171.221.147.121])
-        by smtp13 (Coremail) with SMTP id EcCowAC3rJxTmqBiHla6Gw--.54176S2;
-        Wed, 08 Jun 2022 20:47:19 +0800 (CST)
-From:   Chen Lin <chen45464546@163.com>
-To:     kuba@kernel.org
-Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, matthias.bgg@gmail.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        alexander.duyck@gmail.com, Chen Lin <chen45464546@163.com>
-Subject: [PATCH v5] net: ethernet: mtk_eth_soc: fix misuse of mem alloc interface netdev[napi]_alloc_frag
-Date:   Wed,  8 Jun 2022 20:46:53 +0800
-Message-Id: <1654692413-2598-1-git-send-email-chen45464546@163.com>
-X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <20220607161413.655dd63f@kernel.org>
-References: <20220607161413.655dd63f@kernel.org>
-X-CM-TRANSID: EcCowAC3rJxTmqBiHla6Gw--.54176S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7ZFyfKF13AF45WF15tr45GFg_yoW8uryrpr
-        4UKa43AF48Jr47G395Aa1DZa1Yyw4IgrWUKFy3Z34fZ345tFWrtFyktFW5WFySkrWvkF1S
-        yFs8Zr9xursxtw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0piIPf9UUUUU=
-X-Originating-IP: [171.221.147.121]
-X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/1tbiGhganlaECDCbOQAAsO
+        Wed, 8 Jun 2022 08:48:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB2692D0C;
+        Wed,  8 Jun 2022 05:48:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF7B4B8276C;
+        Wed,  8 Jun 2022 12:48:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D66FC34116;
+        Wed,  8 Jun 2022 12:48:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654692494;
+        bh=kL7aqTzSrEHcf3xZnL9DdRnwdBZsFUKtW/2ujP1VUbA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=t+UPSSFw+vgYMzwwfmzMdDix74pc+PpAiHwFtFPbm0Rmj5nt+c93ofl1Absuy8yre
+         2rVzdZOxFIttdCCnGT4hEBVVtOVHP281fHSOQCtzoiy2GxMTKLGW9dqw9eUJ8DRfoI
+         59Xc/ltMZWoqXp5QV75udZRKq1gDkWO7ore0oaD9pXJ9cLK2oG4OzhE2jP4/CTyf1J
+         BPJtzBgsFnYlWlZoKRPO3ZXpHq3PJ/Wn1kqdoqFnzSiQ/x0naJwOERiFExY+Eo/Hsb
+         0Z7orm0A5tvTn2jhiZUJusrIEYY21CSypQxJxVEtR60fAyBy4zofy73/IwZczAMKPK
+         Tan82+dxllvFw==
+Date:   Wed, 8 Jun 2022 14:48:08 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Amir Goldstein <amir73il@gmail.com>
+Cc:     Christian =?utf-8?B?R8O2dHRzY2hl?= <cgzones@googlemail.com>,
+        selinux@vger.kernel.org, Miklos Szeredi <mszeredi@redhat.com>,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-man <linux-man@vger.kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH] f*xattr: allow O_PATH descriptors
+Message-ID: <20220608124808.uylo5lntzfgxxmns@wittgenstein>
+References: <20220607153139.35588-1-cgzones@googlemail.com>
+ <20220608112728.b4xrdppxqmyqmtwf@wittgenstein>
+ <CAOQ4uxipD6khNUYuZT80WUa0KOMdyyP0ia55uhmeRCLj4NBicg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAOQ4uxipD6khNUYuZT80WUa0KOMdyyP0ia55uhmeRCLj4NBicg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When rx_flag == MTK_RX_FLAGS_HWLRO,
-rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
-netdev_alloc_frag is for alloction of page fragment only.
-Reference to other drivers and Documentation/vm/page_frags.rst
+On Wed, Jun 08, 2022 at 03:28:52PM +0300, Amir Goldstein wrote:
+> On Wed, Jun 8, 2022 at 2:57 PM Christian Brauner <brauner@kernel.org> wrote:
+> >
+> > On Tue, Jun 07, 2022 at 05:31:39PM +0200, Christian Göttsche wrote:
+> > > From: Miklos Szeredi <mszeredi@redhat.com>
+> > >
+> > > Support file descriptors obtained via O_PATH for extended attribute
+> > > operations.
+> > >
+> > > Extended attributes are for example used by SELinux for the security
+> > > context of file objects. To avoid time-of-check-time-of-use issues while
+> > > setting those contexts it is advisable to pin the file in question and
+> > > operate on a file descriptor instead of the path name. This can be
+> > > emulated in userspace via /proc/self/fd/NN [1] but requires a procfs,
+> > > which might not be mounted e.g. inside of chroots, see[2].
+> > >
+> > > [1]: https://github.com/SELinuxProject/selinux/commit/7e979b56fd2cee28f647376a7233d2ac2d12ca50
+> > > [2]: https://github.com/SELinuxProject/selinux/commit/de285252a1801397306032e070793889c9466845
+> > >
+> > > Original patch by Miklos Szeredi <mszeredi@redhat.com>
+> > > https://patchwork.kernel.org/project/linux-fsdevel/patch/20200505095915.11275-6-mszeredi@redhat.com/
+> > >
+> > > > While this carries a minute risk of someone relying on the property of
+> > > > xattr syscalls rejecting O_PATH descriptors, it saves the trouble of
+> > > > introducing another set of syscalls.
+> > > >
+> > > > Only file->f_path and file->f_inode are accessed in these functions.
+> > > >
+> > > > Current versions return EBADF, hence easy to detect the presense of
+> > > > this feature and fall back in case it's missing.
+> > >
+> > > CC: linux-api@vger.kernel.org
+> > > CC: linux-man@vger.kernel.org
+> > > Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+> > > ---
+> >
+> > I'd be somewhat fine with getxattr and listxattr but I'm worried that
+> > setxattr/removexattr waters down O_PATH semantics even more. I don't
+> > want O_PATH fds to be useable for operations which are semantically
+> > equivalent to a write.
+> 
+> It is not really semantically equivalent to a write if it works on a
+> O_RDONLY fd already.
 
-Branch to use __get_free_pages when ring->frag_size > PAGE_SIZE.
+The fact that it works on a O_RDONLY fd has always been weird. And is
+probably a bug. If you look at xattr_permission() you can see that it
+checks for MAY_WRITE for set operations... setxattr() writes to disk for
+real filesystems. I don't know how much closer to a write this can get.
 
-Signed-off-by: Chen Lin <chen45464546@163.com>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c |   21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+In general, one semantic aberration doesn't justify piling another one
+on top.
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index b3b3c07..aba0d84 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -899,6 +899,17 @@ static bool mtk_rx_get_desc(struct mtk_eth *eth, struct mtk_rx_dma_v2 *rxd,
- 	return true;
- }
- 
-+static void *mtk_max_lro_buf_alloc(gfp_t gfp_mask)
-+{
-+	unsigned long data;
-+	unsigned int size = mtk_max_frag_size(MTK_MAX_LRO_RX_LENGTH);
-+
-+	data = __get_free_pages(gfp_mask | __GFP_COMP | __GFP_NOWARN,
-+				get_order(size));
-+
-+	return (void *)data;
-+}
-+
- /* the qdma core needs scratch memory to be setup */
- static int mtk_init_fq_dma(struct mtk_eth *eth)
- {
-@@ -1467,7 +1478,10 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			goto release_desc;
- 
- 		/* alloc new buffer */
--		new_data = napi_alloc_frag(ring->frag_size);
-+		if (ring->frag_size <= PAGE_SIZE)
-+			new_data = napi_alloc_frag(ring->frag_size);
-+		else
-+			new_data = mtk_max_lro_buf_alloc(GFP_ATOMIC);
- 		if (unlikely(!new_data)) {
- 			netdev->stats.rx_dropped++;
- 			goto release_desc;
-@@ -1914,7 +1928,10 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
- 		return -ENOMEM;
- 
- 	for (i = 0; i < rx_dma_size; i++) {
--		ring->data[i] = netdev_alloc_frag(ring->frag_size);
-+		if (ring->frag_size <= PAGE_SIZE)
-+			ring->data[i] = netdev_alloc_frag(ring->frag_size);
-+		else
-+			ring->data[i] = mtk_max_lro_buf_alloc(GFP_KERNEL);
- 		if (!ring->data[i])
- 			return -ENOMEM;
- 	}
--- 
-1.7.9.5
+(And one thing that speaks for O_RDONLY is at least that it actually
+opens the file wheres O_PATH doesn't.)
 
+> 
+> >
+> > In sensitive environments such as service management/container runtimes
+> > we often send O_PATH fds around precisely because it is restricted what
+> > they can be used for. I'd prefer to not to plug at this string.
+> 
+> But unless I am mistaken, path_setxattr() and syscall_fsetxattr()
+> are almost identical w.r.t permission checks and everything else.
+> 
+> So this change introduces nothing new that a user in said environment
+> cannot already accomplish with setxattr().
+> 
+> Besides, as the commit message said, doing setxattr() on an O_PATH
+> fd is already possible with setxattr("/proc/self/$fd"), so whatever security
+> hole you are trying to prevent is already wide open.
+
+That is very much a something that we're trying to restrict for this
+exact reason and is one of the main motivator for upgrade mask in
+openat2(). If I want to send a O_PATH around I want it to not be
+upgradable. Aleksa is working on upgrade masks with openat2() (see [1]
+and part of the original patchset in [2]. O_PATH semantics don't need to
+become weird.
+
+[1]: https://lore.kernel.org/all/20220526130355.fo6gzbst455fxywy@senku
+[2]: https://patchwork.ozlabs.org/project/linuxppc-dev/patch/20190728010207.9781-8-cyphar@cyphar.com
