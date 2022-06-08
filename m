@@ -2,126 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F784C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:16:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C31BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:17:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235027AbiFHJQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:16:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
+        id S235062AbiFHJRA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:17:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235093AbiFHJOa (ORCPT
+        with ESMTP id S235350AbiFHJOy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:14:30 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE871D82F4;
-        Wed,  8 Jun 2022 01:36:10 -0700 (PDT)
-X-UUID: b566a5b6eae447c9897858eace2fbdea-20220608
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:0d5b83aa-2477-46cd-b412-e843e534e382,OB:0,LO
-        B:20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:95
-X-CID-INFO: VERSION:1.1.5,REQID:0d5b83aa-2477-46cd-b412-e843e534e382,OB:0,LOB:
-        20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:95
-X-CID-META: VersionHash:2a19b09,CLOUDID:ac2415e5-2ba2-4dc1-b6c5-11feb6c769e0,C
-        OID:ab9fe7398c47,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: b566a5b6eae447c9897858eace2fbdea-20220608
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 788356503; Wed, 08 Jun 2022 16:36:03 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Wed, 8 Jun 2022 16:36:02 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 8 Jun 2022 16:36:02 +0800
-From:   Tinghan Shen <tinghan.shen@mediatek.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Benson Leung <bleung@chromium.org>,
-        "Guenter Roeck" <groeck@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        Kees Cook <keescook@chromium.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>
-CC:     <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <chrome-platform@lists.linux.dev>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <weishunc@google.com>
-Subject: [PATCH v2 1/9] dt-binding: remoteproc: mediatek: Support dual-core SCP
-Date:   Wed, 8 Jun 2022 16:35:45 +0800
-Message-ID: <20220608083553.8697-2-tinghan.shen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220608083553.8697-1-tinghan.shen@mediatek.com>
-References: <20220608083553.8697-1-tinghan.shen@mediatek.com>
+        Wed, 8 Jun 2022 05:14:54 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7123D29832;
+        Wed,  8 Jun 2022 01:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1654677481; x=1686213481;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=UmpkQCfq78I9O4H6zMMUL04zFy7nE3AaQI8yswkw5HA=;
+  b=1k3GQU02K5FiS/uM8BHpv5p7G5tpXWbtSt51Mh3FU2/RcgUAe1OhD58t
+   gErUJy+T4rhjuMQfBeHLWbLFNgx8wk6gDoePOuaPk+Yna19N7300oeATI
+   AG001gCKqZ28ISUJNZsUqX/7JyKoN9tWtKjt7IJ858llzcizQNIlDDWjk
+   CI87HzSVBAZ9dDWSWR2c3dot1GbXmpPKEL9gO/jhmNuqzzDRo0fXxLO1+
+   skKdbdns4c51e974F9ZuanUWOP2abiOa9CeBT0PGz7VIwD+2eowcQ0mbi
+   hKd4vz2T6DnYurb2PKynFJJyQNNYgpODuhfBW0MtVCa278KhOaxPLdoxG
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="167565074"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jun 2022 01:38:00 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 8 Jun 2022 01:38:00 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 8 Jun 2022 01:37:57 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <p.zabel@pengutronix.de>, <sre@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <linux-arm-kernel@lists.infradead.org>, <linux-pm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH v4 8/9] power: reset: at91-reset: add support for SAMA7G5
+Date:   Wed, 8 Jun 2022 11:39:41 +0300
+Message-ID: <20220608083942.1584087-9-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
+References: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The MT8195 SCP co-processor is a dual-core RISC-V MCU.
+Add support for SAMA7G5 including reset_controller_dev support for 3 lines
+(which are USB PHYs).
 
-Add a new property to reference the sibling core and to assign
-core id to SCP nodes. Also add a new compatile for the driver of
-SCP 2nd core.
-
-Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- .../devicetree/bindings/remoteproc/mtk,scp.yaml     | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/power/reset/at91-reset.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
-index eec3b9c4c713..4576ff9b1f2d 100644
---- a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
-+++ b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
-@@ -20,6 +20,7 @@ properties:
-       - mediatek,mt8186-scp
-       - mediatek,mt8192-scp
-       - mediatek,mt8195-scp
-+      - mediatek,mt8195-scp-dual
+diff --git a/drivers/power/reset/at91-reset.c b/drivers/power/reset/at91-reset.c
+index e25d8d38a2f8..80bf0c023c17 100644
+--- a/drivers/power/reset/at91-reset.c
++++ b/drivers/power/reset/at91-reset.c
+@@ -202,6 +202,11 @@ static const struct at91_reset_data samx7 = {
+ 	.reset_args = AT91_RSTC_KEY | AT91_RSTC_PROCRST,
+ };
  
-   reg:
-     description:
-@@ -57,6 +58,17 @@ properties:
-   memory-region:
-     maxItems: 1
- 
-+  mediatek,scp-core:
-+    $ref: "/schemas/types.yaml#/definitions/phandle-array"
-+    description:
-+      Reference to the sibling SCP core. This is required to
-+      enable support for dual-core SCP.
-+    items:
-+      - items:
-+          - description: Phandle of sibling SCP node.
-+          - description: Core id of this SCP node
-+            enum: [0, 1]
++static const struct at91_reset_data sama7g5 = {
++	.reset_args = AT91_RSTC_KEY | AT91_RSTC_PROCRST,
++	.n_device_reset = 3,
++};
 +
- required:
-   - compatible
-   - reg
-@@ -115,6 +127,7 @@ examples:
-         reg-names = "sram", "cfg", "l1tcm";
-         clocks = <&infracfg CLK_INFRA_SCPSYS>;
-         clock-names = "main";
-+        mediatek,scp-core = <&scp_dual 0>;
- 
-         cros_ec {
-             mediatek,rpmsg-name = "cros-ec-rpmsg";
+ static const struct of_device_id at91_reset_of_match[] = {
+ 	{
+ 		.compatible = "atmel,at91sam9260-rstc",
+@@ -223,6 +228,10 @@ static const struct of_device_id at91_reset_of_match[] = {
+ 		.compatible = "microchip,sam9x60-rstc",
+ 		.data = &samx7,
+ 	},
++	{
++		.compatible = "microchip,sama7g5-rstc",
++		.data = &sama7g5,
++	},
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, at91_reset_of_match);
 -- 
-2.18.0
+2.33.0
 
