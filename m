@@ -2,99 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:40:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C60BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:41:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241560AbiFHOkz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 10:40:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52784 "EHLO
+        id S241878AbiFHOlS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 10:41:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241659AbiFHOki (ORCPT
+        with ESMTP id S241705AbiFHOlE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 10:40:38 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF5E14AF66
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 07:40:33 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LJ8vH0Sv7zRjBF;
-        Wed,  8 Jun 2022 22:37:15 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 8 Jun
- 2022 22:40:27 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <david@redhat.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v2 1/3] mm/swapfile: make security_vm_enough_memory_mm() work as expected
-Date:   Wed, 8 Jun 2022 22:40:29 +0800
-Message-ID: <20220608144031.829-2-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220608144031.829-1-linmiaohe@huawei.com>
-References: <20220608144031.829-1-linmiaohe@huawei.com>
+        Wed, 8 Jun 2022 10:41:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CBA5157E83
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 07:40:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 864BF61B95
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 14:40:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA7C7C341C8;
+        Wed,  8 Jun 2022 14:40:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654699248;
+        bh=ns1vdA0/qrQYg4Q4rjwNdkKJ1jBqx0nuAlBJgu/kcNw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FftvwcczPCwlYEmoEN+HsJhaAgib1ISbeICzSUDzCi11ZeNCEfw6gIVs69DLI7JX9
+         Z1TBMDcv09De9frZ5eBu7PcNt/FRZyhwk18mbmb+4zKpRqxxTvlUA8P0tvaGa+4GB6
+         8/TRSz0A+Vae7JgK18uDyO7x1eiAS2r2sXVEmNF1anh7Ya6PsuB8Z2CrAYsw2x+VL2
+         jWkeYJd1jzDhhRXiFf5fa8Rc04b3fSWAmUW49KhytZvNFQ7ZlxEwf25moY7hNmhQ+Y
+         WZ7dqDLU6TOXDybqxztnbh4mCIgZ99a3ahNFlvLvkjIfmBU34yRaONKuE+emFWigUE
+         kCOQkxrf2LF+Q==
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Phil Auld <pauld@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Yu Liao <liaoyu15@huawei.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Subject: [PATCH 01/20] context_tracking: Remove unused context_tracking_in_user()
+Date:   Wed,  8 Jun 2022 16:40:18 +0200
+Message-Id: <20220608144037.1765000-2-frederic@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220608144037.1765000-1-frederic@kernel.org>
+References: <20220608144037.1765000-1-frederic@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-security_vm_enough_memory_mm() checks whether a process has enough memory
-to allocate a new virtual mapping. And total_swap_pages is considered as
-available memory while swapoff tries to make sure there's enough memory
-that can hold the swapped out memory. But total_swap_pages contains the
-swap space that is being swapoff. So security_vm_enough_memory_mm() will
-success even if there's no memory to hold the swapped out memory because
-total_swap_pages always greater than or equal to p->pages.
+This function is not used and CT_WARN_ON() coupled with ct_state() is
+the preferred way to assert context tracking state values.
 
-In order to fix it, p->pages should be retracted from total_swap_pages
-first and then check whether there's enough memory for inuse swap pages.
-
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Reported-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Cc: Paul E. McKenney <paulmck@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Cc: Boqun Feng <boqun.feng@gmail.com>
+Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Cc: Yu Liao<liaoyu15@huawei.com>
+Cc: Phil Auld <pauld@redhat.com>
+Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
+Cc: Alex Belits <abelits@marvell.com>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
 ---
- mm/swapfile.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ include/linux/context_tracking_state.h | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/mm/swapfile.c b/mm/swapfile.c
-index ec4c1b276691..d2bead7b8b70 100644
---- a/mm/swapfile.c
-+++ b/mm/swapfile.c
-@@ -2398,6 +2398,7 @@ SYSCALL_DEFINE1(swapoff, const char __user *, specialfile)
- 	struct filename *pathname;
- 	int err, found = 0;
- 	unsigned int old_block_size;
-+	unsigned int inuse_pages;
+diff --git a/include/linux/context_tracking_state.h b/include/linux/context_tracking_state.h
+index 65a60d3313b0..02be3ac2040d 100644
+--- a/include/linux/context_tracking_state.h
++++ b/include/linux/context_tracking_state.h
+@@ -41,12 +41,7 @@ static inline bool context_tracking_enabled_this_cpu(void)
+ 	return context_tracking_enabled() && __this_cpu_read(context_tracking.active);
+ }
  
- 	if (!capable(CAP_SYS_ADMIN))
- 		return -EPERM;
-@@ -2428,9 +2429,13 @@ SYSCALL_DEFINE1(swapoff, const char __user *, specialfile)
- 		spin_unlock(&swap_lock);
- 		goto out_dput;
- 	}
--	if (!security_vm_enough_memory_mm(current->mm, p->pages))
--		vm_unacct_memory(p->pages);
-+
-+	total_swap_pages -= p->pages;
-+	inuse_pages = READ_ONCE(p->inuse_pages);
-+	if (!security_vm_enough_memory_mm(current->mm, inuse_pages))
-+		vm_unacct_memory(inuse_pages);
- 	else {
-+		total_swap_pages += p->pages;
- 		err = -ENOMEM;
- 		spin_unlock(&swap_lock);
- 		goto out_dput;
-@@ -2453,7 +2458,6 @@ SYSCALL_DEFINE1(swapoff, const char __user *, specialfile)
- 	}
- 	plist_del(&p->list, &swap_active_head);
- 	atomic_long_sub(p->pages, &nr_swap_pages);
--	total_swap_pages -= p->pages;
- 	p->flags &= ~SWP_WRITEOK;
- 	spin_unlock(&p->lock);
- 	spin_unlock(&swap_lock);
+-static __always_inline bool context_tracking_in_user(void)
+-{
+-	return __this_cpu_read(context_tracking.state) == CONTEXT_USER;
+-}
+ #else
+-static inline bool context_tracking_in_user(void) { return false; }
+ static inline bool context_tracking_enabled(void) { return false; }
+ static inline bool context_tracking_enabled_cpu(int cpu) { return false; }
+ static inline bool context_tracking_enabled_this_cpu(void) { return false; }
 -- 
-2.23.0
+2.25.1
 
