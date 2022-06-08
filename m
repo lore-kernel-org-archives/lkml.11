@@ -2,105 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A794C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:10:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236248AbiFHKKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36302 "EHLO
+        id S236321AbiFHKKY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:10:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236991AbiFHKJ3 (ORCPT
+        with ESMTP id S237034AbiFHKJc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:09:29 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C356FA3B;
-        Wed,  8 Jun 2022 02:54:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654682045; x=1686218045;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=Cd8pbVH0sEmGPZUUgfp1h3i8osc5+Du509bEtizTrWg=;
-  b=C6Vcdb/fAd1MkkkHeMs5rlUzdUA//45Ev6PFlA1XtAg+l4swdsR7fn0Z
-   vNIifRFcf/pInw/bhcKXBGRa/Uu+Icz9t20PhndfYZ5GbjHmwg1s/Mcpf
-   8CEAQBPAp+VoUQeWEl+6Tkh2R5KQQYx4QUTw5AFVJ7QfOH499Gxv8EccA
-   FrrpZqrK3UH65JZbmX4nxhf3a/O/hj3oCPEnNzAFFLo7zz2B710Owt/vs
-   va502N7B0MlXdVYVk4HuhEVTSrGnWQXuLNXcl45F+bGqJBQ+oerRQ7bgh
-   L5GMnLP7YzAu3Z4SwrBf7USpd9U4gSkFSIBr5RAEpYPqznsFe+tdbNuNJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="276866313"
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="276866313"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:04 -0700
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="636721443"
-Received: from bmichals-mobl.ger.corp.intel.com ([10.252.57.131])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:03 -0700
-Date:   Wed, 8 Jun 2022 12:54:01 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 03/36] tty/vt: consolemap: define UNI_* macros for
- constants
-In-Reply-To: <ab9bf4c2-48ed-1a14-9788-8a1672e29849@suse.cz>
-Message-ID: <dd7830f1-be51-29a-b77-64a5f4c34a6a@linux.intel.com>
-References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-3-jslaby@suse.cz> <59e0ae93-c7b-2087-75f8-4da0de918250@linux.intel.com> <ab9bf4c2-48ed-1a14-9788-8a1672e29849@suse.cz>
+        Wed, 8 Jun 2022 06:09:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D3BED3F8;
+        Wed,  8 Jun 2022 02:54:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA77E61A3F;
+        Wed,  8 Jun 2022 09:54:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCF08C34116;
+        Wed,  8 Jun 2022 09:54:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654682070;
+        bh=AzEVbvMp6p8V46Xl/eSBFT/ox0PW2CfgYNjNb28qaPs=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=fJfBz3cPlvZEPBAKmG9AvgHA1Nc+8TVn/ng9xVDjDNImDUlfFYP8mCKt9+gXDYbOl
+         DsRdb22dFmP70IyYp0s/A40vwkSpxcxqeWArE2PWTenCOYQoDXBT7U3mCYg/Bo2HqA
+         YZorATyovxsX3TqTsdrOPLuC9zOicfs2GCi54SOG3x1gKt9ptUW2wSVfMyy6Oe3j9J
+         5uTSz0Q+qUfxbpSsFCKISKoFRymbtsMNMsUmfQU4Ev9Su4EBDE592AvsyWlrWp2Iwu
+         k0riOLEhrcX4tCOaYsSm917oXxyk+KE9NIHmQeA2RN7GyhKObRHNUN4LACu+GKtfVh
+         zPBM282Dosq7Q==
+Date:   Wed, 8 Jun 2022 11:54:26 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Hilton Chain <hako@ultrarare.space>
+cc:     =?ISO-8859-15?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        Bryan Cain <bryancain3@gmail.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: Re: [PATCH v5] HID: apple: Properly handle function keys on non-Apple
+  keyboard
+In-Reply-To: <20220602161219.152be32d@ultrarare.space>
+Message-ID: <nycvar.YFH.7.76.2206081154160.10851@cbobk.fhfr.pm>
+References: <20220529182036.10226-1-jose.exposito89@gmail.com> <20220530083752.1973a905@ultrarare.space> <20220530061812.GA10391@elementary> <20220531221102.7bd7da7d@ultrarare.space> <20220531223330.3d63e2fe@ultrarare.space> <20220531172053.GA10651@elementary>
+ <CAPnXWxG8gbe1arQK9kBtwM1Xcta+wreTN742kgtBBr1v0ewKug@mail.gmail.com> <7f67ac07b8bd37d5817cd151674cc6b0@ultrarare.space> <20220601072651.242ce08a@ultrarare.space> <20220601121737.1226ffea@ultrarare.space> <20220601174956.GA10418@elementary>
+ <20220602161219.152be32d@ultrarare.space>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-1421660256-1654678483=:1676"
-Content-ID: <9d3b502f-879d-19b7-99db-1cce7bf934c@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Thu, 2 Jun 2022, Hilton Chain wrote:
 
---8323329-1421660256-1654678483=:1676
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <94ebc639-5988-436d-3f10-ca604d4f30eb@linux.intel.com>
-
-On Wed, 8 Jun 2022, Jiri Slaby wrote:
-
-> On 07. 06. 22, 15:21, Ilpo Järvinen wrote:
-> > On Tue, 7 Jun 2022, Jiri Slaby wrote:
-> > 
-> > > The code uses constants for sizes of dictionary substructures on many
-> > > places. Define 3 macros and use them in the code, so that loop bounds,
-> > > local variables and the dictionary always match. (And the loop bounds
-> > > are obvious now too.)
-> > > 
-> > > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> > 
-> > Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > 
-> > > -			for (k = 0; k < 64; k++) {
-> > > +			for (k = 0; k < UNI_ROW_GLYPHS; k++) {
-> > >   				glyph = p2[k];
-> > >   				if (glyph >= 0 && glyph < MAX_GLYPH
-> > >   					       && q[glyph] < 32)
-> > 
-> > Probably unrelated to this change but what's that < 32? It seems to appear
-> > twice related to the inverse mapping (and you didn't end up naming it).
+> This commit extends fa33382c7f74 ("HID: apple: Properly handle function
+> keys on Keychron keyboards") by adding an array of known non-Apple
+> keyboards' device names, and the function apple_is_non_apple_keyboard()
+> to identify and create exception for them.
 > 
-> That's ascii C0 test _IMO_.
+> Signed-off-by: Hilton Chain <hako@ultrarare.space>
+> ---
+> 
+> V4 -> V5: Add Varmilo keyboards' name "AONE" to the exception list
+> V3 -> V4: Remove unnecessary strlen()
 
-Ok, that's what I though it must be. But then this code seems even more 
-odd to me, why it sets the inverse again but only if it's a control 
-character...
-
-Maybe this gives some hint why but it's unintelligible to me:
-			/* prefer '-' above SHY etc. */
-Both that quoted - and soft hyphen (SHY) are >= 32. So it kind of matches 
-to what the if does, but it completely fails to explain why preference is 
-the different way around with the control chars.
-
-Btw, for set_inverse_transl(), q -> inv rename would still be useful on 
-top of the other variable renames.
+Applied to hid.git, thank you.
 
 -- 
- i.
---8323329-1421660256-1654678483=:1676--
+Jiri Kosina
+SUSE Labs
+
