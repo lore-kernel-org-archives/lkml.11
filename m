@@ -2,73 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D7EEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD79C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:46:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229555AbiFHHqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51822 "EHLO
+        id S233303AbiFHHpU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:45:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238006AbiFHHmD (ORCPT
+        with ESMTP id S237478AbiFHHhr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:42:03 -0400
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FBC229A48;
-        Wed,  8 Jun 2022 00:06:51 -0700 (PDT)
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.95)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1nyplE-002o4y-CQ; Wed, 08 Jun 2022 09:05:48 +0200
-Received: from p57bd968f.dip0.t-ipconnect.de ([87.189.150.143] helo=[192.168.178.81])
-          by inpost2.zedat.fu-berlin.de (Exim 4.95)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_128_GCM_SHA256
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1nyplE-003Qpw-5p; Wed, 08 Jun 2022 09:05:48 +0200
-Message-ID: <db5505e5-811e-0572-7614-8443c864b5e6@physik.fu-berlin.de>
-Date:   Wed, 8 Jun 2022 09:05:47 +0200
+        Wed, 8 Jun 2022 03:37:47 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541221A881D
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:59:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654671574; x=1686207574;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=V5IH10Oa/APIbHxnd3+1jfus6BwIkyJBYQzSYhAxYXs=;
+  b=IaIZj7+lCPcvs9HRHSw6MFMaB8kHdx9HDJdCSR8TTzKothoWD2k6uHuh
+   yvHbJLXFGdcc9fto7aU+OdL/5Y1ydOvepV7c8Ks6LIwZAf2q78aTxY/nk
+   muxUY8bAXNL9t7l7PLWk0P4jHmv/mg13ZVJd0T4IJKWRdYPXAqCuPVpuQ
+   CJDvo9jQukxcaGkNcfO0NS20DgOl1MSJouvl9OJp2RuCGdtWBVrZsNU+2
+   xqPUijlLVor2e42TE5lLvOvx5vxZALVw9sOU1BhJQx2xIn2Dud2RwDVtT
+   8OmloZPh+nD1u/r/k1Nlo8XNGXFwTxOEqx7aykiuFwbKovkCvzgCwaAIS
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="340892742"
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="340892742"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 23:59:33 -0700
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="584688344"
+Received: from xding11-mobl.ccr.corp.intel.com ([10.254.214.239])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 23:59:29 -0700
+Message-ID: <a0a70b517bf1da920dca6082afa3fbc6aba77a67.camel@intel.com>
+Subject: Re: [PATCH v5 6/9] mm/demotion: Add support for removing node from
+ demotion memory tiers
+From:   Ying Huang <ying.huang@intel.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+Date:   Wed, 08 Jun 2022 14:59:26 +0800
+In-Reply-To: <20220603134237.131362-7-aneesh.kumar@linux.ibm.com>
+References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
+         <20220603134237.131362-7-aneesh.kumar@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] sh: cast away __iomem to remove sparse warning
-Content-Language: en-US
-To:     Baoquan He <bhe@redhat.com>, Rob Landley <rob@landley.net>,
-        akpm@linux-foundation.org
-Cc:     ysato@users.sourceforge.jp, dalias@libc.org,
-        linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-References: <20220507013411.74277-1-bhe@redhat.com>
- <YpS0C8tVG2E5jGSV@MiWiFi-R3L-srv>
- <c24579a3-74e4-1dbb-6237-d9e1a01e6e09@landley.net>
- <Yp/3Lq03+UVs9Bpv@MiWiFi-R3L-srv>
-From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-In-Reply-To: <Yp/3Lq03+UVs9Bpv@MiWiFi-R3L-srv>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-Originating-IP: 87.189.150.143
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+On Fri, 2022-06-03 at 19:12 +0530, Aneesh Kumar K.V wrote:
+> This patch adds the special string "none" as a supported memtier value
+> that we can use to remove a specific node from being using as demotion target.
+> 
+> For ex:
+> :/sys/devices/system/node/node1# cat memtier
+> 1
+> :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
+> 1-3
+> :/sys/devices/system/node/node1# echo none > memtier
+> :/sys/devices/system/node/node1#
+> :/sys/devices/system/node/node1# cat memtier
+> :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
+> 2-3
+> :/sys/devices/system/node/node1#
 
-On 6/8/22 03:11, Baoquan He wrote:
-> I guess SuperH arch has been in status of no maintenance, however some
-> generic code change may involve correspondant ARCH change so that we
-> have to touch arch/sh/.
+Do you have a practical use case for this?  What kind of memory node
+needs to be removed from memory tiers demotion/promotion?
 
-It is actually actively maintained by Rich Felker but he is often slow to
-respond at the moment. I have already offered Rich my help and maybe we
-can work something out that I can help him with the maintenance.
+Best Regards,
+Huang, YIng
 
-Adrian
 
--- 
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+[snip]
+
 
