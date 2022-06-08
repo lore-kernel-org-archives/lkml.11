@@ -2,163 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB64C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:07:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1022FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233807AbiFHJHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55682 "EHLO
+        id S233979AbiFHJHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:07:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234367AbiFHJE3 (ORCPT
+        with ESMTP id S233006AbiFHJEv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:04:29 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B54026271A
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:24:21 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id m25so18575485lji.11
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 01:24:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qn1e9UAfXz5aNABeJOAzysJEyHPbsjfCU7HdITnS84k=;
-        b=Zf/rY8UPfUil7LCo0AmPL0ktcOejRjNbVkLs6BfbQEG0tklgICY+14UzNT7D2l+FDP
-         kd/C58CeMvLCk8v3OokScSeoWleedGL2pCuZ4fpDA/Jq1KQDZNs4yJvNeRq2uK5ohQfv
-         x4JYv71VyLAWcCv/E2Q2Aj30ajf43xjO6xVU0l7ZmWZuCFV8Mab02uK+G5KxWVWLxWab
-         pz3zN5y+pykDMGv075WbOy8vrLxMM7b81TO1CCsC2Cjxlj6PBZkA0QWRSCsNtnZJpAjf
-         OGONEqGxWA91wAD7DPtau1HbAdjZEXl/4fttRzwneXCGvy6jRrNp4vyt+nqKNTR9wue/
-         xJKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qn1e9UAfXz5aNABeJOAzysJEyHPbsjfCU7HdITnS84k=;
-        b=EGf9uiZoAyvU+THNsv5ImFQgxFAtTv7l8GDzVFWjL5lOMQmIb/grBDihPDTKjVuoru
-         tT0HR83aEsSmDuLeUu0YREttw9zchXB6sQrjkheM9FClkQcWMpFsV8A8ZwtrTtSpTNp6
-         /fu0JZ4rU6L28Zm6hQE+BnChQqgOfunyxKMofpxvUKjHoeJW/J+1x9YvHDeZyEC1KoIW
-         oLcbTmart/lz0JFApVb8f4JZC6nGKpOBxDAVLWgg2wLUAGYtLGC4OYrnO4kHgNvz3Wxe
-         kYXYuCxY8O3qLPeI/rN1c25NO1hzX1u3ihvauvpC+ChJYo8u0oLdMgqhlwAFbX5VbuUg
-         WXWA==
-X-Gm-Message-State: AOAM530+F8Iyoqr8812+tE+elqHBfMBTlT8nu7qG8SbTfQYDC1yt7alV
-        I1cN6ICHQOOih2fPjp8WXJnaaL/TsJ2UqCwvynO2QA==
-X-Google-Smtp-Source: ABdhPJwud0+3E/Q29u9oy+kzSCNdY14guBqBmA0Hqpt4c+PmhIEHReOxdmFrIBDqbHdvMdQZbHcRxllXIDLHtj3hagQ=
-X-Received: by 2002:a2e:bf14:0:b0:255:b789:576b with SMTP id
- c20-20020a2ebf14000000b00255b789576bmr3093006ljr.47.1654676659002; Wed, 08
- Jun 2022 01:24:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <000000000000bb7f1c05da29b601@google.com> <00000000000010b7d305e08837c8@google.com>
- <YpnqpMYcokTwCB6u@smile.fi.intel.com> <Ypor265BTdnmgwpM@rowland.harvard.edu>
- <YpouRmanvCQeKA3S@kroah.com> <Ypow1LRZ3Hau36ci@rowland.harvard.edu>
- <Ypoyy/stICFdHauR@kroah.com> <CACT4Y+bBWrLRwiowaWk8o4+XAtCHxxJiEQfiSkgM3BDut9atAw@mail.gmail.com>
- <20220606123839.GW2146@kadam> <CACT4Y+Y_kg1J00iBL=sMr5AP7U4RXuBizusvQG52few2NcJ6dg@mail.gmail.com>
- <YqAWpMdi4o1IQslu@casper.infradead.org> <CACT4Y+anOkc=-A5=3EBrvmu+AJ+f7CcrOfWp85hEu+CHkS3BGw@mail.gmail.com>
-In-Reply-To: <CACT4Y+anOkc=-A5=3EBrvmu+AJ+f7CcrOfWp85hEu+CHkS3BGw@mail.gmail.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Wed, 8 Jun 2022 10:24:07 +0200
-Message-ID: <CACT4Y+YM8__WOVAQcpNBNxneHCp5dv2tF7ySDpivRJ-efGNCUQ@mail.gmail.com>
-Subject: Re: [syzbot] general protection fault in __device_attach
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        syzbot <syzbot+dd3c97de244683533381@syzkaller.appspotmail.com>,
-        hdanton@sina.com, lenb@kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rafael.j.wysocki@intel.com,
-        rafael@kernel.org, rjw@rjwysocki.net,
-        syzkaller-bugs@googlegroups.com, linux-usb@vger.kernel.org,
-        Linux-MM <linux-mm@kvack.org>
+        Wed, 8 Jun 2022 05:04:51 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7353B0928
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:24:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654676666; x=1686212666;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ExKBbSfCOtpswNsSsOMGnKwgFVvsSYdnSKk9OuhGdxo=;
+  b=DyBgs++NHiKbmWA4m5SxSdGl5CePJydZCQhiyyxX2jbweNnbasi7xaE2
+   mGx5QHr4mxwnp1gvGRLGZ3suA8/TxC1qHKQidwYh3BPj2HFm1S15gHP/R
+   sx08NhjbVR5FqqUiGEhY26++0BRFgW4zZd81PEbRIKvde04Wvt4AQZiJS
+   QsPZdyYYwignmtfiHXzRm1eQS1SyewPIE0t9PtKMlzQJU2HrjFsyAA0uL
+   XmgYO4tv7DXFnVD6VOzP+jELFJFibZfow6P+SCrK2IFwGvGXtLgr1DL1v
+   WHbddWorBL2eQ4nd2RxgWN1Ql0zmPsVIN6J5If3JDkMwmv66X7yCAX1f0
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="259977181"
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="259977181"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 01:24:03 -0700
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="636671615"
+Received: from xding11-mobl.ccr.corp.intel.com ([10.254.214.239])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 01:23:57 -0700
+Message-ID: <06d04b6588b43ca010ec78ce0dee8127193f5562.camel@intel.com>
+Subject: Re: [PATCH v5 6/9] mm/demotion: Add support for removing node from
+ demotion memory tiers
+From:   Ying Huang <ying.huang@intel.com>
+To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>, linux-mm@kvack.org,
+        akpm@linux-foundation.org
+Cc:     Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+Date:   Wed, 08 Jun 2022 16:23:55 +0800
+In-Reply-To: <81956d2e-0bfe-78ba-5ad0-f6c388c2190e@linux.ibm.com>
+References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
+         <20220603134237.131362-7-aneesh.kumar@linux.ibm.com>
+         <a0a70b517bf1da920dca6082afa3fbc6aba77a67.camel@intel.com>
+         <81956d2e-0bfe-78ba-5ad0-f6c388c2190e@linux.ibm.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 8 Jun 2022 at 10:20, Dmitry Vyukov <dvyukov@google.com> wrote:
-> > On Tue, Jun 07, 2022 at 09:15:09AM +0200, Dmitry Vyukov wrote:
-> > > On Mon, 6 Jun 2022 at 14:39, Dan Carpenter <dan.carpenter@oracle.com> wrote:
-> > > >
-> > > > On Sat, Jun 04, 2022 at 10:32:46AM +0200, 'Dmitry Vyukov' via syzkaller-bugs wrote:
-> > > > > On Fri, 3 Jun 2022 at 18:12, Greg KH <gregkh@linuxfoundation.org> wrote:
-> > > > > >
-> > > > > > But again, is this a "real and able to be triggered from userspace"
-> > > > > > problem, or just fault-injection-induced?
-> > > > >
-> > > > > Then this is something to fix in the fault injection subsystem.
-> > > > > Testing systems shouldn't be reporting false positives.
-> > > > > What allocations cannot fail in real life? Is it <=page_size?
-> > > > >
-> > > >
-> > > > Apparently in 2014, anything less than *EIGHT?!!* pages succeeded!
-> > > >
-> > > > https://lwn.net/Articles/627419/
-> > > >
-> > > > I have been on the look out since that article and never seen anyone
-> > > > mention it changing.  I think we should ignore that and say that
-> > > > anything over PAGE_SIZE can fail.  Possibly we could go smaller than
-> > > > PAGE_SIZE...
-> > >
-> > > +linux-mm for GFP expertise re what allocations cannot possibly fail
-> > > and should be excluded from fault injection.
-> > >
-> > > Interesting, thanks for the link.
-> > >
-> > > PAGE_SIZE looks like a good start. Once we have the predicate in
-> > > place, we can refine it later when/if we have more inputs.
-> > >
-> > > But I wonder about GFP flags. They definitely have some impact on allocations.
-> > > If GFP_ACCOUNT is set, all allocations can fail, right?
-> > > If GFP_DMA/DMA32 is set, allocations can fail, right? What about other zones?
-> > > If GFP_NORETRY is set, allocations can fail?
-> > > What about GFP_NOMEMALLOC and GFP_ATOMIC?
-> > > What about GFP_IO/GFP_FS/GFP_DIRECT_RECLAIM/GFP_KSWAPD_RECLAIM? At
-> > > least some of these need to be set for allocations to not fail? Which
-> > > ones?
-> > > Any other flags are required to be set/unset for allocations to not fail?
-> >
-> > I'm not the expert on page allocation, but ...
-> >
-> > I don't think GFP_ACCOUNT makes allocations fail.  It might make reclaim
-> > happen from within that cgroup, and it might cause an OOM kill for
-> > something in that cgroup.  But I don't think it makes a (low order)
-> > allocation more likely to fail.
->
-> Interesting.
-> I was thinking of some malicious specifically crafted configurations
-> with very low limit and particular pattern of allocations. Also what
-> if there is just 1 process (current)? Is it possible to kill and
-> reclaim the current process when a thread is stuck in the middle of
-> the kernel on a kmalloc?
-> Also I see e.g.:
->         Tasks with the OOM protection (oom_score_adj set to -1000)
->         are treated as an exception and are never killed.
->
-> I am not an expert on this either, but I think it may be hard to fight
-> with a specifically crafted attack.
->
->
-> > There's usually less memory avilable in DMA/DMA32 zones, but we have
-> > so few allocations from those zones, I question the utility of focusing
-> > testing on those allocations.
-> >
-> > GFP_ATOMIC allows access to emergency pools, so I would say _less_ likely
-> > to fail.  KSWAPD_RECLAIM has no effect on whether _this_ allocation
-> > succeeds or fails; it kicks kswapd to do reclaim, rather than doing
-> > reclaim directly.  DIRECT_RECLAIM definitely makes allocations more likely
-> > to succeed.  GFP_FS allows (direct) reclaim to happen from filesystems.
-> > GFP_IO allows IO to start (ie writeback can start) in order to clean
-> > dirty memory.
-> >
-> > Anyway, I hope somebody who knows the page allocator better than I do
-> > can say smarter things than this.  Even better if they can put it into
-> > Documentation/ somewhere ;-)
->
-> Even better to put this into code as a predicate function that fault
-> injection will use. It will also serve as precise up-to-date
-> documentation.
+On Wed, 2022-06-08 at 13:50 +0530, Aneesh Kumar K V wrote:
+> On 6/8/22 12:29 PM, Ying Huang wrote:
+> > On Fri, 2022-06-03 at 19:12 +0530, Aneesh Kumar K.V wrote:
+> > > This patch adds the special string "none" as a supported memtier value
+> > > that we can use to remove a specific node from being using as demotion target.
+> > > 
+> > > For ex:
+> > > :/sys/devices/system/node/node1# cat memtier
+> > > 1
+> > > :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
+> > > 1-3
+> > > :/sys/devices/system/node/node1# echo none > memtier
+> > > :/sys/devices/system/node/node1#
+> > > :/sys/devices/system/node/node1# cat memtier
+> > > :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
+> > > 2-3
+> > > :/sys/devices/system/node/node1#
+> > 
+> > Do you have a practical use case for this?  What kind of memory node
+> > needs to be removed from memory tiers demotion/promotion?
+> > 
+> 
+> This came up in our internal discussion. It was mentioned that there is 
+> a need to skip some slow memory nodes from participating in demotion.
 
-Also at the end of kmalloc as:
-WARN_ON(!ret && !cant_fail(size, gfp));
-!
+Again, can you provide a practical use case?  Why we shouldn't demote
+cold pages to these slow memory nodes?  How do we use these slow memory
+node?  These slow memory node is slower than disk?
 
-> > https://www.kernel.org/doc/html/latest/core-api/memory-allocation.html
-> > exists but isn't quite enough to answer this question.
+Best Regards,
+Huang, Ying
+
