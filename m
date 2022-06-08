@@ -2,77 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A1D9C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:56:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B9A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239520AbiFHM4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40126 "EHLO
+        id S239547AbiFHM5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239510AbiFHMz6 (ORCPT
+        with ESMTP id S239510AbiFHM52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:55:58 -0400
-Received: from mail.enpas.org (zhong.enpas.org [IPv6:2a03:4000:2:537::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ADA4326AFD;
-        Wed,  8 Jun 2022 05:55:54 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        by mail.enpas.org (Postfix) with ESMTPSA id 18FEC100022;
-        Wed,  8 Jun 2022 12:55:52 +0000 (UTC)
-Date:   Wed, 8 Jun 2022 14:55:49 +0200
-From:   Max Staudt <max@enpas.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        linux-kernel@vger.kernel.org,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 00/13] can: slcan: extend supported features
-Message-ID: <20220608145549.67f0f831.max@enpas.org>
-In-Reply-To: <20220608071947.pwl4whyzqpyubzqn@pengutronix.de>
-References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
-        <20220608021537.04c45cf9.max@enpas.org>
-        <20220608071947.pwl4whyzqpyubzqn@pengutronix.de>
+        Wed, 8 Jun 2022 08:57:28 -0400
+X-Greylist: delayed 930 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Jun 2022 05:57:25 PDT
+Received: from linderud.pw (linderud.dev [163.172.10.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC2123A00E;
+        Wed,  8 Jun 2022 05:57:24 -0700 (PDT)
+Received: from linderud.pw (localhost [127.0.0.1])
+        by linderud.pw (Postfix) with ESMTP id 85067C0273;
+        Wed,  8 Jun 2022 14:32:46 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linderud.pw;
+        s=linderud; t=1654691566;
+        bh=M3XueMVFe7gOTM1GQj/+FxeEg3x7aocLkX7oHxmpKcA=;
+        h=From:To:Cc:Subject:Date;
+        b=KMQ+jTr9zGswdqCgz7EFNCXBQN8V1/e15wofI/Hy9Im+KwV/gaKnl+swjxYb8wcA7
+         pj2SQgx+rsp6F5NmCnZlwBXGootjC6hC83SXFcGoG6neoPCXpLkFZjkpsOethxMs6k
+         Xp1aG6U9X63Eab82633iTJnmEF44Cba1F/6LUHmibeN45AP7zq7Qcagvi67RbenzG6
+         ytNlPcQqnfEniXwIGBWrMIRU1uSzY3qk5OtXuQQZdoN4Ei1foCrQAmSfD6QltKOuYV
+         iJh25G5ZxR/OxphnSHsjU4kUpxOGzPNETgFP+wX7mdJEIABYaa7TI9KlH7mZqgmoz7
+         WQRbOFhGqenM1Q/UmMXhtRba14wEjt7Y5QV7SEyBSq9rYezRG1VuzhpUhcn9qIsltc
+         GaWj5RZLpa5REHZY3/VoRmlq/uSrUx4y1pcmphvNvbmLRXOhjUS3Faa4YQHOFv7hgR
+         EhPYo001tQ8o1u1uZKZFQpRMS1UQGFVkShCV3hHGPDinPpuA9mx/3PjsSdedj+4JfC
+         103QklHmgraPCzmj724lAjFULiNf4a39XVNzQyQAyPty6QX9KbunQBttRK7p+Q+rdK
+         pi7+Gm/FHDAuPJGt+AMjIdJJTvnfhiVyEpPH5b4YLHiSWtXc6jl/0d/a8eaemHkhp7
+         09ZYoru9vETf8eljjE9M3QO0=
+Received: from localhost (101.81-167-132.customer.lyse.net [81.167.132.101])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: morten)
+        by linderud.pw (Postfix) with ESMTPSA id 40FDDC0077;
+        Wed,  8 Jun 2022 14:32:46 +0200 (CEST)
+From:   Morten Linderud <morten@linderud.pw>
+Cc:     Morten Linderud <morten@linderud.pw>,
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] tpm/eventlog: Don't abort tpm_read_log on faulty ACPI address
+Date:   Wed,  8 Jun 2022 14:31:08 +0200
+Message-Id: <20220608123109.678343-1-morten@linderud.pw>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 8 Jun 2022 09:19:47 +0200
-Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+tpm_read_log_acpi() should return -ENODEV when no eventlog from the ACPI
+table is found. If the firmware vendor includes an invalid log address
+we are unable to map from the ACPI memory and the function returns -EIO
+which would abort discovery of the eventlog.
 
-> On 08.06.2022 02:15:37, Max Staudt wrote:
-> > To speed up the slcan cleanup, may I suggest looking at can327?
-> > 
-> > It started as a modification of slcan, and over the past few months,
-> > it has gone through several review rounds in upstreaming. In fact, a
-> > *ton* of things pointed out during reviews would apply 1:1 to slcan.
-> > 
-> > What's more, there's legacy stuff that's no longer needed. No
-> > SLCAN_MAGIC, no slcan_devs, ... it's all gone in can327. May I
-> > suggest you have a look at it and bring slcan's boilerplate in line
-> > with it?  
-> 
-> +1
-> 
-> Most of Dario's series looks good. I suggest that we mainline this
-> first. If there's interest and energy the slcan driver can be reworked
-> to re-use the more modern concepts of the can327 driver.
+This change ensure we always return -ENODEV in tpm_read_log_acpi() and
+fallback to the EFI configuration table.
 
-Agreed. It does look good, and I'm glad to see slcan get some
-love.
+The following hardware was used to test this issue:
+    Framework Laptop (Pre-production)
+    BIOS: INSYDE Corp, Revision: 3.2
+    TPM Device: NTC, Firmware Revision: 7.2
 
-Thanks Dario!
+Dump of the faulty ACPI TPM2 table:
+    [000h 0000   4]                    Signature : "TPM2"    [Trusted Platform Module hardware interface Table]
+    [004h 0004   4]                 Table Length : 0000004C
+    [008h 0008   1]                     Revision : 04
+    [009h 0009   1]                     Checksum : 2B
+    [00Ah 0010   6]                       Oem ID : "INSYDE"
+    [010h 0016   8]                 Oem Table ID : "TGL-ULT"
+    [018h 0024   4]                 Oem Revision : 00000002
+    [01Ch 0028   4]              Asl Compiler ID : "ACPI"
+    [020h 0032   4]        Asl Compiler Revision : 00040000
 
+    [024h 0036   2]               Platform Class : 0000
+    [026h 0038   2]                     Reserved : 0000
+    [028h 0040   8]              Control Address : 0000000000000000
+    [030h 0048   4]                 Start Method : 06 [Memory Mapped I/O]
 
-Max
+    [034h 0052  12]            Method Parameters : 00 00 00 00 00 00 00 00 00 00 00 00
+    [040h 0064   4]           Minimum Log Length : 00010000
+    [044h 0068   8]                  Log Address : 000000004053D000
+
+Signed-off-by: Morten Linderud <morten@linderud.pw>
+
+---
+
+v2: Tweak commit message and opt to return -ENODEV instead of loosening up the
+    if condition in tpm_read_log()
+
+---
+ drivers/char/tpm/eventlog/acpi.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/char/tpm/eventlog/acpi.c b/drivers/char/tpm/eventlog/acpi.c
+index 1b18ce5ebab1..2b15d6eebd69 100644
+--- a/drivers/char/tpm/eventlog/acpi.c
++++ b/drivers/char/tpm/eventlog/acpi.c
+@@ -136,8 +136,12 @@ int tpm_read_log_acpi(struct tpm_chip *chip)
+ 
+ 	ret = -EIO;
+ 	virt = acpi_os_map_iomem(start, len);
+-	if (!virt)
++	if (!virt) {
++		dev_warn(&chip->dev, "%s: Failed to map ACPI memory\n", __func__);
++		/* try EFI log next */
++		ret = -ENODEV;
+ 		goto err;
++	}
+ 
+ 	memcpy_fromio(log->bios_event_log, virt, len);
+ 
+-- 
+2.36.1
