@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD434C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:25:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2D71C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237041AbiFHKY7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:24:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34340 "EHLO
+        id S236427AbiFHKZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:25:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236744AbiFHKXE (ORCPT
+        with ESMTP id S236750AbiFHKXF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:23:04 -0400
+        Wed, 8 Jun 2022 06:23:05 -0400
 Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 373BD1F66EC;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C38ED1F5C59;
         Wed,  8 Jun 2022 03:12:24 -0700 (PDT)
-Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 9941F1C811AF;
-        Wed,  8 Jun 2022 17:56:34 +0800 (CST)
-Received: from NTHCML01B.nuvoton.com (10.1.8.178) by NTHCCAS04.nuvoton.com
- (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 8 Jun
- 2022 17:56:34 +0800
-Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCML01B.nuvoton.com
- (10.1.8.178) with Microsoft SMTP Server (version=TLS1_2,
+Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 7EA931C811C6;
+        Wed,  8 Jun 2022 17:56:42 +0800 (CST)
+Received: from NTHCCAS02.nuvoton.com (10.1.9.121) by NTHCCAS01.nuvoton.com
+ (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Wed, 8 Jun 2022
+ 17:56:42 +0800
+Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS02.nuvoton.com
+ (10.1.9.121) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 8 Jun 2022
- 17:56:34 +0800
+ 17:56:30 +0800
 Received: from taln60.nuvoton.com (10.191.1.180) by NTHCCAS01.nuvoton.com
  (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
- Transport; Wed, 8 Jun 2022 17:56:33 +0800
+ Transport; Wed, 8 Jun 2022 17:56:29 +0800
 Received: by taln60.nuvoton.com (Postfix, from userid 10070)
-        id 3F89B63A0A; Wed,  8 Jun 2022 12:56:33 +0300 (IDT)
+        id 1FE6A62EFD; Wed,  8 Jun 2022 12:56:29 +0300 (IDT)
 From:   Tomer Maimon <tmaimon77@gmail.com>
 To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
         <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
@@ -51,9 +51,9 @@ CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-watchdog@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v2 08/20] dt-bindings: reset: modify to general NPCM name
-Date:   Wed, 8 Jun 2022 12:56:11 +0300
-Message-ID: <20220608095623.22327-9-tmaimon77@gmail.com>
+Subject: [PATCH v2 01/20] clocksource: timer-npcm7xx: Add NPCM845 timer
+Date:   Wed, 8 Jun 2022 12:56:04 +0300
+Message-ID: <20220608095623.22327-2-tmaimon77@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220608095623.22327-1-tmaimon77@gmail.com>
 References: <20220608095623.22327-1-tmaimon77@gmail.com>
@@ -64,31 +64,24 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Modify nuvoton,npcm750-reset specific name to
-general NPCM file name, nuvoton,npcm-reset.
+Add Nuvoton BMC NPCM845 timer support.
+The NPCM845 uses the same timer controller as the NPCM750.
 
 Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 ---
- .../{nuvoton,npcm750-reset.yaml => nuvoton,npcm-reset.yaml}     | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
- rename Documentation/devicetree/bindings/reset/{nuvoton,npcm750-reset.yaml => nuvoton,npcm-reset.yaml} (93%)
+ drivers/clocksource/timer-npcm7xx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml b/Documentation/devicetree/bindings/reset/nuvoton,npcm-reset.yaml
-similarity index 93%
-rename from Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
-rename to Documentation/devicetree/bindings/reset/nuvoton,npcm-reset.yaml
-index fa5e4ea6400e..0998f481578d 100644
---- a/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
-+++ b/Documentation/devicetree/bindings/reset/nuvoton,npcm-reset.yaml
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: http://devicetree.org/schemas/reset/nuvoton,npcm750-reset.yaml#
-+$id: http://devicetree.org/schemas/reset/nuvoton,npcm-reset.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/clocksource/timer-npcm7xx.c b/drivers/clocksource/timer-npcm7xx.c
+index a00520cbb660..1630daad4df5 100644
+--- a/drivers/clocksource/timer-npcm7xx.c
++++ b/drivers/clocksource/timer-npcm7xx.c
+@@ -210,4 +210,5 @@ static int __init npcm7xx_timer_init(struct device_node *np)
  
- title: Nuvoton NPCM Reset controller
+ TIMER_OF_DECLARE(wpcm450, "nuvoton,wpcm450-timer", npcm7xx_timer_init);
+ TIMER_OF_DECLARE(npcm7xx, "nuvoton,npcm750-timer", npcm7xx_timer_init);
++TIMER_OF_DECLARE(npcm8xx, "nuvoton,npcm845-timer", npcm7xx_timer_init);
+ 
 -- 
 2.33.0
 
