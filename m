@@ -2,97 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D043C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEE5C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:17:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244030AbiFHPQx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:16:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41740 "EHLO
+        id S244012AbiFHPQq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243265AbiFHPQG (ORCPT
+        with ESMTP id S244312AbiFHPO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:16:06 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC3B3B558
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:12:18 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id n10so42131806ejk.5
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 08:12:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0wo28W6u7lVNDcrnTWpD6PtK5Yh/q56MRuIbEHfWpMA=;
-        b=UqPBSC8UeBWLodpPuqbv9EGQdkhhD0u3WcQIiBuu9jP3Gx1lQO+7rw57nqILzKDmF3
-         QjZJPODF7cSMorpXUweOgyyt7D1OupUkUjFD6VJ7lpLHA8CYh84fkqpBHoIIPnOwEFvt
-         mj7la1t2vqFNWZHkguUZlN50rQ+VojzxiyYHuPJJH+j/a29wULqRkOnZS+JC6931tvEf
-         uAIOD0+pG+F49VLtdvkm4Zs+/Z8f72cSxrDU6mjg2MrpP4NgOgxblEyzlh/oi7Flki5m
-         dRmqgfQKunhlD0kynkGsuPFiBzdPkvkvqgmH2YIM8GlYPagNk81M9PiCCgVaYk/C69BL
-         AbuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0wo28W6u7lVNDcrnTWpD6PtK5Yh/q56MRuIbEHfWpMA=;
-        b=cfn55HxCAyPPq29EJSYdWhySKtCPtLVMkUGVVXvL5kChF/X90ogFh+hls5gX4FGWUZ
-         gUaEm1UZCgNyzG8DH9TbC6av/fIPj4kzpUqV7vZ3HMZVOuj4TnHnwTUh9g3VzWrHcKBs
-         TwS6dCZq+e8k1Jf08be1c/vnNxkwRrYVL59tjglYe7f+BxCJI1dV+c2lP2mbwGG5PtGr
-         yf60NkrmQS4uwovaI5GPRp1EgTVymnJ5VLUKK9kCndU+NKbJP5WtHmUGURT+sJ5h7zRI
-         1OZQHg3SMVXChrRr68jCNvETw/4+fLh1WZVEJVWYmRRWg/7seJrQ8Y5T9zpZ2tYbEegk
-         Agdw==
-X-Gm-Message-State: AOAM5312jv3A9cG1t3du4YVIh/KydY6QAlYRnaQOMeu3A54NJ6B1hujE
-        slmFlkwiP5x1a77N1IcvkALGgg==
-X-Google-Smtp-Source: ABdhPJztdyKIPVdguj7TN6+S7yMRjzDCE9N9DK46oHiWu07CES1P4a7OzzlUMd8F3+cU5ML4Wlsw2A==
-X-Received: by 2002:a17:906:99c5:b0:6fe:b069:4ab6 with SMTP id s5-20020a17090699c500b006feb0694ab6mr31875027ejn.436.1654701136476;
-        Wed, 08 Jun 2022 08:12:16 -0700 (PDT)
-Received: from [192.168.0.194] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id p11-20020a1709060dcb00b006fe9f9d0938sm9486755eji.175.2022.06.08.08.12.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 08:12:15 -0700 (PDT)
-Message-ID: <6178d685-5a87-6057-1200-e41baa3ece7d@linaro.org>
-Date:   Wed, 8 Jun 2022 17:12:14 +0200
+        Wed, 8 Jun 2022 11:14:58 -0400
+Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E679C3ED09
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 08:09:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1654699986; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=g3XBbcUgcr7RPvjyGEXjx+/RTzPFGWR/DvVUHYZc7LFndYP06sHFzbu3ykLfe2hpTAP5OtOyg72XFa4IHnttmb+oU8sxXUoKaJUh+raTW8OrVLG6P42/l5YRPPR/GwepprEG/F4zrYK/Tp8n6Y81OMca+SZXp+JJJNjMrFDEDHg=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1654699986; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=F9JBMBia5rEoXy4yptoHZJknCMfwVffC8pmBgrhBArY=; 
+        b=d3liPRSDOtPjiQPUfbeA2/YJEaxOUWWi/QomjSx9Qp+pZ3K3wZDxyBVOwGjrsL5bpEhbVuzQWV8Jn2eJaistqlk8zYk1ANMaYL2IDpsNo6D8OjgHSegyXrKvPEoQbYSozFAGg1lUr1k9I1BQo21C22EyF18VNCxaQbLwywtEtPI=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=icenowy.me;
+        spf=pass  smtp.mailfrom=uwu@icenowy.me;
+        dmarc=pass header.from=<uwu@icenowy.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1654699986;
+        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
+        h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:MIME-Version:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=F9JBMBia5rEoXy4yptoHZJknCMfwVffC8pmBgrhBArY=;
+        b=W/Gxnvle0kTMRWewMbHueLB3F8j90Ih/+8aa4eajDkYeFvCilKZdp1rQW8Zz9Z+k
+        jFaHiSCCfIWR2obhpGMJbdcLSVByQTH8/O7o0M2PKeWJpe038DUvkegeM5NzXx5zxiS
+        oDEiJuzRYUELr4IOUpRZMX1WhPXyK5F0e1de2EGQ=
+Received: from edelgard.icenowy.me (59.41.163.66 [59.41.163.66]) by mx.zohomail.com
+        with SMTPS id 1654699984521556.1461877734166; Wed, 8 Jun 2022 07:53:04 -0700 (PDT)
+Message-ID: <3628fbc2eb9a8c21dc0742b929ee14da76f9adf5.camel@icenowy.me>
+Subject: Re: [PATCH 2/7] dt-bindings: phy: add binding document for
+ Allwinner F1C100s USB PHY
+From:   Icenowy Zheng <uwu@icenowy.me>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bin Liu <b-liu@ti.com>, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-usb@vger.kernel.org
+Date:   Wed, 08 Jun 2022 22:52:52 +0800
+In-Reply-To: <20220608144939.GA1366879-robh@kernel.org>
+References: <20220608070452.338006-1-uwu@icenowy.me>
+         <20220608070452.338006-3-uwu@icenowy.me>
+         <20220608144939.GA1366879-robh@kernel.org>
+Organization: Anthon Open-Source Community
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/5] dt-bindings: clock: Add bindings for Exynos7885
- CMU_FSYS
-Content-Language: en-US
-To:     Sylwester Nawrocki <s.nawrocki@samsung.com>
-Cc:     phone-devel@vger.kernel.org,
-        David Virag <virag.david003@gmail.com>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220601233743.56317-1-virag.david003@gmail.com>
- <20220601233743.56317-2-virag.david003@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220601233743.56317-2-virag.david003@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/06/2022 01:37, David Virag wrote:
-> CMU_FSYS clock domain provides clocks for MMC (MMC_CARD, MMC_EMBD,
-> MMC_SDIO), and USB30DRD.
-> 
-> Add clock indices and bindings documentation for CMU_FSYS domain.
-> 
-> Signed-off-by: David Virag <virag.david003@gmail.com>
-> ---
->  .../clock/samsung,exynos7885-clock.yaml       | 27 ++++++++++++++++
->  include/dt-bindings/clock/exynos7885.h        | 31 ++++++++++++++++++-
+=E5=9C=A8 2022-06-08=E6=98=9F=E6=9C=9F=E4=B8=89=E7=9A=84 08:49 -0600=EF=BC=
+=8CRob Herring=E5=86=99=E9=81=93=EF=BC=9A
+> On Wed, Jun 08, 2022 at 03:04:47PM +0800, Icenowy Zheng wrote:
+> > Allwinner F1C100s has the most simple USB PHY among all Allwinner
+> > SoCs,
+> > because it has only one OTG USB controller, no host-only OHCI/EHCI
+> > controllers.
+> >=20
+> > Add a binding document for it.
+> >=20
+> > Signed-off-by: Icenowy Zheng <uwu@icenowy.me>
+> > ---
+> > =C2=A0.../phy/allwinner,suniv-f1c100s-usb-phy.yaml=C2=A0 | 83
+> > +++++++++++++++++++
+> > =C2=A01 file changed, 83 insertions(+)
+> > =C2=A0create mode 100644
+> > Documentation/devicetree/bindings/phy/allwinner,suniv-f1c100s-usb-
+> > phy.yaml
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/phy/allwinner,suniv-
+> > f1c100s-usb-phy.yaml
+> > b/Documentation/devicetree/bindings/phy/allwinner,suniv-f1c100s-
+> > usb-phy.yaml
+> > new file mode 100644
+> > index 000000000000..180fa8840bf7
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/phy/allwinner,suniv-
+> > f1c100s-usb-phy.yaml
+> > @@ -0,0 +1,83 @@
+> > +# SPDX-License-Identifier: GPL-2.0
+>=20
+> Dual license please.
 
-It seems the clock IDs from bindings are used by both driver and DTS.
-Sylwester, can I take them to Samsung Soc and send you a pull request?
+I am based on another Allwinner USB PHY binding file in the same
+directory, and that file is single licensed. I created a new file
+because each variant of the PHY has a single file now.
 
-Best regards,
-Krzysztof
+>=20
+> > +%YAML 1.2
+> > +---
+> > +$id:
+> > http://devicetree.org/schemas/phy/allwinner,suniv-f1c100s-usb-phy.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Allwinner F1C100s USB PHY Device Tree Bindings
+> > +
+> > +maintainers:
+> > +=C2=A0 - Chen-Yu Tsai <wens@csie.org>
+> > +=C2=A0 - Maxime Ripard <mripard@kernel.org>
+> > +
+> > +properties:
+> > +=C2=A0 "#phy-cells":
+> > +=C2=A0=C2=A0=C2=A0 const: 1
+> > +
+> > +=C2=A0 compatible:
+> > +=C2=A0=C2=A0=C2=A0 const: allwinner,suniv-f1c100s-usb-phy
+> > +
+> > +=C2=A0 reg:
+> > +=C2=A0=C2=A0=C2=A0 maxItems: 1
+> > +=C2=A0=C2=A0=C2=A0 description: PHY Control registers
+> > +
+> > +=C2=A0 reg-names:
+> > +=C2=A0=C2=A0=C2=A0 const: phy_ctrl
+> > +
+> > +=C2=A0 clocks:
+> > +=C2=A0=C2=A0=C2=A0 maxItems: 1
+> > +=C2=A0=C2=A0=C2=A0 description: USB OTG PHY bus clock
+> > +
+> > +=C2=A0 clock-names:
+> > +=C2=A0=C2=A0=C2=A0 const: usb0_phy
+>=20
+> *-names is not needed with only one entry. Plus, just using the
+> module=20
+> name is not a great choice.
+
+However the driver expects it...
+
+Should I patch the driver to use no name on F1C100s?
+
+>=20
+> > +
+> > +=C2=A0 resets:
+> > +=C2=A0=C2=A0=C2=A0 maxItems: 1
+> > +=C2=A0=C2=A0=C2=A0 description: USB OTG reset
+> > +
+> > +=C2=A0 reset-names:
+> > +=C2=A0=C2=A0=C2=A0 const: usb0_reset
+>=20
+> Same here.
+>=20
+> > +=C2=A0 usb0_id_det-gpios:
+> > +=C2=A0=C2=A0=C2=A0 maxItems: 1
+> > +=C2=A0=C2=A0=C2=A0 description: GPIO to the USB OTG ID pin
+> > +
+> > +=C2=A0 usb0_vbus_det-gpios:
+> > +=C2=A0=C2=A0=C2=A0 maxItems: 1
+> > +=C2=A0=C2=A0=C2=A0 description: GPIO to the USB OTG VBUS detect pin
+> > +
+> > +=C2=A0 usb0_vbus_power-supply:
+> > +=C2=A0=C2=A0=C2=A0 description: Power supply to detect the USB OTG VBU=
+S
+> > +
+> > +=C2=A0 usb0_vbus-supply:
+> > +=C2=A0=C2=A0=C2=A0 description: Regulator controlling USB OTG VBUS
+>=20
+> Why the 'usb0_' prefix?
+>=20
+> Are these GPIOs and Vbus supply connected to the phy? If not, these
+> all=20
+> belong in a connector node (as that is where they are connected to in
+> h/w).
+
+Well these are historical things of phy-sun4i-usb driver too.
+
+>=20
+> > +
+> > +required:
+> > +=C2=A0 - "#phy-cells"
+> > +=C2=A0 - compatible
+> > +=C2=A0 - clocks
+> > +=C2=A0 - clock-names
+> > +=C2=A0 - reg
+> > +=C2=A0 - reg-names
+> > +=C2=A0 - resets
+> > +=C2=A0 - reset-names
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +=C2=A0 - |
+> > +=C2=A0=C2=A0=C2=A0 #include <dt-bindings/gpio/gpio.h>
+> > +=C2=A0=C2=A0=C2=A0 #include <dt-bindings/clock/suniv-f1c100s-ccu.h>
+> > +=C2=A0=C2=A0=C2=A0 #include <dt-bindings/reset/suniv-f1c100s-ccu.h>
+> > +
+> > +=C2=A0=C2=A0=C2=A0 phy@1c13400 {
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 compatible =3D "allwinner,s=
+univ-f1c100s-usb-phy";
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 reg =3D <0x01c13400 0x10>;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 reg-names =3D "phy_ctrl";
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clocks =3D <&ccu CLK_USB_PH=
+Y0>;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clock-names =3D "usb0_phy";
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 resets =3D <&ccu RST_USB_PH=
+Y0>;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 reset-names =3D "usb0_reset=
+";
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 #phy-cells =3D <1>;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 usb0_id_det-gpios =3D <&pio=
+ 4 2 GPIO_ACTIVE_HIGH>;
+> > +=C2=A0=C2=A0=C2=A0 };
+> > --=20
+> > 2.36.0
+> >=20
+> >=20
+
+
