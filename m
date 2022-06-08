@@ -2,115 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8EF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:56:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232835AbiFHH4A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48996 "EHLO
+        id S232657AbiFHH4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:56:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233652AbiFHHzl (ORCPT
+        with ESMTP id S233022AbiFHHzZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:55:41 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A891DAF20
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:24:27 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nyq2V-0006tL-8N; Wed, 08 Jun 2022 09:23:39 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 09B2E8EA6B;
-        Wed,  8 Jun 2022 07:19:47 +0000 (UTC)
-Date:   Wed, 8 Jun 2022 09:19:47 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Max Staudt <max@enpas.org>
-Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        linux-kernel@vger.kernel.org,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 00/13] can: slcan: extend supported features
-Message-ID: <20220608071947.pwl4whyzqpyubzqn@pengutronix.de>
-References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
- <20220608021537.04c45cf9.max@enpas.org>
+        Wed, 8 Jun 2022 03:55:25 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65B11A048A;
+        Wed,  8 Jun 2022 00:24:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654673068; x=1686209068;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=n6ZzcLPLeuptMeqjzTvwmiJodh+6qVPTBoekvS/R3Pk=;
+  b=B/41e0HX++2sRmVG/e8GUSATjv4wZQ5Mdtts7lXDOnHZwYoqWBsRkvrD
+   uSuhfzlFnOIjcilvvtiFrKWAwSqBC3vXI7J2VZ5+B/k7tv0t3HhQS+H7d
+   LIoqXX2y/8WE6IOthXOVo+as5VtPoguFj5+brLUqACyBhbLBEvgNI6F++
+   opsjKQ36WSGkTPZU21QIO0SG15ODm5w12Qmk4joN3qSBAN6LUxnbpURZC
+   fGmFfXYKhNWb9CYQO9Xhkt1MfqUch4gnL4VOQpqOcqrk/fKHGnkQyp7JA
+   UpvSYagR1KZfWnNtFeh4yIlYVr7+wm9ps/Ltx9raHbr0LF6D34YiOq9qG
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277632430"
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="277632430"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 00:23:53 -0700
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="636636736"
+Received: from bmichals-mobl.ger.corp.intel.com ([10.252.57.131])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 00:23:52 -0700
+Date:   Wed, 8 Jun 2022 10:23:45 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 12/36] tty/vt: consolemap: use sizeof(*pointer) instead
+ of sizeof(type)
+In-Reply-To: <37ced336-ac77-4c8f-1142-1f55c01383ca@suse.cz>
+Message-ID: <b2df9240-2b47-6fe3-4a65-3bdfcb961e4@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-12-jslaby@suse.cz> <8c809bd0-552d-8027-a1a7-96b77369d06e@linux.intel.com> <37ced336-ac77-4c8f-1142-1f55c01383ca@suse.cz>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zltmsl6xgx33hokg"
-Content-Disposition: inline
-In-Reply-To: <20220608021537.04c45cf9.max@enpas.org>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: multipart/mixed; boundary="8323329-1026436096-1654673033=:1676"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
---zltmsl6xgx33hokg
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+--8323329-1026436096-1654673033=:1676
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-On 08.06.2022 02:15:37, Max Staudt wrote:
-> To speed up the slcan cleanup, may I suggest looking at can327?
->=20
-> It started as a modification of slcan, and over the past few months,
-> it has gone through several review rounds in upstreaming. In fact, a
-> *ton* of things pointed out during reviews would apply 1:1 to slcan.
->=20
-> What's more, there's legacy stuff that's no longer needed. No
-> SLCAN_MAGIC, no slcan_devs, ... it's all gone in can327. May I suggest
-> you have a look at it and bring slcan's boilerplate in line with it?
+On Tue, 7 Jun 2022, Jiri Slaby wrote:
 
-+1
+> On 07. 06. 22, 16:00, Ilpo Järvinen wrote:
+> > On Tue, 7 Jun 2022, Jiri Slaby wrote:
+> > 
+> > > It is preferred to use sizeof(*pointer) instead of sizeof(type). First,
+> > > the type of the variable can change and one needs not change the former
+> > > (unlike the latter). Second, the latter is error-prone due to (u16),
+> > > (u16 *), and (u16 **) mixture here.
+> > > 
+> > > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> > 
+> > Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > 
+> > This seems fine but see the comments below which are not directly related
+> > to the change itself.
+> > 
+> > > ---
+> > >   drivers/tty/vt/consolemap.c | 23 ++++++++++++-----------
+> > >   1 file changed, 12 insertions(+), 11 deletions(-)
+> > > 
+> > > diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+> > > index 097ab7d01f8b..79a62dcca046 100644
+> > > --- a/drivers/tty/vt/consolemap.c
+> > > +++ b/drivers/tty/vt/consolemap.c
+> > > @@ -251,12 +251,12 @@ static void set_inverse_trans_unicode(struct vc_data
+> > > *conp,
+> > >   		return;
+> > >   	q = p->inverse_trans_unicode;
+> > >   	if (!q) {
+> > > -		q = p->inverse_trans_unicode =
+> > > -			kmalloc_array(MAX_GLYPH, sizeof(u16), GFP_KERNEL);
+> > > +		q = p->inverse_trans_unicode = kmalloc_array(MAX_GLYPH,
+> > > +				sizeof(*q), GFP_KERNEL);
+> > >   		if (!q)
+> > >   			return;
+> > >   	}
+> > > -	memset(q, 0, MAX_GLYPH * sizeof(u16));
+> > > +	memset(q, 0, MAX_GLYPH * sizeof(*q));
+> > 
+> > Convert kmalloc_array into kcalloc and place memset() into else branch?
+> 
+> IMO, the way it is now is more obvious.
 
-Most of Dario's series looks good. I suggest that we mainline this
-first. If there's interest and energy the slcan driver can be reworked
-to re-use the more modern concepts of the can327 driver.
+Fair enough.
 
-> It's certainly not perfect (7 patch series and counting, and that's
-> just the public ones), but I'm sure that looking at the two drivers
-> side-by-side could serve as a good starting point, to avoid
-> re-reviewing the same things all over again.
+> > > @@ -514,11 +514,12 @@ con_insert_unipair(struct uni_pagedict *p, u_short
+> > > unicode, u_short fontpos)
+> > >   	n = UNI_ROW(unicode);
+> > >   	p2 = p1[n];
+> > >   	if (!p2) {
+> > > -		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(u16),
+> > > GFP_KERNEL);
+> > > +		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(*p2),
+> > > +				GFP_KERNEL);
+> > >   		if (!p2)
+> > >   			return -ENOMEM;
+> > >   		/* No glyphs for the characters (yet) */
+> > > -		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(u16));
+> > > +		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(*p2));
+> > 
+> > This could have been kcalloc'ed.
+> 
+> Why would you zero it before setting it to 0xff?
 
-regards,
-Marc
+Yes, nevermind that. I obviously completely missed the fact it wasn't 
+memsetting to zero.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+-- 
+ i.
 
---zltmsl6xgx33hokg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKgTZAACgkQrX5LkNig
-013DMQf+Oowv9u1tls3YgQbK2Ek0zFsMF5BZXa9eBmGDKBf+HIIQx5g0+pzec8gq
-wBRNRaOlS1KGLewF86lK9yPxUG/CpwB9NpIDDsLtG+kL/AGfuj4Kguf/LfbjtOpV
-0vAibm8x7iyJB5AKmAgnyf9F32He0evcBCam2ZbItdLLVJT3txmhCQmvIK5gQj8S
-v342uBUKiTfyy+q1Z+7OfzX+iPsmRgjgz4IGNr4d/x8GvD3LMtMdFWCSKmyv0ZJ6
-JTdoUILLkMj6R2w9xnurIsz1RtJXJXMHNgBu1gDx9SMGxw9MlhTC7Bv0LKJ+bJZ6
-A05xF3jOzD+bLkfQF9X7a5702XOG8g==
-=1VoJ
------END PGP SIGNATURE-----
-
---zltmsl6xgx33hokg--
+--8323329-1026436096-1654673033=:1676--
