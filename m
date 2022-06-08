@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1335C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:09:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A8A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 11:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237857AbiFHLJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 07:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53028 "EHLO
+        id S237997AbiFHLJv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 07:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237794AbiFHLIE (ORCPT
+        with ESMTP id S237875AbiFHLIQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 07:08:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EA31B31B6
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 04:07:58 -0700 (PDT)
+        Wed, 8 Jun 2022 07:08:16 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CA520C25C
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 04:08:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6B37B826EF
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:07:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B859BC341C0;
-        Wed,  8 Jun 2022 11:07:54 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 70240CE1D6F
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:08:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAC70C34116;
+        Wed,  8 Jun 2022 11:08:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654686475;
-        bh=wi1SDuwZmlg1s/vDvlK9MyTNq3HXQKP7FJaBG0WKmaA=;
+        s=k20201202; t=1654686486;
+        bh=ih26mD8gWYA0ngbk8TzR3WX1e7dsZX0JE4dyVo2c0rs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WnMOHBBeCjA3IgYldtXTPstCOEH/h0mUiwxTGvZTqa6r1dH9crdnkp5dxM8z1eyQQ
-         bIP7+nkFjTHv/KE4VJuP/wVnS3NQ53mLV1cMlGkAKEchVkwdb797FfVzH7w1qcLuO5
-         7Fmr45s1T6Q8kzVWMh1Bz0GqPJnZ8qVLYPfkpnyyTtgnrIeVkv/pzKCQsEzPBXm6SK
-         mafZ6DXV+xGD2njDQXafynfNU5x9jLeJ8xupRk/B7aEwa2H4f1HFGyJ8KzOejkvcrf
-         cNgLkfeq+/PzY71ON07CWbhhWq4hFrsOE5CLv94eWUIMC/TuBPAwD0gn420AgpvzQY
-         2NlOtdiueFQYw==
+        b=CDOBevCgDTOEGjAuYjLjPYoJn20fwiamYzo7covq5q2idZLhzzmfhXSeCXMo7XvHW
+         U/W33TUIuDdu0JaB4tlNjq/fs9yQzos7xLoB2zoZaqRPYfejUFy1HxWzy09NJEZdv6
+         6n9pbWtpWqbpdEXtlMni6PeThUi7UMNSZm02BgJm1OWmHpJmHtfQWnkLSr9CxgT4sh
+         k8OZVqZQthF8dpRLZXNN97PVVWf3nwrpUnQpmn+NNZZz/9UlNza9cfJ5Nq4UD0F14z
+         5nmwr+YFC1WkjvTXQ6IMrVMAYuhOwyfJZrGCK8rnXwpVKWeBUq2waHB9ii+r171zoF
+         1PFVsPZ7twH8g==
 From:   Tzung-Bi Shih <tzungbi@kernel.org>
 To:     bleung@chromium.org, groeck@chromium.org
 Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 06/23] platform/chrome: cros_ec_proto: use cros_ec_map_error()
-Date:   Wed,  8 Jun 2022 11:07:17 +0000
-Message-Id: <20220608110734.2928245-7-tzungbi@kernel.org>
+Subject: [PATCH v3 15/23] platform/chrome: cros_ec_proto: don't show MKBP version if unsupported
+Date:   Wed,  8 Jun 2022 11:07:26 +0000
+Message-Id: <20220608110734.2928245-16-tzungbi@kernel.org>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 In-Reply-To: <20220608110734.2928245-1-tzungbi@kernel.org>
 References: <20220608110734.2928245-1-tzungbi@kernel.org>
@@ -48,51 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use cros_ec_map_error() in cros_ec_get_host_event_wake_mask().
+It wrongly showed the following message when it doesn't support MKBP:
+"MKBP support version 4294967295".
 
-The behavior of cros_ec_get_host_event_wake_mask() slightly changed.  It
-is acceptable because the caller only needs it returns negative integers
-for indicating errors.  Especially, the EC_RES_INVALID_COMMAND still
-maps to -EOPNOTSUPP.
+Fix it.
 
 Reviewed-by: Guenter Roeck <groeck@chromium.org>
 Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 ---
-No change from v2.
-
-Changes from v1:
+Changes from v2:
 - Add R-b tag.
 
- drivers/platform/chrome/cros_ec_proto.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/platform/chrome/cros_ec_proto.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index 1b851dcd20c9..71ba6a56ad7c 100644
+index 8a53e989c7e2..efbabdcb31ae 100644
 --- a/drivers/platform/chrome/cros_ec_proto.c
 +++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -247,7 +247,7 @@ static int cros_ec_get_host_event_wake_mask(struct cros_ec_device *ec_dev,
- 					    uint32_t *mask)
- {
- 	struct ec_response_host_event_mask *r;
--	int ret;
-+	int ret, mapped;
+@@ -508,13 +508,13 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+ 	ret = cros_ec_get_host_command_version_mask(ec_dev,
+ 						    EC_CMD_GET_NEXT_EVENT,
+ 						    &ver_mask);
+-	if (ret < 0 || ver_mask == 0)
++	if (ret < 0 || ver_mask == 0) {
+ 		ec_dev->mkbp_event_supported = 0;
+-	else
++	} else {
+ 		ec_dev->mkbp_event_supported = fls(ver_mask);
  
- 	msg->command = EC_CMD_HOST_EVENT_GET_WAKE_MASK;
- 	msg->version = 0;
-@@ -256,10 +256,9 @@ static int cros_ec_get_host_event_wake_mask(struct cros_ec_device *ec_dev,
+-	dev_dbg(ec_dev->dev, "MKBP support version %u\n",
+-		ec_dev->mkbp_event_supported - 1);
++		dev_dbg(ec_dev->dev, "MKBP support version %u\n", ec_dev->mkbp_event_supported - 1);
++	}
  
- 	ret = send_command(ec_dev, msg);
- 	if (ret >= 0) {
--		if (msg->result == EC_RES_INVALID_COMMAND)
--			return -EOPNOTSUPP;
--		if (msg->result != EC_RES_SUCCESS)
--			return -EPROTO;
-+		mapped = cros_ec_map_error(msg->result);
-+		if (mapped)
-+			return mapped;
- 	}
- 	if (ret > 0) {
- 		r = (struct ec_response_host_event_mask *)msg->data;
+ 	/* Probe if host sleep v1 is supported for S0ix failure detection. */
+ 	ret = cros_ec_get_host_command_version_mask(ec_dev,
 -- 
 2.36.1.255.ge46751e96f-goog
 
