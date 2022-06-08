@@ -2,120 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5100CCA489
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01909CCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:15:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238368AbiFHHL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:11:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53096 "EHLO
+        id S236053AbiFHHKO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:10:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353663AbiFHGRl (ORCPT
+        with ESMTP id S1350558AbiFHGOl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 02:17:41 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30AB09FE6
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:03:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654668183; x=1686204183;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=9i4mMx/iK/L9JFNyh7Qsw9oNlDYVHXglo3wBtNN8FfE=;
-  b=BpY2W6N51cIQx1J02+LTpsMjqIGv+5Gl9wSqcDIb0S66tva6e8M0kE1y
-   OaZdMUH4fAf/0ncBW7jbcN2g/PslnqXQHvev4wxFWntUBq3xIo0KJorEx
-   A7hWPOk4wgjSG3w4RFNhi8SbHX0SUV29wKDpzPPP4UDiVKaJBro71aboC
-   aUiEImRY9kJkLdVqE7PQonU5Yfc7KHCuUuoTanmqUbNtoZZr9Xn3knO+g
-   8WlbT9cYXnHrcyQqrPqBbh0RBXyS6A7SeD4K+8kVcnhkjvQ38+nxuKq81
-   FgK3vlMJJLXKRuJe9Fx+LIfJ5cOCB9N0f6/Shurl4sVCF/WNsh42RXQ5K
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277936556"
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="277936556"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 23:02:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="648419441"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 07 Jun 2022 23:02:22 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nyolp-000ELd-FV;
-        Wed, 08 Jun 2022 06:02:21 +0000
-Date:   Wed, 8 Jun 2022 14:01:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [arm-integrator:kernel-in-vmalloc-v5.19-rc1 23/33]
- arch/microblaze/include/asm/page.h:115:25: error: implicit declaration of
- function '__virt_to_phys'; did you mean 'virt_to_pfn'?
-Message-ID: <202206081328.suY733VF-lkp@intel.com>
+        Wed, 8 Jun 2022 02:14:41 -0400
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6BDD27CCA;
+        Tue,  7 Jun 2022 22:43:02 -0700 (PDT)
+Received: by mail-ej1-f44.google.com with SMTP id y19so39232120ejq.6;
+        Tue, 07 Jun 2022 22:43:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gMGNu91Gx6YDbvR5JQvBJeAlO/wMEvI2zj5hAaR6Zrg=;
+        b=ZNUSS5+7wEikzr+myYGXjYuTlgHSrFKN1bnKbcf+5MHOQMg4/M59fH2xvMZricjyaA
+         uNqAp3ba+UHXXZpafe9UHfCppv5BNjKN5nQa8zJ499KpzrFjIVWx9xf0VfWwr7lbM4Yr
+         MpoqETpB1Y9xYCt7QZ7bEK0n+ZMvCgZ7pqEAM9O1E+6CEBLZDU68JFV0mg1I+csb1fdE
+         5H+/EEgZtPYOp4hlZOLk96ds8+n+cb+8TOJ+2Ik5WcnN6xfMuEYb/tW0zFLDxT2d2eNI
+         QptD+j+DqsBECFHYQe4IxbMBgmZUN/e4LpIS4Ior8WPFO2tle/FCa8pz3WxBtalfLgWQ
+         iVmg==
+X-Gm-Message-State: AOAM533GzLMWNY3Ylap5D9lN1QnT9T0q2cdxsBqwXqufAz/9UROV0FUv
+        eZf5BLTGo8AHJ7lRlFPAExM=
+X-Google-Smtp-Source: ABdhPJzQ8LZuW+1+srFEBy1aDK0rkmppPaNCYjNmU6aY098PL8I7MIVOTd14Xe6jxua4s6p/TOdfcw==
+X-Received: by 2002:a17:906:66d4:b0:70f:e86d:61b with SMTP id k20-20020a17090666d400b0070fe86d061bmr22844751ejp.401.1654666939610;
+        Tue, 07 Jun 2022 22:42:19 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id p18-20020a17090628d200b006f3ef214dbesm8539768ejd.36.2022.06.07.22.42.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 22:42:19 -0700 (PDT)
+Message-ID: <83fb92d0-7006-a488-1ba2-490ade9b2604@kernel.org>
+Date:   Wed, 8 Jun 2022 07:42:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 02/36] tty/vt: consolemap: rename and document struct
+ uni_pagedir
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220607104946.18710-1-jslaby@suse.cz>
+ <20220607104946.18710-2-jslaby@suse.cz>
+ <46cbc044-5157-65d8-65f0-2ecbee908150@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <46cbc044-5157-65d8-65f0-2ecbee908150@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.19-rc1
-head:   512fc95a58c7b2e91e267db91a4ec5a54afedd01
-commit: 25049d91eb99805aaf82c2829b63b52ee8591776 [23/33] microblaze: Make virt_to_pfn() a static inline
-config: microblaze-buildonly-randconfig-r012-20220607 (https://download.01.org/0day-ci/archive/20220608/202206081328.suY733VF-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=25049d91eb99805aaf82c2829b63b52ee8591776
-        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
-        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.19-rc1
-        git checkout 25049d91eb99805aaf82c2829b63b52ee8591776
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=microblaze prepare
+On 07. 06. 22, 14:36, Ilpo Järvinen wrote:
+> On Tue, 7 Jun 2022, Jiri Slaby wrote:
+> 
+>> struct uni_pagedir contains 32 unicode page directories, so the name of
+>> the structure is a bit misleading. Rename the structure to uni_pagedict,
+>> so it looks like this:
+>> struct uni_pagedict
+>>    -> 32 page dirs
+>>       -> 32 rows
+>>         -> 64 glyphs
+>>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> ---
+> 
+> The rename looks incomplete:
+> 
+>>   drivers/tty/vt/consolemap.c    | 47 ++++++++++++++++++++--------------
+>>   drivers/video/console/vgacon.c |  4 +--
+>>   include/linux/console_struct.h |  6 ++---
+>>   3 files changed, 33 insertions(+), 24 deletions(-)
+> 
+> vs
+> 
+> $ git grep -l vc_uni_pagedir
+> drivers/tty/vt/consolemap.c
+> drivers/tty/vt/vt.c
+> drivers/usb/misc/sisusbvga/sisusb_con.c
+> drivers/video/console/vgacon.c
+> drivers/video/fbdev/core/fbcon.c
+> include/linux/console_struct.h
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I renamed only the type, not the variables/members. Maybe the latter 
+makes sense too. I will do that as a follow-up patch.
 
-All errors (new ones prefixed by >>):
-
-   In file included from arch/microblaze/include/asm/page.h:15,
-                    from include/linux/shm.h:6,
-                    from include/linux/sched.h:16,
-                    from arch/microblaze/kernel/asm-offsets.c:13:
-   arch/microblaze/include/asm/page.h: In function 'virt_to_pfn':
->> arch/microblaze/include/asm/page.h:115:25: error: implicit declaration of function '__virt_to_phys'; did you mean 'virt_to_pfn'? [-Werror=implicit-function-declaration]
-     115 | # define __pa(x)        __virt_to_phys((unsigned long)(x))
-         |                         ^~~~~~~~~~~~~~
-   include/linux/pfn.h:20:27: note: in definition of macro 'PFN_DOWN'
-      20 | #define PFN_DOWN(x)     ((x) >> PAGE_SHIFT)
-         |                           ^
-   arch/microblaze/include/asm/page.h:120:16: note: in expansion of macro 'phys_to_pfn'
-     120 |         return phys_to_pfn(__pa(vaddr));
-         |                ^~~~~~~~~~~
-   arch/microblaze/include/asm/page.h:120:28: note: in expansion of macro '__pa'
-     120 |         return phys_to_pfn(__pa(vaddr));
-         |                            ^~~~
-   cc1: some warnings being treated as errors
-   make[2]: *** [scripts/Makefile.build:117: arch/microblaze/kernel/asm-offsets.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1196: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
-
-
-vim +115 arch/microblaze/include/asm/page.h
-
-4b87d7a4f91d31 Michal Simek 2009-03-27  114  
-1f84e1ea0e87ad Michal Simek 2009-05-26 @115  # define __pa(x)	__virt_to_phys((unsigned long)(x))
-1f84e1ea0e87ad Michal Simek 2009-05-26  116  # define __va(x)	((void *)__phys_to_virt((unsigned long)(x)))
-1f84e1ea0e87ad Michal Simek 2009-05-26  117  
-
-:::::: The code at line 115 was first introduced by commit
-:::::: 1f84e1ea0e87ad659cd6f6a6285d50c73a8d1a24 microblaze_mmu_v2: pgalloc.h and page.h
-
-:::::: TO: Michal Simek <monstr@monstr.eu>
-:::::: CC: Michal Simek <monstr@monstr.eu>
-
+thanks,
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+js
+suse labs
