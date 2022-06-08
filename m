@@ -2,169 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB5CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA38C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231750AbiFHEmV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 00:42:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43456 "EHLO
+        id S232830AbiFHEnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 00:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233835AbiFHEjO (ORCPT
+        with ESMTP id S231529AbiFHEmO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 00:39:14 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27B93FE0F2;
-        Tue,  7 Jun 2022 19:30:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654655440; x=1686191440;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sG0AzbZENUyQtpHzBixIeP6cHtFJAq/4tpTQw7wbmn0=;
-  b=FkrCxB2a8hi0DK391FdjWv3tE3CIl4NoQK0s7ANDxw/5XG0gfz4/8uMg
-   8rR/9iZuRINcEMmYuuWOPCOi8l87gpVmZSav6+WYaKBrS+EkTmWIPfr0U
-   hd45a4GYbgZ3+fLfAhlP+RfL+9+6O295+eUKa9CkMuHlJA1xoMzehPwOc
-   pue5esBllMxOxsFxtGVUgxwqBYKjUxThSilPe70Yy++0OLV/t2QicDTGj
-   ireUrGQqriS+wyq0ovVc9EVr149ha8exVD9C8Jkl18ArAegq1T1yWHeXY
-   o0xZ9o6twIX4Oql9LJn0wB98GA90w2ROdY5JQoO8BYSzeQ4KSSW5C43Ax
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="340812529"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="340812529"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 19:30:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="826684008"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 07 Jun 2022 19:30:14 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nylSY-000EB2-2P;
-        Wed, 08 Jun 2022 02:30:14 +0000
-Date:   Wed, 8 Jun 2022 10:29:24 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
-        broonie@kernel.org, robh+dt@kernel.org, quic_plai@quicinc.com,
-        bgoswami@quicinc.com, perex@perex.cz, tiwai@suse.com,
-        srinivas.kandagatla@linaro.org, quic_rohkumar@quicinc.com,
-        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        swboyd@chromium.org, judyhsiao@chromium.org, vkoul@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: Re: [PATCH 2/2] ASoC: qcom: soundwire: Add software clock gating
- requirement check
-Message-ID: <202206081054.vVkYPkJt-lkp@intel.com>
-References: <1654605334-32030-3-git-send-email-quic_srivasam@quicinc.com>
+        Wed, 8 Jun 2022 00:42:14 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C95414780;
+        Tue,  7 Jun 2022 19:34:18 -0700 (PDT)
+X-UUID: d0c4507de4df4791bd72f8ff104955c9-20220608
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:c312a6f2-4170-4211-b8d3-77a887bc844b,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:2a19b09,CLOUDID:4db28e7e-c8dc-403a-96e8-6237210dceee,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: d0c4507de4df4791bd72f8ff104955c9-20220608
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1403095489; Wed, 08 Jun 2022 10:23:10 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Wed, 8 Jun 2022 10:23:08 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Wed, 8 Jun 2022 10:23:08 +0800
+Message-ID: <358331497a5ff431d46bfea9c5c9dcadfaaa9a63.camel@mediatek.com>
+Subject: Re: [PATCH v10 18/21] drm/mediatek: Add mt8195 Embedded DisplayPort
+ driver
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Guillaume Ranquet <granquet@baylibre.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        "Daniel Vetter" <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chunfeng Yun =?UTF-8?Q?=28=E4=BA=91=E6=98=A5=E5=B3=B0=29?= 
+        <Chunfeng.Yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, "Helge Deller" <deller@gmx.de>,
+        Jitao Shi =?UTF-8?Q?=28=E7=9F=B3=E8=AE=B0=E6=B6=9B=29?= 
+        <jitao.shi@mediatek.com>
+CC:     Markus Schneider-Pargmann <msp@baylibre.com>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>
+Date:   Wed, 8 Jun 2022 10:23:08 +0800
+In-Reply-To: <8af7938ae9244e4b7caf62e0c6ce0bcdddc13889.camel@mediatek.com>
+References: <20220523104758.29531-1-granquet@baylibre.com>
+         <20220523104758.29531-19-granquet@baylibre.com>
+         <0bd8b0c66b9e2a1b63280e7eab63048bee7fe786.camel@mediatek.com>
+         <8af7938ae9244e4b7caf62e0c6ce0bcdddc13889.camel@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1654605334-32030-3-git-send-email-quic_srivasam@quicinc.com>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Srinivasa,
+Hi, Rex:
 
-Thank you for the patch! Yet something to improve:
+On Tue, 2022-06-07 at 20:24 +0800, Rex-BC Chen wrote:
+> On Tue, 2022-06-07 at 14:21 +0800, CK Hu wrote:
+> > Hi, Rex:
+> > 
+> > On Mon, 2022-05-23 at 12:47 +0200, Guillaume Ranquet wrote:
+> > > From: Markus Schneider-Pargmann <msp@baylibre.com>
+> > > 
+> > > This patch adds a DisplayPort driver for the Mediatek mt8195 SoC.
+> > > 
+> > > It supports the mt8195, the embedded DisplayPort units. It offers
+> > > DisplayPort 1.4 with up to 4 lanes.
+> > > 
+> > > The driver creates a child device for the phy. The child device
+> > > will
+> > > never exist without the parent being active. As they are sharing
+> > > a
+> > > register range, the parent passes a regmap pointer to the child
+> > > so
+> > > that
+> > > both can work with the same register range. The phy driver sets
+> > > device
+> > > data that is read by the parent to get the phy device that can be
+> > > used
+> > > to control the phy properties.
+> > > 
+> > > This driver is based on an initial version by
+> > > Jason-JH.Lin <jason-jh.lin@mediatek.com>.
+> > > 
+> > > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> > > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> > > ---
+> > 
+> > [snip]
+> > 
+> > > +
+> > > +static irqreturn_t mtk_dp_hpd_event_thread(int hpd, void *dev)
+> > > +{
+> > > +	struct mtk_dp *mtk_dp = dev;
+> > > +	int event;
+> > > +	u8 buf[DP_RECEIVER_CAP_SIZE] = {};
+> > > +
+> > > +	event = mtk_dp_plug_state(mtk_dp) ? connector_status_connected
+> > > :
+> > > +						  connector_status_disc
+> > > onnected;
+> > > +
+> > > +	if (event < 0)
+> > 
+> > event is always > 0, isn't it?
+> > 
+> 
+> Hello CK,
+> 
+> ok, I will move this to dp patch.
+> 
+> > > +		return IRQ_HANDLED;
+> > > +
+> > > +	if (mtk_dp->drm_dev) {
+> > > +		dev_info(mtk_dp->dev, "drm_helper_hpd_irq_event\n");
+> > > +		drm_helper_hpd_irq_event(mtk_dp->bridge.dev);
+> > 
+> > I think this ISR would come once. If bridge has not attached, the
+> > drm
+> > core would lost this event. Maybe you should enable eDP hardware
+> > after
+> > bridge attached or send this event when attached.
+> > 
+> 
+> for edp patch, I will move it to (mtk_dp_bridge_attach).
+> for dp patch, I will add it back.
 
-[auto build test ERROR on broonie-sound/for-next]
-[cannot apply to linus/master v5.19-rc1 next-20220607]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+I find out that mtk_dp_poweron() is in top of mtk_dp_bridge_attach().
+If move mtk_dp_poweron() to bottom of mtk_dp_bridge_attach(), mtk_dp-
+>drm_dev would not be NULL here. So we could drop this checking.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Srinivasa-Rao-Mandadapu/Add-software-clock-gating-requirement-check/20220607-203739
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
-config: i386-randconfig-a006 (https://download.01.org/0day-ci/archive/20220608/202206081054.vVkYPkJt-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b92436efcb7813fc481b30f2593a4907568d917a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/86aa15d36b06f7b73938f00f9ad99eff75a94a94
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Srinivasa-Rao-Mandadapu/Add-software-clock-gating-requirement-check/20220607-203739
-        git checkout 86aa15d36b06f7b73938f00f9ad99eff75a94a94
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/soundwire/
+> 
+> > > +	}
+> > > +
+> > > +	if (mtk_dp->train_info.cable_state_change) {
+> > 
+> > Executing this thread imply cable_state_change = true, so drop
+> > cable_state_change.
+> > 
+> 
+> In mtk_dp_hpd_isr_handler(), there is another irq
+> "MTK_DP_HPD_INTERRUPT" which means the sink devices give a interrupt
+> to
+> source device. it's not about connected status, so I think we still
+> need this.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+In bottom of mtk_dp_hpd_isr_handler(), the code is:
 
-All errors (new ones prefixed by >>):
++	train_info->cable_state_change = true;
++
++	return IRQ_WAKE_THREAD;
 
->> drivers/soundwire/qcom.c:668:6: error: use of undeclared identifier 'data'
-           if (data->sw_clk_gate_required)
-               ^
-   drivers/soundwire/qcom.c:1509:7: error: use of undeclared identifier 'data'
-                   if (data->sw_clk_gate_required)
-                       ^
-   2 errors generated.
+This thread is called only when return IRQ_WAKE_THREAD, and before
+return IRQ_WAKE_THREAD, train_info->cable_state_change is always set to
+true. So in this thread, train_info->cable_state_change must be true.
 
+Regards,
+CK
 
-vim +/data +668 drivers/soundwire/qcom.c
+> 
+> > > +		mtk_dp->train_info.cable_state_change = false;
+> > > +
+> > > +		mtk_dp->train_state = MTK_DP_TRAIN_STATE_STARTUP;
+> > > +
+> > > +		if (!mtk_dp->train_info.cable_plugged_in ||
+> > > +		    !mtk_dp_plug_state(mtk_dp)) {
+> > 
+> > I do not like two variable to present one thing. If
+> > 
+> > mtk_dp->train_info.cable_plugged_in = false
+> > and
+> > mtk_dp_plug_state(mtk_dp) = ture
+> > 
+> > What does this mean? I think this mean 'now' is connected because
+> > cable_plugged_in is old information and mtk_dp_plug_state() is
+> > current
+> > information.
+> > 
+> > But I would like to keep cable_plugged_in and drop
+> > mtk_dp_plug_state()
+> > because cable_plugged_in would be changed in isr and it would be
+> > the
+> > same as mtk_dp_plug_state().
+> > 
+> > Regards,
+> > CK
+> > 
+> 
+> ok, I will drop this.
+> 
+> BRs,
+> Rex
+> 
+> > > +			mtk_dp_video_mute(mtk_dp, true);
+> > > +
+> > > +			mtk_dp_initialize_priv_data(mtk_dp);
+> > > +			mtk_dp_set_idle_pattern(mtk_dp, true);
+> > > +			if (mtk_dp->has_fec)
+> > > +				mtk_dp_fec_enable(mtk_dp, false);
+> > > +
+> > > +			mtk_dp_update_bits(mtk_dp,
+> > > MTK_DP_TOP_PWR_STATE,
+> > > +					   DP_PWR_STATE_BANDGAP_TPLL,
+> > > +					   DP_PWR_STATE_MASK);
+> > > +		} else {
+> > > +			mtk_dp_update_bits(mtk_dp,
+> > > MTK_DP_TOP_PWR_STATE,
+> > > +					   DP_PWR_STATE_BANDGAP_TPLL_LA
+> > > NE,
+> > > +					   DP_PWR_STATE_MASK);
+> > > +			drm_dp_read_dpcd_caps(&mtk_dp->aux, buf);
+> > > +			mtk_dp->train_info.link_rate =
+> > > +				min_t(int, mtk_dp->max_linkrate,
+> > > +				      buf[mtk_dp->max_linkrate]);
+> > > +			mtk_dp->train_info.lane_count =
+> > > +				min_t(int, mtk_dp->max_lanes,
+> > > +				      drm_dp_max_lane_count(buf));
+> > > +		}
+> > > +	}
+> > > +
+> > > +	if (mtk_dp->train_info.irq_status & MTK_DP_HPD_INTERRUPT) {
+> > > +		dev_dbg(mtk_dp->dev, "MTK_DP_HPD_INTERRUPT\n");
+> > > +		mtk_dp->train_info.irq_status &= ~MTK_DP_HPD_INTERRUPT;
+> > > +		mtk_dp_hpd_sink_event(mtk_dp);
+> > > +	}
+> > > +
+> > > +	return IRQ_HANDLED;
+> > > +}
+> > > +
+> > 
+> > 
+> 
+> 
 
-   659	
-   660	static int qcom_swrm_init(struct qcom_swrm_ctrl *ctrl)
-   661	{
-   662		u32 val;
-   663	
-   664		/* Clear Rows and Cols */
-   665		val = FIELD_PREP(SWRM_MCP_FRAME_CTRL_BANK_ROW_CTRL_BMSK, ctrl->rows_index);
-   666		val |= FIELD_PREP(SWRM_MCP_FRAME_CTRL_BANK_COL_CTRL_BMSK, ctrl->cols_index);
-   667	
- > 668		if (data->sw_clk_gate_required)
-   669			reset_control_reset(ctrl->audio_cgcr);
-   670	
-   671		ctrl->reg_write(ctrl, SWRM_MCP_FRAME_CTRL_BANK_ADDR(0), val);
-   672	
-   673		/* Enable Auto enumeration */
-   674		ctrl->reg_write(ctrl, SWRM_ENUMERATOR_CFG_ADDR, 1);
-   675	
-   676		ctrl->intr_mask = SWRM_INTERRUPT_STATUS_RMSK;
-   677		/* Mask soundwire interrupts */
-   678		ctrl->reg_write(ctrl, SWRM_INTERRUPT_MASK_ADDR,
-   679				SWRM_INTERRUPT_STATUS_RMSK);
-   680	
-   681		/* Configure No pings */
-   682		ctrl->reg_read(ctrl, SWRM_MCP_CFG_ADDR, &val);
-   683		u32p_replace_bits(&val, SWRM_DEF_CMD_NO_PINGS, SWRM_MCP_CFG_MAX_NUM_OF_CMD_NO_PINGS_BMSK);
-   684		ctrl->reg_write(ctrl, SWRM_MCP_CFG_ADDR, val);
-   685	
-   686		ctrl->reg_write(ctrl, SWRM_MCP_BUS_CTRL, SWRM_MCP_BUS_CLK_START);
-   687		/* Configure number of retries of a read/write cmd */
-   688		if (ctrl->version > 0x01050001) {
-   689			/* Only for versions >= 1.5.1 */
-   690			ctrl->reg_write(ctrl, SWRM_CMD_FIFO_CFG_ADDR,
-   691					SWRM_RD_WR_CMD_RETRIES |
-   692					SWRM_CONTINUE_EXEC_ON_CMD_IGNORE);
-   693		} else {
-   694			ctrl->reg_write(ctrl, SWRM_CMD_FIFO_CFG_ADDR,
-   695					SWRM_RD_WR_CMD_RETRIES);
-   696		}
-   697	
-   698		/* Set IRQ to PULSE */
-   699		ctrl->reg_write(ctrl, SWRM_COMP_CFG_ADDR,
-   700				SWRM_COMP_CFG_IRQ_LEVEL_OR_PULSE_MSK |
-   701				SWRM_COMP_CFG_ENABLE_MSK);
-   702	
-   703		/* enable CPU IRQs */
-   704		if (ctrl->mmio) {
-   705			ctrl->reg_write(ctrl, SWRM_INTERRUPT_CPU_EN,
-   706					SWRM_INTERRUPT_STATUS_RMSK);
-   707		}
-   708		ctrl->slave_status = 0;
-   709		ctrl->reg_read(ctrl, SWRM_COMP_PARAMS, &val);
-   710		ctrl->rd_fifo_depth = FIELD_GET(SWRM_COMP_PARAMS_RD_FIFO_DEPTH, val);
-   711		ctrl->wr_fifo_depth = FIELD_GET(SWRM_COMP_PARAMS_WR_FIFO_DEPTH, val);
-   712	
-   713		return 0;
-   714	}
-   715	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
