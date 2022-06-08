@@ -2,140 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA89CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:52:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33812C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:52:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232200AbiFHHwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44102 "EHLO
+        id S232317AbiFHHwX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232154AbiFHHvQ (ORCPT
+        with ESMTP id S229908AbiFHHvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:51:16 -0400
+        Wed, 8 Jun 2022 03:51:19 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D9BF8257
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:17:59 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AB9E10D5F1
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 00:18:43 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nypwu-0005bg-Nx; Wed, 08 Jun 2022 09:17:52 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nypwu-0078uA-Kt; Wed, 08 Jun 2022 09:17:51 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nypws-00G1PR-7o; Wed, 08 Jun 2022 09:17:50 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 1/3] net: phy: dp83td510: add SQI support
-Date:   Wed,  8 Jun 2022 09:17:47 +0200
-Message-Id: <20220608071749.3818602-2-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220608071749.3818602-1-o.rempel@pengutronix.de>
-References: <20220608071749.3818602-1-o.rempel@pengutronix.de>
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1nypxZ-0005n6-W8; Wed, 08 Jun 2022 09:18:34 +0200
+Message-ID: <8ed717046a4c3c37d8415a924538f38353825027.camel@pengutronix.de>
+Subject: Re: [PATCH v9 4/8] PCI: imx6: Disable iMX6QDL PCIe REF clock when
+ disable PCIe clocks
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Richard Zhu <hongxing.zhu@nxp.com>, bhelgaas@google.com,
+        robh+dt@kernel.org, broonie@kernel.org, lorenzo.pieralisi@arm.com,
+        jingoohan1@gmail.com, festevam@gmail.com,
+        francesco.dolcini@toradex.com
+Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Date:   Wed, 08 Jun 2022 09:18:32 +0200
+In-Reply-To: <1651801629-30223-5-git-send-email-hongxing.zhu@nxp.com>
+References: <1651801629-30223-1-git-send-email-hongxing.zhu@nxp.com>
+         <1651801629-30223-5-git-send-email-hongxing.zhu@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert MSE (mean-square error) values to SNR and split it SQI (Signal Quality
-Indicator) ranges. The used ranges are taken from "OPEN ALLIANCE - Advanced
-diagnostic features for 100BASE-T1 automotive Ethernet PHYs"
-specification.
+Am Freitag, dem 06.05.2022 um 09:47 +0800 schrieb Richard Zhu:
+> When disable PCIe clocks, disable i.MX6QDL PCIe REF clock too.
+> 
+> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/phy/dp83td510.c | 49 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
 
-diff --git a/drivers/net/phy/dp83td510.c b/drivers/net/phy/dp83td510.c
-index 1ae792b0daaa..3cd9a77f9532 100644
---- a/drivers/net/phy/dp83td510.c
-+++ b/drivers/net/phy/dp83td510.c
-@@ -27,6 +27,27 @@
- #define DP83TD510E_AN_STAT_1			0x60c
- #define DP83TD510E_MASTER_SLAVE_RESOL_FAIL	BIT(15)
- 
-+#define DP83TD510E_MSE_DETECT			0xa85
-+
-+#define DP83TD510_SQI_MAX	7
-+
-+/* Register values are converted to SNR(dB) as suggested by
-+ * "Application Report - DP83TD510E Cable Diagnostics Toolkit":
-+ * SNR(dB) = -10 * log10 (VAL/2^17) - 1.76 dB.
-+ * SQI ranges are implemented according to "OPEN ALLIANCE - Advanced diagnostic
-+ * features for 100BASE-T1 automotive Ethernet PHYs"
-+ */
-+static const u16 dp83td510_mse_sqi_map[] = {
-+	0x0569, /* < 18dB */
-+	0x044c, /* 18dB =< SNR < 19dB */
-+	0x0369, /* 19dB =< SNR < 20dB */
-+	0x02b6, /* 20dB =< SNR < 21dB */
-+	0x0227, /* 21dB =< SNR < 22dB */
-+	0x01b6, /* 22dB =< SNR < 23dB */
-+	0x015b, /* 23dB =< SNR < 24dB */
-+	0x0000  /* 24dB =< SNR */
-+};
-+
- static int dp83td510_config_intr(struct phy_device *phydev)
- {
- 	int ret;
-@@ -164,6 +185,32 @@ static int dp83td510_config_aneg(struct phy_device *phydev)
- 	return genphy_c45_check_and_restart_aneg(phydev, changed);
- }
- 
-+static int dp83td510_get_sqi(struct phy_device *phydev)
-+{
-+	int sqi, ret;
-+	u16 mse_val;
-+
-+	if (!phydev->link)
-+		return 0;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_MSE_DETECT);
-+	if (ret < 0)
-+		return ret;
-+
-+	mse_val = 0xFFFF & ret;
-+	for (sqi = 0; sqi < ARRAY_SIZE(dp83td510_mse_sqi_map); sqi++) {
-+		if (mse_val >= dp83td510_mse_sqi_map[sqi])
-+			return sqi;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int dp83td510_get_sqi_max(struct phy_device *phydev)
-+{
-+	return DP83TD510_SQI_MAX;
-+}
-+
- static int dp83td510_get_features(struct phy_device *phydev)
- {
- 	/* This PHY can't respond on MDIO bus if no RMII clock is enabled.
-@@ -192,6 +239,8 @@ static struct phy_driver dp83td510_driver[] = {
- 	.get_features	= dp83td510_get_features,
- 	.config_intr	= dp83td510_config_intr,
- 	.handle_interrupt = dp83td510_handle_interrupt,
-+	.get_sqi	= dp83td510_get_sqi,
-+	.get_sqi_max	= dp83td510_get_sqi_max,
- 
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
--- 
-2.30.2
+> ---
+>  drivers/pci/controller/dwc/pci-imx6.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+> index 9b0eac64badc..7005a7910003 100644
+> --- a/drivers/pci/controller/dwc/pci-imx6.c
+> +++ b/drivers/pci/controller/dwc/pci-imx6.c
+> @@ -536,6 +536,14 @@ static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
+>  	clk_disable_unprepare(imx6_pcie->pcie_bus);
+>  
+>  	switch (imx6_pcie->drvdata->variant) {
+> +	case IMX6Q:
+> +	case IMX6QP:
+> +		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR1,
+> +				IMX6Q_GPR1_PCIE_REF_CLK_EN, 0);
+> +		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR1,
+> +				IMX6Q_GPR1_PCIE_TEST_PD,
+> +				IMX6Q_GPR1_PCIE_TEST_PD);
+> +		break;
+>  	case IMX6SX:
+>  		clk_disable_unprepare(imx6_pcie->pcie_inbound_axi);
+>  		break;
+
 
