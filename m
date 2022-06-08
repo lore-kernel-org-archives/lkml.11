@@ -2,117 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18145C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1DB7CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 06:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234882AbiFHGBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 02:01:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
+        id S235006AbiFHGCO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 02:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242207AbiFHFxx (ORCPT
+        with ESMTP id S234672AbiFHFtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 01:53:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E8E02CB4F1
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 20:47:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654660041;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=S1W4hgx8Hu6HctQFGvInxvOPdJHknH/VauE9079NO9c=;
-        b=UFOTTWDo/k76fAiYgdkpVK5X07NyP65X8TTr0zfZZzGYNIYxeex+1BTRQRtPtGIgFtzca0
-        O6aRzqsKK2FIibmdgpVPFp7AgGunL9jWO5jGPFTX/ts/Vl8+zQwuZplZqIIWTACVXq0UWs
-        AczlYtPIO0XO+2ZC9bClWCFFX2anbm4=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-380-iuJJXqDKPlupan0skIUoTw-1; Tue, 07 Jun 2022 23:47:18 -0400
-X-MC-Unique: iuJJXqDKPlupan0skIUoTw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CD09D1C0CE7A;
-        Wed,  8 Jun 2022 03:47:17 +0000 (UTC)
-Received: from localhost (ovpn-12-81.pek2.redhat.com [10.72.12.81])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id A1F7F2166B26;
-        Wed,  8 Jun 2022 03:47:16 +0000 (UTC)
-Date:   Wed, 8 Jun 2022 11:47:12 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     "Uladzislau Rezki (Sony)" <urezki@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
-Subject: Re: [PATCH 4/5] mm/vmalloc: Extend __find_vmap_area() with one more
- argument
-Message-ID: <YqAbwC/evlFgMXuc@MiWiFi-R3L-srv>
-References: <20220607093449.3100-1-urezki@gmail.com>
- <20220607093449.3100-5-urezki@gmail.com>
+        Wed, 8 Jun 2022 01:49:06 -0400
+Received: from EX-PRD-EDGE02.vmware.com (ex-prd-edge02.vmware.com [208.91.3.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5EF122BAD2;
+        Tue,  7 Jun 2022 20:24:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+    s=s1024; d=vmware.com;
+    h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
+      content-type;
+    bh=Iek9hW54QhGw2V/2phmsOs4cdU2tFOpvP/eViuA1UH4=;
+    b=QSAvjUitIkzuYEWf/jNEmVRPSVBQEn21x89YXAnLZ52l7UYJllvfhwO42pSVY/
+      8TWryEEFrsPDCCdxnOxsgZbrGN7yw4KdEkaXEB9SkDqrx+slvBKIeo2A5jWhz7
+      HCpdgwR5/62vm/uHf+B5lvDjF7R5NG/wHXHj2gX+rfV4FQc=
+Received: from sc9-mailhost2.vmware.com (10.113.161.72) by
+ EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
+ 15.1.2308.14; Tue, 7 Jun 2022 20:23:58 -0700
+Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
+        by sc9-mailhost2.vmware.com (Postfix) with ESMTP id 1DB782032A;
+        Tue,  7 Jun 2022 20:24:04 -0700 (PDT)
+Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
+        id 1593DAA454; Tue,  7 Jun 2022 20:24:04 -0700 (PDT)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 net-next 3/8] vmxnet3: add support for large passthrough BAR register
+Date:   Tue, 7 Jun 2022 20:23:48 -0700
+Message-ID: <20220608032353.964-4-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20220608032353.964-1-doshir@vmware.com>
+References: <20220608032353.964-1-doshir@vmware.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607093449.3100-5-urezki@gmail.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Type: text/plain
+Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/07/22 at 11:34am, Uladzislau Rezki (Sony) wrote:
-> __find_vmap_area() finds a "vmap_area" based on passed address.
-> It scan the specific "vmap_area_root" rb-tree. Extend the function
-> with one extra argument, so any tree can be specified where the
-> search has to be done.
-> 
-> There is no functional change as a result of this patch.
+For vmxnet3 to work in UPT mode, the BAR sizes have been increased.
+The PT page has been extended to 2 pages and also includes OOB pages
+as a part of PT BAR. This patch enhances vmxnet3 to use appropriate
+BAR offsets based on the capability registered. To use new offsets,
+VMXNET3_CAP_LARGE_BAR needs to be set by the device. If it is not set
+then the device will use legacy PT page layout.
 
-LGTM,
-Reviewed-by: Baoquan He <bhe@redhat.com>
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+---
+ drivers/net/vmxnet3/vmxnet3_defs.h    | 14 ++++++++++++--
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 25 ++++++++++++++++++++-----
+ drivers/net/vmxnet3/vmxnet3_ethtool.c |  6 +++---
+ drivers/net/vmxnet3/vmxnet3_int.h     |  3 +++
+ 4 files changed, 38 insertions(+), 10 deletions(-)
 
-> 
-> Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
-> ---
->  mm/vmalloc.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-> index 82771e555273..b60385101897 100644
-> --- a/mm/vmalloc.c
-> +++ b/mm/vmalloc.c
-> @@ -814,9 +814,9 @@ static struct vmap_area *find_vmap_area_exceed_addr(unsigned long addr)
->  	return va;
->  }
->  
-> -static struct vmap_area *__find_vmap_area(unsigned long addr)
-> +static struct vmap_area *__find_vmap_area(unsigned long addr, struct rb_root *root)
->  {
-> -	struct rb_node *n = vmap_area_root.rb_node;
-> +	struct rb_node *n = root->rb_node;
->  
->  	addr = (unsigned long)kasan_reset_tag((void *)addr);
->  
-> @@ -1840,7 +1840,7 @@ static struct vmap_area *find_vmap_area(unsigned long addr)
->  	struct vmap_area *va;
->  
->  	spin_lock(&vmap_area_lock);
-> -	va = __find_vmap_area(addr);
-> +	va = __find_vmap_area(addr, &vmap_area_root);
->  	spin_unlock(&vmap_area_lock);
->  
->  	return va;
-> @@ -2582,7 +2582,7 @@ struct vm_struct *remove_vm_area(const void *addr)
->  	might_sleep();
->  
->  	spin_lock(&vmap_area_lock);
-> -	va = __find_vmap_area((unsigned long)addr);
-> +	va = __find_vmap_area((unsigned long)addr, &vmap_area_root);
->  	if (va && va->vm) {
->  		struct vm_struct *vm = va->vm;
->  
-> -- 
-> 2.30.2
-> 
-> 
+diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
+index 0157155ff677..8d626611ab2d 100644
+--- a/drivers/net/vmxnet3/vmxnet3_defs.h
++++ b/drivers/net/vmxnet3/vmxnet3_defs.h
+@@ -57,8 +57,18 @@ enum {
+ 	VMXNET3_REG_RXPROD2	= 0xA00	 /* Rx Producer Index for ring 2 */
+ };
+ 
+-#define VMXNET3_PT_REG_SIZE     4096	/* BAR 0 */
+-#define VMXNET3_VD_REG_SIZE     4096	/* BAR 1 */
++/* For Large PT BAR, the following offset to DB register */
++enum {
++	VMXNET3_REG_LB_TXPROD   = 0x1000, /* Tx Producer Index */
++	VMXNET3_REG_LB_RXPROD   = 0x1400, /* Rx Producer Index for ring 1 */
++	VMXNET3_REG_LB_RXPROD2  = 0x1800, /* Rx Producer Index for ring 2 */
++};
++
++#define VMXNET3_PT_REG_SIZE         4096		/* BAR 0 */
++#define VMXNET3_LARGE_PT_REG_SIZE   8192		/* large PT pages */
++#define VMXNET3_VD_REG_SIZE         4096		/* BAR 1 */
++#define VMXNET3_LARGE_BAR0_REG_SIZE (4096 * 4096)	/* LARGE BAR 0 */
++#define VMXNET3_OOB_REG_SIZE        (4094 * 4096)	/* OOB pages */
+ 
+ #define VMXNET3_REG_ALIGN       8	/* All registers are 8-byte aligned. */
+ #define VMXNET3_REG_ALIGN_MASK  0x7
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index edc4f23d4965..93f237db463d 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1207,7 +1207,7 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 	if (tx_num_deferred >= le32_to_cpu(tq->shared->txThreshold)) {
+ 		tq->shared->txNumDeferred = 0;
+ 		VMXNET3_WRITE_BAR0_REG(adapter,
+-				       VMXNET3_REG_TXPROD + tq->qid * 8,
++				       adapter->tx_prod_offset + tq->qid * 8,
+ 				       tq->tx_ring.next2fill);
+ 	}
+ 
+@@ -1359,8 +1359,8 @@ static int
+ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 		       struct vmxnet3_adapter *adapter, int quota)
+ {
+-	static const u32 rxprod_reg[2] = {
+-		VMXNET3_REG_RXPROD, VMXNET3_REG_RXPROD2
++	u32 rxprod_reg[2] = {
++		adapter->rx_prod_offset, adapter->rx_prod2_offset
+ 	};
+ 	u32 num_pkts = 0;
+ 	bool skip_page_frags = false;
+@@ -2783,9 +2783,9 @@ vmxnet3_activate_dev(struct vmxnet3_adapter *adapter)
+ 
+ 	for (i = 0; i < adapter->num_rx_queues; i++) {
+ 		VMXNET3_WRITE_BAR0_REG(adapter,
+-				VMXNET3_REG_RXPROD + i * VMXNET3_REG_ALIGN,
++				adapter->rx_prod_offset + i * VMXNET3_REG_ALIGN,
+ 				adapter->rx_queue[i].rx_ring[0].next2fill);
+-		VMXNET3_WRITE_BAR0_REG(adapter, (VMXNET3_REG_RXPROD2 +
++		VMXNET3_WRITE_BAR0_REG(adapter, (adapter->rx_prod2_offset +
+ 				(i * VMXNET3_REG_ALIGN)),
+ 				adapter->rx_queue[i].rx_ring[1].next2fill);
+ 	}
+@@ -3608,6 +3608,10 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 	if (VMXNET3_VERSION_GE_7(adapter)) {
+ 		adapter->devcap_supported[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_DCR);
+ 		adapter->ptcap_supported[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_PTCR);
++		if (adapter->devcap_supported[0] & (1UL << VMXNET3_CAP_LARGE_BAR)) {
++			adapter->dev_caps[0] = adapter->devcap_supported[0] &
++							(1UL << VMXNET3_CAP_LARGE_BAR);
++		}
+ 		if (adapter->dev_caps[0])
+ 			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
+ 
+@@ -3617,6 +3621,17 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
+ 	}
+ 
++	if (VMXNET3_VERSION_GE_7(adapter) &&
++	    adapter->dev_caps[0] & (1UL << VMXNET3_CAP_LARGE_BAR)) {
++		adapter->tx_prod_offset = VMXNET3_REG_LB_TXPROD;
++		adapter->rx_prod_offset = VMXNET3_REG_LB_RXPROD;
++		adapter->rx_prod2_offset = VMXNET3_REG_LB_RXPROD2;
++	} else {
++		adapter->tx_prod_offset = VMXNET3_REG_TXPROD;
++		adapter->rx_prod_offset = VMXNET3_REG_RXPROD;
++		adapter->rx_prod2_offset = VMXNET3_REG_RXPROD2;
++	}
++
+ 	if (VMXNET3_VERSION_GE_6(adapter)) {
+ 		spin_lock_irqsave(&adapter->cmd_lock, flags);
+ 		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index 458f2da1ebab..397b268f7bc5 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -520,7 +520,7 @@ vmxnet3_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *p)
+ 	for (i = 0; i < adapter->num_tx_queues; i++) {
+ 		struct vmxnet3_tx_queue *tq = &adapter->tx_queue[i];
+ 
+-		buf[j++] = VMXNET3_READ_BAR0_REG(adapter, VMXNET3_REG_TXPROD +
++		buf[j++] = VMXNET3_READ_BAR0_REG(adapter, adapter->tx_prod_offset +
+ 						 i * VMXNET3_REG_ALIGN);
+ 
+ 		buf[j++] = VMXNET3_GET_ADDR_LO(tq->tx_ring.basePA);
+@@ -548,9 +548,9 @@ vmxnet3_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *p)
+ 	for (i = 0; i < adapter->num_rx_queues; i++) {
+ 		struct vmxnet3_rx_queue *rq = &adapter->rx_queue[i];
+ 
+-		buf[j++] =  VMXNET3_READ_BAR0_REG(adapter, VMXNET3_REG_RXPROD +
++		buf[j++] =  VMXNET3_READ_BAR0_REG(adapter, adapter->rx_prod_offset +
+ 						  i * VMXNET3_REG_ALIGN);
+-		buf[j++] =  VMXNET3_READ_BAR0_REG(adapter, VMXNET3_REG_RXPROD2 +
++		buf[j++] =  VMXNET3_READ_BAR0_REG(adapter, adapter->rx_prod2_offset +
+ 						  i * VMXNET3_REG_ALIGN);
+ 
+ 		buf[j++] = VMXNET3_GET_ADDR_LO(rq->rx_ring[0].basePA);
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index a7c8f80702c2..a4f832f0ad5b 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -406,6 +406,9 @@ struct vmxnet3_adapter {
+ 	u32    devcap_supported[8];
+ 	u32    ptcap_supported[8];
+ 	u32    dev_caps[8];
++	u16    tx_prod_offset;
++	u16    rx_prod_offset;
++	u16    rx_prod2_offset;
+ };
+ 
+ #define VMXNET3_WRITE_BAR0_REG(adapter, reg, val)  \
+-- 
+2.11.0
 
