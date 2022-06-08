@@ -2,97 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A155C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8693DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 15:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243454AbiFHO6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 10:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51972 "EHLO
+        id S242323AbiFHPGS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 11:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243245AbiFHO5w (ORCPT
+        with ESMTP id S242504AbiFHPFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 10:57:52 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8043EEE0A
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 07:54:49 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id m39-20020a05600c3b2700b0039c511ebbacso4487777wms.3
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 07:54:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=/UVSlpPd3rsOTMDlQ1ZyeboYDpPQXRxEscJnVQE7aXc=;
-        b=NOVyZ0ybVuagM0hyY5lUQmNY5Z6tlfSssVLuHrioj4pFXSStCE299BtFou21UZk/8m
-         VepKg6OpRednAFUOH+DrFvmLI9yOlC/IAMdYiSfQ6UOc7UJzfTqtO3wrZhRQ6Y3PkLuY
-         gqjs0vLD5jjUsL/mscM1fXT35tsnMSwcomlX6a9/g3w8TXZ3R497MNNJCeBYOYZ22HGL
-         9l/NPiOWTrux+f9ruw4K5CJf1Cr/GWmk6hkYBSp06qahIqkm03PO9JisT+Q0fZgMrbut
-         ZpW2yIjJYDnnTb1+8qLVNW55t1H1tePx44wBwq4uu593J2cdba146uVXx2JRI0sZqR7f
-         x2kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=/UVSlpPd3rsOTMDlQ1ZyeboYDpPQXRxEscJnVQE7aXc=;
-        b=OehvXrDJle+mRrfLCtkEoZ6s9eCj05HRdmNxol3bhjcZL9ZJJuKmyAcVE1EmzEnaKx
-         0ZgQgfgfKSncZjpWH8a3HKWybb2GJj474TERZEmVVMm0B2nU9RkBmvJoOvDfYkmcgKHm
-         CwWFrTRs20kVHveu47Qd9rp5zm2PA6H//UmD4De7yjcD/pOQAybG5tZ/abrkjYIsE5YQ
-         DKve6YnMmB6ndo+CX23aWsPzOQKmwfvDlzizAUsPSs960d7ZuJkH0LOqb7lPrvU93qRL
-         rz2E/xG0B0BSXH1w9otLpD1dSPC2vmw2HdS7Mlc8OdfMiJ6UM2YcqRNEuHXUEJ5/cBQU
-         Hs2w==
-X-Gm-Message-State: AOAM533rIsx3fBYTYVxceJ+vv63ld7ewgVEeaDAruin9SLNyW6EOzi8o
-        OhFi7SLZpcwPKP//0vUfp3wjoA==
-X-Google-Smtp-Source: ABdhPJyEA+RemPKIQuk742PCiLnKJ52To3H1lPVlBXw0lq0Iq7rdYqBME7INiy/5snTFyMG/KiRGTQ==
-X-Received: by 2002:a7b:c354:0:b0:39c:6753:21f8 with SMTP id l20-20020a7bc354000000b0039c675321f8mr707309wmj.113.1654700044185;
-        Wed, 08 Jun 2022 07:54:04 -0700 (PDT)
-Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
-        by smtp.gmail.com with ESMTPSA id m19-20020a05600c4f5300b003942a244f2esm30757054wmq.7.2022.06.08.07.54.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 07:54:03 -0700 (PDT)
-Date:   Wed, 8 Jun 2022 15:54:01 +0100
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Len Baker <len.baker@gmx.com>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-staging@lists.linux.dev
-Subject: Re: [PATCH] staging: ftbft: Use backlight helper
-Message-ID: <20220608145401.qaycvdfc7ks3bbx3@maple.lan>
-References: <20220607185516.1129900-1-steve@sk2.org>
+        Wed, 8 Jun 2022 11:05:32 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5173826B96B;
+        Wed,  8 Jun 2022 07:57:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654700253; x=1686236253;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vabkUfz2r5crtrIrJqk2A20R0OQx7I0ukNGf+NHVR10=;
+  b=Uqh6wab9Ud1bgRlPBUeeVRCWsKzFyQoenBrbzHpT/tqGlTxEb50VXH5E
+   4ChG/dmZkRrNE/Z2Pv5nhiwPCQswMfoSt8/nPyexC+ciPcUK4JyNhn99+
+   VhbRWgStb2moKesatl/QnWX5cGKVL3H8Y7GjIrImldmHHSAw7eJ+8OfhP
+   3NiQ4Ft2WqoKfkueCAutmYAAYpaUwJskwcNHa5ckTtGiggt9dl6Ohav94
+   ZoEfV04Qqc1+dCp63JwYEg3JaZnHtfccCR1+EUry/aZOL+YFZEjSrvoeh
+   UmfMcAXuVcc0z7IO/beu1tef4q6rWoDOs8sfDHQKCtPj5bg6wZNrERWvY
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="363250872"
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="363250872"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 07:49:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="580090504"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 08 Jun 2022 07:49:35 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nyx03-000EiI-8k;
+        Wed, 08 Jun 2022 14:49:35 +0000
+Date:   Wed, 8 Jun 2022 22:48:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Roberto Sassu <roberto.sassu@huawei.com>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kpsingh@kernel.org
+Cc:     kbuild-all@lists.01.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: Re: [PATCH v2 1/3] bpf: Add bpf_verify_pkcs7_signature() helper
+Message-ID: <202206082219.09oAvCwe-lkp@intel.com>
+References: <20220608111221.373833-2-roberto.sassu@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220607185516.1129900-1-steve@sk2.org>
+In-Reply-To: <20220608111221.373833-2-roberto.sassu@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 08:55:16PM +0200, Stephen Kitt wrote:
-> backlight_properties.fb_blank is deprecated. The states it represents
-> are handled by other properties; but instead of accessing those
-> properties directly, drivers should use the helpers provided by
-> backlight.h.
-> 
-> Instead of manually checking the power state in struct
-> backlight_properties, use backlight_is_blank().
-> 
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: "Noralf Trønnes" <noralf@tronnes.org>
-> Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: Javier Martinez Canillas <javierm@redhat.com>
-> Cc: Len Baker <len.baker@gmx.com>
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-fbdev@vger.kernel.org
-> Cc: linux-staging@lists.linux.dev
+Hi Roberto,
 
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on bpf-next/master]
+[also build test WARNING on bpf/master]
+[cannot apply to horms-ipvs/master]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Roberto-Sassu/bpf-Add-bpf_verify_pkcs7_signature-helper/20220608-192110
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220608/202206082219.09oAvCwe-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/223914a2278b692d4120315d2fc7a29e3b89512a
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Roberto-Sassu/bpf-Add-bpf_verify_pkcs7_signature-helper/20220608-192110
+        git checkout 223914a2278b692d4120315d2fc7a29e3b89512a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash kernel/bpf/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   kernel/bpf/bpf_lsm.c: In function '____bpf_verify_pkcs7_signature':
+>> kernel/bpf/bpf_lsm.c:146:38: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+     146 |                                      (struct key *)keyring,
+         |                                      ^
 
 
-Daniel.
+vim +146 kernel/bpf/bpf_lsm.c
+
+   135	
+   136	BPF_CALL_5(bpf_verify_pkcs7_signature, u8 *, data, u32, datalen, u8 *, sig,
+   137		   u32, siglen, u64, keyring)
+   138	{
+   139		int ret = -EOPNOTSUPP;
+   140	
+   141	#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
+   142		if (keyring > (unsigned long)VERIFY_USE_PLATFORM_KEYRING)
+   143			return -EINVAL;
+   144	
+   145		ret = verify_pkcs7_signature(data, datalen, sig, siglen,
+ > 146					     (struct key *)keyring,
+   147					     VERIFYING_UNSPECIFIED_SIGNATURE, NULL,
+   148					     NULL);
+   149	#endif
+   150		return ret;
+   151	}
+   152	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
