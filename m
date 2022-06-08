@@ -2,81 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1658BCCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B94AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 09:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233544AbiFHJCo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41592 "EHLO
+        id S233213AbiFHJDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 05:03:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233394AbiFHJBX (ORCPT
+        with ESMTP id S233039AbiFHJB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:01:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE609270412;
-        Wed,  8 Jun 2022 01:20:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A3BFB82600;
-        Wed,  8 Jun 2022 08:20:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96CF5C341C0;
-        Wed,  8 Jun 2022 08:20:35 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="I8nrspf8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1654676433;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=s+nnloJXOZe3sp7KGEI5/CL3G/9pL2fN3vtSg1xL8Vw=;
-        b=I8nrspf8j1gD5i4+wAjj0htInCIHYEOX8yRD7u0i8fGlrktR2IhBQAaY3IcVciYQrx3Va1
-        qM6+b1o5rDAICdKXp2PSch8A+Tt607ym3NZbJ8MTzplaSPiFMecsP3auw3Ol9K+WDmkvMn
-        +EVDPLefmhwodj0zKIX6vtyesR1I1cU=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ac2b5bff (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 8 Jun 2022 08:20:33 +0000 (UTC)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-31332df12a6so52993887b3.4;
-        Wed, 08 Jun 2022 01:20:33 -0700 (PDT)
-X-Gm-Message-State: AOAM5328PeFqmY48pm8DngclszuBMpcxSeGcx+7MEV+TgHTnzOxvE6nE
-        4pwBrVHGM6IsWTVYd2GE1ro29wNysnBO7EnuUiQ=
-X-Google-Smtp-Source: ABdhPJzYWhAiZY+gq/MBohBjnsZTJ7ZYRXoMS1F5fwcHI24a4Z7znU19lyYizM6OeIKgkvASrWmuHV/POva6koiqls4=
-X-Received: by 2002:a81:6c89:0:b0:30c:4c36:f9c7 with SMTP id
- h131-20020a816c89000000b0030c4c36f9c7mr35742711ywc.485.1654676432063; Wed, 08
- Jun 2022 01:20:32 -0700 (PDT)
+        Wed, 8 Jun 2022 05:01:57 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2973B168D1E
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:21:30 -0700 (PDT)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2587CP4I031377;
+        Wed, 8 Jun 2022 08:21:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=IU+fKq91VoViJ1WRbcC3vvh3KJYWrI3EWyFa97WpR94=;
+ b=hVZdLVPI7prFKOy8hYuz3mnkKtO3FT7Z2IBhPmx6/AO2BUngQueMTY0Fy8U94YvJ7+gM
+ tJdGapaiBHpO9loarZbYpbVn411KLW4PhmLg3v0ZQAgh66lPgZ1jB7FWa1Y2vN05n+SY
+ Bj732ZPgk50asCW/LhkPw3jqoGFsXPrxGK9rMhkm4Tn00bDBsVbNtUirNhORax5Q8OS7
+ TZZopCQRHNb/IBj1XAghuWFq5jU0EGVKLTKwx9ZK5LaLdoe/QCk6fn3zaGZVI3n08Gwn
+ x17AEXowYCWvHtiGQVjmVOoKBQ7KOjltErNUy38osCRN78bzEi9qI2OpEcaQOHmZNiov cQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjq5w99c3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Jun 2022 08:21:03 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2587DRPD004028;
+        Wed, 8 Jun 2022 08:21:02 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gjq5w99bb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Jun 2022 08:21:02 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2588K6qf020023;
+        Wed, 8 Jun 2022 08:20:59 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04ams.nl.ibm.com with ESMTP id 3gfy19cuxq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Jun 2022 08:20:59 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2588Kv0m48169230
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 8 Jun 2022 08:20:57 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 873FD5204E;
+        Wed,  8 Jun 2022 08:20:57 +0000 (GMT)
+Received: from [9.43.53.124] (unknown [9.43.53.124])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id D147D5204F;
+        Wed,  8 Jun 2022 08:20:51 +0000 (GMT)
+Message-ID: <81956d2e-0bfe-78ba-5ad0-f6c388c2190e@linux.ibm.com>
+Date:   Wed, 8 Jun 2022 13:50:50 +0530
 MIME-Version: 1.0
-References: <8cc7ebe4-442b-a24b-9bb0-fce6e0425ee6@raspberrypi.com>
- <CAHmME9pL=g7Gz9-QOHnTosLHAL9YSPsW+CnE=9=u3iTQaFzomg@mail.gmail.com>
- <0f6458d7-037a-fa4d-8387-7de833288fb9@raspberrypi.com> <CAHmME9rJif3ydZuFJcSjPxkGMofZkbu2PXcHBF23OWVgGQ4c+A@mail.gmail.com>
- <Yp8jQG30OWOG9C4j@arm.com>
-In-Reply-To: <Yp8jQG30OWOG9C4j@arm.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 8 Jun 2022 10:20:21 +0200
-X-Gmail-Original-Message-ID: <CAHmME9p+FxQhTQYKWKkxkGiYxErP6NHuvSiFEat7ts1XgsM6YA@mail.gmail.com>
-Message-ID: <CAHmME9p+FxQhTQYKWKkxkGiYxErP6NHuvSiFEat7ts1XgsM6YA@mail.gmail.com>
-Subject: Re: [PATCH v2] ARM: initialize jump labels before setup_machine_fdt()
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Phil Elwell <phil@raspberrypi.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v5 6/9] mm/demotion: Add support for removing node from
+ demotion memory tiers
+Content-Language: en-US
+To:     Ying Huang <ying.huang@intel.com>, linux-mm@kvack.org,
+        akpm@linux-foundation.org
+Cc:     Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
+ <20220603134237.131362-7-aneesh.kumar@linux.ibm.com>
+ <a0a70b517bf1da920dca6082afa3fbc6aba77a67.camel@intel.com>
+From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+In-Reply-To: <a0a70b517bf1da920dca6082afa3fbc6aba77a67.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: TFWKE6aCFd2VbH2mCXRQZzW2WF7AeNNg
+X-Proofpoint-ORIG-GUID: oLucu96w3ZMNzVrmKu4x3xyZ8_PoQHMc
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-08_02,2022-06-07_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
+ malwarescore=0 phishscore=0 impostorscore=0 lowpriorityscore=0 bulkscore=0
+ mlxlogscore=999 priorityscore=1501 clxscore=1015 mlxscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
+ definitions=main-2206080035
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Catalin,
+On 6/8/22 12:29 PM, Ying Huang wrote:
+> On Fri, 2022-06-03 at 19:12 +0530, Aneesh Kumar K.V wrote:
+>> This patch adds the special string "none" as a supported memtier value
+>> that we can use to remove a specific node from being using as demotion target.
+>>
+>> For ex:
+>> :/sys/devices/system/node/node1# cat memtier
+>> 1
+>> :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
+>> 1-3
+>> :/sys/devices/system/node/node1# echo none > memtier
+>> :/sys/devices/system/node/node1#
+>> :/sys/devices/system/node/node1# cat memtier
+>> :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
+>> 2-3
+>> :/sys/devices/system/node/node1#
+> 
+> Do you have a practical use case for this?  What kind of memory node
+> needs to be removed from memory tiers demotion/promotion?
+> 
 
-On Tue, Jun 7, 2022 at 12:07 PM Catalin Marinas <catalin.marinas@arm.com> wrote:
-> Do you plan to fix the crng_ready() static branch differently? If you
-> do, I'd like to revert the corresponding arm64 commit as well. It seems
-> to be harmless but I'd rather not keep it if no longer needed. So please
-> keep me updated whatever you decide.
+This came up in our internal discussion. It was mentioned that there is 
+a need to skip some slow memory nodes from participating in demotion.
 
-Feel free to revert. I'm aborting this line of inquiry and will just
-fix it downstream in random.c.
-
-Jason
+-aneesh
