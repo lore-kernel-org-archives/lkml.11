@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9117CCA47A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9DEFCCA47B
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 20:53:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235194AbiFHUxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 16:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42612 "EHLO
+        id S235014AbiFHUxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 16:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231691AbiFHUxA (ORCPT
+        with ESMTP id S233829AbiFHUw6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 16:53:00 -0400
+        Wed, 8 Jun 2022 16:52:58 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45661CAD00
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 13:52:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652261CB704
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 13:52:57 -0700 (PDT)
 Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 31E376601809;
-        Wed,  8 Jun 2022 21:52:56 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 8814466017FF;
+        Wed,  8 Jun 2022 21:52:53 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654721576;
-        bh=r6lF+wb4oVIUvBtEdpQAsS/+HQWGO3JeX6KjqiaMQi0=;
+        s=mail; t=1654721574;
+        bh=5onxy7g3IyKjCCmK9QZL22aFYjquEYO/6uZuRnKxvGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F0HAuM23UJf5E7QHrXaIFFVXkx6DchpY6GZh5Av4142EiJOa4Abh+fqgLTjtcz5G9
-         3cA1QvXRosGUsg6WuYQuZ9c8ZvE+G4slTkLGhMiSqFL48+eLcVXBPGgSg9Oiv5Mak+
-         WJSuyOvbfYAmsKRN4NBTjX4DrsTdKFqWrw8QTVNwkjN355F9z2AmDhNe6HPQ3JnRN1
-         xEYMkHfDJAAu+HJDYm8rPQjhFJ/AUGwxDTj05WwPR20V5ZTD9pe6ahRyx3/+gmALe2
-         RnN2nNMNDpTgYFuzsrE1itZB4YFTVLNwo+tiqnh7ikMrozPpUDMidpgu6XVdf9cIE+
-         FEepQ6N0I/DRA==
+        b=eeYEbPAJL5WYphbcycRgnIay7VKMzhjiqy8SIZoJRz5rEk3wBC8I+KUR/NxWKEBPm
+         VyyrZVVpNLgxiSDRcYVAPkBGf3TH3/7vxu6dI3BuHN6PJX3dAaZE6hpBpa3vqrV7Jv
+         V9EGDxxWrCLXWf7W7zDAUZKWx0nYDqq6KnJiN+4CbnKzn0fzSzD0mUzpH1p4+7EANt
+         /wR0y60U5rTjb5TjgXOBr7ornpPIStZDLFdQ2qcJYWI63DqnLMk46Hw7r8kgkioiNC
+         eX76dcHCkknJh10vTvE4+C2Q+ZWne53SPAFUO+pzKhjqeJLMWqLiwMMIMLkx5mfNNo
+         C1GpJ08vDLn8Q==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -44,82 +44,158 @@ Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
         Matthew Auld <matthew.auld@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 6/8] drm/i915/gem: further fix mman selftest
-Date:   Wed,  8 Jun 2022 20:51:29 +0000
-Message-Id: <20220608205132.438596-7-bob.beckett@collabora.com>
+Subject: [PATCH v2 3/8] drm/i915: setup ggtt scratch page after memory regions
+Date:   Wed,  8 Jun 2022 20:51:26 +0000
+Message-Id: <20220608205132.438596-4-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220608205132.438596-1-bob.beckett@collabora.com>
 References: <20220608205132.438596-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In commit 450cede7f380 ("drm/i915/gem: Fix the mman selftest") we fixed up
-the mman selftest to allocate user buffers via smem only if we have lmem,
-otherwise it uses internal buffers.
-
-As the commit message asserts, we should only be using buffers that
-userland should be able to create.
-Internal buffers are not intended to be used by userland.
-
-Instead, fix the code to always create buffers from smem.
-In the case of integrated, this will create them from the shmem non-ttm
-backend, which is fine.
-
-This also fixes up the code to allow conversion of internal backend to
-ttm without breaking this test.
+Reorder scratch page allocation so that memory regions are available
+to allocate the buffers
 
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
 ---
- .../gpu/drm/i915/gem/selftests/i915_gem_mman.c  | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ drivers/gpu/drm/i915/gt/intel_gt_gmch.c | 20 ++++++++++++++++++--
+ drivers/gpu/drm/i915/gt/intel_gt_gmch.h |  6 ++++++
+ drivers/gpu/drm/i915/i915_driver.c      | 16 ++++++++++------
+ 3 files changed, 34 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
-index 5bc93a1ce3e3..ee2ad1281f97 100644
---- a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
-+++ b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
-@@ -594,17 +594,12 @@ static enum i915_mmap_type default_mapping(struct drm_i915_private *i915)
- }
+diff --git a/drivers/gpu/drm/i915/gt/intel_gt_gmch.c b/drivers/gpu/drm/i915/gt/intel_gt_gmch.c
+index 18e488672d1b..5411df1734ac 100644
+--- a/drivers/gpu/drm/i915/gt/intel_gt_gmch.c
++++ b/drivers/gpu/drm/i915/gt/intel_gt_gmch.c
+@@ -440,8 +440,6 @@ static int ggtt_probe_common(struct i915_ggtt *ggtt, u64 size)
+ 	struct drm_i915_private *i915 = ggtt->vm.i915;
+ 	struct pci_dev *pdev = to_pci_dev(i915->drm.dev);
+ 	phys_addr_t phys_addr;
+-	u32 pte_flags;
+-	int ret;
  
- static struct drm_i915_gem_object *
--create_sys_or_internal(struct drm_i915_private *i915,
--		       unsigned long size)
-+create_sys(struct drm_i915_private *i915, unsigned long size)
- {
--	if (HAS_LMEM(i915)) {
--		struct intel_memory_region *sys_region =
--			i915->mm.regions[INTEL_REGION_SMEM];
-+	struct intel_memory_region *sys_region =
-+		i915->mm.regions[INTEL_REGION_SMEM];
- 
--		return __i915_gem_object_create_user(i915, size, &sys_region, 1);
--	}
--
--	return i915_gem_object_create_internal(i915, size);
-+	return __i915_gem_object_create_user(i915, size, &sys_region, 1);
- }
- 
- static bool assert_mmap_offset(struct drm_i915_private *i915,
-@@ -615,7 +610,7 @@ static bool assert_mmap_offset(struct drm_i915_private *i915,
- 	u64 offset;
- 	int ret;
- 
--	obj = create_sys_or_internal(i915, size);
-+	obj = create_sys(i915, size);
- 	if (IS_ERR(obj))
- 		return expected && expected == PTR_ERR(obj);
- 
-@@ -717,7 +712,7 @@ static int igt_mmap_offset_exhaustion(void *arg)
+ 	GEM_WARN_ON(pci_resource_len(pdev, 0) != gen6_gttmmadr_size(i915));
+ 	phys_addr = pci_resource_start(pdev, 0) + gen6_gttadr_offset(i915);
+@@ -463,6 +461,24 @@ static int ggtt_probe_common(struct i915_ggtt *ggtt, u64 size)
  	}
  
- 	/* Fill the hole, further allocation attempts should then fail */
--	obj = create_sys_or_internal(i915, PAGE_SIZE);
-+	obj = create_sys(i915, PAGE_SIZE);
- 	if (IS_ERR(obj)) {
- 		err = PTR_ERR(obj);
- 		pr_err("Unable to create object for reclaimed hole\n");
+ 	kref_init(&ggtt->vm.resv_ref);
++
++	return 0;
++}
++
++/**
++ * i915_ggtt_setup_scratch_page - setup ggtt scratch page
++ * @i915: i915 device
++ */
++int i915_ggtt_setup_scratch_page(struct drm_i915_private *i915)
++{
++	struct i915_ggtt *ggtt = to_gt(i915)->ggtt;
++	u32 pte_flags;
++	int ret;
++
++	/* gen5- scratch setup currently happens in @intel_gtt_init */
++	if (GRAPHICS_VER(i915) <= 5)
++		return 0;
++
+ 	ret = setup_scratch_page(&ggtt->vm);
+ 	if (ret) {
+ 		drm_err(&i915->drm, "Scratch setup failed\n");
+diff --git a/drivers/gpu/drm/i915/gt/intel_gt_gmch.h b/drivers/gpu/drm/i915/gt/intel_gt_gmch.h
+index 75ed55c1f30a..c6b79cb78637 100644
+--- a/drivers/gpu/drm/i915/gt/intel_gt_gmch.h
++++ b/drivers/gpu/drm/i915/gt/intel_gt_gmch.h
+@@ -15,6 +15,7 @@ int intel_gt_gmch_gen6_probe(struct i915_ggtt *ggtt);
+ int intel_gt_gmch_gen8_probe(struct i915_ggtt *ggtt);
+ int intel_gt_gmch_gen5_probe(struct i915_ggtt *ggtt);
+ int intel_gt_gmch_gen5_enable_hw(struct drm_i915_private *i915);
++int i915_ggtt_setup_scratch_page(struct drm_i915_private *i915);
+ 
+ /* Stubs for non-x86 platforms */
+ #else
+@@ -41,6 +42,11 @@ static inline int intel_gt_gmch_gen5_enable_hw(struct drm_i915_private *i915)
+ 	/* No HW should be enabled for this case yet, return fail */
+ 	return -ENODEV;
+ }
++
++static inline int i915_ggtt_setup_scratch_page(struct drm_i915_private *i915)
++{
++	return 0;
++}
+ #endif
+ 
+ #endif /* __INTEL_GT_GMCH_H__ */
+diff --git a/drivers/gpu/drm/i915/i915_driver.c b/drivers/gpu/drm/i915/i915_driver.c
+index d26dcca7e654..4e8a92ffbfe9 100644
+--- a/drivers/gpu/drm/i915/i915_driver.c
++++ b/drivers/gpu/drm/i915/i915_driver.c
+@@ -69,6 +69,7 @@
+ #include "gem/i915_gem_mman.h"
+ #include "gem/i915_gem_pm.h"
+ #include "gt/intel_gt.h"
++#include "gt/intel_gt_gmch.h"
+ #include "gt/intel_gt_pm.h"
+ #include "gt/intel_rc6.h"
+ 
+@@ -605,12 +606,16 @@ static int i915_driver_hw_probe(struct drm_i915_private *dev_priv)
+ 
+ 	ret = intel_gt_tiles_init(dev_priv);
+ 	if (ret)
+-		goto err_mem_regions;
++		goto err_ggtt;
++
++	ret = i915_ggtt_setup_scratch_page(dev_priv);
++	if (ret)
++		goto err_ggtt;
+ 
+ 	ret = i915_ggtt_enable_hw(dev_priv);
+ 	if (ret) {
+ 		drm_err(&dev_priv->drm, "failed to enable GGTT\n");
+-		goto err_mem_regions;
++		goto err_ggtt;
+ 	}
+ 
+ 	pci_set_master(pdev);
+@@ -662,11 +667,10 @@ static int i915_driver_hw_probe(struct drm_i915_private *dev_priv)
+ err_msi:
+ 	if (pdev->msi_enabled)
+ 		pci_disable_msi(pdev);
+-err_mem_regions:
+-	intel_memory_regions_driver_release(dev_priv);
+ err_ggtt:
+ 	i915_ggtt_driver_release(dev_priv);
+ 	i915_gem_drain_freed_objects(dev_priv);
++	intel_memory_regions_driver_release(dev_priv);
+ 	i915_ggtt_driver_late_release(dev_priv);
+ err_perf:
+ 	i915_perf_fini(dev_priv);
+@@ -912,9 +916,9 @@ int i915_driver_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	intel_modeset_driver_remove_nogem(i915);
+ out_cleanup_hw:
+ 	i915_driver_hw_remove(i915);
+-	intel_memory_regions_driver_release(i915);
+ 	i915_ggtt_driver_release(i915);
+ 	i915_gem_drain_freed_objects(i915);
++	intel_memory_regions_driver_release(i915);
+ 	i915_ggtt_driver_late_release(i915);
+ out_cleanup_mmio:
+ 	i915_driver_mmio_release(i915);
+@@ -971,9 +975,9 @@ static void i915_driver_release(struct drm_device *dev)
+ 
+ 	i915_gem_driver_release(dev_priv);
+ 
+-	intel_memory_regions_driver_release(dev_priv);
+ 	i915_ggtt_driver_release(dev_priv);
+ 	i915_gem_drain_freed_objects(dev_priv);
++	intel_memory_regions_driver_release(dev_priv);
+ 	i915_ggtt_driver_late_release(dev_priv);
+ 
+ 	i915_driver_mmio_release(dev_priv);
 -- 
 2.25.1
 
