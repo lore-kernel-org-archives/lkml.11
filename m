@@ -2,189 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15507C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:51:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF86EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 04:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231441AbiFHEvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 00:51:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46408 "EHLO
+        id S229840AbiFHEwI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 00:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231297AbiFHEus (ORCPT
+        with ESMTP id S231948AbiFHEvU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 00:50:48 -0400
-Received: from qq.com (smtpbg409.qq.com [113.96.223.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A5F262D5D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:14:48 -0700 (PDT)
-X-QQ-mid: bizesmtp90t1654650751tuq5zi7i
-Received: from localhost.localdomain ( [113.57.152.160])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 08 Jun 2022 09:12:29 +0800 (CST)
-X-QQ-SSF: 01400000000000B0I000000A0000000
-X-QQ-FEAT: wW02ejDrK19zwg0XYkba9Vxx6w1YXvuCf2ZhsE1PeWB2HnvEPkqCFJkXhAR51
-        wK0ngGJDMWsJtjTJX0CCSqv4IDonX3hvuCkIqfzwLXA6yyI3aDstmD3IJz63CHRcloNRhMd
-        S4FN9rpPJWrHf4tGvxDAHFb+cGgtJLMNN2y0oeTEZ22dVmRvYge7wmsCBdDbKbojddyl9mK
-        SBTM24zrggXZY91QVcQrDidyovOtPaEBCQ/YtcAL4q3635ykhu6zCNcMwvrYz8jtQD2ppKY
-        T98buXXhaH4Ap++ha8/I1gBNHMGKl5x+W44hRxmCE95Zbgh9cTtpf9CViVMs5Oi1e4NaErm
-        snOB5kIfT13m9j+1As=
-X-QQ-GoodBg: 1
-From:   huangwenhui <huangwenhuia@uniontech.com>
-To:     tiwai@suse.com, perex@perex.cz
-Cc:     jeremy.szu@canonical.com, hui.wang@canonical.com,
-        wse@tuxedocomputers.com, cam@neo-zeon.de, kailang@realtek.com,
-        tanureal@opensource.cirrus.com, sami@loone.fi,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        huangwenhui <huangwenhuia@uniontech.com>
-Subject: [PATCH] ALSA: hda/realtek - Add HW8326 support
-Date:   Wed,  8 Jun 2022 09:12:27 +0800
-Message-Id: <20220608011227.15994-1-huangwenhuia@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Wed, 8 Jun 2022 00:51:20 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED1A2717AB;
+        Tue,  7 Jun 2022 18:17:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654651042; x=1686187042;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=k1TdWJdCOte5lEmhirdFhp1kWl2phGEs6DbE8zLu2oQ=;
+  b=wjLJxzHbopOqCRppzLNHsj9CT3DesharkOuAaaPH4GtHlFHrLP4aGx9Y
+   v3O+OBTo6qUWPDgX/dhlscjfsfYH80S755qp6yYUWlaWJXn6ZNSzc0FHQ
+   RHX/WTnNGXMpuaYWEa3aF8fcnds3xn09t+LlDUs2Qvmb8y1DDQBp/EUu+
+   k=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 07 Jun 2022 18:17:20 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 18:17:20 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 7 Jun 2022 18:17:19 -0700
+Received: from hu-clew-lv.qualcomm.com (10.49.16.6) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 7 Jun 2022 18:17:19 -0700
+From:   Chris Lew <quic_clew@quicinc.com>
+To:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>
+CC:     <linux-remoteproc@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_clew@quicinc.com>
+Subject: [PATCH 1/4] rpmsg: core: Add rx done hooks
+Date:   Tue, 7 Jun 2022 18:16:42 -0700
+Message-ID: <1654651005-15475-2-git-send-email-quic_clew@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1654651005-15475-1-git-send-email-quic_clew@quicinc.com>
+References: <1654651005-15475-1-git-send-email-quic_clew@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign9
-X-QQ-Bgrelay: 1
+Content-Type: text/plain
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added the support of new Huawei codec HW8326.
+In order to reduce the amount of copies in the rpmsg framework, it is
+necessary for clients to take brief ownership of the receive buffer.
 
-Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
+Add the capability for clients to notify the rpmsg framework and the
+underlying transports when it is going to hold onto a buffer and also
+notify when the client is done with the buffer.
+
+In the .rx_cb of the rpmsg drivers, if they wish to use the received
+buffer at a later point, they should return RPMSG_DEFER. Otherwise
+returning RPMSG_HANDLED (0) will signal the framework that the client
+is done with the resources and can continue with cleanup.
+
+The clients should check if their rpmsg endpoint supports the rx_done
+operation with the new state variable in the rpmsg_endpoint since not
+all endpoints will have the ability to support this operation.
+
+Signed-off-by: Chris Lew <quic_clew@quicinc.com>
 ---
- sound/hda/hdac_device.c       |  1 +
- sound/pci/hda/patch_realtek.c | 14 ++++++++++++++
- 2 files changed, 15 insertions(+)
+ drivers/rpmsg/rpmsg_core.c     | 20 ++++++++++++++++++++
+ drivers/rpmsg/rpmsg_internal.h |  1 +
+ include/linux/rpmsg.h          | 24 ++++++++++++++++++++++++
+ 3 files changed, 45 insertions(+)
 
-diff --git a/sound/hda/hdac_device.c b/sound/hda/hdac_device.c
-index 3e9e9ac804f6..775474f00141 100644
---- a/sound/hda/hdac_device.c
-+++ b/sound/hda/hdac_device.c
-@@ -651,6 +651,7 @@ static const struct hda_vendor_id hda_vendor_ids[] = {
- 	{ 0x1095, "Silicon Image" },
- 	{ 0x10de, "Nvidia" },
- 	{ 0x10ec, "Realtek" },
-+	{ 0x19e5, "Huawei" },
- 	{ 0x1102, "Creative" },
- 	{ 0x1106, "VIA" },
- 	{ 0x111d, "IDT" },
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index f3ad454b3fbf..cd1281691767 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -443,6 +443,7 @@ static void alc_fill_eapd_coef(struct hda_codec *codec)
- 	case 0x10ec0245:
- 	case 0x10ec0255:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 	case 0x10ec0257:
- 	case 0x10ec0282:
- 	case 0x10ec0283:
-@@ -580,6 +581,7 @@ static void alc_shutup_pins(struct hda_codec *codec)
- 	switch (codec->core.vendor_id) {
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 	case 0x10ec0283:
- 	case 0x10ec0286:
- 	case 0x10ec0288:
-@@ -3247,6 +3249,7 @@ static void alc_disable_headset_jack_key(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x48, 0x0);
- 		alc_update_coef_idx(codec, 0x49, 0x0045, 0x0);
- 		break;
-@@ -3275,6 +3278,7 @@ static void alc_enable_headset_jack_key(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x48, 0xd011);
- 		alc_update_coef_idx(codec, 0x49, 0x007f, 0x0045);
- 		break;
-@@ -4910,6 +4914,7 @@ static void alc_headset_mode_unplugged(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5025,6 +5030,7 @@ static void alc_headset_mode_mic_in(struct hda_codec *codec, hda_nid_t hp_pin,
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x45, 0xc489);
- 		snd_hda_set_pin_ctl_cache(codec, hp_pin, 0);
- 		alc_process_coef_fw(codec, coef0256);
-@@ -5175,6 +5181,7 @@ static void alc_headset_mode_default(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x1b, 0x0e4b);
- 		alc_write_coef_idx(codec, 0x45, 0xc089);
- 		msleep(50);
-@@ -5274,6 +5281,7 @@ static void alc_headset_mode_ctia(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5388,6 +5396,7 @@ static void alc_headset_mode_omtp(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5489,6 +5498,7 @@ static void alc_determine_headset_type(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x1b, 0x0e4b);
- 		alc_write_coef_idx(codec, 0x06, 0x6104);
- 		alc_write_coefex_idx(codec, 0x57, 0x3, 0x09a3);
-@@ -5783,6 +5793,7 @@ static void alc255_set_default_jack_type(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, alc256fw);
- 		break;
- 	}
-@@ -6385,6 +6396,7 @@ static void alc_combo_jack_hp_jd_restart(struct hda_codec *codec)
- 	case 0x10ec0236:
- 	case 0x10ec0255:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_update_coef_idx(codec, 0x1b, 0x8000, 1 << 15); /* Reset HP JD */
- 		alc_update_coef_idx(codec, 0x1b, 0x8000, 0 << 15);
- 		break;
-@@ -10095,6 +10107,7 @@ static int patch_alc269(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		spec->codec_variant = ALC269_TYPE_ALC256;
- 		spec->shutup = alc256_shutup;
- 		spec->init_hook = alc256_init;
-@@ -11545,6 +11558,7 @@ static const struct hda_device_id snd_hda_id_realtek[] = {
- 	HDA_CODEC_ENTRY(0x10ec0b00, "ALCS1200A", patch_alc882),
- 	HDA_CODEC_ENTRY(0x10ec1168, "ALC1220", patch_alc882),
- 	HDA_CODEC_ENTRY(0x10ec1220, "ALC1220", patch_alc882),
-+	HDA_CODEC_ENTRY(0x19e58326, "HW8326", patch_alc269),
- 	{} /* terminator */
+diff --git a/drivers/rpmsg/rpmsg_core.c b/drivers/rpmsg/rpmsg_core.c
+index 290c1f02da10..359be643060f 100644
+--- a/drivers/rpmsg/rpmsg_core.c
++++ b/drivers/rpmsg/rpmsg_core.c
+@@ -351,6 +351,26 @@ ssize_t rpmsg_get_mtu(struct rpmsg_endpoint *ept)
+ }
+ EXPORT_SYMBOL(rpmsg_get_mtu);
+ 
++/**
++ * rpmsg_rx_done() - release resources related to @data from a @rx_cb
++ * @ept:	the rpmsg endpoint
++ * @data:	payload from a message
++ *
++ * Returns 0 on success and an appropriate error value on failure.
++ */
++int rpmsg_rx_done(struct rpmsg_endpoint *ept, void *data)
++{
++	if (WARN_ON(!ept))
++		return -EINVAL;
++	if (!ept->ops->rx_done)
++		return -ENXIO;
++	if (!ept->rx_done)
++		return -EINVAL;
++
++	return ept->ops->rx_done(ept, data);
++}
++EXPORT_SYMBOL(rpmsg_rx_done);
++
+ /*
+  * match a rpmsg channel with a channel info struct.
+  * this is used to make sure we're not creating rpmsg devices for channels
+diff --git a/drivers/rpmsg/rpmsg_internal.h b/drivers/rpmsg/rpmsg_internal.h
+index a22cd4abe7d1..99cb86ce638e 100644
+--- a/drivers/rpmsg/rpmsg_internal.h
++++ b/drivers/rpmsg/rpmsg_internal.h
+@@ -76,6 +76,7 @@ struct rpmsg_endpoint_ops {
+ 	__poll_t (*poll)(struct rpmsg_endpoint *ept, struct file *filp,
+ 			     poll_table *wait);
+ 	ssize_t (*get_mtu)(struct rpmsg_endpoint *ept);
++	int (*rx_done)(struct rpmsg_endpoint *ept, void *data);
  };
- MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_realtek);
+ 
+ struct device *rpmsg_find_device(struct device *parent,
+diff --git a/include/linux/rpmsg.h b/include/linux/rpmsg.h
+index 523c98b96cb4..8e34222e8bca 100644
+--- a/include/linux/rpmsg.h
++++ b/include/linux/rpmsg.h
+@@ -63,6 +63,18 @@ struct rpmsg_device {
+ 	const struct rpmsg_device_ops *ops;
+ };
+ 
++/**
++ * rpmsg rx callback return definitions
++ * @RPMSG_HANDLED: rpmsg user is done processing data, framework can free the
++ *                 resources related to the buffer
++ * @RPMSG_DEFER:   rpmsg user is not done processing data, framework will hold
++ *                 onto resources related to the buffer until rpmsg_rx_done is
++ *                 called. User should check their endpoint to see if rx_done
++ *                 is a supported operation.
++ */
++#define RPMSG_HANDLED	0
++#define RPMSG_DEFER	1
++
+ typedef int (*rpmsg_rx_cb_t)(struct rpmsg_device *, void *, int, void *, u32);
+ 
+ /**
+@@ -71,6 +83,7 @@ typedef int (*rpmsg_rx_cb_t)(struct rpmsg_device *, void *, int, void *, u32);
+  * @refcount: when this drops to zero, the ept is deallocated
+  * @cb: rx callback handler
+  * @cb_lock: must be taken before accessing/changing @cb
++ * @rx_done: if set, rpmsg endpoint supports rpmsg_rx_done
+  * @addr: local rpmsg address
+  * @priv: private data for the driver's use
+  *
+@@ -93,6 +106,7 @@ struct rpmsg_endpoint {
+ 	struct kref refcount;
+ 	rpmsg_rx_cb_t cb;
+ 	struct mutex cb_lock;
++	bool rx_done;
+ 	u32 addr;
+ 	void *priv;
+ 
+@@ -192,6 +206,8 @@ __poll_t rpmsg_poll(struct rpmsg_endpoint *ept, struct file *filp,
+ 
+ ssize_t rpmsg_get_mtu(struct rpmsg_endpoint *ept);
+ 
++int rpmsg_rx_done(struct rpmsg_endpoint *ept, void *data);
++
+ #else
+ 
+ static inline int rpmsg_register_device_override(struct rpmsg_device *rpdev,
+@@ -316,6 +332,14 @@ static inline ssize_t rpmsg_get_mtu(struct rpmsg_endpoint *ept)
+ 	return -ENXIO;
+ }
+ 
++static inline int rpmsg_rx_done(struct rpmsg_endpoint *ept, void *data)
++{
++	/* This shouldn't be possible */
++	WARN_ON(1);
++
++	return -ENXIO;
++}
++
+ #endif /* IS_ENABLED(CONFIG_RPMSG) */
+ 
+ /* use a macro to avoid include chaining to get THIS_MODULE */
 -- 
-2.20.1
-
-
+2.7.4
 
