@@ -2,95 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0BB3C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:00:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A1AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232353AbiFHFAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46990 "EHLO
+        id S232443AbiFHFBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233487AbiFHE7Q (ORCPT
+        with ESMTP id S232983AbiFHFBD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 00:59:16 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C73222AE9
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:31:48 -0700 (PDT)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx708L+p9iq4InAA--.61590S2;
-        Wed, 08 Jun 2022 09:23:23 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] samples: Use KSYM_NAME_LEN for kprobes
-Date:   Wed,  8 Jun 2022 09:23:22 +0800
-Message-Id: <1654651402-21552-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9Dx708L+p9iq4InAA--.61590S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Zr45CF4ruw4xXF18ZFy3CFg_yoW8AF17pF
-        1qy34Ygr4rZr1UJ39xJw18W34Iq34DZr47Gr4rW34UtasF9r1kAr4xtF4jqw4kuF9Yqa13
-        Jr4Igr98JryxJ3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkG14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxV
-        W8Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xf
-        McIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7
-        v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAF
-        wVWkMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI
-        0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y
-        0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxV
-        WUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8
-        JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUg4SOUUU
-        UU=
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        Wed, 8 Jun 2022 01:01:03 -0400
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE2A2A142F
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:37:25 -0700 (PDT)
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220608013723epoutp03b9fec689db875bb11dd8ae402085fce0~2gXLgz_4Q2574425744epoutp03M
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 01:37:23 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220608013723epoutp03b9fec689db875bb11dd8ae402085fce0~2gXLgz_4Q2574425744epoutp03M
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1654652243;
+        bh=opXGkGbRe/ErGUghcNtoq7K7Ws9fOuLrbwVHZpDOy3A=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=mLWgLsfLoiNhjQzY61FaaTwZyuv6dC2Xx0HAPMYNpJ3tTV1P7ISIq4ZylhqzLdBXN
+         ZJ7KjdWD7W+/K2E40epmM9JuzGriMwO7XJyBjRNOB/QvsWrEcj3MO+HJhC8LB+oVZl
+         YiHjpXmNvguVNPbi6UjpAC9KyU451HIqcZ5ys1h8=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20220608013722epcas2p39188b5686cb3b868a8688159d040bad4~2gXK74ALD2152521525epcas2p3E;
+        Wed,  8 Jun 2022 01:37:22 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.98]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4LHqbQ1KMgz4x9QP; Wed,  8 Jun
+        2022 01:37:22 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        B7.DC.10028.25DFF926; Wed,  8 Jun 2022 10:37:22 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220608013721epcas2p3a1505f7ade7ad2a41a3a8d477c5b0188~2gXJyNTDI0960809608epcas2p32;
+        Wed,  8 Jun 2022 01:37:21 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220608013721epsmtrp1bac4215603a142cf7349c3a89c2028c7~2gXJxVmfh3218032180epsmtrp1A;
+        Wed,  8 Jun 2022 01:37:21 +0000 (GMT)
+X-AuditID: b6c32a47-573ff7000000272c-c0-629ffd522376
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        0D.63.11276.15DFF926; Wed,  8 Jun 2022 10:37:21 +0900 (KST)
+Received: from KORCO082417 (unknown [10.229.8.121]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220608013721epsmtip272c4a5caf8d0c7d83dc3e875652ad4bb~2gXJlqiVm0080300803epsmtip2U;
+        Wed,  8 Jun 2022 01:37:21 +0000 (GMT)
+From:   "Chanho Park" <chanho61.park@samsung.com>
+To:     "'Alim Akhtar'" <alim.akhtar@samsung.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>
+Cc:     <devicetree@vger.kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <vkoul@kernel.org>,
+        <avri.altman@wdc.com>, <bvanassche@acm.org>,
+        <martin.petersen@oracle.com>, <pankaj.dubey@samsung.com>,
+        "'Bharat Uppal'" <bharat.uppal@samsung.com>
+In-Reply-To: <20220603154714.30532-3-alim.akhtar@samsung.com>
+Subject: RE: [PATCH v2 2/7] phy: samsung-ufs: move cdr offset to drvdata
+Date:   Wed, 8 Jun 2022 10:37:21 +0900
+Message-ID: <002c01d87ad8$4c0f8600$e42e9200$@samsung.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: ko
+Thread-Index: AQFSBQ9Zoh1+pG8sApsbls4ebot9jgJwO85AAlq0dRmuK062cA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrOJsWRmVeSWpSXmKPExsWy7bCmhW7Q3/lJBlf6OCwezNvGZvHy51U2
+        i2svL7BbTPvwk9li/pFzrBZ9Lx4yW2x6fI3V4vKuOWwWE1Z9Y7Hovr6DzWL58X9MFou2fmG3
+        aN17hN1i550TzA58HpeveHtsWtXJ5nHn2h42j81L6j0+Pr3F4tG3ZRWjx+dNch7tB7qZAjii
+        sm0yUhNTUosUUvOS81My89JtlbyD453jTc0MDHUNLS3MlRTyEnNTbZVcfAJ03TJzgM5WUihL
+        zCkFCgUkFhcr6dvZFOWXlqQqZOQXl9gqpRak5BSYF+gVJ+YWl+al6+WlllgZGhgYmQIVJmRn
+        zHyykqVgMXPFr6YtzA2M15i6GDk5JARMJNaf+cDWxcjFISSwg1Gi//JiJgjnE6NEw4FXrBDO
+        N0aJ7r637DAth9e/YAGxhQT2MkqcWSgCUfSCUWLdpsVgc9kE9CVedmwD6xYBmft5xScWEIdZ
+        oJNJovvIBbAqTgFbiV+LJ7OB2MICHhLzrnQxdzFycLAIqEj0rwsGCfMKWEpsf7SSGcIWlDg5
+        8wnYZmYBeYntb+cwQ1ykIPHz6TJWiLiIxOzONrC4iICTxIX3U6BqnnBInLhuCmG7SDxue8MG
+        YQtLvDq+BeozKYmX/W1QdrHE0lmfwGEhIdDAKHF52y+oBmOJWc/aGUHuZBbQlFi/Sx/ElBBQ
+        ljhyC+o0PomOw3/ZIcK8Eh1tQhCN6hIHtk9ngbBlJbrnfGadwKg0C8ljs5A8NgvJM7MQdi1g
+        ZFnFKJZaUJybnlpsVGAMj+zk/NxNjOAUreW+g3HG2w96hxiZOBgPMUpwMCuJ8EqGz08S4k1J
+        rKxKLcqPLyrNSS0+xGgKDOmJzFKiyfnALJFXEm9oYmlgYmZmaG5kamCuJM7rlbIhUUggPbEk
+        NTs1tSC1CKaPiYNTqoGp31v2af3Tkqluej1TAx4cytTRlDp0cUtH5ffHwjkp8Wt+RIdrrTJK
+        Otbj8Wbj9xnJ8pFXG7VWTV2jtdRzdtsN+bgjJUYXFSV+SOTGfTzjvlRyqvG1NI8P6l+v/fxw
+        hSdNd9KMS8t/+uw9G1y385++Q+KZw1l6dren87if3Hkzd1N2z68GNhUFE9ktZ8VjhO5O0s/8
+        t4G1R+L+vIgrS2Itcr06r1/jswydbOgYHLBVJ+am5SILJyteq5JbSslHOVQ3yD19qha5110m
+        69JbX4M12sszvz/WZTlz2ir9hLawRL0gk9OTDWlZy27GqZVotP0LVzqrLvR9rkFESZ/S/c8H
+        5Ptrfl9/emInw/Ee4XYlluKMREMt5qLiRAAvr9uPWgQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrKIsWRmVeSWpSXmKPExsWy7bCSvG7g3/lJBsvfKlk8mLeNzeLlz6ts
+        FtdeXmC3mPbhJ7PF/CPnWC36Xjxkttj0+BqrxeVdc9gsJqz6xmLRfX0Hm8Xy4/+YLBZt/cJu
+        0br3CLvFzjsnmB34PC5f8fbYtKqTzePOtT1sHpuX1Ht8fHqLxaNvyypGj8+b5DzaD3QzBXBE
+        cdmkpOZklqUW6dslcGXMfLKSpWAxc8Wvpi3MDYzXmLoYOTkkBEwkDq9/wdLFyMUhJLCbUWLv
+        xmcsEAlZiWfvdrBD2MIS91uOsEIUPWOUWNP/nBEkwSagL/GyYxtYQkRgD6NE27xT7CAOs8Bk
+        JolJDV+h5u5nlFi2ahNYC6eArcSvxZPZQGxhAQ+JeVe6mLsYOThYBFQk+tcFg4R5BSwltj9a
+        yQxhC0qcnPkE7CRmAW2J3oetjBC2vMT2t3OYIc5TkPj5dBkrRFxEYnZnG1hcRMBJ4sL7KcwT
+        GIVnIRk1C8moWUhGzULSvoCRZRWjZGpBcW56brFhgWFearlecWJucWleul5yfu4mRnDMamnu
+        YNy+6oPeIUYmDsZDjBIczEoivJLh85OEeFMSK6tSi/Lji0pzUosPMUpzsCiJ817oOhkvJJCe
+        WJKanZpakFoEk2Xi4JRqYGrd+3zWrfysxQmNO8qFr7tdTpvuacL+K+2dovtLNb/r/0KehAuU
+        XRPvX7CNRy+89+W0oz6BNyNXn1/+O/xf5vkjDsWG+qcaBVdxvX5zafo5m4qzeQmXr3iJ7NdV
+        +pK0kdG9ce3xjOYLhiFckc+4bHs+cob2Tjy27J6IH19du3noO4a9P9x7leY0aM9ap/reqzZg
+        arTR9u5fRvPttwu9mPiJ8W3Z9/kKO9WqQm6vcNEtzlVQWZxwucFO8PUal4fpWiFne3Y+P7R2
+        0eWibVah3FWrdkx53G1Ws+BMc92JLVoyLHGrV0ufub6nOGXDzRU/aj/9fFa4wkp3qiFPs3HM
+        dJ+NBnaTZbp4+XbpvjtwYqUSS3FGoqEWc1FxIgBuNA77SAMAAA==
+X-CMS-MailID: 20220608013721epcas2p3a1505f7ade7ad2a41a3a8d477c5b0188
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220603154853epcas5p1f072d462edae5584d1cce601189ab85b
+References: <20220603154714.30532-1-alim.akhtar@samsung.com>
+        <CGME20220603154853epcas5p1f072d462edae5584d1cce601189ab85b@epcas5p1.samsung.com>
+        <20220603154714.30532-3-alim.akhtar@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is better and enough to use KSYM_NAME_LEN for kprobes
-in samples, no need to define and use the other values.
+> Subject: [PATCH v2 2/7] phy: samsung-ufs: move cdr offset to drvdata
+> 
+> Move CDR lock offset to drv data so that it can be extended for other SoCs
+> which are having CDR lock at different register offset.
+> 
+> Signed-off-by: Bharat Uppal <bharat.uppal@samsung.com>
+> Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
 
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
- samples/kprobes/kprobe_example.c    | 5 ++---
- samples/kprobes/kretprobe_example.c | 5 ++---
- 2 files changed, 4 insertions(+), 6 deletions(-)
+Reviewed-by: Chanho Park <chanho61.park@samsung.com>
 
-diff --git a/samples/kprobes/kprobe_example.c b/samples/kprobes/kprobe_example.c
-index f991a66..fd346f5 100644
---- a/samples/kprobes/kprobe_example.c
-+++ b/samples/kprobes/kprobe_example.c
-@@ -16,9 +16,8 @@
- #include <linux/module.h>
- #include <linux/kprobes.h>
- 
--#define MAX_SYMBOL_LEN	64
--static char symbol[MAX_SYMBOL_LEN] = "kernel_clone";
--module_param_string(symbol, symbol, sizeof(symbol), 0644);
-+static char symbol[KSYM_NAME_LEN] = "kernel_clone";
-+module_param_string(symbol, symbol, KSYM_NAME_LEN, 0644);
- 
- /* For each probe you need to allocate a kprobe structure */
- static struct kprobe kp = {
-diff --git a/samples/kprobes/kretprobe_example.c b/samples/kprobes/kretprobe_example.c
-index 228321e..cbf1654 100644
---- a/samples/kprobes/kretprobe_example.c
-+++ b/samples/kprobes/kretprobe_example.c
-@@ -23,11 +23,10 @@
- #include <linux/module.h>
- #include <linux/kprobes.h>
- #include <linux/ktime.h>
--#include <linux/limits.h>
- #include <linux/sched.h>
- 
--static char func_name[NAME_MAX] = "kernel_clone";
--module_param_string(func, func_name, NAME_MAX, S_IRUGO);
-+static char func_name[KSYM_NAME_LEN] = "kernel_clone";
-+module_param_string(func, func_name, KSYM_NAME_LEN, 0644);
- MODULE_PARM_DESC(func, "Function to kretprobe; this module will report the"
- 			" function's execution time");
- 
--- 
-2.1.0
+Best Regards,
+Chanho Park
 
