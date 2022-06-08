@@ -2,174 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 926E6C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:18:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B3A0CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244146AbiFHHNU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:13:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35588 "EHLO
+        id S245130AbiFHHNw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:13:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343598AbiFHGLW (ORCPT
+        with ESMTP id S1347096AbiFHGNC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 02:11:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21DD2188E42;
-        Tue,  7 Jun 2022 22:27:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6859BB823CE;
-        Wed,  8 Jun 2022 05:27:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF184C34116;
-        Wed,  8 Jun 2022 05:27:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654666055;
-        bh=MlRI3FslLxCpadUQCkxKP9EyE+xCG5VhPqp7eO/RKxw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bTmq5cb3aiOFARjJfOSrWvmBbg4IqDeMYLAQcEwT3SvNyrlnsEdo+bJds7+Exmdp1
-         79OrZgnbP09WSyuTFdvTyLah6ugaMZ0kez+KabcbeZ8t+RmwASwCkX7odNddl6yr6R
-         MpgZoZU5zCgBI4H6UxtnJnfjlqCDb50dNLRMK7iirwicyyRs17a4fFjr1M+htOawKO
-         MHyg7HHPVKiM4wuNrSNYHTep0JDdxmzQJitkoMH17qYMBcYHwsm4aubrdp6Yy11mck
-         fYzRn/OXDH5gklZfaHxdLnwzgwLdwqoLF7wfqldmpcxcfnkI+cdpcFrefdlWXanfjB
-         hgTz8Dxc3vbcw==
-Date:   Wed, 8 Jun 2022 08:25:38 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Guo Ren <guoren@kernel.org>
-Cc:     Jarkko Sakkinen <jarkko@profian.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Marco Elver <elver@google.com>,
-        Dan Li <ashimida@linux.alibaba.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Song Liu <song@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Mark Brown <broonie@kernel.org>,
-        Luis Machado <luis.machado@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Atsushi Nemoto <anemo@mba.ocn.ne.jp>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dave Anglin <dave.anglin@bell.net>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Daniel Axtens <dja@axtens.net>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jordan Niethe <jniethe5@gmail.com>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Changbin Du <changbin.du@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Liao Chang <liaochang1@huawei.com>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>,
-        Wu Caize <zepan@sipeed.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Tobias Huschle <huschle@linux.ibm.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Michael Roth <michael.roth@amd.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        =?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@igalia.com>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-modules@vger.kernel.org
-Subject: Re: [PATCH] kprobes: Enable tracing for mololithic kernel images
-Message-ID: <YqAy0qjI4Lktk/uJ@iki.fi>
-References: <20220608000014.3054333-1-jarkko@profian.com>
- <CAJF2gTQgCn2CyZ4+VBqEEBT2b4+1KxoEXxrd+Ritk=58+U8EFA@mail.gmail.com>
+        Wed, 8 Jun 2022 02:13:02 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0E7396A9;
+        Tue,  7 Jun 2022 22:39:53 -0700 (PDT)
+X-UUID: 7e99c7cfab0b48bf84ff8ae1af4944b6-20220608
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:f6b07ecb-f680-4e5d-9c64-862bbb181458,OB:10,L
+        OB:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:90
+X-CID-INFO: VERSION:1.1.5,REQID:f6b07ecb-f680-4e5d-9c64-862bbb181458,OB:10,LOB
+        :0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:90
+X-CID-META: VersionHash:2a19b09,CLOUDID:a4790ce5-2ba2-4dc1-b6c5-11feb6c769e0,C
+        OID:932e8ed994a5,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:0,BEC:nil
+X-UUID: 7e99c7cfab0b48bf84ff8ae1af4944b6-20220608
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <guodong.liu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1627927091; Wed, 08 Jun 2022 13:39:22 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 8 Jun 2022 13:39:21 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 8 Jun 2022 13:39:20 +0800
+From:   Guodong Liu <guodong.liu@mediatek.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@kernel.org>
+CC:     Sean Wang <sean.wang@mediatek.com>,
+        Zhiyong Tao <zhiyong.tao@mediatek.com>,
+        =?UTF-8?q?N=EDcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
+        <nfraprado@collabora.com>, <linux-gpio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Guodong Liu <guodong.liu@mediatek.com>
+Subject: [PATCH v1 1/4] pinctrl: add generic driving setup property on mt8192
+Date:   Wed, 8 Jun 2022 13:39:06 +0800
+Message-ID: <20220608053909.1252-2-guodong.liu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220608053909.1252-1-guodong.liu@mediatek.com>
+References: <20220608053909.1252-1-guodong.liu@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJF2gTQgCn2CyZ4+VBqEEBT2b4+1KxoEXxrd+Ritk=58+U8EFA@mail.gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 10:35:42AM +0800, Guo Ren wrote:
-> .
-> 
-> On Wed, Jun 8, 2022 at 8:02 AM Jarkko Sakkinen <jarkko@profian.com> wrote:
-> >
-> > Tracing with kprobes while running a monolithic kernel is currently
-> > impossible because CONFIG_KPROBES is dependent of CONFIG_MODULES.  This
-> > dependency is a result of kprobes code using the module allocator for the
-> > trampoline code.
-> >
-> > Detaching kprobes from modules helps to squeeze down the user space,
-> > e.g. when developing new core kernel features, while still having all
-> > the nice tracing capabilities.
-> >
-> > For kernel/ and arch/*, move module_alloc() and module_memfree() to
-> > module_alloc.c, and compile as part of vmlinux when either CONFIG_MODULES
-> > or CONFIG_KPROBES is enabled.  In addition, flag kernel module specific
-> > code with CONFIG_MODULES.
-> >
-> > As the result, kprobes can be used with a monolithic kernel.
-> It's strange when MODULES is n, but vmlinux still obtains module_alloc.
-> 
-> Maybe we need a kprobe_alloc, right?
+This patch provides generic driving setup, which support
+2/4/6/8/10/12/14/16mA driving, original driver just set
+raw data setup setting when use drive-strength property
 
-Perhaps not the best name but at least it documents the fact that
-they use the same allocator.
+Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
+---
+ drivers/pinctrl/mediatek/pinctrl-mt8192.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Few years ago I carved up something "half-way there" for kprobes,
-and I used the name text_alloc() [*].
+diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8192.c b/drivers/pinctrl/mediatek/pinctrl-mt8192.c
+index acccde9262ba..9faf7001369d 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-mt8192.c
++++ b/drivers/pinctrl/mediatek/pinctrl-mt8192.c
+@@ -1372,8 +1372,8 @@ static const struct mtk_pin_soc mt8192_data = {
+ 	.gpio_m = 0,
+ 	.bias_set_combo = mtk_pinconf_bias_set_combo,
+ 	.bias_get_combo = mtk_pinconf_bias_get_combo,
+-	.drive_set = mtk_pinconf_drive_set_raw,
+-	.drive_get = mtk_pinconf_drive_get_raw,
++	.drive_set	= mtk_pinconf_drive_set_rev1,
++	.drive_get	= mtk_pinconf_drive_get_rev1,
+ 	.adv_pull_get = mtk_pinconf_adv_pull_get,
+ 	.adv_pull_set = mtk_pinconf_adv_pull_set,
+ 	.adv_drive_get = mtk_pinconf_adv_drive_get,
+-- 
+2.25.5
 
-[*] https://lore.kernel.org/all/20200724050553.1724168-1-jarkko.sakkinen@linux.intel.com/ 
-
-BR, Jarkko
