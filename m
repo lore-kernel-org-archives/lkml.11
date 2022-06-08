@@ -2,113 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84BEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:10:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A2ECCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 10:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236190AbiFHKJ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:09:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35570 "EHLO
+        id S236207AbiFHKKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236189AbiFHKIM (ORCPT
+        with ESMTP id S236993AbiFHKJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:08:12 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DA51B0780;
-        Wed,  8 Jun 2022 02:51:36 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id j7so18116515pjn.4;
-        Wed, 08 Jun 2022 02:51:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=fauG2+ouC/pE9fJBFguldPR02kf/OkXrX9OF5a1epKw=;
-        b=HMDNWEhCcLSUhdf09KbZLJllzy0AHoA5hc7cY+4DfDKpW3uhdJJGQTM+yjNkBMqLC0
-         rel0nka4lEpbb+UZaUt2hdT2PndkqBx9zUxAjumk+h47hcHBM/kwuB01UJ2vi57TYn1S
-         bQYn+pk+nuP3R1TtODW7OP1xUqdV8AsjP9m2AQQU4wWsRjO8MqdDt49f8k7fRbhjrEGK
-         BR8Ad9MoyjpPqYQf/1w6npeHENegaiZkU1umUoVJlpoj/YNRrQ4d2io8IAjflbzm+L4R
-         1sJN0vFwes29VAAdtCA3+nhPFeSHeqwhgIU1IYGqBiwoBG1qB6AG5kzC/m4B/DwShDUt
-         UHyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=fauG2+ouC/pE9fJBFguldPR02kf/OkXrX9OF5a1epKw=;
-        b=JVdBqo2+E22LHn0+jbrBhtHLC4D9x/nr1ATfVZkTshNFcksdet+30xZEa7NthhUoLV
-         GGf7k6uYWt8Ehvws9lpadtEkg8JcZJ1uAhJ+cHPSPCerPicL6AClCRknbmjVsnRmpMND
-         IHZeKRHfUUfd1tqFegcU5ETPPCK2x1f6g4JataOC8HUSuBkJowNDApfsdP4QCFXdl/WY
-         Noq6+8Kfrdhm8jo+BSDUdFAruzehufdkIobuqQO4K9uNQggVWOG72vTRQCYuNI656lA+
-         uXlRPS8TSnoSyA/Cz5HQAwGGFzZkmT71Q6svoWvVJihMiVxezhLPHJXKqWq2VJJZaqug
-         lkZg==
-X-Gm-Message-State: AOAM530Z8sJk7EXq1TKqNQwu2/9sN0mIPVSd8HMvxijy9GhGFVQ7WU3l
-        WnzbyzS4Ahw3llQ1hyEfSVU=
-X-Google-Smtp-Source: ABdhPJxEWS/rHoQGxKsD3tIotODBmp2FZwHZA31x813cDASnCP9ZP49/qjqKKz0GqJChqK0YicDI1A==
-X-Received: by 2002:a17:90b:3b8a:b0:1e2:ee1e:6340 with SMTP id pc10-20020a17090b3b8a00b001e2ee1e6340mr36776831pjb.38.1654681895328;
-        Wed, 08 Jun 2022 02:51:35 -0700 (PDT)
-Received: from [192.168.43.80] (subs03-180-214-233-80.three.co.id. [180.214.233.80])
-        by smtp.gmail.com with ESMTPSA id e13-20020aa798cd000000b0050dc76281b8sm15275765pfm.146.2022.06.08.02.51.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 02:51:33 -0700 (PDT)
-Message-ID: <28ec9f61-3086-a12e-3e8d-33f855f916fc@gmail.com>
-Date:   Wed, 8 Jun 2022 16:51:26 +0700
+        Wed, 8 Jun 2022 06:09:29 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 56D48131F38
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 02:54:01 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4A12D1424;
+        Wed,  8 Jun 2022 02:54:01 -0700 (PDT)
+Received: from [192.168.178.6] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BA25A3F73B;
+        Wed,  8 Jun 2022 02:53:59 -0700 (PDT)
+Message-ID: <2860f381-24e8-2950-388a-b984c4eb51f2@arm.com>
+Date:   Wed, 8 Jun 2022 11:53:42 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: virt_to_phys outside array bounds warning (GCC 12.1.0)
+ Thunderbird/91.8.1
+From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
+Subject: Re: [PATCH v10 2/7] sched/fair: Decay task PELT values during wakeup
+ migration
+To:     Vincent Donnefort <vdonnefort@google.com>, peterz@infradead.org,
+        mingo@redhat.com, vincent.guittot@linaro.org
+Cc:     linux-kernel@vger.kernel.org, morten.rasmussen@arm.com,
+        chris.redpath@arm.com, qperret@google.com, tao.zhou@linux.dev,
+        kernel-team@android.com
+References: <20220607123254.565579-1-vdonnefort@google.com>
+ <20220607123254.565579-3-vdonnefort@google.com>
 Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Cc:     =?UTF-8?Q?Beno=c3=aet_Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <YqBgWoXQmzVczRDo@debian.me>
- <e8f8f42b-9df3-d9a1-893e-0f972e27ef80@linaro.org>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <e8f8f42b-9df3-d9a1-893e-0f972e27ef80@linaro.org>
+In-Reply-To: <20220607123254.565579-3-vdonnefort@google.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/8/22 16:28, Krzysztof Kozlowski wrote:
-> On 08/06/2022 10:39, Bagas Sanjaya wrote:
->> Hi everyone,
->>
->> When cross-compiling arm 5.19-rc1 kernel using GCC 12.1.0 (armv7 with neon
->> fpu, multi_v7_defconfig), I got outside array bounds warning pointing to
->> virt_to_phys() macro:
->>
-> 
-> Thanks for the report!
-> 
-> I think this was already reported:
-> https://lore.kernel.org/all/CAK8P3a3X0UwQiVNZqvGmSKi8BX6zg=k07+9Q3rDGqHVkc8Hdsg@mail.gmail.com/
-> 
+On 07/06/2022 14:32, Vincent Donnefort wrote:
+> From: Vincent Donnefort <vincent.donnefort@arm.com>
 
-The report above is for arm64, but similar to this report (arm report).
+[...]
 
-> Anyway, for the future:
-> I don't think the CC list matches the problem. Please bisect this issue
-> (since it is reproducible build time, it should be straightforward) to
-> find offending commit and then Cc responsible people and maintainers
-> (scripts/get_maintainer.pl). Ccing half-random people might not get
-> necessary attention.
+> To that end, we need sched_clock_cpu() but it is a costly function. Limit
+> the usage to the case where the source CPU is idle as we know this is when
+> the clock is having the biggest risk of being outdated. In this such case,
+
+s/In this such case/in such a case
+
+> let's call it cfs_idle_lag the delta time between the rq_clock_pelt value
+> at rq idle and cfs_rq idle.
+
+s/it cfs_idle_lag the delta time between the rq_clock_pelt value at rq
+idle and cfs_rq idle./the delta time between the rq_clock_pelt value
+> at rq idle and cfs_rq idle cfs_idle_lag?
+
+ And rq_idle_lag the delta between "now" and
+> the rq_clock_pelt at rq idle.
 > 
 
-I think the most likely culprit is commit 37efe6427dd50e ("[ARM] use asm/sections.h")
-and 14c4a533e0996f ("ARM: 8583/1: mm: fix location of _etext").
+--->
 
+> The estimated PELT clock is then:
+> 
+>    last_update_time (the cfs_rq's last_update_time)
+>    + cfs_idle_lag (delta between cfs_rq's update and rq's update>    + rq_idle_lag (delta between rq's update and now)
+> 
+>   last_update_time = cfs_rq_clock_pelt()
+>                    = rq_clock_pelt() - cfs->throttled_clock_pelt_time
+> 
+>   cfs_idle_lag = rq_clock_pelt()@rq_idle -
+>                  rq_clock_pelt()@cfs_rq_idle
+> 
+>   rq_idle_lag = sched_clock_cpu() - rq_clock()@rq_idle
+> 
+> The rq_clock_pelt() from last_update_time being the same as
+> rq_clock_pelt()@cfs_rq_idle, we can write:
+> 
+>   estimation = rq_clock_pelt()@rq_idle - cfs->throttled_clock_pelt_time +
+>                sched_clock_cpu() - rq_clock()@rq_idle
+> 
+> The clocks being not accessible without the rq lock taken, some timestamps
+> are created:
+> 
+>       rq_clock_pelt()@rq_idle        is rq->clock_pelt_idle
+>       rq_clock()@rq_idle             is rq->enter_idle
+>       cfs->throttled_clock_pelt_time is cfs_rq->throttled_pelt_idle
+> 
 
-Thanks.
+<--- ^^^
 
--- 
-An old man doll... just what I always wanted! - Clara
+This whole block seems to be the same information as the comment block
+in migrate_se_pelt_lag(). But you haven't updated it in v10. Maybe you
+can get rid of this here and point to the comment block in
+migrate_se_pelt_lag() from here instead to guarantee consistency?
+Otherwise they should be in sync.
+
+[...]
+
+> +	/*
+> +	 * Estimated "now" is: last_update_time + cfs_idle_lag + rq_idle_lag, where:
+> +	 *
+> +	 *   last_update_time (the cfs_rq's last_update_time)
+> +	 *	= cfs_rq_clock_pelt()@cfs_rq_idle
+> +	 *      = rq_clock_pelt()@cfs_rq_idle
+> +	 *        - cfs->throttled_clock_pelt_time@cfs_rq_idle
+> +	 *
+> +	 *   cfs_idle_lag (delta between cfs_rq's update and rq's update)
+
+Isn't this:            (delta between rq's update and cfs_rq's update) ?
+
+> +	 *      = rq_clock_pelt()@rq_idle - rq_clock_pelt()@cfs_rq_idle
+> +	 *
+> +	 *   rq_idle_lag (delta between rq's update and now)
+
+Isn't this:              (delta between now and rq's update) ?
+
+> +	 *      = sched_clock_cpu() - rq_clock()@rq_idle
+> +	 *
+> +	 * We can then write:
+> +	 *
+> +	 *    now = rq_clock_pelt()@rq_idle - cfs->throttled_clock_pelt_time +
+> +	 *          sched_clock_cpu() - rq_clock()@rq_idle
+> +	 * Where:
+> +	 *      rq_clock_pelt()@rq_idle        is rq->clock_pelt_idle
+> +	 *      rq_clock()@rq_idle             is rq->clock_idle
+                                         is rq->clock_pelt_idle
+                                         is rq->clock_idle
+
+> +	 *      cfs->throttled_clock_pelt_time@cfs_rq_idle is
+> +	 *      cfs_rq->throttled_pelt_idle
+                                          is cfs_rq->throttled_pelt_idle
+
+Maybe align the `is foo` for readability?
+
+[...]
