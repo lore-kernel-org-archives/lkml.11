@@ -2,217 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD02EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C61C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 16:42:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245677AbiFHQlb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 12:41:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37350 "EHLO
+        id S245674AbiFHQmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 12:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245624AbiFHQlY (ORCPT
+        with ESMTP id S245618AbiFHQmY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 12:41:24 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2074.outbound.protection.outlook.com [40.107.236.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45293A183;
-        Wed,  8 Jun 2022 09:41:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YYdBNTECZet8xV3478sCkPGJGBVpEAV/btl80q7DDyjGvV/wNJKAGBufFGU/T+bqU4zpu6RwXPJH1VQxfa+2wr8vwEZOkPqeO9v9+B43LzX/z+GyzHWmzMjqWZ+cpgnwzbThAsQTBMenn/8SJesUEStFhKKg6Y73E2ZL9EW9G+ryx8ZduN33URGMAPqbj1hNTYAQflf4ENB5qQinmKhczDsb3m8jd+vbTR/jJG0dX0YJF4yTpGDykbs/URbCC8Qoixll6rorOmguQO3KKUiFAaRp57o8UUvk+pnibDHgiIAEde4LRRRjOOhAS+zHYoF37HlRnDS2/1FRIDwhG84mSQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4JzkrQVtvdUrigBCGYj16qerczDCpXz4LKCs9+G293o=;
- b=ANYax8GiHUJJIUW7okISSqHDmBo1lMdcZ9SgD/hNjPP31Jm2qCmU3A83CeyZxY9wz3Mk22dXR4b7SBbKqmkSgHq4lb6P3FQsP6VvQkaFeA1NRFIopgmf66qakdIsQEZvhAztfVIDECo4r4Xm6GeQIpHcyjNtp8EogBRDLD05HSrUlYLS6fvz8QQTJyOycDUsshqbik3BVHnegdCzET4ZCHoGm5QYfV0uJet0zyDNzyIMssAheq+MXri9/jNDC8uz3XTmgzrBWXXktfNQ2587ZkOcQ1FjfcBa4secGzUUtB7cGA838E3GK9IKrsbG3pvxVbAvkIzC0iuMmC2TaA9MpQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
+        Wed, 8 Jun 2022 12:42:24 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496573915F
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 09:42:22 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id s6so34050277lfo.13
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 09:42:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4JzkrQVtvdUrigBCGYj16qerczDCpXz4LKCs9+G293o=;
- b=X407vd3tAaobViYElETZt5WbjnyId6e135pA8nQGi2EIFA71Va+qxTV6A3iL1mgt9ZT7cA+aaRsc8C8dWGK9ORwCqhFL/OLPKiZyEydZVb6xMyHdxqbUsEicc1MqrCgzk9B+HNtv2/jUKyEGMWx1LN5mF09HkVua9VOutQKT8sM=
-Received: from SA9P223CA0007.NAMP223.PROD.OUTLOOK.COM (2603:10b6:806:26::12)
- by CY4PR02MB2550.namprd02.prod.outlook.com (2603:10b6:903:6e::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13; Wed, 8 Jun
- 2022 16:41:22 +0000
-Received: from SN1NAM02FT0032.eop-nam02.prod.protection.outlook.com
- (2603:10b6:806:26:cafe::4a) by SA9P223CA0007.outlook.office365.com
- (2603:10b6:806:26::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13 via Frontend
- Transport; Wed, 8 Jun 2022 16:41:21 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- SN1NAM02FT0032.mail.protection.outlook.com (10.97.5.58) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5332.12 via Frontend Transport; Wed, 8 Jun 2022 16:41:21 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Wed, 8 Jun 2022 09:41:20 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Wed, 8 Jun 2022 09:41:20 -0700
-Envelope-to: linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org,
- lorenzo.pieralisi@arm.com,
- bhelgaas@google.com,
- robh@kernel.org
-Received: from [10.140.9.2] (port=41368 helo=xhdbharatku40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <bharat.kumar.gogada@xilinx.com>)
-        id 1nyykB-00016D-MY; Wed, 08 Jun 2022 09:41:20 -0700
-From:   Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-To:     <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     <lorenzo.pieralisi@arm.com>, <bhelgaas@google.com>,
-        <michals@xilinx.com>, <robh@kernel.org>,
-        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-Subject: [PATCH v4 2/2] PCI: xilinx-cpm: Add support for Versal CPM5 Root Port
-Date:   Wed, 8 Jun 2022 22:10:46 +0530
-Message-ID: <20220608164046.3474-3-bharat.kumar.gogada@xilinx.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220608164046.3474-1-bharat.kumar.gogada@xilinx.com>
-References: <20220608164046.3474-1-bharat.kumar.gogada@xilinx.com>
+        d=amarulasolutions.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rtvbbKja+RixG7eLu6aZGD6IZi/1ihppukZ37LTZ21o=;
+        b=ZHhOkNzX2G0GXL04J/v1/pjgenn1QROUlIT0zdFiZ/K16NMBunyQxo2n8YEg/AIOz/
+         52lMfP/EnZxT5OIEs4vtULdZzJFYhV8NazOyPYVeybryD2z7AT4EQftyniAyKstdOU2Q
+         WXrnyiolXVyKCWQxM8OB26hIUiT+68DFy9Wl0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rtvbbKja+RixG7eLu6aZGD6IZi/1ihppukZ37LTZ21o=;
+        b=aAvq0TmlCPFs+LS+mBSG10Bn4dKY3kpasQGUkypSgsEG8kIzDxndCyW7ogTFYN+POC
+         RcJ5U1GeEbetK8KNwaeBwm+/zBSOc7dhU4XgPpmu1LRISyfcZT8cewmKp74DDUyoCaN8
+         AiXW1FobbQkp7TNA/jplCnpSgsZLG9KbJMVyNJ/KwztPYQsR18rdDohfBJmxzEGbiMal
+         TZAI2PC4BRhOuiXa2SmYlgmPINv1MRW2wBbvL1WuRA78RLXhNPS99EUqefgNaSg+Kl29
+         XYSzqGZDK0mxthj636zATNya0YfQsPg1KzONz5vKOr+FHf6VBEGKnusFAHw0lDQ2d2pN
+         mTbw==
+X-Gm-Message-State: AOAM532vbIMIBQ0zlj0/GeYZC+Ta/eNXB2c89F+wY2SBPWGaSmuILQfq
+        bmjCnCZQ8ROTp8GgQ4qMYFYutyNo/EG9ibOlIadP6A==
+X-Google-Smtp-Source: ABdhPJx1uAzRSL7xtxPdEgqJWRJv8sD/eH7vAKsECzjBji+29coD64JBDzgESLeN6rGYED4yq4SDFG/QY/AVpRFA5BU=
+X-Received: by 2002:a05:6512:10c5:b0:479:2de0:561c with SMTP id
+ k5-20020a05651210c500b004792de0561cmr13376583lfg.536.1654706540474; Wed, 08
+ Jun 2022 09:42:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ffd3414a-2c8d-4199-aa73-08da496db844
-X-MS-TrafficTypeDiagnostic: CY4PR02MB2550:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR02MB2550C172EC6AD8702D760756A5A49@CY4PR02MB2550.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GrZlDTMsNt6MiBNACGQI0VypDzgmGbDNZTVbj3eEHZHJRpfswV2A0zncLlrESsdnll9l7ubcmY2Z6dTmrUhLYHsOYI1YhEc6Hbdb8SNc+SGKYPhjUlxHcRTDd4iEXnqQV4PKL24jcrE4JtD4wPR3vszixgK3mebVYMOTYgtLgocDLh6Iv8R6xjwoQMDsvYN92qj5Bb8ONcVDMU6j19EtcyE1mRtCwrTuoPLZbJTvAwLrwumXrOdMaRyYvWqGwp70LQjKRhV97lRYJDC4IatIHmgjLNu34hJ/5LDjaYZoXSZhF+plMJRIqJT+4FMxj4ksI061LjSGdpQPt4OQeNkibycv7gA3JnlZtetDXrxr+D8mZpZs6++2O5UAIMFY6tWYniEZLtpfr7Zj/Yl8lddYqO2QjKjdPf0DGeToOw+64es1itC13RQF3L3FIbqJGy99JV5Q3dDyaudKSTFo9+9g3iD42liNcClgsfry4KwCvLUOdllX0AN69nRX7r7MgZcKSi/D+w7NzwHKn80kbwDZJhVMPtOk5MZRmb4XioiWnckYpK0Oc4bBe/3XFzKtgOwGEQzHvCxgzWOu6zQKSXfwm34YuIAcx0MxE458iFROGC9TW1yrmxRWaAvNm/E77PNlyDIrb0ovX23DwiWChlcyknMKx/n/D5NsUt2qD84AeKQSJPIDM8bIUuAYVwiVZhNsF6q5KSwpp2O5b0Zr46rfzw==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(4326008)(1076003)(107886003)(186003)(7636003)(40460700003)(82310400005)(36756003)(356005)(26005)(2906002)(110136005)(316002)(103116003)(54906003)(70206006)(6666004)(36860700001)(2616005)(8676002)(5660300002)(70586007)(7696005)(9786002)(508600001)(83380400001)(8936002)(336012)(426003)(47076005)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2022 16:41:21.7023
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ffd3414a-2c8d-4199-aa73-08da496db844
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0032.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR02MB2550
+References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
+ <20220607094752.1029295-5-dario.binacchi@amarulasolutions.com> <20220607111330.tkpaplzeupfq3peh@pengutronix.de>
+In-Reply-To: <20220607111330.tkpaplzeupfq3peh@pengutronix.de>
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Date:   Wed, 8 Jun 2022 18:42:09 +0200
+Message-ID: <CABGWkvotv4Ebm7OSbp=oQ7vwHhR_=sXfAAEkngjLm2faYrUFPw@mail.gmail.com>
+Subject: Re: [RFC PATCH 04/13] can: slcan: use CAN network device driver API
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-kernel@vger.kernel.org,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Xilinx Versal Premium series has CPM5 block which supports Root Port
-functioning at Gen5 speed.
+Hi Marc,
 
-Xilinx Versal CPM5 has few changes with existing CPM block.
-- CPM5 has dedicated register space for control and status registers.
-- CPM5 legacy interrupt handling needs additional register bit
-  to enable and handle legacy interrupts.
+On Tue, Jun 7, 2022 at 1:13 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+>
+> On 07.06.2022 11:47:43, Dario Binacchi wrote:
+> > As suggested by commit [1], now the driver uses the functions and the
+> > data structures provided by the CAN network device driver interface.
+> >
+> > There is no way to set bitrate for SLCAN based devices via ip tool, so
+>   ^^^^^^^^^^^^^^^
+> Currently the driver doesn't implement a way
 
-Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
----
- drivers/pci/controller/pcie-xilinx-cpm.c | 33 +++++++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
+Ok, I'll do it.
 
-diff --git a/drivers/pci/controller/pcie-xilinx-cpm.c b/drivers/pci/controller/pcie-xilinx-cpm.c
-index c7cd44ed4dfc..a3b04083b6b3 100644
---- a/drivers/pci/controller/pcie-xilinx-cpm.c
-+++ b/drivers/pci/controller/pcie-xilinx-cpm.c
-@@ -35,6 +35,10 @@
- #define XILINX_CPM_PCIE_MISC_IR_ENABLE	0x00000348
- #define XILINX_CPM_PCIE_MISC_IR_LOCAL	BIT(1)
- 
-+#define XILINX_CPM_PCIE_IR_STATUS       0x000002A0
-+#define XILINX_CPM_PCIE_IR_ENABLE       0x000002A8
-+#define XILINX_CPM_PCIE_IR_LOCAL        BIT(0)
-+
- /* Interrupt registers definitions */
- #define XILINX_CPM_PCIE_INTR_LINK_DOWN		0
- #define XILINX_CPM_PCIE_INTR_HOT_RESET		3
-@@ -109,6 +113,7 @@
-  * @intx_irq: legacy interrupt number
-  * @irq: Error interrupt number
-  * @lock: lock protecting shared register access
-+ * @is_cpm5: value to check cpm version
-  */
- struct xilinx_cpm_pcie {
- 	struct device			*dev;
-@@ -120,6 +125,7 @@ struct xilinx_cpm_pcie {
- 	int				intx_irq;
- 	int				irq;
- 	raw_spinlock_t			lock;
-+	bool                            is_cpm5;
- };
- 
- static u32 pcie_read(struct xilinx_cpm_pcie *port, u32 reg)
-@@ -285,6 +291,14 @@ static void xilinx_cpm_pcie_event_flow(struct irq_desc *desc)
- 		generic_handle_domain_irq(port->cpm_domain, i);
- 	pcie_write(port, val, XILINX_CPM_PCIE_REG_IDR);
- 
-+	if (port->is_cpm5) {
-+		val = readl_relaxed(port->cpm_base + XILINX_CPM_PCIE_IR_STATUS);
-+		if (val)
-+			writel_relaxed(val,
-+				       port->cpm_base +
-+				       XILINX_CPM_PCIE_IR_STATUS);
-+	}
-+
- 	/*
- 	 * XILINX_CPM_PCIE_MISC_IR_STATUS register is mapped to
- 	 * CPM SLCR block.
-@@ -484,6 +498,12 @@ static void xilinx_cpm_pcie_init_port(struct xilinx_cpm_pcie *port)
- 	 */
- 	writel(XILINX_CPM_PCIE_MISC_IR_LOCAL,
- 	       port->cpm_base + XILINX_CPM_PCIE_MISC_IR_ENABLE);
-+
-+	if (port->is_cpm5) {
-+		writel(XILINX_CPM_PCIE_IR_LOCAL,
-+		       port->cpm_base + XILINX_CPM_PCIE_IR_ENABLE);
-+	}
-+
- 	/* Enable the Bridge enable bit */
- 	pcie_write(port, pcie_read(port, XILINX_CPM_PCIE_REG_RPSC) |
- 		   XILINX_CPM_PCIE_REG_RPSC_BEN,
-@@ -504,6 +524,9 @@ static int xilinx_cpm_pcie_parse_dt(struct xilinx_cpm_pcie *port,
- 	struct platform_device *pdev = to_platform_device(dev);
- 	struct resource *res;
- 
-+	port->is_cpm5 = of_device_is_compatible(dev->of_node,
-+						"xlnx,versal-cpm5-host");
-+
- 	port->cpm_base = devm_platform_ioremap_resource_byname(pdev,
- 							       "cpm_slcr");
- 	if (IS_ERR(port->cpm_base))
-@@ -518,7 +541,14 @@ static int xilinx_cpm_pcie_parse_dt(struct xilinx_cpm_pcie *port,
- 	if (IS_ERR(port->cfg))
- 		return PTR_ERR(port->cfg);
- 
--	port->reg_base = port->cfg->win;
-+	if (port->is_cpm5) {
-+		port->reg_base = devm_platform_ioremap_resource_byname(pdev,
-+								       "cpm_csr");
-+		if (IS_ERR(port->reg_base))
-+			return PTR_ERR(port->reg_base);
-+	} else {
-+		port->reg_base = port->cfg->win;
-+	}
- 
- 	return 0;
- }
-@@ -593,6 +623,7 @@ static int xilinx_cpm_pcie_probe(struct platform_device *pdev)
- 
- static const struct of_device_id xilinx_cpm_pcie_of_match[] = {
- 	{ .compatible = "xlnx,versal-cpm-host-1.00", },
-+	{ .compatible = "xlnx,versal-cpm5-host", },
- 	{}
- };
- 
+>
+> > you'll have to do this by slcand/slcan_attach invocation through the
+> > -sX parameter:
+> >
+> > - slcan_attach -f -s6 -o /dev/ttyACM0
+> > - slcand -f -s8 -o /dev/ttyUSB0
+> >
+> > where -s6 in will set adapter's bitrate to 500 Kbit/s and -s8 to
+> > 1Mbit/s.
+> > See the table below for further CAN bitrates:
+> > - s0 ->   10 Kbit/s
+> > - s1 ->   20 Kbit/s
+> > - s2 ->   50 Kbit/s
+> > - s3 ->  100 Kbit/s
+> > - s4 ->  125 Kbit/s
+> > - s5 ->  250 Kbit/s
+> > - s6 ->  500 Kbit/s
+> > - s7 ->  800 Kbit/s
+> > - s8 -> 1000 Kbit/s
+> >
+> > In doing so, the struct can_priv::bittiming.bitrate of the driver is not
+> > set and since the open_candev() checks that the bitrate has been set, it
+> > must be a non-zero value, the bitrate is set to a fake value (-1) before
+> > it is called.
+>
+> What does
+>
+> | ip --details -s -s link show
+>
+> show as the bit rate?
+
+# ip --details -s -s link show dev can0
+ can0: <NOARP,UP,LOWER_UP> mtu 16 qdisc pfifo_fast state UP mode
+DEFAULT group default qlen 10
+    link/can  promiscuity 0 minmtu 0 maxmtu 0
+    can state ERROR-ACTIVE restart-ms 0
+  bitrate 500000 sample-point 0.875
+  tq 41 prop-seg 20 phase-seg1 21 phase-seg2 6 sjw 1
+  slcan: tseg1 2..256 tseg2 1..128 sjw 1..128 brp 1..256 brp-inc 1
+  clock 24000000
+  re-started bus-errors arbit-lost error-warn error-pass bus-off
+  0          0          0          0          0          0
+numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+    RX: bytes  packets  errors  dropped overrun mcast
+    292        75       0       0       0       0
+    RX errors: length   crc     frame   fifo    missed
+               0        0       0       0       0
+    TX: bytes  packets  errors  dropped carrier collsns
+    0          0        0       0       0       0
+    TX errors: aborted  fifo   window heartbeat transns
+               0        0       0       0       1
+
+And after applying your suggestions about using the CAN framework
+support for setting the fixed bit rates (you'll
+find it in V2), this is the output instead:
+
+# ip --details -s -s link show dev can0
+5: can0: <NOARP,UP,LOWER_UP> mtu 16 qdisc pfifo_fast state UP mode
+DEFAULT group default qlen 10
+    link/can  promiscuity 0 minmtu 0 maxmtu 0
+    can state ERROR-ACTIVE restart-ms 0
+  bitrate 500000
+     [   10000,    20000,    50000,   100000,   125000,   250000,
+        500000,   800000,  1000000 ]
+  clock 0
+  re-started bus-errors arbit-lost error-warn error-pass bus-off
+  0          0          0          0          0          0
+numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+    RX: bytes  packets  errors  dropped overrun mcast
+    37307      4789     0       0       0       0
+    RX errors: length   crc     frame   fifo    missed
+               0        0       0       0       0
+    TX: bytes  packets  errors  dropped carrier collsns
+    7276       988      0       0       0       0
+    TX errors: aborted  fifo   window heartbeat transns
+               0        0       0       0       1
+
+Thanks and regards,
+Dario
+
+>
+> Marc
+>
+> --
+> Pengutronix e.K.                 | Marc Kleine-Budde           |
+> Embedded Linux                   | https://www.pengutronix.de  |
+> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+
 -- 
-2.17.1
 
+Dario Binacchi
+
+Embedded Linux Developer
+
+dario.binacchi@amarulasolutions.com
+
+__________________________________
+
+
+Amarula Solutions SRL
+
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+
+T. +39 042 243 5310
+info@amarulasolutions.com
+
+www.amarulasolutions.com
