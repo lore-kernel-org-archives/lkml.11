@@ -2,189 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B2FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 306C2CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 07:07:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235048AbiFHHGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44748 "EHLO
+        id S232602AbiFHHFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352054AbiFHGPj (ORCPT
+        with ESMTP id S1349849AbiFHF7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 02:15:39 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CBBC364D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 22:47:35 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 7CAD121A6B;
-        Wed,  8 Jun 2022 05:37:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1654666630; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=e/FPclAX4SEQhI3WAYAvS5WpRBi4c3ovJp5fbx59ihQ=;
-        b=gaL6+OK02YkQai6LRYBqGDzbwRYz887l/KNSZ9kW7PRK7y11HZMHu33Qg3KUQvJRWMaUpV
-        Xqx9zSHQ4NP5bWaDWM0hG2bL2/58rBbX3t5BpEUM8q6fTaJEn8vECY18p2tiydox3GClBJ
-        37oMixruWaW2fUSzaYkXeR1TTau431Y=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2F07D13638;
-        Wed,  8 Jun 2022 05:37:10 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Su0UCoY1oGIDcAAAMHmgww
-        (envelope-from <jgross@suse.com>); Wed, 08 Jun 2022 05:37:10 +0000
-Message-ID: <d7ab14e9-2411-774e-21f1-2ecf3cffd2e9@suse.com>
-Date:   Wed, 8 Jun 2022 07:37:09 +0200
+        Wed, 8 Jun 2022 01:59:09 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 109F027F475;
+        Tue,  7 Jun 2022 21:39:00 -0700 (PDT)
+X-UUID: 4bcf0fc150254110924ef8c2554b7888-20220608
+X-CID-P-RULE: Spam_GS6885AD
+X-CID-O-INFO: VERSION:1.1.5,REQID:98151ce4-7812-4724-a823-5b479187f885,OB:20,L
+        OB:10,IP:0,URL:25,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS6885
+        AD,ACTION:quarantine,TS:115
+X-CID-INFO: VERSION:1.1.5,REQID:98151ce4-7812-4724-a823-5b479187f885,OB:20,LOB
+        :10,IP:0,URL:25,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D
+        ,ACTION:quarantine,TS:115
+X-CID-META: VersionHash:2a19b09,CLOUDID:6aa0947e-c8dc-403a-96e8-6237210dceee,C
+        OID:1047e9c84de5,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:0,BEC:nil
+X-UUID: 4bcf0fc150254110924ef8c2554b7888-20220608
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1257175741; Wed, 08 Jun 2022 12:38:56 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 8 Jun 2022 12:38:55 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 8 Jun 2022 12:38:55 +0800
+From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
+CC:     <matthias.bgg@gmail.com>, <airlied@linux.ie>,
+        <angelogioacchino.delregno@collabora.com>, <pavel@ucw.cz>,
+        <nancy.lin@mediatek.com>, <ck.hu@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Subject: [RESEND v5 1/3] dt-bindings: mediatek: add vdosys1 RDMA definition for mt8195
+Date:   Wed, 8 Jun 2022 12:38:50 +0800
+Message-ID: <20220608043852.4980-2-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220608043852.4980-1-rex-bc.chen@mediatek.com>
+References: <20220608043852.4980-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] xen: unexport __init-annotated
- xen_xlate_map_ballooned_pages()
-Content-Language: en-US
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        moderated for non-subscribers <xen-devel@lists.xenproject.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Julien Grall <julien.grall@arm.com>,
-        Shannon Zhao <shannon.zhao@linaro.org>,
-        linux-kernel@vger.kernel.org
-References: <20220606045920.4161881-1-masahiroy@kernel.org>
-From:   Juergen Gross <jgross@suse.com>
-In-Reply-To: <20220606045920.4161881-1-masahiroy@kernel.org>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------oj1mRICSkSejk0rWguOK0LQn"
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------oj1mRICSkSejk0rWguOK0LQn
-Content-Type: multipart/mixed; boundary="------------JvVY88ac2iha0WITW905MGd9";
- protected-headers="v1"
-From: Juergen Gross <jgross@suse.com>
-To: Masahiro Yamada <masahiroy@kernel.org>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- moderated for non-subscribers <xen-devel@lists.xenproject.org>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>,
- Julien Grall <julien.grall@arm.com>, Shannon Zhao <shannon.zhao@linaro.org>,
- linux-kernel@vger.kernel.org
-Message-ID: <d7ab14e9-2411-774e-21f1-2ecf3cffd2e9@suse.com>
-Subject: Re: [PATCH] xen: unexport __init-annotated
- xen_xlate_map_ballooned_pages()
-References: <20220606045920.4161881-1-masahiroy@kernel.org>
-In-Reply-To: <20220606045920.4161881-1-masahiroy@kernel.org>
+From: "Nancy.Lin" <nancy.lin@mediatek.com>
 
---------------JvVY88ac2iha0WITW905MGd9
-Content-Type: multipart/mixed; boundary="------------ZeiZdpYwEdKOOY0zd3kClKE9"
+Add vdosys1 RDMA definition.
 
---------------ZeiZdpYwEdKOOY0zd3kClKE9
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
+Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ .../display/mediatek/mediatek,mdp-rdma.yaml   | 88 +++++++++++++++++++
+ 1 file changed, 88 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
 
-T24gMDYuMDYuMjIgMDY6NTksIE1hc2FoaXJvIFlhbWFkYSB3cm90ZToNCj4gRVhQT1JUX1NZ
-TUJPTCBhbmQgX19pbml0IGlzIGEgYmFkIGNvbWJpbmF0aW9uIGJlY2F1c2UgdGhlIC5pbml0
-LnRleHQNCj4gc2VjdGlvbiBpcyBmcmVlZCB1cCBhZnRlciB0aGUgaW5pdGlhbGl6YXRpb24u
-IEhlbmNlLCBtb2R1bGVzIGNhbm5vdA0KPiB1c2Ugc3ltYm9scyBhbm5vdGF0ZWQgX19pbml0
-LiBUaGUgYWNjZXNzIHRvIGEgZnJlZWQgc3ltYm9sIG1heSBlbmQgdXANCj4gd2l0aCBrZXJu
-ZWwgcGFuaWMuDQo+IA0KPiBtb2Rwb3N0IHVzZWQgdG8gZGV0ZWN0IGl0LCBidXQgaXQgaGFz
-IGJlZW4gYnJva2VuIGZvciBhIGRlY2FkZS4NCj4gDQo+IFJlY2VudGx5LCBJIGZpeGVkIG1v
-ZHBvc3Qgc28gaXQgc3RhcnRlZCB0byB3YXJuIGl0IGFnYWluLCB0aGVuIHRoaXMNCj4gc2hv
-d2VkIHVwIGluIGxpbnV4LW5leHQgYnVpbGRzLg0KPiANCj4gVGhlcmUgYXJlIHR3byB3YXlz
-IHRvIGZpeCBpdDoNCj4gDQo+ICAgIC0gUmVtb3ZlIF9faW5pdA0KPiAgICAtIFJlbW92ZSBF
-WFBPUlRfU1lNQk9MDQo+IA0KPiBJIGNob3NlIHRoZSBsYXR0ZXIgZm9yIHRoaXMgY2FzZSBi
-ZWNhdXNlIG5vbmUgb2YgdGhlIGluLXRyZWUgY2FsbC1zaXRlcw0KPiAoYXJjaC9hcm0veGVu
-L2VubGlnaHRlbi5jLCBhcmNoL3g4Ni94ZW4vZ3JhbnQtdGFibGUuYykgaXMgY29tcGlsZWQg
-YXMNCj4gbW9kdWxhci4NCj4gDQo+IEZpeGVzOiAyNDM4NDhmYzAxOGMgKCJ4ZW4vZ3JhbnQt
-dGFibGU6IE1vdmUgeGxhdGVkX3NldHVwX2dudHRhYl9wYWdlcyB0byBjb21tb24gcGxhY2Ui
-KQ0KPiBSZXBvcnRlZC1ieTogU3RlcGhlbiBSb3Rod2VsbCA8c2ZyQGNhbmIuYXV1Zy5vcmcu
-YXU+DQo+IFNpZ25lZC1vZmYtYnk6IE1hc2FoaXJvIFlhbWFkYSA8bWFzYWhpcm95QGtlcm5l
-bC5vcmc+DQoNClB1c2hlZCB0byB4ZW4vdGlwLmdpdCBmb3ItbGludXMtNS4xOWENCg0KDQpK
-dWVyZ2VuDQo=
---------------ZeiZdpYwEdKOOY0zd3kClKE9
-Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Description: OpenPGP public key
-Content-Transfer-Encoding: quoted-printable
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
+new file mode 100644
+index 000000000000..dd12e2ff685c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
+@@ -0,0 +1,88 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/display/mediatek/mediatek,mdp-rdma.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MediaTek MDP RDMA
++
++maintainers:
++  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
++  - Philipp Zabel <p.zabel@pengutronix.de>
++
++description:
++  The MediaTek MDP RDMA stands for Read Direct Memory Access.
++  It provides real time data to the back-end panel driver, such as DSI,
++  DPI and DP_INTF.
++  It contains one line buffer to store the sufficient pixel data.
++  RDMA device node must be siblings to the central MMSYS_CONFIG node.
++  For a description of the MMSYS_CONFIG binding, see
++  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml for details.
++
++properties:
++  compatible:
++    const: mediatek,mt8195-vdo1-rdma
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  power-domains:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: RDMA Clock
++
++  iommus:
++    maxItems: 1
++
++  mediatek,gce-client-reg:
++    description:
++      The register of display function block to be set by gce. There are 4 arguments,
++      such as gce node, subsys id, offset and register size. The subsys id that is
++      mapping to the register of display function blocks is defined in the gce header
++      include/dt-bindings/gce/<chip>-gce.h of each chips.
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    items:
++      items:
++        - description: phandle of GCE
++        - description: GCE subsys id
++        - description: register offset
++        - description: register size
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - power-domains
++  - clocks
++  - iommus
++  - mediatek,gce-client-reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/mt8195-clk.h>
++    #include <dt-bindings/power/mt8195-power.h>
++    #include <dt-bindings/gce/mt8195-gce.h>
++    #include <dt-bindings/memory/mt8195-memory-port.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        rdma@1c104000 {
++            compatible = "mediatek,mt8195-vdo1-rdma";
++            reg = <0 0x1c104000 0 0x1000>;
++            interrupts = <GIC_SPI 495 IRQ_TYPE_LEVEL_HIGH 0>;
++            clocks = <&vdosys1 CLK_VDO1_MDP_RDMA0>;
++            power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
++            iommus = <&iommu_vdo M4U_PORT_L2_MDP_RDMA0>;
++            mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0x4000 0x1000>;
++        };
++    };
+-- 
+2.18.0
 
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-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
-jR/i1DG86lem3iBDXzXsZDn8R38=3D
-=3D2wuH
------END PGP PUBLIC KEY BLOCK-----
-
---------------ZeiZdpYwEdKOOY0zd3kClKE9--
-
---------------JvVY88ac2iha0WITW905MGd9--
-
---------------oj1mRICSkSejk0rWguOK0LQn
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmKgNYUFAwAAAAAACgkQsN6d1ii/Ey9e
-Xgf+KwHpnK/tq7Xc1VnnhPGEDHSqDxRDwlvwcfgFFl2Z9EqwXcDwIQ7HGtnRVS5FyxGzDx1Z/RrA
-tuPi1k/MjwoqMVWMuoxRxfoIe2fQN/3PtawkVviWyNjL+3D8QDwks/dBhlrnYxHMP6XCtwtoxzz7
-jGla6k3nDKEsb5GI7d6aaMzt1dXduBIqW/e8QX46rh7isnR7byqkGv8hC+4VQ8X8iOH2KAIvX1UV
-k7EAwLZzhxXgegCDr7CWvb/jOqo7dnKmVPAyvUeqDWou29zlq+XovMB7I5gpl8q0SXr8SOJsB89s
-fFNGCjpClpothDKrjtjlZ3RxwXgQHP+ZIviJcJZqdw==
-=tDYM
------END PGP SIGNATURE-----
-
---------------oj1mRICSkSejk0rWguOK0LQn--
