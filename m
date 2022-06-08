@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7934C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 22:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 22:45:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229539AbiFHWpp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 18:45:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33666 "EHLO
+        id S235926AbiFHWps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 18:45:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236800AbiFHWp3 (ORCPT
+        with ESMTP id S236959AbiFHWpW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 18:45:29 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 030D72504CB
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 15:45:27 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id q12-20020a056a0002ac00b0051bb2e66c91so11327999pfs.4
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 15:45:27 -0700 (PDT)
+        Wed, 8 Jun 2022 18:45:22 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C620A2506CB
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 15:45:21 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31382419c22so15075587b3.18
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 15:45:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=L6CG/ucwyzRbxPhEP+xskpq5cumPIfOGi6WfytIM0VI=;
-        b=EVrWDujSzZhYWScj6uvyk/wsH9irmGTL6WNySzq7huYNhDGk2RcPTI6RmAp+SHuBd9
-         tUjiNPGzPKbB+WvXlCxogt0M9Mbw8kwAjdR95DKE6qPdhzNa57z58+zWAHhnOziOHbn+
-         Zwqth5TBzimqdtVbE+W+DNFJBcTLFJwYtJL9p9msqFQXjrg3eZpLkpoTUjqIPhJ7VNGq
-         DFg32qozGkUujV/IdgRsor4H2O5y+mDXrza/czdxLHnhX8QYnZAzv4xOtaVLGnzjbKVj
-         XPpl+91Ds74ar752Cg7+9B0m+II28CnWOtVSf2z2RonRixRyR5jeyNV9/TI2siqPjny+
-         cSIA==
+        bh=Aj47vH7bOM7CIvT8Dyt2GzqDM34J/7dBeBUz69774ew=;
+        b=FvUPMqERCr+vn5DAlXucDMK8JQYwnBC6iD8ztZR5A8TbC0iMs2oNwezvO8LZsbk2Bd
+         JAnaOUZlOiKhfVjCBJhHExnscF2eISgVrvFq+nbT+JmZ7aqhE2tG9XNQZLeCqXw8yDHQ
+         FHC3PRf0jU40rP479ZovjS3+Cu/81X9UX9pbb3DjmdXZGlRx1JB2Wep4jVFaj5DVxZrO
+         25RiEmgEBl0NQ1gGT7yrntGFbguPrYyNx2VpcH7B6YueRUaLHp5ioeHiaIX5zViGdvaj
+         dvqZ3w7+J+wTbq734pXBBu9nywfJaXrQvl4ybyZbRWZFvkS4gMVHZbQUF+Nph9rz2J4b
+         HAqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=L6CG/ucwyzRbxPhEP+xskpq5cumPIfOGi6WfytIM0VI=;
-        b=BIXpw5S0+qb7WeIiNCPZ1Tsjb1SLALY8+ibiXmtKdQCRvqaEQAialAaYsx95ieSLAt
-         nbUJOrt8fY6M3LPlJb5ZG+iAaHuGjm0vwcP5yTHcSYLfAGfUwZmpwP8TmWnIXJqSIQpu
-         SDBAgYLy43YWqFleg4CKUHdd5G/AYVEyCKGKbIsc6vCLfgvAATtAZq8YMweU+RJC0dYt
-         TwTvJdiysNFbg6YYmEnjJ0Erh/JKGnn6/QHuFUuZUA3XUsBuSPVbGx6hsrOmWOIw5xNx
-         9yiN5DAukB2wKOy3bmgvtbK9w7J2o3FQJSP00pO2HqRHrwmAmteoEJ13FwW5Kw5gaAnM
-         ATVg==
-X-Gm-Message-State: AOAM532yfux4Tsa/KcHTdAkDt9FPmOSop5m3FmRm+TVusi7KEL0RN67R
-        dBgmptg0cC4dr5fBJAWFHLrLPULYbBA=
-X-Google-Smtp-Source: ABdhPJx9WF++0c78k3640NdFplCX1fFdbExMr6dWv7IOPQRs+W4YuRh0MTHB9N/9ITqnrqr6Dd0MjFHwpsI=
+        bh=Aj47vH7bOM7CIvT8Dyt2GzqDM34J/7dBeBUz69774ew=;
+        b=leOAqoBy+1f6zZ19C+OHycLPRT7qCs9e0a4N4fEJvzgGZu2UzmGuFSkm700sH/GIkJ
+         3EqmCphU/iVwa1DFxv4OJTphGEdztn0relmnCa7a6Y0i0uIV3MWBEJmNxzDi2wD+RYSb
+         QiX3qXND/dow+Kwu9555mM7rnQoOR4FYKNiwMnwWmNeQPXL4ngt+RXV1v6zkn5z6LF8l
+         Uf0VWDerserqUPjTvxOdcCPIdibZxRWR/wpZZCd8SIVNK+H4e4W1LBFzbZPbtn/c13IQ
+         JJiuF95gyHm6v0aTAmIdgo8DVcUNKxl59wpv5naorMoByn28Njs1L/Q18RGNpbqYoA9V
+         VpjA==
+X-Gm-Message-State: AOAM5321CMMQ8XOY4KoYj83UTgrDMpopS0jcGpSyv+qf3A9AkLjAh9G/
+        zroY1rKC+O+Zy3/rKVF0o2B9vntps20=
+X-Google-Smtp-Source: ABdhPJwitxoDkwVjT8ngUL3WN+GVfi9ZRSFxFHUCta7tvzet9Zy5A3/DRpzqmKRGgeqbz97ywWxxDaO5gjo=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:5a48:b0:1e3:4180:a218 with SMTP id
- m8-20020a17090a5a4800b001e34180a218mr262148pji.182.1654728327551; Wed, 08 Jun
- 2022 15:45:27 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a0d:d843:0:b0:30e:c210:87a4 with SMTP id
+ a64-20020a0dd843000000b0030ec21087a4mr39532146ywe.313.1654728321051; Wed, 08
+ Jun 2022 15:45:21 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  8 Jun 2022 22:45:16 +0000
+Date:   Wed,  8 Jun 2022 22:45:12 +0000
 In-Reply-To: <20220608224516.3788274-1-seanjc@google.com>
-Message-Id: <20220608224516.3788274-6-seanjc@google.com>
+Message-Id: <20220608224516.3788274-2-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220608224516.3788274-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH 5/5] KVM: selftests: Add MONITOR/MWAIT quirk test
+Subject: [PATCH 1/5] KVM: x86: Add a quirk for KVM's "MONITOR/MWAIT are NOPs!" behavior
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -67,180 +67,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a test to verify the "MONITOR/MWAIT never fault" quirk, and as a
-bonus, also verify the related "MISC_ENABLES ignores ENABLE_MWAIT" quirk.
+Add a quirk for KVM's behavior of emulating intercepted MONITOR/MWAIT
+instructions a NOPs regardless of whether or not they are supported in
+guest CPUID.  KVM's current behavior was likely motiviated by a certain
+fruity operating system that expects MONITOR/MWAIT to be supported
+unconditionally and blindly executes MONITOR/MWAIT without first checking
+CPUID.  And because KVM does NOT advertise MONITOR/MWAIT to userspace,
+that's effectively the default setup for any VMM that regurgitates
+KVM_GET_SUPPORTED_CPUID to KVM_SET_CPUID2.
 
-If the "never fault" quirk is enabled, MONITOR/MWAIT should always be
-emulated as NOPs, even if they're reported as disabled in guest CPUID.
-Use the MISC_ENABLES quirk to coerce KVM into toggling the MWAIT CPUID
-enable, as KVM now disallows manually toggling CPUID bits after running
-the vCPU.
+Note, this quirk interacts with KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT.  The
+behavior is actually desirable, as userspace VMMs that want to
+unconditionally hide MONITOR/MWAIT from the guest can leave the
+MISC_ENABLE quirk enabled.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/.gitignore        |   1 +
- tools/testing/selftests/kvm/Makefile          |   1 +
- .../selftests/kvm/x86_64/monitor_mwait_test.c | 127 ++++++++++++++++++
- 3 files changed, 129 insertions(+)
- create mode 100644 tools/testing/selftests/kvm/x86_64/monitor_mwait_test.c
+ Documentation/virt/kvm/api.rst  | 13 +++++++++++++
+ arch/x86/include/asm/kvm_host.h |  3 ++-
+ arch/x86/include/uapi/asm/kvm.h |  1 +
+ arch/x86/kvm/x86.c              | 26 +++++++++++++++++---------
+ 4 files changed, 33 insertions(+), 10 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
-index 0ab0e255d292..1a56522f009c 100644
---- a/tools/testing/selftests/kvm/.gitignore
-+++ b/tools/testing/selftests/kvm/.gitignore
-@@ -27,6 +27,7 @@
- /x86_64/hyperv_svm_test
- /x86_64/max_vcpuid_cap_test
- /x86_64/mmio_warning_test
-+/x86_64/monitor_mwait_test
- /x86_64/platform_info_test
- /x86_64/pmu_event_filter_test
- /x86_64/set_boot_cpu_id
-diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index 9a256c1f1bdf..bbbfdeb7ee9b 100644
---- a/tools/testing/selftests/kvm/Makefile
-+++ b/tools/testing/selftests/kvm/Makefile
-@@ -56,6 +56,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_svm_test
- TEST_GEN_PROGS_x86_64 += x86_64/kvm_clock_test
- TEST_GEN_PROGS_x86_64 += x86_64/kvm_pv_test
- TEST_GEN_PROGS_x86_64 += x86_64/mmio_warning_test
-+TEST_GEN_PROGS_x86_64 += x86_64/monitor_mwait_test
- TEST_GEN_PROGS_x86_64 += x86_64/platform_info_test
- TEST_GEN_PROGS_x86_64 += x86_64/pmu_event_filter_test
- TEST_GEN_PROGS_x86_64 += x86_64/set_boot_cpu_id
-diff --git a/tools/testing/selftests/kvm/x86_64/monitor_mwait_test.c b/tools/testing/selftests/kvm/x86_64/monitor_mwait_test.c
-new file mode 100644
-index 000000000000..b9af8e29721e
---- /dev/null
-+++ b/tools/testing/selftests/kvm/x86_64/monitor_mwait_test.c
-@@ -0,0 +1,127 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <fcntl.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <sys/ioctl.h>
+diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+index 42a1984fafc8..5c6cd8f7975f 100644
+--- a/Documentation/virt/kvm/api.rst
++++ b/Documentation/virt/kvm/api.rst
+@@ -7374,6 +7374,19 @@ The valid bits in cap.args[0] are:
+                                     hypercall instructions. Executing the
+                                     incorrect hypercall instruction will
+                                     generate a #UD within the guest.
 +
-+#include "kvm_util.h"
-+#include "processor.h"
++KVM_X86_QUIRK_MWAIT_NEVER_FAULTS    By default, KVM emulates MONITOR/MWAIT (if
++                                    they are intercepted) as NOPs regardless of
++                                    whether or not MONITOR/MWAIT are supported
++                                    according to guest CPUID.  When this quirk
++                                    is disabled and KVM_X86_DISABLE_EXITS_MWAIT
++                                    is not set (MONITOR/MWAIT are intercepted),
++                                    KVM will inject a #UD on MONITOR/MWAIT if
++                                    they're unsupported per guest CPUID.  Note,
++                                    KVM will modify MONITOR/MWAIT support in
++                                    guest CPUID on writes to MISC_ENABLE if
++                                    KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT is
++                                    disabled.
+ =================================== ============================================
+ 
+ 7.32 KVM_CAP_MAX_VCPU_ID
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 6cf5d77d7896..bc3e85a81f41 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -2011,6 +2011,7 @@ int memslot_rmap_alloc(struct kvm_memory_slot *slot, unsigned long npages);
+ 	 KVM_X86_QUIRK_LAPIC_MMIO_HOLE |	\
+ 	 KVM_X86_QUIRK_OUT_7E_INC_RIP |		\
+ 	 KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT |	\
+-	 KVM_X86_QUIRK_FIX_HYPERCALL_INSN)
++	 KVM_X86_QUIRK_FIX_HYPERCALL_INSN |	\
++	 KVM_X86_QUIRK_MWAIT_NEVER_FAULTS)
+ 
+ #endif /* _ASM_X86_KVM_HOST_H */
+diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
+index 24c807c8d5f7..b7c92844550b 100644
+--- a/arch/x86/include/uapi/asm/kvm.h
++++ b/arch/x86/include/uapi/asm/kvm.h
+@@ -438,6 +438,7 @@ struct kvm_sync_regs {
+ #define KVM_X86_QUIRK_OUT_7E_INC_RIP		(1 << 3)
+ #define KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT	(1 << 4)
+ #define KVM_X86_QUIRK_FIX_HYPERCALL_INSN	(1 << 5)
++#define KVM_X86_QUIRK_MWAIT_NEVER_FAULTS	(1 << 6)
+ 
+ #define KVM_STATE_NESTED_FORMAT_VMX	0
+ #define KVM_STATE_NESTED_FORMAT_SVM	1
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 2db6f0373fa3..14abcd5c2714 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -2034,13 +2034,6 @@ int kvm_emulate_invd(struct kvm_vcpu *vcpu)
+ }
+ EXPORT_SYMBOL_GPL(kvm_emulate_invd);
+ 
+-int kvm_emulate_mwait(struct kvm_vcpu *vcpu)
+-{
+-	pr_warn_once("kvm: MWAIT instruction emulated as NOP!\n");
+-	return kvm_emulate_as_nop(vcpu);
+-}
+-EXPORT_SYMBOL_GPL(kvm_emulate_mwait);
+-
+ int kvm_handle_invalid_op(struct kvm_vcpu *vcpu)
+ {
+ 	kvm_queue_exception(vcpu, UD_VECTOR);
+@@ -2048,10 +2041,25 @@ int kvm_handle_invalid_op(struct kvm_vcpu *vcpu)
+ }
+ EXPORT_SYMBOL_GPL(kvm_handle_invalid_op);
+ 
 +
-+enum monitor_mwait_testcases {
-+	MWAIT_QUIRK_DISABLED = BIT(0),
-+	MISC_ENABLES_QUIRK_DISABLED = BIT(1),
-+	MWAIT_DISABLED = BIT(2),
-+};
-+
-+static void guest_monitor_wait(int testcase)
++static int kvm_emulate_monitor_mwait(struct kvm_vcpu *vcpu, const char *insn)
 +{
-+	/*
-+	 * If both MWAIT and its quirk are disabled, MONITOR/MWAIT should #UD,
-+	 * in all other scenarios KVM should emulate them as nops.
-+	 */
-+	bool fault_wanted = (testcase & MWAIT_QUIRK_DISABLED) &&
-+			    (testcase & MWAIT_DISABLED);
-+	u8 vector;
++	if (!kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_MWAIT_NEVER_FAULTS) &&
++	    !guest_cpuid_has(vcpu, X86_FEATURE_MWAIT))
++		return kvm_handle_invalid_op(vcpu);
 +
-+	GUEST_SYNC(testcase);
-+
-+	vector = kvm_asm_safe("monitor");
-+	if (fault_wanted)
-+		GUEST_ASSERT_2(vector == UD_VECTOR, testcase, vector);
-+	else
-+		GUEST_ASSERT_2(!vector, testcase, vector);
-+
-+	vector = kvm_asm_safe("monitor");
-+	if (fault_wanted)
-+		GUEST_ASSERT_2(vector == UD_VECTOR, testcase, vector);
-+	else
-+		GUEST_ASSERT_2(!vector, testcase, vector);
++	pr_warn_once("kvm: %s instruction emulated as NOP!\n", insn);
++	return kvm_emulate_as_nop(vcpu);
 +}
-+
-+static void guest_code(void)
++int kvm_emulate_mwait(struct kvm_vcpu *vcpu)
 +{
-+	guest_monitor_wait(MWAIT_DISABLED);
-+
-+	guest_monitor_wait(MWAIT_QUIRK_DISABLED | MWAIT_DISABLED);
-+
-+	guest_monitor_wait(MISC_ENABLES_QUIRK_DISABLED | MWAIT_DISABLED);
-+	guest_monitor_wait(MISC_ENABLES_QUIRK_DISABLED);
-+
-+	guest_monitor_wait(MISC_ENABLES_QUIRK_DISABLED | MWAIT_QUIRK_DISABLED | MWAIT_DISABLED);
-+	guest_monitor_wait(MISC_ENABLES_QUIRK_DISABLED | MWAIT_QUIRK_DISABLED);
-+
-+	GUEST_DONE();
++	return kvm_emulate_monitor_mwait(vcpu, "MWAIT");
 +}
++EXPORT_SYMBOL_GPL(kvm_emulate_mwait);
 +
-+int main(int argc, char *argv[])
-+{
-+	uint64_t disabled_quirks;
-+	struct kvm_vcpu *vcpu;
-+	struct kvm_run *run;
-+	struct kvm_vm *vm;
-+	struct ucall uc;
-+	int testcase;
-+
-+	TEST_REQUIRE(kvm_has_cap(KVM_CAP_DISABLE_QUIRKS2));
-+
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	vcpu_clear_cpuid_feature(vcpu, X86_FEATURE_MWAIT);
-+
-+	run = vcpu->run;
-+
-+	vm_init_descriptor_tables(vm);
-+	vcpu_init_descriptor_tables(vcpu);
-+
-+	while (1) {
-+		vcpu_run(vcpu);
-+
-+		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
-+			    "Unexpected exit reason: %u (%s),\n",
-+			    run->exit_reason,
-+			    exit_reason_str(run->exit_reason));
-+
-+		switch (get_ucall(vcpu, &uc)) {
-+		case UCALL_SYNC:
-+			testcase = uc.args[1];
-+			break;
-+		case UCALL_ABORT:
-+			TEST_FAIL("%s at %s:%ld, testcase = %lx, vector = %ld",
-+				  (const char *)uc.args[0], __FILE__,
-+				  uc.args[1], uc.args[2], uc.args[3]);
-+			goto done;
-+		case UCALL_DONE:
-+			goto done;
-+		default:
-+			TEST_FAIL("Unknown ucall %lu", uc.cmd);
-+			goto done;
-+		}
-+
-+		disabled_quirks = 0;
-+		if (testcase & MWAIT_QUIRK_DISABLED)
-+			disabled_quirks |= KVM_X86_QUIRK_MWAIT_NEVER_FAULTS;
-+		if (testcase & MISC_ENABLES_QUIRK_DISABLED)
-+			disabled_quirks |= KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT;
-+		vm_enable_cap(vm, KVM_CAP_DISABLE_QUIRKS2, disabled_quirks);
-+
-+		/*
-+		 * If the MISC_ENABLES quirk (KVM neglects to update CPUID to
-+		 * enable/disable MWAIT) is disabled, toggle the ENABLE_MWAIT
-+		 * bit in MISC_ENABLES accordingly.  If the quirk is enabled,
-+		 * the only valid configuration is MWAIT disabled, as CPUID
-+		 * can't be manually changed after running the vCPU.
-+		 */
-+		if (!(testcase & MISC_ENABLES_QUIRK_DISABLED)) {
-+			TEST_ASSERT(testcase & MWAIT_DISABLED,
-+				    "Can't toggle CPUID features after running vCPU");
-+			continue;
-+		}
-+
-+		vcpu_set_msr(vcpu, MSR_IA32_MISC_ENABLE,
-+			     (testcase & MWAIT_DISABLED) ? 0 : MSR_IA32_MISC_ENABLE_MWAIT);
-+	}
-+
-+done:
-+	kvm_vm_free(vm);
-+	return 0;
-+}
+ int kvm_emulate_monitor(struct kvm_vcpu *vcpu)
+ {
+-	pr_warn_once("kvm: MONITOR instruction emulated as NOP!\n");
+-	return kvm_emulate_as_nop(vcpu);
++	return kvm_emulate_monitor_mwait(vcpu, "MONITOR");
+ }
+ EXPORT_SYMBOL_GPL(kvm_emulate_monitor);
+ 
 -- 
 2.36.1.255.ge46751e96f-goog
 
