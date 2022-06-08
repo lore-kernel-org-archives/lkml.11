@@ -2,61 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E1DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 18:52:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51EB6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 18:53:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232174AbiFHSwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 14:52:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35470 "EHLO
+        id S232191AbiFHSxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 14:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232191AbiFHSv6 (ORCPT
+        with ESMTP id S229754AbiFHSxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 14:51:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057653E2E9F;
-        Wed,  8 Jun 2022 11:51:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 8 Jun 2022 14:53:01 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC45A192C7E
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 11:52:59 -0700 (PDT)
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA1E8B82616;
-        Wed,  8 Jun 2022 18:51:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F924C34116;
-        Wed,  8 Jun 2022 18:51:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654714313;
-        bh=wGS+AcGNqHfLuT2Hm3nCkkeKEwLClhkrXKZ2e19uFtA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=uqzk/TUIyXeatRqLcjlUWyEHLm8RX0X6tbBX1ESrbsrWsJKPNa8zzy2R1Mk2TGXFD
-         Z2qq04Pw4T6ZANgvUuA5wsLSRrHtMVP2cBLl+heJ0Dzid3rETS4TeNPU1qKQiuw1Do
-         mmwepTr+IlAIon/fs966b6CtcbfNBsZBlJ9woIGhLn+Ck4NM9A6tTPY+B/yfdfbKmB
-         13lb7vOrDQf0K06E4eRJqtSqaDCy6evjZwWMQALkqpbRptjBN29Pefg/uMR20af8as
-         UI3k47G3dX+rowQm+4kUFK0KeyhVxEHtgDa7LWsHtDTsyekZK25iSrqWkqzITXAUek
-         83C58AzR7FeOw==
-Date:   Wed, 8 Jun 2022 13:51:50 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Richard Zhu <hongxing.zhu@nxp.com>
-Cc:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
-        broonie@kernel.org, lorenzo.pieralisi@arm.com,
-        jingoohan1@gmail.com, festevam@gmail.com,
-        francesco.dolcini@toradex.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: Re: [PATCH v9 1/8] PCI: imx6: Encapsulate the clock enable into one
- standalone function
-Message-ID: <20220608185150.GA410588@bhelgaas>
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id BE41D3F207
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 18:52:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1654714378;
+        bh=1xC7xuJX2LwCqZhAFi0xIy8j41xevuej7OLQ+ytw2nQ=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=Yey4wV9LTtGV3TuTImVjgvASalfXnFMYvU14RjMxv3mQnw+fX8T8qq89Zy9uMb8gL
+         WJ1wNVofzza4+GX3oHLjexerykjhZ5F3R0X4cNCBJEIUjaUsPkJVjB0Qk3S8PGZK8Q
+         80k8XeUvYcUrcJi0VUOFL43ADGlUYu9UWdxucVm4XkS4X/2zSqOTLRXUMd7hQvu+NW
+         m6rUL3feTkiYKJ3cLmGqX7sv0u4xjC9Pb5Tg/hy0mAMQqBI/ESrwAKMguQb8LKV4Vh
+         PpoaQr/Y9x9/SdGwdl3lWjcnGx7Ue5vu2Jysbva6pGgUWktyO4dM/tJ7oJ3WSHBX33
+         gDKCYjCIMo3ig==
+Received: by mail-pl1-f198.google.com with SMTP id h10-20020a170902f54a00b00166449db7f8so9618930plf.9
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 11:52:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
+         :comments:mime-version:content-id:date:message-id;
+        bh=1xC7xuJX2LwCqZhAFi0xIy8j41xevuej7OLQ+ytw2nQ=;
+        b=MxHeEutOw/XNxYkdx2P65X0yfg+JmEzyAa+iHkB2ctCTeXRHZTMHdwB+dLTRKRYJRV
+         0RcptJWIxr221kbmeOx0rp7JR/JiPi1K1RGZ6xqP1NzIdN9yhYQhfBpu1shLFKFwfh+D
+         t+lUIvkgSjkeaOUE4BEeVf4TpuMJ6bCumgpQAY//fkPH4n2lnGZvwTwFN2Nd0lNjN5rB
+         dMloS0vQGH+kkFJwwOQQHZF1zmlE6ZRyOjU9t4NG/A+NFl3qA8nuiJ/TclBaUsvBse7D
+         YqwpjByX8wmwpppCodvV+s37KdEHKG9qBKZCb8S2TgBCW+oyqvSCKe2+jlPJMjbwOHNU
+         fGsg==
+X-Gm-Message-State: AOAM531qVYyKa7xeABid905p5JdnVCWEAF3HjaIaddsjho759e0WMgTX
+        hikCqkwf2DCwoWIv7EV2dL8t2nsArE2GkWjUctltO7gpWagPn2jlp35IrZIDTSrphIY1Td8+rfk
+        4iHWPf3oNHNjFfzTAm2v7p2hb/s+w2wTGmrYBe52C+g==
+X-Received: by 2002:a17:902:bd09:b0:162:1497:de0a with SMTP id p9-20020a170902bd0900b001621497de0amr35553394pls.64.1654714377008;
+        Wed, 08 Jun 2022 11:52:57 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz23ty9fYIWfgAEUEgkcxRCNjUJTs0y3pIhLc6xx8m3HBunMKZC4fUMAvhK8ymRAtXm6HpymA==
+X-Received: by 2002:a17:902:bd09:b0:162:1497:de0a with SMTP id p9-20020a170902bd0900b001621497de0amr35553376pls.64.1654714376797;
+        Wed, 08 Jun 2022 11:52:56 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id x22-20020a63cc16000000b003f9e80538d0sm15196943pgf.17.2022.06.08.11.52.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 08 Jun 2022 11:52:56 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id F0F1A62730; Wed,  8 Jun 2022 11:52:55 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id E9D74A0B36;
+        Wed,  8 Jun 2022 11:52:55 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jonathan Toppins <jtoppins@redhat.com>
+cc:     netdev@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [net-next v2 1/2] bonding: netlink error message support for options
+In-reply-to: <57acf609e89a35d4ea6ff901b3be3c5bb0071f78.1654711315.git.jtoppins@redhat.com>
+References: <cover.1654711315.git.jtoppins@redhat.com> <57acf609e89a35d4ea6ff901b3be3c5bb0071f78.1654711315.git.jtoppins@redhat.com>
+Comments: In-reply-to Jonathan Toppins <jtoppins@redhat.com>
+   message dated "Wed, 08 Jun 2022 14:14:56 -0400."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1651801629-30223-2-git-send-email-hongxing.zhu@nxp.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <13032.1654714375.1@famine>
+Date:   Wed, 08 Jun 2022 11:52:55 -0700
+Message-ID: <13033.1654714375@famine>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 09:47:02AM +0800, Richard Zhu wrote:
-> No function changes, just encapsulate the i.MX PCIe clocks enable
-> operations into one standalone function
+Jonathan Toppins <jtoppins@redhat.com> wrote:
 
-Since there's another rev coming for other reasons, maybe mention the
-name of the "one standalone function."
+>Add support for reporting errors via extack in both bond_newlink
+>and bond_changelink.
+>
+>Instead of having to look in the kernel log for why an option was not
+>correct just report the error to the user via the extack variable.
+>
+>What is currently reported today:
+>  ip link add bond0 type bond
+>  ip link set bond0 up
+>  ip link set bond0 type bond mode 4
+> RTNETLINK answers: Device or resource busy
+>
+>After this change:
+>  ip link add bond0 type bond
+>  ip link set bond0 up
+>  ip link set bond0 type bond mode 4
+> Error: unable to set option because the bond is up.
+>
+>Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
 
-s/clocks enable/clock enable/ above
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
