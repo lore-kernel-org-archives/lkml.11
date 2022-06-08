@@ -2,137 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D19DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 20:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E487FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 21:04:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234003AbiFHU5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 16:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59652 "EHLO
+        id S234607AbiFHVEp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 17:04:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229904AbiFHU5J (ORCPT
+        with ESMTP id S234873AbiFHVEh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 16:57:09 -0400
-Received: from 17.mo583.mail-out.ovh.net (17.mo583.mail-out.ovh.net [46.105.56.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 591D4208710
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 13:57:05 -0700 (PDT)
-Received: from player693.ha.ovh.net (unknown [10.109.146.240])
-        by mo583.mail-out.ovh.net (Postfix) with ESMTP id 51828243AD
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 20:57:03 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player693.ha.ovh.net (Postfix) with ESMTPSA id F0CB22B5316F7;
-        Wed,  8 Jun 2022 20:56:53 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-107S00185b07d8f-96d6-4095-b4d8-e86ccb7a7ee7,
-                    17AB8856E930E35E66C22CFEE532C9037B5FA013) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Helge Deller <deller@gmx.de>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH] fbdev: atmel_lcdfb: Rework backlight status updates
-Date:   Wed,  8 Jun 2022 22:56:23 +0200
-Message-Id: <20220608205623.2106113-1-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
+        Wed, 8 Jun 2022 17:04:37 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955B12271B7
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 14:04:33 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id a2so28927804lfg.5
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 14:04:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ragnatech-se.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=3og44WXkQ15rtspRUHybs2AJ6uWnEPTknKE2/uTVFhk=;
+        b=c9xQrWqUh3Y4y7wrrShTgfIjJfpd+ZpKRWC1HqYB9YTGBsndvDvQ9cfoHXRsCTr7fg
+         DpZTYZrXWeOQVFKT1Oj+a+8fWZuO+gj894/2qkaeh6Mh0Mg/nqsl+KeZonNzjx+kciDI
+         3OvoDonBlGyAnUfyd+0ej7hSwrjhsacmDpywsibtSC4TegswuwuHhPJVRY9fBGTcRqLn
+         dq/GIqfb6FFtkTPV3w6HPstioV4BsjXoFFCDgZgesBgZKuey3gwQBzp9QVilvmjolP85
+         Qys9ZClOx5k/vtufUzMJe6/Qr8oPJiVJ+yUIGFoWlmA/6DbBzLTKtQ5AXawsuVpWaRCh
+         Yv+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=3og44WXkQ15rtspRUHybs2AJ6uWnEPTknKE2/uTVFhk=;
+        b=l8K7ZGOPXM87YdaMAcincwxb3KhZPajzismeD5mQ0RiMPvLPIezC/usqnHTqEZ0Fdv
+         ew0JgK1d6EzlnI4Oe5McvAtdyQwVs/Nne0i6dmc6UeqgcJtFSfdBcneQlsI7GjNsIqHW
+         nyK0Dzhf9PDeEgTXEUemhZgYeyvv4E4Gk/NL27aKXplr5qoXM7i66CRTsUHPmTZnB31Z
+         Vrj57kSzJhboIrBFWCxhGl6q5WMxuKV9h4xYCh23WWPRmN9+Q1IZsS3Q7sXBi7JSaNQW
+         OgRpgn6vwlS72rvEyiYuzfziobPz7hmzmlVSauKWmN78yripgGxiNOZ570SPdFNgP2Dw
+         KlDQ==
+X-Gm-Message-State: AOAM531J7CsdoQ1LdI4Odl75KttDCDSs0yvK1oXtnzukDW/1y3kP6Ut8
+        T9RShicRjuV6dsw1kFI0bzCmAQ==
+X-Google-Smtp-Source: ABdhPJznMyIMvmIa9+UbNg9WB1mTMChsKt3TSYKKErioRbkh5g61JmjB1k+SFRhuuel2BnXY69ASYQ==
+X-Received: by 2002:a05:6512:1504:b0:478:d3a1:11 with SMTP id bq4-20020a056512150400b00478d3a10011mr23059178lfb.622.1654722271860;
+        Wed, 08 Jun 2022 14:04:31 -0700 (PDT)
+Received: from localhost (h-85-24-188-65.A463.priv.bahnhof.se. [85.24.188.65])
+        by smtp.gmail.com with ESMTPSA id x36-20020a0565123fa400b004744bfd620fsm3864284lfa.236.2022.06.08.14.04.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 14:04:31 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 23:04:31 +0200
+From:   Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>
+To:     Michael Rodin <mrodin@de.adit-jv.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, michael@rodin.online,
+        erosca@de.adit-jv.com
+Subject: Re: [PATCH 3/3] rcar-vin: handle transfer errors from subdevices and
+ stop streaming if required
+Message-ID: <YqEO3/KekkZhVjW+@oden.dyn.berto.se>
+References: <1652983210-1194-1-git-send-email-mrodin@de.adit-jv.com>
+ <1652983210-1194-4-git-send-email-mrodin@de.adit-jv.com>
+ <Yoav5KjnbIlpkR6c@oden.dyn.berto.se>
+ <20220520195041.GA18056@vmlxhi-121.adit-jv.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 945474448624879238
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddtjedgudehudcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileefrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekfe
+In-Reply-To: <20220520195041.GA18056@vmlxhi-121.adit-jv.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of checking the state of various backlight_properties fields
-against the memorised state in atmel_lcdfb_info.bl_power,
-atmel_bl_update_status() should retrieve the desired state using
-backlight_get_brightness (which takes into account the power state,
-blanking etc.). This means the explicit checks using props.fb_blank
-and props.power can be dropped.
+Hi Michael,
 
-Then brightness can only be negative if the backlight is on but
-props.brightness is negative, so the test before reading the
-brightness value from the hardware can be simplified to
-(brightness < 0).
+On 2022-05-20 21:50:41 +0200, Michael Rodin wrote:
 
-As a result, bl_power in struct atmel_lcdfb_info is no longer
-necessary, so remove that while we're at it. Since we only ever care
-about reading the current state in backlight_properties, drop the
-updates at the end of the function.
+[snip]
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc: Helge Deller <deller@gmx.de>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc: linux-fbdev@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-arm-kernel@lists.infradead.org
----
- drivers/video/fbdev/atmel_lcdfb.c | 21 ++-------------------
- 1 file changed, 2 insertions(+), 19 deletions(-)
+> > 
+> > Do we need to set xfer_error to false here? The delayed work is canceled 
+> > and we reset the xfer_error when we start in rvin_start_streaming().
+> > 
+> 
+> You are right, this seems to be redundant. But I think that there might be
+> a different case where we have to reset xfer_error:
+> 
+>  1. A non-critical transfer error has occurred during streaming from a
+>     HDMI source.
+>  2. Frames are still captured for an hour without any further problems,
+>     since it was just a short glitch
+>  3. Now the source (e.g. HDMI signal generator) has been powered off by the
+>     user so it does not send new frames.
+>  4. Timeout occurs due to 3 but since xfer_error has been set 1 hour ago,
+>     userspace is notified about a transfer error and assumes that streaming
+>     has been stopped because of this.
+> 
+> To avoid this scenario I think maybe we have to restrict validity of
+> xfer_error. Maybe it would be better to make xfer_error a counter which is
+> set after a transfer error to e.g. 10 frames and then decremented after
+> each captured frame so after 10 successfully captured frames we know that a
+> timeout has occurred definitely not due to a transfer error?
+> 
+> Another possible improvement might be to make FRAME_TIMEOUT_MS configurable,
+> maybe via a v4l2 control from userspace? Or we could also define the timeout
+> as a multiple of the frame interval of the source. This would allow us to
+> reduce the timeout further based on the particular source so the userspace
+> does not have to wait for a second until it knows that it has to restart
+> streaming.
+> 
+> What do you think?
 
-diff --git a/drivers/video/fbdev/atmel_lcdfb.c b/drivers/video/fbdev/atmel_lcdfb.c
-index 1fc8de4ecbeb..06159a4da293 100644
---- a/drivers/video/fbdev/atmel_lcdfb.c
-+++ b/drivers/video/fbdev/atmel_lcdfb.c
-@@ -49,7 +49,6 @@ struct atmel_lcdfb_info {
- 	struct clk		*lcdc_clk;
- 
- 	struct backlight_device	*backlight;
--	u8			bl_power;
- 	u8			saved_lcdcon;
- 
- 	u32			pseudo_palette[16];
-@@ -109,22 +108,10 @@ static u32 contrast_ctr = ATMEL_LCDC_PS_DIV8
- static int atmel_bl_update_status(struct backlight_device *bl)
- {
- 	struct atmel_lcdfb_info *sinfo = bl_get_data(bl);
--	int			power = sinfo->bl_power;
--	int			brightness = bl->props.brightness;
-+	int			brightness = backlight_get_brightness(bl);
- 
--	/* REVISIT there may be a meaningful difference between
--	 * fb_blank and power ... there seem to be some cases
--	 * this doesn't handle correctly.
--	 */
--	if (bl->props.fb_blank != sinfo->bl_power)
--		power = bl->props.fb_blank;
--	else if (bl->props.power != sinfo->bl_power)
--		power = bl->props.power;
--
--	if (brightness < 0 && power == FB_BLANK_UNBLANK)
-+	if (brightness < 0)
- 		brightness = lcdc_readl(sinfo, ATMEL_LCDC_CONTRAST_VAL);
--	else if (power != FB_BLANK_UNBLANK)
--		brightness = 0;
- 
- 	lcdc_writel(sinfo, ATMEL_LCDC_CONTRAST_VAL, brightness);
- 	if (contrast_ctr & ATMEL_LCDC_POL_POSITIVE)
-@@ -133,8 +120,6 @@ static int atmel_bl_update_status(struct backlight_device *bl)
- 	else
- 		lcdc_writel(sinfo, ATMEL_LCDC_CONTRAST_CTR, contrast_ctr);
- 
--	bl->props.fb_blank = bl->props.power = sinfo->bl_power = power;
--
- 	return 0;
- }
- 
-@@ -155,8 +140,6 @@ static void init_backlight(struct atmel_lcdfb_info *sinfo)
- 	struct backlight_properties props;
- 	struct backlight_device	*bl;
- 
--	sinfo->bl_power = FB_BLANK_UNBLANK;
--
- 	if (sinfo->backlight)
- 		return;
- 
+I discussed this problem last week at a conference and the consensus was 
+that this problem of timeouts and the like should in the first hand be 
+handled in user-space. The reason being that there might be use-cases 
+that are better dealt with there.
 
-base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+If the monitor thread is is strictly needed for some reason in kernel 
+thread it should likely be moved to the V4L2 core as all drivers would 
+then be able to use it instead of deeding on slightly different 
+implementations in each driver.
+
+So I fear we are back to only try to signal xfer errors in the driver 
+and then leave it to either user-space or some new V4L2 code to help 
+monitoring.
+
+Sorry for only understanding this so late in the review, it took some 
+time for me to understand it but once explained to me it made sens.
+
 -- 
-2.30.2
-
+Kind Regards,
+Niklas Söderlund
