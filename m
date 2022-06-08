@@ -2,89 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F7F2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:27:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ADBAC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 12:27:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239201AbiFHM1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:27:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48576 "EHLO
+        id S239249AbiFHM1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239160AbiFHM1j (ORCPT
+        with ESMTP id S239160AbiFHM1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:27:39 -0400
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3556B2383F8;
-        Wed,  8 Jun 2022 05:27:38 -0700 (PDT)
-Received: by mail-wr1-f51.google.com with SMTP id q26so17786771wra.1;
-        Wed, 08 Jun 2022 05:27:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=olXSHoK0AVfUatuPzpksjr3kjUvIgoKcvlcJNQWKpqg=;
-        b=ChxkkUQRoDL6yMY9Y9uRxuDS1I3u95QMzjFt4BpH/dj5UC3Z9kGOc9Aa1H+JjFyJZH
-         pcB6krn8VjkViWJWFP/2hA68Ng9SNXs40Z4xxU18rPgEf7MI6xPeRhn8lF8SG/iL1jXs
-         x915nfB9pYP31GTz3bdR1brc1PNH7KQCmo7Dr4dNIZo4I9nv2gpcLxcfVCZuFLT6A3Wg
-         aezL3FjjhGn1UHQsExyMCAO+fPhFVTmOT8CODEIf6qzlf/S24Nc1nBmV2Sl5rL+qDre4
-         JHT5z3YXj5eg0rTfk65HDTMZvaNAJDelXbmjQ5Mt5THSFp0CgHQ/q9PqnIKNvRsLlj81
-         4Zdg==
-X-Gm-Message-State: AOAM530Lwqw12cxrNCdrmcl/9J2SSQGFIb2tvfNCs6W4heLBHpcA9UQ2
-        yH6N1zCyo19Pnjcy76NKBUE=
-X-Google-Smtp-Source: ABdhPJyDnp51cvsxq0KnEnlHaLonX92SKXnq8QCyunTkm09ZTePIxCWrkyJMGc8CFXoQUJkJQd2Lpg==
-X-Received: by 2002:a05:6000:1ac8:b0:218:4187:aab6 with SMTP id i8-20020a0560001ac800b002184187aab6mr14902511wry.236.1654691256539;
-        Wed, 08 Jun 2022 05:27:36 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id p15-20020a05600c358f00b003973ea7e725sm35966983wmq.0.2022.06.08.05.27.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 05:27:36 -0700 (PDT)
-Date:   Wed, 8 Jun 2022 12:27:34 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     "K . Y . Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        linux-hyperv@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] clocksource: hyper-v: unexport __init-annotated
- hv_init_clocksource()
-Message-ID: <20220608122734.m25chzpwbr5ancnm@liuwe-devbox-debian-v2>
-References: <20220606050238.4162200-1-masahiroy@kernel.org>
+        Wed, 8 Jun 2022 08:27:43 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21C123E835
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 05:27:41 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LJ60C3hlFzjYcL;
+        Wed,  8 Jun 2022 20:26:19 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 8 Jun 2022 20:27:39 +0800
+Subject: Re: [PATCH] MAINTAINERS: add myself as a memory-failure reviewer
+To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>
+CC:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220607145135.38670-1-linmiaohe@huawei.com>
+ <20220607224210.GA1400450@hori.linux.bs1.fc.nec.co.jp>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <07a5fb28-a9b2-3c77-79fd-c1dc7dbe755e@huawei.com>
+Date:   Wed, 8 Jun 2022 20:27:39 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220606050238.4162200-1-masahiroy@kernel.org>
+In-Reply-To: <20220607224210.GA1400450@hori.linux.bs1.fc.nec.co.jp>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 02:02:38PM +0900, Masahiro Yamada wrote:
-> EXPORT_SYMBOL and __init is a bad combination because the .init.text
-> section is freed up after the initialization. Hence, modules cannot
-> use symbols annotated __init. The access to a freed symbol may end up
-> with kernel panic.
+On 2022/6/8 6:42, HORIGUCHI NAOYA(堀口 直也) wrote:
+> On Tue, Jun 07, 2022 at 10:51:35PM +0800, Miaohe Lin wrote:
+>> I have been focusing on mm for the past two years. e.g. fixing bugs,
+>> cleaning up the code and reviewing. I would like to help maintainers
+>> and people working on memory-failure by reviewing their work.
+>>
+>> Let me be Cc'd on patches related to memory-failure.
+>>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 > 
-> modpost used to detect it, but it has been broken for a decade.
-> 
-> Recently, I fixed modpost so it started to warn it again, then this
-> showed up in linux-next builds.
-> 
-> There are two ways to fix it:
-> 
->   - Remove __init
->   - Remove EXPORT_SYMBOL
-> 
-> I chose the latter for this case because the only in-tree call-site,
-> arch/x86/kernel/cpu/mshyperv.c is never compiled as modular.
-> (CONFIG_HYPERVISOR_GUEST is boolean)
-> 
-> Fixes: dd2cb348613b ("clocksource/drivers: Continue making Hyper-V clocksource ISA agnostic")
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> Thank you for raising a hand, this is really nice.
 
-Applied to hyperv-fixes. Thanks.
+That's my pleasure. I will try my best to be qualified for this position. ;)
+
+> 
+> Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+
+Thanks!
+
+> 
+>> ---
+>>  MAINTAINERS | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index 6e4ad450bf3c..6430aebfe296 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -9136,6 +9136,7 @@ F:	drivers/media/platform/st/sti/hva
+>>  
+>>  HWPOISON MEMORY FAILURE HANDLING
+>>  M:	Naoya Horiguchi <naoya.horiguchi@nec.com>
+>> +R:	Miaohe Lin <linmiaohe@huawei.com>
+>>  L:	linux-mm@kvack.org
+>>  S:	Maintained
+>>  F:	mm/hwpoison-inject.c
+>> -- 
+>> 2.23.0
+
