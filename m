@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F0D9C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F623CCA483
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 14:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241656AbiFHOki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 10:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53110 "EHLO
+        id S241488AbiFHOkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 10:40:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241585AbiFHOkg (ORCPT
+        with ESMTP id S241592AbiFHOkg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 8 Jun 2022 10:40:36 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8083913B8CC
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 07:40:30 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LJ8vH6YdpzRj9k;
-        Wed,  8 Jun 2022 22:37:15 +0800 (CST)
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1FE1455B4
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 07:40:31 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LJ8wt6y9Kz1K9sx;
+        Wed,  8 Jun 2022 22:38:38 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 8 Jun
- 2022 22:40:28 +0800
+ 2022 22:40:27 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <david@redhat.com>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v2 3/3] mm/swap: remove swap_cache_info statistics
-Date:   Wed, 8 Jun 2022 22:40:31 +0800
-Message-ID: <20220608144031.829-4-linmiaohe@huawei.com>
+Subject: [PATCH v2 2/3] mm/swapfile: fix possible data races of inuse_pages
+Date:   Wed, 8 Jun 2022 22:40:30 +0800
+Message-ID: <20220608144031.829-3-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220608144031.829-1-linmiaohe@huawei.com>
 References: <20220608144031.829-1-linmiaohe@huawei.com>
@@ -43,75 +43,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-swap_cache_info are not statistics that could be easily used to tune system
-performance because they are not easily accessile. Also they can't provide
-really useful info when OOM occurs. Remove these statistics can also help
-mitigate unneeded global swap_cache_info cacheline contention.
+si->inuse_pages could still be accessed concurrently now. The plain reads
+outside si->lock critical section, i.e. swap_show and si_swapinfo, which
+results in data races. But these should be ok because they're just used
+for showing swap info.
 
-Suggested-by: David Hildenbrand <david@redhat.com>
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Reviewed-by: David Hildenbrand <david@redhat.com>
 ---
- mm/swap_state.c | 17 -----------------
- 1 file changed, 17 deletions(-)
+ mm/swapfile.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/mm/swap_state.c b/mm/swap_state.c
-index 0a2021fc55ad..41c6a6053d5c 100644
---- a/mm/swap_state.c
-+++ b/mm/swap_state.c
-@@ -59,24 +59,11 @@ static bool enable_vma_readahead __read_mostly = true;
- #define GET_SWAP_RA_VAL(vma)					\
- 	(atomic_long_read(&(vma)->swap_readahead_info) ? : 4)
+diff --git a/mm/swapfile.c b/mm/swapfile.c
+index d2bead7b8b70..3fa26f6971e9 100644
+--- a/mm/swapfile.c
++++ b/mm/swapfile.c
+@@ -2646,7 +2646,7 @@ static int swap_show(struct seq_file *swap, void *v)
+ 	}
  
--#define INC_CACHE_INFO(x)	data_race(swap_cache_info.x++)
--#define ADD_CACHE_INFO(x, nr)	data_race(swap_cache_info.x += (nr))
--
--static struct {
--	unsigned long add_total;
--	unsigned long del_total;
--	unsigned long find_success;
--	unsigned long find_total;
--} swap_cache_info;
--
- static atomic_t swapin_readahead_hits = ATOMIC_INIT(4);
+ 	bytes = si->pages << (PAGE_SHIFT - 10);
+-	inuse = si->inuse_pages << (PAGE_SHIFT - 10);
++	inuse = READ_ONCE(si->inuse_pages) << (PAGE_SHIFT - 10);
  
- void show_swap_cache_info(void)
- {
- 	printk("%lu pages in swap cache\n", total_swapcache_pages());
--	printk("Swap cache stats: add %lu, delete %lu, find %lu/%lu\n",
--		swap_cache_info.add_total, swap_cache_info.del_total,
--		swap_cache_info.find_success, swap_cache_info.find_total);
- 	printk("Free swap  = %ldkB\n",
- 		get_nr_swap_pages() << (PAGE_SHIFT - 10));
- 	printk("Total swap = %lukB\n", total_swap_pages << (PAGE_SHIFT - 10));
-@@ -133,7 +120,6 @@ int add_to_swap_cache(struct page *page, swp_entry_t entry,
- 		address_space->nrpages += nr;
- 		__mod_node_page_state(page_pgdat(page), NR_FILE_PAGES, nr);
- 		__mod_lruvec_page_state(page, NR_SWAPCACHE, nr);
--		ADD_CACHE_INFO(add_total, nr);
- unlock:
- 		xas_unlock_irq(&xas);
- 	} while (xas_nomem(&xas, gfp));
-@@ -172,7 +158,6 @@ void __delete_from_swap_cache(struct page *page,
- 	address_space->nrpages -= nr;
- 	__mod_node_page_state(page_pgdat(page), NR_FILE_PAGES, -nr);
- 	__mod_lruvec_page_state(page, NR_SWAPCACHE, -nr);
--	ADD_CACHE_INFO(del_total, nr);
- }
+ 	file = si->swap_file;
+ 	len = seq_file_path(swap, file, " \t\n\\");
+@@ -3265,7 +3265,7 @@ void si_swapinfo(struct sysinfo *val)
+ 		struct swap_info_struct *si = swap_info[type];
  
- /**
-@@ -348,12 +333,10 @@ struct page *lookup_swap_cache(swp_entry_t entry, struct vm_area_struct *vma,
- 	page = find_get_page(swap_address_space(entry), swp_offset(entry));
- 	put_swap_device(si);
- 
--	INC_CACHE_INFO(find_total);
- 	if (page) {
- 		bool vma_ra = swap_use_vma_readahead();
- 		bool readahead;
- 
--		INC_CACHE_INFO(find_success);
- 		/*
- 		 * At the moment, we don't support PG_readahead for anon THP
- 		 * so let's bail out rather than confusing the readahead stat.
+ 		if ((si->flags & SWP_USED) && !(si->flags & SWP_WRITEOK))
+-			nr_to_be_unused += si->inuse_pages;
++			nr_to_be_unused += READ_ONCE(si->inuse_pages);
+ 	}
+ 	val->freeswap = atomic_long_read(&nr_swap_pages) + nr_to_be_unused;
+ 	val->totalswap = total_swap_pages + nr_to_be_unused;
 -- 
 2.23.0
 
