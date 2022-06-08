@@ -2,99 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB676C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:00:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0BB3C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 05:00:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232132AbiFHFAP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 01:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60890 "EHLO
+        id S232353AbiFHFAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 01:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231970AbiFHE6S (ORCPT
+        with ESMTP id S233487AbiFHE7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 00:58:18 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD982584C1
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:29:25 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id i201so11791699ioa.6
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 18:29:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=g/FyTJSdUmnIw8e0BMa6AuXeqzIW/H0uELplCSxIKYI=;
-        b=WjwYVUwLrvT6SvyNkyxcsXhXmLjZb00LOh6ljURgUxzDG8Cn+yn9BkKr6OD6O6191X
-         snwXgYG5mkDrpi2X+mhfp4ixpim4Shn5seCc2xe4eDEqQSRmuRa5Mgo2caG5/QzmReZK
-         T6W9ebEu9jgkUG9AwDIQgK7Vf0H9l+xNgUBXg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=g/FyTJSdUmnIw8e0BMa6AuXeqzIW/H0uELplCSxIKYI=;
-        b=nSb5U+/dQmqOKdO3NBwwHjxsP1oOA/gXgT7bEQgJTdLpa//i9LTWNv8Vl6laXQ7lId
-         Tsip/k4+28qdz1NHISBAJnRdq24HkvWPDmI1yoOUKDKBUdo95a0gwk5tXA9MnNXP2hiU
-         yik8WEuBSmvDlUvNDRswaxovGpGIgrcJTnNACF/hikU/QotNKcPiMltEquF7J+wZqsB0
-         J0wUIc6GQuRBYjHpHlZn5uzBP18ZbrMjXPhvx86qOe+fwVDCbZWZe8j7P2PVeyAUPoBs
-         lklGloa0KCyo0Yw1ycNZEJIBhkcB2B0YdJaXzTiIdZUcaZgyrP6czlTX+UmIxlTsXUaa
-         EjtQ==
-X-Gm-Message-State: AOAM533LUgD1FK3z5+/mSs2upXxsJae6obw7GZj+/mjn/tDIrRsg7Ccl
-        1AhT7+7pNjMLFmlIYAcWdfVezQ==
-X-Google-Smtp-Source: ABdhPJwgHgS9a+2m4fzbod5RRpMFPyIWrF465Y0yhQ+Cc2sf+vRXsDSx9fp3Xi+hOnYE64g4wqA/Xw==
-X-Received: by 2002:a5d:8348:0:b0:668:9cc6:1a52 with SMTP id q8-20020a5d8348000000b006689cc61a52mr14694337ior.101.1654651763747;
-        Tue, 07 Jun 2022 18:29:23 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id k2-20020a5d97c2000000b006656f9eefa3sm7358056ios.18.2022.06.07.18.29.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 18:29:23 -0700 (PDT)
-Subject: Re: [PATCH 5.10 000/452] 5.10.121-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220607164908.521895282@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <7f0e1a0e-a6c0-abaa-f390-4e1adc78d14c@linuxfoundation.org>
-Date:   Tue, 7 Jun 2022 19:29:22 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-MIME-Version: 1.0
-In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Wed, 8 Jun 2022 00:59:16 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C73222AE9
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:31:48 -0700 (PDT)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx708L+p9iq4InAA--.61590S2;
+        Wed, 08 Jun 2022 09:23:23 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] samples: Use KSYM_NAME_LEN for kprobes
+Date:   Wed,  8 Jun 2022 09:23:22 +0800
+Message-Id: <1654651402-21552-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9Dx708L+p9iq4InAA--.61590S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Zr45CF4ruw4xXF18ZFy3CFg_yoW8AF17pF
+        1qy34Ygr4rZr1UJ39xJw18W34Iq34DZr47Gr4rW34UtasF9r1kAr4xtF4jqw4kuF9Yqa13
+        Jr4Igr98JryxJ3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkG14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxV
+        W8Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xf
+        McIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7
+        v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAF
+        wVWkMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI
+        0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y
+        0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxV
+        WUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8
+        JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUg4SOUUU
+        UU=
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/7/22 10:57 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.121 release.
-> There are 452 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 09 Jun 2022 16:48:02 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.121-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+It is better and enough to use KSYM_NAME_LEN for kprobes
+in samples, no need to define and use the other values.
 
-Compiled and booted on my test system. No dmesg regressions.
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ samples/kprobes/kprobe_example.c    | 5 ++---
+ samples/kprobes/kretprobe_example.c | 5 ++---
+ 2 files changed, 4 insertions(+), 6 deletions(-)
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
-
-thanks,
--- Shuah
-
+diff --git a/samples/kprobes/kprobe_example.c b/samples/kprobes/kprobe_example.c
+index f991a66..fd346f5 100644
+--- a/samples/kprobes/kprobe_example.c
++++ b/samples/kprobes/kprobe_example.c
+@@ -16,9 +16,8 @@
+ #include <linux/module.h>
+ #include <linux/kprobes.h>
+ 
+-#define MAX_SYMBOL_LEN	64
+-static char symbol[MAX_SYMBOL_LEN] = "kernel_clone";
+-module_param_string(symbol, symbol, sizeof(symbol), 0644);
++static char symbol[KSYM_NAME_LEN] = "kernel_clone";
++module_param_string(symbol, symbol, KSYM_NAME_LEN, 0644);
+ 
+ /* For each probe you need to allocate a kprobe structure */
+ static struct kprobe kp = {
+diff --git a/samples/kprobes/kretprobe_example.c b/samples/kprobes/kretprobe_example.c
+index 228321e..cbf1654 100644
+--- a/samples/kprobes/kretprobe_example.c
++++ b/samples/kprobes/kretprobe_example.c
+@@ -23,11 +23,10 @@
+ #include <linux/module.h>
+ #include <linux/kprobes.h>
+ #include <linux/ktime.h>
+-#include <linux/limits.h>
+ #include <linux/sched.h>
+ 
+-static char func_name[NAME_MAX] = "kernel_clone";
+-module_param_string(func, func_name, NAME_MAX, S_IRUGO);
++static char func_name[KSYM_NAME_LEN] = "kernel_clone";
++module_param_string(func, func_name, KSYM_NAME_LEN, 0644);
+ MODULE_PARM_DESC(func, "Function to kretprobe; this module will report the"
+ 			" function's execution time");
+ 
+-- 
+2.1.0
 
