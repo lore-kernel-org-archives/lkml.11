@@ -2,458 +2,361 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55569C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 05:57:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A933DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 05:57:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238738AbiFIF5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 01:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51180 "EHLO
+        id S238809AbiFIF5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 01:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238662AbiFIF5L (ORCPT
+        with ESMTP id S231255AbiFIF5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 01:57:11 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 862222ED51;
-        Wed,  8 Jun 2022 22:57:07 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id y187so20933875pgd.3;
-        Wed, 08 Jun 2022 22:57:07 -0700 (PDT)
+        Thu, 9 Jun 2022 01:57:03 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BBFD2DD70;
+        Wed,  8 Jun 2022 22:57:02 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id e66so20892353pgc.8;
+        Wed, 08 Jun 2022 22:57:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=j0j00m2X6T/5xgVeW9xL8vXTopWoHv2mPnZPACxJ5WY=;
-        b=J39mbzfcia1l9D7OkCj+IaO3AyqpA4/LeiM/EJO406vRR7GxJwvy0l3y+/hyNB2CIx
-         h0YV4k/b9J48rasqWq19wINl6Kdvg1j5kDQ0Ka7VyjYWWIxhq61ZdJv3qwSHNIewtFt1
-         VF0yUcwCCkEJ6p67siJgXSn4oGvBx18duiWqE/R/Izw4/6fZBZUS2V/K2hVsl+TwM8Ob
-         pW/t/nje5WMUvZBuf/f+xXWTYI+yFD9L7YXM9XFXeFahB6QNKZ2to1yTzzG3B6mgDD9X
-         +u5nnUHeMPQrPd1fpvbrf6/WBWnuCMWk4OE1CwnedYVLCBrDxcCdgQxm164zZWppaBLL
-         51uw==
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GPdbfLYebrSBilu4sWHrQjj3Z3ds+OW3q529cekCEq0=;
+        b=ghJFVwLTXC9Sx4QQRLpAqC3ILtqsxIc9WRRU11ZKPYBCYqtAn4Y+h3qZsYsrQCBdpB
+         JcqmIb7RfIQKwO9Z+U2OzpMYGoy1cRndGrayHZ2BLczOyt1hHaejSch4AWmE3XpfTIei
+         yrWHax6cSVCHCwhlt2s8MTzhsCm9x/DETzAY9JOot3mdQGkVykhcADzaUxh96ZhjiNyJ
+         NCT7ejZhGQyj9RyNtjqNHogfPTHAvyyB3+UExgPX0GLh6u4igAuTaerATzbd55Kh5Bjb
+         jlqhMbcCMQE8v+s3givQ9zAyaVoUo5ONkedy/06HGAFJnwuEwbbsqCe/HxdoVnVxkOEQ
+         8Kig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=j0j00m2X6T/5xgVeW9xL8vXTopWoHv2mPnZPACxJ5WY=;
-        b=1OoR8HS9IOoS/13ws7F1hZQmXqHalGn6yuwgEqHcotXpux6TLjsKBqAcxhW5PNIKcq
-         hljMpCAmKPVXMz2Lge4ZDPH9ekYPAWZvLi9yq3J8wsZuMeR4aI2Gk4CUfRhHtp/zOWwF
-         ICyZkybNlVeIvAsc4BsXQii0IjhP6n0T8gmxG1TxRWvG4gI6RAiYzpDExd8T6/bH6KxW
-         2zIqFy+Wtmh4K+hV4UdC4mmWdLduPm5JL5NJNqjje/kpU5Ra0Dv+txp/smNXg2/Z4RGy
-         JbSu7QB6xsL2A08VeHQjBOdjhce43CZ7Jpw6bwNNflh2tA1S8m/RywI6fYSUBtwYAxIW
-         yRew==
-X-Gm-Message-State: AOAM530tbNGOBioSta82wHv09IXK8Jmpvz3r+ymIEvgH8WleX2ztvrr2
-        mmcfvlXJWj72mhP+GC2IjdU=
-X-Google-Smtp-Source: ABdhPJya6Cw087uKEn1CsL1DAZ7XBeHzMf0yQwQaALff2Px+Vif9g2eX9TG+jhVAKzCgHkcvqoQJaA==
-X-Received: by 2002:a05:6a00:a8b:b0:4e1:52db:9e5c with SMTP id b11-20020a056a000a8b00b004e152db9e5cmr104582134pfl.38.1654754226844;
-        Wed, 08 Jun 2022 22:57:06 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id s22-20020a170902a51600b001677841e9c2sm7936189plq.119.2022.06.08.22.57.04
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=GPdbfLYebrSBilu4sWHrQjj3Z3ds+OW3q529cekCEq0=;
+        b=w/NHAqfaELqcpyjFH1pkoWgeb60W7OSqRmeqA0ND/UfvPGGu1b17lOMXBJAgsubp5j
+         UvmWPgmxN+9TjQDuqdSwymVxBn419UjQ05TYVxbb5IS/5WYHbfPQoawaVLAtxCG1U7NJ
+         pxlOZEZZPOHhWE4++BqO3oGBV3+Oe8fJF9lupwYL0H+20+2FZ7bvneniOvbKikV6UJcW
+         sLatYq5xF7lANzMqyLjwc6pt02dcX7fL91NLuUBM701TUA9QY2UT++fP9kVXItGYCyVl
+         rlnpcyZU01YjzbRS5FJAaSzMHifu/pySuaoKVfH2U0vabEOVOK9eTMvwC8g2prTywrqq
+         WXCw==
+X-Gm-Message-State: AOAM532IWVQu9rWOKCRVpL87DjbuX7qvqNqw/UmXFEAaEfXuKHXk4wXx
+        2mIQVQBpcH6bP/aMgmqX0FA=
+X-Google-Smtp-Source: ABdhPJwWDYRZURQ7qmJEJHlCO0ZPtptTumIXmIJxiqyr4VJ64alsmbHwN4bNstpmBKdoU2ypCqDV9g==
+X-Received: by 2002:aa7:88c6:0:b0:51c:6e36:fad7 with SMTP id k6-20020aa788c6000000b0051c6e36fad7mr5798989pff.2.1654754222108;
+        Wed, 08 Jun 2022 22:57:02 -0700 (PDT)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:6780:cb0:2c32:ceaf:ea06:c5de])
+        by smtp.gmail.com with ESMTPSA id w22-20020a1709026f1600b0016196bcf743sm9502413plk.275.2022.06.08.22.57.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 22:57:06 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: xu.xin16@zte.com.cn
-To:     akpm@linux-foundation.org
-Cc:     mhocko@suse.com, oleksandr@natalenko.name, willy@infradead.org,
-        corbet@lwn.net, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-doc@vger.kernel.org, xu xin <xu.xin16@zte.com.cn>
-Subject: [PATCH] mm/ksm: provide global_force to see maximum potential merging
-Date:   Thu,  9 Jun 2022 05:56:58 +0000
-Message-Id: <20220609055658.703472-1-xu.xin16@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 08 Jun 2022 22:57:01 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Subject: [PATCH 7/7] perf lock: Look up callchain for the contended locks
+Date:   Wed,  8 Jun 2022 22:56:52 -0700
+Message-Id: <20220609055652.938821-8-namhyung@kernel.org>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+In-Reply-To: <20220609055652.938821-1-namhyung@kernel.org>
+References: <20220609055652.938821-1-namhyung@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: xu xin <xu.xin16@zte.com.cn>
+The lock contention tracepoints don't provide lock names.  All we can
+do is to get stack traces and show the caller instead.  To minimize
+the overhead it's limited to up to 8 stack traces and display the
+first non-lock function symbol name as a caller.
 
-Up to now, KSM is apparently useful to save memory not just for VM but for
-normal applications. But upper application developers might not know much
-about KSM or whether they should use madvise(xxx, MERGEABLE) while there
-indeed exist a lot of same pages in their apps. Some application developers
-urgently need the kernel to provide an interface of KSM debugging mode to
-see the maximum potential merging of the whole system, so the patch is.
+  $ perf lock report -F acquired,contended,avg_wait,wait_total
 
-We provide global_force at /sys/kernel/mm/ksm/. We can turn it on/off
-simply by:
+                  Name   acquired  contended     avg wait    total wait
 
-echo 1 > /sys/kernel/mm/ksm/global_force
-echo 0 > /sys/kernel/mm/ksm/global_force
+   update_blocked_a...         40         40      3.61 us     144.45 us
+   kernfs_fop_open+...          5          5      3.64 us      18.18 us
+    _nohz_idle_balance          3          3      2.65 us       7.95 us
+   tick_do_update_j...          1          1      6.04 us       6.04 us
+    ep_scan_ready_list          1          1      3.93 us       3.93 us
+  ...
 
-Also, we can change the sysfs boot time defaults of global_force supported
-by passing the parameter ``ksm_global_force=true`` to kernel cmdline.
-
-With this patch, we can use it together with'/proc/<pid>/ksm_merging_pages'
-to explore the maximum potential of KSM merging of all the running
-applications in service-developping or debugging environments. Setting it
-to 1 is not recommended in service-online environments. Note: if an app is
-started before setting global_force to 1, it may need to be restart to let
-the affect effective.
-
-Signed-off-by: xu xin <xu.xin16@zte.com.cn>
+Acked-by: Ian Rogers <irogers@google.com>
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 ---
- Documentation/admin-guide/mm/ksm.rst |  19 +++++
- include/linux/ksm.h                  |  40 ++++++++++
- mm/ksm.c                             | 108 ++++++++++++++++++++++-----
- mm/memory.c                          |   4 +
- mm/mmap.c                            |   7 ++
- 5 files changed, 158 insertions(+), 20 deletions(-)
+ tools/perf/builtin-lock.c | 172 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 168 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/admin-guide/mm/ksm.rst b/Documentation/admin-guide/mm/ksm.rst
-index b244f0202a03..bea571d29b58 100644
---- a/Documentation/admin-guide/mm/ksm.rst
-+++ b/Documentation/admin-guide/mm/ksm.rst
-@@ -157,6 +157,17 @@ stable_node_chains_prune_millisecs
-         scan. It's a noop if not a single KSM page hit the
-         ``max_page_sharing`` yet.
+diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
+index a677ad9507c3..93e958a7f844 100644
+--- a/tools/perf/builtin-lock.c
++++ b/tools/perf/builtin-lock.c
+@@ -9,6 +9,7 @@
+ #include "util/symbol.h"
+ #include "util/thread.h"
+ #include "util/header.h"
++#include "util/callchain.h"
  
-+global_force
-+        specifies whether to force all anonymous and eligible pages to
-+        be scanned in KSM. When set to 1, the ksmd will consume more cpu
-+        performance because more pages needs to be scanned suddenly, so
-+        setting it to 1 is not recommended in service-online environments.
-+        we can use it together with ``/proc/<pid>/ksm_merging_pages`` to
-+        explore the maximum potential of KSM merging of all the running
-+        applications in service-developping or debugging environments.
-+        Note: if an app is started before setting global_force to 1, it
-+        may need to be restart to let the affect effective.
-+
- The effectiveness of KSM and MADV_MERGEABLE is shown in ``/sys/kernel/mm/ksm/``:
+ #include <subcmd/pager.h>
+ #include <subcmd/parse-options.h>
+@@ -19,6 +20,7 @@
+ #include "util/tool.h"
+ #include "util/data.h"
+ #include "util/string2.h"
++#include "util/map.h"
  
- pages_shared
-@@ -202,6 +213,14 @@ ksm_swpin_copy
- 	note that KSM page might be copied when swapping in because do_swap_page()
- 	cannot do all the locking needed to reconstitute a cross-anon_vma KSM page.
+ #include <sys/types.h>
+ #include <sys/prctl.h>
+@@ -32,6 +34,7 @@
+ #include <linux/kernel.h>
+ #include <linux/zalloc.h>
+ #include <linux/err.h>
++#include <linux/stringify.h>
  
-+Boot parameter
-+==============
-+
-+You can change the sysfs boot time defaults of global_force supported by
-+passing the parameter ``ksm_global_force=true`` to kernel cmdline, where
-+all anonymous pagess of memory will be scanned by ksm daemon after kernel
-+start up, and you will see that the value of ``global_force`` is 1.
-+
- --
- Izik Eidus,
- Hugh Dickins, 17 Nov 2009
-diff --git a/include/linux/ksm.h b/include/linux/ksm.h
-index 0b4f17418f64..3081097f3879 100644
---- a/include/linux/ksm.h
-+++ b/include/linux/ksm.h
-@@ -19,6 +19,9 @@ struct stable_node;
- struct mem_cgroup;
+ static struct perf_session *session;
  
- #ifdef CONFIG_KSM
-+
-+extern bool ksm_global_force __read_mostly;
-+
- int ksm_madvise(struct vm_area_struct *vma, unsigned long start,
- 		unsigned long end, int advice, unsigned long *vm_flags);
- int __ksm_enter(struct mm_struct *mm);
-@@ -37,6 +40,32 @@ static inline void ksm_exit(struct mm_struct *mm)
- 		__ksm_exit(mm);
- }
+@@ -120,6 +123,24 @@ static struct rb_root		thread_stats;
+ static bool combine_locks;
+ static bool show_thread_stats;
  
-+static inline int ksm_enter_vma(struct vm_area_struct *vma)
-+{
-+	struct mm_struct *mm = vma->vm_mm;
-+
-+	if (!ksm_global_force)
-+		return 0;
-+
-+	if (!test_bit(MMF_VM_MERGEABLE, &mm->flags))
-+		return  __ksm_enter(vma->vm_mm);
-+
-+	return 0;
-+}
++/*
++ * CONTENTION_STACK_DEPTH
++ * Number of stack trace entries to find callers
++ */
++#define CONTENTION_STACK_DEPTH  8
 +
 +/*
-+ * When mm_fault happens, check whether ksm_global_force is set to true,
-+ * if yes, make this mm enter KSM.
++ * CONTENTION_STACK_SKIP
++ * Number of stack trace entries to skip when finding callers.
++ * The first few entries belong to the locking implementation itself.
 + */
-+static inline vm_fault_t ksm_enter_mm_fault(struct mm_struct *mm)
-+{
-+	if (!test_bit(MMF_VM_MERGEABLE, &mm->flags))
-+		if (ksm_global_force)
-+			if (__ksm_enter(mm))
-+				return VM_FAULT_OOM;
-+	return 0;
-+}
++#define CONTENTION_STACK_SKIP  3
 +
- /*
-  * When do_swap_page() first faults in from swap what used to be a KSM page,
-  * no problem, it will be assigned to this vma's anon_vma; but thereafter,
-@@ -65,6 +94,17 @@ static inline void ksm_exit(struct mm_struct *mm)
++static u64 sched_text_start;
++static u64 sched_text_end;
++static u64 lock_text_start;
++static u64 lock_text_end;
++
+ static struct thread_stat *thread_stat_find(u32 tid)
  {
+ 	struct rb_node *node;
+@@ -483,6 +504,18 @@ static struct lock_stat *pop_from_result(void)
+ 	return container_of(node, struct lock_stat, rb);
  }
  
-+static inline vm_fault_t ksm_enter_mm_fault(struct mm_struct *mm)
++static struct lock_stat *lock_stat_find(u64 addr)
 +{
-+	return 0;
-+}
++	struct hlist_head *entry = lockhashentry(addr);
++	struct lock_stat *ret;
 +
-+static inline int ksm_enter_vma(struct vm_area_struct *vma)
-+{
-+	return 0;
-+}
-+
-+
- #ifdef CONFIG_MMU
- static inline int ksm_madvise(struct vm_area_struct *vma, unsigned long start,
- 		unsigned long end, int advice, unsigned long *vm_flags)
-diff --git a/mm/ksm.c b/mm/ksm.c
-index e19deb7871c1..069f1eba93df 100644
---- a/mm/ksm.c
-+++ b/mm/ksm.c
-@@ -277,6 +277,9 @@ static unsigned int zero_checksum __read_mostly;
- /* Whether to merge empty (zeroed) pages with actual zero pages */
- static bool ksm_use_zero_pages __read_mostly;
- 
-+/* Whether to force all mm to be scanned in KSM */
-+bool ksm_global_force __read_mostly;
-+
- #ifdef CONFIG_NUMA
- /* Zeroed when merging across nodes is not allowed */
- static unsigned int ksm_merge_across_nodes = 1;
-@@ -334,6 +337,43 @@ static void __init ksm_slab_free(void)
- 	mm_slot_cache = NULL;
- }
- 
-+static inline bool vma_eligible_for_ksm(struct vm_area_struct *vma,
-+					unsigned long vm_flags)
-+{
-+	/*
-+	 * Be somewhat over-protective for now!
-+	 */
-+	if (vm_flags & (VM_SHARED  | VM_MAYSHARE   |
-+			VM_PFNMAP    | VM_IO      | VM_DONTEXPAND |
-+			VM_HUGETLB | VM_MIXEDMAP))
-+		return false;	/* just ignore the advice */
-+
-+	if (vma_is_dax(vma))
-+		return false;
-+
-+#ifdef VM_SAO
-+	if (*vm_flags & VM_SAO)
-+		return false;
-+#endif
-+#ifdef VM_SPARC_ADI
-+	if (*vm_flags & VM_SPARC_ADI)
-+		return false;
-+#endif
-+
-+	return true;
-+}
-+
-+static inline bool vma_is_scannable(struct vm_area_struct *vma)
-+{
-+	if (!(vma->vm_flags & VM_MERGEABLE) && !ksm_global_force)
-+		return false;
-+
-+	if (!vma_eligible_for_ksm(vma, vma->vm_flags))
-+		return false;
-+
-+	return true;
-+}
-+
- static __always_inline bool is_stable_node_chain(struct stable_node *chain)
- {
- 	return chain->rmap_hlist_len == STABLE_NODE_CHAIN;
-@@ -523,7 +563,7 @@ static struct vm_area_struct *find_mergeable_vma(struct mm_struct *mm,
- 	if (ksm_test_exit(mm))
- 		return NULL;
- 	vma = vma_lookup(mm, addr);
--	if (!vma || !(vma->vm_flags & VM_MERGEABLE) || !vma->anon_vma)
-+	if (!vma || !vma_is_scannable(vma) || !vma->anon_vma)
- 		return NULL;
- 	return vma;
- }
-@@ -990,7 +1030,7 @@ static int unmerge_and_remove_all_rmap_items(void)
- 		for_each_vma(vmi, vma) {
- 			if (ksm_test_exit(mm))
- 				break;
--			if (!(vma->vm_flags & VM_MERGEABLE) || !vma->anon_vma)
-+			if (!vma_is_scannable(vma) || !vma->anon_vma)
- 				continue;
- 			err = unmerge_ksm_pages(vma,
- 						vma->vm_start, vma->vm_end);
-@@ -2300,7 +2340,7 @@ static struct rmap_item *scan_get_next_rmap_item(struct page **page)
- 		goto no_vmas;
- 
- 	for_each_vma(vmi, vma) {
--		if (!(vma->vm_flags & VM_MERGEABLE))
-+		if (!vma_is_scannable(vma))
- 			continue;
- 		if (ksm_scan.address < vma->vm_start)
- 			ksm_scan.address = vma->vm_start;
-@@ -2450,26 +2490,12 @@ int ksm_madvise(struct vm_area_struct *vma, unsigned long start,
- 
- 	switch (advice) {
- 	case MADV_MERGEABLE:
--		/*
--		 * Be somewhat over-protective for now!
--		 */
--		if (*vm_flags & (VM_MERGEABLE | VM_SHARED  | VM_MAYSHARE   |
--				 VM_PFNMAP    | VM_IO      | VM_DONTEXPAND |
--				 VM_HUGETLB | VM_MIXEDMAP))
-+		if (*vm_flags & VM_MERGEABLE)
- 			return 0;		/* just ignore the advice */
- 
--		if (vma_is_dax(vma))
-+		if (!vma_eligible_for_ksm(vma, *vm_flags))
- 			return 0;
- 
--#ifdef VM_SAO
--		if (*vm_flags & VM_SAO)
--			return 0;
--#endif
--#ifdef VM_SPARC_ADI
--		if (*vm_flags & VM_SPARC_ADI)
--			return 0;
--#endif
--
- 		if (!test_bit(MMF_VM_MERGEABLE, &mm->flags)) {
- 			err = __ksm_enter(mm);
- 			if (err)
-@@ -2508,7 +2534,6 @@ int __ksm_enter(struct mm_struct *mm)
- 
- 	/* Check ksm_run too?  Would need tighter locking */
- 	needs_wakeup = list_empty(&ksm_mm_head.mm_list);
--
- 	spin_lock(&ksm_mmlist_lock);
- 	insert_to_mm_slots_hash(mm, mm_slot);
- 	/*
-@@ -2943,6 +2968,48 @@ static ssize_t run_store(struct kobject *kobj, struct kobj_attribute *attr,
- }
- KSM_ATTR(run);
- 
-+static ssize_t global_force_show(struct kobject *kobj, struct kobj_attribute *attr,
-+				 char *buf)
-+{
-+	return sprintf(buf, "%d\n", ksm_global_force);
-+}
-+
-+static ssize_t global_force_store(struct kobject *kobj, struct kobj_attribute *attr,
-+				  const char *buf, size_t count)
-+{
-+	int err;
-+	unsigned long value;
-+
-+	err = kstrtoul(buf, 10, &value);
-+	if (err || value > UINT_MAX)
-+		return -EINVAL;
-+	if (value > 1)
-+		return -EINVAL;
-+
-+	ksm_global_force = value;
-+
-+	return count;
-+}
-+KSM_ATTR(global_force);
-+
-+/* used for boot cmdline */
-+static int __init setup_ksm_global_force(char *str)
-+{
-+	int ret = 0;
-+
-+	if (!str)
-+		goto out;
-+	if (!strcmp(str, "true")) {
-+		ksm_global_force = true;
-+		ret = 1;
++	hlist_for_each_entry(ret, entry, hash_entry) {
++		if (ret->addr == addr)
++			return ret;
 +	}
-+out:
-+	if (!ret)
-+		pr_warn("ksm_global_force= cannot parse, ignored\n");
-+	return ret;
++	return NULL;
 +}
-+__setup("ksm_global_force=", setup_ksm_global_force);
 +
- #ifdef CONFIG_NUMA
- static ssize_t merge_across_nodes_show(struct kobject *kobj,
- 				       struct kobj_attribute *attr, char *buf)
-@@ -3153,6 +3220,7 @@ static struct attribute *ksm_attrs[] = {
- 	&sleep_millisecs_attr.attr,
- 	&pages_to_scan_attr.attr,
- 	&run_attr.attr,
-+	&global_force_attr.attr,
- 	&pages_shared_attr.attr,
- 	&pages_sharing_attr.attr,
- 	&pages_unshared_attr.attr,
-diff --git a/mm/memory.c b/mm/memory.c
-index be724238a9d3..b13c5a4fc399 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -4989,6 +4989,10 @@ static vm_fault_t __handle_mm_fault(struct vm_area_struct *vma,
- 	p4d_t *p4d;
- 	vm_fault_t ret;
+ static struct lock_stat *lock_stat_findnew(u64 addr, const char *name)
+ {
+ 	struct hlist_head *entry = lockhashentry(addr);
+@@ -825,6 +858,116 @@ static int report_lock_release_event(struct evsel *evsel,
+ 	return 0;
+ }
  
-+	ret = ksm_enter_mm_fault(mm);
-+	if (ret)
-+		return VM_FAULT_OOM;
++static bool is_lock_function(u64 addr)
++{
++	if (!sched_text_start) {
++		struct machine *machine = &session->machines.host;
++		struct map *kmap;
++		struct symbol *sym;
 +
- 	pgd = pgd_offset(mm, address);
- 	p4d = p4d_alloc(mm, pgd, address);
- 	if (!p4d)
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 5599c36283dd..36bb15bf9877 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -46,6 +46,7 @@
- #include <linux/pkeys.h>
- #include <linux/oom.h>
- #include <linux/sched/mm.h>
-+#include <linux/ksm.h>
++		sym = machine__find_kernel_symbol_by_name(machine,
++							  "__sched_text_start",
++							  &kmap);
++		if (!sym) {
++			/* to avoid retry */
++			sched_text_start = 1;
++			return false;
++		}
++
++		sched_text_start = kmap->unmap_ip(kmap, sym->start);
++
++		/* should not fail from here */
++		sym = machine__find_kernel_symbol_by_name(machine,
++							  "__sched_text_end",
++							  &kmap);
++		sched_text_end = kmap->unmap_ip(kmap, sym->start);
++
++		sym = machine__find_kernel_symbol_by_name(machine,
++							  "__lock_text_start",
++							  &kmap);
++		lock_text_start = kmap->unmap_ip(kmap, sym->start);
++
++		sym = machine__find_kernel_symbol_by_name(machine,
++							  "__lock_text_end",
++							  &kmap);
++		lock_text_start = kmap->unmap_ip(kmap, sym->start);
++	}
++
++	/* failed to get kernel symbols */
++	if (sched_text_start == 1)
++		return false;
++
++	/* mutex and rwsem functions are in sched text section */
++	if (sched_text_start <= addr && addr < sched_text_end)
++		return true;
++
++	/* spinlock functions are in lock text section */
++	if (lock_text_start <= addr && addr < lock_text_end)
++		return true;
++
++	return false;
++}
++
++static int lock_contention_caller(struct evsel *evsel, struct perf_sample *sample,
++				  char *buf, int size)
++{
++	struct thread *thread;
++	struct callchain_cursor *cursor = &callchain_cursor;
++	struct symbol *sym;
++	int skip = 0;
++	int ret;
++
++	/* lock names will be replaced to task name later */
++	if (show_thread_stats)
++		return -1;
++
++	thread = machine__findnew_thread(&session->machines.host,
++					 -1, sample->pid);
++	if (thread == NULL)
++		return -1;
++
++	/* use caller function name from the callchain */
++	ret = thread__resolve_callchain(thread, cursor, evsel, sample,
++					NULL, NULL, CONTENTION_STACK_DEPTH);
++	if (ret != 0) {
++		thread__put(thread);
++		return -1;
++	}
++
++	callchain_cursor_commit(cursor);
++	thread__put(thread);
++
++	while (true) {
++		struct callchain_cursor_node *node;
++
++		node = callchain_cursor_current(cursor);
++		if (node == NULL)
++			break;
++
++		/* skip first few entries - for lock functions */
++		if (++skip <= CONTENTION_STACK_SKIP)
++			goto next;
++
++		sym = node->ms.sym;
++		if (sym && !is_lock_function(node->ip)) {
++			struct map *map = node->ms.map;
++			u64 offset;
++
++			offset = map->map_ip(map, node->ip) - sym->start;
++
++			if (offset)
++				scnprintf(buf, size, "%s+%#lx", sym->name, offset);
++			else
++				strlcpy(buf, sym->name, size);
++			return 0;
++		}
++
++next:
++		callchain_cursor_advance(cursor);
++	}
++	return -1;
++}
++
+ static int report_lock_contention_begin_event(struct evsel *evsel,
+ 					      struct perf_sample *sample)
+ {
+@@ -836,9 +979,18 @@ static int report_lock_contention_begin_event(struct evsel *evsel,
+ 	if (show_thread_stats)
+ 		addr = sample->tid;
  
- #include <linux/uaccess.h>
- #include <asm/cacheflush.h>
-@@ -1140,6 +1141,7 @@ struct vm_area_struct *vma_merge(struct mm_struct *mm,
- 	if (err)
- 		return NULL;
- 	khugepaged_enter_vma(res, vm_flags);
-+	ksm_enter_vma(res);
- 	return res;
- }
+-	ls = lock_stat_findnew(addr, "No name");
+-	if (!ls)
+-		return -ENOMEM;
++	ls = lock_stat_find(addr);
++	if (!ls) {
++		char buf[128];
++		const char *caller = buf;
++
++		if (lock_contention_caller(evsel, sample, buf, sizeof(buf)) < 0)
++			caller = "Unknown";
++
++		ls = lock_stat_findnew(addr, caller);
++		if (!ls)
++			return -ENOMEM;
++	}
  
-@@ -2052,6 +2054,7 @@ int expand_upwards(struct vm_area_struct *vma, unsigned long address)
+ 	ts = thread_stat_findnew(sample->tid);
+ 	if (!ts)
+@@ -1219,6 +1371,7 @@ static int __cmd_report(bool display_info)
+ 	struct perf_tool eops = {
+ 		.sample		 = process_sample_event,
+ 		.comm		 = perf_event__process_comm,
++		.mmap		 = perf_event__process_mmap,
+ 		.namespaces	 = perf_event__process_namespaces,
+ 		.ordered_events	 = true,
+ 	};
+@@ -1234,6 +1387,8 @@ static int __cmd_report(bool display_info)
+ 		return PTR_ERR(session);
  	}
- 	anon_vma_unlock_write(vma->anon_vma);
- 	khugepaged_enter_vma(vma, vma->vm_flags);
-+	ksm_enter_vma(vma);
- 	mas_destroy(&mas);
- 	return error;
- }
-@@ -2134,6 +2137,7 @@ int expand_downwards(struct vm_area_struct *vma, unsigned long address)
- 	}
- 	anon_vma_unlock_write(vma->anon_vma);
- 	khugepaged_enter_vma(vma, vma->vm_flags);
-+	ksm_enter_vma(vma);
- 	mas_destroy(&mas);
- 	return error;
- }
-@@ -2645,6 +2649,7 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
- 	if (vma &&
- 	    !vma_expand(&mas, vma, merge_start, merge_end, vm_pgoff, next)) {
- 		khugepaged_enter_vma(vma, vm_flags);
-+		ksm_enter_vma(vma);
- 		goto expanded;
- 	}
  
-@@ -2761,6 +2766,7 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
- 	 * call covers the non-merge case.
- 	 */
- 	khugepaged_enter_vma(vma, vma->vm_flags);
-+	ksm_enter_vma(vma);
++	/* for lock function check */
++	symbol_conf.sort_by_name = true;
+ 	symbol__init(&session->header.env);
  
- 	/* Once vma denies write, undo our temporary denial count */
- unmap_writable:
-@@ -3068,6 +3074,7 @@ static int do_brk_flags(struct ma_state *mas, struct vm_area_struct *vma,
- 			anon_vma_unlock_write(vma->anon_vma);
+ 	if (!perf_session__has_traces(session, "lock record"))
+@@ -1278,8 +1433,12 @@ static int __cmd_record(int argc, const char **argv)
+ 	const char *record_args[] = {
+ 		"record", "-R", "-m", "1024", "-c", "1", "--synth", "task",
+ 	};
++	const char *callgraph_args[] = {
++		"--call-graph", "fp," __stringify(CONTENTION_STACK_DEPTH),
++	};
+ 	unsigned int rec_argc, i, j, ret;
+ 	unsigned int nr_tracepoints;
++	unsigned int nr_callgraph_args = 0;
+ 	const char **rec_argv;
+ 	bool has_lock_stat = true;
+ 
+@@ -1304,8 +1463,10 @@ static int __cmd_record(int argc, const char **argv)
  		}
- 		khugepaged_enter_vma(vma, flags);
-+		ksm_enter_vma(vma);
- 		goto out;
  	}
+ 
++	nr_callgraph_args = ARRAY_SIZE(callgraph_args);
++
+ setup_args:
+-	rec_argc = ARRAY_SIZE(record_args) + argc - 1;
++	rec_argc = ARRAY_SIZE(record_args) + nr_callgraph_args + argc - 1;
+ 
+ 	if (has_lock_stat)
+ 		nr_tracepoints = ARRAY_SIZE(lock_tracepoints);
+@@ -1337,6 +1498,9 @@ static int __cmd_record(int argc, const char **argv)
+ 		rec_argv[i++] = ev_name;
+ 	}
+ 
++	for (j = 0; j < nr_callgraph_args; j++, i++)
++		rec_argv[i] = callgraph_args[j];
++
+ 	for (j = 1; j < (unsigned int)argc; j++, i++)
+ 		rec_argv[i] = argv[j];
  
 -- 
-2.25.1
+2.36.1.255.ge46751e96f-goog
 
