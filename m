@@ -2,136 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F70C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 22:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC34C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 22:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345566AbiFIWSA (ORCPT
+        id S1345588AbiFIWSI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 18:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43308 "EHLO
+        Thu, 9 Jun 2022 18:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235687AbiFIWR4 (ORCPT
+        with ESMTP id S1345572AbiFIWSE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 18:17:56 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13191CC1;
-        Thu,  9 Jun 2022 15:17:54 -0700 (PDT)
-Received: from mercury (unknown [185.209.196.172])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 846836601752;
-        Thu,  9 Jun 2022 23:17:53 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654813073;
-        bh=MDbdaDhtE3Q+wc17/NHVK22+YjezJBLMU2iTMKmf188=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RFBQ7SbMoeV0jgvXumEArTw8ahybc5BKeUgwJmN5A41Q65wEhOc6+jbewnEnRJhin
-         xeSkLxzN7z5ef95PXfxXFMhyQ0qbAa3Q7a0nJCiqf/U5stDRToFJaqTZsecSgX6sGe
-         0OhBTPIXHcb2raI7tfU5nrmQ3piSrq9guDcikE9suMJ3SYdo/yOkftqtguOj38kyxX
-         K5ouKuhIjpj/6Rp4FZ4ef3ysT+4XEA7rM/SfkkXyDGAOjwvFkbygOfEKwuSsw46Sfa
-         /H17V88uI6cpjOhasQhdvBYv4+zvIHkKQGHmkiwxI1L/5rwTvGci180DG+xhN54Oij
-         D3vpJj6Ztf6gA==
-Received: by mercury (Postfix, from userid 1000)
-        id A8A0010605B9; Fri, 10 Jun 2022 00:17:51 +0200 (CEST)
-Date:   Fri, 10 Jun 2022 00:17:51 +0200
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Manaf Meethalavalappu Pallikunhi <quic_manafm@quicinc.com>
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gregkh@google.com,
-        Subbaraman Narayanamurthy <quic_subbaram@quicinc.com>
-Subject: Re: [RESEND 2/2] power_supply: Use of-thermal cdev registration API
-Message-ID: <20220609221751.wjgazwamzodejfxt@mercury.elektranox.org>
-References: <20220531183054.6476-1-quic_manafm@quicinc.com>
- <20220531183054.6476-2-quic_manafm@quicinc.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="koppcha23r66m7mj"
-Content-Disposition: inline
-In-Reply-To: <20220531183054.6476-2-quic_manafm@quicinc.com>
+        Thu, 9 Jun 2022 18:18:04 -0400
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C44AA3D1C3
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 15:18:02 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id z5-20020aa79f85000000b0051baa4e9fb8so12996185pfr.7
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 15:18:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=SFFjvyZvefpU9NrWWzQ0TAmvQ8SzfCLTau1AjR7El54=;
+        b=Kr2RYZFWYOeNjzG0DXVZ1PIX9XZMzBF03Z569egSujYX+SETM8BM22isVSs7ZYg0je
+         vtmIi51QjRTMj1fwLrkgjqNVlwKBP1pP5HLG5JFnMd4QeQYx2K01nU1Ejrc/H0elX0dB
+         xVMAEAznym96CzfG/aOkwGNw3H9g+blFPI7HqqKYy6VdsppoXnWpV0WmljI7FHufbK83
+         ON+xFi3394AkXlTQEdIEaihpVBJQ8PGsd812EFScZ5x0FGwt1QmokUw/eccZEX97Itvg
+         V6YGaLMc68zBNDG7tvYESM8uNaTijhm4Fewwwm5H2YtyjsN07CoVm9f4qHoqAerZAXZJ
+         XTVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=SFFjvyZvefpU9NrWWzQ0TAmvQ8SzfCLTau1AjR7El54=;
+        b=NX3Fab4PAToI15oJlh7stMNXK7Jsj9rL5hFOJpuiCBrGip/2fsOJnAGyp1peRLr9jb
+         Cp3JUca84XcHDdY4pKUyKdFxvJOtuR3m5fpuNRGdFjSu4loHFOaI0b6xo4wjJiDabA0n
+         4Herw3lxjAb/OAoI/6JiOA24kmz6dez2u4ptjKFmWGyYH4nmGWEzur7xuYwdMfdf25HJ
+         z0u1jOC8bqhldAid/v8cK2MbNBj2F9ZT3HT08jPs+9u81IbZpLfd+VjUu7BwkraJzOO8
+         Q18o36V2wPWGJe9LLfDgDJQFeOn9bGGPhWnbvXdRaeHUFW/FY3F8c1xBBrkRMJ6sTFxT
+         xfnA==
+X-Gm-Message-State: AOAM533SOpi/v2kWaFZBlUWKzEVcMAScuENkYQ4Y8quWql+8T49xp3Xq
+        XslF3XP/i756wprvZn8SuLxSsdWr
+X-Google-Smtp-Source: ABdhPJweUcyR1bJf/XiwDrAaJ+hZ/VGm1qzwS+oRhWzjXi1BAcLnFDZIdAsYxk3A8uUCFP+evw6wWgyl2Q==
+X-Received: from fawn.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5795])
+ (user=morbo job=sendgmr) by 2002:a63:35ce:0:b0:3fd:fb5a:a1c3 with SMTP id
+ c197-20020a6335ce000000b003fdfb5aa1c3mr15000208pga.85.1654813082090; Thu, 09
+ Jun 2022 15:18:02 -0700 (PDT)
+Date:   Thu,  9 Jun 2022 22:16:21 +0000
+In-Reply-To: <20220609221702.347522-1-morbo@google.com>
+Message-Id: <20220609221702.347522-3-morbo@google.com>
+Mime-Version: 1.0
+References: <20220609221702.347522-1-morbo@google.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH 02/12] x86/CPU/AMD: use correct format characters
+From:   Bill Wendling <morbo@google.com>
+To:     isanbard@gmail.com
+Cc:     Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Jan Kara <jack@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Daniel Kiper <daniel.kiper@oracle.com>,
+        Ross Philipson <ross.philipson@oracle.com>,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-mm@kvack.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Bill Wendling <isanbard@gmail.com>
 
---koppcha23r66m7mj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+When compiling with -Wformat, clang emits the following warnings:
 
-Hi,
+arch/x86/kernel/cpu/mce/amd.c:1119:67: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
+        err = kobject_init_and_add(&b->kobj, &threshold_ktype, tb->kobj, get_name(cpu, bank, b));
+                                                                         ^~~~~~~~~~~~~~~~~~~~~~
+arch/x86/kernel/cpu/mce/amd.c:1151:47: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
+        err = kobject_add(&b->blocks->kobj, b->kobj, b->blocks->kobj.name);
+                                                     ^~~~~~~~~~~~~~~~~~~~
+arch/x86/kernel/cpu/mce/amd.c:1157:42: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
+                err = kobject_add(&pos->kobj, b->kobj, pos->kobj.name);
+                                                       ^~~~~~~~~~~~~~
+arch/x86/kernel/cpu/mce/amd.c:1187:43: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
+                        err = kobject_add(b->kobj, &dev->kobj, name);
+                                                               ^~~~
+                                                               "%s",
 
-On Wed, Jun 01, 2022 at 12:00:54AM +0530, Manaf Meethalavalappu Pallikunhi =
-wrote:
-> With thermal frameworks of-thermal interface, thermal zone parameters can
-> be defined in devicetree. This includes cooling device mitigation levels
-> for a thermal zone. To take advantage of this, cooling device should use
-> the thermal_of_cooling_device_register API to register a cooling device.
->=20
-> Use thermal_of_cooling_device_register API to register the power supply
-> cooling device. This enables power supply cooling device be included in t=
-he
-> thermal zone parameter in devicetree.
->=20
-> Signed-off-by: Manaf Meethalavalappu Pallikunhi <quic_manafm@quicinc.com>
-> ---
->
->  drivers/power/supply/power_supply_core.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/power/supply/power_supply_core.c b/drivers/power/sup=
-ply/power_supply_core.c
-> index 74623c4977db..4593450920a4 100644
-> --- a/drivers/power/supply/power_supply_core.c
-> +++ b/drivers/power/supply/power_supply_core.c
-> @@ -1157,9 +1157,15 @@ static int psy_register_cooler(struct power_supply=
- *psy)
->  	for (i =3D 0; i < psy->desc->num_properties; i++) {
->  		if (psy->desc->properties[i] =3D=3D
->  				POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT) {
-> -			psy->tcd =3D thermal_cooling_device_register(
-> -							(char *)psy->desc->name,
-> -							psy, &psy_tcd_ops);
-> +			if (psy->dev.parent)
-> +				psy->tcd =3D thermal_of_cooling_device_register(
-> +						dev_of_node(psy->dev.parent),
-> +						(char *)psy->desc->name,
-> +						psy, &psy_tcd_ops);
+Use a string literal for the format string.
 
-if (psy->of_node)
-    psy->tcd =3D thermal_of_cooling_device_register(psy->of_node, ...);
-else
-    psy->tcd =3D thermal_cooling_device_register(...);
+Link: https://github.com/ClangBuiltLinux/linux/issues/378
+Signed-off-by: Bill Wendling <isanbard@gmail.com>
+---
+ arch/x86/kernel/cpu/mce/amd.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- Sebastian
+diff --git a/arch/x86/kernel/cpu/mce/amd.c b/arch/x86/kernel/cpu/mce/amd.c
+index 1c87501e0fa3..d19bf0eb0abe 100644
+--- a/arch/x86/kernel/cpu/mce/amd.c
++++ b/arch/x86/kernel/cpu/mce/amd.c
+@@ -1116,7 +1116,8 @@ static int allocate_threshold_blocks(unsigned int cpu, struct threshold_bank *tb
+ 	else
+ 		tb->blocks = b;
+ 
+-	err = kobject_init_and_add(&b->kobj, &threshold_ktype, tb->kobj, get_name(cpu, bank, b));
++	err = kobject_init_and_add(&b->kobj, &threshold_ktype, tb->kobj, "%s",
++				   get_name(cpu, bank, b));
+ 	if (err)
+ 		goto out_free;
+ recurse:
+@@ -1148,13 +1149,13 @@ static int __threshold_add_blocks(struct threshold_bank *b)
+ 	struct threshold_block *tmp = NULL;
+ 	int err = 0;
+ 
+-	err = kobject_add(&b->blocks->kobj, b->kobj, b->blocks->kobj.name);
++	err = kobject_add(&b->blocks->kobj, b->kobj, "%s", b->blocks->kobj.name);
+ 	if (err)
+ 		return err;
+ 
+ 	list_for_each_entry_safe(pos, tmp, head, miscj) {
+ 
+-		err = kobject_add(&pos->kobj, b->kobj, pos->kobj.name);
++		err = kobject_add(&pos->kobj, b->kobj, "%s", pos->kobj.name);
+ 		if (err) {
+ 			list_for_each_entry_safe_reverse(pos, tmp, head, miscj)
+ 				kobject_del(&pos->kobj);
+@@ -1184,7 +1185,7 @@ static int threshold_create_bank(struct threshold_bank **bp, unsigned int cpu,
+ 		if (nb && nb->bank4) {
+ 			/* yes, use it */
+ 			b = nb->bank4;
+-			err = kobject_add(b->kobj, &dev->kobj, name);
++			err = kobject_add(b->kobj, &dev->kobj, "%s", name);
+ 			if (err)
+ 				goto out;
+ 
+-- 
+2.36.1.255.ge46751e96f-goog
 
-> +			else
-> +				psy->tcd =3D thermal_cooling_device_register(
-> +						(char *)psy->desc->name,
-> +						psy, &psy_tcd_ops);
->  			return PTR_ERR_OR_ZERO(psy->tcd);
->  		}
->  	}
-
---koppcha23r66m7mj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmKicY8ACgkQ2O7X88g7
-+ppnJA/+KPGz3XV7XmAFhZKzeHyCLLToNsB3415VF1viueQ8uXD1lgE3KDXhBPiY
-H1TC4phj8lzNDNJekbH03bZB61P/9pMco/fmKXsqFeumL2Ubtl1FOqEoutRUeUff
-yjGD+X/pV+dvfelv/6S1Fo6QcHoLfrVMw0vMn9FYlS/ijh1C8mYVrLY1EMMrI7sT
-i4pZ6SRODWogwqKogRQhcOg/odOzHOlD01N+rtas06+IRNmuv8ijAYp0ZVbw0AH6
-MjD+hOVi6se7s+7l5vo1ZBhlVn+P/m1pKUaGkmdykZr62w40qClyapX3ojtSB6jZ
-bkG7MkSWDtB5M96/pw+MZR49J+zlkXwN7Vou4pMmG9EKm7QaYKSGRo4cEH+3fzil
-TXB6IrXnDYI42+9rTLYW/+cU9/eRYJYzUzDadehTRvXhk3T7vCF6Im35FoFPcznd
-RoDAip5VbkFVUHxGr9dO6ggvMiEZcO/qD0NWpujAWmkzzMvZw1qdMjq/od/FHjwf
-73sColCqzJJPw2CJVUBPn01uci0Df67SwYs5jNjg1Ug9UCstRGrx/keVoMUFduPm
-tsR2pOW7oRkXvlyoxBx6ENO7nJP2mBALs4sdRSHX3qxCALqxJproAWX3NVi3x5hz
-n1x/PjaGc5rzTq9UflK0t5963VJGOcJ3Zcy69AMPQoqv2JJZz08=
-=J1bd
------END PGP SIGNATURE-----
-
---koppcha23r66m7mj--
