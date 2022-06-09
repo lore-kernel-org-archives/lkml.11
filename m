@@ -2,173 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD051C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 17:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F76C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 17:07:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242642AbiFIRHG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 13:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37572 "EHLO
+        id S245215AbiFIRHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 13:07:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234588AbiFIRHF (ORCPT
+        with ESMTP id S1344534AbiFIRHd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 13:07:05 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAA428731
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 10:07:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654794423; x=1686330423;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DqcLSXzla24BAOWUg0Q7TFQHtplmc6Xrbtg5PjslZl4=;
-  b=fQRoW/5/n7nIF/pbRnu/R4hSJ9ghqeM3FDe/oKI07QmGiDTtg+8d6Fcj
-   LiOictOVuA85mqIowdSKWuCmEH+Kgkc541h50jQlxUBX1uEdGDERsLe89
-   f+ESM9N7uCfEuiYcJ2hu+rWnfb/YGH21cMuKPheb51ieLZ69hV64OMNfr
-   04lfj9D51t61LsrPQu4+DAYlcPWmdzeeqhd6tFaHvC8srxbQPnSaF/jHb
-   Fqx/A4sNeGIUueXMFRcpfNvijrqTtr7tY5NbL/vkCWwURz40IWuV8PYOf
-   C6r2tQ873m6fRIoTj/mh94pGrQX+D/M9otyBH2g7gbswPREccaBtEv7p6
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="341427575"
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="341427575"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 10:06:44 -0700
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="610347539"
-Received: from araj-dh-work.jf.intel.com (HELO araj-dh-work) ([10.165.157.158])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 10:06:44 -0700
-Date:   Thu, 9 Jun 2022 17:06:44 +0000
-From:   "Raj, Ashok" <ashok.raj@intel.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Joao Martins <joao.m.martins@oracle.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Ashok Raj <ashok.raj@intel.com>
-Subject: Re: [RFC PATCHES 1/2] iommu: Add RCU-protected page free support
-Message-ID: <20220609170644.GA33363@araj-dh-work>
-References: <20220609070811.902868-1-baolu.lu@linux.intel.com>
+        Thu, 9 Jun 2022 13:07:33 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0468CCBD6A
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 10:07:31 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id x13-20020a0566022c4d00b0065491fa5614so11836929iov.9
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 10:07:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Qomqaou+54axI368WL0XNwH/m5OrniWkk2TGmdoD03s=;
+        b=mTVTVJqtenoaiRS0P6SA04Anu+SHfv5GKHvJMJdMP9sQo/1bYvPg8PO2dE/sSko6Xg
+         8lSy9WcXH0PvhtzCIBseoX08oxz1aQGvY/SU+fIxinJAt2Gehl2X70W3r3Vpx2grbGEd
+         iVgRowhwZir/yM9Ii1w4LLmMhaOF/iDgssJvMombFfvvZJbKXNY2waA21Y4BvFRDCWxS
+         idV4O4Gr7cbgbrFBqR7VcuyWhHeBIJLPDfDVYkQoBcluMiEMV9mRb5P9JN6zB2cgdDY0
+         1Ww5AErYsWh67emJUmdx2WvYz0O5ZQqwFhHI5cOhe2PiIVfLWD9YnoXGQLYbdG34aucR
+         PdUg==
+X-Gm-Message-State: AOAM530P8Nb1I2IhSkDqoladfgM9Gx0pbgKbkk8J8etai28rovxjaBxM
+        3LVtJa0YHWBG9NTiHB3Y3qNoVhjKLrqcNSsakpcvsmiFgOQd
+X-Google-Smtp-Source: ABdhPJyVJHg3/m2kQwxyyCxd1zESRTo3sTeDhbK/QZnA+IOspn6syM/GFLrUeOhi2mKdxfhfBAL1NBJ3PIditxTIg9xODgH6XI/i
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220609070811.902868-1-baolu.lu@linux.intel.com>
+X-Received: by 2002:a6b:6d0d:0:b0:669:6f9b:68c7 with SMTP id
+ a13-20020a6b6d0d000000b006696f9b68c7mr7846766iod.167.1654794450275; Thu, 09
+ Jun 2022 10:07:30 -0700 (PDT)
+Date:   Thu, 09 Jun 2022 10:07:30 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006294c805e106db34@google.com>
+Subject: [syzbot] possible deadlock in bpf_trace_printk
+From:   syzbot <syzbot+c49e17557ddb5725583d@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, boqun.feng@gmail.com,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        hawk@kernel.org, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        longman@redhat.com, mingo@redhat.com, netdev@vger.kernel.org,
+        peterz@infradead.org, rostedt@goodmis.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, will@kernel.org, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 03:08:10PM +0800, Lu Baolu wrote:
-> The IOMMU page tables are updated using iommu_map/unmap() interfaces.
-> Currently, there is no mandatory requirement for drivers to use locks
-> to ensure concurrent updates to page tables, because it's assumed that
-> overlapping IOVA ranges do not have concurrent updates. Therefore the
-> IOMMU drivers only need to take care of concurrent updates to level
-> page table entries.
+Hello,
 
-The last part doesn't read well.. 
-s/updates to level page table entries/ updates to page-table entries at the
-same level
+syzbot found the following issue on:
 
-> 
-> But enabling new features challenges this assumption. For example, the
-> hardware assisted dirty page tracking feature requires scanning page
-> tables in interfaces other than mapping and unmapping. This might result
-> in a use-after-free scenario in which a level page table has been freed
-> by the unmap() interface, while another thread is scanning the next level
-> page table.
-> 
-> This adds RCU-protected page free support so that the pages are really
-> freed and reused after a RCU grace period. Hence, the page tables are
-> safe for scanning within a rcu_read_lock critical region. Considering
-> that scanning the page table is a rare case, this also adds a domain
-> flag and the RCU-protected page free is only used when this flat is set.
+HEAD commit:    d678cbd2f867 xsk: Fix handling of invalid descriptors in X..
+git tree:       bpf
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=15ea1120080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=fc5a30a131480a80
+dashboard link: https://syzkaller.appspot.com/bug?extid=c49e17557ddb5725583d
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1342b1f7f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15ca7880080000
 
-s/flat/flag
+The issue was bisected to:
 
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  include/linux/iommu.h |  9 +++++++++
->  drivers/iommu/iommu.c | 23 +++++++++++++++++++++++
->  2 files changed, 32 insertions(+)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 5e1afe169549..6f68eabb8567 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -95,6 +95,7 @@ struct iommu_domain {
->  	void *handler_token;
->  	struct iommu_domain_geometry geometry;
->  	struct iommu_dma_cookie *iova_cookie;
-> +	unsigned long concurrent_traversal:1;
+commit dc1f7893a70fe403983bd8492f177bf993940e2c
+Author: Peter Zijlstra <peterz@infradead.org>
+Date:   Wed Mar 30 11:06:54 2022 +0000
 
-Does this need to be a bitfield? Even though you are needing just one bit
-now, you can probably make have maskbits?
+    locking/mutex: Make contention tracepoints more consistent wrt adaptive spinning
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14c55dcff00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=16c55dcff00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12c55dcff00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c49e17557ddb5725583d@syzkaller.appspotmail.com
+Fixes: dc1f7893a70f ("locking/mutex: Make contention tracepoints more consistent wrt adaptive spinning")
+
+============================================
+WARNING: possible recursive locking detected
+5.18.0-syzkaller-12122-gd678cbd2f867 #0 Not tainted
+--------------------------------------------
+syz-executor354/3616 is trying to acquire lock:
+ffffffff8be0d6d8 (trace_printk_lock){..-.}-{2:2}, at: ____bpf_trace_printk kernel/trace/bpf_trace.c:388 [inline]
+ffffffff8be0d6d8 (trace_printk_lock){..-.}-{2:2}, at: bpf_trace_printk+0xcf/0x170 kernel/trace/bpf_trace.c:374
+
+but task is already holding lock:
+ffffffff8be0d6d8 (trace_printk_lock){..-.}-{2:2}, at: ____bpf_trace_printk kernel/trace/bpf_trace.c:388 [inline]
+ffffffff8be0d6d8 (trace_printk_lock){..-.}-{2:2}, at: bpf_trace_printk+0xcf/0x170 kernel/trace/bpf_trace.c:374
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(trace_printk_lock);
+  lock(trace_printk_lock);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+4 locks held by syz-executor354/3616:
+ #0: ffffffff8be67668 (delayed_uprobe_lock){+.+.}-{3:3}, at: uprobe_clear_state+0x47/0x420 kernel/events/uprobes.c:1544
+ #1: ffffffff8bd86be0 (rcu_read_lock){....}-{1:2}, at: bpf_trace_run2+0x0/0x340 kernel/trace/./bpf_trace.h:11
+ #2: ffffffff8be0d6d8 (trace_printk_lock){..-.}-{2:2}, at: ____bpf_trace_printk kernel/trace/bpf_trace.c:388 [inline]
+ #2: ffffffff8be0d6d8 (trace_printk_lock){..-.}-{2:2}, at: bpf_trace_printk+0xcf/0x170 kernel/trace/bpf_trace.c:374
+ #3: ffffffff8bd86be0 (rcu_read_lock){....}-{1:2}, at: bpf_trace_run2+0x0/0x340 kernel/trace/./bpf_trace.h:11
+
+stack backtrace:
+CPU: 1 PID: 3616 Comm: syz-executor354 Not tainted 5.18.0-syzkaller-12122-gd678cbd2f867 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_deadlock_bug kernel/locking/lockdep.c:2988 [inline]
+ check_deadlock kernel/locking/lockdep.c:3031 [inline]
+ validate_chain kernel/locking/lockdep.c:3816 [inline]
+ __lock_acquire.cold+0x1f5/0x3b4 kernel/locking/lockdep.c:5053
+ lock_acquire kernel/locking/lockdep.c:5665 [inline]
+ lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5630
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+ _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
+ ____bpf_trace_printk kernel/trace/bpf_trace.c:388 [inline]
+ bpf_trace_printk+0xcf/0x170 kernel/trace/bpf_trace.c:374
+ bpf_prog_0605f9f479290f07+0x2f/0x33
+ bpf_dispatcher_nop_func include/linux/bpf.h:869 [inline]
+ __bpf_prog_run include/linux/filter.h:628 [inline]
+ bpf_prog_run include/linux/filter.h:635 [inline]
+ __bpf_trace_run kernel/trace/bpf_trace.c:2046 [inline]
+ bpf_trace_run2+0x110/0x340 kernel/trace/bpf_trace.c:2083
+ __bpf_trace_contention_begin+0xb5/0xf0 include/trace/events/lock.h:95
+ trace_contention_begin.constprop.0+0xda/0x1b0 include/trace/events/lock.h:95
+ __pv_queued_spin_lock_slowpath+0x103/0xb50 kernel/locking/qspinlock.c:405
+ pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt.h:591 [inline]
+ queued_spin_lock_slowpath arch/x86/include/asm/qspinlock.h:51 [inline]
+ queued_spin_lock include/asm-generic/qspinlock.h:114 [inline]
+ do_raw_spin_lock+0x200/0x2a0 kernel/locking/spinlock_debug.c:115
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:111 [inline]
+ _raw_spin_lock_irqsave+0x41/0x50 kernel/locking/spinlock.c:162
+ ____bpf_trace_printk kernel/trace/bpf_trace.c:388 [inline]
+ bpf_trace_printk+0xcf/0x170 kernel/trace/bpf_trace.c:374
+ bpf_prog_0605f9f479290f07+0x2f/0x33
+ bpf_dispatcher_nop_func include/linux/bpf.h:869 [inline]
+ __bpf_prog_run include/linux/filter.h:628 [inline]
+ bpf_prog_run include/linux/filter.h:635 [inline]
+ __bpf_trace_run kernel/trace/bpf_trace.c:2046 [inline]
+ bpf_trace_run2+0x110/0x340 kernel/trace/bpf_trace.c:2083
+ __bpf_trace_contention_begin+0xb5/0xf0 include/trace/events/lock.h:95
+ trace_contention_begin+0xc0/0x150 include/trace/events/lock.h:95
+ __mutex_lock_common kernel/locking/mutex.c:605 [inline]
+ __mutex_lock+0x13c/0x1350 kernel/locking/mutex.c:747
+ uprobe_clear_state+0x47/0x420 kernel/events/uprobes.c:1544
+ __mmput+0x73/0x4b0 kernel/fork.c:1183
+ mmput+0x56/0x60 kernel/fork.c:1208
+ exit_mm kernel/exit.c:510 [inline]
+ do_exit+0xa12/0x2a00 kernel/exit.c:782
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:925
+ __do_sys_exit_group kernel/exit.c:936 [inline]
+ __se_sys_exit_group kernel/exit.c:934 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f15c46e1139
+Code: Unable to access opcode bytes at RIP 0x7f15c46e110f.
+RSP: 002b:00007ffd3b43d738 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 00007f15c475c330 RCX: 00007f15c46e1139
+RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 00007f15c4756ec0
+R10: 00007ffd3b43d200 R11: 0000000000000246 R12: 00007f15c475c330
+R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+ </TASK>
 
 
->  };
->  
->  static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
-> @@ -657,6 +658,12 @@ static inline void dev_iommu_priv_set(struct device *dev, void *priv)
->  	dev->iommu->priv = priv;
->  }
->  
-> +static inline void domain_set_concurrent_traversal(struct iommu_domain *domain,
-> +						   bool value)
-> +{
-> +	domain->concurrent_traversal = value;
-> +}
-> +
->  int iommu_probe_device(struct device *dev);
->  void iommu_release_device(struct device *dev);
->  
-> @@ -677,6 +684,8 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner);
->  void iommu_group_release_dma_owner(struct iommu_group *group);
->  bool iommu_group_dma_owner_claimed(struct iommu_group *group);
->  
-> +void iommu_free_pgtbl_pages(struct iommu_domain *domain,
-> +			    struct list_head *pages);
->  #else /* CONFIG_IOMMU_API */
->  
->  struct iommu_ops {};
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 847ad47a2dfd..ceeb97ebe3e2 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3252,3 +3252,26 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
->  	return user;
->  }
->  EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
-> +
-> +static void pgtble_page_free_rcu(struct rcu_head *rcu)
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-maybe the names can be consistent? pgtble_ vs pgtbl below.
-
-vote to drop the 'e' :-)
-
-> +{
-> +	struct page *page = container_of(rcu, struct page, rcu_head);
-> +
-> +	__free_pages(page, 0);
-> +}
-> +
-> +void iommu_free_pgtbl_pages(struct iommu_domain *domain,
-> +			    struct list_head *pages)
-> +{
-> +	struct page *page, *next;
-> +
-> +	if (!domain->concurrent_traversal) {
-> +		put_pages_list(pages);
-> +		return;
-> +	}
-> +
-> +	list_for_each_entry_safe(page, next, pages, lru) {
-> +		list_del(&page->lru);
-> +		call_rcu(&page->rcu_head, pgtble_page_free_rcu);
-> +	}
-> +}
-> -- 
-> 2.25.1
-> 
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
