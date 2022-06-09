@@ -2,159 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A2CFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 07:42:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AA1FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 07:45:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240198AbiFIHmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 03:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
+        id S240207AbiFIHpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 03:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240132AbiFIHmp (ORCPT
+        with ESMTP id S233114AbiFIHpO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 03:42:45 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E051DA52;
-        Thu,  9 Jun 2022 00:42:43 -0700 (PDT)
-X-UUID: 1404f54a2a6c40eaa4e7087ddf05d916-20220609
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:cbae9d9a-7040-4dd5-b802-665c971927b5,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:100
-X-CID-INFO: VERSION:1.1.5,REQID:cbae9d9a-7040-4dd5-b802-665c971927b5,OB:0,LOB:
-        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
-        ION:quarantine,TS:100
-X-CID-META: VersionHash:2a19b09,CLOUDID:b19c39e5-2ba2-4dc1-b6c5-11feb6c769e0,C
-        OID:64c1756fc639,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: 1404f54a2a6c40eaa4e7087ddf05d916-20220609
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <chunfeng.yun@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 537685179; Thu, 09 Jun 2022 15:42:37 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 9 Jun 2022 15:42:36 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 9 Jun 2022 15:42:35 +0800
-From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <linux-usb@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Eddie Hung <eddie.hung@mediatek.com>
-Subject: [PATCH 2/3] usb: mtu3: implement udc_async_callbacks of gadget operation
-Date:   Thu, 9 Jun 2022 15:42:32 +0800
-Message-ID: <20220609074233.15532-2-chunfeng.yun@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220609074233.15532-1-chunfeng.yun@mediatek.com>
-References: <20220609074233.15532-1-chunfeng.yun@mediatek.com>
+        Thu, 9 Jun 2022 03:45:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2AA1A398;
+        Thu,  9 Jun 2022 00:45:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 546E2B82C1F;
+        Thu,  9 Jun 2022 07:45:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8DA6C34114;
+        Thu,  9 Jun 2022 07:45:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654760711;
+        bh=2LL7+wgynfXqSoybroZDLmD28F35k05LG/4YKWxg6ig=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=U3acwFCjdjQ6OEXtnuqNMjF45pE4qMIt3/k1ZOYvk9Jkw07UrLmsGmqlQc1SjPtiL
+         UL0bOGGad0zLb8TcLC72qe6E1jiHs33vcrilaAofu96KN+mR74SNFsAyp7VfDfoQn/
+         JE939YUHMOIyM0GlaCxHywQli/BaXd5x5i+c/cdzglJSugiADlaIOm049KAiTi7Ezi
+         QeZexJdKXMuPio77uB6vjicQIS+ODyTguK0WsbnJxNARn8POAqfrNB9/nkFtG55zYN
+         8Zi4p2KrfvEx+C6mc9ICdJjniTC1a27cJeqmdoOERkFMgvDQ8VUHpXBvMYCFEoWis6
+         713CYN6SH5nlg==
+Date:   Thu, 9 Jun 2022 07:45:07 +0000
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org
+Cc:     chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        mka@chromium.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 2/5] platform/chrome: cros_kbd_led_backlight: separate
+ ACPI backend
+Message-ID: <YqGlA/5CK4lX95ge@google.com>
+References: <20220523090822.3035189-1-tzungbi@kernel.org>
+ <20220523090822.3035189-3-tzungbi@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220523090822.3035189-3-tzungbi@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Implement udc_async_callbacks hook function to avoid a race when unnbinding
-gadget drivers, refer to:
-7dc0c55e9f30 ('USB: UDC core: Add udc_async_callbacks gadget op')
+On Mon, May 23, 2022 at 05:08:19PM +0800, Tzung-Bi Shih wrote:
+> cros_kbd_led_backlight uses ACPI_KEYBOARD_BACKLIGHT_WRITE and
+> ACPI_KEYBOARD_BACKLIGHT_READ for setting and getting the brightness
+> respectively.
+> 
+> Separate ACPI operations for preparing the driver to support other
+> backends.
 
-Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
----
- drivers/usb/mtu3/mtu3.h            |  1 +
- drivers/usb/mtu3/mtu3_gadget.c     | 19 ++++++++++++++++---
- drivers/usb/mtu3/mtu3_gadget_ep0.c |  2 +-
- 3 files changed, 18 insertions(+), 4 deletions(-)
+The patch is the last one in the series that hasn't got a R-b tag.
 
-diff --git a/drivers/usb/mtu3/mtu3.h b/drivers/usb/mtu3/mtu3.h
-index 022bbdc54e68..8408e1b1a24a 100644
---- a/drivers/usb/mtu3/mtu3.h
-+++ b/drivers/usb/mtu3/mtu3.h
-@@ -357,6 +357,7 @@ struct mtu3 {
- 	unsigned delayed_status:1;
- 	unsigned gen2cp:1;
- 	unsigned connected:1;
-+	unsigned async_callbacks:1;
- 
- 	u8 address;
- 	u8 test_mode_nr;
-diff --git a/drivers/usb/mtu3/mtu3_gadget.c b/drivers/usb/mtu3/mtu3_gadget.c
-index d57cea62fe6b..30999b4debb8 100644
---- a/drivers/usb/mtu3/mtu3_gadget.c
-+++ b/drivers/usb/mtu3/mtu3_gadget.c
-@@ -592,6 +592,18 @@ mtu3_gadget_set_speed(struct usb_gadget *g, enum usb_device_speed speed)
- 	spin_unlock_irqrestore(&mtu->lock, flags);
- }
- 
-+static void mtu3_gadget_async_callbacks(struct usb_gadget *g, bool enable)
-+{
-+	struct mtu3 *mtu = gadget_to_mtu3(g);
-+	unsigned long flags;
-+
-+	dev_dbg(mtu->dev, "%s %s\n", __func__, enable ? "en" : "dis");
-+
-+	spin_lock_irqsave(&mtu->lock, flags);
-+	mtu->async_callbacks = enable;
-+	spin_unlock_irqrestore(&mtu->lock, flags);
-+}
-+
- static const struct usb_gadget_ops mtu3_gadget_ops = {
- 	.get_frame = mtu3_gadget_get_frame,
- 	.wakeup = mtu3_gadget_wakeup,
-@@ -600,6 +612,7 @@ static const struct usb_gadget_ops mtu3_gadget_ops = {
- 	.udc_start = mtu3_gadget_start,
- 	.udc_stop = mtu3_gadget_stop,
- 	.udc_set_speed = mtu3_gadget_set_speed,
-+	.udc_async_callbacks = mtu3_gadget_async_callbacks,
- };
- 
- static void mtu3_state_reset(struct mtu3 *mtu)
-@@ -697,7 +710,7 @@ void mtu3_gadget_cleanup(struct mtu3 *mtu)
- void mtu3_gadget_resume(struct mtu3 *mtu)
- {
- 	dev_dbg(mtu->dev, "gadget RESUME\n");
--	if (mtu->gadget_driver && mtu->gadget_driver->resume) {
-+	if (mtu->async_callbacks && mtu->gadget_driver && mtu->gadget_driver->resume) {
- 		spin_unlock(&mtu->lock);
- 		mtu->gadget_driver->resume(&mtu->g);
- 		spin_lock(&mtu->lock);
-@@ -708,7 +721,7 @@ void mtu3_gadget_resume(struct mtu3 *mtu)
- void mtu3_gadget_suspend(struct mtu3 *mtu)
- {
- 	dev_dbg(mtu->dev, "gadget SUSPEND\n");
--	if (mtu->gadget_driver && mtu->gadget_driver->suspend) {
-+	if (mtu->async_callbacks && mtu->gadget_driver && mtu->gadget_driver->suspend) {
- 		spin_unlock(&mtu->lock);
- 		mtu->gadget_driver->suspend(&mtu->g);
- 		spin_lock(&mtu->lock);
-@@ -719,7 +732,7 @@ void mtu3_gadget_suspend(struct mtu3 *mtu)
- void mtu3_gadget_disconnect(struct mtu3 *mtu)
- {
- 	dev_dbg(mtu->dev, "gadget DISCONNECT\n");
--	if (mtu->gadget_driver && mtu->gadget_driver->disconnect) {
-+	if (mtu->async_callbacks && mtu->gadget_driver && mtu->gadget_driver->disconnect) {
- 		spin_unlock(&mtu->lock);
- 		mtu->gadget_driver->disconnect(&mtu->g);
- 		spin_lock(&mtu->lock);
-diff --git a/drivers/usb/mtu3/mtu3_gadget_ep0.c b/drivers/usb/mtu3/mtu3_gadget_ep0.c
-index 0ca47212f1ec..7e7013508af6 100644
---- a/drivers/usb/mtu3/mtu3_gadget_ep0.c
-+++ b/drivers/usb/mtu3/mtu3_gadget_ep0.c
-@@ -66,7 +66,7 @@ __acquires(mtu->lock)
- {
- 	int ret;
- 
--	if (!mtu->gadget_driver)
-+	if (!mtu->gadget_driver || !mtu->async_callbacks)
- 		return -EOPNOTSUPP;
- 
- 	spin_unlock(&mtu->lock);
--- 
-2.18.0
-
+I have tested the patch on an ADL-P-based chromebook and the keyboard
+backlight works.  Could anyone on the list help to review the patch?
