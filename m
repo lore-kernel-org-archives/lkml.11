@@ -2,134 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD98FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D974CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:55:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240031AbiFINy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 09:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42222 "EHLO
+        id S239533AbiFINxP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 09:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243525AbiFINyz (ORCPT
+        with ESMTP id S230425AbiFINxJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 09:54:55 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96844563A1;
-        Thu,  9 Jun 2022 06:54:53 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LJltJ296wzjXKF;
-        Thu,  9 Jun 2022 21:53:28 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 9 Jun 2022 21:54:50 +0800
-Received: from thunder-town.china.huawei.com (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 9 Jun 2022 21:54:49 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        <devicetree@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        <kexec@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Jonathan Corbet <corbet@lwn.net>, <linux-doc@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        "John Donnelly" <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: [PATCH] arm64: kdump: Provide default size when crashkernel=Y,low is not specified
-Date:   Thu, 9 Jun 2022 21:50:29 +0800
-Message-ID: <20220609135029.607-1-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
+        Thu, 9 Jun 2022 09:53:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82C7221489B
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 06:53:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654782786;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zpelrKcCBvxZODnS+e4yu6gn9thjf5wVTXhf5pEuG28=;
+        b=TMuUqSNV+JRhq4jfRl9CH8h2tw5NCmaw3BWYkK60g3EGVDQ6D8B4LkLaLO44YfbBxnfWNB
+        8IKvOypjACkRHZOnMsJWwWx1ULjXPyNleS94utCBwfyHCqzJnTXIgjx3kpiAOHkXIYW6La
+        R7IqzLyj9izWkQTjVaod0WQ7ws31sfg=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-39-EbfAzZOFPE-wBWnuLoq_sg-1; Thu, 09 Jun 2022 09:53:01 -0400
+X-MC-Unique: EbfAzZOFPE-wBWnuLoq_sg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D592B811E81;
+        Thu,  9 Jun 2022 13:53:00 +0000 (UTC)
+Received: from horse.redhat.com (unknown [10.18.25.210])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C31C22026D64;
+        Thu,  9 Jun 2022 13:53:00 +0000 (UTC)
+Received: by horse.redhat.com (Postfix, from userid 10451)
+        id 7E614220882; Thu,  9 Jun 2022 09:53:00 -0400 (EDT)
+Date:   Thu, 9 Jun 2022 09:53:00 -0400
+From:   Vivek Goyal <vgoyal@redhat.com>
+To:     Bernd Schubert <bschubert@ddn.com>
+Cc:     Dharmendra Singh <dharamhans87@gmail.com>, miklos@szeredi.hu,
+        linux-fsdevel@vger.kernel.org, fuse-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Dharmendra Singh <dsingh@ddn.com>
+Subject: Re: [PATCH v4 1/1] Allow non-extending parallel direct writes on the
+ same file.
+Message-ID: <YqH7PO7KtoiXkmVH@redhat.com>
+References: <20220605072201.9237-1-dharamhans87@gmail.com>
+ <20220605072201.9237-2-dharamhans87@gmail.com>
+ <Yp/CYjONZHoekSVA@redhat.com>
+ <34dd96b3-e253-de4e-d5d3-a49bc1990e6f@ddn.com>
+ <Yp/KnF0oSIsk0SYd@redhat.com>
+ <3d189ccc-437e-d9c0-e9f1-b4e0d2012e3c@ddn.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3d189ccc-437e-d9c0-e9f1-b4e0d2012e3c@ddn.com>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To be consistent with the implementation of x86 and improve cross-platform
-user experience. Try to allocate at least 256 MiB low memory automatically
-when crashkernel=Y,low is not specified.
+On Wed, Jun 08, 2022 at 12:42:20AM +0200, Bernd Schubert wrote:
+> 
+> 
+> On 6/8/22 00:01, Vivek Goyal wrote:
+> > On Tue, Jun 07, 2022 at 11:42:16PM +0200, Bernd Schubert wrote:
+> > > 
+> > > 
+> > > On 6/7/22 23:25, Vivek Goyal wrote:
+> > > > On Sun, Jun 05, 2022 at 12:52:00PM +0530, Dharmendra Singh wrote:
+> > > > > From: Dharmendra Singh <dsingh@ddn.com>
+> > > > > 
+> > > > > In general, as of now, in FUSE, direct writes on the same file are
+> > > > > serialized over inode lock i.e we hold inode lock for the full duration
+> > > > > of the write request. I could not found in fuse code a comment which
+> > > > > clearly explains why this exclusive lock is taken for direct writes.
+> > > > > 
+> > > > > Following might be the reasons for acquiring exclusive lock but not
+> > > > > limited to
+> > > > > 1) Our guess is some USER space fuse implementations might be relying
+> > > > >      on this lock for seralization.
+> > > > 
+> > > > Hi Dharmendra,
+> > > > 
+> > > > I will just try to be devil's advocate. So if this is server side
+> > > > limitation, then it is possible that fuse client's isize data in
+> > > > cache is stale. For example, filesystem is shared between two
+> > > > clients.
+> > > > 
+> > > > - File size is 4G as seen by client A.
+> > > > - Client B truncates the file to 2G.
+> > > > - Two processes in client A, try to do parallel direct writes and will
+> > > >     be able to proceed and server will get two parallel writes both
+> > > >     extending file size.
+> > > > 
+> > > > I can see that this can happen with virtiofs with cache=auto policy.
+> > > > 
+> > > > IOW, if this is a fuse server side limitation, then how do you ensure
+> > > > that fuse kernel's i_size definition is not stale.
+> > > 
+> > > Hi Vivek,
+> > > 
+> > > I'm sorry, to be sure, can you explain where exactly a client is located for
+> > > you? For us these are multiple daemons linked to libufse - which you seem to
+> > > call 'server' Typically these clients are on different machines. And servers
+> > > are for us on the other side of the network - like an NFS server.
+> > 
+> > Hi Bernd,
+> > 
+> > Agreed, terminology is little confusing. I am calling "fuse kernel" as
+> > client and fuse daemon (user space) as server. This server in turn might
+> > be the client to another network filesystem and real files might be
+> > served by that server on network.
+> > 
+> > So for simple virtiofs case, There can be two fuse daemons (virtiofsd
+> > instances) sharing same directory (either on local filesystem or on
+> > a network filesystem).
+> 
+> So the combination of fuse-kernel + fuse-daemon == vfs mount.
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- Documentation/admin-guide/kernel-parameters.txt | 10 +++-------
- arch/arm64/mm/init.c                            | 12 +++++++++++-
- 2 files changed, 14 insertions(+), 8 deletions(-)
+This is fine for regular fuse file systems. For virtiofs fuse-kernel is
+running in a VM and fuse-daemon is running outside the VM on host.
+> 
+> > 
+> > > 
+> > > So now while I'm not sure what you mean with 'client', I'm wondering about
+> > > two generic questions
+> > > 
+> > > a) I need to double check, but we were under the assumption the code in
+> > > question is a direct-io code path. I assume cache=auto would use the page
+> > > cache and should not be effected?
+> > 
+> > By default cache=auto use page cache but if application initiates a
+> > direct I/O, it should use direct I/O path.
+> 
+> Ok, so we are on the same page regarding direct-io.
+> 
+> > 
+> > > 
+> > > b) How would the current lock help for distributed clients? Or multiple fuse
+> > > daemons (what you seem to call server) per local machine?
+> > 
+> > I thought that current lock is trying to protect fuse kernel side and
+> > assumed fuse server (daemon linked to libfuse) can handle multiple
+> > parallel writes. Atleast that's how I thought about the things. I might
+> > be wrong. I am not sure.
+> > 
+> > > 
+> > > For a single vfs mount point served by fuse, truncate should take the
+> > > exclusive lock and parallel writes the shared lock - I don't see a problem
+> > > here either.
+> > 
+> > Agreed that this does not seem like a problem from fuse kernel side. I was
+> > just questioning that where parallel direct writes become a problem. And
+> > answer I heard was that it probably is fuse server (daemon linked with
+> > libfuse) which is expecting the locking. And if that's the case, this
+> > patch is not fool proof. It is possible that file got truncated from
+> > a different client (from a different fuse daemon linked with libfuse).
+> > 
+> > So say A is first fuse daemon and B is another fuse daemon. Both are
+> > clients to some network file system as NFS.
+> > 
+> > - Fuse kernel for A, sees file size as 4G.
+> > - fuse daemon B truncates the file to size 2G.
+> > - Fuse kernel for A, has stale cache, and can send two parallel writes
+> >    say at 3G and 3.5G offset.
+> 
+> I guess you mean inode cache, not data cache, as this is direct-io.
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 8090130b544b070..9560f5af248e0d6 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -843,7 +843,9 @@
- 			available.
- 			It will be ignored if crashkernel=X is specified.
- 	crashkernel=size[KMG],low
--			[KNL, X86-64] range under 4G. When crashkernel=X,high
-+			[KNL, X86-64, ARM64] range under 4G(For some platforms,
-+			not all low 4G memory can be directly accessed by devices,
-+			use the DMA zones instead). When crashkernel=X,high
- 			is passed, kernel could allocate physical memory region
- 			above 4G, that cause second kernel crash on system
- 			that require some amount of low memory, e.g. swiotlb
-@@ -857,12 +859,6 @@
- 			It will be ignored when crashkernel=X,high is not used
- 			or memory reserved is below 4G.
- 
--			[KNL, ARM64] range in low memory.
--			This one lets the user specify a low range in the
--			DMA zone for the crash dump kernel.
--			It will be ignored when crashkernel=X,high is not used
--			or memory reserved is located in the DMA zones.
--
- 	cryptomgr.notests
- 			[KNL] Disable crypto self-tests
- 
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 339ee84e5a61a0b..5390f361208ccf7 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -96,6 +96,14 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
- #define CRASH_ADDR_LOW_MAX		arm64_dma_phys_limit
- #define CRASH_ADDR_HIGH_MAX		(PHYS_MASK + 1)
- 
-+/*
-+ * This is an empirical value in x86_64 and taken here directly. Please
-+ * refer to the code comment in reserve_crashkernel_low() of x86_64 for more
-+ * details.
-+ */
-+#define DEFAULT_CRASH_KERNEL_LOW_SIZE	\
-+	max(swiotlb_size_or_default() + (8UL << 20), 256UL << 20)
-+
- static int __init reserve_crashkernel_low(unsigned long long low_size)
- {
- 	unsigned long long low_base;
-@@ -147,7 +155,9 @@ static void __init reserve_crashkernel(void)
- 		 * is not allowed.
- 		 */
- 		ret = parse_crashkernel_low(cmdline, 0, &crash_low_size, &crash_base);
--		if (ret && (ret != -ENOENT))
-+		if (ret == -ENOENT)
-+			crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
-+		else if (ret)
- 			return;
- 
- 		crash_max = CRASH_ADDR_HIGH_MAX;
--- 
-2.25.1
+Yes inode cache and cached ->i_size might be an issue. These patches
+used cached ->i_size to determine if parallel direct I/O should be
+allowed or not.
+
+
+> But now
+> why would we need to worry about any cache here, if this is direct-io - the
+> application writes without going into any cache and at the same time a
+> truncate happens? The current kernel side lock would not help here, but a
+> distrubuted lock is needed to handle this correctly?
+> 
+> int fd = open(path, O_WRONLY | O_DIRECT);
+> 
+> clientA: pwrite(fd, buf, 100G, 0) -> takes a long time
+> clientB: ftruncate(fd, 0)
+> 
+> I guess on a local file system that will result in a zero size file. On
+> different fuse mounts (without a DLM) or NFS, undefined behavior.
+> 
+> 
+> > - Fuser daemon A might not like it.(Assuming this is fuse daemon/user
+> >    space side limitation).
+> 
+> I think there are two cases for the fuser daemons:
+> 
+> a) does not have a distributed lock - just needs to handle the writes, the
+> local kernel lock does not protect against distributed races.
+
+Exactly. This is the point I am trying to raise. "Local kernel lock does
+not protect against distributed races".
+
+So in this case local kernel has ->i_size cached and this might be an
+old value and checking i_size does not guarantee that fuse daemon
+will not get parallel extending writes.
+
+> I guess most
+> of these file systems can enable parallel writes, unless the kernel lock is
+> used to handle userspace thread synchronization.
+
+Right. If user space is relying on kernel lock for thread synchronization,
+it can not enable parallel writes.
+
+But if it is not relying on this, it should be able to enable parallel
+writes. Just keep in mind that ->i_size check is not sufficient to
+guarantee that you will not get "two extnding parallel writes". If
+another client on a different machine truncated the file, it is
+possible this client has old cached ->i_size and it will can
+get multiple file extending parallel writes.
+
+So if fuse daemon enables parallel extending writes, it should be
+prepared to deal with multiple extending parallel writes.
+
+And if this is correct assumption, I am wondering why to even try
+to do ->i_size check and try to avoid parallel extending writes
+in fuse kernel. May be there is something I am not aware of. And
+that's why I am just raising questions.
+
+> 
+> b) has a distributed lock - needs a callback to fuse kernel to inform the
+> kernel to invalidate all data.
+> 
+> At DDN we have both of them, a) is in production, the successor b) is being
+> worked on. We might come back with more patches for more callbacks for the
+> DLM - I'm not sure yet.
+> 
+> 
+> > 
+> > I hope I am able to explain my concern. I am not saying that this patch
+> > is not good. All I am saying that fuse daemon (user space) can not rely
+> > on that it will never get two parallel direct writes which can be beyond
+> > the file size. If fuse kernel cache is stale, it can happen. Just trying
+> > to set the expectations right.
+> 
+> 
+> I don't see an issue yet. Regarding virtiofs, does it have a distributed
+> lock manager (DLM)? I guess not?
+
+Nope. virtiofs does not have any DLM.
+
+Vivek
+> 
+> 
+> Thanks,
+> Bernd
+> 
 
