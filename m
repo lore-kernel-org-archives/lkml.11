@@ -2,168 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67F69C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 07:48:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E304C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 07:50:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240333AbiFIHsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 03:48:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58276 "EHLO
+        id S240350AbiFIHuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 03:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238680AbiFIHsw (ORCPT
+        with ESMTP id S233090AbiFIHud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 03:48:52 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDB76A043;
-        Thu,  9 Jun 2022 00:48:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3xoIRA2BBvzVO0XOc/JU1zTILnsefWyOV49Y7IJ3FLY=; b=AGRuyJpQp9QMikHh/33qL0JsHV
-        U+WVKRpKqJjJvGyaFDokMlWsSCM9no5evqxr8XfHexEuz39eb12W7RP7lrous4XASMRUkOLz5VouH
-        wLOvqEp2LZsitkUiAmo4QZ4OqBM+FawBjbkxe3L4iSs+u4EoDbAZTWfm7hCu0mzKN+/zIyvki4As7
-        StixFRJyaOTciQhpHuJ8zWO31vomCg9cRzQQEama2CztMyJ+0N8odAUMXxupDZVXJ2vDzPMCIz1fo
-        q5Sz7FLf2dgFeqPVWUX5WWIQ+PRyBjxQp0aakORxRQrSWetvEE8P/oPwTCIquE+kqksSrLBnCbWei
-        uIwhbQZg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32800)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nzCtn-0005fb-B8; Thu, 09 Jun 2022 08:48:11 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nzCtG-0002ae-KM; Thu, 09 Jun 2022 08:47:38 +0100
-Date:   Thu, 9 Jun 2022 08:47:38 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Jarkko Sakkinen <jarkko@profian.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Marco Elver <elver@google.com>,
-        Dan Li <ashimida@linux.alibaba.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Song Liu <song@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Mark Brown <broonie@kernel.org>,
-        Luis Machado <luis.machado@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Atsushi Nemoto <anemo@mba.ocn.ne.jp>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dave Anglin <dave.anglin@bell.net>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Daniel Axtens <dja@axtens.net>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jordan Niethe <jniethe5@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Changbin Du <changbin.du@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Liao Chang <liaochang1@huawei.com>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>,
-        Wu Caize <zepan@sipeed.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Tobias Huschle <huschle@linux.ibm.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Michael Roth <michael.roth@amd.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        =?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@igalia.com>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-modules@vger.kernel.org
-Subject: Re: [PATCH] kprobes: Enable tracing for mololithic kernel images
-Message-ID: <YqGlmpbx8HTrWmpF@shell.armlinux.org.uk>
-References: <20220608000014.3054333-1-jarkko@profian.com>
+        Thu, 9 Jun 2022 03:50:33 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9265CC687C
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 00:50:32 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id p12-20020a056e02144c00b002d196a4d73eso17207128ilo.18
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 00:50:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=UTrdcwVGYZBfRqJEg/qIbaLEhJKmxhweso7R79qIqH0=;
+        b=dJyC2tj/KBZ8CrMJnr5GSKQnu2PvQNY2RVVfYWnvW6hRVo6LAdTSQiQl71mifjBSUJ
+         cI+QdZ9k2rvPnxgShFiNtJVqoO7f1R1TGflRceKW+sEiJkDRvNcXXt5h1vEr+IzkJaqV
+         4BqXh0U62NWi2xb3V3HbRCmiQ1+UWLmmT+MR4AKDaCj1436gKkFX2sdiDeC773ybUeDE
+         RdLex4JOZUl6UcAMNKTlQm2P3HkcnaNup2SrIaA9W+g7Iu22WeJiHssvkBVlb0Uj0oc2
+         eajbBvSLAVIR7Df0zv+bt6D8r37Yur+Iiu742r8TjmAAfo9DTkYD2ANCaR/XjRNx5bWS
+         WWAA==
+X-Gm-Message-State: AOAM532+PO4pW6aIjgezaBkXlzCG85LEReUDdU7takL+aMgi/UB6ofLT
+        AP9bqmSCMvCZOf4EOfsvfb5+WlyRDZ9egR/oywL7/YAfm2CI
+X-Google-Smtp-Source: ABdhPJwjiHptorZizX/hT6ZuZbLjnZ5UbdLOEVd5N1fZtBLUID+zQATZmRLdgvdqCE9QezYdtOIdy8y1vpMlzUh01N9J0yE7hCOu
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220608000014.3054333-1-jarkko@profian.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Received: by 2002:a05:6638:1b0:b0:32e:dfe3:10bf with SMTP id
+ b16-20020a05663801b000b0032edfe310bfmr21024823jaq.188.1654761031748; Thu, 09
+ Jun 2022 00:50:31 -0700 (PDT)
+Date:   Thu, 09 Jun 2022 00:50:31 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007c525005e0ff1382@google.com>
+Subject: [syzbot] WARNING: ODEBUG bug in kvm_xen_vcpu_set_attr
+From:   syzbot <syzbot+e54f930ed78eb0f85281@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 02:59:27AM +0300, Jarkko Sakkinen wrote:
-> diff --git a/arch/arm/kernel/Makefile b/arch/arm/kernel/Makefile
-> index 553866751e1a..d2bb954cd54f 100644
-> --- a/arch/arm/kernel/Makefile
-> +++ b/arch/arm/kernel/Makefile
-> @@ -44,6 +44,11 @@ obj-$(CONFIG_CPU_IDLE)		+= cpuidle.o
->  obj-$(CONFIG_ISA_DMA_API)	+= dma.o
->  obj-$(CONFIG_FIQ)		+= fiq.o fiqasm.o
->  obj-$(CONFIG_MODULES)		+= armksyms.o module.o
-> +ifeq ($(CONFIG_MODULES),y)
-> +obj-y				+= module_alloc.o
-> +else
-> +obj-$(CONFIG_KPROBES)		+= module_alloc.o
-> +endif
+Hello,
 
-Doesn't:
+syzbot found the following issue on:
 
-obj-$(CONFIG_MODULES)		+= module_alloc.o
-obj-$(CONFIG_KPROBES)		+= module_alloc.o
+HEAD commit:    032dcf09e2bf Merge tag 'gpio-fixes-for-v5.19-rc1' of git:/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=122ece4ff00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3096247591885bfa
+dashboard link: https://syzkaller.appspot.com/bug?extid=e54f930ed78eb0f85281
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-work just as well? The kbuild modules.rst documentation says:
+Unfortunately, I don't have any reproducer for this issue yet.
 
-        The order of files in $(obj-y) is significant.  Duplicates in
-        the lists are allowed: the first instance will be linked into
-        built-in.a and succeeding instances will be ignored.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+e54f930ed78eb0f85281@syzkaller.appspotmail.com
 
-so you should be fine... or the documentation is wrong!
+------------[ cut here ]------------
+ODEBUG: init active (active state 0) object type: hrtimer hint: xen_timer_callback+0x0/0xb0 arch/x86/kvm/xen.c:1086
+WARNING: CPU: 1 PID: 26545 at lib/debugobjects.c:502 debug_print_object+0x16e/0x250 lib/debugobjects.c:502
+Modules linked in:
+CPU: 1 PID: 26545 Comm: syz-executor.4 Not tainted 5.18.0-syzkaller-13760-g032dcf09e2bf #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:502
+Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd c0 5e 28 8a 4c 89 ee 48 c7 c7 a0 52 28 8a e8 74 08 32 05 <0f> 0b 83 05 35 b5 bb 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
+RSP: 0018:ffffc900160df778 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
+RDX: ffff8880565a3b00 RSI: ffffffff8160ef28 RDI: fffff52002c1bee1
+RBP: 0000000000000001 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000080000000 R11: 0000000000000001 R12: ffffffff89cedc20
+R13: ffffffff8a285820 R14: ffffffff816a8e30 R15: ffffffff911293e0
+FS:  00007f720c5f2700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020402000 CR3: 000000004040a000 CR4: 00000000003526e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __debug_object_init+0x524/0xd10 lib/debugobjects.c:590
+ debug_hrtimer_init kernel/time/hrtimer.c:414 [inline]
+ debug_init kernel/time/hrtimer.c:468 [inline]
+ hrtimer_init+0x23/0x2b0 kernel/time/hrtimer.c:1592
+ kvm_xen_init_timer arch/x86/kvm/xen.c:168 [inline]
+ kvm_xen_vcpu_set_attr+0x1ca/0x16c0 arch/x86/kvm/xen.c:716
+ kvm_arch_vcpu_ioctl+0x1bcd/0x39f0 arch/x86/kvm/x86.c:5695
+ kvm_vcpu_ioctl+0x973/0xf30 arch/x86/kvm/../../../virt/kvm/kvm_main.c:4100
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl fs/ioctl.c:856 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f720b489109
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f720c5f2168 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f720b59c030 RCX: 00007f720b489109
+RDX: 0000000020003680 RSI: 000000004048aecb RDI: 000000000000000b
+RBP: 00007f720b4e308d R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f720bacfb1f R14: 00007f720c5f2300 R15: 0000000000022000
+ </TASK>
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
