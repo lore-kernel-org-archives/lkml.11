@@ -2,179 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCAB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C55CFCCA473
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245438AbiFIMdp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 08:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
+        id S245453AbiFIMdv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 08:33:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245430AbiFIMdb (ORCPT
+        with ESMTP id S245363AbiFIMdg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 08:33:31 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60067.outbound.protection.outlook.com [40.107.6.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F39F186FB;
-        Thu,  9 Jun 2022 05:33:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KcCZmgsalLaiq1H159KH4P0pS03RdGeaUGs1ws5V4wXOk9g9idmryH8LYqVyKcI+fwNh9TT5kwoLTh1kNcuqhn0p1BG8tpVR7xEHz6avm9P9FzZx6XXhxrlfmBpxJB9GQ99aev9KUt0grd+mKv20PPI2APk1YuRzW4HmMmB3nc0PtB0Qo3FKLfrjVzzxG5nbDFnUmXzakNIcS80nqIOayPRa6RLrxDgY1gyLuAKAlB7nuwFFweH98oauVmoyAmSaZRj3sY4oqTZsK3oqWzp/SWxXcMg8WpggAUhl9BOTacjNd0SrZ+QEFc9ia6GCQbl0NTVKQq/Nmy6UTnWC29Yr/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8AhxINjBYSayOm0wbQf1JweZvXYsx+vRUb4sT7T3218=;
- b=AKXXVEQyVcO2Q3cSI5C9FyFpL5ui/sYilwqBFbhtZLrmkEcmnLt/zCQiKwOGlL7PPi4WXzFceOjKqqW/mOaYmCrlkcZ5RqVCGfQxbNpwG0cloa83yGGF00kvrU4ozj/hAIKTIb1601sE4g1XZld4ihBpv1d99Gwn8qJExj9esFtgrxXgp34FneAICGTj0nMN5uzJ651FsoWJplwPEbRngPg6WuroHlkLiqlC4zPi3uT6zASpvl5SogeVqD94eSebOeL9tqvoJi8xVkl4AZ2ZdtSuSgVoarSLgpsor8D3gzktthWEtE8c6Q0arWLW2g/stL9U24FaW+Zcu8qvkwXYpg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8AhxINjBYSayOm0wbQf1JweZvXYsx+vRUb4sT7T3218=;
- b=IGbUANeHwv5qn7rGDp7lflNxCMmCAbYxFSguM7Lsl7QqXhKHzRxAEdBkDjqGywFo/8bxTFbw9JNIoq3aJJUTmxg0E4tJCkvZmp2HqEGFI1r/CDhkoEuzEQkRZdTAlvBWEyF4oMG93/WjVkEXe54nxaz3vaapMarS1Sjhnkk8R9M=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by DB7PR04MB4475.eurprd04.prod.outlook.com (2603:10a6:5:35::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Thu, 9 Jun
- 2022 12:33:27 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::a892:e4a9:4769:13a5]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::a892:e4a9:4769:13a5%8]) with mapi id 15.20.5332.012; Thu, 9 Jun 2022
- 12:33:27 +0000
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com,
-        linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Cc:     devicetree@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: [PATCH 2/2] remoteproc: imx_rproc: delay after kick remote processor
-Date:   Thu,  9 Jun 2022 20:35:00 +0800
-Message-Id: <20220609123500.3492475-3-peng.fan@oss.nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220609123500.3492475-1-peng.fan@oss.nxp.com>
-References: <20220609123500.3492475-1-peng.fan@oss.nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR02CA0021.apcprd02.prod.outlook.com
- (2603:1096:4:195::10) To DU0PR04MB9417.eurprd04.prod.outlook.com
- (2603:10a6:10:358::11)
+        Thu, 9 Jun 2022 08:33:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D6B192AB
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 05:33:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A192619BF
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 12:33:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D437CC34114;
+        Thu,  9 Jun 2022 12:33:32 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="mPLOVvmm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1654778011;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZSYQGAKV0NAoJGNwfFuUVE9nqijGNSU8b+ZISJRatmU=;
+        b=mPLOVvmmWmr9mOmfK6h7V5tZ1lsne9dp4NUex/mzsDduozgpZSMlnQYBhbRuhsT2QLWGGw
+        GnQ87sI3p0ZbD51tjavn4ciJ4ixeyRjYfNQKN+0rrwruYe86mAXBmu39Rq1ckTdX3Ewz60
+        uX7Y0TMcy75pHMIr2+Ur+kdU9S1eQds=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b86d10e9 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 9 Jun 2022 12:33:30 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Alexander Potapenko <glider@google.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v2] mm/kfence: select random number before taking raw lock
+Date:   Thu,  9 Jun 2022 14:33:19 +0200
+Message-Id: <20220609123319.17576-1-Jason@zx2c4.com>
+In-Reply-To: <CAHmME9rkQDnsTu-8whevtBa_J6aOKT=gQO7kBAxwWrBgKgcyUQ@mail.gmail.com>
+References: <CAHmME9rkQDnsTu-8whevtBa_J6aOKT=gQO7kBAxwWrBgKgcyUQ@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9326d93d-89cf-4ea9-412b-08da4a144086
-X-MS-TrafficTypeDiagnostic: DB7PR04MB4475:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <DB7PR04MB447513A7052EC7A91D0F43F4C9A79@DB7PR04MB4475.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: egwSX/+GT04amGr8JyZoRsFKs98P5jPPQSE9TSQ0B3UqumPQEnSGrVjzbxFFAGBlJrkOU2qnyYeGcpIQoZb1x5IjnIFDcvflCRJuPPuWysITT/PNjz/khmx3V7SxvNSXwtqYxAnj0UYWk8+yryROcrpISA/wF5LJQWw+PSiOHg54N5q6tA3g+EMZ/GMRuAh2ZL9EI+3zwyc9Yjbq+oK5YKEyaOW1KBKOoPoD6H4uJ3qxizwyMHeknM/rfjct68HLjsDpqExWyuawSuUHbdPSOoIYl0Plsu89h/0YR0U9WFhVVQU4/uakrhnSrbVj990Aw/vMFiucphlgIccLnqxm3PuUs+jSKMJb5XXaHL2pyeC+ORXoSClUJnj8LaXXJRhzAdILxRVMgmiIjlZd2WSk/CfycnMaMaEYQXR5HtcWK0a9Tz0CGC8WnTB5q3E4f5RDHWduGQrOBxRRdy2VWMbSok7PqMiggjiWJB+B7jaPj4MEnp4Qoe2yl1dmw1RUrmFapU8ikz6ao73TZQibr7sbEf7xCUU2wPGmVjSetFpboRI5WOjLeJxbfgAEEUWCK5dvVnmh/jmgyQjczRhjnSgxzAodSiWUeTO1gL6ZT6tJ47z8cJffUvxhn9yG4JJYSc0hWGv3L7ORlp1W7YQRXrDBUdt878WRNWyKiLJKvEou0GIdNHDrLx84yzrRNG51zybHGiVArJu1V/5ba9MpCUj1UPguVlIPERHzQBKra02w17g=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(921005)(26005)(6512007)(4326008)(186003)(52116002)(316002)(6506007)(1076003)(8936002)(86362001)(8676002)(66946007)(6486002)(66476007)(66556008)(83380400001)(508600001)(6666004)(38350700002)(38100700002)(7416002)(5660300002)(2616005)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MMYjQ2rjZ1Trw9p+lIIX90Tr7D18oEeUFYzbLJgWLUGMYPpMbus2BkBA24R6?=
- =?us-ascii?Q?3QFn2gVupaAWAu4LXzRZ1wcRtgOEJbxGO2OXs2d5sMHH8DWyp1Rj/S9Tmorn?=
- =?us-ascii?Q?LPc+Ymlx1RprX0kzT4NkNRsoTe/pfHZnQlyegYAm6uIshm3IqRPSEgBZP/1F?=
- =?us-ascii?Q?p/Iz9WK0fitbtrzz6Uib60+ol3xjIY3Nem62P4wvorFtrwmuIEsr0NxpEDKh?=
- =?us-ascii?Q?8ecYENeCT1O+i3Ia/VgYLoRaXZuNxeavhSeeIi3DvF+yokWsjCgeEJarRRD1?=
- =?us-ascii?Q?CREjHo6vGxymt7ntLfFzBGUPlocgN4TtBRYdomzezYAP3BkORnCWlK23ouey?=
- =?us-ascii?Q?Fcey8FbhWa+ZuHU/xwGWCMKqSr/lJuIGaRLitm6FtM0yfGA9JQZ6avewkPsa?=
- =?us-ascii?Q?1l15pggFgCOiYXEfvqUt5/zh3t/tpwjgBfoKNv/bOeyMS4lv0MKaXax9/V+i?=
- =?us-ascii?Q?EIQxEp1YplMSpFO+9IUmKrkwQ5go57A0KKcFMCPe2IhxLlDqFFxqq5ZQLgt/?=
- =?us-ascii?Q?WYqu8DYjovPVfeFNnfGfIBpboTTaXAeIekypwa0gIPpwEHUX8pZamJQ4TjE4?=
- =?us-ascii?Q?ONuHrEaiNyxDuzWq9MKOyNhKhMtOOM10mC7PPU2zmxlJAiLIKW1fi2tedNF+?=
- =?us-ascii?Q?uDh76ydvKHl6kxQUijAxI35GUZThQvjaEOm2y9cXQSpxquS6+2PfM1tHLoBE?=
- =?us-ascii?Q?urR6w6QDthKE9008cp/w0OrRbrFbaJdG4yTSTXmYz9Mjr7XRq0ZOMZYs+bDW?=
- =?us-ascii?Q?xXdEfrtkvsjWNx2kUyPTOugbiLHq0qs3fhvMTEA1qyZKc3DYbMczIybE1ZA7?=
- =?us-ascii?Q?ejf3SF5v+ziMTfj03oquEL5FKukSqQibOA7SUHPyaPy5HVaFE4h2S6Liy3RK?=
- =?us-ascii?Q?HNel2wKN/3CGLwZVe3+8CUWsHc1fiV3y8diCrIW4UVxxlNIJF8qvpd/PZSlJ?=
- =?us-ascii?Q?i1eoUewqL3TYct0hdhCzpEvsmdXMxyAIPugmIotjgiWDDDYz+vYWIbwmq8AM?=
- =?us-ascii?Q?jyhv4nJ3WJYg6x/kVMl7cf6nm4zFZXM9jdlmN6cfcwNEmkx31XCICd5GAFmG?=
- =?us-ascii?Q?x4oNQg5bx93oFXiaRUh+cRESjCxds0m11Yes2R9cYrUXRfaBuPeWhO0RefOn?=
- =?us-ascii?Q?gog3fhn9B3UpgHoOdCp7bSNkrOemoIVeYXcMvdIRxJCU5hWw39uLK/L2IAnX?=
- =?us-ascii?Q?+6ErVBA210g5+cBHY2gNL46yGZk9JhR/ohNkl6uuhz49c0sofCisWr0bZddm?=
- =?us-ascii?Q?vNiBg8N6TSCAIzP775xQc/60YNjynkMqxPkYU25BPO0r71EFtXhLLGLbaka5?=
- =?us-ascii?Q?5MLc2nhnCAoK34xTKJGwccvFGsXNEBGQjXkSnloWZsbPqGzBhUyXOtG5KDQw?=
- =?us-ascii?Q?VW86ULzHCC9ahCtGGWtdU4npI5dH0/CwzaU7rwNZcpFCCMNuXpoUe8YN5W0R?=
- =?us-ascii?Q?bTfQYnMub4Ys44QwaOb4yiDUKAJB2LnHs2QOB3xMLjNH6p1Iy8KnF3FnaxD7?=
- =?us-ascii?Q?uOhvcX5rdAEg+ShlPQuKKDM+d/YXsugD4M+mjPWJlYD4FRCIQrrVPSZVv4gg?=
- =?us-ascii?Q?jNilOi+++tYzPLXw1GN4/HfOB1LMeAALtzizaHzZ7dctzLssLddcOOJhhY68?=
- =?us-ascii?Q?Ozd+zfOTRu/yxwJ95mwNuu9Ufk/w01qMqOPcjr2MUiMwnu0llkoEWeje5gR+?=
- =?us-ascii?Q?BBdddyLqiWyAFaFQVDBpUZDGbrLTa0h/L/PcY7Ep06sio6pO4mwV6Hs7rk3x?=
- =?us-ascii?Q?dDR5tWbVsA=3D=3D?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9326d93d-89cf-4ea9-412b-08da4a144086
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2022 12:33:27.2437
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pzNUcoW0fiOpkrpO43EAeyjS7WPgwNltXwOL/lV5orU8LX6FHn8ptvopS0dMeWtKlctKFEZKjduGcWFyRRVtAw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4475
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+The RNG uses vanilla spinlocks, not raw spinlocks, so kfence should pick
+its random numbers before taking its raw spinlocks. This also has the
+nice effect of doing less work inside the lock. It should fix a splat
+that Geert saw with CONFIG_PROVE_RAW_LOCK_NESTING:
 
-There is case that after remoteproc start remote processor[M4], the M4
-runs slow and before M4 finish its own rpmsg framework initialization,
-linux sends out vring kick message, then M4 firmware drops the kick
-message. Some NXP released Cortex-M[x] images has such limitation that
-it requires linux sends out vring kick message after M4 firmware finish
-its rpmsg framework initialization.
+     dump_backtrace.part.0+0x98/0xc0
+     show_stack+0x14/0x28
+     dump_stack_lvl+0xac/0xec
+     dump_stack+0x14/0x2c
+     __lock_acquire+0x388/0x10a0
+     lock_acquire+0x190/0x2c0
+     _raw_spin_lock_irqsave+0x6c/0x94
+     crng_make_state+0x148/0x1e4
+     _get_random_bytes.part.0+0x4c/0xe8
+     get_random_u32+0x4c/0x140
+     __kfence_alloc+0x460/0x5c4
+     kmem_cache_alloc_trace+0x194/0x1dc
+     __kthread_create_on_node+0x5c/0x1a8
+     kthread_create_on_node+0x58/0x7c
+     printk_start_kthread.part.0+0x34/0xa8
+     printk_activate_kthreads+0x4c/0x54
+     do_one_initcall+0xec/0x278
+     kernel_init_freeable+0x11c/0x214
+     kernel_init+0x24/0x124
+     ret_from_fork+0x10/0x20
 
-So add delay before linux send out vring kick message.
-
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Cc: John Ogness <john.ogness@linutronix.de>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: Marco Elver <elver@google.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- drivers/remoteproc/imx_rproc.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+Changes v1->v2:
+- Make the bools const to help compiler elide branch when possible,
+  suggested by Marco.
 
-diff --git a/drivers/remoteproc/imx_rproc.c b/drivers/remoteproc/imx_rproc.c
-index 8fe139624ecc..ad0fec128504 100644
---- a/drivers/remoteproc/imx_rproc.c
-+++ b/drivers/remoteproc/imx_rproc.c
-@@ -6,6 +6,7 @@
- #include <dt-bindings/firmware/imx/rsrc.h>
- #include <linux/arm-smccc.h>
- #include <linux/clk.h>
-+#include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/firmware/imx/sci.h>
- #include <linux/interrupt.h>
-@@ -109,6 +110,7 @@ struct imx_rproc {
- 	u32				core_index;
- 	struct device                   **pd_dev;
- 	struct device_link              **pd_dev_link;
-+	u32				startup_delay;
- };
+ mm/kfence/core.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+index 4e7cd4c8e687..4b5e5a3d3a63 100644
+--- a/mm/kfence/core.c
++++ b/mm/kfence/core.c
+@@ -360,6 +360,9 @@ static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t g
+ 	unsigned long flags;
+ 	struct slab *slab;
+ 	void *addr;
++	const bool random_right_allocate = prandom_u32_max(2);
++	const bool random_fault = CONFIG_KFENCE_STRESS_TEST_FAULTS &&
++				  !prandom_u32_max(CONFIG_KFENCE_STRESS_TEST_FAULTS);
  
- static const struct imx_rproc_att imx_rproc_att_imx93[] = {
-@@ -381,6 +383,9 @@ static int imx_rproc_start(struct rproc *rproc)
- 	if (ret)
- 		dev_err(dev, "Failed to enable remote core!\n");
+ 	/* Try to obtain a free object. */
+ 	raw_spin_lock_irqsave(&kfence_freelist_lock, flags);
+@@ -404,7 +407,7 @@ static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t g
+ 	 * is that the out-of-bounds accesses detected are deterministic for
+ 	 * such allocations.
+ 	 */
+-	if (prandom_u32_max(2)) {
++	if (random_right_allocate) {
+ 		/* Allocate on the "right" side, re-calculate address. */
+ 		meta->addr += PAGE_SIZE - size;
+ 		meta->addr = ALIGN_DOWN(meta->addr, cache->align);
+@@ -444,7 +447,7 @@ static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t g
+ 	if (cache->ctor)
+ 		cache->ctor(addr);
  
-+	if (priv->startup_delay)
-+		msleep_interruptible(priv->startup_delay);
-+
- 	return ret;
- }
+-	if (CONFIG_KFENCE_STRESS_TEST_FAULTS && !prandom_u32_max(CONFIG_KFENCE_STRESS_TEST_FAULTS))
++	if (random_fault)
+ 		kfence_protect(meta->addr); /* Random "faults" by protecting the object. */
  
-@@ -1020,6 +1025,10 @@ static int imx_rproc_probe(struct platform_device *pdev)
- 	if (rproc->state != RPROC_DETACHED)
- 		rproc->auto_boot = of_property_read_bool(np, "fsl,auto-boot");
- 
-+	ret = of_property_read_u32(np, "fsl,startup-delay-ms", &priv->startup_delay);
-+	if (ret)
-+		priv->startup_delay = 0;
-+
- 	ret = rproc_add(rproc);
- 	if (ret) {
- 		dev_err(dev, "rproc_add failed\n");
+ 	atomic_long_inc(&counters[KFENCE_COUNTER_ALLOCATED]);
 -- 
-2.25.1
+2.35.1
 
