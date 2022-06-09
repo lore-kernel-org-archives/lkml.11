@@ -2,36 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5650CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E17F1CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245212AbiFIQwh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 12:52:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57752 "EHLO
+        id S1344349AbiFIQwn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 12:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237472AbiFIQw3 (ORCPT
+        with ESMTP id S237404AbiFIQw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 9 Jun 2022 12:52:29 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F6BD227CFC
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 09:52:27 -0700 (PDT)
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DADE44A0A
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 09:52:26 -0700 (PDT)
 Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id CD5A666017BA;
-        Thu,  9 Jun 2022 17:52:25 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5DCC666017D3;
+        Thu,  9 Jun 2022 17:52:24 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654793546;
-        bh=fNrnNmjm8O3impsJ3FwNrPFJIw42pnJblFgr2kI6zEE=;
+        s=mail; t=1654793544;
+        bh=5MPDE6PLauo4xeTXuzQqjxRuaatIiJJgaRF7Azzw0o0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EpKGah8MRwcPqjQ95aCfc7Oks1XrRyNlKgTrhFsuhUw2s3yzaRTIoYsy++VgRqvQ5
-         Oy/gXuwzxwXXFaonnGDftHH9qzCXCKjtF/MEMtxP/q7xQw0howdNcAsAVCn3P5hKYQ
-         Kbc/xg4zKL+o1MMWxLTFRpwbLg/0h7jua9peemWb5Bt7Po3wzD8Zg/QJk8f53P5sD6
-         ePj1vstZNyUg69igFYvoFsjGWRxMpGCvpoK1EZZwhk6myvgmc6GD+SBuFVTr4NgYqF
-         ElfEg472OJdCcPK0tbEWwiQtU2I/u411NrTuCAXGhbk0Qckeh6POMRbPN0yY/KPU1M
-         cn3s2ysIC8RwQ==
+        b=RlkP1xHXyos7Ke4dm5wGk0GT576pUmbcE2uyzbC20aAskIonfza2gSq4uf5I6Mkls
+         l5OC82mjgKt6TFTNt+Sq9iiQX1af0na3XOgHUTU0xevMxQwFTs8q+HnEmkihWGsrQ9
+         2R4oYIcKKoDqbS7RSLSiYJ16ap5U8P99DdxmT32hkvjQZqOuwtswWrLdk3UoMw6Xew
+         D3qcIpkWSghfDmvaEFhphJ3W84exgaQ+XaCWvr9TGsH4tBJur1XZoH3P+gijGL2zDt
+         sQ5B4bDoDUMpaTedzRtl1S2FloqhE3HLHj830GthW/sd0OWm/bfkPkkb0ZYsFTbZ73
+         /GNT8okcGtrXQ==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -44,9 +45,9 @@ Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
         Matthew Auld <matthew.auld@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 4/8] drm/i915: allow volatile buffers to use ttm pool allocator
-Date:   Thu,  9 Jun 2022 16:51:56 +0000
-Message-Id: <20220609165200.842821-5-bob.beckett@collabora.com>
+Subject: [PATCH v3 2/8] drm/i915: add gen6 ppgtt dummy creation function
+Date:   Thu,  9 Jun 2022 16:51:54 +0000
+Message-Id: <20220609165200.842821-3-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220609165200.842821-1-bob.beckett@collabora.com>
 References: <20220609165200.842821-1-bob.beckett@collabora.com>
@@ -56,42 +57,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Internal/volatile buffers should not be shmem backed.
-If a volatile buffer is requested, allow ttm to use the pool allocator
-to provide volatile pages as backing.
-Fix i915_ttm_shrink to handle !is_shmem volatile buffers by purging.
+Internal gem objects will soon just be volatile system memory region
+objects.
+To enable this, create a separate dummy object creation function
+for gen6 ppgtt. The object only exists as a fake object pointing to ggtt
+and gains no benefit in going via the internal backend.
+Instead, create a dummy gem object and avoid having to maintain a custom
+ops api in the internal backend, which makes later refactoring easier.
 
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_ttm.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/gt/gen6_ppgtt.c | 43 ++++++++++++++++++++++++++--
+ 1 file changed, 40 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-index 27d59639177f..8edce04a0509 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-@@ -309,7 +309,8 @@ static struct ttm_tt *i915_ttm_tt_create(struct ttm_buffer_object *bo,
- 		page_flags |= TTM_TT_FLAG_ZERO_ALLOC;
+diff --git a/drivers/gpu/drm/i915/gt/gen6_ppgtt.c b/drivers/gpu/drm/i915/gt/gen6_ppgtt.c
+index 1bb766c79dcb..f3b660cfeb7f 100644
+--- a/drivers/gpu/drm/i915/gt/gen6_ppgtt.c
++++ b/drivers/gpu/drm/i915/gt/gen6_ppgtt.c
+@@ -372,6 +372,45 @@ static const struct drm_i915_gem_object_ops pd_dummy_obj_ops = {
+ 	.put_pages = pd_dummy_obj_put_pages,
+ };
  
- 	caching = i915_ttm_select_tt_caching(obj);
--	if (i915_gem_object_is_shrinkable(obj) && caching == ttm_cached) {
-+	if (i915_gem_object_is_shrinkable(obj) && caching == ttm_cached &&
-+	    !i915_gem_object_is_volatile(obj)) {
- 		page_flags |= TTM_TT_FLAG_EXTERNAL |
- 			      TTM_TT_FLAG_EXTERNAL_MAPPABLE;
- 		i915_tt->is_shmem = true;
-@@ -531,9 +532,9 @@ static int i915_ttm_shrink(struct drm_i915_gem_object *obj, unsigned int flags)
- 	if (!bo->ttm || bo->resource->mem_type != TTM_PL_SYSTEM)
- 		return 0;
++static struct drm_i915_gem_object *
++i915_gem_object_create_dummy(struct drm_i915_private *i915, phys_addr_t size)
++{
++	static struct lock_class_key lock_class;
++	struct drm_i915_gem_object *obj;
++	unsigned int cache_level;
++
++	GEM_BUG_ON(!size);
++	GEM_BUG_ON(!IS_ALIGNED(size, PAGE_SIZE));
++
++	if (overflows_type(size, obj->base.size))
++		return ERR_PTR(-E2BIG);
++
++	obj = i915_gem_object_alloc();
++	if (!obj)
++		return ERR_PTR(-ENOMEM);
++
++	drm_gem_private_object_init(&i915->drm, &obj->base, size);
++	i915_gem_object_init(obj, &pd_dummy_obj_ops, &lock_class, 0);
++	obj->mem_flags |= I915_BO_FLAG_STRUCT_PAGE;
++
++	/*
++	 * Mark the object as volatile, such that the pages are marked as
++	 * dontneed whilst they are still pinned. As soon as they are unpinned
++	 * they are allowed to be reaped by the shrinker, and the caller is
++	 * expected to repopulate - the contents of this object are only valid
++	 * whilst active and pinned.
++	 */
++	i915_gem_object_set_volatile(obj);
++
++	obj->read_domains = I915_GEM_DOMAIN_CPU;
++	obj->write_domain = I915_GEM_DOMAIN_CPU;
++
++	cache_level = HAS_LLC(i915) ? I915_CACHE_LLC : I915_CACHE_NONE;
++	i915_gem_object_set_cache_coherency(obj, cache_level);
++
++	return obj;
++}
++
+ static struct i915_page_directory *
+ gen6_alloc_top_pd(struct gen6_ppgtt *ppgtt)
+ {
+@@ -383,9 +422,7 @@ gen6_alloc_top_pd(struct gen6_ppgtt *ppgtt)
+ 	if (unlikely(!pd))
+ 		return ERR_PTR(-ENOMEM);
  
--	GEM_BUG_ON(!i915_tt->is_shmem);
-+	GEM_BUG_ON(!i915_tt->is_shmem && obj->mm.madv != I915_MADV_DONTNEED);
- 
--	if (!i915_tt->filp)
-+	if (i915_tt->is_shmem && !i915_tt->filp)
- 		return 0;
- 
- 	ret = ttm_bo_wait_ctx(bo, &ctx);
+-	pd->pt.base = __i915_gem_object_create_internal(ppgtt->base.vm.gt->i915,
+-							&pd_dummy_obj_ops,
+-							I915_PDES * SZ_4K);
++	pd->pt.base = i915_gem_object_create_dummy(ppgtt->base.vm.gt->i915, I915_PDES * SZ_4K);
+ 	if (IS_ERR(pd->pt.base)) {
+ 		err = PTR_ERR(pd->pt.base);
+ 		pd->pt.base = NULL;
 -- 
 2.25.1
 
