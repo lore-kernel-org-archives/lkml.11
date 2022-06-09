@@ -2,82 +2,322 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B9AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63275C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:22:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344428AbiFIPVZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 11:21:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
+        id S242717AbiFIPWW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 11:22:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344403AbiFIPVT (ORCPT
+        with ESMTP id S235758AbiFIPWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 11:21:19 -0400
-Received: from mail-il1-f172.google.com (mail-il1-f172.google.com [209.85.166.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E305F4A3D6;
-        Thu,  9 Jun 2022 08:21:18 -0700 (PDT)
-Received: by mail-il1-f172.google.com with SMTP id u2so18055667iln.2;
-        Thu, 09 Jun 2022 08:21:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aA/410L+9p0xbmxpZ2Mn80L61ojuTJuT5kn/KAJbX/4=;
-        b=Ttz/Fk1bveFFH689hqjJKzWS9KQ5KhTf2yeTwqyAGY5h+IvB2MQjGz5lJGwWpYfmBH
-         2zplGkITJqNgSrRlFuQebaG9bfVYmPzjEHyurO3oGPTIEFP4ov1HEA5wgkjzxD9n4S4s
-         lnex3oyqTDpIHyH2dJ8Y+hexVtZBt8XFZSv1W49437hp2hJq578EAE2aHKqMH7YWKWPO
-         TaAwor9oCWKxAjMImGYrPzpkKg5RLA6yWtkoT0aoexB7ojicV7O2NRezADcdXJCdOlH/
-         gFCXRiSP5gi1JCLZ2b1svcT/h5eOGrMZNeFx79r/gbDLbsImkg4ABuZP9a52phVhoqfx
-         IxNQ==
-X-Gm-Message-State: AOAM532jBydMJ6uiqUcubJUKQR6LbLAlKa0x8lB4NjnEGFBnkpLBKjjd
-        JT7wzTkypPaXSZinres20dR/y2Y0Uw==
-X-Google-Smtp-Source: ABdhPJwS4Z8Uz7/L6+/4oTICgHYgwtFPW/adzsCrE/yk1RazKDvfUEOiTFSooJZLeC437CADIxrnJA==
-X-Received: by 2002:a05:6e02:1bae:b0:2d3:a66b:7432 with SMTP id n14-20020a056e021bae00b002d3a66b7432mr21846994ili.185.1654788078227;
-        Thu, 09 Jun 2022 08:21:18 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id g23-20020a02bb97000000b0032e1e0ac289sm9687144jan.8.2022.06.09.08.21.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 08:21:17 -0700 (PDT)
-Received: (nullmailer pid 3817707 invoked by uid 1000);
-        Thu, 09 Jun 2022 15:21:16 -0000
-Date:   Thu, 9 Jun 2022 09:21:15 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Olof Johansson <olof@lixom.net>, arm@kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-input@vger.kernel.org, soc@kernel.org,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: Re: [PATCH v2 03/48] dt-bindings: input: gpio-keys: accept also
- interrupt-extended
-Message-ID: <20220609152115.GA3815878-robh@kernel.org>
-References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org>
- <20220609113911.380368-2-krzysztof.kozlowski@linaro.org>
+        Thu, 9 Jun 2022 11:22:20 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A664A90E
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 08:22:18 -0700 (PDT)
+Date:   Thu, 9 Jun 2022 23:23:07 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1654788136;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EvFlr9jWMKJlj83y7nexAJxr7Y4+e2ShZqmtpIoClAQ=;
+        b=oCxB2LqT8cvG54QvEQZ60RdyEib+dYZOp4BhdE95SbyWmJWwJpJuE0HV/8QiZUSKBWCJ3o
+        TaDFyJm58NJijKbi7OEuK9xYDD4WahKkBsDLbr1XCOcvH2SBAkdU9hX0zBzfGYq1WaA7x4
+        iOZj5ybAlO5mc5tK3rsTWyqAhFKMnFE=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Tao Zhou <tao.zhou@linux.dev>
+To:     Vincent Donnefort <vdonnefort@google.com>
+Cc:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org,
+        linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        morten.rasmussen@arm.com, chris.redpath@arm.com,
+        qperret@google.com, kernel-team@android.com,
+        Tao Zhou <tao.zhou@linux.dev>
+Subject: Re: [PATCH v10 1/7] sched/fair: Provide u64 read for 32-bits arch
+ helper
+Message-ID: <YqIQW14RLk6DBmmt@geo.homenetwork>
+References: <20220607123254.565579-1-vdonnefort@google.com>
+ <20220607123254.565579-2-vdonnefort@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220609113911.380368-2-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220607123254.565579-2-vdonnefort@google.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 09 Jun 2022 13:39:05 +0200, Krzysztof Kozlowski wrote:
-> Each key device node might have interrupts-extended instead of
-> interrupts property:
-> 
->   fsl-ls1028a-kontron-sl28-var1.dtb: buttons0: power-button: 'anyOf' conditional failed, one must be fixed:
->     'interrupts' is a required property
->     'gpios' is a required property
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  Documentation/devicetree/bindings/input/gpio-keys.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+On Tue, Jun 07, 2022 at 01:32:48PM +0100, Vincent Donnefort wrote:
 
-The tooling is supposed to take care of this, but it's complicated 
-enough that we don't find it. So easier to handle in the schema.
+> From: Vincent Donnefort <vincent.donnefort@arm.com>
+> 
+> Introducing macro helpers u64_u32_{store,load}() to factorize lockless
+> accesses to u64 variables for 32-bits architectures.
+> 
+> Users are for now cfs_rq.min_vruntime and sched_avg.last_update_time. To
+> accommodate the later where the copy lies outside of the structure
+> (cfs_rq.last_udpate_time_copy instead of sched_avg.last_update_time_copy),
+> use the _copy() version of those helpers.
+> 
+> Those new helpers encapsulate smp_rmb() and smp_wmb() synchronization and
+> therefore, have a small penalty for 32-bits machines in set_task_rq_fair()
+> and init_cfs_rq().
+> 
+> Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
+> Signed-off-by: Vincent Donnefort <vdonnefort@google.com>
+> Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+> 
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index 77b2048a9326..05614d9b919c 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -612,11 +612,8 @@ static void update_min_vruntime(struct cfs_rq *cfs_rq)
+>  	}
+>  
+>  	/* ensure we never gain time by being placed backwards. */
+> -	cfs_rq->min_vruntime = max_vruntime(cfs_rq->min_vruntime, vruntime);
+> -#ifndef CONFIG_64BIT
+> -	smp_wmb();
+> -	cfs_rq->min_vruntime_copy = cfs_rq->min_vruntime;
+> -#endif
+> +	u64_u32_store(cfs_rq->min_vruntime,
+> +		      max_vruntime(cfs_rq->min_vruntime, vruntime));
+>  }
+>  
+>  static inline bool __entity_less(struct rb_node *a, const struct rb_node *b)
+> @@ -3313,6 +3310,11 @@ static inline void cfs_rq_util_change(struct cfs_rq *cfs_rq, int flags)
+>  }
+>  
+>  #ifdef CONFIG_SMP
+> +static inline u64 cfs_rq_last_update_time(struct cfs_rq *cfs_rq)
+> +{
+> +	return u64_u32_load_copy(cfs_rq->avg.last_update_time,
+> +				 cfs_rq->last_update_time_copy);
+> +}
+>  #ifdef CONFIG_FAIR_GROUP_SCHED
+>  /*
+>   * Because list_add_leaf_cfs_rq always places a child cfs_rq on the list
+> @@ -3423,27 +3425,9 @@ void set_task_rq_fair(struct sched_entity *se,
+>  	if (!(se->avg.last_update_time && prev))
+>  		return;
+>  
+> -#ifndef CONFIG_64BIT
+> -	{
+> -		u64 p_last_update_time_copy;
+> -		u64 n_last_update_time_copy;
+> -
+> -		do {
+> -			p_last_update_time_copy = prev->load_last_update_time_copy;
+> -			n_last_update_time_copy = next->load_last_update_time_copy;
+> -
+> -			smp_rmb();
+> -
+> -			p_last_update_time = prev->avg.last_update_time;
+> -			n_last_update_time = next->avg.last_update_time;
+> +	p_last_update_time = cfs_rq_last_update_time(prev);
+> +	n_last_update_time = cfs_rq_last_update_time(next);
+>  
+> -		} while (p_last_update_time != p_last_update_time_copy ||
+> -			 n_last_update_time != n_last_update_time_copy);
+> -	}
+> -#else
+> -	p_last_update_time = prev->avg.last_update_time;
+> -	n_last_update_time = next->avg.last_update_time;
+> -#endif
+>  	__update_load_avg_blocked_se(p_last_update_time, se);
+>  	se->avg.last_update_time = n_last_update_time;
+>  }
+> @@ -3796,12 +3780,9 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
+>  	}
+>  
+>  	decayed |= __update_load_avg_cfs_rq(now, cfs_rq);
+> -
+> -#ifndef CONFIG_64BIT
+> -	smp_wmb();
+> -	cfs_rq->load_last_update_time_copy = sa->last_update_time;
+> -#endif
+> -
+> +	u64_u32_store_copy(sa->last_update_time,
+> +			   cfs_rq->last_update_time_copy,
+> +			   sa->last_update_time);
+>  	return decayed;
+>  }
+>  
+> @@ -3933,27 +3914,6 @@ static inline void update_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
+>  	}
+>  }
+>  
+> -#ifndef CONFIG_64BIT
+> -static inline u64 cfs_rq_last_update_time(struct cfs_rq *cfs_rq)
+> -{
+> -	u64 last_update_time_copy;
+> -	u64 last_update_time;
+> -
+> -	do {
+> -		last_update_time_copy = cfs_rq->load_last_update_time_copy;
+> -		smp_rmb();
+> -		last_update_time = cfs_rq->avg.last_update_time;
+> -	} while (last_update_time != last_update_time_copy);
+> -
+> -	return last_update_time;
+> -}
+> -#else
+> -static inline u64 cfs_rq_last_update_time(struct cfs_rq *cfs_rq)
+> -{
+> -	return cfs_rq->avg.last_update_time;
+> -}
+> -#endif
+> -
+>  /*
+>   * Synchronize entity load avg of dequeued entity without locking
+>   * the previous rq.
+> @@ -6960,21 +6920,8 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
+>  	if (READ_ONCE(p->__state) == TASK_WAKING) {
+>  		struct sched_entity *se = &p->se;
+>  		struct cfs_rq *cfs_rq = cfs_rq_of(se);
+> -		u64 min_vruntime;
+> -
+> -#ifndef CONFIG_64BIT
+> -		u64 min_vruntime_copy;
+> -
+> -		do {
+> -			min_vruntime_copy = cfs_rq->min_vruntime_copy;
+> -			smp_rmb();
+> -			min_vruntime = cfs_rq->min_vruntime;
+> -		} while (min_vruntime != min_vruntime_copy);
+> -#else
+> -		min_vruntime = cfs_rq->min_vruntime;
+> -#endif
+>  
+> -		se->vruntime -= min_vruntime;
+> +		se->vruntime -= u64_u32_load(cfs_rq->min_vruntime);
+>  	}
+>  
+>  	if (p->on_rq == TASK_ON_RQ_MIGRATING) {
+> @@ -11422,10 +11369,7 @@ static void set_next_task_fair(struct rq *rq, struct task_struct *p, bool first)
+>  void init_cfs_rq(struct cfs_rq *cfs_rq)
+>  {
+>  	cfs_rq->tasks_timeline = RB_ROOT_CACHED;
+> -	cfs_rq->min_vruntime = (u64)(-(1LL << 20));
+> -#ifndef CONFIG_64BIT
+> -	cfs_rq->min_vruntime_copy = cfs_rq->min_vruntime;
+> -#endif
+> +	u64_u32_store(cfs_rq->min_vruntime, (u64)(-(1LL << 20)));
+>  #ifdef CONFIG_SMP
+>  	raw_spin_lock_init(&cfs_rq->removed.lock);
+>  #endif
+> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+> index 1f97f357aacd..bf4a0ec98678 100644
+> --- a/kernel/sched/sched.h
+> +++ b/kernel/sched/sched.h
+> @@ -520,6 +520,45 @@ struct cfs_bandwidth { };
+>  
+>  #endif	/* CONFIG_CGROUP_SCHED */
+>  
+> +/*
+> + * u64_u32_load/u64_u32_store
+> + *
+> + * Use a copy of a u64 value to protect against data race. This is only
+> + * applicable for 32-bits architectures.
+> + */
+> +#ifdef CONFIG_64BIT
+> +# define u64_u32_load_copy(var, copy)       var
+> +# define u64_u32_store_copy(var, copy, val) (var = val)
+> +#else
+> +# define u64_u32_load_copy(var, copy)					\
+> +({									\
+> +	u64 __val, __val_copy;						\
+> +	do {								\
+> +		__val_copy = copy;					\
+> +		/*							\
+> +		 * paired with u64_u32_store, ordering access		\
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+s/u64_u32_store/u64_u32_store_copy()/
+
+> +		 * to var and copy.					\
+> +		 */							\
+> +		smp_rmb();						\
+> +		__val = var;						\
+> +	} while (__val != __val_copy);					\
+> +	__val;								\
+> +})
+> +# define u64_u32_store_copy(var, copy, val)				\
+> +do {									\
+> +	typeof(val) __val = (val);					\
+> +	var = __val;							\
+> +	/*								\
+> +	 * paired with u64_u32_load, ordering access to var and		\
+
+s/u64_u32_load/u64_u32_load_copy()/
+
+> +	 * copy.							\
+> +	 */								\
+> +	smp_wmb();							\
+> +	copy = __val;							\
+> +} while (0)
+
+Try again here from me.
+The semantics of this macro is different from the original code.
+To be consistent with the original code, the 'copy = __val;' should
+be changed to 'copy = var'. Why not original code here.
+
+They are different in that the var can be changed currently on another
+CPU and copy can be different from __val.
+
+Documentation/memory-barriers.txt(line 1351, 5.19.0-rc1-rt1):
+In section:
+(*) What are memory barriers?
+     - Multicopy atomicity.
+The example there can be referenced here I think.
+
+And I feel that here the smp_wmb() should be changed to smp_mb(). One user
+of this macro have the load/write  write. Another user have write  write
+if I am not wrong.
+
+Also,
+
+'Memory Barriers: a Hardware View for Software Hackers' (July 23, 2010)
+Section: 6.3 Example 2, I just scrolled to the code in table 3 and check
+that the semantics there is almost the same with the semantics here.
+
+I do not have confidence to convince anything just after some days when I
+read it.
+
+According to those two examples, if the small penalty is small, this
+u64_u32_store_copy() macro should be changed like this:
+
+# define u64_u32_store_copy(var, copy, val)				\
+do {									\
+	typeof(val) __val = (val);					\
+	var = __val;							\
+	/*								\
+	 * paired with u64_u32_load_copy(), ordering access to var and	\
+	 * copy.							\
+	 */								\
+	smp_mb();							\
+	copy = var;							\
+} while (0)
+
+Not sure and this is the continuation to my reply to this patch in v4.
+
+Thanks,
+Tao
+> +#endif
+> +# define u64_u32_load(var)      u64_u32_load_copy(var, var##_copy)
+> +# define u64_u32_store(var, val) u64_u32_store_copy(var, var##_copy, val)
+> +
+>  /* CFS-related fields in a runqueue */
+>  struct cfs_rq {
+>  	struct load_weight	load;
+> @@ -560,7 +599,7 @@ struct cfs_rq {
+>  	 */
+>  	struct sched_avg	avg;
+>  #ifndef CONFIG_64BIT
+> -	u64			load_last_update_time_copy;
+> +	u64			last_update_time_copy;
+>  #endif
+>  	struct {
+>  		raw_spinlock_t	lock ____cacheline_aligned;
+> -- 
+> 2.36.1.255.ge46751e96f-goog
