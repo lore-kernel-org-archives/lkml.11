@@ -2,56 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E80CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344894AbiFIQvJ (ORCPT
+        id S1344923AbiFIQvO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 12:51:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47988 "EHLO
+        Thu, 9 Jun 2022 12:51:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344675AbiFIQuf (ORCPT
+        with ESMTP id S1344726AbiFIQuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 9 Jun 2022 12:50:35 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D6B16C0C6
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 09:50:31 -0700 (PDT)
-Date:   Thu, 09 Jun 2022 16:50:29 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC98E21
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 09:50:33 -0700 (PDT)
+Date:   Thu, 09 Jun 2022 16:50:31 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1654793430;
+        s=2020; t=1654793432;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dHielvjeadYHFGOtQOVaGYUxq8bvjP3EnPYD76F6TmU=;
-        b=jI6uonFeKyqsyvgfnLhgVXBrrGtFANnEChLos7FFqAczLtwOHR13TKWO2xVIgQh+ctyU+s
-        NsaMI2sPstwz7oGTZ0smgQsK7S4qYkcZRr8rZIbQXdk1qxl+SO0OfPnY01zQcOp26/EUfZ
-        5FOag7rdfbGO3opAgwYQNbfE8gS551JMWwqODiBZapALOj+4nG49J90kUPRtl9pmI75V8h
-        ljbzhmjVJT9xMlLlLqhu+A+Qw8NilgoJMrqOhQv4NqBmO5bCVK3PcsE20Zg5XWOMShM4uq
-        bauFMPQBT1q/pBdcgNR0D87uGC90P9BVWzFhFqdbde74F3qnq8awQ0gJrRkUvw==
+        bh=u15XumVur9JpMXMMkU3BZwJ8hWCd8qkWcy1gDSKwbZg=;
+        b=vVqVMXuqRVZjnRJcm3kbuRa05wx29AePSuQJXeZi71B7gunHqjubvuxS+t9TnKJZGh20GE
+        BSwa9Ovnnnbw51Ilephb08n6OvqJFvbb2gUvtr5lgUdISb+esh9aV9fDGHcoAjkZdv2nDs
+        CuWZRbfoH3lICNokWG1/jTQeHSFxOjNCgfgQf/C9MknPoxdNzlv0bV433iOK/Qubyd9zT+
+        xKrMUhANU/JZC1rrgTaBR15EzF1bnSK25ZfHYP0P5ze/uCVb2QMg7OrHM5ozV1SQeQJ/0Z
+        BDJtLgWu2gfONk8aLwy92hvOp8yLITBMkk1ZKpUgZKdICOhqpqvjoZIGHArRPA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1654793430;
+        s=2020e; t=1654793432;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dHielvjeadYHFGOtQOVaGYUxq8bvjP3EnPYD76F6TmU=;
-        b=sGodCvLZ3gr2mBUAXr4VtKNdrBRJ01vpKsCr2br3aWdpbISgea6f603WiOL3XFuSHM61Te
-        q8B0tpk7hYNZJOBw==
-From:   "irqchip-bot for Miaoqian Lin" <tip-bot2@linutronix.de>
+        bh=u15XumVur9JpMXMMkU3BZwJ8hWCd8qkWcy1gDSKwbZg=;
+        b=eISXRXNoGPP+1njjiNQltmKOYkDBC8oIg4xox4AdysamK/+C8q2Q9JAJPNuivWAqO6r8Qt
+        XlPIkD2a7PVAveCw==
+From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-fixes] irqchip/gic/realview: Fix refcount leak
- in realview_gic_of_init
-Cc:     Miaoqian Lin <linmq006@gmail.com>, Marc Zyngier <maz@kernel.org>,
+Subject: [irqchip: irq/irqchip-fixes] genirq: PM: Use runtime PM for chained
+ interrupts
+Cc:     Lucas Stach <l.stach@pengutronix.de>,
+        Liu Ying <victor.liu@nxp.com>, Marc Zyngier <maz@kernel.org>,
         tglx@linutronix.de
-In-Reply-To: <20220601080930.31005-2-linmq006@gmail.com>
-References: <20220601080930.31005-2-linmq006@gmail.com>
+In-Reply-To: <26973cddee5f527ea17184c0f3fccb70bc8969a0.camel@pengutronix.de>
+References: <26973cddee5f527ea17184c0f3fccb70bc8969a0.camel@pengutronix.de>
 MIME-Version: 1.0
-Message-ID: <165479342917.4207.8528273657753463802.tip-bot2@tip-bot2>
+Message-ID: <165479343125.4207.18391675887674520232.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,36 +63,54 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the irq/irqchip-fixes branch of irqchip:
 
-Commit-ID:     f4b98e314888cc51486421bcf6d52852452ea48b
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/f4b98e314888cc51486421bcf6d52852452ea48b
-Author:        Miaoqian Lin <linmq006@gmail.com>
-AuthorDate:    Wed, 01 Jun 2022 12:09:25 +04:00
+Commit-ID:     668a9fe5c6a1bcac6b65d5e9b91a9eca86f782a3
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/668a9fe5c6a1bcac6b65d5e9b91a9eca86f782a3
+Author:        Marc Zyngier <maz@kernel.org>
+AuthorDate:    Wed, 08 Jun 2022 14:45:35 +01:00
 Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Thu, 09 Jun 2022 17:36:57 +01:00
+CommitterDate: Thu, 09 Jun 2022 15:58:13 +01:00
 
-irqchip/gic/realview: Fix refcount leak in realview_gic_of_init
+genirq: PM: Use runtime PM for chained interrupts
 
-of_find_matching_node_and_match() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+When requesting an interrupt, we correctly call into the runtime
+PM framework to guarantee that the underlying interrupt controller
+is up and running.
 
-Fixes: 82b0a434b436 ("irqchip/gic/realview: Support more RealView DCC variants")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+However, we fail to do so for chained interrupt controllers, as
+the mux interrupt is not requested along the same path.
+
+Augment __irq_do_set_handler() to call into the runtime PM code
+in this case, making sure the PM flow is the same for all interrupts.
+
+Reported-by: Lucas Stach <l.stach@pengutronix.de>
+Tested-by: Liu Ying <victor.liu@nxp.com>
 Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220601080930.31005-2-linmq006@gmail.com
+Link: https://lore.kernel.org/r/26973cddee5f527ea17184c0f3fccb70bc8969a0.camel@pengutronix.de
 ---
- drivers/irqchip/irq-gic-realview.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/irq/chip.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/irqchip/irq-gic-realview.c b/drivers/irqchip/irq-gic-realview.c
-index b4c1924..38fab02 100644
---- a/drivers/irqchip/irq-gic-realview.c
-+++ b/drivers/irqchip/irq-gic-realview.c
-@@ -57,6 +57,7 @@ realview_gic_of_init(struct device_node *node, struct device_node *parent)
- 
- 	/* The PB11MPCore GIC needs to be configured in the syscon */
- 	map = syscon_node_to_regmap(np);
-+	of_node_put(np);
- 	if (!IS_ERR(map)) {
- 		/* new irq mode with no DCC */
- 		regmap_write(map, REALVIEW_SYS_LOCK_OFFSET,
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index e6b8e56..886789d 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -1006,8 +1006,10 @@ __irq_do_set_handler(struct irq_desc *desc, irq_flow_handler_t handle,
+ 		if (desc->irq_data.chip != &no_irq_chip)
+ 			mask_ack_irq(desc);
+ 		irq_state_set_disabled(desc);
+-		if (is_chained)
++		if (is_chained) {
+ 			desc->action = NULL;
++			WARN_ON(irq_chip_pm_put(irq_desc_get_irq_data(desc)));
++		}
+ 		desc->depth = 1;
+ 	}
+ 	desc->handle_irq = handle;
+@@ -1033,6 +1035,7 @@ __irq_do_set_handler(struct irq_desc *desc, irq_flow_handler_t handle,
+ 		irq_settings_set_norequest(desc);
+ 		irq_settings_set_nothread(desc);
+ 		desc->action = &chained_action;
++		WARN_ON(irq_chip_pm_get(irq_desc_get_irq_data(desc)));
+ 		irq_activate_and_startup(desc, IRQ_RESEND);
+ 	}
+ }
