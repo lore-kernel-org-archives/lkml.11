@@ -2,116 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D811AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 21:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64438C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 21:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233475AbiFIVoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 17:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44694 "EHLO
+        id S234752AbiFIVs7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 17:48:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234151AbiFIVoX (ORCPT
+        with ESMTP id S233015AbiFIVsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 17:44:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 163AC65D39
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 14:44:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654811060;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=B1pdgF7AnLu0fVQCtydwApAx3WZNtJh5bsvpbPEg0J0=;
-        b=eS6SQpz+ywcjgd0sAI/vvEs9NWMWx9wXBpp80hz9vMvuJuRk8hfr8301T5ZfjmOubltLYv
-        piL8dgK11d04i958czQRnfjpe8qFa6iidTGjfrxkCP+7YzLdB6zMX4OeAoIh+lz8ntZSiw
-        16vGo2FNkBYAPP41uuPQznrSLDJmo3o=
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
- [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-185-eKP6F1qsOAuRPoxSU0KLSA-1; Thu, 09 Jun 2022 17:44:19 -0400
-X-MC-Unique: eKP6F1qsOAuRPoxSU0KLSA-1
-Received: by mail-il1-f197.google.com with SMTP id y18-20020a927d12000000b002d3dd2a5d53so17759413ilc.0
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 14:44:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=B1pdgF7AnLu0fVQCtydwApAx3WZNtJh5bsvpbPEg0J0=;
-        b=A7vuoGyEdacE2jCysOA07oCObzrb+8oEWXjbX2NjzNyudfj6DxjET2vazTgr6/Cio5
-         kFA8pHVeCOc0W2f4L6aHtnY6ggUNc+SeK1hANWaGXn00P3fHRVMOvSOOeLMPD9PlFW89
-         YwRFdIQb8m1bIC94JgdZEOrQFi80vtLBiQz017lLsGhosn1f/f0Jbc71mc8izlfhf6Yl
-         pVFbyK/izYdaLN7B5mci4JvprLK0ge6S0eVIsEuU5PUimHDRlYLbBZ37c+6TrkjHr/0U
-         2gsM8E81g80H03E6aFAcg8wokovb+sFBbYsq9DknJzK//Z+YS/9OStbM2tl68FeBywwW
-         e78w==
-X-Gm-Message-State: AOAM533CuGEvL2yxhO9eNE2nKwymWY/wJeJTzKmlMbox64R+0f4dLNCj
-        1oqYHnOpgpYk57KNOH2tn2VQsgZGEZn40sVSRXSzwqprgjxup7lnmIYu08zehQu8D3GaWffGBla
-        UexZQzkuvqHLw5Ms3nz6ISYM6
-X-Received: by 2002:a05:6e02:1e09:b0:2d1:97ca:a241 with SMTP id g9-20020a056e021e0900b002d197caa241mr23122508ila.238.1654811059001;
-        Thu, 09 Jun 2022 14:44:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwDscdO/W1/4no+7jY69FGERgzQXiRmYHQK/m9EuLA1t1bvx3ksqGSpUr0meCCLPhXF9woEYQ==
-X-Received: by 2002:a05:6e02:1e09:b0:2d1:97ca:a241 with SMTP id g9-20020a056e021e0900b002d197caa241mr23122496ila.238.1654811058769;
-        Thu, 09 Jun 2022 14:44:18 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id n29-20020a02711d000000b00331a94f2b04sm5740155jac.105.2022.06.09.14.44.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 14:44:18 -0700 (PDT)
-Date:   Thu, 9 Jun 2022 15:44:16 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     kvm@vger.kernel.org, airlied@linux.ie,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Laszlo Ersek <lersek@redhat.com>,
-        Gerd Hoffmann <kraxel@redhat.com>
-Subject: Re: [PATCH 2/2] vfio/pci: Remove console drivers
-Message-ID: <20220609154416.676b1068.alex.williamson@redhat.com>
-In-Reply-To: <20220609154102.5cb1d3ca.alex.williamson@redhat.com>
-References: <165453797543.3592816.6381793341352595461.stgit@omen>
-        <165453800875.3592816.12944011921352366695.stgit@omen>
-        <0c45183c-cdb8-4578-e346-bc4855be038f@suse.de>
-        <20220608080432.45282f0b.alex.williamson@redhat.com>
-        <01c74525-38b7-1e00-51ba-7cd793439f03@suse.de>
-        <20220609154102.5cb1d3ca.alex.williamson@redhat.com>
-Organization: Red Hat
+        Thu, 9 Jun 2022 17:48:54 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7332315904B;
+        Thu,  9 Jun 2022 14:48:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1654811322;
+        bh=U7dqB8UZdHHYcktusZM81tIBeUrwtsptS8hwCJ84BSQ=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=hDjstnznxLfq8PyokZ8miSDWv11KasD/PgGoA6wBP/6nvp6p++vf/ch4i57RAz0nF
+         1WnZLBjnhoUh+kta+4z09+pfDJY6L87BcyO++TAFk9sB92Yl77akx+n7OFnRQ/y2HA
+         s5mEOIpKnP3kRBEjQS9t+8JOwH7c1hvBt3cuX6lo=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([81.173.137.165]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MLiCo-1oGwu22ba4-00Hd8L; Thu, 09
+ Jun 2022 23:48:42 +0200
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     openbmc@lists.ozlabs.org
+Cc:     =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Joel Stanley <joel@jms.id.au>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 RESEND] ARM: dts: wpcm450: Enable watchdog by default
+Date:   Thu,  9 Jun 2022 23:48:29 +0200
+Message-Id: <20220609214830.127003-1-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:R413OIxSVSQYRw8jKEwpcm/ZgoQ1U2Jl5TG7MPAjVmUQU2DPnje
+ CxiTcmbinj+EEOgd1ULAxSgrnBUUtZ5/rO7yzE91skR2/LUDQgOjmuj2Lyah5Fs3j79Aixa
+ CKtXzG4gMSFRAyFgzzUJmnAlKe0wwv4Tc47p7Sa+uEVrrI3DNrypzZYivWFtxJ7jY4rxN4O
+ 9+ZC6YK4I3C1GgNnlWx1Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:NEaxQCxCa38=:AoJWebXCsRpZnJW538RGg1
+ SyY3EDWz1pzJON2su0Tdf2Uphqy8AbJd4feK3XD+gO+DD339i0hMThxlbd/o28MO03GAws6wX
+ DQ79Tg8hFuAKFLg0k6WPSXzV508w8ANwjkIjjQKPVKDPNcnrfpGan+GX7kVhZ3Ya3ktWSU1nl
+ +Fc0lh4PC3a3XWOA9aOEjjphIgHHRPyqBADciEf3u88Pu3HZ31kpNcmzXXAx8lTEbicvJdt7g
+ Njk2zzC+miAo+B+0kfqpx5a2BZIRaIhijbzJEwDtk+O9dhMKTrUzRHpN/auIQimXYj00WvCwF
+ OsTtaYUNMzpd8WQR48Jct1wph+S1EKpXH2KsOJAOV+JJDmEi2R8ozw23b2FWsalVbq9z4yEQO
+ /F339q9NanuIfgG2+wRuZ/yv5Opd+m/48vYv0Gk9hFFoAyJT7fZezz5hMUOfeb2YAnkIu3oQ+
+ o0wX7o4F/xymd9ucS7F8Zjmqz1gxo+nKugAtfogt12e4Qd6wEeOWPvLoGOcYgsaW6/GznmYdN
+ pvbssJphONnDyZWjgwd3Fh98jZ0TE9iuGs7Cdst/vK+4Qv1HLnoZmAI8GRGu0Syf2vfxpLx40
+ 5+O8QMP6VdJhmopNo6l7u7eCUJrN4p7+OMf8hPtO+B6NQB0UF5O38NGQVPu4pLAN50I/hAF03
+ cXIhZt0gelHy9dbHUsQTC16MILvQl6SrgvWBQDN25ICl0GcjMwXjo7d7+Am/KPY08tJVyLYf+
+ 7SyKLLEiRmC69hli8SoZCffrEOJgUrOW7W6nsQkcHaC2V7x3+csSxjl6N1mrzHuvlOd0jQiAx
+ CQpr4+4cWFgm+RWmjlNfYSIZlyqg1QcHJEyiq69MTbftKEZQmlkKQLWVJ3Cn1TrEYLzGfH0vm
+ NrPbjgcAT2lDuUr5oNWR2Rw/dhwzyqFHWQPwhzm0ogtf+8YY1j9c19H6ay7eemxqAqd4DJybP
+ +zXJT292srIQ7Nfgh2HmeH2KmKKUv4r+keizUL2FQS6Y/Gat1ndpbeD5LpfKeTR7h0KMq5GwS
+ uU4zBZADuE5Xrj09jjw/At2lvC1wFNMurJTBs1wyRbhAWO0xzX3Pm3+rtdY8/METy5ssoKrTe
+ 7tBpBtgtqVX7tda2Da5cysDaR3GwiL93uYm0Llumd3bDel66Ppd9ZQy1Q==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 9 Jun 2022 15:41:02 -0600
-Alex Williamson <alex.williamson@redhat.com> wrote:
+The watchdog timer is always usable, regardless of board design, so
+there is no point in marking the watchdog device as disabled-by-default
+in nuvoton-wpcm450.dtsi.
 
-> On Thu, 9 Jun 2022 11:13:22 +0200
-> Thomas Zimmermann <tzimmermann@suse.de> wrote:
-> > 
-> > Please have a look at the attached patch. It moves the aperture helpers 
-> > to a location common to the various possible users (DRM, fbdev, vfio). 
-> > The DRM interfaces remain untouched for now.  The patch should provide 
-> > what you need in vfio and also serve our future use cases for graphics 
-> > drivers. If possible, please create your patch on top of it.  
-> 
-> Looks good to me, this of course makes the vfio change quite trivial.
-> One change I'd request:
-> 
-> diff --git a/drivers/video/console/Kconfig b/drivers/video/console/Kconfig
-> index 40c50fa2dd70..7f3c44e1538b 100644
-> --- a/drivers/video/console/Kconfig
-> +++ b/drivers/video/console/Kconfig
-> @@ -10,6 +10,7 @@ config VGA_CONSOLE
->  	depends on !4xx && !PPC_8xx && !SPARC && !M68K && !PARISC &&  !SUPERH && \
->  		(!ARM || ARCH_FOOTBRIDGE || ARCH_INTEGRATOR || ARCH_NETWINDER) && \
->  		!ARM64 && !ARC && !MICROBLAZE && !OPENRISC && !S390 && !UML
-> +	select APERTURE_HELPERS if (DRM || FB || VFIO_PCI)
->  	default y
->  	help
->  	  Saying Y here will allow you to use Linux in text mode through a
-> 
-> This should be VFIO_PCI_CORE.  Thanks,
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+=2D--
 
-Also, whatever tree this lands in, I'd appreciate a topic branch being
-made available so I can more easily get the vfio change in on the same
-release.  Thanks,
+v2:
+- add Reviewed-by tag
 
-Alex
+v1:
+- https://lore.kernel.org/lkml/20220128221054.2002911-1-j.neuschaefer@gmx.=
+net/
+=2D--
+ arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts | 4 ----
+ arch/arm/boot/dts/nuvoton-wpcm450.dtsi                      | 1 -
+ 2 files changed, 5 deletions(-)
+
+diff --git a/arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts b=
+/arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts
+index 3ee61251a16d0..1ae7ae4804275 100644
+=2D-- a/arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts
++++ b/arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts
+@@ -77,7 +77,3 @@ &serial1 {
+ 	/* "Serial over LAN" port. Connected to ttyS2 of the host system. */
+ 	status =3D "okay";
+ };
+-
+-&watchdog0 {
+-	status =3D "okay";
+-};
+diff --git a/arch/arm/boot/dts/nuvoton-wpcm450.dtsi b/arch/arm/boot/dts/nu=
+voton-wpcm450.dtsi
+index 57943bf5aa4a9..1c63ab14c4383 100644
+=2D-- a/arch/arm/boot/dts/nuvoton-wpcm450.dtsi
++++ b/arch/arm/boot/dts/nuvoton-wpcm450.dtsi
+@@ -83,7 +83,6 @@ watchdog0: watchdog@b800101c {
+ 			interrupts =3D <1 IRQ_TYPE_LEVEL_HIGH>;
+ 			reg =3D <0xb800101c 0x4>;
+ 			clocks =3D <&clk24m>;
+-			status =3D "disabled";
+ 		};
+
+ 		aic: interrupt-controller@b8002000 {
+=2D-
+2.35.1
 
