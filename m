@@ -2,212 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A46C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:23:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A7C8CCA473
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343748AbiFINXf (ORCPT
+        id S1343766AbiFINXj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 09:23:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42866 "EHLO
+        Thu, 9 Jun 2022 09:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235210AbiFINXd (ORCPT
+        with ESMTP id S245054AbiFINXe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 09:23:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E78C22600;
-        Thu,  9 Jun 2022 06:23:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 867D061D17;
-        Thu,  9 Jun 2022 13:23:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA142C3411F;
-        Thu,  9 Jun 2022 13:23:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654781010;
-        bh=IcMP1Nqp9GJ7GlASLImme5YF3P4SQbrK4SBhBNQ9UV0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=jQI8KSeT4hxL6/XRNWsYygZWPq6c2rTnYyQvpYYkJPXgEXv7HKrcTvhEmEXb1M5OE
-         YUL9w6tQFJLUK2/WUFDSypzkpzdCLwJ2PazaP+wEYYauRmJqicn3D79nREb+ysfjrg
-         x1mwP9BXotlSStVEgEtVsRx4zHHmQqdBzqXpfFmRnaaNH+7hKs7r2ABNQGzOJ4P0kf
-         sT1LX9OuXM4G/GeSHuVyF6fKGGhXuoQL0NDdIeclh0lzQxzdpK9LYU91FXM1NO9wdK
-         YDH1zAXnAWA5HicNM35ekYln4tgWB/u9SCrULYSznxrQAiKtg+JmsncEygLd46VaOl
-         sTlmmDnaL9E/w==
-Received: by mail-oi1-f170.google.com with SMTP id l81so16385028oif.9;
-        Thu, 09 Jun 2022 06:23:30 -0700 (PDT)
-X-Gm-Message-State: AOAM5311zLAhnHqWyTbM5wAfYXd+yQdZ6gN7XfSBCy4E6z28GSL0ak5D
-        lMxT8TOhl911G3/dqZyYejodJBywV3Ksm+DsExs=
-X-Google-Smtp-Source: ABdhPJwc69XiDhgAtEuLcemFuiOzMfwrJQLG3YPNssqJ+a5mUfVOzUfeMKARLXGuY2TVerUlDPEZ6gFkcGbsfRaP3M8=
-X-Received: by 2002:a05:6808:300e:b0:32c:425e:df34 with SMTP id
- ay14-20020a056808300e00b0032c425edf34mr1704337oib.126.1654781009990; Thu, 09
- Jun 2022 06:23:29 -0700 (PDT)
+        Thu, 9 Jun 2022 09:23:34 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806882600;
+        Thu,  9 Jun 2022 06:23:33 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id d129so21806768pgc.9;
+        Thu, 09 Jun 2022 06:23:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=+YkdE4hgL9nudEqBz5hZQ0msyQAME4oIXjwpc7HKTC4=;
+        b=kSLcdlt+IN5JIBnJAeI9HUaw3v+tFe11y6pKaRx+W+JMBoNlQEfYvNyH3QWBzC3hQZ
+         /FQfM+NN+dQC50RZW8QaG7gYa9LfyDjqCercchn4qONMAz/FScyoeZ1wsBgYD7+Io6Wr
+         oelsqYApYfG3r+dcjopj2SolZNdcp9pK9zqqhSfcY7C/3iFqfIi0tVCFZQIG4CTNUnqc
+         ASsA0Ds+gfQxTT4NjQRXNu6EupkB2lcdORW68vR2sFPuf7YMyKfkQRwD+TjsWFHPZn9V
+         41r480kar8I3HEbHcrdd1KvthfxSX2hwg/3YE5Zlb8wh7emejC8YRGWqOX5l13BEfXym
+         2m8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+YkdE4hgL9nudEqBz5hZQ0msyQAME4oIXjwpc7HKTC4=;
+        b=56AKyi6QVnbcairB7MAZ4+b6lWJlgpF6C4kktqJJeWPwUZQDeCsUSne3GcfcjO0SkO
+         JOCT+csuCPT7UGhkoZ/5T8R/51IGfSDh4pdgneptDBB1wHeZEaTaeotLgpQ9QjXHx9d0
+         QL4KS9Z/h1NFQz2k36hQR8GKfNsAArUF6S7et87vEQLtMcQnRpCavpdVvPLmByZAoWv0
+         Qk+e/+apawd2f6nnG6ZGvkaidniKC6bVcpHNYxICd6SC7wYx4Mu9LgRUu/TuuCI7ZMUz
+         4EB8frxV/GB8WhLUgVi82gOhKKAPLBDfpEpabce2MVE/uBlK30Vx92ClymoYmg/JtAns
+         sPZA==
+X-Gm-Message-State: AOAM533xsUTRr+0DTg8LyLGT+FO0aVHhKOYdudNE3PBfIuhbB++UG/BQ
+        KHzCJspcQ+RdZ2dgAQ+z/nw=
+X-Google-Smtp-Source: ABdhPJyMOFMlhAynmsJzHw50MAGtr8ty3qmRrNgcjKI3OM2dTXIg01V2FcUu4QCq1unNbC/t1pS8KA==
+X-Received: by 2002:a05:6a00:1387:b0:51c:2712:7859 with SMTP id t7-20020a056a00138700b0051c27127859mr19074541pfg.38.1654781013066;
+        Thu, 09 Jun 2022 06:23:33 -0700 (PDT)
+Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id a21-20020a170902ee9500b00161a40b2135sm16914849pld.104.2022.06.09.06.23.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 06:23:32 -0700 (PDT)
+Message-ID: <81cddbde-bc28-bec1-fca4-3c8fe2df502f@gmail.com>
+Date:   Thu, 9 Jun 2022 22:23:27 +0900
 MIME-Version: 1.0
-References: <20220608000014.3054333-1-jarkko@profian.com> <CAJF2gTQgCn2CyZ4+VBqEEBT2b4+1KxoEXxrd+Ritk=58+U8EFA@mail.gmail.com>
- <YqAy0qjI4Lktk/uJ@iki.fi> <20220608232115.ccd4399f4a1d133e9b65c2a9@kernel.org>
- <CAPhsuW6iUieQvA6KqzSLgtxmjkVSWCuVwNA338DATb_myHxo7w@mail.gmail.com> <YqHx1d+MwRLLzGQe@iki.fi>
-In-Reply-To: <YqHx1d+MwRLLzGQe@iki.fi>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Thu, 9 Jun 2022 15:23:16 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGGyO-DL9hjKYKR2sp87s4KExiQybES8pp4JgqJcHkfLA@mail.gmail.com>
-Message-ID: <CAMj1kXGGyO-DL9hjKYKR2sp87s4KExiQybES8pp4JgqJcHkfLA@mail.gmail.com>
-Subject: Re: [PATCH] kprobes: Enable tracing for mololithic kernel images
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     Song Liu <song@kernel.org>, Masami Hiramatsu <mhiramat@kernel.org>,
-        Guo Ren <guoren@kernel.org>,
-        Jarkko Sakkinen <jarkko@profian.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Marco Elver <elver@google.com>,
-        Dan Li <ashimida@linux.alibaba.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Mark Brown <broonie@kernel.org>,
-        Luis Machado <luis.machado@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Atsushi Nemoto <anemo@mba.ocn.ne.jp>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dave Anglin <dave.anglin@bell.net>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Daniel Axtens <dja@axtens.net>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jordan Niethe <jniethe5@gmail.com>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Changbin Du <changbin.du@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Liao Chang <liaochang1@huawei.com>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>,
-        Wu Caize <zepan@sipeed.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Tobias Huschle <huschle@linux.ibm.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Michael Roth <michael.roth@amd.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-modules@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: [PATCH 1/5] docs/doc-guide: Add footnote on Inkscape for better
+ images in PDF documents
+Content-Language: en-US
+To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org,
+        Akira Yokosawa <akiyks@gmail.com>
+References: <dccb5233-7f4f-1be6-d1f4-bbe9f42f88e0@gmail.com>
+From:   Akira Yokosawa <akiyks@gmail.com>
+In-Reply-To: <dccb5233-7f4f-1be6-d1f4-bbe9f42f88e0@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 9 Jun 2022 at 15:14, Jarkko Sakkinen <jarkko@kernel.org> wrote:
->
-> On Wed, Jun 08, 2022 at 09:12:34AM -0700, Song Liu wrote:
-> > On Wed, Jun 8, 2022 at 7:21 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> > >
-> > > Hi Jarkko,
-> > >
-> > > On Wed, 8 Jun 2022 08:25:38 +0300
-> > > Jarkko Sakkinen <jarkko@kernel.org> wrote:
-> > >
-> > > > On Wed, Jun 08, 2022 at 10:35:42AM +0800, Guo Ren wrote:
-> > > > > .
-> > > > >
-> > > > > On Wed, Jun 8, 2022 at 8:02 AM Jarkko Sakkinen <jarkko@profian.com> wrote:
-> > > > > >
-> > > > > > Tracing with kprobes while running a monolithic kernel is currently
-> > > > > > impossible because CONFIG_KPROBES is dependent of CONFIG_MODULES.  This
-> > > > > > dependency is a result of kprobes code using the module allocator for the
-> > > > > > trampoline code.
-> > > > > >
-> > > > > > Detaching kprobes from modules helps to squeeze down the user space,
-> > > > > > e.g. when developing new core kernel features, while still having all
-> > > > > > the nice tracing capabilities.
-> > > > > >
-> > > > > > For kernel/ and arch/*, move module_alloc() and module_memfree() to
-> > > > > > module_alloc.c, and compile as part of vmlinux when either CONFIG_MODULES
-> > > > > > or CONFIG_KPROBES is enabled.  In addition, flag kernel module specific
-> > > > > > code with CONFIG_MODULES.
-> > > > > >
-> > > > > > As the result, kprobes can be used with a monolithic kernel.
-> > > > > It's strange when MODULES is n, but vmlinux still obtains module_alloc.
-> > > > >
-> > > > > Maybe we need a kprobe_alloc, right?
-> > > >
-> > > > Perhaps not the best name but at least it documents the fact that
-> > > > they use the same allocator.
-> > > >
-> > > > Few years ago I carved up something "half-way there" for kprobes,
-> > > > and I used the name text_alloc() [*].
-> > > >
-> > > > [*] https://lore.kernel.org/all/20200724050553.1724168-1-jarkko.sakkinen@linux.intel.com/
-> > >
-> > > Yeah, I remember that. Thank you for updating your patch!
-> > > I think the idea (split module_alloc() from CONFIG_MODULE) is good to me.
-> > > If module support maintainers think this name is not good, you may be
-> > > able to rename it as text_alloc() and make the module_alloc() as a
-> > > wrapper of it.
-> >
-> > IIUC, most users of module_alloc() use it to allocate memory for text, except
-> > that module code uses it for both text and data. Therefore, I guess calling it
-> > text_alloc() is not 100% accurate until we change the module code (to use
-> > a different API to allocate memory for data).
->
-> After reading the feedback, I'd stay on using module_alloc() because
-> it has arch-specific quirks baked in. Easier to deal with them in one
-> place.
->
+With kernel releases v5.18 and later, if you have Inkscape, images
+embedded in PDF documents are of vector graphics, not the raster
+images as are the case with pre-v5.18 releases.
+Even with pre-5.18 releases, having Inkscape would improve images
+converted from some of SVG files which are not fully covered by the
+limited capability of rsvg-convert(1) [1].
 
-In that case, please ensure that you enable this only on architectures
-where it is needed. arm64 implements alloc_insn_page() without relying
-on module_alloc() so I would not expect to see any changes there.
+Add a footnote mentioning the expected improvements of such images.
+
+Link: https://gitlab.gnome.org/GNOME/librsvg#non-goals-of-librsvg [1]
+Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+---
+ Documentation/doc-guide/sphinx.rst | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/doc-guide/sphinx.rst b/Documentation/doc-guide/sphinx.rst
+index 2ff1ab4158d4..edc4fa023986 100644
+--- a/Documentation/doc-guide/sphinx.rst
++++ b/Documentation/doc-guide/sphinx.rst
+@@ -132,7 +132,8 @@ format-specific subdirectories under ``Documentation/output``.
+ To generate documentation, Sphinx (``sphinx-build``) must obviously be
+ installed. For prettier HTML output, the Read the Docs Sphinx theme
+ (``sphinx_rtd_theme``) is used if available. For PDF output you'll also need
+-``XeLaTeX`` and ``convert(1)`` from ImageMagick (https://www.imagemagick.org).
++``XeLaTeX`` and ``convert(1)`` from ImageMagick
++(https://www.imagemagick.org).\ [#ink]_
+ All of these are widely available and packaged in distributions.
+ 
+ To pass extra options to Sphinx, you can use the ``SPHINXOPTS`` make
+@@ -152,6 +153,10 @@ The Sphinx theme can be overridden by using the ``DOCS_THEME`` make variable.
+ 
+ To remove the generated documentation, run ``make cleandocs``.
+ 
++.. [#ink] Having ``inkscape(1)`` from Inkscape (https://inkscape.org)
++	  as well would improve the quality of images embedded in PDF
++	  documents, especially for kernel releases 5.18 and later.
++
+ Writing Documentation
+ =====================
+ 
+-- 
+2.25.1
+
+
