@@ -2,138 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C3ADC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 02:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7750C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 02:57:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237291AbiFICzu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 22:55:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51604 "EHLO
+        id S237304AbiFIC5K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 22:57:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237271AbiFICzs (ORCPT
+        with ESMTP id S232220AbiFIC5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 22:55:48 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A50F1A29F2;
-        Wed,  8 Jun 2022 19:55:43 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 2592t2o05008872, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 2592t2o05008872
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 9 Jun 2022 10:55:02 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Thu, 9 Jun 2022 10:55:02 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 9 Jun 2022 10:55:01 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
- RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
- 15.01.2308.021; Thu, 9 Jun 2022 10:55:01 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "neojou@gmail.com" <neojou@gmail.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "martin.blumenstingl@googlemail.com" 
-        <martin.blumenstingl@googlemail.com>,
-        "linux@ulli-kroll.de" <linux@ulli-kroll.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 05/10] rtw88: iterate over vif/sta list non-atomically
-Thread-Topic: [PATCH v2 05/10] rtw88: iterate over vif/sta list non-atomically
-Thread-Index: AQHYdDPOvAC5P6vVz0elhZc8Fv6eZa1F6gcA
-Date:   Thu, 9 Jun 2022 02:55:01 +0000
-Message-ID: <523bb16608f48852b180121696d31cf82fb55484.camel@realtek.com>
-References: <20220530135457.1104091-1-s.hauer@pengutronix.de>
-         <20220530135457.1104091-6-s.hauer@pengutronix.de>
-In-Reply-To: <20220530135457.1104091-6-s.hauer@pengutronix.de>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.1-2 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzYvOCDkuIvljYggMTA6MTk6MDA=?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <4922BF3DEA0C7049AC1B7D51BF1A184E@realtek.com>
-Content-Transfer-Encoding: base64
+        Wed, 8 Jun 2022 22:57:08 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8ADE1A40B1;
+        Wed,  8 Jun 2022 19:57:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654743426; x=1686279426;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=DWdTmomDdHvDa03AdXAl+EdQlsJVgcEVxjeDSDWI6GE=;
+  b=KEHhg83gXUFPRx1+U1+LYTkm5bC5SCIcYgPzV7t0NJFFCxswh+f9BpSI
+   3DGeQc1qFEbRLMt4TFKapP0cojzT6crqhj2XBwCkbPRJQCZO1fvA9QTjH
+   Z3xkxwBpeAOzPKcm//wHSfaxpTPr4W7Y/34zS3tV15VrdjJ5qXYjd+GYW
+   k6W1MDfPkk8cv9JM63Rdz+ALbTdVDuCprrWldsLDHppQJ6dWfwL9IoX9R
+   jNRXs3d+f+X7GbKUsOfOu5EMEVF36ciaeuqWKbsU1OFOrFO5YNaPdQwb5
+   BdiEEbMpzSbxks5EdHZnIQAfe1t/OUild8mL9tuLBK9RiNbiUN43g6DgM
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="278284863"
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="278284863"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 19:57:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="566189797"
+Received: from unknown (HELO localhost.localdomain) ([10.226.216.116])
+  by orsmga002.jf.intel.com with ESMTP; 08 Jun 2022 19:57:04 -0700
+From:   wen.ping.teh@intel.com
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Teh Wen Ping <wen.ping.teh@intel.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: altera: document Stratix 10 SWVP compatibles
+Date:   Thu,  9 Jun 2022 10:56:47 +0800
+Message-Id: <20220609025647.400998-1-wen.ping.teh@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gTW9uLCAyMDIyLTA1LTMwIGF0IDE1OjU0ICswMjAwLCBTYXNjaGEgSGF1ZXIgd3JvdGU6DQo+
-IFRoZSBkcml2ZXIgdXNlcyBpZWVlODAyMTFfaXRlcmF0ZV9hY3RpdmVfaW50ZXJmYWNlc19hdG9t
-aWMoKQ0KPiBhbmQgaWVlZTgwMjExX2l0ZXJhdGVfc3RhdGlvbnNfYXRvbWljKCkgaW4gc2V2ZXJh
-bCBwbGFjZXMgYW5kIGRvZXMNCj4gcmVnaXN0ZXIgYWNjZXNzZXMgaW4gdGhlIGl0ZXJhdG9ycy4g
-VGhpcyBkb2Vzbid0IGNvcGUgd2l0aCB1cGNvbWluZw0KPiBVU0Igc3VwcG9ydCBhcyByZWdpc3Rl
-cnMgY2FuIG9ubHkgYmUgYWNjZXNzZWQgbm9uLWF0b21pY2FsbHkuDQo+IA0KPiBTcGxpdCB0aGVz
-ZSBpbnRvIGEgdHdvIHN0YWdlIHByb2Nlc3M6IEZpcnN0IHVzZSB0aGUgYXRvbWljIGl0ZXJhdG9y
-DQo+IGZ1bmN0aW9ucyB0byBjb2xsZWN0IGFsbCBhY3RpdmUgaW50ZXJmYWNlcyBvciBzdGF0aW9u
-cyBvbiBhIGxpc3QsIHRoZW4NCj4gaXRlcmF0ZSBvdmVyIHRoZSBsaXN0IG5vbi1hdG9taWNhbGx5
-IGFuZCBjYWxsIHRoZSBpdGVyYXRvciBvbiBlYWNoDQo+IGVudHJ5Lg0KPiANCj4gU2lnbmVkLW9m
-Zi1ieTogU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRlPg0KPiBTdWdnZXN0ZWQt
-Ynk6IFBrc2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPg0KPiAtLS0NCj4gDQo+IE5vdGVzOg0KPiAg
-ICAgQ2hhbmdlcyBzaW5jZSB2MToNCj4gICAgIC0gQ2hhbmdlIHN1YmplY3QNCj4gICAgIC0gQWRk
-IHNvbWUgbG9ja2RlcF9hc3NlcnRfaGVsZCgmcnR3ZGV2LT5tdXRleCk7DQo+ICAgICAtIG1ha2Ug
-bG9jYWxseSB1c2VkIGZ1bmN0aW9ucyBzdGF0aWMNCj4gICAgIC0gQWRkIGNvbW1lbnQgaG93ICZy
-dHdkZXYtPm11dGV4IHByb3RlY3RzIHVzIGZyb20gc3RhdGlvbnMvaW50ZXJmYWNlcw0KPiAgICAg
-ICBiZWluZyBkZWxldGVkIGJldHdlZW4gY29sbGVjdGluZyB0aGVtIGFuZCBpdGVyYXRpbmcgb3Zl
-ciB0aGVtLg0KPiANCj4gIGRyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcGh5LmMg
-IHwgICA2ICstDQo+ICBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3BzLmMgICB8
-ICAgMiArLQ0KPiAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC91dGlsLmMgfCAx
-MDMgKysrKysrKysrKysrKysrKysrKysrKw0KPiAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRl
-ay9ydHc4OC91dGlsLmggfCAgMTIgKystDQo+ICA0IGZpbGVzIGNoYW5nZWQsIDExNiBpbnNlcnRp
-b25zKCspLCA3IGRlbGV0aW9ucygtKQ0KPiANCj4gDQoNClsuLi5dDQoNCj4gKw0KPiArc3RydWN0
-IHJ0d192aWZzX2VudHJ5IHsNCj4gKwlzdHJ1Y3QgbGlzdF9oZWFkIGxpc3Q7DQo+ICsJc3RydWN0
-IGllZWU4MDIxMV92aWYgKnZpZjsNCj4gKwl1OCBtYWNbRVRIX0FMRU5dOw0KPiArfTsNCj4gKw0K
-PiArc3RydWN0IHJ0d19pdGVyX3ZpZnNfZGF0YSB7DQo+ICsJc3RydWN0IHJ0d19kZXYgKnJ0d2Rl
-djsNCj4gKwlzdHJ1Y3QgbGlzdF9oZWFkIGxpc3Q7DQo+ICt9Ow0KPiArDQo+ICt2b2lkIHJ0d19j
-b2xsZWN0X3ZpZl9pdGVyKHZvaWQgKmRhdGEsIHU4ICptYWMsIHN0cnVjdCBpZWVlODAyMTFfdmlm
-ICp2aWYpDQoNCllvdSBkbyB0aGlzIGNoYW5nZSBpbiBwYXRjaCAicnR3ODg6IEFkZCBjb21tb24g
-VVNCIGNoaXAgc3VwcG9ydCIuDQpQbGVhc2UgbW92ZSB0byBoZXJlLg0KDQotdm9pZCBydHdfY29s
-bGVjdF92aWZfaXRlcih2b2lkICpkYXRhLCB1OCAqbWFjLCBzdHJ1Y3QgaWVlZTgwMjExX3ZpZiAq
-dmlmKQ0KK3N0YXRpYyB2b2lkIHJ0d19jb2xsZWN0X3ZpZl9pdGVyKHZvaWQgKmRhdGEsIHU4ICpt
-YWMsIHN0cnVjdCBpZWVlODAyMTFfdmlmICp2aWYpDQoNCj4gK3sNCj4gKwlzdHJ1Y3QgcnR3X2l0
-ZXJfdmlmc19kYXRhICppdGVyX3N0YXMgPSBkYXRhOw0KPiArCXN0cnVjdCBydHdfdmlmc19lbnRy
-eSAqdmlmc19lbnRyeTsNCj4gKw0KPiArCXZpZnNfZW50cnkgPSBrbWFsbG9jKHNpemVvZigqdmlm
-c19lbnRyeSksIEdGUF9BVE9NSUMpOw0KPiArCWlmICghdmlmc19lbnRyeSkNCj4gKwkJcmV0dXJu
-Ow0KPiArDQo+ICsJdmlmc19lbnRyeS0+dmlmID0gdmlmOw0KPiArCWV0aGVyX2FkZHJfY29weSh2
-aWZzX2VudHJ5LT5tYWMsIG1hYyk7DQo+ICsJbGlzdF9hZGRfdGFpbCgmdmlmc19lbnRyeS0+bGlz
-dCwgJml0ZXJfc3Rhcy0+bGlzdCk7DQo+ICt9DQo+ICsNCj4gK3ZvaWQgcnR3X2l0ZXJhdGVfdmlm
-cyhzdHJ1Y3QgcnR3X2RldiAqcnR3ZGV2LA0KPiArCQkgICAgICB2b2lkICgqaXRlcmF0b3IpKHZv
-aWQgKmRhdGEsIHU4ICptYWMsDQo+ICsJCQkJICAgICAgIHN0cnVjdCBpZWVlODAyMTFfdmlmICp2
-aWYpLA0KPiArCQkgICAgICB2b2lkICpkYXRhKQ0KPiArew0KPiArCXN0cnVjdCBydHdfaXRlcl92
-aWZzX2RhdGEgaXRlcl9kYXRhOw0KPiArCXN0cnVjdCBydHdfdmlmc19lbnQNCg0KWy4uLl0NCg0K
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC91dGlsLmgg
-Yi9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3V0aWwuaA0KPiBpbmRleCAwYzIz
-YjUwNjliZTBiLi5kYzg5NjU1MjU0MDAyIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC93aXJl
-bGVzcy9yZWFsdGVrL3J0dzg4L3V0aWwuaA0KPiArKysgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9y
-ZWFsdGVrL3J0dzg4L3V0aWwuaA0KPiBAQCAtNyw5ICs3LDYgQEANCj4gIA0KPiAgc3RydWN0IHJ0
-d19kZXY7DQo+ICANCj4gLSNkZWZpbmUgcnR3X2l0ZXJhdGVfdmlmcyhydHdkZXYsIGl0ZXJhdG9y
-LCBkYXRhKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcDQo+IC0JaWVlZTgwMjExX2l0
-ZXJhdGVfYWN0aXZlX2ludGVyZmFjZXMocnR3ZGV2LT5odywgICAgICAgICAgICAgICAgICAgICAg
-ICBcDQo+IC0JCQlJRUVFODAyMTFfSUZBQ0VfSVRFUl9OT1JNQUwsIGl0ZXJhdG9yLCBkYXRhKQ0K
-PiAgI2RlZmluZSBydHdfaXRlcmF0ZV92aWZzX2F0b21pYyhydHdkZXYsIGl0ZXJhdG9yLCBkYXRh
-KSAgICAgICAgICAgICAgICAgICAgICAgIFwNCj4gIAlpZWVlODAyMTFfaXRlcmF0ZV9hY3RpdmVf
-aW50ZXJmYWNlc19hdG9taWMocnR3ZGV2LT5odywgICAgICAgICAgICAgICAgIFwNCj4gIAkJCUlF
-RUU4MDIxMV9JRkFDRV9JVEVSX05PUk1BTCwgaXRlcmF0b3IsIGRhdGEpDQoNCkFmdGVyIHJlYWQg
-TWFydGluJ3MgcGF0Y2hlcywgSSB0aGluayB3ZSBjYW4gcmV2aWV3IGFsbCBwbGFjZXMgd2hlcmUg
-dXNlDQpfYW90bWljIHZlcnNpb24gb2YgdmlmIGFuZCBzdGEsIGV2ZW4gd2UgZG9uJ3QgcmVhbGx5
-IG1lZXQgcHJvYmxlbSBmb3Igbm93Lg0KVGhlbiwgdXNlIG5vbi1hdG9taWMgdmVyc2lvbiBpZiBw
-b3NzaWJsZS4NCg0KUGluZy1LZQ0KDQoNCg==
+From: Teh Wen Ping <wen.ping.teh@intel.com>
+
+Add compatible strings for Stratix 10 Software Virtual Platform
+
+Signed-off-by: Teh Wen Ping <wen.ping.teh@intel.com>
+---
+ Documentation/devicetree/bindings/arm/altera.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/altera.yaml b/Documentation/devicetree/bindings/arm/altera.yaml
+index 5e2017c0a051..d9037e4bbf73 100644
+--- a/Documentation/devicetree/bindings/arm/altera.yaml
++++ b/Documentation/devicetree/bindings/arm/altera.yaml
+@@ -47,6 +47,7 @@ properties:
+         items:
+           - enum:
+               - altr,socfpga-stratix10-socdk
++              - altr,socfpga-stratix10-swvp
+           - const: altr,socfpga-stratix10
+ 
+       - description: SoCFPGA VT
+-- 
+2.25.1
+
