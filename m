@@ -2,123 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 204FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:42:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE49C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:45:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242611AbiFIJmr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 05:42:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52630 "EHLO
+        id S234065AbiFIJp0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 05:45:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242905AbiFIJmb (ORCPT
+        with ESMTP id S230246AbiFIJpZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 05:42:31 -0400
+        Thu, 9 Jun 2022 05:45:25 -0400
 Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2215046B;
-        Thu,  9 Jun 2022 02:42:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EFB50B14
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 02:45:23 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id A1774DFDD0;
-        Thu,  9 Jun 2022 02:41:51 -0700 (PDT)
+        by comms.puri.sm (Postfix) with ESMTP id 703BFDFDD0;
+        Thu,  9 Jun 2022 02:45:23 -0700 (PDT)
 Received: from comms.puri.sm ([127.0.0.1])
         by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id CyLQcTKbNT2H; Thu,  9 Jun 2022 02:41:50 -0700 (PDT)
-Message-ID: <2d5d3bbec443742506e39488dbfbf724bb4ca93f.camel@puri.sm>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1654767710; bh=JvptTP0wGobXosSU7TbBT2e0e6nJPwu/H4EWqXXNeho=;
-        h=Subject:From:To:Cc:Date:From;
-        b=YJSQTdNModpI7tt0R9Pvs9HK40ecR0k2wgvVJQEPSVYBy9S3RTEOYRKrPwL7VjopH
-         pQtPJrW24FSTr3XFIqmzybUmWUA7tWFk9+1+OdqMfAahivwTB5jR9MLvjpArbsoAGj
-         Bglfu6gti68ww5wPC6rthFm6daproEF5DHlTRlZcZ0SOpDAtrMoKeFtWC04Ahq9ETq
-         +o3zo61IUCN5LAiFnhdteOfD6aWMks81CcHEWHx/AvMebVaTRZnhv0ihoYSFxt0GwE
-         JWYZdGir3B114jBVcUmtb6pt4LYUec5mKRT2+Fbkoi0tNX9Pb0Qzz1YOcSjnPPDJEm
-         rG5KOQe58q7ow==
-Subject: soc: imx: gpcv2: regulator issue with system suspend on imx8mq
+        with ESMTP id KnrSODr8z27T; Thu,  9 Jun 2022 02:45:22 -0700 (PDT)
 From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-To:     Lucas Stach <l.stach@pengutronix.de>,
-        Adam Ford <aford173@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>, peng.fan@nxp.com,
-        festevam@gmail.com, lgirdwood@gmail.com
-Cc:     linux-media <linux-media@vger.kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        arm-soc <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        kernel@puri.sm
-Date:   Thu, 09 Jun 2022 11:41:43 +0200
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
+        t=1654767922; bh=13VRg4Lwk4+BEnm3SUM2cb0pYq53kKrwUDqrt4YlzQc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=V9/MIKvNERmqtpSd5O4VRXuaCcwmEMjmDBxKaLvBGLG7nbWDxpahnGafIQcn2XF9K
+         pxSwLPVxwZmqgUCV2eNHTmhDCGtGrzV4kSgEeU52EUlshc0JtoMnO8fim+PW5fcgDQ
+         GzCjnEmNawpU6VUUx/pGgTz2MFMJJrRzzmHQWJGhnBULWeJmItGsyQrEuAsjUSG+Z5
+         WwKFxdasmbbMYweNJHiaL6lDIaFxevPb3RDGE4unaN4jNg400e6G7vXnN3hSRfd01E
+         9J9HW2LQuCCCehgah9orN5uxPsKa/GSTKGs/3caNnG8CWVLerxOm0eyhblGePQpX2l
+         X2RF9MxOKC7cg==
+To:     shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com
+Cc:     kernel@pengutronix.de, kernel@puri.sm, linux-imx@nxp.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Martin Kepplinger <martin.kepplinger@puri.sm>
+Subject: [PATCH] soc: imx: gpcv2: print errno for regulator errors
+Date:   Thu,  9 Jun 2022 11:44:53 +0200
+Message-Id: <20220609094453.2120099-1-martin.kepplinger@puri.sm>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hi Lucas and all interested in suspend to ram on imx8mq,
+Make debugging of power management issues easier by printing the reason
+why a regulator fails to be enabled or disabled.
 
-This is slighly repeating my previous observations that still apply,
-but summarizing the situation:
+Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+---
+ drivers/soc/imx/gpcv2.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-s2idle should work on mainline when looking at the implementations of
-platform drivers. With the missing bits
-https://source.codeaurora.org/external/imx/linux-imx/commit/?h=imx_5.10.35_2.0.0_imx8ulp_er&id=ab850d655c22df562c27c9d6775a26b6df6865b5
-and
-https://lore.kernel.org/linux-arm-kernel/1631554694-9599-7-git-send-email-abel.vesa@nxp.com/
-suspend to ram should work too,
-and it does for me, except when a power domain is using a board-
-regulator as power-supply that is not always-on, but controlled by a
-driver. (when I describe these as "always-on", things are fine (except
-for unrelated edgecases)) here's the example I'm running where I don't
-describe "buck3" as always-on, but etnaviv runtime pm is controlling
-it:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi#n1161
-When starting to resume, the following happens:
-
-[  139.985440] Enabling non-boot CPUs ...
-[  139.990363] Detected VIPT I-cache on CPU1
-[  139.990413] GICv3: CPU1: found redistributor 1 region
-0:0x00000000388a0000
-[  139.990487] CPU1: Booted secondary processor 0x0000000001
-[0x410fd034]
-[  139.991445] CPU1 is up
-[  140.011836] Detected VIPT I-cache on CPU2
-[  140.011852] GICv3: CPU2: found redistributor 2 region
-0:0x00000000388c0000
-[  140.011876] CPU2: Booted secondary processor 0x0000000002
-[0x410fd034]
-[  140.012284] CPU2 is up
-[  140.032739] Detected VIPT I-cache on CPU3
-[  140.032756] GICv3: CPU3: found redistributor 3 region
-0:0x00000000388e0000
-[  140.032780] CPU3: Booted secondary processor 0x0000000003
-[0x410fd034]
-[  140.033310] CPU3 is up
-[  140.158791] imx-pgc imx-pgc-domain.5: failed to enable regulator: -
-110
-
-trying runtime-resume in system-suspend for i2c busses didn't help me
-here for example. What's your idea for solving this? (regulator always-
-on is not an acceptable workaround :) I'm always happy to test concrete
-ideas and would like to know from anyone who uses system suspend on
-imx8mq.
-
-history
--------
-last time this came to my attention via the mainling lists was the VPU
-addition:
-https://lore.kernel.org/linux-arm-kernel/8ed3a28d59b442b531e68e95d83b187bb3392940.camel@puri.sm/
-but for the above logs and all current tests, I ignore the VPU (set the
-power-supply always-on) simply because the the driver is in staging and
-seems to create a different problem when suspending, and the GPU power-
-supply example is very well suited to highlight the problem.
-
-but before that, "gpcv2: support systemd suspend/resume"
-( https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=da4112230f86
-) didn't work for me, see:
-https://lore.kernel.org/all/a20ecd639f8e8b7fa4a9bed7a8e9590225262784.camel@puri.sm/
-
-thanks a lot,
-
-                               martin
-
+diff --git a/drivers/soc/imx/gpcv2.c b/drivers/soc/imx/gpcv2.c
+index 3cb123016b3e..311507a815c5 100644
+--- a/drivers/soc/imx/gpcv2.c
++++ b/drivers/soc/imx/gpcv2.c
+@@ -233,7 +233,8 @@ static int imx_pgc_power_up(struct generic_pm_domain *genpd)
+ 	if (!IS_ERR(domain->regulator)) {
+ 		ret = regulator_enable(domain->regulator);
+ 		if (ret) {
+-			dev_err(domain->dev, "failed to enable regulator\n");
++			dev_err(domain->dev, "failed to enable regulator: %d\n",
++				ret);
+ 			goto out_put_pm;
+ 		}
+ 	}
+@@ -372,7 +373,8 @@ static int imx_pgc_power_down(struct generic_pm_domain *genpd)
+ 	if (!IS_ERR(domain->regulator)) {
+ 		ret = regulator_disable(domain->regulator);
+ 		if (ret) {
+-			dev_err(domain->dev, "failed to disable regulator\n");
++			dev_err(domain->dev,
++				"failed to disable regulator: %d\n", ret);
+ 			return ret;
+ 		}
+ 	}
+-- 
+2.30.2
 
