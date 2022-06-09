@@ -2,126 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E00C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DAFDCCA473
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244330AbiFILra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:47:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
+        id S244831AbiFILr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244534AbiFILrJ (ORCPT
+        with ESMTP id S244613AbiFILro (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:47:09 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90736E3DF5
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:45:38 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id i29so20817140lfp.3
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 04:45:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z3ypSb+XDrbeyHXO4y2Np7U53zPPEdC7B+zbSpknR0k=;
-        b=OY/i7kxud0oo+BFCt+TUyi9H+g3C5k5yrf+GXzEjHjPnjtkGEK4seV9DkRk020ZUWz
-         WKIH+f9T+Afyh0yOus92Sk0vZdrYShJ4ANs3mHE/+w0RKzy/cpBxO+5vSXpcs/6I/W1F
-         VgAz/3Vc0Nn9QjNv2tmAAZMKO/Zx0Ief1thCMpUMys0hnSluwTEWS9QWq5+xu+Xs3xCj
-         KJI2vfV/hzfKhedkmNIIP79nVy65JYBECsLTbLv14046cdq+juG+NEFNr00i7eve/JuS
-         L/L653ZLeJUs2U8MFmzrO0Dn6Jw5uA4RYssB8Qz6MWalyz5dsMEsbsKnbJjRN9KmbwEF
-         YCQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z3ypSb+XDrbeyHXO4y2Np7U53zPPEdC7B+zbSpknR0k=;
-        b=gfnY4SsaPuVlBkLuGoveTqaKBErthWM8MVZGiktl7euJoR90GmSr4pHDvQrlCo70ws
-         5atfkbVcK2isVU8CQet0ceUVlIvPJruxn/ycBKIYzPoUI0UJRjfWww3WxGjqe3gDBNJq
-         E5z7nakO+8CvA70HpCgS0g/1XZixIhC7FzlhlmMD3vY+9vofJVidOibx1gZhkqDQYUv2
-         8+cPVcm6GGbNnbDLW9ax1Nct5VByh9IxW/aMBPDtaj1NU3HkrB11UrmycaWkC8dzLDla
-         vEIqR8ldED9+CzSJGFdlt+HmWc+fypuvL6t2ZOiufShjSf/7tefCSy8y+quWkJW0LAWL
-         mzzQ==
-X-Gm-Message-State: AOAM533k9YNbBKe9ylv5//HvvXnuLs0qz7RHGk/6AoLZPUmm7x007ZZ+
-        Ja0WXn2YgNT3jBxGPZST+7ywH58oPPyi8D9RSAN1zw==
-X-Google-Smtp-Source: ABdhPJyH77X7NZCKlUAkh1b8rGns+ZTVzL2JJqtqHXE5Z9Yu2vwepFP1JhFxEiQXE3Fhj1dWwk3q+ErEVVRC0NDjZtA=
-X-Received: by 2002:a05:6512:303:b0:479:1baf:7e5b with SMTP id
- t3-20020a056512030300b004791baf7e5bmr19877546lfp.184.1654775136919; Thu, 09
- Jun 2022 04:45:36 -0700 (PDT)
+        Thu, 9 Jun 2022 07:47:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 943099CF0D;
+        Thu,  9 Jun 2022 04:46:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41BA7B82D2A;
+        Thu,  9 Jun 2022 11:46:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AA83C3411D;
+        Thu,  9 Jun 2022 11:46:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654775210;
+        bh=/yxLzqAjj2ZrsiJ7/7VVT2f9u68+1KplA0iIvcfew/s=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=c8nKB7Pjyhf7T+iNcXR1vZsGr9vjU2ODmpnedAgMBbo+h8zI8MdhgL3sk9jU/ng9w
+         vK6RaFT7p/PLaE7wtvvixE0+KtTThplqB45qjQCaiDL2hEP0rK1ZKYSlPyAaVMvVkE
+         6NBjM8ZTNGPq+WZn16esfNS4vLlU/qsJyTiS5Yo/KnRRrhqvm3ln/yOmmdi0rz8JGC
+         DojrATrdFQ5xkUxkDqMLjD0HbaGmyQw4rh6aTcQ1+AU6UugHcl+7wGdeFMYApFmh4F
+         6Q/6fCeKPBurR7mXLR7K+q/pmQamNDHGdHGzggzlNGxRuobvUXBvxnNOwSvQ3za9k7
+         Gs6ZZmylo8tjg==
+Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-f2cbceefb8so30622963fac.11;
+        Thu, 09 Jun 2022 04:46:49 -0700 (PDT)
+X-Gm-Message-State: AOAM530GpQhdo46aykCNI3A8zFALo9bIO2cH9WJgsdHyhqym5aCgNVg4
+        lJWItbIuFtR7VgVvlzo4l9dY2M94N7W3wVgkkfs=
+X-Google-Smtp-Source: ABdhPJySqpOhlxopOUar3NHF1BEitePFrjp62TaQqPlr8UadINA15pPJJKyqzfrM3qQcpaduICaeC8hRDxT/vNWVgq4=
+X-Received: by 2002:a05:6871:5c8:b0:f3:3c1c:126f with SMTP id
+ v8-20020a05687105c800b000f33c1c126fmr1470910oan.126.1654775209137; Thu, 09
+ Jun 2022 04:46:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com> <20220601070707.3946847-2-saravanak@google.com>
-In-Reply-To: <20220601070707.3946847-2-saravanak@google.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 9 Jun 2022 13:44:59 +0200
-Message-ID: <CAPDyKFpZTmt71LgQ9vNE4_iRff-OBkDWkHrc7y9zQ7o_Z_UYFA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org
+References: <20220609113730.32062-1-baskov@ispras.ru>
+In-Reply-To: <20220609113730.32062-1-baskov@ispras.ru>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Thu, 9 Jun 2022 13:46:36 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXFvKAPzog7m4FFDLcGSO1F6nT5kzaDcyG635vy=UD0j6Q@mail.gmail.com>
+Message-ID: <CAMj1kXFvKAPzog7m4FFDLcGSO1F6nT5kzaDcyG635vy=UD0j6Q@mail.gmail.com>
+Subject: Re: [PATCH] efi/x86: libstub: Fix typo in __efi64_argmap* name
+To:     Evgeniy Baskov <baskov@ispras.ru>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 1 Jun 2022 at 09:07, Saravana Kannan <saravanak@google.com> wrote:
+On Thu, 9 Jun 2022 at 13:39, Evgeniy Baskov <baskov@ispras.ru> wrote:
 >
-> Now that fw_devlink=on by default and fw_devlink supports
-> "power-domains" property, the execution will never get to the point
-> where driver_deferred_probe_check_state() is called before the supplier
-> has probed successfully or before deferred probe timeout has expired.
+> The actual name of the DXE services function used
+> is set_memory_space_attributes(), not set_memory_space_descriptor().
 >
-> So, delete the call and replace it with -ENODEV.
-
-With fw_devlink=on by default - does that mean that the parameter
-can't be changed?
-
-Or perhaps the point is that we don't want to go back, but rather drop
-the fw_devlink parameter altogether when moving forward?
-
+> Change EFI mixed mode helper macro name to match the function name.
 >
-> Signed-off-by: Saravana Kannan <saravanak@google.com>
+> Fixes: 31f1a0edff78 ("efi/x86: libstub: Make DXE calls mixed mode safe")
+> Signed-off-by: Evgeniy Baskov <baskov@ispras.ru>
 
-Just a minor nitpick below. Nevertheless, feel free to add:
+Thanks for the fix! I'll queue this up in efi/urgent
 
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
 
 > ---
->  drivers/base/power/domain.c | 2 +-
+>  arch/x86/include/asm/efi.h | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-> index 739e52cd4aba..3e86772d5fac 100644
-> --- a/drivers/base/power/domain.c
-> +++ b/drivers/base/power/domain.c
-> @@ -2730,7 +2730,7 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
->                 mutex_unlock(&gpd_list_lock);
->                 dev_dbg(dev, "%s() failed to find PM domain: %ld\n",
->                         __func__, PTR_ERR(pd));
-> -               return driver_deferred_probe_check_state(base_dev);
-
-Adding a brief comment about why -EPROBE_DEFER doesn't make sense
-here, would be nice.
-
-> +               return -ENODEV;
->         }
+> diff --git a/arch/x86/include/asm/efi.h b/arch/x86/include/asm/efi.h
+> index 71943dce691e..9636742a80f2 100644
+> --- a/arch/x86/include/asm/efi.h
+> +++ b/arch/x86/include/asm/efi.h
+> @@ -323,7 +323,7 @@ static inline u32 efi64_convert_status(efi_status_t status)
+>  #define __efi64_argmap_get_memory_space_descriptor(phys, desc) \
+>         (__efi64_split(phys), (desc))
 >
->         dev_dbg(dev, "adding to PM domain %s\n", pd->name);
+> -#define __efi64_argmap_set_memory_space_descriptor(phys, size, flags) \
+> +#define __efi64_argmap_set_memory_space_attributes(phys, size, flags) \
+>         (__efi64_split(phys), __efi64_split(size), __efi64_split(flags))
+>
+>  /*
 > --
-> 2.36.1.255.ge46751e96f-goog
+> 2.36.1
 >
-
-Kind regards
-Uffe
