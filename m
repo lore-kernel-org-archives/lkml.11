@@ -2,297 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44177C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8341C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:37:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344050AbiFIOgy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 10:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59534 "EHLO
+        id S241109AbiFIOg6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 10:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343670AbiFIOfY (ORCPT
+        with ESMTP id S1343983AbiFIOfe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 10:35:24 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6C0320C35;
-        Thu,  9 Jun 2022 07:35:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=TA+NCKNN+eR/98pPS94dU7ufUL4m7Zs6MV61a+jrgiQ=; b=mJcV7mgbC23cOsHdB1405TagzU
-        l6AFmpVy5mLOXT20rfyqUCs8GP1EArGlIG1d+bclAU46G00m8RJH75DYvbpvKFAoiuSJW6O1QFxtc
-        2ZX4fS2+npBuj7sf3RvxFNkEweZex+Vj5ENrzd+I9sLOEiAHImqAtc2JJMmXz3zh4NxdT+iutq57l
-        sa2BrKvjamqY1v2cSnnX2SVKVkgqfyixklYyUbrljPQ6xD47cyaOzZMoDzKBVpqtqSMOytkWZDuBZ
-        F+RQnbBADziujlHBIVHKfnYLbBNznbuZDQFAQyeC1t2Akp4vpvYgdDPkd6Xi/SQT+RWagEzzXyc1U
-        YnTwbbOg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nzJFc-00DcSb-SM; Thu, 09 Jun 2022 14:35:08 +0000
-Date:   Thu, 9 Jun 2022 15:35:08 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-aio@kvack.org,
-        linux-btrfs@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, cluster-devel@redhat.com,
-        linux-mm@kvack.org, linux-xfs@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
-        ocfs2-devel@oss.oracle.com, linux-mtd@lists.infradead.org,
-        virtualization@lists.linux-foundation.org,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v2 03/19] fs: Add aops->migrate_folio
-Message-ID: <YqIFHPJZNMrmtXlh@casper.infradead.org>
-References: <20220608150249.3033815-1-willy@infradead.org>
- <20220608150249.3033815-4-willy@infradead.org>
- <b2a81248-03fc-afb3-1041-d8206e95e08a@redhat.com>
+        Thu, 9 Jun 2022 10:35:34 -0400
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140079.outbound.protection.outlook.com [40.107.14.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B55322397;
+        Thu,  9 Jun 2022 07:35:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GUNchdz+VclcSEUAnaQp0YQ9AMinY57Xj8xD8ltpAAjZM8RIbxnAUkZ8jXVOtit5nBVrIESfDacwpUgW3EJTejeculBZTM4eHmzWxCSv6LiPjPOOFD775T0QouXXx8BwJ7g97VYDOupLNHuW6dYuu0ao0UbgG4b7YsK5c3BlOQI17IAzgQ66TN0+BC88sN/i7bUk3nGi5JOkOrIcbxhKjLNhpCfzWYC/aN6MyqwjLN1zm1oY9nMthLT3gn39B/1fektb9OrOtIqUoXoEbOnaU+Q50wSYbvI1K0oPKPlpLqyQ7eeF2EPnmtvMwbw4QiD2Mj2F6iv9dTnW9I9cMp6iqA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=YZaX10cPl5rmEGJohVsrEEBQBMQUDFKEKWOlhuqBbsI=;
+ b=OUEb7Kg3Jvp+nhIFnxpKSDJMDGto3rzlnbg0zrhBLZHG8yaS+mnZIdNZXU/RVm2P88oWxLUnDgBJ7uxuYdnR4VBYyXIueDJHEVbD7hqFy+sCmL4mmzOsgD0/a+i043xSlj2YTnM3x54eK2Tv6J3CHWpXA1ULXQGLFb7b5gzj/TJqFq20gynfKzSxmHRNcn6kZojwm7NbKQMuVUfSjKgBFJy6k1LPkiOU+I88p5aV0SZLUVBD4HSujkQ3uC1YiH7oqyvNE16LW1sEzqvsygFW0GEVnswas0oDRSeb1z5+LTdek0/f2ACExKs96IuiL0bwy2UVl1WG+Zj6r3yp65bHXQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YZaX10cPl5rmEGJohVsrEEBQBMQUDFKEKWOlhuqBbsI=;
+ b=rOFo0M1vOgYV69JvxLWCFem9Uhf9C7t1eM99m8Nv2fmQomLi9aw1E4RzceVPVuknMV2rQMaQP+hdhSfk4S+EhBLkxVZBpl6F2XJSxvvnIZUV2X13zE/cVnVm0XlC1sQQ25Vx4yhNd0jcOJ2L4Z+ADZR/tmQxyc6ViDc25xTi7Aw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
+ by VI1PR04MB5885.eurprd04.prod.outlook.com (2603:10a6:803:e1::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Thu, 9 Jun
+ 2022 14:35:25 +0000
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::a541:25cd:666f:11b1]) by VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::a541:25cd:666f:11b1%5]) with mapi id 15.20.5332.013; Thu, 9 Jun 2022
+ 14:35:25 +0000
+From:   Abel Vesa <abel.vesa@nxp.com>
+To:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Stefan Agner <stefan@agner.ch>
+Cc:     Stephen Boyd <sboyd@kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-clk@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: [PATCH v3 06/10] dt-bindings: power: Add fsl,scu-pd yaml file
+Date:   Thu,  9 Jun 2022 17:34:19 +0300
+Message-Id: <20220609143423.2839186-7-abel.vesa@nxp.com>
+X-Mailer: git-send-email 2.34.3
+In-Reply-To: <20220609143423.2839186-1-abel.vesa@nxp.com>
+References: <20220609143423.2839186-1-abel.vesa@nxp.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AS9PR07CA0042.eurprd07.prod.outlook.com
+ (2603:10a6:20b:46b::29) To VI1PR04MB4688.eurprd04.prod.outlook.com
+ (2603:10a6:803:6a::30)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b2a81248-03fc-afb3-1041-d8206e95e08a@redhat.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7bba8f71-30fc-4eec-d353-08da4a253b17
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5885:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB58854444BC87AA18EE4D6BF8F6A79@VI1PR04MB5885.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: D53AuuqICRBzXs+HGPaY4V7iBQbPgItAKF8QVzUMZOstEi5Xmp7CL1pJEjh/tVyl//3MqFCZF6AY6WyLtILCKSuUymM+5vvzKwMIVDTguRHH9cUIVLvtlndLTqjNi3Iw53UJ+MlrECbm582h+/8aK8KlZztvRS7EIRlqAPTV0xQ6Ji3o+bO+cwJlLPBZDhM43Z0uQ3+gj7f1IAiBVIY84y9Hz34eoLhTXnCtRwMy/k0hjWRnF+Gf7HfQV76lFzmE1NEgFom5UjfD+6LdLlCdQdhKXVS4sUgl3tHl9KqRtcfhXcSv+XmGuQkM4aasL3IDjMmlEVaht7eiYRLETPNHej0VHpLwrwAvqDA6J64ZhwZki9raIpEawEz5IpPOTKsE2s2CI8KsCkw91FEvw3xYDUE2y4M+Z1XwdEdiTAJetmr1DioezJAo4hcxmDjIvTNNJPFIiqW2vznwwp+QzuySWm9CbDqu3m9ZEm15Xd3QJ5BNhuY0UwaOUjguO26/2R/UeUKjNd8C+bzTaDxjpgDMvjUhANHxn9WSO12koDIPFed+dpfhNWeqzxEjEpbUg84z01dwK9sBf+ukx2rsXBDxxsbvHSpBgJkmQ+8Ug4k/YQm80ON3CsduCZNznKxckudaoxy6vg5F8YWwcWgG7eqO/S+8DydbGc1fJ/oxWzafNGUoiUacjEY0TwGIwYWqkmXehOmcHGJKjfFoo1i7cUjgp3Gd8NEwV41ICjlneyQdIQgswM75tcl1F7ip+WTHOtVRsA0e8rqzN5+5OuaUlZLtlYTBxfqDuWhel5p/naqTdGVl4hH6CNQFpKxCKrhO4A7dPOrGPPsAQusz55C46DnfA7WVC5KDdxkMcuZPAMm+J/s=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(316002)(36756003)(54906003)(110136005)(6506007)(6486002)(508600001)(2906002)(966005)(7416002)(38100700002)(5660300002)(6666004)(86362001)(44832011)(8936002)(8676002)(83380400001)(2616005)(186003)(52116002)(38350700002)(921005)(1076003)(66556008)(26005)(6512007)(66476007)(66946007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Yk2W4lKdBzZHu8yw/lVDjxfNOBSzqgd6d2kKcXyYfTnE2nS15wxrXMOoTIOP?=
+ =?us-ascii?Q?AYjrlis8r9XgqTB5BBjdJHtAblE1RheGsKrmu5+z5tfV6iW0V0PPFCv0zOBe?=
+ =?us-ascii?Q?dWmqbPNsyOCTwRBrcgNwG1dF8s25ayVDSq2RF5A7rN4F7c4ixXHzaNzWgUy1?=
+ =?us-ascii?Q?uCWxGuVf7qRfXmHQqeswquuuA5sbhMc5gi/04O1RlsKgu7chjQ7PLKEOeqPm?=
+ =?us-ascii?Q?4diDFe0841Vv/IhgoWCw8KTVdtmpirNpd02g6qTB6MrkxfSvDtle4XRB10mP?=
+ =?us-ascii?Q?HGM9qEGSBbJFjnzC5xOz9Sdl2Ob2F34x+5gE0AxbvlmgM+FZiFom1pCp4S2i?=
+ =?us-ascii?Q?n6GzgnZF/8MZcCKkNmBhsO1A+FRGfzOVnKQjCVNJhh8ONfihn1gw7sKQxw0M?=
+ =?us-ascii?Q?MHhQmBfrkwIwUOnaHOYQRxWZB/pg9G1XT5MEMVsUUSmehAj+SzWKICW4x/Oh?=
+ =?us-ascii?Q?MyeBoQbc5ikxXAWMzV1SZ1e3tLU6n0OBeyXHaGeVKebf0V673HWt0T+/fwnu?=
+ =?us-ascii?Q?oR/p68g8WK2XndJMCgG7DlNLiSXhre6B+RMNGYhEYmXx4dki6pVRdp8KdV5Y?=
+ =?us-ascii?Q?BlsPxr1ErpVytpZwJWLYYNAHlEele9ZRlkE4fBtGUw5N9pEjYsRfWs3VKAa5?=
+ =?us-ascii?Q?WIa51EDlJPwCVNu2QevXzZqOvOlTZZoFLeL/HDGs0y8gKXRoRiBtYIXirIS+?=
+ =?us-ascii?Q?dulny1zahPMS0mUyxqoSIuxB2ebOm45s1165S37lyFCUr/D28q6lks4qaAyt?=
+ =?us-ascii?Q?GY329bblh6jUWXBsQex3qnHlanLSp92PRDLe4UmWaifusNwHVP9moKJXFOkp?=
+ =?us-ascii?Q?azyKWu2ZKii5yG7TbDSPJjqzSR/ZU5PUYaq+sFrXXxNGRTfBZfpMYIg8bljD?=
+ =?us-ascii?Q?CfLGA/lwzcwA4EEOC4zjkK24fadwmyI5nm2XQJheqRPFw4DanY8w6OdN8nXw?=
+ =?us-ascii?Q?KNZPlsJI8vuEJZEvVPn3pBRniw80LCSZ0g8Za5Cm9TH3Z1PIEuz44Yvhmlyj?=
+ =?us-ascii?Q?+/EAgZeyB2KsLfIyxrtMQJ1DL6J9Z59YfLDHeEARkV5m8iUBxPRKi2z0EaEl?=
+ =?us-ascii?Q?+ADZC62G8z6uQ0iQpdflmkZxsQX4xi70Sir5ZdoHgdk4siHgXwt/HIKp7AkN?=
+ =?us-ascii?Q?df9k7SGFA+KnLel0LZidSnC15vUPK0T2Qtfv2xhXct3inxUapQoXKZ6JLey0?=
+ =?us-ascii?Q?a78jTnD2bLYTYWINrAMiKAqxllzu5qplVhW+E6z2ShhEFX2fPYpsrxeRLETS?=
+ =?us-ascii?Q?ZTRIGPCgKbPwxEUTPG6A53VWU0VHw80DFNimNtykB4DKt4gdwD/CTx1plM/e?=
+ =?us-ascii?Q?QZp3D28oQ+c92N5b6vmNvMxS2FoS2dgYU6dM1l3FYysn2d8sHwUPXRZ8+/yx?=
+ =?us-ascii?Q?w/OM+xHlbx2rjm0WqbmwZFjokw/E7r/wvQPC22TtBd7gEb9bXtGaU0ic8T32?=
+ =?us-ascii?Q?xbvnhXpJQUIazlcOgg3FR80xwvb7YxJat9QuzOItggHUBfVooHflWJabxkY1?=
+ =?us-ascii?Q?zDIXtjwc/EWCQPBgnMBkFYif9FJWm6cuY6DqzIDkhfUzfyPzsM9U5G4KXDur?=
+ =?us-ascii?Q?dlCYV3wEnRjZIr90hStgk+3U4O14/oFtdqBswdlvXWrDm9ygqAwoWxbr7fuq?=
+ =?us-ascii?Q?E1QjB75T/Rf+TuBMU/dZmaAreolVHD9xYHBCaXHOVgIeANJG4trqyvo2TIVr?=
+ =?us-ascii?Q?Oj7O1rRDCXA96LfVjqBzOIB4X0EUts73loMufCIssmC3WSOT/XoUWll6lpV1?=
+ =?us-ascii?Q?2Xxm4uHcsA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7bba8f71-30fc-4eec-d353-08da4a253b17
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2022 14:34:59.4040
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xvN/kLK96fxp7z4+YE+LBiEIl+hCobc1VQMgjSMew95ihSbJuF8BCEoHzFOXkZLKjTuztMrmmGgOug9jP6PJHw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5885
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 02:50:20PM +0200, David Hildenbrand wrote:
-> On 08.06.22 17:02, Matthew Wilcox (Oracle) wrote:
-> > diff --git a/Documentation/filesystems/locking.rst b/Documentation/filesystems/locking.rst
-> > index c0fe711f14d3..3d28b23676bd 100644
-> > --- a/Documentation/filesystems/locking.rst
-> > +++ b/Documentation/filesystems/locking.rst
-> > @@ -253,7 +253,8 @@ prototypes::
-> >  	void (*free_folio)(struct folio *);
-> >  	int (*direct_IO)(struct kiocb *, struct iov_iter *iter);
-> >  	bool (*isolate_page) (struct page *, isolate_mode_t);
-> > -	int (*migratepage)(struct address_space *, struct page *, struct page *);
-> > +	int (*migrate_folio)(struct address_space *, struct folio *dst,
-> > +			struct folio *src, enum migrate_mode);
-> >  	void (*putback_page) (struct page *);
-> 
-> isolate_page/putback_page are leftovers from the previous patch, no?
+In order to replace the fsl,scu txt file from bindings/arm/freescale,
+we need to split it between the right subsystems. This patch documents
+separately the 'power controller' child node of the SCU main node.
 
-Argh, right, I completely forgot I needed to update the documentation in
-that patch.
+Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+---
+ .../devicetree/bindings/power/fsl,scu-pd.yaml | 34 +++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/power/fsl,scu-pd.yaml
 
-> > +++ b/Documentation/vm/page_migration.rst
-> > @@ -181,22 +181,23 @@ which are function pointers of struct address_space_operations.
-> >     Once page is successfully isolated, VM uses page.lru fields so driver
-> >     shouldn't expect to preserve values in those fields.
-> >  
-> > -2. ``int (*migratepage) (struct address_space *mapping,``
-> > -|	``struct page *newpage, struct page *oldpage, enum migrate_mode);``
-> > -
-> > -   After isolation, VM calls migratepage() of driver with the isolated page.
-> > -   The function of migratepage() is to move the contents of the old page to the
-> > -   new page
-> > -   and set up fields of struct page newpage. Keep in mind that you should
-> > -   indicate to the VM the oldpage is no longer movable via __ClearPageMovable()
-> > -   under page_lock if you migrated the oldpage successfully and returned
-> > -   MIGRATEPAGE_SUCCESS. If driver cannot migrate the page at the moment, driver
-> > -   can return -EAGAIN. On -EAGAIN, VM will retry page migration in a short time
-> > -   because VM interprets -EAGAIN as "temporary migration failure". On returning
-> > -   any error except -EAGAIN, VM will give up the page migration without
-> > -   retrying.
-> > -
-> > -   Driver shouldn't touch the page.lru field while in the migratepage() function.
-> > +2. ``int (*migrate_folio) (struct address_space *mapping,``
-> > +|	``struct folio *dst, struct folio *src, enum migrate_mode);``
-> > +
-> > +   After isolation, VM calls the driver's migrate_folio() with the
-> > +   isolated folio.  The purpose of migrate_folio() is to move the contents
-> > +   of the source folio to the destination folio and set up the fields
-> > +   of destination folio.  Keep in mind that you should indicate to the
-> > +   VM the source folio is no longer movable via __ClearPageMovable()
-> > +   under folio if you migrated the source successfully and returned
-> > +   MIGRATEPAGE_SUCCESS.  If driver cannot migrate the folio at the
-> > +   moment, driver can return -EAGAIN. On -EAGAIN, VM will retry folio
-> > +   migration in a short time because VM interprets -EAGAIN as "temporary
-> > +   migration failure".  On returning any error except -EAGAIN, VM will
-> > +   give up the folio migration without retrying.
-> > +
-> > +   Driver shouldn't touch the folio.lru field while in the migrate_folio()
-> > +   function.
-> >  
-> >  3. ``void (*putback_page)(struct page *);``
-> 
-> Hmm, here it's a bit more complicated now, because we essentially have
-> two paths: LRU+migrate_folio or !LRU+movable_ops
-> (isolate/migrate/putback page)
-
-Oh ... actually, this is just documenting the driver side of things.
-I don't really like how it's written.  Here, have some rewritten
-documentation (which is now part of the previous patch):
-
-+++ b/Documentation/vm/page_migration.rst
-@@ -152,110 +152,15 @@ Steps:
- Non-LRU page migration
- ======================
-
--Although migration originally aimed for reducing the latency of memory accesses
--for NUMA, compaction also uses migration to create high-order pages.
-+Although migration originally aimed for reducing the latency of memory
-+accesses for NUMA, compaction also uses migration to create high-order
-+pages.  For compaction purposes, it is also useful to be able to move
-+non-LRU pages, such as zsmalloc and virtio-balloon pages.
-
--Current problem of the implementation is that it is designed to migrate only
--*LRU* pages. However, there are potential non-LRU pages which can be migrated
--in drivers, for example, zsmalloc, virtio-balloon pages.
--
--For virtio-balloon pages, some parts of migration code path have been hooked
--up and added virtio-balloon specific functions to intercept migration logics.
--It's too specific to a driver so other drivers who want to make their pages
--movable would have to add their own specific hooks in the migration path.
--
--To overcome the problem, VM supports non-LRU page migration which provides
--generic functions for non-LRU movable pages without driver specific hooks
--in the migration path.
--
--If a driver wants to make its pages movable, it should define three functions
--which are function pointers of struct address_space_operations.
--
--1. ``bool (*isolate_page) (struct page *page, isolate_mode_t mode);``
--
--   What VM expects from isolate_page() function of driver is to return *true*
--   if driver isolates the page successfully. On returning true, VM marks the page
--   as PG_isolated so concurrent isolation in several CPUs skip the page
--   for isolation. If a driver cannot isolate the page, it should return *false*.
--
--   Once page is successfully isolated, VM uses page.lru fields so driver
--   shouldn't expect to preserve values in those fields.
--
--2. ``int (*migratepage) (struct address_space *mapping,``
--|      ``struct page *newpage, struct page *oldpage, enum migrate_mode);``
--
--   After isolation, VM calls migratepage() of driver with the isolated page.
--   The function of migratepage() is to move the contents of the old page to the
--   new page
--   and set up fields of struct page newpage. Keep in mind that you should
--   indicate to the VM the oldpage is no longer movable via __ClearPageMovable()
--   under page_lock if you migrated the oldpage successfully and returned
--   MIGRATEPAGE_SUCCESS. If driver cannot migrate the page at the moment, driver
--   can return -EAGAIN. On -EAGAIN, VM will retry page migration in a short time
--   because VM interprets -EAGAIN as "temporary migration failure". On returning
--   any error except -EAGAIN, VM will give up the page migration without
--   retrying.
--
--   Driver shouldn't touch the page.lru field while in the migratepage() function.
--
--3. ``void (*putback_page)(struct page *);``
--
--   If migration fails on the isolated page, VM should return the isolated page
--   to the driver so VM calls the driver's putback_page() with the isolated page.
--   In this function, the driver should put the isolated page back into its own data
--   structure.
--
--Non-LRU movable page flags
--
--   There are two page flags for supporting non-LRU movable page.
--
--   * PG_movable
--
--     Driver should use the function below to make page movable under page_lock::
--
--       void __SetPageMovable(struct page *page, struct address_space *mapping)
--
--     It needs argument of address_space for registering migration
--     family functions which will be called by VM. Exactly speaking,
--     PG_movable is not a real flag of struct page. Rather, VM
--     reuses the page->mapping's lower bits to represent it::
--
--       #define PAGE_MAPPING_MOVABLE 0x2
--       page->mapping = page->mapping | PAGE_MAPPING_MOVABLE;
--
--     so driver shouldn't access page->mapping directly. Instead, driver should
--     use page_mapping() which masks off the low two bits of page->mapping under
--     page lock so it can get the right struct address_space.
--
--     For testing of non-LRU movable pages, VM supports __PageMovable() function.
--     However, it doesn't guarantee to identify non-LRU movable pages because
--     the page->mapping field is unified with other variables in struct page.
--     If the driver releases the page after isolation by VM, page->mapping
--     doesn't have a stable value although it has PAGE_MAPPING_MOVABLE set
--     (look at __ClearPageMovable). But __PageMovable() is cheap to call whether
--     page is LRU or non-LRU movable once the page has been isolated because LRU
--     pages can never have PAGE_MAPPING_MOVABLE set in page->mapping. It is also
--     good for just peeking to test non-LRU movable pages before more expensive
--     checking with lock_page() in pfn scanning to select a victim.
--
--     For guaranteeing non-LRU movable page, VM provides PageMovable() function.
--     Unlike __PageMovable(), PageMovable() validates page->mapping and
--     mapping->a_ops->isolate_page under lock_page(). The lock_page() prevents
--     sudden destroying of page->mapping.
--
--     Drivers using __SetPageMovable() should clear the flag via
--     __ClearMovablePage() under page_lock() before the releasing the page.
--
--   * PG_isolated
--
--     To prevent concurrent isolation among several CPUs, VM marks isolated page
--     as PG_isolated under lock_page(). So if a CPU encounters PG_isolated
--     non-LRU movable page, it can skip it. Driver doesn't need to manipulate the
--     flag because VM will set/clear it automatically. Keep in mind that if the
--     driver sees a PG_isolated page, it means the page has been isolated by the
--     VM so it shouldn't touch the page.lru field.
--     The PG_isolated flag is aliased with the PG_reclaim flag so drivers
--     shouldn't use PG_isolated for its own purposes.
-+If a driver wants to make its pages movable, it should define a struct
-+movable_operations.  It then needs to call __SetPageMovable() on each
-+page that it may be able to move.  This uses the ``page->mapping`` field,
-+so this field is not available for the driver to use for other purposes.
-
- Monitoring Migration
- =====================
-@@ -286,3 +191,5 @@ THP_MIGRATION_FAIL and PGMIGRATE_FAIL to increase.
-
- Christoph Lameter, May 8, 2006.
- Minchan Kim, Mar 28, 2016.
+diff --git a/Documentation/devicetree/bindings/power/fsl,scu-pd.yaml b/Documentation/devicetree/bindings/power/fsl,scu-pd.yaml
+new file mode 100644
+index 000000000000..b7d76bb25016
+--- /dev/null
++++ b/Documentation/devicetree/bindings/power/fsl,scu-pd.yaml
+@@ -0,0 +1,34 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/power/fsl,scu-pd.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+.. kernel-doc:: include/linux/migrate.h
-+++ b/include/linux/migrate.h
-@@ -19,6 +19,43 @@ struct migration_target_control;
-  */
- #define MIGRATEPAGE_SUCCESS            0
-
-+/**
-+ * struct movable_operations - Driver page migration
-+ * @isolate_page:
-+ * The VM calls this function to prepare the page to be moved.  The page
-+ * is locked and the driver should not unlock it.  The driver should
-+ * return ``true`` if the page is movable and ``false`` if it is not
-+ * currently movable.  After this function returns, the VM uses the
-+ * page->lru field, so the driver must preserve any information which
-+ * is usually stored here.
-+ *
-+ * @migrate_page:
-+ * After isolation, the VM calls this function with the isolated
-+ * @src page.  The driver should copy the contents of the
-+ * @src page to the @dst page and set up the fields of @dst page.
-+ * Both pages are locked.
-+ * If page migration is successful, the driver should call
-+ * __ClearPageMovable(@src) and return MIGRATEPAGE_SUCCESS.
-+ * If the driver cannot migrate the page at the moment, it can return
-+ * -EAGAIN.  The VM interprets this as a temporary migration failure and
-+ * will retry it later.  Any other error value is a permanent migration
-+ * failure and migration will not be retried.
-+ * The driver shouldn't touch the @src->lru field while in the
-+ * migrate_page() function.  It may write to @dst->lru.
-+ *
-+ * @putback_page:
-+ * If migration fails on the isolated page, the VM informs the driver
-+ * that the page is no longer a candidate for migration by calling
-+ * this function.  The driver should put the isolated page back into
-+ * its own data structure.
-+ */
-+struct movable_operations {
-+       bool (*isolate_page)(struct page *, isolate_mode_t);
-+       int (*migrate_page)(struct page *dst, struct page *src,
-+                       enum migrate_mode);
-+       void (*putback_page)(struct page *);
-+};
++title: i.MX SCU Client Device Node - Power domain bindings based on SCU Message Protocol
 +
- /* Defined in mm/debug.c: */
- extern const char *migrate_reason_names[MR_TYPES];
-
-
-
++maintainers:
++  - Dong Aisheng <aisheng.dong@nxp.com>
++
++description: i.MX SCU Client Device Node
++  Client nodes are maintained as children of the relevant IMX-SCU device node.
++  Power domain bindings based on SCU Message Protocol
++
++allOf:
++  - $ref: /schemas/power/power-domain.yaml
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - fsl,imx8qm-scu-pd
++          - fsl,imx8qxp-scu-pd
++      - const: fsl,scu-pd
++
++  '#power-domain-cells':
++    const: 1
++
++required:
++  - compatible
++  - '#power-domain-cells'
++
++additionalProperties: false
+-- 
+2.34.3
 
