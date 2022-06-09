@@ -2,123 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B43DCCA480
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D3B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344799AbiFIQh7 (ORCPT
+        id S1344810AbiFIQj1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 12:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45028 "EHLO
+        Thu, 9 Jun 2022 12:39:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244063AbiFIQh5 (ORCPT
+        with ESMTP id S244751AbiFIQjZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 12:37:57 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE136994E6;
-        Thu,  9 Jun 2022 09:37:55 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 65EBB1FECD;
-        Thu,  9 Jun 2022 16:37:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654792674;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zfYT+PR9lXha9hYJlMd2oONaI1SUc3WGC1Bck/G8ec0=;
-        b=b2KEX6ZCINZeKoHTynlrz3FMDUbnVbIkotULQQM8wta+qakmo0wc5ILD3yfYynBGt8D1yz
-        HYV/+JhfacH7KcZ34tTxnGAMq0+073DU9INO4NM3aBmmmH1cmHo9hWrrTnPyGWxZmapSer
-        hIaGVqCWyAZ99ysi+fFP8RhgxxrPFtk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654792674;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zfYT+PR9lXha9hYJlMd2oONaI1SUc3WGC1Bck/G8ec0=;
-        b=Irv56z+I7t/5vmpdqARm0xsfrzoUND1o/lJUqjcW0uNId73f8zXP/st70yGmLiPVj3W5Qe
-        j8Fgd9g+H7+p0iCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E9F2713A8C;
-        Thu,  9 Jun 2022 16:37:53 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id sFfPN+EhomK4KAAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Thu, 09 Jun 2022 16:37:53 +0000
-Date:   Thu, 9 Jun 2022 18:33:23 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-aio@kvack.org,
-        linux-btrfs@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, cluster-devel@redhat.com,
-        linux-mm@kvack.org, linux-xfs@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
-        ocfs2-devel@oss.oracle.com, linux-mtd@lists.infradead.org,
-        virtualization@lists.linux-foundation.org,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v2 12/19] btrfs: Convert btrfs_migratepage to
- migrate_folio
-Message-ID: <20220609163323.GV20633@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-aio@kvack.org,
-        linux-btrfs@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, cluster-devel@redhat.com,
-        linux-mm@kvack.org, linux-xfs@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
-        ocfs2-devel@oss.oracle.com, linux-mtd@lists.infradead.org,
-        virtualization@lists.linux-foundation.org,
-        Christoph Hellwig <hch@lst.de>
-References: <20220608150249.3033815-1-willy@infradead.org>
- <20220608150249.3033815-13-willy@infradead.org>
+        Thu, 9 Jun 2022 12:39:25 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF03261808;
+        Thu,  9 Jun 2022 09:39:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654792764; x=1686328764;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=p8iFJ3QnHLXyV0XBD0xEpbKqckLKd6ENyKoogA15bwk=;
+  b=ZE0zH0AwoD051GX3JFHfAyt7gRcGwpbN2F/vf+pEctcvY26kpAKFDfAr
+   KE8EVJTygEjxbiYsukuFc/3U1HgYWaxt8adrLpjj+hJZvWmzqJXWwCmXe
+   UUnMAukd6BIihnd8aNicpf5kDMU2zgWQPpeQnJYeqd1ma0/tsVuM2uvmg
+   s=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 09 Jun 2022 09:39:24 -0700
+X-QCInternal: smtphost
+Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 09:39:22 -0700
+Received: from quicinc.com (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 9 Jun 2022
+ 09:39:22 -0700
+Date:   Thu, 9 Jun 2022 09:39:20 -0700
+From:   Guru Das Srinagesh <quic_gurus@quicinc.com>
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+CC:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <wens@csie.org>,
+        <jic23@kernel.org>, <lee.jones@linaro.org>, <sre@kernel.org>,
+        <broonie@kernel.org>, <gregkh@linuxfoundation.org>,
+        <lgirdwood@gmail.com>, <lars@metafoo.de>, <rafael@kernel.org>,
+        <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>
+Subject: Re: [PATCH v2 01/17] regmap-irq: Use sub_irq_reg() to calculate
+ unmask register address
+Message-ID: <20220609163920.GA7420@quicinc.com>
+References: <20220607155324.118102-1-aidanmacdonald.0x0@gmail.com>
+ <20220607155324.118102-2-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220608150249.3033815-13-willy@infradead.org>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <20220607155324.118102-2-aidanmacdonald.0x0@gmail.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 04:02:42PM +0100, Matthew Wilcox (Oracle) wrote:
-> Use filemap_migrate_folio() to do the bulk of the work, and then copy
-> the ordered flag across if needed.
-> 
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
+On Tue, Jun 07, 2022 at 04:53:08PM +0100, Aidan MacDonald wrote:
+> Call sub_irq_reg() instead of calculating the offset of the register
+> to avoid relying on the fact that sub_irq_reg() is a linear function.
 
-Acked-by: David Sterba <dsterba@suse.com>
+Seems like unmask_reg is the only register whose address is not calculated
+using sub_irq_reg(). Switching to using sub_irq_reg() will bring it in line
+with the other calculations.
 
-> +static int btrfs_migrate_folio(struct address_space *mapping,
-> +			     struct folio *dst, struct folio *src,
->  			     enum migrate_mode mode)
->  {
-> -	int ret;
-> +	int ret = filemap_migrate_folio(mapping, dst, src, mode);
->  
-> -	ret = migrate_page_move_mapping(mapping, newpage, page, 0);
->  	if (ret != MIGRATEPAGE_SUCCESS)
->  		return ret;
->  
-> -	if (page_has_private(page))
-> -		attach_page_private(newpage, detach_page_private(page));
+Could you please incorporate this info in your commit message as well? This
+should be the rationale for this change; that it allows for the get_irq_reg()
+patch should be secondary.
 
-If I'm reading it correctly, the private pointer does not need to be set
-like that anymore because it's done somewhere during the
-filemap_migrate_folio() call.
+The change seems okay to me, but I'd ideally like someone to pick this up and
+test it out just to make sure it doesn't break existing behaviour for them.
 
-> -
-> -	if (PageOrdered(page)) {
-> -		ClearPageOrdered(page);
-> -		SetPageOrdered(newpage);
-> +	if (folio_test_ordered(src)) {
-> +		folio_clear_ordered(src);
-> +		folio_set_ordered(dst);
->  	}
+Thank you.
+
+Guru Das.
