@@ -2,88 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C3CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D67CCA473
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:22:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345384AbiFISVR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 14:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47904 "EHLO
+        id S239797AbiFISWL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 14:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344091AbiFISVJ (ORCPT
+        with ESMTP id S232000AbiFISWI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 14:21:09 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DD83D489
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 11:21:07 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id i1so20877514plg.7
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 11:21:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sohamsen-me.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=B9RF4GfJpLOSChLP69/9v/27AKPLXtsI2HPRFnCkmaU=;
-        b=tdBT48G+TG4Dn6DuFoq587bfuOUoUSpyOGgjX4mp9zgApFfRSu8l0nI5/Wfvz14Ey7
-         FUqAmZXE2OzN9JrSsWhlm20HOVjBcq3VgbGZMaM6IptI4VSZCfPOsV160m4cdk/XM70p
-         mXZAqXRJgZELUwYt/KO1PYR1eFEXMIIGfH28O/rMMSuKyOIlcdpvkP2G5PmI5YCCDDoF
-         47Mxfy+dcWUVtRfdeavAplqTxhS3AFfA4eAFp3DJme8+9vFI9/OADdaKATBlmHfTi2CP
-         fpNdE49qL7SghMpKLbVD8Ge5cEkSrz31yw1MK9QLqiTTjSZSnLZyvv2oOfn5b3LIumAc
-         nJ3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=B9RF4GfJpLOSChLP69/9v/27AKPLXtsI2HPRFnCkmaU=;
-        b=O9Re8O4qgGuIQm/ysWcWOlEBNQP6hAA5TmAEYY6jJdaJdVmwETTw9Nfq042gdPXScG
-         Y1IkG7vze16mv93MhBjAiWgO5+mu0uwTz0kmItxd7NmfsreSu+mU3lHFGJhE+UuJz8iY
-         +93gDKCsj/+DSZl2wwsr8OUKY4rq/rgwVOkqdLtKwpZlyxCZlgmMQHRMpFFmo8EiXuaC
-         S3ZnVJfbmNgN6McNUdJVjWzNM00fFUlpkbL/zKPIZovtNZwfTIAYro0gsPcae4qvO8ba
-         Mn4cN4u42nVBrfhsc6E0c9IWSo2GL/IbjKLud5uJhPb8JGab5JCc9EPyqX16qak/Qd/p
-         Tbzg==
-X-Gm-Message-State: AOAM532jBNXEi+bTTpxj+Qg7QpM3XwRlXQWqtzRLpEVIfUod8n+tA28q
-        AP8xsypjSvsmxXh26stzI5iHlA==
-X-Google-Smtp-Source: ABdhPJzrWPmA6aBJOj5hl9GBv4dVZQHWUYcE1nNAoieI6W6+s2CO85bmOAeu91zcppNDITHvs79ZQw==
-X-Received: by 2002:a17:90a:7349:b0:1dc:9314:8699 with SMTP id j9-20020a17090a734900b001dc93148699mr4674464pjs.184.1654798867227;
-        Thu, 09 Jun 2022 11:21:07 -0700 (PDT)
-Received: from localhost.localdomain ([202.173.126.209])
-        by smtp.gmail.com with ESMTPSA id ja13-20020a170902efcd00b00168adae4eb2sm1497646plb.262.2022.06.09.11.21.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 11:21:06 -0700 (PDT)
-From:   contact@sohamsen.me
-To:     tiwai@suse.com, perex@perex.cz
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Soham Sen <contact@sohamsen.me>
-Subject: [PATCH] ALSA: hda/realtek: Add mute LED quirk for HP Omen laptop
-Date:   Thu,  9 Jun 2022 23:49:20 +0530
-Message-Id: <20220609181919.45535-1-contact@sohamsen.me>
-X-Mailer: git-send-email 2.36.1
+        Thu, 9 Jun 2022 14:22:08 -0400
+X-Greylist: delayed 137 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 09 Jun 2022 11:22:06 PDT
+Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E85F6261808;
+        Thu,  9 Jun 2022 11:22:06 -0700 (PDT)
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 259ILeBc006422;
+        Fri, 10 Jun 2022 03:21:41 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 259ILeBc006422
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1654798902;
+        bh=LJxtddDBXsjMYUL3pGSS5tmHKgRvI6z/bgDNxm6WRn8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=pw51riWI/3vLXCmz12G2F1QJdPsdTMrSqhRVxYQU6LSvhqG/LUcbMb3ZIOT9xaYpI
+         l+MNI0bLP1T10yifBY4DSSJgfWTXTC8Rl/aA1OCKSmLmqHK+lwbZXLPlevo/m4/g92
+         sa+FceO6TPtq/wUrVer2rh8TNb1OkDXy/0Ws2u6B5Tg0zqyM6iCpR6xFZtqLDrOHv8
+         TXa6dbasMOC2BVIElR4H86jcOSf7F6yUezSZGyXi1mtfsd575VHEFMGMwkG97xUy/V
+         7C6foJVZdT75BxqvoYQ5Hoqj3yLzMTt5H1W2RXfCL+MnfSepYrqjApLQGJtyd/Pssy
+         vKNkUGqNg5BGQ==
+X-Nifty-SrcIP: [209.85.221.54]
+Received: by mail-wr1-f54.google.com with SMTP id a15so25004389wrh.2;
+        Thu, 09 Jun 2022 11:21:41 -0700 (PDT)
+X-Gm-Message-State: AOAM533Zft/cbv58hS6qi1gJAGnIicbqeijlOKoufZj8VD2N46gp1dHm
+        1uqvg/SM1+zAfslJ2n3qzASGijitWUVlOJz8TkQ=
+X-Google-Smtp-Source: ABdhPJxaWmtRJLw5nnCMAcH4th8qdNiNm5VSCrjWi029K8m8/ByjE9CXdA0nfBaA2HBFVO9hj8duYh0pZONdMUuQV+s=
+X-Received: by 2002:a5d:584f:0:b0:219:e106:3e02 with SMTP id
+ i15-20020a5d584f000000b00219e1063e02mr1818472wrf.461.1654798900049; Thu, 09
+ Jun 2022 11:21:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <165451871967.1941436.17828809503267245815.stgit@warthog.procyon.org.uk>
+ <CAK7LNAS-0kQOvt=7TNn0osf9JO5hZhSp9PaFFBsSx++2Pevc9g@mail.gmail.com>
+ <22a067fe-795f-d3ae-fac6-7baa75393349@digikod.net> <75918f49-5670-766a-09a2-f29aef95f2ca@digikod.net>
+In-Reply-To: <75918f49-5670-766a-09a2-f29aef95f2ca@digikod.net>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 10 Jun 2022 03:21:03 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQKRK9e6=ND8o22YtV0mHs4OhH4qE49t4=UDLAgih+uEQ@mail.gmail.com>
+Message-ID: <CAK7LNAQKRK9e6=ND8o22YtV0mHs4OhH4qE49t4=UDLAgih+uEQ@mail.gmail.com>
+Subject: Re: [PATCH] certs: Convert spaces in certs/Makefile to a tab
+To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
+Cc:     David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Soham Sen <contact@sohamsen.me>
+On Fri, Jun 10, 2022 at 2:17 AM Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> =
+wrote:
+>
+>
+>
+> On 09/06/2022 19:12, Micka=C3=ABl Sala=C3=BCn wrote:
+> >
+> > On 06/06/2022 18:49, Masahiro Yamada wrote:
+> >> On Mon, Jun 6, 2022 at 9:32 PM David Howells <dhowells@redhat.com> wro=
+te:
+> >>>
+> >>> There's a rule in certs/Makefile for which the command begins with ei=
+ght
+> >>> spaces.  This results in:
+> >>>
+> >>>          ../certs/Makefile:21: FORCE prerequisite is missing
+> >>>          ../certs/Makefile:21: *** missing separator.  Stop.
+> >>>
+> >>> Fix this by turning the spaces into a tab.
+> >>>
+> >>> Fixes: addf466389d9 ("certs: Check that builtin blacklist hashes are
+> >>> valid")
+> >>> Signed-off-by: David Howells <dhowells@redhat.com>
+> >>> cc: Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
+> >>> cc: Jarkko Sakkinen <jarkko@kernel.org>
+> >>> cc: keyrings@vger.kernel.org
+> >>
+> >>
+> >> Not only 8-space indentation, but also:
+> >>
+> >>    - config_filename does not exist
+> >>    - $(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX) is always empty
+> >>    - $(SYSTEM_BLACKLIST_HASH_LIST_FILENAME) is always empty
+> >
+> > These are imported helpers (not only used for this hash list BTW), henc=
+e
+> > not defined in this Makefile.
+>
+> Well, they were defined in scripts/Kbuild.include but they are gone
+> since your commit b8c96a6b466c ("certs: simplify $(srctree)/ handling
+> and remove config_filename macro").
+>
+> I guess it just happens during the merge. We need to fix that.
+>
 
-The HP Omen 15 laptop needs a quirk to toggle the mute LED. It already is implemented for a different variant of the HP Omen laptop so a fixup entry is needed for this variant.
 
-Signed-off-by: Soham Sen <contact@sohamsen.me>
----
- sound/pci/hda/patch_realtek.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index f3ad454b3..495b919bf 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9010,6 +9010,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
- 	SND_PCI_QUIRK(0x103c, 0x8783, "HP ZBook Fury 15 G7 Mobile Workstation",
- 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
-+	SND_PCI_QUIRK(0x103c, 0x8787, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8788, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x87c8, "HP", ALC287_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x87e5, "HP ProBook 440 G8 Notebook PC", ALC236_FIXUP_HP_GPIO_LED),
--- 
-2.36.1
 
+Right, it seems your patch was flying for a long time.
+
+
+
+
+
+$ git show --pretty=3Dfuller   addf466389d9d78f255e8b15ac44ab4791029852
+commit addf466389d9d78f255e8b15ac44ab4791029852
+Author:     Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
+AuthorDate: Mon Jul 12 19:03:10 2021 +0200
+Commit:     Jarkko Sakkinen <jarkko@kernel.org>
+CommitDate: Mon May 23 18:47:49 2022 +0300
+
+    certs: Check that builtin blacklist hashes are valid
+
+
+
+
+It was committed 8 months after the patch submission.
+
+The base code changed during the gap.
+
+
+
+
+--
+Best Regards
+Masahiro Yamada
