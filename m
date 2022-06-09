@@ -2,102 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4F88C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 22:14:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EEE4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 22:16:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244963AbiFIWOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 18:14:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56244 "EHLO
+        id S236604AbiFIWQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 18:16:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235102AbiFIWOh (ORCPT
+        with ESMTP id S233876AbiFIWQy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 18:14:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F55160874;
-        Thu,  9 Jun 2022 15:14:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3815CB83099;
-        Thu,  9 Jun 2022 22:14:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8990C34114;
-        Thu,  9 Jun 2022 22:14:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654812873;
-        bh=H+jLa2rwFapf2Ofk7AqrjLvwyTI2J1EztZNbf9m0syw=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=lEkzbE74y9VKqlOW0aCd+63moxuAPWhVC79dtjZKcpDjP2CRWzAAn1OkGvueerRvC
-         uKlPdp3ZxGJvAawBGHgNz662O022+tnX3ZLy1mx59fK/rwUkh9iDvjDUZLklKVXsrN
-         DiQ4w4Bb/F4Xo97a/Vx7bWD8fQ4LJlqO14LgGrw1qnv4QF/YdnTk72CyZj2mnsxxf2
-         EtfozD9ebbjzLFpM4ySgwRi5zvaCkdec6M/6KuRO16wR3JBPZKCE+SApPXydGqnTSC
-         AC6wSbgTqzA+2amQpeJy45P4jzzzHFCJQHj0VzugzGD23C+85wURnohiar8RROZIkN
-         d5f4f7R5rpLVw==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220608095623.22327-8-tmaimon77@gmail.com>
-References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-8-tmaimon77@gmail.com>
-Subject: Re: [PATCH v2 07/20] clk: npcm8xx: add clock controller
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Tomer Maimon <tmaimon77@gmail.com>
-To:     Tomer Maimon <tmaimon77@gmail.com>, arnd@arndb.de,
-        avifishman70@gmail.com, benjaminfair@google.com,
-        biju.das.jz@bp.renesas.com, bjorn.andersson@linaro.org,
-        catalin.marinas@arm.com, daniel.lezcano@linaro.org,
-        geert+renesas@glider.be, gregkh@linuxfoundation.org,
-        j.neuschaefer@gmx.net, jirislaby@kernel.org, joel@jms.id.au,
-        krzysztof.kozlowski+dt@linaro.org, linux@roeck-us.net,
-        lkundrak@v3.sk, marcel.ziswiler@toradex.com,
-        mturquette@baylibre.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        olof@lixom.net, p.zabel@pengutronix.de, robert.hancock@calian.com,
-        robh+dt@kernel.org, shawnguo@kernel.org, tali.perry1@gmail.com,
-        tglx@linutronix.de, venture@google.com, vkoul@kernel.org,
-        will@kernel.org, wim@linux-watchdog.org, yuenn@google.com
-Date:   Thu, 09 Jun 2022 15:14:31 -0700
-User-Agent: alot/0.10
-Message-Id: <20220609221433.B8990C34114@smtp.kernel.org>
+        Thu, 9 Jun 2022 18:16:54 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437CB1203EB
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 15:16:52 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id c2-20020a25a2c2000000b0066288641421so15477792ybn.14
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 15:16:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=a7HKcIF+i0T4+qY1S/nBDjlBN8LZbn3HajfMjAd6pgE=;
+        b=myr+KdqGBf+8fU62rrrc6vdWLC4zQ+EyY6QFdgZ42GfmTyENhLo1IAw3h2RNkQhUwn
+         0XIlmFI5we6dPTmcL5OoVRYkNlg1LkiEp4m7TTvZUlR6ue+fe982BLupBD9KlWv7xdeq
+         tEyC52lTuBzUzYKgufcIPK7Ci1BaDygPGjKQT8u6/zm5afnc2zO7GbJDlDaelSa5C9I6
+         m1gTG8o78bI6STaoseXyxF12CneUqy+nHYwCQMj9r7YNbTeNrJ/xKj0EQk+nA9+z1UEj
+         WUT+SwL4WoBwN+LsZ0RrnI0mPP8hfuMvwOWrNlfSbRwkDqmNF92nH57ZSUm5tqv4Qcz4
+         Lc7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=a7HKcIF+i0T4+qY1S/nBDjlBN8LZbn3HajfMjAd6pgE=;
+        b=CvDLjylZgUzt3ryIQVpATFsKvvB7Wjqc9zY1lI2EiHnvntDHh9xCvKBrKAfB5gJHvV
+         T5dqn+UZhNzDWotc0+mTbM2I/QiUIMZtmgLJmV81JIaxjSgk22eWt+cHWTOtPUpcHOEU
+         mqELH8WkVFe2N3zbXzeYKmVrQbWl3qRxtWR4a2V3eRDDTE9XQxaDt5xHzK5YjIVWjKmb
+         qZivViC5+W7066FhwFY4lm3pSXBaRgTVe4Fg6+bseowNFRN0E73ILj0vvqQReoLv81m/
+         AN/EGAJ4aVJ7kwQEVowWtJ4joc9wpAqE9OjOoHACsa/xTaaGTlpCQUYgv/LxfWuyQnqB
+         AmzA==
+X-Gm-Message-State: AOAM531jkRPIjgYF+WCH3tgpsNP4RE7itRudIeUgn5zZCHaMM/nhZQFE
+        KzrkiYUdEi4j7FhPnTO+LdHcTpNJkIQTtw==
+X-Google-Smtp-Source: ABdhPJxssTaeezzS7wEt6X3VKCQoaymqGu0EUoWOB6KOG9bWlT0i99Upi+R4v9esUZodWYU8smo6tDC44wMwrQ==
+X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:28b])
+ (user=shakeelb job=sendgmr) by 2002:a25:2003:0:b0:663:e799:4ab5 with SMTP id
+ g3-20020a252003000000b00663e7994ab5mr13476183ybg.403.1654813011398; Thu, 09
+ Jun 2022 15:16:51 -0700 (PDT)
+Date:   Thu, 9 Jun 2022 22:16:47 +0000
+In-Reply-To: <YqJulJzLKVQ6xn88@carbon>
+Message-Id: <20220609221647.lqxljj4wlb6mcuvr@google.com>
+Mime-Version: 1.0
+References: <CA+G9fYv7fESqpGoeKmHoJsst6wfRNMi2wQLGm+PsjbLDuDjdMQ@mail.gmail.com>
+ <CA+G9fYsJThWFAxXTbAcJmjshx+oYxVVd+gMM680hS0X1z37+FQ@mail.gmail.com>
+ <YqItYKEIvsw4Yzjx@carbon> <CALvZod6ojDd8Bc0VcyFEk-ZrdkFezvQPUvbGg3wyzae+NOp_4A@mail.gmail.com>
+ <YqI0OYwNzxGo4XRo@carbon> <20220609191221.rv3lqbhipnvvzt67@google.com> <YqJulJzLKVQ6xn88@carbon>
+Subject: Re: [next] arm64: boot failed - next-20220606
+From:   Shakeel Butt <shakeelb@google.com>
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        regressions@lists.linux.dev, lkft-triage@lists.linaro.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Raghuram Thammiraju <raghuram.thammiraju@arm.com>,
+        Mark Brown <broonie@kernel.org>, Will Deacon <will@kernel.org>,
+        Vasily Averin <vvs@openvz.org>,
+        Qian Cai <quic_qiancai@quicinc.com>
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Tomer Maimon (2022-06-08 02:56:10)
-> diff --git a/drivers/clk/clk-npcm8xx.c b/drivers/clk/clk-npcm8xx.c
-> new file mode 100644
-> index 000000000000..40340c3611b5
-> --- /dev/null
-> +++ b/drivers/clk/clk-npcm8xx.c
-> @@ -0,0 +1,756 @@
-[...]
-> +
-> +#define PLLCON_LOKI    BIT(31)
-> +#define PLLCON_LOKS    BIT(30)
-> +#define PLLCON_FBDV    GENMASK(27, 16)
-> +#define PLLCON_OTDV2   GENMASK(15, 13)
-> +#define PLLCON_PWDEN   BIT(12)
-> +#define PLLCON_OTDV1   GENMASK(10, 8)
-> +#define PLLCON_INDV    GENMASK(5, 0)
-> +
-> +static unsigned long npcm8xx_clk_pll_recalc_rate(struct clk_hw *hw,
-> +                                                unsigned long parent_rat=
-e)
-> +{
-> +       struct npcm8xx_clk_pll *pll =3D to_npcm8xx_clk_pll(hw);
-> +       unsigned long fbdv, indv, otdv1, otdv2;
-> +       unsigned int val;
-> +       u64 ret;
-> +
-> +       if (parent_rate =3D=3D 0) {
-> +               pr_debug("%s: parent rate is zero", __func__);
+On Thu, Jun 09, 2022 at 03:05:08PM -0700, Roman Gushchin wrote:
+> On Thu, Jun 09, 2022 at 07:12:21PM +0000, Shakeel Butt wrote:
+> > On Thu, Jun 09, 2022 at 10:56:09AM -0700, Roman Gushchin wrote:
+> > > On Thu, Jun 09, 2022 at 10:47:35AM -0700, Shakeel Butt wrote:
+> > > > On Thu, Jun 9, 2022 at 10:27 AM Roman Gushchin <roman.gushchin@linux.dev> wrote:
+> > > > >
+> > > > [...]
+> > > > > +struct mem_cgroup *mem_cgroup_from_obj(void *p)
+> > > > > +{
+> > > > > +       struct folio *folio;
+> > > > > +
+> > > > > +       if (mem_cgroup_disabled())
+> > > > > +               return NULL;
+> > > > > +
+> > > > > +       if (unlikely(is_vmalloc_addr(p)))
+> > > > > +               folio = page_folio(vmalloc_to_page(p));
+> > > > 
+> > > > Do we need to check for NULL from vmalloc_to_page(p)?
+> > > 
+> > > Idk, can it realistically return NULL after is_vmalloc_addr() returned true?
+> > > I would be surprised, but maybe I'm missing something.
+> > 
+> > is_vmalloc_addr() is simply checking the range and some buggy caller can
+> > provide an unmapped address within the range. Maybe VM_BUG_ON() should
+> > be good enough (though no strong opinion either way).
+> 
+> No strong opinion here as well, but I think we don't have to be too defensive
+> here. Actually we'll know anyway, unlikely a null pointer dereference will be
+> unnoticed. And it's not different to calling mem_cgroup_from_obj() with some
+> random invalid address now.
+> 
 
-Missing newline.
-
-> +               return 0;
-> +       }
-> +
-> +       val =3D readl_relaxed(pll->pllcon);
-> +
-> +       indv =3D FIELD_GET(PLLCON_INDV, val);
+Sounds good. You can add my ack when you send the official version of
+the patch.
