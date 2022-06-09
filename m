@@ -2,92 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB544C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C86BEC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:57:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242844AbiFII5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34222 "EHLO
+        id S242186AbiFII5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:57:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242905AbiFII4a (ORCPT
+        with ESMTP id S242572AbiFII4a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 9 Jun 2022 04:56:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5B51E2898;
-        Thu,  9 Jun 2022 01:56:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47D27B82C7E;
-        Thu,  9 Jun 2022 08:56:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A46A2C3411E;
-        Thu,  9 Jun 2022 08:56:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654764969;
-        bh=Le8tPzoYYL2tORCuXImVySrfImcCUAxU8vy3RAykSlo=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=R/4IuUAssjcQ98itfPJK0iNCFfRUlw+3MZ/iZnTNJUF6bN6a7p13V/qoFv/jwApAX
-         /YO6GCcYRqM/tbR0tBPDr+1YKh4NDeZ8qLtv7BFGujHm+RE025u1xfGpC1hwInGhLe
-         eUXcK2L0oWQkAK4S2TbHbut+shw0flWC4Ei9HvNeKH23WR0D1C5UKjQ84CpOB68xZW
-         ch4xuqd/xD3wZV3KNTs48yLShwKN/LbpKWCIBaxFpQn9kbSGgCntRJwOmj30dI0Y+D
-         iPoZBt3+cmlONVICod7/BJgHSG/AmNRx2ylQ6nafDhKoGy7BM0xtUJN/LfZgsWO7sw
-         FL/J+dDESo7jA==
-Date:   Thu, 9 Jun 2022 10:55:57 +0200 (CEST)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-cc:     benjamin.tissoires@redhat.com, eudean@arista.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dan.carpenter@oracle.com
-Subject: Re: [PATCH] HID: cp2112: prevent a buffer overflow in
- cp2112_xfer()
-In-Reply-To: <20220608122609.70861-1-harshit.m.mogalapalli@oracle.com>
-Message-ID: <nycvar.YFH.7.76.2206091055490.14340@cbobk.fhfr.pm>
-References: <20220608122609.70861-1-harshit.m.mogalapalli@oracle.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 191761E7BE4
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:56:12 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id bg6so26312953ejb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 01:56:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=23ND4rIp28maicnbuFOnjfrniSOk7N5VAPPY+gIY+W4=;
+        b=rUKxy/Yy93wPG79xU9wyskibQe9IRoiZzJ2GgV7Rc+CT3nUoOk7M8yUvMIv1gGrLer
+         /FfOvsdp+vLpnspqkhm6sLxbl0Ulatox3je4BBcVUO+0SIHldW3ckm9KSFRutkz5bqPu
+         OgVhwwpirghDtgGAb9b5ks2MEM/mHCyZqys9tQNCs++Iq6Rrpx8WBoPMyeIzwKxI3U1G
+         pw0gHt2ffA7CyDg55fNSVtYsi/G7HbsuxYPirs8qqhF8zf3+2Gg58RXIH1v3T+H9UsB8
+         Y+GsCd22zC7QtvqDoBDwAJdWw9avWFaaXtI1Cv4CJ91rVTCviq5goUyebvXSaLosSzRa
+         9U2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=23ND4rIp28maicnbuFOnjfrniSOk7N5VAPPY+gIY+W4=;
+        b=aX0nWx/8ECYUdgs/dl/mTYRD0OsKiX/lycu46i2cK0m/33PoG9q0fqGzNgWqj6o8NM
+         JZ7NUlBnjnmQ28Vp0vaAgxQkUZE4PbmPemh2gSN8KWe7D7b68OExA+jXDFA/IFIeFeZQ
+         mWGlcrroZdS/maQQ0hVZDU0f3eu/0xFII6FngFuAhMvi88zp13GkW4bbooH5j4sYCvK4
+         nYJh7T+8Rd6VeXp0mLRLJRelzNMjElwk94XFyhJ9y0cL+Ym/ziE4tMGArbPNJj7mTETY
+         X3EIJLsiw74uMqNclG4dy5wcXLQLdC1moHhXUup2Wyzc3/4CXYyNwycsUV2JPs4b8jdw
+         ehiA==
+X-Gm-Message-State: AOAM533wMC0jjLHUvd2hzKlDbe60caeO+uFHgoGcgApzw9V+Cub5Ddd3
+        cjkONVME9n428PbRHt0jjJaCxA==
+X-Google-Smtp-Source: ABdhPJxT89yjhtXwg4++i7ECOHiVXc4PmOb6nuBXh9T0b6PTr4L1lJYk6J2tR702atACd/Yq//8x/w==
+X-Received: by 2002:a17:907:1c8f:b0:6e8:f898:63bb with SMTP id nb15-20020a1709071c8f00b006e8f89863bbmr36423455ejc.721.1654764970676;
+        Thu, 09 Jun 2022 01:56:10 -0700 (PDT)
+Received: from [192.168.0.195] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id q6-20020a1709060f8600b00711edab7622sm2819210ejj.40.2022.06.09.01.56.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 01:56:09 -0700 (PDT)
+Message-ID: <67079e6f-52f4-6e0d-bf53-f9feb63e28f6@linaro.org>
+Date:   Thu, 9 Jun 2022 10:56:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 00/11] dt-bindings/pinctrl/arm: qcom: minor cleanups of
+ QCOM PMIC pinctrl
+Content-Language: en-US
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Luca Weiss <luca@z3ntu.xyz>, David Heidelberg <david@ixit.cz>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>
+References: <20220507194913.261121-1-krzysztof.kozlowski@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220507194913.261121-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 8 Jun 2022, Harshit Mogalapalli wrote:
-
-> Smatch warnings:
-> drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy()
-> 'data->block[1]' too small (33 vs 255)
-> drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy() 'buf' too
-> small (64 vs 255)
+On 07/05/2022 21:49, Krzysztof Kozlowski wrote:
+> Hi,
 > 
-> The 'read_length' variable is provided by 'data->block[0]' which comes
-> from user and it(read_length) can take a value between 0-255. Add an
-> upper bound to 'read_length' variable to prevent a buffer overflow in
-> memcpy().
+> The patches are independent, so they can be picked up as is.
 > 
-> Fixes: 542134c0375b ("HID: cp2112: Fix I2C_BLOCK_DATA transactions")
-> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-> ---
->  drivers/hid/hid-cp2112.c | 5 +++++
->  1 file changed, 5 insertions(+)
+> Not really tested on hardware (except SDM845).
 > 
-> diff --git a/drivers/hid/hid-cp2112.c b/drivers/hid/hid-cp2112.c
-> index ece147d1a278..1e16b0fa310d 100644
-> --- a/drivers/hid/hid-cp2112.c
-> +++ b/drivers/hid/hid-cp2112.c
-> @@ -790,6 +790,11 @@ static int cp2112_xfer(struct i2c_adapter *adap, u16 addr,
->  		data->word = le16_to_cpup((__le16 *)buf);
->  		break;
->  	case I2C_SMBUS_I2C_BLOCK_DATA:
-> +		if (read_length > I2C_SMBUS_BLOCK_MAX) {
-> +			ret = -EINVAL;
-> +			goto power_normal;
-> +		}
-> +
->  		memcpy(data->block + 1, buf, read_length);
->  		break;
 
-Good catch, now applied. Thanks,
+Hi Bjorn,
+The pinctrl bindings part was applied. The DTS changes are waiting for
+you here.
 
--- 
-Jiri Kosina
-SUSE Labs
-
+Best regards,
+Krzysztof
