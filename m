@@ -2,31 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEFADC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1479BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:19:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345335AbiFISS7 (ORCPT
+        id S1345345AbiFISTC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 14:18:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36510 "EHLO
+        Thu, 9 Jun 2022 14:19:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233182AbiFISSz (ORCPT
+        with ESMTP id S1345317AbiFISSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 9 Jun 2022 14:18:55 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF143AE822
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 11:18:52 -0700 (PDT)
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D61B9CF17
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 11:18:51 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1654798731;
+        t=1654798730;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fO4jbpVApVQcfTPwx9gBa9O1ee1UTzsQG3M5HGLfNnA=;
-        b=Xa3doeBqLfHwMDbSeTb4ZiFXvBmIjIofPaa33n/qvrG/uWiPfuEdLm4uM0UENmXHeStFzI
-        05B2JyJIU0BKhPX6l1OEPU9ljfiSO4uJc8a8Ta+g8lK5davYDlg+I/F1PNsr9pOnGgg1I3
-        Or3TzC6G5wLjJyGaTo+AhgrnmvED5fw=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=EsGrAYAp6IJFxcDVn2/7Z4jT50O8LabBUCsC9BUqAmM=;
+        b=XNdLbz37TBFf1v0b6csPsvWj5sDWbvqbE7S1KwnxS4SfiEscQLGgb7f5GXJzS9M1Gfrm0u
+        tNERjdG7bv4iyPAyQkwUJmp5G6Q6965x/8gnLOV1CuT2rdkawheBHtlDCc/DurG82Y82fe
+        J9SQ+dLevT+gkykVqB7AQ/67U/n49os=
 From:   andrey.konovalov@linux.dev
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
@@ -37,11 +36,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         kasan-dev@googlegroups.com, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH v2 2/3] mm: introduce clear_highpage_kasan_tagged
-Date:   Thu,  9 Jun 2022 20:18:46 +0200
-Message-Id: <4471979b46b2c487787ddcd08b9dc5fedd1b6ffd.1654798516.git.andreyknvl@google.com>
-In-Reply-To: <1ecaffc0a9c1404d4d7cf52efe0b2dc8a0c681d8.1654798516.git.andreyknvl@google.com>
-References: <1ecaffc0a9c1404d4d7cf52efe0b2dc8a0c681d8.1654798516.git.andreyknvl@google.com>
+Subject: [PATCH v2 1/3] mm: rename kernel_init_free_pages to kernel_init_pages
+Date:   Thu,  9 Jun 2022 20:18:45 +0200
+Message-Id: <1ecaffc0a9c1404d4d7cf52efe0b2dc8a0c681d8.1654798516.git.andreyknvl@google.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Migadu-Flow: FLOW_OUT
@@ -52,63 +49,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Add a clear_highpage_kasan_tagged() helper that does clear_highpage()
-on a page potentially tagged by KASAN.
-
-This helper is used by the following patch.
+Rename kernel_init_free_pages() to kernel_init_pages(). This function is
+not only used for free pages but also for pages that were just allocated.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-
 ---
+ mm/page_alloc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Changes v1->v2:
-- Renamed clear_highpage_tagged() to clear_highpage_kasan_tagged().
-- Removed extra empty line in clear_highpage_kasan_tagged().
----
- include/linux/highmem.h | 10 ++++++++++
- mm/page_alloc.c         |  8 ++------
- 2 files changed, 12 insertions(+), 6 deletions(-)
-
-diff --git a/include/linux/highmem.h b/include/linux/highmem.h
-index 3af34de54330..70b496bbd2d9 100644
---- a/include/linux/highmem.h
-+++ b/include/linux/highmem.h
-@@ -243,6 +243,16 @@ static inline void clear_highpage(struct page *page)
- 	kunmap_local(kaddr);
- }
- 
-+static inline void clear_highpage_kasan_tagged(struct page *page)
-+{
-+	u8 tag;
-+
-+	tag = page_kasan_tag(page);
-+	page_kasan_tag_reset(page);
-+	clear_highpage(page);
-+	page_kasan_tag_set(page, tag);
-+}
-+
- #ifndef __HAVE_ARCH_TAG_CLEAR_HIGHPAGE
- 
- static inline void tag_clear_highpage(struct page *page)
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 66ef8c310dce..76a02255f57c 100644
+index e008a3df0485..66ef8c310dce 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -1302,12 +1302,8 @@ static void kernel_init_pages(struct page *page, int numpages)
- 
- 	/* s390's use of memset() could override KASAN redzones. */
- 	kasan_disable_current();
--	for (i = 0; i < numpages; i++) {
--		u8 tag = page_kasan_tag(page + i);
--		page_kasan_tag_reset(page + i);
--		clear_highpage(page + i);
--		page_kasan_tag_set(page + i, tag);
--	}
-+	for (i = 0; i < numpages; i++)
-+		clear_highpage_kasan_tagged(page + i);
- 	kasan_enable_current();
+@@ -1296,7 +1296,7 @@ static inline bool should_skip_kasan_poison(struct page *page, fpi_t fpi_flags)
+ 	       PageSkipKASanPoison(page);
  }
  
+-static void kernel_init_free_pages(struct page *page, int numpages)
++static void kernel_init_pages(struct page *page, int numpages)
+ {
+ 	int i;
+ 
+@@ -1396,7 +1396,7 @@ static __always_inline bool free_pages_prepare(struct page *page,
+ 			init = false;
+ 	}
+ 	if (init)
+-		kernel_init_free_pages(page, 1 << order);
++		kernel_init_pages(page, 1 << order);
+ 
+ 	/*
+ 	 * arch_free_page() can make the page's contents inaccessible.  s390
+@@ -2441,7 +2441,7 @@ inline void post_alloc_hook(struct page *page, unsigned int order,
+ 	}
+ 	/* If memory is still not initialized, do it now. */
+ 	if (init)
+-		kernel_init_free_pages(page, 1 << order);
++		kernel_init_pages(page, 1 << order);
+ 	/* Propagate __GFP_SKIP_KASAN_POISON to page flags. */
+ 	if (kasan_hw_tags_enabled() && (gfp_flags & __GFP_SKIP_KASAN_POISON))
+ 		SetPageSkipKASanPoison(page);
 -- 
 2.25.1
 
