@@ -2,167 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E82C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 20:29:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E15C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 20:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344324AbiFIU3S (ORCPT
+        id S1344729AbiFIUbt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 16:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50266 "EHLO
+        Thu, 9 Jun 2022 16:31:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241211AbiFIU3N (ORCPT
+        with ESMTP id S234626AbiFIUbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 16:29:13 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A55D26EE9F
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 13:29:12 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id o6-20020a17090a0a0600b001e2c6566046so405155pjo.0
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 13:29:12 -0700 (PDT)
+        Thu, 9 Jun 2022 16:31:46 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C70A921808;
+        Thu,  9 Jun 2022 13:31:44 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id w20so18092350lfa.11;
+        Thu, 09 Jun 2022 13:31:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=C4/yJYyLya7rE6Jieokr56CujDpfPfuLcGNiEECS+QU=;
-        b=CjppovKB2YLi+/umkUgs7TGbUGFHqjbhz+/vuQpURnYcTn7Y/XOYbzw0Ykj8khDf1D
-         lU6118PzbLcDnYEohwwuQpWRqLnFFor88HMkhxJnTWzVFPYmlDCWI4t25w0FcOY9LsJ3
-         Xx+fRvY97K5Q4b9fyl2wIJsNDu8BFxuzsJC2MBkEM8rOua9Xl2avo9S7S1w8ygcb6WQp
-         l07wjz7O+ipoSddpByuvOEx8LLG0at/WFa44rE+IaodvVFqdep6gbL1AbyDvvOmSNBeS
-         GcNHdTH1imkTwWGYIM5B+u73KBCppBXzzkigAH/N4DrtNRxqLpENGyWxu6onk+j5isHM
-         5lXw==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=CA2137blCv89eq2ZgR16JFTYhMBK9m/DAMtjtrUnzv4=;
+        b=FNyhUSkOM7ITAVGM42a2lcYI7sMqsdl0l5PUJFKaAoyxqtp/3p7EMeU5IC1E/DLGTN
+         lFmGYHU8olzBe1VrTMlwtGoLufWejlLWT3IoxvVDLA7fA96M9N3DyArbCRhj9J5BTi0y
+         66tc0iPJyUKSeQNfOl5YWQAyoeFRDpT95Lw2i1DzMQ0sSdXFwyUarMLWXWBBhhcS4jz6
+         svQcbwKYUzyq4m8WcM6yhHR50Lg3Uw1M4kx7kwKszV2XrqZO8g8J4rWI4N5IvNTPgTGV
+         xCBD6S5Xq9y/UXULLjfiwt4AoyAhnRzEnd7ZZAmYgtIW4fLG6J+vbT/8IRmLlf9MG3kb
+         SDBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=C4/yJYyLya7rE6Jieokr56CujDpfPfuLcGNiEECS+QU=;
-        b=vGNHmLhNUsdxJRt21dwBg/jgEEQUWNJsmcGE/S4WGa9OLvAwilJFaZNgXZWi/Xe+Cq
-         /LSp671VvMi6J8P+ELj41wTjnGUAuhKCaoErcxusDxdKmVx1wfDSyKPqutnYCJeEBxby
-         m40uTkDSIYbiz8QFcWrIikxTzVT5MBAAp2OPthqAR1EJ7eUjAvdM54ddDPFJrt9n0jvy
-         LSvIJb523Hfw8l7ldGJkzdJoE0lpYJEZWiT/1lvlK2rpJpyYQ9uHWp7lmDZ3JFy4hhp/
-         quhcAPpcjsLPwbPBSzuZp8vUdJWfjfVQfhlQWWBnXL8Cl3ASW3m3NKWx8Jx2sMt/+Eqh
-         CMlg==
-X-Gm-Message-State: AOAM531FEVWfWs/d12VEY2Jyyx173Ohu3rydEmlaoZzX1B01eJYUFYQn
-        22Hp3JfawEUBUOG1Q2yQLsz5pw==
-X-Google-Smtp-Source: ABdhPJx0nBU6Y+TUh04OO6/IROXMWJ7hUc76Ud455mDwfSNlb8nAgIObkwH4NgXB0NSx9cPem36m4g==
-X-Received: by 2002:a17:90a:b284:b0:1e3:826b:d11d with SMTP id c4-20020a17090ab28400b001e3826bd11dmr5147277pjr.79.1654806551448;
-        Thu, 09 Jun 2022 13:29:11 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id e3-20020a17090301c300b0016511314b94sm17748369plh.159.2022.06.09.13.29.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 13:29:10 -0700 (PDT)
-Date:   Thu, 9 Jun 2022 20:29:06 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vishal Annapurve <vannapurve@google.com>
-Cc:     Chao Peng <chao.p.peng@linux.intel.com>,
-        Marc Orr <marcorr@google.com>, kvm list <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86 <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Jun Nakajima <jun.nakajima@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        David Hildenbrand <david@redhat.com>, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com
-Subject: Re: [PATCH v6 0/8] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <YqJYEheLiGI4KqXF@google.com>
-References: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
- <CAGtprH_83CEC0U-cBR2FzHsxbwbGn0QJ87WFNOEet8sineOcbQ@mail.gmail.com>
- <20220607065749.GA1513445@chaop.bj.intel.com>
- <CAA03e5H_vOQS-qdZgacnmqP5T5jJLnEfm44yfRzJQ2KVu0Br+Q@mail.gmail.com>
- <20220608021820.GA1548172@chaop.bj.intel.com>
- <CAGtprH8xyf07jMN7ubTC__BvDj+z41uVGRiCJ7Rc5cv3KWg03w@mail.gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=CA2137blCv89eq2ZgR16JFTYhMBK9m/DAMtjtrUnzv4=;
+        b=Q6buC3mnk+spodJoYpS0iByHA8QJQuabEEBLPMSIyaDXzt133aQjnhnIQBhXgtQs4e
+         W51zULw5WiVvuPe+wOhURoP6YiyinTC1/7gJloc8IXRUYkXfZciqT41o2f6QQT6zAqo0
+         m2OdTg/qsGUEpE5K7GsRwnN64V9unNJdi9p2CzHxoZSvOLIhwpduH5EjgLnPUBtWbWwY
+         cCT4ylmrDowmEDjm7Jk9T84h4np+GG1lqL27QCVbrAAZqrGQewTl63T4/v8g6/guoRJi
+         kiwBe0r3ahoVEvww4mUYKfysH8ynM8CQdH5tBHzPDZnsj50DKr5a/ffTnDEpQ0xH2QZz
+         mpbA==
+X-Gm-Message-State: AOAM532j3nKIK6XWXuu7zLHP1pc40mfTOw69TlmXujAOVU+hq93DiyZF
+        kOYmnTjYVzgJeIfV5xUMN9w=
+X-Google-Smtp-Source: ABdhPJzhToDwB+G1T0rZoz9FzKJtAL3yXpSGu2fYpJJiJS5R8uUYEpkNX6PVk+RkVORC1F5SWSz7Bw==
+X-Received: by 2002:ac2:4c50:0:b0:479:55a9:2e08 with SMTP id o16-20020ac24c50000000b0047955a92e08mr11574855lfk.642.1654806703162;
+        Thu, 09 Jun 2022 13:31:43 -0700 (PDT)
+Received: from [192.168.0.131] ([194.183.54.57])
+        by smtp.gmail.com with ESMTPSA id q22-20020a194316000000b0047255d210e0sm4389159lfa.15.2022.06.09.13.31.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 13:31:42 -0700 (PDT)
+Message-ID: <4a7f8ab6-c061-3861-5790-b6c0fbd7cad1@gmail.com>
+Date:   Thu, 9 Jun 2022 22:31:41 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGtprH8xyf07jMN7ubTC__BvDj+z41uVGRiCJ7Rc5cv3KWg03w@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 3/3] ARM: dts: exynos: add function and color to aat1290
+ flash LED node in Galaxy S3
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+References: <20220607085343.72414-1-krzysztof.kozlowski@linaro.org>
+ <20220607085343.72414-3-krzysztof.kozlowski@linaro.org>
+From:   Jacek Anaszewski <jacek.anaszewski@gmail.com>
+In-Reply-To: <20220607085343.72414-3-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022, Vishal Annapurve wrote:
-> ...
-> > With this patch series, it's actually even not possible for userspace VMM
-> > to allocate private page by a direct write, it's basically unmapped from
-> > there. If it really wants to, it should so something special, by intention,
-> > that's basically the conversion, which we should allow.
-> >
+Hi Krzysztof,
+
+On 6/7/22 10:53, Krzysztof Kozlowski wrote:
+> Add common LED properties - the function and color - to aat1290 flash
+> LED node in Galaxy S3.
 > 
-> A VM can pass GPA backed by private pages to userspace VMM and when
-> Userspace VMM accesses the backing hva there will be pages allocated
-> to back the shared fd causing 2 sets of pages backing the same guest
-> memory range.
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>   arch/arm/boot/dts/exynos4412-galaxy-s3.dtsi | 3 +++
+>   1 file changed, 3 insertions(+)
 > 
-> > Thanks for bringing this up. But in my mind I still think userspace VMM
-> > can do and it's its responsibility to guarantee that, if that is hard
-> > required.
+> diff --git a/arch/arm/boot/dts/exynos4412-galaxy-s3.dtsi b/arch/arm/boot/dts/exynos4412-galaxy-s3.dtsi
+> index 72901772fcad..d76f3678dcab 100644
+> --- a/arch/arm/boot/dts/exynos4412-galaxy-s3.dtsi
+> +++ b/arch/arm/boot/dts/exynos4412-galaxy-s3.dtsi
+> @@ -7,6 +7,7 @@
+>    */
+>   
+>   /dts-v1/;
+> +#include <dt-bindings/leds/common.h>
+>   #include "exynos4412-midas.dtsi"
+>   
+>   / {
+> @@ -27,6 +28,8 @@ led-controller {
+>   
+>   		led {
+>   			label = "flash";
+> +			function = LED_FUNCTION_FLASH;
+> +			color = <LED_COLOR_ID_WHITE>;
 
-That was my initial reaction too, but there are unfortunate side effects to punting
-this to userspace. 
+Addition of these two properties will not change anything because
+the label has precedence. It is deprecated, but if you introduce
+function and color to the binding instead of the label, the resulting
+LED class device name will change.
 
-> By design, userspace VMM is the decision-maker for page
-> > conversion and has all the necessary information to know which page is
-> > shared/private. It also has the necessary knobs to allocate/free the
-> > physical pages for guest memory. Definitely, we should make userspace
-> > VMM more robust.
-> 
-> Making Userspace VMM more robust to avoid double allocation can get
-> complex, it will have to keep track of all in-use (by Userspace VMM)
-> shared fd memory to disallow conversion from shared to private and
-> will have to ensure that all guest supplied addresses belong to shared
-> GPA ranges.
+>   			led-max-microamp = <520833>;
+>   			flash-max-microamp = <1012500>;
+>   			flash-max-timeout-us = <1940000>;
 
-IMO, the complexity argument isn't sufficient justfication for introducing new
-kernel functionality.  If multiple processes are accessing guest memory then there
-already needs to be some amount of coordination, i.e. it can't be _that_ complex.
-
-My concern with forcing userspace to fully handle unmapping shared memory is that
-it may lead to additional performance overhead and/or noisy neighbor issues, even
-if all guests are well-behaved.
-
-Unnmapping arbitrary ranges will fragment the virtual address space and consume
-more memory for all the result VMAs.  The extra memory consumption isn't that big
-of a deal, and it will be self-healing to some extent as VMAs will get merged when
-the holes are filled back in (if the guest converts back to shared), but it's still
-less than desirable.
-
-More concerning is having to take mmap_lock for write for every conversion, which
-is very problematic for configurations where a single userspace process maps memory
-belong to multiple VMs.  Unmapping and remapping on every conversion will create a
-bottleneck, especially if a VM has sub-optimal behavior and is converting pages at
-a high rate.
-
-One argument is that userspace can simply rely on cgroups to detect misbehaving
-guests, but (a) those types of OOMs will be a nightmare to debug and (b) an OOM
-kill from the host is typically considered a _host_ issue and will be treated as
-a missed SLO.
-
-An idea for handling this in the kernel without too much complexity would be to
-add F_SEAL_FAULT_ALLOCATIONS (terrible name) that would prevent page faults from
-allocating pages, i.e. holes can only be filled by an explicit fallocate().  Minor
-faults, e.g. due to NUMA balancing stupidity, and major faults due to swap would
-still work, but writes to previously unreserved/unallocated memory would get a
-SIGSEGV on something it has mapped.  That would allow the userspace VMM to prevent
-unintentional allocations without having to coordinate unmapping/remapping across
-multiple processes.
+-- 
+Best regards,
+Jacek Anaszewski
