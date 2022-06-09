@@ -2,224 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A45C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:50:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:51:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343603AbiFIMuv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 08:50:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44228 "EHLO
+        id S242066AbiFIMv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 08:51:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343518AbiFIMud (ORCPT
+        with ESMTP id S244351AbiFIMvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 08:50:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F178694AB
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 05:50:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654779024;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jSyVt04wqMoyKuQwGc4zbS9w9C6qNO7mTJG8w/5DiLs=;
-        b=Rl3YETfEkiQD6P2TsO5Q+i5VUelvKEU17hm+QH6XVlbmrAJ7L3t+EKioFBQ5V87wSzaX2K
-        P9vJkXK6o5F0e3B84HtDADUGHQ9+35O3pCsp1XpTsGXgoMQ02jOISrg18N3vhiAfq/tIlh
-        UX1g0Zx+CYCEYOq3jeqHpE2JcOdz03I=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-442-63kbGtiINVyJe9I4d414oQ-1; Thu, 09 Jun 2022 08:50:23 -0400
-X-MC-Unique: 63kbGtiINVyJe9I4d414oQ-1
-Received: by mail-wm1-f69.google.com with SMTP id 130-20020a1c0288000000b0039c6608296dso1813526wmc.4
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 05:50:23 -0700 (PDT)
+        Thu, 9 Jun 2022 08:51:02 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B7456399
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 05:50:59 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id mh16-20020a17090b4ad000b001e8313301f1so1318687pjb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 05:50:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=EATzTqJA26CcqIUbCI5V7nNL9XJq45wIulrxBrVLYks=;
+        b=Nr4lPTaBeFU/+ThnnKI5ZNeBs4isqeW/eCkDJqq9HffaN3pRiipHzVVf6GA3vU2F1N
+         biOi5JsicylGuvpsd0eDUQY224O0fKgUe5y1xiZlEt1W7saYBn3N+Lz/dg2IFGwg6oua
+         L6a3UjjXwzwzTZhPk8qquS2/O0EztFAkXVCyFcYHmhujMF1bbOooo0+eU4foE0FCSoyI
+         ZF5YjADR6p2sBkhSF5AKia1IzcomLMypmaKPVeJfu9ihTyAliSHRZVmv5rqgVPSP6RXf
+         6Q1STj3KtMI+Yrko16o5QcVpRVoUsQwd8PHdukPC7V13qVYxg4JqgqIK7pmEqX1EuCvI
+         qzRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=jSyVt04wqMoyKuQwGc4zbS9w9C6qNO7mTJG8w/5DiLs=;
-        b=kj7c/4s9o2H1OFG9EFGucmlj0RTSZYGJLJyb6SOLG60z6st6mtZ5RvF7woLCObvzAm
-         5jI3p7EgMv+JvGmfIO1Cn4KYJN11wEIdZPoocBgPM8fEZOucdXfBDeXp7XloK4f0fiCn
-         UBuRH0g6XYQW8nfoGiFHd9c+/rZTYnhMiDzwiBYzFC8BEMVGynJYsNybbBpu4tBg1mxZ
-         qZtwG/UMN4DFf8hR5NXKYUslDMd+z8yRy0AdyJvm9gyWSebYXa45bGpyVlHYBR4aXqNf
-         uF2U1LpN9DigbzHMGu8NwRqYY0WWUlNnNQAVN/JEmSJlPOIEcamPaGleCg2GH0n0TJct
-         4ctA==
-X-Gm-Message-State: AOAM532+nzOJU5ksHw9EH4/v9W5lkClOBLGBZrII/5lDH5D+CyPQMOKn
-        GQwvAYezoSyO04c0k9t1IrAgWU3xyun0I3AuYe8+AP/nJ2+IvVb6hYn3u/186RUCfjsVpqQPm6H
-        crlRAwaBG265/Q3UlMYBUOsgE
-X-Received: by 2002:a1c:4c0d:0:b0:39c:5233:1873 with SMTP id z13-20020a1c4c0d000000b0039c52331873mr3299339wmf.28.1654779022063;
-        Thu, 09 Jun 2022 05:50:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyJlGErsfVOd4GnScqiilTH958FLxgjsObuI+18makmIYSKefVpu0HdsVXKQhmSAU7kjNobOQ==
-X-Received: by 2002:a1c:4c0d:0:b0:39c:5233:1873 with SMTP id z13-20020a1c4c0d000000b0039c52331873mr3299322wmf.28.1654779021707;
-        Thu, 09 Jun 2022 05:50:21 -0700 (PDT)
-Received: from ?IPV6:2a09:80c0:192:0:20af:34be:985b:b6c8? ([2a09:80c0:192:0:20af:34be:985b:b6c8])
-        by smtp.gmail.com with ESMTPSA id j8-20020a056000124800b002185d79dc7fsm5672822wrx.75.2022.06.09.05.50.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jun 2022 05:50:21 -0700 (PDT)
-Message-ID: <b2a81248-03fc-afb3-1041-d8206e95e08a@redhat.com>
-Date:   Thu, 9 Jun 2022 14:50:20 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=EATzTqJA26CcqIUbCI5V7nNL9XJq45wIulrxBrVLYks=;
+        b=CeQ2rTZCqL9gxJrzYHo8IDB2TgN29REtNgehDSdUANc/QKTQ/+u+btSVQBWyzM+sym
+         UG2PbLTIAi4SoODGcdr15YzOdAZt1oYLw7THoJqmHV1yiRQdNdfdMeem15Km0FEk2ucP
+         0HhILULz6wsX2azguf55hZr1IJZALULHKHxeFHE+L08I3faBDgLRUfNcd0dAdMolSDpM
+         +HfNdp3oBfxl1M9ghxtve7T564x041CwZfy4NOdxXUftRg5YqT8x5G9O10vplUYJy8Ql
+         IIurGEAjaTgqOcukIVdk3aP2rbpZz6PgSHyG4/mi58xOUToeBNtFkemrSMjHwyO7PQ5C
+         YNwQ==
+X-Gm-Message-State: AOAM530oYscDi0BMQf3hmJqLRbPOEOF0jrR5sOhfwCA/vwHw32An1AoJ
+        /ZTWDUt3YCcvBSjPQAueZdQ=
+X-Google-Smtp-Source: ABdhPJyqLFXK6TLZ5EjskzrqgxTJtqZHVVP6dGqh5/Fk1wWI6DsuvX5n6d53xH7ufOvPa1ojiTtwdw==
+X-Received: by 2002:a17:90a:3182:b0:1e3:530d:6994 with SMTP id j2-20020a17090a318200b001e3530d6994mr3341173pjb.69.1654779058703;
+        Thu, 09 Jun 2022 05:50:58 -0700 (PDT)
+Received: from localhost ([101.86.206.203])
+        by smtp.gmail.com with ESMTPSA id b20-20020aa79514000000b0051b97828505sm17262562pfp.166.2022.06.09.05.50.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 05:50:58 -0700 (PDT)
+From:   Patrick Wang <patrick.wang.shcn@gmail.com>
+To:     catalin.marinas@arm.com, akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        yee.lee@mediatek.com, patrick.wang.shcn@gmail.com
+Subject: [PATCH v3 1/3] mm: kmemleak: add OBJECT_PHYS flag for objects allocated with physical address
+Date:   Thu,  9 Jun 2022 20:49:48 +0800
+Message-Id: <20220609124950.1694394-2-patrick.wang.shcn@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220609124950.1694394-1-patrick.wang.shcn@gmail.com>
+References: <20220609124950.1694394-1-patrick.wang.shcn@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2 03/19] fs: Add aops->migrate_folio
-Content-Language: en-US
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-fsdevel@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-aio@kvack.org, linux-btrfs@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        cluster-devel@redhat.com, linux-mm@kvack.org,
-        linux-xfs@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-ntfs-dev@lists.sourceforge.net, ocfs2-devel@oss.oracle.com,
-        linux-mtd@lists.infradead.org,
-        virtualization@lists.linux-foundation.org,
-        Christoph Hellwig <hch@lst.de>
-References: <20220608150249.3033815-1-willy@infradead.org>
- <20220608150249.3033815-4-willy@infradead.org>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220608150249.3033815-4-willy@infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08.06.22 17:02, Matthew Wilcox (Oracle) wrote:
-> Provide a folio-based replacement for aops->migratepage.  Update the
-> documentation to document migrate_folio instead of migratepage.
-> 
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
-> ---
->  Documentation/filesystems/locking.rst |  5 ++--
->  Documentation/filesystems/vfs.rst     | 13 ++++++-----
->  Documentation/vm/page_migration.rst   | 33 ++++++++++++++-------------
->  include/linux/fs.h                    |  4 +++-
->  mm/compaction.c                       |  4 +++-
->  mm/migrate.c                          | 11 +++++----
->  6 files changed, 40 insertions(+), 30 deletions(-)
-> 
-> diff --git a/Documentation/filesystems/locking.rst b/Documentation/filesystems/locking.rst
-> index c0fe711f14d3..3d28b23676bd 100644
-> --- a/Documentation/filesystems/locking.rst
-> +++ b/Documentation/filesystems/locking.rst
-> @@ -253,7 +253,8 @@ prototypes::
->  	void (*free_folio)(struct folio *);
->  	int (*direct_IO)(struct kiocb *, struct iov_iter *iter);
->  	bool (*isolate_page) (struct page *, isolate_mode_t);
-> -	int (*migratepage)(struct address_space *, struct page *, struct page *);
-> +	int (*migrate_folio)(struct address_space *, struct folio *dst,
-> +			struct folio *src, enum migrate_mode);
->  	void (*putback_page) (struct page *);
+Add OBJECT_PHYS flag for object. This flag is used
+to identify the objects allocated with physical
+address.The create_object_phys() function is added as
+well to set that flag. And remove the min_count
+argument to kmemleak_alloc_phys() function, assume
+it's 0.
 
-isolate_page/putback_page are leftovers from the previous patch, no?
+Suggested-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Patrick Wang <patrick.wang.shcn@gmail.com>
+---
+ drivers/of/fdt.c                        |  2 +-
+ include/linux/kmemleak.h                |  4 +--
+ mm/kmemleak.c                           | 44 ++++++++++++++++++-------
+ mm/memblock.c                           | 14 ++++----
+ tools/testing/memblock/linux/kmemleak.h |  2 +-
+ 5 files changed, 43 insertions(+), 23 deletions(-)
 
->  	int (*launder_folio)(struct folio *);
->  	bool (*is_partially_uptodate)(struct folio *, size_t from, size_t count);
-> @@ -281,7 +282,7 @@ release_folio:		yes
->  free_folio:		yes
->  direct_IO:
->  isolate_page:		yes
-> -migratepage:		yes (both)
-> +migrate_folio:		yes (both)
->  putback_page:		yes
-
-Dito.
-
->  launder_folio:		yes
->  is_partially_uptodate:	yes
-> diff --git a/Documentation/filesystems/vfs.rst b/Documentation/filesystems/vfs.rst
-> index a08c652467d7..3ae1b039b03f 100644
-> --- a/Documentation/filesystems/vfs.rst
-> +++ b/Documentation/filesystems/vfs.rst
-> @@ -740,7 +740,8 @@ cache in your filesystem.  The following members are defined:
->  		/* isolate a page for migration */
->  		bool (*isolate_page) (struct page *, isolate_mode_t);
->  		/* migrate the contents of a page to the specified target */
-> -		int (*migratepage) (struct page *, struct page *);
-> +		int (*migrate_folio)(struct mapping *, struct folio *dst,
-> +				struct folio *src, enum migrate_mode);
->  		/* put migration-failed page back to right list */
->  		void (*putback_page) (struct page *);
-
-Dito.
-
->  		int (*launder_folio) (struct folio *);
-> @@ -935,12 +936,12 @@ cache in your filesystem.  The following members are defined:
->  	is successfully isolated, VM marks the page as PG_isolated via
->  	__SetPageIsolated.
->  
-> -``migrate_page``
-> +``migrate_folio``
->  	This is used to compact the physical memory usage.  If the VM
-> -	wants to relocate a page (maybe off a memory card that is
-> -	signalling imminent failure) it will pass a new page and an old
-> -	page to this function.  migrate_page should transfer any private
-> -	data across and update any references that it has to the page.
-> +	wants to relocate a folio (maybe from a memory device that is
-> +	signalling imminent failure) it will pass a new folio and an old
-> +	folio to this function.  migrate_folio should transfer any private
-> +	data across and update any references that it has to the folio.
->  
->  ``putback_page``
->  	Called by the VM when isolated page's migration fails.
-
-Dito.
-
-> diff --git a/Documentation/vm/page_migration.rst b/Documentation/vm/page_migration.rst
-> index 8c5cb8147e55..e0f73ddfabb1 100644
-> --- a/Documentation/vm/page_migration.rst
-> +++ b/Documentation/vm/page_migration.rst
-> @@ -181,22 +181,23 @@ which are function pointers of struct address_space_operations.
->     Once page is successfully isolated, VM uses page.lru fields so driver
->     shouldn't expect to preserve values in those fields.
->  
-> -2. ``int (*migratepage) (struct address_space *mapping,``
-> -|	``struct page *newpage, struct page *oldpage, enum migrate_mode);``
-> -
-> -   After isolation, VM calls migratepage() of driver with the isolated page.
-> -   The function of migratepage() is to move the contents of the old page to the
-> -   new page
-> -   and set up fields of struct page newpage. Keep in mind that you should
-> -   indicate to the VM the oldpage is no longer movable via __ClearPageMovable()
-> -   under page_lock if you migrated the oldpage successfully and returned
-> -   MIGRATEPAGE_SUCCESS. If driver cannot migrate the page at the moment, driver
-> -   can return -EAGAIN. On -EAGAIN, VM will retry page migration in a short time
-> -   because VM interprets -EAGAIN as "temporary migration failure". On returning
-> -   any error except -EAGAIN, VM will give up the page migration without
-> -   retrying.
-> -
-> -   Driver shouldn't touch the page.lru field while in the migratepage() function.
-> +2. ``int (*migrate_folio) (struct address_space *mapping,``
-> +|	``struct folio *dst, struct folio *src, enum migrate_mode);``
-> +
-> +   After isolation, VM calls the driver's migrate_folio() with the
-> +   isolated folio.  The purpose of migrate_folio() is to move the contents
-> +   of the source folio to the destination folio and set up the fields
-> +   of destination folio.  Keep in mind that you should indicate to the
-> +   VM the source folio is no longer movable via __ClearPageMovable()
-> +   under folio if you migrated the source successfully and returned
-> +   MIGRATEPAGE_SUCCESS.  If driver cannot migrate the folio at the
-> +   moment, driver can return -EAGAIN. On -EAGAIN, VM will retry folio
-> +   migration in a short time because VM interprets -EAGAIN as "temporary
-> +   migration failure".  On returning any error except -EAGAIN, VM will
-> +   give up the folio migration without retrying.
-> +
-> +   Driver shouldn't touch the folio.lru field while in the migrate_folio()
-> +   function.
->  
->  3. ``void (*putback_page)(struct page *);``
-
-Hmm, here it's a bit more complicated now, because we essentially have
-two paths: LRU+migrate_folio or !LRU+movable_ops
-(isolate/migrate/putback page)
-
-
-
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index a8f5b6532165..2c677e84c3f5 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -529,7 +529,7 @@ static int __init __reserved_mem_reserve_reg(unsigned long node,
+ 			pr_debug("Reserved memory: reserved region for node '%s': base %pa, size %lu MiB\n",
+ 				uname, &base, (unsigned long)(size / SZ_1M));
+ 			if (!nomap)
+-				kmemleak_alloc_phys(base, size, 0, 0);
++				kmemleak_alloc_phys(base, size, 0);
+ 		}
+ 		else
+ 			pr_info("Reserved memory: failed to reserve memory for node '%s': base %pa, size %lu MiB\n",
+diff --git a/include/linux/kmemleak.h b/include/linux/kmemleak.h
+index 34684b2026ab..df245d875b1e 100644
+--- a/include/linux/kmemleak.h
++++ b/include/linux/kmemleak.h
+@@ -29,7 +29,7 @@ extern void kmemleak_not_leak(const void *ptr) __ref;
+ extern void kmemleak_ignore(const void *ptr) __ref;
+ extern void kmemleak_scan_area(const void *ptr, size_t size, gfp_t gfp) __ref;
+ extern void kmemleak_no_scan(const void *ptr) __ref;
+-extern void kmemleak_alloc_phys(phys_addr_t phys, size_t size, int min_count,
++extern void kmemleak_alloc_phys(phys_addr_t phys, size_t size,
+ 				gfp_t gfp) __ref;
+ extern void kmemleak_free_part_phys(phys_addr_t phys, size_t size) __ref;
+ extern void kmemleak_not_leak_phys(phys_addr_t phys) __ref;
+@@ -107,7 +107,7 @@ static inline void kmemleak_no_scan(const void *ptr)
+ {
+ }
+ static inline void kmemleak_alloc_phys(phys_addr_t phys, size_t size,
+-				       int min_count, gfp_t gfp)
++				       gfp_t gfp)
+ {
+ }
+ static inline void kmemleak_free_part_phys(phys_addr_t phys, size_t size)
+diff --git a/mm/kmemleak.c b/mm/kmemleak.c
+index a182f5ddaf68..85ed719e750d 100644
+--- a/mm/kmemleak.c
++++ b/mm/kmemleak.c
+@@ -172,6 +172,8 @@ struct kmemleak_object {
+ #define OBJECT_NO_SCAN		(1 << 2)
+ /* flag set to fully scan the object when scan_area allocation failed */
+ #define OBJECT_FULL_SCAN	(1 << 3)
++/* flag set for object allocated with physical address */
++#define OBJECT_PHYS		(1 << 4)
+ 
+ #define HEX_PREFIX		"    "
+ /* number of bytes to print per line; must be 16 or 32 */
+@@ -574,8 +576,9 @@ static int __save_stack_trace(unsigned long *trace)
+  * Create the metadata (struct kmemleak_object) corresponding to an allocated
+  * memory block and add it to the object_list and object_tree_root.
+  */
+-static struct kmemleak_object *create_object(unsigned long ptr, size_t size,
+-					     int min_count, gfp_t gfp)
++static struct kmemleak_object *__create_object(unsigned long ptr, size_t size,
++					     int min_count, gfp_t gfp,
++					     bool is_phys)
+ {
+ 	unsigned long flags;
+ 	struct kmemleak_object *object, *parent;
+@@ -595,7 +598,7 @@ static struct kmemleak_object *create_object(unsigned long ptr, size_t size,
+ 	INIT_HLIST_HEAD(&object->area_list);
+ 	raw_spin_lock_init(&object->lock);
+ 	atomic_set(&object->use_count, 1);
+-	object->flags = OBJECT_ALLOCATED;
++	object->flags = OBJECT_ALLOCATED | (is_phys ? OBJECT_PHYS : 0);
+ 	object->pointer = ptr;
+ 	object->size = kfence_ksize((void *)ptr) ?: size;
+ 	object->excess_ref = 0;
+@@ -662,6 +665,20 @@ static struct kmemleak_object *create_object(unsigned long ptr, size_t size,
+ 	return object;
+ }
+ 
++/* Create kmemleak object which allocated with virtual address. */
++static struct kmemleak_object *create_object(unsigned long ptr, size_t size,
++					     int min_count, gfp_t gfp)
++{
++	return __create_object(ptr, size, min_count, gfp, false);
++}
++
++/* Create kmemleak object which allocated with physical address. */
++static struct kmemleak_object *create_object_phys(unsigned long ptr, size_t size,
++					     int min_count, gfp_t gfp)
++{
++	return __create_object(ptr, size, min_count, gfp, true);
++}
++
+ /*
+  * Mark the object as not allocated and schedule RCU freeing via put_object().
+  */
+@@ -728,11 +745,11 @@ static void delete_object_part(unsigned long ptr, size_t size)
+ 	start = object->pointer;
+ 	end = object->pointer + object->size;
+ 	if (ptr > start)
+-		create_object(start, ptr - start, object->min_count,
+-			      GFP_KERNEL);
++		__create_object(start, ptr - start, object->min_count,
++			      GFP_KERNEL, object->flags & OBJECT_PHYS);
+ 	if (ptr + size < end)
+-		create_object(ptr + size, end - ptr - size, object->min_count,
+-			      GFP_KERNEL);
++		__create_object(ptr + size, end - ptr - size, object->min_count,
++			      GFP_KERNEL, object->flags & OBJECT_PHYS);
+ 
+ 	__delete_object(object);
+ }
+@@ -1125,15 +1142,18 @@ EXPORT_SYMBOL(kmemleak_no_scan);
+  *			 address argument
+  * @phys:	physical address of the object
+  * @size:	size of the object
+- * @min_count:	minimum number of references to this object.
+- *              See kmemleak_alloc()
+  * @gfp:	kmalloc() flags used for kmemleak internal memory allocations
+  */
+-void __ref kmemleak_alloc_phys(phys_addr_t phys, size_t size, int min_count,
+-			       gfp_t gfp)
++void __ref kmemleak_alloc_phys(phys_addr_t phys, size_t size, gfp_t gfp)
+ {
++	pr_debug("%s(0x%pa, %zu)\n", __func__, &phys, size);
++
+ 	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
+-		kmemleak_alloc(__va(phys), size, min_count, gfp);
++		/*
++		 * Create object with OBJECT_PHYS flag and
++		 * assume min_count 0.
++		 */
++		create_object_phys((unsigned long)__va(phys), size, 0, gfp);
+ }
+ EXPORT_SYMBOL(kmemleak_alloc_phys);
+ 
+diff --git a/mm/memblock.c b/mm/memblock.c
+index e4f03a6e8e56..749abd2685c4 100644
+--- a/mm/memblock.c
++++ b/mm/memblock.c
+@@ -1345,8 +1345,8 @@ __next_mem_pfn_range_in_zone(u64 *idx, struct zone *zone,
+  * from the regions with mirroring enabled and then retried from any
+  * memory region.
+  *
+- * In addition, function sets the min_count to 0 using kmemleak_alloc_phys for
+- * allocated boot memory block, so that it is never reported as leaks.
++ * In addition, function using kmemleak_alloc_phys for allocated boot
++ * memory block, it is never reported as leaks.
+  *
+  * Return:
+  * Physical address of allocated memory block on success, %0 on failure.
+@@ -1398,12 +1398,12 @@ phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
+ 	 */
+ 	if (end != MEMBLOCK_ALLOC_NOLEAKTRACE)
+ 		/*
+-		 * The min_count is set to 0 so that memblock allocated
+-		 * blocks are never reported as leaks. This is because many
+-		 * of these blocks are only referred via the physical
+-		 * address which is not looked up by kmemleak.
++		 * Memblock allocated blocks are never reported as
++		 * leaks. This is because many of these blocks are
++		 * only referred via the physical address which is
++		 * not looked up by kmemleak.
+ 		 */
+-		kmemleak_alloc_phys(found, size, 0, 0);
++		kmemleak_alloc_phys(found, size, 0);
+ 
+ 	return found;
+ }
+diff --git a/tools/testing/memblock/linux/kmemleak.h b/tools/testing/memblock/linux/kmemleak.h
+index 462f8c5e8aa0..5fed13bb9ec4 100644
+--- a/tools/testing/memblock/linux/kmemleak.h
++++ b/tools/testing/memblock/linux/kmemleak.h
+@@ -7,7 +7,7 @@ static inline void kmemleak_free_part_phys(phys_addr_t phys, size_t size)
+ }
+ 
+ static inline void kmemleak_alloc_phys(phys_addr_t phys, size_t size,
+-				       int min_count, gfp_t gfp)
++				       gfp_t gfp)
+ {
+ }
+ 
 -- 
-Thanks,
-
-David / dhildenb
+2.25.1
 
