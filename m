@@ -2,107 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59351C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:38:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A34FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240041AbiFIJih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 05:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60846 "EHLO
+        id S240752AbiFIJjC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 05:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234406AbiFIJiU (ORCPT
+        with ESMTP id S242775AbiFIJjA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 05:38:20 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED32E33355
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 02:38:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1654767500; x=1686303500;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=uJ5qZvhAQ1nIadAE2aDvP4HNyjdst+87wL1ry98HR+g=;
-  b=eEueqbgSd6x0SpGwnY2By2cYbvPhPMdYdJGGhCgWl6srTeaXNgI6slMc
-   ikOFvA3R3I2TggQL9rEsFddyC8SF4oiGNF5cRDmIuFqGQlBjCPY6rijbh
-   f127cgWe2eiIOcRyYNN5M0DbB9Ac41PbC8VBboc5npUvC3LmmsZajuN1N
-   1a1kY3i0HKvhHPs+4JKuwQryJGebMPUvg9R3gfMO5foiGcStDfVKymdaY
-   7MYv4agnr9QYYc1YU4htnWS3LckED9BUb9TiK8l9qp6Ml8hE0w3vWspa6
-   4+8/iaqfsiHxVongGh88MyXNQb4pDU1HR8ozxhbM5skwg95qFpfbpvqUu
-   g==;
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="159549787"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Jun 2022 02:38:19 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 9 Jun 2022 02:38:18 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 9 Jun 2022 02:38:17 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <daniel.lezcano@linaro.org>, <tglx@linutronix.de>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [RESEND][PATCH 3/3] clocksource/drivers/timer-microchip-pit64b: fix compilation warnings
-Date:   Thu, 9 Jun 2022 12:40:41 +0300
-Message-ID: <20220609094041.1796372-4-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220609094041.1796372-1-claudiu.beznea@microchip.com>
-References: <20220609094041.1796372-1-claudiu.beznea@microchip.com>
+        Thu, 9 Jun 2022 05:39:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 444B73A724
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 02:38:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E50D2B82C94
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 09:38:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71CE7C34114;
+        Thu,  9 Jun 2022 09:38:55 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="KWO6SD/+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1654767533;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XLQ8mMO0hzeJi8rzxsf9luStKEDEI8Zafy1QgR2AB2A=;
+        b=KWO6SD/+lFHS9/dt8B1qD6KGi1uc18TwUSdHr8x8fDXwydBzf8WzB7SrX2t2wQPHZ7u2ig
+        AwGmSU7A2YIpKbZTIRhmrT/3mDj0D/9tuVIaUYdc8zhps4iSGZJu9jUPR+h8IrTQYzwMxl
+        vU6uRNynWcY3WJIJnd5zo7rUxOPcgHc=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d6f35694 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 9 Jun 2022 09:38:53 +0000 (UTC)
+Date:   Thu, 9 Jun 2022 11:38:47 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     "R, Monish Kumar" <monish.kumar.r@intel.com>
+Cc:     "open list:NVM EXPRESS DRIVER" <linux-nvme@lists.infradead.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        "alan.adamson@oracle.com" <alan.adamson@oracle.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Yi Zhang <yi.zhang@redhat.com>,
+        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "Rao, Abhijeet" <abhijeet.rao@intel.com>
+Subject: Re: 2 second nvme initialization delay regression in 5.18 [Was: Re:
+ [bug report]nvme0: Admin Cmd(0x6), I/O Error (sct 0x0 / sc 0x2) MORE DNR
+ observed during blktests]
+Message-ID: <YqG/pybFg0P5yQ9a@zx2c4.com>
+References: <CAHj4cs_iC+FE8ZAXXZPeia1V3ZX7zRbeASdOP_8c7DLiFozNfA@mail.gmail.com>
+ <Ykyf5Zuz1W8yHhNY@zx2c4.com>
+ <CAHmME9pwz4q0m-pSUy7ReWu4nNzxySNcYZrqyDZiTuGxHN=1NQ@mail.gmail.com>
+ <CAHmME9o-orF52HzkT80054e3Op5fLOcTHb-KHpvvU7H3FpAJ7A@mail.gmail.com>
+ <SA2PR11MB5115DCE45778910C96813CA1C3A79@SA2PR11MB5115.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <SA2PR11MB5115DCE45778910C96813CA1C3A79@SA2PR11MB5115.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following compilation warnings:
-timer-microchip-pit64b.c:68: warning: cannot understand function prototype: 'struct mchp_pit64b_clkevt '
-timer-microchip-pit64b.c:82: warning: cannot understand function prototype: 'struct mchp_pit64b_clksrc '
-timer-microchip-pit64b.c:283: warning: Function parameter or member 'timer' not described in 'mchp_pit64b_init_mode'
-timer-microchip-pit64b.c:283: warning: Function parameter or member 'max_rate' not described in 'mchp_pit64b_init_mode'
+Hi Monish,
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/clocksource/timer-microchip-pit64b.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+On Thu, Jun 09, 2022 at 09:32:02AM +0000, R, Monish Kumar wrote:
+> Hi Jason,
+> 
+> I would like to provide justification for this Samsung X5 SSD fix added.
+> We were facing SSD enumeration issue after cold / warm reboot with device 
+> connected ends up with probe failures.
+> 
+> When I debug on this issue, I could find that this device was not enumerating 
+> once the system got booted. Moreover, we were facing this enumeration issue
+> specific to this device. 
+> 
+> Based on analysis, due to deep power state of the device fails to enumerate.
+> So, added the following quirks as a workaround fixe and it helps to enumerate the device after cold/warm reboot. If new Samsung X5 SSD's are working fine as expected, we can remove those 
+> fix. 
 
-diff --git a/drivers/clocksource/timer-microchip-pit64b.c b/drivers/clocksource/timer-microchip-pit64b.c
-index f50705698283..d5f1436f33d9 100644
---- a/drivers/clocksource/timer-microchip-pit64b.c
-+++ b/drivers/clocksource/timer-microchip-pit64b.c
-@@ -61,7 +61,7 @@ struct mchp_pit64b_timer {
- };
- 
- /**
-- * mchp_pit64b_clkevt - PIT64B clockevent data structure
-+ * struct mchp_pit64b_clkevt - PIT64B clockevent data structure
-  * @timer: PIT64B timer
-  * @clkevt: clockevent
-  */
-@@ -75,7 +75,7 @@ struct mchp_pit64b_clkevt {
- 		struct mchp_pit64b_clkevt, clkevt))
- 
- /**
-- * mchp_pit64b_clksrc - PIT64B clocksource data structure
-+ * struct mchp_pit64b_clksrc - PIT64B clocksource data structure
-  * @timer: PIT64B timer
-  * @clksrc: clocksource
-  */
-@@ -245,8 +245,10 @@ static void __init mchp_pit64b_pres_compute(u32 *pres, u32 clk_rate,
- }
- 
- /**
-- * mchp_pit64b_init_mode - prepare PIT64B mode register value to be used at
-- *			   runtime; this includes prescaler and SGCLK bit
-+ * mchp_pit64b_init_mode() - prepare PIT64B mode register value to be used at
-+ *			     runtime; this includes prescaler and SGCLK bit
-+ * @timer: pointer to pit64b timer to init
-+ * @max_rate: maximum rate that timer's clock could use
-  *
-  * PIT64B timer may be fed by gclk or pclk. When gclk is used its rate has to
-  * be at least 3 times lower that pclk's rate. pclk rate is fixed, gclk rate
--- 
-2.34.1
+FWIW, all of that should have been in the commit message. Also, "based
+on analysis" - what analysis exactly? I have no way of thinking more
+about the issue at hand other than, "Monish said things are like this in
+a lab".
 
+In any case, I believe the 970 ID predates that of the X5, and
+destroying battery on those laptops and introducing boot time delays
+isn't really okay. So let's just revert this until somebody can work out
+better how to differentiate drives that need a quirk from drives that
+don't need a quirk.
+
+I sent this in: https://lore.kernel.org/lkml/20220609084051.4445-1-Jason@zx2c4.com/
+
+Jason
