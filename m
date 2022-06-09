@@ -2,125 +2,318 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B192C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F54C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233822AbiFIOKz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 10:10:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57286 "EHLO
+        id S234347AbiFIOLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 10:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237337AbiFIOKw (ORCPT
+        with ESMTP id S237174AbiFIOKx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 10:10:52 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F00A1E2E;
-        Thu,  9 Jun 2022 07:10:47 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id fd25so31404137edb.3;
-        Thu, 09 Jun 2022 07:10:47 -0700 (PDT)
+        Thu, 9 Jun 2022 10:10:53 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2066.outbound.protection.outlook.com [40.107.95.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F56D4D610;
+        Thu,  9 Jun 2022 07:10:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X5+TlGgsawH0H+1ZWPHx1w6178Lf8dhRrJO2e0qH83g0hDfh5TLtQKJe1a+D68DpZClKHLY40Iu4I0BuGwcBn8irCiBw+kfstgT5Vd2mKz1ZXhOs2RwXcbLhcesPvnAwiQKN2ogs1ijKuGtChnSTxUXQ0zIHqAPtZVIrFyopL2nrj2t7xy9V75NfZX18KjAV+y/YdpyzYjQ8fTwxaujOLTFd95zETlH3SyNTG5KbErNYE8WpaCatUkv7YUH0uSs1A+95PCVT13j6+0IQ2QIS63uigj3n69BpGLk5vnHiaiVq281VaPadkOmfSSZD8D+brIO082yfTA8jLj35mezl+Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ys5JX/GT0QAG6rP/33DMBuT0Ca0wc+h3kCmOF8P9v8g=;
+ b=Z8DJFHf31OTFOCimbkOtQ7RS8fC2g4EMmYLqiHoSFJC3nimGO7V2nx+r0fioA6nL7VCsAoFOREbI9N+d4GZbmqWdgighXWRIirNJU1U9e1K2nRRvasAeaSqWYD3EHlNjH0psvx02zsCpULFv55c8qAovcpOkNcBPIi79mqVledtcJUeH/6PoDJ8wRZE+Y/F72/tKAu6/ckdKKN+OYgJieKzZcAkIGBlOvb8s2ZyHJl1z0s+D9J0jjjVK67Qf3BswouGl9WpfKtLdqCtdcoC/ow00iUChH4XdblJZexYLlsmsTXAmhCikBh+6SQl4zTnc5Iq7RiXAfDPdLEbU03OsMg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=towertech.it smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=mEtsDMb1k6CAhwW7ISC2TInxkibSNypnKownS0OQOzM=;
-        b=mgrJ9hp/GfgwWN5tXJmnl8BnnEqXCAKpNGpam7MtrpYO0SI1hQovYwM1cGtHRSBW8N
-         8hwdKmACCRbdEVp3ztBxuOUpU8Lj8cWf+Kx+Z+HJz+f/NStxBiUuk3lNwo/iQqflxvTF
-         InhPQenYDtubdWj0kzqQunKVK2VpuXe5lG3LqH359TPGOV1ya8aUubNqeEJm5slFN9UC
-         s0l6wKpJdTKH6VEkOyvnAWu4FuxiRHTd1mmSc0t20a63BtaAauk73vDVGuMPaKxjSfDI
-         ZF7BlODVAXy32IB8sffpp41YjC1ufolYJTK/mIyUwM1Gg4I4h8Te99MpvvqM5hnlFIwa
-         jqMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=mEtsDMb1k6CAhwW7ISC2TInxkibSNypnKownS0OQOzM=;
-        b=bfpDhOe3ZcKZbjcorPwQjYVm6N7fNRquF0Qobpu3I3Pnrj+bCp78CMOXKsmL7M0Bz9
-         Z+lXMfyG2z8aAgEao6Sxkfy8MCkjcaYeBNDgsLCNM9Mggslu+nxOW9C5mDvfZJiDCjh2
-         YdjZGPSyMgQCCielQmf5ciTDZ7YFVmvGAa9Qn+78NZjU+f/W5XH26EQOGDfd1VkJ1R0f
-         f5Z1wv1SqKF8CigoARLcnT94TLyQzbvlU8m/YyVLp6tFMyWPXVK8zaLtW+0nW/72wjCw
-         kQVNHnGwNe3fG9txulbpUtSB878nCH8p2EiymV8kfii/OT02u7L9lPInRDW62+9OOkX6
-         z6Hw==
-X-Gm-Message-State: AOAM532mHO5qujRHkN4OKeSdQJnvAsNOuGEXG+i+W+UP6adwsAqSpPRs
-        WFyud28aZwTnfOSbl8R2m5FevebjqrQ=
-X-Google-Smtp-Source: ABdhPJyeKHQqi9/0tzt/2RVsH3TlW5RXc5Nbx2kxhyDYn4Th+HmG5UQ3rIQ0Tdhh57D5z0Br/W8sFA==
-X-Received: by 2002:a05:6402:3291:b0:42d:dd03:cbb1 with SMTP id f17-20020a056402329100b0042ddd03cbb1mr44742813eda.268.1654783846479;
-        Thu, 09 Jun 2022 07:10:46 -0700 (PDT)
-Received: from ?IPV6:2a02:908:1256:79a0:99ff:907d:6fef:f861? ([2a02:908:1256:79a0:99ff:907d:6fef:f861])
-        by smtp.gmail.com with ESMTPSA id q24-20020aa7d458000000b0042aad9edc9bsm14778769edr.71.2022.06.09.07.10.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jun 2022 07:10:39 -0700 (PDT)
-Message-ID: <26d3e1c7-d73c-cc95-54ef-58b2c9055f0c@gmail.com>
-Date:   Thu, 9 Jun 2022 16:10:33 +0200
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ys5JX/GT0QAG6rP/33DMBuT0Ca0wc+h3kCmOF8P9v8g=;
+ b=KfCb8+hkbQ13OdwuD2pWl5OT3LnJ/YkKZxrePsZA1DKcZkA0z5He88v6Jz6O7JDeWS/MrT5WqtaJX2kohYED10GbdK/JsfuT2NBItI89L1Fpi6ZA6Z864WsizjC+IS20xNG2dUZqJlDP+vGEETQrMRzXu0Z52kdkuC9TzYee8ow=
+Received: from SA9PR13CA0011.namprd13.prod.outlook.com (2603:10b6:806:21::16)
+ by CH0PR02MB8075.namprd02.prod.outlook.com (2603:10b6:610:108::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Thu, 9 Jun
+ 2022 14:10:48 +0000
+Received: from SN1NAM02FT0027.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:806:21:cafe::3c) by SA9PR13CA0011.outlook.office365.com
+ (2603:10b6:806:21::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.5 via Frontend
+ Transport; Thu, 9 Jun 2022 14:10:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0027.mail.protection.outlook.com (10.97.4.212) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5332.12 via Frontend Transport; Thu, 9 Jun 2022 14:10:48 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 9 Jun 2022 07:08:50 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Thu, 9 Jun 2022 07:08:50 -0700
+Envelope-to: git@xilinx.com,
+ a.zummo@towertech.it,
+ alexandre.belloni@bootlin.com,
+ robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org,
+ srinivas.neeli@amd.com,
+ neelisrinivas18@gmail.com,
+ devicetree@vger.kernel.org,
+ linux-rtc@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+Received: from [10.140.6.39] (port=38176 helo=xhdsgoud40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <srinivas.neeli@xilinx.com>)
+        id 1nzIq9-0001FS-Nx; Thu, 09 Jun 2022 07:08:50 -0700
+From:   Srinivas Neeli <srinivas.neeli@xilinx.com>
+To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <michal.simek@xilinx.com>, <sgoud@xilinx.com>,
+        <shubhraj@xilinx.com>, <srinivas.neeli@amd.com>,
+        <neelisrinivas18@gmail.com>
+CC:     <devicetree@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <git@xilinx.com>,
+        Srinivas Neeli <srinivas.neeli@xilinx.com>
+Subject: [PATCH V6 2/2] rtc: zynqmp: Add calibration set and get support
+Date:   Thu, 9 Jun 2022 19:38:33 +0530
+Message-ID: <20220609140833.1784738-2-srinivas.neeli@xilinx.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220609140833.1784738-1-srinivas.neeli@xilinx.com>
+References: <20220609140833.1784738-1-srinivas.neeli@xilinx.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 03/13] mm: shmem: provide oom badness for shmem files
-Content-Language: en-US
-To:     Michal Hocko <mhocko@suse.com>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        nouveau@lists.freedesktop.org, linux-tegra@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        alexander.deucher@amd.com, daniel@ffwll.ch,
-        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
-        hughd@google.com, andrey.grodzovsky@amd.com
-References: <20220531100007.174649-1-christian.koenig@amd.com>
- <20220531100007.174649-4-christian.koenig@amd.com>
- <YqG67sox6L64E6wV@dhcp22.suse.cz>
- <77b99722-fc13-e5c5-c9be-7d4f3830859c@amd.com>
- <YqHuH5brYFQUfW8l@dhcp22.suse.cz>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
-In-Reply-To: <YqHuH5brYFQUfW8l@dhcp22.suse.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5c04a4ab-d349-4030-8be2-08da4a21da4b
+X-MS-TrafficTypeDiagnostic: CH0PR02MB8075:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR02MB80755FBACDD9088761A87815AFA79@CH0PR02MB8075.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qWXgZ0gYz3gyQKGkhrOgxn/3Uubi93YUizoRGBo3WQixy8VRS35Up2Fwe5O3eZUJFuPIvY9FDTvUD9aP0dqyMFBrQG5Zu+wq62vTzUWCKfkS9zT9Vdfq3DEsA/34VemISW1g6lx2EnDPXak7Nnxx8ffNfjaHkYYFss/ECvmQJG12+sGZy3oZvPRA22iF8bVowOH1BCqvPCXacQxNqiv6ui0es4FmU0H5p8GXzK3aETbnnx9tUI+w9Rg7K2sDCFVQENgEJhjJ+YMiVAi0Fg68qzeQNMfKwxT+3guiD3NY/LVnDDUe+08BHK4L6PflVi7I+uCxRb0xlp4aHeMrK1qTjER43eT4QQfGWkK/fdmE5Q6TWph17yw6D9hGz63kmS8lMrUUVNI4CFj7M9cZM2ionwGmw1JgrxMbaNN5c+hVgPQ4FM+jcaA7d7j9LUpHZnBKzTuimP3f8phZrEgGwz7AcGsuMq7MZmlsBsvC/4axnKDS5UCn+Ag5UZ88JcSkallu+0MirG88K49mIwLP04PTZpOzXhF3UZxHRgOK6CdJApB6RmOn3k3jyDLIqaOYJ4ZXVOKtUm5tEkqDG9otpJEte5FIp4gb4v6yHzFijyuOt6jnmCPBBEYgnpmNPCpd9+FlUFeJ1ZOVpiT6TMjzMR57uYRrDEDFYi1g62nztHjnvToWkJ7cTdz9Ey1PInmub31k8Y8i9yalW6FtILYL0gZRyF0rzUrKJS1DeosL6gr9v7g=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(1076003)(40460700003)(82310400005)(186003)(9786002)(107886003)(2616005)(426003)(336012)(47076005)(508600001)(54906003)(8936002)(36860700001)(110136005)(8676002)(4326008)(5660300002)(7416002)(70586007)(2906002)(70206006)(316002)(83380400001)(26005)(6666004)(7696005)(356005)(44832011)(36756003)(7636003)(102446001)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2022 14:10:48.2169
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c04a4ab-d349-4030-8be2-08da4a21da4b
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0027.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR02MB8075
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 09.06.22 um 14:57 schrieb Michal Hocko:
-> On Thu 09-06-22 14:16:56, Christian König wrote:
->> Am 09.06.22 um 11:18 schrieb Michal Hocko:
->>> On Tue 31-05-22 11:59:57, Christian König wrote:
->>>> This gives the OOM killer an additional hint which processes are
->>>> referencing shmem files with potentially no other accounting for them.
->>>>
->>>> Signed-off-by: Christian König <christian.koenig@amd.com>
->>>> ---
->>>>    mm/shmem.c | 6 ++++++
->>>>    1 file changed, 6 insertions(+)
->>>>
->>>> diff --git a/mm/shmem.c b/mm/shmem.c
->>>> index 4b2fea33158e..a4ad92a16968 100644
->>>> --- a/mm/shmem.c
->>>> +++ b/mm/shmem.c
->>>> @@ -2179,6 +2179,11 @@ unsigned long shmem_get_unmapped_area(struct file *file,
->>>>    	return inflated_addr;
->>>>    }
->>>> +static long shmem_oom_badness(struct file *file)
->>>> +{
->>>> +	return i_size_read(file_inode(file)) >> PAGE_SHIFT;
->>>> +}
->>> This doesn't really represent the in memory size of the file, does it?
->> Well the file could be partially or fully swapped out as anonymous memory or
->> the address space only sparse populated, but even then just using the file
->> size as OOM badness sounded like the most straightforward approach to me.
-> It covers hole as well, right?
+Zynqmp RTC controller has a calibration feature to compensate
+time deviation due to input clock inaccuracy.
+Set and get calibration API's are used for setting and getting
+calibration value from the controller calibration register.
+As per RTC spec default calibration value is 0x7FFF.
 
-Yes, exactly.
+Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+---
+Changes in V6:
+-None
+Changes in V5:
+-None
+Changes in V4:
+-Updated MIN and MAX calibration values.
+Changes in V3:
+-Calculated tick_mult using crystal frequency.
+-Calibration register updating based on crystal frequency in probe.
+-Supressed MIN an MAX calibration values,Will send separate patch in future.
+Changes in V2:
+-Removed unused macro.
+-Updated code with review comments.
+---
+ drivers/rtc/rtc-zynqmp.c | 115 ++++++++++++++++++++++++++++++++-------
+ 1 file changed, 95 insertions(+), 20 deletions(-)
 
->
->> What could happen is that the file is also mmaped and we double account.
->>
->>> Also the memcg oom handling could be considerably skewed if the file was
->>> shared between more memcgs.
->> Yes, and that's one of the reasons why I didn't touched the memcg by this
->> and only affected the classic OOM killer.
-> oom_badness is for all oom handlers, including memcg. Maybe I have
-> misread an earlier patch but I do not see anything specific to global
-> oom handling.
+diff --git a/drivers/rtc/rtc-zynqmp.c b/drivers/rtc/rtc-zynqmp.c
+index f440bb52be92..1dd389b891fe 100644
+--- a/drivers/rtc/rtc-zynqmp.c
++++ b/drivers/rtc/rtc-zynqmp.c
+@@ -6,6 +6,7 @@
+  *
+  */
+ 
++#include <linux/clk.h>
+ #include <linux/delay.h>
+ #include <linux/init.h>
+ #include <linux/io.h>
+@@ -36,17 +37,23 @@
+ #define RTC_OSC_EN		BIT(24)
+ #define RTC_BATT_EN		BIT(31)
+ 
+-#define RTC_CALIB_DEF		0x198233
++#define RTC_CALIB_DEF		0x7FFF
+ #define RTC_CALIB_MASK		0x1FFFFF
+ #define RTC_ALRM_MASK          BIT(1)
+ #define RTC_MSEC               1000
++#define RTC_FR_MASK		0xF0000
++#define RTC_FR_MAX_TICKS	16
++#define RTC_PPB			1000000000LL
++#define RTC_MIN_OFFSET		-32768000
++#define RTC_MAX_OFFSET		32767000
+ 
+ struct xlnx_rtc_dev {
+ 	struct rtc_device	*rtc;
+ 	void __iomem		*reg_base;
+ 	int			alarm_irq;
+ 	int			sec_irq;
+-	unsigned int		calibval;
++	struct clk		*rtc_clk;
++	unsigned int		freq;
+ };
+ 
+ static int xlnx_rtc_set_time(struct device *dev, struct rtc_time *tm)
+@@ -61,13 +68,6 @@ static int xlnx_rtc_set_time(struct device *dev, struct rtc_time *tm)
+ 	 */
+ 	new_time = rtc_tm_to_time64(tm) + 1;
+ 
+-	/*
+-	 * Writing into calibration register will clear the Tick Counter and
+-	 * force the next second to be signaled exactly in 1 second period
+-	 */
+-	xrtcdev->calibval &= RTC_CALIB_MASK;
+-	writel(xrtcdev->calibval, (xrtcdev->reg_base + RTC_CALIB_WR));
+-
+ 	writel(new_time, xrtcdev->reg_base + RTC_SET_TM_WR);
+ 
+ 	/*
+@@ -173,15 +173,76 @@ static void xlnx_init_rtc(struct xlnx_rtc_dev *xrtcdev)
+ 	rtc_ctrl = readl(xrtcdev->reg_base + RTC_CTRL);
+ 	rtc_ctrl |= RTC_BATT_EN;
+ 	writel(rtc_ctrl, xrtcdev->reg_base + RTC_CTRL);
++}
+ 
+-	/*
+-	 * Based on crystal freq of 33.330 KHz
+-	 * set the seconds counter and enable, set fractions counter
+-	 * to default value suggested as per design spec
+-	 * to correct RTC delay in frequency over period of time.
++static int xlnx_rtc_read_offset(struct device *dev, long *offset)
++{
++	struct xlnx_rtc_dev *xrtcdev = dev_get_drvdata(dev);
++	unsigned long long rtc_ppb = RTC_PPB;
++	unsigned int tick_mult = do_div(rtc_ppb, xrtcdev->freq);
++	unsigned int calibval;
++	long offset_val;
++
++	calibval = readl(xrtcdev->reg_base + RTC_CALIB_RD);
++	/* Offset with seconds ticks */
++	offset_val = calibval & RTC_TICK_MASK;
++	offset_val = offset_val - RTC_CALIB_DEF;
++	offset_val = offset_val * tick_mult;
++
++	/* Offset with fractional ticks */
++	if (calibval & RTC_FR_EN)
++		offset_val += ((calibval & RTC_FR_MASK) >> RTC_FR_DATSHIFT)
++			* (tick_mult / RTC_FR_MAX_TICKS);
++	*offset = offset_val;
++
++	return 0;
++}
++
++static int xlnx_rtc_set_offset(struct device *dev, long offset)
++{
++	struct xlnx_rtc_dev *xrtcdev = dev_get_drvdata(dev);
++	unsigned long long rtc_ppb = RTC_PPB;
++	unsigned int tick_mult = do_div(rtc_ppb, xrtcdev->freq);
++	unsigned char fract_tick;
++	unsigned int calibval;
++	short int  max_tick;
++	int fract_offset;
++
++	if (offset < RTC_MIN_OFFSET || offset > RTC_MAX_OFFSET)
++		return -ERANGE;
++
++	/* Number ticks for given offset */
++	max_tick = div_s64_rem(offset, tick_mult, &fract_offset);
++
++	/* Number fractional ticks for given offset */
++	if (fract_offset) {
++		if (fract_offset < 0) {
++			fract_offset = fract_offset + tick_mult;
++			max_tick--;
++		}
++		if (fract_offset > (tick_mult / RTC_FR_MAX_TICKS)) {
++			for (fract_tick = 1; fract_tick < 16; fract_tick++) {
++				if (fract_offset <=
++				    (fract_tick *
++				     (tick_mult / RTC_FR_MAX_TICKS)))
++					break;
++			}
++		}
++	}
++
++	/* Zynqmp RTC uses second and fractional tick
++	 * counters for compensation
+ 	 */
+-	xrtcdev->calibval &= RTC_CALIB_MASK;
+-	writel(xrtcdev->calibval, (xrtcdev->reg_base + RTC_CALIB_WR));
++	calibval = max_tick + RTC_CALIB_DEF;
++
++	if (fract_tick)
++		calibval |= RTC_FR_EN;
++
++	calibval |= (fract_tick << RTC_FR_DATSHIFT);
++
++	writel(calibval, (xrtcdev->reg_base + RTC_CALIB_WR));
++
++	return 0;
+ }
+ 
+ static const struct rtc_class_ops xlnx_rtc_ops = {
+@@ -190,6 +251,8 @@ static const struct rtc_class_ops xlnx_rtc_ops = {
+ 	.read_alarm	  = xlnx_rtc_read_alarm,
+ 	.set_alarm	  = xlnx_rtc_set_alarm,
+ 	.alarm_irq_enable = xlnx_rtc_alarm_irq_enable,
++	.read_offset	  = xlnx_rtc_read_offset,
++	.set_offset	  = xlnx_rtc_set_offset,
+ };
+ 
+ static irqreturn_t xlnx_rtc_interrupt(int irq, void *id)
+@@ -255,10 +318,22 @@ static int xlnx_rtc_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
+-	ret = of_property_read_u32(pdev->dev.of_node, "calibration",
+-				   &xrtcdev->calibval);
+-	if (ret)
+-		xrtcdev->calibval = RTC_CALIB_DEF;
++	/* Getting the rtc_clk info */
++	xrtcdev->rtc_clk = devm_clk_get_optional(&pdev->dev, "rtc_clk");
++	if (IS_ERR(xrtcdev->rtc_clk)) {
++		if (PTR_ERR(xrtcdev->rtc_clk) != -EPROBE_DEFER)
++			dev_warn(&pdev->dev, "Device clock not found.\n");
++	}
++	xrtcdev->freq = clk_get_rate(xrtcdev->rtc_clk);
++	if (!xrtcdev->freq) {
++		ret = of_property_read_u32(pdev->dev.of_node, "calibration",
++					   &xrtcdev->freq);
++		if (ret)
++			xrtcdev->freq = RTC_CALIB_DEF;
++	}
++	ret = readl(xrtcdev->reg_base + RTC_CALIB_RD);
++	if (!ret)
++		writel(xrtcdev->freq, (xrtcdev->reg_base + RTC_CALIB_WR));
+ 
+ 	xlnx_init_rtc(xrtcdev);
+ 
+-- 
+2.25.1
 
-As far as I can see the oom_badness() function is only used in oom_kill.c and in procfs to return the oom score. Did I missed something?
-
-Regards,
-Christian.
