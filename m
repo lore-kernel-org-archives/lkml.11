@@ -2,68 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E5EFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:26:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 623F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343939AbiFIO0t (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 10:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48240 "EHLO
+        id S241067AbiFIO1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 10:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343959AbiFIO0p (ORCPT
+        with ESMTP id S229973AbiFIO1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 10:26:45 -0400
-Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E659F6FA1A;
-        Thu,  9 Jun 2022 07:26:37 -0700 (PDT)
-X-QQ-mid: bizesmtp73t1654784656t8hh5989
-Received: from localhost.localdomain ( [111.9.5.115])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 09 Jun 2022 22:24:10 +0800 (CST)
-X-QQ-SSF: 01000000002000C0H000B00A0000000
-X-QQ-FEAT: LVBOaDZ5gPorCP/XffdZeTI+1vyOfcp8Jl6f1X5JL7/BufghuOj6H79AyBfqD
-        ImKD7MMUyDdTdTEdMBg8qBT01kW1eqwlqlYa1lQLod6f98/e0NrVUOLNbyYgn/IaNJ3LVBz
-        guhmpgFHCPPVico9L3D9ibe8UJqJqWOk5I6hxreebh2yHkIHEEqb9AtyixxEVVI4kLj0hT2
-        fNoP0Ma821vfRwRmM64Y8zHUlRz12wurwJNCWWMLhtaLQdVmehX2tZuWNbc3LWXunm2P6We
-        NIMmefDBhEqajD5V/Wy+Bl5Vss5+2ekcUvLnR7FTOm2jl2wvS2PH4oJ5lr+z42oZhdVg==
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     clm@fb.com
-Cc:     josef@toxicpanda.com, dsterba@suse.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH] btrfs: Fix typo in comment
-Date:   Thu,  9 Jun 2022 22:24:05 +0800
-Message-Id: <20220609142405.51613-1-wangxiang@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 9 Jun 2022 10:27:46 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F3412FB29;
+        Thu,  9 Jun 2022 07:27:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654784865; x=1686320865;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=eCY5vfssjBdEESu3NYeDhokIbEHWS/CgrAYFRq7UYdE=;
+  b=DXH8TA4evcya/w22/AJ3pBxXQ/UxKms8dGCZKg2yCCidvBaG5orPxp+S
+   QiPbZHNrn5IldMAjOhtJhR4gHGsNo7mLSGehHwTeAwQYbfWvAmfASF9b2
+   iTZHT0qmAuqzA/oYSdfbHyk6z9r/asxDavKkQFOdtceFO0ARHLENyR5JT
+   c2bQYn2T0u+wszTo5OP779k6EgZiLxPIeblOvwEJAnVHIaWSh3kQAB50p
+   8yxxtNPRA1e/iRQ+VVXZ7LihhbV9tpsPZ3eEZHXIfJQFhicXpatwtIH2x
+   il7TWj+oVsLLuHrW11jEFaj36DiN0i7+JD8Obvq53c2Lh0fLX5ArOmChi
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="257125019"
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="257125019"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 07:27:44 -0700
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="908344064"
+Received: from fungjona-mobl.amr.corp.intel.com (HELO [10.212.203.188]) ([10.212.203.188])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 07:27:43 -0700
+Message-ID: <f62ab257-b2e0-3097-e394-93a9e7a0d2bf@intel.com>
+Date:   Thu, 9 Jun 2022 07:27:43 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 1/2] x86: notify hypervisor about guest entering s2idle
+ state
+Content-Language: en-US
+To:     Grzegorz Jaszczyk <jaz@semihalf.com>, linux-kernel@vger.kernel.org
+Cc:     dmy@semihalf.com,
+        Zide Chen <zide.chen@intel.corp-partner.google.com>,
+        Peter Fang <peter.fang@intel.corp-partner.google.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Ashish Kalra <ashish.kalra@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Pratik Vishwakarma <Pratik.Vishwakarma@amd.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sachi King <nakato@nakato.io>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        David Dunn <daviddunn@google.com>,
+        Wei Wang <wei.w.wang@intel.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "open list:KERNEL VIRTUAL MACHINE (KVM)" <kvm@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        "open list:ACPI" <linux-acpi@vger.kernel.org>,
+        "open list:HIBERNATION (aka Software Suspend, aka swsusp)" 
+        <linux-pm@vger.kernel.org>
+References: <20220609110337.1238762-1-jaz@semihalf.com>
+ <20220609110337.1238762-2-jaz@semihalf.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220609110337.1238762-2-jaz@semihalf.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'we'.
+On 6/9/22 04:03, Grzegorz Jaszczyk wrote:
+> Co-developed-by: Peter Fang <peter.fang@intel.corp-partner.google.com>
+> Signed-off-by: Peter Fang <peter.fang@intel.corp-partner.google.com>
+> Co-developed-by: Tomasz Nowicki <tn@semihalf.com>
+> Signed-off-by: Tomasz Nowicki <tn@semihalf.com>
+> Signed-off-by: Zide Chen <zide.chen@intel.corp-partner.google.com>
+> Co-developed-by: Grzegorz Jaszczyk <jaz@semihalf.com>
+> Signed-off-by: Grzegorz Jaszczyk <jaz@semihalf.com>
+> ---
+>  Documentation/virt/kvm/x86/hypercalls.rst | 7 +++++++
+>  arch/x86/kvm/x86.c                        | 3 +++
+>  drivers/acpi/x86/s2idle.c                 | 8 ++++++++
+>  include/linux/suspend.h                   | 1 +
+>  include/uapi/linux/kvm_para.h             | 1 +
+>  kernel/power/suspend.c                    | 4 ++++
+>  6 files changed, 24 insertions(+)
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
----
- fs/btrfs/file.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+What's the deal with these emails?
 
-diff --git a/fs/btrfs/file.c b/fs/btrfs/file.c
-index da41a0c371bc..e583558cbbfd 100644
---- a/fs/btrfs/file.c
-+++ b/fs/btrfs/file.c
-@@ -2857,7 +2857,7 @@ int btrfs_replace_file_extents(struct btrfs_inode *inode,
- 	}
- 
- 	/*
--	 * If we were cloning, force the next fsync to be a full one since we
-+	 * If we were cloning, force the next fsync to be a full one since
- 	 * we replaced (or just dropped in the case of cloning holes when
- 	 * NO_HOLES is enabled) file extent items and did not setup new extent
- 	 * maps for the replacement extents (or holes).
--- 
-2.36.1
+	zide.chen@intel.corp-partner.google.com
 
+I see a smattering of those in the git logs, but never for Intel folks.
+
+I'll also say that I'm a bit suspicious of a patch that includes 5
+authors for 24 lines of code.  Did it really take five of you to write
+24 lines of code?
