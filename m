@@ -2,114 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC259C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:31:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF605C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243808AbiFIMbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 08:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44652 "EHLO
+        id S244663AbiFIMcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 08:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237961AbiFIMbe (ORCPT
+        with ESMTP id S237961AbiFIMcP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 08:31:34 -0400
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8573F22F
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 05:31:32 -0700 (PDT)
-Received: by mail-qk1-f180.google.com with SMTP id c83so5133267qke.3
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 05:31:32 -0700 (PDT)
+        Thu, 9 Jun 2022 08:32:15 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7522118353
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 05:32:13 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id h23so37753660lfe.4
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 05:32:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SfBdadjjVbuYsWcHjyT2JNkeKnRXZofpQUc3M0v3lw8=;
+        b=ZuexHRJpNkArhkzlyVFzZzfvSGVG0EYbj1SnK7hExFfijK7WjsRYWBLE0IAgfsl2Zi
+         MEyYD78r42eLMgaGkHPJR1S3gTnNwQnEllIN+QBILQnNTymZq4f19Yu/6jG5M503bWVv
+         sTnn/1fbYfOfY6pb0CbXuakmf+f9jM1TKXottjCpAfvvenicMckun+zADDhluMOtEFEr
+         Fltda09pvIbbAqK5WXQ/PojELjI4dNLYnujpwmEs+PosBQICQSiY48ZEGW61ag+09nDR
+         naerd/Vk9Iwjla68zxr0uqMt7jTerwywgXFZ3UjNXRbXyEQGZgLfPS9674SbORQU4h6m
+         PWww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6WNNhQK6JE2Cn/3pAieE4V2HComQZrsks/B6n612PiU=;
-        b=a7t5REScGn8rczrH3NdB4766wQQn+Q/c5cZ64rkGhv2kTUENpHnIpZX/w/81Ru177z
-         YGuqU/ozILaqkcX3iqRN7Cd0ftYR6m0/ca30iiR7UO+/ThbBFR7ZBa1WlQM+t+42gK+z
-         ODmUDQVZf1DS02u9p2tO+cHclXbkcB8xZC6cA/J4BfVXPeaZD1QNtBaZbAnf2jzrsTd/
-         k4K0+IBh6MXiRc4H9CrMUzJWDokpzRcRp3Cc0d8Sbz3sSJ4DZ8X4yICq9tNPEHvh4TUK
-         Lq+SyXdChfGTiyn+khKuaCtJhheO24s1ZuuCTailIZuVHO4OEZbtoBIIF+450uw+LQiu
-         cpfg==
-X-Gm-Message-State: AOAM533LltWdDDrSqwahXFabERSpi+RE06jDU6cZRRBhNvSbdxMxSDeA
-        22wSe0AcJPRu9aebfZRoQP2ZYXXS6LHr6g==
-X-Google-Smtp-Source: ABdhPJxMIlK5ymr5ifVZxKBZhSzm3C+zODRKVSU7XDehZp1zm7BILi/Jv13hB/MXeXVjfC0v73VgIA==
-X-Received: by 2002:a37:a605:0:b0:6a6:7c24:5c80 with SMTP id p5-20020a37a605000000b006a67c245c80mr24895796qke.448.1654777891097;
-        Thu, 09 Jun 2022 05:31:31 -0700 (PDT)
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
-        by smtp.gmail.com with ESMTPSA id j19-20020a05620a289300b006a6ab259261sm13524759qkp.29.2022.06.09.05.31.30
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jun 2022 05:31:30 -0700 (PDT)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-30c2f288f13so239211757b3.7
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 05:31:30 -0700 (PDT)
-X-Received: by 2002:a81:6157:0:b0:30c:7e4d:b28e with SMTP id
- v84-20020a816157000000b0030c7e4db28emr42497205ywb.502.1654777889942; Thu, 09
- Jun 2022 05:31:29 -0700 (PDT)
+        bh=SfBdadjjVbuYsWcHjyT2JNkeKnRXZofpQUc3M0v3lw8=;
+        b=Il26Rr0jriFE7IGnTdmZvmvlbRQXwNRkAYyT2LOu/oGOgYvkWQ4iz+FQR1i2mq0aFw
+         5C7VQ0eq/m0TjJds5ATYAYEOgVS3ZMs9/u7Rj/DKYLxjb7hTl1sRMxINQHyzjHSt7ynq
+         IzFs/i8uPp8iWWxPFqw0/ZDcBDIthQnqToU1VDQLDFPqrwnfiLOHsTKPQ82ip5Cj+wMY
+         Nz5hq9nWCcbuhkvfFRuSDCS8MRL26XkRAtMr26sGEiCjdxaQOwUo95iuvzJdbwf6a9ia
+         p9oWuEhCjM9KXU20e47b3ofJx2qFpetKpw2MerxnRHEGif+1VrC1/NTUscmf0oI2xsIt
+         dKEw==
+X-Gm-Message-State: AOAM532bnxEMcPtNhtmW5efJaNS2iPFaNPTnxv0b1Up5yqLRVyfrR5cl
+        +23Ji83RZwQ9HmZb1fY5rKO8/wSwxA6SZTV1T4/LSA==
+X-Google-Smtp-Source: ABdhPJzLWjIsu++QNIx3qDCOGVcwgjQAzeuOsueKw0KOpXNjxn2Gz9hA0HmKib9smkmGcaOLoJgCB0QQYNMhpqx7BYk=
+X-Received: by 2002:a05:6512:1588:b0:477:a556:4ab2 with SMTP id
+ bp8-20020a056512158800b00477a5564ab2mr24638097lfb.376.1654777931483; Thu, 09
+ Jun 2022 05:32:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220609121709.12939-1-Jason@zx2c4.com>
-In-Reply-To: <20220609121709.12939-1-Jason@zx2c4.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 9 Jun 2022 14:31:18 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXocvPDViVHjEfeWGxA+7SwOrD3pP7v8wFM80Us3xSU4Q@mail.gmail.com>
-Message-ID: <CAMuHMdXocvPDViVHjEfeWGxA+7SwOrD3pP7v8wFM80Us3xSU4Q@mail.gmail.com>
-Subject: Re: [PATCH] mm/kfence: select random number before taking raw lock
+References: <b6c1a8ac-c691-a84d-d3a1-f99984d32f06@samsung.com>
+ <87fslyv6y3.fsf@jogness.linutronix.de> <51dfc4a0-f6cf-092f-109f-a04eeb240655@samsung.com>
+ <87k0b6blz2.fsf@jogness.linutronix.de> <32bba8f8-dec7-78aa-f2e5-f62928412eda@samsung.com>
+ <87y1zkkrjy.fsf@jogness.linutronix.de> <CAMuHMdVmoj3Tqz65VmSuVL2no4+bGC=qdB8LWoB=vyASf9vS+g@mail.gmail.com>
+ <87fske3wzw.fsf@jogness.linutronix.de> <YqHgdECTYFNJgdGc@zx2c4.com>
+ <CACT4Y+ajfVUkqAjAin73ftqAz=HmLX=p=S=HRV1qe-8_y36J+A@mail.gmail.com> <YqHnH+Yc4TCOXa9X@zx2c4.com>
+In-Reply-To: <YqHnH+Yc4TCOXa9X@zx2c4.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 9 Jun 2022 14:32:00 +0200
+Message-ID: <CACT4Y+Zf8=DgaAYfFWL==vbYF13omtMUGaP=LzKEbsuVzrTe9w@mail.gmail.com>
+Subject: Re: [PATCH printk v5 1/1] printk: extend console_lock for per-console locking
 To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Linux MM <linux-mm@kvack.org>,
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        John Ogness <john.ogness@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
         Alexander Potapenko <glider@google.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>
+        Marco Elver <elver@google.com>, kasan-dev@googlegroups.com,
+        bigeasy@linutronix.de
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
-
-On Thu, Jun 9, 2022 at 2:17 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> The RNG uses vanilla spinlocks, not raw spinlocks, so kfence should pick
-> its random numbers before taking its raw spinlocks. This also has the
-> nice effect of doing less work inside the lock. It should fix a splat
-> that Geert saw with CONFIG_PROVE_RAW_LOCK_NESTING:
+On Thu, 9 Jun 2022 at 14:27, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
 >
->      dump_backtrace.part.0+0x98/0xc0
->      show_stack+0x14/0x28
->      dump_stack_lvl+0xac/0xec
->      dump_stack+0x14/0x2c
->      __lock_acquire+0x388/0x10a0
->      lock_acquire+0x190/0x2c0
->      _raw_spin_lock_irqsave+0x6c/0x94
->      crng_make_state+0x148/0x1e4
->      _get_random_bytes.part.0+0x4c/0xe8
->      get_random_u32+0x4c/0x140
->      __kfence_alloc+0x460/0x5c4
->      kmem_cache_alloc_trace+0x194/0x1dc
->      __kthread_create_on_node+0x5c/0x1a8
->      kthread_create_on_node+0x58/0x7c
->      printk_start_kthread.part.0+0x34/0xa8
->      printk_activate_kthreads+0x4c/0x54
->      do_one_initcall+0xec/0x278
->      kernel_init_freeable+0x11c/0x214
->      kernel_init+0x24/0x124
->      ret_from_fork+0x10/0x20
+> Hi Dmitry,
 >
-> Cc: John Ogness <john.ogness@linutronix.de>
-> Cc: Alexander Potapenko <glider@google.com>
-> Cc: Marco Elver <elver@google.com>
-> Cc: Dmitry Vyukov <dvyukov@google.com>
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> On Thu, Jun 09, 2022 at 02:18:19PM +0200, Dmitry Vyukov wrote:
+> > > AFAIK, CONFIG_PROVE_RAW_LOCK_NESTING is useful for teasing out cases
+> > > where RT's raw spinlocks will nest wrong with RT's sleeping spinlocks.
+> > > But nobody who wants an RT kernel will be using KFENCE. So this seems
+> > > like a non-issue? Maybe just add a `depends on !KFENCE` to
+> > > PROVE_RAW_LOCK_NESTING?
+> >
+> > Don't know if there are other good solutions (of similar simplicity).
+>
+> Fortunately, I found one that solves things without needing to
+> compromise on anything:
+> https://lore.kernel.org/lkml/20220609121709.12939-1-Jason@zx2c4.com/
 
-Thank you, the splat is gone.
+Cool! Thanks!
 
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > Btw, should this new CONFIG_PROVE_RAW_LOCK_NESTING be generally
+> > enabled on testing systems? We don't have it enabled on syzbot.
+>
+> Last time I spoke with RT people about this, the goal was eventually to
+> *always* enable it when lock proving is enabled, but there are too many
+> bugs and cases now to do that, so it's an opt-in. I might be
+> misremembering, though, so CC'ing Sebastian in case he wants to chime
+> in.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+OK, we will wait then.
+Little point in doubling the number of reports for known issues.
