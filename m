@@ -2,80 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0028FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:33:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A52C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345448AbiFISd5 (ORCPT
+        id S1343835AbiFISes (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 14:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
+        Thu, 9 Jun 2022 14:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231477AbiFISdz (ORCPT
+        with ESMTP id S232784AbiFISeo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 14:33:55 -0400
-Received: from mail-il1-f178.google.com (mail-il1-f178.google.com [209.85.166.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BFC736E1E;
-        Thu,  9 Jun 2022 11:33:54 -0700 (PDT)
-Received: by mail-il1-f178.google.com with SMTP id d6so8555960ilm.4;
-        Thu, 09 Jun 2022 11:33:54 -0700 (PDT)
+        Thu, 9 Jun 2022 14:34:44 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C75810C307
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 11:34:44 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id h8so4685125iof.11
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 11:34:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=h+QoQcZlBQcgjaXTtPpLAq3kb9O2sEKS7YuulaGYrdM=;
+        b=Y7L1oYc4ArWnrFVDRVPeULE6pzqLh3WUk0CNiPz7NrRBgZdSWaSTUCQcPlJDbeVg+j
+         LBqa2kIEBIN5O4+n3C9ZzeP5vy8R2QsSi9lswlABwcPHQvpDdov85nCJVzimprRN6UJ0
+         iD5m/s+cbQBj1gn8zzBjmMS5F2UpuYLE56zonznVZFJfo++oE0C0tSo/KaElhmyFZsYg
+         BFrV2OgVsxgu4MZZn7ZgkXJyxidvddkjXpV9nnI7dyLAS7oxqneQqXiSA/JHjpjAUhd/
+         FEnkjLjHTpV9j3pzOI9Y/EAe4UL6BUaYl4lTx2BF5CU+QVAZMi32dsQ2BIurzAg7RDX7
+         QFmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yjLp36AHdSqY0OzW26Jz18S5rMmSenhLhsO9ff9VDN0=;
-        b=gd6Bihklt5tvu4cu1EXf8FCpsauEehwJnpvmCtjHI886iVUHGe3nkFiV9p/GfuNpvT
-         8s9UGzPlWzg8jRY06ec6/zKzW2sj+8x/YsarzdykezQH9OnzIJVl1Nch9WroJGZhRf3/
-         nxrbjrWH9SgTORA2opKTQ7dhepD/u2uOe7Uf41xeTyiRxtJGB3NXY2oqOpWYIzYaW3uB
-         I/DP+XOb85y5tbReUdB9uT/tvFK4J9SGg5TUmXrVr+xt32/s4+L5tHX5yea9hL87CIMX
-         xcLr+RjW822H5woplXD9qca7AjuLv5bbbadOA4cv9sqX/FTIAjFBfLGm5oxG5VV7EAt3
-         +KGg==
-X-Gm-Message-State: AOAM5306BwhbXbi3NicKteTUojRFiSKXxZVWKFzKUZ0jkjisHpk2IyYN
-        MPVZNkV07J83CGw5zZN79g==
-X-Google-Smtp-Source: ABdhPJw5uhY5WYkLXPaUEKy4FK6Ff3jLXV7VjuZ37mMIdftbI88KntHhJABZm5VboUtyoRtKqshWNA==
-X-Received: by 2002:a05:6e02:1ba6:b0:2d1:b582:a9db with SMTP id n6-20020a056e021ba600b002d1b582a9dbmr22860477ili.90.1654799633880;
-        Thu, 09 Jun 2022 11:33:53 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id x4-20020a023404000000b00331f63a3dfasm1973963jae.122.2022.06.09.11.33.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 11:33:53 -0700 (PDT)
-Received: (nullmailer pid 4083400 invoked by uid 1000);
-        Thu, 09 Jun 2022 18:33:51 -0000
-Date:   Thu, 9 Jun 2022 12:33:51 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Richard Weinberger <richard@nod.at>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-kernel@vger.kernel.org,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-mtd@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        =?utf-8?B?77+9ZWNraQ==?= <rafal@milecki.pl>
-Subject: Re: [PATCH v5 2/3] dt-bindings: mtd: partitions: add additional
- example for qcom,smem-part
-Message-ID: <20220609183351.GA4083315-robh@kernel.org>
-References: <20220606151417.19227-1-ansuelsmth@gmail.com>
- <20220606151417.19227-3-ansuelsmth@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=h+QoQcZlBQcgjaXTtPpLAq3kb9O2sEKS7YuulaGYrdM=;
+        b=cfakkD7uc5iIm+OWnbz6DxbjMEAfl2Zh7lNJ7cqXMmKeEtcyvBOH8cA2HFTF2RMpjd
+         zp3hiwFDT+YriS0VnfXJOR8dNycGtB4/I4CilBuKdni4mKAUdwrCJSXcrLbzuFcFu+iI
+         olQT2TYyd2QmpU4grnQE+E6WlHt5FLtV7jGoBVjnt8xu2GmUHx1dwcMBtGjemlt4YmQ9
+         tKp6xvWZZV+8VGG+AaXVwezaaZoH8G+F/L1435yXlaLeaPKzNUZ7IIVryRSW3Lgno2YK
+         mnziwM3CpNYYy7mQ80JK7vfmPECfH3E55g7VFhSGCwxPpi+oza1T7mji4zmTQciTS2az
+         qepg==
+X-Gm-Message-State: AOAM530ZQ51iIlb/T2zlcFwhY+j/pS9VA5CTJKSmFwl4+lw4HM4DXXLP
+        Lw0o0J842yOq73dqvksWHCh+3/j/mMEc+jvQ4fmZKANp
+X-Google-Smtp-Source: ABdhPJz7XAipzp0kbM49L99YDkyeQFf6HdOEexpPmmCsedyTSkPAHR5EGJDeWq/6YFMx8bUdqOZ0TVqcAFqnX/EgQRw=
+X-Received: by 2002:a5d:9817:0:b0:65a:f20b:db2c with SMTP id
+ a23-20020a5d9817000000b0065af20bdb2cmr20052140iol.118.1654799683559; Thu, 09
+ Jun 2022 11:34:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220606151417.19227-3-ansuelsmth@gmail.com>
+References: <20220607113150.55140-1-vincenzo.frascino@arm.com>
+In-Reply-To: <20220607113150.55140-1-vincenzo.frascino@arm.com>
+From:   Andrey Konovalov <andreyknvl@gmail.com>
+Date:   Thu, 9 Jun 2022 20:34:32 +0200
+Message-ID: <CA+fCnZcZcoOz+SVXdVOsrC_pR_PJUoCQnJe3B2u=D_K7=J79+Q@mail.gmail.com>
+Subject: Re: [PATCH] mte: Initialize tag storage to KASAN_TAG_INVALID
+To:     Vincenzo Frascino <vincenzo.frascino@arm.com>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 06 Jun 2022 17:14:16 +0200, Ansuel Smith wrote:
-> Add additional example for qcom,smem-part to declare a dynamic
-> partition to provide NVMEM cells for the commonly ART partition
-> provided by this parser.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  .../mtd/partitions/qcom,smem-part.yaml        | 27 +++++++++++++++++++
->  1 file changed, 27 insertions(+)
-> 
+On Tue, Jun 7, 2022 at 1:32 PM Vincenzo Frascino
+<vincenzo.frascino@arm.com> wrote:
+>
+> When the kernel is entered on aarch64, the MTE allocation tags are in an
+> UNKNOWN state.
+>
+> With MTE enabled, the tags are initialized:
+>  - When a page is allocated and the user maps it with PROT_MTE.
+>  - On allocation, with in-kernel MTE enabled (KHWASAN).
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Hi Vincenzo,
+
+I think we should move away from the KHWASAN name - it was used during
+the early prototyping days for SW_TAGS KASAN. What you mean here is
+HW_TAGS KASAN.
+
+Thanks!
+
+
+>
+> If the tag pool is zeroed by the hardware at reset, it makes it
+> difficult to track potential places where the initialization of the
+> tags was missed.
+>
+> This can be observed under QEMU for aarch64, which initializes the MTE
+> allocation tags to zero.
+>
+> Initialize to tag storage to KASAN_TAG_INVALID to catch potential
+> places where the initialization of the tags was missed.
+>
+> This is done introducing a new kernel command line parameter
+> "mte.tags_init" that enables the debug option.
+>
+> Note: The proposed solution should be considered a debug option because
+> it might have performance impact on large machines at boot.
+>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Signed-off-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
+> ---
+>  arch/arm64/kernel/mte.c | 47 +++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 47 insertions(+)
+>
+> diff --git a/arch/arm64/kernel/mte.c b/arch/arm64/kernel/mte.c
+> index 57b30bcf9f21..259a826363f1 100644
+> --- a/arch/arm64/kernel/mte.c
+> +++ b/arch/arm64/kernel/mte.c
+> @@ -6,6 +6,7 @@
+>  #include <linux/bitops.h>
+>  #include <linux/cpu.h>
+>  #include <linux/kernel.h>
+> +#include <linux/memblock.h>
+>  #include <linux/mm.h>
+>  #include <linux/prctl.h>
+>  #include <linux/sched.h>
+> @@ -35,6 +36,8 @@ DEFINE_STATIC_KEY_FALSE(mte_async_or_asymm_mode);
+>  EXPORT_SYMBOL_GPL(mte_async_or_asymm_mode);
+>  #endif
+>
+> +static bool mte_tags_init __ro_after_init;
+> +
+>  static void mte_sync_page_tags(struct page *page, pte_t old_pte,
+>                                bool check_swap, bool pte_is_tagged)
+>  {
+> @@ -107,6 +110,48 @@ int memcmp_pages(struct page *page1, struct page *page2)
+>         return ret;
+>  }
+>
+> +/* mte.tags_init=off/on */
+> +static int __init early_mte_tags_init(char *arg)
+> +{
+> +       if (!arg)
+> +               return -EINVAL;
+> +
+> +       if (!strcmp(arg, "off"))
+> +               mte_tags_init = false;
+> +       else if (!strcmp(arg, "on"))
+> +               mte_tags_init = true;
+> +       else
+> +               return -EINVAL;
+> +
+> +       return 0;
+> +}
+> +early_param("mte.tags_init", early_mte_tags_init);
+> +
+> +static inline void __mte_tag_storage_init(void)
+> +{
+> +       static bool mte_tags_uninitialized = true;
+> +       phys_addr_t pa_start, pa_end;
+> +       u64 index;
+> +
+> +       if (mte_tags_init && !mte_tags_uninitialized)
+> +               return;
+> +
+> +       for_each_mem_range(index, &pa_start, &pa_end) {
+> +               void *va_start = (void *)__phys_to_virt(pa_start);
+> +               void *va_end = (void *)__phys_to_virt(pa_end);
+> +               size_t va_size = (u64)va_end - (u64)va_start;
+> +
+> +               if (va_start >= va_end)
+> +                       break;
+> +
+> +               mte_set_mem_tag_range(va_start, va_size, KASAN_TAG_INVALID, false);
+> +       }
+> +
+> +       /* Tags are now initialized to KASAN_TAG_INVALID */
+> +       mte_tags_uninitialized = false;
+> +       pr_info("MTE: Tag Storage Initialized\n");
+> +}
+> +
+>  static inline void __mte_enable_kernel(const char *mode, unsigned long tcf)
+>  {
+>         /* Enable MTE Sync Mode for EL1. */
+> @@ -114,6 +159,8 @@ static inline void __mte_enable_kernel(const char *mode, unsigned long tcf)
+>                          SYS_FIELD_PREP(SCTLR_EL1, TCF, tcf));
+>         isb();
+>
+> +       __mte_tag_storage_init();
+> +
+>         pr_info_once("MTE: enabled in %s mode at EL1\n", mode);
+>  }
+>
+> --
+> 2.36.1
+>
+> --
+> You received this message because you are subscribed to the Google Groups "kasan-dev" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to kasan-dev+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/kasan-dev/20220607113150.55140-1-vincenzo.frascino%40arm.com.
