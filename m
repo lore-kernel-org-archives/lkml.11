@@ -2,200 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D370C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 22:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 338BACCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 23:02:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345419AbiFIWxT (ORCPT
+        id S1345562AbiFIXCD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 18:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33378 "EHLO
+        Thu, 9 Jun 2022 19:02:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230371AbiFIWxQ (ORCPT
+        with ESMTP id S236797AbiFIXB7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 18:53:16 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4917E12AB6;
-        Thu,  9 Jun 2022 15:53:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1654815193; x=1686351193;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=ctS/sQpYqBjynPNcgFFwpOoQJVRsp1odcWhGtxNO2GA=;
-  b=umbpFMaWSMuPI7PtK+10IXTDU+PQyGgLjDrS0wTtDi1oRExB4GD1RK+m
-   /o7/wlzVI/KGy1RbQ+Dm7CnSiLU+q/0d3V6xvs6n1MOBGZTcfhKzAncNF
-   WfXz4ddwqib3ByukSvcC9dGP0JzDlXMWacx5KRvUCuyTuky9AMfqVemKd
-   TVOkEH8DblkK3XVM/WI3pbgrS0z4E45pbQJkCdctthdSZ7/TNeWxlRg06
-   zveY23J5nbz3Tp7J391sT/VWpWYz/n9PCW18l1ehek+H4BUfCYg06o18Y
-   cWNNKshhMJzpzQV/wdTpPQ4CYfk68qYoET415TFX8W+zu21/mnT1f3/2X
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="177335022"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Jun 2022 15:53:11 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 9 Jun 2022 15:53:11 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17 via Frontend Transport; Thu, 9 Jun 2022 15:53:10 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eMxgYbgyTu/JI8PI+VUQJ4v9tZk192jV0aiA/iFXxfLwDBeJxyQPPvzlT2sVqhtAnFxyE7uqstgzuDwEQ2MGb+ajQHkCMF5WpO1JKlJ5xTNx41I/o4pY2M4a/gLqmxmQpzW+JcmcqbPao4ylRg7KAL4G/hioIaDgBeZIZ7U7VfQZ3Fgxv0Dyz6diGnDcudJpyAcvGRxnTBz0prgKbshyk2gkw82iWwRYEVX5mMoZ1xoXOKD1ysCJ0W3KB7tjRUsN71YS5PTCteQDR7oZVXzYEIfLmHVwfqH/PW6jpNHVV7luGpH0vjZS4m3xYBtkJdgG5AhLGypF+VxRBSDJBXHpOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ctS/sQpYqBjynPNcgFFwpOoQJVRsp1odcWhGtxNO2GA=;
- b=lQ2QPR4iSp/U8GVupnhUAAK6eIFnZrxsAkVuTFmoDow37T++HGBh3ER3g1n2rRiUOK101XYJ4RIuoOmLrwPDPT5gxPKR6DDKgrU0eSh45DqHI32XfyNdMuSegSYG1SgrlFOu/MGWh97Iof+oTSPxMLvWWoSMWf2utv2vcf+keIZFZY84snKYmXreWUreqjaq0aXSg7DpuPI24J3V+OvgqpIpAGnVhW1deDkZQVuqfJVdyJloXpiN0lB+N5JlAYgOZE9Tqh343aMu8mgoW0TJEivVpFsUICld9Ti6VFyRUCmxkc5XDVuULNDYDpYFIUicWjT2AnDOPmQMg0IFRPewyw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ctS/sQpYqBjynPNcgFFwpOoQJVRsp1odcWhGtxNO2GA=;
- b=n5OJoY3zrGdT7bZS5cmrZTgHhyyV4Z9Gcqm/fJQpkRCwu+c9Fjupnj6lbbV7cM+B0WxYNjXpoKh8JvqiwLyum/qCEm/HmLTmwtObBpC37rwJ4K1P5ar5qn8VUQxKDPixv4FNmFNzc5hj2xE5/rmiHnMcCmxWkBOMpNYrPI5+Qz8=
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
- by BYAPR11MB3238.namprd11.prod.outlook.com (2603:10b6:a03:7e::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.18; Thu, 9 Jun
- 2022 22:53:08 +0000
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::699b:5c23:de4f:2bfa]) by CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::699b:5c23:de4f:2bfa%4]) with mapi id 15.20.5314.019; Thu, 9 Jun 2022
- 22:53:07 +0000
-From:   <Conor.Dooley@microchip.com>
-To:     <sboyd@kernel.org>, <arnd@arndb.de>, <Conor.Dooley@microchip.com>,
-        <gregkh@linuxfoundation.org>, <palmer@rivosinc.com>,
-        <kw@linux.com>, <linux-clk@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>, <lorenzo.pieralisi@arm.com>,
-        <mturquette@baylibre.com>, <robh@kernel.org>,
-        <herbert@gondor.apana.org.au>
-CC:     <paul.walmsley@sifive.com>, <aou@eecs.berkeley.edu>,
-        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <Daire.McNamara@microchip.com>, <Cyril.Jean@microchip.com>
-Subject: Re: [PATCH v4 1/1] MAINTAINERS: add polarfire rng, pci and clock
- drivers
-Thread-Topic: [PATCH v4 1/1] MAINTAINERS: add polarfire rng, pci and clock
- drivers
-Thread-Index: AQHYYG7KcHM3Zb8ggE+yYwRhcaPSb60sczEAgACJPICAAAITAIAOiFsAgAxdB4CAAAKegA==
-Date:   Thu, 9 Jun 2022 22:53:07 +0000
-Message-ID: <bb401ee9-2c8e-d486-9663-b80ae9cc0974@microchip.com>
-References: <mhng-5c57560e-a00b-4fd8-95ee-5e2fc0dcd34c@palmer-ri-x1c9>
- <20220609224347.1212EC34115@smtp.kernel.org>
-In-Reply-To: <20220609224347.1212EC34115@smtp.kernel.org>
-Accept-Language: en-IE, en-US
-Content-Language: en-IE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 550287fe-8a0c-4735-315d-08da4a6ad21b
-x-ms-traffictypediagnostic: BYAPR11MB3238:EE_
-x-microsoft-antispam-prvs: <BYAPR11MB32382AE3A151F0E3C3CEBC0A98A79@BYAPR11MB3238.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: iMCWOCg3RymkwGtv5PSksqBCNwzpNs5FkGIWee+HyDERiDpQIkACi26ZYrRIMV/DYuP5gkdCVBbEWjnav6O43XvoUmrRi1Xom76pem0iefi0Yapeug0kpFBf1wsOQAImDuAPDQb9kAaV3WccczVSdHcaE+MERRQ/1VN2882JwT2yMK1NT6sCnOva7YYHJa2kzF84rHbUqfrviPfctI0Coh5d+tLlAuLhZKeNQ0wLUzjSA1gRx8pXuTCUvl8q/tmzZP3DPMJS1veEDTAWnf6YVH6/vIhY4VtlWZWaoq+C1bidmssaiz9kBUvGrtkeY77bC7vcVr7tVO2OnZrvv5MhN8d1eE7oI+N8gXjpqdlpEQolOF9ez3+WFnDG+MivNKoisltiLlS+yno9zT6LCL6TKzqEpeuS2y49SVYBFPdU6bVDgi28kB+DdTNOw59taa3BW5hn+X1l8Wx8/X/mmbJVOba+ZKysRbAnZNThUpZNBpRbMRHzXe5zl1HOCOFdWH3DnNhvFsR5U8/2jU4R1uohkRWAPeVvGHmCLhzSWeWZnSXAJsorM5KMGLAeXtwcDYS6iNDvpDiQJcOSUi8+OdXhrwJNakzQcrdRS+x+S75Rki1QdvDVcA/CJyL5Kcf61U0AJv3aghZH/tGtpLjeE9ibKC29Ilj+H/Ng6XSMr+wBYoODvJkAkRA2h3niEGIUoj/FEHa3zEM9RMMSu/9bUsmXKbvlq5n8qDI2Q6NQTz+IH+6E+rjQ0XBFhDhIS+yt8878qdjFBhZSXbZ1LiXZL1PJAqIeNOOGUTAc4txn9utNN38=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6486002)(508600001)(8936002)(2906002)(91956017)(31696002)(76116006)(66946007)(38100700002)(66476007)(66556008)(66446008)(53546011)(5660300002)(6506007)(7416002)(71200400001)(2616005)(6512007)(64756008)(86362001)(36756003)(122000001)(8676002)(921005)(4326008)(107886003)(186003)(83380400001)(38070700005)(316002)(26005)(110136005)(31686004)(54906003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RzgvTHBoc3lMNno3bGJWaFJrdEV0amhCNmNVUk9XMjl1R1o2OWtOekgrc01D?=
- =?utf-8?B?SWFCU2JYTkJmdytLczJyc3BEWjJqL1ZFZ21aYjNuRTlmVGRhdGNKUTEwYU5k?=
- =?utf-8?B?Z29xNEZkL2hMclh2djBmUmtjMXBWeFZtMUdUcXErTHJBMEVpb2VsN25YZlkv?=
- =?utf-8?B?dHNqNVpyVXlJVGJoeW1BaCtoOUV2MHU5bXh6M3JTVDFDMU1oVFJ2c1htVUVT?=
- =?utf-8?B?WEtxUDJIRUVMaVFXVnZMTU0vdEtSZVkxQTRDVlIxT0VQanl2SWErVnp4dlRT?=
- =?utf-8?B?RlF1dkNuMTAxbmx3YUxvZkVGZm5KVmcxVytHMC9PMkEvWnQreS9Va2wrcEZM?=
- =?utf-8?B?dkFsd2xXQStSRDF1TDc4SVlpd1lTTVRqWFUyaDczT1Q4TWJOKzRSRkpLc2d2?=
- =?utf-8?B?UzJtOEtBVmtGTm9GMXM1Q1BTUlU1Y0lDSnVySVA0M21kY0ZKeWkrbHNLaWN2?=
- =?utf-8?B?dWt0MWtxRDRURWNEdURTWFIrS0hYSkdkT1QwVEw2b3RhajM2ajd3aUl5U0E5?=
- =?utf-8?B?S2JMZ2lnMmlzSkNZOFBoR25JT2V2MlBTeUxmS082SkZEQVlVdjNSZWs4Tm03?=
- =?utf-8?B?eTQ3UVowQ0pjMXR5RWxKRUpGbGJNejAvT1JMMHVwbEg0SlRsQ0o2NVhkcGZq?=
- =?utf-8?B?Qy9CODA5Z2hCMEFGL2kybzJGcW9oMk1xRHE2bzRkSkpTdnM3N1M5K2dSRzU2?=
- =?utf-8?B?M3ZVRFdBTCtCT3poRkR5TWNnaFdQOXM4MzFLYnpsdTNzN3JkQ3JCRG5DbDl6?=
- =?utf-8?B?VzhmZ0hyT2thOEc2SHlCdVJ3QVBxcnBZcU5RQnEyRm1ZOGl3ZGNFZ1hGRVla?=
- =?utf-8?B?eEZVSDFUREFmQzdPRHJQZHZBalpJVmZKRDdES0dxM0wzdS9Tb0xOZDVuS20y?=
- =?utf-8?B?czVtN2ZUUjJsYzNVa2s5MHpycHB0aVJ4WmQvbkx1MG9rV01vQWRwendYbSt3?=
- =?utf-8?B?b2xRdElkUEdNUXA0Q2xpbmFYMkVMbzc4RVBaTXJ4MUJsSktSNi9Tb2toN2w1?=
- =?utf-8?B?YzZGVnFNZ0NpTmNkeGdJTHFYYmRsOVpZWGVHVmovenozVHY0bmZjaGhQWTNq?=
- =?utf-8?B?R1dZamRpdTViREFRS1poN01QNzgwWG1MYzN3L09hR2F6aUJuU1ExS0ZnN0Iv?=
- =?utf-8?B?UTUwblVvRi8rQkVPb3R1Zk1tZTM0MFRCeDlaZDc3cEtoM1h6bHZWTjczOGNy?=
- =?utf-8?B?Mi92U1pEUi9HeXNJMkRpQmloZ1NHd0t3NUJiMTJLTW8vbStaaitZaGVuNnhS?=
- =?utf-8?B?ZnFFc0VrazhmSThDNjhXd05FWDBWbzkrMzhlczhNc1JRMkFjb3NFOEhqT1Qv?=
- =?utf-8?B?eDZsQzI0Mi9QSnhuUkZaeWUxaExGZ3dyMXFJSWJrWExHVlQ1c3RISlRqYS9I?=
- =?utf-8?B?aVdiNFgwRjhUV3hEeDlVd0xqR2E4VU1qWlBwZDJWTWlacWJjREhDSU13Q1Iy?=
- =?utf-8?B?MjViSG80V2w4MkpNWURtS0NsN1F5dHlydC8yRkZsS0E1Nzl1NlE3MElFVWNn?=
- =?utf-8?B?dkxZUndsRm04eXVXbDc4eVczazVUN0lXN0FOM3hxY0lqMUxJYVBxdG5LWXVV?=
- =?utf-8?B?R0xwdTZrVnFZVmszSzdBWjJNN3EyL0xURk9sZEhQL1BBUTltdTF3eFQ2dXhX?=
- =?utf-8?B?d3BYWnFYUTlGdUExdXhTSERJZTNtRUdtaVZISDNKSUpuUXM3enBnV2l6QSsr?=
- =?utf-8?B?NkdhV1FVNjkreE5qbzVVdWVBeFk2a0luZDNEZTM1RFdzc2hHVStiT21CZUd2?=
- =?utf-8?B?cENYeW5iZHFHeHR3M3dScnZBU0R1V3Vib3FDQkpOeWNRNkRtMWNRSDF2VWkz?=
- =?utf-8?B?RlV5eHdoUDFaalY3MmYycmc4RkJ5YWdjK2dmMnVnd2NqMCsvUmx6a0tjZWpn?=
- =?utf-8?B?czdKZ28zVTVEOEVSOHhXMnVUZTNZSVpvWkV5UnJuQUtKZEl4RjErQ3NXNTVu?=
- =?utf-8?B?RVYyU3FvVjhJa2ZnV1A0T0tzbjFCM293RzkwREw5NDVQUWFBeUg0M1U3WjlZ?=
- =?utf-8?B?em1YaHpOVXBjTXRvM2l2c3VHemo5c1h5UXE4STZmczBjbjVLYVpLdnpRSTR5?=
- =?utf-8?B?dnVJaUpUNFZWL2hwNnFRUnhOL1dGYzR2UU1VV0RjU1JSa0o0aVhQTXZSQTdI?=
- =?utf-8?B?SWRNQkJkU2phSFU1aDVrUlpMc1dMZ1MyRmhqbWlBYS9JaldDQmRnZW5EMFEr?=
- =?utf-8?B?aElaZUI1eXhBQVNqM2F3NDhOQ2Jmc0UwbitQVTRPcURkQ1doZzJmeU9QMzBR?=
- =?utf-8?B?elc3ZEtDNFA5MysvN1kxcm55K1JWUjM1cmlnQjViT1FScFZlRUc0emNSak55?=
- =?utf-8?B?NUkrMW03RTlvZ0VoQVNGaG9KbmgzaVVaSUU5bnpNUjFHODM0N3BFU0ZEVDFl?=
- =?utf-8?Q?6Gq9SPzpdn23hRV4=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <49DA1C5B64600442B024B1821764BA25@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Thu, 9 Jun 2022 19:01:59 -0400
+Received: from sonic316-27.consmr.mail.ne1.yahoo.com (sonic316-27.consmr.mail.ne1.yahoo.com [66.163.187.153])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AB63A81D1
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 16:01:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1654815716; bh=3o5SNPwTygO2LFJJxsuqLI+/nYBK+jKK5VhgaHDFflQ=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=MB0GbsJpA9f+Go2z+Gg1OD7CbkwIhsEW6qVqdyv8KJQMR1TiJtdhm5PQpoa3viYnzwQ+FGEjOrmi8pt7qSAcbRGwsEso3cMrL0CMsiKuCUGoW7lBBadsxTyn7PVX5iASlMkCmIxRcKyHAe1F1pFogUWo/JmCCSawKl2sSwe37mfdyGwAyANbI6hvV7JvcSesDjDXA12Kp8p0dUNcP6sYO3dzpVXCYZaO4NXlk4j0gCKhG24Mu3Ef1J9nN6MXcv5U2LO/MiDut1OzKACGnllDWO5NX+5IuEddVGx+xcb5SvWJ4BqmlrcXViWwiunxuolPgsPIH2wX3qso4/x0jNIAYA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1654815716; bh=ImdRA8lD7GaElGNVKGeK5gfGoIW5FujHb1sXef9nKX2=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=qbEDwjx3KO1UvaJyjxGwEvce1IR7kPma+s/2eL+393BK/zuWQdf524oG3/Jfowj8kJ26YIqpBpnYAp6AS0/neZuPG/zL6sJKQljpKlc6NtEZzTGwaTGe+gfiLIYDIVNzloNJDe0uqssnc0jHIMInfqMAUnP8+f9Ply/VkTqhu2Nyq0i7BVUJOGagCE/Q+6Kb6fMO+pU2C4zyhhGwC2BkBHnX4yQ8fC+QBHqtDbh77z4W5r1HiYI2xkwoLBRpMgL8fiCOrwUtK0fMJmWi/m4yN+gUAd0VGhQAU+iPLLRuxM58VDJ7exxjGnoJmkthTlI2/OjBR1Zf1AtFUkZHd9DHiQ==
+X-YMail-OSG: iUOlzhAVM1l_HU.psXHgLSlUCS46SpbDejCxG0EL.cHrwH.MCXY0ci8HCty5TY0
+ B22PWoVxqs0lMz0wAR5iH.ASwNmxW0Btp7WkRX727UWQM6_FsLlzt9QpwvOG17E3QdIpcEmK7siQ
+ 3USPrkBvjA_yKX4Yni4gCa.u4TwTHNYTnz5MgJ6wSPynmcsT6dce2ipmezBp0qlyFYwvqFuqx3EA
+ 8u44SycOl84w4Tvi4gaEU983uJhA9ujsZGJkSUXfzajSII1z.egsIvzirXUPpQO7G27YTg9BgcPU
+ Ap3LGnUn1zuKK9ec6L2S0B2LlNWAQLg1WQ21Ov7ZOyPebGecn4bgUfggiNW70yRzWtEbuvNWRVf3
+ 4YmA6k.HXLUhlfiOkr1iW9mRNmRZf6dWNXSn6Za2J5p2sLc2D2HDzjiBESZ8RGXg953X6emS2orr
+ fuBSwynmF821CM0rpbA8IfbB_qI8tF7vRWu7ujD0f75VuTjiJNYwdrk8n42NR4G8vbqW68lEWUJe
+ JoIbFCg5ny.9kk1fx7FExuJ.811eJz5DMHzuIuf1svBK62fuT6.GmMMNYGQfjCdwI..mUJq9K1yE
+ s4Bpyh_8u_FB4lHVx2DMIMQsbX3K8iwihDd1YockhMKOofzhuxdLtdaAV_NKZ8yF9ScXkJVG2tLb
+ uOFwSPf4svEL8gYz7v6MbBbgkKrgOiU3uHtmoNW7asJwMbwGwKAnHEveOVS9680JylY6fDQscfw.
+ X_hTW88lhZwbUFBkvGDeEHAxefoQyiFT2A0ZgQyTVuRBsnf9fojiyj.9i5RrwU3p1mfPF_TUdkdC
+ pafeS_zmYEV5AKjKCR8gyte0mr1SZtDCujmdynYanH62XzvSyy53Ga8tgt5zEF0NdwHxeSBflvjF
+ eXd8Yhjkfbrg2bEdajgNsFC8ioSYRORKvkpNojQfTjB6vbujE4KPawb7791bSyDX_M8DTU5cVL70
+ poIEmlnlSLjPrDz1XocyLru6gCKyY95E7QY0ZHYZ_jqIJCvbXhjRbr.thxAHd3fTzFmMMA13tulg
+ 85BMxnoHvGotQc3aZiY7pqKZtl1XNRwiwRBA3bxzP6ddSAkoTkmxwbP5hj4oriDXKU5PS5ztxBvN
+ zfOL8HzXQE5sk9Ix14FXG1MlkMmyzRLy9Y_o.rcBv8J.nJvLM3uyywB2LSprApLVv505lEx0p.Zm
+ hsK3e5VRy4qLTvVf7RzdwJoz.iT2gNKZBybY3GGrDngWJXy0bpm2pTgmc7UXwFmiTAz4T9PKrtzQ
+ jjx1k8YoRU72Robar0WOyAR1JqT3qZsWETWWFh5mCV0IIqe9RRsZmFz48CcrhGwpxe.VWxu4lqKk
+ j0dSDNjQr06IRdVoouYgM2H_7gzsgv1cBO1rd.y322xLTz.ea1eJTB_zBL6j5AjBHYBbXm4zNs.X
+ tr590AFYbxb9OJ6krDGvyH3AtlmvgHwoK2xoWwxWwgyzi4tLqYsdOgq1RokOJHafK9lPaPn_Feib
+ wDeyZ.EUFQ2MrGOhkIVL4EBA1JE4VI_Kj_OZEV2W6.GrKdf0Mm_FAvyCqaWhL_9wqBll.zl3P81i
+ .s9OyZfWphRUBDywAKUMXee8kRk_HEHrMcshNyR_lkRvcklSwOnzuAbnABaPvokqHmqRRnRGlzEp
+ xOvG1ex3sUDjV47D7ow4Pcq4V5EOhNUkyOD2_puGBOtm9BE9Q6hj5.LsvM8ayz9HC9z2Pb23UOQG
+ bpHmGZPz83S_Zslm9WquGOoET.c9Y0yrBJ35A9b53OBolk41IG00PLzYPRAPPNrBpVIBc69ZSQDD
+ 0Dhwyqwh236rDJslpCRG5ljFFE_wKC3hsqyMHDHaQZf5UstTH7zi5P.4EnW9iKI_IhIDkXFXwb2n
+ 7ictLf8ahGIanqXR1wrF41MIo2yvmf5clU1WNXFokD0Ey57ZrqhzSyFp.o68A28GUGbmgPcv2HMz
+ atWJtyq9CvukSyvVJOT4llXWYgGo140aVnqzAqhkoVh9CbPedlEOv5LtQhLZXL8CVIljlwtFMzMQ
+ ydH5e6c7F7GyWf2Oh6UO.WhyOqNtkIVQLN0y5OOS4KHPc3W4A0H1UqzbnCvxZTwavtTALhO_jnQw
+ WUuFWFFAXFdsWp8DlTtf2F5mt8FKKFae3bn7erBDVIdv2rbmAhhBd3_LuEg_sQ8IYQEt5kl1ayTh
+ TFBIyqT6sWyzTDenvXqC5g4zQ0u2xaxwty6LoqpHPTJy6Dm8LDesuk3CPjQerLM7keCm5nNRNdXX
+ WdEm4qrz8lhUJU39UWW7r.Z_wCS6f1uGgm3kiOjTJYSfbIGKHy6Xip4qOiVK7RXjiwT5.spzjVah
+ .dKP8NCJSbrp.Xp1ushv5Ju7UY4QnC_FmSmaYSRLtyAki9L2EVa0Qxz08jzHofBYY4ESaJHEFya1
+ 1
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic316.consmr.mail.ne1.yahoo.com with HTTP; Thu, 9 Jun 2022 23:01:56 +0000
+Received: by hermes--canary-production-gq1-54945cc758-xkjn5 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 0e6e0ce8663761707dd7260b164b0053;
+          Thu, 09 Jun 2022 23:01:52 +0000 (UTC)
+From:   Casey Schaufler <casey@schaufler-ca.com>
+To:     casey.schaufler@intel.com, jmorris@namei.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
+        keescook@chromium.org, john.johansen@canonical.com,
+        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
+        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org,
+        linux-integrity@vger.kernel.org
+Subject: [PATCH v36 01/33] integrity: disassociate ima_filter_rule from security_audit_rule
+Date:   Thu,  9 Jun 2022 16:01:14 -0700
+Message-Id: <20220609230146.319210-2-casey@schaufler-ca.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220609230146.319210-1-casey@schaufler-ca.com>
+References: <20220609230146.319210-1-casey@schaufler-ca.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 550287fe-8a0c-4735-315d-08da4a6ad21b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jun 2022 22:53:07.8176
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: WftBDy/yiTXIgz0tB8VyGWmF3THkclCWsUxG1IeIElNdrbvuNNWue3FG0gXZ5q9nPDUtPqVQQDL+88vlch99VTYvJyNBYoDgVuKbSEXjMXI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3238
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCk9uIDA5LzA2LzIwMjIgMjM6NDMsIFN0ZXBoZW4gQm95ZCB3cm90ZToNCj4gUXVvdGluZyBQ
-YWxtZXIgRGFiYmVsdCAoMjAyMi0wNi0wMSAxODo1NTo0MCkNCj4+IE9uIE1vbiwgMjMgTWF5IDIw
-MjIgMTM6MDA6MDEgUERUICgtMDcwMCksIENvbm9yLkRvb2xleUBtaWNyb2NoaXAuY29tIHdyb3Rl
-Og0KPj4+IE9uIDIzLzA1LzIwMjIgMjA6NTIsIFBhbG1lciBEYWJiZWx0IHdyb3RlOg0KPj4+PiBF
-WFRFUk5BTCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5s
-ZXNzIHlvdSBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUNCj4+Pj4NCj4+Pj4gT24gTW9uLCAyMyBN
-YXkgMjAyMiAwNDo0Mjo1MyBQRFQgKC0wNzAwKSwgQ29ub3IuRG9vbGV5QG1pY3JvY2hpcC5jb20g
-d3JvdGU6DQo+Pj4+PiBPbiAwNS8wNS8yMDIyIDExOjU1LCBDb25vciBEb29sZXkgd3JvdGU6DQo+
-Pj4+Pj4gSGFyZHdhcmUgcmFuZG9tLCBQQ0kgYW5kIGNsb2NrIGRyaXZlcnMgZm9yIHRoZSBQb2xh
-ckZpcmUgU29DIGhhdmUgYmVlbg0KPj4+Pj4+IHVwc3RyZWFtZWQgYnV0IGFyZSBub3QgY292ZXJl
-ZCBieSB0aGUgTUFJTlRBSU5FUlMgZW50cnksIHNvIGFkZCB0aGVtLg0KPj4+Pj4+IERhaXJlIGlz
-IHRoZSBhdXRob3Igb2YgdGhlIGNsb2NrICYgUENJIGRyaXZlcnMsIHNvIGFkZCBoaW0gYXMgYQ0K
-Pj4+Pj4+IG1haW50YWluZXIgaW4gcGxhY2Ugb2YgTGV3aXMuDQo+Pj4+Pj4NCj4+Pj4+PiBTaWdu
-ZWQtb2ZmLWJ5OiBDb25vciBEb29sZXkgPGNvbm9yLmRvb2xleUBtaWNyb2NoaXAuY29tPg0KPj4+
-Pj4NCj4+Pj4+IEhleSBQYWxtZXIsDQo+Pj4+PiBJIGtub3cgeW91cmUgYnVzeSBldGMgYnV0IGp1
-c3QgYSByZW1pbmRlciA6KQ0KPj4+Pg0KPj4+PiBTb3JyeSwgSSBkaWRuJ3QgcmVhbGl6ZSB0aGlz
-IHdhcyBhaW1lZCBhdCB0aGUgUklTQy1WIHRyZWUu77+977+9IEknbSBmaW5lDQo+Pj4+IHRha2lu
-ZyBpdCwgYnV0IGl0IHNlZW1zIGxpa2UgdGhlc2Ugc2hvdWxkIGhhdmUgZ29uZSBpbiBhbG9uZyB3
-aXRoIHRoZQ0KPj4+PiBkcml2ZXJzLg0KPj4+DQo+Pj4gWWVhaCwgc29ycnkuIEluIGhpbmRzaWdo
-dCBpdCBzaG91bGQndmUgYnV0IHRoYXQgc2hpcCBoYXMgc2FpbGVkLiBJIHNlbnQNCj4+PiB0aGUg
-cm5nIGJ1bmRsZWQgdGhpcyB3YXkgYi9jIEkgZGlkbid0IHdhbnQgdG8gZW5kIHVwIGEgY29uZmxp
-Y3QuDQo+Pj4gT2J2LiB0aGVyZSdzIG5vdCBhIHJ1c2ggc28gSSBjYW4gYWx3YXlzIHNwbGl0IGl0
-IGJhY2sgb3V0IGlmIG5lZWRzIGJlLg0KPj4NCj4+IEknbSBhZGRpbmcgYSBidW5jaCBvZiBzdWJz
-eXN0ZW0gbWFpbnRhaW5lcnMganVzdCB0byBjaGVjayBhZ2Fpbi4gIEkgDQo+PiBkb24ndCBoYXZl
-IGFueSBwcm9ibGVtIHdpdGggaXQsIGp1c3Qgbm90IHJlYWxseSBhIFJJU0MtViB0aGluZyBhbmQg
-ZG9uJ3QgDQo+PiB3YW4gdG8gbWFrZSBhIG1lc3MuICBJJ3ZlIHN0YXNoZWQgaXQgb3ZlciBhdCBw
-YWxtZXIvcGNzb2MtbWFpbnRhaW5lcnMgDQo+PiBmb3Igbm93Lg0KPj4NCj4gDQo+IEFja2VkLWJ5
-OiBTdGVwaGVuIEJveWQgPHNib3lkQGtlcm5lbC5vcmc+DQo+IA0KDQorQ0MgSGVyYmVydCBmb3Ig
-dGhlIGxhc3Qgb25lLg0KDQpUaGlzIGlzIGxpa2VseSB0byBnZW5lcmF0ZSBhIGNvbmZsaWN0IGlu
-IC1uZXh0IHRob3VnaCBiL2MNCm15IHNwaSBkcml2ZXIgdGhhdCB3YXMgYXBwbGllZCBmb3IgNS4y
-MCBhbHNvIHRvdWNoZXMgdGhpcw0KZW50cnkuIEl0IHJlYWxseSBwaXNzZXMgbWUgb2ZmIHRoYXQg
-SSBhbGxvd2VkIHRoaXMgdG8NCmhhcHBlbiAmIGJlY29tZSBhIGJ1cmRlbi4uDQoNCldoYXQgYW0g
-SSAibWVhbnQiIHRvIGRvIGhlcmU/IERvIHRoZSBtZXJnZXMgbXlzZWxmICYgcHJvdmlkZQ0KdGhl
-IGNvbmZsaWN0IHJlc29sdXRpb24/IE9yIGZvciBzb21ldGhpbmcgYXMgb2J2aW91cyBhcyB0aGlz
-DQppcyBpdCBlbm91Z2ggdG8gbm90aWZ5IHRoYXQgdGhlcmUgd2lsbCBiZSBvbmU/DQoNClNvcnJ5
-LA0KQ29ub3IuDQo=
+Create real functions for the ima_filter_rule interfaces.
+These replace #defines that obscure the reuse of audit
+interfaces. The new functions are put in security.c because
+they use security module registered hooks that we don't
+want exported.
+
+Acked-by: Paul Moore <paul@paul-moore.com>
+Reviewed-by: John Johansen <john.johansen@canonical.com>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+To: Mimi Zohar <zohar@linux.ibm.com>
+Cc: linux-integrity@vger.kernel.org
+---
+ include/linux/security.h     | 24 ++++++++++++++++++++++++
+ security/integrity/ima/ima.h | 26 --------------------------
+ security/security.c          | 21 +++++++++++++++++++++
+ 3 files changed, 45 insertions(+), 26 deletions(-)
+
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 7fc4e9f49f54..5260dbe9ef0d 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -1919,6 +1919,30 @@ static inline void security_audit_rule_free(void *lsmrule)
+ #endif /* CONFIG_SECURITY */
+ #endif /* CONFIG_AUDIT */
+ 
++#if defined(CONFIG_IMA_LSM_RULES) && defined(CONFIG_SECURITY)
++int ima_filter_rule_init(u32 field, u32 op, char *rulestr, void **lsmrule);
++int ima_filter_rule_match(u32 secid, u32 field, u32 op, void *lsmrule);
++void ima_filter_rule_free(void *lsmrule);
++
++#else
++
++static inline int ima_filter_rule_init(u32 field, u32 op, char *rulestr,
++					   void **lsmrule)
++{
++	return 0;
++}
++
++static inline int ima_filter_rule_match(u32 secid, u32 field, u32 op,
++					    void *lsmrule)
++{
++	return 0;
++}
++
++static inline void ima_filter_rule_free(void *lsmrule)
++{ }
++
++#endif /* defined(CONFIG_IMA_LSM_RULES) && defined(CONFIG_SECURITY) */
++
+ #ifdef CONFIG_SECURITYFS
+ 
+ extern struct dentry *securityfs_create_file(const char *name, umode_t mode,
+diff --git a/security/integrity/ima/ima.h b/security/integrity/ima/ima.h
+index be965a8715e4..1b5d70ac2dc9 100644
+--- a/security/integrity/ima/ima.h
++++ b/security/integrity/ima/ima.h
+@@ -418,32 +418,6 @@ static inline void ima_free_modsig(struct modsig *modsig)
+ }
+ #endif /* CONFIG_IMA_APPRAISE_MODSIG */
+ 
+-/* LSM based policy rules require audit */
+-#ifdef CONFIG_IMA_LSM_RULES
+-
+-#define ima_filter_rule_init security_audit_rule_init
+-#define ima_filter_rule_free security_audit_rule_free
+-#define ima_filter_rule_match security_audit_rule_match
+-
+-#else
+-
+-static inline int ima_filter_rule_init(u32 field, u32 op, char *rulestr,
+-				       void **lsmrule)
+-{
+-	return -EINVAL;
+-}
+-
+-static inline void ima_filter_rule_free(void *lsmrule)
+-{
+-}
+-
+-static inline int ima_filter_rule_match(u32 secid, u32 field, u32 op,
+-					void *lsmrule)
+-{
+-	return -EINVAL;
+-}
+-#endif /* CONFIG_IMA_LSM_RULES */
+-
+ #ifdef	CONFIG_IMA_READ_POLICY
+ #define	POLICY_FILE_FLAGS	(S_IWUSR | S_IRUSR)
+ #else
+diff --git a/security/security.c b/security/security.c
+index 188b8f782220..8b176769dd86 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -2580,6 +2580,27 @@ int security_audit_rule_match(u32 secid, u32 field, u32 op, void *lsmrule)
+ }
+ #endif /* CONFIG_AUDIT */
+ 
++#ifdef CONFIG_IMA_LSM_RULES
++/*
++ * The integrity subsystem uses the same hooks as
++ * the audit subsystem.
++ */
++int ima_filter_rule_init(u32 field, u32 op, char *rulestr, void **lsmrule)
++{
++	return call_int_hook(audit_rule_init, 0, field, op, rulestr, lsmrule);
++}
++
++void ima_filter_rule_free(void *lsmrule)
++{
++	call_void_hook(audit_rule_free, lsmrule);
++}
++
++int ima_filter_rule_match(u32 secid, u32 field, u32 op, void *lsmrule)
++{
++	return call_int_hook(audit_rule_match, 0, secid, field, op, lsmrule);
++}
++#endif /* CONFIG_IMA_LSM_RULES */
++
+ #ifdef CONFIG_BPF_SYSCALL
+ int security_bpf(int cmd, union bpf_attr *attr, unsigned int size)
+ {
+-- 
+2.35.1
+
