@@ -2,82 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 428C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2F18C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:14:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237525AbiFIPN7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 11:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56098 "EHLO
+        id S1343785AbiFIPOd (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 11:14:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234554AbiFIPN5 (ORCPT
+        with ESMTP id S240876AbiFIPO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 11:13:57 -0400
-Received: from mail-il1-f170.google.com (mail-il1-f170.google.com [209.85.166.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445E816CF57;
-        Thu,  9 Jun 2022 08:13:56 -0700 (PDT)
-Received: by mail-il1-f170.google.com with SMTP id y16so18957369ili.13;
-        Thu, 09 Jun 2022 08:13:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MdnhP1B6dGe9n1h4hktJclfvkqEAaRhx1l6n/vgyXH4=;
-        b=aYTbHcIKSip9z5eLx3PXdLGwuKe0xh1Tn2oOaO9kaUJIF4wj3mkDabH6U/zxvbT/8L
-         hUfiMwu6JBnmVIMFXvIYDHyjNpY2Bk5qo184ekh9xL3p074cwDFIUydefhj7JWcWg5Sq
-         uoJQ98vf0Sril1ErLfmslUolQeFA/mKWQ7MUGKze729A7mifYXlPth/fGMYY37RBN/y7
-         m/h2sRT/uZ9BaagePFkDavu9ex0q978IOOt3xvdZm36N0eB3AMuRby1XviCxLbsd44II
-         qCGTIlQiS9fY0QhPScLZfrXJ5PO3PMr0OJBlHWBaVmhgL6zLxW++FHH3rVS4TWAkV2rO
-         +tJw==
-X-Gm-Message-State: AOAM531/cp9zIXWOPAayUDzNzDbQUTRatdVYFrQA9WhBDmYJ3OAk7w1a
-        LSiZY0+xqtxDOJiG6v6mFd3enj+F/Q==
-X-Google-Smtp-Source: ABdhPJxctqvAdV7wfx539ewBQpXQWBku3TcCJ0hHKApqfvhQCoOWdBrv7T4tvRUdM6b2f3Ul4BaiJw==
-X-Received: by 2002:a05:6e02:1788:b0:2d1:aafa:9f13 with SMTP id y8-20020a056e02178800b002d1aafa9f13mr22412428ilu.69.1654787635365;
-        Thu, 09 Jun 2022 08:13:55 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id c3-20020a056e020bc300b002d3a8969dd4sm10432576ilu.28.2022.06.09.08.13.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 08:13:55 -0700 (PDT)
-Received: (nullmailer pid 3807446 invoked by uid 1000);
-        Thu, 09 Jun 2022 15:13:53 -0000
-Date:   Thu, 9 Jun 2022 09:13:53 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Atul Khare <atulkhare@rivosinc.com>
-Cc:     Palmer Dabbelt <palmer@rivosinc.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v2 0/2] dt-bindings: sifive: fix dt-schema errors
-Message-ID: <20220609151353.GA3805719-robh@kernel.org>
-References: <CABMhjYp3xUyQ9q6nXHvEA2zuzhYi0ETn6UETeH1apWf2n2eP7A@mail.gmail.com>
+        Thu, 9 Jun 2022 11:14:28 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A284A46150;
+        Thu,  9 Jun 2022 08:14:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654787666; x=1686323666;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=wr33ML0e4lODezvF0rSXZW2gyNc2rLAlNWAvEtgI1TQ=;
+  b=b2ls8HuuIxikpqK190ySTuiJx0LidsWad4miA2YaT/RD0WTlUxjMjhtc
+   0aMcoY0pVMYkkwM/t9YIdgix8wZ3yRBm0oS7wwUXnqf7kD1OaI7nGoqsM
+   77ePbIPoPBbYsTuc/Bauup64Ipd3Hi8JFPMLqzqzJKKYq4SWxRlQZ9a03
+   KanP9teVV95x6r56zbZE56rPubkx9XfmlSUZNi72PKi9HbOfYIEcSJZ24
+   dOFQH7Ew+HqEtsFkG2/YYl+qS7e8Tbm8UNdQHb3tHGZeifamZoRhDKRyK
+   S5I1JskXsRTFi34k0PzKRSYXnR9WmXPGYCcqSjnrn4N/O1ArIkLTkp7dX
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="274837351"
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="274837351"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 08:14:26 -0700
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="649312322"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 08:14:23 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nzJpR-000XxY-4u;
+        Thu, 09 Jun 2022 18:12:09 +0300
+Date:   Thu, 9 Jun 2022 18:12:08 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Frank Rowand <frank.rowand@sony.com>,
+        Rob Herring <robh@kernel.org>
+Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>
+Subject: Re: [PATCH v1 00/16] ACPI: Get rid of the list of children in struct
+ acpi_device
+Message-ID: <YqINyDTfpNBGDYlb@smile.fi.intel.com>
+References: <1843211.tdWV9SEqCh@kreacher>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CABMhjYp3xUyQ9q6nXHvEA2zuzhYi0ETn6UETeH1apWf2n2eP7A@mail.gmail.com>
+In-Reply-To: <1843211.tdWV9SEqCh@kreacher>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 04:39:23PM -0700, Atul Khare wrote:
-> The patch series fixes dt-schema validation errors that can be reproduced
-> using the following: make ARCH=riscv defconfig; make ARCH=riscv
-> dt_binding_check dtbs_check
+On Thu, Jun 09, 2022 at 03:44:27PM +0200, Rafael J. Wysocki wrote:
+> Hi All,
 > 
-> This is a rebased version of https://tinyurl.com/yvdvmsjd, and excludes
-> two patches that are now redundant.
+> Confusingly enough, the ACPI subsystem stores the information on the given ACPI
+> device's children in two places: as the list of children in struct acpi_device
+> and (as a result of device registration) in the list of children in the embedded
+> struct device.
 > 
-> Atul Khare (2):
->   dt-bindings: sifive: add cache-set value of 2048
->   dt-bindings: sifive: add gpio-line-names
+> These two lists agree with each other most of the time, but not always (like in
+> error paths in some cases), and the list of children in struct acpi_device is
+> not generally safe to use without locking.  In principle, it should always be
+> walked under acpi_device_lock, but in practice holding acpi_scan_lock is
+> sufficient for that too.  However, its users may not know whether or not
+> they operate under acpi_scan_lock and at least in some cases it is not accessed
+> in a safe way (note that ACPI devices may go away as a result of hot-remove,
 
-Your series is not properly threaded. git-send-email does this for you 
-by default unless you tell it not to.
+> unlike OF nodes).
 
+Hmm... Does it true for DT overlays? Not an expert in DT overlays, though,
+adding Rob and Frank.
+
+> For this reason, it is better to consolidate the code that needs to walk the
+> children of an ACPI device which is the purpose of this patch series.
 > 
->  Documentation/devicetree/bindings/gpio/sifive,gpio.yaml      | 3 +++
->  Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml | 4 +++-
->  2 files changed, 6 insertions(+), 1 deletion(-)
+> Overall, it switches over all of the users of the list of children in struct
+> acpi_device to using helpers based on the driver core's mechanics and finally
+> drops that list, but some extra cleanups are done on the way.
 > 
-> --
-> 2.34.1
-> 
+> Please refer to the patch changelogs for details.
+
+I'm going to look the individual patches.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
