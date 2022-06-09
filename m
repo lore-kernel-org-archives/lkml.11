@@ -2,125 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A964C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 00:13:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7E83CCA47A
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 00:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235824AbiFIAM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 20:12:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56708 "EHLO
+        id S235987AbiFIAPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 20:15:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229673AbiFIAM4 (ORCPT
+        with ESMTP id S235865AbiFIAPN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 20:12:56 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A37B034676;
-        Wed,  8 Jun 2022 17:12:55 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id x5so24033015edi.2;
-        Wed, 08 Jun 2022 17:12:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=d+/fJF2djT1DclZjNPSTPoNHUSOfCcPs6iD3wKEM/T0=;
-        b=jEvOiDBS+YNifNjxyaLVHDF+j7G8V4Nw4YjUEgr6O3/ehWQRDJahNRv1qIqI4RkyU8
-         tFgrUVO0H/dBghITg3LcWXwJVCcaRPV2tLh5BabJcoF730++jgsFt4xSK7m3/5Os2pX5
-         O22HzgzO9c4NjZ6O24NROX5dC7fD2sagaInba+n2zDsF/rAp4PStdG1/ZeMMETCCvebB
-         4ASOSrnI+P0dCZ+9azWEeEoH+sAvdriabmroV3CobwWJMI4U2THTGnqmeM+nZng5sI5C
-         ZbWXSMXZDnleEgrKOX8kZqeOemDmW+MJNb75innj2kRnTlWiVepolEOemyOyF5NH+wMn
-         Yesg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=d+/fJF2djT1DclZjNPSTPoNHUSOfCcPs6iD3wKEM/T0=;
-        b=g36x7LmCT5DhDA+mUl67BnBSZ6g3sU4jVb6HVbjcaCkSU9nZGAYoNDyJHf6G7qtVUt
-         6wuvbMVMiQ8tEG9bcQYfWs83ztX6uZyh6ItmD1ScJG3c6S54cJgLPrNOjz5L00l+NWNi
-         OeWYTqIjCSJj27qMf+rRqLU8/BTM1DgM3wKQ4ePnu+UtNWoHS6Blm1q2JXuM+GLyr3Tn
-         TMMzAuTl4lMC/uyT5xIF9SuLBCBKmQf3QDz0GlPWYrGveB92goy+swRBpAuk+cVmtwpP
-         vTLaNjibewz3rWmA9Tnf5Y3V3hBDawsNnQj4zcrqoRAMn9vYvU1zw36O01UcOernm/sM
-         yzKQ==
-X-Gm-Message-State: AOAM532mKZAItQkCtSw5n0FH0wsIQTmw1CKm6ymueRcSQ1XoPkQhE1NT
-        XK8r6qOlsANcfHlFgvObjr2NCZFjh+YaFKtBzjM=
-X-Google-Smtp-Source: ABdhPJwnxHMwfwrtisT2I4w3h9eLchQbIXCVEYfwv8wr1DmS6m2YMxY6ATx90TISPZhEXcwR0lGzkIpJSntkYwMobbM=
-X-Received: by 2002:a05:6402:3895:b0:430:6a14:8ca3 with SMTP id
- fd21-20020a056402389500b004306a148ca3mr29401064edb.421.1654733574084; Wed, 08
- Jun 2022 17:12:54 -0700 (PDT)
+        Wed, 8 Jun 2022 20:15:13 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D50A224090;
+        Wed,  8 Jun 2022 17:15:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654733711; x=1686269711;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AuKmeHqO8kg5TU3QFi7lo4/x+Zz36zZKWeKouXntz5o=;
+  b=iLC9tGnFYZjomwW74F8qegclpBWLETu/bqbh6FYgobi8Kr3XCbitWtDl
+   AJZbMrsfQlAbyYFxqGm5x39A+6WodGtrzISbnYdC9kRF8dGRuyrFG03fW
+   qayCXoQpefvAXVaeSJqTdLOaRZ0e10NV7REQ/NIE3B42lwT5/aQDk+23d
+   snCQhIacUfPKLHG3jGPwk7l2uL82GcUlkfC8YwQat4x7JrnM/CIcY9LQz
+   AflDSAYSgFXxtcmXN0DLBLgFb5ApReKyGc7BKQYJLQtT70SXhh0rCDE6O
+   ALmWLTK0LS7XDMQHUlQRpfXURW798gwd0tt4Nv30V9dYeRAtz7+7jt6u0
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="278254905"
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="278254905"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 17:15:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="670858357"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 Jun 2022 17:15:08 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nz5pL-000FGB-OC;
+        Thu, 09 Jun 2022 00:15:07 +0000
+Date:   Thu, 9 Jun 2022 08:14:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Jongpil Jung <jongpil19.jung@samsung.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org
+Subject: Re: [PATCH 1/1] iio:proximity:sx9360: Fix hardware gain read/write
+Message-ID: <202206090828.1Q7GljFY-lkp@intel.com>
+References: <20220608010857.1720-1-xiaohuizhang@ruc.edu.cn>
 MIME-Version: 1.0
-References: <20220608111221.373833-1-roberto.sassu@huawei.com> <20220608111221.373833-3-roberto.sassu@huawei.com>
-In-Reply-To: <20220608111221.373833-3-roberto.sassu@huawei.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 8 Jun 2022 17:12:41 -0700
-Message-ID: <CAADnVQJ4RCSAeDMqFpF5bQznPQaTWFr=kL7GdssDQuzLof06fg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] selftests/bpf: Add test_progs opts for sign-file
- and kernel priv key + cert
-To:     Roberto Sassu <roberto.sassu@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220608010857.1720-1-xiaohuizhang@ruc.edu.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 4:15 AM Roberto Sassu <roberto.sassu@huawei.com> wrote:
->
-> According to the logs of the eBPF CI, built kernel and tests are copied to
-> a virtual machine to run there.
->
-> Since a test for a new helper to verify PKCS#7 signatures requires to sign
-> data to be verified, extend test_progs to store in the test_env data
-> structure (accessible by individual tests) the path of sign-file and of the
-> kernel private key and cert.
->
-> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-> ---
->  tools/testing/selftests/bpf/test_progs.c | 12 ++++++++++++
->  tools/testing/selftests/bpf/test_progs.h |  3 +++
->  2 files changed, 15 insertions(+)
->
-> diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-> index c639f2e56fc5..90ce2c06a15e 100644
-> --- a/tools/testing/selftests/bpf/test_progs.c
-> +++ b/tools/testing/selftests/bpf/test_progs.c
-> @@ -707,6 +707,8 @@ enum ARG_KEYS {
->         ARG_TEST_NAME_GLOB_DENYLIST = 'd',
->         ARG_NUM_WORKERS = 'j',
->         ARG_DEBUG = -1,
-> +       ARG_SIGN_FILE = 'S',
-> +       ARG_KERNEL_PRIV_CERT = 'C',
->  };
->
->  static const struct argp_option opts[] = {
-> @@ -732,6 +734,10 @@ static const struct argp_option opts[] = {
->           "Number of workers to run in parallel, default to number of cpus." },
->         { "debug", ARG_DEBUG, NULL, 0,
->           "print extra debug information for test_progs." },
-> +       { "sign-file", ARG_SIGN_FILE, "PATH", 0,
-> +         "sign-file path " },
-> +       { "kernel-priv-cert", ARG_KERNEL_PRIV_CERT, "PATH", 0,
-> +         "kernel private key and cert path " },
->         {},
->  };
->
-> @@ -862,6 +868,12 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
->         case ARG_DEBUG:
->                 env->debug = true;
->                 break;
-> +       case ARG_SIGN_FILE:
-> +               env->sign_file_path = arg;
-> +               break;
-> +       case ARG_KERNEL_PRIV_CERT:
-> +               env->kernel_priv_cert_path = arg;
-> +               break;
+Hi Xiaohui,
 
-That's cumbersome approach to use to force CI and
-users to pass these args on command line.
-The test has to be self contained.
-test_progs should execute it without any additional input.
-For example by having test-only private/public key
-that is used to sign and verify the signature.
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on jic23-iio/togreg]
+[also build test ERROR on v5.19-rc1 next-20220608]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Xiaohui-Zhang/iio-proximity-sx9360-Fix-hardware-gain-read-write/20220608-125912
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+config: openrisc-randconfig-r033-20220608 (https://download.01.org/0day-ci/archive/20220609/202206090828.1Q7GljFY-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/bdc0a6947530604152de0d152635e144a486ee32
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Xiaohui-Zhang/iio-proximity-sx9360-Fix-hardware-gain-read-write/20220608-125912
+        git checkout bdc0a6947530604152de0d152635e144a486ee32
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/iio/proximity/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/iio/proximity/sx9360.c: In function 'sx9360_read_gain':
+>> drivers/iio/proximity/sx9360.c:297:28: error: 'SX9360_REG_PROX_CTRL0_GAIN_RSVD' undeclared (first use in this function); did you mean 'SX9324_REG_PROX_CTRL0_GAIN_RSVD'?
+     297 |         else if (regval == SX9360_REG_PROX_CTRL0_GAIN_RSVD ||
+         |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                            SX9324_REG_PROX_CTRL0_GAIN_RSVD
+   drivers/iio/proximity/sx9360.c:297:28: note: each undeclared identifier is reported only once for each function it appears in
+>> drivers/iio/proximity/sx9360.c:298:27: error: 'SX9360_REG_PROX_CTRL0_GAIN_8' undeclared (first use in this function); did you mean 'SX9324_REG_PROX_CTRL0_GAIN_8'?
+     298 |                  regval > SX9360_REG_PROX_CTRL0_GAIN_8)
+         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                           SX9324_REG_PROX_CTRL0_GAIN_8
+   drivers/iio/proximity/sx9360.c: In function 'sx9360_write_gain':
+   drivers/iio/proximity/sx9360.c:646:32: error: 'SX9360_REG_PROX_CTRL0_GAIN_8' undeclared (first use in this function); did you mean 'SX9324_REG_PROX_CTRL0_GAIN_8'?
+     646 |         if (val <= 0 || gain > SX9360_REG_PROX_CTRL0_GAIN_8)
+         |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                                SX9324_REG_PROX_CTRL0_GAIN_8
+   drivers/iio/proximity/sx9360.c: At top level:
+>> drivers/iio/proximity/sx9360.c:699:17: error: 'SX9360_REG_PROX_CTRL0_GAIN_1' undeclared here (not in a function); did you mean 'SX9324_REG_PROX_CTRL0_GAIN_1'?
+     699 |                 SX9360_REG_PROX_CTRL0_GAIN_1 << SX9360_REG_PROX_CTRL0_GAIN_SHIFT |
+         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                 SX9324_REG_PROX_CTRL0_GAIN_1
+>> drivers/iio/proximity/sx9360.c:699:49: error: 'SX9360_REG_PROX_CTRL0_GAIN_SHIFT' undeclared here (not in a function); did you mean 'SX9324_REG_PROX_CTRL0_GAIN_SHIFT'?
+     699 |                 SX9360_REG_PROX_CTRL0_GAIN_1 << SX9360_REG_PROX_CTRL0_GAIN_SHIFT |
+         |                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                                                 SX9324_REG_PROX_CTRL0_GAIN_SHIFT
+
+
+vim +297 drivers/iio/proximity/sx9360.c
+
+   282	
+   283	static int sx9360_read_gain(struct sx_common_data *data,
+   284				    const struct iio_chan_spec *chan, int *val)
+   285	{
+   286		unsigned int reg, regval;
+   287		int ret;
+   288	
+   289		reg = SX9360_REG_PROX_CTRL0_PHR + chan->channel;
+   290		ret = regmap_read(data->regmap, reg, &regval);
+   291		if (ret)
+   292			return ret;
+   293	
+   294		regval = FIELD_GET(SX9360_REG_PROX_CTRL0_GAIN_MASK, regval);
+   295		if (regval)
+   296			regval--;
+ > 297		else if (regval == SX9360_REG_PROX_CTRL0_GAIN_RSVD ||
+ > 298			 regval > SX9360_REG_PROX_CTRL0_GAIN_8)
+   299			return -EINVAL;
+   300	
+   301		*val = 1 << regval;
+   302	
+   303		return IIO_VAL_INT;
+   304	}
+   305	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
