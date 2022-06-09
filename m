@@ -2,542 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC8D7CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:05:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0FC0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:11:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236850AbiFIQF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 12:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40094 "EHLO
+        id S1344462AbiFIQLA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 12:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231679AbiFIQFy (ORCPT
+        with ESMTP id S233153AbiFIQKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 12:05:54 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A789613892A;
-        Thu,  9 Jun 2022 09:05:52 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 259Fxcj0011420;
-        Thu, 9 Jun 2022 16:05:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=Ionq+1sLp9BiqhJLVZfsLskBCazoUK6xUpZm2BAiiJs=;
- b=plbCagQ/zx31MtTPKxukRN0Kcx+h2aD1bkjjG6dMf79H3tvKPQ4nKwKNx7I4zsOCA8aZ
- TbiWDi4W2bzgQHHZTy87AEhsrs3YUu2EXP+T3lqMqT0jCK/i0GibHwkmQP9AYO71EqCY
- wT7wE+qYXNwGLjZsTS5LF2CJTGpxA3S5ecSHGTQuEBL/uWtiUH78Vdb3wUVuSWxn4B5p
- XuYei405S3rxjyDrhXC2l1P3I6OuC7olPeBPI0Rv8h0nqtzRy33l+3OFHLjlF4aUonGb
- jUYdTyyE1cIpd99EdAKi5EGAppCeoynWrFNBn0vvNvFS8WCTC6A+EnJpnDkkL+/zTcsQ 6g== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gkm07r3r4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 09 Jun 2022 16:05:45 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 259G5BoF029443;
-        Thu, 9 Jun 2022 16:05:45 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gkm07r3qq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 09 Jun 2022 16:05:45 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 259G5LMX011146;
-        Thu, 9 Jun 2022 16:05:44 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma04dal.us.ibm.com with ESMTP id 3gfy1akvcb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 09 Jun 2022 16:05:44 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 259G5gmL36372842
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 9 Jun 2022 16:05:42 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5F63C136051;
-        Thu,  9 Jun 2022 16:05:42 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EF8BA136059;
-        Thu,  9 Jun 2022 16:05:40 +0000 (GMT)
-Received: from farman-thinkpad-t470p (unknown [9.211.94.47])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu,  9 Jun 2022 16:05:40 +0000 (GMT)
-Message-ID: <9001ce801360e3ed1482e15b5e8ec0cccc26ad64.camel@linux.ibm.com>
-Subject: Re: [PATCH] vfio: de-extern-ify function prototypes
-From:   Eric Farman <farman@linux.ibm.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     kwankhede@nvidia.com, mjrosato@linux.ibm.com, pasic@linux.ibm.com,
-        diana.craciun@oss.nxp.com, cohuck@redhat.com,
-        eric.auger@redhat.com, kvm@vger.kernel.org,
+        Thu, 9 Jun 2022 12:10:55 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D0E1483F5;
+        Thu,  9 Jun 2022 09:10:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
+        bh=pQAaYG0UZr1h6O+BbSTbwI89gARYyD/qE5RN8fhYMmQ=;
+        b=SBWLuViINb1MuVt8e5uaeNFyVcA/xkztNrVK3lfMyzoJr6RWZ3TiYwUzBuLYxfy+mbQqBrR6O5gRt
+         dZBM/nMi102Dunnb9OE9HwqVdjgEF4b2abjokRVmVeHqbtF1+ETeFbxGj8IODSlaGg5ZPR3FPgAqJ8
+         +lz9FWGSlXsOCP7dtBPbZGvpzQpXTO242IddGbM7MkUCTDg8UtEJUucmffhbSe1Dli859SsAtug47e
+         IvHePKINEzRFIxXt/kYELU9OkhfzkyANkNPXO6m4ufb5ctWHZzg9tMkJxDeBbKUnqmnwVTHk/df4w1
+         UJooy2QgaJicHymEogtQAmTTtQpTPWw==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000010,0.019162)], BW: [Enabled, t: (0.000020,0.000001)], RTDA: [Enabled, t: (0.073962), Hit: No, Details: v2.40.0; Id: 15.52k9ds.1g54jmhqh.30v1; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from localhost.localdomain ([178.70.36.174])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Thu, 9 Jun 2022 19:10:28 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, corbet@lwn.net
+Cc:     Ivan Bornyakov <brnkv.i1@gmail.com>, Conor.Dooley@microchip.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, jgg@nvidia.com, yishaih@nvidia.com,
-        hch@lst.de
-Date:   Thu, 09 Jun 2022 12:05:39 -0400
-In-Reply-To: <165471414407.203056.474032786990662279.stgit@omen>
-References: <165471414407.203056.474032786990662279.stgit@omen>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: QLnhjnmaaH_QFQA6-xW0JnUtRe2hOXGP
-X-Proofpoint-GUID: 0sTcPT-982aElfTBdzLAGsYK3SwzNkGb
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-09_12,2022-06-09_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- spamscore=0 malwarescore=0 priorityscore=1501 bulkscore=0 mlxscore=0
- suspectscore=0 clxscore=1011 mlxlogscore=999 adultscore=0 phishscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206090062
+        system@metrotek.ru
+Subject: [PATCH v17 0/4] Microchip Polarfire FPGA manager
+Date:   Thu,  9 Jun 2022 18:47:48 +0300
+Message-Id: <20220609154752.20781-1-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-06-08 at 12:55 -0600, Alex Williamson wrote:
-> The use of 'extern' in function prototypes has been disrecommended in
-> the kernel coding style for several years now, remove them from all
-> vfio
-> related files so contributors no longer need to decide between style
-> and
-> consistency.
-> 
-> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+From: Ivan Bornyakov <brnkv.i1@gmail.com>
 
-Reviewed-by: Eric Farman <farman@linux.ibm.com>
+Add support to the FPGA manager for programming Microchip Polarfire
+FPGAs over slave SPI interface with .dat formatted bitsream image.
 
-> ---
-> 
-> A patch in the same vein was proposed about a year ago, but tied to
-> an ill
-> fated series and forgotten.  Now that we're at the beginning of a new
-> development cycle, I'd like to propose kicking off the v5.20 vfio
-> next
-> branch with this patch and would kindly ask anyone with pending
-> respins or
-> significant conflicts to rebase on top of this patch.  Thanks!
-> 
->  Documentation/driver-api/vfio-mediated-device.rst |   10 ++-
->  drivers/s390/cio/vfio_ccw_cp.h                    |   12 ++--
->  drivers/s390/cio/vfio_ccw_private.h               |    6 +-
->  drivers/vfio/fsl-mc/vfio_fsl_mc_private.h         |    2 -
->  drivers/vfio/platform/vfio_platform_private.h     |   21 +++---
->  include/linux/vfio.h                              |   70 ++++++++++-
-> ----------
->  include/linux/vfio_pci_core.h                     |   65 ++++++++++-
-> ---------
->  7 files changed, 91 insertions(+), 95 deletions(-)
-> 
-> diff --git a/Documentation/driver-api/vfio-mediated-device.rst
-> b/Documentation/driver-api/vfio-mediated-device.rst
-> index eded8719180f..1c57815619fd 100644
-> --- a/Documentation/driver-api/vfio-mediated-device.rst
-> +++ b/Documentation/driver-api/vfio-mediated-device.rst
-> @@ -114,11 +114,11 @@ to register and unregister itself with the core
-> driver:
->  
->  * Register::
->  
-> -    extern int  mdev_register_driver(struct mdev_driver *drv);
-> +    int mdev_register_driver(struct mdev_driver *drv);
->  
->  * Unregister::
->  
-> -    extern void mdev_unregister_driver(struct mdev_driver *drv);
-> +    void mdev_unregister_driver(struct mdev_driver *drv);
->  
->  The mediated bus driver's probe function should create a vfio_device
-> on top of
->  the mdev_device and connect it to an appropriate implementation of
-> @@ -127,8 +127,8 @@ vfio_device_ops.
->  When a driver wants to add the GUID creation sysfs to an existing
-> device it has
->  probe'd to then it should call::
->  
-> -	extern int  mdev_register_device(struct device *dev,
-> -	                                 struct mdev_driver
-> *mdev_driver);
-> +    int mdev_register_device(struct device *dev,
-> +                             struct mdev_driver *mdev_driver);
->  
->  This will provide the 'mdev_supported_types/XX/create' files which
-> can then be
->  used to trigger the creation of a mdev_device. The created
-> mdev_device will be
-> @@ -136,7 +136,7 @@ attached to the specified driver.
->  
->  When the driver needs to remove itself it calls::
->  
-> -	extern void mdev_unregister_device(struct device *dev);
-> +    void mdev_unregister_device(struct device *dev);
->  
->  Which will unbind and destroy all the created mdevs and remove the
-> sysfs files.
->  
-> diff --git a/drivers/s390/cio/vfio_ccw_cp.h
-> b/drivers/s390/cio/vfio_ccw_cp.h
-> index e4c436199b4c..3194d887e08e 100644
-> --- a/drivers/s390/cio/vfio_ccw_cp.h
-> +++ b/drivers/s390/cio/vfio_ccw_cp.h
-> @@ -41,11 +41,11 @@ struct channel_program {
->  	struct ccw1 *guest_cp;
->  };
->  
-> -extern int cp_init(struct channel_program *cp, union orb *orb);
-> -extern void cp_free(struct channel_program *cp);
-> -extern int cp_prefetch(struct channel_program *cp);
-> -extern union orb *cp_get_orb(struct channel_program *cp, u32
-> intparm, u8 lpm);
-> -extern void cp_update_scsw(struct channel_program *cp, union scsw
-> *scsw);
-> -extern bool cp_iova_pinned(struct channel_program *cp, u64 iova);
-> +int cp_init(struct channel_program *cp, union orb *orb);
-> +void cp_free(struct channel_program *cp);
-> +int cp_prefetch(struct channel_program *cp);
-> +union orb *cp_get_orb(struct channel_program *cp, u32 intparm, u8
-> lpm);
-> +void cp_update_scsw(struct channel_program *cp, union scsw *scsw);
-> +bool cp_iova_pinned(struct channel_program *cp, u64 iova);
->  
->  #endif
-> diff --git a/drivers/s390/cio/vfio_ccw_private.h
-> b/drivers/s390/cio/vfio_ccw_private.h
-> index 7272eb788612..b7163bac8cc7 100644
-> --- a/drivers/s390/cio/vfio_ccw_private.h
-> +++ b/drivers/s390/cio/vfio_ccw_private.h
-> @@ -119,10 +119,10 @@ struct vfio_ccw_private {
->  	struct work_struct	crw_work;
->  } __aligned(8);
->  
-> -extern int vfio_ccw_mdev_reg(struct subchannel *sch);
-> -extern void vfio_ccw_mdev_unreg(struct subchannel *sch);
-> +int vfio_ccw_mdev_reg(struct subchannel *sch);
-> +void vfio_ccw_mdev_unreg(struct subchannel *sch);
->  
-> -extern int vfio_ccw_sch_quiesce(struct subchannel *sch);
-> +int vfio_ccw_sch_quiesce(struct subchannel *sch);
->  
->  extern struct mdev_driver vfio_ccw_mdev_driver;
->  
-> diff --git a/drivers/vfio/fsl-mc/vfio_fsl_mc_private.h
-> b/drivers/vfio/fsl-mc/vfio_fsl_mc_private.h
-> index 4ad63ececb91..7a29f572f93d 100644
-> --- a/drivers/vfio/fsl-mc/vfio_fsl_mc_private.h
-> +++ b/drivers/vfio/fsl-mc/vfio_fsl_mc_private.h
-> @@ -39,7 +39,7 @@ struct vfio_fsl_mc_device {
->  	struct vfio_fsl_mc_irq      *mc_irqs;
->  };
->  
-> -extern int vfio_fsl_mc_set_irqs_ioctl(struct vfio_fsl_mc_device
-> *vdev,
-> +int vfio_fsl_mc_set_irqs_ioctl(struct vfio_fsl_mc_device *vdev,
->  			       u32 flags, unsigned int index,
->  			       unsigned int start, unsigned int count,
->  			       void *data);
-> diff --git a/drivers/vfio/platform/vfio_platform_private.h
-> b/drivers/vfio/platform/vfio_platform_private.h
-> index 520d2a8e8375..691b43f4b2b2 100644
-> --- a/drivers/vfio/platform/vfio_platform_private.h
-> +++ b/drivers/vfio/platform/vfio_platform_private.h
-> @@ -78,21 +78,20 @@ struct vfio_platform_reset_node {
->  	vfio_platform_reset_fn_t of_reset;
->  };
->  
-> -extern int vfio_platform_probe_common(struct vfio_platform_device
-> *vdev,
-> -				      struct device *dev);
-> +int vfio_platform_probe_common(struct vfio_platform_device *vdev,
-> +			       struct device *dev);
->  void vfio_platform_remove_common(struct vfio_platform_device *vdev);
->  
-> -extern int vfio_platform_irq_init(struct vfio_platform_device
-> *vdev);
-> -extern void vfio_platform_irq_cleanup(struct vfio_platform_device
-> *vdev);
-> +int vfio_platform_irq_init(struct vfio_platform_device *vdev);
-> +void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev);
->  
-> -extern int vfio_platform_set_irqs_ioctl(struct vfio_platform_device
-> *vdev,
-> -					uint32_t flags, unsigned index,
-> -					unsigned start, unsigned count,
-> -					void *data);
-> +int vfio_platform_set_irqs_ioctl(struct vfio_platform_device *vdev,
-> +				 uint32_t flags, unsigned index,
-> +				 unsigned start, unsigned count, void
-> *data);
->  
-> -extern void __vfio_platform_register_reset(struct
-> vfio_platform_reset_node *n);
-> -extern void vfio_platform_unregister_reset(const char *compat,
-> -					   vfio_platform_reset_fn_t
-> fn);
-> +void __vfio_platform_register_reset(struct vfio_platform_reset_node
-> *n);
-> +void vfio_platform_unregister_reset(const char *compat,
-> +				    vfio_platform_reset_fn_t fn);
->  #define vfio_platform_register_reset(__compat, __reset)		
-> \
->  static struct vfio_platform_reset_node __reset ## _node = {	\
->  	.owner = THIS_MODULE,					\
-> diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-> index aa888cc51757..49580fa2073a 100644
-> --- a/include/linux/vfio.h
-> +++ b/include/linux/vfio.h
-> @@ -140,19 +140,19 @@ int vfio_mig_get_next_state(struct vfio_device
-> *device,
->  /*
->   * External user API
->   */
-> -extern struct iommu_group *vfio_file_iommu_group(struct file *file);
-> -extern bool vfio_file_enforced_coherent(struct file *file);
-> -extern void vfio_file_set_kvm(struct file *file, struct kvm *kvm);
-> -extern bool vfio_file_has_dev(struct file *file, struct vfio_device
-> *device);
-> +struct iommu_group *vfio_file_iommu_group(struct file *file);
-> +bool vfio_file_enforced_coherent(struct file *file);
-> +void vfio_file_set_kvm(struct file *file, struct kvm *kvm);
-> +bool vfio_file_has_dev(struct file *file, struct vfio_device
-> *device);
->  
->  #define VFIO_PIN_PAGES_MAX_ENTRIES	(PAGE_SIZE/sizeof(unsigned
-> long))
->  
-> -extern int vfio_pin_pages(struct vfio_device *device, unsigned long
-> *user_pfn,
-> -			  int npage, int prot, unsigned long
-> *phys_pfn);
-> -extern int vfio_unpin_pages(struct vfio_device *device, unsigned
-> long *user_pfn,
-> -			    int npage);
-> -extern int vfio_dma_rw(struct vfio_device *device, dma_addr_t
-> user_iova,
-> -		       void *data, size_t len, bool write);
-> +int vfio_pin_pages(struct vfio_device *device, unsigned long
-> *user_pfn,
-> +		   int npage, int prot, unsigned long *phys_pfn);
-> +int vfio_unpin_pages(struct vfio_device *device, unsigned long
-> *user_pfn,
-> +		     int npage);
-> +int vfio_dma_rw(struct vfio_device *device, dma_addr_t user_iova,
-> +		void *data, size_t len, bool write);
->  
->  /* each type has independent events */
->  enum vfio_notify_type {
-> @@ -162,13 +162,13 @@ enum vfio_notify_type {
->  /* events for VFIO_IOMMU_NOTIFY */
->  #define VFIO_IOMMU_NOTIFY_DMA_UNMAP	BIT(0)
->  
-> -extern int vfio_register_notifier(struct vfio_device *device,
-> -				  enum vfio_notify_type type,
-> -				  unsigned long *required_events,
-> -				  struct notifier_block *nb);
-> -extern int vfio_unregister_notifier(struct vfio_device *device,
-> -				    enum vfio_notify_type type,
-> -				    struct notifier_block *nb);
-> +int vfio_register_notifier(struct vfio_device *device,
-> +			   enum vfio_notify_type type,
-> +			   unsigned long *required_events,
-> +			   struct notifier_block *nb);
-> +int vfio_unregister_notifier(struct vfio_device *device,
-> +			     enum vfio_notify_type type,
-> +			     struct notifier_block *nb);
->  
->  
->  /*
-> @@ -178,25 +178,24 @@ struct vfio_info_cap {
->  	struct vfio_info_cap_header *buf;
->  	size_t size;
->  };
-> -extern struct vfio_info_cap_header *vfio_info_cap_add(
-> -		struct vfio_info_cap *caps, size_t size, u16 id, u16
-> version);
-> -extern void vfio_info_cap_shift(struct vfio_info_cap *caps, size_t
-> offset);
-> +struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap
-> *caps,
-> +					       size_t size, u16 id,
-> +					       u16 version);
-> +void vfio_info_cap_shift(struct vfio_info_cap *caps, size_t offset);
->  
-> -extern int vfio_info_add_capability(struct vfio_info_cap *caps,
-> -				    struct vfio_info_cap_header *cap,
-> -				    size_t size);
-> +int vfio_info_add_capability(struct vfio_info_cap *caps,
-> +			     struct vfio_info_cap_header *cap, size_t
-> size);
->  
-> -extern int vfio_set_irqs_validate_and_prepare(struct vfio_irq_set
-> *hdr,
-> -					      int num_irqs, int
-> max_irq_type,
-> -					      size_t *data_size);
-> +int vfio_set_irqs_validate_and_prepare(struct vfio_irq_set *hdr,
-> +				       int num_irqs, int max_irq_type,
-> +				       size_t *data_size);
->  
->  struct pci_dev;
->  #if IS_ENABLED(CONFIG_VFIO_SPAPR_EEH)
-> -extern void vfio_spapr_pci_eeh_open(struct pci_dev *pdev);
-> -extern void vfio_spapr_pci_eeh_release(struct pci_dev *pdev);
-> -extern long vfio_spapr_iommu_eeh_ioctl(struct iommu_group *group,
-> -				       unsigned int cmd,
-> -				       unsigned long arg);
-> +void vfio_spapr_pci_eeh_open(struct pci_dev *pdev);
-> +void vfio_spapr_pci_eeh_release(struct pci_dev *pdev);
-> +long vfio_spapr_iommu_eeh_ioctl(struct iommu_group *group, unsigned
-> int cmd,
-> +				unsigned long arg);
->  #else
->  static inline void vfio_spapr_pci_eeh_open(struct pci_dev *pdev)
->  {
-> @@ -230,10 +229,9 @@ struct virqfd {
->  	struct virqfd		**pvirqfd;
->  };
->  
-> -extern int vfio_virqfd_enable(void *opaque,
-> -			      int (*handler)(void *, void *),
-> -			      void (*thread)(void *, void *),
-> -			      void *data, struct virqfd **pvirqfd, int
-> fd);
-> -extern void vfio_virqfd_disable(struct virqfd **pvirqfd);
-> +int vfio_virqfd_enable(void *opaque, int (*handler)(void *, void *),
-> +		       void (*thread)(void *, void *), void *data,
-> +		       struct virqfd **pvirqfd, int fd);
-> +void vfio_virqfd_disable(struct virqfd **pvirqfd);
->  
->  #endif /* VFIO_H */
-> diff --git a/include/linux/vfio_pci_core.h
-> b/include/linux/vfio_pci_core.h
-> index 23c176d4b073..22de2bce6394 100644
-> --- a/include/linux/vfio_pci_core.h
-> +++ b/include/linux/vfio_pci_core.h
-> @@ -147,23 +147,23 @@ struct vfio_pci_core_device {
->  #define is_irq_none(vdev) (!(is_intx(vdev) || is_msi(vdev) ||
-> is_msix(vdev)))
->  #define irq_is(vdev, type) (vdev->irq_type == type)
->  
-> -extern void vfio_pci_intx_mask(struct vfio_pci_core_device *vdev);
-> -extern void vfio_pci_intx_unmask(struct vfio_pci_core_device *vdev);
-> +void vfio_pci_intx_mask(struct vfio_pci_core_device *vdev);
-> +void vfio_pci_intx_unmask(struct vfio_pci_core_device *vdev);
->  
-> -extern int vfio_pci_set_irqs_ioctl(struct vfio_pci_core_device
-> *vdev,
-> -				   uint32_t flags, unsigned index,
-> -				   unsigned start, unsigned count, void
-> *data);
-> +int vfio_pci_set_irqs_ioctl(struct vfio_pci_core_device *vdev,
-> +			    uint32_t flags, unsigned index,
-> +			    unsigned start, unsigned count, void
-> *data);
->  
-> -extern ssize_t vfio_pci_config_rw(struct vfio_pci_core_device *vdev,
-> -				  char __user *buf, size_t count,
-> -				  loff_t *ppos, bool iswrite);
-> +ssize_t vfio_pci_config_rw(struct vfio_pci_core_device *vdev,
-> +			   char __user *buf, size_t count,
-> +			   loff_t *ppos, bool iswrite);
->  
-> -extern ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev,
-> char __user *buf,
-> -			       size_t count, loff_t *ppos, bool
-> iswrite);
-> +ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char
-> __user *buf,
-> +			size_t count, loff_t *ppos, bool iswrite);
->  
->  #ifdef CONFIG_VFIO_PCI_VGA
-> -extern ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev,
-> char __user *buf,
-> -			       size_t count, loff_t *ppos, bool
-> iswrite);
-> +ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char
-> __user *buf,
-> +			size_t count, loff_t *ppos, bool iswrite);
->  #else
->  static inline ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device
-> *vdev,
->  				      char __user *buf, size_t count,
-> @@ -173,32 +173,31 @@ static inline ssize_t vfio_pci_vga_rw(struct
-> vfio_pci_core_device *vdev,
->  }
->  #endif
->  
-> -extern long vfio_pci_ioeventfd(struct vfio_pci_core_device *vdev,
-> loff_t offset,
-> -			       uint64_t data, int count, int fd);
-> +long vfio_pci_ioeventfd(struct vfio_pci_core_device *vdev, loff_t
-> offset,
-> +			uint64_t data, int count, int fd);
->  
-> -extern int vfio_pci_init_perm_bits(void);
-> -extern void vfio_pci_uninit_perm_bits(void);
-> +int vfio_pci_init_perm_bits(void);
-> +void vfio_pci_uninit_perm_bits(void);
->  
-> -extern int vfio_config_init(struct vfio_pci_core_device *vdev);
-> -extern void vfio_config_free(struct vfio_pci_core_device *vdev);
-> +int vfio_config_init(struct vfio_pci_core_device *vdev);
-> +void vfio_config_free(struct vfio_pci_core_device *vdev);
->  
-> -extern int vfio_pci_register_dev_region(struct vfio_pci_core_device
-> *vdev,
-> -					unsigned int type, unsigned int
-> subtype,
-> -					const struct vfio_pci_regops
-> *ops,
-> -					size_t size, u32 flags, void
-> *data);
-> +int vfio_pci_register_dev_region(struct vfio_pci_core_device *vdev,
-> +				 unsigned int type, unsigned int
-> subtype,
-> +				 const struct vfio_pci_regops *ops,
-> +				 size_t size, u32 flags, void *data);
->  
-> -extern int vfio_pci_set_power_state(struct vfio_pci_core_device
-> *vdev,
-> -				    pci_power_t state);
-> +int vfio_pci_set_power_state(struct vfio_pci_core_device *vdev,
-> +			     pci_power_t state);
->  
-> -extern bool __vfio_pci_memory_enabled(struct vfio_pci_core_device
-> *vdev);
-> -extern void vfio_pci_zap_and_down_write_memory_lock(struct
-> vfio_pci_core_device
-> -						    *vdev);
-> -extern u16 vfio_pci_memory_lock_and_enable(struct
-> vfio_pci_core_device *vdev);
-> -extern void vfio_pci_memory_unlock_and_restore(struct
-> vfio_pci_core_device *vdev,
-> -					       u16 cmd);
-> +bool __vfio_pci_memory_enabled(struct vfio_pci_core_device *vdev);
-> +void vfio_pci_zap_and_down_write_memory_lock(struct
-> vfio_pci_core_device *vdev);
-> +u16 vfio_pci_memory_lock_and_enable(struct vfio_pci_core_device
-> *vdev);
-> +void vfio_pci_memory_unlock_and_restore(struct vfio_pci_core_device
-> *vdev,
-> +					u16 cmd);
->  
->  #ifdef CONFIG_VFIO_PCI_IGD
-> -extern int vfio_pci_igd_init(struct vfio_pci_core_device *vdev);
-> +int vfio_pci_igd_init(struct vfio_pci_core_device *vdev);
->  #else
->  static inline int vfio_pci_igd_init(struct vfio_pci_core_device
-> *vdev)
->  {
-> @@ -207,8 +206,8 @@ static inline int vfio_pci_igd_init(struct
-> vfio_pci_core_device *vdev)
->  #endif
->  
->  #ifdef CONFIG_S390
-> -extern int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device
-> *vdev,
-> -				       struct vfio_info_cap *caps);
-> +int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
-> +				struct vfio_info_cap *caps);
->  #else
->  static inline int vfio_pci_info_zdev_add_caps(struct
-> vfio_pci_core_device *vdev,
->  					      struct vfio_info_cap
-> *caps)
-> 
-> 
+Changelog:
+  v1 -> v2: fix printk formating
+  v2 -> v3:
+   * replace "microsemi" with "microchip"
+   * replace prefix "microsemi_fpga_" with "mpf_"
+   * more sensible .compatible and .name strings
+   * remove unused defines STATUS_SPI_VIOLATION and STATUS_SPI_ERROR
+  v3 -> v4: fix unused variable warning
+    Put 'mpf_of_ids' definition under conditional compilation, so it
+    would not hang unused if CONFIG_OF is not enabled.
+  v4 -> v5:
+   * prefix defines with MPF_
+   * mdelay() -> usleep_range()
+   * formatting fixes
+   * add DT bindings doc
+   * rework fpga_manager_ops.write() to fpga_manager_ops.write_sg()
+     We can't parse image header in write_init() because image header
+     size is not known beforehand. Thus parsing need to be done in
+     fpga_manager_ops.write() callback, but fpga_manager_ops.write()
+     also need to be reenterable. On the other hand,
+     fpga_manager_ops.write_sg() is called once. Thus, rework usage of
+     write() callback to write_sg().
+  v5 -> v6: fix patch applying
+     I forgot to clean up unrelated local changes which lead to error on
+     patch 0001-fpga-microchip-spi-add-Microchip-MPF-FPGA-manager.patch
+     applying on vanilla kernel.
+  v6 -> v7: fix binding doc to pass dt_binding_check
+  v7 -> v8: another fix for dt_binding_check warning
+  v8 -> v9:
+   * add another patch to support bitstream offset in FPGA image buffer
+   * rework fpga_manager_ops.write_sg() back to fpga_manager_ops.write()
+   * move image header parsing from write() to write_init()
+  v9 -> v10:
+   * add parse_header() callback to fpga_manager_ops
+   * adjust fpga_mgr_write_init[_buf|_sg]() for parse_header() usage
+   * implement parse_header() in microchip-spi driver
+  v10 -> v11: include missing unaligned.h to microchip-spi
+     fix error: implicit declaration of function 'get_unaligned_le[16|32]'
+  v11 -> v12:
+   * microchip-spi: double read hw status, ignore first read, because it
+     can be unreliable.
+   * microchip-spi: remove sleep between status readings in
+     poll_status_not_busy() to save a few seconds. Status is polled on
+     every 16 byte writes - that is quite often, therefore
+     usleep_range() accumulate to a considerable number of seconds.
+  v12 -> v13:
+   * fpga-mgr: separate fpga_mgr_parse_header_buf() from
+     fpga_mgr_write_init_buf()
+   * fpga-mgr: introduce FPGA_MGR_STATE_PARSE_HEADER and
+     FPGA_MGR_STATE_PARSE_HEADER_ERR fpga_mgr_states
+   * fpga-mgr: rename fpga_mgr_write_init_sg() to fpga_mgr_prepare_sg()
+     and rework with respect to a new fpga_mgr_parse_header_buf()
+   * fpga-mgr: rework write accounting in fpga_mgr_buf_load_sg() for
+     better clarity
+   * microchip-spi: rename MPF_STATUS_POLL_TIMEOUT to
+     MPF_STATUS_POLL_RETRIES
+   * microchip-spi: add comment about status reading quirk to
+     mpf_read_status()
+   * microchip-spi: rename poll_status_not_busy() to mpf_poll_status()
+     and add comment.
+   * microchip-spi: make if statement in mpf_poll_status() easier to
+     read.
+  v13 -> v14:
+   * fpga-mgr: improvements from Xu Yilun in
+      - fpga_mgr_parse_header_buf()
+      - fpga_mgr_write_init_buf()
+      - fpga_mgr_prepare_sg()
+      - fpga_mgr_buf_load_sg()
+   * fpga-mgr: add check for -EAGAIN from fpga_mgr_parse_header_buf()
+     when called from fpga_mgr_buf_load_mapped()
+   * microchip-spi: remove excessive cs_change from second spi_transfer
+     in mpf_read_status()
+   * microchip-spi: change type of components_size_start,
+     bitstream_start, i from size_t to u32 in mpf_ops_parse_header()
+  v14 -> v15: eliminate memcpy() in mpf_ops_write()
+    Eliminate excessive memcpy() in mpf_ops_write() by using
+    spi_sync_transfer() instead of spi_write().
+  v15 -> v16:
+   * microchip-spi: change back components_size_start and
+     bitstream_start variables types to size_t, i - to u16 in
+     mpf_ops_parse_header()
+   * fpga-mgr: rename fpga_parse_header_buf() to
+     fpga_parse_header_mapped(). It serves only mapped FPGA image now,
+     adjust it accordingly.
+   * fpga-mgr: separate fpga_mgr_parse_header_sg_first() and
+     fpga_mgr_parse_header_sg() from fpga_mgr_prepare_sg()
+  v16 -> v17:
+   * microchip-spi: return size of allocated header from
+     fpga_mgr_parse_header_sg(), add `char **ret_buf` to function args
+     to save pointer to allocated header. This allow us to call
+     fpga_mgr_write_init_buf() with exact size of allocated header.
+   * document parse_header() callback in fpga-mgr.rst
+
+Ivan Bornyakov (4):
+  fpga: fpga-mgr: support bitstream offset in image buffer
+  docs: fpga: mgr: document parse_header() callback
+  fpga: microchip-spi: add Microchip MPF FPGA manager
+  dt-bindings: fpga: add binding doc for microchip-spi fpga mgr
+
+ .../fpga/microchip,mpf-spi-fpga-mgr.yaml      |  44 ++
+ Documentation/driver-api/fpga/fpga-mgr.rst    |  31 +-
+ drivers/fpga/Kconfig                          |   8 +
+ drivers/fpga/Makefile                         |   1 +
+ drivers/fpga/fpga-mgr.c                       | 243 +++++++++--
+ drivers/fpga/microchip-spi.c                  | 393 ++++++++++++++++++
+ include/linux/fpga/fpga-mgr.h                 |  17 +-
+ 7 files changed, 698 insertions(+), 39 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+ create mode 100644 drivers/fpga/microchip-spi.c
+
+-- 
+2.35.1
+
 
