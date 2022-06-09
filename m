@@ -2,99 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B0BAC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 23:41:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC30CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 23:45:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345329AbiFIXlh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 19:41:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52488 "EHLO
+        id S242494AbiFIXp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 19:45:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238141AbiFIXld (ORCPT
+        with ESMTP id S232670AbiFIXpY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 19:41:33 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813EE24D6AF
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 16:41:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1654818086;
-        bh=Rl9WrMgBIa/yI1Mcm82IC1znT+c2KjvFsK4cEWVrTp0=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=AzznsniZIMOvcSyeh3GFojvoMPEQeBJdv/qrsKya71LTllehjVOhT9RksM8fHTJJJ
-         HYip+ebRgIHv8sj2KlAYnmqZjfWUkFw2sw1vLV+chxkybQ3Zvhi6wJ+tAncJ6z1tfI
-         r3ZtjrwfqRbuiE1bHJC21/J9Tdz04608CqJvW6qI=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.195.3]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mg6dy-1nXHlg2wmc-00he9L; Fri, 10
- Jun 2022 01:41:26 +0200
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-kernel@vger.kernel.org
-Cc:     trivial@kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Tejun Heo <tj@kernel.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>
-Subject: [PATCH RESEND] workqueue: Switch to new kerneldoc syntax for named variable macro argument
-Date:   Fri, 10 Jun 2022 01:41:10 +0200
-Message-Id: <20220609234111.226879-1-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.35.1
+        Thu, 9 Jun 2022 19:45:24 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E963A60ABF;
+        Thu,  9 Jun 2022 16:45:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654818322; x=1686354322;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=/qix89+4Yux2UyS3QMBWmKLCne+VvkXES21cCGFIhLs=;
+  b=EkaTUs0rea+454rYaBsqSroRFg0PamD4jU6O0eq1wv/5itn58fVYLUXz
+   hlWtv1Ogpl7/5XIS618tIb0uG/q2+eGCMXsttxiOJDTm6dvjif29rcsmN
+   nWpOfx8wOz2WQB1f6Ul8b7EGNqASBsmk3lVSAAbjuyEvvEhAIHeX8zQmg
+   +ufj+64/oRf3ev5vJZH5Yejs7zEtNES51/2LxU4etWbj7BVv+kw0q1QiP
+   unGfwpuQghUcTK8rXLxr286tVxF9gYfN+irF5pYrEItvr0xmkc2yTnQok
+   EbNfwxaIzp9UCsQ8gskKbD4HfjRVXi6KKS6myyqzqnJkOJaWOKufoYQaK
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="278263539"
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
+   d="scan'208";a="278263539"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 16:45:19 -0700
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
+   d="scan'208";a="610480359"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 16:45:19 -0700
+Date:   Thu, 9 Jun 2022 16:49:21 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
+        vgupta@kernel.org, linux@armlinux.org.uk,
+        ulli.kroll@googlemail.com, linus.walleij@linaro.org,
+        shawnguo@kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        tony@atomide.com, khilman@kernel.org, catalin.marinas@arm.com,
+        will@kernel.org, guoren@kernel.org, bcain@quicinc.com,
+        chenhuacai@kernel.org, kernel@xen0n.name, geert@linux-m68k.org,
+        sammy@sammy.net, monstr@monstr.eu, tsbogend@alpha.franken.de,
+        dinguyen@kernel.org, jonas@southpole.se,
+        stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
+        James.Bottomley@HansenPartnership.com, deller@gmx.de,
+        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
+        davem@davemloft.net, richard@nod.at,
+        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, jgross@suse.com, srivatsa@csail.mit.edu,
+        amakhalov@vmware.com, pv-drivers@vmware.com,
+        boris.ostrovsky@oracle.com, chris@zankel.net, jcmvbkbc@gmail.com,
+        rafael@kernel.org, lenb@kernel.org, pavel@ucw.cz,
+        gregkh@linuxfoundation.org, mturquette@baylibre.com,
+        sboyd@kernel.org, daniel.lezcano@linaro.org, lpieralisi@kernel.org,
+        sudeep.holla@arm.com, agross@kernel.org,
+        bjorn.andersson@linaro.org, anup@brainfault.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        Arnd Bergmann <arnd@arndb.de>, yury.norov@gmail.com,
+        andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk,
+        rostedt@goodmis.org, pmladek@suse.com, senozhatsky@chromium.org,
+        john.ogness@linutronix.de, paulmck@kernel.org, frederic@kernel.org,
+        quic_neeraju@quicinc.com, josh@joshtriplett.org,
+        mathieu.desnoyers@efficios.com, jiangshanlai@gmail.com,
+        joel@joelfernandes.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
+        vschneid@redhat.com, jpoimboe@kernel.org,
+        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-perf-users@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org,
+        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-arch@vger.kernel.org,
+        rcu@vger.kernel.org, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 04/36] cpuidle,intel_idle: Fix CPUIDLE_FLAG_IRQ_ENABLE
+Message-ID: <20220609164921.5e61711d@jacob-builder>
+In-Reply-To: <20220608144516.172460444@infradead.org>
+References: <20220608142723.103523089@infradead.org>
+        <20220608144516.172460444@infradead.org>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:WDhYrFq0Di5EhwsWXsbXT1hGJtkbYXMcCCLlTiWJAU/aSCsxHiP
- EJA/alH/aNZBGHDlbnT8CQV/laiYaFdJw7UxY76T+N/oSIOneO+vRvWtS1xmeBDS2JFcKRc
- fKqujLUguJ8OxFRjb6ACXsGrsx1iqkfTu2nhqhZKzsAwSwH+30JPDNEePXgLAjcgQjq7AN4
- KvfTTljYaSQ8i/0CUZD4w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:0TB8WP92lGo=:itar347bhBe/SQmBhRYxkv
- 58W0/DVrxJ7xzLvNq37Qd0mgFxjVhulBu5Ezzr7RkL3ILvhhNN1+PE2Wopn51PBTb/xLsVoFK
- Sh7+NQl23M88pSvVF1kB3f6hyGsI3pq6EdJUj8uMG8vfQ/4JhILNXw5h2PR4p1FcUe9TClqM4
- I/MIceojcVlw6Plfx/Bh/Q5r+Np0NCr9M30GOV0cCECJzROLNd/0l0Xzr2kLhxGMdk4VmdtGV
- lQ3Ol2A2levpfoQePd8Y5RJVROMdqI4EagMRuIE3kv11qow+v7rqd8zAtAvkyxMOPl+MjxSsr
- 9rjcXa+beBNS7LKTNwLk7+AhspuX0fFmY+hingeNezSoovYCa7nYW1VBNK52nEkMz9qmKz/RJ
- lt2Ea1YlEFBNpxSdJL2KLfpNaGIEI073eVOna6AVznaFsk/g3o4iVWdCk+YVYdLFBStMEnhPd
- 8WDtOG2bUQa9872rSK3TtYiSdCJuONhpcJePbf/ty96FTmOV6lh3+FIoM5c4HnYTNQXnVRUE4
- WUvZk3nqIavkvke/L/IFJVqMring790lkmjbHOhfd48pSm8GNCC5m4+fjRva+Nk0fBVGsw9di
- wAgzYd9enOcLbu3gKbVB/TLjfT6JItzYKDvLmPNACRoRrylvp0L1FLXYtG2iY4rxGCMW2Ohsw
- aeR2i1Yc7nFcujk5qdAvMARUsnXFhdrFz0LoNlVJ5ATUWw0ccmQsfeTmNsJnfCzy58bnAaSJR
- JlZ46Jmj6w2xWHV4o/5olQ/C7NnKa9/+fvTZgJ6OQ1W8iZxJP2XZL0DkNh+I0eeSp/PVbKpzM
- H987cwsdkTeBt2bRjx+OOVTTbg30bP6JOXfdUr383zJ8xKmA497BjBcuGCEQ5OWpre/xK75Qe
- 81chW7O6RSNbeg1w6s+zAFNTbzH9nnmpMwI5zDhx1348q+buYzW0l3XL4hwUBRkRNmY3joZ27
- jJnetPCYCYPG1jauQ+vY0Qk+3WI4wl2djuhhvDsAYn0NsV7iqULrgOJoceaAZXiXXy0kKGrmx
- Yx0Sv9Ts2FukYsL/HWLlG5xbRkdn0sNFxQEn6GM2v6PBy3c6m4ZnM3CSoTnKmMEmEs0QE4xR2
- Nc0nPA1KQyUd+nx221cTZ/pEisW0lt80fiU/iGVL0IICYF53m3V/KD4XA==
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The syntax without dots is available since commit 43756e347f21
-("scripts/kernel-doc: Add support for named variable macro arguments").
+Hi Peter,
 
-The same HTML output is produced with and without this patch.
+On Wed, 08 Jun 2022 16:27:27 +0200, Peter Zijlstra <peterz@infradead.org>
+wrote:
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-Acked-by: Tejun Heo <tj@kernel.org>
-=2D--
-Previous copy:
-- https://lore.kernel.org/lkml/20210320182829.688032-1-j.neuschaefer@gmx.n=
-et/
-=2D--
- include/linux/workqueue.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Commit c227233ad64c ("intel_idle: enable interrupts before C1 on
+> Xeons") wrecked intel_idle in two ways:
+> 
+>  - must not have tracing in idle functions
+>  - must return with IRQs disabled
+> 
+> Additionally, it added a branch for no good reason.
+> 
+> Fixes: c227233ad64c ("intel_idle: enable interrupts before C1 on Xeons")
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  drivers/idle/intel_idle.c |   48
+> +++++++++++++++++++++++++++++++++++----------- 1 file changed, 37
+> insertions(+), 11 deletions(-)
+> 
+> --- a/drivers/idle/intel_idle.c
+> +++ b/drivers/idle/intel_idle.c
+> @@ -129,21 +137,37 @@ static unsigned int mwait_substates __in
+>   *
+>   * Must be called under local_irq_disable().
+>   */
+nit: this comment is no long true, right?
 
-diff --git a/include/linux/workqueue.h b/include/linux/workqueue.h
-index d15a7730ee18b..83a51c5100e68 100644
-=2D-- a/include/linux/workqueue.h
-+++ b/include/linux/workqueue.h
-@@ -412,7 +412,7 @@ struct workqueue_struct *alloc_workqueue(const char *f=
-mt,
-  * alloc_ordered_workqueue - allocate an ordered workqueue
-  * @fmt: printf format for the name of the workqueue
-  * @flags: WQ_* flags (only WQ_FREEZABLE and WQ_MEM_RECLAIM are meaningfu=
-l)
-- * @args...: args for @fmt
-+ * @args: args for @fmt
-  *
-  * Allocate an ordered workqueue.  An ordered workqueue executes at
-  * most one work item at any given time in the queued order.  They are
-=2D-
-2.30.1
+> +
+> -static __cpuidle int intel_idle(struct cpuidle_device *dev,
+> -				struct cpuidle_driver *drv, int index)
+> +static __always_inline int __intel_idle(struct cpuidle_device *dev,
+> +					struct cpuidle_driver *drv, int
+> index) {
+>  	struct cpuidle_state *state = &drv->states[index];
+>  	unsigned long eax = flg2MWAIT(state->flags);
+>  	unsigned long ecx = 1; /* break on interrupt flag */
+>  
+> -	if (state->flags & CPUIDLE_FLAG_IRQ_ENABLE)
+> -		local_irq_enable();
+> -
+>  	mwait_idle_with_hints(eax, ecx);
+>  
+>  	return index;
+>  }
+>  
+> +static __cpuidle int intel_idle(struct cpuidle_device *dev,
+> +				struct cpuidle_driver *drv, int index)
+> +{
+> +	return __intel_idle(dev, drv, index);
+> +}
+> +
+> +static __cpuidle int intel_idle_irq(struct cpuidle_device *dev,
+> +				    struct cpuidle_driver *drv, int
+> index) +{
+> +	int ret;
+> +
+> +	raw_local_irq_enable();
+> +	ret = __intel_idle(dev, drv, index);
+> +	raw_local_irq_disable();
+> +
+> +	return ret;
+> +}
+> +
+>  /**
+>   * intel_idle_s2idle - Ask the processor to enter the given idle state.
+>   * @dev: cpuidle device of the target CPU.
+> @@ -1801,6 +1824,9 @@ static void __init intel_idle_init_cstat
+>  		/* Structure copy. */
+>  		drv->states[drv->state_count] =
+> cpuidle_state_table[cstate]; 
+> +		if (cpuidle_state_table[cstate].flags &
+> CPUIDLE_FLAG_IRQ_ENABLE)
+> +			drv->states[drv->state_count].enter =
+> intel_idle_irq; +
+>  		if ((disabled_states_mask & BIT(drv->state_count)) ||
+>  		    ((icpu->use_acpi || force_use_acpi) &&
+>  		     intel_idle_off_by_default(mwait_hint) &&
+> 
+> 
 
+
+Thanks,
+
+Jacob
