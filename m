@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A94EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:37:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99EDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:37:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242764AbiFIJhI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 05:37:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53228 "EHLO
+        id S242757AbiFIJhK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 05:37:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242516AbiFIJg4 (ORCPT
+        with ESMTP id S242697AbiFIJhD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 05:36:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7CA6928E30
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 02:36:54 -0700 (PDT)
+        Thu, 9 Jun 2022 05:37:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5059E2494C
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 02:37:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654767413;
+        s=mimecast20190719; t=1654767419;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=cPpYHnXIBZc98vfrpGPPeNO4G+nbrOWi/rqlDfKtk/c=;
-        b=CSGLSnmFMRJ2m8g4U9LiTMcoVjjO2Y4SeFRNjTO2/yze+jw+Xm03scjykEHa2V+OIMXgSD
-        BmNh78qZoMQnUakWf1KiAIzdUlm9QyJ3k+yQPADw64Qsf+txYRa/hXE2aHqSTkhUI9aR/W
-        mvO5ZQ5UQYBFxYWG2w/waSk4Hh6K21s=
+        bh=MR1Gg3APqC3KScgCLB1W8gelo918jbhbexHlcrWCcj0=;
+        b=iWdhNDdWDlK6wjhQgbkiWT7KnEC4xCrtHHpP3kQJ80PY9O7BQyfDayGjJceTUObePy7qRX
+        Ue/y64vG1+B6OUbY2J9cuV0sYDemZRNBV+lN0xyag8AVWaySAxlHZFkp1aeNts8arlKSFp
+        g+UOsfaxMOYJ/HR3NujKhj+uLXqMBxQ=
 Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
  [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-155-uhaPHohYM3Ot5m0oL10eAw-1; Thu, 09 Jun 2022 05:36:52 -0400
-X-MC-Unique: uhaPHohYM3Ot5m0oL10eAw-1
-Received: by mail-wm1-f71.google.com with SMTP id j31-20020a05600c1c1f00b0039c481c4664so3953198wms.7
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 02:36:52 -0700 (PDT)
+ us-mta-266-sJ11ohVHO_6jpOW-YaXuEA-1; Thu, 09 Jun 2022 05:36:57 -0400
+X-MC-Unique: sJ11ohVHO_6jpOW-YaXuEA-1
+Received: by mail-wm1-f71.google.com with SMTP id c125-20020a1c3583000000b003978decffedso15743781wma.5
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 02:36:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cPpYHnXIBZc98vfrpGPPeNO4G+nbrOWi/rqlDfKtk/c=;
-        b=HtaQKE8A4zNm30udXXuZI61C9z+I9OHF3SEqHlL7cMgw1pXGCvoOvyd/S7Bj85DEJV
-         HxFWXblQDw1J4V/cImDjg63J21MkrmyKluJPXm7WJfBDhlztgaIcwbiw4jmf+Pb7A/Eq
-         luGVASBLbMcDw5XomVPHHx5Zg5UmyxD+LL1zlm6LuqmR0oQJskrOPmCR9tzcbxB5eZEn
-         Lou3Rlmls+9SplET8wpw9XDBUrjRSOKk/tMLCmwK4qiTNPp3dWgeCB2KbkOLRu7XMPUI
-         765CR5xE0woXu9e5DzQG//If/LpSXvl46PUr7JzGnrHzBCj4dWORJS4EMuT5PUm3gpUZ
-         HXcg==
-X-Gm-Message-State: AOAM533t2NEzs8mViK8yc/WMkzLk3DDMdZRtOJs+igaZUrm5a9HPuco7
-        eGt5SbZJOvdlUrzIJlqSnNDiLeweqSF2+XeoVKjwUY+A90Yrt7iXvA+RXOPAiFQ4k8CbMao/X8X
-        OXBJBiy5ENED/lAY6/ACq+II6YtVYVX/l/DrqJk+jyeY06NM7xFkjTCnIv1Br6g6he8y/OqdnvM
-        w=
-X-Received: by 2002:adf:d1ca:0:b0:218:47e1:ab0b with SMTP id b10-20020adfd1ca000000b0021847e1ab0bmr16907164wrd.90.1654767411231;
-        Thu, 09 Jun 2022 02:36:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJymFw6eUMkR7CNYmHzwLfgqtmOzRz6ug7p6629lFPTqTuSd5slid+3U6WpmMw011viGhpAfeQ==
-X-Received: by 2002:adf:d1ca:0:b0:218:47e1:ab0b with SMTP id b10-20020adfd1ca000000b0021847e1ab0bmr16907129wrd.90.1654767410957;
-        Thu, 09 Jun 2022 02:36:50 -0700 (PDT)
+        bh=MR1Gg3APqC3KScgCLB1W8gelo918jbhbexHlcrWCcj0=;
+        b=AGp2gD958kxdrxUBvqXx/j16ynRvblZWS51uZ1Jps2jZU2TDZvVIaooDCwbA9/13e+
+         5YcfDiCMT4LNjduIy3KbH5jA+ZHu/6UqidMZKKuLGpM4rO2Ttq3LhAkGrNGkDltirZ5S
+         x6AlyNdoRhrecorbs5KJCeKRg1WmcwfXOmUpk8My1xjwM0whovlq6pXO6hXPD1msMU1F
+         i30u/cWS7e6IQeUu7Qd7A+FJ1T56QvJwjt75qaVvQXj2VBMbi7R5FlT2WGhQm+VO1h49
+         kpXxsPG4C1cXhoUDLz4CsrSgaL2UN6NkcvpIn551VCGJvOKirNq0ETP9bX2D3R0VnhLf
+         ihlA==
+X-Gm-Message-State: AOAM5313pK4CCRXECleAU0LQ/uoIBAW9/gCZYQI0cQKecFL+gqsuBJ6V
+        9OFsoHBHh3c07/otVVQqgYNB9zudwvqw3fikqIMkTWnZI86+HK/T9TUKJ5JDcFjEq1+MHYyzxDH
+        YmI/lE+Vxa+cZuH2wRaShMNL94A+0J1BQmfIw05dts/+iMLl3X3GxpeKBQPU2j1olgHF2WBCPeQ
+        k=
+X-Received: by 2002:a5d:5452:0:b0:216:f80e:f7c6 with SMTP id w18-20020a5d5452000000b00216f80ef7c6mr24899337wrv.472.1654767415182;
+        Thu, 09 Jun 2022 02:36:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyxEj2OrQ9eQ+YDGgXFgVqRTz/a3B1WWgKCdV/5GXwifXUVC/IjJoHQVQ6y6SNEa/SE5vTFCw==
+X-Received: by 2002:a5d:5452:0:b0:216:f80e:f7c6 with SMTP id w18-20020a5d5452000000b00216f80ef7c6mr24899302wrv.472.1654767414837;
+        Thu, 09 Jun 2022 02:36:54 -0700 (PDT)
 Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id m18-20020a05600c3b1200b00397122e63b6sm27385580wms.29.2022.06.09.02.36.49
+        by smtp.gmail.com with ESMTPSA id m18-20020a05600c3b1200b00397122e63b6sm27385580wms.29.2022.06.09.02.36.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 02:36:50 -0700 (PDT)
+        Thu, 09 Jun 2022 02:36:54 -0700 (PDT)
 From:   Javier Martinez Canillas <javierm@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Peter Jones <pjones@redhat.com>,
@@ -68,10 +68,11 @@ Cc:     Peter Jones <pjones@redhat.com>,
         Christian Kellner <ckellner@redhat.com>,
         OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
         Carlos Maiolino <cmaiolin@redhat.com>,
-        Javier Martinez Canillas <javierm@redhat.com>
-Subject: [PATCH v5 1/4] fat: add a vfat_rename2() and make existing .rename callback a helper
-Date:   Thu,  9 Jun 2022 11:36:34 +0200
-Message-Id: <20220609093638.664034-2-javierm@redhat.com>
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
+Subject: [PATCH v5 4/4] selftests/filesystems: add a vfat RENAME_EXCHANGE test
+Date:   Thu,  9 Jun 2022 11:36:37 +0200
+Message-Id: <20220609093638.664034-5-javierm@redhat.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220609093638.664034-1-javierm@redhat.com>
 References: <20220609093638.664034-1-javierm@redhat.com>
@@ -81,73 +82,232 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently vfat only supports the RENAME_NOREPLACE flag which is handled by
-the virtual file system layer but doesn't support the RENAME_EXCHANGE flag.
+Add a test for the renameat2 RENAME_EXCHANGE support in vfat, but split it
+in a tool that just does the rename exchange and a script that is run by
+the kselftests framework on `make TARGETS="filesystems/fat" kselftest`.
 
-Add a vfat_rename2() function to be used as the .rename callback and move
-the current vfat_rename() handler to a helper. This is in preparation for
-implementing the RENAME_NOREPLACE flag using a different helper function.
+That way the script can be easily extended to test other file operations.
+
+The script creates a 1 MiB disk image, that is then formated with a vfat
+filesystem and mounted using a loop device. That way all file operations
+are done on an ephemeral filesystem.
 
 Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Acked-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 ---
 
-(no changes since v1)
+(no changes since v4)
 
- fs/fat/namei_vfat.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+Changes in v4:
+- Add Muhammad Usama Anjum Acked-by tag.
 
-diff --git a/fs/fat/namei_vfat.c b/fs/fat/namei_vfat.c
-index c573314806cf..88ccb2ee3537 100644
---- a/fs/fat/namei_vfat.c
-+++ b/fs/fat/namei_vfat.c
-@@ -889,9 +889,8 @@ static int vfat_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
- 	return err;
- }
+Changes in v3:
+- Add a .gitignore for the rename_exchange binary (Muhammad Usama Anjum).
+- Include $(KHDR_INCLUDES) instead of hardcoding a relative path in Makefile
+  (Muhammad Usama Anjum).
+
+Changes in v2:
+- Call sync to flush the page cache before checking the file contents
+  (Alex Larsson).
+
+ MAINTAINERS                                   |  1 +
+ tools/testing/selftests/Makefile              |  1 +
+ .../selftests/filesystems/fat/.gitignore      |  2 +
+ .../selftests/filesystems/fat/Makefile        |  7 ++
+ .../testing/selftests/filesystems/fat/config  |  2 +
+ .../filesystems/fat/rename_exchange.c         | 37 +++++++++
+ .../filesystems/fat/run_fat_tests.sh          | 82 +++++++++++++++++++
+ 7 files changed, 132 insertions(+)
+ create mode 100644 tools/testing/selftests/filesystems/fat/.gitignore
+ create mode 100644 tools/testing/selftests/filesystems/fat/Makefile
+ create mode 100644 tools/testing/selftests/filesystems/fat/config
+ create mode 100644 tools/testing/selftests/filesystems/fat/rename_exchange.c
+ create mode 100755 tools/testing/selftests/filesystems/fat/run_fat_tests.sh
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 4fdbbd6c1984..158771bb7755 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -20841,6 +20841,7 @@ M:	OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+ S:	Maintained
+ F:	Documentation/filesystems/vfat.rst
+ F:	fs/fat/
++F:	tools/testing/selftests/filesystems/fat/
  
--static int vfat_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
--		       struct dentry *old_dentry, struct inode *new_dir,
--		       struct dentry *new_dentry, unsigned int flags)
-+static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
-+		       struct inode *new_dir, struct dentry *new_dentry)
- {
- 	struct buffer_head *dotdot_bh;
- 	struct msdos_dir_entry *dotdot_de;
-@@ -902,9 +901,6 @@ static int vfat_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
- 	int err, is_dir, update_dotdot, corrupt = 0;
- 	struct super_block *sb = old_dir->i_sb;
- 
--	if (flags & ~RENAME_NOREPLACE)
--		return -EINVAL;
--
- 	old_sinfo.bh = sinfo.bh = dotdot_bh = NULL;
- 	old_inode = d_inode(old_dentry);
- 	new_inode = d_inode(new_dentry);
-@@ -1021,13 +1017,24 @@ static int vfat_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
- 	goto out;
- }
- 
-+static int vfat_rename2(struct user_namespace *mnt_userns, struct inode *old_dir,
-+			struct dentry *old_dentry, struct inode *new_dir,
-+			struct dentry *new_dentry, unsigned int flags)
-+{
-+	if (flags & ~RENAME_NOREPLACE)
-+		return -EINVAL;
+ VFIO DRIVER
+ M:	Alex Williamson <alex.williamson@redhat.com>
+diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+index 0aedcd76cf0f..fc59ad849a90 100644
+--- a/tools/testing/selftests/Makefile
++++ b/tools/testing/selftests/Makefile
+@@ -16,6 +16,7 @@ TARGETS += exec
+ TARGETS += filesystems
+ TARGETS += filesystems/binderfs
+ TARGETS += filesystems/epoll
++TARGETS += filesystems/fat
+ TARGETS += firmware
+ TARGETS += fpu
+ TARGETS += ftrace
+diff --git a/tools/testing/selftests/filesystems/fat/.gitignore b/tools/testing/selftests/filesystems/fat/.gitignore
+new file mode 100644
+index 000000000000..b89920ed841c
+--- /dev/null
++++ b/tools/testing/selftests/filesystems/fat/.gitignore
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0-only
++rename_exchange
+diff --git a/tools/testing/selftests/filesystems/fat/Makefile b/tools/testing/selftests/filesystems/fat/Makefile
+new file mode 100644
+index 000000000000..902033f6ef09
+--- /dev/null
++++ b/tools/testing/selftests/filesystems/fat/Makefile
+@@ -0,0 +1,7 @@
++# SPDX-License-Identifier: GPL-2.0
 +
-+	/* VFS already handled RENAME_NOREPLACE, handle it as a normal rename */
-+	return vfat_rename(old_dir, old_dentry, new_dir, new_dentry);
++TEST_PROGS := run_fat_tests.sh
++TEST_GEN_PROGS_EXTENDED := rename_exchange
++CFLAGS += -O2 -g -Wall $(KHDR_INCLUDES)
++
++include ../../lib.mk
+diff --git a/tools/testing/selftests/filesystems/fat/config b/tools/testing/selftests/filesystems/fat/config
+new file mode 100644
+index 000000000000..6cf95e787a17
+--- /dev/null
++++ b/tools/testing/selftests/filesystems/fat/config
+@@ -0,0 +1,2 @@
++CONFIG_BLK_DEV_LOOP=y
++CONFIG_VFAT_FS=y
+diff --git a/tools/testing/selftests/filesystems/fat/rename_exchange.c b/tools/testing/selftests/filesystems/fat/rename_exchange.c
+new file mode 100644
+index 000000000000..e488ad354fce
+--- /dev/null
++++ b/tools/testing/selftests/filesystems/fat/rename_exchange.c
+@@ -0,0 +1,37 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Program that atomically exchanges two paths using
++ * the renameat2() system call RENAME_EXCHANGE flag.
++ *
++ * Copyright 2022 Red Hat Inc.
++ * Author: Javier Martinez Canillas <javierm@redhat.com>
++ */
++
++#define _GNU_SOURCE
++#include <fcntl.h>
++#include <stdio.h>
++#include <stdlib.h>
++
++void print_usage(const char *program)
++{
++	printf("Usage: %s [oldpath] [newpath]\n", program);
++	printf("Atomically exchange oldpath and newpath\n");
 +}
 +
- static const struct inode_operations vfat_dir_inode_operations = {
- 	.create		= vfat_create,
- 	.lookup		= vfat_lookup,
- 	.unlink		= vfat_unlink,
- 	.mkdir		= vfat_mkdir,
- 	.rmdir		= vfat_rmdir,
--	.rename		= vfat_rename,
-+	.rename		= vfat_rename2,
- 	.setattr	= fat_setattr,
- 	.getattr	= fat_getattr,
- 	.update_time	= fat_update_time,
++int main(int argc, char *argv[])
++{
++	int ret;
++
++	if (argc != 3) {
++		print_usage(argv[0]);
++		exit(EXIT_FAILURE);
++	}
++
++	ret = renameat2(AT_FDCWD, argv[1], AT_FDCWD, argv[2], RENAME_EXCHANGE);
++	if (ret) {
++		perror("rename exchange failed");
++		exit(EXIT_FAILURE);
++	}
++
++	exit(EXIT_SUCCESS);
++}
+diff --git a/tools/testing/selftests/filesystems/fat/run_fat_tests.sh b/tools/testing/selftests/filesystems/fat/run_fat_tests.sh
+new file mode 100755
+index 000000000000..7f35dc3d15df
+--- /dev/null
++++ b/tools/testing/selftests/filesystems/fat/run_fat_tests.sh
+@@ -0,0 +1,82 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Run filesystem operations tests on an 1 MiB disk image that is formatted with
++# a vfat filesystem and mounted in a temporary directory using a loop device.
++#
++# Copyright 2022 Red Hat Inc.
++# Author: Javier Martinez Canillas <javierm@redhat.com>
++
++set -e
++set -u
++set -o pipefail
++
++BASE_DIR="$(dirname $0)"
++TMP_DIR="$(mktemp -d /tmp/fat_tests_tmp.XXXX)"
++IMG_PATH="${TMP_DIR}/fat.img"
++MNT_PATH="${TMP_DIR}/mnt"
++
++cleanup()
++{
++    mountpoint -q "${MNT_PATH}" && unmount_image
++    rm -rf "${TMP_DIR}"
++}
++trap cleanup SIGINT SIGTERM EXIT
++
++create_loopback()
++{
++    touch "${IMG_PATH}"
++    chattr +C "${IMG_PATH}" >/dev/null 2>&1 || true
++
++    truncate -s 1M "${IMG_PATH}"
++    mkfs.vfat "${IMG_PATH}" >/dev/null 2>&1
++}
++
++mount_image()
++{
++    mkdir -p "${MNT_PATH}"
++    sudo mount -o loop "${IMG_PATH}" "${MNT_PATH}"
++}
++
++rename_exchange_test()
++{
++    local rename_exchange="${BASE_DIR}/rename_exchange"
++    local old_path="${MNT_PATH}/old_file"
++    local new_path="${MNT_PATH}/new_file"
++
++    echo old | sudo tee "${old_path}" >/dev/null 2>&1
++    echo new | sudo tee "${new_path}" >/dev/null 2>&1
++    sudo "${rename_exchange}" "${old_path}" "${new_path}" >/dev/null 2>&1
++    sudo sync -f "${MNT_PATH}"
++    grep new "${old_path}" >/dev/null 2>&1
++    grep old "${new_path}" >/dev/null 2>&1
++}
++
++rename_exchange_subdir_test()
++{
++    local rename_exchange="${BASE_DIR}/rename_exchange"
++    local dir_path="${MNT_PATH}/subdir"
++    local old_path="${MNT_PATH}/old_file"
++    local new_path="${dir_path}/new_file"
++
++    sudo mkdir -p "${dir_path}"
++    echo old | sudo tee "${old_path}" >/dev/null 2>&1
++    echo new | sudo tee "${new_path}" >/dev/null 2>&1
++    sudo "${rename_exchange}" "${old_path}" "${new_path}" >/dev/null 2>&1
++    sudo sync -f "${MNT_PATH}"
++    grep new "${old_path}" >/dev/null 2>&1
++    grep old "${new_path}" >/dev/null 2>&1
++}
++
++unmount_image()
++{
++    sudo umount "${MNT_PATH}" &> /dev/null
++}
++
++create_loopback
++mount_image
++rename_exchange_test
++rename_exchange_subdir_test
++unmount_image
++
++exit 0
 -- 
 2.36.1
 
