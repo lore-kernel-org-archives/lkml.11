@@ -2,137 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40BAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE53FCCA473
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:57:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344248AbiFIO5Z convert rfc822-to-8bit (ORCPT
+        id S1344102AbiFIO5t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 10:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42192 "EHLO
+        Thu, 9 Jun 2022 10:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344135AbiFIO5L (ORCPT
+        with ESMTP id S1343592AbiFIO5m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 10:57:11 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7077C3A79E3;
-        Thu,  9 Jun 2022 07:57:05 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1nzJad-0006x1-AP; Thu, 09 Jun 2022 16:56:51 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Maya Matuszczyk <maccraft123mc@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        arm@kernel.org, soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 32/48] arm64: dts: rockchip: align gpio-key node names with dtschema
-Date:   Thu, 09 Jun 2022 16:56:50 +0200
-Message-ID: <2126178.C4sosBPzcN@diego>
-In-Reply-To: <e0f7146d-3ccc-a194-bb1e-c3475ca8c29e@linaro.org>
-References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org> <CAO_MupKxvaXRQvMyEUZMThBZ9033OeJec+BtBndjs5oZ3etTEQ@mail.gmail.com> <e0f7146d-3ccc-a194-bb1e-c3475ca8c29e@linaro.org>
+        Thu, 9 Jun 2022 10:57:42 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9033A2B8B
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 07:57:41 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id e66so22035244pgc.8
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 07:57:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=IwDbyRBH5j46NT03MVkQ+aJLs/1CaN0IJ5TDlMIAfBI=;
+        b=fjTHNXi4aftLJVuc/cEp6jjK3k29Ix9OrTzcyy1oa7SAdPXZSzaxsOIPbTUYTGFJSs
+         BWXGkdYL+toNdSUlla8e1tzA8XvU+SuYcF9qT9MZoTgSnsIodfuQG8W+gvHMhbD9ugnC
+         RYa1Vbmp31AlKQ99WCVDCpRBbWIIt//yyrDKWIzYyUJhP4EIJIHWOXo9GixhQl5ZvI/I
+         CZOp9UGvyAgGGXbYnAr+z14NT28fPIMt05tKz4+AS5w4IrRYsG1l39jWy1cnvXSAl1zM
+         m02QVEcBU2X4rKM0flG53bC5ins0xHtel97lPgLGzXu+o5gagEE4Qecf36U6IR7DMXlq
+         HDiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IwDbyRBH5j46NT03MVkQ+aJLs/1CaN0IJ5TDlMIAfBI=;
+        b=kzROATosLi4BkD6FJ7/jX2JiCdJDIIuZIsPzEnwpH8fEJynmgfn5O8RqdKeG08cYeD
+         j0BwOmKc0aSFGe6hmt7QlxXl1RRL+BQOTOOUSpsR3ZccuPQtUIIy6EKlgW4s7WMXx/su
+         eZNq8nJanNJdzG0AMRrrZ9jzWNuZx9XEPwcPtvwVWrYxhHoWNO4OPQq40h25u3KVa5P7
+         OHSbZoGPCSp1nQdjtymz9ZdKlwbWb+jHIJencJxgdHtVHchCCu4q0ID4Li7bR9laXfx6
+         BxbvSweIxnj8Fs9a66W8VC2rwl/LgF94ynVWgI6py5Gxe/H6V6yI9alL+yYHRH5t5Nir
+         +Frw==
+X-Gm-Message-State: AOAM533HrKPObm/kUrgaf7NPxeQIZ95ndmKTjH49A+iI+6oChsywZ3W/
+        Ycl15ZxPdK/b5OVwaukmctefug==
+X-Google-Smtp-Source: ABdhPJwr2XBzQiTa3FF7hr1nqL+GuDlbUCI3Wc1P+pTo7y1/QJ5aWp9bsB6hfaxgag15XKau9x6mYg==
+X-Received: by 2002:a05:6a00:158e:b0:51c:2a89:3845 with SMTP id u14-20020a056a00158e00b0051c2a893845mr17988818pfk.64.1654786660858;
+        Thu, 09 Jun 2022 07:57:40 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id a21-20020a170902ee9500b00161a40b2135sm17062716pld.104.2022.06.09.07.57.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 07:57:39 -0700 (PDT)
+Date:   Thu, 9 Jun 2022 14:57:36 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Anup Patel <anup@brainfault.org>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        KVM General <kvm@vger.kernel.org>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Andrew Jones <drjones@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Oliver Upton <oupton@google.com>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        Marc Zyngier <maz@kernel.org>
+Subject: Re: [PATCH v2 000/144] KVM: selftests: Overhaul APIs, purge VCPU_ID
+Message-ID: <YqIKYOtQTvrGpmPV@google.com>
+References: <20220603004331.1523888-1-seanjc@google.com>
+ <21570ac1-e684-7983-be00-ba8b3f43a9ee@redhat.com>
+ <CAAhSdy0_50KshS1rAcOjtFBUu=R7a0uXYa76vNibD_n7s=q6XA@mail.gmail.com>
+ <CAAhSdy1N9vwX1aXkdVEvO=MLV7TEWKMB2jxpNNfzT2LUQ-Q01A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAhSdy1N9vwX1aXkdVEvO=MLV7TEWKMB2jxpNNfzT2LUQ-Q01A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Donnerstag, 9. Juni 2022, 16:15:25 CEST schrieb Krzysztof Kozlowski:
-> On 09/06/2022 15:57, Maya Matuszczyk wrote:
-> > czw., 9 cze 2022 o 13:56 Krzysztof Kozlowski
-> > <krzysztof.kozlowski@linaro.org> napisał(a):
-> >>
-> >> The node names should be generic and DT schema expects certain pattern
-> >> (e.g. with key/button/switch).
-> >>
-> >> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> >> ---
-> >>  arch/arm64/boot/dts/rockchip/rk3308-evb.dts   |  2 +-
-> >>  .../boot/dts/rockchip/rk3326-odroid-go2.dts   | 32 +++++++++----------
-> >>  .../boot/dts/rockchip/rk3328-nanopi-r2s.dts   |  2 +-
-> >>  arch/arm64/boot/dts/rockchip/rk3368-evb.dtsi  |  2 +-
-> >>  .../boot/dts/rockchip/rk3368-geekbox.dts      |  2 +-
-> >>  .../dts/rockchip/rk3368-orion-r68-meta.dts    |  2 +-
-> >>  .../boot/dts/rockchip/rk3368-px5-evb.dts      |  2 +-
-> >>  arch/arm64/boot/dts/rockchip/rk3368-r88.dts   |  2 +-
-> >>  .../boot/dts/rockchip/rk3399-firefly.dts      |  2 +-
-> >>  .../dts/rockchip/rk3399-gru-chromebook.dtsi   |  2 +-
-> >>  .../boot/dts/rockchip/rk3399-gru-kevin.dts    |  2 +-
-> >>  .../boot/dts/rockchip/rk3399-gru-scarlet.dtsi |  2 +-
-> >>  .../boot/dts/rockchip/rk3399-khadas-edge.dtsi |  2 +-
-> >>  .../boot/dts/rockchip/rk3399-nanopi-r4s.dts   |  4 +--
-> >>  .../boot/dts/rockchip/rk3399-nanopi4.dtsi     |  2 +-
-> >>  .../boot/dts/rockchip/rk3399-orangepi.dts     |  2 +-
-> >>  .../boot/dts/rockchip/rk3399-pinebook-pro.dts |  4 +--
-> >>  .../boot/dts/rockchip/rk3399-roc-pc.dtsi      |  2 +-
-> >>  .../boot/dts/rockchip/rk3399-rockpro64.dtsi   |  2 +-
-> >>  .../boot/dts/rockchip/rk3399-sapphire.dtsi    |  2 +-
-> >>  .../boot/dts/rockchip/rk3566-pinenote.dtsi    |  2 +-
-> >>  21 files changed, 38 insertions(+), 38 deletions(-)
-> >>
-> >> diff --git a/arch/arm64/boot/dts/rockchip/rk3308-evb.dts b/arch/arm64/boot/dts/rockchip/rk3308-evb.dts
-> >> index 9b4f855ea5d4..4b5413b12bfa 100644
-> >> --- a/arch/arm64/boot/dts/rockchip/rk3308-evb.dts
-> >> +++ b/arch/arm64/boot/dts/rockchip/rk3308-evb.dts
-> >> @@ -75,7 +75,7 @@ gpio-keys {
-> >>                 pinctrl-names = "default";
-> >>                 pinctrl-0 = <&pwr_key>;
-> >>
-> >> -               power {
-> >> +               power-key {
-
-hmm, it looks like all the others below are named key-power, while
-only this uses power-key ?
-
-
-> >>                         gpios = <&gpio0 RK_PA6 GPIO_ACTIVE_LOW>;
-> >>                         linux,code = <KEY_POWER>;
-> >>                         label = "GPIO Key Power";
-> >> diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
-> >> index ea0695b51ecd..72328dd993ee 100644
-> >> --- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
-> >> +++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
-> >> @@ -71,82 +71,82 @@ gpio-keys {
-> >>                  * |------------------------------------------------|
-> >>                  */
-> >>
-> >> -               sw1 {
-> >> +               switch-1 {
-> > Wouldn't it make more sense to rename this and all other
-> > renamed nodes in this dts into "button-dpad-up" or "button-1",
-> > as on the physical device those are buttons and the naming
-> > scheme of "sw" + number seems to be a carryover from
-> > downstream sources.
-
-The naming actually carries over from the device itself.
-In the schematics the relevant keys are also named sw1, sw2, etc.
-
-And I do believe it is way nicer when devicetree names correspond to the
-things you find in device schematics and not be named "arbitarily" to
-only conform to some schema ;-)
-
-So personally I'd actually prefer going with switch-sw1 (or button-sw1 if
-you prefer) as being able to just use the search function in schematic pdfs
-is a helpful tool.
-
-
-Heiko
-
-> Can be buttons. I assumed SW comes from some kind of switch.
-> I assume you mean only this Odroid Go2 DTS, because some other DTSes
-> (like EVB above) explicitly call it "Key Power".
+On Thu, Jun 09, 2022, Anup Patel wrote:
+> On Wed, Jun 8, 2022 at 9:26 PM Anup Patel <anup@brainfault.org> wrote:
+> >
+> > On Tue, Jun 7, 2022 at 8:57 PM Paolo Bonzini <pbonzini@redhat.com> wrote:
+> > >
+> > > Marc, Christian, Anup, can you please give this a go?
+> >
+> > Sure, I will try this series.
 > 
-> 
-> Best regards,
-> Krzysztof
-> 
+> I tried to apply this series on top of kvm/next and kvm/queue but
+> I always get conflicts. It seems this series is dependent on other
+> in-flight patches.
 
+Hrm, that's odd, it's based directly on kvm/queue, commit 55371f1d0c01 ("KVM: ...).
 
+> Is there a branch somewhere in a public repo ?
 
-
+https://github.com/sean-jc/linux/tree/x86/selftests_overhaul
