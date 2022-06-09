@@ -2,96 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BF49C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:53:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB7BFCCA473
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:54:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234581AbiFIJxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 05:53:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45262 "EHLO
+        id S238571AbiFIJyU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 05:54:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234288AbiFIJxa (ORCPT
+        with ESMTP id S234288AbiFIJyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 05:53:30 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B234818DADD;
-        Thu,  9 Jun 2022 02:53:28 -0700 (PDT)
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2599Q9Tg024960;
-        Thu, 9 Jun 2022 11:52:55 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=L+GV88KUXWKpKEgxaMfS4iBDvfAOOghJXwOQUjIkFY0=;
- b=lHnLI0ACqOV2zhymuW7TFjkj6nhdGoMheHwSSObfSPu92MpOObAq8gU5TpcLUYnOxUoF
- bjQcTQ0jEAwqUIIxa0XE0Tc1pmCTlFjmE1YBKKEsPcsBbCXESzHFkwyG6h6UTmIPUhvn
- G3cL2Yh9CfCUBC1T2bW6GTxCT11AfZeqy13ar3Leom1RBh+mVy7TsHGbD5Uz/q++VnH6
- enCD54s4U36SO531t1XbIzwM0UstfgM9qeRz9bObtFMp0J/x116XMy7tiRpexvoKPUBD
- sZCox2VJTASwGkAhQ8aDPvRMAfX4tvex8kV2bKhImEN0BOfbCspqJ6VOz0RScm3V09a7 NA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gjrbc0af3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 09 Jun 2022 11:52:55 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D4086100034;
-        Thu,  9 Jun 2022 11:52:54 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id BFCFC2138E8;
-        Thu,  9 Jun 2022 11:52:54 +0200 (CEST)
-Received: from localhost (10.75.127.49) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Thu, 9 Jun
- 2022 11:52:54 +0200
-From:   Olivier Moysan <olivier.moysan@foss.st.com>
-To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Olivier Moysan <olivier.moysan@foss.st.com>,
-        Paul Cercueil <paul@crapouillou.net>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-Subject: [PATCH] iio: adc: stm32: fix maximum clock rate for stm32mp15x
-Date:   Thu, 9 Jun 2022 11:52:34 +0200
-Message-ID: <20220609095234.375925-1-olivier.moysan@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 9 Jun 2022 05:54:18 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E88194254
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 02:54:17 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id k19so31630828wrd.8
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 02:54:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dgxIUh9kZnAhshZpAfcCNmc5NM9XP1H+pazqAWk3o4M=;
+        b=sYbi7/4QmhUcDAphES1n3sjziqocBdZaVokz7jqGR4vrF3G3Qx7JFQpiauElXr2toJ
+         gZCDaP679DwAhMrD7ycpRlIYOzaEABiJxvohe6lQDbOyZ046TDwXOkS0cfiY0nbpoyJn
+         YCLA016qOzd+q/EJpiVMQjT/jLcQTvR3KG6oXmdYhV8Q2nNGNmausPfLhEbsQeMd/AeP
+         cCNlWGGAQTCzmt6MBNFK4z7FzPN3oY6B1jDnNTP8HO6T7vXWhZeqo2tkfKjPrjmkzih1
+         okOr9aVs9Hff9CcOIbUAMS5m1PFeAewjo+nOUf8xnjRWRtJM3OEVD6S68MmTywxggO4G
+         esMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dgxIUh9kZnAhshZpAfcCNmc5NM9XP1H+pazqAWk3o4M=;
+        b=SZHjqzuA5NEmRAFkWGvgt0e2MEMZHxIgJAoxkjCycUV63UVmGTbvjVb7UqarcKpAMF
+         f2ND3gu4QTMrLiq0DBjtzNpheswdGUm7mK2U3Srg2K9nEfj6HLhKoM0N/DRoeyuZRO0a
+         ruf+FzqV6QoqmHS7OzCzO+UgwfS3uOUSTtmYORV7YrrvfnxE4Pe6TjTwTC9vAM/9wcuY
+         P84AzQg1wqIG0E+EuQPlVHMsWudckzNqVsfjRms4Sc6Ww2ihu3zUSJO2KMO430zD+1CI
+         nqbHOzCXSGqark77Hub2CE30F8n3UTwqlB8Ukd89xRR0m53o0TlBVR0tZ3s5f8/XohNh
+         Uyog==
+X-Gm-Message-State: AOAM530oB9ces4PA/YT+9HZgrkTlyqtZdu2/JxE2g1JfiRCnSHENlgtL
+        m/XxMYo1PDENS/zzqRuwQFa90A==
+X-Google-Smtp-Source: ABdhPJwFTfJT5VBRvmZdE52zTqSkomJN72re/rRGHQq1XZGdbN0tmi270rT5tG9338WBlHEIN7CpYw==
+X-Received: by 2002:a5d:64e7:0:b0:218:5626:7e7f with SMTP id g7-20020a5d64e7000000b0021856267e7fmr11844016wri.245.1654768455480;
+        Thu, 09 Jun 2022 02:54:15 -0700 (PDT)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id h13-20020a5d504d000000b002100e86319asm15031976wrt.78.2022.06.09.02.54.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 02:54:14 -0700 (PDT)
+Date:   Thu, 9 Jun 2022 10:54:12 +0100
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Stephen Kitt <steve@sk2.org>
+Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Helge Deller <deller@gmx.de>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] fbdev: atmel_lcdfb: Rework backlight status updates
+Message-ID: <20220609095412.fccofr2e2kpzhw4t@maple.lan>
+References: <20220608205623.2106113-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.49]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-09_08,2022-06-07_02,2022-02-23_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220608205623.2106113-1-steve@sk2.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change maximum STM32 ADC input clock rate to 36MHz, as specified
-in STM32MP15x datasheets.
+On Wed, Jun 08, 2022 at 10:56:23PM +0200, Stephen Kitt wrote:
+> Instead of checking the state of various backlight_properties fields
+> against the memorised state in atmel_lcdfb_info.bl_power,
+> atmel_bl_update_status() should retrieve the desired state using
+> backlight_get_brightness (which takes into account the power state,
+> blanking etc.). This means the explicit checks using props.fb_blank
+> and props.power can be dropped.
+> 
+> Then brightness can only be negative if the backlight is on but
+> props.brightness is negative, so the test before reading the
+> brightness value from the hardware can be simplified to
+> (brightness < 0).
 
-Fixes: d58c67d1d851 ("iio: adc: stm32-adc: add support for STM32MP1")
+props.brightness should always be in the interval 0..max_brightness.
 
-Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
----
- drivers/iio/adc/stm32-adc-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This is enforced by the main backlight code (and APIs to set the
+brightness use unsigned values). Thus props.brightness could only be
+negative is the driver explicitly sets a negative value as some kind of
+placeholder (which this driver does not do).
 
-diff --git a/drivers/iio/adc/stm32-adc-core.c b/drivers/iio/adc/stm32-adc-core.c
-index 142656232157..ce1a63a82034 100644
---- a/drivers/iio/adc/stm32-adc-core.c
-+++ b/drivers/iio/adc/stm32-adc-core.c
-@@ -805,7 +805,7 @@ static const struct stm32_adc_priv_cfg stm32h7_adc_priv_cfg = {
- static const struct stm32_adc_priv_cfg stm32mp1_adc_priv_cfg = {
- 	.regs = &stm32h7_adc_common_regs,
- 	.clk_sel = stm32h7_adc_clk_sel,
--	.max_clk_rate_hz = 40000000,
-+	.max_clk_rate_hz = 36000000,
- 	.has_syscfg = HAS_VBOOSTER | HAS_ANASWVDD,
- 	.num_irqs = 2,
- };
--- 
-2.25.1
+I don't think there is any need to keep this logic.
 
+
+Daniel.
+
+
+> diff --git a/drivers/video/fbdev/atmel_lcdfb.c b/drivers/video/fbdev/atmel_lcdfb.c
+> index 1fc8de4ecbeb..06159a4da293 100644
+> --- a/drivers/video/fbdev/atmel_lcdfb.c
+> +++ b/drivers/video/fbdev/atmel_lcdfb.c
+> @@ -109,22 +108,10 @@ static u32 contrast_ctr = ATMEL_LCDC_PS_DIV8
+>  static int atmel_bl_update_status(struct backlight_device *bl)
+>  {
+>  	struct atmel_lcdfb_info *sinfo = bl_get_data(bl);
+> -	int			power = sinfo->bl_power;
+> -	int			brightness = bl->props.brightness;
+> +	int			brightness = backlight_get_brightness(bl);
+>  
+> -	/* REVISIT there may be a meaningful difference between
+> -	 * fb_blank and power ... there seem to be some cases
+> -	 * this doesn't handle correctly.
+> -	 */
+> -	if (bl->props.fb_blank != sinfo->bl_power)
+> -		power = bl->props.fb_blank;
+> -	else if (bl->props.power != sinfo->bl_power)
+> -		power = bl->props.power;
+> -
+> -	if (brightness < 0 && power == FB_BLANK_UNBLANK)
+> +	if (brightness < 0)
+>  		brightness = lcdc_readl(sinfo, ATMEL_LCDC_CONTRAST_VAL);
+> -	else if (power != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+>  
+>  	lcdc_writel(sinfo, ATMEL_LCDC_CONTRAST_VAL, brightness);
+>  	if (contrast_ctr & ATMEL_LCDC_POL_POSITIVE)
