@@ -2,140 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 041C9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 22:19:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B989EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 22:20:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345666AbiFIWTg (ORCPT
+        id S1345586AbiFIWT5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 18:19:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
+        Thu, 9 Jun 2022 18:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345597AbiFIWTW (ORCPT
+        with ESMTP id S1345677AbiFIWTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 18:19:22 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B7C457BC;
-        Thu,  9 Jun 2022 15:19:20 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 259LqV4d021237;
-        Thu, 9 Jun 2022 22:18:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=5HFels0siO9Bs1KgO2JhJGYpJaNAG8PeqPH7KCpQZ8I=;
- b=iAzYl3HGbDPjGXTh3OP2TMtL8+E00E4alPACUjc12mHEx1F0g4Wav7UU13WA58TpKEN/
- v6svbQGfFE5DAdCcgmlNFzKBE+Eg000u0UbngUGaRd/c6ooO0uKyt8bL4tWzFKvEH80x
- w3pe1l2FoKqhiHzfDe0FNnF7eEOGiyQ//lcjABbhVvN3CyO8iJL8P/m9rSQR2RFK4Jqf
- ZvD55hb1u8ldwCuT+DqIv4ppav4SCUQUf3IjuBlPaM7mQLxC4GlYpocdXVXrVmdKSxG1
- Io++Oyg5UxHMfTpYFdaQswQqtjpC6/7M3jgumv2ROuP29D2kSIu3MfU8vvZRNRU/0hjV RA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gks5cgctx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 09 Jun 2022 22:18:51 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 259MD8WL005156;
-        Thu, 9 Jun 2022 22:18:51 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gks5cgct7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 09 Jun 2022 22:18:51 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 259M6fwY027968;
-        Thu, 9 Jun 2022 22:18:49 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma04ams.nl.ibm.com with ESMTP id 3gfy19ff4p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 09 Jun 2022 22:18:49 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 259MIkPq9175434
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 9 Jun 2022 22:18:46 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BEFFC4C044;
-        Thu,  9 Jun 2022 22:18:46 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BD1FF4C040;
-        Thu,  9 Jun 2022 22:18:44 +0000 (GMT)
-Received: from sig-9-65-64-6.ibm.com (unknown [9.65.64.6])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu,  9 Jun 2022 22:18:44 +0000 (GMT)
-Message-ID: <5db507747b2be22499e7357ce65f1800b36e1de4.camel@linux.ibm.com>
-Subject: Re: [PATCH v8 2/4] kexec, KEYS: make the code in
- bzImage64_verify_sig generic
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Coiby Xu <coxu@redhat.com>, kexec@lists.infradead.org
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Michal Suchanek <msuchanek@suse.de>,
-        Baoquan He <bhe@redhat.com>, Dave Young <dyoung@redhat.com>,
-        Will Deacon <will@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Chun-Yi Lee <jlee@suse.com>, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-Date:   Thu, 09 Jun 2022 18:18:44 -0400
-In-Reply-To: <20220512070123.29486-3-coxu@redhat.com>
-References: <20220512070123.29486-1-coxu@redhat.com>
-         <20220512070123.29486-3-coxu@redhat.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+        Thu, 9 Jun 2022 18:19:49 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C544BFC7
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 15:19:33 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id 37-20020a630a25000000b003fdcbe1ffc8so6689759pgk.11
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 15:19:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=VtmBCpNp1KP0Wih0wNtSn6S6eDN4r8qEfTH0S3sfDvI=;
+        b=k5UJiPwakkG5FRIZZ5lAwSHv1cl5CV0HckKotKPvFRLB2rm04skCRUAH92Ocj74nI8
+         VRgM32h5RM5BUgSugbEFBV15QskHdJF/UARg45aXgMXIqpE44JaqgZSOgpAQZ1jpikDb
+         GULMqiClDzX4kfuE9w7o93QGAbqsh6kUT85oC3PEd1vaEzeRnphtmpPAmbhnAhgk6lx0
+         LnkSW18ZNlDn2dA0I8HZDUuV5QwUSYnjU7SGR9fWBj1oQGC+opt0AKeg9qvISijvMYMC
+         exN/sa9O/SGU7ijyDd9mK0GdtUUcbGfySNVXrOfDrxnggsEQ+nfu/2kYPptx+0sLFFrT
+         DcWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=VtmBCpNp1KP0Wih0wNtSn6S6eDN4r8qEfTH0S3sfDvI=;
+        b=sefVy2076AcGSw517pYX8KBuyHyBHgzukhie9G6CEQ30/AHvPmFqmTiqiWEKwbef6N
+         tBUQ0qy/anx4wh33JA/G17WDSyyps2/K5JA1p6zl/k0QAKfnSqDbrHV4apID+s/ZtYID
+         id/KASOt/QxTm6crSTANMD+1tBIff5SzRanl4tA2elGpPJxqRjAIX2VvmVhg5hQPbr25
+         5iCiI4oOy7jB7Rw1s2cLP9A7kc9aDYVD72gxO5kIAWz2OX/XIoWQ3yPA14PvSiU0X5Zw
+         dpCphpSavDaklzFjFuXjxV4bI5wPIjgOr1Uo/y04JiKlVN5KVcls7einPfmLrG9OKAiv
+         NlgQ==
+X-Gm-Message-State: AOAM532+oC5M4IyiplXD3DpyfRQeCxR3/P41N8JoDLFG5d37NqS4vPRU
+        qPJJUMyZar8+T783wF9Xd++OGSIB
+X-Google-Smtp-Source: ABdhPJyLvkWkgsl5N6fEs4uPVrRWt8N7EGGq7Ji9SRjDngCAZu0NMTQ8venaNAjb270E/IyAc5Cnz/CcgQ==
+X-Received: from fawn.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5795])
+ (user=morbo job=sendgmr) by 2002:a63:4722:0:b0:3fb:94a7:9986 with SMTP id
+ u34-20020a634722000000b003fb94a79986mr36618043pga.531.1654813173379; Thu, 09
+ Jun 2022 15:19:33 -0700 (PDT)
+Date:   Thu,  9 Jun 2022 22:16:25 +0000
+In-Reply-To: <20220609221702.347522-1-morbo@google.com>
+Message-Id: <20220609221702.347522-7-morbo@google.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 7wDBaP3m-VYgn90ZlORpX0j8Rd3YzlsY
-X-Proofpoint-GUID: BG6JqiSb9BIi2R873tnMtsXFSjA4dDlA
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-09_15,2022-06-09_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- suspectscore=0 clxscore=1011 adultscore=0 mlxscore=0 mlxlogscore=781
- impostorscore=0 bulkscore=0 spamscore=0 malwarescore=0 lowpriorityscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206090082
+References: <20220609221702.347522-1-morbo@google.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH 06/12] PNP: use correct format characters
+From:   Bill Wendling <morbo@google.com>
+To:     isanbard@gmail.com
+Cc:     Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Jan Kara <jack@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Ross Philipson <ross.philipson@oracle.com>,
+        Daniel Kiper <daniel.kiper@oracle.com>,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-mm@kvack.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Coiby,
+From: Bill Wendling <isanbard@gmail.com>
 
-On Thu, 2022-05-12 at 15:01 +0800, Coiby Xu wrote:
-> commit 278311e417be ("kexec, KEYS: Make use of platform keyring for
-> signature verify") adds platform keyring support on x86 kexec but not
-> arm64.
-> 
-> The code in bzImage64_verify_sig makes use of system keyrings including
-> .buitin_trusted_keys, .secondary_trusted_keys and .platform keyring to
-> verify signed kernel image as PE file. Make it generic so both x86_64
-> and arm64 can use it.
+When compiling with -Wformat, clang emits the following warnings:
 
-^uses the keys on the .builtin_trusted_keys, .machine, if configured
-and enabled, .secondary_trusted_keys, also if configured, and .platform
-keyrings to verify the signed kernel image as PE file. 
+drivers/pnp/interface.c:273:22: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
+                pnp_printf(buffer, pnp_resource_type_name(res));
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-> 
-> @@ -202,6 +203,12 @@ int arch_kexec_apply_relocations(struct purgatory_info *pi,
->  				 const Elf_Shdr *relsec,
->  				 const Elf_Shdr *symtab);
->  int arch_kimage_file_post_load_cleanup(struct kimage *image);
-> +#ifdef CONFIG_KEXEC_SIG
-> +#ifdef CONFIG_SIGNED_PE_FILE_VERIFICATION
-> +int kexec_kernel_verify_pe_sig(const char *kernel,
-> +				    unsigned long kernel_len);
+Use a string literal for the format string.
 
-Please join this line with the previous one.
+Link: https://github.com/ClangBuiltLinux/linux/issues/378
+Signed-off-by: Bill Wendling <isanbard@gmail.com>
+---
+ drivers/pnp/interface.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +#endif
-> +#endif
->  int arch_kexec_locate_mem_hole(struct kexec_buf *kbuf);
->  
->  extern int kexec_add_buffer(struct kexec_buf *kbuf);
-
-thanks,
-
-Mimi
+diff --git a/drivers/pnp/interface.c b/drivers/pnp/interface.c
+index 44efcdb87e6f..553221a0c89a 100644
+--- a/drivers/pnp/interface.c
++++ b/drivers/pnp/interface.c
+@@ -270,7 +270,7 @@ static ssize_t resources_show(struct device *dmdev,
+ 	list_for_each_entry(pnp_res, &dev->resources, list) {
+ 		res = &pnp_res->res;
+ 
+-		pnp_printf(buffer, pnp_resource_type_name(res));
++		pnp_printf(buffer, "%s", pnp_resource_type_name(res));
+ 
+ 		if (res->flags & IORESOURCE_DISABLED) {
+ 			pnp_printf(buffer, " disabled\n");
+-- 
+2.36.1.255.ge46751e96f-goog
 
