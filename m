@@ -2,132 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E526EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 20:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 20:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344984AbiFIUga (ORCPT
+        id S1345023AbiFIUhu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 16:36:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54300 "EHLO
+        Thu, 9 Jun 2022 16:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230359AbiFIUg3 (ORCPT
+        with ESMTP id S236064AbiFIUhr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 16:36:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2EEF6F3FB0
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 13:36:28 -0700 (PDT)
+        Thu, 9 Jun 2022 16:37:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 16ADBDE81
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 13:37:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654806987;
+        s=mimecast20190719; t=1654807066;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Dgea+t4oiPPgtuKt/vNqsbsyWPPitCsrOvboiSTnKV8=;
-        b=Y1jL7lRCM/aX+urTFTMvL4T7scusc/SjCAhqQNOw/lSJEm1Mj+J/9ioXA4Z9geQOYk/FA0
-        t8KL8TkLwuSC2P8ng7+3JKn/tf3hGH3BBp5RVj5pxxkWZgGaPhLpRm9ngZUS/V3LlbD25j
-        E9e4+p/VIINVePYnIPUFd5UYLlKKE08=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=PRwCAczOEs3oWB79ndk+TRrGu6B70/rR3Wnhg/0mT/M=;
+        b=UPUrJ8rm+mYswySS1EhesqQGaLqGjpDs8I4VH9qutLrA2crnLBh0QCGhdwizgWSOKocHlp
+        Aksy0IHBUscSzhHX3ZKfUf2mwrEmpge1ZqXnSgPSBs47f2DoI6QR5vzVTd2vCZvApfw6UN
+        HIT5N9S5NkTdw+Lu46pU19NcdZoTYvQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-230-ZqxGssiPPaqTbnJEqg4-vA-1; Thu, 09 Jun 2022 16:36:25 -0400
-X-MC-Unique: ZqxGssiPPaqTbnJEqg4-vA-1
-Received: by mail-wm1-f69.google.com with SMTP id v125-20020a1cac83000000b0039c6608296dso201556wme.4
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 13:36:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Dgea+t4oiPPgtuKt/vNqsbsyWPPitCsrOvboiSTnKV8=;
-        b=u5+QT2C8yx+N/5aHnSGaw6+ls4eW8Q//kn3PPbqW9vYe3G9pNQUaG27PY9+5MIiqYq
-         eiGB5HR/WlgxSdxomzEnnjshbtHrj2zD2eunDQT5CvRR8cAhZgbJbgddkY+ZnF3kMjNN
-         7HJbnSO/gNIsLqe5xJ812OYxIBMkKPXnsyPU9ysiHvyl0WQMl0Xjv/yMQytldPasJlc5
-         3SgXdqaaRqLojkeV1VdBY8x7Bify2XnjYxrepkEzwdTq34Tv2JAH5pL985ci3ejxhK+D
-         8VEAFtqk9KgBKGFe6ZR2Dlgqf0HX1el9ENrHuWZ6+B6C+dTkNXMssvv4y2X9LoER/FrT
-         yO0Q==
-X-Gm-Message-State: AOAM532xeNuGPYYj+k7ezDocn7guFZ2CWlrI+aOnEqPIDRg3w2gfEvnR
-        Py4datsoTPWn22W6rQzmPDp9pXl4N6sDzs8DkPTUbsOiC01wu6JHyyCoxkBxEgFTrf2wyBU+W9L
-        ctZvMwCiKD3YN2L6lhs2iniPl
-X-Received: by 2002:a1c:4604:0:b0:39c:4769:3bb7 with SMTP id t4-20020a1c4604000000b0039c47693bb7mr5141981wma.115.1654806983777;
-        Thu, 09 Jun 2022 13:36:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxNbDJfNALDz7ISZlvVgawVkm3IKJZPFLuDtDUJ3DMffggrrY4IQZ1wxEvoZhgRxtpLILArNg==
-X-Received: by 2002:a1c:4604:0:b0:39c:4769:3bb7 with SMTP id t4-20020a1c4604000000b0039c47693bb7mr5141959wma.115.1654806983430;
-        Thu, 09 Jun 2022 13:36:23 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id x8-20020adff0c8000000b00210a6bd8019sm24923451wro.8.2022.06.09.13.36.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jun 2022 13:36:23 -0700 (PDT)
-Message-ID: <9d837076-f666-c3c3-dd09-5c3705da23e6@redhat.com>
-Date:   Thu, 9 Jun 2022 22:36:21 +0200
+ us-mta-79-kvgtpqTPPj62Ir5KLx3dGQ-1; Thu, 09 Jun 2022 16:37:43 -0400
+X-MC-Unique: kvgtpqTPPj62Ir5KLx3dGQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 90A4B80159B;
+        Thu,  9 Jun 2022 20:37:42 +0000 (UTC)
+Received: from jsavitz-csb.redhat.com (unknown [10.22.11.108])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 434E71730C;
+        Thu,  9 Jun 2022 20:37:42 +0000 (UTC)
+From:   Joel Savitz <jsavitz@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Joel Savitz <jsavitz@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org, Nico Pache <npache@redhat.com>
+Subject: [PATCH] selftests: make use of GUP_TEST_FILE macro
+Date:   Thu,  9 Jun 2022 16:32:17 -0400
+Message-Id: <20220609203217.3206247-1-jsavitz@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v5 3/4] fat: add renameat2 RENAME_EXCHANGE flag support
-Content-Language: en-US
-To:     OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
-Cc:     linux-kernel@vger.kernel.org, Peter Jones <pjones@redhat.com>,
-        Alexander Larsson <alexl@redhat.com>,
-        Colin Walters <walters@verbum.org>,
-        Alberto Ruiz <aruiz@redhat.com>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Lennart Poettering <lennart@poettering.net>,
-        Chung-Chiang Cheng <cccheng@synology.com>,
-        Christian Kellner <ckellner@redhat.com>,
-        Carlos Maiolino <cmaiolin@redhat.com>
-References: <20220609093638.664034-1-javierm@redhat.com>
- <20220609093638.664034-4-javierm@redhat.com>
- <878rq54pf1.fsf@mail.parknet.co.jp>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <878rq54pf1.fsf@mail.parknet.co.jp>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello OGAWA,
+Commit 17de1e559cf1 ("selftests: clarify common error when running
+gup_test") had most of its hunks dropped due to a conflict with another
+patch accepted into Linux around the same time that implemented the same
+behavior as a subset of other changes.
 
-Thanks for your feedback.
+However, the remaining hunk defines the GUP_TEST_FILE macro without
+making use of it. This patch makes use of the macro in the two relevant
+places.
 
-On 6/9/22 21:17, OGAWA Hirofumi wrote:
-> Javier Martinez Canillas <javierm@redhat.com> writes:
-> 
->> +static void vfat_update_nlink(struct inode *dir, struct inode *inode)
->> +{
->> +		if (S_ISDIR(inode->i_mode))
->> +			drop_nlink(dir);
->> +		else
->> +			inc_nlink(dir);
->> +}
-> 
-> [...]
-> 
->> +	vfat_update_dir_metadata(old_dir, &ts);
->> +	/* if directories are not the same, update new_dir as well */
->> +	if (old_dir != new_dir) {
->> +		vfat_update_dir_metadata(new_dir, &ts);
->> +		/* nlink only needs to be updated if the file types differ */
->> +		if (old_inode->i_mode != new_inode->i_mode) {
->> +			vfat_update_nlink(old_dir, old_inode);
->> +			vfat_update_nlink(new_dir, new_inode);
->> +		}
->> +	}
-> 
-> Looks like unnecessary complex (and comparing raw i_mode, not S_ISDIR(),
-> better to change before make dir dirty).  How about this change, it is
-> only tested slightly though? Can you review and test?
->
+Furthermore, the above mentioned commit's log message erroneously describes
+the changes that were dropped from the patch.
 
-Your change looks good to me and indeed the logic is simpler than in mine.
+This patch corrects the record.
 
-I've also tested it and AFAICT it works correctly as well. Do you plan to
-squash this or should I respin a new revision of the whole patch-set ? If
-you want to post it as a follow-up I'm also OK with that.
+Fixes: 17de1e559cf1 ("selftests: clarify common error when running gup_test")
 
+Signed-off-by: Joel Savitz <jsavitz@redhat.com>
+---
+ tools/testing/selftests/vm/gup_test.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/testing/selftests/vm/gup_test.c b/tools/testing/selftests/vm/gup_test.c
+index 6bb36ca71cb5..a309876d832f 100644
+--- a/tools/testing/selftests/vm/gup_test.c
++++ b/tools/testing/selftests/vm/gup_test.c
+@@ -209,7 +209,7 @@ int main(int argc, char **argv)
+ 	if (write)
+ 		gup.gup_flags |= FOLL_WRITE;
+ 
+-	gup_fd = open("/sys/kernel/debug/gup_test", O_RDWR);
++	gup_fd = open(GUP_TEST_FILE, O_RDWR);
+ 	if (gup_fd == -1) {
+ 		switch (errno) {
+ 		case EACCES:
+@@ -224,7 +224,7 @@ int main(int argc, char **argv)
+ 			printf("check if CONFIG_GUP_TEST is enabled in kernel config\n");
+ 			break;
+ 		default:
+-			perror("failed to open /sys/kernel/debug/gup_test");
++			perror("failed to open " GUP_TEST_FILE);
+ 			break;
+ 		}
+ 		exit(KSFT_SKIP);
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+2.31.1
 
