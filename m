@@ -2,110 +2,265 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD172C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:51:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E008CCCA473
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:51:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236794AbiFIMv3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 08:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46340 "EHLO
+        id S244096AbiFIMv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 08:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343556AbiFIMu5 (ORCPT
+        with ESMTP id S1343532AbiFIMvx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 08:50:57 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16EF81F2E2
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 05:50:56 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id e9so10734446pju.5
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 05:50:56 -0700 (PDT)
+        Thu, 9 Jun 2022 08:51:53 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 571377DE33
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 05:51:50 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-30ce6492a60so239888707b3.8
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 05:51:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qv9uiCnYkz7r1g81Uxpd/4YaIX8fP8HTMmvq6kZi5lg=;
-        b=Z3X3g/QGldKGffMSt6uWhAgADYxTRzzt38s6Pl69DAYLj1AM7WTDnUcZBlWAjKzHjz
-         t36dGvwHRMlH5CSHGrAcMtXSlzUVagN60htpNE2pzC10V9BySpRdo555jFDaKA3nGd5E
-         nIwSjf7UZWrga5twSOS5YPkCbvTpaHc4eODH0OrzTkv71qCXmAnLNc42dDvobiBRPwCr
-         MdC8vysihai1udc5P40yfWlX+wUyurn8FnCLqNZTePbJSyp3XDa3FHNjcYb+rFeHGI5Q
-         +j7fF8Cdjx4NOyh1dy4lCJCxK+Ikhv86U7eRUK5LrFxHLXQo/Eeamh8ixO6waC+8ZlB8
-         6d+Q==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=4afj7Puirir/0/e//ltntSfmYEZ3ENBCv+Yk5IK4kr4=;
+        b=RqNdubTcUIgzg7tBBUlmM3DuzMa0s5W+x/LPK3GQU9I28/1sGXWkz3Pg2H7yxQmpBl
+         OamtGhtcH13Cg6qikfTFZG5Zpm5Mt6/5SVb3QQhHU3ifKNJ6XmGoDYF21TOnF49T2TjL
+         aiS2sX0zwVkoeVxCncruKCSU4hjnZJTjAvFt7WWuSjbJoG2pXzGSAOFcZb4dy5e+1kAU
+         geh83B2fBIJdjpJBdo1rl0pdZFMnHbBnnSuqt0wJKTLmKYHUiIhWScUZJIcajXK5q49y
+         a/jpQac4uplgaHbV0B4sa9Ia0ZqGDjxqYvW0Ooq3OtORklug/pYhMgSjUzSW9bM0nOcI
+         D8VA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qv9uiCnYkz7r1g81Uxpd/4YaIX8fP8HTMmvq6kZi5lg=;
-        b=Bvovqh+Kn6yOQZtapIX3ZMXpLQhFPuGpIp8aNE/UWyJeb8puT5VftqStNP+HpOGJzR
-         1l6FKqj72nG4zRLRpAZ8CXPUP71JjaLTA2epPIeyxVMHXJVoyYP0Az/wF5ej9p2mehPw
-         Re9la74gdb7RazBFJVIwV9gt3ZlvifRSTo/KWUKhUwwgMsMw1sDLJ84Mp3UDHf/iratH
-         CpLd7ODW+RnUoZJJAaFv4KU3LxKPcX/TUlDIT6jTVzdBPhTDvXeNxMihM+6puVfqWH6D
-         KCgWZHNhuGHHeChaA6DqY2Op3uMZRwpiG9+ntZAe1zVFQ8qqtyD6o/oXhM9dVgCXFA3z
-         R54g==
-X-Gm-Message-State: AOAM530zDUcrd4DM09M6Strl2pzmg+2HhYk13+cK2jn01ortVYxolGZB
-        e9LAT+/Y1NRFN8gldg6ds5c=
-X-Google-Smtp-Source: ABdhPJyBnxAQEPn+HX6J+QIyBBx3dSo2YPqdDlBYIzCGbyEsPlUrXIAm08nFvf+/fUte/mJiqvpZ8w==
-X-Received: by 2002:a17:903:120f:b0:15f:99f:9597 with SMTP id l15-20020a170903120f00b0015f099f9597mr38766686plh.45.1654779055575;
-        Thu, 09 Jun 2022 05:50:55 -0700 (PDT)
-Received: from localhost ([101.86.206.203])
-        by smtp.gmail.com with ESMTPSA id p1-20020a1709027ec100b00167736c8568sm9214922plb.70.2022.06.09.05.50.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 05:50:55 -0700 (PDT)
-From:   Patrick Wang <patrick.wang.shcn@gmail.com>
-To:     catalin.marinas@arm.com, akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        yee.lee@mediatek.com, patrick.wang.shcn@gmail.com
-Subject: [PATCH v3 0/3] mm: kmemleak: store objects allocated with physical address separately and check when scan
-Date:   Thu,  9 Jun 2022 20:49:47 +0800
-Message-Id: <20220609124950.1694394-1-patrick.wang.shcn@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=4afj7Puirir/0/e//ltntSfmYEZ3ENBCv+Yk5IK4kr4=;
+        b=Tck9/WeZZPwLehElVcbTmfVqOlnDYSR/nK6ayxVdwsOkDsnHnbJySNfFJswmShQWPe
+         tpekqOWj2wsYohoO2+lAdKG/xEvBrJ5q9Tq3Qnb5c40ksx5GBQobz1bzK7rO/VlGPNiF
+         O2HaffXtuHA6IS5lcgtDefjMFyGY8v2l4fQuSPG4q4vLvn3Q/3VPbobl3ccXWxYuwRs9
+         2Oz7PrXJpgfgbxWSca6eMToUiVOxvMrdDl3r/f/xJNr7qJNHCfYJfmJAfY4CKkaMAQYl
+         o6L6I6SaVJJOb9qnRWG2LGQFzB5MaM1eWbcqlvU9wEqpQfttuUyfGBehakNWMappaOEx
+         +sGA==
+X-Gm-Message-State: AOAM530ch37djK7r2AVZK9IegOp69Yfs2sMJtGvsF2qw+kPSkTrJEn6B
+        0AVm7tfwTzc7DKwe9tLPqTfEqkqKrxVg8zxb1tNIZg==
+X-Google-Smtp-Source: ABdhPJy8nNzH3FGt6T2lPVdz5Vpj4GhKa37WfdGfdFim8BKk6GF6dUpwGX5W8SUsbHDiE+7bYRplRpdRWmido6CIpEw=
+X-Received: by 2002:a81:b343:0:b0:300:4822:e12 with SMTP id
+ r64-20020a81b343000000b0030048220e12mr43195108ywh.376.1654779109344; Thu, 09
+ Jun 2022 05:51:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220607164948.980838585@linuxfoundation.org> <CA+G9fYui20CoDeqa6OrCYB+CGpgoFkhXtkdMDFJd1H55efCm6Q@mail.gmail.com>
+In-Reply-To: <CA+G9fYui20CoDeqa6OrCYB+CGpgoFkhXtkdMDFJd1H55efCm6Q@mail.gmail.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Thu, 9 Jun 2022 18:21:37 +0530
+Message-ID: <CA+G9fYt47PBfbOK77eiH3qP2QH0iWQ=p12NELpL+R_k7O678=g@mail.gmail.com>
+Subject: Re: [PATCH 5.17 000/772] 5.17.14-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Daniel Latypov <dlatypov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        kunit-dev@googlegroups.com,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kmemleak_*_phys() interface uses "min_low_pfn" and
-"max_low_pfn" to check address. But on some architectures,
-kmemleak_*_phys() is called before those two variables
-initialized. The following steps will be taken:
+On Wed, 8 Jun 2022 at 19:24, Naresh Kamboju <naresh.kamboju@linaro.org> wro=
+te:
+>
+> On Tue, 7 Jun 2022 at 23:41, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > This is the start of the stable review cycle for the 5.17.14 release.
+> > There are 772 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> >
+> > Responses should be made by Thu, 09 Jun 2022 16:48:02 +0000.
+> > Anything received after that time might be too late.
+> >
+> > The whole patch series can be found in one patch at:
+> >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patc=
+h-5.17.14-rc1.gz
+> > or in the git tree and branch at:
+> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stab=
+le-rc.git linux-5.17.y
+> > and the diffstat can be found below.
+> >
+> > thanks,
+> >
+> > greg k-h
+>
+> Results from Linaro=E2=80=99s test farm.
+>
+> Regressions found on qemu_x86_64:
+>   - kunit/kasan [1]
+>
+> Regressions found on qemu_i386:
+>   - kunit/kfence [2]
+>   - kunit/test_out_of_bounds_read
+>
+> We will bisect and let you know more details about this reported problem.
 
-1) Add OBJECT_PHYS flag and rbtree for the objects allocated
-   with physical address
-2) Store physical address in objects if allocated with OBJECT_PHYS
-3) Check the boundary when scan instead of in kmemleak_*_phys()
+The bisect script pointed me to this commit and  reverted and tested and
+confirmed.
 
-This patch set will solve:
-https://lore.kernel.org/r/20220527032504.30341-1-yee.lee@mediatek.com
-https://lore.kernel.org/r/9dd08bb5-f39e-53d8-f88d-bec598a08c93@gmail.com
+commit 1883088ed4a0d5cc9cea500ca4e89a354ab32c11
+Author: Jia-Ju Bai <baijiaju1990@gmail.com>
+Date:   Fri May 27 23:28:18 2022 +0800
 
-v2: https://lore.kernel.org/r/20220603035415.1243913-1-patrick.wang.shcn@gmail.com
-v1: https://lore.kernel.org/r/20220531150823.1004101-1-patrick.wang.shcn@gmail.com
+    md: bcache: check the return value of kzalloc() in detached_dev_do_requ=
+est()
 
-v2->v3:
- - remove the min_count argument to kmemleak_alloc_phys() function and assume it's 0
- - remove unused kmemleak_not_leak_phys() function
- - add functions to reduce unnecessary changes
- - remove the check for kasan_reset_tag()
- - add Fixes tag in patch 3
+    commit 40f567bbb3b0639d2ec7d1c6ad4b1b018f80cf19 upstream.
 
-v1->v2:
- - add rbtree for the objects allocated with physical address
- - store physical address in objects if allocated with OBJECT_PHYS
- - check the upper object boundary as well and avoid duplicate check
+    The function kzalloc() in detached_dev_do_request() can fail, so its
+    return value should be checked.
 
-Patrick Wang (3):
-  mm: kmemleak: add OBJECT_PHYS flag for objects allocated with physical
-    address
-  mm: kmemleak: add rbtree and store physical address for objects
-    allocated with PA
-  mm: kmemleak: check physical address when scan
+    Fixes: bc082a55d25c ("bcache: fix inaccurate io state for detached
+bcache devices")
+    Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+    Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+    Signed-off-by: Coly Li <colyli@suse.de>
+    Link: https://lore.kernel.org/r/20220527152818.27545-4-colyli@suse.de
+    Signed-off-by: Jens Axboe <axboe@kernel.dk>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
- Documentation/dev-tools/kmemleak.rst    |   1 -
- drivers/of/fdt.c                        |   2 +-
- include/linux/kmemleak.h                |   8 +-
- mm/kmemleak.c                           | 200 ++++++++++++++++--------
- mm/memblock.c                           |  14 +-
- tools/testing/memblock/linux/kmemleak.h |   2 +-
- 6 files changed, 145 insertions(+), 82 deletions(-)
+diff --git a/drivers/md/bcache/request.c b/drivers/md/bcache/request.c
+index d15aae6c51c1..673a680240a9 100644
+--- a/drivers/md/bcache/request.c
++++ b/drivers/md/bcache/request.c
+@@ -1107,6 +1107,12 @@ static void detached_dev_do_request(struct
+bcache_device *d, struct bio *bio,
+         * which would call closure_get(&dc->disk.cl)
+         */
+        ddip =3D kzalloc(sizeof(struct detached_dev_io_private), GFP_NOIO);
++       if (!ddip) {
++               bio->bi_status =3D BLK_STS_RESOURCE;
++               bio->bi_end_io(bio);
++               return;
++       }
++
+        ddip->d =3D d;
+        /* Count on the bcache device */
+        ddip->orig_bdev =3D orig_bdev;
 
--- 
-2.25.1
 
+
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>
+> [1] https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.17.y/build=
+/v5.17.13-773-gd0f9b2818e1e/testrun/10038101/suite/kunit/test/kasan/details=
+/
+> [2] https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.17.y/build=
+/v5.17.13-773-gd0f9b2818e1e/testrun/10038215/suite/kunit/test/kfence/detail=
+s/
+>
+> ## Build
+> * kernel: 5.17.14-rc1
+> * git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+> * git branch: linux-5.17.y
+> * git commit: d0f9b2818e1e4d43847e10d6e5310a0c653cb18f
+> * git describe: v5.17.13-773-gd0f9b2818e1e
+> * test details:
+> https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.17.y/build/v5.=
+17.13-773-gd0f9b2818e1e
+>
+> ## Test Regressions (compared to v5.17.11-188-g8eb69e8f0d45)
+> Regressions found on qemu_x86_64:
+>   - kunit/kasan [1]
+>
+> Regressions found on qemu_i386:
+>   - kunit/kfence [2]
+>   - kunit/test_out_of_bounds_read
+>
+> ## Metric Regressions (compared to v5.17.11-188-g8eb69e8f0d45)
+> No metric regressions found.
+>
+> ## Test Fixes (compared to v5.17.11-188-g8eb69e8f0d45)
+> No test fixes found.
+>
+> ## Metric Fixes (compared to v5.17.11-188-g8eb69e8f0d45)
+> No metric fixes found.
+>
+> ## Test result summary
+> total: 134591, pass: 121555, fail: 447, skip: 11730, xfail: 859
+>
+> ## Build Summary
+> * arm: 17 total, 14 passed, 3 failed
+> * arm64: 20 total, 20 passed, 0 failed
+> * i386: 17 total, 12 passed, 5 failed
+> * mips: 4 total, 1 passed, 3 failed
+> * parisc: 2 total, 2 passed, 0 failed
+> * powerpc: 5 total, 2 passed, 3 failed
+> * riscv: 5 total, 5 passed, 0 failed
+> * s390: 5 total, 2 passed, 3 failed
+> * sh: 2 total, 0 passed, 2 failed
+> * sparc: 2 total, 2 passed, 0 failed
+> * x86_64: 20 total, 20 passed, 0 failed
+>
+> ## Test suites summary
+> * fwts
+> * kunit
+> * kvm-unit-tests
+> * libgpiod
+> * libhugetlbfs
+> * log-parser-boot
+> * log-parser-test
+> * ltp-cap_bounds
+> * ltp-cap_bounds-tests
+> * ltp-commands
+> * ltp-commands-tests
+> * ltp-containers
+> * ltp-containers-tests
+> * ltp-controllers-tests
+> * ltp-cpuhotplug-tests
+> * ltp-crypto
+> * ltp-crypto-tests
+> * ltp-cve-tests
+> * ltp-dio-tests
+> * ltp-fcntl-locktests
+> * ltp-fcntl-locktests-tests
+> * ltp-filecaps
+> * ltp-filecaps-tests
+> * ltp-fs
+> * ltp-fs-tests
+> * ltp-fs_bind
+> * ltp-fs_bind-tests
+> * ltp-fs_perms_simple
+> * ltp-fs_perms_simple-tests
+> * ltp-fsx
+> * ltp-fsx-tests
+> * ltp-hugetlb
+> * ltp-hugetlb-tests
+> * ltp-io
+> * ltp-io-tests
+> * ltp-ipc
+> * ltp-ipc-tests
+> * ltp-math-tests
+> * ltp-mm-tests
+> * ltp-nptl
+> * ltp-nptl-tests
+> * ltp-open-posix-tests
+> * ltp-pty
+> * ltp-pty-tests
+> * ltp-sched-tests
+> * ltp-securebits
+> * ltp-securebits-tests
+> * ltp-syscalls-tests
+> * ltp-tracing-tests
+> * network-basic-tests
+> * packetdrill
+> * perf
+> * rcutorture
+> * ssuite
+> * v4l2-compliance
+> * vdso
+>
+> --
+> Linaro LKFT
+> https://lkft.linaro.org
