@@ -2,140 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44AB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 19:24:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DAFBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 19:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345041AbiFITYS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 15:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56942 "EHLO
+        id S243380AbiFITZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 15:25:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344909AbiFITYO (ORCPT
+        with ESMTP id S232154AbiFITZx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 15:24:14 -0400
-X-Greylist: delayed 2402 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 09 Jun 2022 12:24:11 PDT
-Received: from 4.mo550.mail-out.ovh.net (4.mo550.mail-out.ovh.net [46.105.76.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2EB01145B
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 12:24:11 -0700 (PDT)
-Received: from player788.ha.ovh.net (unknown [10.108.1.240])
-        by mo550.mail-out.ovh.net (Postfix) with ESMTP id B094224FEE
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 18:06:25 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player788.ha.ovh.net (Postfix) with ESMTPSA id C45D92B66FB16;
-        Thu,  9 Jun 2022 18:06:13 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-104R005d40fa0bf-8e0f-46d4-85d9-c1d69ed95b28,
-                    FB82ABC7E83112E23A0D9558C7043BAE976A9334) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
-        Sam Ravnborg <sam@ravnborg.org>, Stephen Kitt <steve@sk2.org>,
-        Helge Deller <deller@gmx.de>, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] fbdev: atmel_lcdfb: Rework backlight status updates
-Date:   Thu,  9 Jun 2022 20:04:40 +0200
-Message-Id: <20220609180440.3138625-1-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
+        Thu, 9 Jun 2022 15:25:53 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488C44F1D3
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 12:25:51 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id d14so6941104eda.12
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 12:25:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VSgagsbvkmfJHY7CYmbuTXz5MyIqb1Bl1J/7nYFzNlM=;
+        b=FVNNymOhRuplBcsV+zXBVZLeFMvqgJpfsBbgHGD7f/pNHtK4ouPMt7jThFW/F+cKNY
+         INVY/vpRSk7QrdC8+hxmXbR8tsr13n5fNakRr3iCk8by11ygyGQgOGMCfosktXQTZhvv
+         hwTUDZkiW3d/p8nCw8vhYtpNnLdiu7ZxBkKwE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VSgagsbvkmfJHY7CYmbuTXz5MyIqb1Bl1J/7nYFzNlM=;
+        b=mFxguvBAAoBiNtmtaNghxBFW/oBy1R5Z8emECPoulluwZBu7RS8ZGzoRdbAGBjF82V
+         fue/7n/gRl/AjY7dsgsL6cAHQL+bZhXm+4itqS6LtJGcTzdPebBRKAbM9PTkqbCmB4ci
+         nsISlh+cHoTiRWT+5fz/0uGv+pNWj2vSKW2r3x9Psl2PmKyAQak+VxJi9IjlQmuMVS1o
+         pt10/81kRK0PX3szXVeoT1yB1mc0YEHLBknam/e5PUgbvqWnCgqAyL2slUmZ11fPyQlt
+         yPPfDg0xFp+hT99Z6Q5HYnQAKC5Du8nau6NSXvaVMT/ua0CDpQVvzVYBnkzIptuKGaHA
+         Cl8Q==
+X-Gm-Message-State: AOAM531vCvdRoT/EREUflUD9VPSMLU/+eBy7YvLt69j5u6QUfmkIH1Or
+        7uc0J3Hq6vsW3tf+DuBse7/xga662xcH73fm
+X-Google-Smtp-Source: ABdhPJzW8+pgj5yfrVjZteJ3A5TTCS7YpD+n22CrImTOUQuYbIuc6TDfedqESWQki+3sZT8P9hYlyQ==
+X-Received: by 2002:aa7:c44b:0:b0:42d:d107:7e7a with SMTP id n11-20020aa7c44b000000b0042dd1077e7amr46558677edr.261.1654802749623;
+        Thu, 09 Jun 2022 12:25:49 -0700 (PDT)
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
+        by smtp.gmail.com with ESMTPSA id si28-20020a170906cedc00b006f3ef214e0csm11184625ejb.114.2022.06.09.12.25.48
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 12:25:48 -0700 (PDT)
+Received: by mail-wr1-f43.google.com with SMTP id x17so33725274wrg.6
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 12:25:48 -0700 (PDT)
+X-Received: by 2002:a5d:6da3:0:b0:219:bcdd:97cd with SMTP id
+ u3-20020a5d6da3000000b00219bcdd97cdmr3118138wrs.274.1654802747974; Thu, 09
+ Jun 2022 12:25:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 3936427552257050331
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddtledgudduiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejkeekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheehtd
+References: <CA+icZUUFdsEyNybVORm4x7_bAyoc0zTnudtNdgnTqjvbYXJRYA@mail.gmail.com>
+ <CA+icZUWxyNeZnEBDpDWxGc-qJ-jHwR0rJMBhk1a8StPHRgC6qA@mail.gmail.com>
+ <CA+icZUW7y3JxQ3dCB8Wy83EjEyYj7z55nFUw-kZ+V4We22HZZg@mail.gmail.com>
+ <CA+icZUVyp2CdX7m72GY-=DtK9J+64uHeWPr5-cvo8haQm_4hUw@mail.gmail.com>
+ <CA+icZUWiYYQbAav7VxVsT0ikqCeLckym08Au8oSeyYjvJHcNbg@mail.gmail.com>
+ <CA+icZUUOQcc4uiVbv+tJzPr_ED7e4tD0u9tC8mcn2BRe3sdPAg@mail.gmail.com>
+ <CAHk-=wiOrXUr0wqHL+hfkzGg_+b7UvtLeB=59KsX8W939bTY-A@mail.gmail.com>
+ <CA+icZUUma1B8KFWF-ed9sjXH4QpCRZ+B2pON3uAFkTUs77tMzw@mail.gmail.com> <20220609192308.GB10732@1wt.eu>
+In-Reply-To: <20220609192308.GB10732@1wt.eu>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 9 Jun 2022 12:25:31 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wimC_B+nCJrXwuvWULz6ycFFmRMT1Uc+PeM5wJdma_VFw@mail.gmail.com>
+Message-ID: <CAHk-=wimC_B+nCJrXwuvWULz6ycFFmRMT1Uc+PeM5wJdma_VFw@mail.gmail.com>
+Subject: Re: [Linux v5.17.9] -Wdeprecated-declarations warnings with LLVM-14
+ and OpenSSL v3.0.x
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     Sedat Dilek <sedat.dilek@gmail.com>,
+        Kees Cook <keescook@chromium.org>, keyrings@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Salvatore Bonaccorso <carnil@debian.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        David Howells <dhowells@redhat.com>,
+        Tasmiya Nalatwad <tasmiya@linux.vnet.ibm.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of checking the state of various backlight_properties fields
-against the memorised state in atmel_lcdfb_info.bl_power,
-atmel_bl_update_status() should retrieve the desired state using
-backlight_get_brightness (which takes into account the power state,
-blanking etc.). This means the explicit checks using props.fb_blank
-and props.power can be dropped.
+On Thu, Jun 9, 2022 at 12:23 PM Willy Tarreau <w@1wt.eu> wrote:
+>
+> IIRC you can also disable the deprecation warnings by defining the
+> OPENSSL_SUPPRESS_DEPRECATED macro. It doesn't require to change the
+> compiler's options and allows us to put our head in the sand.
 
-The backlight framework ensures that backlight is never negative, so
-the test before reading the brightness from the hardware always ends
-up false and the whole block can be removed. The framework retrieves
-the brightness from the hardware through atmel_bl_get_brightness()
-when necessary.
+That one had the downside that you have to know what you're doing to
+make such a change ;)
 
-As a result, bl_power in struct atmel_lcdfb_info is no longer
-necessary, so remove that while we're at it. Since we only ever care
-about reading the current state in backlight_properties, drop the
-updates at the end of the function.
+I just wanted to be able to start doing pulls again after mistakenly
+thinking that an upgrade would be pain-free.
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc: Helge Deller <deller@gmx.de>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc: linux-fbdev@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-arm-kernel@lists.infradead.org
----
- drivers/video/fbdev/atmel_lcdfb.c | 22 +---------------------
- 1 file changed, 1 insertion(+), 21 deletions(-)
-
-diff --git a/drivers/video/fbdev/atmel_lcdfb.c b/drivers/video/fbdev/atmel_lcdfb.c
-index 1fc8de4ecbeb..8187a7c4f910 100644
---- a/drivers/video/fbdev/atmel_lcdfb.c
-+++ b/drivers/video/fbdev/atmel_lcdfb.c
-@@ -49,7 +49,6 @@ struct atmel_lcdfb_info {
- 	struct clk		*lcdc_clk;
- 
- 	struct backlight_device	*backlight;
--	u8			bl_power;
- 	u8			saved_lcdcon;
- 
- 	u32			pseudo_palette[16];
-@@ -109,22 +108,7 @@ static u32 contrast_ctr = ATMEL_LCDC_PS_DIV8
- static int atmel_bl_update_status(struct backlight_device *bl)
- {
- 	struct atmel_lcdfb_info *sinfo = bl_get_data(bl);
--	int			power = sinfo->bl_power;
--	int			brightness = bl->props.brightness;
--
--	/* REVISIT there may be a meaningful difference between
--	 * fb_blank and power ... there seem to be some cases
--	 * this doesn't handle correctly.
--	 */
--	if (bl->props.fb_blank != sinfo->bl_power)
--		power = bl->props.fb_blank;
--	else if (bl->props.power != sinfo->bl_power)
--		power = bl->props.power;
--
--	if (brightness < 0 && power == FB_BLANK_UNBLANK)
--		brightness = lcdc_readl(sinfo, ATMEL_LCDC_CONTRAST_VAL);
--	else if (power != FB_BLANK_UNBLANK)
--		brightness = 0;
-+	int			brightness = backlight_get_brightness(bl);
- 
- 	lcdc_writel(sinfo, ATMEL_LCDC_CONTRAST_VAL, brightness);
- 	if (contrast_ctr & ATMEL_LCDC_POL_POSITIVE)
-@@ -133,8 +117,6 @@ static int atmel_bl_update_status(struct backlight_device *bl)
- 	else
- 		lcdc_writel(sinfo, ATMEL_LCDC_CONTRAST_CTR, contrast_ctr);
- 
--	bl->props.fb_blank = bl->props.power = sinfo->bl_power = power;
--
- 	return 0;
- }
- 
-@@ -155,8 +137,6 @@ static void init_backlight(struct atmel_lcdfb_info *sinfo)
- 	struct backlight_properties props;
- 	struct backlight_device	*bl;
- 
--	sinfo->bl_power = FB_BLANK_UNBLANK;
--
- 	if (sinfo->backlight)
- 		return;
- 
-
-base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
--- 
-2.30.2
-
+                    Linus
