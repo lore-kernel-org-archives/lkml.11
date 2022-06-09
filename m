@@ -2,126 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A52CCA473
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 07:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01FC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 07:28:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238456AbiFIH2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 03:28:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46314 "EHLO
+        id S240243AbiFIH2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 03:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240121AbiFIH17 (ORCPT
+        with ESMTP id S240094AbiFIH17 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 9 Jun 2022 03:27:59 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2231F5898
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 00:27:55 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id c14so21043110pgu.13
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 00:27:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wQhOn/YiixyOJw4v/o8WRfr7u50AUleNhUdb032jkoc=;
-        b=L7jS/0Ul8GyfGFjRHSjlC/3V1YgWm5fckAx4cb0ozB4CuNwCbDePiYLy99VKkO4eYR
-         vsIEwXCARojXs6cMBuEgOpj5milTERUvgpkWcuL7Sfsn8AInOOdQvfSoVcc334NhuGZ4
-         7TUKV91TAvpAbsMABW8YLDZN6I2yI6bugPIPI=
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 45FD01F4FD2
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 00:27:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654759671;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Wii0zR07KfthhhOdHcY7fAYYXEPbr/dpqwRhIU0EtzU=;
+        b=gUyLwVVS4vOD6uGZibKYTn1QpK5614oceZU1edpdvGtbrB7z0eJ/WK1k9QLZfOVACQW+el
+        4E2h/J69/qta7mJq95EsJGj5mj6C0217wpRsxpi19EE/YSarvGpHIPS5bguLtDOqspZ9fx
+        7rmXABurroBmgN4Lg6TxntY2UJzICV8=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-287-jYQ3aPsnPlmCrnw4zS1I8w-1; Thu, 09 Jun 2022 03:27:50 -0400
+X-MC-Unique: jYQ3aPsnPlmCrnw4zS1I8w-1
+Received: by mail-wm1-f70.google.com with SMTP id bg7-20020a05600c3c8700b0039468585269so7928295wmb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 00:27:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wQhOn/YiixyOJw4v/o8WRfr7u50AUleNhUdb032jkoc=;
-        b=Px8WMhGuXfWvCTE93ntVD6bfSGiu5QI9TRFMK7nDzBhNsYH84+ZCbo14Ij8ol5ZbwX
-         w4zSe8hSCCh9hEcWgW7abmeRlTXrE90GBip4Z+65CXrk6faLjEJkJ04vBhRVpgCw7Jc9
-         9ZBvVPvqWtuDeh61CnL7P6VTewPC9OxrxXm+0V7zDOgvcs2o0iTE/XvvG8Wtc7j7dQqF
-         YmnhCA07kxOvaDPg80LEKpCPLBKl5td1FajZlAiqJUgOLw6LlzA0I5dNxki+OyAvqbFH
-         JipDob+K1cmcWwc5xFL5fTZVXQcVtDT/IbrkUgAiENsKqCXSETK/gLRsHPN/nSLTbzmJ
-         iAOA==
-X-Gm-Message-State: AOAM533CAxPhcMuiQJOM8Cu6Lm1qx33eJI10ZKWC8H9UVFg+7QBZs0XT
-        FZ2Z8T/mim5EZv/8waUmcYeAHw==
-X-Google-Smtp-Source: ABdhPJwaokvXUJTqJoAx08HJzYQQnKmSiU3Qu9ykQ3bFrg5pAH7mwkib4XyJbC+tUSapAx+aGXawRQ==
-X-Received: by 2002:a05:6a00:1805:b0:51c:3a7:54dc with SMTP id y5-20020a056a00180500b0051c03a754dcmr23846453pfa.15.1654759674657;
-        Thu, 09 Jun 2022 00:27:54 -0700 (PDT)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:5119:d95b:c6cd:77fb])
-        by smtp.gmail.com with ESMTPSA id p16-20020a1709027ed000b0016403cae7desm15312221plb.276.2022.06.09.00.27.51
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Wii0zR07KfthhhOdHcY7fAYYXEPbr/dpqwRhIU0EtzU=;
+        b=gHBbD2Qypuj7XUCrArzBAuRkz4en2h5G0maXnMexumryVo3hjW65Ax2ojJVsqo6HoS
+         YgH/9DGGBXdZ5vbhBvd9gsrT+3hCI5p3Jkhje2L+S1l1PCZasnF0jEktBCPJKd1rWVxm
+         wwBRU3DVVHQ/CMJbkGMAxE/T/3EyAIccpG96Aovyx/c4TWHDk3OZIBHUMf0dYuqp90/G
+         sWFfF8X5oqbj7FzfwA8oduOgDQ31UzHDW9RWBkpAzU5k0zw/SEf8mm0bEjYQmtztMcjj
+         Q8Rs4nAjkybCJO8DUQhJk0pOT/JpdYibF06dJ4FHNyNrhzR/ETnQ/vUkQNC32uLVyggu
+         u57A==
+X-Gm-Message-State: AOAM5337l+iqDlcQF2JfOJKBmerMiTdoeFKvovrH0n0VaDCpP1wX/ccT
+        W/aTDAl1HwPn65zkExY1TO/kgmdMaxKE/IcPqHBp08dWk3uwHk6+h3Jk6ChrucDgJz8G0/sCgps
+        LXilAlYgu/w362BcaOF65mdvw
+X-Received: by 2002:a05:600c:5021:b0:39c:6571:e0b0 with SMTP id n33-20020a05600c502100b0039c6571e0b0mr1876987wmr.177.1654759669115;
+        Thu, 09 Jun 2022 00:27:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw5ZXIHrCIXcJnhibfPD0CZh9Ngp8vvh/E5AiHEI7gYeWrse3XiPFktxnvKe0MJOZc1qhXZLw==
+X-Received: by 2002:a05:600c:5021:b0:39c:6571:e0b0 with SMTP id n33-20020a05600c502100b0039c6571e0b0mr1876963wmr.177.1654759668924;
+        Thu, 09 Jun 2022 00:27:48 -0700 (PDT)
+Received: from gator (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
+        by smtp.gmail.com with ESMTPSA id o10-20020a5d474a000000b002184a3a3641sm8459301wrs.100.2022.06.09.00.27.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 00:27:54 -0700 (PDT)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     Hans de Goede <hdegoede@redhat.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org,
-        Rob Clark <robdclark@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 5/8] drm/panel: panel-simple: Implement .get_orientation callback
-Date:   Thu,  9 Jun 2022 15:27:19 +0800
-Message-Id: <20220609072722.3488207-6-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-In-Reply-To: <20220609072722.3488207-1-hsinyi@chromium.org>
-References: <20220609072722.3488207-1-hsinyi@chromium.org>
+        Thu, 09 Jun 2022 00:27:48 -0700 (PDT)
+Date:   Thu, 9 Jun 2022 09:27:46 +0200
+From:   Andrew Jones <drjones@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Oliver Upton <oupton@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 048/144] KVM: selftests: Rename 'struct vcpu' to
+ 'struct kvm_vcpu'
+Message-ID: <20220609072746.op7ez4rmdn2wmynj@gator>
+References: <20220603004331.1523888-1-seanjc@google.com>
+ <20220603004331.1523888-49-seanjc@google.com>
+ <20220608151815.7mwlj3eppwmujaow@gator>
+ <YqDH4m0TxLcK5Brw@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqDH4m0TxLcK5Brw@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To return the orientation property to drm/kms driver.
+On Wed, Jun 08, 2022 at 04:01:38PM +0000, Sean Christopherson wrote:
+> On Wed, Jun 08, 2022, Andrew Jones wrote:
+> > On Fri, Jun 03, 2022 at 12:41:55AM +0000, Sean Christopherson wrote:
+> > > Rename 'struct vcpu' to 'struct kvm_vcpu' to align with 'struct kvm_vm'
+> > > in the selftest, and to give readers a hint that the struct is specific
+> > > to KVM.
+> > 
+> > I'm not completely sold on this change. I don't mind that the selftest
+> > vcpu struct isn't named the same as the KVM vcpu struct, since they're
+> > different structs.
+> 
+> I don't care about about matching KVM's internal naming exactly, but I do care
+> about not having a bare "vcpu", it makes searching for usage a pain because it's
+> impossible to differentiate between instances of the struct and variables of the
+> same name without additional qualifiers.
+> 
+> > I also don't mind avoiding 'kvm_' prefixes in "KVM selftests" (indeed I
+> > wonder if we really need the kvm_ prefix for the vm struct).
+> 
+> Same as above, "struct vm *vm" will drive me bonkers :-)
 
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
- drivers/gpu/drm/panel/panel-simple.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+Yes, that is a good point.
 
-diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
-index 4a2e580a2f7b7..b4b9195251891 100644
---- a/drivers/gpu/drm/panel/panel-simple.c
-+++ b/drivers/gpu/drm/panel/panel-simple.c
-@@ -411,7 +411,10 @@ static int panel_simple_get_modes(struct drm_panel *panel,
- 	/* add hard-coded panel modes */
- 	num += panel_simple_get_non_edid_modes(p, connector);
- 
--	/* set up connector's "panel orientation" property */
-+	/*
-+	 * TODO: Remove once all drm drivers call
-+	 * drm_connector_set_orientation_from_panel()
-+	 */
- 	drm_connector_set_panel_orientation(connector, p->orientation);
- 
- 	return num;
-@@ -434,12 +437,21 @@ static int panel_simple_get_timings(struct drm_panel *panel,
- 	return p->desc->num_timings;
- }
- 
-+static enum drm_panel_orientation panel_simple_get_orientation(struct drm_panel *panel)
-+{
-+       struct panel_simple *p = to_panel_simple(panel);
-+
-+       return p->orientation;
-+}
-+
-+
- static const struct drm_panel_funcs panel_simple_funcs = {
- 	.disable = panel_simple_disable,
- 	.unprepare = panel_simple_unprepare,
- 	.prepare = panel_simple_prepare,
- 	.enable = panel_simple_enable,
- 	.get_modes = panel_simple_get_modes,
-+	.get_orientation = panel_simple_get_orientation,
- 	.get_timings = panel_simple_get_timings,
- };
- 
--- 
-2.36.1.255.ge46751e96f-goog
+> 
+> > If we do need prefixes for the kvm selftest framework code to avoid
+> > collisions with test code, then maybe we should invent something else, rather
+> > than use the somewhat ambiguous 'kvm', which could also collide with stuff in
+> > the kvm uapi.
+> 
+> Potential collisions with the KVM uAPI is a feature of sorts, e.g. tests shouldn't
+> be redefining kvm_* structures (I'd prefer _tests_ not use kvm_* at all, and only
+> use kvm_* in the library), and I gotta imagine KVM would break at least one real
+> world userspace if it defined "kvm_vcpu".
+> 
+> That said, I don't have a super strong preference for kvm_ versus something else,
+> though I think it will be difficult to come up with something that's unique,
+> intuitive, and doesn't look like a typo.
+>
+
+Maybe just abbreviated "Kvm Selftests", i.e. 'ks_'? I won't harp on this
+any longer though, so if that doesn't look good, then we can proceed with
+'kvm_'.
+
+Thanks,
+drew
 
