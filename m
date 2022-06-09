@@ -2,124 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A5FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01187C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244248AbiFISNe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 14:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38982 "EHLO
+        id S1345313AbiFISNk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 14:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344260AbiFISNX (ORCPT
+        with ESMTP id S1345307AbiFISNd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 14:13:23 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36DD73AE826;
-        Thu,  9 Jun 2022 11:13:22 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id c2so19813542lfk.0;
-        Thu, 09 Jun 2022 11:13:22 -0700 (PDT)
+        Thu, 9 Jun 2022 14:13:33 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16DAB3B1E82
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 11:13:31 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id s135so6928352pgs.10
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 11:13:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Nrob4dJ+ClPM90DZzze1TlX2UiKS1UeXsdDvkcnagJw=;
-        b=q2ndAPUxqZB4EUjxYrakHR8sR2Y2KpSV3Gfd32qjlN+ecuDeE4/aFgT4DltPyTEwNh
-         YmFDunw4MvRwLqzY6Vlu/MTR2ZrUboCXAfac9IfuMnxrSvLR4vqLiRpbh8Qqnhuu53yY
-         3wZUl2NCLXhERJ7jeXJdX3j4ApRbBiAP50HcQz5Ma/1OjGoxhJEbzNm6aSVlg0mySoB9
-         UqgI8yHK+8WqK0K1EIQJvAU5aGxSVNIbMyV2DQa2bhzlrmLkaCTF6srVG9EEID7iX7b7
-         5YSIL+ISMiZIM1AbLSq2Npge4WzTxsFfEBStbYrQa3WGGgXojQT6fraC3Dv+VWgHNMRV
-         fVwg==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2e9qvlBS9PXaO5KE3mr93HDyloUdR6RQhfh7PY4trpc=;
+        b=bVTK7bj9dfeUzdpypMRl3axVPchhhLdpkvoCdpiGZmX4x1R1qqXlxgDgwFMD9kS/mc
+         bUkGyKfPmCn7w7ROYEY+7xXoqyYi3jHBCgpGPVfTp7Hv5R5fXbX0V+bBKuL4gu8esPsi
+         oF4RVO8/CzhB8skKeL4HWnvxHG9r7jUfP6/Ag=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nrob4dJ+ClPM90DZzze1TlX2UiKS1UeXsdDvkcnagJw=;
-        b=mUiR6NPD/Sx5kG0ImvNVfd4uRHze/ofODqHPxzz0jze2PTJVgcVHnn9dNAAbISp8y+
-         H9N2JOeT+zKwtHMDMgfwKk8lzVwIMwJo/zpf8DD+843Fpo3kXKpLC8E73+HBtKsgX6RN
-         l7W9nKqgOb0SXE4a19fYBKbRqMlUcM9a0CxDB2c/1/AM2rabe985dNH92AlbuDfhvKOv
-         1xAFL/GGh+mB1RFuF47PQBZQyxCwnzDweuTAPbmzsMkva/guCGMA8nZBJzMg1BH6to26
-         ghOkXAEWT5Jk69ySbijFF8tif50nZdeLarWlCE0f5mHCntTzA1wgpMPXFfR6Z4ookWJh
-         yB+w==
-X-Gm-Message-State: AOAM532Qk1JrU+oUULpenl5PHT2/aw2t5OeVV5w+HkphXVCvpTPye7sF
-        o8fnO4oZyF4794Wu/fTUb/vO4B2EOPu1EeGMX2g=
-X-Google-Smtp-Source: ABdhPJywoR8tMewppXrjcU/oGHzyHyh6LYfN0TR1A9shojoyvA6Bka0vdgjtBfHjdxh7zcne0/surTaBVqDcAt/3xR8=
-X-Received: by 2002:a05:6512:1398:b0:448:bda0:99f2 with SMTP id
- p24-20020a056512139800b00448bda099f2mr72050669lfa.681.1654798400337; Thu, 09
- Jun 2022 11:13:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2e9qvlBS9PXaO5KE3mr93HDyloUdR6RQhfh7PY4trpc=;
+        b=y8BzFO7NHyTEDicY6RB1/4j4iuuYS9VHcRncrgFSqYrhRKrqqaR4TX0AzmGllDyVPW
+         366Ldf8emPZNMmUl3JBIwBCzIgPxGU7522YEnZ5MpOBUIGZ1caQfWpZOKsjfYQNb4g+L
+         fRB8evWhwJP0KnXx5hooiZbU6HV15aEqetwsgdI1gyebG2F7zE1UMS5JfZHJiXkDhRAI
+         hP0sMoISu48No+jOk6+QhIuJkZwsI8u6iXpMVJei9/9uDhECgy3CLssGk8qJJG0wjyuI
+         6fu7mF0MksbwlRxaF3byMTGBlL2IqhiX7hLBsoPBhTI8WgBdH2Iqdq/Xj0CxPc/3lqLB
+         kPCQ==
+X-Gm-Message-State: AOAM532UFsdBC0RLs/ijnfzFXFtAKZxuMUf+BPqh94Kqu1bH7/VdXAzC
+        QXYA9x9KCadwROMxmm9VP5+S16PF61sgEg==
+X-Google-Smtp-Source: ABdhPJxtb6tPpdUzJnjTltj9Coiem1A+RGPdXWPqKUhy8JD+8XnMOcg0fFOe5P80fHg5Fk+die1qiw==
+X-Received: by 2002:a63:b57:0:b0:3fb:a948:6d96 with SMTP id a23-20020a630b57000000b003fba9486d96mr35379670pgl.596.1654798410404;
+        Thu, 09 Jun 2022 11:13:30 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id r14-20020a63ec4e000000b003fb0354c43asm17728049pgj.32.2022.06.09.11.13.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 11:13:30 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: [PATCH v2 1/7] usb: typec: mux: Allow muxes to specify mode-switch
+Date:   Thu,  9 Jun 2022 18:09:40 +0000
+Message-Id: <20220609181106.3695103-2-pmalani@chromium.org>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+In-Reply-To: <20220609181106.3695103-1-pmalani@chromium.org>
+References: <20220609181106.3695103-1-pmalani@chromium.org>
 MIME-Version: 1.0
-References: <20220609062412.3950380-1-james.hilliard1@gmail.com>
-In-Reply-To: <20220609062412.3950380-1-james.hilliard1@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 9 Jun 2022 11:13:08 -0700
-Message-ID: <CAEf4BzbL8ivLH=HZDFTNyCTFjhWrWLcY3K34Ef+q4Pr+oDe_Gw@mail.gmail.com>
-Subject: Re: [PATCH v3 1/1] libbpf: fix broken gcc SEC pragma macro
-To:     James Hilliard <james.hilliard1@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 11:24 PM James Hilliard
-<james.hilliard1@gmail.com> wrote:
->
-> It seems the gcc preprocessor breaks unless pragmas are wrapped
-> individually inside macros when surrounding __attribute__.
->
-> Fixes errors like:
-> error: expected identifier or '(' before '#pragma'
->   106 | SEC("cgroup/bind6")
->       | ^~~
->
-> error: expected '=', ',', ';', 'asm' or '__attribute__' before '#pragma'
->   114 | char _license[] SEC("license") = "GPL";
->       | ^~~
->
-> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-> ---
-> Changes v2 -> v3:
->   - just fix SEC pragma
-> Changes v1 -> v2:
->   - replace typeof with __typeof__ instead of changing pragma macros
-> ---
->  tools/lib/bpf/bpf_helpers.h | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
->
-> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> index fb04eaf367f1..66d23c47c206 100644
-> --- a/tools/lib/bpf/bpf_helpers.h
-> +++ b/tools/lib/bpf/bpf_helpers.h
-> @@ -22,11 +22,12 @@
->   * To allow use of SEC() with externs (e.g., for extern .maps declarations),
->   * make sure __attribute__((unused)) doesn't trigger compilation warning.
->   */
-> +#define DO_PRAGMA(x) _Pragma(#x)
->  #define SEC(name) \
-> -       _Pragma("GCC diagnostic push")                                      \
-> -       _Pragma("GCC diagnostic ignored \"-Wignored-attributes\"")          \
-> +       DO_PRAGMA("GCC diagnostic push")                                    \
-> +       DO_PRAGMA("GCC diagnostic ignored \"-Wignored-attributes\"")        \
->         __attribute__((section(name), used))                                \
-> -       _Pragma("GCC diagnostic pop")                                       \
-> +       DO_PRAGMA("GCC diagnostic pop")                                     \
->
+Loosen the typec_mux_match() requirements so that searches where an
+alt mode is not specified, but the target mux device lists the
+"mode-switch" property, return a success.
 
-I'm not going to accept this unless I can repro it in the first place.
-Using -std=c17 doesn't trigger such issue. Please provide the repro
-first. Building systemd is not a repro, unfortunately. Please try to
-do it based on libbpf-bootstrap ([0])
+This is helpful in Type C port drivers which would like to get a pointer
+to the mux switch associated with a Type C port, but don't want to
+specify a particular alt mode.
 
-  [0] https://github.com/libbpf/libbpf-bootstrap
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+---
 
->  /* Avoid 'linux/stddef.h' definition of '__always_inline'. */
->  #undef __always_inline
-> --
-> 2.25.1
->
+Changes since v1:
+- No changes.
+
+ drivers/usb/typec/mux.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/usb/typec/mux.c b/drivers/usb/typec/mux.c
+index fd55c2c516a5..464330776cd6 100644
+--- a/drivers/usb/typec/mux.c
++++ b/drivers/usb/typec/mux.c
+@@ -281,9 +281,13 @@ static void *typec_mux_match(struct fwnode_handle *fwnode, const char *id,
+ 	if (match)
+ 		goto find_mux;
+ 
+-	/* Accessory Mode muxes */
+ 	if (!desc) {
+-		match = fwnode_property_present(fwnode, "accessory");
++		/*
++		 * Accessory Mode muxes & muxes which explicitly specify
++		 * the required identifier can avoid SVID matching.
++		 */
++		match = fwnode_property_present(fwnode, "accessory") ||
++			fwnode_property_present(fwnode, id);
+ 		if (match)
+ 			goto find_mux;
+ 		return NULL;
+-- 
+2.36.1.476.g0c4daa206d-goog
+
