@@ -2,102 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 099CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E76C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:51:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232516AbiFIIvO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:51:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42402 "EHLO
+        id S242435AbiFIIvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:51:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242633AbiFIIug (ORCPT
+        with ESMTP id S242492AbiFIIuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 04:50:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED27F145581;
-        Thu,  9 Jun 2022 01:47:30 -0700 (PDT)
+        Thu, 9 Jun 2022 04:50:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC75152D9D
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:50:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89659619AF;
-        Thu,  9 Jun 2022 08:47:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50939C34114;
-        Thu,  9 Jun 2022 08:47:28 +0000 (UTC)
-Message-ID: <afafa5db-cf2c-4e4d-7003-2e7d35658a99@xs4all.nl>
-Date:   Thu, 9 Jun 2022 10:47:26 +0200
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8DAD4B82C8B
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 08:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DFF1C3411E;
+        Thu,  9 Jun 2022 08:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654764615;
+        bh=kSKP42ykG3A4myTitkeRDF2p6ezFTYtRvxAW7SZhgSQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ofFnETWpJ8tYyqXpwgCwo2kXg+InhjBQl0MT8Poo6HsphBba1wCKcMEcVivQvbHN2
+         F+kH49w3uzI6LESRzM7sgdENm9xXXYzq7fAX6QGhd6nM1AvACdBKpHwgP4El7sdTOX
+         oR/FnYG52YJ1kY+8WLbkJ8+vEX2GIkzAP2z0oPjfFe6tdcPFCHhdMepKCFv9SFqnmG
+         HCFEeqzqzOShTr7fr93FPqjLdMsIzujvYCdoUB9bQKtIik9Iww6dx0RuNDYLPRA6Jy
+         dWTvJwnqp+DZxLLdo040wu1FQhf6KhpqfoPgLWwyj1cfSXscRLUblfFwHrpqx8dQLJ
+         DGKKH1ksxY+PA==
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     bleung@chromium.org, groeck@chromium.org
+Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4 01/21] platform/chrome: cros_ec_commands: fix compile errors
+Date:   Thu,  9 Jun 2022 08:49:37 +0000
+Message-Id: <20220609084957.3684698-2-tzungbi@kernel.org>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+In-Reply-To: <20220609084957.3684698-1-tzungbi@kernel.org>
+References: <20220609084957.3684698-1-tzungbi@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] media: hantro: fix compatible string deprecation warning
-Content-Language: en-US
-To:     Robin Murphy <robin.murphy@arm.com>,
-        Martin Kepplinger <martin.kepplinger@puri.sm>,
-        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
-        mchehab@kernel.org
-Cc:     linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220517143521.1670663-1-martin.kepplinger@puri.sm>
- <0da188fa-efd8-62d0-2ea6-5a8e0c286cb5@arm.com>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <0da188fa-efd8-62d0-2ea6-5a8e0c286cb5@arm.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Martin,
+Fix compile errors when including cros_ec_commands.h solely.
 
-On 5/17/22 18:46, Robin Murphy wrote:
-> On 2022-05-17 15:35, Martin Kepplinger wrote:
->> of_device_is_compatible() in the end uses strlen of the string
->> for comparison, so in this case, the condition is true even if
->> the requested string "nxp,imx8mq-vpu-g1" is being used. The first
->> chars containing "nxp,imx8mq-vpu" are the same.
-> 
-> Have you seen this go wrong in practice? AFAICS, unless you're on SPARC, which seems somewhat unlikely for an i.MX8 peripheral, of_compat_cmp() should map to strcasecmp(), which should do the right thing :/
+1.
+cros_ec_commands.h:587:9: error: unknown type name 'uint8_t'
+  587 |         uint8_t flags;
+      |         ^~~~~~~
 
-Robin is correct, the existing code is fine for all but SPARC, which
-won't be using this driver.
+2.
+cros_ec_commands.h:1105:43: error: implicit declaration of function 'BIT'
+ 1105 |         EC_COMMS_STATUS_PROCESSING      = BIT(0),
+      |                                           ^~~
 
-I'm rejecting this patch.
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+---
+No change from v2 and v3.
 
-Regards,
+Changes from v1:
+- Add R-b tag.
 
-	Hans
+ include/linux/platform_data/cros_ec_commands.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> 
-> Robin.
-> 
->> Fix this by encoding what the comment says.
->>
->> Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
->> ---
->>
->> This is more of a bugreport as the solution doesn't look very elegant
->> to me. I'm happy for advice.
->>
->> thanks,
->>                             martin
->>
->>
->>   drivers/staging/media/hantro/hantro_drv.c | 7 ++++---
->>   1 file changed, 4 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
->> index ac232b5f7825..014fab637df0 100644
->> --- a/drivers/staging/media/hantro/hantro_drv.c
->> +++ b/drivers/staging/media/hantro/hantro_drv.c
->> @@ -923,10 +923,11 @@ static int hantro_probe(struct platform_device *pdev)
->>         /*
->>        * Support for nxp,imx8mq-vpu is kept for backwards compatibility
->> -     * but it's deprecated. Please update your DTS file to use
->> -     * nxp,imx8mq-vpu-g1 or nxp,imx8mq-vpu-g2 instead.
->> +     * but it's deprecated.
->>        */
->> -    if (of_device_is_compatible(pdev->dev.of_node, "nxp,imx8mq-vpu"))
->> +    if ((of_device_is_compatible(pdev->dev.of_node, "nxp,imx8mq-vpu")) &&
->> +        (!of_device_is_compatible(pdev->dev.of_node, "nxp,imx8mq-vpu-g1")) &&
->> +        (!of_device_is_compatible(pdev->dev.of_node, "nxp,imx8mq-vpu-g2")))
->>           dev_warn(&pdev->dev, "%s compatible is deprecated\n",
->>                match->compatible);
->>   
+diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
+index 8cfa8cfca77e..a5b749a85707 100644
+--- a/include/linux/platform_data/cros_ec_commands.h
++++ b/include/linux/platform_data/cros_ec_commands.h
+@@ -13,8 +13,8 @@
+ #ifndef __CROS_EC_COMMANDS_H
+ #define __CROS_EC_COMMANDS_H
+ 
+-
+-
++#include <linux/bits.h>
++#include <linux/types.h>
+ 
+ #define BUILD_ASSERT(_cond)
+ 
+-- 
+2.36.1.255.ge46751e96f-goog
+
