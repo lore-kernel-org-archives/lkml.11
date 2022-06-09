@@ -2,161 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 17:45:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3065FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 17:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345101AbiFIRpv (ORCPT
+        id S1344176AbiFIRrv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 13:45:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40396 "EHLO
+        Thu, 9 Jun 2022 13:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345073AbiFIRpm (ORCPT
+        with ESMTP id S245571AbiFIRrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 13:45:42 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1CC52A1D65;
-        Thu,  9 Jun 2022 10:45:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1654796682;
-        bh=aAGWS5nsEjumC36D8Oj4xKJFjI8cDGKi0mv38ijyKvU=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=iglfxQwW7H2DsRtidTWRvPFWgQlqhaWIYH9JVcg4gFlV+XkI4j8PLqDe+uFhmyIyY
-         EKCS0Jgd553PG8W8DZfmU8/QU93j6q1OvbQreIlh7MapLt/UmddRKb1PmDiHYAwXAd
-         OWnxDsMfQhsyusJEXGHD7w2NsIGCtBq3LTQdnVfk=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.195.3]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N3se8-1nZ8A54288-00zqaM; Thu, 09
- Jun 2022 19:44:42 +0200
-Date:   Thu, 9 Jun 2022 19:44:37 +0200
-From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
-        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
-        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
-        sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
-        bjorn.andersson@linaro.org, geert+renesas@glider.be,
-        marcel.ziswiler@toradex.com, vkoul@kernel.org,
-        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2 06/20] dt-binding: clk: npcm845: Add binding for
- Nuvoton NPCM8XX Clock
-Message-ID: <YqIxhWeUbEAo3Jam@latitude>
-References: <20220608095623.22327-1-tmaimon77@gmail.com>
- <20220608095623.22327-7-tmaimon77@gmail.com>
- <f4899b6d-fec3-5940-709a-f5fbc7ae6233@linaro.org>
+        Thu, 9 Jun 2022 13:47:48 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518FB2A3075
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 10:47:47 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id e9so11444134pju.5
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 10:47:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b9oolEZCMKFW54fooG59c84yEUWgHZBbtR7AfCAYdYI=;
+        b=X41D9Z1M9z11lUWedCO5eNRFRapXlxPrsuECpK13PvOvf2i1VqGFPiimjY6gh8oGqa
+         7HbfsPGMpMPCFR49lDG9d9wCISozqdegH3GP7WkRN5d/3FvL7KAKpGG3rneRsYiCASfU
+         ch6bjD6f9Nz1TEmXrL5N8RmhaZc9l6PQZdecdH12/5/rLoM5uGhhW3lbKW/DbeL2nM1g
+         pfyhzA+c7lyHLYow3MzkHrR8Z262rXzMRhAuzarc7VQQklAckxSTD+KVDXMjlw9y65jM
+         uB/nlOgdxjm86dKvsVqxi//096hBdFfWihztJAZ1SDFmxoQuPe+C7eKaEYHialep6Iko
+         lXUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b9oolEZCMKFW54fooG59c84yEUWgHZBbtR7AfCAYdYI=;
+        b=InjTiybxFwBfyefYJkwi28H6AlnDwFrfA6AKpsJk3oDtx8W6mXFDiOl1SfS6LBWR9P
+         cq+ODWnUrgK+5qm3zVyvtJhPnDDWshC+8mOumQmnDyqHooW0V/4zpP8qjCTF6xz5sWPu
+         OJyps6jpDB7yFLdMs6DkWVJBci/PPIkBnl/15IXaBPw+474RKBeNkBjCvTOR8P0oZU6h
+         cwEYT1wm/cQnzB01s7CYlK2+SzKPmO/G8KTVJWpO0VudUjDRM/L0GacfgOJj1NPJwEsK
+         ANff/mLFEsir64YjaAlGaaU+9NvKJLr6mcNpkLSy4JU/ie2GJv/1xOM1Reo98HOV0u4K
+         zPSQ==
+X-Gm-Message-State: AOAM530vwLN2QVZUP2GKVRZbEk5bS0UdrKycRBB4gULat70Znc5neod6
+        tFj/s9po+AHJzbH5g70LhkiEOYJ6EpmmUUR2bCfp/Q==
+X-Google-Smtp-Source: ABdhPJxLjqCNbzof1vIJhdH5pog7yCXy+y68VQTqER1z0tqe95qssQwKtKqsASY83T43LyDA+aIwt77I/KrM0pJHgEA=
+X-Received: by 2002:a17:90b:4a4e:b0:1e6:6757:d085 with SMTP id
+ lb14-20020a17090b4a4e00b001e66757d085mr4470182pjb.207.1654796866625; Thu, 09
+ Jun 2022 10:47:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="32Ze5EV+vj+4NHJh"
-Content-Disposition: inline
-In-Reply-To: <f4899b6d-fec3-5940-709a-f5fbc7ae6233@linaro.org>
-X-Provags-ID: V03:K1:jzzTW8LVcmmU+9aQiJW2YIJKQAtbyON9+tJYiHXjrPQeLMigfIM
- 6Z40D5jT0qAvqfZZWiSelFOZwlcmtKRJAbAIzd4yNVVJ87qwrLiUr7zCoG9bi9LI5DEkChj
- M6R/8AlnrbtbrhVB3r/5UAtTOEkAR9TFpi1jXVbbZBeJJ/A7oMYRyWVb9CwlhiegbIxF+LT
- DzFzENR5xVvura4eu0iew==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:3dUJcptKLkA=:IbJCdExBzHM+v+boTuHr85
- BShd2H0KfY7rw9/BR1QVjRpCffF84AUGG9XgGajnpXxfFBQVxs0aRHhYRFSGziJqrXJ+hGDlr
- yWM+w5ZPnlR3Te1mMLW33eCQIR11kK9/t0xB0uABoQUsR+bRjiZmPNC26NJcp5WlQhnvuJmR3
- ywN6iueU7pGt9jMpDTKO9pvQKQ4xxL6xd1u7FYVihI3ee77JrFn45QQujsA88iaeTBzvOw+Yt
- mXavbUEs1rjR/JZUukIp4Fi/mWsYo7iFIbnEKAFuMHa7JSWv2XB4Y6hxzl8j4uvnQcAvIS5af
- NhnTWutnnxdiATBFoJGLqlmePx8Xy8ysQDaImMp+/REDBlH6wFTwYC1v9IA0gsZMbSQ/gBDZq
- Wrz1/e5lhi/WtgqSWALIJNLVA61D1Vo76S0Jr7m2k5fPemguTW+GRe91zNXwm4n282LbucxLw
- vNxT26OsoTGlNjhguMIiNSsPSJmCIDdabs/S8Sr0V0gtZmdcxIT+TJTbR/+VbB/dHU/dD3FbW
- rpVgmCRMRnBorK1F0GCv3LxaxiI29AjON7yo78RF3vfxRGhf8sIT8KJmvTWvrBdLUZEgiY9MJ
- 9jaWw0OBwl81G49BNxsAsUnPr9PM6Fyfa8Qa+cHQN32RXMmnzdyokFm2fsnyTTmQrIyVlImwg
- fIhjYlZsXPbR6U47PtcS3wjfcE6V76RKxizu8PaS29UVVg00OYhZyk6QgBzgdUM5rDL33s6qu
- acYIfZX1e/zMRZ4evGbwZdF0QUqEdCTo9IeqnzWYbZyD8q7GDpRM8+2QQYeLEEg8e5Kfyih5s
- 6ndecLwf/kRWkxn9wKnuaukmKrP6KmqzMlPXjQNI2FfYid8enDFPiDeRckBdk5XmLh9R9Rw3F
- KotEMyJ0xZ4QlgU+QqqzicJC27JznOO/10tZZxB21qxDWii5KP+4evEvVksEijFshL9jCt5U3
- J7/icxxq2HS1X0Rs1tfhUq4NuHHaIKXUDfxJYRQ3432fsND5ra90dX6Sax+m8WDUrJWtysnwZ
- befrBiVXRduCh4iudct1R0Xz9mKcSTdVwxpFkZoLr/ihh2m9wh3FCxJIWEkZxJZseBGSfIJUu
- KjJSGnqwWs+ZrUY6r4UUJmcNrWLd2RwMb6h2q1CO/xT5z86e2NliQx3Qg==
+References: <CA+G9fYv7fESqpGoeKmHoJsst6wfRNMi2wQLGm+PsjbLDuDjdMQ@mail.gmail.com>
+ <CA+G9fYsJThWFAxXTbAcJmjshx+oYxVVd+gMM680hS0X1z37+FQ@mail.gmail.com> <YqItYKEIvsw4Yzjx@carbon>
+In-Reply-To: <YqItYKEIvsw4Yzjx@carbon>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 9 Jun 2022 10:47:35 -0700
+Message-ID: <CALvZod6ojDd8Bc0VcyFEk-ZrdkFezvQPUvbGg3wyzae+NOp_4A@mail.gmail.com>
+Subject: Re: [next] arm64: boot failed - next-20220606
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        regressions@lists.linux.dev, lkft-triage@lists.linaro.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Raghuram Thammiraju <raghuram.thammiraju@arm.com>,
+        Mark Brown <broonie@kernel.org>, Will Deacon <will@kernel.org>,
+        Vasily Averin <vvs@openvz.org>,
+        Qian Cai <quic_qiancai@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
---32Ze5EV+vj+4NHJh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hello Tomer and Krzysztof,
-
-On Wed, Jun 08, 2022 at 12:03:00PM +0200, Krzysztof Kozlowski wrote:
-> On 08/06/2022 11:56, Tomer Maimon wrote:
-> > Add binding for the Arbel BMC NPCM8XX Clock controller.
-> >=20
-> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> > ---
+On Thu, Jun 9, 2022 at 10:27 AM Roman Gushchin <roman.gushchin@linux.dev> wrote:
+>
 [...]
-> > +  clocks:
-> > +    items:
-> > +      - description: 25M reference clock
-> > +      - description: CPU reference clock
-> > +      - description: MC reference clock
-> > +
-> > +  clock-names:
-> > +    items:
-> > +      - const: refclk
-> > +      - const: sysbypck
-> > +      - const: mcbypck
-> > +
->=20
-> I asked what is the suffix about and you replied "ck"... ok, so let's
-> make clear. This should be:
->=20
->     items:
->       - const: ref
->       - const: sysbyp
->       - const: mcbyp
->=20
-> or something similar, without the same suffix all over.
+> +struct mem_cgroup *mem_cgroup_from_obj(void *p)
+> +{
+> +       struct folio *folio;
+> +
+> +       if (mem_cgroup_disabled())
+> +               return NULL;
+> +
+> +       if (unlikely(is_vmalloc_addr(p)))
+> +               folio = page_folio(vmalloc_to_page(p));
 
-A bit of a side note on these names:
+Do we need to check for NULL from vmalloc_to_page(p)?
 
-To make the binding as easy to understand as possible, I think it would
-help to have every part of the clock-names reflected in corresponding
-clock description:
-
-- sysbypck:  presumably means system bypass clock
-- mcbypck:   presumably means memory controller bypass clock
-
-
-As it currently is in the patch, the "byp" part stays unexplained and
-unmentioned in the descriptions.
-
-
-
-Thanks,
-Jonathan
-
---32Ze5EV+vj+4NHJh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAmKiMWIACgkQCDBEmo7z
-X9vEyw//UyXHHGnZqNSCU2vjJVfqb3xYR+6PkcHcT0S8zAQhF+r49qZjx2NHgU7M
-UK49lMtTgrU3NtU+6zjY49TDUtBqImQtjshiTi1Ny8pk1EeILBOAtfs37Woh0RT0
-/L0z/8MSiYSEiEFwMMQju9y0op3cBs+/7FraPBx/LlZiWvxmKi3U9+dYjKQnlzE6
-i33Um6sHshnWKc3GUHRmhZcipbc06kgST4+iTJPGqip9l5p/HusyWfTB3HBHwV48
-5oc4+0yPM3RksA2jkfwyPHSv5jaQ+Vli88tZC7NRQYGzVpMhrgjJ6tMszip//wsA
-tIaIbAr2KBNOWsirnLya9y2lV/OHkaauS/wqn+WH+oliAu9NA0u4Wly8espADuVu
-VeIa3jy1Lm1pYI+UmGJljRKDOWE07KMtwIsQ0XqloLXdYCAlCRLM3sQO6vztUPKl
-eaLBbX2Oh2F5WLh9bkKzTg1vDusL/7YkAopmy9nejnayevRhpD1yApfQFAuOJTCO
-1qvWxfbgzAMa2Ask0kaW7AIJ3L0KPJhRDVDVBqsGlQ4+gww7qoEeh6tOTGayfpXE
-5QpbQzZNrHIpATf4nH+s+fyK9BgXftuoFQQBzi0FyxaIedlegtLymSFCxrhwY74E
-5a7VDITbr+qiBNCkuH94zj0onqdpx8/4uWaraM3vvh3xf/z1C3I=
-=CY1G
------END PGP SIGNATURE-----
-
---32Ze5EV+vj+4NHJh--
+> +       else
+> +               folio = virt_to_folio(p);
+> +
+> +       return mem_cgroup_from_obj_folio(folio, p);
+> +}
