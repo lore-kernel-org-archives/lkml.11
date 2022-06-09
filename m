@@ -2,112 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3451CCCA473
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 05:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E30A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 05:48:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230003AbiFIFrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 01:47:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37684 "EHLO
+        id S238172AbiFIFsF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 01:48:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237153AbiFIFr3 (ORCPT
+        with ESMTP id S231158AbiFIFsE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 01:47:29 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5FA223B557;
-        Wed,  8 Jun 2022 22:47:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1654753626;
-        bh=CK1mrzVGgNsxBX50Lg3eVfTjvuYYZTQEUKDaJ6KAwtA=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=AG8PQw5BbksWUtL/e77b539/4DsN39MLJdJ4x0pF8FsSpLDhyLwJlVxzWm/1pkvqX
-         HypYBaje6j831XPHQi/GFofAfavMFed9yiGN2aeb2OGE6DYYgNTKIPHnf9+J+ZOEEr
-         CII/yb2XGnq8g7yU8PMHcGM2K0QNASGxH7cgihD8=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [172.25.0.188] ([62.143.94.109]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N6bfw-1nh0bM1ad4-0181NO; Thu, 09
- Jun 2022 07:47:06 +0200
-Message-ID: <dbd56518-e688-3b3b-08ae-63f66004e62a@gmx.de>
-Date:   Thu, 9 Jun 2022 07:46:51 +0200
+        Thu, 9 Jun 2022 01:48:04 -0400
+Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998EE1A0049;
+        Wed,  8 Jun 2022 22:48:02 -0700 (PDT)
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 2595ljbS024219;
+        Thu, 9 Jun 2022 14:47:46 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 2595ljbS024219
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1654753666;
+        bh=THMhz6Wceyy6ZCLdJWjybc0DlI0gGoaA/DiX+ijqRnE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=xVsbK57w0uyaXCVEiIg3LjorSv75JV75jldT2Sr6vYP3B3sLDTUgBsCG3hgj0mWEC
+         GRK552F0KqYYKDQHiakuCuMxIA8VvDSwpUs5lYhGy2NVLp9QIcUB8VAE1bsG54CE49
+         KsAPx9rdWKQ3OZiYF+zcvAVTj9yDpCh7iNXwokvXcLnfjyYUd54wWtASA2/H2nVciw
+         lzVVPTs++WAKEXD/stBTXGJIMw1mxzzpRaX8pbnuGP7lE9MdoNNAW/HORmm/CLL/ac
+         VQed7H0xl37xJU7C83jvz9+as9SOnirEZs6Z6yHpgXVaLikrGHu3j2mkiqTDig7+cB
+         r88ngE4jqyXfQ==
+X-Nifty-SrcIP: [209.85.221.45]
+Received: by mail-wr1-f45.google.com with SMTP id q15so22810837wrc.11;
+        Wed, 08 Jun 2022 22:47:46 -0700 (PDT)
+X-Gm-Message-State: AOAM5301nBBZfmtKIUe9uWEeTXGM+4BnxeZCxsk5QYNOcgFaPCWjc9Bt
+        OoaEPpmWazbH6OiOFnWRG7H7XBI0WEhx2R8iESQ=
+X-Google-Smtp-Source: ABdhPJwrJ2qTe89uEqhh0NQ25s6EGxU7xHHovAW9On194IJT/l/TeJzmuh7jBTEqA1epiwaKhUtVMbrt7RBXFIGnhFs=
+X-Received: by 2002:adf:f948:0:b0:20f:f964:7621 with SMTP id
+ q8-20020adff948000000b0020ff9647621mr37345257wrr.235.1654753664612; Wed, 08
+ Jun 2022 22:47:44 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 1/5] dt-bindings: input: Increase maximum keycode value
- to 0x2ff
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Artur Rojek <contact@artur-rojek.eu>,
-        Maxime Ripard <mripard@kernel.org>,
-        Jeff LaBundy <jeff@labundy.com>, linux-input@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220608211207.2058487-1-robh@kernel.org>
- <20220608211207.2058487-2-robh@kernel.org>
-From:   Heinrich Schuchardt <xypron.glpk@gmx.de>
-In-Reply-To: <20220608211207.2058487-2-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:r5i5vKTtld9WbI0jJeooo/iDNKFkEgcMttR/u2647QaNJg3sMnb
- Vzkx+hKMkjoF11eI530jtAI2p1JKgmm4B4GRNgX/pjwvqIuxlOBpLr6NVTEYPZFWd6sS359
- fTuImSMqSPBGbcZH08yH5mfz2890zzw08HSQLbH0b0nWQH9e2HsDUiQRs0RySU9x8XllBT1
- JPViqwjJrPWua0LaRxaYA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:PSEr1mVjB8o=:cELoQFPPluIiE0AFnXuXky
- T8fmMgvq7C21Q8lPfzowLXyDFVGgU48k2qareqgpNtz45oLlez0m9oTng7DVQ9SxZ54vv92bD
- ZPjHNh2dkp30dTbUo1AskzC5mz9N2kg/yjmBMVQqaFUVOJWVZNarGRyZOIkIxVEPowOUWuKU6
- XXxgewhBw+aFWjOFFCcd0mGZm2ClP2OjdPB2H7GSdTGwJFl6TDL8bsP4fVF0Nzt4dEz6HkyOU
- ol6Vmx8GMMSFSzl4goUSqnnq3TgNCJpvBmu8S5w7cm/PApkUEAILkBlaAfqbo7JRZRH84f1qo
- 85p/O6DapVRLFueQLMSMS/z+qvxfqGcnbt1f/34b/SzUJ3yLWVFit345OPCxxf+qLR2v8YI2I
- 4WMLYhMedBbBTCaJqsA8kutUUroaThXnbxLQ00gup5QV+fKtYzVeDcSJneVPuwb5kJUC1nCjg
- jSpKwOqjm/6FMsczij/GzFAHDsAFm0VG9OBfveTDjsRf0WIAjapcKVMHjk6cbsUnUP2EHDtCT
- P8Ge8Bw8YGyEyBz2qGpcORBnCmqfEn1miyyNZBVUD4Ns3L9RqTimElkSczMB44AptmqLh0F19
- KbVNF5ghXUlIB8YV4CthJbz8UeZrgyh4+sVeMtGZyzf37ijZf/9R2aqnoL9TUvoI24ANnpaAV
- K5GxykvZkuNz9lNLa1TxG9s+i+UuhUHM5SiBXDZ6WjtqO0dpGWKYZIBTRkJ5IQVesUNAouySj
- Q/ILB2/2LcUivUaXt6J/Geof2hwmumNqZnNl7AAHOdCU5uWyS5m9I3LvInKMCvaRdyLnGxy4f
- 2LUsUkHr1M97junNZgf49vAuZMVi03PVN2P6wO7se3rbkaxMvnYWHe9hmUa4ysST/K0AlFi+5
- y9y4rfwuEqrBYo/0TwgxYRUgjvM/79rRl/YWD2llSbIDvMG3e5rwcxRMRzK73oNtj1wc5lv7G
- eC0PzWlfkh7sNFU6zIwnvvwnbsoD5v4La0ZTH05PN26yveQTEcYNLmIX6LldKDmXyNnxnTdDg
- ehEqpGBkcpvXjGcY4rVqmFiveeIhWnsm8auOYbRVOz997zqY52UJotWQg/oO19/Bf4OvARN7x
- HGVSfdGCeqqi2oQeNW2OQEM8nYDIHFCcPZtqI41WWWrfEm4wWgNN1AoMQ==
+References: <20220608095456.27479-1-zev@bewilderbeest.net> <6d6d252d-79e9-4b4c-4a62-aa4018a6254c@infradead.org>
+ <YqFtHfC59akYP9jB@hatter.bewilderbeest.net> <a4e7e2ce-8107-712c-1627-b3bb8646ed79@infradead.org>
+In-Reply-To: <a4e7e2ce-8107-712c-1627-b3bb8646ed79@infradead.org>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 9 Jun 2022 14:47:08 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARYnQyyQ-5MrH-7_c2HUM63UGuSJQNM5PAoaTaq-r1iug@mail.gmail.com>
+Message-ID: <CAK7LNARYnQyyQ-5MrH-7_c2HUM63UGuSJQNM5PAoaTaq-r1iug@mail.gmail.com>
+Subject: Re: [PATCH] kconfig: Add findconf script and helper program
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Zev Weiss <zev@bewilderbeest.net>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/8/22 23:12, Rob Herring wrote:
-> The maximum keycode value for Linux is 0x2ff, not 0xff. There's already
-> users and examples with values greater than 0xff, but the schema is not
-> yet applied in those cases.
+On Thu, Jun 9, 2022 at 12:49 PM Randy Dunlap <rdunlap@infradead.org> wrote:
 >
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->   Documentation/devicetree/bindings/input/input.yaml | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/Documentation/devicetree/bindings/input/input.yaml b/Docume=
-ntation/devicetree/bindings/input/input.yaml
-> index d41d8743aad4..43d2f299c332 100644
-> --- a/Documentation/devicetree/bindings/input/input.yaml
-> +++ b/Documentation/devicetree/bindings/input/input.yaml
-> @@ -21,7 +21,7 @@ properties:
->       $ref: /schemas/types.yaml#/definitions/uint32-array
->       items:
->         minimum: 0
-> -      maximum: 0xff
-> +      maximum: 0x2ff
-
-Can this value of 0x2ff be make exportable such that we can use it as a
-reference in devicetree/bindings/input/adc-keys.yaml. E.g. define a type
-that only take values in the 0-0x2ff range?
-
-Best regards
-
-Heinrich
-
 >
->     poll-interval:
->       description: Poll interval time in milliseconds.
+> On 6/8/22 20:46, Zev Weiss wrote:
+> > On Wed, Jun 08, 2022 at 07:48:44PM PDT, Randy Dunlap wrote:
+> >> Hi--
+> >>
+> >> On 6/8/22 02:54, Zev Weiss wrote:
+> >>> scripts/findconf provides menuconfig's search functionality as a
+> >>> standalone, non-interactive command, somewhat in the spirit of
+> >>> scripts/config.  It is meant to be useful for tasks like getting a
+> >>> quick overview of symbol dependencies or determining which Kconfig
+> >>> file to edit for a given symbol, without having to fire up one of the
+> >>> interactive config programs.
+> >>>
+> >>> It accepts a single command-line flag, '-v', which causes it to also
+> >>> print the help text of each matching result.
+> >>>
+> >>> Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+> >>> ---
+> >>
+> >> I can see how this could be useful.
+> >> It's a little easier to use than what I currently do:
+> >>
+> >> $ findconfig  DRM_HISI_HIBMC
+> >> ./drivers/gpu/drm/hisilicon/hibmc/Kconfig:2:config DRM_HISI_HIBMC
+> >
+> > I'm guessing 'findconfig' here is some personal shell
+> > alias/function/script?  (I can't see any references to it in the kernel
+> > source tree.)
+> >
+>
+> Yes, it's just local.
+>
+> >>
+> >> then $EDITOR that_Kconfig_file
+> >>
+> >>
+> >> In testing, I am seeing this:
+> >>
+> >> #
+> >> # using defaults found in /boot/config-5.3.18-150300.59.63-default
+> >> #
+> >> .config:421:warning: symbol value 'm' invalid for I8K
+> >> .config:2335:warning: symbol value 'm' invalid for
+> >> MTD_NAND_ECC_SW_HAMMING
+> >> .config:2484:warning: symbol value 'm' invalid for PVPANIC
+> >> .config:8671:warning: symbol value 'm' invalid for INTERCONNECT
+> >> .config:9369:warning: symbol value 'm' invalid for
+> >> CRYPTO_ARCH_HAVE_LIB_BLAKE2S
+> >> .config:9370:warning: symbol value 'm' invalid for
+> >> CRYPTO_LIB_BLAKE2S_GENERIC
+> >> .config:9653:warning: symbol value '1' invalid for KASAN_STACK
+> >>
+> >
+> > This I assume is just due to the contents of your .config file relative
+> > to the current Kconfig definitions and not a problem with anything in
+> > this patch?
+>
+> There is no .config file in the linux/ source tree at the top level.
+> I use O=build_dir for all builds.
+>
+> >
+> >> How do I specify/choose a .config file to be used?
+> >>
+> >> Oh, use KCONFIG_CONFIG=filename
+> >>
+> >
+> > Ah, I guess that'd be a nice thing to add a flag for to the wrapper
+> > script -- I'll include that in v2.
+> >
+> >>
+> >> Please update (add) usage/help text in scripts/kconfig/Makefile.
+> >>
+> >
+> > Ack, will do.
+> >
+> >
+> > Thanks for the review!
+> >
+> >
+> > Zev
+> >
 
+
+
+
+
+
+
+
+Another idea might be to add the following to
+scripts/kconfig/Makefile:
+
+
+
+@@ -77,7 +76,13 @@ PHONY += $(simple-targets)
+ $(simple-targets): $(obj)/conf
+        $(Q)$< $(silent) --$@ $(Kconfig)
+
+-PHONY += savedefconfig defconfig
++PHONY += findconfig savedefconfig defconfig
++
++findconfig: $(obj)/conf
++       $(Q)$< $(silent) --$@=$(KCONFIG_FIND) $(Kconfig)
++
++%_findconfig: $(obj)/conf
++       $(Q)$< $(silent) --findconfig=$* $(Kconfig)
+
+ savedefconfig: $(obj)/conf
+        $(Q)$< $(silent) --$@=defconfig $(Kconfig)
+
+
+
+
+
+Instead of adding a separate program for this,
+you can modify scripts/kconfig/conf.c
+
+ - add 'findconfig' to enum input_mode
+ - add 'findconfig' to long_opts[]
+ - add 'case findconfig' to main() function
+
+
+
+Then, you can do
+
+$ make findconfig KCONFIG_FIND=DRM_HISI_HIBMC
+
+   or
+
+$ make DRM_HISI_HIBMC_findconfig
+
+  as a shorthand.
+
+
+scripts/findconf is unneeded
+but you can put your own script in ~/bin
+if you want to save your typing even more.
+
+
+
+
+-- 
+Best Regards
+Masahiro Yamada
