@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4107EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:32:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F5A9C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241159AbiFIIcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
+        id S241212AbiFIIcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241465AbiFIIay (ORCPT
+        with ESMTP id S241467AbiFIIaz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 04:30:54 -0400
+        Thu, 9 Jun 2022 04:30:55 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E74156B5D;
-        Thu,  9 Jun 2022 01:30:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920B817ED23;
+        Thu,  9 Jun 2022 01:30:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1654763453; x=1686299453;
+  t=1654763452; x=1686299452;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Ll0pmw1Vk/YBbwAmIaJ5EKVxCCSMAvzU8LKYSxHUX/Q=;
-  b=Zj5BhSI5m8fxLfAoq8hgHdrwrmXpGzavb8elyE79R3FIlZO8H8Dauuxk
-   vMdYl1H7kwMRewsIAk++amH43RhQMFzfhoic3S5Qt0+dTFrukJR558X1A
-   iE5mZ9M/hLA83wL15abrmJBggdGymmulTu0RSiSttjYM1MTmtKQrlFHIK
-   KwCSYz1c204nfX+yPuodTlsB7e9XUIYs3BCkTcIsO2uUuVCcT2CwaitOH
-   qV/PUIxwPOJr2F67oWN3jLvzUbnaKF/SljzZj0HXHIdLY5Dy6jmX5/cej
-   7/AZmmZxNslZ+feU2q40HT4B10Meh/L+ni7dcdzZ4aAriLkN1kjz8JDVN
-   Q==;
+  bh=2KACe3/GYV5guHYf4UPwWh8gIJ0NJnYxBt0UNKQba8M=;
+  b=JeZOm91S31Ao6iJbb8Gu33vm4bjefpU6PqxxUEm5axcSFfGL9NJT4+By
+   t6ecZ8G9BiVH47bdlPyHwu8Y6QzaXnwj1cUDHnzWKJQCHV3755dzsAWLx
+   ssHXJ8QzRO99lb7vfo6U91Z5abZm+QU1Sl48KaQwG8E3fUyCjDajETKVE
+   mRE2ko2HqZd7wIXA0GKA5iUYHWmvPj1/ROsr9J6WhGblJ4b0YnF5G5BwG
+   JQAeXJ3orMQ4DhtsT1EmTPVvyKiyi2fz4yPZnSLNg5VEP9uL+n20DuBC1
+   wuo2oG43RySgRkJ4pUrK/Ld+2T3tdbcOkcfqgvlq7eTINXesoq/iY3iM6
+   A==;
 X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="167403828"
+   d="scan'208";a="167403780"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Jun 2022 01:30:52 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Jun 2022 01:30:48 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 9 Jun 2022 01:30:50 -0700
+ 15.1.2375.17; Thu, 9 Jun 2022 01:30:43 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 9 Jun 2022 01:30:47 -0700
+ 15.1.2375.17 via Frontend Transport; Thu, 9 Jun 2022 01:30:40 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <eugen.hristev@microchip.com>, <jic23@kernel.org>,
         <lars@metafoo.de>, <nicolas.ferre@microchip.com>,
@@ -48,9 +48,9 @@ CC:     <linux-iio@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 16/16] iio: adc: at91-sama5d2_adc: use pm_ptr()
-Date:   Thu, 9 Jun 2022 11:32:13 +0300
-Message-ID: <20220609083213.1795019-17-claudiu.beznea@microchip.com>
+Subject: [PATCH 14/16] iio: adc: at91-sama5d2_adc: add empty line after functions
+Date:   Thu, 9 Jun 2022 11:32:11 +0300
+Message-ID: <20220609083213.1795019-15-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220609083213.1795019-1-claudiu.beznea@microchip.com>
 References: <20220609083213.1795019-1-claudiu.beznea@microchip.com>
@@ -61,27 +61,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use pm_ptr() on the assignment of at91_adc_pm_ops to
-at91_adc_driver.driver.pm.
+Add empty line after function.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/iio/adc/at91-sama5d2_adc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/at91-sama5d2_adc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index 5d9ad51d0920..221c09532b38 100644
+index 67ced1369754..1a6788566969 100644
 --- a/drivers/iio/adc/at91-sama5d2_adc.c
 +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -2647,7 +2647,7 @@ static struct platform_driver at91_adc_driver = {
- 	.driver = {
- 		.name = "at91-sama5d2_adc",
- 		.of_match_table = at91_adc_dt_match,
--		.pm = &at91_adc_pm_ops,
-+		.pm = pm_ptr(&at91_adc_pm_ops),
- 	},
- };
- module_platform_driver(at91_adc_driver)
+@@ -1374,6 +1374,7 @@ static struct iio_trigger *at91_adc_allocate_trigger(struct iio_dev *indio,
+ 
+ 	return trig;
+ }
++
+ static void at91_adc_trigger_handler_nodma(struct iio_dev *indio_dev,
+ 					   struct iio_poll_func *pf)
+ {
 -- 
 2.34.1
 
