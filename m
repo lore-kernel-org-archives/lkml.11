@@ -2,171 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3219C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 21:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB539C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 21:37:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239796AbiFIVdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 17:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53036 "EHLO
+        id S231894AbiFIVg6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 17:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231304AbiFIVdi (ORCPT
+        with ESMTP id S230205AbiFIVg4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 17:33:38 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E30114AA8
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 14:33:34 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id o17so21268630pla.6
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 14:33:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=m7ycA4UvCRcWR4yKEUVYS54WeWG49dg/6jDxIB9tTNA=;
-        b=Jqq2qaUmztHXYlLC5OtDZ1kjE3J4zkrncd42dGrvID2KbEKbAY9YGGZYNNdpgSsi17
-         LVCDdST/dYjbt6pTf+bnRXMgQM4hHqzJLOyHwtqChyrmT6E2+mlWn5hIF2V0TZSXd6yt
-         tVMowv8ZPTS/p62/qff/4OAqw4onqe01bLt8JukOqng8pdaIBh7P0ZeFKNL9ggilP8vk
-         5LxStOh07fwcYGt8ioBMcXY0DG9zd6FfQyvQKMf0TjX0iv11uUTujpxVcY4APAA0AWAO
-         YqnYYpPyAl71U0a8/FIrW8jkdfNmx0BdSLrmQttJMQoo9xzBZXmfFbTJdG+/jUdJJ56l
-         IKXw==
+        Thu, 9 Jun 2022 17:36:56 -0400
+Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407974CD7D;
+        Thu,  9 Jun 2022 14:36:55 -0700 (PDT)
+Received: by mail-io1-f48.google.com with SMTP id p128so4046811iof.1;
+        Thu, 09 Jun 2022 14:36:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=m7ycA4UvCRcWR4yKEUVYS54WeWG49dg/6jDxIB9tTNA=;
-        b=o3sxgx369Ab0M7v5YmDAcut7GrCxRE5l/WxGc5AeHhFCLyip6i/jowIS67c/IvqcCH
-         QhYuSwwKRmJCZEaoF+IAqK8gLeQtprGSa4h4dUZM22dveQ135aDcg19+oQddkD4HrI31
-         KqJTpTAlSESNfbLstFx5QXXWCm50yEFHpSRCTtxizGp1cEUX/nCPOs/64huKfxYPUVNm
-         /gyP6vBqovcnL7lZWZUbTEkKFwrv2Srt+llYKcKGGa6M7f9ebra1Qq15lWeW0ciNiijX
-         rus4UmAveu6vSx2W9O016JYyIGT9zOV6sZGFkrf4aEoY1zKvwSIdPogFoXluo1KNhdMc
-         mYdQ==
-X-Gm-Message-State: AOAM532z4XyX++IioeXR+ojTsdfV/ihhIuHbkTxVgigCE0PWbgNa9Cbr
-        lNNq3emtTLMYIbFuyxFbp8UaOg==
-X-Google-Smtp-Source: ABdhPJyMFtULqK6xP7o6ODg72mXgOYMUfRbFIM45qO5zRVZM10jyMpfcu73oXSgj7e4Wxz96JFuhfg==
-X-Received: by 2002:a17:903:2312:b0:163:daf7:83a9 with SMTP id d18-20020a170903231200b00163daf783a9mr41587405plh.160.1654810414111;
-        Thu, 09 Jun 2022 14:33:34 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id h11-20020a62830b000000b0050dc7628150sm17761006pfe.42.2022.06.09.14.33.32
+        bh=2GI2KI1Sv9nVJuFCWd4uVdfP1TjuW2GDmuuGQs73bfQ=;
+        b=Rh3MnhnBt0E83Jeba6SVddAiv8ADnVc10r9w4p79vf0UtG+jGdiT4iJeWuRvKy5Ly9
+         FYVMbHO+1qoge5/E/vzojq4kSVJVC5wRGRGfQQcdHyo3nFIPhMDgl6eeHT/ApAmjqYR0
+         8Wt5CK3AH0rpYxq2deIkGQh7b4x27iBCTUtDDAcPj/WPIHS6D00af8vRnlT8hI4xtc9J
+         dx/+Nm8agthoebEG8RWXK3G1/75R4AnnH+PnBLXheXjR4rZhuCYITaDrZRI8Sm8anVxu
+         AJXGzdPOc4ZEEOla9LZLY1zny4p8/GtWhT40/gSVNZeEPUxH8O2l7Eg5nyxHSfl9LlwK
+         Ak8w==
+X-Gm-Message-State: AOAM531TI3CQKx2Mul5izPoRbuIYpvB5v/J1NubK8k432OanYID3sIkC
+        9G/+uhPULOBXh8wcJk4Qa9VEFOw3EA==
+X-Google-Smtp-Source: ABdhPJzmA9HKNjxiz4/zlBnWfsm/zBXu8DtBqt+f4EU3yMC+DxOPgS7LmN16jxvFjKOtvP2Avki6tw==
+X-Received: by 2002:a05:6602:2cca:b0:664:d9c6:3674 with SMTP id j10-20020a0566022cca00b00664d9c63674mr19416950iow.67.1654810614520;
+        Thu, 09 Jun 2022 14:36:54 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id t15-20020a02ccaf000000b00331767e8113sm8418064jap.52.2022.06.09.14.36.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 14:33:32 -0700 (PDT)
-Date:   Thu, 9 Jun 2022 21:33:29 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: Re: [PATCH 1/6] KVM: x86: inline kernel_pio into its sole caller
-Message-ID: <YqJnKSpnPFZ5VsnL@google.com>
-References: <20220608121253.867333-1-pbonzini@redhat.com>
- <20220608121253.867333-2-pbonzini@redhat.com>
+        Thu, 09 Jun 2022 14:36:54 -0700 (PDT)
+Received: (nullmailer pid 139789 invoked by uid 1000);
+        Thu, 09 Jun 2022 21:36:52 -0000
+Date:   Thu, 9 Jun 2022 15:36:52 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Yoan Picchi <yoan.picchi@arm.com>
+Cc:     Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>, qat-linux@intel.com,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andre Przywara <andre.przywara@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: Re: [PATCH 2/2] Removes the x86 dependency on the QAT drivers
+Message-ID: <20220609213652.GA115440-robh@kernel.org>
+References: <20220607165840.66931-1-yoan.picchi@arm.com>
+ <20220607165840.66931-3-yoan.picchi@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220608121253.867333-2-pbonzini@redhat.com>
+In-Reply-To: <20220607165840.66931-3-yoan.picchi@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022, Paolo Bonzini wrote:
-> The caller of kernel_pio already has arguments for most of what kernel_pio
-> fishes out of vcpu->arch.pio.  This is the first step towards ensuring that
-> vcpu->arch.pio.* is only used when exiting to userspace.
-> 
-> We can now also WARN if emulated PIO performs successful in-kernel iterations
-> before having to fall back to userspace.  The code is not ready for that, and
-> it should never happen.
+On Tue, Jun 07, 2022 at 04:58:40PM +0000, Yoan Picchi wrote:
+> This dependency looks outdated. After the previous patch, we have been able
+> to use this driver to encrypt some data and to create working VF on arm64.
+> We have not tested it yet on any big endian machine, hence the new dependency
 
-Please avoid pronouns and state what patch does, not what "can" be done.  It's not
-clear without reading the actual code whether "The code is not ready for that" means
-"KVM is not ready to WARN" or "KVM is not ready to fall back to exiting userspace
-if a
+For the subject, use prefixes matching the subsystem (like you did on 
+patch 1).
 
-E.g.
+The only testing obligation you have is compiling for BE. If kconfig was
+supposed to capture what endianness drivers have been tested or not
+tested with, then lots of drivers are missing the dependency. Kconfig
+depends/select entries should generally be either to prevent compile
+failures (you checked PPC, RiscV, etc.?) or to hide drivers *really*
+specific to a platform. IMO, we should only have !CPU_BIG_ENDIAN if it 
+is known not to work and not easily fixed.
 
-  WARN if emulated PIO falls back to userspace after successfully handling
-  one or more in-kernel iterations.  The port, size, and access type do not
-  change, and KVM so it should be impossible for in-kernel PIO to fail on
-  subsequent iterations.
+Also, with the dependency, no one can test the driver without modifying 
+the kernel and if it does work as-is, then one has to upstream a change 
+and then wait for it to show up in distro kernels. You could mitigate 
+the first part with COMPILE_TEST.
 
-That said, I don't think the above statement is true.  KVM is running with SRCU
-protection, but the synchronize_srcu_expedited() in kvm_io_bus_unregister_dev()
-only protects against use-after-free, it does not prevent two calls to
-kvm_io_bus_read() from seeing different incarnations of kvm->buses.
-
-And if I'm right, that could be exploited to create a buffer overrun due to doing
-this memcpy with "data = <original data> + i * size".
-
-	else
-		memcpy(vcpu->arch.pio_data, data, size * count);
-
-The existing code is arguably wrong too in that it will result in replaying PIO
-accesses, but IMO userspace gets to keep the pieces if it unregisters a device
-while vCPUs are running.
- 
-> No functional change intended.
-> 
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> ---
->  arch/x86/kvm/x86.c | 39 +++++++++++++++++----------------------
->  1 file changed, 17 insertions(+), 22 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 79efdc19b4c8..2f9100f2564e 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -7415,37 +7415,32 @@ static int emulator_cmpxchg_emulated(struct x86_emulate_ctxt *ctxt,
->  	return emulator_write_emulated(ctxt, addr, new, bytes, exception);
->  }
->  
-> -static int kernel_pio(struct kvm_vcpu *vcpu, void *pd)
-> -{
-> -	int r = 0, i;
-> -
-> -	for (i = 0; i < vcpu->arch.pio.count; i++) {
-> -		if (vcpu->arch.pio.in)
-> -			r = kvm_io_bus_read(vcpu, KVM_PIO_BUS, vcpu->arch.pio.port,
-> -					    vcpu->arch.pio.size, pd);
-> -		else
-> -			r = kvm_io_bus_write(vcpu, KVM_PIO_BUS,
-> -					     vcpu->arch.pio.port, vcpu->arch.pio.size,
-> -					     pd);
-> -		if (r)
-> -			break;
-> -		pd += vcpu->arch.pio.size;
-> -	}
-> -	return r;
-> -}
-> -
->  static int emulator_pio_in_out(struct kvm_vcpu *vcpu, int size,
->  			       unsigned short port,
->  			       unsigned int count, bool in)
->  {
-> +	void *data = vcpu->arch.pio_data;
-> +	unsigned i;
-> +	int r;
-> +
->  	vcpu->arch.pio.port = port;
->  	vcpu->arch.pio.in = in;
-> -	vcpu->arch.pio.count  = count;
-> +	vcpu->arch.pio.count = count;
->  	vcpu->arch.pio.size = size;
->  
-> -	if (!kernel_pio(vcpu, vcpu->arch.pio_data))
-> -		return 1;
-> +	for (i = 0; i < count; i++) {
-> +		if (in)
-> +			r = kvm_io_bus_read(vcpu, KVM_PIO_BUS, port, size, data);
-> +		else
-> +			r = kvm_io_bus_write(vcpu, KVM_PIO_BUS, port, size, data);
-> +		if (r)
-> +			goto userspace_io;
-> +		data += size;
-> +	}
-> +	return 1;
->  
-> +userspace_io:
-> +	WARN_ON(i != 0);
->  	vcpu->run->exit_reason = KVM_EXIT_IO;
->  	vcpu->run->io.direction = in ? KVM_EXIT_IO_IN : KVM_EXIT_IO_OUT;
->  	vcpu->run->io.size = size;
-> -- 
-> 2.31.1
-> 
-> 
+Rob
