@@ -2,202 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 798C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:18:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C10F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:19:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343735AbiFINSI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 09:18:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46754 "EHLO
+        id S242295AbiFINTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 09:19:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245534AbiFINSC (ORCPT
+        with ESMTP id S235363AbiFINTR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 09:18:02 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50FCF3CBE2A;
-        Thu,  9 Jun 2022 06:18:00 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id a2so31821507lfg.5;
-        Thu, 09 Jun 2022 06:18:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9H4dOb7IaIcY52Tw6WWiljInSfJiOJbeD3ghXohKUWk=;
-        b=bxQvhZiJyJvGenAgd1C3qiVyZH4ml/Vnom25DFpoC731mCeBREubO4jUNTENKxajXI
-         MR7U3ddjUCoMlr94nBmzEpBeJvuDXEB4HnnaYJ4xnZrR2sPFuLgxOuqrN4kkfkES6Iiw
-         ti9BmmUPpa3hFl3+Zc/z/bPGNz3VCCT15NGOCugqxHdTW/AkKBAfV76k9CiaScYOKqHP
-         KbgKcr377DEMvYCj0FOCu+WyDp6YuJOl1YptRleIGyBJJMESsuQX3KcpfOkmYJ/lzpku
-         emeAUmFuDjlnZfTYGGf7DPIXv1uMZqHlgj1QLdeFtC+2zieBgGMkxqJejaLhPLJi/Efl
-         q5qQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9H4dOb7IaIcY52Tw6WWiljInSfJiOJbeD3ghXohKUWk=;
-        b=IsI8jgiNFNrkpBfZYaIq8P1FRHzm6EihbzZjOeOfIF+khwvJ1ppeumno3LLujJZevU
-         IuFD256g9pFeoNxc2YitZm0O9pNVHNeV9t673TrDQVIQvZq9DJf5mi0/7rQAH2FScHoE
-         /WQuUQgbfks+yMhHkivYaq9LGXX1oyy14gvYsv6IfmYESlAJkIyeeiro6/+Mz6Qs07Fq
-         cxUnenC11rtDvIUlCm6aBMvIx3EeS2RK17bNCCIVCoz9j7YvQHClGurQ4GvHkUpvyeTg
-         9Q91ZszDCYM4lAZ+8RL5uj4evZUkkIHN2tBecn/l3ydTeCpI5OV1nG7ZZmqPUMrwIwcp
-         U6jQ==
-X-Gm-Message-State: AOAM531DHiiK68nmwC5t8bX2ipXFMeVsFWi1b3UYuqFbVbWM/NSXZ8lL
-        fbUv0e6JGGiOxAUVKGi/aQ8t3NXgkKGE9glmijo=
-X-Google-Smtp-Source: ABdhPJxz9i9pVE0BdHMV70Vwi186ROVaHboigU3uL+CKro67Q69etkqlQSJOajfipTkSsc8z60rVUCQteSPARaV4mpI=
-X-Received: by 2002:a05:6512:703:b0:479:157a:c18d with SMTP id
- b3-20020a056512070300b00479157ac18dmr21665529lfs.639.1654780678706; Thu, 09
- Jun 2022 06:17:58 -0700 (PDT)
+        Thu, 9 Jun 2022 09:19:17 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B5AF5B85A
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 06:19:14 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8928B12FC;
+        Thu,  9 Jun 2022 06:19:14 -0700 (PDT)
+Received: from [10.57.82.209] (unknown [10.57.82.209])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 55F5D3F73B;
+        Thu,  9 Jun 2022 06:19:12 -0700 (PDT)
+Message-ID: <9a339b42-2993-f7e2-3122-764a486e796f@arm.com>
+Date:   Thu, 9 Jun 2022 14:19:06 +0100
 MIME-Version: 1.0
-References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-7-tmaimon77@gmail.com>
- <f4899b6d-fec3-5940-709a-f5fbc7ae6233@linaro.org>
-In-Reply-To: <f4899b6d-fec3-5940-709a-f5fbc7ae6233@linaro.org>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Thu, 9 Jun 2022 16:17:47 +0300
-Message-ID: <CAP6Zq1geJyaDrP2CBY3FHe5y-L=bCptX1pzAkNypY+TS5vXzMA@mail.gmail.com>
-Subject: Re: [PATCH v2 06/20] dt-binding: clk: npcm845: Add binding for
- Nuvoton NPCM8XX Clock
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC PATCHES 1/2] iommu: Add RCU-protected page free support
+Content-Language: en-GB
+To:     Jason Gunthorpe <jgg@nvidia.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Joao Martins <joao.m.martins@oracle.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20220609070811.902868-1-baolu.lu@linux.intel.com>
+ <20220609124934.GZ1343366@nvidia.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220609124934.GZ1343366@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+On 2022-06-09 13:49, Jason Gunthorpe wrote:
+> On Thu, Jun 09, 2022 at 03:08:10PM +0800, Lu Baolu wrote:
+>> The IOMMU page tables are updated using iommu_map/unmap() interfaces.
+>> Currently, there is no mandatory requirement for drivers to use locks
+>> to ensure concurrent updates to page tables, because it's assumed that
+>> overlapping IOVA ranges do not have concurrent updates. Therefore the
+>> IOMMU drivers only need to take care of concurrent updates to level
+>> page table entries.
+>>
+>> But enabling new features challenges this assumption. For example, the
+>> hardware assisted dirty page tracking feature requires scanning page
+>> tables in interfaces other than mapping and unmapping. This might result
+>> in a use-after-free scenario in which a level page table has been freed
+>> by the unmap() interface, while another thread is scanning the next level
+>> page table.
+>>
+>> This adds RCU-protected page free support so that the pages are really
+>> freed and reused after a RCU grace period. Hence, the page tables are
+>> safe for scanning within a rcu_read_lock critical region. Considering
+>> that scanning the page table is a rare case, this also adds a domain
+>> flag and the RCU-protected page free is only used when this flat is set.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   include/linux/iommu.h |  9 +++++++++
+>>   drivers/iommu/iommu.c | 23 +++++++++++++++++++++++
+>>   2 files changed, 32 insertions(+)
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index 5e1afe169549..6f68eabb8567 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -95,6 +95,7 @@ struct iommu_domain {
+>>   	void *handler_token;
+>>   	struct iommu_domain_geometry geometry;
+>>   	struct iommu_dma_cookie *iova_cookie;
+>> +	unsigned long concurrent_traversal:1;
+>>   };
+>>   
+>>   static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+>> @@ -657,6 +658,12 @@ static inline void dev_iommu_priv_set(struct device *dev, void *priv)
+>>   	dev->iommu->priv = priv;
+>>   }
+>>   
+>> +static inline void domain_set_concurrent_traversal(struct iommu_domain *domain,
+>> +						   bool value)
+>> +{
+>> +	domain->concurrent_traversal = value;
+>> +}
+> 
+> ?? If you want it to be a driver opt in I would just add a flags to
+> the domain ops. "DOMAIN_FLAG_RCU_FREE_PAGES"
 
-Thanks for your comments.
+Is there a significant benefit to keeping both paths, or could we get 
+away with just always using RCU? Realistically, pagetable pages aren't 
+likely to be freed all that frequently, except perhaps at domain 
+teardown, but that shouldn't really be performance-critical, and I guess 
+we could stick an RCU sync point in iommu_domain_free() if we're really 
+worried about releasing larger quantities of pages back to the allocator 
+ASAP?
 
-On Wed, 8 Jun 2022 at 13:03, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 08/06/2022 11:56, Tomer Maimon wrote:
-> > Add binding for the Arbel BMC NPCM8XX Clock controller.
-> >
-> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> > ---
-> >  .../bindings/clock/nuvoton,npcm845-clk.yaml   | 63 +++++++++++++++++++
-> >  .../dt-bindings/clock/nuvoton,npcm8xx-clock.h | 50 +++++++++++++++
-> >  2 files changed, 113 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-> >  create mode 100644 include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
-> >
-> > diff --git a/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-> > new file mode 100644
-> > index 000000000000..e1f375716bc5
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-> > @@ -0,0 +1,63 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/clock/nuvoton,npcm845-clk.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Nuvoton NPCM8XX Clock Controller Binding
-> > +
-> > +maintainers:
-> > +  - Tomer Maimon <tmaimon77@gmail.com>
-> > +
-> > +description: |
-> > +  Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller, which
-> > +  generates and supplies clocks to all modules within the BMC.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - nuvoton,npcm845-clk
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  clocks:
-> > +    items:
-> > +      - description: 25M reference clock
-> > +      - description: CPU reference clock
-> > +      - description: MC reference clock
-> > +
-> > +  clock-names:
-> > +    items:
-> > +      - const: refclk
-> > +      - const: sysbypck
-> > +      - const: mcbypck
-> > +
->
-> I asked what is the suffix about and you replied "ck"... ok, so let's
-> make clear. This should be:
->
->     items:
->       - const: ref
->       - const: sysbyp
->       - const: mcbyp
->
-> or something similar, without the same suffix all over.
-The clock names are the same clock name in our spec, this why we
-prefer to leave the clock names as is.
->
-> > diff --git a/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h b/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
-> > new file mode 100644
-> > index 000000000000..229915a254a5
-> > --- /dev/null
-> > +++ b/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
->
-> Same comment as before. No changes here...
->
-about the comments from V1::
-- Krzysztof: Filename - same as bindings, so nuvoton,npcm845-clk.h
-In NPCM7XX we use the same include file and clock source
-dt-binding
-https://elixir.bootlin.com/linux/v5.19-rc1/source/Documentation/devicetree/bindings/clock/nuvoton,npcm750-clk.txt
-dt-binding include
-https://elixir.bootlin.com/linux/v5.19-rc1/source/include/dt-bindings/clock/nuvoton,npcm7xx-clock.h
-we prefer to be align with our older BMC version
+It's already a driver opt-in to use the iommu_iotlb_gather freelist in 
+the first place, and right now the ones that do are also the ones that 
+do lock-free table walks so will ultimately all want this as well.
 
-- Krzysztof: Dual license, same as bindings.
-modified in the file * SPDX-License-Identifier: (GPL-2.0-only OR
-BSD-2-Clause) */
-the same license approved in en7523-clk include file and pushed to
-Linux kernel 5.19 :
-https://elixir.bootlin.com/linux/v5.19-rc1/source/include/dt-bindings/clock/en7523-clk.h
+Robin.
 
->
->
-> Best regards,
-> Krzysztof
-
-Best regards,
-
-Tomer
+>> +void iommu_free_pgtbl_pages(struct iommu_domain *domain,
+>> +			    struct list_head *pages)
+>> +{
+>> +	struct page *page, *next;
+>> +
+>> +	if (!domain->concurrent_traversal) {
+>> +		put_pages_list(pages);
+>> +		return;
+>> +	}
+>> +
+>> +	list_for_each_entry_safe(page, next, pages, lru) {
+>> +		list_del(&page->lru);
+>> +		call_rcu(&page->rcu_head, pgtble_page_free_rcu);
+>> +	}
+> 
+> It seems OK, but I wonder if there is benifit to using
+> put_pages_list() from the rcu callback
+> 
+> Jason
