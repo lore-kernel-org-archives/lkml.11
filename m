@@ -2,133 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A85C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 04:48:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E97FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 04:53:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236918AbiFIEsw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 00:48:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33248 "EHLO
+        id S234548AbiFIExr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 00:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbiFIEss (ORCPT
+        with ESMTP id S229791AbiFIExn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 00:48:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6900A6424;
-        Wed,  8 Jun 2022 21:48:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 136B3B81DBA;
-        Thu,  9 Jun 2022 04:48:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6301AC34114;
-        Thu,  9 Jun 2022 04:48:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654750124;
-        bh=pc9Sx5FD1mon9/oL66m0qEe+QZMPjUEMwctwj/Wa2iA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HKlCDrS9O4/4OXh5vJ7KFIcVdn1e/EcaQTVVH5DhcBruNKKLJFkFqS6XWjrzhgbOY
-         LuhAKe4UZdjd+B0EPWuqAd+jVJrWHJwxnzvoJX0Pt5/iagf5a/OKhxtD+qdCPRIIBr
-         gkBRaVIpFcDYt/X+getsVw7dANejFpOVz191w3KHodJgJBH0/TEU4pXIF7jG2rkQ55
-         oqf2qfdvV6cRPh28uVOeTpRyCmCurkQs6O/WGKx8h2ed35kLqkiXo+PkSWZenn15Vw
-         6CSee0tt4W6FSadFh8Sf7BvHtFLBQt1JjgcvhXd8+xamBYxiuXlpSFTt/e1U4alEw6
-         2hstkkz3HrT2g==
-Date:   Thu, 9 Jun 2022 07:46:46 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Morten Linderud <morten@linderud.pw>
-Cc:     Peter Huewe <peterhuewe@gmx.de>, Jason Gunthorpe <jgg@ziepe.ca>,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] tpm/eventlog: Don't abort tpm_read_log on faulty ACPI
- address
-Message-ID: <YqF7NktlAJg26Bvd@iki.fi>
-References: <20220608123109.678343-1-morten@linderud.pw>
+        Thu, 9 Jun 2022 00:53:43 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C49065D7
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 21:53:39 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id y15so16417644qtx.4
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 21:53:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wK0n9FILdJ7qq+0rwrIHsBXVqiJ9LJ3AWSSuXSk8iyw=;
+        b=B8gvoklE6ptVsichtHoq8naMoFmbtfGHS01OSpUXDxD4jpq5MkTk63ywHa2a03UM1I
+         COuU51zJRDK3Kci3GDqDSsmJTrdQySyLu24+11A+yR4s2qRqlzNtKIrdxHo1h0hWi7oy
+         KJHtFhJZiQMd+d6UtV/UKoz7idXJp3GFd0Kbr23gkti7+uEj+QPnXgEy8VVt5+4agAF9
+         9hEtmfii/dt4SZuAwN9oHx1zDuXG3YFpa0S+bzU8E8QkRm1237TnohfxlX/AMVMVVlQ3
+         SupyW9yB9jKW3OtTRvWds+Di1xSrQcdvNBHB4kJnndicG8ZrLwvl8CD3zuT/oFsyp+HV
+         qrGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wK0n9FILdJ7qq+0rwrIHsBXVqiJ9LJ3AWSSuXSk8iyw=;
+        b=HLJcjiu2fNMZXnXgbeaLCKJRhBkYU+2UKsi9wtmrOAsormn/5kp67KGTQsvgqLcXTE
+         ljqofwuYHLaxdfLRkXPw/6x4bnnFum99niTeotigD0PxQeWZ2a7twsCapsst50yP0wof
+         jqDM+Vf3r5hUY7ViKV1DN6vpm3IGfv/1z2aqD7JRlWGFy5C8R1aAmpGSCw7KGU/Q7pAs
+         /gPS4Euutew85hgdJ19j6LE1F4w/V0iMApJ9EvrIQ5TmPz75gOGjqi1gYiaAr7qSgUUY
+         UkTN2+diMmv8nYgwu5JWq+a2up2zX5lgcIo1E/tRPa9EDXLnvSKDDhWM7HP2CvjAlonl
+         +tHA==
+X-Gm-Message-State: AOAM533Kpor2VZrLaFtEWC/e7mZCMQGAx8w3bYlvKco6IuYQGUF4UzUc
+        fPZ5F9k9RfCZ3aRLhRmvUDg=
+X-Google-Smtp-Source: ABdhPJy208Qrh3fZ4OBLFM14cY0HnbAyLYLWybDmC7GjRqstV2rbHIFxcv3xOmCgtEMZu0/ytwie8Q==
+X-Received: by 2002:ac8:7fc2:0:b0:304:f234:4597 with SMTP id b2-20020ac87fc2000000b00304f2344597mr13049305qtk.673.1654750418152;
+        Wed, 08 Jun 2022 21:53:38 -0700 (PDT)
+Received: from Agam.hsd1.mi.comcast.net ([2601:402:4500:22e0::e952])
+        by smtp.gmail.com with ESMTPSA id x19-20020a05620a449300b006a71729a139sm2674407qkp.44.2022.06.08.21.53.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 21:53:37 -0700 (PDT)
+From:   Agam Kohli <agamkohli9@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     abbotti@mev.co.uk, hsweeten@visionengravers.com,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Agam Kohli <agamkohli9@gmail.com>
+Subject: [PATCH] Staging: comedi: comedi_fops: fixed a spacing coding style issue
+Date:   Thu,  9 Jun 2022 00:53:34 -0400
+Message-Id: <20220609045334.93266-1-agamkohli9@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220608123109.678343-1-morten@linderud.pw>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 02:31:08PM +0200, Morten Linderud wrote:
-> tpm_read_log_acpi() should return -ENODEV when no eventlog from the ACPI
-> table is found. If the firmware vendor includes an invalid log address
-> we are unable to map from the ACPI memory and the function returns -EIO
-> which would abort discovery of the eventlog.
-> 
-> This change ensure we always return -ENODEV in tpm_read_log_acpi() and
-> fallback to the EFI configuration table.
+Fixed a coding style issue.
 
-Please do not use "we" in commit messages. Or start a sentence
-with "this patch", "this commit" or "this change". It is always
-best just to go down to the roots and use imperative form.
+Signed-off-by: Agam Kohli <agamkohli9@gmail.com>
+---
+ drivers/staging/comedi/comedi_fops.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-E.g. you could rephrase the last paragraph as
+diff --git a/drivers/staging/comedi/comedi_fops.c b/drivers/staging/comedi/comedi_fops.c
+index e85a99b68f31..3f70e5dfac39 100644
+--- a/drivers/staging/comedi/comedi_fops.c
++++ b/drivers/staging/comedi/comedi_fops.c
+@@ -2169,6 +2169,7 @@ static long comedi_unlocked_ioctl(struct file *file, unsigned int cmd,
+ 		break;
+ 	case COMEDI_CHANINFO: {
+ 		struct comedi_chaninfo it;
++
+ 		if (copy_from_user(&it, (void __user *)arg, sizeof(it)))
+ 			rc = -EFAULT;
+ 		else
+@@ -2177,6 +2178,7 @@ static long comedi_unlocked_ioctl(struct file *file, unsigned int cmd,
+ 	}
+ 	case COMEDI_RANGEINFO: {
+ 		struct comedi_rangeinfo it;
++
+ 		if (copy_from_user(&it, (void __user *)arg, sizeof(it)))
+ 			rc = -EFAULT;
+ 		else
+@@ -2249,6 +2251,7 @@ static long comedi_unlocked_ioctl(struct file *file, unsigned int cmd,
+ 	}
+ 	case COMEDI_INSN: {
+ 		struct comedi_insn insn;
++
+ 		if (copy_from_user(&insn, (void __user *)arg, sizeof(insn)))
+ 			rc = -EFAULT;
+ 		else
 
-"Change the return value from -EIO to -ENODEV when acpi_os_map_iomem()
-fails to map the event log."
+2.36.0
 
-> The following hardware was used to test this issue:
->     Framework Laptop (Pre-production)
->     BIOS: INSYDE Corp, Revision: 3.2
->     TPM Device: NTC, Firmware Revision: 7.2
-> 
-> Dump of the faulty ACPI TPM2 table:
->     [000h 0000   4]                    Signature : "TPM2"    [Trusted Platform Module hardware interface Table]
->     [004h 0004   4]                 Table Length : 0000004C
->     [008h 0008   1]                     Revision : 04
->     [009h 0009   1]                     Checksum : 2B
->     [00Ah 0010   6]                       Oem ID : "INSYDE"
->     [010h 0016   8]                 Oem Table ID : "TGL-ULT"
->     [018h 0024   4]                 Oem Revision : 00000002
->     [01Ch 0028   4]              Asl Compiler ID : "ACPI"
->     [020h 0032   4]        Asl Compiler Revision : 00040000
-> 
->     [024h 0036   2]               Platform Class : 0000
->     [026h 0038   2]                     Reserved : 0000
->     [028h 0040   8]              Control Address : 0000000000000000
->     [030h 0048   4]                 Start Method : 06 [Memory Mapped I/O]
-> 
->     [034h 0052  12]            Method Parameters : 00 00 00 00 00 00 00 00 00 00 00 00
->     [040h 0064   4]           Minimum Log Length : 00010000
->     [044h 0068   8]                  Log Address : 000000004053D000
-> 
-> Signed-off-by: Morten Linderud <morten@linderud.pw>
-> 
-> ---
-> 
-> v2: Tweak commit message and opt to return -ENODEV instead of loosening up the
->     if condition in tpm_read_log()
-> 
-> ---
->  drivers/char/tpm/eventlog/acpi.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/char/tpm/eventlog/acpi.c b/drivers/char/tpm/eventlog/acpi.c
-> index 1b18ce5ebab1..2b15d6eebd69 100644
-> --- a/drivers/char/tpm/eventlog/acpi.c
-> +++ b/drivers/char/tpm/eventlog/acpi.c
-> @@ -136,8 +136,12 @@ int tpm_read_log_acpi(struct tpm_chip *chip)
->  
->  	ret = -EIO;
->  	virt = acpi_os_map_iomem(start, len);
-> -	if (!virt)
-> +	if (!virt) {
-> +		dev_warn(&chip->dev, "%s: Failed to map ACPI memory\n", __func__);
-> +		/* try EFI log next */
-> +		ret = -ENODEV;
->  		goto err;
-> +	}
-
-It is wrong to try out EFI, if this fails. TPM2 ACPI table was already
-detected.
-
->  
->  	memcpy_fromio(log->bios_event_log, virt, len);
->  
-> -- 
-> 2.36.1
-
-What you are using this for? Without any actual bug report, this 
-is an obvious NAK.
-
-BR, Jarkko
