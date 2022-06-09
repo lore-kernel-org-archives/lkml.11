@@ -2,240 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 969C1CCA473
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF71C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 17:01:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344874AbiFIQ6J (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 12:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
+        id S244828AbiFIRBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 13:01:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238833AbiFIQ6D (ORCPT
+        with ESMTP id S230107AbiFIRBc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 12:58:03 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65E9BE176;
-        Thu,  9 Jun 2022 09:58:01 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id s12so41485578ejx.3;
-        Thu, 09 Jun 2022 09:58:01 -0700 (PDT)
+        Thu, 9 Jun 2022 13:01:32 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1C9B490;
+        Thu,  9 Jun 2022 10:01:31 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id c8so17609633qtj.1;
+        Thu, 09 Jun 2022 10:01:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VeJH2GjgTNv55jeCpCfZ1ujKSjcX5p8lHDW19F4+qv0=;
-        b=eU51bgefzD4BjSWwpiGbcxgEQEXO5kaPih1MD0/kJ8dKtUTbxN1L+VPH8x71j31XaQ
-         215GBGMNb8eotwEdhZpA0DuYQud1RfSg2bN1RSAONgW4D/x21ylx2sAoouEVuqH5kBG5
-         uCfISMSgZMxlya10bCwA1qOrBD5OxxBHgVqocUc/pQLAeo4as0p9eq6JKTl7y0GnBmyq
-         NCDQl7i7pNzhR7yIIh8sddZilQChCu4q568RtEoo46P+w+xhJTHTcBSN9mSP89ZP7X8W
-         EkbW9sMwsxhAQW6q8zgEqLtlqlZ+9hEBsjW7l4pBijYq8hnVZqhpBfsCJN3buf3UsTpt
-         Pq8g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jnwjuzj3MrO/cwr2OIkDIAaSQBe3BajVFxJznUYian0=;
+        b=KXqRhtXyWnfMMh67/l7UqFNSak6iRPazY7CXKZ8kXMQ28xL6ZgU/jokUz5eYFK4Fmf
+         RSP4C1zwYfySDnFihTA+aG73lcyhQC2oUpja4Q0z5PZNdMPTSBVEYPXBzvrR3kLqDuUg
+         ER3zClQ+6tt0BFGJmHXW9WWL6C/D68LHpXXhtEzC4d0A960OviV85LsphNuoMihi4fFT
+         YicoSQdctm46hGSz4YgrEhYfyp1IhVjilwY7hZWzC9CLWNXUqD5eVMJb2GoUnLVzr3b2
+         DRSDlDXTuIhIt3SoJuqetEdNDvg+rkRNVFpE574dSoUVTyyg9zOKm2gnPxvyT2p3csIP
+         iHXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VeJH2GjgTNv55jeCpCfZ1ujKSjcX5p8lHDW19F4+qv0=;
-        b=rd4rPCQot3aAtdTQhIp2vhlxOz/8nFeRgPgtmvf++rSNTFN1txdh+OA95kdJffN3eP
-         bIACF6kd+ulEB0svU3nXT91T1WrQJVaj7QMpwGrLThz33KFEYCA4pn141+f+W5IcyXB+
-         xQCmejK8Mvwt46n+4P8xyEXTMqJUYnpJZsmvwc8PBTTVyZwMEeKTVpKRAU+eakINt2pl
-         65SlrHSDQQUJ5n0QLym3YjcSq80hwvRFf/EyeKPnuIIletRDLLWO2on933ZX/Xm5kLpm
-         zsOKJ2jgg6e37Sowqr7C07wOUTGGu6OdWTytr8H9msUAB5SQx+vXvXElvN9DRlipMyMu
-         nnBg==
-X-Gm-Message-State: AOAM532HLOV2gI3hqt4pyShwtoqt/8JmYp8os2T+lyu7X1EaoFMDhReZ
-        c0snWnMu47+6fsWOIQVMqS0gZmDTPzFojCEcisw=
-X-Google-Smtp-Source: ABdhPJz/bLVGa94IUhnQGtuYBTuAjqeCnsYqrJUHvGlOch8tOQQBrYNlJ4iNmC+EQIqmuResN1kzJ7b4XtO4YLokwhs=
-X-Received: by 2002:a17:906:1193:b0:70d:cf39:a4db with SMTP id
- n19-20020a170906119300b0070dcf39a4dbmr31577671eja.44.1654793880193; Thu, 09
- Jun 2022 09:58:00 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jnwjuzj3MrO/cwr2OIkDIAaSQBe3BajVFxJznUYian0=;
+        b=BMNFADqC2KJFEuzd7enq9kZLdIXCqPiqc2NMIsk7DOe5moLPgPsNkvAhcOYt4D1iiD
+         8qKSotbixVh1q62x1llRKLY4sP3/UllogRQ/R/7G0qMhf2MdX3o7lIQf+YXs0wfGDwAb
+         uetnjp6pMMHdB+1N4Dhr1LnghzzfQmVhXqTtJOBzZ30EeFgxPOXvYdmbnkkai+zXFAwK
+         3khxGcl5G2eP7HntsigCNyseqmforT0TptiTkhXE72+Wr8GTn37CZw/saj7Mxx1poAti
+         aLcurJpAevC2JMrbMuwmeM0WNv7h89Q5Qc960e8vDQJ3a11qKfPrPNdfPD4NxTsCzQja
+         mGbA==
+X-Gm-Message-State: AOAM533T4ObLrQErw3264v5boVJdrk+Lf8m/2xfThzK1ay2uxLWTG1DS
+        /p7NFE9SUbFTN+bSyfPrAYz6XLwRrYSCKmD3
+X-Google-Smtp-Source: ABdhPJxUnc6jx6BU5l82GJ9gkvxlowGGDi71/wPGyxGzCs8eaISpn9agirY+M5cMSde/PUqXlbAjrw==
+X-Received: by 2002:ac8:5a11:0:b0:304:bab8:66f3 with SMTP id n17-20020ac85a11000000b00304bab866f3mr32399696qta.388.1654794089992;
+        Thu, 09 Jun 2022 10:01:29 -0700 (PDT)
+Received: from Sassy (bras-base-oshwon9563w-grc-26-142-113-132-114.dsl.bell.ca. [142.113.132.114])
+        by smtp.gmail.com with ESMTPSA id w17-20020a05620a445100b006a7137330e2sm4046161qkp.132.2022.06.09.10.01.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 10:01:29 -0700 (PDT)
+Date:   Thu, 9 Jun 2022 13:01:27 -0400
+From:   Srivathsan Sivakumar <sri.skumar05@gmail.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: qlge: qlge_main.c: convert do-while loops to for
+ loops
+Message-ID: <YqInZ/KNEJFN9kNS@Sassy>
+References: <YqIOp+cPXNxLAnui@Sassy>
+ <20220609152653.GZ2146@kadam>
 MIME-Version: 1.0
-References: <20220609162734.1462625-1-jjhiblot@traphandler.com> <20220609162734.1462625-3-jjhiblot@traphandler.com>
-In-Reply-To: <20220609162734.1462625-3-jjhiblot@traphandler.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 9 Jun 2022 18:57:24 +0200
-Message-ID: <CAHp75Veurvhxi0Pg1Sjxav+3XpDTVOdan8WFFmZmdhJbZJiCaQ@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] leds: Add driver for the TLC5925 LED controller
-To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Cc:     Pavel Machek <pavel@ucw.cz>, krzk+dt@kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220609152653.GZ2146@kadam>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 9, 2022 at 6:30 PM Jean-Jacques Hiblot
-<jjhiblot@traphandler.com> wrote:
->
-> The TLC5925 is a 16-channels constant-current LED sink driver.
-> It is controlled via SPI but doesn't offer a register-based interface.
-> Instead it contains a shift register and latches that convert the
-> serial input into a parallel output.
+On Thu, Jun 09, 2022 at 06:26:53PM +0300, Dan Carpenter wrote:
+> On Thu, Jun 09, 2022 at 11:15:51AM -0400, Srivathsan Sivakumar wrote:
+> > diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+> > index 8c35d4c4b851..308e8b621185 100644
+> > --- a/drivers/staging/qlge/qlge_main.c
+> > +++ b/drivers/staging/qlge/qlge_main.c
+> > @@ -3006,13 +3006,13 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
+> >  		cqicb->flags |= FLAGS_LL;	/* Load lbq values */
+> >  		tmp = (u64)rx_ring->lbq.base_dma;
+> >  		base_indirect_ptr = rx_ring->lbq.base_indirect;
+> > -		page_entries = 0;
+> > -		do {
+> > -			*base_indirect_ptr = cpu_to_le64(tmp);
+> > -			tmp += DB_PAGE_SIZE;
+> > -			base_indirect_ptr++;
+> > -			page_entries++;
+> > -		} while (page_entries < MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN));
+> > +
+> > +		for (page_entries = 0; page_entries <
+> > +			MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); page_entries++) {
+> > +				*base_indirect_ptr = cpu_to_le64(tmp);
+> > +				tmp += DB_PAGE_SIZE;
+> > +				base_indirect_ptr++;
+> > +		}
+> 
+> It's better than the original, but wouldn't it be better yet to write
+> something like this (untested):
+> 
+> 		for (i = 0; i <	MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); i++)
+> 			base_indirect_ptr[i] = cpu_to_le64(tmp + (i * DB_PAGE_SIZE));
+> 
+> Same with the other as well, obviously.
+> 
+> regards,
+> dan carpenter
+> 
 
-Can you add Datasheet: tag here with the corresponding URL? Rationale
-is to get a link to the datasheet by just browsing Git log without
-browsing the source code, which will benefit via Web UIs.
-> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+Hello Dan,
 
-...
+Thanks for your input
 
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/leds.h>
-> +#include <linux/err.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/property.h>
-> +#include <linux/workqueue.h>
+wouldn't base_indirect_ptr point at a different endian value if tmp is
+added with (i * DB_PAGE_SIZE)?
 
-Keep it sorted?
-
-...
-
-> +struct single_led_priv {
-> +       int idx;
-> +       struct led_classdev cdev;
-
-For pointer arithmetics it's better to swap these two members.
-
-> +};
-> +
-> +struct tlc5925_leds_priv {
-> +       int max_num_leds;
-> +       u8 *state;
-
-unsigned long? DECLARE_BITMAP() ?
-
-> +       spinlock_t lock;
-> +       struct single_led_priv leds[];
-> +};
-
-...
-
-> +       if (brightness)
-> +               priv->state[index / 8] |= (1 << (index % 8));
-> +       else
-> +               priv->state[index / 8] &= ~(1 << (index % 8));
-
-assign_bit()
-
-...
-
-> +       return spi_write(spi, priv->state, priv->max_num_leds / 8);
-
-BITS_TO_BYTES() ?
-
-...
-
-> +       count = device_get_child_node_count(dev);
-> +       if (!count) {
-> +               dev_err(dev, "no led defined.\n");
-> +               return -ENODEV;
-
-  return dev_err_probe(...);
-
-here and everywhere in ->probe() and Co.
-
-> +       }
-
-...
-
-> +       ret = device_property_read_u32_array(dev, "ti,shift-register-length",
-> +                                            &max_num_leds, 1);
-
-Always an array of 1 element? call device_property_read_u32().
-
-...
-
-> +       if (max_num_leds % 8) {
-> +               dev_err(dev, "'ti,shift-register-length' must be a multiple of 8\n");
-> +               return -EINVAL;
-> +       }
-
-Is this really fatal? I would rather issue a warning and go on if it
-has at least 8 there. So the idea is to use a minimum that holds
-multiple of 8.
-
-...
-
-> +       /* Assert all the OE/ lines */
-> +       gpios = devm_gpiod_get_array(dev, "output-enable-b", GPIOD_OUT_LOW);
-> +       if (IS_ERR(gpios)) {
-> +               dev_err(dev, "Unable to get the 'output-enable-b' gpios\n");
-> +               return PTR_ERR(gpios);
-> +       }
-
-You have to use dev_err_probe() here, otherwise it will spam logs a
-lot in case of deferred probe.
-
-...
-
-> +       priv->state = devm_kzalloc(dev, DIV_ROUND_UP(max_num_leds, 8), GFP_KERNEL);
-
-devm_bitmap_zalloc()
-
-...
-
-> +       device_for_each_child_node(dev, child) {
-> +               struct led_init_data init_data = {.fwnode = child};
-
-Missed spaces.
-
-> +               struct led_classdev *cdev;
-> +               u32 idx;
-> +
-> +               ret = fwnode_property_read_u32_array(child, "reg", &idx, 1);
-
-fwnode_property_read_u32()
-
-> +               if (ret || idx >= max_num_leds) {
-> +                       dev_err(dev, "%s: invalid reg value. Ignoring.\n",
-> +                               fwnode_get_name(child));
-> +                       fwnode_handle_put(child);
-> +                       continue;
-
-Either dev_warn + continue, or dev_err + return dev_err_probe().
-
-> +               }
-> +
-> +               count--;
-> +               priv->leds[count].idx = idx;
-> +               cdev = &(priv->leds[count].cdev);
-> +               cdev->brightness = LED_OFF;
-> +               cdev->max_brightness = 1;
-> +               cdev->brightness_set_blocking = tlc5925_brightness_set_blocking;
-> +
-> +               ret = devm_led_classdev_register_ext(dev, cdev, &init_data);
-> +               if (ret) {
-
-Ditto.
-
-> +                       dev_err(dev, "%s: cannot create LED device.\n",
-> +                               fwnode_get_name(child));
-> +                       fwnode_handle_put(child);
-> +                       continue;
-> +               }
-> +       }
-
-...
-
-> +static const struct of_device_id tlc5925_dt_ids[] = {
-> +       { .compatible = "ti,tlc5925", },
-> +       {},
-
-No comma for terminator entry.
-
-> +};
-
-Where is the MODULE_DEVICE_TABLE() for this one?
-
-...
-
-> +
-
-No  need for this blank line.
-
-> +module_spi_driver(tlc5925_driver);
-
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks,
+Srivathsan
