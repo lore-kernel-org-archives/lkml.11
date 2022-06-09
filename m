@@ -2,90 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B49EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:44:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 390DBC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:44:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243964AbiFIMoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 08:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43738 "EHLO
+        id S245395AbiFIMoO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 08:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343969AbiFIMn7 (ORCPT
+        with ESMTP id S242253AbiFIMoN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 08:43:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CAEB40902;
-        Thu,  9 Jun 2022 05:43:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 575B3B82D3F;
-        Thu,  9 Jun 2022 12:43:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E689FC3411D;
-        Thu,  9 Jun 2022 12:43:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654778635;
-        bh=DNUj55i+tBAtllU92vXeXrrYBcW7ydlaZIiUaPiMcDU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Qr/9hCvA9/RXFgWTOOsYBWeT8rpRvItuiBrVVEUrLtqsnsUIJUp6BWMbc8KDK59Kb
-         1/bDaRKhaElMuPoHuYR+HtP9JHSNEHukPpfjfeP30UrCuMPNOkdJ8a4QtCFMv6dQzS
-         TX/TpsIgOX7mYRvzlX5CkABrBd0m/akNXJAqamLbnTpYBL9BCODvX/CrIzQLh1hsA0
-         XGLlE/ysaYDaeZdNKwfvIrqY6NV8vfzpPF7TpomEILCASMJKgWOtwKOuMeBqW6m/Fq
-         6Y7mopYnV467KWmnCjys0ZgNgINGqD6ScroZA7L4D6LgW6fEBvecFZnmH9+dv3+rhR
-         lg/6pWcWPvOaw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nzHVu-0005Qw-Il; Thu, 09 Jun 2022 14:43:50 +0200
-Date:   Thu, 9 Jun 2022 14:43:50 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] USB: serial: Remove redundant NULL check before
- release_firmware() call
-Message-ID: <YqHrBq1BZ+6DWcGl@hovoldconsulting.com>
-References: <20220606014315.290533-1-chi.minghao@zte.com.cn>
+        Thu, 9 Jun 2022 08:44:13 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3274A3E9
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 05:44:11 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 349DE1C000D;
+        Thu,  9 Jun 2022 12:44:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1654778650;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Rh0EyhjuDEt34kf2NyApfB4/YmN6/yaxANbey6hLXEM=;
+        b=RhSngzTJO64S6lbii9KYjY6QfSmkrIxa/gQlLBWM+AZbYqCnJy8iz+R8kQiJl7PSKwPK+R
+        8SnKfoh9agj1iA3qV282RjCouMmX4VjIJdB50wX6Qy8UwqFqbphTJ8ro3GM9//YQHH1qfh
+        yyE4kjoyOYhUmJ6aJ2lvvQvQ5xsyvsVhfMF2Pn8CyFq6hjeVBMKOvAUyurTk87wZ9gW8sG
+        WRDELfDn5JNa7WlzkHDfWULJgDoUFB1K6YomsOGa1W4JGrU0t3E+ciorcEJ+mHhoQ1EUb0
+        XC1ZSxgcmIaw8J7VGkrD7jr2h4ObCjiB6mI6K7r49Yph7bUZNaxQ5y2Ac5V2Gg==
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
+        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com
+Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] mtd: spinand: Add support for ATO25D1GA
+Date:   Thu,  9 Jun 2022 14:44:08 +0200
+Message-Id: <20220609124408.209175-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220604113250.4745-1-aidanmacdonald.0x0@gmail.com>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220606014315.290533-1-chi.minghao@zte.com.cn>
+X-linux-mtd-patch-notification: thanks
+X-linux-mtd-patch-commit: b'fc602b4f692cb83c937b5f79628bca32b60c4402'
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 01:43:15AM +0000, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
+On Sat, 2022-06-04 at 11:32:50 UTC, Aidan MacDonald wrote:
+> Add support for the ATO25D1GA SPI NAND flash.
 > 
-> release_firmware() checks for NULL pointers internally so checking
-> before calling it is redundant.
+> Datasheet:
+> - https://atta.szlcsc.com/upload/public/pdf/source/20191212/C469320_04599D67B03B078044EB65FF5AEDDDE9.pdf
 > 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 
-Cleanups do not deserve a Reported-by tag, and neither do reports that
-are never posted to the mailing lists.
+Applied to https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git nand/next, thanks.
 
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> ---
->  drivers/usb/serial/mxuport.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/usb/serial/mxuport.c b/drivers/usb/serial/mxuport.c
-> index eb45a9b0005c..eb9090ab900f 100644
-> --- a/drivers/usb/serial/mxuport.c
-> +++ b/drivers/usb/serial/mxuport.c
-> @@ -1109,8 +1109,7 @@ static int mxuport_probe(struct usb_serial *serial,
->  	 */
->  	usb_set_serial_data(serial, (void *)id->driver_info);
->  out:
-> -	if (fw_p)
-> -		release_firmware(fw_p);
-> +	release_firmware(fw_p);
-
-I think keeping this check is preferred here as it makes the intent of
-code more clear (and you don't have to check the definition of
-release_firmware() to make sure it's safe to pass in NULL).
-
->  	return err;
->  }
-
-Johan
+Miquel
