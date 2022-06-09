@@ -2,84 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4529C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 00:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69FB3C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 00:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233212AbiFIApH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 20:45:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54002 "EHLO
+        id S232748AbiFIA7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 20:59:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbiFIApD (ORCPT
+        with ESMTP id S230003AbiFIA7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 20:45:03 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F0D276CDA;
-        Wed,  8 Jun 2022 17:45:00 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LJQNT26V2z4xZ0;
-        Thu,  9 Jun 2022 10:44:57 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1654735497;
-        bh=mLG8ejCGWmb/Au9RUWAqxX1RLyC6YWV0QuvItfBebWM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=oLpxSQ8o58De1aCxMIeg96bwoRbj1ZPjwWbijMI3cwohr/Ecer6ysIod7WwevwtMA
-         EFR0rRUiq7sR6ijYllSGFKVm0V+ZOeA98311IYVFdFmdsYX5yGIrmxvw8yoW8lZ1U0
-         OvZdDU+sSq8i2nciEjtKHt8FMGzmKz4X6sF/GoV03PlIIcWS/tWHm1KSVY0nrm/LyF
-         DcsEaCgte1NqoBDsU1JYX4GXcMfrLzBRdX1Y2X87sl1WNYG9uBnjYOldreKmLxn+0A
-         lknrfufS8HRCNtLHI5B6KdfL380VPVpFZ6/qjtrHwEt9nwR9nni1GZ6RBsQxAXXED1
-         ycL8Ppa8xfALw==
-Date:   Thu, 9 Jun 2022 10:44:56 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Junxiao Bi <junxiao.bi@oracle.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Signed-off-by missing for commit in the mm tree
-Message-ID: <20220609104456.009c53c6@canb.auug.org.au>
+        Wed, 8 Jun 2022 20:59:21 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E910271E;
+        Wed,  8 Jun 2022 17:59:18 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LJQgs19lfzjXH7;
+        Thu,  9 Jun 2022 08:58:17 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 9 Jun 2022 08:59:15 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 9 Jun 2022 08:59:14 +0800
+Subject: Re: [PATCH -next v5 0/8] bugfix and cleanup for blk-throttle
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <tj@kernel.org>, <mkoutny@suse.com>, <axboe@kernel.dk>,
+        <ming.lei@redhat.com>
+CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+References: <20220528064330.3471000-1-yukuai3@huawei.com>
+ <244865d4-e7e7-432f-8e9c-248ab900d283@huawei.com>
+Message-ID: <66910926-39e8-85df-bd13-2ca6b2b03cac@huawei.com>
+Date:   Thu, 9 Jun 2022 08:59:13 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/XTZ6Ex2v68UIuOz_Ny5O9+2";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <244865d4-e7e7-432f-8e9c-248ab900d283@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/XTZ6Ex2v68UIuOz_Ny5O9+2
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+在 2022/06/02 19:14, Yu Kuai 写道:
+> 在 2022/05/28 14:43, Yu Kuai 写道:
+>> Changes in v5:
+>>   - add comments in patch 4
+>>   - clear bytes/io_skipped in throtl_start_new_slice_with_credit() in
+>>   patch 4
+>>   - and cleanup patches 5-8
+>> Changes in v4:
+>>   - add reviewed-by tag for patch 1
+>>   - add patch 2,3
+>>   - use a different way to fix io hung in patch 4
+>> Changes in v3:
+>>   - fix a check in patch 1
+>>   - fix link err in patch 2 on 32-bit platform
+>>   - handle overflow in patch 2
+>> Changes in v2:
+>>   - use a new solution suggested by Ming
+>>   - change the title of patch 1
+>>   - add patch 2
+>>
+>> Patch 1 fix that blk-throttle can't work if multiple bios are throttle,
+>> Patch 2 fix overflow while calculating wait time
+>> Patch 3,4 fix io hung due to configuration updates.
+>> Patch 5-8 are cleanup patches, there are no functional changes, just
+>> some places that I think can be optimized during code review.
+> 
+> friendly ping ...
 
-Hi all,
+friendly ping ...
 
-Commit
+I'll resend this patchset soon if there are still no response.
 
-  a4bf92bd6e08 ("ocfs2: kill EBUSY from dlmfs_evict_inode")
-
-is missing a Signed-off-by from its author.
-
-This is just a patch that went through a mailing list that rewrote its
-=46rom address ... I wonder if we can make git use the Reply-To address
-for the author in these cases?
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/XTZ6Ex2v68UIuOz_Ny5O9+2
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKhQogACgkQAVBC80lX
-0GyEKwf7BhnXGOUMeiAqIjjiOY10geYJN5gA+eYMXlt15/sth1mo22PzL8Xg1KU6
-DNAZhuVhcDnaC2d8cFKAyBTHkSN5sM9owF47/qxb0H3J2AN+vNk7GI8NA467bHZi
-ycnlRjeNP9MeQtdrzaHuegBrQ6Y7oHvJmXnjOTOaIchSy9TELcxmq0HYtannR1+J
-9FDNXHa6B0NXUc3yO8wAjfedzKLZRJ+xMMcnoYbv6dQjJJDPtpHwIi9FZ32UZ90k
-GJ2Tlm/eERItwFs6WwobyBrOjXZGegxhfqx50nrtxD81fEGb7G8CQ5bv2B/npyg2
-HiqhPzbjpwDu0RqOGgs+bkj5MaxODw==
-=KpFt
------END PGP SIGNATURE-----
-
---Sig_/XTZ6Ex2v68UIuOz_Ny5O9+2--
+Thanks,
+Kuai
+>>
+>> Previous version:
+>> v1: 
+>> https://lore.kernel.org/all/20220517134909.2910251-1-yukuai3@huawei.com/
+>> v2: 
+>> https://lore.kernel.org/all/20220518072751.1188163-1-yukuai3@huawei.com/
+>> v3: 
+>> https://lore.kernel.org/all/20220519085811.879097-1-yukuai3@huawei.com/
+>> v4: 
+>> https://lore.kernel.org/all/20220523082633.2324980-1-yukuai3@huawei.com/
+>>
+>> Yu Kuai (8):
+>>    blk-throttle: fix that io throttle can only work for single bio
+>>    blk-throttle: prevent overflow while calculating wait time
+>>    blk-throttle: factor out code to calculate ios/bytes_allowed
+>>    blk-throttle: fix io hung due to config updates
+>>    blk-throttle: use 'READ/WRITE' instead of '0/1'
+>>    blk-throttle: calling throtl_dequeue/enqueue_tg in pairs
+>>    blk-throttle: cleanup tg_update_disptime()
+>>    blk-throttle: clean up flag 'THROTL_TG_PENDING'
+>>
+>>   block/blk-throttle.c | 158 +++++++++++++++++++++++++++++--------------
+>>   block/blk-throttle.h |  16 +++--
+>>   2 files changed, 120 insertions(+), 54 deletions(-)
+>>
