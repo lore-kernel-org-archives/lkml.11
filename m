@@ -2,165 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3302CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 21:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C35C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 21:41:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241754AbiFIViI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 17:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44828 "EHLO
+        id S235069AbiFIVlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 17:41:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241598AbiFIViE (ORCPT
+        with ESMTP id S229862AbiFIVlJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 17:38:04 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 735C51E7373;
-        Thu,  9 Jun 2022 14:38:01 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id m25so24289287lji.11;
-        Thu, 09 Jun 2022 14:38:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xuhZxHj/U/uyrGh0QRL2giIMCZ9xcES2xwt8P7yF6to=;
-        b=JAkyByJksy+qoa6HbOhaGhB/7umKsKTTKRwcNWF42CdK388N8UhTbUlVshl1hbo75U
-         2vG1b8kBfg43EPsLhebV6xvMcvfziFJyCUUScQZuF+5Nof4NGsK6cCKudmtaEdtK7xv6
-         h8o1MYdfg8tYPc47QOgD9PtEIxKvN4sT804N0crGbBtDaMHhBAgW8RbcTBftPzROgRt3
-         b5yGyLvcMCeaS5ERBw2UjCb+CyslfxvZplPLXK8+i48RqQ1O5/F/MwEEQgGqm+qyOuWT
-         gqx92x39oXRUXwcXJnmoHJ2kpMq6fNg/xg6Ikshz+JeNMmsN0yKC/6w8txLih+QxAr0G
-         03Og==
+        Thu, 9 Jun 2022 17:41:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D11163FBCB
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 14:41:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654810867;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+0dAgKBzfPuu/Qpg4c3Cqr8k4N4HCUwtJu4hqNYeV2g=;
+        b=SxOCVmx1m/PsjO4TP5h1JL7b6OfXAKQkdMoxjeVcxhsyOB+tPRUBfNoSmsi3SehTZEOMXe
+        Sm83E/hCKzD9e1+lXnEMlCa/95Pz78D2bJnRKL0UEz9KZKnTzm/90BOG9CkFXLx1eEEX6n
+        +eWsnr3z0pWf46idXX1wITg6yJCgups=
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
+ [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-102-cw9-IdbVOIyhM6TdVaCzHA-1; Thu, 09 Jun 2022 17:41:06 -0400
+X-MC-Unique: cw9-IdbVOIyhM6TdVaCzHA-1
+Received: by mail-il1-f200.google.com with SMTP id j5-20020a922005000000b002d1c2659644so18444625ile.8
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 14:41:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xuhZxHj/U/uyrGh0QRL2giIMCZ9xcES2xwt8P7yF6to=;
-        b=M1nGqr+/ywshoWvrFcGlwH1RMqiFnU7JadaeyNpNRQkdIAJARZvNtlJhRtBIcMnice
-         F1UGAsuvdbBjbjsSW5LERJYvETG0jhVTkY8oXipmgLYwdU8VDCJ9y5CY/AEkYZeLQDEY
-         wdaYWUSQjmdHmLGGiRTimJeWv++F9KrlyMwKNEH0utcTSOQalth1h9NpL1fVzUIv8jYd
-         LQ8xvcRAlwVw7098d+X9X19OG3yn6tv0iLJWXvVakJyGNX0DzvLftYCTG9AXEZxxBh5N
-         QtepbmkDFW+Q/z5lU77mZrL1Qd1yeEnqJL5zD6hIW0sK6CSZ4WTR1pag0sjFKeDF92Ik
-         TXTg==
-X-Gm-Message-State: AOAM533GRYb7IFO08rVDBCguYAdrcEbdKPQc1iQmIWyrnWeSuc2qcNlp
-        WtgsSjLhq/iZorMZ5FBL+fcqN+KXslY/WmbMWL4=
-X-Google-Smtp-Source: ABdhPJwUcamBCwOm6ERaUQOFsS9FH0jEHEp1L9m1V9Nk72MnEa1UzUuCExo1sqhaCb60aIqxKCobSgakC6CpKBCiUNk=
-X-Received: by 2002:a05:651c:158c:b0:250:a23d:2701 with SMTP id
- h12-20020a05651c158c00b00250a23d2701mr60541188ljq.475.1654810679845; Thu, 09
- Jun 2022 14:37:59 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=+0dAgKBzfPuu/Qpg4c3Cqr8k4N4HCUwtJu4hqNYeV2g=;
+        b=yLUg3YoSHY8LHVyQlwY7RrOLTj8fSsG9dQwM9/Rv68KA1TxrL73rejaTirL7qD2G0O
+         r0XOtC5XAaNqNvf3Iew0iAQ3TFI0jGO0R/qCbKHJfHDtW06per2bvM5H37IZNPz7/jpD
+         sYIBqq1ylCvjiAHut357bPm23xrtmE6x5M46KxPH7uqH3xhe0HTQuSA4QnnNimYXegNE
+         uiuT5510zXIp2IxtDHn73g+XjpnAbLDhzOo/5BAK2m+7CJYSJPROjdESLQGLLmZX6mrn
+         Usubm4r0e2jHlHKAk9KfloCX6bd9+3ZuWQIIxuRCmyXeMb5vADTliL8aZTfom+ntK3p+
+         yPYg==
+X-Gm-Message-State: AOAM533FwX//CStO4i7tREuJWQ5eI3DrzRM0i1d8t9Vlpo8xYlVKSBi9
+        fP89Qi6D+uO7DAXYXRIe0aM9ZdQREzol4CYPrS64sB0D4naTLBNJnlQ4xvD3m+Zv+0v5gyEu5X0
+        VIVpGHuter5wQukgvdtgcnxtl
+X-Received: by 2002:a05:6638:dd3:b0:331:d98c:9a67 with SMTP id m19-20020a0566380dd300b00331d98c9a67mr7194725jaj.47.1654810866035;
+        Thu, 09 Jun 2022 14:41:06 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxLYxbzXLY+uqvkGUeuaM8Esk3FhbYDeZwBAuNSC8NN4cjxlecj6CnbA+l3i4GOPufnvI4knw==
+X-Received: by 2002:a05:6638:dd3:b0:331:d98c:9a67 with SMTP id m19-20020a0566380dd300b00331d98c9a67mr7194664jaj.47.1654810864338;
+        Thu, 09 Jun 2022 14:41:04 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id a18-20020a6b6d12000000b0066938e02579sm7583703iod.38.2022.06.09.14.41.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 14:41:03 -0700 (PDT)
+Date:   Thu, 9 Jun 2022 15:41:02 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     kvm@vger.kernel.org, airlied@linux.ie,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Laszlo Ersek <lersek@redhat.com>,
+        Gerd Hoffmann <kraxel@redhat.com>
+Subject: Re: [PATCH 2/2] vfio/pci: Remove console drivers
+Message-ID: <20220609154102.5cb1d3ca.alex.williamson@redhat.com>
+In-Reply-To: <01c74525-38b7-1e00-51ba-7cd793439f03@suse.de>
+References: <165453797543.3592816.6381793341352595461.stgit@omen>
+        <165453800875.3592816.12944011921352366695.stgit@omen>
+        <0c45183c-cdb8-4578-e346-bc4855be038f@suse.de>
+        <20220608080432.45282f0b.alex.williamson@redhat.com>
+        <01c74525-38b7-1e00-51ba-7cd793439f03@suse.de>
+Organization: Red Hat
 MIME-Version: 1.0
-References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-12-tmaimon77@gmail.com>
- <91549b70-08fc-ed6f-c48e-5bcb70ea63d0@linaro.org>
-In-Reply-To: <91549b70-08fc-ed6f-c48e-5bcb70ea63d0@linaro.org>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Fri, 10 Jun 2022 00:37:49 +0300
-Message-ID: <CAP6Zq1j2VZno4w4w0QCYwHnRaVqiM=DnNSmND1vOGDs_wfi2zw@mail.gmail.com>
-Subject: Re: [PATCH v2 11/20] reset: npcm: using syscon instead of device data
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof
+On Thu, 9 Jun 2022 11:13:22 +0200
+Thomas Zimmermann <tzimmermann@suse.de> wrote:
+> 
+> Please have a look at the attached patch. It moves the aperture helpers 
+> to a location common to the various possible users (DRM, fbdev, vfio). 
+> The DRM interfaces remain untouched for now.  The patch should provide 
+> what you need in vfio and also serve our future use cases for graphics 
+> drivers. If possible, please create your patch on top of it.
 
-Sorry but I didn't ignore your comment.
+Looks good to me, this of course makes the vfio change quite trivial.
+One change I'd request:
 
-For not breaking exciting boards I add the following patch in V2
-https://lore.kernel.org/linux-arm-kernel/20220608095623.22327-11-tmaimon77@gmail.com/
+diff --git a/drivers/video/console/Kconfig b/drivers/video/console/Kconfig
+index 40c50fa2dd70..7f3c44e1538b 100644
+--- a/drivers/video/console/Kconfig
++++ b/drivers/video/console/Kconfig
+@@ -10,6 +10,7 @@ config VGA_CONSOLE
+ 	depends on !4xx && !PPC_8xx && !SPARC && !M68K && !PARISC &&  !SUPERH && \
+ 		(!ARM || ARCH_FOOTBRIDGE || ARCH_INTEGRATOR || ARCH_NETWINDER) && \
+ 		!ARM64 && !ARC && !MICROBLAZE && !OPENRISC && !S390 && !UML
++	select APERTURE_HELPERS if (DRM || FB || VFIO_PCI)
+ 	default y
+ 	help
+ 	  Saying Y here will allow you to use Linux in text mode through a
 
-On Wed, 8 Jun 2022 at 13:08, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 08/06/2022 11:56, Tomer Maimon wrote:
-> > Using syscon device tree property instead of
-> > device data to handle the NPCM general control
-> > registers.
-> >
->
-> Again ignored the comment.
->
-> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> > ---
-> >  drivers/reset/reset-npcm.c | 11 +++--------
-> >  1 file changed, 3 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/drivers/reset/reset-npcm.c b/drivers/reset/reset-npcm.c
-> > index 2ea4d3136e15..312c3b594b8f 100644
-> > --- a/drivers/reset/reset-npcm.c
-> > +++ b/drivers/reset/reset-npcm.c
-> > @@ -138,8 +138,7 @@ static int npcm_reset_xlate(struct reset_controller_dev *rcdev,
-> >  }
-> >
-> >  static const struct of_device_id npcm_rc_match[] = {
-> > -     { .compatible = "nuvoton,npcm750-reset",
-> > -             .data = (void *)"nuvoton,npcm750-gcr" },
-> > +     { .compatible = "nuvoton,npcm750-reset"},
-> >       { }
-> >  };
-> >
-> > @@ -155,14 +154,10 @@ static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
-> >       u32 ipsrst1_bits = 0;
-> >       u32 ipsrst2_bits = NPCM_IPSRST2_USB_HOST;
-> >       u32 ipsrst3_bits = 0;
-> > -     const char *gcr_dt;
-> >
-> > -     gcr_dt = (const char *)
-> > -     of_match_device(dev->driver->of_match_table, dev)->data;
-> > -
-> > -     gcr_regmap = syscon_regmap_lookup_by_compatible(gcr_dt);
-> > +     gcr_regmap = syscon_regmap_lookup_by_phandle(dev->of_node, "nuvoton,sysgcr");
-> >       if (IS_ERR(gcr_regmap)) {
-> > -             dev_err(&pdev->dev, "Failed to find %s\n", gcr_dt);
-> > +             dev_err(&pdev->dev, "Failed to find gcr syscon");
-> >               return PTR_ERR(gcr_regmap);
->
-> Comment still ignored.
->
-> There is no point in this review if you keep ignoring what we ask to fix.
->
-> If something is unclear, ask for clarification. Resending without
-> implementing the comment means that you ignore the review which is waste
-> of my time.
->
-> I am sorry, but this is not acceptable.
->
-> Best regards,
-> Krzysztof
+This should be VFIO_PCI_CORE.  Thanks,
 
-Best regards,
+Alex
 
-Tomer
