@@ -2,101 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 20:37:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC54BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 20:40:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345023AbiFIUhu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 16:37:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
+        id S234991AbiFIUkX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 16:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236064AbiFIUhr (ORCPT
+        with ESMTP id S232101AbiFIUkU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 16:37:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 16ADBDE81
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 13:37:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654807066;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=PRwCAczOEs3oWB79ndk+TRrGu6B70/rR3Wnhg/0mT/M=;
-        b=UPUrJ8rm+mYswySS1EhesqQGaLqGjpDs8I4VH9qutLrA2crnLBh0QCGhdwizgWSOKocHlp
-        Aksy0IHBUscSzhHX3ZKfUf2mwrEmpge1ZqXnSgPSBs47f2DoI6QR5vzVTd2vCZvApfw6UN
-        HIT5N9S5NkTdw+Lu46pU19NcdZoTYvQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-79-kvgtpqTPPj62Ir5KLx3dGQ-1; Thu, 09 Jun 2022 16:37:43 -0400
-X-MC-Unique: kvgtpqTPPj62Ir5KLx3dGQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 90A4B80159B;
-        Thu,  9 Jun 2022 20:37:42 +0000 (UTC)
-Received: from jsavitz-csb.redhat.com (unknown [10.22.11.108])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 434E71730C;
-        Thu,  9 Jun 2022 20:37:42 +0000 (UTC)
-From:   Joel Savitz <jsavitz@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Joel Savitz <jsavitz@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, Nico Pache <npache@redhat.com>
-Subject: [PATCH] selftests: make use of GUP_TEST_FILE macro
-Date:   Thu,  9 Jun 2022 16:32:17 -0400
-Message-Id: <20220609203217.3206247-1-jsavitz@redhat.com>
+        Thu, 9 Jun 2022 16:40:20 -0400
+Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC8FFC81B;
+        Thu,  9 Jun 2022 13:40:19 -0700 (PDT)
+Received: by mail-io1-f48.google.com with SMTP id y12so23374204ior.7;
+        Thu, 09 Jun 2022 13:40:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=e3inXp28+t1Fu79HVtNOuLwQSwI2FZtsXZm82BbEUbM=;
+        b=CUhKsn6lNkObvScQjMFQneQkGcqY4Y3wD7Hi8MED7Xov07JLLk/I3R/b37DDokI0GZ
+         w2RborYaxpHsu38zDh9kjUemBmqVMmcNpPQdDgD3+RFya6o8IPjaX8YaM5+F1EpuiXTg
+         XdieUpO2/iODAkq/ryodDKVJApbVm5VPNwgNuv7m/RPkgM4kVPfCzmQS5oQh4svdhxXV
+         GHdzVO10043GeTvWFqruWuLKsI8vojCitER4SpJ9Etb+UWCrYH2ygVuUiM6+LGzMIucf
+         +ZhF22c+4ANMFq0oReZnCFG79N59dHLw1xtrt5ZO+RyOKhviVM/PWUCE9LSB0Yd0KU75
+         IpXA==
+X-Gm-Message-State: AOAM532sAPzn4xSQxtt/xcAg08vY6xR79RmpM1yN9/mlXvbsPDMKRDf+
+        Jvs+Ijz6MUKUqpgGogaZ4kb0DfMdxw==
+X-Google-Smtp-Source: ABdhPJzNkq8AnEwrys013uFfNBIMTljy33vvXsnbh8wZjluRcL2tShGePfR6E5wOFRvNqDHM4dr0Cg==
+X-Received: by 2002:a02:3506:0:b0:328:9a29:678 with SMTP id k6-20020a023506000000b003289a290678mr21985379jaa.33.1654807218797;
+        Thu, 09 Jun 2022 13:40:18 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id b13-20020a02914d000000b00332122c106dsm121225jag.152.2022.06.09.13.40.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 13:40:18 -0700 (PDT)
+Received: (nullmailer pid 63550 invoked by uid 1000);
+        Thu, 09 Jun 2022 20:40:16 -0000
+Date:   Thu, 9 Jun 2022 14:40:16 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Brian Masney <masneyb@onstation.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/14] dt-bindings: sram: qcom,ocmem: cleanup example
+ coding style
+Message-ID: <20220609204016.GA59013-robh@kernel.org>
+References: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 17de1e559cf1 ("selftests: clarify common error when running
-gup_test") had most of its hunks dropped due to a conflict with another
-patch accepted into Linux around the same time that implemented the same
-behavior as a subset of other changes.
+On Tue, Jun 07, 2022 at 07:18:35PM +0200, Krzysztof Kozlowski wrote:
+> Fix the indentation in the OCMEM example and use generic node name -
+> sram - to reflect the type of the device.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/sram/qcom,ocmem.yaml | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
 
-However, the remaining hunk defines the GUP_TEST_FILE macro without
-making use of it. This patch makes use of the macro in the two relevant
-places.
-
-Furthermore, the above mentioned commit's log message erroneously describes
-the changes that were dropped from the patch.
-
-This patch corrects the record.
-
-Fixes: 17de1e559cf1 ("selftests: clarify common error when running gup_test")
-
-Signed-off-by: Joel Savitz <jsavitz@redhat.com>
----
- tools/testing/selftests/vm/gup_test.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/vm/gup_test.c b/tools/testing/selftests/vm/gup_test.c
-index 6bb36ca71cb5..a309876d832f 100644
---- a/tools/testing/selftests/vm/gup_test.c
-+++ b/tools/testing/selftests/vm/gup_test.c
-@@ -209,7 +209,7 @@ int main(int argc, char **argv)
- 	if (write)
- 		gup.gup_flags |= FOLL_WRITE;
- 
--	gup_fd = open("/sys/kernel/debug/gup_test", O_RDWR);
-+	gup_fd = open(GUP_TEST_FILE, O_RDWR);
- 	if (gup_fd == -1) {
- 		switch (errno) {
- 		case EACCES:
-@@ -224,7 +224,7 @@ int main(int argc, char **argv)
- 			printf("check if CONFIG_GUP_TEST is enabled in kernel config\n");
- 			break;
- 		default:
--			perror("failed to open /sys/kernel/debug/gup_test");
-+			perror("failed to open " GUP_TEST_FILE);
- 			break;
- 		}
- 		exit(KSFT_SKIP);
--- 
-2.31.1
-
+Applied, thanks.
