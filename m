@@ -2,37 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06398C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 10:41:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA6E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 10:41:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234819AbiFIKlB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 06:41:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35342 "EHLO
+        id S242937AbiFIKlH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 06:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243387AbiFIKkp (ORCPT
+        with ESMTP id S243394AbiFIKkp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 9 Jun 2022 06:40:45 -0400
-X-Greylist: delayed 3858 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 09 Jun 2022 03:40:11 PDT
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4D72FAC07;
-        Thu,  9 Jun 2022 03:40:10 -0700 (PDT)
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4515A35DB1A;
+        Thu,  9 Jun 2022 03:40:12 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id DEE3F66017C5;
-        Thu,  9 Jun 2022 11:40:07 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 20A5266017C7;
+        Thu,  9 Jun 2022 11:40:10 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654771208;
-        bh=e0AQfxv8jGpQQTIJ9KKzNfQsGY/6PxPWTtlkTzfZaxQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=QFp+iinGUw+/GZa9POrbVNX8EqjKqwp/vDjG+HoAKtab89eWAf8/SwDrG7wJSSHzY
-         dnoosbFI8+GYD3a08e9TOw9PWSjBZ0Hj7zL0iXt6dQXVBjCrqg/lCvZs8MV7fNsZiv
-         TfY6Vjck2tHn3FQmO6C4qTZIEo8TfpGi06NGe1XM9K30kbRkipqzFdlUZxWBAenzW4
-         olooBGTyxd9Bn5kx0w5hxsKmFIZnuz68MHXhcGGFX1hOkVrFXNkvgNzsRIzYkid//W
-         xUKG36GZfioFha92O78ghvotmX+1BvKmQRUp96KtQvH8XGTgL0J30iZ9KTZLKajZ9U
-         DQjswuX2s1dYQ==
+        s=mail; t=1654771211;
+        bh=XsdKca6uJqVHP/fpe/JGNltV33I9zIbmdBk8VfIBHU4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=grhQQ7l0fxS0nE/QuH0wy0PvUmj2vFgdYu7M8vFf3deBIEaJt7TGwQt4JHSSlJkey
+         KW7H1VFqaIh+dCG9wyw9x2tMiAmHhyG5jITZDY88uOT9TKXI1nSpdB4W5yzwHMeuq5
+         pXfBARcaRcd/vE1NRxU8Aru+DV7A10v5cWgRT4QhrTcgb4iDl4WLYRoBU4dcmXkxTX
+         ENCk8OYQLp1VkSiPgp0IQSFcsWFqbODDdYe8Q5n3JwHRZE36OVnuIXJvfjwfwDSGSL
+         LYdskul928uHc6cD20stZsm4zZvq9N07xMW0Oi/jepPqxvZuCyj3LL+obrCZEPwwjV
+         0bZw1J288bbgA==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     yong.wu@mediatek.com
@@ -46,42 +45,59 @@ Cc:     joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
         phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v3 0/3] MediaTek Helio X10 MT6795 - M4U/IOMMU Support
-Date:   Thu,  9 Jun 2022 12:39:58 +0200
-Message-Id: <20220609104001.97753-1-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v3 2/3] iommu: mtk_iommu: Introduce new flag TF_PORT_TO_ADDR_MT8173
+Date:   Thu,  9 Jun 2022 12:40:00 +0200
+Message-Id: <20220609104001.97753-3-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220609104001.97753-1-angelogioacchino.delregno@collabora.com>
+References: <20220609104001.97753-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In an effort to give some love to the apparently forgotten MT6795 SoC,
-I am upstreaming more components that are necessary to support platforms
-powered by this one apart from a simple boot to serial console.
+In preparation for adding support for MT6795, add a new flag named
+TF_PORT_TO_ADDR_MT8173 and use that instead of checking for m4u_plat
+type in mtk_iommu_hw_init() to avoid seeing a long list of m4u_plat
+checks there in the future.
 
-This series introduces support for the IOMMUs found on this SoC.
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/iommu/mtk_iommu.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Tested on a MT6795 Sony Xperia M5 (codename "Holly") smartphone.
-
-Changes in v3:
- - Added new flag as suggested by Yong Wu
- - Rebased on top of https://patchwork.kernel.org/project/linux-mediatek/list/?series=648784
-
-Changes in v2:
- - Rebased on top of https://patchwork.kernel.org/project/linux-mediatek/list/?series=642681
-
-AngeloGioacchino Del Regno (3):
-  dt-bindings: mediatek: Add bindings for MT6795 M4U
-  iommu: mtk_iommu: Introduce new flag TF_PORT_TO_ADDR_MT8173
-  iommu: mtk_iommu: Add support for MT6795 Helio X10 M4Us
-
- .../bindings/iommu/mediatek,iommu.yaml        |  4 +
- drivers/iommu/mtk_iommu.c                     | 21 +++-
- include/dt-bindings/memory/mt6795-larb-port.h | 96 +++++++++++++++++++
- 3 files changed, 119 insertions(+), 2 deletions(-)
- create mode 100644 include/dt-bindings/memory/mt6795-larb-port.h
-
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 0ea0848581e9..8611cf8e4bd5 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -140,6 +140,7 @@
+ #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
+ /* IOMMU I/O (r/w) is enabled using PERICFG_IOMMU_1 register */
+ #define HAS_PERI_IOMMU1_REG		BIT(17)
++#define TF_PORT_TO_ADDR_MT8173		BIT(18)
+ 
+ #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
+ 				((((pdata)->flags) & (mask)) == (_x))
+@@ -960,7 +961,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data, unsigned int ban
+ 	 * Global control settings are in bank0. May re-init these global registers
+ 	 * since no sure if there is bank0 consumers.
+ 	 */
+-	if (data->plat_data->m4u_plat == M4U_MT8173) {
++	if (MTK_IOMMU_HAS_FLAG(data->plat_data, TF_PORT_TO_ADDR_MT8173)) {
+ 		regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
+ 			 F_MMU_TF_PROT_TO_PROGRAM_ADDR_MT8173;
+ 	} else {
+@@ -1437,7 +1438,8 @@ static const struct mtk_iommu_plat_data mt8167_data = {
+ static const struct mtk_iommu_plat_data mt8173_data = {
+ 	.m4u_plat     = M4U_MT8173,
+ 	.flags	      = HAS_4GB_MODE | HAS_BCLK | RESET_AXI |
+-			HAS_LEGACY_IVRP_PADDR | MTK_IOMMU_TYPE_MM,
++			HAS_LEGACY_IVRP_PADDR | MTK_IOMMU_TYPE_MM |
++			TF_PORT_TO_ADDR_MT8173,
+ 	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
+ 	.banks_num    = 1,
+ 	.banks_enable = {true},
 -- 
 2.35.1
 
