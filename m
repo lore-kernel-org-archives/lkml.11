@@ -2,97 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D62A8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:44:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CAE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:45:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244649AbiFILoy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:44:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39406 "EHLO
+        id S244715AbiFILnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:43:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244953AbiFILog (ORCPT
+        with ESMTP id S243952AbiFILmY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:44:36 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55273404357;
-        Thu,  9 Jun 2022 04:42:38 -0700 (PDT)
-X-UUID: 53869f4d4d8c4750a53be2ca23917f8e-20220609
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:175a5234-853c-4822-9b54-36c6b298710b,OB:0,LO
-        B:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:95
-X-CID-INFO: VERSION:1.1.5,REQID:175a5234-853c-4822-9b54-36c6b298710b,OB:0,LOB:
-        10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:95
-X-CID-META: VersionHash:2a19b09,CLOUDID:565f42e5-2ba2-4dc1-b6c5-11feb6c769e0,C
-        OID:df1cdf5d9736,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: 53869f4d4d8c4750a53be2ca23917f8e-20220609
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <irui.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 500897232; Thu, 09 Jun 2022 19:41:59 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 9 Jun 2022 19:41:58 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 9 Jun 2022 19:41:57 +0800
-From:   Irui Wang <irui.wang@mediatek.com>
-To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tzung-Bi Shih <tzungbi@chromium.org>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Tomasz Figa <tfiga@chromium.org>, <xia.jiang@mediatek.com>,
-        <maoguang.meng@mediatek.com>, kyrie wu <kyrie.wu@mediatek.com>,
-        <srv_heupstream@mediatek.com>
-Subject: [RESEND,V2,2/2] media: media: jpegenc: set bit mask for jpegenc
-Date:   Thu, 9 Jun 2022 19:41:51 +0800
-Message-ID: <20220609114151.19509-3-irui.wang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220609114151.19509-1-irui.wang@mediatek.com>
-References: <20220609114151.19509-1-irui.wang@mediatek.com>
+        Thu, 9 Jun 2022 07:42:24 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73561ECD42
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:40:53 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id u12so46920138eja.8
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 04:40:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ouHToTpfN91IdC1bQjCsmRZ9s0XMaKvgoUPDfBZdkoE=;
+        b=MCGCVjufFqOOIqY2BmXcaAlOQZP/Mb+gEcACSVAlis2Z8u5cPYXb0vv1bolsxVRWIL
+         6w8c7VAOzqydEgwsZrxcNAjPTgKFSWbtgFo5K/dU3ikxMhoSakVBi5ZsZVu88h6PZ8vV
+         eKJFs1KM9Pric7/nas8TK64Mibp6DgyMO00AQS6rB5QI624a/23Ajww+GB6jBy3Z+464
+         m3h1BxP0wtfBG6hxyUXwFl0qgLRXBJZ4O/hZ6axe/6wPj8C8SLqLPdRYU/5qLfc4LnRx
+         pKqCTW5/szu1KTxaulfufe8/WxKqGAiDvLzN13ijGS245X3U28yqx5qxu8HiWnb3U8jz
+         5YSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ouHToTpfN91IdC1bQjCsmRZ9s0XMaKvgoUPDfBZdkoE=;
+        b=SVTfkbkIW0nuY/knuLb5xRfQiZ5IQdV74Cm4HjSS9RYjzjNbU0dXWjzBGVi0q83o7n
+         yCZ7Gmr93sdp+Y1vlMVojbGQftJ4XNcXj8yugJhwTgYXP5QmigxYGEHIsG6LIcxwI50U
+         tJ/mMtngXzHrquip8T2P60+4PfhzAqLj2LTPjj3/9MUOa7NRcVn1y4f99apY0e8r0F3s
+         eyULWVVnvTioLYsp+gS+Q3ljRziXtjnH6hyDfGDGAL3VbYrkwdEk960+1njYCoO+TRs4
+         vXLMtNXltptTat+lwzCgXhFsoE1BoOYKSrawHqJ2FOUFQt0Ko78mrxl2cRhWUzx2ZkdX
+         QRBw==
+X-Gm-Message-State: AOAM5301ROD06f7NukikfaJf7oEbrUSDDMRkDMJddtbglo+YsLj6MLRq
+        zqH9MmC2+0BXTOUXWym3YBkSbA==
+X-Google-Smtp-Source: ABdhPJzz6M1UXqHNUIFcQq/P9/vNHhMGDrGeRXnd7+DWHIroLqIpwMzDeGqSSb7yKePjKhWbv85fhQ==
+X-Received: by 2002:a17:907:3f97:b0:711:d61d:df9 with SMTP id hr23-20020a1709073f9700b00711d61d0df9mr16406402ejc.644.1654774852403;
+        Thu, 09 Jun 2022 04:40:52 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id bk2-20020a170906b0c200b006fef557bb7asm10498662ejb.80.2022.06.09.04.40.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 04:40:52 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        arm@kernel.org, soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 40/48] ARM: dts: animeo: align gpio-key node names with dtschema
+Date:   Thu,  9 Jun 2022 13:40:39 +0200
+Message-Id: <20220609114047.380793-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org>
+References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kyrie wu <kyrie.wu@mediatek.com>
+The node names should be generic and DT schema expects certain pattern
+(e.g. with key/button/switch).
 
-set jpeg encode DMA bit mask to support 34bits
-iova space(16GB) that the mt8186 iommu HW support.
-Whole the iova range separate to 0~4G/4G~8G/8G~12G/12G~16G,
-regarding which iova range jpgenc actually locate, it
-depends on the dma-ranges property of vdec dtsi node.
-
-Signed-off-by: kyrie wu <kyrie.wu@mediatek.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/boot/dts/animeo_ip.dts | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
-index bc5b0a0168ec..87685a62a5c2 100644
---- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
-+++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
-@@ -1369,6 +1369,9 @@ static int mtk_jpeg_probe(struct platform_device *pdev)
- 	jpeg->vdev->device_caps = V4L2_CAP_STREAMING |
- 				  V4L2_CAP_VIDEO_M2M_MPLANE;
+diff --git a/arch/arm/boot/dts/animeo_ip.dts b/arch/arm/boot/dts/animeo_ip.dts
+index 7da718abbd85..3fa3db2d9d02 100644
+--- a/arch/arm/boot/dts/animeo_ip.dts
++++ b/arch/arm/boot/dts/animeo_ip.dts
+@@ -168,26 +168,26 @@ tx_red {
+ 		};
+ 	};
  
-+	if (of_get_property(pdev->dev.of_node, "dma-ranges", NULL))
-+		dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(34));
-+
- 	ret = video_register_device(jpeg->vdev, VFL_TYPE_VIDEO, -1);
- 	if (ret) {
- 		v4l2_err(&jpeg->v4l2_dev, "Failed to register video device\n");
+-	gpio_keys {
++	gpio-keys {
+ 		compatible = "gpio-keys";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+-		keyswitch_in {
++		key-switch-in {
+ 			label = "keyswitch_in";
+ 			gpios = <&pioB 1 GPIO_ACTIVE_HIGH>;
+ 			linux,code = <28>;
+ 			wakeup-source;
+ 		};
+ 
+-		error_in {
++		key-error-in {
+ 			label = "error_in";
+ 			gpios = <&pioB 2 GPIO_ACTIVE_HIGH>;
+ 			linux,code = <29>;
+ 			wakeup-source;
+ 		};
+ 
+-		btn {
++		key-s {
+ 			label = "btn";
+ 			gpios = <&pioC 23 GPIO_ACTIVE_HIGH>;
+ 			linux,code = <31>;
 -- 
-2.18.0
+2.34.1
 
