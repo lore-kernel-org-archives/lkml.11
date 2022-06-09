@@ -2,104 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF712C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E68C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:01:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244915AbiFIL7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44362 "EHLO
+        id S234615AbiFIMB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 08:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242926AbiFIL7H (ORCPT
+        with ESMTP id S229851AbiFIMBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:59:07 -0400
+        Thu, 9 Jun 2022 08:01:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292361A398
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:59:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD1415A32
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 05:01:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F82660C93
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 11:59:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56CF2C34114;
-        Thu,  9 Jun 2022 11:59:03 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="qAkHwz2j"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1654775941;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RJORkAj3NYvpFmB7Va3TCC7yJxwVqGg4INvFsRsC1Dc=;
-        b=qAkHwz2jr4oCqOOVRj78DuuxoJkmmUX4fPRZKXfsz4meQuqHLz4LN0u/rjJFW5FdSmeY2Y
-        CDTcMkoCYHq1luCGXvyHiVS5q3V+ByoO9LplbfpB90MaDetyPd5tE6XSQfZQB8ydr2Vt6c
-        U7H+8O/1A8YthKJqeNeHEigJDa+s9/w=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 5cfe460d (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 9 Jun 2022 11:59:00 +0000 (UTC)
-Date:   Thu, 9 Jun 2022 13:58:44 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 386F360DE6
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 12:01:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94140C34114;
+        Thu,  9 Jun 2022 12:01:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654776112;
+        bh=u+XcfQReiKtxDuoUpBEx6UyrLDzkBQyxvH5fW+kzcYo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pcSP3/VTTdmDQELmxtlbXoFgmKAGwZcf+V0kLp95iAtBY+KZ9iVAHlfKwm1Io07vp
+         oiF0uIcToS/EpdF9ONCzdQdThqURJoBZYbsdIOevwxgANCYfnyN/rPcmGh5rKY5J7y
+         W9moHY103jFeCYAJQePsbVVdJUi0pwaxZ7cN+w8dvHPV5f6ZJ07sGlLeOPkEN6efXL
+         +vf7IXT5XCaVzcKilP8BdmGt53BLNgW16jalCSZRdUJV/xO0g2ei65VP6eEkrW6HVN
+         2UmEyqkIPIiVv/QgRlYNsNGJxIrd+r57VQzigtaYmwjKQj7jZavHuTT7LHiqUowNK9
+         WI60p8fHdRQaQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nzGrG-00GrMO-6i; Thu, 09 Jun 2022 13:01:50 +0100
+Date:   Thu, 09 Jun 2022 13:01:49 +0100
+Message-ID: <87a6am3v0y.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jiaxun Yang <jiaxun.yang@flygoat.com>
+Cc:     Huacai Chen <chenhuacai@loongson.cn>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Alexander Potapenko <glider@google.com>,
-        Marco Elver <elver@google.com>, kasan-dev@googlegroups.com
-Subject: Re: [PATCH printk v5 1/1] printk: extend console_lock for
- per-console locking
-Message-ID: <YqHgdECTYFNJgdGc@zx2c4.com>
-References: <2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com>
- <Ymjy3rHRenba7r7R@alley>
- <b6c1a8ac-c691-a84d-d3a1-f99984d32f06@samsung.com>
- <87fslyv6y3.fsf@jogness.linutronix.de>
- <51dfc4a0-f6cf-092f-109f-a04eeb240655@samsung.com>
- <87k0b6blz2.fsf@jogness.linutronix.de>
- <32bba8f8-dec7-78aa-f2e5-f62928412eda@samsung.com>
- <87y1zkkrjy.fsf@jogness.linutronix.de>
- <CAMuHMdVmoj3Tqz65VmSuVL2no4+bGC=qdB8LWoB=vyASf9vS+g@mail.gmail.com>
- <87fske3wzw.fsf@jogness.linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <87fske3wzw.fsf@jogness.linutronix.de>
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Jianmin Lv <lvjianmin@loongson.cn>
+Subject: Re: [PATCH V11 00/10] irqchip: Add LoongArch-related irqchip drivers
+In-Reply-To: <f9bafd6c-0819-9046-e0dd-11e2dd98da38@flygoat.com>
+References: <20220430085344.3127346-1-chenhuacai@loongson.cn>
+        <87v8uk6kfa.wl-maz@kernel.org>
+        <f9bafd6c-0819-9046-e0dd-11e2dd98da38@flygoat.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: jiaxun.yang@flygoat.com, chenhuacai@loongson.cn, tglx@linutronix.de, linux-kernel@vger.kernel.org, lixuefeng@loongson.cn, chenhuacai@gmail.com, lvjianmin@loongson.cn
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi John,
++ Jianmin Lv
 
-On Thu, Jun 09, 2022 at 01:25:15PM +0206, John Ogness wrote:
-> (Added RANDOM NUMBER DRIVER and KFENCE people.)
+On Fri, 20 May 2022 16:04:28 +0100,
+Jiaxun Yang <jiaxun.yang@flygoat.com> wrote:
+>=20
+>=20
+>=20
+> =E5=9C=A8 2022/5/5 16:58, Marc Zyngier =E5=86=99=E9=81=93:
+> >> LoongArch use ACPI, but ACPI tables cannot describe the hierarchy of
+> >> irqchips, so we initilize the irqchip subsystem in this way (from arch
+> >> code):
+> >>=20
+> >>    cpu_domain =3D loongarch_cpu_irq_init();
+> >>    liointc_domain =3D liointc_acpi_init(cpu_domain, acpi_liointc);
+> >>    eiointc_domain =3D eiointc_acpi_init(cpu_domain, acpi_eiointc);
+> >>    pch_pic_domain =3D pch_pic_acpi_init(eiointc_domain, acpi_pchpic);
+> >>    pch_msi_domain =3D pch_msi_acpi_init(eiointc_domain, acpi_pchmsi);
+> > I said no to this in the past, and I'm going to reiterate: this is
+> > *not* acceptable. This obviously doesn't scale and isn't manageable in
+> > the long run. Hardcoding the topology and the probing order in the
+> > kernel code has repeatedly proved to be a disaster, and yet you refuse
+> > to take any input from past experience. This is pretty worrying.
+> Just my two cents here.
+>=20
+> Those drivers have such a topology just because this was my design to
+> handle irqchip differences between RS780E and LS7A for MIPS-era Loongson.
+>=20
+> TBH, for LoongArch-era Loongson, they should be handled by the same drive=
+r,
+> cuz the topology behind them just looks like GIC PPI SPI and MSI for
+> Arm GIC.
+>=20
+> PCH PIC and eiointc in combination relays interrupts from
+> peripherals just like SPI.  liointc is doing the PPI job. They are
+> not separated modules in hardware, they are interlocked.
 
-Thanks.
+That was my impression too, but I keep getting pushback on that. I
+wouldn't mind leaving the existing drivers for MIPS only and get new
+ones for Loongson if that made things clearer.
 
-> I am guessing you have CONFIG_PROVE_RAW_LOCK_NESTING enabled?
-> 
-> We are seeing a spinlock (base_crng.lock) taken while holding a
-> raw_spinlock (meta->lock).
-> 
-> kfence_guarded_alloc()
->   raw_spin_trylock_irqsave(&meta->lock, flags)
->     prandom_u32_max()
->       prandom_u32()
->         get_random_u32()
->           get_random_bytes()
->             _get_random_bytes()
->               crng_make_state()
->                 spin_lock_irqsave(&base_crng.lock, flags);
-> 
-> I expect it is allowed to create kthreads via kthread_run() in
-> early_initcalls.
+> The system should be treated as a whole, pretty much like how we see
+> Arm's GIC. The topology will last forever for every ACPI enabled
+> LoongArch PC.
+>=20
+> I see no reason they should be described separately. Adding complicities =
+to
+> ACPI bindings brings no benefit. Changing ACPI binding which is already in
+> final draft stage can only leave us with chaos.
 
-AFAIK, CONFIG_PROVE_RAW_LOCK_NESTING is useful for teasing out cases
-where RT's raw spinlocks will nest wrong with RT's sleeping spinlocks.
-But nobody who wants an RT kernel will be using KFENCE. So this seems
-like a non-issue? Maybe just add a `depends on !KFENCE` to
-PROVE_RAW_LOCK_NESTING?
+OK. So how do we move forward? You seem to have a good grasp on how
+this should be structured, so can you work with Jianmin Lv to make
+some progress on this?
 
-Jason
+Thanks,
+
+	M.
+
+--=20
+Without deviation from the norm, progress is not possible.
