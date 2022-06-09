@@ -2,64 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5C12C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:41:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FD9C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244222AbiFILlt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:41:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35516 "EHLO
+        id S244245AbiFILlz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:41:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244141AbiFILlD (ORCPT
+        with ESMTP id S244116AbiFILke (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:41:03 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750621E3019
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:40:17 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id gl15so33033191ejb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 04:40:17 -0700 (PDT)
+        Thu, 9 Jun 2022 07:40:34 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87B9A1E0C12
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:40:11 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id s12so39689406ejx.3
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 04:40:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jcozBsTgT/YC375ApFyzAWc29eO1kZXhYvLLJcIaQdo=;
-        b=CfvdCBVNbMGWtVTdw8pHSTzzwyWFyrbpPI2qYmX2pmsat0d6wQV0PoomT5PheJ3e7T
-         AKdsBGS0VJR+2b1QFm3ZluTcdXkrDYUskfb6x407WaY56urH4AzVSW0AmcoV/haYW/Et
-         ILNf8e56vPvZ+JE9lArBOPe+vmzn9to9Dm4vEbgWsSpvCepnaG16rt/uR/uQqA2alvXC
-         OrBZMiH0yIT/39QmaoMyxdlRB8lbNjlryAW/SQhX+CB01xxmcK431g93BxtolkwsHfM5
-         /dfitoFeaOYBB5eYLXiWPoRbzFKda3qNFEk/Tr8c0HM3nIT6nr26NTCkrhIqXRcToKUL
-         Gu/A==
+        bh=hsW59cFZjklHB2Wpxrfsfror1DmvkvVRBrL7nFD90Rw=;
+        b=EskDVL4BMCVdTuVtgU02j2Lf24yqoUYVo6Jth0FY8fPZunmtSvGk++17C91VQRGZ5Y
+         4uqCpYzfH56oOiJSWgEfzB7VSkMuAlL57u7mzBqmZUw8e7Gu0+B/KQeLicxKX/iclITS
+         fiVhjRqkXZd4JrAjzl7jnmt1KUQlXsW0dvneIZEYiJccRHEk+OBTDYqflaglkAW2aZWo
+         XyppDgoKAltxSqKMIXcw6Vq/T8KrnI5b/VeCqf1WUaFVJ3qSjWlgncYtQ5+k5Vb7RJi1
+         icfcY75PLQlqc99AvGllP4Z67z1vIB8dyNcvVA5qABFL0PrB2KixwtE5TYhcMTJpw2/z
+         2jCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jcozBsTgT/YC375ApFyzAWc29eO1kZXhYvLLJcIaQdo=;
-        b=xz1EP8C6Pk9ZUDM/DFUGyUoB4j0wJci9yid84tDpaSFUKABKrZIdiTV9TKRvCQcS34
-         lZp2Mvj5Hy6xi0GBXnXYBWehrDB7l9EGpGPSvF0j4gFAyPSbvaD3KHbbkMytA6GfoULV
-         MMeXWlH8pmKGnbGVdT27HhIAJz75FNFXudWnA71LO2sRICeouzzl1kBZ9q3t9xV5Uvrv
-         BDbvqMJouecrtMDJ3HLSmTjjDpViJ6UMF6gSR5ZwMBmh0pKyXgZbA+QmZKmzvd8KZEgL
-         B4R8StzPHqZUhykDn9fjrkr92HoYMFM2EXQpTOdtRAecPYZ8EBahkORSirEsGH1tRa7D
-         YMzQ==
-X-Gm-Message-State: AOAM533f6+MrAOT+O/N5oT0ER75gVOIDJVpFy5cR95MeU+r8up+veDOr
-        MRLJ1ASkhLtXAfWu2H2q58QTyQ==
-X-Google-Smtp-Source: ABdhPJzES6tPulNj5Wy4xrvXk6IgrBILt1ArgrmGgwN31bzfvVX4gweDST+60dXsz6pTQ42tTsROLg==
-X-Received: by 2002:a17:907:2cc4:b0:6fe:2100:de21 with SMTP id hg4-20020a1709072cc400b006fe2100de21mr35434866ejc.462.1654774815646;
-        Thu, 09 Jun 2022 04:40:15 -0700 (PDT)
+        bh=hsW59cFZjklHB2Wpxrfsfror1DmvkvVRBrL7nFD90Rw=;
+        b=tiZxGainouhGXmH7hF7RSQl7s9n/MG5AoVKVmXtevttLhKcYfDOzkWqcmZx6gxEzgt
+         YFgwWbND/EHmyI+yitKoXoMN3Cs9ZUWdnSBEdXzkYkFtgcpE/afIfhYxw/eQYrmmZB9Z
+         V3fovIMD81iLavDc2voUq3NwCqPLtTX5508vlQ8wHvLb/Ly5PsQzixNh4DQONoUJZZ5+
+         6NtzT1YNjxVurMyyOz91bNy73/nV++FWZoHXwZ/P8aurJEyw7zMWpT1+dCK3zT3QG5TG
+         HzTvXe2jIbl7wr1GVr5tHU18qGN9X0xQ/eOXGyoNl9h1T86ZFvhe1wgCcCkzm/H844xK
+         j22w==
+X-Gm-Message-State: AOAM5322OTkFk8B/pJ/ns4SWd1ykRUNl42XcB4m8l9+eIcne7nWQvXZk
+        /D8ZeSMDQFbMkQZQWbVaVSMFnw==
+X-Google-Smtp-Source: ABdhPJzbI0Bm95mFsHbaVdDvO2+VQTt8NXkiInDIkjgIE93NXch5C/nf02nOC7GzU9E0lfFP0RwGSA==
+X-Received: by 2002:a17:907:1b20:b0:6da:649b:d99e with SMTP id mp32-20020a1709071b2000b006da649bd99emr35554691ejc.712.1654774810411;
+        Thu, 09 Jun 2022 04:40:10 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id q1-20020a170906360100b006ff59151e34sm10638441ejb.39.2022.06.09.04.40.14
+        by smtp.gmail.com with ESMTPSA id q1-20020a170906360100b006ff59151e34sm10638441ejb.39.2022.06.09.04.40.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 04:40:15 -0700 (PDT)
+        Thu, 09 Jun 2022 04:40:10 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
         arm@kernel.org, soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 25/48] arm64: dts: tegra: align gpio-key node names with dtschema
-Date:   Thu,  9 Jun 2022 13:39:58 +0200
-Message-Id: <20220609114002.380563-6-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 21/48] arm64: dts: mediatek: align gpio-key node names with dtschema
+Date:   Thu,  9 Jun 2022 13:39:54 +0200
+Message-Id: <20220609114002.380563-2-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org>
 References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org>
@@ -74,286 +73,188 @@ The node names should be generic and DT schema expects certain pattern
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/boot/dts/nvidia/tegra132-norrin.dts         |  4 ++--
- arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dts     |  6 +++---
- .../boot/dts/nvidia/tegra186-p3509-0000+p3636-0001.dts |  6 +++---
- arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dts     |  4 ++--
- arch/arm64/boot/dts/nvidia/tegra194-p3509-0000.dtsi    |  4 ++--
- arch/arm64/boot/dts/nvidia/tegra210-p2597.dtsi         |  6 +++---
- arch/arm64/boot/dts/nvidia/tegra210-p2894.dtsi         |  2 +-
- arch/arm64/boot/dts/nvidia/tegra210-p3450-0000.dts     |  4 ++--
- arch/arm64/boot/dts/nvidia/tegra210-smaug.dts          | 10 +++++-----
- .../boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts |  6 +++---
- 10 files changed, 26 insertions(+), 26 deletions(-)
+ .../boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts      |  4 ++--
+ arch/arm64/boot/dts/mediatek/mt7622-rfb1.dts           |  4 ++--
+ arch/arm64/boot/dts/mediatek/mt8173-elm-hana-rev7.dts  |  6 +++---
+ arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi           | 10 +++++-----
+ arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi |  4 ++--
+ arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dtsi  |  2 +-
+ arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi         |  2 +-
+ arch/arm64/boot/dts/mediatek/pumpkin-common.dtsi       |  4 ++--
+ 8 files changed, 18 insertions(+), 18 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra132-norrin.dts b/arch/arm64/boot/dts/nvidia/tegra132-norrin.dts
-index f16acb4cabaa..62d58221ad3c 100644
---- a/arch/arm64/boot/dts/nvidia/tegra132-norrin.dts
-+++ b/arch/arm64/boot/dts/nvidia/tegra132-norrin.dts
-@@ -1030,7 +1030,7 @@ clk32k_in: clock-32k {
+diff --git a/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts b/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
+index 2b9bf8dd14ec..c2311733d2de 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
+@@ -40,13 +40,13 @@ cpu@1 {
  	gpio-keys {
  		compatible = "gpio-keys";
+ 
+-		factory {
++		factory-key {
+ 			label = "factory";
+ 			linux,code = <BTN_0>;
+ 			gpios = <&pio 0 GPIO_ACTIVE_HIGH>;
+ 		};
+ 
+-		wps {
++		wps-key {
+ 			label = "wps";
+ 			linux,code = <KEY_WPS_BUTTON>;
+ 			gpios = <&pio 102 GPIO_ACTIVE_HIGH>;
+diff --git a/arch/arm64/boot/dts/mediatek/mt7622-rfb1.dts b/arch/arm64/boot/dts/mediatek/mt7622-rfb1.dts
+index 596c073d8b05..c28da9323a9c 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7622-rfb1.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7622-rfb1.dts
+@@ -42,13 +42,13 @@ gpio-keys {
+ 		compatible = "gpio-keys";
+ 		poll-interval = <100>;
+ 
+-		factory {
++		key-factory {
+ 			label = "factory";
+ 			linux,code = <BTN_0>;
+ 			gpios = <&pio 0 0>;
+ 		};
+ 
+-		wps {
++		key-wps {
+ 			label = "wps";
+ 			linux,code = <KEY_WPS_BUTTON>;
+ 			gpios = <&pio 102 0>;
+diff --git a/arch/arm64/boot/dts/mediatek/mt8173-elm-hana-rev7.dts b/arch/arm64/boot/dts/mediatek/mt8173-elm-hana-rev7.dts
+index 44f6149c1307..28433b94f7c7 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8173-elm-hana-rev7.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8173-elm-hana-rev7.dts
+@@ -21,7 +21,7 @@ cpu_crit: cpu_crit0 {
+ };
+ 
+ &gpio_keys {
+-	/delete-node/tablet_mode;
+-	/delete-node/volume_down;
+-	/delete-node/volume_up;
++	/delete-node/switch-tablet-mode;
++	/delete-node/switch-volume-down;
++	/delete-node/switch-volume-up;
+ };
+diff --git a/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi b/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
+index 9c75fbb31f98..d20378758213 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
+@@ -53,7 +53,7 @@ gpio_keys: gpio-keys {
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&gpio_keys_pins>;
  
 -		lid {
 +		switch-lid {
  			label = "Lid";
- 			gpios = <&gpio TEGRA_GPIO(R, 4) GPIO_ACTIVE_LOW>;
- 			linux,input-type = <5>;
-@@ -1039,7 +1039,7 @@ lid {
- 			wakeup-source;
+ 			gpios = <&pio 69 GPIO_ACTIVE_LOW>;
+ 			linux,code = <SW_LID>;
+@@ -61,7 +61,7 @@ lid {
+ 			gpio-key,wakeup;
  		};
  
 -		power {
 +		switch-power {
  			label = "Power";
- 			gpios = <&gpio TEGRA_GPIO(Q, 0) GPIO_ACTIVE_LOW>;
+ 			gpios = <&pio 14 GPIO_ACTIVE_HIGH>;
  			linux,code = <KEY_POWER>;
-diff --git a/arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dts b/arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dts
-index bd1897707fcc..47cf2013afcc 100644
---- a/arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dts
-+++ b/arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dts
-@@ -2478,7 +2478,7 @@ sata@3507000 {
- 	gpio-keys {
- 		compatible = "gpio-keys";
- 
--		power {
-+		key-power {
- 			label = "Power";
- 			gpios = <&gpio_aon TEGRA186_AON_GPIO(FF, 0)
- 					   GPIO_ACTIVE_LOW>;
-@@ -2489,7 +2489,7 @@ power {
- 			wakeup-source;
- 		};
- 
--		volume-up {
-+		key-volume-up {
- 			label = "Volume Up";
- 			gpios = <&gpio_aon TEGRA186_AON_GPIO(FF, 1)
- 					   GPIO_ACTIVE_LOW>;
-@@ -2498,7 +2498,7 @@ volume-up {
- 			debounce-interval = <10>;
- 		};
- 
--		volume-down {
-+		key-volume-down {
- 			label = "Volume Down";
- 			gpios = <&gpio_aon TEGRA186_AON_GPIO(FF, 2)
- 					   GPIO_ACTIVE_LOW>;
-diff --git a/arch/arm64/boot/dts/nvidia/tegra186-p3509-0000+p3636-0001.dts b/arch/arm64/boot/dts/nvidia/tegra186-p3509-0000+p3636-0001.dts
-index 7e9aad9ff177..3e83a4d52eb1 100644
---- a/arch/arm64/boot/dts/nvidia/tegra186-p3509-0000+p3636-0001.dts
-+++ b/arch/arm64/boot/dts/nvidia/tegra186-p3509-0000+p3636-0001.dts
-@@ -360,7 +360,7 @@ fan: pwm-fan {
- 	gpio-keys {
- 		compatible = "gpio-keys";
- 
--		power {
-+		key-power {
- 			label = "Power";
- 			gpios = <&gpio_aon TEGRA186_AON_GPIO(FF, 0)
- 					   GPIO_ACTIVE_LOW>;
-@@ -371,7 +371,7 @@ power {
- 			wakeup-source;
- 		};
- 
--		volume-up {
-+		key-volume-up {
- 			label = "Volume Up";
- 			gpios = <&gpio_aon TEGRA186_AON_GPIO(FF, 1)
- 					   GPIO_ACTIVE_LOW>;
-@@ -380,7 +380,7 @@ volume-up {
- 			debounce-interval = <10>;
- 		};
- 
--		volume-down {
-+		key-volume-down {
- 			label = "Volume Down";
- 			gpios = <&gpio_aon TEGRA186_AON_GPIO(FF, 2)
- 					   GPIO_ACTIVE_LOW>;
-diff --git a/arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dts b/arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dts
-index fafd7073d18c..bc1041d11f6d 100644
---- a/arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dts
-+++ b/arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dts
-@@ -2258,7 +2258,7 @@ fan: pwm-fan {
- 	gpio-keys {
- 		compatible = "gpio-keys";
- 
--		force-recovery {
-+		key-force-recovery {
- 			label = "Force Recovery";
- 			gpios = <&gpio TEGRA194_MAIN_GPIO(G, 0)
- 				       GPIO_ACTIVE_LOW>;
-@@ -2267,7 +2267,7 @@ force-recovery {
- 			debounce-interval = <10>;
- 		};
- 
--		power {
-+		key-power {
- 			label = "Power";
- 			gpios = <&gpio_aon TEGRA194_AON_GPIO(EE, 4)
- 					   GPIO_ACTIVE_LOW>;
-diff --git a/arch/arm64/boot/dts/nvidia/tegra194-p3509-0000.dtsi b/arch/arm64/boot/dts/nvidia/tegra194-p3509-0000.dtsi
-index 4cee935e44a5..273a1ef716b6 100644
---- a/arch/arm64/boot/dts/nvidia/tegra194-p3509-0000.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra194-p3509-0000.dtsi
-@@ -2262,7 +2262,7 @@ fan: pwm-fan {
- 	gpio-keys {
- 		compatible = "gpio-keys";
- 
--		force-recovery {
-+		key-force-recovery {
- 			label = "Force Recovery";
- 			gpios = <&gpio TEGRA194_MAIN_GPIO(G, 0)
- 				       GPIO_ACTIVE_LOW>;
-@@ -2271,7 +2271,7 @@ force-recovery {
- 			debounce-interval = <10>;
- 		};
- 
--		power {
-+		key-power {
- 			label = "Power";
- 			gpios = <&gpio_aon TEGRA194_AON_GPIO(EE, 4)
- 					   GPIO_ACTIVE_LOW>;
-diff --git a/arch/arm64/boot/dts/nvidia/tegra210-p2597.dtsi b/arch/arm64/boot/dts/nvidia/tegra210-p2597.dtsi
-index 4b43b89a9651..a44c56c1e56e 100644
---- a/arch/arm64/boot/dts/nvidia/tegra210-p2597.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra210-p2597.dtsi
-@@ -1530,20 +1530,20 @@ gpio-keys {
- 		compatible = "gpio-keys";
- 		label = "gpio-keys";
- 
--		power {
-+		key-power {
- 			label = "Power";
- 			gpios = <&gpio TEGRA_GPIO(X, 5) GPIO_ACTIVE_LOW>;
- 			linux,code = <KEY_POWER>;
- 			wakeup-source;
- 		};
- 
--		volume_down {
-+		key-volume-down {
- 			label = "Volume Down";
- 			gpios = <&gpio TEGRA_GPIO(Y, 0) GPIO_ACTIVE_LOW>;
- 			linux,code = <KEY_VOLUMEDOWN>;
- 		};
- 
--		volume_up {
-+		key-volume-up {
- 			label = "Volume Up";
- 			gpios = <&gpio TEGRA_GPIO(X, 6) GPIO_ACTIVE_LOW>;
- 			linux,code = <KEY_VOLUMEUP>;
-diff --git a/arch/arm64/boot/dts/nvidia/tegra210-p2894.dtsi b/arch/arm64/boot/dts/nvidia/tegra210-p2894.dtsi
-index 10347b6e6e84..8e657b10569d 100644
---- a/arch/arm64/boot/dts/nvidia/tegra210-p2894.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra210-p2894.dtsi
-@@ -1596,7 +1596,7 @@ gpio-keys {
- 		compatible = "gpio-keys";
- 		status = "okay";
- 
--		power {
-+		key-power {
- 			debounce-interval = <30>;
- 			gpios = <&gpio TEGRA_GPIO(X, 7) GPIO_ACTIVE_LOW>;
- 			label = "Power";
-diff --git a/arch/arm64/boot/dts/nvidia/tegra210-p3450-0000.dts b/arch/arm64/boot/dts/nvidia/tegra210-p3450-0000.dts
-index 749b44cf3ffa..37678c337a34 100644
---- a/arch/arm64/boot/dts/nvidia/tegra210-p3450-0000.dts
-+++ b/arch/arm64/boot/dts/nvidia/tegra210-p3450-0000.dts
-@@ -1802,7 +1802,7 @@ cpu-passive {
- 	gpio-keys {
- 		compatible = "gpio-keys";
- 
--		power {
-+		key-power {
- 			label = "Power";
- 			gpios = <&gpio TEGRA_GPIO(X, 5) GPIO_ACTIVE_LOW>;
- 			linux,input-type = <EV_KEY>;
-@@ -1812,7 +1812,7 @@ power {
- 			wakeup-source;
- 		};
- 
--		force-recovery {
-+		key-force-recovery {
- 			label = "Force Recovery";
- 			gpios = <&gpio TEGRA_GPIO(X, 6) GPIO_ACTIVE_LOW>;
- 			linux,input-type = <EV_KEY>;
-diff --git a/arch/arm64/boot/dts/nvidia/tegra210-smaug.dts b/arch/arm64/boot/dts/nvidia/tegra210-smaug.dts
-index a263d51882ee..8494c7b2961b 100644
---- a/arch/arm64/boot/dts/nvidia/tegra210-smaug.dts
-+++ b/arch/arm64/boot/dts/nvidia/tegra210-smaug.dts
-@@ -1756,7 +1756,7 @@ cpu-sleep {
- 	gpio-keys {
- 		compatible = "gpio-keys";
- 
--		power {
-+		key-power {
- 			label = "Power";
- 			gpios = <&gpio TEGRA_GPIO(X, 5) GPIO_ACTIVE_LOW>;
- 			linux,code = <KEY_POWER>;
-@@ -1764,7 +1764,7 @@ power {
- 			wakeup-source;
- 		};
- 
--		lid {
-+		switch-lid {
- 			label = "Lid";
- 			gpios = <&gpio TEGRA_GPIO(B, 4) GPIO_ACTIVE_LOW>;
- 			linux,input-type = <EV_SW>;
-@@ -1772,7 +1772,7 @@ lid {
- 			wakeup-source;
+@@ -69,7 +69,7 @@ power {
+ 			gpio-key,wakeup;
  		};
  
 -		tablet_mode {
-+		key-tablet-mode {
- 			label = "Tablet Mode";
- 			gpios = <&gpio TEGRA_GPIO(Z, 2) GPIO_ACTIVE_HIGH>;
- 			linux,input-type = <EV_SW>;
-@@ -1780,13 +1780,13 @@ tablet_mode {
- 			wakeup-source;
++		switch-tablet-mode {
+ 			label = "Tablet_mode";
+ 			gpios = <&pio 121 GPIO_ACTIVE_HIGH>;
+ 			linux,code = <SW_TABLET_MODE>;
+@@ -77,13 +77,13 @@ tablet_mode {
+ 			gpio-key,wakeup;
  		};
  
 -		volume_down {
-+		key-volume-down {
- 			label = "Volume Down";
- 			gpios = <&gpio TEGRA_GPIO(X, 7) GPIO_ACTIVE_LOW>;
++		switch-volume-down {
+ 			label = "Volume_down";
+ 			gpios = <&pio 123 GPIO_ACTIVE_LOW>;
  			linux,code = <KEY_VOLUMEDOWN>;
  		};
  
 -		volume_up {
-+		key-volume-up {
- 			label = "Volume Up";
- 			gpios = <&gpio TEGRA_GPIO(M, 4) GPIO_ACTIVE_LOW>;
++		switch-volume-up {
+ 			label = "Volume_up";
+ 			gpios = <&pio 124 GPIO_ACTIVE_LOW>;
  			linux,code = <KEY_VOLUMEUP>;
-diff --git a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
-index 3f6c399e3371..02a10bb38562 100644
---- a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
-+++ b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
-@@ -2021,14 +2021,14 @@ gpio-keys {
- 		compatible = "gpio-keys";
- 		status = "okay";
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
+index 2d7a193272ae..3ac83be53627 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
+@@ -73,7 +73,7 @@ volume_buttons: volume-buttons {
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&volume_button_pins>;
  
--		force-recovery {
-+		key-force-recovery {
- 			label = "Force Recovery";
- 			gpios = <&gpio TEGRA234_MAIN_GPIO(G, 0) GPIO_ACTIVE_LOW>;
- 			linux,input-type = <EV_KEY>;
- 			linux,code = <BTN_1>;
+-		volume_down {
++		button-volume-down {
+ 			label = "Volume Down";
+ 			linux,code = <KEY_VOLUMEDOWN>;
+ 			debounce-interval = <100>;
+@@ -81,7 +81,7 @@ volume_down {
+ 			gpios = <&pio 6 GPIO_ACTIVE_LOW>;
  		};
  
--		power-key {
-+		key-power {
- 			label = "Power";
- 			gpios = <&gpio_aon TEGRA234_AON_GPIO(EE, 4) GPIO_ACTIVE_LOW>;
- 			linux,input-type = <EV_KEY>;
-@@ -2037,7 +2037,7 @@ power-key {
- 			wakeup-source;
+-		volume_up {
++		button-volume-up {
+ 			label = "Volume Up";
+ 			linux,code = <KEY_VOLUMEUP>;
+ 			debounce-interval = <100>;
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dtsi
+index 28966a65391b..50a0dd36b5fb 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dtsi
+@@ -45,7 +45,7 @@ gpio-keys {
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pen_eject>;
+ 
+-		pen-insert {
++		switch-pen-insert {
+ 			label = "Pen Insert";
+ 			/* Insert = low, eject = high */
+ 			gpios = <&pio 6 GPIO_ACTIVE_LOW>;
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
+index b035e06840e6..b50261e8b9ed 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
+@@ -144,7 +144,7 @@ wifi_wakeup: wifi-wakeup {
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&wifi_pins_wakeup>;
+ 
+-		wowlan {
++		button-wowlan {
+ 			label = "Wake on WiFi";
+ 			gpios = <&pio 113 GPIO_ACTIVE_HIGH>;
+ 			linux,code = <KEY_WAKEUP>;
+diff --git a/arch/arm64/boot/dts/mediatek/pumpkin-common.dtsi b/arch/arm64/boot/dts/mediatek/pumpkin-common.dtsi
+index 7a717f926929..8ee1529683a3 100644
+--- a/arch/arm64/boot/dts/mediatek/pumpkin-common.dtsi
++++ b/arch/arm64/boot/dts/mediatek/pumpkin-common.dtsi
+@@ -28,7 +28,7 @@ gpio-keys {
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&gpio_keys_default>;
+ 
+-		volume-up {
++		key-volume-up {
+ 			gpios = <&pio 42 GPIO_ACTIVE_LOW>;
+ 			label = "volume_up";
+ 			linux,code = <115>;
+@@ -36,7 +36,7 @@ volume-up {
+ 			debounce-interval = <15>;
  		};
  
--		suspend {
-+		key-suspend {
- 			label = "Suspend";
- 			gpios = <&gpio TEGRA234_MAIN_GPIO(G, 2) GPIO_ACTIVE_LOW>;
- 			linux,input-type = <EV_KEY>;
+-		volume-down {
++		key-volume-down {
+ 			gpios = <&pio 43 GPIO_ACTIVE_LOW>;
+ 			label = "volume_down";
+ 			linux,code = <114>;
 -- 
 2.34.1
 
