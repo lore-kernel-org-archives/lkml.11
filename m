@@ -2,92 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C86BEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E51CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242186AbiFII5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:57:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
+        id S239094AbiFII53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242572AbiFII4a (ORCPT
+        with ESMTP id S233090AbiFII4t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 04:56:30 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 191761E7BE4
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:56:12 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id bg6so26312953ejb.0
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 01:56:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=23ND4rIp28maicnbuFOnjfrniSOk7N5VAPPY+gIY+W4=;
-        b=rUKxy/Yy93wPG79xU9wyskibQe9IRoiZzJ2GgV7Rc+CT3nUoOk7M8yUvMIv1gGrLer
-         /FfOvsdp+vLpnspqkhm6sLxbl0Ulatox3je4BBcVUO+0SIHldW3ckm9KSFRutkz5bqPu
-         OgVhwwpirghDtgGAb9b5ks2MEM/mHCyZqys9tQNCs++Iq6Rrpx8WBoPMyeIzwKxI3U1G
-         pw0gHt2ffA7CyDg55fNSVtYsi/G7HbsuxYPirs8qqhF8zf3+2Gg58RXIH1v3T+H9UsB8
-         Y+GsCd22zC7QtvqDoBDwAJdWw9avWFaaXtI1Cv4CJ91rVTCviq5goUyebvXSaLosSzRa
-         9U2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=23ND4rIp28maicnbuFOnjfrniSOk7N5VAPPY+gIY+W4=;
-        b=aX0nWx/8ECYUdgs/dl/mTYRD0OsKiX/lycu46i2cK0m/33PoG9q0fqGzNgWqj6o8NM
-         JZ7NUlBnjnmQ28Vp0vaAgxQkUZE4PbmPemh2gSN8KWe7D7b68OExA+jXDFA/IFIeFeZQ
-         mWGlcrroZdS/maQQ0hVZDU0f3eu/0xFII6FngFuAhMvi88zp13GkW4bbooH5j4sYCvK4
-         nYJh7T+8Rd6VeXp0mLRLJRelzNMjElwk94XFyhJ9y0cL+Ym/ziE4tMGArbPNJj7mTETY
-         X3EIJLsiw74uMqNclG4dy5wcXLQLdC1moHhXUup2Wyzc3/4CXYyNwycsUV2JPs4b8jdw
-         ehiA==
-X-Gm-Message-State: AOAM533wMC0jjLHUvd2hzKlDbe60caeO+uFHgoGcgApzw9V+Cub5Ddd3
-        cjkONVME9n428PbRHt0jjJaCxA==
-X-Google-Smtp-Source: ABdhPJxT89yjhtXwg4++i7ECOHiVXc4PmOb6nuBXh9T0b6PTr4L1lJYk6J2tR702atACd/Yq//8x/w==
-X-Received: by 2002:a17:907:1c8f:b0:6e8:f898:63bb with SMTP id nb15-20020a1709071c8f00b006e8f89863bbmr36423455ejc.721.1654764970676;
-        Thu, 09 Jun 2022 01:56:10 -0700 (PDT)
-Received: from [192.168.0.195] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id q6-20020a1709060f8600b00711edab7622sm2819210ejj.40.2022.06.09.01.56.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jun 2022 01:56:09 -0700 (PDT)
-Message-ID: <67079e6f-52f4-6e0d-bf53-f9feb63e28f6@linaro.org>
-Date:   Thu, 9 Jun 2022 10:56:08 +0200
+        Thu, 9 Jun 2022 04:56:49 -0400
+Received: from mail-4316.protonmail.ch (mail-4316.protonmail.ch [185.70.43.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4E2B14AA50
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:56:17 -0700 (PDT)
+Date:   Thu, 09 Jun 2022 08:56:06 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
+        s=protonmail3; t=1654764975; x=1655024175;
+        bh=0fGVsCOsJ783x4T1usRFr8i+QZzgtmK7SsF2ZzEkCqM=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
+         Feedback-ID:Message-ID;
+        b=G46JYp0go5QwvIJ0K9+zx1ct3gJsf+sUOOHXsGc6Gz03a1zVTwxHUA8VJ3IPopPqQ
+         DzQxx40+iMLv1EzAI1nsXawAK0oMQN8u+nMMzJccbQDf69zL//Q7+GbzRE4T8w8guz
+         lRVZxYcjR88U/fy3d09mhftdMBz9Oz+r5/3Dy6so28Pgjwc+EMuJt+GbjVtTEPyLSg
+         GSF3gYAA/9IrRTMefyke3veBaX64H75WXG8GiMTf9pDDsB9YeE25ZQuKNvd6Qd/Lbf
+         gxlBm5ON82OTMjwBHvfPjVBmvh9UoIK86XKuwUFvXx7kzP6N3GWZ2RD9nANCX+FM7Z
+         Sp4WS+HHEFhog==
+To:     Marcel Holtmann <marcel@holtmann.org>
+From:   Juerg Haefliger <juergh@proton.me>
+Cc:     Juerg Haefliger <juergh@protonmail.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        BlueZ <linux-bluetooth@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Reply-To: Juerg Haefliger <juergh@proton.me>
+Subject: Re: [PATCH RESEND] Bluetooth: ath3k: Add MODULE_FIRMWARE for patch and config files
+Message-ID: <20220609104941.46bda87f@smeagol>
+In-Reply-To: <20220505080744.0343a857@smeagol>
+References: <20220504074606.15505-1-juergh@protonmail.com> <6A323366-2AB3-443E-A605-C18EA7A2E161@holtmann.org> <20220505080744.0343a857@smeagol>
+Feedback-ID: 45149698:user:proton
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 00/11] dt-bindings/pinctrl/arm: qcom: minor cleanups of
- QCOM PMIC pinctrl
-Content-Language: en-US
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Luca Weiss <luca@z3ntu.xyz>, David Heidelberg <david@ixit.cz>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>
-References: <20220507194913.261121-1-krzysztof.kozlowski@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220507194913.261121-1-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed;
+ boundary="b1_X5QaQZmVeY2aDI7edktz7aPJvWCC92D1dICoI1MbEM"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/05/2022 21:49, Krzysztof Kozlowski wrote:
-> Hi,
-> 
-> The patches are independent, so they can be picked up as is.
-> 
-> Not really tested on hardware (except SDM845).
-> 
+This is a multi-part message in MIME format.
 
-Hi Bjorn,
-The pinctrl bindings part was applied. The DTS changes are waiting for
-you here.
+--b1_X5QaQZmVeY2aDI7edktz7aPJvWCC92D1dICoI1MbEM
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Best regards,
-Krzysztof
+On Thu, 05 May 2022 06:07:52 +0000
+"Juerg Haefliger" <juergh@protonmail.com> wrote:
+
+> Hi Marcel,
+>
+>
+> > Hi Juerg,
+> >
+> > > The ath3k driver loads patch and configuration files so add MODULE_FI=
+RMWARE
+> > > macros to povide that information via modinfo.
+> > >
+> > > Signed-off-by: Juerg Haefliger <juergh@protonmail.com>
+> > > ---
+> > > RESEND:
+> > >  Resend from protonmail email account to please the test bot.
+> > > ---
+> > > drivers/bluetooth/ath3k.c | 2 ++
+> > > 1 file changed, 2 insertions(+)
+> > >
+> > > diff --git a/drivers/bluetooth/ath3k.c b/drivers/bluetooth/ath3k.c
+> > > index 88262d3a9392..56e9a64177ae 100644
+> > > --- a/drivers/bluetooth/ath3k.c
+> > > +++ b/drivers/bluetooth/ath3k.c
+> > > @@ -538,3 +538,5 @@ MODULE_DESCRIPTION("Atheros AR30xx firmware drive=
+r");
+> > > MODULE_VERSION(VERSION);
+> > > MODULE_LICENSE("GPL");
+> > > MODULE_FIRMWARE(ATH3K_FIRMWARE);
+> > > +MODULE_FIRMWARE("ar3k/AthrBT_0x*.dfu");
+> > > +MODULE_FIRMWARE("ar3k/ramps_0x*_*.dfu");
+> >
+> > I am still not convinced by the glob file matching. How would that actu=
+ally work?
+>
+> In my case I need to remove firmware blobs that the kernel doesn't need t=
+o
+> reduce disk usage. This information helps. While it might retain unneeded
+> versions it's still better than nothing.
+
+Ping. So what do you suggest? Hard-code all filenames based on what's
+currently in linux-firmware? Given the HW is quite old that might not chang=
+e
+very often...
+
+...Juerg
+
+>
+> ...Juerg
+>
+>
+> > Regards
+> >
+> > Marcel
+> >
+>
+
+
+--b1_X5QaQZmVeY2aDI7edktz7aPJvWCC92D1dICoI1MbEM
+Content-Type: application/pgp-signature; name=attachment.sig
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=attachment.sig
+
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0NCg0KaVFJekJBRUJDZ0FkRmlFRWhaZlU5Nkl1
+cHJ2aUxkZUxEOU9MQ1F1bVFyY0ZBbUtodFowQUNna1FEOU9MQ1F1bQ0KUXJjNHZCQUFnVDI2bXpE
+TnYwL0FXRzMyTElXdnBGZ3BtUEhKMVdmT0kyRFJDbVd0ZGJDTk0yMFVCNnRMc1VYRQ0KU1VhSExt
+VC96QlFTMzdaNStId2VPc3J0SXJGbVhQbmxuTTVDVnhWNHhQVGFnaURndGNaNm51QTFSUDB0S29v
+Yg0KK0N5Q2lDb0VNMWFTY3VCREJVbnVsWjU3YSt0R3VERTN5cUZxdkdodWNneENHYTZUTHpBKytz
+ZEkxQkx2Z0ZYeg0KZGU1OGE0UW5ET1Z4ZXh6YzZJMlhjRFB6UDQ2N0FDSGZlR2xMSEZTaUNWYmh3
+N3BVNGt0SjBVbkswaGcyZDZuQg0KQUgvVHhwTm42WWU1SWRJNVpmVHYyYllheVZLaGZCOGUzYWRF
+a2drblNwYS90UWJOaE51cEUyblhzcjdPUlBhMw0KWnhQZE1zOVFERlZZbEYwelNQci9DNzdBT1Z2
+T3ZkUTdDNUpBN204bXc1eStYano4TWJweHdRUEJFZURXOUZqRQ0Kb3RqemQyM2NIaEptTkM3eU1O
+bWJpUzZXdmsrMThkWWtZZ1BMSGhVVHlaUUJaMnFXcmovdU1KKyt1S3NMT0hZdA0KOTV3NVpMV0hs
+dFdnMTlsOENObEI1RWFEbEJqOTZjSkRaNmU2M3BJQ1owT3Ria0w5bUVTRGhOTk5zNnJDbHdMeA0K
+azEvMnhlQWVnOE5ISmtXL2lTUzJMcjhWemRlZ3o1SXpNclNocUhqSkFpbFl0STY0Vys2WkVpQ1dD
+RGRlQWQ5Zg0KVCtNLzVZZW9xd1h5RkNWT096TFJFaVJuVGV3TExNdTNQSXQrSVZiTzdFNmRWZHNT
+aVNYOGQ0YjZROFhmT0V2dg0KQXgwYUYwN2s4U3o4S1NVKzZFRDVqRXNGYnYrRHVqQm1hVStoSFQw
+MEl5L0RJVzNBZGlrPQ0KPWhveW8NCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQ0K
+
+--b1_X5QaQZmVeY2aDI7edktz7aPJvWCC92D1dICoI1MbEM--
+
