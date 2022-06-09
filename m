@@ -2,129 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81DDECCA473
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:23:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74337C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344446AbiFIPXk (ORCPT
+        id S1344463AbiFIPXu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 11:23:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
+        Thu, 9 Jun 2022 11:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344489AbiFIPXa (ORCPT
+        with ESMTP id S243952AbiFIPXi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 11:23:30 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869F5B18;
-        Thu,  9 Jun 2022 08:23:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654788208; x=1686324208;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=OqFF6qDwLOh06Q07Wxi7YuzZhtAUWXJ5RHWWW3Dj/IY=;
-  b=VeUiBiKw+Eaxyb83yq9NpxMX1jKSB5jl+LTcZSlT4+U7fnss6cr7aivv
-   DxG0fUpDg0Zs9sRb+ZGdLVnJgr1VRWxbr4lLkuoQHMVaL8AIRnSx3Sz7d
-   BYpfM+phMKhY3gTldLAmsTJIl+f2vaz96NiI6GZhwlgNm8ME9rYn+/HAA
-   DiEcdKNJZpACESyJWmvVbBPd5qn47oGHP2iojYvZAuoU5Ibg3dB91m3ZC
-   WeYBSLh/2Azl+RNXcZbezgpRRIg8He7Rm1tQUYqyIS25jz1QZaLMSuXE4
-   u+EbH3Vv7Jm9GZQHgpr6/1vq4BiUBWi1K0f0iZCId9vv8BVPEXNrfTsXW
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="257747930"
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="257747930"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 08:23:28 -0700
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="585630710"
-Received: from jeremywe-mobl3.amr.corp.intel.com (HELO [10.209.173.145]) ([10.209.173.145])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 08:23:26 -0700
-Message-ID: <97757ee1-2525-4e97-855e-da6fb66f01ae@linux.intel.com>
-Date:   Thu, 9 Jun 2022 10:22:35 -0500
+        Thu, 9 Jun 2022 11:23:38 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A17CF1D
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 08:23:37 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id w21so21404666pfc.0
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 08:23:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YV7RC7djtxI0kHw5S5FDRQb2joRqGeuY1mF5zw0phKk=;
+        b=lSf0tQldx/w/ULdeiOjWFksRRZOHkwFQ+zi7S6eUMpPE+euTNq3HfakFsiKn+akZgA
+         BYsNOZN6AKF8VG7tGzdoYC3XsUS9zpNzK4OTBz8SkU/vOjzA6DCrzImFZh8K5L5045nO
+         gtaGCeNE0sEYaJtDzQI5dYct1BCJ/LUA0kDrZ29TbBynMGr3m+1dUjIO/8+rinAeI8Ge
+         ZM4yM/D1Q/S8svh4b8VSGnrbrPC6w7hLXcJ2xNJO9bZ0AbME7FRMvC58Wsw5XYedMd43
+         VYw31UYqRn0Gr/rFapRiPydIJmWwSdOVdFFbZ/5OT8ysrKDH3W9qbrHeYJTS7UfCRGnm
+         J0ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YV7RC7djtxI0kHw5S5FDRQb2joRqGeuY1mF5zw0phKk=;
+        b=ri5AEYXhDyVEcknPKs+OvaCVQx95XEZCnd7nxGgb/HhAc4immX4kQTPDLAhe5oYya/
+         Nh/1IEyAe0dRQRM/fUVj2xXEhFzgczdz8UgR59Eq21U0Xz2+tK6uS/TWUKCiSVb0WBcV
+         VVSrwz6ITDNO7w4rF6XRGx5KNwRhAGS2J+jpwDQS3TSDt8Xr8RAQihDVnVVYOmbVDbrp
+         sookMM5Qvm2LgoR0KgZaaskCtMLsDlX+AlYxNIHf3YeJtbheF48uvU8X7fFb6Xghn5if
+         wLmp1s1yW1HQ9GhF6c2QpONL4gAnsPpP8g30XWkCC4dct2cE9RI4WUBZFinoIKZpH/Pq
+         z1og==
+X-Gm-Message-State: AOAM5335FBgeDuSZsbPKaK7pTMQ4mEm0ejG4fa41kyuwJgka/Ljsc27h
+        JK/1CFuGaTTCjAn8F+P42vVHIFCseCZfFh6E2aIuJg==
+X-Google-Smtp-Source: ABdhPJy/KwvUBHnh2VRlvCqbK+o5hSwHlwE0i9AJu6gcHX/fyizWfCV7lcs5p6BiMXf7TYQ8FWcrUdEhtuopEnRW2Zg=
+X-Received: by 2002:a05:6a00:889:b0:510:91e6:6463 with SMTP id
+ q9-20020a056a00088900b0051091e66463mr40895230pfj.58.1654788216841; Thu, 09
+ Jun 2022 08:23:36 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.9.1
-Subject: Re: [PATCH v4 1/2] soundwire: qcom: Add flag for software clock
- gating check
-Content-Language: en-US
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
-        broonie@kernel.org, robh+dt@kernel.org, quic_plai@quicinc.com,
-        bgoswami@quicinc.com, perex@perex.cz, tiwai@suse.com,
-        srinivas.kandagatla@linaro.org, quic_rohkumar@quicinc.com,
-        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        swboyd@chromium.org, judyhsiao@chromium.org, vkoul@kernel.org
-References: <1654785023-1667-1-git-send-email-quic_srivasam@quicinc.com>
- <1654785023-1667-2-git-send-email-quic_srivasam@quicinc.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <1654785023-1667-2-git-send-email-quic_srivasam@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <CA+G9fYsJThWFAxXTbAcJmjshx+oYxVVd+gMM680hS0X1z37+FQ@mail.gmail.com>
+ <20220607162504.7fd5a92a@canb.auug.org.au> <CALvZod5XBjw7MZfYSNv-UnE7pHMKTquUNomqyC5T05Qu_ef6Zw@mail.gmail.com>
+ <CALvZod4DhM00LXsPty=cnYyv3Ci5YS5otasu_tr9o7ujQekKLw@mail.gmail.com>
+ <CA+G9fYve1faH7AmpEa-p_ySb_WCgc4DdjqyS6fSdiJYsaEi=rA@mail.gmail.com>
+ <CALvZod72bp9ejY+KghaUGkoXDrOMMbs_ofsopGib=MY4jzhRkg@mail.gmail.com>
+ <CA+G9fYu6mayYrrYK+0Rn1K7HOM6WbaOhnJSx-Wv6CaKBDpaT2g@mail.gmail.com>
+ <2a4cc632-c936-1e42-4fdc-572334c58ee1@openvz.org> <44530040-0384-796e-143f-b7293886753c@huawei.com>
+ <20220609101153.GB2187@willie-the-truck> <YqHKs19RBubUNrve@arm.com>
+In-Reply-To: <YqHKs19RBubUNrve@arm.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 9 Jun 2022 08:23:25 -0700
+Message-ID: <CALvZod4ukk_iSytn7v_aTdU4XQ2Xs7YK8Fq_PogtN9ARGL9urA@mail.gmail.com>
+Subject: Re: [next] arm64: boot failed - next-20220606
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Will Deacon <will@kernel.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Vasily Averin <vvs@openvz.org>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        regressions@lists.linux.dev, lkft-triage@lists.linaro.org,
+        linux-mm <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Raghuram Thammiraju <raghuram.thammiraju@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Qian Cai <quic_qiancai@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jun 9, 2022 at 3:26 AM Catalin Marinas <catalin.marinas@arm.com> wrote:
+>
+> On Thu, Jun 09, 2022 at 11:11:54AM +0100, Will Deacon wrote:
+> > On Thu, Jun 09, 2022 at 11:44:09AM +0800, Kefeng Wang wrote:
+> > > On 2022/6/9 10:49, Vasily Averin wrote:
+> > > > mem_cgroup_from_obj():
+> > > > ffff80000836cf40:       d503245f        bti     c
+> > > > ffff80000836cf44:       d503201f        nop
+> > > > ffff80000836cf48:       d503201f        nop
+> > > > ffff80000836cf4c:       d503233f        paciasp
+> > > > ffff80000836cf50:       d503201f        nop
+> > > > ffff80000836cf54:       d2e00021        mov     x1, #0x1000000000000            // #281474976710656
+> > > > ffff80000836cf58:       8b010001        add     x1, x0, x1
+> > > > ffff80000836cf5c:       b25657e4        mov     x4, #0xfffffc0000000000         // #-4398046511104
+> > > > ffff80000836cf60:       d34cfc21        lsr     x1, x1, #12
+> > > > ffff80000836cf64:       d37ae421        lsl     x1, x1, #6
+> > > > ffff80000836cf68:       8b040022        add     x2, x1, x4
+> > > > ffff80000836cf6c:       f9400443        ldr     x3, [x2, #8]
+> > > >
+> > > > x5 : ffff80000a96f000 x4 : fffffc0000000000 x3 : ffff80000ad5e680
+> > > > x2 : fffffe00002bc240 x1 : 00000200002bc240 x0 : ffff80000af09740
+> > > >
+> > > > x0 = 0xffff80000af09740 is an argument of mem_cgroup_from_obj()
+> > > > according to System.map it is init_net
+> > > >
+> > > > This issue is caused by calling virt_to_page() on address of static variable init_net.
+> > > > Arm64 consider that addresses of static variables are not valid virtual addresses.
+> > > > On x86_64 the same API works without any problem.
+> >
+> > This just depends on whether or not the kernel is running out of the linear
+> > mapping or not. On arm64, we use the vmalloc area for the kernel image and
+> > so virt_to_page() won't work, just like it won't work for modules on other
+> > architectures.
+> >
+> > How are module addresses handled by mem_cgroup_from_obj()?
+>
+> It doesn't look like they are handled in any way. It just expects the
+> pointer to be a linear map one.
 
+Yes, that is correct.
 
-On 6/9/22 09:30, Srinivasa Rao Mandadapu wrote:
-> Validate software clock gating required or not and do software
-> clock gating on hclk if soundwire is operational and keep it
-> running by adding flag in private data structure.
-> This is to avoid conflict between older architectures,
-> where software clock gating is not required and on latest
-> architectues, where software clock gating is mandatory.
-
-architectures.
-
-> 
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> ---
->  drivers/soundwire/qcom.c | 14 ++++++++++----
->  1 file changed, 10 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-> index a3fccf0..8e163da 100644
-> --- a/drivers/soundwire/qcom.c
-> +++ b/drivers/soundwire/qcom.c
-> @@ -181,6 +181,7 @@ struct qcom_swrm_ctrl {
->  struct qcom_swrm_data {
->  	u32 default_cols;
->  	u32 default_rows;
-> +	bool sw_clk_gate_required;
->  };
->  
->  static const struct qcom_swrm_data swrm_v1_3_data = {
-> @@ -1311,6 +1312,15 @@ static int qcom_swrm_probe(struct platform_device *pdev)
->  			return PTR_ERR(ctrl->mmio);
->  	}
->  
-> +	if (data->sw_clk_gate_required) {
-> +		ctrl->audio_cgcr = devm_reset_control_get_exclusive(dev, "swr_audio_cgcr");
-> +		if (IS_ERR(ctrl->audio_cgcr)) {
-
-You need to handle the NULL case, devm_reset_control_get_exclusive() can
-return ERR_OR_NULL
-
-https://elixir.bootlin.com/linux/latest/source/drivers/reset/core.c#L1045
-
-> +			dev_err(dev, "Failed to get cgcr reset ctrl required for SW gating\n");
-> +			ret = PTR_ERR(ctrl->audio_cgcr);
-> +			goto err_init;
-> +		}
-> +	}
+> Something like below:
+>
+> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+> index 27cebaa53472..795bf3673fa7 100644
+> --- a/mm/memcontrol.c
+> +++ b/mm/memcontrol.c
+> @@ -2860,6 +2860,11 @@ struct mem_cgroup *mem_cgroup_from_obj(void *p)
+>         if (mem_cgroup_disabled())
+>                 return NULL;
+>
+> +       if (is_module_address((unsigned long)p))
+> +               return NULL;
+> +       else if (is_kernel((unsigned long)p))
+> +               return NULL;
 > +
->  	ctrl->irq = of_irq_get(dev->of_node, 0);
->  	if (ctrl->irq < 0) {
->  		ret = ctrl->irq;
-> @@ -1336,10 +1346,6 @@ static int qcom_swrm_probe(struct platform_device *pdev)
->  	ctrl->bus.compute_params = &qcom_swrm_compute_params;
->  	ctrl->bus.clk_stop_timeout = 300;
->  
-> -	ctrl->audio_cgcr = devm_reset_control_get_exclusive(dev, "swr_audio_cgcr");
-> -	if (IS_ERR(ctrl->audio_cgcr))
-> -		dev_err(dev, "Failed to get audio_cgcr reset required for soundwire-v1.6.0\n");
-> -
->  	ret = qcom_swrm_get_port_config(ctrl);
->  	if (ret)
->  		goto err_clk;
+
+How about just is_vmalloc_addr(p) check? It should cover modules and
+also arm64 using vmalloc for kernel image cases.
+
+>         folio = virt_to_folio(p);
+>
+>         /*
+>
+> --
+> Catalin
