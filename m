@@ -2,85 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF147CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25BCAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344325AbiFIPRo (ORCPT
+        id S1344351AbiFIPSS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 11:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45460 "EHLO
+        Thu, 9 Jun 2022 11:18:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344326AbiFIPRm (ORCPT
+        with ESMTP id S242212AbiFIPSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 11:17:42 -0400
-Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866ED49F20;
-        Thu,  9 Jun 2022 08:17:41 -0700 (PDT)
-Received: by mail-io1-f53.google.com with SMTP id p128so2984972iof.1;
-        Thu, 09 Jun 2022 08:17:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7CNQXhlme5eQIHXbnsgkUH7CMFXIeljNmFCXWsWvWE4=;
-        b=6MG45JKnkbBSYHM2m1QGG/M7OQ7gEUAK2TycdbOCi27CbKK6/W77zRmwvBN27ho/Z5
-         QxvDB9d1Qqs7QTVQ9HtLkFRxBZFJWTo41tpwx/tMng+fjRCUzl6YnfYLd5zsnSTwVrm+
-         q+2j8hiSv48gKt22e9XnA1q1LMGLzmFRm5RN7Ub7rDUGezdy3SmDb+uwubusOshQ6ldC
-         sfvv0sATYvaqxc8531pjjFJAl2WevZ94gE06Gnu81+1OCMvPMq7Msy3iMLiFXam8Rm6v
-         ao8yrFrJK7V9/EEac3gQVdCREnccSZUBqDR5OIb+JvwS0RZlzT10dLtiixqRj81kGr09
-         8CAA==
-X-Gm-Message-State: AOAM533XFQ5szRGATNhVDcOw5ZvGNR7rtG2JnHEmg1WicvnQVzrEZfy4
-        bSBT+X4rtoAuDpnLcE4B+Q==
-X-Google-Smtp-Source: ABdhPJxJRrvWySB45UK6FLQxD5ol1vphUXTZCU3F4uQ4ESUHx/oZ/n2249kg4HzMx/J2Z7cR3VtiOw==
-X-Received: by 2002:a6b:2bc8:0:b0:669:af77:34bd with SMTP id r191-20020a6b2bc8000000b00669af7734bdmr1442822ior.182.1654787860556;
-        Thu, 09 Jun 2022 08:17:40 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id f6-20020a056602038600b00665862d12bbsm9438447iov.46.2022.06.09.08.17.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 08:17:40 -0700 (PDT)
-Received: (nullmailer pid 3812662 invoked by uid 1000);
-        Thu, 09 Jun 2022 15:17:38 -0000
-Date:   Thu, 9 Jun 2022 09:17:38 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     arm@kernel.org, linux-kernel@vger.kernel.org,
-        linux-input@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, soc@kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Olof Johansson <olof@lixom.net>
-Subject: Re: [PATCH v2 01/48] dt-bindings: input: gpio-keys: enforce node
- names to match all properties
-Message-ID: <20220609151738.GA3812591-robh@kernel.org>
-References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org>
- <20220609113843.380260-1-krzysztof.kozlowski@linaro.org>
+        Thu, 9 Jun 2022 11:18:15 -0400
+X-Greylist: delayed 1849 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 09 Jun 2022 08:18:10 PDT
+Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7C0349F16
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 08:18:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=9jmiY
+        Z8pRS/uF1eNB9/cdQDjDlfV/hTLDW6XrEdWyxM=; b=QIUfBDoMM6uG/b+UyRtV1
+        09Z/AYUPPVjNPFIKRSWuokn6epR/6uXPw8pRRPlO1WwJ6S5nwT2LfhtbRAFfpqBS
+        yMmD5zkvzhI7O/1PoJ+sPSFT9eVsr0863tP104Ar8nMOXy23iRRopi0P/C1kYnIB
+        r0LFaSjXu3z8Bg4MQkslpU=
+Received: from localhost.localdomain (unknown [117.174.18.188])
+        by smtp3 (Coremail) with SMTP id DcmowADX3mrVB6JiHxKeCw--.14055S2;
+        Thu, 09 Jun 2022 22:46:49 +0800 (CST)
+From:   cxbing <zhangkkoo@126.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Balbir Singh <bsingharora@gmail.com>, linux-kernel@vger.kernel.org,
+        cxbing <chenxuebing@jari.cn>
+Subject: [PATCH] delayacct: Remove some unused variables
+Date:   Thu,  9 Jun 2022 07:44:59 -0700
+Message-Id: <20220609144459.86379-1-zhangkkoo@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220609113843.380260-1-krzysztof.kozlowski@linaro.org>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcmowADX3mrVB6JiHxKeCw--.14055S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7JFW7Zr4DCF43Xw1xuFyxGrg_yoWkArbEq3
+        yag3y8CrZ5Aryjka18Ja18XrW0q3WrW3s7CwsrtrW3Xr1xWa4FyFWDZr1DA3Wruay7AFW3
+        JFsYyr1fC3yUGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUbaZX7UUUUU==
+X-Originating-IP: [117.174.18.188]
+X-CM-SenderInfo: x2kd0wpnnr0qqrswhudrp/1tbi2hob-VuwMKhWjAAAsP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 09 Jun 2022 13:38:43 +0200, Krzysztof Kozlowski wrote:
-> The gpio-keys DT schema matches all properties with a wide pattern and
-> applies specific schema to children.  This has drawback - all regular
-> properties are also matched and are silently ignored, even if they are
-> not described in schema.  Basically this allows any non-object property
-> to be present.
-> 
-> Enforce specific naming pattern for children (keys) to narrow the
-> pattern thus do not match other properties.  This will require all
-> children to be named with 'key-' prefix or '-key' suffix.
-> 
-> Removal of "if:" within patternProperties causes drop of one indentation
-> level, but there are no other changes in the affected block.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  .../devicetree/bindings/input/gpio-keys.yaml  | 157 +++++++++---------
->  1 file changed, 77 insertions(+), 80 deletions(-)
-> 
+From: cxbing <chenxuebing@jari.cn>
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Drop the unused variables *done* and *count*.
+
+Signed-off-by: cxbing <chenxuebing@jari.cn>
+---
+ tools/accounting/getdelays.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/tools/accounting/getdelays.c b/tools/accounting/getdelays.c
+index 11e86739456d..ea54ee53a802 100644
+--- a/tools/accounting/getdelays.c
++++ b/tools/accounting/getdelays.c
+@@ -45,7 +45,6 @@
+ 		exit(code);			\
+ 	} while (0)
+ 
+-int done;
+ int rcvbufsz;
+ char name[100];
+ int dbg;
+@@ -279,7 +278,6 @@ int main(int argc, char *argv[])
+ 	pid_t rtid = 0;
+ 
+ 	int fd = 0;
+-	int count = 0;
+ 	int write_file = 0;
+ 	int maskset = 0;
+ 	char *logfile = NULL;
+@@ -489,7 +487,6 @@ int main(int argc, char *argv[])
+ 				len2 = 0;
+ 				/* For nested attributes, na follows */
+ 				na = (struct nlattr *) NLA_DATA(na);
+-				done = 0;
+ 				while (len2 < aggr_len) {
+ 					switch (na->nla_type) {
+ 					case TASKSTATS_TYPE_PID:
+@@ -503,7 +500,6 @@ int main(int argc, char *argv[])
+ 							printf("TGID\t%d\n", rtid);
+ 						break;
+ 					case TASKSTATS_TYPE_STATS:
+-						count++;
+ 						if (print_delays)
+ 							print_delayacct((struct taskstats *) NLA_DATA(na));
+ 						if (print_io_accounting)
+-- 
+2.25.1
+
