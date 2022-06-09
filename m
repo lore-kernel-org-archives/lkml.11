@@ -2,110 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8698AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:35:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D211EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:36:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235008AbiFIJf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 05:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47360 "EHLO
+        id S242126AbiFIJgW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 05:36:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233025AbiFIJfz (ORCPT
+        with ESMTP id S234852AbiFIJgU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 05:35:55 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C767D654B;
-        Thu,  9 Jun 2022 02:35:51 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Thu, 9 Jun 2022 05:36:20 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E3558E7B;
+        Thu,  9 Jun 2022 02:36:19 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 4DB521FDA8;
+        Thu,  9 Jun 2022 09:36:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1654767378; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VvwjhH9UWKe8FrlHHhosAdnMECDi+CI7dFYYzh8hlOA=;
+        b=rA2U7Q/wkWcXY/kcesb3Wc6YNg2eoiuocD7bBc9TDt6MpgMS958akfsf3KG50j8LOllzNj
+        RLdT0LG7Rpqg6i1Sy/hWGR/zXhLXblNcZTMeLEgFW/FBZBI77+awNU2qClYTlwal1XWtjl
+        KK9eSO1+59Llj1R4qY1Z9yg+Asa4E8U=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3D1EC66016FD;
-        Thu,  9 Jun 2022 10:35:49 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654767350;
-        bh=BH72tA3Gv2tLURwDnY5UsSEkwsx+vUzwp5wTPxVczvk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=aFgguC5hMuyVbHwuGvCHFJ/j16RiTIEJQ4LRbUFOphEqEyKiRcnjJxU8B66h/GYQ3
-         GT4U+S2FDQS4S3AGCcCaRin3wtBLGC3hxCBCSeMrx2JX+jozSujwzsrd4N3kasKMZq
-         xb2PmVvm4z1F+7aYRKRxe32oRugDq2sax4108q+hp0dCiiAltoVHxLT5nLh84KlWZN
-         xykOEDKdoJSUMDP3HUAW7qeyPZCEq4cGi6nCaQ2Vq8TijxtaONgDPNjXKCDNkdTaCW
-         5XFKn7XzzqiLqvKcovYV+NFovRiH2SrZtWqaHEKxtODGlePSDyhrTS/200pYBUAocV
-         WLARRgsksZ3cw==
-Message-ID: <1974b83e-967a-41ed-e790-52ceaf349ad3@collabora.com>
-Date:   Thu, 9 Jun 2022 11:35:46 +0200
+        by relay2.suse.de (Postfix) with ESMTPS id 825A62C141;
+        Thu,  9 Jun 2022 09:36:16 +0000 (UTC)
+Date:   Thu, 9 Jun 2022 11:36:15 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     cgel.zte@gmail.com
+Cc:     akpm@linux-foundation.org, oleksandr@natalenko.name,
+        willy@infradead.org, corbet@lwn.net, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-doc@vger.kernel.org,
+        xu xin <xu.xin16@zte.com.cn>
+Subject: Re: [PATCH] mm/ksm: provide global_force to see maximum potential
+ merging
+Message-ID: <YqG/Dyj62aDK/3Jr@dhcp22.suse.cz>
+References: <20220609055658.703472-1-xu.xin16@zte.com.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v3 1/2] dt-bindings: timer: mediatek: Add CPUX System
- Timer and MT6795 compatible
-Content-Language: en-US
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        daniel.lezcano@linaro.org
-Cc:     tglx@linutronix.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, konrad.dybcio@somainline.org,
-        marijn.suijten@somainline.org, martin.botka@somainline.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        paul.bouchara@somainline.org
-References: <20220518112435.241116-1-angelogioacchino.delregno@collabora.com>
- <20220518112435.241116-2-angelogioacchino.delregno@collabora.com>
- <afd9ab8e-5bad-54ee-3f44-5e0cfdb22e75@gmail.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <afd9ab8e-5bad-54ee-3f44-5e0cfdb22e75@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220609055658.703472-1-xu.xin16@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 07/06/22 18:11, Matthias Brugger ha scritto:
+On Thu 09-06-22 05:56:58, cgel.zte@gmail.com wrote:
+> From: xu xin <xu.xin16@zte.com.cn>
 > 
-> 
-> On 18/05/2022 13:24, AngeloGioacchino Del Regno wrote:
->> Document the "CPUXGPT" CPU General Purpose Timer, used as ARM/ARM64
->> System Timer on MediaTek platforms and add the MT6795 compatible for it.
->>
->> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
->> ---
->>   .../devicetree/bindings/timer/mediatek,mtk-timer.txt          | 4 ++++
->>   1 file changed, 4 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt 
->> b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
->> index 6f1f9dba6e88..49706cbef45d 100644
->> --- a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
->> +++ b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
->> @@ -2,6 +2,7 @@ MediaTek Timers
->>   ---------------
->>   MediaTek SoCs have two different timers on different platforms,
-> 
-> Nit: There are now three different timers so maybe:
-> "MediaTek SoCs have different timers on different platforms,"
-> 
-> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-> 
+> Up to now, KSM is apparently useful to save memory not just for VM but for
+> normal applications. But upper application developers might not know much
+> about KSM or whether they should use madvise(xxx, MERGEABLE) while there
+> indeed exist a lot of same pages in their apps. Some application developers
+> urgently need the kernel to provide an interface of KSM debugging mode to
+> see the maximum potential merging of the whole system, so the patch is.
 
-Hi Matthias,
-can we please ignore that description nit for this patch?
+I disagree with this. As already discussed in previous proposals of KSM
+related interfaces KSM is a nice tool but it shouldn't be used without
+understanding of all the consequences.
 
-I was anyway planning to do a YAML conversion after getting this merged in, perhaps
-we can just fix that on the new one instead?
+Maybe we should be more verbose about how to use KSM properly and also
+describe best practices but I do not think that enable-for-all in any
+form is a good interface.
 
-Cheers,
-Angelo
-
->> +- CPUX (ARM/ARM64 System Timer)
->>   - GPT (General Purpose Timer)
->>   - SYST (System Timer)
->> @@ -29,6 +30,9 @@ Required properties:
->>       * "mediatek,mt7629-timer" for MT7629 compatible timers (SYST)
->>       * "mediatek,mt6765-timer" for MT6765 and all above compatible timers (SYST)
->> +    For those SoCs that use CPUX
->> +    * "mediatek,mt6795-systimer" for MT6795 compatible timers (CPUX)
->> +
->>   - reg: Should contain location and length for timer register.
->>   - clocks: Should contain system clock.
-
+Nack to the interface.
+-- 
+Michal Hocko
+SUSE Labs
