@@ -2,159 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 591E4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 762C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:19:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345358AbiFIST1 (ORCPT
+        id S1343927AbiFIST5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 14:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38660 "EHLO
+        Thu, 9 Jun 2022 14:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345355AbiFISTY (ORCPT
+        with ESMTP id S229780AbiFISTw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 14:19:24 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2AE63B4040
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 11:19:22 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id n18so20889332plg.5
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 11:19:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=x3m9ez4cM4hiYs276hV/EUX/qeGe+tzFYgA9QX32RhM=;
-        b=jkK73066+UxvJ5xFs1AtNV3sHc9/h6S8mJVHGO3CFCC+9KuwpwXefPlSAW5U2xfllr
-         HHaHLrfTss2GcS9nAoLug0IHIr9n1zKvu6SDZlqz3j3Ft+SZouLsl5pqvJiWJBd4aULj
-         ocBiWRPWQMUCK/Q7DmcT66O517yBB8lA5ti2w=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=x3m9ez4cM4hiYs276hV/EUX/qeGe+tzFYgA9QX32RhM=;
-        b=2v0vykNFFqwLthmfiwj5nKS57ONYq7sh5PLbjseWjcic/pcWFbiT36zhF91+wOOCuu
-         TaIjII8XQKXCDLNwzuUVQZ4bMf3TzoI8BQv1e5xmIHtFz4rgkZ8O674vzFJ0/cLch9Fc
-         q0IYHRkF2sbtTijqBp7xRviuiP8Ksy2J6ftvsaYM+0QlqugyEb07I8S9hd927/Qit8Io
-         nQ/6ZaAvGgfmNUVab0WrGUyKcjWgo31nNiHTPZmWjVtjyG5lU0w0eAeo5iuCHg1Cu9Yh
-         nYI7qJ1UMFG5yj/WHvjIVK38T1YGldU3fAjSPbALR8ezaaES0m+DnTv3qFnH+npO+Fl5
-         zt2Q==
-X-Gm-Message-State: AOAM532z9kZdeV6J1wDfalw58A1HTbX7KvD5WR7ihYYhg2Ddgvr0MN3B
-        hNEtuHYmHB0sK6B27z1BILs52rZzHJH7Hw==
-X-Google-Smtp-Source: ABdhPJzhlzTGKke4dLwYx4GBwR8EWUUrWbpjJrMKK7ZTUdjPnXvKfnhCIFdSOp1vZlUMaDGMYuXWDg==
-X-Received: by 2002:a17:902:edd7:b0:168:b0b2:f0a3 with SMTP id q23-20020a170902edd700b00168b0b2f0a3mr2412619plk.20.1654798761971;
-        Thu, 09 Jun 2022 11:19:21 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id r14-20020a63ec4e000000b003fb0354c43asm17728049pgj.32.2022.06.09.11.19.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 11:19:21 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH v2 5/7] drm/bridge: anx7625: Register number of Type C switches
-Date:   Thu,  9 Jun 2022 18:09:44 +0000
-Message-Id: <20220609181106.3695103-6-pmalani@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-In-Reply-To: <20220609181106.3695103-1-pmalani@chromium.org>
-References: <20220609181106.3695103-1-pmalani@chromium.org>
+        Thu, 9 Jun 2022 14:19:52 -0400
+Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F784AE06;
+        Thu,  9 Jun 2022 11:19:49 -0700 (PDT)
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 259IJRIT004743;
+        Fri, 10 Jun 2022 03:19:28 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 259IJRIT004743
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1654798769;
+        bh=fcsfs2qoDl2ZO8fQQcwgnKeipVZccVxwxhSME/g7iys=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=LjOl2745KlAOJiiN0tYiYPmzVxSeNpDtGIIpcdHpTC60dGeTSPB4C5RJs2Yt1JpKR
+         liIVtq2xOCRq5coPf6xO0nRWs0MsCFtwvvDgV+GZ1I6LwzvPI0Yf2sSAnPw2LbbGVT
+         /aY7xpdInXhU4wcskA1UEpsMGxFjoy8/WqaXfxDFnfCp2oXWixi9FYmtL2pAQMsfoL
+         BjCa5t7oyBDWIpqQGDrD/mdj82kzi+cz7B+gzXMgK/A4jpV0YFnlp+0+QSX+mfXOO6
+         qyrPvKUJZqj074pmQCHkQ4oklINwYw4vTK+oCIhUfCmcOP1jOu5foVncndVldtrU+N
+         kAdw2CRVozoBA==
+X-Nifty-SrcIP: [209.85.128.47]
+Received: by mail-wm1-f47.google.com with SMTP id j5-20020a05600c1c0500b0039c5dbbfa48so25958wms.5;
+        Thu, 09 Jun 2022 11:19:28 -0700 (PDT)
+X-Gm-Message-State: AOAM533NtNx1zfBlll1/CpRRAYNUobzMwD0mlEiL9rA2+Nx0riPVH1ny
+        zL9xGg/fxSSIA6NghEueCCmmpCz2JW5WuZakIJg=
+X-Google-Smtp-Source: ABdhPJxYKL/6QBVHu2cEepuTWiW+yV2L980p4ZI5s1s4uuEZn2aFWuTs7EjC0VmIgiBrb5TNOlXTtQayJM2MPp6P6+4=
+X-Received: by 2002:a7b:ce04:0:b0:394:1f46:213 with SMTP id
+ m4-20020a7bce04000000b003941f460213mr4570297wmc.157.1654798767012; Thu, 09
+ Jun 2022 11:19:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <165451871967.1941436.17828809503267245815.stgit@warthog.procyon.org.uk>
+ <486b1b80-9932-aab6-138d-434c541c934a@digikod.net>
+In-Reply-To: <486b1b80-9932-aab6-138d-434c541c934a@digikod.net>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 10 Jun 2022 03:18:50 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAR9R3OXzZXUWywR5EJf6n9tRp3QeJuo7UsS3pfDTzOvig@mail.gmail.com>
+Message-ID: <CAK7LNAR9R3OXzZXUWywR5EJf6n9tRp3QeJuo7UsS3pfDTzOvig@mail.gmail.com>
+Subject: Re: [PATCH] certs: Convert spaces in certs/Makefile to a tab
+To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
+Cc:     David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Parse the "switches" node, if available, and count and store the number
-of Type-C switches within it. Since we currently don't do anything with
-this info, no functional changes are expected from this change.
+On Fri, Jun 10, 2022 at 2:05 AM Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> =
+wrote:
+>
+>
+> On 06/06/2022 14:31, David Howells wrote:
+> > There's a rule in certs/Makefile for which the command begins with eigh=
+t
+> > spaces.  This results in:
+> >
+> >       ../certs/Makefile:21: FORCE prerequisite is missing
+> >       ../certs/Makefile:21: *** missing separator.  Stop.
+> >
+> > Fix this by turning the spaces into a tab.
+>
+> These spaces were not part of my patch but they are indeed in this file
+> now: https://lore.kernel.org/r/20210712170313.884724-3-mic@digikod.net
+>
+> Reviewed-by: Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
 
-This patch sets a foundation for the actual registering of Type-C
-switches with the Type-C connector class framework.
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
+Indeed, you used a tab,
+but the applied code (commit addf466389d9) uses 8 spaces.
 
-Changes since v1:
-- No changes.
+I think something bad happened
+when the committer locally modified the code.
 
- drivers/gpu/drm/bridge/analogix/anx7625.c | 20 ++++++++++++++++++++
- drivers/gpu/drm/bridge/analogix/anx7625.h |  1 +
- 2 files changed, 21 insertions(+)
 
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index 53a5da6c49dd..07ed44c6b839 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -2581,6 +2581,22 @@ static void anx7625_runtime_disable(void *data)
- 	pm_runtime_disable(data);
- }
- 
-+static int anx7625_register_typec_switches(struct device *device, struct anx7625_data *ctx)
-+{
-+	struct device_node *of = NULL;
-+	int ret = 0;
-+
-+	of = of_get_child_by_name(device->of_node, "switches");
-+	if (!of)
-+		return -ENODEV;
-+
-+	ctx->num_typec_switches = of_get_child_count(of);
-+	if (ctx->num_typec_switches <= 0)
-+		return -ENODEV;
-+
-+	return ret;
-+}
-+
- static int anx7625_i2c_probe(struct i2c_client *client,
- 			     const struct i2c_device_id *id)
- {
-@@ -2686,6 +2702,10 @@ static int anx7625_i2c_probe(struct i2c_client *client,
- 	if (platform->pdata.intp_irq)
- 		queue_work(platform->workqueue, &platform->work);
- 
-+	ret = anx7625_register_typec_switches(dev, platform);
-+	if (ret)
-+		dev_info(dev, "Didn't register Type C switches, err: %d\n", ret);
-+
- 	platform->bridge.funcs = &anx7625_bridge_funcs;
- 	platform->bridge.of_node = client->dev.of_node;
- 	if (!anx7625_of_panel_on_aux_bus(&client->dev))
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
-index e257a84db962..d5cbca708842 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.h
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
-@@ -473,6 +473,7 @@ struct anx7625_data {
- 	struct drm_connector *connector;
- 	struct mipi_dsi_device *dsi;
- 	struct drm_dp_aux aux;
-+	int num_typec_switches;
- };
- 
- #endif  /* __ANX7625_H__ */
--- 
-2.36.1.476.g0c4daa206d-goog
 
+
+
+
+--
+Best Regards
+Masahiro Yamada
