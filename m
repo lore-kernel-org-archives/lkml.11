@@ -2,173 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DCA8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 00:10:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7496FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 00:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235103AbiFIAKH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 20:10:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42388 "EHLO
+        id S235288AbiFIAKZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 20:10:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231699AbiFIAKD (ORCPT
+        with ESMTP id S235264AbiFIAKV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 20:10:03 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9D013CDA;
-        Wed,  8 Jun 2022 17:10:00 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id c24-20020a9d4818000000b0060c2372addeso399402otf.11;
-        Wed, 08 Jun 2022 17:10:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i3YzjZWYXJycs6wrkROezA8KHgvVM2duWk8XTiinVlQ=;
-        b=HIWfbyi4oC2RfmzEJ8j2HCGR/9aB4AYyMA6qjSOSyCvQN2x13lUqJpkq7Alo9UF2jr
-         sI/h08TBJ8WrftH+l1AILLtkuZw2fQBYc5TpxQtdc0jFpGCDIwLrYQKXLoreAGUQQFJq
-         NoZZCoGIcJSmmbLiGltAvIyjapG/U4kwDmlJjEO8bx0V3UZZ3TDqnrN40wv+SYhHCck8
-         MniMkEiHJCxnVSd+5saJLQJstXJIZ8x/6diSxaIMXthn5yaVoAnrr1L9JedonlzOVPLz
-         ddyMG+cQ+CVPMfKPZo1hpn0sF5GQ2jnK2uffekfH6pnYPauRvz0v3IRPGMg/6ErLLFGO
-         6P7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i3YzjZWYXJycs6wrkROezA8KHgvVM2duWk8XTiinVlQ=;
-        b=YNCh8mC+zzvEy8lGLfaNgupo7QuUqGKCPWE67aIkX042JMvshau/7gDZvzlBY9LOTb
-         K0L1i5qPbR4KR7VPQbuOoZkWXPmsVUigGQ4EsgeiYHIiU/w+Asqr9t81pVdl7GAv0W6o
-         ILU23/0nhiYBB7dgmOfMPuLir4IQQwQHXGMiDJZhip0bEituCaWiynAF7MbEh3yT1hLj
-         it9WIeX28sSBadz7vm0QcvQbiD6hMM2T/FOzbUgTysZUguFY/sdLG9OtHArGAzphNeVh
-         3w51F/Dok3mS9j9qBrfyVYz9yxfAW17K2yBz92NA7FsP8WvqVO4aCMtW8ADWdnwiHh7t
-         P6tA==
-X-Gm-Message-State: AOAM532Iq/YpAV0HomXe5X8YlB1AWxMRPmsXmSmHbxwweFZ4u4NJ3fY5
-        613sTt3eprd/W2poDExyCZIbh90PrkxqLpOFwCg=
-X-Google-Smtp-Source: ABdhPJy/ZYSU7LLbrX5YXP//2zn4Q/EkT23+nyGSDv1Qbl4HLopabHpRCrGgdtOfl6K9BG7K4BksdbpKDlzk6aG1x+8=
-X-Received: by 2002:a9d:7596:0:b0:60c:723:9e93 with SMTP id
- s22-20020a9d7596000000b0060c07239e93mr4810809otk.124.1654733400283; Wed, 08
- Jun 2022 17:10:00 -0700 (PDT)
+        Wed, 8 Jun 2022 20:10:21 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6598A34662;
+        Wed,  8 Jun 2022 17:10:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654733411; x=1686269411;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Y9+IS1gO54BIHDcDJFlgsbwaELjLugQXja76ti6srj8=;
+  b=LA+OvDS5+v+si6XCRWBzBMdU2kTnX2bL6S2jJBB6fkm5LFEv5B1h9IbU
+   gMOLNnn1xhBVcyJZksq2abKHmu1eVItcfmagOAaE8/6ahCTveZNAwIFDU
+   SEDf/cyIW8zJhfG9CZ5nz5QSOGuOfSYPvsT280Msi/iwGhklAvtzDp4Qo
+   D3c/TUDcPpr5gX+6xEqhn3PoAxz5X3WJpiyyDSnjsxuej7c5lPlOcCpHX
+   C4jTMPFjQtxru836y15WLT0rW/J7dX+m0km/msa1df8mm7GvYHZxUjWMC
+   cxKKsoT8bLa/rGK5n7REOZ6+fIK/363IhZxG9/QnlCy+VYC9Oc0JBzOxu
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="341185153"
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="341185153"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 17:10:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="670854669"
+Received: from linux.intel.com ([10.54.29.200])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 Jun 2022 17:10:09 -0700
+Received: from rjingar-desk5.amr.corp.intel.com (unknown [10.251.26.11])
+        by linux.intel.com (Postfix) with ESMTP id 3EB53580BBE;
+        Wed,  8 Jun 2022 17:10:09 -0700 (PDT)
+From:   Rajvi Jingar <rajvi.jingar@linux.intel.com>
+To:     rafael.j.wysocki@intel.com, bhelgaas@google.com
+Cc:     rajvi.jingar@linux.intel.com, david.e.box@linux.intel.com,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH v7 2/2] PCI/PM: Disable PTM on all devices
+Date:   Wed,  8 Jun 2022 17:10:07 -0700
+Message-Id: <20220609001007.533242-2-rajvi.jingar@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220609001007.533242-1-rajvi.jingar@linux.intel.com>
+References: <20220609001007.533242-1-rajvi.jingar@linux.intel.com>
 MIME-Version: 1.0
-References: <20220607013315.1956301-1-zhengjun.xing@linux.intel.com> <20220607013315.1956301-6-zhengjun.xing@linux.intel.com>
-In-Reply-To: <20220607013315.1956301-6-zhengjun.xing@linux.intel.com>
-From:   Namhyung Kim <namhyung@gmail.com>
-Date:   Wed, 8 Jun 2022 17:09:49 -0700
-Message-ID: <CAM9d7ciZAZzsA=cDojZp8H5tTd-F7NC=OnTMRg3S3cdjCW0+eA@mail.gmail.com>
-Subject: Re: [PATCH 5/5] perf stat: Add topdown metrics in the default perf
- stat on the hybrid machine
-To:     Xing Zhengjun <zhengjun.xing@linux.intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, alexander.shishkin@intel.com,
-        Jiri Olsa <jolsa@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 1:08 AM <zhengjun.xing@linux.intel.com> wrote:
->
-> From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
->
-> Topdown metrics are missed in the default perf stat on the hybrid machine,
-> add Topdown metrics in default perf stat for hybrid systems.
->
-> Currently, we support the perf metrics Topdown for the p-core PMU in the
-> perf stat default, the perf metrics Topdown support for e-core PMU will be
-> implemented later separately. Refactor the code adds two x86 specific
-> functions. Widen the size of the event name column by 7 chars, so that all
-> metrics after the "#" become aligned again.
->
-> The perf metrics topdown feature is supported on the cpu_core of ADL. The
-> dedicated perf metrics counter and the fixed counter 3 are used for the
-> topdown events. Adding the topdown metrics doesn't trigger multiplexing.
->
-> Before:
->
->  # ./perf  stat  -a true
->
->  Performance counter stats for 'system wide':
->
->              53.70 msec cpu-clock                 #   25.736 CPUs utilized
->                 80      context-switches          #    1.490 K/sec
->                 24      cpu-migrations            #  446.951 /sec
->                 52      page-faults               #  968.394 /sec
->          2,788,555      cpu_core/cycles/          #   51.931 M/sec
->            851,129      cpu_atom/cycles/          #   15.851 M/sec
->          2,974,030      cpu_core/instructions/    #   55.385 M/sec
->            416,919      cpu_atom/instructions/    #    7.764 M/sec
->            586,136      cpu_core/branches/        #   10.916 M/sec
->             79,872      cpu_atom/branches/        #    1.487 M/sec
->             14,220      cpu_core/branch-misses/   #  264.819 K/sec
->              7,691      cpu_atom/branch-misses/   #  143.229 K/sec
->
->        0.002086438 seconds time elapsed
->
-> After:
->
->  # ./perf stat  -a true
->
->  Performance counter stats for 'system wide':
->
->              61.39 msec cpu-clock                        #   24.874 CPUs utilized
->                 76      context-switches                 #    1.238 K/sec
->                 24      cpu-migrations                   #  390.968 /sec
->                 52      page-faults                      #  847.097 /sec
->          2,753,695      cpu_core/cycles/                 #   44.859 M/sec
->            903,899      cpu_atom/cycles/                 #   14.725 M/sec
->          2,927,529      cpu_core/instructions/           #   47.690 M/sec
->            428,498      cpu_atom/instructions/           #    6.980 M/sec
->            581,299      cpu_core/branches/               #    9.470 M/sec
->             83,409      cpu_atom/branches/               #    1.359 M/sec
->             13,641      cpu_core/branch-misses/          #  222.216 K/sec
->              8,008      cpu_atom/branch-misses/          #  130.453 K/sec
->         14,761,308      cpu_core/slots/                  #  240.466 M/sec
->          3,288,625      cpu_core/topdown-retiring/       #     22.3% retiring
->          1,323,323      cpu_core/topdown-bad-spec/       #      9.0% bad speculation
->          5,477,470      cpu_core/topdown-fe-bound/       #     37.1% frontend bound
->          4,679,199      cpu_core/topdown-be-bound/       #     31.7% backend bound
->            646,194      cpu_core/topdown-heavy-ops/      #      4.4% heavy operations       #     17.9% light operations
->          1,244,999      cpu_core/topdown-br-mispredict/  #      8.4% branch mispredict      #      0.5% machine clears
->          3,891,800      cpu_core/topdown-fetch-lat/      #     26.4% fetch latency          #     10.7% fetch bandwidth
->          1,879,034      cpu_core/topdown-mem-bound/      #     12.7% memory bound           #     19.0% Core bound
->
->        0.002467839 seconds time elapsed
->
-> Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
-> Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-> ---
-[SNIP]
-> +const char *arch_get_topdown_pmu_name(struct evlist *evlist, bool warn)
-> +{
-> +       const char *pmu_name = "cpu";
-> +
-> +       if (perf_pmu__has_hybrid()) {
-> +               if (!evlist->hybrid_pmu_name) {
-> +                       if (warn)
-> +                               pr_warning
-> +                                   ("WARNING: default to use cpu_core topdown events\n");
-> +                       evlist->hybrid_pmu_name =
-> +                           perf_pmu__hybrid_type_to_pmu("core");
+On receiving a PTM Request from a downstream device, if PTM is disabled
+on the root port, as per PCIe specification, such request would cause
+an Unsupported Request error. So disable PTM for any downstream devices.
+PTM state needs to be saved before disabling it to be restored later.
 
-This doesn't look good.  Please consider reducing the
-indent level like returning early as
+Set ptm_enabled from 'struct pci_dev' to 0 in pci_ptm_disable() and
+it is used in pci_save_state() before saving PTM state to avoid
+double save.
 
-    if (!perf_pmu__has_hybrid())
-        return "cpu";
+Fixes: a697f072f5da ("PCI: Disable PTM during suspend to save power")
+Signed-off-by: Rajvi Jingar <rajvi.jingar@linux.intel.com>
+Suggested-by: David E. Box <david.e.box@linux.intel.com>
+---
+ v1 -> v2: add Fixes tag in commit message
+ v2 -> v3: move changelog after "---" marker
+ v3 -> v4: add "---" marker after changelog
+ v4 -> v5: move pci_disable_ptm() out of the pci_dev->state_saved check.
+	   disable PTM for all devices, not just root ports.
+ v5 -> v6: move pci_disable_ptm() to pci_pm_suspend()
+	   set pci_dev->ptm_enabled to 0 in pci_ptm_disable() and it is
+	   used in pci_save_state() before saving PTM state to avoid
+	   double save.
+ v6 -> v7: add #ifdef CONFIG_PCIE_PTM in pci_save_state() before saving
+	   PTM state
+---
+ drivers/pci/pci-driver.c | 21 ++++++++++++++++++++-
+ drivers/pci/pci.c        | 28 +++++++++++++---------------
+ drivers/pci/pcie/ptm.c   |  1 +
+ 3 files changed, 34 insertions(+), 16 deletions(-)
 
-    if (!evlist->hybrid_pmu_name) {
-        ...
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index 1f64de3e5280..db4d7835d7ae 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -803,14 +803,33 @@ static int pci_pm_suspend(struct device *dev)
+ 		pci_dev_adjust_pme(pci_dev);
+ 	}
+ 
++	/*
++	 * If a PTM Requester is put in a low-power state, a PTM Responder
++	 * upstream from it may also be put in a low-power state. Putting a
++	 * Port in D1, D2, or D3hot does not prohibit it from sending or
++	 * responding to PTM Requests. We want to disable PTM on Responders
++	 * when they are in a low-power state. Per 6.21.3, a PTM Requester
++	 * must not be enabled when the upstream PTM Responder is disabled.
++	 * Therefore, we must disable all PTM on all downstream PTM
++	 * Requesters before disabling it on the PTM Responder, e.g., a Root
++	 * Port.
++	 *
++	 * Also, to restore the PTM state, it needs to be saved before
++	 * disabling it for all devices.
++	 */
++	pci_save_ptm_state(pci_dev);
++	pci_disable_ptm(pci_dev);
++
+ 	if (pm->suspend) {
+ 		pci_power_t prev = pci_dev->current_state;
+ 		int error;
+ 
+ 		error = pm->suspend(dev);
+ 		suspend_report_result(dev, pm->suspend, error);
+-		if (error)
++		if (error) {
++			pci_restore_ptm_state(pci_dev);
+ 			return error;
++		}
+ 
+ 		if (!pci_dev->state_saved && pci_dev->current_state != PCI_D0
+ 		    && pci_dev->current_state != PCI_UNKNOWN) {
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index cfaf40a540a8..3e9dcb1bbffa 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -1669,7 +1669,15 @@ int pci_save_state(struct pci_dev *dev)
+ 	pci_save_ltr_state(dev);
+ 	pci_save_dpc_state(dev);
+ 	pci_save_aer_state(dev);
+-	pci_save_ptm_state(dev);
++#ifdef CONFIG_PCIE_PTM
++	/*
++	 * PCI PM core disables PTM during suspend and saves PTM state before
++	 * that to be able to restore the ptm state restored later. So PCI core
++	 * needs this check to avoid double save.
++	 */
++	if (dev->ptm_enabled)
++		pci_save_ptm_state(dev);
++#endif
+ 	return pci_save_vc_state(dev);
+ }
+ EXPORT_SYMBOL(pci_save_state);
+@@ -2710,24 +2718,12 @@ int pci_prepare_to_sleep(struct pci_dev *dev)
+ 	if (target_state == PCI_POWER_ERROR)
+ 		return -EIO;
+ 
+-	/*
+-	 * There are systems (for example, Intel mobile chips since Coffee
+-	 * Lake) where the power drawn while suspended can be significantly
+-	 * reduced by disabling PTM on PCIe root ports as this allows the
+-	 * port to enter a lower-power PM state and the SoC to reach a
+-	 * lower-power idle state as a whole.
+-	 */
+-	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
+-		pci_disable_ptm(dev);
+-
+ 	pci_enable_wake(dev, target_state, wakeup);
+ 
+ 	error = pci_set_power_state(dev, target_state);
+ 
+-	if (error) {
++	if (error)
+ 		pci_enable_wake(dev, target_state, false);
+-		pci_restore_ptm_state(dev);
+-	}
+ 
+ 	return error;
+ }
+@@ -2775,8 +2771,10 @@ int pci_finish_runtime_suspend(struct pci_dev *dev)
+ 	 * port to enter a lower-power PM state and the SoC to reach a
+ 	 * lower-power idle state as a whole.
+ 	 */
+-	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
++	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT) {
++		pci_save_ptm_state(dev);
+ 		pci_disable_ptm(dev);
++	}
+ 
+ 	__pci_enable_wake(dev, target_state, pci_dev_run_wake(dev));
+ 
+diff --git a/drivers/pci/pcie/ptm.c b/drivers/pci/pcie/ptm.c
+index 368a254e3124..746e29779c27 100644
+--- a/drivers/pci/pcie/ptm.c
++++ b/drivers/pci/pcie/ptm.c
+@@ -44,6 +44,7 @@ void pci_disable_ptm(struct pci_dev *dev)
+ 	pci_read_config_word(dev, ptm + PCI_PTM_CTRL, &ctrl);
+ 	ctrl &= ~(PCI_PTM_CTRL_ENABLE | PCI_PTM_CTRL_ROOT);
+ 	pci_write_config_word(dev, ptm + PCI_PTM_CTRL, ctrl);
++	dev->ptm_enabled = 0;
+ }
+ 
+ void pci_save_ptm_state(struct pci_dev *dev)
+-- 
+2.25.1
 
-Thanks,
-Namhyung
-
-
-> +               }
-> +
-> +               pmu_name = evlist->hybrid_pmu_name;
-> +       }
-> +       return pmu_name;
-> +}
