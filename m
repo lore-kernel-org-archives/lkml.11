@@ -2,264 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FFF3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:28:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A839DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344719AbiFIQ2T (ORCPT
+        id S1344152AbiFIQaR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 12:28:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
+        Thu, 9 Jun 2022 12:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344152AbiFIQ1v (ORCPT
+        with ESMTP id S234492AbiFIQaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 12:27:51 -0400
-Received: from smtpout1.mo528.mail-out.ovh.net (smtpout1.mo528.mail-out.ovh.net [46.105.34.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078034EA3F;
-        Thu,  9 Jun 2022 09:27:47 -0700 (PDT)
-Received: from pro2.mail.ovh.net (unknown [10.109.146.31])
-        by mo528.mail-out.ovh.net (Postfix) with ESMTPS id 70881109DBBD1;
-        Thu,  9 Jun 2022 18:27:46 +0200 (CEST)
-Received: from localhost.localdomain (88.161.25.233) by DAG1EX2.emp2.local
- (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.9; Thu, 9 Jun 2022
- 18:27:45 +0200
-From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-To:     <pavel@ucw.cz>, <krzk+dt@kernel.org>
-CC:     <robh+dt@kernel.org>, <linux-leds@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Subject: [PATCH v3 2/3] leds: Add driver for the TLC5925 LED controller
-Date:   Thu, 9 Jun 2022 18:27:33 +0200
-Message-ID: <20220609162734.1462625-3-jjhiblot@traphandler.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220609162734.1462625-1-jjhiblot@traphandler.com>
-References: <20220609162734.1462625-1-jjhiblot@traphandler.com>
+        Thu, 9 Jun 2022 12:30:15 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270C3287F49;
+        Thu,  9 Jun 2022 09:30:14 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id n10so48567003ejk.5;
+        Thu, 09 Jun 2022 09:30:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=L/sjdWC0GS+tRAh6Vs/BzO5ThKtSyT6V2dJOpuhJPMA=;
+        b=JPnRdvX9X4TXxEyeuJ8Yxp02z/JfppJq5UtxO2GCEse22e4eHn4PrjnOJ4CFGWF89B
+         A2K8cKZ3rjg3a76o76wceKBOkfdyYRymE/pGv2ajxNK1SmoPANCajnCvqlCYknx6W+7U
+         IfRYjm1ZJDYZcAPYH7oIIzIZ4jHlDDwtOEMri8QV2a0JKjf6onrMj8T27uQwo6ECNJm7
+         +dAGXQ4jy9FKGfQop+MKkwTsnNm72qRaBLsKo70jIVPJYPzS4h/gW9YicZXUhDYaZuBq
+         NQ51eGFVI+HNEhBwuV3nsjRvAoHJ3fff6bSqZK5zSLKUooF/9oEq4Cn3LpSbc3xQDbtq
+         PL/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=L/sjdWC0GS+tRAh6Vs/BzO5ThKtSyT6V2dJOpuhJPMA=;
+        b=CBXCka8ErUY7YHUVQnmThc9eVyYiGUbuzXcycKW743bSrmxtVnzzK/N6Ee9jZFUphR
+         NaQ9tXT+cYdmayGKtgxQPPG+Zel3i+flRphrV2akcd/olxMWRC7OVBXel9y25UBcEeAB
+         EifjR9HzGymu3kODImkmmG2bemNBjrOt171ZExUgmj4i/qp6ByKfCkbxjXioiahsnZOT
+         fNGrd84m2ZNbx2wOqMInMLgWerT12xBP3myDNgIqBmSLpU646qV2HU2bxfnUfigF+U3A
+         Eu+e248ksa6ckI8aggLaJSsUXk88hO1VJtPwAuJuuujfZLcEicT4S7d184T8eHE311Dt
+         JCKw==
+X-Gm-Message-State: AOAM530RBajsRoWrZAc6Nz+9PHBYRej5xQtio1/cHjICRoO265YdvHCn
+        OkDbHVJHoqkLWX5eSYnaX+CzWIS6hvWFfnRWfgA=
+X-Google-Smtp-Source: ABdhPJx4+RSPuKs/dqA5hWxIDDmYaAWEjprpjzlXwC1ilPF3Uwt4ukdpBGT6Wp+CzuffPonJSSKrrpnIS4CXpDZpH4E=
+X-Received: by 2002:a17:906:1193:b0:70d:cf39:a4db with SMTP id
+ n19-20020a170906119300b0070dcf39a4dbmr31469936eja.44.1654792212477; Thu, 09
+ Jun 2022 09:30:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [88.161.25.233]
-X-ClientProxiedBy: DAG8EX2.emp2.local (172.16.2.82) To DAG1EX2.emp2.local
- (172.16.2.2)
-X-Ovh-Tracer-Id: 2270377162369874395
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: 0
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddtledgleeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucenucfjughrpefhvfevufffkffojghfggfgtghisehtkeertdertddtnecuhfhrohhmpeflvggrnhdqlfgrtghquhgvshcujfhisghlohhtuceojhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmqeenucggtffrrghtthgvrhhnpeejveevffefudeutddukeekueeifeeuhfetfefgfedulefhhffgvddvvdevieekveenucffohhmrghinhepthhirdgtohhmnecukfhppedtrddtrddtrddtpdekkedrudeiuddrvdehrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehprhhovddrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomhdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhohedvke
+References: <20220608212923.8585-1-jorge.lopez2@hp.com> <20220608212923.8585-2-jorge.lopez2@hp.com>
+In-Reply-To: <20220608212923.8585-2-jorge.lopez2@hp.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 9 Jun 2022 18:29:36 +0200
+Message-ID: <CAHp75VfPoranKhsHJo=8jJXXhdvqn4-x2E2UJa-Yxb_=tO3QDg@mail.gmail.com>
+Subject: Re: [PATCH v3 1/1] Resolve WMI query failures on some devices
+To:     Jorge Lopez <jorgealtxwork@gmail.com>
+Cc:     Hans de Goede <hdegoede@redhat.com>, balalic.enver@gmail.com,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mark Gross <markgross@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TLC5925 is a 16-channels constant-current LED sink driver.
-It is controlled via SPI but doesn't offer a register-based interface.
-Instead it contains a shift register and latches that convert the
-serial input into a parallel output.
+On Wed, Jun 8, 2022 at 11:32 PM Jorge Lopez <jorgealtxwork@gmail.com> wrote:
+>
+> WMI queries fail on some devices where the ACPI method HWMC
+> unconditionally attempts to create Fields beyond the buffer
+> if the buffer is too small, this breaks essential features
+> such as power profiles:
+>
+>          CreateByteField (Arg1, 0x10, D008)
+>          CreateByteField (Arg1, 0x11, D009)
+>          CreateByteField (Arg1, 0x12, D010)
+>          CreateDWordField (Arg1, 0x10, D032)
+>          CreateField (Arg1, 0x80, 0x0400, D128)
+>
+> In cases where args->data had zero length, ACPI BIOS Error
+> (bug): AE_AML_BUFFER_LIMIT, Field [D008] at bit
+> offset/length 128/8 exceeds size of target Buffer (128 bits)
+> (20211217/dsopcode-198) was obtained.
+>
+> ACPI BIOS Error (bug): AE_AML_BUFFER_LIMIT, Field [D009] at bit
+> offset/length 136/8 exceeds size of target Buffer (136bits)
+> (20211217/dsopcode-198)
+>
+> The original code created a buffer size of 128 bytes regardless if
+> the WMI call required a smaller buffer or not.  This particular
+> behavior occurs in older BIOS and reproduced in OMEN laptops.  Newer
+> BIOS handles buffer sizes properly and meets the latest specification
+> requirements.  This is the reason why testing with a dynamically
+> allocated buffer did not uncover any failures with the test systems at
+> hand.
+>
+> This patch was tested on several OMEN, Elite, and Zbooks.  It was
+> confirmed the patch resolves HPWMI_FAN GET/SET calls in an OMEN
+> Laptop 15-ek0xxx.  No problems were reported when testing on several Elite
+> and Zbooks notebooks.
 
-Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
----
- drivers/leds/Kconfig        |   6 ++
- drivers/leds/Makefile       |   1 +
- drivers/leds/leds-tlc5925.c | 164 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 171 insertions(+)
- create mode 100644 drivers/leds/leds-tlc5925.c
+Perfect!
 
-diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
-index a49979f41eee..b17eb01210ba 100644
---- a/drivers/leds/Kconfig
-+++ b/drivers/leds/Kconfig
-@@ -658,6 +658,12 @@ config LEDS_TLC591XX
- 	  This option enables support for Texas Instruments TLC59108
- 	  and TLC59116 LED controllers.
- 
-+config LEDS_TLC5925
-+	tristate "LED driver for TLC5925 controller"
-+	depends on LEDS_CLASS && SPI
-+	help
-+	  This option enables support for Texas Instruments TLC5925.
-+
- config LEDS_MAX77650
- 	tristate "LED support for Maxim MAX77650 PMIC"
- 	depends on LEDS_CLASS && MFD_MAX77650
-diff --git a/drivers/leds/Makefile b/drivers/leds/Makefile
-index 4fd2f92cd198..9d15b88d482f 100644
---- a/drivers/leds/Makefile
-+++ b/drivers/leds/Makefile
-@@ -81,6 +81,7 @@ obj-$(CONFIG_LEDS_SYSCON)		+= leds-syscon.o
- obj-$(CONFIG_LEDS_TCA6507)		+= leds-tca6507.o
- obj-$(CONFIG_LEDS_TI_LMU_COMMON)	+= leds-ti-lmu-common.o
- obj-$(CONFIG_LEDS_TLC591XX)		+= leds-tlc591xx.o
-+obj-$(CONFIG_LEDS_TLC5925)		+= leds-tlc5925.o
- obj-$(CONFIG_LEDS_TPS6105X)		+= leds-tps6105x.o
- obj-$(CONFIG_LEDS_TURRIS_OMNIA)		+= leds-turris-omnia.o
- obj-$(CONFIG_LEDS_WM831X_STATUS)	+= leds-wm831x-status.o
-diff --git a/drivers/leds/leds-tlc5925.c b/drivers/leds/leds-tlc5925.c
-new file mode 100644
-index 000000000000..2c50ba10bdbf
---- /dev/null
-+++ b/drivers/leds/leds-tlc5925.c
-@@ -0,0 +1,164 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * The driver supports controllers with a very simple SPI protocol:
-+ * - the data is deserialized in a shift-register when CS is asserted
-+ * - the data is latched when CS is de-asserted
-+ * - the LED are either on or off (no control of the brightness)
-+ *
-+ * Supported devices:
-+ * - "ti,tlc5925":  Low-Power 16-Channel Constant-Current LED Sink Driver
-+ *                  https://www.ti.com/lit/ds/symlink/tlc5925.pdf
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/leds.h>
-+#include <linux/err.h>
-+#include <linux/spi/spi.h>
-+#include <linux/property.h>
-+#include <linux/workqueue.h>
-+
-+struct single_led_priv {
-+	int idx;
-+	struct led_classdev cdev;
-+};
-+
-+struct tlc5925_leds_priv {
-+	int max_num_leds;
-+	u8 *state;
-+	spinlock_t lock;
-+	struct single_led_priv leds[];
-+};
-+
-+static int tlc5925_brightness_set_blocking(struct led_classdev *cdev,
-+					    enum led_brightness brightness)
-+{
-+	struct spi_device *spi = to_spi_device(cdev->dev->parent);
-+	struct tlc5925_leds_priv *priv = spi_get_drvdata(spi);
-+	struct single_led_priv *led = container_of(cdev,
-+						   struct single_led_priv,
-+						   cdev);
-+	int index = led->idx;
-+
-+	spin_lock(&priv->lock);
-+	if (brightness)
-+		priv->state[index / 8] |= (1 << (index % 8));
-+	else
-+		priv->state[index / 8] &= ~(1 << (index % 8));
-+	spin_unlock(&priv->lock);
-+
-+	return spi_write(spi, priv->state, priv->max_num_leds / 8);
-+}
-+
-+
-+static int tlc5925_probe(struct spi_device *spi)
-+{
-+	struct device *dev = &spi->dev;
-+	struct fwnode_handle *child;
-+	struct tlc5925_leds_priv *priv;
-+	int ret;
-+	int max_num_leds, count;
-+	struct gpio_descs *gpios;
-+
-+	count = device_get_child_node_count(dev);
-+	if (!count) {
-+		dev_err(dev, "no led defined.\n");
-+		return -ENODEV;
-+	}
-+
-+	ret = device_property_read_u32_array(dev, "ti,shift-register-length",
-+					     &max_num_leds, 1);
-+	if (ret) {
-+		dev_err(dev, "'ti,shift-register-length' property is required.\n");
-+		return -EINVAL;
-+	}
-+
-+	if (max_num_leds % 8) {
-+		dev_err(dev, "'ti,shift-register-length' must be a multiple of 8\n");
-+		return -EINVAL;
-+	}
-+
-+	if (max_num_leds == 0) {
-+		dev_err(dev, "'ti,shift-register-length' must be greater than 0\n");
-+		return -EINVAL;
-+	}
-+
-+	/* Assert all the OE/ lines */
-+	gpios = devm_gpiod_get_array(dev, "output-enable-b", GPIOD_OUT_LOW);
-+	if (IS_ERR(gpios)) {
-+		dev_err(dev, "Unable to get the 'output-enable-b' gpios\n");
-+		return PTR_ERR(gpios);
-+	}
-+
-+	priv = devm_kzalloc(dev, struct_size(priv, leds, count), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	spin_lock_init(&priv->lock);
-+
-+	priv->state = devm_kzalloc(dev, DIV_ROUND_UP(max_num_leds, 8), GFP_KERNEL);
-+	if (!priv->state)
-+		return -ENOMEM;
-+
-+	priv->max_num_leds = max_num_leds;
-+
-+	device_for_each_child_node(dev, child) {
-+		struct led_init_data init_data = {.fwnode = child};
-+		struct led_classdev *cdev;
-+		u32 idx;
-+
-+		ret = fwnode_property_read_u32_array(child, "reg", &idx, 1);
-+		if (ret || idx >= max_num_leds) {
-+			dev_err(dev, "%s: invalid reg value. Ignoring.\n",
-+				fwnode_get_name(child));
-+			fwnode_handle_put(child);
-+			continue;
-+		}
-+
-+		count--;
-+		priv->leds[count].idx = idx;
-+		cdev = &(priv->leds[count].cdev);
-+		cdev->brightness = LED_OFF;
-+		cdev->max_brightness = 1;
-+		cdev->brightness_set_blocking = tlc5925_brightness_set_blocking;
-+
-+		ret = devm_led_classdev_register_ext(dev, cdev, &init_data);
-+		if (ret) {
-+			dev_err(dev, "%s: cannot create LED device.\n",
-+				fwnode_get_name(child));
-+			fwnode_handle_put(child);
-+			continue;
-+		}
-+	}
-+
-+	spi_set_drvdata(spi, priv);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id tlc5925_dt_ids[] = {
-+	{ .compatible = "ti,tlc5925", },
-+	{},
-+};
-+
-+static const struct spi_device_id tlc5925_id[] = {
-+	{"tlc5925", 0},
-+	{}
-+};
-+MODULE_DEVICE_TABLE(spi, tlc5925_id);
-+
-+static struct spi_driver tlc5925_driver = {
-+	.driver = {
-+		.name		= KBUILD_MODNAME,
-+		.of_match_table	= tlc5925_dt_ids,
-+	},
-+	.id_table = tlc5925_id,
-+	.probe = tlc5925_probe,
-+};
-+
-+module_spi_driver(tlc5925_driver);
-+
-+MODULE_AUTHOR("Jean-Jacques Hiblot <jjhiblot@traphandler.com>");
-+MODULE_DESCRIPTION("TLC5925 LED driver");
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS("spi:tlc5925");
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+
+Also needs a Fixes tag:
+
+Fixes: 4b4967cbd268 ("platform/x86: hp-wmi: Changing bios_args.data to
+be dynamically allocated")
+
+(I believe Hans can help you and add it on the fly)
+
+> Signed-off-by: Jorge Lopez <jorge.lopez2@hp.com>
+>
+> ---
+> Based on the latest platform-drivers-x86.git/for-next
+> ---
+>  drivers/platform/x86/hp-wmi.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
+> index 0e9a25b56e0e..d3540dd62d06 100644
+> --- a/drivers/platform/x86/hp-wmi.c
+> +++ b/drivers/platform/x86/hp-wmi.c
+> @@ -290,14 +290,16 @@ static int hp_wmi_perform_query(int query, enum hp_wmi_command command,
+>         struct bios_return *bios_return;
+>         union acpi_object *obj = NULL;
+>         struct bios_args *args = NULL;
+> -       int mid, actual_outsize, ret;
+> +       int mid, actual_insize, actual_outsize;
+>         size_t bios_args_size;
+> +       int ret;
+>
+>         mid = encode_outsize_for_pvsz(outsize);
+>         if (WARN_ON(mid < 0))
+>                 return mid;
+>
+> -       bios_args_size = struct_size(args, data, insize);
+> +       actual_insize = max(insize, 128);
+> +       bios_args_size = struct_size(args, data, actual_insize);
+>         args = kmalloc(bios_args_size, GFP_KERNEL);
+>         if (!args)
+>                 return -ENOMEM;
+> --
+> 2.25.1
+>
+
+
 -- 
-2.25.1
-
+With Best Regards,
+Andy Shevchenko
