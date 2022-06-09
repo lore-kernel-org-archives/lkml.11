@@ -2,142 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE3EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:05:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 392D1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:05:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245071AbiFISFB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 14:05:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33888 "EHLO
+        id S1344721AbiFISFh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 14:05:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238630AbiFISE6 (ORCPT
+        with ESMTP id S233676AbiFISFe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 14:04:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEEDC20014D;
-        Thu,  9 Jun 2022 11:04:50 -0700 (PDT)
+        Thu, 9 Jun 2022 14:05:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2877229128;
+        Thu,  9 Jun 2022 11:05:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 68E1661D06;
-        Thu,  9 Jun 2022 18:04:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27328C34114;
-        Thu,  9 Jun 2022 18:04:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C428B82EAF;
+        Thu,  9 Jun 2022 18:05:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3E5BC34114;
+        Thu,  9 Jun 2022 18:05:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654797889;
-        bh=pASgOkIhhI/ZJTQJiOxQQ7BetAsfgOyqGy5+OxBbrvU=;
+        s=k20201202; t=1654797930;
+        bh=bqMZPrfPAZOVdob6RXRz2FAHvjl0IT86srdTOf+oanA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BTB64wygOFCsPdDhaQrt8ga2Ig64u/kXZw4tZeGJT0YWnHOFEVrA9wtMwDaA4po75
-         tHkRwZ4Z1OS5DEp1vz0DLZjhsVFXOj9cWFGJqF8h1e4ExnGDlLM66vc852A7UGTVkV
-         yEz7FlAClMKRrohieUz/v2D/e1sIUfPAptFYdXD6e5jM5B9XSjou+kMB5JSzyCWkav
-         Vy3bM2wpcA65mdDfoHZTzmvQ2m/dzKtFKO6ebtcmQ6ve9Ss5LpTv7FPNvFa0fZq3IE
-         X+WdUzskIEX0iCxmt+US9NfG657DMkWYw8HIeB0mVRrH72fJJ6NrdiTApIn1c/+71Q
-         Z1MZF3k8udZcQ==
-Date:   Thu, 9 Jun 2022 21:04:34 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-Cc:     "bsingharora@gmail.com" <bsingharora@gmail.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "Syromiatnikov, Eugene" <esyr@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "0x7f454c46@gmail.com" <0x7f454c46@gmail.com>,
-        "Eranian, Stephane" <eranian@google.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "adrian@lisas.de" <adrian@lisas.de>,
-        "fweimer@redhat.com" <fweimer@redhat.com>,
-        "nadav.amit@gmail.com" <nadav.amit@gmail.com>,
-        "jannh@google.com" <jannh@google.com>,
-        "avagin@gmail.com" <avagin@gmail.com>,
-        "kcc@google.com" <kcc@google.com>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "pavel@ucw.cz" <pavel@ucw.cz>, "oleg@redhat.com" <oleg@redhat.com>,
-        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "bp@alien8.de" <bp@alien8.de>, "arnd@arndb.de" <arnd@arndb.de>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "Yang, Weijiang" <weijiang.yang@intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "john.allen@amd.com" <john.allen@amd.com>,
-        "dave.martin@arm.com" <dave.martin@arm.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "gorcunov@gmail.com" <gorcunov@gmail.com>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
-Subject: Re: [PATCH 00/35] Shadow stacks for userspace
-Message-ID: <YqI2MgV9S1iQR9Mq@kernel.org>
-References: <fb7d6e4da58ae77be2c6321ee3f3487485b2886c.camel@intel.com>
- <40a3500c-835a-60b0-15bf-40c6622ad013@kernel.org>
- <YiZVbPwlgSFnhadv@kernel.org>
- <CAMe9rOrSLPKdL2gL=yx84zrs-u6ch1AVvjk3oqUe3thR5ZD=dQ@mail.gmail.com>
- <YpYDKVjMEYVlV6Ya@kernel.org>
- <d0c94eed6e3c7f35b78bab3f00aadebd960ee0d8.camel@intel.com>
- <YpZEDjxSPxUfMxDZ@kernel.org>
- <7c637f729e14f03d0df744568800fc986542e33d.camel@intel.com>
- <Ypcd8HQtrn7T41LF@kernel.org>
- <1d77dcab5d5ee7c565cfc62601d3a28ecf5a6bed.camel@intel.com>
+        b=aOEfrA8zGgg8T2+zX3dfzoFlhpcrWW0Fb5dgk5ZBJ5ZygzdQnXtSRaRj03J8BNxbn
+         IL4CZsPsv3pBuBHTSYCKgmAjQh2F0KCWCQ0dagD1welrJ47OK0rMJEtcFZGVQmSzCk
+         P/Q64uLfacBtTU1GwCIvWitIRc8Pe5Cf9SWVrc/nYhBCmDauMgS23v+VKY+juEWzwa
+         m034YhanLwKGWPdanS2hsMtuZjPfhrziMlSrQUO19iU0PEhJdY93ZB9Dy+/WwcHKLH
+         6BVSiblvaC3tSwX6KIhbn+o1qEB/qJ22hJkyA77Ih2OoNhokH3wlEeAYpCmB61B/p6
+         esGCeoTKgRRkg==
+Received: by pali.im (Postfix)
+        id 8C5B52104; Thu,  9 Jun 2022 20:05:26 +0200 (CEST)
+Date:   Thu, 9 Jun 2022 20:05:26 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Tyrel Datwyler <tyreld@linux.ibm.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH] powerpc/pci: Add config option for using OF 'reg' for
+ PCI domain
+Message-ID: <20220609180526.7dwyzezyu5zxncar@pali>
+References: <20220609162725.wu45rrbqo3jyfoi2@pali>
+ <20220609171022.GA517022@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1d77dcab5d5ee7c565cfc62601d3a28ecf5a6bed.camel@intel.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220609171022.GA517022@bhelgaas>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 05:24:26PM +0000, Edgecombe, Rick P wrote:
-> On Wed, 2022-06-01 at 11:06 +0300, Mike Rapoport wrote:
-> > > Yea, having something working is really great. My only hesitancy is
-> > > that, per a discussion on the LAM patchset, we are going to make
-> > > this
-> > > enabling API CET only (same semantics for though). I suppose the
-> > > locking API arch_prctl() could still be support other arch
-> > > features,
-> > > but it might be a second CET only regset. It's not the end of the
-> > > world.
+On Thursday 09 June 2022 12:10:22 Bjorn Helgaas wrote:
+> On Thu, Jun 09, 2022 at 06:27:25PM +0200, Pali Rohár wrote:
+> > On Thursday 09 June 2022 11:22:55 Bjorn Helgaas wrote:
+> > > [+cc Guilherme, Michael, Ben (author of 63a72284b159 and PPC folks), thread:
+> > > https://lore.kernel.org/r/20220504175718.29011-1-pali@kernel.org]
+> > > 
+> > > On Fri, May 06, 2022 at 12:33:02AM +0200, Pali Rohár wrote:
+> > > > On Thursday 05 May 2022 15:10:01 Tyrel Datwyler wrote:
+> > > > > On 5/5/22 02:31, Pali Rohár wrote:
+> > > > > > On Thursday 05 May 2022 07:16:40 Christophe Leroy wrote:
+> > > > > >> Le 04/05/2022 à 19:57, Pali Rohár a écrit :
+> > > > > >>> Since commit 63a72284b159 ("powerpc/pci: Assign fixed PHB
+> > > > > >>> number based on device-tree properties"), powerpc kernel
+> > > > > >>> always fallback to PCI domain assignment from OF / Device Tree
+> > > > > >>> 'reg' property of the PCI controller.
+> > > > > >>>
+> > > > > >>> PCI code for other Linux architectures use increasing
+> > > > > >>> assignment of the PCI domain for individual controllers
+> > > > > >>> (assign the first free number), like it was also for powerpc
+> > > > > >>> prior mentioned commit.
+> > > > > >>>
+> > > > > >>> Upgrading powerpc kernels from LTS 4.4 version (which does not
+> > > > > >>> contain mentioned commit) to new LTS versions brings a
+> > > > > >>> regression in domain assignment.
+> > > > > >>
+> > > > > >> Can you elaborate why it is a regression ?
+> > > > > >> 63a72284b159 That commit says 'no functionnal changes', I'm
+> > > > > >> having hard time understanding how a nochange can be a
+> > > > > >> regression.
+> > > > > > 
+> > > > > > It is not 'no functional change'. That commit completely changed
+> > > > > > PCI domain assignment in a way that is incompatible with other
+> > > > > > architectures and also incompatible with the way how it was done
+> > > > > > prior that commit.
+> > > > > 
+> > > > > I agree that the "no functional change" statement is incorrect.
+> > > > > However, for most powerpc platforms it ended up being simply a
+> > > > > cosmetic behavior change. As far as I can tell there is nothing
+> > > > > requiring domain ids to increase montonically from zero or that
+> > > > > each architecture is required to use the same domain numbering
+> > > > > scheme.
+> > > > 
+> > > > That is truth. But it looks really suspicious why domains are not
+> > > > assigned monotonically. Some scripts / applications are using PCI
+> > > > location (domain:bus:dev:func) for remembering PCI device and domain
+> > > > change can cause issue for config files. And some (older) applications
+> > > > expects existence of domain zero. In systems without hot plug support
+> > > > with small number of domains (e.g. 3) it means that there are always
+> > > > domains 0, 1 and 2.
+> > > > 
+> > > > > Its hard to call this a true regression unless it actually broke
+> > > > > something. The commit in question has been in the kernel since 4.8
+> > > > > which was released over 5 1/2 years ago.
+> > > > 
+> > > > I agree, it really depends on how you look at it.
+> > > > 
+> > > > The important is that lot of people are using LTS versions and are
+> > > > doing upgrades when LTS support is dropped. Which for 4.4 now
+> > > > happened. So not all smaller or "cosmetic" changes could be detected
+> > > > until longer LTS period pass.
+> > > > 
+> > > > > With all that said looking closer at the code in question I think
+> > > > > it is fair to assume that the author only intended this change for
+> > > > > powernv and pseries platforms and not every powerpc platform. That
+> > > > > change was done to make persistent naming easier to manage in
+> > > > > userspace.
+> > > > 
+> > > > I agree that this behavior change may be useful in some situations
+> > > > and I do not object this need.
+> > > > 
+> > > > > Your change defaults back to the old behavior which will now break
+> > > > > both powernv and pseries platforms with regard to hotplugging and
+> > > > > persistent naming.
+> > > > 
+> > > > I was aware of it, that change could cause issues. And that is why I
+> > > > added config option for choosing behavior. So users would be able to
+> > > > choose what they need.
+> > > > 
+> > > > > We could properly limit it to powernv and pseries by using
+> > > > > ibm,fw-phb-id instead of reg property in the look up that follows
+> > > > > a failed ibm,opal-phbid lookup. I think this is acceptable as long
+> > > > > as no other powerpc platforms have started using this behavior for
+> > > > > persistent naming.
+> > > > 
+> > > > And what about setting that new config option to enabled by default
+> > > > for those series?
+> > > > 
+> > > > Or is there issue with introduction of the new config option?
+> > > > 
+> > > > One of the point is that it is really a good idea to have
+> > > > similar/same behavior for all linux platforms. And if it cannot be
+> > > > enabled by default (for backward compatibility) add at least some
+> > > > option, so new platforms can start using it or users can decide to
+> > > > switch behavior.
+> > > 
+> > > This is a powerpc thing so I'm just kibbitzing a little.
+> > > 
+> > > This basically looks like a new config option to selectively revert
+> > > 63a72284b159.  That seems hard to maintain and doesn't seem like
+> > > something that needs to be baked into the kernel at compile-time.
+> > > 
+> > > The 63a72284b159 commit log says persistent NIC names are tied to PCI
+> > > domain/bus/dev/fn addresses, which seems like something we should
+> > > discourage because we can't predict PCI addresses in general.  I
+> > > assume other platforms typically use udev with MAC addresses or
+> > > something?
 > > 
-> > The support for CET in criu is anyway experimental for now, if the
-> > kernel
-> > API will be slightly different in the end, we'll update criu.
-> > The important things are the ability to control tracee shadow stack
-> > from ptrace, the ability to map the shadow stack at fixed address and
-> > the
-> > ability to control the features at least from ptrace.
-> > As long as we have APIs that provide those, it should be Ok.
-> >  
-> > > I guess the other consideration is tieing CRIU to glibc
-> > > peculiarities.
-> > > Like even if we fix glibc, then CRIU may not work with some other
-> > > libc
-> > > or app that force disables for some weird reason. Is it supposed to
-> > > be
-> > > libc-agnostic?
-> > 
-> > Actually using the ptrace to control the CET features does not tie
-> > criu to
-> > glibc. The current proposal for the arch_prctl() allows libc to lock
-> > CET
-> > features and having a ptrace call to control the lock makes criu
-> > agnostic
-> > to libc behaviour.
+> > This is not about ethernet NIC cards only. But affects also WiFi cards
+> > (which registers phy dev, not netdev) and also all other PCIe cards
+> > which do not have to be network-based. Hence MAC address or udev does
+> > not play role there.
 > 
-> From staring at the glibc code, I'm suspicious something was weird with
-> your test setup, as I don't think it should be locking. But I guess to
-> be completely proper you would need to save and restore the lock state
-> anyway. So, ok yea, on balance probably better to have an extra
-> interface.
+> What persistent naming mechanism do other platforms use in those
+> cases?
+
+For example sysfs path which contains domain/bus/dev/fn numbers. And
+these numbers were changed in that mentioned commit.
+
+> I forgot to ask before about the actual regression here.  The commit
+> log says domain numbers are different, but I don't know the connection
+> from there to something failing.  I assume there's some script or
+> config file that depends on specific domain numbers?  And that
+> dependency is (hopefully) powerpc-specific?
 > 
-> Should we make it a GET/SET interface?
+> Bjorn
 
-Yes, I think so.
-
--- 
-Sincerely yours,
-Mike.
+You assume correct. For example this is the way how OpenWRT handles PCI
+devices (but not only OpenWRT). This OpenWRT case is not
+powerpc-specific but generic to all architectures. This is just one
+example.
