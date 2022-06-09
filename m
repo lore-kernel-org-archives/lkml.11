@@ -2,77 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9075C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 10:16:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD22C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 10:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240095AbiFIKQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 06:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59728 "EHLO
+        id S234401AbiFIKRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 06:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241879AbiFIKQF (ORCPT
+        with ESMTP id S232694AbiFIKRQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 06:16:05 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2039DB36EE;
-        Thu,  9 Jun 2022 03:16:01 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1nzFCF-004yZH-QF; Thu, 09 Jun 2022 20:15:25 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Thu, 09 Jun 2022 18:15:24 +0800
-Date:   Thu, 9 Jun 2022 18:15:24 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: Re: [PATCH] crypto: x86/camellia - Replace kernel.h with the
- necessary inclusions
-Message-ID: <YqHIPE0MlZLP8C5I@gondor.apana.org.au>
-References: <65634fb748cc0ce2cc5bafaf904cb5f76bd4edc4.1654414362.git.christophe.jaillet@wanadoo.fr>
+        Thu, 9 Jun 2022 06:17:16 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1077F6351
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 03:17:15 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4LJg4n2cjVz9tJH;
+        Thu,  9 Jun 2022 12:17:13 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id CquQaKZpF0QP; Thu,  9 Jun 2022 12:17:13 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4LJg4n1rgVz9tJB;
+        Thu,  9 Jun 2022 12:17:13 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 2C5888B77E;
+        Thu,  9 Jun 2022 12:17:13 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id 9m_gcIdVOhYL; Thu,  9 Jun 2022 12:17:13 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.129])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id D2ADB8B779;
+        Thu,  9 Jun 2022 12:17:12 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 259AH7eB133875
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Thu, 9 Jun 2022 12:17:07 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 259AH7Et133874;
+        Thu, 9 Jun 2022 12:17:07 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH v2 3/3] powerpc/irq: Simplify __do_irq()
+Date:   Thu,  9 Jun 2022 12:16:42 +0200
+Message-Id: <5a3b21311191f1240850db6ab29b19ac7885fe03.1654769775.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <adbe1c8315ec2d63259f41468e82e51677bb1eda.1654769775.git.christophe.leroy@csgroup.eu>
+References: <adbe1c8315ec2d63259f41468e82e51677bb1eda.1654769775.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <65634fb748cc0ce2cc5bafaf904cb5f76bd4edc4.1654414362.git.christophe.jaillet@wanadoo.fr>
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1654769796; l=977; s=20211009; h=from:subject:message-id; bh=xPwNVe000eN2DJVt6xZCsdQz6hHo3NPxzkYNOYjA61w=; b=2GsZPo4SfVOte/difHxgCcuUUYr7GCKFeyh2awhrz+t7BYYbg7DTK3LUREljdSFkogHE1P7KiMmw Scln8xAYCi/jtTgZxT3P/eSt1q3q1U+jzYrvAFfkOdeOTyfyViLy
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 05, 2022 at 09:32:53AM +0200, Christophe JAILLET wrote:
-> When kernel.h is used in the headers it adds a lot into dependency hell,
-> especially when there are circular dependencies are involved.
-> 
-> Replace kernel.h inclusion with the list of what is really being used.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
->  arch/x86/crypto/camellia.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/crypto/camellia.h b/arch/x86/crypto/camellia.h
-> index 1dcea79e8f8e..547fb7e30928 100644
-> --- a/arch/x86/crypto/camellia.h
-> +++ b/arch/x86/crypto/camellia.h
-> @@ -4,7 +4,7 @@
->  
->  #include <crypto/b128ops.h>
->  #include <linux/crypto.h>
-> -#include <linux/kernel.h>
-> +#include <linux/types.h>
->  
->  #define CAMELLIA_MIN_KEY_SIZE	16
->  #define CAMELLIA_MAX_KEY_SIZE	32
+Remove duplicated code by implementing a proper if/else.
 
-This is not sufficient.  For example, asmlinkage isn't explicitly
-defined by any of these header files so it would be relying on an
-implicit inclusion which is prone to breakage.
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/kernel/irq.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-Did you audit the entire file?
-
-Cheers,
+diff --git a/arch/powerpc/kernel/irq.c b/arch/powerpc/kernel/irq.c
+index e5b7fb5282ee..b007f16ccbd3 100644
+--- a/arch/powerpc/kernel/irq.c
++++ b/arch/powerpc/kernel/irq.c
+@@ -280,14 +280,11 @@ void __do_IRQ(struct pt_regs *regs)
+ 	irqsp = hardirq_ctx[raw_smp_processor_id()];
+ 	sirqsp = softirq_ctx[raw_smp_processor_id()];
+ 
+-	/* Already there ? */
+-	if (unlikely(cursp == irqsp || cursp == sirqsp)) {
++	/* Already there ? If not switch stack and call */
++	if (unlikely(cursp == irqsp || cursp == sirqsp))
+ 		__do_irq(regs, current_stack_pointer);
+-		set_irq_regs(old_regs);
+-		return;
+-	}
+-	/* Switch stack and call */
+-	call_do_irq(regs, irqsp);
++	else
++		call_do_irq(regs, irqsp);
+ 
+ 	set_irq_regs(old_regs);
+ }
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.35.3
+
