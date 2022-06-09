@@ -2,185 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:25:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD842C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:25:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243707AbiFILX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:23:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45614 "EHLO
+        id S243649AbiFILZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243517AbiFILXN (ORCPT
+        with ESMTP id S235756AbiFILZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:23:13 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD301C1EDD;
-        Thu,  9 Jun 2022 04:23:11 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Thu, 9 Jun 2022 07:25:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1900C44754
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:25:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id A188B66017CB;
-        Thu,  9 Jun 2022 12:23:09 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654773790;
-        bh=6b5Fn00QFN3S8pk3LiXp3oowU6+YetKGNFXGTWU1NeQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gbQJ9zbuPxPKTT7q3eU227g6oIEkx67WfDTehPGu0ahrJiFRpwnXwna+F/oZ3Trxp
-         29wyf5ywNX0PTB5eosLv/tW5/oUu2axA5eowmKllKV+01cvAohdKHvxHe1jcdwJyXc
-         IjSQNspArFVk4HhDH38hoisHRw6CdaU+5q9jmW7GpWRlD3C83N/6QReLfnE8mjD/zN
-         f9xRU23cPvduQO8CNpCtXLaVc+MXEtk/o9LK8IG+TCidx9TwIvluLsM8yi3ffllVdk
-         b5FfiR69AQqePQWP+5ESsm9f7j7LhVp/aWn9AYbkcTe3D+I9aq6I+L5KMKe9QEX4gJ
-         mK+ltmDoiIUag==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     robh+dt@kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
-        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
-        kernel@collabora.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v2 02/10] arm64: dts: mediatek: mt6795: Add cpu-map and L2 cache
-Date:   Thu,  9 Jun 2022 13:22:55 +0200
-Message-Id: <20220609112303.117928-3-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220609112303.117928-1-angelogioacchino.delregno@collabora.com>
-References: <20220609112303.117928-1-angelogioacchino.delregno@collabora.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        by ams.source.kernel.org (Postfix) with ESMTPS id D13E7B82D29
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 11:25:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89171C34114;
+        Thu,  9 Jun 2022 11:25:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654773919;
+        bh=6/sOlCyCw6rHNEeZDbfk6xBrqaNslLwkK28Hj2D8Uno=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ApvizybvaKty43n7ZSt6NW7is7g+cvIJh9Pd/MqBqLZEFrxfAzrTJ1p6w9t+SBP55
+         I8Le7+ggZMXjb+hUX/Xew3ob8scpltj6wHGRtRuwWnONoUe8qr/Uci4wHfh0p0zjQu
+         bc82kRCO8SxTsysOmLzzX3OFyxc2nI5FD/DAIEPI2LCvap15IPB0sSymL6FkfCQJIh
+         YQg4gsNcPE4vHCogzLZlnMbMo1z5z3yyj0ytx0fGrkAzXGOhWUGl4mplxtTbr8iHZe
+         ceEwalPaugox/QO7FQNlUZTZa0iMlZ21pfgUQC3g1X9rGuzwv05aVRNBJgtWaMF3rf
+         qDZ+303+PlhMw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nzGHt-00GqeJ-4G; Thu, 09 Jun 2022 12:25:17 +0100
+Date:   Thu, 09 Jun 2022 12:25:16 +0100
+Message-ID: <87czfi3wpv.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Liu Ying <victor.liu@nxp.com>
+Cc:     Lucas Stach <l.stach@pengutronix.de>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Subject: Re: [PATCH] irqchip/irq-imx-irqsteer: Get/put PM runtime in ->irq_unmask()/irq_mask()
+In-Reply-To: <07e01555c4722daed2dc13871c42ef7764a157ae.camel@nxp.com>
+References: <20220608105057.2607812-1-victor.liu@nxp.com>
+        <2d79719b8670a3693b210af5ab45716dba23999a.camel@pengutronix.de>
+        <17d3adc7d7d329cab65b54ce71db05bc070872d1.camel@nxp.com>
+        <26973cddee5f527ea17184c0f3fccb70bc8969a0.camel@pengutronix.de>
+        <87k09r45ww.wl-maz@kernel.org>
+        <07e01555c4722daed2dc13871c42ef7764a157ae.camel@nxp.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: victor.liu@nxp.com, l.stach@pengutronix.de, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tglx@linutronix.de, shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This SoC is HMP and has two clusters with four Cortex-A53 cores each:
-declare a cpu map and, while at it, also add the next-level-cache
-properties.
+On Thu, 09 Jun 2022 02:41:55 +0100,
+Liu Ying <victor.liu@nxp.com> wrote:
+> 
+> On Wed, 2022-06-08 at 14:54 +0100, Marc Zyngier wrote:
+> > On Wed, 08 Jun 2022 13:02:46 +0100,
+> > Lucas Stach <l.stach@pengutronix.de> wrote:
+> > > 
+> > > Am Mittwoch, dem 08.06.2022 um 19:29 +0800 schrieb Liu Ying:
+> > > > On Wed, 2022-06-08 at 12:56 +0200, Lucas Stach wrote:
+> > > > > Am Mittwoch, dem 08.06.2022 um 18:50 +0800 schrieb Liu Ying:
+> > > > > > Now that runtime PM support was added in this driver, we have
+> > > > > > to enable power before accessing irqchip registers.  And,
+> > > > > > after
+> > > > > > the access is done, we should disable power.  This patch
+> > > > > > calls
+> > > > > > pm_runtime_get_sync() in ->irq_unmask() and pm_runtime_put()
+> > > > > > in
+> > > > > > ->irq_mask() to make sure power is managed for the register
+> > > > > > access.
+> > > > > > 
+> > > > > 
+> > > > > Can you tell me in which case this is necessary? IIRC the IRQ
+> > > > > core
+> > > > 
+> > > > With the i.MX8qxp DPU driver[1], I see below synchronous external
+> > > > abort:
+> > > > 
+> > > > [    1.207270] Internal error: synchronous external abort:
+> > > > 96000210
+> > > > [#1] PREEMPT SMP
+> > > > [    1.207287] Modules linked in:
+> > > > [    1.207299] CPU: 1 PID: 64 Comm: kworker/u8:2 Not tainted
+> > > > 5.18.0-
+> > > > rc6-next-20220509-00053-gf01f74ee1c18 #272
+> > > > [    1.207311] Hardware name: Freescale i.MX8QXP MEK (DT)
+> > > > [    1.207319] Workqueue: events_unbound deferred_probe_work_func
+> > > > [    1.207339] pstate: 400000c5 (nZcv daIF -PAN -UAO -TCO -DIT
+> > > > -SSBS
+> > > > BTYPE=--)
+> > > > [    1.207349] pc : imx_irqsteer_irq_unmask+0x48/0x80
+> > > > [    1.207360] lr : imx_irqsteer_irq_unmask+0x38/0x80
+> > > > [    1.207368] sp : ffff80000a88b900
+> > > > [    1.207372] x29: ffff80000a88b900 x28: ffff8000080fed90 x27:
+> > > > ffff8000080fefe0
+> > > > [    1.207388] x26: ffff8000080fef40 x25: ffff0008012538d4 x24:
+> > > > ffff8000092fe388
+> > > > [    1.207407] x23: 0000000000000001 x22: ffff0008013295b4 x21:
+> > > > ffff000801329580
+> > > > [    1.207425] x20: ffff0008003faa60 x19: 000000000000000e x18:
+> > > > 0000000000000000
+> > > > [    1.207443] x17: 0000000000000003 x16: 0000000000000162 x15:
+> > > > 0000000000000001
+> > > > [    1.207459] x14: 0000000000000002 x13: 0000000000000018 x12:
+> > > > 0000000000000040
+> > > > [    1.207477] x11: ffff000800682480 x10: ffff000800682482 x9 :
+> > > > ffff80000a072678
+> > > > [    1.207495] x8 : ffff0008006a64a8 x7 : 0000000000000000 x6 :
+> > > > ffff0008006a6608
+> > > > [    1.207513] x5 : ffff800009070a18 x4 : 0000000000000000 x3 :
+> > > > ffff80000b240000
+> > > > [    1.207529] x2 : ffff80000b240038 x1 : 00000000000000c0 x0 :
+> > > > 00000000000000c0
+> > > > [    1.207549] Call trace:
+> > > > [    1.207553]  imx_irqsteer_irq_unmask+0x48/0x80
+> > > > [    1.207562]  irq_enable+0x40/0x8c
+> > > > [    1.207575]  __irq_startup+0x78/0xa4
+> > > > [    1.207588]  irq_startup+0x78/0x16c
+> > > > [    1.207601]  irq_activate_and_startup+0x38/0x70
+> > > > [    1.207612]  __irq_do_set_handler+0xcc/0x1e0
+> > > > [    1.207626]  irq_set_chained_handler_and_data+0x58/0xa0
+> > > 
+> > > Ooh, I think this is the problem. The IRQ is not requested in the
+> > > usual
+> > > way when a chained handler is added, so this might bypass the
+> > > runtime
+> > > PM handling normally done in the IRQ core. In that case this is a
+> > > core
+> > > issue and should not be worked around in the driver, but the core
+> > > should take the RPM reference for the chained handler, just like it
+> > > does for normal IRQs.
+> > 
+> > Well spotted. Could you please give the hack below (compile-tested
+> > only) a go?
+> 
+> I don't see the splat after your patch is applied.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- arch/arm64/boot/dts/mediatek/mt6795.dtsi | 56 ++++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
+Can I take this as a formal "Tested-by:" tag?
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt6795.dtsi b/arch/arm64/boot/dts/mediatek/mt6795.dtsi
-index 167f90bd991a..1456b9035336 100644
---- a/arch/arm64/boot/dts/mediatek/mt6795.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt6795.dtsi
-@@ -34,6 +34,7 @@ cpu0: cpu@0 {
- 			compatible = "arm,cortex-a53";
- 			enable-method = "psci";
- 			reg = <0x000>;
-+			next-level-cache = <&l2_0>;
- 		};
- 
- 		cpu1: cpu@1 {
-@@ -41,6 +42,7 @@ cpu1: cpu@1 {
- 			compatible = "arm,cortex-a53";
- 			enable-method = "psci";
- 			reg = <0x001>;
-+			next-level-cache = <&l2_0>;
- 		};
- 
- 		cpu2: cpu@2 {
-@@ -48,6 +50,7 @@ cpu2: cpu@2 {
- 			compatible = "arm,cortex-a53";
- 			enable-method = "psci";
- 			reg = <0x002>;
-+			next-level-cache = <&l2_0>;
- 		};
- 
- 		cpu3: cpu@3 {
-@@ -55,6 +58,7 @@ cpu3: cpu@3 {
- 			compatible = "arm,cortex-a53";
- 			enable-method = "psci";
- 			reg = <0x003>;
-+			next-level-cache = <&l2_0>;
- 		};
- 
- 		cpu4: cpu@100 {
-@@ -62,6 +66,7 @@ cpu4: cpu@100 {
- 			compatible = "arm,cortex-a53";
- 			enable-method = "psci";
- 			reg = <0x100>;
-+			next-level-cache = <&l2_1>;
- 		};
- 
- 		cpu5: cpu@101 {
-@@ -69,6 +74,7 @@ cpu5: cpu@101 {
- 			compatible = "arm,cortex-a53";
- 			enable-method = "psci";
- 			reg = <0x101>;
-+			next-level-cache = <&l2_1>;
- 		};
- 
- 		cpu6: cpu@102 {
-@@ -76,6 +82,7 @@ cpu6: cpu@102 {
- 			compatible = "arm,cortex-a53";
- 			enable-method = "psci";
- 			reg = <0x102>;
-+			next-level-cache = <&l2_1>;
- 		};
- 
- 		cpu7: cpu@103 {
-@@ -83,6 +90,55 @@ cpu7: cpu@103 {
- 			compatible = "arm,cortex-a53";
- 			enable-method = "psci";
- 			reg = <0x103>;
-+			next-level-cache = <&l2_1>;
-+		};
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+
-+				core2 {
-+					cpu = <&cpu2>;
-+				};
-+
-+				core3 {
-+					cpu = <&cpu3>;
-+				};
-+			};
-+
-+			cluster1 {
-+				core0 {
-+					cpu = <&cpu4>;
-+				};
-+
-+				core1 {
-+					cpu = <&cpu5>;
-+				};
-+
-+				core2 {
-+					cpu = <&cpu6>;
-+				};
-+
-+				core3 {
-+					cpu = <&cpu7>;
-+				};
-+			};
-+		};
-+
-+		l2_0: l2-cache0 {
-+			compatible = "cache";
-+			cache-level = <2>;
-+		};
-+
-+		l2_1: l2-cache1 {
-+			compatible = "cache";
-+			cache-level = <2>;
- 		};
- 	};
- 
+Thanks,
+
+	M.
+
 -- 
-2.35.1
-
+Without deviation from the norm, progress is not possible.
