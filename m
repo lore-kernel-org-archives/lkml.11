@@ -2,96 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 506EAC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:59:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 051F3C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243745AbiFIN7S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 09:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57076 "EHLO
+        id S239103AbiFIOAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 10:00:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343932AbiFIN6W (ORCPT
+        with ESMTP id S230094AbiFIOAS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 09:58:22 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB7F02AA011;
-        Thu,  9 Jun 2022 06:58:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ciLcywds5wOdnXeWouFexQ8d/+FNSoE5WBQrR+b6OwM=; b=mKsWKYf2pkhC8HfcoFMxBoJXzi
-        K/oB0kSnAezMRQsl3td03sgJoPvVDD9+KSpF5qIneVrf9Mn8EP64LmojGJ0L1hvPJnZrvh4vYTBPx
-        DnlfSnVzEtZylYW3daHrq5wI1c7JfPec1UTHBh3K8uzT+R3qgXgT2eH4vdy+zw/Z9+E3lWhCimGkY
-        P5BA0LHMcGkJnt17ox8V4ir7JNMfXlNDYM3PG1yCL8GGg9dg40ZGZeTin7rarjXKpBWsTscGVeA7G
-        IEIbVBZsSVPLpGmnR+rfBe0iLV+ltHJOsbubUYb7Ul1N2pyj/VQFsOV/lrQ5KaGyy3whNous/JlFd
-        s5sebcsg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nzIfy-002MlT-IV; Thu, 09 Jun 2022 13:58:18 +0000
-Date:   Thu, 9 Jun 2022 06:58:18 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] sysctl: Merge adjacent CONFIG_TREE_RCU blocks
-Message-ID: <YqH8esqnhj2VTW+g@bombadil.infradead.org>
-References: <a6931221b532ae7a5cf0eb229ace58acee4f0c1a.1652799977.git.geert+renesas@glider.be>
- <20220517155737.GA1790663@paulmck-ThinkPad-P17-Gen-1>
- <YoW4tRf693CSAioE@bombadil.infradead.org>
- <20220519035720.GV1790663@paulmck-ThinkPad-P17-Gen-1>
+        Thu, 9 Jun 2022 10:00:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09AC1B31;
+        Thu,  9 Jun 2022 07:00:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1A96B82D5B;
+        Thu,  9 Jun 2022 14:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C9FAC34114;
+        Thu,  9 Jun 2022 14:00:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654783214;
+        bh=LmGPGQgFlXDp39gkuaUh/QQ94CuUMZoIes/TMms8Jfc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=F22F5K/aPgI/wT/JwFq3XZhGIWh9x6u3peG/NtDCkXeoOvHm2BToOMwNFhQFopdwm
+         +7atn6OwSfogpGGrhsA082Fk807mMpFGQ0olpsjEk0dqSBniHrLDK/U67dTVW/DFnF
+         7lWOJGc7L5f7Yed98S6MvagMr2R9+PpVHvHrkvB+hB9vjP6B4E4JpmPIk3l4itdrZq
+         vLqMb/sEfG6uaPiAQ1DtQqipPWyETU49oMR6z5WqbZ6YNYgOwM0y3a2dyfZIOqVmXj
+         CCs2220Q22QLKKAWceh5PpRuVhDqVH0KDQEIqhJSs3bEM69HajO1jvV2EEUrWdnAbx
+         JEkAVA26cc9VA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1nzIhm-0005EB-Ke; Thu, 09 Jun 2022 16:00:10 +0200
+Date:   Thu, 9 Jun 2022 16:00:10 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        gushengxian <gushengxian@yulong.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Oliver Neukum <oneukum@suse.com>, Sean Young <sean@mess.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-media@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] media: flexcop-usb: fix sanity check of bNumEndpoints
+Message-ID: <YqH86qB4wfYctyYP@hovoldconsulting.com>
+References: <20220602055027.849014-1-dzm91@hust.edu.cn>
+ <YphciEToNtxIUrzU@hovoldconsulting.com>
+ <CAD-N9QUfeN7qQ-S20x9mU=-rd38nPFeont2dYT2+-phTxdqMvA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220519035720.GV1790663@paulmck-ThinkPad-P17-Gen-1>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+In-Reply-To: <CAD-N9QUfeN7qQ-S20x9mU=-rd38nPFeont2dYT2+-phTxdqMvA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 08:57:20PM -0700, Paul E. McKenney wrote:
-> On Wed, May 18, 2022 at 08:25:41PM -0700, Luis Chamberlain wrote:
-> > On Tue, May 17, 2022 at 08:57:37AM -0700, Paul E. McKenney wrote:
-> > > On Tue, May 17, 2022 at 05:07:31PM +0200, Geert Uytterhoeven wrote:
-> > > > There are two adjacent sysctl entries protected by the same
-> > > > CONFIG_TREE_RCU config symbol.  Merge them into a single block to
-> > > > improve readability.
-> > > > 
-> > > > Use the more common "#ifdef" form while at it.
-> > > > 
-> > > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > > 
-> > > If you would like me to take this, please let me know.  (The default
-> > > would be not the upcoming merge window, but the one after that.)
-> > > 
-> > > If you would rather send it via some other path:
-> > > 
-> > > Reviewed-by: Paul E. McKenney <paulmck@kernel.org>
-> > 
-> > The one that that occurs to me is that while at it, Geert,
-> > can you also just then follow up with a patch 2/2 which then
-> > moves the sysctl out to the respective RCU code. If you look
-> > at linux-nxt kernel/sysctl.c is getting modified heavily with
-> > time to avoid stuffing everyone's sysctls there because this
-> > creates merge conflicts, make the file hard to read, and we
-> > have ways to split this.
-> > 
-> > This work started about 2 kernel releases ago and is ongoing,
-> > it may take 3-4 more before kernel/sysctl.c stop being a kitchen
-> > sink of everyone's syctls.
-> > 
-> > Paul, I've been collecting these modifications in a sysctl-next
-> > tree to avoid merge conflicts, and I try to not do to much per
-> > kernel release. If you like I can take this in for that tree
-> > as well, but as you noted, this would be for the next release,
-> > not the current one which we'll soon enter the merge window for.
-> > 
-> > Let me know!
+On Thu, Jun 09, 2022 at 09:42:15AM +0800, Dongliang Mu wrote:
+> On Thu, Jun 2, 2022 at 2:45 PM Johan Hovold <johan@kernel.org> wrote:
+> >
+> > On Thu, Jun 02, 2022 at 01:50:24PM +0800, Dongliang Mu wrote:
+> > > From: Dongliang Mu <mudongliangabcd@gmail.com>
+> > >
+> > > Commit d725d20e81c2 ("media: flexcop-usb: sanity checking of endpoint type
+> > > ") adds a sanity check for endpoint[1], but fails to modify the sanity
+> > > check of bNumEndpoints.
+> > >
+> > > Fix this by modifying the sanity check of bNumEndpoints to 2.
+> >
+> > Are you sure that d725d20e81c2 ("media: flexcop-usb: sanity checking of
+> > endpoint type) was correct?
 > 
-> Please do take it!
+> I am not sure if fc_usb->uintf->cur_altsetting->endpoint[1] is right or not.
+> 
+> But the sanity check of bNumEndpoints does not match the following dereference.
 
-Geert, I queued this up onto sysctl-next, but would hope you *might*
-be inclined to move the sysctls out as outlined above to help with
-the kitchen sink on kernel/sysctl.c.
+I should know better than try to be subtle on the internet: Your fix is
+wrong.
 
- Luis
+You need to try to understand the code you're changing. Not just do
+pattern matching.
+
+> > > Fixes: d725d20e81c2 ("media: flexcop-usb: sanity checking of endpoint type")
+> > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > > ---
+> > >  drivers/media/usb/b2c2/flexcop-usb.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/media/usb/b2c2/flexcop-usb.c b/drivers/media/usb/b2c2/flexcop-usb.c
+> > > index 7835bb0f32fc..eb54bfdda01f 100644
+> > > --- a/drivers/media/usb/b2c2/flexcop-usb.c
+> > > +++ b/drivers/media/usb/b2c2/flexcop-usb.c
+> > > @@ -509,7 +509,7 @@ static int flexcop_usb_init(struct flexcop_usb *fc_usb)
+> > >               return ret;
+> > >       }
+> > >
+> > > -     if (fc_usb->uintf->cur_altsetting->desc.bNumEndpoints < 1)
+> > > +     if (fc_usb->uintf->cur_altsetting->desc.bNumEndpoints < 2)
+> > >               return -ENODEV;
+> > >       if (!usb_endpoint_is_isoc_in(&fc_usb->uintf->cur_altsetting->endpoint[1].desc))
+> > >               return -ENODEV;
+> >
+> > It looks like it should have verified the type of endpoint[0] here
+> > instead.
+> 
+> This sanity check originally makes sure the
+> fc_usb->uintf->cur_altsetting->endpoint[0] in
+> flexcop_usb_transfer_init.
+
+Yes, and that is the only endpoint that this driver uses.
+
+I've posted a fix here:
+
+	https://lore.kernel.org/r/20220609135341.19941-1-johan@kernel.org
+
+Johan
