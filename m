@@ -2,131 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B17DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:26:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B94C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345416AbiFIS0u (ORCPT
+        id S1345415AbiFIS3U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 14:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45750 "EHLO
+        Thu, 9 Jun 2022 14:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230129AbiFIS0r (ORCPT
+        with ESMTP id S229573AbiFIS3R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 14:26:47 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4221EF072A
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 11:26:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654799206; x=1686335206;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=jr0lIf0jCMlZxD8aPAkcAccpuSBw8ZVqumU2RXeM7gw=;
-  b=XKOsKq+/z4ZNDO7IENwwl3BcGwk9O27swwWRtpxRuw8MuiXBQOQbBL2B
-   p6JpkSo3OU5fPmUlOR5J38sIWN1Lql04B5VVMUAknM3OiEccexj0C1HE3
-   hAHQSTUr9PV0xw1+AbC6hz7Pa6A1YiigOD0t1QZquEbHCx77lZg1+Z2Vx
-   jU0r3YmjScHAAneh1ZH6AfxcJYM9IIv2QE7h1X+LYkpplCJ7l21oKVnEU
-   Qls3fd8/dN033VadKkE/LTPE7ceP/FqFUssLGoXTt2+QDz9JLDgY2AWH6
-   OlOAqGxQIChTPB8R0epWCOGf3juShRno9oJ2NPtDbhjcQctRiCmteki10
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="302750416"
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="302750416"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 11:26:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="585726010"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 09 Jun 2022 11:26:44 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nzMrk-000GGX-BB;
-        Thu, 09 Jun 2022 18:26:44 +0000
-Date:   Fri, 10 Jun 2022 02:26:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: arch/arm/mach-lpc32xx/serial.c:63:6: warning: no previous prototype
- for 'lpc32xx_loopback_set'
-Message-ID: <202206100243.FIBW6bJC-lkp@intel.com>
+        Thu, 9 Jun 2022 14:29:17 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11C122B12;
+        Thu,  9 Jun 2022 11:29:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654799355; x=1686335355;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=VEv/d5YIxiPaJMScZm3HoS8v7DwuXuOyJo2yQ5lgprg=;
+  b=pyPd9m0GkB8Wb8dX0TllU1ZDnw6HEp+/V8TwgkzTfAOVwclsWyTK9ISy
+   EhQTVf6nEgueoafREETDl5Uy+D6pt9HxJWQpC2PxEmryzUiazN8V/qOGL
+   Hw8LEDAoizkuLQmxIlhFm50le8OHyQAxCbtVn2nksBuoC6FzyU2/kW5LR
+   k=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 09 Jun 2022 11:29:15 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 11:29:15 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 9 Jun 2022 11:29:14 -0700
+Received: from [10.216.42.89] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 9 Jun 2022
+ 11:29:07 -0700
+Message-ID: <f5fe4aed-6d7d-5a09-ad0e-b666268b643c@quicinc.com>
+Date:   Thu, 9 Jun 2022 23:59:03 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [Freedreno] [PATCH v2] drm/msm: Grab the GPU runtime in a6xx
+ routines, not the GMU one
+Content-Language: en-US
+To:     Rob Clark <robdclark@gmail.com>
+CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        Yangtao Li <tiny.windzz@gmail.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Wang Qing <wangqing@vivo.com>, Eric Anholt <eric@anholt.net>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Sean Paul <sean@poorly.run>, Chia-I Wu <olvaffe@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+References: <20220609094716.v2.1.Ie846c5352bc307ee4248d7cab998ab3016b85d06@changeid>
+ <a4abf2dd-7bb9-2638-9684-8c140a22491e@quicinc.com>
+ <CAF6AEGs3aLoAiiA1hMFu_k6oBAs1bA6Htu3BRFjkg0eU72-1Zw@mail.gmail.com>
+From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
+In-Reply-To: <CAF6AEGs3aLoAiiA1hMFu_k6oBAs1bA6Htu3BRFjkg0eU72-1Zw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd,
+On 6/9/2022 11:42 PM, Rob Clark wrote:
+> On Thu, Jun 9, 2022 at 11:04 AM Akhil P Oommen <quic_akhilpo@quicinc.com> wrote:
+>> On 6/9/2022 10:17 PM, Douglas Anderson wrote:
+>>> >From testing on sc7180-trogdor devices, reading the GMU registers
+>>> needs the GMU clocks to be enabled. Those clocks get turned on in
+>>> a6xx_gmu_resume(). Confusingly enough, that function is called as a
+>>> result of the runtime_pm of the GPU "struct device", not the GMU
+>>> "struct device".
+>>>
+>>> Let's grab a reference to the correct device. Incidentally, this makes
+>>> us match the a5xx routine more closely.
+>>>
+>>> This is easily shown to fix crashes that happen if we change the GPU's
+>>> pm_runtime usage to not use autosuspend. It's also believed to fix
+>>> some long tail GPU crashes even with autosuspend.
+>>>
+>>> NOTE: the crashes I've seen were fixed by _only_ fixing
+>>> a6xx_gpu_busy(). However, I believe that the same arguments should be
+>>> made to a6xx_gmu_set_freq() so I've fixed that case too. To make that
+>>> fix clean, we've moved the pm runtime grabbing into the GPU file.
+>>>
+>>> As a bonus fix with this change, we change the pm_runtime get
+>>> functions to check for <= 0 instead of ==. This handles the case where
+>>> pm_runtime is disabled.
+>>>
+>>> Fixes: eadf79286a4b ("drm/msm: Check for powered down HW in the devfreq callbacks")
+>>> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+>>> ---
+>>>
+>>> Changes in v2:
+>>> - Move the set_freq runtime pm grab to the GPU file.
+>>> - Use <= for the pm_runtime test, not ==.
+>>>
+>>>    drivers/gpu/drm/msm/adreno/a6xx_gmu.c |  9 ---------
+>>>    drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 13 +++++++++++--
+>>>    2 files changed, 11 insertions(+), 11 deletions(-)
+>>>
+>>> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
+>>> index 9f76f5b15759..2410815e77b4 100644
+>>> --- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
+>>> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
+>>> @@ -125,17 +125,9 @@ void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
+>>>
+>>>        trace_msm_gmu_freq_change(gmu->freq, perf_index);
+>>>
+>>> -     /*
+>>> -      * This can get called from devfreq while the hardware is idle. Don't
+>>> -      * bring up the power if it isn't already active
+>>> -      */
+>>> -     if (pm_runtime_get_if_in_use(gmu->dev) == 0)
+>>> -             return;
+>>> -
+>>>        if (!gmu->legacy) {
+>>>                a6xx_hfi_set_freq(gmu, perf_index);
+>>>                dev_pm_opp_set_opp(&gpu->pdev->dev, opp);
+>>> -             pm_runtime_put(gmu->dev);
+>>>                return;
+>>>        }
+>>>
+>>> @@ -159,7 +151,6 @@ void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
+>>>                dev_err(gmu->dev, "GMU set GPU frequency error: %d\n", ret);
+>>>
+>>>        dev_pm_opp_set_opp(&gpu->pdev->dev, opp);
+>>> -     pm_runtime_put(gmu->dev);
+>>>    }
+>>>
+>>>    unsigned long a6xx_gmu_get_freq(struct msm_gpu *gpu)
+>>> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+>>> index 42ed9a3c4905..54efd9b76ea6 100644
+>>> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+>>> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+>>> @@ -1659,7 +1659,7 @@ static u64 a6xx_gpu_busy(struct msm_gpu *gpu, unsigned long *out_sample_rate)
+>>>        *out_sample_rate = 19200000;
+>>>
+>>>        /* Only read the gpu busy if the hardware is already active */
+>>> -     if (pm_runtime_get_if_in_use(a6xx_gpu->gmu.dev) == 0)
+>>> +     if (pm_runtime_get_if_in_use(&gpu->pdev->dev) <= 0)
+>> You are changing the behavior here when CONFIG_PM is not enabled.
+> I'd guess the odds of anything working with PM=n are low
+fwiw, https://patchwork.freedesktop.org/patch/364077/#comment_672059
 
-First bad commit (maybe != root cause):
+Akhil
+>
+> BR,
+> -R
+>
+>> -Akhil.
+>>>                return 0;
+>>>
+>>>        busy_cycles = gmu_read64(&a6xx_gpu->gmu,
+>>> @@ -1667,7 +1667,7 @@ static u64 a6xx_gpu_busy(struct msm_gpu *gpu, unsigned long *out_sample_rate)
+>>>                        REG_A6XX_GMU_CX_GMU_POWER_COUNTER_XOCLK_0_H);
+>>>
+>>>
+>>> -     pm_runtime_put(a6xx_gpu->gmu.dev);
+>>> +     pm_runtime_put(&gpu->pdev->dev);
+>>>
+>>>        return busy_cycles;
+>>>    }
+>>> @@ -1677,9 +1677,18 @@ static void a6xx_gpu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
+>>>        struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
+>>>        struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
+>>>
+>>> +     /*
+>>> +      * This can get called from devfreq while the hardware is idle. Don't
+>>> +      * bring up the power if it isn't already active
+>>> +      */
+>>> +     if (pm_runtime_get_if_in_use(&gpu->pdev->dev) <= 0)
+>>> +             return;
+>>> +
+>>>        mutex_lock(&a6xx_gpu->gmu.lock);
+>>>        a6xx_gmu_set_freq(gpu, opp);
+>>>        mutex_unlock(&a6xx_gpu->gmu.lock);
+>>> +
+>>> +     pm_runtime_put(&gpu->pdev->dev);
+>>>    }
+>>>
+>>>    static struct msm_gem_address_space *
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   6bfb56e93bcef41859c2d5ab234ffd80b691be35
-commit: 7036440eab3e2d47a775d4616909f8235488d714 ARM: omap1: enable multiplatform
-date:   6 days ago
-config: arm-buildonly-randconfig-r012-20220608 (https://download.01.org/0day-ci/archive/20220610/202206100243.FIBW6bJC-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7036440eab3e2d47a775d4616909f8235488d714
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 7036440eab3e2d47a775d4616909f8235488d714
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/arm/mach-lpc32xx/serial.c:63:6: warning: no previous prototype for 'lpc32xx_loopback_set' [-Wmissing-prototypes]
-      63 | void lpc32xx_loopback_set(resource_size_t mapbase, int state)
-         |      ^~~~~~~~~~~~~~~~~~~~
-
-
-vim +/lpc32xx_loopback_set +63 arch/arm/mach-lpc32xx/serial.c
-
-e6e912c4964ce5 Kevin Wells   2010-07-27  61  
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  62  /* LPC3250 Errata HSUART.1: Hang workaround via loopback mode on inactivity */
-ffba29c9ebd097 Arnd Bergmann 2019-08-09 @63  void lpc32xx_loopback_set(resource_size_t mapbase, int state)
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  64  {
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  65  	int bit;
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  66  	u32 tmp;
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  67  
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  68  	switch (mapbase) {
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  69  	case LPC32XX_HS_UART1_BASE:
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  70  		bit = 0;
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  71  		break;
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  72  	case LPC32XX_HS_UART2_BASE:
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  73  		bit = 1;
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  74  		break;
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  75  	case LPC32XX_HS_UART7_BASE:
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  76  		bit = 6;
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  77  		break;
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  78  	default:
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  79  		WARN(1, "lpc32xx_hs: Warning: Unknown port at %08x\n", mapbase);
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  80  		return;
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  81  	}
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  82  
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  83  	tmp = readl(LPC32XX_UARTCTL_CLOOP);
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  84  	if (state)
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  85  		tmp |= (1 << bit);
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  86  	else
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  87  		tmp &= ~(1 << bit);
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  88  	writel(tmp, LPC32XX_UARTCTL_CLOOP);
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  89  }
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  90  EXPORT_SYMBOL_GPL(lpc32xx_loopback_set);
-ffba29c9ebd097 Arnd Bergmann 2019-08-09  91  
-
-:::::: The code at line 63 was first introduced by commit
-:::::: ffba29c9ebd0977dbf77bf6064776716a51b8ae5 serial: lpc32xx: allow compile testing
-
-:::::: TO: Arnd Bergmann <arnd@arndb.de>
-:::::: CC: Arnd Bergmann <arnd@arndb.de>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
