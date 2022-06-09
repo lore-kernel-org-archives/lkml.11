@@ -2,99 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 17:35:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 845BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 17:38:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344688AbiFIRf4 (ORCPT
+        id S1343775AbiFIRiu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 13:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52926 "EHLO
+        Thu, 9 Jun 2022 13:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232387AbiFIRfx (ORCPT
+        with ESMTP id S237357AbiFIRis (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 13:35:53 -0400
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426B7169E2B;
-        Thu,  9 Jun 2022 10:35:52 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id p13so42956978ybm.1;
-        Thu, 09 Jun 2022 10:35:52 -0700 (PDT)
+        Thu, 9 Jun 2022 13:38:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97F60563BF
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 10:38:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654796324;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k6TtggULp7/GiOA6VvEvNpW/MHPOaym0FBcYUcuSeZU=;
+        b=IlLX1TYN3xV9vVXmklU+Vdn0/mk/OBIEpHMLjq81Wn3YMKTmaixquqWOLD5tWK3qLVODFG
+        XqBBIqVCNQPKQPf0hA3yJzdQLghvb/lYUNVxdHTF3xJ0cgojH0oJ0VYvaVl1Gqs6A5dDgw
+        A2pw7IlXlgF4H5ZSflJyg6fxLUkrFrQ=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-281-iimkXWO4Myepf1Ga-u0d0A-1; Thu, 09 Jun 2022 13:38:43 -0400
+X-MC-Unique: iimkXWO4Myepf1Ga-u0d0A-1
+Received: by mail-wm1-f71.google.com with SMTP id l4-20020a05600c1d0400b0039c60535405so2537987wms.6
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 10:38:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VC+T5gNopDGm2JXb4Q0gD1ESudpir+AKQBEND4sHjLs=;
-        b=430MJSkaxs7KMOw4QhH8X2FHZuBzUIbs704MKdJjhDzvZXtt04U421Ttkq6Hjvf6Ns
-         ZcF9gFlthCSGBRvWEWbVopNf5xItqCs4ZFbIxD8N/GpCwEQ/eMZ/SeJJgwyjjwWwGr4u
-         aaH7ZmKgP0aZwEtPO8VYYEz+rI9AuFkm1PNP4TqoDQlyihLB1gnqBhqJXc7X2JpopANI
-         ZSg+30MckJsBgE5vBaB0+4WuV5mXVr5TopNwwTSRm/gzuqPd/2o4fZ/mvWkt6dpF1X7w
-         FeQNHBIZ+MRUopoaL3Gc1yock+I8UqN6hHHzwO2yqtsattw9NfTcxAT+gZs65Z0NeB0s
-         nJlw==
-X-Gm-Message-State: AOAM532xGFYOESj0mNy2eEZmFXeQqG4w5TeRx1NKAjMqVva2zjl++kwf
-        GgZ6aj1czNZDXvPRE17OwzwHb+aSp8ZE686CUx0Rtpzq
-X-Google-Smtp-Source: ABdhPJyVIGpmxye5bnwhynEG24c16C312gNtzaFfAseNsDXbDB5re+boNDhXJ5I+yEEdQCOMEXBzOFI0n7W06mBDIAE=
-X-Received: by 2002:a25:d748:0:b0:65c:6b00:55af with SMTP id
- o69-20020a25d748000000b0065c6b0055afmr39672546ybg.365.1654796151473; Thu, 09
- Jun 2022 10:35:51 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=k6TtggULp7/GiOA6VvEvNpW/MHPOaym0FBcYUcuSeZU=;
+        b=3N+yGYyUNEIYvKhBhnSIHhluyW/hyGErF8vQ5PBINkvMuV6GgdtXvKd6oDNRb9FfTg
+         dTlyqwThRZwunYLWrnsdAsZDOJ5STkt1UC/3jgBwq67n32Vz8Cs/Vyl16ulSLrUPv9jj
+         RSoa320d+yVVfQDs5EB2hgirRAw6lncYjxEX2kF7rpOk0j7FMzzMSewOmmYJ5ybKXQLC
+         ZMWf2NkdVCybcWs0O18iBnKBOHildyzTd+GA5r0cgWRISwwjdFXEisp7iDyIg0DrSJpS
+         v2aY/GlELuD9uFfsgSGsbW2qE4D2nCR1mSkMZ1CJF0Mj46dQ7vMAt954E0xLWK6khmIJ
+         7hrw==
+X-Gm-Message-State: AOAM532i+HrD6z8wByuxK2aaQlDJw5rRYmNiSertWk6L5DnBRm7JYO2e
+        U2ERfDuTyCFExq+jpLeTzyZtwiB5JfDhctA3tSyMjnkIDogCT+R4Y3Y/2vps6rM0P9zuB9UUW56
+        8VxlvIW4jnSxE+apJMeUZSr+x
+X-Received: by 2002:a5d:6283:0:b0:213:b939:826d with SMTP id k3-20020a5d6283000000b00213b939826dmr35332052wru.543.1654796322052;
+        Thu, 09 Jun 2022 10:38:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJycbjbAoqYi/Z38MH7gotfLoia/Ifcg797dUpu4eGDAE74k+ABciK+rkA2pggXKQtSvmd1fZw==
+X-Received: by 2002:a5d:6283:0:b0:213:b939:826d with SMTP id k3-20020a5d6283000000b00213b939826dmr35332021wru.543.1654796321841;
+        Thu, 09 Jun 2022 10:38:41 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id z2-20020adff1c2000000b0020c5253d8dcsm23897952wro.40.2022.06.09.10.38.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 10:38:41 -0700 (PDT)
+Message-ID: <0bdbec1f-196b-b82e-9d64-06029e250983@redhat.com>
+Date:   Thu, 9 Jun 2022 19:38:39 +0200
 MIME-Version: 1.0
-References: <1843211.tdWV9SEqCh@kreacher> <5296779.Sb9uPGUboI@kreacher>
- <63d7f3ed-b5a9-c869-5d25-a33a1d4e63c8@linux.intel.com> <CAJZ5v0i7xtjrEOXgKiWP5St8OZoiZ4qq+gL62BFrmv-qpeaG_w@mail.gmail.com>
- <7652ddab-53a5-ac8e-33f5-d25527acb1a6@linux.intel.com>
-In-Reply-To: <7652ddab-53a5-ac8e-33f5-d25527acb1a6@linux.intel.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 9 Jun 2022 19:35:40 +0200
-Message-ID: <CAJZ5v0jR1_tO_t90UKQFjYfyE+vOoToJSMCfZ8y37voaYO=wJQ@mail.gmail.com>
-Subject: Re: [PATCH v1 14/16] soundwire: Use acpi_dev_for_each_child()
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." 
-        <alsa-devel@alsa-project.org>, Linux PM <linux-pm@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sanyog Kale <sanyog.r.kale@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: Mark olpc_dcon BROKEN [Was: [PATCH v6 5/5] fbdev: Make
+ registered_fb[] private to fbmem.c]
+Content-Language: en-US
+To:     Sam Ravnborg <sam@ravnborg.org>, Jerry Lin <wahahab11@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Laszlo Ersek <lersek@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Gerd Hoffmann <kraxel@redhat.com>, kvm@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        kernel test robot <lkp@intel.com>,
+        Jens Frederich <jfrederich@gmail.com>,
+        Jon Nettleton <jon.nettleton@gmail.com>,
+        linux-staging@lists.linux.dev,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
+        Matthew Wilcox <willy@infradead.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        linux-fbdev@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>
+References: <20220607182338.344270-1-javierm@redhat.com>
+ <20220607182338.344270-6-javierm@redhat.com>
+ <3ebac271-1276-8132-6175-ca95a26cfcbb@suse.de>
+ <69d8ad0e-efc6-f37d-9aa7-d06f8de16a6a@redhat.com>
+ <YqIskEjUvJo4y4cb@ravnborg.org>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <YqIskEjUvJo4y4cb@ravnborg.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 9, 2022 at 6:21 PM Pierre-Louis Bossart
-<pierre-louis.bossart@linux.intel.com> wrote:
->
->
-> >> Shouldn't the return of sdw_acpi_find_one() be trapped, e.g. with
-> >>
-> >> return acpi_dev_for_each_child(parent, sdw_acpi_find_one, bus);
-> >
-> > Sure, I'll do that.  Thanks!
->
-> I also added this EXPORT_SYMBOL to work-around link errors, not sure if
-> this is in your tree already?
+Hello Sam,
 
-One of the previous patches in the series is adding the export.
+On 6/9/22 19:23, Sam Ravnborg wrote:
 
-> diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
->
-> index 86fa61a21826c..ade6259c19af6 100644
->
-> --- a/drivers/acpi/bus.c
->
-> +++ b/drivers/acpi/bus.c
->
-> @@ -1113,6 +1113,7 @@ int acpi_dev_for_each_child(struct acpi_device *adev,
->
->
->
->         return device_for_each_child(&adev->dev, &adwc,
-> acpi_dev_for_one_check);
->
->  }
->
-> +EXPORT_SYMBOL_GPL(acpi_dev_for_each_child);
->
->
+[snip]
+
+> 
+> To repeat myself from irc.
+> olpc_dcon is a staging driver and we should avoid inventing anything in
+> core code for to make staging drivers works.
+> Geert suggested EXPORT_SYMPBOL_NS_GPL() that could work and narrow it
+> down to olpc_dcon.
+> The better approach is to mark said driver BROKEN and then someone can
+> fix it it there is anyone who cares.
+> Last commit to olpc_dcon was in 2019: e40219d5e4b2177bfd4d885e7b64e3b236af40ac
+> and maybe Jerry Lin cares enough to fix it.
+> 
+> Added Jerry and Greg to the mail.
+> 
+> 	Sam
+> 
+
+That does sound like the best approach indeed. And if the driver is kept
+BROKEN for a few releases then it can just remove it from the kernel. If
+someone still uses/cares about the driver, they can fix it as you said,
+and it could even be ported to DRM if is something that's still useful.
+
+-- 
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
