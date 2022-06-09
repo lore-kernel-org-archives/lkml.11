@@ -2,131 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD35DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21910CCA473
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:57:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344028AbiFIO42 (ORCPT
+        id S1344061AbiFIO5A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 10:56:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37578 "EHLO
+        Thu, 9 Jun 2022 10:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344012AbiFIO40 (ORCPT
+        with ESMTP id S240663AbiFIO46 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 10:56:26 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2720C39182B
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 07:56:24 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-31336535373so92977127b3.2
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 07:56:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0+SkCjGgZBFq5wRCXTYfFTyaGhOAcbR2Sdoh6LQhmUA=;
-        b=deUfDUG4RR9z3kerucIqTXhqCeGsbHnfHtdvw5TsJVYFknetJ/w80Mv9kBz5l4wex9
-         TssewgR73O/IyB/u1mxjbxvVfqyOyYF82MCbjOeauw6zFo7MJimse2lx811joMZtXTdC
-         uT5XfiXo74nBdAcht78tvAUnApid/SMJhbV+Nr+EedCSPzCr3MTOd8EP9AmTLlsnhGck
-         znW1PntgjNv4SDv5OQvubmFMVhj/M7k5WoovioAqVoC/pkPL9GeBmYIXDknX5bKByQzG
-         isj398VB6w8UihJLCkMJNEXGeGaR/Pfe/bXeUjDzdAAissGD1HmQ0PWrAQE6T2NwCeIX
-         Z0+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0+SkCjGgZBFq5wRCXTYfFTyaGhOAcbR2Sdoh6LQhmUA=;
-        b=4pYBXcrYX1KLFSXAfDIrBPQEZs/QA7wVAJrGx2rKwQLTS2/GZ+sJ9DhI09uQ+7jJw4
-         B+yxacj1RHI/uh2zdfRG37QvPizQGeNPsYPZ0Rh7UtSCZna0brpWcJ6HLIhWoDcrppNt
-         P3Mxc0T+eWTVsPDZY+QMKq89FQPUzLIKLbY2hGO1d3NANVsAFITYrJEZ+E80p0808Eb/
-         beR1umqwVmW9dQb0aChv7HIMTlCzC88HEvpXgDRG5LBXcXyqdNVli6hDxFljXf1N6sCs
-         AgBQmM71MelAMYrOJkN66wTtrHMfGUiDBywyfsNlkY5IkFUQuZ4J57zVVENjO9zh8ooQ
-         oKlg==
-X-Gm-Message-State: AOAM5336CeB53Louorqi/+V6+oYZ85ty8HljiveF9Gare9PSb2NCzyAg
-        QGR1s2HPOCc4rHhc0KEoIUH8SqMgDIgUtVFecSRk7Q==
-X-Google-Smtp-Source: ABdhPJz3Thrnbg4dSqU+BoOQp4IJma6lc3JBLsyl9Q3m01mIrlVWxB4SwxkTgcDQXsBg4R1HBpAR8UmcfdarMxR1wx8=
-X-Received: by 2002:a0d:c0c6:0:b0:2ff:bb2:1065 with SMTP id
- b189-20020a0dc0c6000000b002ff0bb21065mr44984991ywd.512.1654786583034; Thu, 09
- Jun 2022 07:56:23 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220609113046.780504-1-elver@google.com> <20220609113046.780504-2-elver@google.com>
- <CACT4Y+bOFmCyqfSgWS0b5xuwnPqP4V9v2ooJRmFCn0YAtOPmhQ@mail.gmail.com>
-In-Reply-To: <CACT4Y+bOFmCyqfSgWS0b5xuwnPqP4V9v2ooJRmFCn0YAtOPmhQ@mail.gmail.com>
-From:   Marco Elver <elver@google.com>
-Date:   Thu, 9 Jun 2022 16:55:46 +0200
-Message-ID: <CANpmjNNtV_6kgoLv=VX3z_oM6ZEvWJNAOj9z4ADcymqmhc+crw@mail.gmail.com>
-Subject: Re: [PATCH 1/8] perf/hw_breakpoint: Optimize list of per-task breakpoints
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
+        Thu, 9 Jun 2022 10:56:58 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF873A15DF
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 07:56:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654786617; x=1686322617;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AhOKgRD6dzPhGcbP+FED4Ce5jeuzBr0fCvK3sx/IZr4=;
+  b=TlkEx04dF6Q/9JBrBbOcsHiJUC0e5JmWWbFZJc8XO+bnIl0m9zVOHL4k
+   JueEfxYodU9OpkQxY+AWCKungj1E3L/M20dtjVJXyAJViXjp4jv2RPry5
+   WKe7Y5ckAQ4M0nhx5y4t+fNaFrs/Iox1ciT1XO8Qrq+6E2GrD2XhJrC0C
+   /fQuH8KTyFciTOhqYz4wIyyC2Fe23PNhYBNR/UqzW3bKbZeHvzbusUl+W
+   uWNr8sKiub67WQGb89aVeq0Cuhj8sn7NivG1urAxeFIFQLSzWjL2I3hFR
+   RxVx7Hrb+iG+AfPwcXFs2Qq4tksdwl7KdOYptx8AOCx8pFIwlmHfAs7X+
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="341381836"
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="341381836"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 07:56:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="610286885"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 09 Jun 2022 07:56:36 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nzJaO-000G55-3C;
+        Thu, 09 Jun 2022 14:56:36 +0000
+Date:   Thu, 9 Jun 2022 22:56:33 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Aswath Govindraju <a-govindraju@ti.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users@vger.kernel.org, x86@kernel.org,
-        linux-sh@vger.kernel.org, kasan-dev@googlegroups.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Marc Zyngier <maz@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] irqchip/ti-sci-intr: Add support for system
+ suspend/resume PM
+Message-ID: <202206092226.YcJ2jTZb-lkp@intel.com>
+References: <20220607061912.12222-1-a-govindraju@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607061912.12222-1-a-govindraju@ti.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 9 Jun 2022 at 16:29, Dmitry Vyukov <dvyukov@google.com> wrote:
->
-> On Thu, 9 Jun 2022 at 13:31, Marco Elver <elver@google.com> wrote:
-> >
-> > On a machine with 256 CPUs, running the recently added perf breakpoint
-> > benchmark results in:
-> >
-> >  | $> perf bench -r 30 breakpoint thread -b 4 -p 64 -t 64
-> >  | # Running 'breakpoint/thread' benchmark:
-> >  | # Created/joined 30 threads with 4 breakpoints and 64 parallelism
-> >  |      Total time: 236.418 [sec]
-> >  |
-> >  |   123134.794271 usecs/op
-> >  |  7880626.833333 usecs/op/cpu
-> >
-> > The benchmark tests inherited breakpoint perf events across many
-> > threads.
-> >
-> > Looking at a perf profile, we can see that the majority of the time is
-> > spent in various hw_breakpoint.c functions, which execute within the
-> > 'nr_bp_mutex' critical sections which then results in contention on that
-> > mutex as well:
-> >
-> >     37.27%  [kernel]       [k] osq_lock
-> >     34.92%  [kernel]       [k] mutex_spin_on_owner
-> >     12.15%  [kernel]       [k] toggle_bp_slot
-> >     11.90%  [kernel]       [k] __reserve_bp_slot
-> >
-> > The culprit here is task_bp_pinned(), which has a runtime complexity of
-> > O(#tasks) due to storing all task breakpoints in the same list and
-> > iterating through that list looking for a matching task. Clearly, this
-> > does not scale to thousands of tasks.
-> >
-> > While one option would be to make task_struct a breakpoint list node,
-> > this would only further bloat task_struct for infrequently used data.
->
-> task_struct already has:
->
-> #ifdef CONFIG_PERF_EVENTS
->   struct perf_event_context *perf_event_ctxp[perf_nr_task_contexts];
->   struct mutex perf_event_mutex;
->   struct list_head perf_event_list;
-> #endif
->
-> Wonder if it's possible to use perf_event_mutex instead of the task_sharded_mtx?
-> And possibly perf_event_list instead of task_bps_ht? It will contain
-> other perf_event types, so we will need to test type as well, but on
-> the positive side, we don't need any management of the separate
-> container.
+Hi Aswath,
 
-Hmm, yes, I looked at that but then decided against messing the
-perf/core internals. The main issue I have with using perf_event_mutex
-is that we might interfere with perf/core's locking rules as well as
-interfere with other concurrent perf event additions. Using
-perf_event_list is very likely a no-go because it requires reworking
-perf/core as well.
+I love your patch! Perhaps something to improve:
 
-I can already hear Peter shouting, but maybe I'm wrong. :-)
+[auto build test WARNING on tip/irq/core]
+[also build test WARNING on v5.19-rc1]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Aswath-Govindraju/irqchip-ti-sci-intr-Add-support-for-system-suspend-resume-PM/20220607-142656
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git cdb4913293897dde0df522ed5789ba016f3b9157
+config: arm64-randconfig-r020-20220607 (https://download.01.org/0day-ci/archive/20220609/202206092226.YcJ2jTZb-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b92436efcb7813fc481b30f2593a4907568d917a)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/c41c5fa0992f5a0a3298d6933ed84349f1f48b58
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Aswath-Govindraju/irqchip-ti-sci-intr-Add-support-for-system-suspend-resume-PM/20220607-142656
+        git checkout c41c5fa0992f5a0a3298d6933ed84349f1f48b58
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/irqchip/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/irqchip/irq-ti-sci-intr.c:270: warning: expecting prototype for ti_sci_intr_initialize_mappingg(). Prototype was for ti_sci_intr_initialize_mapping() instead
+
+
+vim +270 drivers/irqchip/irq-ti-sci-intr.c
+
+   264	
+   265	/**
+   266	 * ti_sci_intr_initialize_mappingg - Initialize the out_irq <-> hwirq mapping table
+   267	 * @intr:	IRQ domain corresponding to Interrupt Router
+   268	 */
+   269	static int ti_sci_intr_initialize_mapping(struct ti_sci_intr_irq_domain *intr)
+ > 270	{
+   271		int i;
+   272		int mapping_len = intr->out_irqs->desc->num + intr->out_irqs->desc->num_sec;
+   273	
+   274		intr->mapping = devm_kzalloc(intr->dev, mapping_len * sizeof(u32), GFP_KERNEL);
+   275		if (!intr->mapping)
+   276			return -ENOMEM;
+   277	
+   278		/* Set all the elements in the array to max value of u32 */
+   279		for (i = 0; i < mapping_len; i++)
+   280			intr->mapping[i] = 0xFFFFFFFF;
+   281	
+   282		return 0;
+   283	}
+   284	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
