@@ -2,202 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DF1C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:28:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:28:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243832AbiFIL2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40262 "EHLO
+        id S243778AbiFIL2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243742AbiFIL1t (ORCPT
+        with ESMTP id S244179AbiFIL23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:27:49 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E366F16F91A;
-        Thu,  9 Jun 2022 04:27:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1654774067;
-  x=1686310067;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=aM/0l4yjaBfnHy1XwDJmSDA6T8THC1eF8t5yyafz8mI=;
-  b=HDpLTUmlD9btr45sL/u8o5ASkTWz17asLQSrKjgILmYKwpa5iVmKt5IZ
-   xEPvfeGbDXStoxHV5YbInBldYmawKy1Ke2N7yccauGH8Eg9oG+LDHWn44
-   zA2tFWY25ab5QmB9NG/aLpxnFgevyA5hZX0PT68/umQfpE2K26Nj5VqJp
-   eAzxSCiRy+PSZ5pOcuPSCY2MXwP6VxNobCVUyeHkOEhPvBCawD/rG63KO
-   Nwr5gvZyEQy/crmZunGrDreCmacR64gvLxG5o0TgmTptTB62oLUnnG7b9
-   7MoKt908/0Gp7dbDP0/ET644C0h8YPYti/MCnyXjK8ihqAV8/jVbhTSHG
-   w==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     <krzysztof.kozlowski@linaro.org>, <tglx@linutronix.de>,
-        <daniel.lezcano@linaro.org>
-CC:     <kernel@axis.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-samsung-soc@vger.kernel.org>, <alim.akhtar@samsung.com>,
-        <devicetree@vger.kernel.org>, <robh+dt@kernel.org>
-Subject: [PATCH v4 3/4] clocksource/drivers/exynos_mct: Support local-timers property
-Date:   Thu, 9 Jun 2022 13:27:37 +0200
-Message-ID: <20220609112738.359385-4-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220609112738.359385-1-vincent.whitchurch@axis.com>
-References: <20220609112738.359385-1-vincent.whitchurch@axis.com>
+        Thu, 9 Jun 2022 07:28:29 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42FD1EBEF5
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:28:27 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LJhdq2vdkzjXHD;
+        Thu,  9 Jun 2022 19:27:27 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 9 Jun 2022 19:28:25 +0800
+Subject: Re: [PATCH v1 5/5] mm, hwpoison: enable memory error handling on 1GB
+ hugepage
+To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>
+CC:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Liu Shixin <liushixin2@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+References: <20220602050631.771414-1-naoya.horiguchi@linux.dev>
+ <20220602050631.771414-6-naoya.horiguchi@linux.dev>
+ <ff58b65d-e55d-04c0-e26d-3c92830b5912@huawei.com>
+ <20220608061635.GA1413099@hori.linux.bs1.fc.nec.co.jp>
+ <5743855d-8f22-0d82-56c0-1ab61ad431b7@huawei.com>
+ <20220609084556.GA1459006@hori.linux.bs1.fc.nec.co.jp>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <f5a733be-5086-9f8f-a530-a28d70dfdc1c@huawei.com>
+Date:   Thu, 9 Jun 2022 19:28:25 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <20220609084556.GA1459006@hori.linux.bs1.fc.nec.co.jp>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the device tree indicates that the hardware requires that the
-processor only use certain local timers, respect that.
+On 2022/6/9 16:45, HORIGUCHI NAOYA(堀口 直也) wrote:
+> On Wed, Jun 08, 2022 at 08:57:24PM +0800, Miaohe Lin wrote:
+> ...
+>>>
+>>> I think that most of page table walker for user address space should first
+>>> check is_vm_hugetlb_page() and call hugetlb specific walking code for vma
+>>> with VM_HUGETLB.
+>>> copy_page_range() is a good example.  It calls copy_hugetlb_page_range()
+>>> for vma with VM_HUGETLB and the function should support hwpoison entry.
+>>> But I feel that I need testing for confirmation.
+>>
+>> Sorry, I missed it should be called from hugetlb variants.
+>>
+>>>
+>>> And I'm not sure that all other are prepared for non-present pud-mapping,
+>>> so I'll need somehow code inspection and testing for each.
+>>
+>> I browsed the code again, there still might be some problematic code paths:
+>>
+>> 1.For follow_pud_mask, !pud_present will mostly reach follow_pmd_mask(). This can be
+>> called for hugetlb page. (Note gup_pud_range is fixed at 15494520b776 ("mm: fix gup_pud_range"))
+>>
+>> 2.Even for huge_pte_alloc, pud_offset will be called in pud_alloc. So pudp will be an invalid pointer.
+>> And it will be de-referenced later.
+> 
+> Yes, these paths need to support non-present pud entry, so I'll update/add
+> the patches.  It seems that I did the similar work for pmd few years ago
+> (cbef8478bee5 ("mm/hugetlb: pmd_huge() returns true for non-present hugepage").
 
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
----
+Yes, these should be similar work. Thanks for your hard work. :)
 
-Notes:
-    v4:
-    - Add function documentation
-    - Add const for local_idx
-    - Rename irqidx -> irq_idx
-    - Error out on invalid number of CPUs
-    
-    v3:
-    - Use array in devicetree
-    - Remove addition of global variable
-    - Split out FRC sharing changes
-
- drivers/clocksource/exynos_mct.c | 62 ++++++++++++++++++++++++++++----
- 1 file changed, 56 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
-index 12023831dedf..bfd60093ee1c 100644
---- a/drivers/clocksource/exynos_mct.c
-+++ b/drivers/clocksource/exynos_mct.c
-@@ -33,7 +33,7 @@
- #define EXYNOS4_MCT_G_INT_ENB		EXYNOS4_MCTREG(0x248)
- #define EXYNOS4_MCT_G_WSTAT		EXYNOS4_MCTREG(0x24C)
- #define _EXYNOS4_MCT_L_BASE		EXYNOS4_MCTREG(0x300)
--#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * x))
-+#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * (x)))
- #define EXYNOS4_MCT_L_MASK		(0xffffff00)
- 
- #define MCT_L_TCNTB_OFFSET		(0x00)
-@@ -66,6 +66,8 @@
- #define MCT_L0_IRQ	4
- /* Max number of IRQ as per DT binding document */
- #define MCT_NR_IRQS	20
-+/* Max number of local timers */
-+#define MCT_NR_LOCAL	(MCT_NR_IRQS - MCT_L0_IRQ)
- 
- enum {
- 	MCT_INT_SPI,
-@@ -456,7 +458,6 @@ static int exynos4_mct_starting_cpu(unsigned int cpu)
- 		per_cpu_ptr(&percpu_mct_tick, cpu);
- 	struct clock_event_device *evt = &mevt->evt;
- 
--	mevt->base = EXYNOS4_MCT_L_BASE(cpu);
- 	snprintf(mevt->name, sizeof(mevt->name), "mct_tick%d", cpu);
- 
- 	evt->name = mevt->name;
-@@ -527,8 +528,17 @@ static int __init exynos4_timer_resources(struct device_node *np)
- 	return 0;
- }
- 
-+/**
-+ * exynos4_timer_interrupts - initialize MCT interrupts
-+ * @np: device node for MCT
-+ * @int_type: interrupt type, MCT_INT_PPI or MCT_INT_SPI
-+ * @local_idx: array mapping CPU numbers to local timer indices
-+ * @nr_local: size of @local_idx array
-+ */
- static int __init exynos4_timer_interrupts(struct device_node *np,
--					   unsigned int int_type)
-+					   unsigned int int_type,
-+					   const u32 *local_idx,
-+					   size_t nr_local)
- {
- 	int nr_irqs, i, err, cpu;
- 
-@@ -561,13 +571,21 @@ static int __init exynos4_timer_interrupts(struct device_node *np,
- 	} else {
- 		for_each_possible_cpu(cpu) {
- 			int mct_irq;
-+			unsigned int irq_idx;
- 			struct mct_clock_event_device *pcpu_mevt =
- 				per_cpu_ptr(&percpu_mct_tick, cpu);
- 
-+			if (cpu >= nr_local) {
-+				err = -EINVAL;
-+				goto out_irq;
-+			}
-+
-+			irq_idx = MCT_L0_IRQ + local_idx[cpu];
-+
- 			pcpu_mevt->evt.irq = -1;
--			if (MCT_L0_IRQ + cpu >= ARRAY_SIZE(mct_irqs))
-+			if (irq_idx >= ARRAY_SIZE(mct_irqs))
- 				break;
--			mct_irq = mct_irqs[MCT_L0_IRQ + cpu];
-+			mct_irq = mct_irqs[irq_idx];
- 
- 			irq_set_status_flags(mct_irq, IRQ_NOAUTOEN);
- 			if (request_irq(mct_irq,
-@@ -583,6 +601,17 @@ static int __init exynos4_timer_interrupts(struct device_node *np,
- 		}
- 	}
- 
-+	for_each_possible_cpu(cpu) {
-+		struct mct_clock_event_device *mevt = per_cpu_ptr(&percpu_mct_tick, cpu);
-+
-+		if (cpu >= nr_local) {
-+			err = -EINVAL;
-+			goto out_irq;
-+		}
-+
-+		mevt->base = EXYNOS4_MCT_L_BASE(local_idx[cpu]);
-+	}
-+
- 	/* Install hotplug callbacks which configure the timer on this CPU */
- 	err = cpuhp_setup_state(CPUHP_AP_EXYNOS4_MCT_TIMER_STARTING,
- 				"clockevents/exynos4/mct_timer:starting",
-@@ -613,13 +642,34 @@ static int __init exynos4_timer_interrupts(struct device_node *np,
- static int __init mct_init_dt(struct device_node *np, unsigned int int_type)
- {
- 	bool frc_shared = of_property_read_bool(np, "samsung,frc-shared");
-+	u32 local_idx[MCT_NR_LOCAL] = {0};
-+	int nr_local;
- 	int ret;
- 
-+	nr_local = of_property_count_u32_elems(np, "samsung,local-timers");
-+	if (nr_local == 0)
-+		return -EINVAL;
-+	if (nr_local > 0) {
-+		if (nr_local > ARRAY_SIZE(local_idx))
-+			return -EINVAL;
-+
-+		ret = of_property_read_u32_array(np, "samsung,local-timers",
-+						 local_idx, nr_local);
-+		if (ret)
-+			return ret;
-+	} else {
-+		int i;
-+
-+		nr_local = ARRAY_SIZE(local_idx);
-+		for (i = 0; i < nr_local; i++)
-+			local_idx[i] = i;
-+	}
-+
- 	ret = exynos4_timer_resources(np);
- 	if (ret)
- 		return ret;
- 
--	ret = exynos4_timer_interrupts(np, int_type);
-+	ret = exynos4_timer_interrupts(np, int_type, local_idx, nr_local);
- 	if (ret)
- 		return ret;
- 
--- 
-2.34.1
+> 
+> Thanks,
+> Naoya Horiguchi
+> 
 
