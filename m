@@ -2,284 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1416C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41145C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:05:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243460AbiFILEb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:04:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44694 "EHLO
+        id S243394AbiFILF4 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243456AbiFILEV (ORCPT
+        with ESMTP id S230108AbiFILFt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:04:21 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72063D1F9
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:04:19 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id u26so36682733lfd.8
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 04:04:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cDvzOjc/sBh8FPM+6m1a79tMWnQrhKoIX1IIc2qqN5M=;
-        b=sJ9087X728vXXXcsD3UnUg0LsTORnlo3ZgGnNuJxX+nelG/jNqA8xZCueHMFTUrVAy
-         1BdJ7dbLidC4ZlYaHGc15eHzPwI5mbeeDQ8mhi2o9WszmUF+pCdmBGSxjGwE3ulEDvNJ
-         h49qEddIFxngaF/MHWdIFngyf7ZYGuGyNJi4wCOwIE34vH+12C+0rnHr49c14gUzuLvf
-         qAlHaoisfVpm6gOWocZXm94KsxKcIGhbuxzFWaVvJ5li72yW3oBeSzU0bwzJc4JirICc
-         VSYYS0MdscAEARJDhREutPMdMwZWda2ZnkvFWHS6mDRcidiUGWS5kelxV5/bXaqPeA3R
-         Sqdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cDvzOjc/sBh8FPM+6m1a79tMWnQrhKoIX1IIc2qqN5M=;
-        b=6f0Cre/8y6OLCbOCIAQ19mxdeWYS9rEJLfpyDfedV53tcYUX8pDSYjBEmbS1zs264O
-         ZKy4D3n9z//hD4bP8Z80XleY2DBqMSrJn59wlLCsROhdB8tlG0kWmwdPFpywK0m9yGz1
-         vh0MV48ytZJG6+A69jdmkAV2VnH9IQoEIgnrQ7Rt3e8cHiPPe+jEnE0vCfTxCydqc+qj
-         CMmeaR5wPwwqQkthuD1xhVhc+jjlgokmb+5L8lMp9rnFUYH7rljhORJ1cY5qlXUQVS97
-         qOG//rlAiy3kN4WH+miGNPqruJlZUhdKb2dUmSlYDzH3nNb5bYpJjcx/e+y1T+qpWId6
-         6kqA==
-X-Gm-Message-State: AOAM531ixKX7vU7Kbtp1cpcLtRwDE+VoDbiNgHLIpAUkByRGsgyRTeOz
-        hKN2p0DypgSskigKjQfgayF4J8rzpnss1KsM2YeY3w==
-X-Google-Smtp-Source: ABdhPJz6twGPG+sTdT7x6V5wwPxuL8uCuYaPA6LLDxrsywOqZ1Nq82Xsy8XrzUhiX8bwptIpALd6QA==
-X-Received: by 2002:a05:6512:31c5:b0:479:47a1:2024 with SMTP id j5-20020a05651231c500b0047947a12024mr12854038lfe.420.1654772657327;
-        Thu, 09 Jun 2022 04:04:17 -0700 (PDT)
-Received: from jazctssd.c.googlers.com.com (138.58.228.35.bc.googleusercontent.com. [35.228.58.138])
-        by smtp.gmail.com with ESMTPSA id a10-20020a194f4a000000b004793605e59dsm2116674lfk.245.2022.06.09.04.04.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 04:04:16 -0700 (PDT)
-From:   Grzegorz Jaszczyk <jaz@semihalf.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     jaz@semihalf.com, dmy@semihalf.com,
-        Zide Chen <zide.chen@intel.corp-partner.google.com>,
-        Peter Fang <peter.fang@intel.corp-partner.google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Steve Rutherford <srutherford@google.com>,
-        Ashish Kalra <ashish.kalra@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Pratik Vishwakarma <Pratik.Vishwakarma@amd.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sachi King <nakato@nakato.io>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Jing Liu <jing2.liu@intel.com>,
-        Fabiano Rosas <farosas@linux.ibm.com>,
-        Wei Wang <wei.w.wang@intel.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        kvm@vger.kernel.org (open list:KERNEL VIRTUAL MACHINE (KVM)),
-        linux-doc@vger.kernel.org (open list:DOCUMENTATION),
-        linux-acpi@vger.kernel.org (open list:ACPI),
-        linux-pm@vger.kernel.org (open list:HIBERNATION (aka Software Suspend,
-        aka swsusp))
-Subject: [PATCH 2/2] KVM: x86: notify user space about guest entering s2idle
-Date:   Thu,  9 Jun 2022 11:03:28 +0000
-Message-Id: <20220609110337.1238762-3-jaz@semihalf.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-In-Reply-To: <20220609110337.1238762-1-jaz@semihalf.com>
-References: <20220609110337.1238762-1-jaz@semihalf.com>
+        Thu, 9 Jun 2022 07:05:49 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5172F21A540;
+        Thu,  9 Jun 2022 04:05:48 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LJh3F5cDyz689QR;
+        Thu,  9 Jun 2022 19:00:57 +0800 (CST)
+Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Thu, 9 Jun 2022 13:05:45 +0200
+Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
+ fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
+ Thu, 9 Jun 2022 13:05:45 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     Eugeniu Rosca <erosca@de.adit-jv.com>
+CC:     Rob Landley <rob@landley.net>, "hpa@zytor.com" <hpa@zytor.com>,
+        "Masahiro Yamada" <masahiroy@kernel.org>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        "Mimi Zohar" <zohar@linux.ibm.com>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "initramfs@vger.kernel.org" <initramfs@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bug-cpio@gnu.org" <bug-cpio@gnu.org>,
+        "zohar@linux.vnet.ibm.com" <zohar@linux.vnet.ibm.com>,
+        Silviu Vlasceanu <Silviu.Vlasceanu@huawei.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@huawei.com>,
+        "takondra@cisco.com" <takondra@cisco.com>,
+        "kamensky@cisco.com" <kamensky@cisco.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "james.w.mcmechan@gmail.com" <james.w.mcmechan@gmail.com>,
+        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
+        Dirk Behme <dirk.behme@de.bosch.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+Subject: RE: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
+ ram disk
+Thread-Topic: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
+ ram disk
+Thread-Index: AQHYe+tsPH1HC/8x8Uq7oovD5MPpKK1G5r2Q
+Date:   Thu, 9 Jun 2022 11:05:45 +0000
+Message-ID: <21b3aeab20554a30b9796b82cc58e55b@huawei.com>
+References: <20190523121803.21638-1-roberto.sassu@huawei.com>
+ <cf9d08ca-74c7-c945-5bf9-7c3495907d1e@huawei.com>
+ <541e9ea1-024f-5c22-0b58-f8692e6c1eb1@landley.net>
+ <33cfb804-6a17-39f0-92b7-01d54e9c452d@huawei.com>
+ <1561909199.3985.33.camel@linux.ibm.com>
+ <45164486-782f-a442-e442-6f56f9299c66@huawei.com>
+ <1561991485.4067.14.camel@linux.ibm.com>
+ <f85ed711-f583-51cd-34e2-80018a592280@huawei.com>
+ <0c17bf9e-9b0b-b067-cf18-24516315b682@huawei.com>
+ <20220609102627.GA3922@lxhi-065>
+In-Reply-To: <20220609102627.GA3922@lxhi-065>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.204.63.21]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zide Chen <zide.chen@intel.corp-partner.google.com>
+> From: Eugeniu Rosca [mailto:erosca@de.adit-jv.com]
+> Sent: Thursday, June 9, 2022 12:26 PM
+> Dear Roberto,
+> Cc: Yamada-san, linux-kbuild
+> 
+> On Mi, Jul 24, 2019 at 05:34:53 +0200, Roberto Sassu wrote:
+> > Is there anything I didn't address in this patch set, that is delaying
+> > the review? I would appreciate if you can give me a feedback, positive
+> > or negative.
+> >
+> > Thanks a lot!
+> >
+> > Roberto
+> 
+> Some of our users have recently asked for this patch series.
 
-Upon exiting to user space, the kvm_run structure contains system_event
-with type KVM_SYSTEM_EVENT_S2IDLE to notify about guest entering s2idle
-suspend state.
+Hello
 
-Userspace can choose to:
-- ignore it
-- start the suspend flow in host (if notified from privileged VM,
-  capable of suspending the host machine)
-- take advantage of this event to make sure that the VM is suspended
+thanks for your interest in this patch set.
 
-The last one is especially useful for cases where some devices are
-pass-through to the VM and to perform full system suspension, the guest
-needs to finish with it's own suspension process first (e.g. calling
-suspend hooks for given driver/subsystem which resides on the guest).
-In such case host user-space power daemon (e.g. powerd) could first
-notify VMM about suspension imminent. Next the VMM could trigger
-suspension process on the guest VM and block till receiving
-KVM_SYSTEM_EVENT_S2IDLE notification, after which the suspension of the
-host can continue.
+> Could you please feedback if this is the latest revision available or
+> maybe there is a newer one developed and potentially not shared on LKML?
 
-Additionally to not introduce regression on existing VMM which doesn't
-support KVM_SYSTEM_EVENT_S2IDLE exits, allow to enable it through
-KVM_CAP_X86_SYSTEM_S2IDLE VM capability.
+Yes, it is the latest revision available. There might have been few
+fixes in the final code. You may want to have a look at:
 
-Co-developed-by: Peter Fang <peter.fang@intel.corp-partner.google.com>
-Signed-off-by: Peter Fang <peter.fang@intel.corp-partner.google.com>
-Signed-off-by: Zide Chen <zide.chen@intel.corp-partner.google.com>
-Co-developed-by: Grzegorz Jaszczyk <jaz@semihalf.com>
-Signed-off-by: Grzegorz Jaszczyk <jaz@semihalf.com>
----
- Documentation/virt/kvm/api.rst  | 21 +++++++++++++++++++++
- arch/x86/include/asm/kvm_host.h |  2 ++
- arch/x86/kvm/x86.c              | 15 +++++++++++++++
- include/uapi/linux/kvm.h        |  2 ++
- tools/include/uapi/linux/kvm.h  |  1 +
- 5 files changed, 41 insertions(+)
+https://github.com/openeuler-mirror/kernel/commit/888460f17775b62f77e33e774e6673587c61cabd
+https://github.com/openeuler-mirror/kernel/commit/4adaeecd5d23cc75ffd1883d9b677bbd67c535d1
+https://github.com/openeuler-mirror/kernel/commit/59db8952e91c2ac443bccdcacfd37ae94c49a259
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index 11e00a46c610..670dada87f50 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -6146,6 +6146,8 @@ should put the acknowledged interrupt vector into the 'epr' field.
-   #define KVM_SYSTEM_EVENT_WAKEUP         4
-   #define KVM_SYSTEM_EVENT_SUSPEND        5
-   #define KVM_SYSTEM_EVENT_SEV_TERM       6
-+  #define KVM_SYSTEM_EVENT_S2IDLE         7
-+
- 			__u32 type;
-                         __u32 ndata;
-                         __u64 data[16];
-@@ -6177,6 +6179,15 @@ Valid values for 'type' are:
-    marking the exiting vCPU as runnable, or deny it and call KVM_RUN again.
-  - KVM_SYSTEM_EVENT_SUSPEND -- the guest has requested a suspension of
-    the VM.
-+ - KVM_SYSTEM_EVENT_S2IDLE -- the guest has notified about entering s2idle
-+   state. Userspace can choose to:
-+   - ignore it
-+   - start the suspend flow in host (if notified from a privileged VM, capable
-+     of suspending the host machine)
-+   - take advantage of this event to make sure that the VM is suspended - used
-+     for full system suspension, where the host waits for guest suspension
-+     before continues with it's own, host suspension process.
-+   This is available on x86 only.
- 
- If KVM_CAP_SYSTEM_EVENT_DATA is present, the 'data' field can contain
- architecture specific information for the system-level event.  Only
-@@ -7956,6 +7967,16 @@ should adjust CPUID leaf 0xA to reflect that the PMU is disabled.
- When enabled, KVM will exit to userspace with KVM_EXIT_SYSTEM_EVENT of
- type KVM_SYSTEM_EVENT_SUSPEND to process the guest suspend request.
- 
-+8.37 KVM_CAP_X86_SYSTEM_S2IDLE
-+-------------------------------
-+
-+:Capability: KVM_CAP_X86_SYSTEM_S2IDLE
-+:Architectures: x86
-+:Type: vm
-+
-+When enabled, KVM will exit to userspace with KVM_EXIT_SYSTEM_EVENT of
-+type KVM_SYSTEM_EVENT_S2IDLE to process the guest s2idle notification.
-+
- 9. Known KVM API problems
- =========================
- 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 959d66b9be94..85966da56c75 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -105,6 +105,7 @@
- 	KVM_ARCH_REQ_FLAGS(30, KVM_REQUEST_WAIT | KVM_REQUEST_NO_WAKEUP)
- #define KVM_REQ_MMU_FREE_OBSOLETE_ROOTS \
- 	KVM_ARCH_REQ_FLAGS(31, KVM_REQUEST_WAIT | KVM_REQUEST_NO_WAKEUP)
-+#define KVM_REQ_HV_S2IDLE		KVM_ARCH_REQ(32)
- 
- #define CR0_RESERVED_BITS                                               \
- 	(~(unsigned long)(X86_CR0_PE | X86_CR0_MP | X86_CR0_EM | X86_CR0_TS \
-@@ -1160,6 +1161,7 @@ struct kvm_arch {
- 
- 	bool bus_lock_detection_enabled;
- 	bool enable_pmu;
-+	bool s2idle_notification;
- 	/*
- 	 * If exit_on_emulation_error is set, and the in-kernel instruction
- 	 * emulator fails to emulate an instruction, allow userspace
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 6ed4bd6e762b..651ebac025c1 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -4291,6 +4291,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 	case KVM_CAP_SYS_ATTRIBUTES:
- 	case KVM_CAP_VAPIC:
- 	case KVM_CAP_ENABLE_CAP:
-+	case KVM_CAP_X86_SYSTEM_S2IDLE:
- 		r = 1;
- 		break;
- 	case KVM_CAP_EXIT_HYPERCALL:
-@@ -6084,6 +6085,10 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
- 		}
- 		mutex_unlock(&kvm->lock);
- 		break;
-+	case KVM_CAP_X86_SYSTEM_S2IDLE:
-+		kvm->arch.s2idle_notification = true;
-+		r = 0;
-+		break;
- 	default:
- 		r = -EINVAL;
- 		break;
-@@ -9307,6 +9312,10 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
- 		return 0;
- 	}
- 	case KVM_HC_SYSTEM_S2IDLE:
-+		if (!vcpu->kvm->arch.s2idle_notification)
-+			break;
-+
-+		kvm_make_request(KVM_REQ_HV_S2IDLE, vcpu);
- 		ret = 0;
- 		break;
- 	default:
-@@ -10114,6 +10123,12 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 			r = 0;
- 			goto out;
- 		}
-+		if (kvm_check_request(KVM_REQ_HV_S2IDLE, vcpu)) {
-+			vcpu->run->exit_reason = KVM_EXIT_SYSTEM_EVENT;
-+			vcpu->run->system_event.type = KVM_SYSTEM_EVENT_S2IDLE;
-+			r = 0;
-+			goto out;
-+		}
- 
- 		/*
- 		 * KVM_REQ_HV_STIMER has to be processed after
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 5088bd9f1922..dd71ccf8fce4 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -447,6 +447,7 @@ struct kvm_run {
- #define KVM_SYSTEM_EVENT_WAKEUP         4
- #define KVM_SYSTEM_EVENT_SUSPEND        5
- #define KVM_SYSTEM_EVENT_SEV_TERM       6
-+#define KVM_SYSTEM_EVENT_S2IDLE         7
- 			__u32 type;
- 			__u32 ndata;
- 			union {
-@@ -1157,6 +1158,7 @@ struct kvm_ppc_resize_hpt {
- #define KVM_CAP_VM_TSC_CONTROL 214
- #define KVM_CAP_SYSTEM_EVENT_DATA 215
- #define KVM_CAP_ARM_SYSTEM_SUSPEND 216
-+#define KVM_CAP_X86_SYSTEM_S2IDLE 217
- 
- #ifdef KVM_CAP_IRQ_ROUTING
- 
-diff --git a/tools/include/uapi/linux/kvm.h b/tools/include/uapi/linux/kvm.h
-index 6a184d260c7f..f8db91439c41 100644
---- a/tools/include/uapi/linux/kvm.h
-+++ b/tools/include/uapi/linux/kvm.h
-@@ -444,6 +444,7 @@ struct kvm_run {
- #define KVM_SYSTEM_EVENT_SHUTDOWN       1
- #define KVM_SYSTEM_EVENT_RESET          2
- #define KVM_SYSTEM_EVENT_CRASH          3
-+#define KVM_SYSTEM_EVENT_S2IDLE         7
- 			__u32 type;
- 			__u32 ndata;
- 			union {
--- 
-2.36.1.476.g0c4daa206d-goog
+and:
 
+https://gitee.com/src-openeuler/cpio/blob/master/add-option-to-add-metadata-in-copy-out-mode.patch
+https://gitee.com/src-openeuler/cpio/blob/master/Fix-use-after-free-and-return-appropriate-error.patch
+
+Roberto
+
+HUAWEI TECHNOLOGIES Duesseldorf GmbH, HRB 56063
+Managing Director: Li Peng, Yang Xi, Li He
