@@ -2,87 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D207C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E67FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243818AbiFIMGe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 08:06:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
+        id S243114AbiFIMHf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 08:07:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232179AbiFIMGa (ORCPT
+        with ESMTP id S231853AbiFIMHc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 08:06:30 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFF325BF99;
-        Thu,  9 Jun 2022 05:06:23 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LJjSb52jyz1GCVm;
-        Thu,  9 Jun 2022 20:04:31 +0800 (CST)
-Received: from dggpeml500008.china.huawei.com (7.185.36.147) by
- dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
+        Thu, 9 Jun 2022 08:07:32 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4D619F040
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 05:07:31 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LJjVR1vh4zjXN4;
+        Thu,  9 Jun 2022 20:06:07 +0800 (CST)
+Received: from localhost.localdomain (10.67.164.66) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 9 Jun 2022 20:06:21 +0800
-Received: from huawei.com (10.67.175.34) by dggpeml500008.china.huawei.com
- (7.185.36.147) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 9 Jun
- 2022 20:06:21 +0800
-From:   Ren Zhijie <renzhijie2@huawei.com>
-To:     <linux@roeck-us.net>, <jdelvare@suse.com>, <dev_public@wujek.eu>
-CC:     <linux-hwmon@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Ren Zhijie <renzhijie2@huawei.com>
-Subject: [PATCH v2 -next] hwmon: (pmbus) fix build error unused-function
-Date:   Thu, 9 Jun 2022 20:04:48 +0800
-Message-ID: <20220609120448.139907-1-renzhijie2@huawei.com>
-X-Mailer: git-send-email 2.17.1
+ 15.1.2375.24; Thu, 9 Jun 2022 20:07:29 +0800
+From:   Yicong Yang <yangyicong@hisilicon.com>
+To:     <peterz@infradead.org>, <mingo@redhat.com>,
+        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
+        <tim.c.chen@linux.intel.com>, <gautham.shenoy@amd.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <bsegall@google.com>, <bristot@redhat.com>,
+        <prime.zeng@huawei.com>, <yangyicong@hisilicon.com>,
+        <jonathan.cameron@huawei.com>, <ego@linux.vnet.ibm.com>,
+        <srikar@linux.vnet.ibm.com>, <linuxarm@huawei.com>,
+        <21cnbao@gmail.com>, <guodong.xu@linaro.org>,
+        <hesham.almatary@huawei.com>, <john.garry@huawei.com>,
+        <shenyang39@huawei.com>
+Subject: [PATCH v4 0/2] sched/fair: Wake task within the cluster when possible
+Date:   Thu, 9 Jun 2022 20:06:20 +0800
+Message-ID: <20220609120622.47724-1-yangyicong@hisilicon.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.175.34]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500008.china.huawei.com (7.185.36.147)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500009.china.huawei.com (7.192.105.203)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If CONFIG_PMBUS is y and CONFIG_DEBUG_FS is not set.
+This is the follow-up work to support cluster scheduler. Previously
+we have added cluster level in the scheduler for both ARM64[1] and
+X86[2] to support load balance between clusters to bring more memory
+bandwidth and decrease cache contention. This patchset, on the other
+hand, takes care of wake-up path by giving CPUs within the same cluster
+a try before scanning the whole LLC to benefit those tasks communicating
+with each other.
 
-make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-, will be failed, like this:
-drivers/hwmon/pmbus/pmbus_core.c:593:13: error: ‘pmbus_check_block_register’ defined but not used [-Werror=unused-function]
- static bool pmbus_check_block_register(struct i2c_client *client, int page,
-             ^~~~~~~~~~~~~~~~~~~~~~~~~~
-cc1: all warnings being treated as errors
-make[3]: *** [drivers/hwmon/pmbus/pmbus_core.o] Error 1
-make[2]: *** [drivers/hwmon/pmbus] Error 2
-make[2]: *** Waiting for unfinished jobs....
-make[1]: *** [drivers/hwmon] Error 2
-make[1]: *** Waiting for unfinished jobs....
-make: *** [drivers] Error 2
+[1] 778c558f49a2 ("sched: Add cluster scheduler level in core and related Kconfig for ARM64")
+[2] 66558b730f25 ("sched: Add cluster scheduler level for x86")
 
-To fix building warning, use __maybe_unused to attach this func.
+Change since v3:
+- fix compile error when !CONFIG_SCHED_CLUSTER, reported by lkp test.
+Link: https://lore.kernel.org/lkml/20220608095758.60504-1-yangyicong@hisilicon.com/
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: c3ffc3a1ff83("hwmon: (pmbus) add a function to check the presence of a block register")
-Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
----
-v2: use __maybe_unused to attach this function, which Guenter suggested.
----
- drivers/hwmon/pmbus/pmbus_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Change since v2:
+- leverage SIS_PROP to suspend redundant scanning when LLC is overloaded
+- remove the ping-pong suppression
+- address the comment from Tim, thanks.
+Link: https://lore.kernel.org/lkml/20220126080947.4529-1-yangyicong@hisilicon.com/
 
-diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
-index 809e666cb52b..e6d3a1118453 100644
---- a/drivers/hwmon/pmbus/pmbus_core.c
-+++ b/drivers/hwmon/pmbus/pmbus_core.c
-@@ -590,7 +590,7 @@ bool pmbus_check_word_register(struct i2c_client *client, int page, int reg)
- }
- EXPORT_SYMBOL_NS_GPL(pmbus_check_word_register, PMBUS);
- 
--static bool pmbus_check_block_register(struct i2c_client *client, int page,
-+static bool __maybe_unused pmbus_check_block_register(struct i2c_client *client, int page,
- 				       int reg)
- {
- 	int rv;
+Change since v1:
+- regain the performance data based on v5.17-rc1
+- rename cpus_share_cluster to cpus_share_resources per Vincent and Gautham, thanks!
+Link: https://lore.kernel.org/lkml/20211215041149.73171-1-yangyicong@hisilicon.com/
+
+Barry Song (2):
+  sched: Add per_cpu cluster domain info and cpus_share_resources API
+  sched/fair: Scan cluster before scanning LLC in wake-up path
+
+ include/linux/sched/sd_flags.h |  7 ++++++
+ include/linux/sched/topology.h |  8 ++++++-
+ kernel/sched/core.c            | 12 ++++++++++
+ kernel/sched/fair.c            | 44 +++++++++++++++++++++++++++++++---
+ kernel/sched/sched.h           |  2 ++
+ kernel/sched/topology.c        | 15 ++++++++++++
+ 6 files changed, 84 insertions(+), 4 deletions(-)
+
 -- 
-2.17.1
+2.24.0
 
