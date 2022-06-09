@@ -2,131 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5781C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A262C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240123AbiFILbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:31:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54356 "EHLO
+        id S243904AbiFILb1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243772AbiFILbN (ORCPT
+        with ESMTP id S243027AbiFILbO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:31:13 -0400
-Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BBA23A393E
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:31:10 -0700 (PDT)
-Received: by mail-ed1-x549.google.com with SMTP id g7-20020a056402424700b0042dee9d11d0so16792898edb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 04:31:10 -0700 (PDT)
+        Thu, 9 Jun 2022 07:31:14 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B682C3A4807
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:31:11 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id y19so46858061ejq.6
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 04:31:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=95dYiJC9IDZol3AtuiRZW/23v+t4OmpxxOGgsAq7Fsc=;
-        b=bk/INExYMBUiLgU9B9FG9Wxis71pb98dHe4VkAA3lfm2iODhPZt7k+FVxcXk/IlJQ5
-         RpFX2tLyK5ayKvJnfKSmbovwQdAQ9qChX7IVHYGLvsWE83meaJOU58o4XvSilpxs1auS
-         1rHmsuprC9Lwk94yHLzDR08aqrODjpQg8nX/chmzEEDz9yCpbteM4nwzxs+w96n83IeJ
-         shOx0BcOzTq3E4JF/hlMco7FAyjn60LdG7vKytD2J+ZdYsrW8rFTDNPh95b3vtUVvhsA
-         nTRmG/zdlPgdhI6hDiah81kGmc0I75VpdGiTUpIkvfkfJ+tkQQEQ29pWBbEWgxA305qQ
-         +ZmQ==
+        bh=+XewJc/p+7yp1re11t6BfmEtfp27WPbXPnywgusXXTc=;
+        b=dD0Bz9eW32MHk+TeRLS+QqFpXQSyJG1PFuM0sFc2oIQiPmRbBKI4wiAjUnrY0TOPB3
+         vmLpoVIxPESYT9ISrrirk39KtLhSpCgEKtG3yrDCpv/Gh6ZWSamp4kS8RJg23gIGNIEa
+         lDd2yagv7BcuRvFzrWxMhthjwknH7br96szys=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=95dYiJC9IDZol3AtuiRZW/23v+t4OmpxxOGgsAq7Fsc=;
-        b=Gjyt2NISWqO3iQmBWrIFoR2G1nNzIHACHnIVXTKeIOdIKX9o6oyNSYWRZdQTa/u3d6
-         9fsRsgPfL4BcXCdfNWJl/GKJR2ReOXH/Z7JhZQu1FAsO5UvIWNqgPmD7vB8CTQlq1lzd
-         TBY9rtaJXlIuhV/g9s1EMrli+KuDBYI7jtOQ0u01UuTqyhxR6le5lUwVLmx4s6jJG6yu
-         wyxPQIHtasCCzkhXabnvtU+zTYgoGJgetsBlhEPMukv3ylv58gbRoSmfl19HnoXRpbrg
-         iFUkiYTiD4iPi9N3Tz+DOqdRgJ1Pwql3s8rjzGy/8nya0ckHUpKa36WKsDIOKtYzAPUE
-         XFKQ==
-X-Gm-Message-State: AOAM533DRVoQ2yG5NxsuYXQ+XcqG3gJjpovlcI3AYFdf4ylOAjOyp4qt
-        x9onNpsK/79zFWfw84DJF+j6yaWcyA==
-X-Google-Smtp-Source: ABdhPJwVUKGw0QLiFW9XPwf2r2NLAq5BjdrToZq6AokVHC66Y8e3UeznCBqRNOYwVV+V22o7YNnBpxHjfQ==
-X-Received: from elver.muc.corp.google.com ([2a00:79e0:9c:201:dcf:e5ba:10a5:1ea5])
- (user=elver job=sendgmr) by 2002:aa7:c706:0:b0:42d:c4ad:ce0a with SMTP id
- i6-20020aa7c706000000b0042dc4adce0amr45226048edq.272.1654774268320; Thu, 09
- Jun 2022 04:31:08 -0700 (PDT)
-Date:   Thu,  9 Jun 2022 13:30:42 +0200
-In-Reply-To: <20220609113046.780504-1-elver@google.com>
-Message-Id: <20220609113046.780504-5-elver@google.com>
-Mime-Version: 1.0
-References: <20220609113046.780504-1-elver@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH 4/8] perf/hw_breakpoint: Make hw_breakpoint_weight() inlinable
-From:   Marco Elver <elver@google.com>
-To:     elver@google.com, Peter Zijlstra <peterz@infradead.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        linux-perf-users@vger.kernel.org, x86@kernel.org,
-        linux-sh@vger.kernel.org, kasan-dev@googlegroups.com,
-        linux-kernel@vger.kernel.org
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+XewJc/p+7yp1re11t6BfmEtfp27WPbXPnywgusXXTc=;
+        b=Wt91M4LNQrQh3lOYo46eXGTd2/Y5MQ2+Slj49z/KVf9G0lpq3rzLotdGvzmD1OyIIF
+         Wyjg0uQTc4ZWUNGM/2XvmFuMz6v0a1gPnNrKUBoLUp1n9Kf5elFkleLn4OepP74LIUtq
+         UbxOcKnu/gaDDTNXDetsZK5CLHt2dBLfCXLa6Vjh0xYr3uNGs/+5vjOKHGQuBlgNqgif
+         FAD6snbpG57MLiocK9zHwrPpwozU1eYQkkqvIXlzTOVczFb+6zUOFyuH1N1NASCGhcxZ
+         9nAjXVMXeGiowB2B2E3zH7fTGO7GLuzxAJ2GdGDxh35pmy3HzhZkVxbev4f5CjH7BQZh
+         m3bw==
+X-Gm-Message-State: AOAM533Oe+bMaTdueQurzxlhllMONjXUAwEvYQp2cUXtHyryz1PSuB5V
+        wy5+w+i2ggAy1aUrkxka2LjyM84zU9uszqoSipVAgw==
+X-Google-Smtp-Source: ABdhPJx9nV7wAxP/lyAtNedlGfDPIROj9YXpatcH7EqCac1uVlfTSKszMzYbWUxkatf8WgjTCZNOZTjPAlJBoltWDx4=
+X-Received: by 2002:a17:907:c22:b0:711:dc95:3996 with SMTP id
+ ga34-20020a1709070c2200b00711dc953996mr13928684ejc.62.1654774269713; Thu, 09
+ Jun 2022 04:31:09 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220608142723.103523089@infradead.org> <20220608144517.444659212@infradead.org>
+ <YqG6URbihTNCk9YR@alley> <YqHFHB6qqv5wiR8t@worktop.programming.kicks-ass.net>
+In-Reply-To: <YqHFHB6qqv5wiR8t@worktop.programming.kicks-ass.net>
+From:   Sergey Senozhatsky <senozhatsky@chromium.org>
+Date:   Thu, 9 Jun 2022 20:30:58 +0900
+Message-ID: <CA+_sPaoJGrXhNPCs2dKf2J7u07y1xYrRFZBUtkKwzK9GqcHSuQ@mail.gmail.com>
+Subject: Re: [PATCH 24/36] printk: Remove trace_.*_rcuidle() usage
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Petr Mladek <pmladek@suse.com>, ink@jurassic.park.msu.ru,
+        mattst88@gmail.com, vgupta@kernel.org, linux@armlinux.org.uk,
+        ulli.kroll@googlemail.com, linus.walleij@linaro.org,
+        shawnguo@kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        tony@atomide.com, khilman@kernel.org, catalin.marinas@arm.com,
+        will@kernel.org, guoren@kernel.org, bcain@quicinc.com,
+        chenhuacai@kernel.org, kernel@xen0n.name, geert@linux-m68k.org,
+        sammy@sammy.net, monstr@monstr.eu, tsbogend@alpha.franken.de,
+        dinguyen@kernel.org, jonas@southpole.se,
+        stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
+        James.Bottomley@hansenpartnership.com, deller@gmx.de,
+        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
+        davem@davemloft.net, richard@nod.at,
+        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, jgross@suse.com, srivatsa@csail.mit.edu,
+        amakhalov@vmware.com, pv-drivers@vmware.com,
+        boris.ostrovsky@oracle.com, chris@zankel.net, jcmvbkbc@gmail.com,
+        rafael@kernel.org, lenb@kernel.org, pavel@ucw.cz,
+        gregkh@linuxfoundation.org, mturquette@baylibre.com,
+        sboyd@kernel.org, daniel.lezcano@linaro.org, lpieralisi@kernel.org,
+        sudeep.holla@arm.com, agross@kernel.org,
+        bjorn.andersson@linaro.org, anup@brainfault.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        jacob.jun.pan@linux.intel.com, Arnd Bergmann <arnd@arndb.de>,
+        yury.norov@gmail.com, andriy.shevchenko@linux.intel.com,
+        linux@rasmusvillemoes.dk, rostedt@goodmis.org,
+        john.ogness@linutronix.de, paulmck@kernel.org, frederic@kernel.org,
+        quic_neeraju@quicinc.com, josh@joshtriplett.org,
+        mathieu.desnoyers@efficios.com, jiangshanlai@gmail.com,
+        joel@joelfernandes.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
+        vschneid@redhat.com, jpoimboe@kernel.org,
+        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-perf-users@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org,
+        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-arch@vger.kernel.org,
+        rcu@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Due to being a __weak function, hw_breakpoint_weight() will cause the
-compiler to always emit a call to it. This generates unnecessarily bad
-code (register spills etc.) for no good reason; in fact it appears in
-profiles of `perf bench -r 100 breakpoint thread -b 4 -p 128 -t 512`:
+My emails are getting rejected... Let me try web-interface
 
-    ...
-    0.70%  [kernel]       [k] hw_breakpoint_weight
-    ...
+Kudos to Petr for the questions and thanks to PeterZ for the answers.
 
-While a small percentage, no architecture defines its own
-hw_breakpoint_weight() nor are there users outside hw_breakpoint.c,
-which makes the fact it is currently __weak a poor choice.
+On Thu, Jun 9, 2022 at 7:02 PM Peter Zijlstra <peterz@infradead.org> wrote:
+> This is the tracepoint used to spool all of printk into ftrace, I
+> suspect there's users, but I haven't used it myself.
 
-Change hw_breakpoint_weight()'s definition to follow a similar protocol
-to hw_breakpoint_slots(), such that if <asm/hw_breakpoint.h> defines
-hw_breakpoint_weight(), we'll use it instead.
-
-The result is that it is inlined and no longer shows up in profiles.
-
-Signed-off-by: Marco Elver <elver@google.com>
----
- include/linux/hw_breakpoint.h | 1 -
- kernel/events/hw_breakpoint.c | 4 +++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/hw_breakpoint.h b/include/linux/hw_breakpoint.h
-index 78dd7035d1e5..9fa3547acd87 100644
---- a/include/linux/hw_breakpoint.h
-+++ b/include/linux/hw_breakpoint.h
-@@ -79,7 +79,6 @@ extern int dbg_reserve_bp_slot(struct perf_event *bp);
- extern int dbg_release_bp_slot(struct perf_event *bp);
- extern int reserve_bp_slot(struct perf_event *bp);
- extern void release_bp_slot(struct perf_event *bp);
--int hw_breakpoint_weight(struct perf_event *bp);
- int arch_reserve_bp_slot(struct perf_event *bp);
- void arch_release_bp_slot(struct perf_event *bp);
- void arch_unregister_hw_breakpoint(struct perf_event *bp);
-diff --git a/kernel/events/hw_breakpoint.c b/kernel/events/hw_breakpoint.c
-index 8e939723f27d..5f40c8dfa042 100644
---- a/kernel/events/hw_breakpoint.c
-+++ b/kernel/events/hw_breakpoint.c
-@@ -125,10 +125,12 @@ static __init int init_breakpoint_slots(void)
- }
- #endif
- 
--__weak int hw_breakpoint_weight(struct perf_event *bp)
-+#ifndef hw_breakpoint_weight
-+static inline int hw_breakpoint_weight(struct perf_event *bp)
- {
- 	return 1;
- }
-+#endif
- 
- static inline enum bp_type_idx find_slot_idx(u64 bp_type)
- {
--- 
-2.36.1.255.ge46751e96f-goog
-
+I'm somewhat curious whether we can actually remove that trace event.
