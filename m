@@ -2,103 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 043DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:27:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF15C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:27:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235413AbiFIP07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 11:26:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60858 "EHLO
+        id S1343599AbiFIP1Y (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 11:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344481AbiFIP0s (ORCPT
+        with ESMTP id S1344419AbiFIP1V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 11:26:48 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E1054B86A
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 08:26:47 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id d13so4847197plh.13
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 08:26:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4yC6pfF/WN7V+oY8+r8MwzNzFD7ztYSYIkkb+eP7wsI=;
-        b=p/TJGuNx5EF2KlHZGPa9pbacESJ0kmlCq42SQ6bV4PcONBrjWJQzF0r2aos67l8HEI
-         3xtdBxEMpMSH5Fr14Z3vkTTDZZ1AZy9oyAaCYAzV7jjLlhYUkmbT7Dlw5B5Q6SGhWcP/
-         I+AzRIQB3M5eTvTh1rUumYCdWyZJ/CwcJ2aNuOJTTpyKgsyxTvi2TbMurjH34DaTV+Hk
-         5t4HX+cojWI2nzpvyXFjr03wuZb7T5wcAITM7XN+VcTsn5Gl69bHIPee6drCSNxT7sjc
-         PLCdh9rX3kHUXuZziuieWznZYgC+OIWfGCnIshZjQSNZGhGWzRJnyTH+BXV5ATYNqISW
-         M2ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4yC6pfF/WN7V+oY8+r8MwzNzFD7ztYSYIkkb+eP7wsI=;
-        b=tiITqWYvnuIzPcDAC0lHbHleQ8sMJS3JlWvaEOBryFQpafF86bfXV8ZA5u27S8rj4T
-         JxK1yGqGmlLLelgHbshyY1lQsUD2mJbGNhnXQqo6NYh4zg15fhY5vRH61dZ1nOsKJwGo
-         HE55/VQBu++V6jXCGp6GgbBS1Y7/mrCwdz+TSyzybZKZv1C5P7GM5bzoNluGxpm4/SRJ
-         gL0gEsDCiZ4mdi+VNo1yumjpbEUwUzHxiqbMJsCOU9Pz4xDtD4aFSR4MzqtE6OtgjezF
-         jmacX12baL3LUDrPg4kp+WtfNSgkHfcrYwrXf1qX7+UgTihkGidj+8JSzmS5rUT4nyUb
-         3F6w==
-X-Gm-Message-State: AOAM532pepM34eSZaWE0Sw9MVWF9fgB1JokussAphJp3PmE6zAt/p6nU
-        U3g6gQ/p5OWPtUprIKIX5D3TaQ==
-X-Google-Smtp-Source: ABdhPJznNVTHtuosLAP88M8/5gGxJJ9m6chiCuhSfrWTF+xMLbzLcGv5Z+atEe11psfn+6vT+dgWVw==
-X-Received: by 2002:a17:90b:3148:b0:1e8:90ae:d1f6 with SMTP id ip8-20020a17090b314800b001e890aed1f6mr3955907pjb.84.1654788406344;
-        Thu, 09 Jun 2022 08:26:46 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id i9-20020a632209000000b003fdcf361df6sm8402348pgi.87.2022.06.09.08.26.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 08:26:45 -0700 (PDT)
-Date:   Thu, 9 Jun 2022 15:26:42 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Andrew Jones <drjones@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Oliver Upton <oupton@google.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 048/144] KVM: selftests: Rename 'struct vcpu' to
- 'struct kvm_vcpu'
-Message-ID: <YqIRMuk5TLyaIb0G@google.com>
-References: <20220603004331.1523888-1-seanjc@google.com>
- <20220603004331.1523888-49-seanjc@google.com>
- <20220608151815.7mwlj3eppwmujaow@gator>
- <YqDH4m0TxLcK5Brw@google.com>
- <20220609072746.op7ez4rmdn2wmynj@gator>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220609072746.op7ez4rmdn2wmynj@gator>
+        Thu, 9 Jun 2022 11:27:21 -0400
+Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251CA2CDC1;
+        Thu,  9 Jun 2022 08:27:16 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1654788433; bh=tALHUrTOMSE2jyi1V2Vz4netgKaq9LwC6aSHlEUoNCQ=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To;
+        b=N2XIV2T7wzMQm8Zsocz031ygN/7fCfeKvkIJIfo7sFoe5ROn34/ORCn1pzggJdOQf
+         hg60OOlz9D+EuA2Knk9b1qFrtn6/zSDrXarDHfHqmwaeHdo8vfJllnnh5INpeE6SXJ
+         rZzElq51cuoAyHVf/Hnkt/un+Bz+L6RhXR2imqfI=
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [RFC PATCH v2 5/5] ASoC: apple: Add macaudio machine driver
+From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>
+In-Reply-To: <YqIOwrRN8rPUF7Y8@sirena.org.uk>
+Date:   Thu, 9 Jun 2022 17:27:12 +0200
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Kettenis <kettenis@openbsd.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>, asahi@lists.linux.dev
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <7F1B2324-4376-4776-BA6D-FBC8892F10C2@cutebit.org>
+References: <20220606191910.16580-1-povik+lin@cutebit.org>
+ <20220606191910.16580-6-povik+lin@cutebit.org>
+ <YqH2uCgaedf0HQPE@sirena.org.uk>
+ <8961DDD2-93FF-4A18-BCA2-90FCE298F517@cutebit.org>
+ <YqIOwrRN8rPUF7Y8@sirena.org.uk>
+To:     Mark Brown <broonie@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022, Andrew Jones wrote:
-> On Wed, Jun 08, 2022 at 04:01:38PM +0000, Sean Christopherson wrote:
-> > On Wed, Jun 08, 2022, Andrew Jones wrote:
-> > > If we do need prefixes for the kvm selftest framework code to avoid
-> > > collisions with test code, then maybe we should invent something else, rather
-> > > than use the somewhat ambiguous 'kvm', which could also collide with stuff in
-> > > the kvm uapi.
-> > 
-> > Potential collisions with the KVM uAPI is a feature of sorts, e.g. tests shouldn't
-> > be redefining kvm_* structures (I'd prefer _tests_ not use kvm_* at all, and only
-> > use kvm_* in the library), and I gotta imagine KVM would break at least one real
-> > world userspace if it defined "kvm_vcpu".
-> > 
-> > That said, I don't have a super strong preference for kvm_ versus something else,
-> > though I think it will be difficult to come up with something that's unique,
-> > intuitive, and doesn't look like a typo.
-> >
-> 
-> Maybe just abbreviated "Kvm Selftests", i.e. 'ks_'? I won't harp on this
-> any longer though, so if that doesn't look good, then we can proceed with
-> 'kvm_'.
 
-ks_ was the best I could come up with too.  But looking at it in code, I find it
-more distracting than helpful.  It's kind of like the uncanny valley effect, where
-ks_ *just* close enough to kvm_ that it makes me think something is wrong.
+> On 9. 6. 2022, at 17:16, Mark Brown <broonie@kernel.org> wrote:
+>=20
+> On Thu, Jun 09, 2022 at 04:09:57PM +0200, Martin Povi=C5=A1er wrote:
+>>> On 9. 6. 2022, at 15:33, Mark Brown <broonie@kernel.org> wrote:
+>=20
+>>>> +		/*
+>>>> +		 * Primary FE
+>>>> +		 *
+>>>> +		 * The mclk/fs ratio at 64 for the primary frontend is =
+important
+>>>> +		 * to ensure that the headphones codec's idea of left =
+and right
+>>>> +		 * in a stereo stream over I2S fits in nicely with =
+everyone else's.
+>>>> +		 * (This is until the headphones codec's driver supports
+>>>> +		 * set_tdm_slot.)
+>>>> +		 *
+>>>> +		 * The low mclk/fs ratio precludes transmitting more =
+than two
+>>>> +		 * channels over I2S, but that's okay since there is the =
+secondary
+>>>> +		 * FE for speaker arrays anyway.
+>>>> +		 */
+>>>> +		.mclk_fs =3D 64,
+>>>> +	},
+>=20
+>>> This seems weird - it looks like it's confusing MCLK and the bit =
+clock
+>>> for the audio bus.  These are two different clocks.  Note that it's =
+very
+>>> common for devices to require a higher MCLK/fs ratio to deliver the =
+best
+>>> audio performance, 256fs is standard.
+>=20
+>> On these machines we are not producing any other clock for the codecs
+>> besides the bit clock, so I am using MCLK interchangeably for it. (It =
+is
+>> what the sample rate is derived from after all.)
+>=20
+> Please don't do this, you're just making everything needlessly hard to
+> understand by using standard terminology inappropriately and there's a
+> risk of breakage further down the line with drivers implementing the
+> standard ops.
 
-	struct kvm_sregs sregs;
-	struct kvm_regs regs;
-	struct ks_vcpu *vcpu;
-	struct kvm_run *run;
+OK
+
+>> One of the codec drivers this is to be used with (cs42l42) expects to =
+be
+>> given the I2S bit clock with
+>=20
+>>  snd_soc_dai_set_sysclk(dai, 0, mclk, SND_SOC_CLOCK_IN);
+>=20
+> That's very, very non-standard...
+>=20
+>> I can rename mclk to bclk in all of the code to make it clearer =
+maybe.
+>> Also the platform driver can take the bit clock value from =
+set_bclk_ratio,
+>> instead of set_sysclk from where it takes it now. The cs42l42 driver =
+I can
+>> patch too to accept set_bclk_ratio.
+>=20
+> ...indeed, set_bclk_ratio() is a better interface for setting the bclk
+> ratio - the CODEC driver should really be doing that as well.
+
+OK, adding that to my TODOs.
+
+>>> This shouldn't be open coded in a driver, please factor it out into =
+the
+>>> core so we've got an API for "set limit X on control Y" then call =
+that.
+>=20
+>> There=E2=80=99s already snd_soc_limit_volume, but it takes a fixed =
+control name.
+>> Can I extend it to understand patterns beginning with a wildcard, =
+like
+>> '* Amp Gain Volume=E2=80=99?
+>=20
+> Or add a new call that does that.
+
+OK
