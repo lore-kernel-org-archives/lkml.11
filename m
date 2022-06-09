@@ -2,100 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34673C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 17:50:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F8ABCCA47E
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 17:51:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344524AbiFIRuy (ORCPT
+        id S1345176AbiFIRvr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 13:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60914 "EHLO
+        Thu, 9 Jun 2022 13:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245151AbiFIRur (ORCPT
+        with ESMTP id S1343563AbiFIRvl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 13:50:47 -0400
-Received: from mail-io1-f46.google.com (mail-io1-f46.google.com [209.85.166.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7628B1BD7C0;
-        Thu,  9 Jun 2022 10:50:46 -0700 (PDT)
-Received: by mail-io1-f46.google.com with SMTP id n11so3027127iod.4;
-        Thu, 09 Jun 2022 10:50:46 -0700 (PDT)
+        Thu, 9 Jun 2022 13:51:41 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F9131AEA7;
+        Thu,  9 Jun 2022 10:51:39 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id h19so32235035edj.0;
+        Thu, 09 Jun 2022 10:51:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=references:from:to:cc:subject:in-reply-to:date:message-id
+         :mime-version;
+        bh=cfnFNEELhJfGAq/OjhFTkSl+Ek4qHu5L5VyE1+b7HTY=;
+        b=e93IIVKnlvb402Ftt9aZOW48kNScNs12uI9NjAPZ6RBwjOYTq0TFHjOZgSelyr1pqY
+         cNXCnzB7pde0fmWKvaUI6X2jJLkMgc3MAJye6X1fGCMgl0EpLqZ2oCIZOFe+ItaV4X5/
+         YYux3bUNFJo8dgz75sq5W44HGybT9VSXohjQUox1cWKnM/Wxf2gIpm9N1aMxuxGk6wZ4
+         JFWES8SeePyv2NNsQFI/szWWIWfpVfnofb8ejHPiYfC1LUUTGwrHXE7pvdMB+Ea7xAS8
+         AZhrlqL7wqo8E4Go4FOmqxZnYIMwNvJeUEkMTPBe/crVfVInGg5C+EIPj55+b3g1D4TM
+         yYQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HnAifctYdNaT/poGeGfhLUmDWMrLaMg17cclIAxPNog=;
-        b=QeOGzhY5q54w99bjRgmCaBoj0PV82iupiQKaQe4hSyywM6E7Q56l07cesrW95eygzb
-         3rr6R8AgYMoWO/JtiDUxrYkai4NN8l29mPT8v4B3mFXY7gbq7Asbz0m9UZ+Qfv+D4/+T
-         NmuTCUg2kBLT96axs7ODASiiXWy5AX/aCVKG94dbJZTdwszxc6Pqcg1q2uiHdgyAzmeD
-         T1VfQnzd7cMTG6YoJcGioqMf0p3vS8ghrAI/c3AzzWzF6RJcQMmHnOI0hKSU0CU2asEE
-         GICIVlQjvGTtofaJlBX5FCIioSJWf6xmNhsxpx+2++bS9OErtRxBQw2O3bqjiXHa7oBj
-         T4WA==
-X-Gm-Message-State: AOAM530nMZ+ZPxug2A/YvJtfQT0Y4CdsmM46LMFm3BYpRm/aA8yilHPL
-        cQ999vi+/+elerL3gbM1xQ==
-X-Google-Smtp-Source: ABdhPJxAiTUZAr56YxyBVP43w4ziAPRPbjtV7Scut9p9XeaOHBavU3f1WWiKaf+TI5dVsV/oPBVYzA==
-X-Received: by 2002:a5d:88c8:0:b0:662:b25a:49b7 with SMTP id i8-20020a5d88c8000000b00662b25a49b7mr18756600iol.159.1654797045693;
-        Thu, 09 Jun 2022 10:50:45 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id b28-20020a056638389c00b00331ab545889sm5305064jav.45.2022.06.09.10.50.43
+        h=x-gm-message-state:references:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=cfnFNEELhJfGAq/OjhFTkSl+Ek4qHu5L5VyE1+b7HTY=;
+        b=GaTAlxUj9f1N5AoiBSS/fem0lOmD8emFvSNJfVQP+CAoMwbV30UINNiXj2KGmzmRcU
+         drJ87L/2pzT71HF3CC/HlyTKhHUFtOHNfZP9WMgP0FvYtazcI9QDBWw1FdGwxknBAnWc
+         4qg3sKbxWaziFMIFC8rrjXWwE81PRJhZkwzaMOuBmTnyydCbe7IZ6u5FafhCOImCQdAf
+         VglApO/nU7xTpC5dlcWxx1B5rKJmo3mMc9FGctG4OaEvn8WLZCG7cpoKPjP+IWEzbGAi
+         8SHN3U0uNXJvJOjN/k0Ju8V2+ldpOxhzt3yaGaMTK9fQuRS90LeYnlOh361S4O3pEB8r
+         190g==
+X-Gm-Message-State: AOAM532p+H4yw1Jf5SAwaZb+nPfNgJkqNc8gsHAZqCpg/SU8guxf2nkV
+        lYxx5vYb7RyyPoe0vBe1aIY=
+X-Google-Smtp-Source: ABdhPJw517rOIR4mHIiR+isPEkhFdVM+dJvQny5LZ2Cl9wto1cn5fPQdgomcbox5pf/JWlfD+KF62A==
+X-Received: by 2002:a05:6402:1d4a:b0:42e:93de:17f4 with SMTP id dz10-20020a0564021d4a00b0042e93de17f4mr38464878edb.8.1654797098116;
+        Thu, 09 Jun 2022 10:51:38 -0700 (PDT)
+Received: from localhost (92.40.202.100.threembb.co.uk. [92.40.202.100])
+        by smtp.gmail.com with ESMTPSA id a9-20020a50ff09000000b0042fb3badd48sm10678142edu.9.2022.06.09.10.51.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 10:50:45 -0700 (PDT)
-Received: (nullmailer pid 4024412 invoked by uid 1000);
-        Thu, 09 Jun 2022 17:50:42 -0000
-Date:   Thu, 9 Jun 2022 11:50:42 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Sjoerd Simons <sjoerd@collabora.com>
-Cc:     linux-rockchip@lists.infradead.org, kernel@collabora.com,
-        Akash Gajjar <akash@openedev.com>,
-        Alex Bee <knaerzche@gmail.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Levin Du <djw@t-chip.com.cn>, Liang Chen <cl@rock-chips.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] arm64: dts: rockchip: add ROCK Pi S DTS support
-Message-ID: <20220609175042.GA4021841-robh@kernel.org>
-References: <20220606082629.79682-1-sjoerd@collabora.com>
- <20220606082629.79682-2-sjoerd@collabora.com>
+        Thu, 09 Jun 2022 10:51:37 -0700 (PDT)
+References: <20220607155324.118102-1-aidanmacdonald.0x0@gmail.com>
+ <20220607155324.118102-4-aidanmacdonald.0x0@gmail.com>
+ <d5465a36-f18a-ff48-b13e-e5f9c48a398a@linaro.org>
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
+        lee.jones@linaro.org, sre@kernel.org, broonie@kernel.org,
+        gregkh@linuxfoundation.org, lgirdwood@gmail.com, lars@metafoo.de,
+        rafael@kernel.org, quic_gurus@quicinc.com,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH v2 03/17] dt-bindings: mfd: add bindings for AXP192 MFD
+ device
+In-reply-to: <d5465a36-f18a-ff48-b13e-e5f9c48a398a@linaro.org>
+Date:   Thu, 09 Jun 2022 18:52:41 +0100
+Message-ID: <SAOEKBJz99Moqt4btaOY5IlUjs9zZAvh@localhost>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220606082629.79682-2-sjoerd@collabora.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 10:26:27AM +0200, Sjoerd Simons wrote:
-> From: Akash Gajjar <akash@openedev.com>
-> 
-> ROCK Pi S is RK3308 based SBC from radxa.com. ROCK Pi S has a,
-> - 256MB/512MB DDR3 RAM
-> - SD, NAND flash (optional on board 1/2/4/8Gb)
-> - 100MB ethernet, PoE (optional)
-> - Onboard 802.11 b/g/n wifi + Bluetooth 4.0 Module
-> - USB2.0 Type-A HOST x1
-> - USB3.0 Type-C OTG x1
-> - 26-pin expansion header
-> - USB Type-C DC 5V Power Supply
-> 
-> This patch enables
-> - Console
-> - NAND Flash
-> - SD Card
-> 
-> Signed-off-by: Akash Gajjar <akash@openedev.com>
-> [sjoerd: Sort dt nodes, drop properties duplicated from dtsi]
-> Signed-off-by: Sjoerd Simons <sjoerd@collabora.com>
-> ---
-> 
->  .../devicetree/bindings/arm/rockchip.yaml     |   5 +
 
-Bindings should be a separate patch.
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> writes:
 
->  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
->  .../boot/dts/rockchip/rk3308-rock-pi-s.dts    | 204 ++++++++++++++++++
->  3 files changed, 210 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/rockchip/rk3308-rock-pi-s.dts
+> On 07/06/2022 17:53, Aidan MacDonald wrote:
+>> The AXP192 is another X-Powers PMIC similar to the existing ones.
+>> 
+>> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+>> ---
+>>  Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml | 1 +
+>
+> You got here ack, didn't you? Why sending without it?
+>
+> https://elixir.bootlin.com/linux/v5.19-rc1/source/Documentation/process/submitting-patches.rst#L536
+>
+>
+> Best regards,
+> Krzysztof
+
+I'm sorry, I'm pretty new to kernel development and I forgot. Will make
+sure to add them in future. Thanks for pointing out my mistake.
