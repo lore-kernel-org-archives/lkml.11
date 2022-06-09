@@ -2,69 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49028C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 19:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E796C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 19:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232784AbiFITW6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 15:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50338 "EHLO
+        id S1344949AbiFITXo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 15:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234716AbiFITWs (ORCPT
+        with ESMTP id S1344809AbiFITXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 15:22:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA82D1E3F0;
-        Thu,  9 Jun 2022 12:22:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 16F75CE317B;
-        Thu,  9 Jun 2022 19:22:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 29653C34114;
-        Thu,  9 Jun 2022 19:22:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654802561;
-        bh=RoX0YbThUxAAH3F3KKjMx4Makt1ywYwX3HaOngRAY0w=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=fe+dhFpK8CYuk/qkVqVOICwvDaeSoqwb4s428Sj5RXdQbgb0SAEzwOgZ8IeWfcjWX
-         HcKLcQbH/carGuIvTkNGayIhUGSQOr4ByQlci0/9JN8yqfmUMuJymp38kpmwMyVFM6
-         Unm85+0uyBuzIDkL7XThBjH24sTvCJ1K5N3rpXl2ZLvXsBJ+8Hf4yUvIQ+ezfZVOsX
-         pGuyjuPcFyp0MXZyxrhmaijdOXjD7+pZrymty5fkh501QMfFNDDQBPHRdpvINrPrVq
-         HtToYm+IWhTVt9xHo8k1obEj8SPAibmAqOk8GUTHQQkSQ4rsBXcNbj/a+5nBctjT/+
-         3MWHM0nd9/ysw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 18B78E737ED;
-        Thu,  9 Jun 2022 19:22:41 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking for 5.19-rc2
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220609103202.21091-1-pabeni@redhat.com>
-References: <20220609103202.21091-1-pabeni@redhat.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220609103202.21091-1-pabeni@redhat.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.19-rc2
-X-PR-Tracked-Commit-Id: 647df0d41b6bd8f4987dde6e8d8d0aba5b082985
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 825464e79db4aac936e0fdae62cdfb7546d0028f
-Message-Id: <165480256109.32717.3386036457616465104.pr-tracker-bot@kernel.org>
-Date:   Thu, 09 Jun 2022 19:22:41 +0000
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Thu, 9 Jun 2022 15:23:36 -0400
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DEAD01F4291;
+        Thu,  9 Jun 2022 12:23:33 -0700 (PDT)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 259JN8D5010797;
+        Thu, 9 Jun 2022 21:23:08 +0200
+Date:   Thu, 9 Jun 2022 21:23:08 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Sedat Dilek <sedat.dilek@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>, keyrings@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Salvatore Bonaccorso <carnil@debian.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        David Howells <dhowells@redhat.com>,
+        Tasmiya Nalatwad <tasmiya@linux.vnet.ibm.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>
+Subject: Re: [Linux v5.17.9] -Wdeprecated-declarations warnings with LLVM-14
+ and OpenSSL v3.0.x
+Message-ID: <20220609192308.GB10732@1wt.eu>
+References: <CA+icZUUFdsEyNybVORm4x7_bAyoc0zTnudtNdgnTqjvbYXJRYA@mail.gmail.com>
+ <CA+icZUWxyNeZnEBDpDWxGc-qJ-jHwR0rJMBhk1a8StPHRgC6qA@mail.gmail.com>
+ <CA+icZUW7y3JxQ3dCB8Wy83EjEyYj7z55nFUw-kZ+V4We22HZZg@mail.gmail.com>
+ <CA+icZUVyp2CdX7m72GY-=DtK9J+64uHeWPr5-cvo8haQm_4hUw@mail.gmail.com>
+ <CA+icZUWiYYQbAav7VxVsT0ikqCeLckym08Au8oSeyYjvJHcNbg@mail.gmail.com>
+ <CA+icZUUOQcc4uiVbv+tJzPr_ED7e4tD0u9tC8mcn2BRe3sdPAg@mail.gmail.com>
+ <CAHk-=wiOrXUr0wqHL+hfkzGg_+b7UvtLeB=59KsX8W939bTY-A@mail.gmail.com>
+ <CA+icZUUma1B8KFWF-ed9sjXH4QpCRZ+B2pON3uAFkTUs77tMzw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+icZUUma1B8KFWF-ed9sjXH4QpCRZ+B2pON3uAFkTUs77tMzw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu,  9 Jun 2022 12:32:02 +0200:
+On Thu, Jun 09, 2022 at 09:19:20PM +0200, Sedat Dilek wrote:
+> On Thu, Jun 9, 2022 at 9:05 PM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+> >
+> > On Thu, Jun 9, 2022 at 11:41 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+> > >
+> > > Why go back and forth... do it like Alexander the Great and the Gordian knot.
+> > >
+> > > Sword - Swash - Done.
+> > >
+> > > commit 6bfb56e93bcef41859c2d5ab234ffd80b691be35
+> > > "cert host tools: Stop complaining about deprecated OpenSSL functions"
+> >
+> > Well, it's not like that is the *right* fix.
+> >
+> > But I think for now, the answer is "leave it like that until we can
+> > just get rid of the ENGINE API entirely".
+> >
+> > I absolutely detest the "deprecation" warnings. We used to do that in
+> > the kernel too, and it was a complete disaster. The warnings are very
+> > noisy, and nobody ever cares about them, so it's simply not worth it.
+> >
+> > So we deprecated "__deprecated" in the kernel itself:
+> >
+> >   771c035372a0 deprecate the '__deprecated' attribute warnings
+> > entirely and for good
+> >
+> > and I don't think we should care about it when it comes to OpenSSL either.
+> >
+> > Eventually, that deprecated interface will go away entirely, and by
+> > then we hopefully don't care about really old openssl implementations
+> > and will have gotten rid of the uses.
+> >
+> > But for now, I think putting our head in the sand is actually the
+> > _better_ model rather than fighting some battle over old vs new
+> > libraries.
+> >
+> > Because sometimes, if you ignore a problem, it really does just go away.
+> >
+> 
+> To be honest: I like your approach, Linus.
+> Very pragma-tic.
+> That's why you use pragma's in your patch :-).
+> 
+> I invested too much of my lifetime in making things work "correctly".
+> And yes, it's post-rc1...
+> 
+> Most of the apps in the Debian world passed the OpenSSL-v3 transition.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.19-rc2
+IIRC you can also disable the deprecation warnings by defining the
+OPENSSL_SUPPRESS_DEPRECATED macro. It doesn't require to change the
+compiler's options and allows us to put our head in the sand.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/825464e79db4aac936e0fdae62cdfb7546d0028f
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Willy
