@@ -2,75 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B4F3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:52:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E42AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234852AbiFINwx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 09:52:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33476 "EHLO
+        id S233486AbiFINxw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 09:53:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230425AbiFINwu (ORCPT
+        with ESMTP id S236453AbiFINxl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 09:52:50 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D24339163
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 06:52:49 -0700 (PDT)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 259DqNnL010191
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 9 Jun 2022 09:52:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1654782746; bh=LNefV/tW71cR73hpGpC9VZ4sOZNx3wCiLfgvCFbU3Kc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=DfEaCRNay4ubQOieWuU9rJsadw1TVmnPO//vk9EfV7XcWDuIWIAJqHxrhrY5Qt1jj
-         hRDPXwk0YISz2h2qLnohVGclGbqLA77fMyP7hw7BrK0PH3RhuqvCI6u4Vjh0LERSlT
-         hbeB4B+vpAT8hu+5UYjvUMd2KLDg5lt0D/KWnW5fVk1SBju3ZUo/jr0XBlryNPiCl9
-         h6e3s0o55UgdOD5rtsqPIlRzIaYLWVLDrFuSuoSUvzvebNq1dNAanoMRd2L9vjBaeT
-         SmdcGy1l46FxqFvtVkwlKtRu59pv0IbgNW8Idn9T04zqwB7BnNouCHRcWOuHuS9sYK
-         f4GUuqBGSSKug==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 7756E15C3E1F; Thu,  9 Jun 2022 09:52:23 -0400 (EDT)
-Date:   Thu, 9 Jun 2022 09:52:23 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        horsten Leemhuis <regressions@leemhuis.info>
-Subject: Re: REGRESSION 5.19-rc1: virtio: harden vring IRQ
-Message-ID: <YqH7F0uBL3Jt8GGY@mit.edu>
-References: <YqF9VEBah+vvCtoR@mit.edu>
- <CACGkMEtn2AKtkY_dYBiimwiKrLFHrVy16h4NR_31LzUVv66W9A@mail.gmail.com>
+        Thu, 9 Jun 2022 09:53:41 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054CA1F703D
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 06:53:40 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id x5so26213084edi.2
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 06:53:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yMMFb3q8dQKJuiEfkSLQTJlf/XhrzWNCwTcjPXBqwk8=;
+        b=IItgPjqhpx0+83mRLTgiGBYEQIi+BKGDe8oSQ+ezGoEQ8ASfW5c3KBNlItx7qhZIt/
+         d7POxEPq0nH13evlIx+T2QQCYuccW9BbltNkKptOFiXBQ1MTG8sL5Ix2Rs12AyGUc1OZ
+         20M3CdkHFWwMDGUs8F6abivuMs7hsD+zcSorF0RWaVAWmgVfLqlhEuRqsuTFeoFawdSR
+         Hn0ZZqDHgai+cR5LgBEHl4GYVmF9tkOe/ZPULlTxeY3K9VZwesffe2BMg2A4BMJdPHA8
+         UXcZ2+Gt+fneWiehw5DVfm4jIF2D5zNSYGHjJT2OX1kKfBtHQnu63HFo7XZMITzQcKIM
+         egGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yMMFb3q8dQKJuiEfkSLQTJlf/XhrzWNCwTcjPXBqwk8=;
+        b=fgOY/SWFK9jPJ2Yr/i6sYAeUULA9MYIxBeaBv9nxgEtz7HyK4z11KfbwEFxJsTyiFh
+         xOehkXoVE8ZPJ+LyhUzADwE7O4NlH3oJ1FPKhPYoadSpR7ww7vds3ydxJ3U+QX1viYWI
+         IS+PCHeoWM1IrAm8l8wiYlGRiLUMgjEWjBMWdg43GusHHaJZmURBOkprODZ+H3WtY8Hi
+         f78CuvmZzPjkTHqe842QOW5DZ+K2j9XTFeTFly2zIaDeKWYjIze87ywEbeVLvbp6/u5G
+         BCyFwdvMcLDTbXoiRYZn8WVfXc7UyTJsSt4p+QysXesPsTnjnADA/Cf860qc2H6S6aZK
+         kA0g==
+X-Gm-Message-State: AOAM532ufpzQ57C26jmSXvKCXLx2sy7iaq8QQPMO0L4FenrndgUmjJfw
+        Pt6G4OeLD93b2yG9s1EmyfF+gkFA0Xm/FwsuUSA=
+X-Google-Smtp-Source: ABdhPJzv2A4wp+xAKyjpuf4pqm0yuKPhCeXw+EKHLTCqRKXsbJIqAK9prUci7/okkqHMgmjZPWX7C2b87OF269RhAIQ=
+X-Received: by 2002:a05:6402:2554:b0:42d:ee79:559d with SMTP id
+ l20-20020a056402255400b0042dee79559dmr45259225edb.175.1654782818596; Thu, 09
+ Jun 2022 06:53:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACGkMEtn2AKtkY_dYBiimwiKrLFHrVy16h4NR_31LzUVv66W9A@mail.gmail.com>
+References: <20220607093449.3100-1-urezki@gmail.com> <20220607093449.3100-4-urezki@gmail.com>
+ <YqAVS7rYAmOmlLYH@MiWiFi-R3L-srv> <CA+KHdyWDSUgFQnCPr_i=NwoDNFiqP2Q6Z6pik3djK=TQ=hoSZQ@mail.gmail.com>
+ <YqH19tutOqChQpwM@MiWiFi-R3L-srv>
+In-Reply-To: <YqH19tutOqChQpwM@MiWiFi-R3L-srv>
+From:   Uladzislau Rezki <urezki@gmail.com>
+Date:   Thu, 9 Jun 2022 15:53:26 +0200
+Message-ID: <CA+KHdyVGMcFhdiTwUNeFqjJCoFtXhL1T815uMD5isCTNqMSOoA@mail.gmail.com>
+Subject: Re: [PATCH 3/5] mm/vmalloc: Initialize VA's list node after unlink
+To:     Baoquan He <bhe@redhat.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 02:19:59PM +0800, Jason Wang wrote:
-> 
-> This seems to be the same issue as the syzbot report recently.
-> 
-> Would you please test this patch to see if it works?
-> 
-> https://www.spinics.net/lists/kernel/msg4389357.html
+On Thu, Jun 9, 2022 at 3:30 PM Baoquan He <bhe@redhat.com> wrote:
+>
+> On 06/09/22 at 02:36pm, Uladzislau Rezki wrote:
+> > >
+> > > On 06/07/22 at 11:34am, Uladzislau Rezki (Sony) wrote:
+> > > > A vmap_area can travel between different places. For example
+> > > > attached/detached to/from different rb-trees. In order to
+> > > > prevent fancy bugs, initialize a VA's list node after it is
+> > > > removed from the list, so it pairs with VA's rb_node which
+> > > > is also initialized.
+> > > >
+> > > > There is no functional change as a result of this patch.
+> > > >
+> > > > Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+> > > > ---
+> > > >  mm/vmalloc.c | 2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+> > > > index 745e89eb6ca1..82771e555273 100644
+> > > > --- a/mm/vmalloc.c
+> > > > +++ b/mm/vmalloc.c
+> > > > @@ -978,7 +978,7 @@ __unlink_va(struct vmap_area *va, struct rb_root *root, bool augment)
+> > > >       else
+> > > >               rb_erase(&va->rb_node, root);
+> > > >
+> > > > -     list_del(&va->list);
+> > > > +     list_del_init(&va->list);
+> > >
+> > > Don't object this change, while list_del poison members, which is also
+> > > not bad?
+> > >
+> > It is not bad for sure. The main aim was to be align with what the
+> > RB_CLEAR_NODE() does, i.e. initialize VA when it is detached
+> > and be safe with list manipulation when it is detached. For example
+> > whether it is empty or not: list_empty(), etc.
+>
+> Agree. list_del() can't make list_empty() work, and RB_CLEAR_NODE() has
+> done the clearing already.
+>
+> Then this change looks reasonable to me, thanks.
+>
+> Reviewed-by: Baoquan He <bhe@redhat.com>
+>
+Thanks!
 
-Yep, that fixes things for me!  (As does disabling
-CONFIG_HW_RANDOM_TPM.)
-
-Tested-by: Theodore Ts'o <tytso@mit.edu>
-
-Thanks,
-
-					- Ted
+-- 
+Uladzislau Rezki
