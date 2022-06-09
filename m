@@ -2,153 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6ADFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:44:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B47C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:46:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242472AbiFIIot (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:44:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40050 "EHLO
+        id S242056AbiFIIqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:46:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242435AbiFIInA (ORCPT
+        with ESMTP id S242882AbiFIIoF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 04:43:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D457DD6D
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:41:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654764069;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=J6hc+0uRrIyBBUIt2+YgJFXzhqP3fUJnP5Yt67N6e6M=;
-        b=EZG0uCWz3Ed+DgV50/08Zo8ZKSETBiSM3TBnhnkjutUEkYInZopPNoqTttIgZpz4hwg/qc
-        3dDMLX+I7FkZKfe43TNqonFIRLQuCfvCxmIVGwxoqn6Gbj6t4HgaJfwSbSCJVvojkjk90R
-        YcGe2eVzySPaiqa4FJdg53Pk2PgLjYs=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-369-TLmbbESMOrWDsA9lIlNTgg-1; Thu, 09 Jun 2022 04:41:07 -0400
-X-MC-Unique: TLmbbESMOrWDsA9lIlNTgg-1
-Received: by mail-qt1-f199.google.com with SMTP id u24-20020a05622a199800b0030500f8e1bcso3346885qtc.16
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 01:41:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=J6hc+0uRrIyBBUIt2+YgJFXzhqP3fUJnP5Yt67N6e6M=;
-        b=L4dNv9n6katVYjNhJo9fSNRXvNEsynRNlwt9Isv6hUPsTnTOQuHX6Rew7EvhOXwhvi
-         yQLx5MCh+Qoz9xpwc3dgZsfxGw4VMQiW7rffYfTOFZCXwhkdD4FiVQeb87pEuCYdj5MU
-         1w8o3Hf3OOWAIsrzyMkZ1YoivQp2J6OHwThPWb3Cvqg9IGrlI5eO+5YmSw996CDZ4faJ
-         am99syPvv3pvlY+PhAzffBICXAU9ZmbxZ/6pyUKtig8w/C897JqrRShwWs2hY8FqrmhR
-         R0tgm9ppIsnxORWclQcbP3xtQ7chE3ASHM1lzQTPZJNHmOj5xsUEB0GcISJc+FHtmI1B
-         8sZg==
-X-Gm-Message-State: AOAM531zx07JxKCIjqYVsMnSsk7BXt1vCDi9pCVvcVe4mC6Yj0gKYpt1
-        9guy6sVRWOoMIl3YjUluC815FHxjHXQ6OpvUbbZyK3rvqiVMg3ZhONrbkdMgcgOVmXq+pht8bc4
-        o76v5AVhRUwB79Psj1ZmjRksu
-X-Received: by 2002:a05:622a:1a21:b0:2f1:f29e:40a with SMTP id f33-20020a05622a1a2100b002f1f29e040amr29940295qtb.235.1654764067094;
-        Thu, 09 Jun 2022 01:41:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyFbSDIRjUzi5na5uVNt0lbiM9L3H/7eIiZKHIhwyuet4AUBQGYalT4HlYt8flSM9MKu4kpRg==
-X-Received: by 2002:a05:622a:1a21:b0:2f1:f29e:40a with SMTP id f33-20020a05622a1a2100b002f1f29e040amr29940281qtb.235.1654764066804;
-        Thu, 09 Jun 2022 01:41:06 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-202.dyn.eolo.it. [146.241.113.202])
-        by smtp.gmail.com with ESMTPSA id m16-20020a05620a291000b006a6bb044740sm10557147qkp.66.2022.06.09.01.41.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 01:41:06 -0700 (PDT)
-Message-ID: <22175690a4e89a78abcb8244dfd0bdd0005267a5.camel@redhat.com>
-Subject: Re: [PATCH v3] net: ax25: Fix deadlock caused by skb_recv_datagram
- in ax25_recvmsg
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Duoming Zhou <duoming@zju.edu.cn>, linux-kernel@vger.kernel.org
-Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-hams@vger.kernel.org, thomas@osterried.de
-Date:   Thu, 09 Jun 2022 10:41:02 +0200
-In-Reply-To: <20220608012923.17505-1-duoming@zju.edu.cn>
-References: <20220608012923.17505-1-duoming@zju.edu.cn>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Thu, 9 Jun 2022 04:44:05 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E15B47561
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:42:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654764151; x=1686300151;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rkvkafBJHA9CZwBiX7ZFsiojylCod4feTJKDvkaFfP4=;
+  b=lW1f72hVlgSREq2pbeXGoGnWimRmsZUXq9xUlL/BdFsB0NfE1FO8wHWr
+   sbs3j6+etKkqJGWq3MsZmlxyeECky3ccuGSG/gaX8LY2mMU96rrbscfv3
+   Vs2tpPLE04NZE/RqRXNiTdCOYSOcE4I10Ys5e/x4VtRXUUafrQ/AOCgwd
+   1BgshiEDPdRa6S3OhtyqeveotqgaVIKnID9kxgmWQwLU00u0jj6fEpgI7
+   iCY6IkQrFrtfdX+WybcXs4yDFIFr+lxWCqW5mnCnU4/GuJkKeZYVcFWCT
+   VjbWIdggEWMnVtHwBEFoK759R0R33oawB0ysOFLdTQmWbxZsRPceMICXS
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="274728046"
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="274728046"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 01:42:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="566295068"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 09 Jun 2022 01:42:27 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nzDkI-000Fnx-Pd;
+        Thu, 09 Jun 2022 08:42:26 +0000
+Date:   Thu, 9 Jun 2022 16:42:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mayuresh Chitale <mchitale@ventanamicro.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Anup Patel <anup@brainfault.org>
+Subject: [avpatel:virtio_rpmsg_bus_fix_v1 35/52]
+ arch/riscv/kernel/setup.c:299:2: error: call to undeclared function
+ 'riscv_tlbflush_init'; ISO C99 and later do not support implicit function
+ declarations
+Message-ID: <202206091653.pAFZq908-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-06-08 at 09:29 +0800, Duoming Zhou wrote:
-> The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
-> and block until it receives a packet from the remote. If the client
-> doesn`t connect to server and calls read() directly, it will not
-> receive any packets forever. As a result, the deadlock will happen.
-> 
-> The fail log caused by deadlock is shown below:
-> 
-> [  369.606973] INFO: task ax25_deadlock:157 blocked for more than 245 seconds.
-> [  369.608919] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> [  369.613058] Call Trace:
-> [  369.613315]  <TASK>
-> [  369.614072]  __schedule+0x2f9/0xb20
-> [  369.615029]  schedule+0x49/0xb0
-> [  369.615734]  __lock_sock+0x92/0x100
-> [  369.616763]  ? destroy_sched_domains_rcu+0x20/0x20
-> [  369.617941]  lock_sock_nested+0x6e/0x70
-> [  369.618809]  ax25_bind+0xaa/0x210
-> [  369.619736]  __sys_bind+0xca/0xf0
-> [  369.620039]  ? do_futex+0xae/0x1b0
-> [  369.620387]  ? __x64_sys_futex+0x7c/0x1c0
-> [  369.620601]  ? fpregs_assert_state_consistent+0x19/0x40
-> [  369.620613]  __x64_sys_bind+0x11/0x20
-> [  369.621791]  do_syscall_64+0x3b/0x90
-> [  369.622423]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> [  369.623319] RIP: 0033:0x7f43c8aa8af7
-> [  369.624301] RSP: 002b:00007f43c8197ef8 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
-> [  369.625756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f43c8aa8af7
-> [  369.626724] RDX: 0000000000000010 RSI: 000055768e2021d0 RDI: 0000000000000005
-> [  369.628569] RBP: 00007f43c8197f00 R08: 0000000000000011 R09: 00007f43c8198700
-> [  369.630208] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff845e6afe
-> [  369.632240] R13: 00007fff845e6aff R14: 00007f43c8197fc0 R15: 00007f43c8198700
-> 
-> This patch moves the skb_recv_datagram() before lock_sock() in order that
-> other functions that need lock_sock could be executed. What`s more, we
-> add skb_free_datagram() before goto out in order to mitigate memory leak.
-> 
-> Suggested-by: Thomas Osterried <thomas@osterried.de>
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-> Reported-by: Thomas Habets <thomas@@habets.se>
-> ---
-> Changes in v3:
->   - Add skb_free_datagram() before goto out in order to mitigate memory leak.
-> 
->  net/ax25/af_ax25.c | 12 +++++++-----
->  1 file changed, 7 insertions(+), 5 deletions(-)
-> 
-> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-> index 95393bb2760..62aa5993093 100644
-> --- a/net/ax25/af_ax25.c
-> +++ b/net/ax25/af_ax25.c
-> @@ -1665,6 +1665,11 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
->  	int copied;
->  	int err = 0;
->  
-> +	/* Now we can treat all alike */
-> +	skb = skb_recv_datagram(sk, flags, &err);
-> +	if (!skb)
-> +		goto done;
-> +
+tree:   https://github.com/avpatel/linux.git virtio_rpmsg_bus_fix_v1
+head:   390aaf641ff2f8919268d611e864227265c3f3f2
+commit: efaaec7bcbaf3346e07955be46d5e3c2bd662167 [35/52] riscv: mm: use svinval instructions instead of sfence.vma
+config: riscv-randconfig-r042-20220609 (https://download.01.org/0day-ci/archive/20220609/202206091653.pAFZq908-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b92436efcb7813fc481b30f2593a4907568d917a)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/avpatel/linux/commit/efaaec7bcbaf3346e07955be46d5e3c2bd662167
+        git remote add avpatel https://github.com/avpatel/linux.git
+        git fetch --no-tags avpatel virtio_rpmsg_bus_fix_v1
+        git checkout efaaec7bcbaf3346e07955be46d5e3c2bd662167
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/ arch/riscv/lib/ arch/riscv/mm/ kernel/dma/
 
-Note that this causes a behavior change: before this patch, calling
-recvmsg() on unconnected seqpacket sockets returned immediatelly with
-an error (due to the the check below), now it blocks. 
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-The change may confuse (== break) user-space applications. I think it
-would be better replacing skb_recv_datagram with an open-coded variant
-of it releasing the socket lock before the
-__skb_wait_for_more_packets() call and re-acquiring it after such call.
-Somewhat alike __unix_dgram_recvmsg().
+All errors (new ones prefixed by >>):
 
-In any case this lacks a 'Fixes' pointing to the commit introducing the
-issue addressed here.
+   In file included from arch/riscv/kernel/setup.c:21:
+   In file included from include/linux/efi.h:20:
+   In file included from include/linux/rtc.h:17:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/riscv/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/riscv/include/asm/io.h:136:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+                                                     ^
+   In file included from arch/riscv/kernel/setup.c:21:
+   In file included from include/linux/efi.h:20:
+   In file included from include/linux/rtc.h:17:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/riscv/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/riscv/include/asm/io.h:136:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+                                                     ^
+   In file included from arch/riscv/kernel/setup.c:21:
+   In file included from include/linux/efi.h:20:
+   In file included from include/linux/rtc.h:17:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/riscv/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/riscv/include/asm/io.h:136:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:1024:55: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           return (port > MMIO_UPPER_LIMIT) ? NULL : PCI_IOBASE + port;
+                                                     ~~~~~~~~~~ ^
+>> arch/riscv/kernel/setup.c:299:2: error: call to undeclared function 'riscv_tlbflush_init'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           riscv_tlbflush_init();
+           ^
+   7 warnings and 1 error generated.
 
-Thanks,
 
-Paolo
+vim +/riscv_tlbflush_init +299 arch/riscv/kernel/setup.c
 
+   297	
+   298		riscv_fill_hwcap();
+ > 299		riscv_tlbflush_init();
+   300		apply_boot_alternatives();
+   301	}
+   302	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
