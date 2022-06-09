@@ -2,161 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 07:20:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2FF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 07:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239800AbiFIHUq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 03:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39732 "EHLO
+        id S239872AbiFIHUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 03:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236716AbiFIHUl (ORCPT
+        with ESMTP id S239859AbiFIHUp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 03:20:41 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A7C243EE7;
-        Thu,  9 Jun 2022 00:20:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654759240; x=1686295240;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=cAhVzC+Qy8SQ5zAT4fg0oQl3ms6QKh++cVsGH/r5o6M=;
-  b=PXdLcVmhXDX3lycrE7XDmz4mFmU7ItzGtia84XGw60belc/agCXeyCdX
-   ifzXU2yxPMioYsM1tAZgBPvNAzn62Jsk11H7aSXCB8mIx68ETOuK1kBTt
-   palwfy6IJbztfLOO6b592br8RL2xzqSLkaTfwmLpzTHg3STsPaIFmj3ca
-   A=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 09 Jun 2022 00:20:39 -0700
-X-QCInternal: smtphost
-Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 00:20:39 -0700
-Received: from localhost (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 9 Jun 2022
- 00:20:38 -0700
-From:   Neeraj Upadhyay <quic_neeraju@quicinc.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>, <sudeep.holla@arm.com>,
-        <cristian.marussi@arm.com>
-CC:     <quic_sramana@quicinc.com>, <vincent.guittot@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>, <kvm@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Subject: [RFC 1/3] dt-bindings: arm: Add document for SCMI Virtio backend device
-Date:   Thu, 9 Jun 2022 12:49:54 +0530
-Message-ID: <20220609071956.5183-2-quic_neeraju@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220609071956.5183-1-quic_neeraju@quicinc.com>
-References: <20220609071956.5183-1-quic_neeraju@quicinc.com>
+        Thu, 9 Jun 2022 03:20:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2DF4243BBD;
+        Thu,  9 Jun 2022 00:20:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8CB78B82C44;
+        Thu,  9 Jun 2022 07:20:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE514C34114;
+        Thu,  9 Jun 2022 07:20:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654759242;
+        bh=GkGBXoZ0lI7pgry3fH1/hlxhfCuW2nQ9dPWKJZmlobA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QIu5f75c01gsq7A3FlZhFl61flEc+x3EMTgwC3K9Z5wVWV94lT1v9XT19H3pE4XmY
+         zkJHzPb7PIiuOttMo612C0vDIMMjAAbc6Q3Jg2bUt0SsxfX7IBMmknuc5Tc1Bk/Y7c
+         G6goJu3RbUBQTTnbMsPvEpmDQDtd8+7i9Zqk12nf4TQqUzi0EMjCY2orDkBzO6lDET
+         y5yUWSI4potzwd+KzBBvaG5KvVPnaHO8t0hi1PiDnJ95BPnanexYgWuoUkF/l+Vijy
+         vW7j8YWSvCN8HByxNRwN9RnSVX94VJYvpiKKyIg9aNvK5qayjrVykTAEMJhmzs017W
+         EhbY9yKtGZaBQ==
+Date:   Thu, 9 Jun 2022 12:50:29 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 2/3] dt-bindings: mtd: qcom_nandc: document
+ qcom,boot-partitions binding
+Message-ID: <20220609072029.GA2758@thinkpad>
+References: <20220608001030.18813-1-ansuelsmth@gmail.com>
+ <20220608001030.18813-3-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220608001030.18813-3-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the properties for ARM SCMI Virtio backend device
-node.
+On Wed, Jun 08, 2022 at 02:10:29AM +0200, Ansuel Smith wrote:
+> Document new qcom,boot-partition binding used to apply special
+> read/write layout to boot partitions.
+> 
+> QCOM apply a special layout where spare data is not protected
+> by ECC for some special pages (used for boot partition). Add
+> Documentation on how to declare these special pages.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  .../devicetree/bindings/mtd/qcom,nandc.yaml   | 26 +++++++++++++++++++
+>  1 file changed, 26 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml b/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
+> index 84ad7ff30121..a0914ccb95b0 100644
+> --- a/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
+> +++ b/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
+> @@ -102,6 +102,30 @@ allOf:
+>              - const: rx
+>              - const: cmd
+>  
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - qcom,ipq806x-nand
+> +
+> +    then:
+> +      properties:
+> +        qcom,boot-partitions:
+> +          $ref: /schemas/types.yaml#/definitions/uint32-matrix
 
-Signed-off-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
----
- .../firmware/arm,scmi-vio-backend.yaml        | 85 +++++++++++++++++++
- 1 file changed, 85 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/firmware/arm,scmi-vio-backend.yaml
+Wondering if u32 is enough for covering all ranges? Other than this,
 
-diff --git a/Documentation/devicetree/bindings/firmware/arm,scmi-vio-backend.yaml b/Documentation/devicetree/bindings/firmware/arm,scmi-vio-backend.yaml
-new file mode 100644
-index 000000000000..c95d4e093a3c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/firmware/arm,scmi-vio-backend.yaml
-@@ -0,0 +1,85 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/firmware/arm,scmi-vio-backend.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: System Control and Management Interface (SCMI) Virtio backend bindings
-+
-+maintainers:
-+  - Neeraj Upadhyay <quic_neeraju@quicinc.com>
-+
-+description: |
-+  This binding defines the interface for configuring the ARM SCMI Virtio
-+  backend using device tree.
-+
-+properties:
-+  $nodename:
-+    const: scmi-vio-backend
-+
-+  compatible:
-+    const: arm,scmi-vio-backend
-+
-+  '#address-cells':
-+    const: 1
-+
-+  '#size-cells':
-+    const: 0
-+
-+  protocol@11:
-+    type: object
-+    properties:
-+      reg:
-+        const: 0x11
-+
-+  protocol@13:
-+    type: object
-+    properties:
-+      reg:
-+        const: 0x13
-+
-+  protocol@14:
-+    type: object
-+    properties:
-+      reg:
-+        const: 0x14
-+
-+  protocol@15:
-+    type: object
-+    properties:
-+      reg:
-+        const: 0x15
-+
-+  protocol@16:
-+    type: object
-+    properties:
-+      reg:
-+        const: 0x16
-+
-+  protocol@17:
-+    type: object
-+    properties:
-+      reg:
-+        const: 0x17
-+
-+required:
-+  - compatible
-+
-+examples:
-+  - |
-+    firmware {
-+        scmi-vio-backend {
-+            compatible = "arm,scmi-vio-backend";
-+
-+            scmi_vio_backend_clk: protocol@14 {
-+                reg = <0x14>;
-+            };
-+
-+            scmi_vio_backend_voltage: protocol@17 {
-+                reg = <0x17>;
-+            };
-+        };
-+    };
-+
-+...
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+
+Thanks,
+Mani
+
+> +          items:
+> +            items:
+> +              - description: offset
+> +              - description: size
+> +          description:
+> +            Boot partition use a different layout where the 4 bytes of spare
+> +            data are not protected by ECC. Use this to declare these special
+> +            partitions by defining first the offset and then the size.
+> +
+> +            It's in the form of <offset1 size1 offset2 size2 offset3 ...>
+> +
+> +            Refer to the ipq8064 example on how to use this special binding.
+> +
+>  required:
+>    - compatible
+>    - reg
+> @@ -135,6 +159,8 @@ examples:
+>          nand-ecc-strength = <4>;
+>          nand-bus-width = <8>;
+>  
+> +        qcom,boot-partitions = <0x0 0x58a0000>;
+> +
+>          partitions {
+>            compatible = "fixed-partitions";
+>            #address-cells = <1>;
+> -- 
+> 2.36.1
+> 
+
 -- 
-2.17.1
-
+மணிவண்ணன் சதாசிவம்
