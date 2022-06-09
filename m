@@ -2,110 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EDAFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31996C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:45:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344617AbiFIPov (ORCPT
+        id S1344636AbiFIPpO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 11:44:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55808 "EHLO
+        Thu, 9 Jun 2022 11:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344616AbiFIPos (ORCPT
+        with ESMTP id S242353AbiFIPpK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 11:44:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E76E12F370
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 08:44:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81596B82E53
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 15:44:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88A0CC34114;
-        Thu,  9 Jun 2022 15:44:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654789484;
-        bh=X32KAVJGD/FwLau5Ef5i2Ezt7M4IokoLndTY3ECDt7M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GciSWBOzy3fCiZevlR74T0Zp5Pe3pQp/56aaAN5ZTdbtF8BxCYv37C3foVv4SfjdC
-         Bh48K/4IE55rmBxz1Xf1DnaHAPnVlKIUry/9mbiY0+/3qnKS+U915CxDBL/aABi9Y6
-         xmOnIRtW07+CgS72vEicSxNXBuVyi1w6rZzgU7GdWZdCbMM5uJXZaUsAHS7n3Uzco5
-         Ch+i7qIn44isV8kq/rCQkivL5BYUNl/43wDkHFq9IVpJ5TDcBYtfFX7OUz42UVZDpj
-         F288nHIkx2pZc2xUNnDspU5STO2RwjRi8VVrQIADqOsPtPrdcdMGLBw0LGwYDtk1dx
-         vG4QIfW+jQ/ew==
-Date:   Thu, 9 Jun 2022 16:44:38 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc:     catalin.marinas@arm.com, mike.kravetz@oracle.com,
-        songmuchun@bytedance.com, anshuman.khandual@arm.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH] arm64/hugetlb: Simplify the huge_ptep_set_access_flags()
-Message-ID: <20220609154438.GA3444@willie-the-truck>
-References: <d81f1c3215000d0f238900dbfa0a0976d8d00cd3.1653470369.git.baolin.wang@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d81f1c3215000d0f238900dbfa0a0976d8d00cd3.1653470369.git.baolin.wang@linux.alibaba.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Thu, 9 Jun 2022 11:45:10 -0400
+X-Greylist: delayed 345 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 09 Jun 2022 08:45:08 PDT
+Received: from smtpout30.security-mail.net (smtpout30.security-mail.net [85.31.212.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2325C12FEE7
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 08:45:06 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by fx308.security-mail.net (Postfix) with ESMTP id EE6055456EA
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 17:39:21 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalrayinc.com;
+        s=sec-sig-email; t=1654789162;
+        bh=4QuvHHS+YVrE/JoZYIlJPPVAIbUQSBiC2BS2Tpjqihw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=SyMqVd0tjvWtZZcKFeCv7vSKdmWmtkHxeaJIHzxwZmCvnJR15jAh0U0yo4Usi7jMd
+         AFIKXuKhJIKD942h/C91z5hyl3CWIpo5/PYhG2MHWKY5n0XDDFTX+NtNRigbXILcuw
+         OxCpSNnuMyFvAYSfSGRJGeV19vBqi7rwVX1GCRqM=
+Received: from fx308 (localhost [127.0.0.1])
+        by fx308.security-mail.net (Postfix) with ESMTP id B19DC5456DB;
+        Thu,  9 Jun 2022 17:39:21 +0200 (CEST)
+X-Virus-Scanned: E-securemail
+Secumail-id: <bfa2.62a21429.41305.0>
+Received: from zimbra2.kalray.eu (unknown [217.181.231.53])
+        by fx308.security-mail.net (Postfix) with ESMTPS id 4192E5456BE;
+        Thu,  9 Jun 2022 17:39:21 +0200 (CEST)
+Received: from zimbra2.kalray.eu (localhost [127.0.0.1])
+        by zimbra2.kalray.eu (Postfix) with ESMTPS id 27B2327E04D2;
+        Thu,  9 Jun 2022 17:39:21 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by zimbra2.kalray.eu (Postfix) with ESMTP id 116B027E04B9;
+        Thu,  9 Jun 2022 17:39:21 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu 116B027E04B9
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalrayinc.com;
+        s=4F334102-7B72-11EB-A74E-42D0B9747555; t=1654789161;
+        bh=0Y2Bwx1XXcdl7GIR63NkBsIwF7u0KjI75XBr1Xt6x4Q=;
+        h=From:To:Date:Message-Id;
+        b=KOyG5a5hebTbFhe6hfSRMBlS5i7JwKuHy+jfq9ODlbzbNVXpoxKmLxARrgpyEUeky
+         8SR5Ti80RWLlesSOgVPcvcmVYshobtMSrYGPSjPtVJDkqmwvILx04oE1fKBre6lM1A
+         UJ4To58ibeNM6gejsg8DIVv9x2WwBoRy/THpPufPQa6evNneMb/KEfMe75YD/GUlDu
+         X7lvXbOHgKLzrl3vLjF+K8XgY5Uer5u8CFlUI724mJrmI0JikuiktFPtwJMpmH7+ge
+         XgNpN+ewp6+kr2fY1w3jzU/auQYIdITBkI+gc05c9rcgaV6yu/GugicatnhLQD2sHF
+         ntSksqjJ+al6g==
+Received: from zimbra2.kalray.eu ([127.0.0.1])
+        by localhost (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id mkXZ0Hvs-iqD; Thu,  9 Jun 2022 17:39:21 +0200 (CEST)
+Received: from ws2104.lin.mbt.kalray.eu (unknown [192.168.37.162])
+        by zimbra2.kalray.eu (Postfix) with ESMTPSA id ED17227E04B4;
+        Thu,  9 Jun 2022 17:39:20 +0200 (CEST)
+From:   Julian Vetter <jvetter@kalrayinc.com>
+To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        ysionneau@kalrayinc.com
+Cc:     Julian Vetter <jvetter@kalrayinc.com>
+Subject: [PATCH 2/2] msi: Add sanity check if more than MAX_DEV_MSIS MSIs are requested
+Date:   Thu,  9 Jun 2022 17:38:43 +0200
+Message-Id: <20220609153843.1991-3-jvetter@kalrayinc.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220609153843.1991-1-jvetter@kalrayinc.com>
+References: <20220609153843.1991-1-jvetter@kalrayinc.com>
+X-Virus-Scanned: by Secumail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 06:31:09PM +0800, Baolin Wang wrote:
-> After commit bc5dfb4fd7bd ("arm64/hugetlb: Implement arm64 specific
-> huge_ptep_get()"), the arm64 specific huge_ptep_get() will always
-> consider the subpages' dirty and young state for CONT-PTE/PMD hugetlb,
-> so there is no need to check them again when setting the access flags
-> for CONT-PTE/PMD hugetlb in huge_ptep_set_access_flags().
-> 
-> Meanwhile this also fixes an issue when users want to make the CONT-PTE/PMD
-> hugetlb's pte entry old, which will be failed to make the pte entry old
-> since the original code will always consider the subpages' young state
-> if the subpages' young state is set. For example, we will make the
-> CONT-PTE/PMD hugetlb pte entry old in DAMON to monitoring the accesses,
-> but we'll failed to monitoring the actual accesses of the CONT-PTE/PMD
-> hugetlb page, due to we can not make its pte old.
-> 
-> Thus remove the code considering the subpages' dirty and young state in
-> huge_ptep_set_access_flags() to fix this issue and simplify the function.
-> 
-> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-> ---
->  arch/arm64/mm/hugetlbpage.c | 10 +---------
->  1 file changed, 1 insertion(+), 9 deletions(-)
-> 
-> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
-> index e2a5ec9..5c703aa 100644
-> --- a/arch/arm64/mm/hugetlbpage.c
-> +++ b/arch/arm64/mm/hugetlbpage.c
-> @@ -448,7 +448,6 @@ int huge_ptep_set_access_flags(struct vm_area_struct *vma,
->  	size_t pgsize = 0;
->  	unsigned long pfn = pte_pfn(pte), dpfn;
->  	pgprot_t hugeprot;
-> -	pte_t orig_pte;
->  
->  	if (!pte_cont(pte))
->  		return ptep_set_access_flags(vma, addr, ptep, pte, dirty);
-> @@ -459,14 +458,7 @@ int huge_ptep_set_access_flags(struct vm_area_struct *vma,
->  	if (!__cont_access_flags_changed(ptep, pte, ncontig))
->  		return 0;
->  
-> -	orig_pte = get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
-> -
-> -	/* Make sure we don't lose the dirty or young state */
-> -	if (pte_dirty(orig_pte))
-> -		pte = pte_mkdirty(pte);
-> -
-> -	if (pte_young(orig_pte))
-> -		pte = pte_mkyoung(pte);
-> +	clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
+If a device requests more than MAX_DEV_MSIS the MSI index will collide with
+the devid and might cause Linux to compute twice the same virtual interrupt
+number for two different devices.
 
-I don't understand what this clear_flush() call is doing here; notably, it
-includes TLB invalidation which we don't have for the non-cont case.
+Signed-off-by: Julian Vetter <jvetter@kalrayinc.com>
+Reviewed-by: Yann Sionneau <ysionneau@kalrayinc.com>
+---
+ drivers/base/platform-msi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Why isn't huge_ptep_set_access_flags() just a loop around
-ptep_set_access_flags() if huge_ptep_get() is taking care of collapsing the
-dirty/young state?
+diff --git a/drivers/base/platform-msi.c b/drivers/base/platform-msi.c
+index 4b0b2fe3a7ff..627d8f6b83ea 100644
+--- a/drivers/base/platform-msi.c
++++ b/drivers/base/platform-msi.c
+@@ -40,6 +40,8 @@ static irq_hw_number_t platform_msi_calc_hwirq(struct msi_desc *desc)
+ {
+ 	u32 devid = desc->dev->msi.data->platform_data->devid;
+ 
++	WARN_ON(desc->msi_index >= MAX_DEV_MSIS);
++
+ 	return (devid << (32 - DEV_ID_SHIFT)) | desc->msi_index;
+ }
+ 
+-- 
+2.17.1
 
-Will
