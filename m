@@ -2,144 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B517EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:46:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244846AbiFILpl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:45:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35758 "EHLO
+        id S236834AbiFILqN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:46:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244580AbiFILmt (ORCPT
+        with ESMTP id S244606AbiFILpz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:42:49 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F781DFC67
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:41:06 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id v25so30826816eda.6
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 04:41:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Gpn7JqseIm0vh0gpd7q4DWQubHQ0jsw35Hsu6S6dEzI=;
-        b=kvsnHK++hy6P9FYjJCDS6+qQamnfahcYExnWCuyC3uJTv7PIfm4usqubs3Z8YqvHRO
-         DjLsDfaGEhenp9FVqtuELGC9oN7/OhU81DfGMTLH3Wkt65j1a2GLXT0kLncsekghlUsc
-         mqLUxv6QfnPxnt8de6j6E/zCndCQnsHF1Mnq+VAHL0oR9fNlaP01f19WZTOFMBshCjiK
-         ZjEfStRZnBVsbKiFN9PneFYtPKzFS2poQDeuqz+DHnnud5wkVaGpRu4NZe4W4YF5pACf
-         shC5I/G6K8a7Hnomk+Ac93rPRhGfOr6zfc+nslmdB+/lyZxDCNX20n1wi6BHfjcjEhVi
-         /xmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Gpn7JqseIm0vh0gpd7q4DWQubHQ0jsw35Hsu6S6dEzI=;
-        b=AX2XvDogWvA/3PfE77ZS6w52vZgJS8Y4jLw5K9C+syknEtW6xQBh0trZZZviuAcTFg
-         MaXAarCjoxkk0OWfo8XvzrvM4Sf0+Jv0qLuX+f4OT4zFITXdRX8tPuV7AFs+Vgg/efsx
-         +cjOrEeEAaJoWs3s0f868sIa1MhXlBzNG37acfiRVgx+3AnmN31KgKRbq6TKLiBaIl24
-         6XuqmfrM6U0S021bt7Q0/45pY7YjfjyB1UIArrJVNkk8IT8zS0WBkG2YXM2FjODnslrd
-         IDkoZBfJyY+nVi/ZyOd+PDJK5S3FdLOEApm2zWtgmTq3js+aE1x1fP1k+W1HeFt0t+az
-         Xzgg==
-X-Gm-Message-State: AOAM531vIMOHXWR+6HlcFoQhLtIbGIPakjGKA3YLCOPA9Q7O0i3krPnz
-        jwXCjXpnODluCbg2mOB+ni/gPg==
-X-Google-Smtp-Source: ABdhPJwT+7kUr2sta77J0wJZy0BuCltCldWfJaTcXTeAdRDkcGZS4UKZb7000TCkaLQnVJ+A6ZoBEQ==
-X-Received: by 2002:a05:6402:3906:b0:42a:ad43:6477 with SMTP id fe6-20020a056402390600b0042aad436477mr44503045edb.20.1654774864945;
-        Thu, 09 Jun 2022 04:41:04 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id bk2-20020a170906b0c200b006fef557bb7asm10498662ejb.80.2022.06.09.04.41.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 04:41:04 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        arm@kernel.org, soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 48/48] ARM: dts: s5pv210: align gpio-key node names with dtschema
-Date:   Thu,  9 Jun 2022 13:40:47 +0200
-Message-Id: <20220609114047.380793-9-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org>
-References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org>
+        Thu, 9 Jun 2022 07:45:55 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C560915B0;
+        Thu,  9 Jun 2022 04:43:52 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3701E21EA7;
+        Thu,  9 Jun 2022 11:43:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1654775006; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NTIXiOJ4EIvDrC+cpN3ttiEi4lKSukSvnqa1HJ4/Oak=;
+        b=YXpo6ssGyrb/fcSzskiXF+qvjIWqbYsLGxCRO5ZeUL79XM8bels9dxFRjxVTtsWJYGAamp
+        mxqfBXNKNnYm2asFfExTve8ddzIDCTIhcjMxOHkrk2EkQaFgnO8soJJ9boo+5MtbgNtKKh
+        IrMzF3sB5OuNDhf3InfPp2yEHgrFUEQ=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id B75D42C141;
+        Thu,  9 Jun 2022 11:43:25 +0000 (UTC)
+Date:   Thu, 9 Jun 2022 13:43:24 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        akpm@linux-foundation.org, vbabka@suse.cz,
+        mgorman@techsingularity.net, peterz@infradead.org,
+        dhowells@redhat.com, willy@infradead.org, Liam.Howlett@oracle.com,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2] mm: sysctl: fix missing numa_stat when
+ !CONFIG_HUGETLB_PAGE
+Message-ID: <YqHc3HoS9S0a+9k3@dhcp22.suse.cz>
+References: <20220609104032.18350-1-songmuchun@bytedance.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220609104032.18350-1-songmuchun@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The node names should be generic and DT schema expects certain pattern
-(e.g. with key/button/switch).
+On Thu 09-06-22 18:40:32, Muchun Song wrote:
+> "numa_stat" should not be included in the scope of CONFIG_HUGETLB_PAGE, if
+> CONFIG_HUGETLB_PAGE is not configured even if CONFIG_NUMA is configured,
+> "numa_stat" is missed form /proc. Move it out of CONFIG_HUGETLB_PAGE to
+> fix it.
+> 
+> Fixes: 4518085e127d ("mm, sysctl: make NUMA stats configurable")
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> Cc: <stable@vger.kernel.org>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm/boot/dts/s5pv210-fascinate4g.dts | 6 +++---
- arch/arm/boot/dts/s5pv210-galaxys.dts     | 8 ++++----
- 2 files changed, 7 insertions(+), 7 deletions(-)
+Acked-by: Michal Hocko <mhocko@suse.com>
 
-diff --git a/arch/arm/boot/dts/s5pv210-fascinate4g.dts b/arch/arm/boot/dts/s5pv210-fascinate4g.dts
-index eae51b197ee9..eaa7c4f0e257 100644
---- a/arch/arm/boot/dts/s5pv210-fascinate4g.dts
-+++ b/arch/arm/boot/dts/s5pv210-fascinate4g.dts
-@@ -17,20 +17,20 @@ chosen {
- 	gpio-keys {
- 		compatible = "gpio-keys";
- 
--		power {
-+		key-power {
- 			label = "power";
- 			gpios = <&gph2 6 GPIO_ACTIVE_LOW>;
- 			linux,code = <KEY_POWER>;
- 			wakeup-source;
- 		};
- 
--		vol-down {
-+		key-vol-down {
- 			label = "volume_down";
- 			gpios = <&gph3 2 GPIO_ACTIVE_LOW>;
- 			linux,code = <KEY_VOLUMEDOWN>;
- 		};
- 
--		vol-up {
-+		key-vol-up {
- 			label = "volume_up";
- 			gpios = <&gph3 1 GPIO_ACTIVE_LOW>;
- 			linux,code = <KEY_VOLUMEUP>;
-diff --git a/arch/arm/boot/dts/s5pv210-galaxys.dts b/arch/arm/boot/dts/s5pv210-galaxys.dts
-index aaf880792f36..cdd3653d487f 100644
---- a/arch/arm/boot/dts/s5pv210-galaxys.dts
-+++ b/arch/arm/boot/dts/s5pv210-galaxys.dts
-@@ -24,26 +24,26 @@ nand_pwrseq: nand-pwrseq {
- 	gpio-keys {
- 		compatible = "gpio-keys";
- 
--		power {
-+		key-power {
- 			label = "power";
- 			gpios = <&gph2 6 GPIO_ACTIVE_LOW>;
- 			linux,code = <KEY_POWER>;
- 			wakeup-source;
- 		};
- 
--		vol-down {
-+		key-vol-down {
- 			label = "volume_down";
- 			gpios = <&gph3 1 GPIO_ACTIVE_LOW>;
- 			linux,code = <KEY_VOLUMEDOWN>;
- 		};
- 
--		vol-up {
-+		key-vol-up {
- 			label = "volume_up";
- 			gpios = <&gph3 2 GPIO_ACTIVE_LOW>;
- 			linux,code = <KEY_VOLUMEUP>;
- 		};
- 
--		home {
-+		key-home {
- 			label = "home";
- 			gpios = <&gph3 5 GPIO_ACTIVE_LOW>;
- 			linux,code = <KEY_HOME>;
+Thanks!
+
+> ---
+> v2:
+>  - Simplify the fix, thanks to Michal.
+> 
+>  kernel/sysctl.c | 20 +++++++++++---------
+>  1 file changed, 11 insertions(+), 9 deletions(-)
+> 
+> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+> index 50a2c29efc94..485d2b1bc873 100644
+> --- a/kernel/sysctl.c
+> +++ b/kernel/sysctl.c
+> @@ -2091,6 +2091,17 @@ static struct ctl_table vm_table[] = {
+>  		.extra1		= SYSCTL_ZERO,
+>  		.extra2		= SYSCTL_TWO_HUNDRED,
+>  	},
+> +#ifdef CONFIG_NUMA
+> +	{
+> +		.procname	= "numa_stat",
+> +		.data		= &sysctl_vm_numa_stat,
+> +		.maxlen		= sizeof(int),
+> +		.mode		= 0644,
+> +		.proc_handler	= sysctl_vm_numa_stat_handler,
+> +		.extra1		= SYSCTL_ZERO,
+> +		.extra2		= SYSCTL_ONE,
+> +	},
+> +#endif
+>  #ifdef CONFIG_HUGETLB_PAGE
+>  	{
+>  		.procname	= "nr_hugepages",
+> @@ -2107,15 +2118,6 @@ static struct ctl_table vm_table[] = {
+>  		.mode           = 0644,
+>  		.proc_handler   = &hugetlb_mempolicy_sysctl_handler,
+>  	},
+> -	{
+> -		.procname		= "numa_stat",
+> -		.data			= &sysctl_vm_numa_stat,
+> -		.maxlen			= sizeof(int),
+> -		.mode			= 0644,
+> -		.proc_handler	= sysctl_vm_numa_stat_handler,
+> -		.extra1			= SYSCTL_ZERO,
+> -		.extra2			= SYSCTL_ONE,
+> -	},
+>  #endif
+>  	 {
+>  		.procname	= "hugetlb_shm_group",
+> -- 
+> 2.11.0
+
 -- 
-2.34.1
-
+Michal Hocko
+SUSE Labs
