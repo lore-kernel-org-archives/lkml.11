@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5225CCA473
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC35CCA47F
 	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:44:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242312AbiFIInZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
+        id S242555AbiFIInh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242380AbiFIIlE (ORCPT
+        with ESMTP id S242369AbiFIIlD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 04:41:04 -0400
+        Thu, 9 Jun 2022 04:41:03 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E26440E69;
-        Thu,  9 Jun 2022 01:40:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61D6B255BC;
+        Thu,  9 Jun 2022 01:40:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1654764028; x=1686300028;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Oaa6POuTrFoq1Nmz2rF5KjdgtPVUEHRqWrgwki6jQ5E=;
-  b=Z2btZrDIRvEtqHVoo2hUsJ0+3Ft6WQkj3m1w1FRncRtzxIzW2UZdMzUr
-   s1WBWZt/wYAwVJ5Owz2XnZIZU0TYTdq9xoF2hDjsLr4pdYRUTYluvDS12
-   LRRSNaaVENSolBdiEQEe2fG12cvxHaA9QYWUjbVSKNghvCmXARKFHVHrs
-   FEwo6uJg1faO67hVbFkyd3jZ+XYl0dljbWXsvmQ6ul+82SeXy5hbh5YLc
-   Shl0ENqcRWZ/oXrEWCPD60C4+Wcrlx8xhT/HOarmtMhHdIbadgPVPsHMC
-   C3Sm+xxlt/yORXD4qhc2IYfAzfZDjGqhg6Rr2OxOxaCbtin9sNph4pS18
-   Q==;
+  t=1654764017; x=1686300017;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=UnfjKrEfwOguxSlRW9Y1YKoPzQz/hSYyMcMrhzmc50Q=;
+  b=p9ZgcE2dxJCnxrxQNXTsoVD87NN16VobH07tL9hKV2n8ufWUXW+HROng
+   juJFpjWobpAGam/BloVwBHeCXlEhGh4zyNgb4uq8x1hPCfh8oa6psSXXW
+   au4qpgCF2C/9UrAUGEAAyuXszyMeFgJz+E4ZPpGChUpbfubCYZM7md+yn
+   N4vO4oafvgq/z16jlrOt6HAtaz69HIj6RR1IsxtL1NwZbwE0wXbCv9fG6
+   Je6z+4YQ8D5SKj2LlG4FBD12kXjD3XHpIY0FqGMpd1r1JgqaRv1rbMRua
+   cYEtKJLFNUsuHlUI8omTSABgRl98cpbbAYJuFSVkmEZky7ZbPgtKfXv6z
+   w==;
 X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="167405374"
+   d="scan'208";a="177214862"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Jun 2022 01:40:28 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Jun 2022 01:40:17 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 9 Jun 2022 01:40:26 -0700
+ 15.1.2375.17; Thu, 9 Jun 2022 01:40:18 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 9 Jun 2022 01:40:23 -0700
+ 15.1.2375.17 via Frontend Transport; Thu, 9 Jun 2022 01:40:16 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <broonie@kernel.org>, <nicolas.ferre@microchip.com>,
         <alexandre.belloni@bootlin.com>, <tudor.ambarus@microchip.com>
@@ -46,12 +46,10 @@ CC:     <linux-spi@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 3/3] spi: atmel-quadspi: align condition to parenthesis
-Date:   Thu, 9 Jun 2022 11:42:46 +0300
-Message-ID: <20220609084246.1795419-4-claudiu.beznea@microchip.com>
+Subject: [PATCH 0/3] spi: atmel-quadspi: add runtime pm support
+Date:   Thu, 9 Jun 2022 11:42:43 +0300
+Message-ID: <20220609084246.1795419-1-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220609084246.1795419-1-claudiu.beznea@microchip.com>
-References: <20220609084246.1795419-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -59,26 +57,24 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Align condition to parenthesis.
+Hi,
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/spi/atmel-quadspi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The following series adds runtime PM support for atmel-quadspi driver.
+clk_disable()/clk_enable() is called on proper
+runtime_suspend()/runtime_resume() ops. Along with it 2 minor cleanups
+were added (patches 2/3, 3/3).
 
-diff --git a/drivers/spi/atmel-quadspi.c b/drivers/spi/atmel-quadspi.c
-index dea8a0311aaa..976a217e356d 100644
---- a/drivers/spi/atmel-quadspi.c
-+++ b/drivers/spi/atmel-quadspi.c
-@@ -286,7 +286,7 @@ static bool atmel_qspi_supports_op(struct spi_mem *mem,
- 
- 	/* special case not supported by hardware */
- 	if (op->addr.nbytes == 2 && op->cmd.buswidth != op->addr.buswidth &&
--		op->dummy.nbytes == 0)
-+	    op->dummy.nbytes == 0)
- 		return false;
- 
- 	return true;
+Thank you,
+Claudiu Beznea
+
+Claudiu Beznea (3):
+  spi: atmel-quadspi: add runtime pm support
+  spi: atmel-quadspi: use pm_ptr()
+  spi: atmel-quadspi: align condition to parenthesis
+
+ drivers/spi/atmel-quadspi.c | 104 ++++++++++++++++++++++++++++++++----
+ 1 file changed, 93 insertions(+), 11 deletions(-)
+
 -- 
 2.34.1
 
