@@ -2,194 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A56B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47572C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343861AbiFINd0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 09:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57344 "EHLO
+        id S243948AbiFINeA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 09:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239779AbiFINdR (ORCPT
+        with ESMTP id S239509AbiFINdw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 09:33:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F79645530
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 06:33:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654781594;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H7eSqOGTybG9EtKoOIjU4Yprkieq4QzoxbYpNEitBhc=;
-        b=G0s+h1CTIn6kNFE6Wr+kiOF8rKUnS2MeNKcX5d21WSQGraIE55oIcn2vSeX6qwrI5y7IxZ
-        b6wKekHrGJaVf4arHMtLJMHCUYfEbYR+/WFgvNCcL1NkO2rrgb6SPvwMbGi15rQZytGBwR
-        Rgwps8dG0TEFsC6YDJfvSJdLD9ip5Wc=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-612-VC-oCNP4Prif_y-GhZyxlA-1; Thu, 09 Jun 2022 09:33:13 -0400
-X-MC-Unique: VC-oCNP4Prif_y-GhZyxlA-1
-Received: by mail-qt1-f197.google.com with SMTP id w17-20020ac87e91000000b00304bc431155so7980202qtj.21
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 06:33:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=H7eSqOGTybG9EtKoOIjU4Yprkieq4QzoxbYpNEitBhc=;
-        b=kd0yTWKcOa/eDDrFSFqH/iq9zFM0J3gse7hsqhqE1LLKZ12F5fdQM+i1WpYKK30HVH
-         JBLJ6LBuLppvQeYOugE/9HuCSj5xu+6wHK6FXH3mXtJ7hl798wRbrIAaFQHr4j0Wvli0
-         mMAgQcGuJuSIoRyt8L6gU5YeXUyaiMk5T73tfw7q82drNiAkEhCOhBt4M5VHOZvZDkYr
-         HTK5n3gBjBJB2wAkD5FTZ+2yYnxmLe8Nz1doy+7xr9WdyTPYdpuDLIJqQh3nhiFf8PYl
-         zrIoU90c4AzThRjgf1Qn81v9MUMT8UWkvAVTlXdUwJ19GmHg3HQFBZyvnlLWoPBYWu37
-         OdXg==
-X-Gm-Message-State: AOAM532/ogzOqSSoJCmWzD9mKl4JdmMTF7gWssMxOC+bLTiqJwCRi4qd
-        tjXW7m6wqz6BdyqAwsZeB1XgviAesBhvf3UhbqNgCx5URremd5j2VwLCRN8mVBZhqq0gHmPJloq
-        ylXKaBavdxwtYE+ACvreFPARP
-X-Received: by 2002:a05:622a:50b:b0:2f3:e227:628a with SMTP id l11-20020a05622a050b00b002f3e227628amr30652676qtx.533.1654781592584;
-        Thu, 09 Jun 2022 06:33:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJytTKcTFaK2lX1ZkHRQjnPUGtGghjPzfCznnjWmX0xo6brMn0kWP7lorj9/JkZtk75Y7zGHOQ==
-X-Received: by 2002:a05:622a:50b:b0:2f3:e227:628a with SMTP id l11-20020a05622a050b00b002f3e227628amr30652593qtx.533.1654781591771;
-        Thu, 09 Jun 2022 06:33:11 -0700 (PDT)
-Received: from gerbillo.redhat.com ([146.241.113.202])
-        by smtp.gmail.com with ESMTPSA id z19-20020ac87f93000000b002f936bae288sm17833782qtj.87.2022.06.09.06.33.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 06:33:11 -0700 (PDT)
-Message-ID: <548f2a708c106fbc8784b1c4c7740643749a3952.camel@redhat.com>
-Subject: Re: [PATCH v3] net: ax25: Fix deadlock caused by skb_recv_datagram
- in ax25_recvmsg
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     duoming@zju.edu.cn
-Cc:     linux-kernel@vger.kernel.org, jreuter@yaina.de,
-        ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-hams@vger.kernel.org, thomas@osterried.de
-Date:   Thu, 09 Jun 2022 15:33:02 +0200
-In-Reply-To: <4ccdba76.5ee33.181489cd6e4.Coremail.duoming@zju.edu.cn>
-References: <20220608012923.17505-1-duoming@zju.edu.cn>
-         <22175690a4e89a78abcb8244dfd0bdd0005267a5.camel@redhat.com>
-         <4ccdba76.5ee33.181489cd6e4.Coremail.duoming@zju.edu.cn>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Thu, 9 Jun 2022 09:33:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8007451E58;
+        Thu,  9 Jun 2022 06:33:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0355661D3E;
+        Thu,  9 Jun 2022 13:33:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A641BC34114;
+        Thu,  9 Jun 2022 13:33:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654781630;
+        bh=By/LmjmkZstbquCKqvZQy6ApS9VkUQsifOo+GuV6Dko=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jBjS/rOwm0hXNM3I8qiEPO7/IWTr1BS4RG6x9wN9iGRDrDP9gF+wZT1lEBA/ZPR3E
+         /IznIWKF1BjwRBQm+yZjYzHz4pWUj8mScY/u/lV2NkIej/gw6RywABIeNCvJs9IdK4
+         th2rkhqsJp/PKLG3zb1z9m9UeN6qRprBs562Aj/2KeDD+OeNMciH67M6F5pVx6scZ0
+         ZcH7msHNtn5u64cIA6FePjvBIyLF4Ix87m6SMxaXkGNAhALWn6ZXdcMSUKX09U5OZ7
+         bEByuQ0LUh4bmqVP9WuIiZTTSWrp0ZzdcUuzDTDkfYjNAEF0IfjvbysQQuF/vGSYMc
+         rGQAi9DvNHL8g==
+Date:   Thu, 9 Jun 2022 14:33:44 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Kettenis <kettenis@openbsd.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>, asahi@lists.linux.dev
+Subject: Re: [RFC PATCH v2 5/5] ASoC: apple: Add macaudio machine driver
+Message-ID: <YqH2uCgaedf0HQPE@sirena.org.uk>
+References: <20220606191910.16580-1-povik+lin@cutebit.org>
+ <20220606191910.16580-6-povik+lin@cutebit.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Yt9911NapMtJ1eUK"
+Content-Disposition: inline
+In-Reply-To: <20220606191910.16580-6-povik+lin@cutebit.org>
+X-Cookie: Space is limited.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-06-09 at 21:17 +0800, duoming@zju.edu.cn wrote:
-> Hello,
-> 
-> On Thu, 09 Jun 2022 10:41:02 +0200 Paolo wrote:
-> 
-> > On Wed, 2022-06-08 at 09:29 +0800, Duoming Zhou wrote:
-> > > The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
-> > > and block until it receives a packet from the remote. If the client
-> > > doesn`t connect to server and calls read() directly, it will not
-> > > receive any packets forever. As a result, the deadlock will happen.
-> > > 
-> > > The fail log caused by deadlock is shown below:
-> > > 
-> > > [  369.606973] INFO: task ax25_deadlock:157 blocked for more than 245 seconds.
-> > > [  369.608919] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> > > [  369.613058] Call Trace:
-> > > [  369.613315]  <TASK>
-> > > [  369.614072]  __schedule+0x2f9/0xb20
-> > > [  369.615029]  schedule+0x49/0xb0
-> > > [  369.615734]  __lock_sock+0x92/0x100
-> > > [  369.616763]  ? destroy_sched_domains_rcu+0x20/0x20
-> > > [  369.617941]  lock_sock_nested+0x6e/0x70
-> > > [  369.618809]  ax25_bind+0xaa/0x210
-> > > [  369.619736]  __sys_bind+0xca/0xf0
-> > > [  369.620039]  ? do_futex+0xae/0x1b0
-> > > [  369.620387]  ? __x64_sys_futex+0x7c/0x1c0
-> > > [  369.620601]  ? fpregs_assert_state_consistent+0x19/0x40
-> > > [  369.620613]  __x64_sys_bind+0x11/0x20
-> > > [  369.621791]  do_syscall_64+0x3b/0x90
-> > > [  369.622423]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> > > [  369.623319] RIP: 0033:0x7f43c8aa8af7
-> > > [  369.624301] RSP: 002b:00007f43c8197ef8 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
-> > > [  369.625756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f43c8aa8af7
-> > > [  369.626724] RDX: 0000000000000010 RSI: 000055768e2021d0 RDI: 0000000000000005
-> > > [  369.628569] RBP: 00007f43c8197f00 R08: 0000000000000011 R09: 00007f43c8198700
-> > > [  369.630208] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff845e6afe
-> > > [  369.632240] R13: 00007fff845e6aff R14: 00007f43c8197fc0 R15: 00007f43c8198700
-> > > 
-> > > This patch moves the skb_recv_datagram() before lock_sock() in order that
-> > > other functions that need lock_sock could be executed. What`s more, we
-> > > add skb_free_datagram() before goto out in order to mitigate memory leak.
-> > > 
-> > > Suggested-by: Thomas Osterried <thomas@osterried.de>
-> > > Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-> > > Reported-by: Thomas Habets <thomas@@habets.se>
-> > > ---
-> > > Changes in v3:
-> > >   - Add skb_free_datagram() before goto out in order to mitigate memory leak.
-> > > 
-> > >  net/ax25/af_ax25.c | 12 +++++++-----
-> > >  1 file changed, 7 insertions(+), 5 deletions(-)
-> > > 
-> > > diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-> > > index 95393bb2760..62aa5993093 100644
-> > > --- a/net/ax25/af_ax25.c
-> > > +++ b/net/ax25/af_ax25.c
-> > > @@ -1665,6 +1665,11 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
-> > >  	int copied;
-> > >  	int err = 0;
-> > >  
-> > > +	/* Now we can treat all alike */
-> > > +	skb = skb_recv_datagram(sk, flags, &err);
-> > > +	if (!skb)
-> > > +		goto done;
-> > > +
-> > 
-> > Note that this causes a behavior change: before this patch, calling
-> > recvmsg() on unconnected seqpacket sockets returned immediatelly with
-> > an error (due to the the check below), now it blocks. 
-> > 
-> > The change may confuse (== break) user-space applications. I think it
-> > would be better replacing skb_recv_datagram with an open-coded variant
-> > of it releasing the socket lock before the
-> > __skb_wait_for_more_packets() call and re-acquiring it after such call.
-> > Somewhat alike __unix_dgram_recvmsg().
-> 
-> Thank you for your time and suggestions!
-> I think the following method may solve the problem.
-> 
-> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-> index 95393bb2760..51b441c837c 100644
-> --- a/net/ax25/af_ax25.c
-> +++ b/net/ax25/af_ax25.c
-> @@ -1675,8 +1675,10 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
->                 goto out;
->         }
-> 
-> +       release_sock(sk);
->         /* Now we can treat all alike */
->         skb = skb_recv_datagram(sk, flags, &err);
-> +       lock_sock(sk);
->         if (skb == NULL)
->                 goto out;
-> 
-> The skb_recv_datagram() is free of race conditions and could be re-entrant.
-> So calling skb_recv_datagram() without the protection of lock_sock() is ok.
-> 
-> What's more, releasing the lock_sock() before skb_recv_datagram() will not
-> cause UAF bugs. Because the sock will not be deallocated unless we call
-> ax25_release(), but ax25_release() and ax25_recvmsg() could not run in parallel.
-> 
-> Although the "sk->sk_state" may be changed due to the release of lock_sock(),
-> it will not influence the following operations in ax25_recvmsg().
 
-One of the downside of the above is that recvmsg() will unconditionally
-acquire and release the socket lock twice which can have non
-trivial/nasty side effects on process scheduling.
+--Yt9911NapMtJ1eUK
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-With the suggested change the socket lock will be released only when
-recvmsg will block and that should produce nicer overal behavior.
+On Mon, Jun 06, 2022 at 09:19:10PM +0200, Martin Povi=C5=A1er wrote:
 
-Cheers,
+> +		/*
+> +		 * Primary FE
+> +		 *
+> +		 * The mclk/fs ratio at 64 for the primary frontend is important
+> +		 * to ensure that the headphones codec's idea of left and right
+> +		 * in a stereo stream over I2S fits in nicely with everyone else's.
+> +		 * (This is until the headphones codec's driver supports
+> +		 * set_tdm_slot.)
+> +		 *
+> +		 * The low mclk/fs ratio precludes transmitting more than two
+> +		 * channels over I2S, but that's okay since there is the secondary
+> +		 * FE for speaker arrays anyway.
+> +		 */
+> +		.mclk_fs =3D 64,
+> +	},
 
-Paolo
+This seems weird - it looks like it's confusing MCLK and the bit clock
+for the audio bus.  These are two different clocks.  Note that it's very
+common for devices to require a higher MCLK/fs ratio to deliver the best
+audio performance, 256fs is standard.
 
+> +	{
+> +		/*
+> +		 * Secondary FE
+> +		 *
+> +		 * Here we want frames plenty long to be able to drive all
+> +		 * those fancy speaker arrays.
+> +		 */
+> +		.mclk_fs =3D 256,
+> +	}
+
+Same thing here - this is at least confusing MCLK and the bit clock.
+
+> +static bool macaudio_match_kctl_name(const char *pattern, const char *na=
+me)
+> +{
+> +	if (pattern[0] =3D=3D '*') {
+> +		int namelen, patternlen;
+> +
+> +		pattern++;
+> +		if (pattern[0] =3D=3D ' ')
+> +			pattern++;
+> +
+> +		namelen =3D strlen(name);
+> +		patternlen =3D strlen(pattern);
+> +
+> +		if (namelen > patternlen)
+> +			name +=3D (namelen - patternlen);
+> +	}
+> +
+> +	return !strcmp(name, pattern);
+> +}
+> +
+> +static int macaudio_limit_volume(struct snd_soc_card *card,
+> +				 const char *pattern, int max)
+> +{
+> +	struct snd_kcontrol *kctl;
+> +	struct soc_mixer_control *mc;
+> +	int found =3D 0;
+> +
+> +	list_for_each_entry(kctl, &card->snd_card->controls, list) {
+> +		if (!macaudio_match_kctl_name(pattern, kctl->id.name))
+> +			continue;
+> +
+> +		found++;
+> +		dev_dbg(card->dev, "limiting volume on '%s'\n", kctl->id.name);
+> +
+> +		/*
+> +		 * TODO: This doesn't decrease the volume if it's already
+> +		 * above the limit!
+> +		 */
+> +		mc =3D (struct soc_mixer_control *)kctl->private_value;
+> +		if (max <=3D mc->max)
+> +			mc->platform_max =3D max;
+> +
+> +	}
+> +
+> +	return found;
+> +}
+
+This shouldn't be open coded in a driver, please factor it out into the
+core so we've got an API for "set limit X on control Y" then call that.
+
+--Yt9911NapMtJ1eUK
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKh9rcACgkQJNaLcl1U
+h9Be8Qf/cbx1SuNmXunfKG1D6mfqR8Q1iocw25ztL4MzTR16bJ8oAGIVuIFGvp6F
+65sLYF0riHrCUz1DZvyFCKmcDB+GeSWR9BICYOSnaQg6DnBXQdaBl3uY7v9DRrA6
+ypLzKzTdy5LhR58xRaThyGAiep77ZxpxGmOmPyMZS+oq+NQ4idOE/5z5ENxRSg3n
+qjMDlWlotFv3MjVNNBBFmZsH1oWa2CuxnXjpM/JrOAhEk7rt7Ylx4I3Bhqpv+lgo
+++g3qBUAP1cMdsyYOJza5Jkh4WynmGe3dQ7zj68UbdWoGtvHV8x6SucSnSeVrWXM
+IzZswmQla/NHnxdszylvTnONJmU8kg==
+=K4AF
+-----END PGP SIGNATURE-----
+
+--Yt9911NapMtJ1eUK--
