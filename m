@@ -2,87 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4DECC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46EC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343764AbiFINXr (ORCPT
+        id S1343783AbiFINYU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 09:23:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43500 "EHLO
+        Thu, 9 Jun 2022 09:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343774AbiFINXk (ORCPT
+        with ESMTP id S238780AbiFINYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 09:23:40 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D84726ACD
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 06:23:38 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id u8so16521270qvj.2
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 06:23:38 -0700 (PDT)
+        Thu, 9 Jun 2022 09:24:17 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13FD1B781;
+        Thu,  9 Jun 2022 06:24:15 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id d14so5638272eda.12;
+        Thu, 09 Jun 2022 06:24:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Ac0XSm6qLT5ejHpXkWVAkUQcaAKF9sF1khNJzx5SMGc=;
-        b=IBWxD9g+sOOqJuU9+jsbN9tnjWE8Rx1lsWEFswdhXxOjH8KJP11tnU4skwTHAJoEB0
-         Uq5x5aHSnHP+YK2ENYnbUtixhxo8GuHvrL3YshFeokIfn/HFuzsQeIAQi7pxhcssa3QR
-         LnAs2/NnpoS/96sFloYm1NK9XRjJygrt6v5UHJCzGcPScpVV82ZRpizWgAdboQRWWzPK
-         epC8F4+clohxoO9fzisXGinlp2qkuO9KGNBd8M7823ShukpkBZWZ8TKnQfJdwBM9f1db
-         +a7V5EFCZbB+srx+xy6XCRQm0AKcKTvY8ZQC9ocXRGPoC4oxGk2MDWAohKaPC96DczKh
-         nPHg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xOp49jraaiqTwhYF0mD/jVJfnTt8MnTWTGqz+xRTGq0=;
+        b=d4kQYyM0yvnckDXPuCHW9lAxap+AYxbPdjcG00CMIxwFvwa/g8Lxynqud3+wQGqBLU
+         l8a4gAg0NSFJoO6339vafPYusRxUSh6YDbuyRNfn4RVLpOGnfLpbUoik54Z8DTlfZxqi
+         6DZukQ43NvrbT3hKz311Ic9q+3xU7uF/NQOO1ocqqS58t5IGbzguWrhy3We2UUerPuOZ
+         IiHpqMebjgvBXHOYsvnH0Jw0gDcU7RqdY4DXI0vBpS4+b1dbjEaYrx03NiEXLHnCEhvq
+         k8XD2H2ERMGyz2vwABv7WCt1fXyoy/mbnkuxV7lUFTP7pVmvKZagNZY/vpVp7TXCObcf
+         YJXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Ac0XSm6qLT5ejHpXkWVAkUQcaAKF9sF1khNJzx5SMGc=;
-        b=CjlmueIi9YhkP6yWOh5w3KXpS1Rs5WWgwQXbJmSF/K7At/GX/r+k881Z5awxKlT8al
-         dqAXOQNfNhFixORFztGAA/O1j6dYFVP5vbQN1NR3tX28KVMRRpt1etZzbN5LgzfnfVpH
-         3W8Tpeh/tn9PDsc7DUkSyY7FR+mk2cNvGDNTmbfnbnnN2fDRHIEdAcaXhFqMrKAb752M
-         yhDvHKlz2WcLpf5ZseJUJeHhBL+gM5QAWERswna650lWJWJ5WUWTEDWqi5Veb0rJNMby
-         d01xrjgWFNAPuaYBH2I7S5YA9iwMlbrwIYd8+oIo3+r5zP++XZxqWFN2a1nshs0YUaTC
-         6XRw==
-X-Gm-Message-State: AOAM530lT0qZEe1okdEQrhlDZ+NEH38ePFgzudut8MVq5xsXEYq/Yfig
-        U5fD5jBze+x/ir1rwx9dzymtPucnl49uB1R6dAc=
-X-Google-Smtp-Source: ABdhPJxxJtzyI6zz1/XREsLwTQubMJsVJXisR+qMeXs7VfVdZY3h9I0a1VHAvQ+tlhTSORWX5mwkjD0I9tFPmKhXGt8=
-X-Received: by 2002:ad4:5ba8:0:b0:46b:a8d7:bd61 with SMTP id
- 8-20020ad45ba8000000b0046ba8d7bd61mr13976579qvq.70.1654781017674; Thu, 09 Jun
- 2022 06:23:37 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xOp49jraaiqTwhYF0mD/jVJfnTt8MnTWTGqz+xRTGq0=;
+        b=CMc3Y4RiJb9nQTFNCE3F1IcTL7JVheMUpQuv5A4Ez3Taw8fCMBgo9H/UIxfCUodAIK
+         4sAfrDSNjyUc+4cOwQ4lu/a/mMr5aaatkCoDiBWF2mtaQxTaw9a9yTRv8OWzbNKUBGaT
+         o9B8mTjd1u+XlVrxfMmsegPDTtv1ZveaB8R/BWBsQg2na4WNw8bQmFegM06FUaj17ueH
+         9G2mkCFFoVw7KIdIVWvLOtXnurUKpZ1HsNcn/9RvCflEMvH723Zt/Wlm1L9yb+yh165V
+         UrwBcIwxDWNP6wIZzxzscj1Lpfsxj81/OR2dZ84a4uNcoTGzI9OmrdZHGUrlgDicRWEe
+         5l2A==
+X-Gm-Message-State: AOAM531L3h3BiqfXat9Nuxic66YjmCAJwJu2eQHdr0HJjNa832QUOWun
+        xCArX95IraQkmJfhkO+nBIN9IDRwBnc=
+X-Google-Smtp-Source: ABdhPJw+G30MAFfNqV3/fVSa6QC3D052TECaWZBqwRPk2jH0eVMb5bWimZSB9eMFpoY8YCgWaAEhiQ==
+X-Received: by 2002:a05:6402:3207:b0:42d:dba6:8ef0 with SMTP id g7-20020a056402320700b0042ddba68ef0mr45929939eda.410.1654781054042;
+        Thu, 09 Jun 2022 06:24:14 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id i2-20020a056402054200b004315050d7dfsm8360263edx.81.2022.06.09.06.24.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 06:24:13 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Manivannan Sadhasivam <mani@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [PATCH v6 0/3] Add support for unprotected spare data page
+Date:   Thu,  9 Jun 2022 15:23:41 +0200
+Message-Id: <20220609132344.17548-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220606122612.2580930-1-foxhoundsk.tw@gmail.com> <YqHnr8SA2gbf45ok@worktop.programming.kicks-ass.net>
-In-Reply-To: <YqHnr8SA2gbf45ok@worktop.programming.kicks-ass.net>
-From:   Huichun Feng <foxhoundsk.tw@gmail.com>
-Date:   Thu, 9 Jun 2022 21:23:26 +0800
-Message-ID: <CAFbkdV2TCZ38ngMViCHgS_v2vMKVMpJwQBR7nZ0a=z6Vwam2Fw@mail.gmail.com>
-Subject: Re: [PATCH] sched/fair: avoid redundant hrtimer check
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        "open list:SCHEDULER" <linux-kernel@vger.kernel.org>,
-        Ching-Chun Huang <jserv@ccns.ncku.edu.tw>,
-        Chin-En Lin <shiyn.lin@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Peter Zijlstra <peterz@infradead.org> =E6=96=BC 2022=E5=B9=B46=E6=9C=889=E6=
-=97=A5 =E9=80=B1=E5=9B=9B =E4=B8=8B=E5=8D=888:29=E5=AF=AB=E9=81=93=EF=BC=9A
->
-> On Mon, Jun 06, 2022 at 08:26:12PM +0800, Huichun Feng wrote:
-> > The check is required iff HRTICK is enabled and DOUBLE_TICK is disabled=
-,
-> > avoid the redundant check by adding corresponding sched_feat() .
->
-> How about: 'don't do that then'?
+Some background about this.
+On original qsdk ipq8064 based firmware there was a big separation from
+boot partition and user partition. With boot partition we refer to
+partition used to init the router (bootloader, spm firmware and other
+internal stuff) With user partition we refer to linux partition and data
+partition not used to init the router.
+When someone had to write to these boot partition a special mode was
+needed, to switch the nand driver to this special configuration.
 
-Looks good!
+Upstream version of the nandc driver totally dropped this and the result
+is that if someone try to read data from these partition a CRC warning
+is printed and if someone try to write that (if for example someone
+wants to replace the bootloader) result is a broken system as the data
+is badly written.
 
-Should I send a v2 for this? Or could you help amend it directly?
+This series comes to fix this.
 
-Thank you!
-Huichun
+A user can declare offset and size of these special partition using the
+qcom,boot-pages binding.
+
+An initial implementation of this assumed that the boot-pages started
+from the start of the nand but we discover that some device have backup
+of these special partition and we can have situation where we have this
+partition scheme
+- APPSBL (require special mode)
+- APPSBLENV (doesn't require special mode)
+- ART
+- APPSBLBK (back of APPSBL require special mode)
+- APPSBLENVBK (back of APPSBLENV doesn't require special mode)
+With this configuration we need to declare sparse boot page and we can't
+assume boot-pages always starts from the start of the nand.
+
+A user can use this form to declare sparse boot pages
+qcom,boot-partitions = <0x0 0x0c80000 0x0c80000 0x0500000>;
+
+The driver internally will parse this array, convert it to nand pages
+and check internally on every read/write if this special configuration
+should used for that page or the normal one.
+
+The reason for all of this is that qcom FOR SOME REASON, disable ECC for
+spare data only for these boot partition and we need to reflect this
+special configuration to mute these warning and to permit actually
+writing to these pages.
+
+v6:
+- Add additional comments on boot partition check
+- First reorder struct then make change
+- Add additional changes request from Manivannan
+- Add review tag for dt commit
+v5:
+- Rename boot-pages to boot-partitions
+- Add additional check to parsing function
+- Rename unprotect_spare_data to codeword_fixup
+- Add additional info from Manivannan
+- Add patch to remove holes in qcom_nand_host struct
+v4:
+- Fix wrong compatible set for boot-pages (ipq8074 instead of ipq806x)
+v3:
+- Fix typo in Docmunetation commit desription
+- Add items description for uint32-matrix
+v2:
+- Add fixes from Krzysztof in Documentation
+
+Ansuel Smith (3):
+  mtd: nand: raw: qcom_nandc: reorder qcom_nand_host struct
+  mtd: nand: raw: qcom_nandc: add support for unprotected spare data
+    pages
+  dt-bindings: mtd: qcom_nandc: document qcom,boot-partitions binding
+
+ .../devicetree/bindings/mtd/qcom,nandc.yaml   |  27 +++
+ drivers/mtd/nand/raw/qcom_nandc.c             | 214 +++++++++++++++++-
+ 2 files changed, 232 insertions(+), 9 deletions(-)
+
+-- 
+2.36.1
+
