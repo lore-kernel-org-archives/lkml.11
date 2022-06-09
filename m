@@ -2,103 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3730C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33CFCC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345044AbiFISRJ (ORCPT
+        id S1345325AbiFISRy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 14:17:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56060 "EHLO
+        Thu, 9 Jun 2022 14:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiFISRH (ORCPT
+        with ESMTP id S233182AbiFISRu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 14:17:07 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D274222355;
-        Thu,  9 Jun 2022 11:17:06 -0700 (PDT)
-Received: from notapiano (unknown [169.150.201.35])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: nfraprado)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id BE44766017A8;
-        Thu,  9 Jun 2022 19:17:02 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654798624;
-        bh=73Y/v8InPphxMIIyYusgiQmgRfQZkIA8g+2zCfS9xd8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=goJymFXpI7vGo2vU57POZtqsHzw1PpoQkonRZaV/x1GeP1CRRfbfwSYD+zZOU0MS4
-         vxqVooUWCc68dlgojJTXXYPSnzjfFkPX8yoUufLCtUoMPPSB/Ff2q4fUIHNdDVpPm4
-         Ei07wTVddxPDxLOvirTqGGp7vix41HO3QUX28RDQ9vslO65rIPNmxzUsAtyFx7lpBn
-         dwZB1AYpPVvh4GTmHx9495CssUjaGqp66NDM7APpD1zZZeuib+Tb2SosDJl5PLgU2T
-         9x4y62bQWke4bSN/3lLtUzXybMVRPfwKuaKWX/XI88PC2XVg1eoQ51BdjbnV672hMP
-         ULDU+5NWSvi5g==
-Date:   Thu, 9 Jun 2022 14:16:58 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     Guodong Liu <guodong.liu@mediatek.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Thu, 9 Jun 2022 14:17:50 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA7D3B1E8E
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 11:17:49 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id r71so22611659pgr.0
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 11:17:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=hU6Im3vb1keVHVlY7TcHchEc2Qgf7bjh4PzS2LAsp0g=;
+        b=UptN1Jr96I8pLOyRcmzeta9p2WveOwoPhhXgeRA7kM9cI69tEGxnQCJAtBRXxvWhlo
+         Rn+Zv7iVzfdyTpBslG9yo/0iXXDJuo5vIHo5/6V0jyzg5tKmcFOEjk9i67KRqMQfc6wx
+         mKFigbgfsH0ZXEoxgFBmfHafg8B4ipYc1phjA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=hU6Im3vb1keVHVlY7TcHchEc2Qgf7bjh4PzS2LAsp0g=;
+        b=VrlbVtFgs+5pHGUKNNzwz2NCnoZENvzYSNBJSX4qPv1AWwzPM2akx7IvpN0tmZwNsB
+         r11VPNeyt4lH5vZIOIp0YpKgiD857niqoMxAs9CDiSdylaK7zcZ+EpTPlj3lI2XWAssX
+         pSyt4urEdgivDGLgiUyOD1mm1D1yu4lRD6d+j/litjSEuYYZeuXMbCZOgePzHD0OCBV7
+         7YJ/iU8IWTJRhflR3KGZFdL76PD/BbnkMGkjuoSFfzy5/76CFcGt8sXVG1ys0dyvoFHo
+         aP1RoE8B/0VAVATL4XUGskX4VvxF6kIOaGO3EJ+gv4Y/uliKdaBm2O5tPUsD4qNXj7M1
+         vPGg==
+X-Gm-Message-State: AOAM530fInP4g8VEa9an5OoB0eZKBnJRrAUpTYHEDuZDzbg0QiYzJLbC
+        4napVqWtLE1Cro8QdtQWehPn/1s7ctsIxA==
+X-Google-Smtp-Source: ABdhPJz2vJgUxsLAZYPstcdskHIS7FJzu4/qiYfO60Xj6S8dALbWGNZF34CISl4QlQBx7EQS+mZUBg==
+X-Received: by 2002:a05:6a00:10cc:b0:506:e0:d6c3 with SMTP id d12-20020a056a0010cc00b0050600e0d6c3mr41488331pfu.33.1654798668551;
+        Thu, 09 Jun 2022 11:17:48 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id r14-20020a63ec4e000000b003fb0354c43asm17728049pgj.32.2022.06.09.11.17.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 11:17:48 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@kernel.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Zhiyong Tao <zhiyong.tao@mediatek.com>,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH v1 1/4] pinctrl: add generic driving setup property on
- mt8192
-Message-ID: <20220609181658.s5qdm32f5vhwkkao@notapiano>
-References: <20220608053909.1252-1-guodong.liu@mediatek.com>
- <20220608053909.1252-2-guodong.liu@mediatek.com>
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: [PATCH v2 4/7] dt-bindings: drm/bridge: anx7625: Add mode-switch support
+Date:   Thu,  9 Jun 2022 18:09:43 +0000
+Message-Id: <20220609181106.3695103-5-pmalani@chromium.org>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+In-Reply-To: <20220609181106.3695103-1-pmalani@chromium.org>
+References: <20220609181106.3695103-1-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220608053909.1252-2-guodong.liu@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Guodong,
+Analogix 7625 can be used in systems to switch USB Type-C DisplayPort
+alternate mode lane traffic between 2 Type-C ports.
 
-thank you for the patch.
+Update the binding to accommodate this usage by introducing a switch
+property.
 
-On Wed, Jun 08, 2022 at 01:39:06PM +0800, Guodong Liu wrote:
-> This patch provides generic driving setup, which support
-> 2/4/6/8/10/12/14/16mA driving, original driver just set
-> raw data setup setting when use drive-strength property
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+---
 
-You should mention in the commit message that the dt-binding expects that
-drive-strength arguments be passed in mA, but the driver was expecting raw
-values. And that this commit changes the driver so that it is aligned with the
-binding.
+Changes since v1:
+- Introduced patternProperties for "switch" children (suggested by Krzysztof Kozlowski).
+- Added unevaluatedProperties descriptor (suggested by Krzysztof Kozlowski).
+- Added "address-cells" and "size-cells" properties to "switches".
 
-Thanks,
-Nícolas
+ .../display/bridge/analogix,anx7625.yaml      | 63 +++++++++++++++++++
+ 1 file changed, 63 insertions(+)
 
-> 
-> Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
-> ---
->  drivers/pinctrl/mediatek/pinctrl-mt8192.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8192.c b/drivers/pinctrl/mediatek/pinctrl-mt8192.c
-> index acccde9262ba..9faf7001369d 100644
-> --- a/drivers/pinctrl/mediatek/pinctrl-mt8192.c
-> +++ b/drivers/pinctrl/mediatek/pinctrl-mt8192.c
-> @@ -1372,8 +1372,8 @@ static const struct mtk_pin_soc mt8192_data = {
->  	.gpio_m = 0,
->  	.bias_set_combo = mtk_pinconf_bias_set_combo,
->  	.bias_get_combo = mtk_pinconf_bias_get_combo,
-> -	.drive_set = mtk_pinconf_drive_set_raw,
-> -	.drive_get = mtk_pinconf_drive_get_raw,
-> +	.drive_set	= mtk_pinconf_drive_set_rev1,
-> +	.drive_get	= mtk_pinconf_drive_get_rev1,
->  	.adv_pull_get = mtk_pinconf_adv_pull_get,
->  	.adv_pull_set = mtk_pinconf_adv_pull_set,
->  	.adv_drive_get = mtk_pinconf_adv_drive_get,
-> -- 
-> 2.25.5
-> 
+diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+index 35a48515836e..cb4a23391244 100644
+--- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
++++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+@@ -105,6 +105,33 @@ properties:
+       - port@0
+       - port@1
+ 
++  switches:
++    type: object
++    description: Set of switches controlling DisplayPort traffic on
++      outgoing RX/TX lanes to Type C ports.
++    unevaluatedProperties: false
++
++    properties:
++      "#address-cells":
++        const: 1
++
++      "#size-cells":
++        const: 0
++
++    patternProperties:
++      'switch@[01]':
++        $ref: /schemas/usb/typec-switch.yaml#
++
++        properties:
++          reg:
++            maxItems: 1
++
++        required:
++          - reg
++
++    required:
++      - switch@0
++
+ required:
+   - compatible
+   - reg
+@@ -167,5 +194,41 @@ examples:
+                     };
+                 };
+             };
++            switches {
++                #address-cells = <1>;
++                #size-cells = <0>;
++                switch@0 {
++                    compatible = "typec-switch";
++                    reg = <0>;
++                    mode-switch;
++
++                    ports {
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++                        port@0 {
++                            reg = <0>;
++                            anx_typec0: endpoint {
++                                remote-endpoint = <&typec_port0>;
++                            };
++                        };
++                    };
++                };
++                switch@1 {
++                    compatible = "typec-switch";
++                    reg = <1>;
++                    mode-switch;
++
++                    ports {
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++                        port@0 {
++                            reg = <0>;
++                            anx_typec1: endpoint {
++                                remote-endpoint = <&typec_port1>;
++                            };
++                        };
++                    };
++                };
++            };
+         };
+     };
+-- 
+2.36.1.476.g0c4daa206d-goog
+
