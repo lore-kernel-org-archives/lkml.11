@@ -2,268 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A559DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:14:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA46CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:15:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245230AbiFIMO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 08:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59416 "EHLO
+        id S245286AbiFIMPC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 08:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237898AbiFIMOw (ORCPT
+        with ESMTP id S237898AbiFIMO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 08:14:52 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA97A15AB1B
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 05:14:49 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id w27so30879683edl.7
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 05:14:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=UzOEe2X6Pcp5CwSwzOY2ybmrXssFZ5RmjZdx4tT+M50=;
-        b=G/WxesYGBG8H3t/Zi6No32EukuRuEvudUPMMa+c7U9VFoVDPbMbL8Y2lsrAuwDziIY
-         I2NgS4zkfLl1TdG5I4Xh53kQv56f3EVw7gWAmcKA19s86ApyHcAebK42vYEETip87382
-         5dAoJ/dh7Gnjr9pXIfbgJynGn2hzi7vAVmgkvIh638E7pyGy6c/6t3d4Aogsf1R1MuuZ
-         XZ6eOAXQdjXBjF9gyk8Ggi8fvtWyni6uFwiohsvNjOShK2a/Yh+RqkRz43pjBC3WSVkm
-         b9tJVs00exkAScc1g4B3wy9bMSGPMVZa9737bLWsJjbbtWwxmZLWEapE5Z5QAauGD6vv
-         olnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=UzOEe2X6Pcp5CwSwzOY2ybmrXssFZ5RmjZdx4tT+M50=;
-        b=C67QFtysckNilu2xUQmMuhUhJc4eivEEiY5yVbgK9d2halcp24TAZJhMrQnV4JoYie
-         jQmS7DdBkpvfBouBjgR2PEVa+8ZIK96Ox7NoMMSTAxCkOgIBPfPFpD/p8T2oKoC74W5Q
-         5PHSbAkcJf4/zfH27pwouXFMJ6u5sLMK+uVc9kiYon8dV2pYfsJtfk2PPQFPdMSPt85R
-         MvlpwEs2lvNHifrjINEuDlPXXOht6T2vx5RY4Ha74FxTKZh7CirZQZarBVkgAMRscb53
-         FID8v8nR9+thJraexBN0AtfnI+CXQDEIYXDPvig0kfY5in9KNSoMUznsFEGTpPWUxwS4
-         CsIA==
-X-Gm-Message-State: AOAM530yx03e+PqZh2qyHdD4Bu9Iav8KNP8nq6ZvSoXeZK13iB6eilGe
-        JEAmifgYSzwGLBpFink/BBH+iQ==
-X-Google-Smtp-Source: ABdhPJxm+YhFVbWSiAI0yxYJExwM3A6gaCeP9DrDlyEGnXB/LOPPvq6V3/x2Q0jrhgeqqaicyeV4wg==
-X-Received: by 2002:a05:6402:378b:b0:42a:ad8c:628f with SMTP id et11-20020a056402378b00b0042aad8c628fmr44794604edb.90.1654776888389;
-        Thu, 09 Jun 2022 05:14:48 -0700 (PDT)
-Received: from [192.168.0.197] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i2-20020a056402054200b004315050d7dfsm8255608edx.81.2022.06.09.05.14.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jun 2022 05:14:47 -0700 (PDT)
-Message-ID: <89afe584-58d6-537a-b30e-84153c228225@linaro.org>
-Date:   Thu, 9 Jun 2022 14:14:46 +0200
+        Thu, 9 Jun 2022 08:14:58 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21FA15BAE9;
+        Thu,  9 Jun 2022 05:14:56 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2598hdMB005036;
+        Thu, 9 Jun 2022 14:14:19 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=bSH8k7jHxKUyrpoyMJgrVh2iKbBNDn/nCbRq/ihGCaQ=;
+ b=EfLJTcbmaMgZQdN1oH42I7AOQhGK+l87T4temiXrsnVJ52EXeiLiANWgDLtU5o1+4Xbp
+ S2mkEJOoIP2Lweijv22F2RwKe3z3RvH3SG3ztZJWtqkvhsVlKFJ2sZhj88HIKp1tlA5e
+ BNruinEEzRsTv56RyLsRAn9+hgdgvOOdiiwnUdbw4HmdUrUsXGvQo+NLPmmEGxfauDMT
+ Zk5oNrBRN8OqDTDkjrC3Q+quD5DynvBryk7baKMGsw//HdtO7BlCcv1+/aOrlmuOgfay
+ 0RcptKu1pKgrsosu5p3aNr5m3ppQFYASOvFRjipp6IQ1FPZt8aQCPEYxuH1MsZu8U1/l hA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gj3d40h8u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 09 Jun 2022 14:14:19 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E7E4110002A;
+        Thu,  9 Jun 2022 14:14:17 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id DF6D62171F4;
+        Thu,  9 Jun 2022 14:14:17 +0200 (CEST)
+Received: from [10.48.1.102] (10.75.127.47) by SHFDAG1NODE2.st.com
+ (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Thu, 9 Jun
+ 2022 14:14:16 +0200
+Message-ID: <587eed11-8418-24a2-e8f7-d624ec570ebe@foss.st.com>
+Date:   Thu, 9 Jun 2022 14:14:15 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 2/2] arm64: dts: qcom/sdm845-shift-axolotl: Add audio
- support
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] iio: adc: stm32: fix maximum clock rate for stm32mp15x
 Content-Language: en-US
-To:     Alexander Martinz <amartinz@shiftphones.com>,
-        ~postmarketos/upstreaming@lists.sr.ht
-Cc:     phone-devel@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Dylan Van Assche <me@dylanvanassche.be>
-References: <20220609095412.211060-1-amartinz@shiftphones.com>
- <20220609095412.211060-2-amartinz@shiftphones.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220609095412.211060-2-amartinz@shiftphones.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Olivier Moysan <olivier.moysan@foss.st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Paul Cercueil <paul@crapouillou.net>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+References: <20220609095234.375925-1-olivier.moysan@foss.st.com>
+From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+In-Reply-To: <20220609095234.375925-1-olivier.moysan@foss.st.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.47]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-09_09,2022-06-09_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/06/2022 11:54, Alexander Martinz wrote:
-> This patch adds audio support for the SHIFT6mq phone.
+On 6/9/22 11:52, Olivier Moysan wrote:
+> Change maximum STM32 ADC input clock rate to 36MHz, as specified
+> in STM32MP15x datasheets.
 > 
-> The primary microphone and headphone jack are handled by the
-> SDM845 sound card and WCD9340 codec.
+> Fixes: d58c67d1d851 ("iio: adc: stm32-adc: add support for STM32MP1")
 > 
-> The primary speaker needs to go through the TFA9890 speaker
-> amplifier.
+> Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
 
-Thank you for your patch. There is something to discuss/improve.
+Hi Olivier,
 
-> 
-> Signed-off-by: Alexander Martinz <amartinz@shiftphones.com>
-> Tested-by: Dylan Van Assche <me@dylanvanassche.be>
+You can add my:
+Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 
-Same problem.
-
+Thanks,
+Fabrice
 > ---
->  .../boot/dts/qcom/sdm845-shift-axolotl.dts    | 141 ++++++++++++++++++
->  1 file changed, 141 insertions(+)
+>  drivers/iio/adc/stm32-adc-core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/sdm845-shift-axolotl.dts b/arch/arm64/boot/dts/qcom/sdm845-shift-axolotl.dts
-> index fa72f23ef0c2..8c4967d6d0e3 100644
-> --- a/arch/arm64/boot/dts/qcom/sdm845-shift-axolotl.dts
-> +++ b/arch/arm64/boot/dts/qcom/sdm845-shift-axolotl.dts
-> @@ -8,6 +8,8 @@
->  
->  #include <dt-bindings/gpio/gpio.h>
->  #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
-> +#include <dt-bindings/sound/qcom,q6afe.h>
-> +#include <dt-bindings/sound/qcom,q6asm.h>
->  #include "sdm845.dtsi"
->  #include "pm8998.dtsi"
->  #include "pmi8998.dtsi"
-> @@ -492,6 +494,19 @@ touchscreen@38 {
->  	};
+> diff --git a/drivers/iio/adc/stm32-adc-core.c b/drivers/iio/adc/stm32-adc-core.c
+> index 142656232157..ce1a63a82034 100644
+> --- a/drivers/iio/adc/stm32-adc-core.c
+> +++ b/drivers/iio/adc/stm32-adc-core.c
+> @@ -805,7 +805,7 @@ static const struct stm32_adc_priv_cfg stm32h7_adc_priv_cfg = {
+>  static const struct stm32_adc_priv_cfg stm32mp1_adc_priv_cfg = {
+>  	.regs = &stm32h7_adc_common_regs,
+>  	.clk_sel = stm32h7_adc_clk_sel,
+> -	.max_clk_rate_hz = 40000000,
+> +	.max_clk_rate_hz = 36000000,
+>  	.has_syscfg = HAS_VBOOSTER | HAS_ANASWVDD,
+>  	.num_irqs = 2,
 >  };
->  
-> +&i2c11 {
-> +	status = "okay";
-> +	clock-frequency = <400000>;
-> +
-> +	tfa9890_codec: tfa9890@34 {
-
-Generic node names please, so I guess it is: codec or audio-codec
-
-> +		compatible = "nxp,tfa9890";
-> +		reg = <0x34>;
-> +		vddd-supply = <&vreg_s4a_1p8>;
-> +		reset-gpio = <&tlmm 7 0>;
-> +		#sound-dai-cells = <1>;
-> +	};
-> +};
-> +
->  &ipa {
->  	status = "okay";
->  
-> @@ -530,6 +545,27 @@ volume_down_resin: resin {
->  	};
->  };
->  
-> +&q6afedai {
-> +	qi2s@22 {
-> +		reg = <22>;
-> +		qcom,sd-lines = <0>;
-> +	};
-> +};
-> +
-> +&q6asmdai {
-> +	dai@0 {
-> +		reg = <0>;
-> +	};
-> +
-> +	dai@1 {
-> +		reg = <1>;
-> +	};
-> +
-> +	dai@2 {
-> +		reg = <2>;
-> +	};
-> +};
-> +
->  /*
->   * Prevent garbage data on bluetooth UART lines
->   */
-> @@ -578,6 +614,84 @@ &qupv3_id_1 {
->  	status = "okay";
->  };
->  
-> +&sound {
-> +	model = "SHIFT6mq";
-> +	compatible = "qcom,sdm845-sndcard";
-> +	pinctrl-0 = <&quat_mi2s_active &quat_mi2s_sd0_active>;
-> +	pinctrl-names = "default";
-> +
-> +	audio-routing = "RX_BIAS", "MCLK",
-> +			"AMIC1", "MIC BIAS1",
-> +			"AMIC2", "MIC BIAS2",
-> +			"AMIC3", "MIC BIAS3";
-> +
-> +	mm1-dai-link {
-> +		link-name = "MultiMedia1";
-> +		cpu {
-> +			sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA1>;
-> +		};
-> +	};
-> +
-> +	mm2-dai-link {
-> +		link-name = "MultiMedia2";
-> +		cpu {
-> +			sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA2>;
-> +		};
-> +	};
-> +
-> +	mm3-dai-link {
-> +		link-name = "MultiMedia3";
-> +		cpu {
-> +			sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA3>;
-> +		};
-> +	};
-> +
-> +	speaker-dai-link {
-> +		link-name = "Speaker Playback";
-> +		codec {
-> +			sound-dai = <&tfa9890_codec 0>;
-> +		};
-> +
-> +		cpu {
-> +			sound-dai = <&q6afedai QUATERNARY_MI2S_RX>;
-> +		};
-> +
-> +		platform {
-> +			sound-dai = <&q6routing>;
-> +		};
-> +	};
-> +
-> +	slim-dai-link {
-> +		link-name = "SLIM Playback";
-> +		codec {
-> +			sound-dai = <&wcd9340 0>;
-> +		};
-> +
-> +		cpu {
-> +			sound-dai = <&q6afedai SLIMBUS_0_RX>;
-> +		};
-> +
-> +		platform {
-> +			sound-dai = <&q6routing>;
-> +		};
-> +	};
-> +
-> +	slimcap-dai-link {
-> +		link-name = "SLIM Capture";
-> +		codec {
-> +			sound-dai = <&wcd9340 1>;
-> +		};
-> +
-> +		cpu {
-> +			sound-dai = <&q6afedai SLIMBUS_0_TX>;
-> +		};
-> +
-> +		platform {
-> +			sound-dai = <&q6routing>;
-> +		};
-> +	};
-> +};
-> +
->  &tlmm {
->  	gpio-reserved-ranges = <0 4>, <81 4>;
->  
-> @@ -686,6 +800,15 @@ config {
->  			bias-pull-down;
->  		};
->  	};
-> +
-> +	wcd_intr_default: wcd_intr_default {
-
-No underscores in node names. Instead hyphens.
-
-> +		pins = <54>;
-> +		function = "gpio";
-> +
-> +		input-enable;
-> +		bias-pull-down;
-> +		drive-strength = <2>;
-> +	};
->  };
-
-
-Best regards,
-Krzysztof
