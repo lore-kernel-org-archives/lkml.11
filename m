@@ -2,87 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A2DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:18:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E4ECCCA473
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241223AbiFIJSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 05:18:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53582 "EHLO
+        id S240825AbiFIJTT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 05:19:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240825AbiFIJSm (ORCPT
+        with ESMTP id S231754AbiFIJTQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 05:18:42 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1F91AF0E;
-        Thu,  9 Jun 2022 02:18:40 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 897FE21DD8;
-        Thu,  9 Jun 2022 09:18:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1654766319; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HayFit8bzwaDzpMDwYah/6SiOyQ4+BuRvDiuto6PjDE=;
-        b=J3GHj6NgeZC2l6CCYS42pH1ur4gz/kZ8MjGwuv4MbjKYXuPXxJ+9p2sVq8TpFihaL3ga3L
-        OiWYpUIDPFjIZgZ9CnMwU2mlrRW3/WMDJfS2SqBYd9qIWY6OST8injns6Do0hW5LlP8Sp/
-        haVizaclvKA0L+81Pw2138qaN9TGJvI=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 351742C142;
-        Thu,  9 Jun 2022 09:18:39 +0000 (UTC)
-Date:   Thu, 9 Jun 2022 11:18:38 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Christian =?iso-8859-1?Q?K=F6nig?= 
-        <ckoenig.leichtzumerken@gmail.com>
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        nouveau@lists.freedesktop.org, linux-tegra@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        christian.koenig@amd.com, alexander.deucher@amd.com,
-        daniel@ffwll.ch, viro@zeniv.linux.org.uk,
-        akpm@linux-foundation.org, hughd@google.com,
-        andrey.grodzovsky@amd.com
-Subject: Re: [PATCH 03/13] mm: shmem: provide oom badness for shmem files
-Message-ID: <YqG67sox6L64E6wV@dhcp22.suse.cz>
-References: <20220531100007.174649-1-christian.koenig@amd.com>
- <20220531100007.174649-4-christian.koenig@amd.com>
+        Thu, 9 Jun 2022 05:19:16 -0400
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84441F2FE;
+        Thu,  9 Jun 2022 02:19:15 -0700 (PDT)
+Received: by mail-qt1-f175.google.com with SMTP id y15so16714975qtx.4;
+        Thu, 09 Jun 2022 02:19:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zLBQ/1iNltaWLswe/a2+FpHCpp5bwmu+I0N93NCsVa0=;
+        b=hCB5P60uwqvEHwrii49UW2qAEnxCznKQZYaKAC5atg3eZGOj7aCsy7e5F2J8/wj1DE
+         8SihwBMe2O4b8lMmdhnfyU054iGEacy6LaF8cPTXdXuIIB4cXKnPnlKAQghSpXhhsBRi
+         e7SAHj0dKpgDXstUMJjRI3lkUBL5jkj+9iRMZkoyoV2g8exNba7ZnP249GDukIWBK5g2
+         ODsXvLjQmJcek8VLcWlYHUiyXC8XuUtyn62YFArX3axWqnjbZCs1WVuV6YAOxWwOJEHQ
+         IeIc6lGx1/2OC1OsP2fQkhrWqvKP5RFaLuvjQinhdXJPqw7xGx0st/51+mQGQA+bnpqn
+         ZYeA==
+X-Gm-Message-State: AOAM532kec0vIS4mHnSP6xSK0GGyex41Je+pKoeRruyzOKWcefGIDEDu
+        GOcHxmq2Rz1pVHZbQWFcp2Uhg8NxOyAiFg==
+X-Google-Smtp-Source: ABdhPJzVlRlMeNTwj9AbZz1pk5P/M1Lu4925n9bpgOJldmE9C3W66Jz0edLrEPK48kT0Y/Iyxw4LXg==
+X-Received: by 2002:ac8:5f12:0:b0:305:c3d:c1da with SMTP id x18-20020ac85f12000000b003050c3dc1damr1888749qta.492.1654766354685;
+        Thu, 09 Jun 2022 02:19:14 -0700 (PDT)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id hh8-20020a05622a618800b00304f3e320f2sm5731766qtb.4.2022.06.09.02.19.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 02:19:14 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id g201so12917358ybf.12;
+        Thu, 09 Jun 2022 02:19:14 -0700 (PDT)
+X-Received: by 2002:a05:6902:120e:b0:634:6f29:6b84 with SMTP id
+ s14-20020a056902120e00b006346f296b84mr39923091ybu.604.1654766354021; Thu, 09
+ Jun 2022 02:19:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220531100007.174649-4-christian.koenig@amd.com>
+References: <20220525151355.24175-1-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20220525151355.24175-1-wsa+renesas@sang-engineering.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 9 Jun 2022 11:19:02 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVhteUVZ0+kaSggEntrwSYtrNEB-CNopPCmdJsRrqkYRg@mail.gmail.com>
+Message-ID: <CAMuHMdVhteUVZ0+kaSggEntrwSYtrNEB-CNopPCmdJsRrqkYRg@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: renesas: r8a779f0: Add thermal support
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linh Phung <linh.phung.jy@renesas.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 31-05-22 11:59:57, Christian König wrote:
-> This gives the OOM killer an additional hint which processes are
-> referencing shmem files with potentially no other accounting for them.
-> 
-> Signed-off-by: Christian König <christian.koenig@amd.com>
-> ---
->  mm/shmem.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/mm/shmem.c b/mm/shmem.c
-> index 4b2fea33158e..a4ad92a16968 100644
-> --- a/mm/shmem.c
-> +++ b/mm/shmem.c
-> @@ -2179,6 +2179,11 @@ unsigned long shmem_get_unmapped_area(struct file *file,
->  	return inflated_addr;
->  }
->  
-> +static long shmem_oom_badness(struct file *file)
-> +{
-> +	return i_size_read(file_inode(file)) >> PAGE_SHIFT;
-> +}
+On Wed, May 25, 2022 at 5:14 PM Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+> From: Linh Phung <linh.phung.jy@renesas.com>
+>
+> Add support for 3 TSC nodes of thermal. The 4th node is for the control
+> domain and not for Linux.
+>
+> Signed-off-by: Linh Phung <linh.phung.jy@renesas.com>
+> [wsa: rebased, fixed resource size, removed unused 4th node breaking probe]
+> Signed-off-by: Wolfram Sang <wsa@kernel.org>
 
-This doesn't really represent the in memory size of the file, does it?
-Also the memcg oom handling could be considerably skewed if the file was
-shared between more memcgs.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
--- 
-Michal Hocko
-SUSE Labs
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
