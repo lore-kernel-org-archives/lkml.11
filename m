@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E116CCA47D
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 10:08:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B40C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 10:08:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243013AbiFIKI3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 06:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54894 "EHLO
+        id S235153AbiFIKId (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 06:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234965AbiFIKIP (ORCPT
+        with ESMTP id S242775AbiFIKIQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 06:08:15 -0400
+        Thu, 9 Jun 2022 06:08:16 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421A162E2;
-        Thu,  9 Jun 2022 03:08:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E31860FA;
+        Thu,  9 Jun 2022 03:08:15 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5839A66017C7;
-        Thu,  9 Jun 2022 11:08:08 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id CAD9866017CA;
+        Thu,  9 Jun 2022 11:08:11 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654769289;
-        bh=HGU3F/fPzfALJBmgYOFXFZVVSN1REtbO7A5z7wOIIZ0=;
+        s=mail; t=1654769292;
+        bh=pb2gWlG7j2g032SqdnNvyy3B/6lmxFBQubwWdcY6ii4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B4zoEc3kuavp5jU+vdoOQdnw6/dPK/kfiEiqQx4QU5cgAXifm+z3TfYRX1Siej/qw
-         tXs4c40wF8cUIsiQpPmsEtxtfuaV/t1dZKHL9IboZ/WtZJQ/HB9YZ3z4Qfj6wDQJvl
-         sz2PC7QAC/m09CBmCzffnGWDHDcdIb5wE7r0ifWgu5l0tr49uboZWzILqc6pjeur9N
-         D/9YT2Sz3Onn0OQ/ZfYz3Ggc5nSG2ZMhQVUP97vtQiLMZHywzrM9lR1rJzbKoVJNLE
-         Vm86cY1OvO3TzLOkDmKB3joUZW2hOLDb5D+M1ajkmmMKxternyYnK1yWVtJFtz/VkZ
-         Rb33r5B+uwMdQ==
+        b=Q9sTvQ6OjmfN2Xr+h60kQLRKdH+Ux3vnvpmUoxw3cSwR++4MBAYYuBli09cSDm7R9
+         /8vEybuz6HL0qQ3LpazzQETe61gJ2WTP+h+Qoahk2WXFeRpczFWosmchVsQWu4oPoY
+         fRJV1prrWSfchOnxeH/5SNCNFV0hOgK7unGczlDq8gIL0DeVYOz9NZ2wYud5c9YuPo
+         pqwbhAOF+jlLIF807YlqGcdaP5P7aEsSjDSPsX5HjRZVOmcaWB9Pr6IL6p3/eMsCze
+         xj8V0I/woD8cOlcaRepHc2UphyFB9OkBkdrla784kO4WOQs46nyMTgvXvV+IShUwX6
+         nVaHIcLshW5hA==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     yong.wu@mediatek.com
@@ -43,9 +43,9 @@ Cc:     joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
         krzysztof.kozlowski@linaro.org,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v3 1/6] dt-bindings: iommu: mediatek: Add mediatek,infracfg phandle
-Date:   Thu,  9 Jun 2022 12:07:57 +0200
-Message-Id: <20220609100802.54513-2-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v3 5/6] dt-bindings: iommu: mediatek: Add mediatek,pericfg phandle
+Date:   Thu,  9 Jun 2022 12:08:01 +0200
+Message-Id: <20220609100802.54513-6-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220609100802.54513-1-angelogioacchino.delregno@collabora.com>
 References: <20220609100802.54513-1-angelogioacchino.delregno@collabora.com>
@@ -55,46 +55,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add property "mediatek,infracfg" to let the mtk_iommu driver retrieve
+Add property "mediatek,pericfg" to let the mtk_iommu driver retrieve
 a phandle to the infracfg syscon instead of performing a per-soc
 compatible lookup in the entire devicetree and set it as a required
-property for MT2712 and MT8173.
+property for MT8195's infra IOMMU.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- .../bindings/iommu/mediatek,iommu.yaml           | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ .../devicetree/bindings/iommu/mediatek,iommu.yaml  | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-index 2ae3bbad7f1a..4142a568b293 100644
+index 4142a568b293..d5e3272a54e8 100644
 --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
 +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-@@ -101,6 +101,10 @@ properties:
-     items:
-       - const: bclk
+@@ -116,6 +116,10 @@ properties:
+       Refer to bindings/memory-controllers/mediatek,smi-larb.yaml. It must sort
+       according to the local arbiter index, like larb0, larb1, larb2...
  
-+  mediatek,infracfg:
++  mediatek,pericfg:
 +    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: The phandle to the mediatek infracfg syscon
++    description: The phandle to the mediatek pericfg syscon
 +
-   mediatek,larbs:
-     $ref: /schemas/types.yaml#/definitions/phandle-array
-     minItems: 1
-@@ -167,6 +171,18 @@ allOf:
+   '#iommu-cells':
+     const: 1
+     description: |
+@@ -183,6 +187,16 @@ allOf:
        required:
-         - power-domains
+         - mediatek,infracfg
  
 +  - if:
 +      properties:
 +        compatible:
 +          contains:
-+            enum:
-+              - mediatek,mt2712-m4u
-+              - mediatek,mt8173-m4u
++            const: mediatek,mt8195-iommu-infra
 +
 +    then:
 +      required:
-+        - mediatek,infracfg
++        - mediatek,pericfg
 +
    - if: # The IOMMUs don't have larbs.
        not:
