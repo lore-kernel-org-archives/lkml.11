@@ -2,104 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E37ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:26:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E92FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343683AbiFIN0j (ORCPT
+        id S1343721AbiFIN1k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 09:26:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
+        Thu, 9 Jun 2022 09:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238373AbiFIN0g (ORCPT
+        with ESMTP id S1343670AbiFIN1g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 09:26:36 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F153E41FBF
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 06:26:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=lfB8fOTqamQfwwSwlqY2SUMWaGvp
-        E2sPIyV2x1j5F78=; b=HwGJKkmmp8Z6QmLx3Ef7Vrt6NdRjjdVRI4ApU+5Ho5i8
-        fJIZedyG7vRXcanm4JFiWlmKbsvrNdZzCKHROSfswJvswbGk6UJrP6AJ2RqUcuPd
-        Iytsr0pmI1Z6XAKc1/umlQ/aNnnuTiiodbMFWqzZT5u1j3ivPD7OP4ggWgbkK4U=
-Received: (qmail 3336385 invoked from network); 9 Jun 2022 15:26:30 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 9 Jun 2022 15:26:30 +0200
-X-UD-Smtp-Session: l3s3148p1@DKvRxAPhMUdZD+4S
-Date:   Thu, 9 Jun 2022 15:26:26 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] thermal: rcar_gen3_thermal: improve logging during
- probe
-Message-ID: <YqH1AofgJVvSpW/x@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220525151216.24133-1-wsa+renesas@sang-engineering.com>
- <20220525151216.24133-2-wsa+renesas@sang-engineering.com>
- <CAMuHMdWEzhE8aAfsDRpzpv=ZFLb7Cn0r-En0K6O7heT6OA1JEA@mail.gmail.com>
+        Thu, 9 Jun 2022 09:27:36 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11B0110988;
+        Thu,  9 Jun 2022 06:27:33 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id r1so3000272plo.10;
+        Thu, 09 Jun 2022 06:27:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=/w33OC2nKB0l49BpBE16Q95GGKplWgpgkQkpZKKx9XU=;
+        b=Saf2DH6GH3ZFWu6ilc7JhttO6h1rIVxm8yxUGdYoDGgSyY6z8OBBwyX19KwLSOFYTt
+         1b1aqBlem3FP97Fq0+HTBc4aMncTJJHLVuTHrvqLlfNQPoud3iyEkR3N/I0Joabdv841
+         UBAxZw7KU9ZhPlwqLi3qxK+FwSVFoCVNXo5Grn7Qt1eGtgxbEHfs1cGXna5kZQXIuf1J
+         mNIdewOE8McOsy0Q0k4xFherTtf0Kj6UdANdGHflT9rK7qyJd+/M/8Ouaz4l0hWRlLtp
+         jr45ETHGXprdUiTDCWzosZtC/qmKG0lu7J6YTYjgV+VBE+A7lrjvaQPBQp7HOaGkm5Pf
+         kkzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/w33OC2nKB0l49BpBE16Q95GGKplWgpgkQkpZKKx9XU=;
+        b=o25gjnyNJvF+uVGdcJQwA3L2skq/EY20uspHNJMyZWZGuP7Yh0E0a8HaWeGMFWQONZ
+         1FdDHP7+Y/LbGo1q2RERSPT5RmZ/XDLmJJ2xe0zIo14HyOr8LCTvnXYck4CdEcNMxen3
+         CYdwTIbUtcuW9mvlJZpTvo/quXU8IKf0cJ9atFJUbjdGr4gwvF8boCsrEcXERR7EiRUQ
+         5Y0j774AlEnnyvqW87WvqwNfFopE727+lDsGJkAPHAmRsEzWO/Nw5qTzsurDJTmde2gX
+         besxx+1lcu5D7tKc8Rd78EBW6AcT+nPyU5VGHYqB7HPbWmfXxbPTcJ91ZI9Li239n2fo
+         x3Iw==
+X-Gm-Message-State: AOAM533+LLsjiVzzm1rT2cYYr0sjKhAitKmMixbwssaZiBN0lmRMt1SF
+        lEIoswPQOrVbQn7kkPVs1kA=
+X-Google-Smtp-Source: ABdhPJyzZwTxrKl6bUcnX4/gvAWipAyf49NA3Zu5vDclNm8uqtyLx1279BiLXP9/GjSMUPsOKKoEJQ==
+X-Received: by 2002:a17:902:b215:b0:165:7bdd:a9f1 with SMTP id t21-20020a170902b21500b001657bdda9f1mr40101997plr.41.1654781253192;
+        Thu, 09 Jun 2022 06:27:33 -0700 (PDT)
+Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id q17-20020a656851000000b003f5d7f0ad6asm17809441pgt.48.2022.06.09.06.27.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 06:27:32 -0700 (PDT)
+Message-ID: <42600ccb-8cfd-434e-cb4f-f871fd8de708@gmail.com>
+Date:   Thu, 9 Jun 2022 22:27:27 +0900
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="UP7xXm/IwNERRwno"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdWEzhE8aAfsDRpzpv=ZFLb7Cn0r-En0K6O7heT6OA1JEA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: [RFC PATCH 4/5] docs/doc-guide: Pull guidelines for title adornments
+ out into subsection
+Content-Language: en-US
+To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org,
+        Akira Yokosawa <akiyks@gmail.com>
+References: <dccb5233-7f4f-1be6-d1f4-bbe9f42f88e0@gmail.com>
+From:   Akira Yokosawa <akiyks@gmail.com>
+In-Reply-To: <dccb5233-7f4f-1be6-d1f4-bbe9f42f88e0@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+As it becomes too large as an item in bullet lists, make it a
+subsection of its own.
 
---UP7xXm/IwNERRwno
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+---
+ Documentation/doc-guide/sphinx.rst | 29 ++++++++++++++++-------------
+ 1 file changed, 16 insertions(+), 13 deletions(-)
 
-Hi Geert,
+diff --git a/Documentation/doc-guide/sphinx.rst b/Documentation/doc-guide/sphinx.rst
+index f257c4785607..f8bbf86fa15a 100644
+--- a/Documentation/doc-guide/sphinx.rst
++++ b/Documentation/doc-guide/sphinx.rst
+@@ -202,7 +202,16 @@ Here are some specific guidelines for the kernel documentation:
+ * Also update the content, not just the formatting, when converting
+   documentation.
+ 
+-* Please stick to this relative order of section title adornments:
++* For inserting fixed width text blocks (for code examples, use case
++  examples, etc.), use ``::`` for anything that doesn't really benefit
++  from syntax highlighting, especially short snippets. Use
++  ``.. code-block:: <language>`` for longer code blocks that benefit
++  from highlighting. For a short snippet of code embedded in the text, use \`\`.
++
++Guidelines for title adornments
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++
++Please stick to this relative order of section title adornments:
+ 
+   1. ``=`` with overline for 1st level titles::
+ 
+@@ -225,12 +234,12 @@ Here are some specific guidelines for the kernel documentation:
+        4th level title
+        ~~~~~~~~~~~~~~~
+ 
+-  Although RST doesn't mandate a specific order ("Rather than imposing a fixed
+-  number and order of section title adornment styles, the order enforced will be
+-  the order as encountered."), having the higher levels the same overall makes
+-  it easier to follow the documents.
++Although RST doesn't mandate a specific order ("Rather than imposing a fixed
++number and order of section title adornment styles, the order enforced will be
++the order as encountered."), having the higher levels the same overall makes
++it easier to follow the documents.
+ 
+-  .. note::
++.. note::
+     - It is not easy to tell the levels (chapter, section, etc.) of title
+       adornments in a particular .rst file.  A title that appears first in
+       a .rst file can be at any level of document, chapter, section, or
+@@ -258,7 +267,7 @@ Here are some specific guidelines for the kernel documentation:
+     .. [#rstdoc] https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#document
+     .. [#rstdirtitle] https://docutils.sourceforge.io/docs/ref/rst/directives.html#metadata-document-title
+ 
+-  .. warning::
++.. warning::
+     For existing documents, manually updating title adornments just to meet
+     these guidelines is not recommended.  Such changes can be error-prone and
+     may break section hierarchy without being caught by reviewers.  They may
+@@ -268,12 +277,6 @@ Here are some specific guidelines for the kernel documentation:
+     It would be appreciated if adjustment of those adornments could be
+     automated in some way.
+ 
+-* For inserting fixed width text blocks (for code examples, use case
+-  examples, etc.), use ``::`` for anything that doesn't really benefit
+-  from syntax highlighting, especially short snippets. Use
+-  ``.. code-block:: <language>`` for longer code blocks that benefit
+-  from highlighting. For a short snippet of code embedded in the text, use \`\`.
+-
+ 
+ the C domain
+ ------------
+-- 
+2.25.1
 
-> > -               dev_info(dev, "TSC%u: Loaded %d trip points\n", i, ret);
-> > +               dev_info(dev, "Sensor %u: Trip points loaded: %u\n", i,=
- ret);
->=20
-> I actually prefer the old wording (I'm undecided about "sensor" vs.
-> "TSC", though, but consistency rules), as it makes it clear "ret"
-> is the number of trip points, and not a success code.
 
-I think "Sensor" is actually important. E.g. on Spider, Sensor 0 is TSC1
-because there is no TSC0. So, the TSC numbering is confusing.
-
-I'll try to reword it so that the number of points becomes clear again.
-
-
---UP7xXm/IwNERRwno
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKh9P4ACgkQFA3kzBSg
-Kbb9RA/+L1KuetE7EfdL2e6FyQdsgMngXBI1yKp2ZhSyxFvWt3RMdk8wjjZWPoGJ
-h7Mw2HGMnw2Q+W4O8XG0V3v0JaGOMxOdlKMMKa6uEXJnpEj9rehW4Bmb6FUqGr5K
-WEN15mfBXeefoKXEUFuwYlfzzoepvPs91fcGa2kGtCGtpOi+gNfwwbZu4GS8/qbc
-ezX1ie0yVgzLxXkQwJK7LShlkxqjQzCCqeVfUYiRkuzv+bnryEOkBndOynBSUatB
-0cyKuKzQ03NlEB7pXhMLYavsUUORI034sNpR7l5kIRlPVgKOPdu/NRvN2CeuQkjh
-yhHM9ZFVyV6ddcdJVArZVg4dkVd6maPVP0jcDoOcGrEBWmy2CrbgXa58Zl4neBxk
-b/TrthdLc3lpphp1qOAxj90dg0lyROeowaKdxICfjdAd/7Sxsfm8es2p40P0cpYL
-2UxDLXaDnLiqNpMtt8VD3GfV9p6oBm5LM6OtBdnoWNu6GOlDGrhO0lDq9COlOaGq
-Hd9oM5HWgAiYuvTXKmKtVdcD/UsktjZ8VudarrqkkhgtmVRJT3qOk18yaC1gvT8h
-QrQBvs6bsz7uib2fB4LNOuAg646STT4GTE2t7PhVZI0R2d7Zqxv16e65AcD4Bgtu
-de5w8HTRTdp2kRxLscLhTeHZ2+FNKlp6+EU2fiIFKVehoh0iqTM=
-=so9F
------END PGP SIGNATURE-----
-
---UP7xXm/IwNERRwno--
