@@ -2,134 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA847C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18EB0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:12:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230436AbiFISLn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 14:11:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
+        id S1345274AbiFISL7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 14:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbiFISLk (ORCPT
+        with ESMTP id S229632AbiFISL4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 14:11:40 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AA643AD8BE
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 11:11:38 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id e24so22075186pjt.0
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 11:11:38 -0700 (PDT)
+        Thu, 9 Jun 2022 14:11:56 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EDFEBA89;
+        Thu,  9 Jun 2022 11:11:55 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id w20so17576468lfa.11;
+        Thu, 09 Jun 2022 11:11:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=B5EoYi45ZBUgcYzH5QmcJabRI+K9dAvb3lNExbNzDTc=;
-        b=IRBv/Csm/7toLZfIoXEPX0E45ay4Enl4+enzXX7DKTkX5nUg1cRxZOi2qv4NePVtAg
-         VoHy+EUE1WpiNMTX9FhRf/mrnjfYQPaESFmpZVcbJGR4OGpEFAlKDDengyMyRxJYaCqe
-         7Zb9IVzTdblW1xpdWU5oA4UNZms7szwAcKGXQ=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wa5+7Ua+o1gsnunSmNIYAMm6Jg9lLaYkR4rgU6BaP74=;
+        b=gyS/q+Ndb+nVDe4qMwR01ny3c0CwbotAbR8WzWWTiRTU+dI0xvcLlNcdo9W8DKldbN
+         xIZzvY9H7TL5LihL2SaN4Dme0knRtLU0ascZZxUQzH0hNaUDAd1ZBil3Oi0SS8Oc/3mI
+         qhly9sIogMShRAuZHao2pMS3wvcej9HQDWp1dJppE1RJHYyBlDkzbjH2jGIcvtIGuLb+
+         8QGCTMxZoHTZp02VLdsZdr0lBD9aQx4hNkPT+gD7r8pFL3xGMkTK7s926balR+mT13/O
+         Oh/JkzQslIF7He7WdMqCer7Kvp4Sy1CNiVFN8CjJxNYKfa4nEnabPAw35yBZM2taGVzA
+         zZJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=B5EoYi45ZBUgcYzH5QmcJabRI+K9dAvb3lNExbNzDTc=;
-        b=oSckdqZ8nOqkLrkNts5Njcz/5xievo4FOZrGw6pwlxudYB8AKBMSfYbThsFP7mrngB
-         bZtRDkjV55I7SNFRq1PMZmGJ9AYAqTnZo02VsyqNd1S1moMufqnxO1tgYbOi+gE8t4Po
-         nwZH6IGG3YFwrQZ6fZzS5KZLF6cx1gKn5SddkpUSW4SPmWk3A0waxikfZcjkqAqgtk72
-         WWznJcVE84dRZI/0G5fBTXj4oDAelGxVb/mwbcipXNsqY0pEFcL7rOFvm9d7h4QR/ECa
-         joUDYFKKm9Kcr5KBKL8mWeP+FtPRSPaQ3EzYhTx1b6s6f11Z02dLhvWm8l3RPx0sX8g/
-         J8zw==
-X-Gm-Message-State: AOAM531KRtwbtLtodjVvmjZqvzbAnoBtywV1hWR2fVNk65GRrovmNLiK
-        lqOz7LBqNVO+KKNoJ9A27xu+64hshvdIcQ==
-X-Google-Smtp-Source: ABdhPJxbvQFA24STYjSmsFQeh34YR6aLuV8nQK5wlXXW3CPcVjhZjHvmK6qgZXTrZwPj8dZKeSjFjQ==
-X-Received: by 2002:a17:902:7248:b0:167:95e2:f83c with SMTP id c8-20020a170902724800b0016795e2f83cmr14304302pll.74.1654798297569;
-        Thu, 09 Jun 2022 11:11:37 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id r14-20020a63ec4e000000b003fb0354c43asm17728049pgj.32.2022.06.09.11.11.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 11:11:36 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH v2 0/7] usb: typec: Introduce typec-switch binding
-Date:   Thu,  9 Jun 2022 18:09:39 +0000
-Message-Id: <20220609181106.3695103-1-pmalani@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wa5+7Ua+o1gsnunSmNIYAMm6Jg9lLaYkR4rgU6BaP74=;
+        b=aZh0J+H/9pAVSb8jVDGa9ivpRbIq2uZV0edPFS5b+cgUzycCjoQxy9ztaMeDdhfv6X
+         NTfv38W1MO2cM5zpSpFLJJGBXRboZKPOVJ3hvq6+6dP+6XFGS45MsgAsDh3LVoMiEG06
+         FVHEAgSaTOcQEw2yZKHlhNOOMsq/S8OuGk/Wdm6G0LHp4cg1BPVZUGSHYK6uaOyGFMUg
+         R6aS4PhGFFMzrTTl8g7lHC7AyqLEcJTXUKO9b7mjYXNgw034NuqKyFT8bWZmE+rob/7N
+         3nEOaC0tjZQd34KtYZErrParzEuvNyib8gzP2mGmjW0aiUFIHmHZ6nzJnGNUMQnWUDnc
+         FNFQ==
+X-Gm-Message-State: AOAM533nMAoBf30Dh4gSyWPnrpUPCCEFEr2ohmcucWHV40rvip14wJox
+        6zoJkXZQoc0QsGvtbrDtOaBiu2MgLYlWx9LlKfc65xlHolM=
+X-Google-Smtp-Source: ABdhPJzATVkjnSUu7Exdv94wsFS5xYaIBAzIfK2YdLU94NNSCHpegCGreT/e9JkUL0anRMP8sHjXa0O+sRWABw3plEg=
+X-Received: by 2002:a05:6512:2296:b0:479:5805:6f05 with SMTP id
+ f22-20020a056512229600b0047958056f05mr10801238lfu.302.1654798313751; Thu, 09
+ Jun 2022 11:11:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220609062829.293217-1-james.hilliard1@gmail.com>
+In-Reply-To: <20220609062829.293217-1-james.hilliard1@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 9 Jun 2022 11:11:42 -0700
+Message-ID: <CAEf4BzaNBcW8ZDWcH5USd9jFshFF78psAjn2mqZp6uVGn0ZK+g@mail.gmail.com>
+Subject: Re: [PATCH 1/1] libbpf: replace typeof with __typeof__ for -std=c17 compatibility
+To:     James Hilliard <james.hilliard1@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series introduces a binding for Type-C data lane switches. These
-control the routing and operating modes of USB Type-C data lanes based
-on the PD messaging from the Type-C port driver regarding connected
-peripherals.
+On Wed, Jun 8, 2022 at 11:28 PM James Hilliard
+<james.hilliard1@gmail.com> wrote:
+>
+> Fixes errors like:
+> error: expected specifier-qualifier-list before 'typeof'
+>    14 | #define __type(name, val) typeof(val) *name
+>       |                           ^~~~~~
+> ../src/core/bpf/socket_bind/socket-bind.bpf.c:25:9: note: in expansion of macro '__type'
+>    25 |         __type(key, __u32);
+>       |         ^~~~~~
+>
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> ---
 
-The first patch introduces a change to the Type-C mux class mode-switch
-matching code, while the second adds a config guard to a Type-C header.
-The next couple of patches introduce the new "typec-switch" binding as
-well as one user of it (the ANX7625 drm bridge).
+If you follow DPDK link you gave me ([0]), you'll see that they ended up doing
 
-The remaining patches add functionality to the anx7625 driver to
-register the mode-switches, as well as program its crosspoint
-switch depending on which Type-C port has a DisplayPort (DP) peripheral
-connected to it.
+#ifndef typeof
+#define typeof __typeof__
+#endif
 
-v1: https://lore.kernel.org/linux-usb/20220607190131.1647511-1-pmalani@chromium.org/
+It's way more localized. Let's do that.
 
-Changes since v1:
-- Fixed function signature error in "else case" of typec_mux.h
-- typec-switch.yaml: Fixed indentation, compatible, and node names in examples.
-- anx7625.yaml:
-    + Introduced patternProperties for "switch" children (suggested by Krzysztof Kozlowski).
-    + Added unevaluatedProperties descriptor (suggested by Krzysztof Kozlowski).
-    + Added "address-cells" and "size-cells" properties to "switches".
+But also I tried to build libbpf-bootstrap with -std=c17 and
+immediately ran into issue with asm, so we need to do the same with
+asm -> __asm__. Can you please update your patch and fix both issues?
 
-Pin-Yen Lin (1):
-  drm/bridge: anx7625: Add typec_mux_set callback function
+  [0] https://patches.dpdk.org/project/dpdk/patch/2601191342CEEE43887BDE71AB977258213F3012@irsmsx105.ger.corp.intel.com/
+  [1] https://github.com/libbpf/libbpf-bootstrap
 
-Prashant Malani (6):
-  usb: typec: mux: Allow muxes to specify mode-switch
-  usb: typec: mux: Add CONFIG guards for functions
-  dt-bindings: usb: Add Type-C switch binding
-  dt-bindings: drm/bridge: anx7625: Add mode-switch support
-  drm/bridge: anx7625: Register number of Type C switches
-  drm/bridge: anx7625: Register Type-C mode switches
 
- .../display/bridge/analogix,anx7625.yaml      |  63 ++++++++
- .../devicetree/bindings/usb/typec-switch.yaml |  74 +++++++++
- drivers/gpu/drm/bridge/analogix/anx7625.c     | 151 ++++++++++++++++++
- drivers/gpu/drm/bridge/analogix/anx7625.h     |  20 +++
- drivers/usb/typec/mux.c                       |   8 +-
- include/linux/usb/typec_mux.h                 |  38 +++++
- 6 files changed, 352 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/usb/typec-switch.yaml
+>  tools/lib/bpf/bpf_core_read.h   | 16 ++++++++--------
+>  tools/lib/bpf/bpf_helpers.h     |  4 ++--
+>  tools/lib/bpf/bpf_tracing.h     | 24 ++++++++++++------------
+>  tools/lib/bpf/btf.h             |  4 ++--
+>  tools/lib/bpf/libbpf_internal.h |  6 +++---
+>  tools/lib/bpf/usdt.bpf.h        |  6 +++---
+>  tools/lib/bpf/xsk.h             | 12 ++++++------
+>  7 files changed, 36 insertions(+), 36 deletions(-)
+>
 
--- 
-2.36.1.476.g0c4daa206d-goog
-
+[...]
