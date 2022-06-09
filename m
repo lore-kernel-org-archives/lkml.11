@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47D03C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B4C0CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:23:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243574AbiFILXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45612 "EHLO
+        id S243655AbiFILX0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243512AbiFILXN (ORCPT
+        with ESMTP id S243520AbiFILXN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 9 Jun 2022 07:23:13 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0316884A2C;
-        Thu,  9 Jun 2022 04:23:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B329D076;
+        Thu,  9 Jun 2022 04:23:12 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id B9E8D66017C9;
-        Thu,  9 Jun 2022 12:23:08 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 8A23166017CF;
+        Thu,  9 Jun 2022 12:23:10 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654773789;
-        bh=BzU2sp5uWjhJVZc+Pbqb4F7Rd9WBetm2NBJji/SvJBY=;
+        s=mail; t=1654773791;
+        bh=+SNQosugZ3rRLzeC91179/d1xD7fpoErRAwb547pmRM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bz5vhmF1Y531BltL8wLWNs23X4odbGrcHRtG8SI8DJFGEkmoec7IyE1m6R3bOYM5a
-         sR54DiZ9U+6IvkH3mTKJfO2ql0PJdAV0IV9MPv/wRZ+qB3tSCtiMa7GKip1cK9OXx8
-         9OLmpH/wh3xtvfGksl62D9Vjv0qzK9EM2LhgBcSeIaLZro1l7PhQxJ9VRK+BAmwPTf
-         SFQO+wwYrVHUUyIQ4ITKiTzSqxcEyBttlHfyw4Bif6zaq7NHPqKMVrmdFo5GQmIq0N
-         dlG0B7K6YRHk2Uo38lCxAolvwOBpXsjTCsCGVDXWMGy7QqOz1gTRwUScXGlIWBnSCp
-         acOquf7Xzl9Sw==
+        b=S7KJDmw4QBP9Uj7VYNzil/QC22SlwfQosv38ZlTcKF1fTNbCdGJMtdM/XXAuS42cx
+         tkber570qlmPd1KgxxeLT57PuZ8dSLaYH/b3G8r8eR3sEXxnnnqiHZasnsC4wosbKB
+         qoPhN1SF9UYkrT/XjkdACqiXVpAOEhWQhS9W7BJUrHT1dH2u0qn93Rq8LOjBAuZtNk
+         iD0qXVvBuFebozm+R/4ydMZygTpqkCRAGLtcFOQYRhe7Kt1VEvwpv4D7MAfb+c2fmT
+         ZfDgTHfbhQZBDJGYky2Tgl4OTWys0UseWYN8K32Ktx0q3hSRZ+RSQT8T7UcsXJyjeU
+         gMZ73MX2uQ+tw==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     robh+dt@kernel.org
@@ -44,9 +44,9 @@ Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
         kernel@collabora.com,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v2 01/10] arm64: dts: mediatek: mt6795: Create soc bus node and move mmio devices
-Date:   Thu,  9 Jun 2022 13:22:54 +0200
-Message-Id: <20220609112303.117928-2-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v2 03/10] arm64: dts: mediatek: mt6795: Add Cortex A53 PMU nodes
+Date:   Thu,  9 Jun 2022 13:22:56 +0200
+Message-Id: <20220609112303.117928-4-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220609112303.117928-1-angelogioacchino.delregno@collabora.com>
 References: <20220609112303.117928-1-angelogioacchino.delregno@collabora.com>
@@ -56,136 +56,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MMIO devices should be inside of a soc bus node, as it's done for the
-vast majority of ARM64 devicetrees, and for almost all MTK devicetrees.
-Create a simple-bus soc node and move all devices with a MMIO address
-space in there.
+Add the required nodes to enable the PMU on this SoC.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- arch/arm64/boot/dts/mediatek/mt6795.dtsi | 105 ++++++++++++-----------
- 1 file changed, 56 insertions(+), 49 deletions(-)
+ arch/arm64/boot/dts/mediatek/mt6795.dtsi | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt6795.dtsi b/arch/arm64/boot/dts/mediatek/mt6795.dtsi
-index c85659d0ff5d..167f90bd991a 100644
+index 1456b9035336..639104b3f693 100644
 --- a/arch/arm64/boot/dts/mediatek/mt6795.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt6795.dtsi
-@@ -117,59 +117,66 @@ timer {
- 			     (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
+@@ -160,6 +160,15 @@ uart_clk: dummy26m {
+ 		#clock-cells = <0>;
  	};
  
--	sysirq: intpol-controller@10200620 {
--		compatible = "mediatek,mt6795-sysirq",
--			     "mediatek,mt6577-sysirq";
--		interrupt-controller;
--		#interrupt-cells = <3>;
--		interrupt-parent = <&gic>;
--		reg = <0 0x10200620 0 0x20>;
--	};
-+	soc {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		compatible = "simple-bus";
-+		ranges;
++	pmu {
++		compatible = "arm,cortex-a53-pmu";
++		interrupts = <GIC_SPI  8 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI  9 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 10 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 11 IRQ_TYPE_LEVEL_LOW>;
++		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
++	};
 +
-+		sysirq: intpol-controller@10200620 {
-+			compatible = "mediatek,mt6795-sysirq",
-+				     "mediatek,mt6577-sysirq";
-+			interrupt-controller;
-+			#interrupt-cells = <3>;
-+			interrupt-parent = <&gic>;
-+			reg = <0 0x10200620 0 0x20>;
-+		};
- 
--	gic: interrupt-controller@10221000 {
--		compatible = "arm,gic-400";
--		#interrupt-cells = <3>;
--		interrupt-parent = <&gic>;
--		interrupt-controller;
--		reg = <0 0x10221000 0 0x1000>,
--		      <0 0x10222000 0 0x2000>,
--		      <0 0x10224000 0 0x2000>,
--		      <0 0x10226000 0 0x2000>;
--	};
-+		gic: interrupt-controller@10221000 {
-+			compatible = "arm,gic-400";
-+			#interrupt-cells = <3>;
-+			interrupt-parent = <&gic>;
-+			interrupt-controller;
-+			reg = <0 0x10221000 0 0x1000>,
-+			      <0 0x10222000 0 0x2000>,
-+			      <0 0x10224000 0 0x2000>,
-+			      <0 0x10226000 0 0x2000>;
-+		};
- 
--	uart0: serial@11002000 {
--		compatible = "mediatek,mt6795-uart",
--			     "mediatek,mt6577-uart";
--		reg = <0 0x11002000 0 0x400>;
--		interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
--		clocks = <&uart_clk>;
--		status = "disabled";
--	};
-+		uart0: serial@11002000 {
-+			compatible = "mediatek,mt6795-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11002000 0 0x400>;
-+			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&uart_clk>;
-+			status = "disabled";
-+		};
- 
--	uart1: serial@11003000 {
--		compatible = "mediatek,mt6795-uart",
--			     "mediatek,mt6577-uart";
--		reg = <0 0x11003000 0 0x400>;
--		interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
--		clocks = <&uart_clk>;
--		status = "disabled";
--	};
-+		uart1: serial@11003000 {
-+			compatible = "mediatek,mt6795-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11003000 0 0x400>;
-+			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&uart_clk>;
-+			status = "disabled";
-+		};
- 
--	uart2: serial@11004000 {
--		compatible = "mediatek,mt6795-uart",
--			     "mediatek,mt6577-uart";
--		reg = <0 0x11004000 0 0x400>;
--		interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
--		clocks = <&uart_clk>;
--		status = "disabled";
--	};
-+		uart2: serial@11004000 {
-+			compatible = "mediatek,mt6795-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11004000 0 0x400>;
-+			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&uart_clk>;
-+			status = "disabled";
-+		};
- 
--	uart3: serial@11005000 {
--		compatible = "mediatek,mt6795-uart",
--			     "mediatek,mt6577-uart";
--		reg = <0 0x11005000 0 0x400>;
--		interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_LOW>;
--		clocks = <&uart_clk>;
--		status = "disabled";
-+		uart3: serial@11005000 {
-+			compatible = "mediatek,mt6795-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11005000 0 0x400>;
-+			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&uart_clk>;
-+			status = "disabled";
-+		};
- 	};
- };
+ 	timer {
+ 		compatible = "arm,armv8-timer";
+ 		interrupt-parent = <&gic>;
 -- 
 2.35.1
 
