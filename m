@@ -2,102 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA6E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 10:41:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 10:41:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242937AbiFIKlH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 06:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58662 "EHLO
+        id S243007AbiFIKlK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 06:41:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243394AbiFIKkp (ORCPT
+        with ESMTP id S243229AbiFIKku (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 06:40:45 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4515A35DB1A;
-        Thu,  9 Jun 2022 03:40:12 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Thu, 9 Jun 2022 06:40:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104721105DE;
+        Thu,  9 Jun 2022 03:40:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 20A5266017C7;
-        Thu,  9 Jun 2022 11:40:10 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654771211;
-        bh=XsdKca6uJqVHP/fpe/JGNltV33I9zIbmdBk8VfIBHU4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=grhQQ7l0fxS0nE/QuH0wy0PvUmj2vFgdYu7M8vFf3deBIEaJt7TGwQt4JHSSlJkey
-         KW7H1VFqaIh+dCG9wyw9x2tMiAmHhyG5jITZDY88uOT9TKXI1nSpdB4W5yzwHMeuq5
-         pXfBARcaRcd/vE1NRxU8Aru+DV7A10v5cWgRT4QhrTcgb4iDl4WLYRoBU4dcmXkxTX
-         ENCk8OYQLp1VkSiPgp0IQSFcsWFqbODDdYe8Q5n3JwHRZE36OVnuIXJvfjwfwDSGSL
-         LYdskul928uHc6cD20stZsm4zZvq9N07xMW0Oi/jepPqxvZuCyj3LL+obrCZEPwwjV
-         0bZw1J288bbgA==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     yong.wu@mediatek.com
-Cc:     joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
-        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v3 2/3] iommu: mtk_iommu: Introduce new flag TF_PORT_TO_ADDR_MT8173
-Date:   Thu,  9 Jun 2022 12:40:00 +0200
-Message-Id: <20220609104001.97753-3-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220609104001.97753-1-angelogioacchino.delregno@collabora.com>
-References: <20220609104001.97753-1-angelogioacchino.delregno@collabora.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A00B961D98;
+        Thu,  9 Jun 2022 10:40:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81D8DC34114;
+        Thu,  9 Jun 2022 10:40:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654771230;
+        bh=Wf1dhu5SQZfFcciS3upZkCwdHerc+NxnCZv0l+U13g8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iLTslnYCa+oM6PAoLH8GepLVVcc/R2U8AJ6EJEvHCTiFddGWW/AjUau6qbWbXwezQ
+         2CRcan9QZd5dfHRgByYGdP9WNSFT6edd90LxCOIE/oWUWIbrzydsqj7Gio3ad5OyVW
+         2HFwrNBIyGMU5aaQI+rKk3iZ23PFEeqnGgEBxwhH5lMVt/3LVw3047oiHm+/GRVRqz
+         wvm/aQizoP19YBog/Hr2aIyv0LfdKViW6zMfGeUC1VDEQyDffKJTJjYzXOrYWD8vDY
+         wFMnMbSyuNSc6MREiqj7QLu1qTmCb4WjTzEBV+d3bleZ1iBjuuTHwjAS+xcP2BY9Y6
+         z/VKtPiEdYPIQ==
+Date:   Thu, 9 Jun 2022 16:09:44 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 2/3] dt-bindings: mtd: qcom_nandc: document
+ qcom,boot-partitions binding
+Message-ID: <20220609103944.GD2758@thinkpad>
+References: <20220608001030.18813-1-ansuelsmth@gmail.com>
+ <20220608001030.18813-3-ansuelsmth@gmail.com>
+ <20220609072029.GA2758@thinkpad>
+ <62a1ca9a.1c69fb81.3b355.0b02@mx.google.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <62a1ca9a.1c69fb81.3b355.0b02@mx.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation for adding support for MT6795, add a new flag named
-TF_PORT_TO_ADDR_MT8173 and use that instead of checking for m4u_plat
-type in mtk_iommu_hw_init() to avoid seeing a long list of m4u_plat
-checks there in the future.
+On Thu, Jun 09, 2022 at 12:25:27PM +0200, Ansuel Smith wrote:
+> On Thu, Jun 09, 2022 at 12:50:29PM +0530, Manivannan Sadhasivam wrote:
+> > On Wed, Jun 08, 2022 at 02:10:29AM +0200, Ansuel Smith wrote:
+> > > Document new qcom,boot-partition binding used to apply special
+> > > read/write layout to boot partitions.
+> > > 
+> > > QCOM apply a special layout where spare data is not protected
+> > > by ECC for some special pages (used for boot partition). Add
+> > > Documentation on how to declare these special pages.
+> > > 
+> > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > ---
+> > >  .../devicetree/bindings/mtd/qcom,nandc.yaml   | 26 +++++++++++++++++++
+> > >  1 file changed, 26 insertions(+)
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml b/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
+> > > index 84ad7ff30121..a0914ccb95b0 100644
+> > > --- a/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
+> > > +++ b/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
+> > > @@ -102,6 +102,30 @@ allOf:
+> > >              - const: rx
+> > >              - const: cmd
+> > >  
+> > > +  - if:
+> > > +      properties:
+> > > +        compatible:
+> > > +          contains:
+> > > +            enum:
+> > > +              - qcom,ipq806x-nand
+> > > +
+> > > +    then:
+> > > +      properties:
+> > > +        qcom,boot-partitions:
+> > > +          $ref: /schemas/types.yaml#/definitions/uint32-matrix
+> > 
+> > Wondering if u32 is enough for covering all ranges? Other than this,
+> > 
+> > Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+> > 
+> > Thanks,
+> > Mani
+> >
+> 
+> I mean they are offset and sizes... Considering it's an old SoC and max
+> nand mounted is 1g we should be safe with u32.
+> 
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/iommu/mtk_iommu.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+I thought so but wanted to confirm...
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 0ea0848581e9..8611cf8e4bd5 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -140,6 +140,7 @@
- #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
- /* IOMMU I/O (r/w) is enabled using PERICFG_IOMMU_1 register */
- #define HAS_PERI_IOMMU1_REG		BIT(17)
-+#define TF_PORT_TO_ADDR_MT8173		BIT(18)
- 
- #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
- 				((((pdata)->flags) & (mask)) == (_x))
-@@ -960,7 +961,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data, unsigned int ban
- 	 * Global control settings are in bank0. May re-init these global registers
- 	 * since no sure if there is bank0 consumers.
- 	 */
--	if (data->plat_data->m4u_plat == M4U_MT8173) {
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, TF_PORT_TO_ADDR_MT8173)) {
- 		regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
- 			 F_MMU_TF_PROT_TO_PROGRAM_ADDR_MT8173;
- 	} else {
-@@ -1437,7 +1438,8 @@ static const struct mtk_iommu_plat_data mt8167_data = {
- static const struct mtk_iommu_plat_data mt8173_data = {
- 	.m4u_plat     = M4U_MT8173,
- 	.flags	      = HAS_4GB_MODE | HAS_BCLK | RESET_AXI |
--			HAS_LEGACY_IVRP_PADDR | MTK_IOMMU_TYPE_MM,
-+			HAS_LEGACY_IVRP_PADDR | MTK_IOMMU_TYPE_MM |
-+			TF_PORT_TO_ADDR_MT8173,
- 	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
- 	.banks_num    = 1,
- 	.banks_enable = {true},
+Thanks,
+Mani
+
+> > > +          items:
+> > > +            items:
+> > > +              - description: offset
+> > > +              - description: size
+> > > +          description:
+> > > +            Boot partition use a different layout where the 4 bytes of spare
+> > > +            data are not protected by ECC. Use this to declare these special
+> > > +            partitions by defining first the offset and then the size.
+> > > +
+> > > +            It's in the form of <offset1 size1 offset2 size2 offset3 ...>
+> > > +
+> > > +            Refer to the ipq8064 example on how to use this special binding.
+> > > +
+> > >  required:
+> > >    - compatible
+> > >    - reg
+> > > @@ -135,6 +159,8 @@ examples:
+> > >          nand-ecc-strength = <4>;
+> > >          nand-bus-width = <8>;
+> > >  
+> > > +        qcom,boot-partitions = <0x0 0x58a0000>;
+> > > +
+> > >          partitions {
+> > >            compatible = "fixed-partitions";
+> > >            #address-cells = <1>;
+> > > -- 
+> > > 2.36.1
+> > > 
+> > 
+> > -- 
+> > மணிவண்ணன் சதாசிவம்
+> 
+> -- 
+> 	Ansuel
+
 -- 
-2.35.1
-
+மணிவண்ணன் சதாசிவம்
