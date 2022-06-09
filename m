@@ -2,87 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E283C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 02:58:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E72C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 02:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237333AbiFIC6O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 22:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34102 "EHLO
+        id S237367AbiFIC6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 22:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232220AbiFIC6K (ORCPT
+        with ESMTP id S232220AbiFIC6t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 22:58:10 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3664E119926;
-        Wed,  8 Jun 2022 19:58:06 -0700 (PDT)
-Received: from canpemm500005.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LJTGM1skZzRhb9;
-        Thu,  9 Jun 2022 10:54:51 +0800 (CST)
-Received: from huawei.com (10.145.46.56) by canpemm500005.china.huawei.com
- (7.192.104.229) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 9 Jun
- 2022 10:58:03 +0800
-From:   Zhou Wang <wangzhou1@hisilicon.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>
-CC:     <qianweili@huawei.com>, <shenyang39@huawei.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>
-Subject: [PATCH] MAINTAINERS: update HiSilicon ZIP and QM maintainers
-Date:   Thu, 9 Jun 2022 02:56:39 +0000
-Message-ID: <20220609025639.3280804-1-wangzhou1@hisilicon.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 8 Jun 2022 22:58:49 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED526E8EB;
+        Wed,  8 Jun 2022 19:58:48 -0700 (PDT)
+X-UUID: bf200434209c47ecbb24c360cc0a5148-20220609
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:8fb325ca-de2d-40f8-9c4c-80a2f91854e9,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:a8552ee5-2ba2-4dc1-b6c5-11feb6c769e0,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: bf200434209c47ecbb24c360cc0a5148-20220609
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 615797572; Thu, 09 Jun 2022 10:58:44 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 9 Jun 2022 10:58:43 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 9 Jun 2022 10:58:42 +0800
+Message-ID: <b3ab001a4a28767cf4f8a5b330b11ead80c5d48e.camel@mediatek.com>
+Subject: Re: [PATCH v6 2/8] ASoC: mediatek: mt8186: add platform driver
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     Mark Brown <broonie@kernel.org>
+CC:     <robh+dt@kernel.org>, <angelogioacchino.delregno@collabora.com>,
+        <aaronyu@google.com>, <matthias.bgg@gmail.com>,
+        <trevor.wu@mediatek.com>, <tzungbi@google.com>,
+        <julianbraha@gmail.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Thu, 9 Jun 2022 10:58:42 +0800
+In-Reply-To: <YqCG+9YkuXsDeh/I@sirena.org.uk>
+References: <20220607142046.28060-1-jiaxin.yu@mediatek.com>
+         <20220607142046.28060-3-jiaxin.yu@mediatek.com>
+         <YqCG+9YkuXsDeh/I@sirena.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.145.46.56]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500005.china.huawei.com (7.192.104.229)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch splits QM and ZIP in MAINTAINERS, then add Weili Qian for QM
-driver and Yang Shen for ZIP driver. This patch adds missing Kconfig and
-Makefile files as well.
+On Wed, 2022-06-08 at 12:24 +0100, Mark Brown wrote:
+> On Tue, Jun 07, 2022 at 10:20:40PM +0800, Jiaxin Yu wrote:
+> 
+> > +obj-$(CONFIG_SND_SOC_MT8186) += snd-soc-mt8186-afe.o
+> > +obj-$(CONFIG_SND_SOC_MT8186_MT6366_DA7219_MAX98357) += mt8186-
+> > mt6366-da7219-max98357.o
+> > +obj-$(CONFIG_SND_SOC_MT8186_MT6366_RT1019_RT5682S) += mt8186-
+> > mt6366-rt1019-rt5682s.o
+> 
+> This breaks bisection - these drivers are being added to the build
+> here
+> but the relevant source files aren't added until later on in the
+> series
+> so the commits in between won't build when the relevant Kconfig
+> options
+> are selected.  The Makefile and Kconfig updates should be moved into
+> the
+> driver patches.
 
-Signed-off-by: Zhou Wang <wangzhou1@hisilicon.com>
----
- MAINTAINERS | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+I see, this is to ensure the independence of each patch. I will move
+the Kconfig and Makefile changes related to the machine driver to the
+corresponding patch.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a6d3bd9d2a8d..b04fb3324837 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8936,16 +8936,25 @@ F:	Documentation/admin-guide/perf/hisi-pcie-pmu.rst
- F:	Documentation/admin-guide/perf/hisi-pmu.rst
- F:	drivers/perf/hisilicon
- 
--HISILICON QM AND ZIP Controller DRIVER
-+HISILICON QM DRIVER
-+M:	Weili Qian <qianweili@huawei.com>
- M:	Zhou Wang <wangzhou1@hisilicon.com>
- L:	linux-crypto@vger.kernel.org
- S:	Maintained
--F:	Documentation/ABI/testing/debugfs-hisi-zip
-+F:	drivers/crypto/hisilicon/Kconfig
-+F:	drivers/crypto/hisilicon/Makefile
- F:	drivers/crypto/hisilicon/qm.c
- F:	drivers/crypto/hisilicon/sgl.c
--F:	drivers/crypto/hisilicon/zip/
- F:	include/linux/hisi_acc_qm.h
- 
-+HISILICON ZIP Controller DRIVER
-+M:	Yang Shen <shenyang39@huawei.com>
-+M:	Zhou Wang <wangzhou1@hisilicon.com>
-+L:	linux-crypto@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/ABI/testing/debugfs-hisi-zip
-+F:	drivers/crypto/hisilicon/zip/
-+
- HISILICON ROCE DRIVER
- M:	Wenpeng Liang <liangwenpeng@huawei.com>
- M:	Weihang Li <liweihang@huawei.com>
--- 
-2.34.1
+Thanks,
+Jiaxin.Yu
 
