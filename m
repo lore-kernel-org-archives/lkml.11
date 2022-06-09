@@ -2,107 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D25C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 10:27:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B197FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 10:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242863AbiFIK1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 06:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
+        id S242896AbiFIK10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 06:27:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241555AbiFIK1D (ORCPT
+        with ESMTP id S242762AbiFIK1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 06:27:03 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256CA1FD9F2;
-        Thu,  9 Jun 2022 03:27:01 -0700 (PDT)
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzFNP-000DEf-LE; Thu, 09 Jun 2022 12:26:55 +0200
-Received: from [2a02:168:f656:0:d16a:7287:ccf0:4fff] (helo=localhost.localdomain)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzFNP-0007Xo-6F; Thu, 09 Jun 2022 12:26:55 +0200
-Subject: Re: [syzbot] BUG: sleeping function called from invalid context in
- corrupted (2)
-To:     syzbot <syzbot+efe1afd49d981d281ae4@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, jakub@cloudflare.com,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, wangyufen@huawei.com, yhs@fb.com
-References: <000000000000124e9105e0fbe047@google.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <fd735658-4d75-85be-28f1-0df389c9cf73@iogearbox.net>
-Date:   Thu, 9 Jun 2022 12:26:53 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Thu, 9 Jun 2022 06:27:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E0E202D2F;
+        Thu,  9 Jun 2022 03:27:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECEF661D3A;
+        Thu,  9 Jun 2022 10:27:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EABAC34114;
+        Thu,  9 Jun 2022 10:27:07 +0000 (UTC)
+Message-ID: <ca006530-b20b-f97c-af68-5f0191478f96@xs4all.nl>
+Date:   Thu, 9 Jun 2022 12:27:05 +0200
 MIME-Version: 1.0
-In-Reply-To: <000000000000124e9105e0fbe047@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] media: imx-jpeg: Disable slot interrupt when frame done
 Content-Language: en-US
+To:     Ming Qian <ming.qian@nxp.com>, mchehab@kernel.org,
+        mirela.rabulea@oss.nxp.com
+Cc:     shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220607072315.23209-1-ming.qian@nxp.com>
+From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
+In-Reply-To: <20220607072315.23209-1-ming.qian@nxp.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26567/Thu Jun  9 10:06:06 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/9/22 6:01 AM, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    03c312cc5f47 Add linux-next specific files for 20220608
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=155a4b73f00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a0a0f5184fb46b
-> dashboard link: https://syzkaller.appspot.com/bug?extid=efe1afd49d981d281ae4
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=168d9ebff00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=125c6e5ff00000
-> 
-> The issue was bisected to:
-> 
-> commit d8616ee2affcff37c5d315310da557a694a3303d
-> Author: Wang Yufen <wangyufen@huawei.com>
-> Date:   Tue May 24 07:53:11 2022 +0000
-> 
->      bpf, sockmap: Fix sk->sk_forward_alloc warn_on in sk_stream_kill_queues
+Hi Ming Qian,
 
-Wang, please take a look and fix. Thanks!
-
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=138a4b57f00000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=104a4b57f00000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=178a4b57f00000
+On 6/7/22 09:23, Ming Qian wrote:
+> The interrupt STMBUF_HALF may be triggered after frame done.
+> It may led to system hang if driver try to access the register after
+> power off.
 > 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+efe1afd49d981d281ae4@syzkaller.appspotmail.com
-> Fixes: d8616ee2affc ("bpf, sockmap: Fix sk->sk_forward_alloc warn_on in sk_stream_kill_queues")
+> Disable the slot interrupt when frame done.
 > 
-> BUG: sleeping function called from invalid context at kernel/workqueue.c:3010
-> in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 3611, name: syz-executor124
-> preempt_count: 201, expected: 0
-> RCU nest depth: 0, expected: 0
-> 3 locks held by syz-executor124/3611:
->   #0: ffff888073295c10 (&sb->s_type->i_mutex_key#10){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:742 [inline]
->   #0: ffff888073295c10 (&sb->s_type->i_mutex_key#10){+.+.}-{3:3}, at: __sock_release+0x86/0x280 net/socket.c:649
->   #1: ffff888073ff1ab0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1691 [inline]
->   #1: ffff888073ff1ab0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: tcp_close+0x1e/0xc0 net/ipv4/tcp.c:2908
-> 
-> 
+> Fixes: 2db16c6ed72ce ("media: imx-jpeg: Add V4L2 driver for i.MX8 JPEG Encoder/Decoder")
+> Signed-off-by: Ming Qian <ming.qian@nxp.com>
 > ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>  drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c |  5 +++++
+>  drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h |  1 +
+>  drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c    | 11 ++---------
+>  3 files changed, 8 insertions(+), 9 deletions(-)
 > 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> syzbot can test patches for this issue, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
-> 
+> diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c
+> index c482228262a3..9418fcf740a8 100644
+> --- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c
+> +++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c
+> @@ -79,6 +79,11 @@ void mxc_jpeg_enable_irq(void __iomem *reg, int slot)
+>  	writel(0xFFFFFFFF, reg + MXC_SLOT_OFFSET(slot, SLOT_IRQ_EN));
+>  }
+>  
+> +void mxc_jpeg_disable_irq(void __iomem *reg, int slot)
+> +{
+> +	writel(0x0, reg + MXC_SLOT_OFFSET(slot, SLOT_IRQ_EN));
+> +}
+> +
+>  void mxc_jpeg_sw_reset(void __iomem *reg)
+>  {
+>  	/*
+> diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
+> index 07655502f4bd..ecf3b6562ba2 100644
+> --- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
+> +++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
+> @@ -126,6 +126,7 @@ u32 mxc_jpeg_get_offset(void __iomem *reg, int slot);
+>  void mxc_jpeg_enable_slot(void __iomem *reg, int slot);
+>  void mxc_jpeg_set_l_endian(void __iomem *reg, int le);
+>  void mxc_jpeg_enable_irq(void __iomem *reg, int slot);
+> +void mxc_jpeg_disable_irq(void __iomem *reg, int slot);
+>  int mxc_jpeg_set_input(void __iomem *reg, u32 in_buf, u32 bufsize);
+>  int mxc_jpeg_set_output(void __iomem *reg, u16 out_pitch, u32 out_buf,
+>  			u16 w, u16 h);
+> diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+> index 965021d3c7ef..b1f48835398e 100644
+> --- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+> +++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+> @@ -592,15 +592,7 @@ static irqreturn_t mxc_jpeg_dec_irq(int irq, void *priv)
+>  	dev_dbg(dev, "Irq %d on slot %d.\n", irq, slot);
+>  
+>  	ctx = v4l2_m2m_get_curr_priv(jpeg->m2m_dev);
+> -	if (!ctx) {
+> -		dev_err(dev,
+> -			"Instance released before the end of transaction.\n");
+> -		/* soft reset only resets internal state, not registers */
+> -		mxc_jpeg_sw_reset(reg);
+> -		/* clear all interrupts */
+> -		writel(0xFFFFFFFF, reg + MXC_SLOT_OFFSET(slot, SLOT_STATUS));
+> -		goto job_unlock;
+> -	}
+> +	WARN_ON(!ctx);
 
+This looks very scary, since if this happens,
+
+>  
+>  	if (slot != ctx->slot) {
+
+then it will crash here when it attempts to access ctx.
+
+Shouldn't this be better?
+
+	if (WARN_ON(!ctx))
+		goto job_unlock;
+
+It's certainly a lot more robust.
+
+Regards,
+
+	Hans
+
+>  		/* TODO investigate when adding multi-instance support */
+> @@ -673,6 +665,7 @@ static irqreturn_t mxc_jpeg_dec_irq(int irq, void *priv)
+>  	buf_state = VB2_BUF_STATE_DONE;
+>  
+>  buffers_done:
+> +	mxc_jpeg_disable_irq(reg, ctx->slot);
+>  	jpeg->slot_data[slot].used = false; /* unused, but don't free */
+>  	mxc_jpeg_check_and_set_last_buffer(ctx, src_buf, dst_buf);
+>  	v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
