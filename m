@@ -2,89 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BF8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:00:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4492CCA47D
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242576AbiFIJAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 05:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52068 "EHLO
+        id S240325AbiFIJJp convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 05:09:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241944AbiFIJAP (ORCPT
+        with ESMTP id S230474AbiFIJJm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 05:00:15 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B5323BDC;
-        Thu,  9 Jun 2022 02:00:14 -0700 (PDT)
-X-UUID: b023b536d4014739bb43a28b23e64d49-20220609
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:36ec617f-03ed-4d1b-bb2f-cc6468efce13,OB:10,L
-        OB:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham
-        ,ACTION:release,TS:95
-X-CID-INFO: VERSION:1.1.5,REQID:36ec617f-03ed-4d1b-bb2f-cc6468efce13,OB:10,LOB
-        :10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D
-        ,ACTION:quarantine,TS:95
-X-CID-META: VersionHash:2a19b09,CLOUDID:8d1e3de5-2ba2-4dc1-b6c5-11feb6c769e0,C
-        OID:77d54d65d1c5,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: b023b536d4014739bb43a28b23e64d49-20220609
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <xiangsheng.hou@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 950824023; Thu, 09 Jun 2022 17:00:08 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Thu, 9 Jun 2022 17:00:07 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Thu, 9 Jun 2022 17:00:06 +0800
-From:   Xiangsheng Hou <xiangsheng.hou@mediatek.com>
-To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <matthias.bgg@gmail.com>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <bin.zhang@mediatek.com>,
-        <benliang.zhao@mediatek.com>,
-        Xiangsheng Hou <xiangsheng.hou@mediatek.com>
-Subject: arm64: dts: mt8173: Fix nor_flash node
-Date:   Thu, 9 Jun 2022 16:59:34 +0800
-Message-ID: <20220609085933.17398-1-xiangsheng.hou@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 9 Jun 2022 05:09:42 -0400
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F6115A34;
+        Thu,  9 Jun 2022 02:09:40 -0700 (PDT)
+Received: by mail-qv1-f44.google.com with SMTP id z20so1757498qvv.3;
+        Thu, 09 Jun 2022 02:09:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vcNcbXn7pen8qYNKzKfNZDPezgTFLJOA1+jKzy0m7VY=;
+        b=t6PzbYf89Sk0M6RM6PyE1SLKU0SPPd61Mb/xBv8gPezXcigd6/znYtr71WOIREtZaK
+         drUO/Rd4WnfztLJArF8ffYLYv/QoGVZGYho/irNqKpt4mkFPi+PTf6Av/O5jKNOV1Xc+
+         49R8RXhZfktueF/yAXi2wMVNuZgY7/GVv9aUeIRAQvJANlesQ9dPd4SoofpjI02toKMq
+         v257cyX5JSJBVIOhfpWacpk1bo5/imjA7mczAUeeelDbGxGjA/ETiqHBNQODgbVIaPEX
+         jlSZq9ki57WcoYXU0fT7DYFr2gVSBwR5gLuqyvOgu89OD91KcF3U3Bd+cQqXlPgI8LCG
+         TLUg==
+X-Gm-Message-State: AOAM5321xnpOczBEuXhevHoNac/3Wuqy/jPMnqd2DG0HLpI96Fg+x9hV
+        gBYSfD9+v8CkZ9tEzv75LYzQsakKiQEwKg==
+X-Google-Smtp-Source: ABdhPJyx2oWeULEhMDYBX+8aprOKzHGS4UYTp8GFV4glC/vwveZHEw3nh7WD9i+8supyEQclp8RhTQ==
+X-Received: by 2002:ad4:596b:0:b0:46b:cc90:5a87 with SMTP id eq11-20020ad4596b000000b0046bcc905a87mr6097794qvb.59.1654765779333;
+        Thu, 09 Jun 2022 02:09:39 -0700 (PDT)
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
+        by smtp.gmail.com with ESMTPSA id x2-20020a05620a01e200b006a7034b7efesm3498006qkn.25.2022.06.09.02.09.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 02:09:38 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-30ce6492a60so234320067b3.8;
+        Thu, 09 Jun 2022 02:09:38 -0700 (PDT)
+X-Received: by 2002:a81:4811:0:b0:30c:8021:4690 with SMTP id
+ v17-20020a814811000000b0030c80214690mr41768687ywa.47.1654765778409; Thu, 09
+ Jun 2022 02:09:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+References: <20220525151040.24024-1-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20220525151040.24024-1-wsa+renesas@sang-engineering.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 9 Jun 2022 11:09:27 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX2qAMaejyEFCSNA1aZrMYQgQuf6mp0o_smKmdXUPkzwA@mail.gmail.com>
+Message-ID: <CAMuHMdX2qAMaejyEFCSNA1aZrMYQgQuf6mp0o_smKmdXUPkzwA@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: thermal: rcar-gen3-thermal: Add r8a779f0 support
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add axi clock since the driver change to DMA mode which need
-to enable axi clock. And change spi clock to 26MHz as default.
+Hi Wolfram,
 
-Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/mt8173.dtsi | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+On Wed, May 25, 2022 at 5:42 PM Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+> Add support for R-Car S4. The S4 IP differs a bit from its siblings in
+> such way that it has 3 out of 4 TSC nodes for Linux and the interrupts
+> are not routed to the INTC-AP but to the ECM.
+>
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-index 40d7b47fc52e..e603170100af 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-@@ -790,9 +790,12 @@ thermal: thermal@1100b000 {
- 		nor_flash: spi@1100d000 {
- 			compatible = "mediatek,mt8173-nor";
- 			reg = <0 0x1100d000 0 0xe0>;
-+			assigned-clocks = <&topckgen CLK_TOP_SPI_SEL>;
-+			assigned-clock-parents = <&clk26m>;
- 			clocks = <&pericfg CLK_PERI_SPI>,
--				 <&topckgen CLK_TOP_SPINFI_IFR_SEL>;
--			clock-names = "spi", "sf";
-+				 <&topckgen CLK_TOP_SPINFI_IFR_SEL>,
-+				 <&pericfg CLK_PERI_NFI>;
-+			clock-names = "spi", "sf", "axi";
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 			status = "disabled";
--- 
-2.25.1
+Thanks for your patch!
 
+> --- a/Documentation/devicetree/bindings/thermal/rcar-gen3-thermal.yaml
+> +++ b/Documentation/devicetree/bindings/thermal/rcar-gen3-thermal.yaml
+> @@ -8,9 +8,10 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  title: Renesas R-Car Gen3 Thermal Sensor
+>
+>  description:
+> -  On R-Car Gen3 SoCs, the thermal sensor controllers (TSC) control the thermal
+> -  sensors (THS) which are the analog circuits for measuring temperature (Tj)
+> -  inside the LSI.
+> +
+> +  On most R-Car Gen3 and later SoCs, the thermal sensor controllers (TSC)
+> +  control the thermal sensors (THS) which are the analog circuits for
+> +  measuring temperature (Tj) inside the LSI.
+>
+>  maintainers:
+>    - Niklas Söderlund <niklas.soderlund@ragnatech.se>
+> @@ -27,6 +28,7 @@ properties:
+>        - renesas,r8a77965-thermal # R-Car M3-N
+>        - renesas,r8a77980-thermal # R-Car V3H
+>        - renesas,r8a779a0-thermal # R-Car V3U
+> +      - renesas,r8a779f0-thermal # R-Car S4
+>
+>    reg: true
+
+As the interrupt is routed to the ECM, like on R-Car V3U, the interrupts
+property should not be required.  Else "make dtbs_check" complains:
+
+    arch/arm64/boot/dts/renesas/r8a779f0-spider.dtb: thermal@e6198000:
+'interrupts' is a required property
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
