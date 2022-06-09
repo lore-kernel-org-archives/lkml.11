@@ -2,117 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D29EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97EC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:29:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232019AbiFII1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42306 "EHLO
+        id S233361AbiFII35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbiFII1p (ORCPT
+        with ESMTP id S229934AbiFII3y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 04:27:45 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594BF14D7AD;
-        Thu,  9 Jun 2022 01:27:43 -0700 (PDT)
-Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LJcXs124Jz6892X;
-        Thu,  9 Jun 2022 16:22:53 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
+        Thu, 9 Jun 2022 04:29:54 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0BF152BA8;
+        Thu,  9 Jun 2022 01:29:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1654763393; x=1686299393;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1vSCdy4AX87UxHEd7W0RPqZe/n4JHEihhwn5uhx7GEM=;
+  b=pczd1i2/DMKfc3AC05khheW0SjQ7RM6CCPd+P9gMfNpiW8DMNzq3uYE9
+   TaqngiyX4Vm9iaUGsSwWX62xLxKf2TiqP/lZIvgfHMIEX882icdAb76f0
+   +lsPxTKij0gf5mXbZ13G9LijPFm9yD1Wgk3uXjBhI8kxeYahCCUFBoTcM
+   sgVnlnoPkKF35rYT2iga0041f+OdD7VgO/59a5gQkXB3Pa2cQheVFtsmP
+   9+m+DQ3q5HvBW97Iei2kaW1VXGgJFdUD+4a/jH/VuwoO3wiTn1GzMQG65
+   mF2/eT8TyRboq7xQtziev0z3KVhRuLLF8Ri+BdICOD0t0KdOC/tzOGtGY
+   g==;
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="167722478"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Jun 2022 01:29:52 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 9 Jun 2022 10:27:40 +0200
-Received: from localhost (10.81.202.195) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 9 Jun
- 2022 09:27:39 +0100
-Date:   Thu, 9 Jun 2022 09:27:38 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Ira Weiny <ira.weiny@intel.com>
-CC:     Ben Widawsky <bwidawsk@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Alison Schofield" <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH V10 6/9] cxl/port: Read CDAT table
-Message-ID: <20220609092738.00007553@Huawei.com>
-In-Reply-To: <YqESPug9duS6BMfQ@iweiny-desk3>
-References: <20220605005049.2155874-1-ira.weiny@intel.com>
-        <20220605005049.2155874-7-ira.weiny@intel.com>
-        <20220606181541.ysb3zqdpe5cuk4e6@bwidawsk-mobl5>
-        <YqESPug9duS6BMfQ@iweiny-desk3>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+ 15.1.2375.17; Thu, 9 Jun 2022 01:29:52 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 9 Jun 2022 01:29:48 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <eugen.hristev@microchip.com>, <jic23@kernel.org>,
+        <lars@metafoo.de>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <robh+dt@kernel.org>,
+        <krzk+dt@kernel.org>, <ludovic.desroches@atmel.com>
+CC:     <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 00/16] iio: adc: at91-sama5d2_adc: add support for temperature sensor
+Date:   Thu, 9 Jun 2022 11:31:57 +0300
+Message-ID: <20220609083213.1795019-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.81.202.195]
-X-ClientProxiedBy: lhreml731-chm.china.huawei.com (10.201.108.82) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 8 Jun 2022 14:27:14 -0700
-Ira Weiny <ira.weiny@intel.com> wrote:
+Hi,
 
-> On Mon, Jun 06, 2022 at 11:15:41AM -0700, Ben Widawsky wrote:
-> > On 22-06-04 17:50:46, ira.weiny@intel.com wrote:  
-> > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > >   
-> 
+The following series add support for temperature sensor available on
+SAMA7G5.
 
-[snip]
+Temperature sensor available on SAMA7G5 provides 2 outputs VTEMP and VBG.
+VTEMP is proportional to the absolute temperature voltage and VBG is a
+quasi-temperature independent voltage. Both are necessary in computing
+the temperature (for better accuracy). Also, for better accuracy the
+following settings were imposed when measusing the temperature:
+oversampling rate of 256, sampling frequency of 10MHz, a startup time of
+512 ticks, MR.tracktim=0xf, EMR.trackx=0x3.
 
-> >   
-> > > +
-> > > +		entry = cdat_response_pl + 1;
-> > > +		entry_dw = task.rv / sizeof(u32);
-> > > +		/* Skip Header */
-> > > +		entry_dw -= 1;
-> > > +		entry_dw = min(length / 4, entry_dw);
-> > > +		memcpy(data, entry, entry_dw * sizeof(u32));
-> > > +		length -= entry_dw * sizeof(u32);
-> > > +		data += entry_dw;
-> > > +		entry_handle = FIELD_GET(CXL_DOE_TABLE_ACCESS_ENTRY_HANDLE, cdat_response_pl[0]);  
-> > 
-> > [0] looks suspicious...  
-> 
-> Actually I have to claim ignorance on this one.  I've carried this from
-> Jonathan's original patches.  I'm not as worried about the [0] as that is just
-> the first dword.  But I'm confused as to this entry handle now.
-> 
-> Jonathan?  Help?
+For computing the temperature measured by ADC calibration data is
+necessary. This is provided via OTP memory available on SAMA7G5.
 
-Looks right to me.  The entryhandle is a field in the upper 16 bits of the
-first dword defined in Read Entry Response table in the CXL spec and also
-used in the request of the next entry (which is more or less a CDAT structure)
-Two magic values.
-0 -  CDAT header (request only - can't be returned)
-0xFFFF - No more entries.
+Patches 1/16-3/16 provides some fixes.
+Patches 3/16-12/16 prepares for the addition of temperature sensor
+support.
+Patch 13/16 adds the temperature sensor support.
 
-As we are reading the whole table, we write 0 to first request and from there
-on use the value returned in the response for the next request until we see
-0xFFFF and stop.
+Along with temperature sensor support I took the chance and added
+runtime PM support in this series, too (handled in patch 15/16).
 
-Note IIRC the meaning of entry handle was clarified in a CXL 2.0 errata as
-was a bit ambiguous in the original spec (we had two QEMU implementations
-briefly and they did different things :)
+The rest of patches in this series are minor cleanups.
 
-Jonathan
+Thank you,
+Claudiu Beznea
 
+Claudiu Beznea (16):
+  iio: adc: at91-sama5d2_adc: fix AT91_SAMA5D2_MR_TRACKTIM_MAX
+  iio: adc: at91-sama5d2_adc: lock around oversampling and sample freq
+  iio: adc: at91-sama5d2_adc: exit from write_raw() when buffers are
+    enabled
+  iio: adc: at91-sama5d2_adc: handle different EMR.OSR for different hw
+    versions
+  iio: adc: at91-sama5d2_adc: adjust osr based on specific platform data
+  iio: adc: at91-sama5d2_adc: add 64 and 256 oversampling ratio
+  iio: adc: at91-sama5d2_adc: simplify the code in
+    at91_adc_read_info_raw()
+  iio: adc: at91-sama5d2_adc: move oversampling storage in its function
+  iio: adc: at91-sama5d2_adc: update trackx on emr
+  iio: adc: at91-sama5d2_adc: add startup and tracktim as parameter for
+    at91_adc_setup_samp_freq()
+  iio: adc: at91-sama5d2_adc: add locking parameter to
+    at91_adc_read_info_raw()
+  dt-bindings: iio: adc: at91-sama5d2_adc: add id for temperature
+    channel
+  iio: adc: at91-sama5d2_adc: add support for temperature sensor
+  iio: adc: at91-sama5d2_adc: add empty line after functions
+  iio: adc: at91-sama5d2_adc: add runtime pm support
+  iio: adc: at91-sama5d2_adc: use pm_ptr()
 
-> 
-> >   
-> > > +
-> > > +	} while (entry_handle != 0xFFFF);
-> > > +
-> > > +	return rc;
-> > > +}
-> > > +
+ drivers/iio/adc/at91-sama5d2_adc.c            | 633 +++++++++++++++---
+ .../dt-bindings/iio/adc/at91-sama5d2_adc.h    |   3 +
+ 2 files changed, 548 insertions(+), 88 deletions(-)
 
+-- 
+2.34.1
 
