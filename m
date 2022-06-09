@@ -2,88 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA921C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:10:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A562EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:10:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236152AbiFIIK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41666 "EHLO
+        id S237656AbiFIIKu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:10:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233329AbiFIIKW (ORCPT
+        with ESMTP id S233276AbiFIIKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 04:10:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5C86416A53D
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:10:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654762220;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tiLrsl9taTyGSrJjDKI7N8ule2WbsgbzAGcFN4T087E=;
-        b=CZdB38vyON4eSNtZCtzDcckFET4VH83fi96VBq+sp6rGIMD4jcZm/UIftijX15bv50FfUt
-        9+XCnoxwy4+erqsXd9t8i7bETeRw3v61NqR+HKtkTbzmQpNLypS8FfR/emPKyUn+/TKVE6
-        L2tfJkK94Kh6Q+9yf6ouDJToeQ0fSIY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-562-sFd4YcckPoi0xEo8ZlBU9g-1; Thu, 09 Jun 2022 04:10:14 -0400
-X-MC-Unique: sFd4YcckPoi0xEo8ZlBU9g-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8A7AB3C0E216;
-        Thu,  9 Jun 2022 08:10:13 +0000 (UTC)
-Received: from localhost (unknown [10.39.192.115])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0B475492C3B;
-        Thu,  9 Jun 2022 08:10:12 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Alex Williamson <alex.williamson@redhat.com>,
-        alex.williamson@redhat.com
-Cc:     kwankhede@nvidia.com, farman@linux.ibm.com, mjrosato@linux.ibm.com,
-        pasic@linux.ibm.com, diana.craciun@oss.nxp.com,
-        eric.auger@redhat.com, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, jgg@nvidia.com, yishaih@nvidia.com,
-        hch@lst.de
-Subject: Re: [PATCH] vfio: de-extern-ify function prototypes
-In-Reply-To: <165471414407.203056.474032786990662279.stgit@omen>
-Organization: Red Hat GmbH
-References: <165471414407.203056.474032786990662279.stgit@omen>
-User-Agent: Notmuch/0.36 (https://notmuchmail.org)
-Date:   Thu, 09 Jun 2022 10:10:11 +0200
-Message-ID: <87tu8u9s0s.fsf@redhat.com>
+        Thu, 9 Jun 2022 04:10:47 -0400
+X-Greylist: delayed 959 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 09 Jun 2022 01:10:46 PDT
+Received: from mail.greatagencyonline.pl (mail.greatagencyonline.pl [89.40.125.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8680555239
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:10:46 -0700 (PDT)
+Received: by mail.greatagencyonline.pl (Postfix, from userid 1001)
+        id DB9BBAB6B5; Thu,  9 Jun 2022 08:50:51 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=greatagencyonline.pl;
+        s=mail; t=1654761064;
+        bh=ksvwLPFdjL017OLwir5xHXy3Vmrj/5fhZ5DwBI62qzc=;
+        h=Date:From:To:Subject:From;
+        b=sxTc2wHalBMJeDiX2G0mnf/vprhdcyMDfeDAlMRfIYzQaJd7bRowTKHqXw+S8C9FM
+         5s0a65FeBc73kypfdtRJRp5jBg94WMZhL0B6JxPOxh75Swnn6fKatAIbY/jw2OYpye
+         VGxyONSI6hv30TMkt1ChB+/kUl6A5rO9eYsCBx7n8l8le2H1pEiKTmOELyjFmwTFG3
+         eBlf0zifD780gFuYPzGkRJ5sGmJ2Ai3gHMPS/mKZwBRjntVYpLfnhPw2Rq3tylybCM
+         yOYlYpJCbhlSqX+OmQSfc/4ZoiftIvgnMTLoDs8wgvAaWhlRzkPPK366ilBp/weisr
+         b80YantUczn9A==
+Received: by mail.greatagencyonline.pl for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 07:50:41 GMT
+Message-ID: <20220609074503-0.1.4e.163x7.0.je45too97p@greatagencyonline.pl>
+Date:   Thu,  9 Jun 2022 07:50:41 GMT
+From:   =?UTF-8?Q? "Miko=C5=82aj_Rudzik" ?= 
+        <mikolaj.rudzik@greatagencyonline.pl>
+To:     <linux-kernel@vger.kernel.org>
+Subject: =?UTF-8?Q?Nap=C5=82yw_Klient=C3=B3w_ze_strony?=
+X-Mailer: mail.greatagencyonline.pl
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08 2022, Alex Williamson <alex.williamson@redhat.com> wrote:
+Dzie=C5=84 dobry,
 
-> The use of 'extern' in function prototypes has been disrecommended in
-> the kernel coding style for several years now, remove them from all vfio
-> related files so contributors no longer need to decide between style and
-> consistency.
->
-> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> ---
->
-> A patch in the same vein was proposed about a year ago, but tied to an ill
-> fated series and forgotten.  Now that we're at the beginning of a new
-> development cycle, I'd like to propose kicking off the v5.20 vfio next
-> branch with this patch and would kindly ask anyone with pending respins or
-> significant conflicts to rebase on top of this patch.  Thanks!
->
->  Documentation/driver-api/vfio-mediated-device.rst |   10 ++-
->  drivers/s390/cio/vfio_ccw_cp.h                    |   12 ++--
->  drivers/s390/cio/vfio_ccw_private.h               |    6 +-
->  drivers/vfio/fsl-mc/vfio_fsl_mc_private.h         |    2 -
->  drivers/vfio/platform/vfio_platform_private.h     |   21 +++---
->  include/linux/vfio.h                              |   70 ++++++++++-----------
->  include/linux/vfio_pci_core.h                     |   65 ++++++++++----------
->  7 files changed, 91 insertions(+), 95 deletions(-)
+chcia=C5=82bym poinformowa=C4=87 Pa=C5=84stwa o mo=C5=BCliwo=C5=9Bci pozy=
+skania nowych zlece=C5=84 ze strony www.
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Widzimy zainteresowanie potencjalnych Klient=C3=B3w Pa=C5=84stwa firm=C4=85=
+, dlatego ch=C4=99tnie pomo=C5=BCemy Pa=C5=84stwu dotrze=C4=87 z ofert=C4=
+=85 do wi=C4=99kszego grona odbiorc=C3=B3w poprzez efektywne metody pozyc=
+jonowania strony w Google.
 
+Czy m=C3=B3g=C5=82bym liczy=C4=87 na kontakt zwrotny?
+
+
+Pozdrawiam,
+Miko=C5=82aj Rudzik
