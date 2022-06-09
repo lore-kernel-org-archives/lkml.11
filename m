@@ -2,68 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3205ECCA473
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C92C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:40:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243161AbiFILkg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:40:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
+        id S242867AbiFILkm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:40:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243924AbiFILkP (ORCPT
+        with ESMTP id S243978AbiFILkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:40:15 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18D71DC85D
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:39:47 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id g25so401924ejh.9
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 04:39:47 -0700 (PDT)
+        Thu, 9 Jun 2022 07:40:22 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4EB1DE2F1
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:39:54 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id v19so30804712edd.4
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 04:39:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TLOgEcTi8rykVs8pllx/IciieSLBDIse4+2rVzfArXY=;
-        b=evrfUU8qIoxac6Ugbi3uM5mJKY60p4YJBYqvn0mjWeqmoit6epSOjwDebGiemocatb
-         sIHlNETvyjeZwJVhxFN4KmkKkoWdsi2yA7+R1G9qiP5tFlbLlt80KWLAqFRXf1qbJNkx
-         4JLKz1NZEbpm/hH5DDI5yf35MwKKmQs3LK0AXdlEViBaMRKrfMu9ncCpKP0dlw4RA6CD
-         8Tsix8oGxtOxRSAF0Jj3INBW14nTeZDjhtEon8nqIXVTUStXlVLhaFBNeMNYYr+5hScl
-         hga8kyT7M+RF0mbro0jYogrRfScRgXGmF7LnovgsoAOrsMGnnZ/eBD7Ag0JwVEliCsXX
-         8CIw==
+        bh=Z0YNwH3n6PjIeqiCRdH4f7yYwMmdAgLu9xDerffdwL8=;
+        b=kUR17GG84q6hCQJUB3Jwk7nEUm/YD6k+5F5oA1dajOpFX2gnQphROOBTGkRYxdjURL
+         OFOYOfaNVInw8o9IL17hk9oRB+mbFJae6xn2ecIgiOlQLZ4JyTmh80Mdq9540Tp4Kvsj
+         Kztvjfkt7qBMH61B1yi0VsVXE5tjPVo6Si++gUGxTdipP660vjgVZ7esQ5SXNuepKkvh
+         jq3PbGD1R/hntODKPc+j7kwx/Jhj+pma/x+KWUQj15ORmsvt5BoxDOfcC4cXsb1b+ncd
+         XAENwI7ChLHPRMhikZBohdOW/iFrQpOqSeaD1v7+ZmrCHuvrrebEwr2D15AD/yb3QDFd
+         EyJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TLOgEcTi8rykVs8pllx/IciieSLBDIse4+2rVzfArXY=;
-        b=3CF1SK4bnrrDFCWqGuSdVDWZCYI4PulnxXOGlM/cWWINjtB7wM8cEF/WQ+99Al3yog
-         UlEmFFLlhLQG1VIrgyEQjCP1KGtauqeiwuLcykd43jO/yuKHz9uH8YkNKvU/+HxSHblG
-         dGqrfmF0b0TnwBROWG6pVm45qLETg3hzUF32d+SdS0q3a21utZ3eMj4ZAgw4x5ShvM5J
-         GpxUnfGMNXPzw2oxMJLzKhWHYhXX5RPqb4rtBv1zA1Sg1jAraA7CeDaEYc4bzM/XpBwR
-         LECl6ZVmjcltZMfld3qGn7octay4/Qxfa/KJ7BmlnkcZfyYFMw9ZFjcX1OS8EorWfcaJ
-         j6rQ==
-X-Gm-Message-State: AOAM531EAxONEmyf+fCedXkx6HcuYUF7ltW0HmbWOUSnyE6mjllPVMKU
-        6+E0QdlJZuNIP6VHLbCR2mRsqQ==
-X-Google-Smtp-Source: ABdhPJz0pGnYtX431VAMWvN9hF8NzcqmGoQxAtLFMtLCB50gITaiEBjsFH+kmA+yrIxtVspBhuvbcA==
-X-Received: by 2002:a17:907:7fa5:b0:711:c8e2:2f4c with SMTP id qk37-20020a1709077fa500b00711c8e22f4cmr20871316ejc.49.1654774786132;
-        Thu, 09 Jun 2022 04:39:46 -0700 (PDT)
+        bh=Z0YNwH3n6PjIeqiCRdH4f7yYwMmdAgLu9xDerffdwL8=;
+        b=iihtVXipSjsUMc1rlLSDj9wa0ePQAxTRo9y6qistZiLWouj6uIZ9IhsrIYr+h8zVjf
+         ZQd5UDve2g6kF2G4XafD1hLN0gVnoxKLyW0LkA4lxuZ/CGLenI18AatZ5ClC0K2mstEi
+         SjWJdSZ6wjLHAE82/Sjk3SHmPONVexAjF41Xyg4fL7me0+js9Es235bVDFwF1SgJa9rD
+         FTA4UY7Buwd3dfAN6LQ8Bgy2e4go0hmsyWlooKyNIy9RxBQn965XUph4ewIyR5Kc60NU
+         lQqnC3lHtCRDb0xpuBJmfpRsZfRb2lDUuo8J7fGojxB9N6OKgHFOdnMqvOg8Qbx23UUn
+         9SAw==
+X-Gm-Message-State: AOAM530a6y/IDuXHyEdfzo8VKIR8kE7jeC1mUV1G/dCOC4RrsR0TPAcV
+        yrvDtPhQ3KDHHiQQ+IYpbArrMQ==
+X-Google-Smtp-Source: ABdhPJxuTqXWn9jMw8LX1nHZdeLpAzHoL0VJNRNgcmvZQR7MtWIU8k75RnzFOriBcJ7nj7Txl/gTVw==
+X-Received: by 2002:a05:6402:369b:b0:431:665e:f91a with SMTP id ej27-20020a056402369b00b00431665ef91amr22678275edb.350.1654774793234;
+        Thu, 09 Jun 2022 04:39:53 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id c10-20020a170906528a00b0070a80f03a44sm9460415ejm.119.2022.06.09.04.39.45
+        by smtp.gmail.com with ESMTPSA id c10-20020a170906528a00b0070a80f03a44sm9460415ejm.119.2022.06.09.04.39.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 04:39:45 -0700 (PDT)
+        Thu, 09 Jun 2022 04:39:52 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        arm@kernel.org, soc@kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
+        arm@kernel.org, soc@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 12/48] ARM: dts: broadcom: correct gpio-keys properties
-Date:   Thu,  9 Jun 2022 13:39:31 +0200
-Message-Id: <20220609113938.380466-3-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 17/48] arm64: dts: marvell: align gpio-key node names with dtschema
+Date:   Thu,  9 Jun 2022 13:39:36 +0200
+Message-Id: <20220609113938.380466-8-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org>
 References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org>
@@ -73,124 +70,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-gpio-keys children do not use unit addresses.
+The node names should be generic and DT schema expects certain pattern
+(e.g. with key/button/switch).
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm/boot/dts/bcm4709-asus-rt-ac87u.dts       | 2 --
- arch/arm/boot/dts/bcm4709-buffalo-wxr-1900dhp.dts | 2 --
- arch/arm/boot/dts/bcm4709-linksys-ea9200.dts      | 2 --
- arch/arm/boot/dts/bcm4709-netgear-r7000.dts       | 2 --
- arch/arm/boot/dts/bcm4709-netgear-r8000.dts       | 2 --
- arch/arm/boot/dts/bcm4709-tplink-archer-c9-v1.dts | 2 --
- arch/arm/boot/dts/bcm47094-luxul-xwc-2000.dts     | 2 --
- arch/arm/boot/dts/bcm53016-meraki-mr32.dts        | 2 --
- 8 files changed, 16 deletions(-)
+ arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts     | 2 +-
+ arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/bcm4709-asus-rt-ac87u.dts b/arch/arm/boot/dts/bcm4709-asus-rt-ac87u.dts
-index 14bb788a693d..f52a75c4ca09 100644
---- a/arch/arm/boot/dts/bcm4709-asus-rt-ac87u.dts
-+++ b/arch/arm/boot/dts/bcm4709-asus-rt-ac87u.dts
-@@ -47,8 +47,6 @@ wan {
- 
+diff --git a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
+index caf9c8529fca..6721b9b4cf5c 100644
+--- a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
++++ b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
+@@ -45,7 +45,7 @@ red {
  	gpio-keys {
  		compatible = "gpio-keys";
--		#address-cells = <1>;
--		#size-cells = <0>;
  
- 		button-wps {
- 			label = "WPS";
-diff --git a/arch/arm/boot/dts/bcm4709-buffalo-wxr-1900dhp.dts b/arch/arm/boot/dts/bcm4709-buffalo-wxr-1900dhp.dts
-index a8294c1ac11b..5ff6c588e16e 100644
---- a/arch/arm/boot/dts/bcm4709-buffalo-wxr-1900dhp.dts
-+++ b/arch/arm/boot/dts/bcm4709-buffalo-wxr-1900dhp.dts
-@@ -77,8 +77,6 @@ wireless-white {
+-		reset {
++		key-reset {
+ 			label = "reset";
+ 			linux,code = <KEY_RESTART>;
+ 			gpios = <&gpiosb 20 GPIO_ACTIVE_LOW>;
+diff --git a/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts b/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts
+index 871f84b4a6ed..15f6ca4df121 100644
+--- a/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts
++++ b/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts
+@@ -94,7 +94,7 @@ keys {
+ 		pinctrl-0 = <&cp0_gpio_reset_pins &cp1_wps_button_pins>;
+ 		pinctrl-names = "default";
  
- 	gpio-keys {
- 		compatible = "gpio-keys";
--		#address-cells = <1>;
--		#size-cells = <0>;
+-		button_0 {
++		button-0 {
+ 			/* The rear button */
+ 			label = "Rear Button";
+ 			gpios = <&cp0_gpio2 7 GPIO_ACTIVE_LOW>;
+@@ -102,7 +102,7 @@ button_0 {
+ 			linux,code = <BTN_0>;
+ 		};
  
- 		button-power {
- 			label = "Power";
-diff --git a/arch/arm/boot/dts/bcm4709-linksys-ea9200.dts b/arch/arm/boot/dts/bcm4709-linksys-ea9200.dts
-index 4bbd31916729..99253fd7adb3 100644
---- a/arch/arm/boot/dts/bcm4709-linksys-ea9200.dts
-+++ b/arch/arm/boot/dts/bcm4709-linksys-ea9200.dts
-@@ -29,8 +29,6 @@ nvram@1c080000 {
- 
- 	gpio-keys {
- 		compatible = "gpio-keys";
--		#address-cells = <1>;
--		#size-cells = <0>;
- 
- 		button-wps {
- 			label = "WPS";
-diff --git a/arch/arm/boot/dts/bcm4709-netgear-r7000.dts b/arch/arm/boot/dts/bcm4709-netgear-r7000.dts
-index 8783963f113b..de961fbb6200 100644
---- a/arch/arm/boot/dts/bcm4709-netgear-r7000.dts
-+++ b/arch/arm/boot/dts/bcm4709-netgear-r7000.dts
-@@ -72,8 +72,6 @@ usb2 {
- 
- 	gpio-keys {
- 		compatible = "gpio-keys";
--		#address-cells = <1>;
--		#size-cells = <0>;
- 
- 		button-wps {
- 			label = "WPS";
-diff --git a/arch/arm/boot/dts/bcm4709-netgear-r8000.dts b/arch/arm/boot/dts/bcm4709-netgear-r8000.dts
-index ac2f4692fc4d..087f7f60de18 100644
---- a/arch/arm/boot/dts/bcm4709-netgear-r8000.dts
-+++ b/arch/arm/boot/dts/bcm4709-netgear-r8000.dts
-@@ -99,8 +99,6 @@ usb2 {
- 
- 	gpio-keys {
- 		compatible = "gpio-keys";
--		#address-cells = <1>;
--		#size-cells = <0>;
- 
- 		button-rfkill {
- 			label = "WiFi";
-diff --git a/arch/arm/boot/dts/bcm4709-tplink-archer-c9-v1.dts b/arch/arm/boot/dts/bcm4709-tplink-archer-c9-v1.dts
-index 651113592598..11d1068160da 100644
---- a/arch/arm/boot/dts/bcm4709-tplink-archer-c9-v1.dts
-+++ b/arch/arm/boot/dts/bcm4709-tplink-archer-c9-v1.dts
-@@ -77,8 +77,6 @@ power {
- 
- 	gpio-keys {
- 		compatible = "gpio-keys";
--		#address-cells = <1>;
--		#size-cells = <0>;
- 
- 		button-wps {
- 			label = "WPS";
-diff --git a/arch/arm/boot/dts/bcm47094-luxul-xwc-2000.dts b/arch/arm/boot/dts/bcm47094-luxul-xwc-2000.dts
-index 9100ff66ab86..654fcce9fded 100644
---- a/arch/arm/boot/dts/bcm47094-luxul-xwc-2000.dts
-+++ b/arch/arm/boot/dts/bcm47094-luxul-xwc-2000.dts
-@@ -34,8 +34,6 @@ status	{
- 
- 	gpio-keys {
- 		compatible = "gpio-keys";
--		#address-cells = <1>;
--		#size-cells = <0>;
- 
- 		button-restart {
- 			label = "Reset";
-diff --git a/arch/arm/boot/dts/bcm53016-meraki-mr32.dts b/arch/arm/boot/dts/bcm53016-meraki-mr32.dts
-index 64ea6def30a4..e678bc03d816 100644
---- a/arch/arm/boot/dts/bcm53016-meraki-mr32.dts
-+++ b/arch/arm/boot/dts/bcm53016-meraki-mr32.dts
-@@ -47,8 +47,6 @@ sysled2 {
- 
- 	keys {
- 		compatible = "gpio-keys";
--		#address-cells = <1>;
--		#size-cells = <0>;
- 
- 		button-restart {
- 			label = "Reset";
+-		button_1 {
++		button-1 {
+ 			/* The wps button */
+ 			label = "WPS Button";
+ 			gpios = <&cp1_gpio1 30 GPIO_ACTIVE_LOW>;
 -- 
 2.34.1
 
