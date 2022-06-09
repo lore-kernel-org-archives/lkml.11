@@ -2,95 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F41D2CCA473
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 099CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:51:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239941AbiFIIvG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42654 "EHLO
+        id S232516AbiFIIvO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:51:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241848AbiFIIum (ORCPT
+        with ESMTP id S242633AbiFIIug (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 04:50:42 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD10E149A9E
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:48:47 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id s12so38873828ejx.3
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 01:48:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0FrUfxGjJdLOSXTrxUdjkVL6nrlzjO3+JUo/vnRLcSA=;
-        b=KMK4oI5Fxe0qAHQkJ9CRo4IKa3GThd6bcTMU9rPxWbxZqBQFMskPd+ihFJHP4JcnZ3
-         XmY244lJqm4jhVPAye8YmfOGsXd/Bvvxjp0Fv9phkeVEFmoa81HLkTohIxs6I62s2ehf
-         GHtq8jUZKG3ijDVptmfLjIlJWIMxE0PgMbMlQLjQJjgwSfsxXoIKXDNU2nSLpAHJx89S
-         0o7tM13z5DXSV/8hRHefRz56S5a2PyGLBn7q/ETGU40Ym5n0UH7P1vHnbfcvJtT4++6o
-         5C8rLdB+EO/p9c2aw6/9lyHwuY7Bu/V4QDKR92OXSqeOnii9+OajsSWAZbWuo0mdkoMQ
-         U/rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0FrUfxGjJdLOSXTrxUdjkVL6nrlzjO3+JUo/vnRLcSA=;
-        b=ztSqF8+QMzfKM/+IhuKQuiLtHUteFJLt7BFRORMEM+mR2qYrEDIH3KSfhsJ6hMH6Wk
-         j8Ojd9+2wnITUh7aI6tlr3SakP0HYTC4o0RgAMLkLSSTqS1nfkY7/WCJ0Z0fgk1LL/43
-         qoJ94IhfssCIFGAJqnSrTGFIiEh3MOXJeUGJ7CNK031uIcaQeIYk5CpYv/GE+ceueTX0
-         ScGSsgNAzNuTx+8GUtu+GXHT4OUTTP35j6G0IoZ1Co5lIyInHGDaWytP6Ex1mex+99EK
-         dgdQl6gvZxqyLSAV/o37dvhBE7mOSU92YXl8iyiCl/l1RVCg1TaeYrh3PI+IWoO24l/K
-         hXdA==
-X-Gm-Message-State: AOAM5325k4G3iA6hVDEwTa+OnfdWPffr42fuGNSP8ixiIVB/+0o1NH0i
-        yfQBMGhuDWT+sajjHaqYgsqnkCZ/ncib5w==
-X-Google-Smtp-Source: ABdhPJy8eOac2SjmBWPxOPqIBIeeBstXz50bOn/9Q8cluK6jx974GoDpH/JlagK8BogFTdJyDpkODw==
-X-Received: by 2002:a17:907:94c8:b0:711:d864:fd84 with SMTP id dn8-20020a17090794c800b00711d864fd84mr15226830ejc.18.1654764526284;
-        Thu, 09 Jun 2022 01:48:46 -0700 (PDT)
-Received: from [192.168.0.195] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id y24-20020a170906071800b006feed200464sm10407049ejb.131.2022.06.09.01.48.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jun 2022 01:48:45 -0700 (PDT)
-Message-ID: <dbf1416d-03ab-dfb2-434c-3cab879afd59@linaro.org>
-Date:   Thu, 9 Jun 2022 10:48:44 +0200
+        Thu, 9 Jun 2022 04:50:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED27F145581;
+        Thu,  9 Jun 2022 01:47:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89659619AF;
+        Thu,  9 Jun 2022 08:47:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50939C34114;
+        Thu,  9 Jun 2022 08:47:28 +0000 (UTC)
+Message-ID: <afafa5db-cf2c-4e4d-7003-2e7d35658a99@xs4all.nl>
+Date:   Thu, 9 Jun 2022 10:47:26 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH -next v2] spi: Return true/false (not 1/0) from bool
- function
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] media: hantro: fix compatible string deprecation warning
 Content-Language: en-US
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     andi@etezian.org, broonie@kernel.org, alim.akhtar@samsung.com,
-        linux-spi@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220609071250.59509-1-yang.lee@linux.alibaba.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220609071250.59509-1-yang.lee@linux.alibaba.com>
+To:     Robin Murphy <robin.murphy@arm.com>,
+        Martin Kepplinger <martin.kepplinger@puri.sm>,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
+        mchehab@kernel.org
+Cc:     linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220517143521.1670663-1-martin.kepplinger@puri.sm>
+ <0da188fa-efd8-62d0-2ea6-5a8e0c286cb5@arm.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <0da188fa-efd8-62d0-2ea6-5a8e0c286cb5@arm.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/06/2022 09:12, Yang Li wrote:
-> Return boolean values ("true" or "false") instead of 1 or 0 from bool
-> function.
+Hi Martin,
+
+On 5/17/22 18:46, Robin Murphy wrote:
+> On 2022-05-17 15:35, Martin Kepplinger wrote:
+>> of_device_is_compatible() in the end uses strlen of the string
+>> for comparison, so in this case, the condition is true even if
+>> the requested string "nxp,imx8mq-vpu-g1" is being used. The first
+>> chars containing "nxp,imx8mq-vpu" are the same.
 > 
-> As reported by coccicheck:
-> ./drivers/spi/spi-s3c64xx.c:385:9-10: WARNING: return of 0/1 in function
-> 's3c64xx_spi_can_dma' with return type bool
+> Have you seen this go wrong in practice? AFAICS, unless you're on SPARC, which seems somewhat unlikely for an i.MX8 peripheral, of_compat_cmp() should map to strcasecmp(), which should do the right thing :/
+
+Robin is correct, the existing code is fine for all but SPARC, which
+won't be using this driver.
+
+I'm rejecting this patch.
+
+Regards,
+
+	Hans
+
 > 
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
-
-https://elixir.bootlin.com/linux/v5.17/source/Documentation/process/submitting-patches.rst#L540
-
-If a tag was not added on purpose, please state why and what changed.
-
-
-Best regards,
-Krzysztof
+> Robin.
+> 
+>> Fix this by encoding what the comment says.
+>>
+>> Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+>> ---
+>>
+>> This is more of a bugreport as the solution doesn't look very elegant
+>> to me. I'm happy for advice.
+>>
+>> thanks,
+>>                             martin
+>>
+>>
+>>   drivers/staging/media/hantro/hantro_drv.c | 7 ++++---
+>>   1 file changed, 4 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
+>> index ac232b5f7825..014fab637df0 100644
+>> --- a/drivers/staging/media/hantro/hantro_drv.c
+>> +++ b/drivers/staging/media/hantro/hantro_drv.c
+>> @@ -923,10 +923,11 @@ static int hantro_probe(struct platform_device *pdev)
+>>         /*
+>>        * Support for nxp,imx8mq-vpu is kept for backwards compatibility
+>> -     * but it's deprecated. Please update your DTS file to use
+>> -     * nxp,imx8mq-vpu-g1 or nxp,imx8mq-vpu-g2 instead.
+>> +     * but it's deprecated.
+>>        */
+>> -    if (of_device_is_compatible(pdev->dev.of_node, "nxp,imx8mq-vpu"))
+>> +    if ((of_device_is_compatible(pdev->dev.of_node, "nxp,imx8mq-vpu")) &&
+>> +        (!of_device_is_compatible(pdev->dev.of_node, "nxp,imx8mq-vpu-g1")) &&
+>> +        (!of_device_is_compatible(pdev->dev.of_node, "nxp,imx8mq-vpu-g2")))
+>>           dev_warn(&pdev->dev, "%s compatible is deprecated\n",
+>>                match->compatible);
+>>   
