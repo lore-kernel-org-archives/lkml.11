@@ -2,124 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CE0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 20:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE2CECCA473
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 20:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238825AbiFIUby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 16:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32932 "EHLO
+        id S235767AbiFIUeE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 16:34:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235367AbiFIUbr (ORCPT
+        with ESMTP id S233887AbiFIUeC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 16:31:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF092315E
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 13:31:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 9 Jun 2022 16:34:02 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488FB9E9ED;
+        Thu,  9 Jun 2022 13:34:00 -0700 (PDT)
+Received: from mercury (unknown [185.209.196.172])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3434EB83079
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 20:31:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D972C34114;
-        Thu,  9 Jun 2022 20:31:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654806702;
-        bh=bnc6QDy2zL5myC/gga6GB6XNfibFDapswj73VFJ+UIM=;
+        (Authenticated sender: sre)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 057316601752;
+        Thu,  9 Jun 2022 21:33:59 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1654806839;
+        bh=VNekLhmfPjsUN9yizbSGziR2L3VN05ZPmSRaQ6aqrU8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mj793kUfM3FNXSBhquvSUtshW6AZZrZOhtvxtSARO5Vq6pM2XchCEcocr9WgH7U9G
-         +WkgXomfe3HMZn1SGIUSD3Qj5eqOfhpk5im2l2WTqvk2p8ki+7Yp8fYq4wev6585eA
-         pg5cho2yfu/IMajymQXFCGhYAhtCqXAsED6kUoHy1+4UHzhJbJ8uALJuy6/tUkuOaD
-         wDnB/0TdR2lDctTJfP6pTXMPYVa/6DOKhhn24D1m8iJcB20Vh287omplxDOXmg+5OM
-         zmytq3gG1/GgTDPUSH46hWkekQX33qLS/2YQTfXE4EQ3EulXhgYjlo5Q3vMS0meFgN
-         nQ4LmZlYiYbEQ==
-Date:   Thu, 9 Jun 2022 13:31:40 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Justin Stitt <jstitt007@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH v3] include/uapi/linux/swab.h: move explicit cast outside
- ternary
-Message-ID: <YqJYrImC3Bk40H1H@dev-arch.thelio-3990X>
-References: <20220608223539.470472-1-justinstitt@google.com>
+        b=n1Q4M3aNHFlWYJQ7bRaYmOi4AR26Z7YrA4ye4kJgw5VrkzBid7LMfmYrDiq4evp0I
+         GOa4yUqsSGbzVBybkOqQ8HudjO7Uvt2XVM1eZUqGy2naC008eWbj+zH07CBB3YhEHe
+         ahCcbtflljV9YdQUYquIZ0MMFAR1vcoAXgLOdwAZ4mME0zVRgxA0J9bMecIzKJ87Zd
+         WWIc5wFhWerUYCwkvBmiG1AXlzm/Eu1eiSywYCL0H7R/PP9xXsy0Tdiu5vRm4xP6Xj
+         HFEhJkXYNog486WMIqnl01EARkxErJeTEqkVty91eQTzLkGgA0ebQ/0Tuo5xhLRnHS
+         bNHPHow56bNow==
+Received: by mercury (Postfix, from userid 1000)
+        id 25E6410605B9; Thu,  9 Jun 2022 22:33:56 +0200 (CEST)
+Date:   Thu, 9 Jun 2022 22:33:56 +0200
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        p.zabel@pengutronix.de, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 6/9] power: reset: at91-reset: add at91_reset_data
+Message-ID: <20220609203356.75oamac2sjqli4op@mercury.elektranox.org>
+References: <20220608083942.1584087-1-claudiu.beznea@microchip.com>
+ <20220608083942.1584087-7-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="e3iabka34udetqlt"
 Content-Disposition: inline
-In-Reply-To: <20220608223539.470472-1-justinstitt@google.com>
+In-Reply-To: <20220608083942.1584087-7-claudiu.beznea@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 03:35:39PM -0700, Justin Stitt wrote:
-> From: Justin Stitt <jstitt007@gmail.com>
-> 
-> A cast inside __builtin_constant_p doesn't do anything since it should
-> evaluate as constant at compile time irrespective of this cast. Instead,
-> I moved this cast outside the ternary to ensure the return type is as
-> expected.
-> 
-> Additionally, if __HAVE_BUILTIN_BSWAP16__ was not defined then __swab16
-> is actually returning an `int` not a `u16` due to integer promotion.
-> 
-> As Al Viro notes:
-> You *can't* get smaller-than-int out of ? :, same as you can't get it
-> out of addition, etc.
-> 
-> This also fixes some clang -Wformat warnings involving default
-> argument promotion.
-> 
-> Link: https://github.com/ClangBuiltLinux/linux/issues/378
-> Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
-> Suggested-by: Nathan Chancellor <nathan@kernel.org>
-> Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
-> Signed-off-by: Justin Stitt <jstitt007@gmail.com>
 
-Thanks for the patch and sticking with it through all the review!
+--e3iabka34udetqlt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Hi,
 
+On Wed, Jun 08, 2022 at 11:39:39AM +0300, Claudiu Beznea wrote:
+> Add struct at91_reset_data to keep per platform related information.
+> This is a prerequisite for adding reset_controller_dev support.
+>=20
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 > ---
->  diff from v2 -> v3:
->   * re-insert respective (u16, u32, u64) cast to __builtin_bswap as per
->      Nick's suggestion
->   * added note from Al Viro
-> 
->  include/uapi/linux/swab.h | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/uapi/linux/swab.h b/include/uapi/linux/swab.h
-> index 7272f85d6d6a..0723a9cce747 100644
-> --- a/include/uapi/linux/swab.h
-> +++ b/include/uapi/linux/swab.h
-> @@ -102,7 +102,7 @@ static inline __attribute_const__ __u32 __fswahb32(__u32 val)
->  #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
->  #else
->  #define __swab16(x)				\
-> -	(__builtin_constant_p((__u16)(x)) ?	\
-> +	(__u16)(__builtin_constant_p(x) ?	\
->  	___constant_swab16(x) :			\
->  	__fswab16(x))
->  #endif
-> @@ -115,7 +115,7 @@ static inline __attribute_const__ __u32 __fswahb32(__u32 val)
->  #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
->  #else
->  #define __swab32(x)				\
-> -	(__builtin_constant_p((__u32)(x)) ?	\
-> +	(__u32)(__builtin_constant_p(x) ?	\
->  	___constant_swab32(x) :			\
->  	__fswab32(x))
->  #endif
-> @@ -128,7 +128,7 @@ static inline __attribute_const__ __u32 __fswahb32(__u32 val)
->  #define __swab64(x) (__u64)__builtin_bswap64((__u64)(x))
->  #else
->  #define __swab64(x)				\
-> -	(__builtin_constant_p((__u64)(x)) ?	\
-> +	(__u64)(__builtin_constant_p(x) ?	\
->  	___constant_swab64(x) :			\
->  	__fswab64(x))
->  #endif
-> -- 
-> 2.36.1.476.g0c4daa206d-goog
-> 
-> 
+>  drivers/power/reset/at91-reset.c | 38 ++++++++++++++++++++++++--------
+>  1 file changed, 29 insertions(+), 9 deletions(-)
+>=20
+> diff --git a/drivers/power/reset/at91-reset.c b/drivers/power/reset/at91-=
+reset.c
+> index e62798750b6b..1b2aca3f490d 100644
+> --- a/drivers/power/reset/at91-reset.c
+> +++ b/drivers/power/reset/at91-reset.c
+> @@ -79,6 +79,16 @@ struct at91_reset {
+>  	u32 ramc_lpr;
+>  };
+> =20
+> +/**
+> + * struct at91_reset_data - AT91 reset data
+> + * @reset_args:		SoC specific system reset arguments
+> + * @n_device_reset:	number of device resets
+> + */
+> +struct at91_reset_data {
+> +	u32 reset_args;
+> +	u32 n_device_reset;
+> +};
+> +
+>  /*
+>  * unless the SDRAM is cleanly shutdown before we hit the
+>  * reset register it can be left driving the data bus and
+> @@ -173,29 +183,34 @@ static const struct of_device_id at91_ramc_of_match=
+[] =3D {
+>  	{ /* sentinel */ }
+>  };
+> =20
+> +static const struct at91_reset_data sam9260 =3D {
+> +	.reset_args =3D AT91_RSTC_KEY | AT91_RSTC_PERRST | AT91_RSTC_PROCRST,
+> +};
+> +
+> +static const struct at91_reset_data samx7 =3D {
+> +	.reset_args =3D AT91_RSTC_KEY | AT91_RSTC_PROCRST,
+> +};
+> +
+>  static const struct of_device_id at91_reset_of_match[] =3D {
+>  	{
+>  		.compatible =3D "atmel,at91sam9260-rstc",
+> -		.data =3D (void *)(AT91_RSTC_KEY | AT91_RSTC_PERRST |
+> -				 AT91_RSTC_PROCRST),
+> +		.data =3D &sam9260,
+>  	},
+>  	{
+>  		.compatible =3D "atmel,at91sam9g45-rstc",
+> -		.data =3D (void *)(AT91_RSTC_KEY | AT91_RSTC_PERRST |
+> -				 AT91_RSTC_PROCRST)
+> +		.data =3D &sam9260,
+>  	},
+>  	{
+>  		.compatible =3D "atmel,sama5d3-rstc",
+> -		.data =3D (void *)(AT91_RSTC_KEY | AT91_RSTC_PERRST |
+> -				 AT91_RSTC_PROCRST)
+> +		.data =3D &sam9260,
+>  	},
+>  	{
+>  		.compatible =3D "atmel,samx7-rstc",
+> -		.data =3D (void *)(AT91_RSTC_KEY | AT91_RSTC_PROCRST)
+> +		.data =3D &samx7,
+>  	},
+>  	{
+>  		.compatible =3D "microchip,sam9x60-rstc",
+> -		.data =3D (void *)(AT91_RSTC_KEY | AT91_RSTC_PROCRST)
+> +		.data =3D &samx7,
+>  	},
+>  	{ /* sentinel */ }
+>  };
+> @@ -204,6 +219,7 @@ MODULE_DEVICE_TABLE(of, at91_reset_of_match);
+>  static int __init at91_reset_probe(struct platform_device *pdev)
+>  {
+>  	const struct of_device_id *match;
+> +	const struct at91_reset_data *data;
+>  	struct at91_reset *reset;
+>  	struct device_node *np;
+>  	int ret, idx =3D 0;
+> @@ -233,9 +249,13 @@ static int __init at91_reset_probe(struct platform_d=
+evice *pdev)
+>  	}
+> =20
+>  	match =3D of_match_node(at91_reset_of_match, pdev->dev.of_node);
+> +	if (!match || !match->data)
+> +		return -ENODEV;
+> +
+> +	data =3D match->data;
+
+data =3D device_get_match_data(&pdev->dev);
+if (!data)
+		return -ENODEV;
+
+Otherwise LGTM.
+
+-- Sebastian
+
+>  	reset->nb.notifier_call =3D at91_reset;
+>  	reset->nb.priority =3D 192;
+> -	reset->args =3D (u32)match->data;
+> +	reset->args =3D data->reset_args;
+> =20
+>  	reset->sclk =3D devm_clk_get(&pdev->dev, NULL);
+>  	if (IS_ERR(reset->sclk))
+> --=20
+> 2.33.0
+>=20
+
+--e3iabka34udetqlt
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmKiWTMACgkQ2O7X88g7
++pqFEBAAhZVanjy/8HLzpTLEX5MMG0hTMRcG+h/W2PQHRJqV8memujSFsmxGhwFC
+FW6HE6dtpzmtxq+Pf4JdljCt76Pu3Pb0Ggb+HONtPPisaJgsck958RWVmjALrAFE
+efgGd6KdxkyJc31YqDnOwSNoV+sFmbjz9luHeGZfEifp233OAOULc4+0db5cElM/
+np9YbF2M72T/8kseQJZTeYdhFti9VHHhO/lDDA7z56XS1ZBTem7Z0Fcuh1hyNRZ3
+teil1ydJyY8MAZ2/4GgTVzC9UklK4KwpTjJDbc0TdMUGfOqbhXhjCWocOjqhMgsk
+5mygLnug/rKdgdJY+SwSGMImRdYv4yTJrtGg1nIiptEX23Z7VA6RZ0BagWufmF2W
+dbOBxq7LWO78FouwtZbBirQ8gHd8nZv56Q7lfnQYjxi40KNW+U0Fcu498wHev4gw
+w3nzye72NAH+xnEUUMmivXR7QQOnXd5hXnyXI5/Ucj9UOmbg2r6Nv6HDgnhZgYqJ
+eJoiJonnTN67N8ja+4zqaBTKQ4UH+E+sEExxuST1g/Fne0RptB2XqLLUOv/i7JVe
+1ee4AvdA6nOF+xYb8MWB06V2zgSonuT7Sni7YvRSA5JU1uehfhcHgZONSRLQa73w
+FF164Pm9LcJOLyzkZeD0cLvu2xbtd3twMp+o108izbY+yDR3XII=
+=P0Hb
+-----END PGP SIGNATURE-----
+
+--e3iabka34udetqlt--
