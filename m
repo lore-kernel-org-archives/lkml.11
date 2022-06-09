@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A26BCCA47E
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D0BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344391AbiFIQwr (ORCPT
+        id S1344813AbiFIQwx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 12:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57800 "EHLO
+        Thu, 9 Jun 2022 12:52:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238785AbiFIQw3 (ORCPT
+        with ESMTP id S234225AbiFIQw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 9 Jun 2022 12:52:29 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E48521BEBE
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F2D821C3A7
         for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 09:52:26 -0700 (PDT)
 Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 319E666017DC;
-        Thu,  9 Jun 2022 17:52:25 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id B4A0B66017CD;
+        Thu,  9 Jun 2022 17:52:23 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654793545;
-        bh=5onxy7g3IyKjCCmK9QZL22aFYjquEYO/6uZuRnKxvGo=;
+        s=mail; t=1654793544;
+        bh=KHg3eOnYqUoUcg57EXhLlpoQHXoJLlQC7w8GyVbN4OU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VDOKJDX+B0hcYxZ90xCJ5neJYINJfg6uq2y/gPClPdArZfuIrS9P5lSybGK5NLPYb
-         z2O54eT4Hr3dMiI5AfkGiyas6YiIByxSWW6QCfPj9zFen/yiU/TOCVllEahJYZ7m3Z
-         haveujfK3qaXh39KZCLEUoTaGI2dDOPKEGNJ90rKAUd+7J6yDihq90iASajJDdxSTW
-         k83qUz8g7bN3WDM75iqhKF1Sqow311Ho4DxhVlyJhyciRWt3hYnH0LHUrcYTaLzfSx
-         wKF3bHzx/O/L4agr6UbcQlupf2JHI8OxzywdGZGbt/W6hhFvq9c8Pqy1BfuyVTtmV5
-         fj7GzmtOPoLuQ==
+        b=g8qjmFu0HwOgqRNI4BZDKtXlwymktY7jIVzEt94+v1RFRu7d8mndgZm+GMP5v9LSw
+         7lkkPww0B8R5F8dI9RwLQIyqlSk4qsW8PniUM/sguq9e5g4D7XDv25Rl+Jl0UtzFH3
+         bt1NfaAAC0mMezpU67FtSkjp7NOlns/m4jQDACzSL990nDaAQQSpr5NXAwf+8GuJzH
+         bzNcOs0VsLOajIukHj9MpPQhNqs6rtmYrPLpia79w6kbLG8yTuqkMgR8OxSSsaROFO
+         AoZok3ZX+R505LiMOir9V9CfKvraxaS9A14izGPc2hdTBNHglKnk1NnWB7m1M11SDI
+         EDO8ZBFiELvfw==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -45,158 +45,95 @@ Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
         Matthew Auld <matthew.auld@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 3/8] drm/i915: setup ggtt scratch page after memory regions
-Date:   Thu,  9 Jun 2022 16:51:55 +0000
-Message-Id: <20220609165200.842821-4-bob.beckett@collabora.com>
+Subject: [PATCH v3 1/8] drm/i915/ttm: dont trample cache_level overrides during ttm move
+Date:   Thu,  9 Jun 2022 16:51:53 +0000
+Message-Id: <20220609165200.842821-2-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220609165200.842821-1-bob.beckett@collabora.com>
 References: <20220609165200.842821-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reorder scratch page allocation so that memory regions are available
-to allocate the buffers
+Various places within the driver override the default chosen cache_level.
+Before ttm, these overrides were permanent until explicitly changed again
+or for the lifetime of the buffer.
+
+TTM movement code came along and decided that it could make that
+decision at that time, which is usually well after object creation, so
+overrode the cache_level decision and reverted it back to its default
+decision.
+
+Add logic to indicate whether the caching mode has been set by anything
+other than the move logic. If so, assume that the code that overrode the
+defaults knows best and keep it.
 
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
-Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
 ---
- drivers/gpu/drm/i915/gt/intel_gt_gmch.c | 20 ++++++++++++++++++--
- drivers/gpu/drm/i915/gt/intel_gt_gmch.h |  6 ++++++
- drivers/gpu/drm/i915/i915_driver.c      | 16 ++++++++++------
- 3 files changed, 34 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_object.c       | 1 +
+ drivers/gpu/drm/i915/gem/i915_gem_object_types.h | 1 +
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c          | 1 +
+ drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c     | 9 ++++++---
+ 4 files changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gt/intel_gt_gmch.c b/drivers/gpu/drm/i915/gt/intel_gt_gmch.c
-index 18e488672d1b..5411df1734ac 100644
---- a/drivers/gpu/drm/i915/gt/intel_gt_gmch.c
-+++ b/drivers/gpu/drm/i915/gt/intel_gt_gmch.c
-@@ -440,8 +440,6 @@ static int ggtt_probe_common(struct i915_ggtt *ggtt, u64 size)
- 	struct drm_i915_private *i915 = ggtt->vm.i915;
- 	struct pci_dev *pdev = to_pci_dev(i915->drm.dev);
- 	phys_addr_t phys_addr;
--	u32 pte_flags;
--	int ret;
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.c b/drivers/gpu/drm/i915/gem/i915_gem_object.c
+index 06b1b188ce5a..519887769c08 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
+@@ -125,6 +125,7 @@ void i915_gem_object_set_cache_coherency(struct drm_i915_gem_object *obj,
+ 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
  
- 	GEM_WARN_ON(pci_resource_len(pdev, 0) != gen6_gttmmadr_size(i915));
- 	phys_addr = pci_resource_start(pdev, 0) + gen6_gttadr_offset(i915);
-@@ -463,6 +461,24 @@ static int ggtt_probe_common(struct i915_ggtt *ggtt, u64 size)
- 	}
+ 	obj->cache_level = cache_level;
++	obj->ttm.cache_level_override = true;
  
- 	kref_init(&ggtt->vm.resv_ref);
-+
-+	return 0;
-+}
-+
-+/**
-+ * i915_ggtt_setup_scratch_page - setup ggtt scratch page
-+ * @i915: i915 device
-+ */
-+int i915_ggtt_setup_scratch_page(struct drm_i915_private *i915)
-+{
-+	struct i915_ggtt *ggtt = to_gt(i915)->ggtt;
-+	u32 pte_flags;
-+	int ret;
-+
-+	/* gen5- scratch setup currently happens in @intel_gtt_init */
-+	if (GRAPHICS_VER(i915) <= 5)
-+		return 0;
-+
- 	ret = setup_scratch_page(&ggtt->vm);
- 	if (ret) {
- 		drm_err(&i915->drm, "Scratch setup failed\n");
-diff --git a/drivers/gpu/drm/i915/gt/intel_gt_gmch.h b/drivers/gpu/drm/i915/gt/intel_gt_gmch.h
-index 75ed55c1f30a..c6b79cb78637 100644
---- a/drivers/gpu/drm/i915/gt/intel_gt_gmch.h
-+++ b/drivers/gpu/drm/i915/gt/intel_gt_gmch.h
-@@ -15,6 +15,7 @@ int intel_gt_gmch_gen6_probe(struct i915_ggtt *ggtt);
- int intel_gt_gmch_gen8_probe(struct i915_ggtt *ggtt);
- int intel_gt_gmch_gen5_probe(struct i915_ggtt *ggtt);
- int intel_gt_gmch_gen5_enable_hw(struct drm_i915_private *i915);
-+int i915_ggtt_setup_scratch_page(struct drm_i915_private *i915);
+ 	if (cache_level != I915_CACHE_NONE)
+ 		obj->cache_coherent = (I915_BO_CACHE_COHERENT_FOR_READ |
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
+index 2c88bdb8ff7c..6632ed52e919 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
+@@ -605,6 +605,7 @@ struct drm_i915_gem_object {
+ 		struct i915_gem_object_page_iter get_io_page;
+ 		struct drm_i915_gem_object *backup;
+ 		bool created:1;
++		bool cache_level_override:1;
+ 	} ttm;
  
- /* Stubs for non-x86 platforms */
- #else
-@@ -41,6 +42,11 @@ static inline int intel_gt_gmch_gen5_enable_hw(struct drm_i915_private *i915)
- 	/* No HW should be enabled for this case yet, return fail */
- 	return -ENODEV;
+ 	/*
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+index 4c25d9b2f138..27d59639177f 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -1241,6 +1241,7 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
+ 	i915_gem_object_init_memory_region(obj, mem);
+ 	i915_ttm_adjust_domains_after_move(obj);
+ 	i915_ttm_adjust_gem_after_move(obj);
++	obj->ttm.cache_level_override = false;
+ 	i915_gem_object_unlock(obj);
+ 
+ 	return 0;
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+index a10716f4e717..4c1de0b4a10f 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+@@ -123,9 +123,12 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
+ 	obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
+ 		I915_BO_FLAG_STRUCT_PAGE;
+ 
+-	cache_level = i915_ttm_cache_level(to_i915(bo->base.dev), bo->resource,
+-					   bo->ttm);
+-	i915_gem_object_set_cache_coherency(obj, cache_level);
++	if (!obj->ttm.cache_level_override) {
++		cache_level = i915_ttm_cache_level(to_i915(bo->base.dev),
++						   bo->resource, bo->ttm);
++		i915_gem_object_set_cache_coherency(obj, cache_level);
++		obj->ttm.cache_level_override = false;
++	}
  }
-+
-+static inline int i915_ggtt_setup_scratch_page(struct drm_i915_private *i915)
-+{
-+	return 0;
-+}
- #endif
  
- #endif /* __INTEL_GT_GMCH_H__ */
-diff --git a/drivers/gpu/drm/i915/i915_driver.c b/drivers/gpu/drm/i915/i915_driver.c
-index d26dcca7e654..4e8a92ffbfe9 100644
---- a/drivers/gpu/drm/i915/i915_driver.c
-+++ b/drivers/gpu/drm/i915/i915_driver.c
-@@ -69,6 +69,7 @@
- #include "gem/i915_gem_mman.h"
- #include "gem/i915_gem_pm.h"
- #include "gt/intel_gt.h"
-+#include "gt/intel_gt_gmch.h"
- #include "gt/intel_gt_pm.h"
- #include "gt/intel_rc6.h"
- 
-@@ -605,12 +606,16 @@ static int i915_driver_hw_probe(struct drm_i915_private *dev_priv)
- 
- 	ret = intel_gt_tiles_init(dev_priv);
- 	if (ret)
--		goto err_mem_regions;
-+		goto err_ggtt;
-+
-+	ret = i915_ggtt_setup_scratch_page(dev_priv);
-+	if (ret)
-+		goto err_ggtt;
- 
- 	ret = i915_ggtt_enable_hw(dev_priv);
- 	if (ret) {
- 		drm_err(&dev_priv->drm, "failed to enable GGTT\n");
--		goto err_mem_regions;
-+		goto err_ggtt;
- 	}
- 
- 	pci_set_master(pdev);
-@@ -662,11 +667,10 @@ static int i915_driver_hw_probe(struct drm_i915_private *dev_priv)
- err_msi:
- 	if (pdev->msi_enabled)
- 		pci_disable_msi(pdev);
--err_mem_regions:
--	intel_memory_regions_driver_release(dev_priv);
- err_ggtt:
- 	i915_ggtt_driver_release(dev_priv);
- 	i915_gem_drain_freed_objects(dev_priv);
-+	intel_memory_regions_driver_release(dev_priv);
- 	i915_ggtt_driver_late_release(dev_priv);
- err_perf:
- 	i915_perf_fini(dev_priv);
-@@ -912,9 +916,9 @@ int i915_driver_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	intel_modeset_driver_remove_nogem(i915);
- out_cleanup_hw:
- 	i915_driver_hw_remove(i915);
--	intel_memory_regions_driver_release(i915);
- 	i915_ggtt_driver_release(i915);
- 	i915_gem_drain_freed_objects(i915);
-+	intel_memory_regions_driver_release(i915);
- 	i915_ggtt_driver_late_release(i915);
- out_cleanup_mmio:
- 	i915_driver_mmio_release(i915);
-@@ -971,9 +975,9 @@ static void i915_driver_release(struct drm_device *dev)
- 
- 	i915_gem_driver_release(dev_priv);
- 
--	intel_memory_regions_driver_release(dev_priv);
- 	i915_ggtt_driver_release(dev_priv);
- 	i915_gem_drain_freed_objects(dev_priv);
-+	intel_memory_regions_driver_release(dev_priv);
- 	i915_ggtt_driver_late_release(dev_priv);
- 
- 	i915_driver_mmio_release(dev_priv);
+ /**
 -- 
 2.25.1
 
