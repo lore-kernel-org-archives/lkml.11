@@ -2,102 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4862C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:28:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F2BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:30:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237932AbiFIM25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 08:28:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60502 "EHLO
+        id S236015AbiFIM37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 08:29:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235368AbiFIM2x (ORCPT
+        with ESMTP id S235653AbiFIM3y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 08:28:53 -0400
-Received: from sonata.ens-lyon.org (domu-toccata.ens-lyon.fr [140.77.166.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5093F13F32;
-        Thu,  9 Jun 2022 05:28:48 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by sonata.ens-lyon.org (Postfix) with ESMTP id 61E4B2015C;
-        Thu,  9 Jun 2022 14:28:45 +0200 (CEST)
-Received: from sonata.ens-lyon.org ([127.0.0.1])
-        by localhost (sonata.ens-lyon.org [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id K-HSDGkridoK; Thu,  9 Jun 2022 14:28:45 +0200 (CEST)
-Received: from begin (ip-185-104-137-33.ptr.icomera.net [185.104.137.33])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Thu, 9 Jun 2022 08:29:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9AD140F8
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 05:29:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sonata.ens-lyon.org (Postfix) with ESMTPSA id 948A620157;
-        Thu,  9 Jun 2022 14:28:44 +0200 (CEST)
-Received: from samy by begin with local (Exim 4.95)
-        (envelope-from <samuel.thibault@ens-lyon.org>)
-        id 1nzHHD-00DgPa-Cr;
-        Thu, 09 Jun 2022 14:28:39 +0200
-Date:   Thu, 9 Jun 2022 14:28:39 +0200
-From:   Samuel Thibault <samuel.thibault@ens-lyon.org>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Zheng Bin <zhengbin13@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        w.d.hubbs@gmail.com, chris@the-brannons.com, kirk@reisers.ca,
-        trix@redhat.com, salah.triki@gmail.com, speakup@linux-speakup.org
-Subject: Re: [PATCH AUTOSEL 5.18 31/68] accessiblity: speakup: Add missing
- misc_deregister in softsynth_probe
-Message-ID: <20220609122839.35vn5vtukmuuxch3@begin>
-Mail-Followup-To: Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Zheng Bin <zhengbin13@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        w.d.hubbs@gmail.com, chris@the-brannons.com, kirk@reisers.ca,
-        trix@redhat.com, salah.triki@gmail.com, speakup@linux-speakup.org
-References: <20220607174846.477972-1-sashal@kernel.org>
- <20220607174846.477972-31-sashal@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BD2961932
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 12:29:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71365C3411D
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 12:29:52 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="BTa3ImG/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1654777790;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+ZKCPkatmZQhMUqvjXsixnwwHTDth2O7Ki+YyHfUIdw=;
+        b=BTa3ImG/q/FDhj2K9CGLypM1xgoxQSph866PKzoVsxVcHgCCqeaOcfLpa/KLeVFVYXgGTT
+        fCWU9e6qcnH3QL+wsskpht5KQcX3b1MohkN+EypJS9z2QwT5toUmaZq+faUyVKTXH19NI4
+        p2l4s8st1KOoWPWo6bioytmRT3bQdN0=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 52557b63 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <linux-kernel@vger.kernel.org>;
+        Thu, 9 Jun 2022 12:29:49 +0000 (UTC)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-30c143c41e5so239294967b3.3
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 05:29:49 -0700 (PDT)
+X-Gm-Message-State: AOAM533gatbTNgBaR3jbhHwbKnfAcfnStHxwHJKEqHkoi6WYldx3SB/n
+        hOc9yg9un1cuDbIiRIqfmy8h0nx523NQSTmCtww=
+X-Google-Smtp-Source: ABdhPJyb0QIJ7TWICAPZCiS2OJY6lap9/tFDuzmweUf578cIz3SS7SYKHoZT+c4EehPz7vXw/aTl77QcI36HThOsARg=
+X-Received: by 2002:a0d:ef03:0:b0:2fa:245:adf3 with SMTP id
+ y3-20020a0def03000000b002fa0245adf3mr44088700ywe.100.1654777788720; Thu, 09
+ Jun 2022 05:29:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220607174846.477972-31-sashal@kernel.org>
-Organization: I am not organized
-User-Agent: NeoMutt/20170609 (1.8.3)
+References: <20220609121709.12939-1-Jason@zx2c4.com> <CANpmjNMKEP246YyDDqW5TPb090f4Fr-PY3Kn2X7N62wTRCEUrw@mail.gmail.com>
+In-Reply-To: <CANpmjNMKEP246YyDDqW5TPb090f4Fr-PY3Kn2X7N62wTRCEUrw@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Thu, 9 Jun 2022 14:29:37 +0200
+X-Gmail-Original-Message-ID: <CAHmME9rkQDnsTu-8whevtBa_J6aOKT=gQO7kBAxwWrBgKgcyUQ@mail.gmail.com>
+Message-ID: <CAHmME9rkQDnsTu-8whevtBa_J6aOKT=gQO7kBAxwWrBgKgcyUQ@mail.gmail.com>
+Subject: Re: [PATCH] mm/kfence: select random number before taking raw lock
+To:     Marco Elver <elver@google.com>
+Cc:     Linux-MM <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sasha Levin, le mar. 07 juin 2022 13:47:57 -0400, a ecrit:
-> From: Zheng Bin <zhengbin13@huawei.com>
-> 
-> [ Upstream commit 106101303eda8f93c65158e5d72b2cc6088ed034 ]
-> 
-> softsynth_probe misses a call misc_deregister() in an error path, this
-> patch fixes that.
-> 
-> Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-> Link: https://lore.kernel.org/r/20220511032937.2736738-1-zhengbin13@huawei.com
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+On Thu, Jun 9, 2022 at 2:27 PM Marco Elver <elver@google.com> wrote:
+> The compiler should elide this branch entirely if
+> CONFIG_KFENCE_STRESS_TEST_FAULTS=0, but not sure it'll always do so
+> now. My suggestion is to make both new bools consts, to help out the
+> compiler a little.
+>
+> Otherwise looks good, thanks for the quick fix!
 
-Reviewed-by: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Disassembling reveals it still does elide. (gcc 11.3) But I'll make
+them const just in case and send a v2.
 
-> ---
->  drivers/accessibility/speakup/speakup_soft.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/accessibility/speakup/speakup_soft.c b/drivers/accessibility/speakup/speakup_soft.c
-> index 19824e7006fe..786dc5d080f3 100644
-> --- a/drivers/accessibility/speakup/speakup_soft.c
-> +++ b/drivers/accessibility/speakup/speakup_soft.c
-> @@ -397,6 +397,7 @@ static int softsynth_probe(struct spk_synth *synth)
->  	synthu_device.name = "softsynthu";
->  	synthu_device.fops = &softsynthu_fops;
->  	if (misc_register(&synthu_device)) {
-> +		misc_deregister(&synth_device);
->  		pr_warn("Couldn't initialize miscdevice /dev/softsynthu.\n");
->  		return -ENODEV;
->  	}
-> -- 
-> 2.35.1
-> 
-
--- 
-Samuel
----
-Pour une évaluation indépendante, transparente et rigoureuse !
-Je soutiens la Commission d'Évaluation de l'Inria.
+Jason
