@@ -2,104 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2F18C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:14:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03165C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:15:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343785AbiFIPOd (ORCPT
+        id S1344206AbiFIPP0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 11:14:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58520 "EHLO
+        Thu, 9 Jun 2022 11:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240876AbiFIPO2 (ORCPT
+        with ESMTP id S242062AbiFIPPY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 11:14:28 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A284A46150;
-        Thu,  9 Jun 2022 08:14:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654787666; x=1686323666;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wr33ML0e4lODezvF0rSXZW2gyNc2rLAlNWAvEtgI1TQ=;
-  b=b2ls8HuuIxikpqK190ySTuiJx0LidsWad4miA2YaT/RD0WTlUxjMjhtc
-   0aMcoY0pVMYkkwM/t9YIdgix8wZ3yRBm0oS7wwUXnqf7kD1OaI7nGoqsM
-   77ePbIPoPBbYsTuc/Bauup64Ipd3Hi8JFPMLqzqzJKKYq4SWxRlQZ9a03
-   KanP9teVV95x6r56zbZE56rPubkx9XfmlSUZNi72PKi9HbOfYIEcSJZ24
-   dOFQH7Ew+HqEtsFkG2/YYl+qS7e8Tbm8UNdQHb3tHGZeifamZoRhDKRyK
-   S5I1JskXsRTFi34k0PzKRSYXnR9WmXPGYCcqSjnrn4N/O1ArIkLTkp7dX
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="274837351"
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="274837351"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 08:14:26 -0700
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="649312322"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 08:14:23 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nzJpR-000XxY-4u;
-        Thu, 09 Jun 2022 18:12:09 +0300
-Date:   Thu, 9 Jun 2022 18:12:08 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Frank Rowand <frank.rowand@sony.com>,
-        Rob Herring <robh@kernel.org>
-Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>
-Subject: Re: [PATCH v1 00/16] ACPI: Get rid of the list of children in struct
- acpi_device
-Message-ID: <YqINyDTfpNBGDYlb@smile.fi.intel.com>
-References: <1843211.tdWV9SEqCh@kreacher>
+        Thu, 9 Jun 2022 11:15:24 -0400
+Received: from outbound-smtp26.blacknight.com (outbound-smtp26.blacknight.com [81.17.249.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611271BE9A
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 08:15:19 -0700 (PDT)
+Received: from mail.blacknight.com (pemlinmail02.blacknight.ie [81.17.254.11])
+        by outbound-smtp26.blacknight.com (Postfix) with ESMTPS id 40165CABE2
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 16:15:18 +0100 (IST)
+Received: (qmail 23872 invoked from network); 9 Jun 2022 15:15:18 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 9 Jun 2022 15:15:17 -0000
+Date:   Thu, 9 Jun 2022 16:15:16 +0100
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        akpm@linux-foundation.org, vbabka@suse.cz, peterz@infradead.org,
+        dhowells@redhat.com, willy@infradead.org, Liam.Howlett@oracle.com,
+        mhocko@suse.com, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v2] mm: sysctl: fix missing numa_stat when
+ !CONFIG_HUGETLB_PAGE
+Message-ID: <20220609151516.GA30825@techsingularity.net>
+References: <20220609104032.18350-1-songmuchun@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
-In-Reply-To: <1843211.tdWV9SEqCh@kreacher>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220609104032.18350-1-songmuchun@bytedance.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 03:44:27PM +0200, Rafael J. Wysocki wrote:
-> Hi All,
+On Thu, Jun 09, 2022 at 06:40:32PM +0800, Muchun Song wrote:
+> "numa_stat" should not be included in the scope of CONFIG_HUGETLB_PAGE, if
+> CONFIG_HUGETLB_PAGE is not configured even if CONFIG_NUMA is configured,
+> "numa_stat" is missed form /proc. Move it out of CONFIG_HUGETLB_PAGE to
+> fix it.
 > 
-> Confusingly enough, the ACPI subsystem stores the information on the given ACPI
-> device's children in two places: as the list of children in struct acpi_device
-> and (as a result of device registration) in the list of children in the embedded
-> struct device.
-> 
-> These two lists agree with each other most of the time, but not always (like in
-> error paths in some cases), and the list of children in struct acpi_device is
-> not generally safe to use without locking.  In principle, it should always be
-> walked under acpi_device_lock, but in practice holding acpi_scan_lock is
-> sufficient for that too.  However, its users may not know whether or not
-> they operate under acpi_scan_lock and at least in some cases it is not accessed
-> in a safe way (note that ACPI devices may go away as a result of hot-remove,
+> Fixes: 4518085e127d ("mm, sysctl: make NUMA stats configurable")
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> Cc: <stable@vger.kernel.org>
 
-> unlike OF nodes).
-
-Hmm... Does it true for DT overlays? Not an expert in DT overlays, though,
-adding Rob and Frank.
-
-> For this reason, it is better to consolidate the code that needs to walk the
-> children of an ACPI device which is the purpose of this patch series.
-> 
-> Overall, it switches over all of the users of the list of children in struct
-> acpi_device to using helpers based on the driver core's mechanics and finally
-> drops that list, but some extra cleanups are done on the way.
-> 
-> Please refer to the patch changelogs for details.
-
-I'm going to look the individual patches.
+Acked-by: Mel Gorman <mgorman@techsingularity.net>
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Mel Gorman
+SUSE Labs
