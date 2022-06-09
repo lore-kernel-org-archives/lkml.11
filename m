@@ -2,151 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5125C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 05:24:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA56C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 05:25:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230361AbiFIFYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 01:24:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49648 "EHLO
+        id S233489AbiFIFZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 01:25:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238450AbiFIFYa (ORCPT
+        with ESMTP id S238401AbiFIFZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 01:24:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F06CB854;
-        Wed,  8 Jun 2022 22:24:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B6E861D07;
-        Thu,  9 Jun 2022 05:24:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C954C34114;
-        Thu,  9 Jun 2022 05:24:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654752266;
-        bh=gR7Tftbpm2rm+WC0YD9ESf+wexNbl5yDTu6oejUROKo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=p9xN8uACyHgE4TBurpqUMrazZhTOO7WCxnzZBwK6zSNWSO1JoWukpOw47b8aNjrSX
-         TS/Qns8mKxpVAEKe18gWhZaUGbW1nS+tsLj2OVqdoky/35nf5wGa1aJPXpEz56mS2Q
-         Hnbsx7MQua2CwtHMrlZ4LzJmq3GHsE6iNVz0LiyPEY/siNq/RpfQS6oBjGOiK60Cvk
-         Y332UIEw9MxqvqxVG+7087cxgE75a926Q49m/ORQoMvunjWw1YbNKWKwQdnttYHZaq
-         bh5/GQXo0UE8cNuWKSJCU5zA7kirNBzKLHHb0DbPSfRP3ZTw4HHM8tUiUWoWyRUgBP
-         beWN8V2YZopfA==
-Date:   Thu, 9 Jun 2022 08:22:29 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Jianglei Nie <niejianglei2021@163.com>
-Cc:     jejb@linux.ibm.com, zohar@linux.ibm.com, dhowells@redhat.com,
-        jmorris@namei.org, serge@hallyn.com,
-        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] KEYS: trusted: Fix memory leak in tpm2_key_encode()
-Message-ID: <YqGDlYGGOvC8rkf6@iki.fi>
-References: <20220608131732.550234-1-niejianglei2021@163.com>
- <YqGDTVa64aknbldb@iki.fi>
+        Thu, 9 Jun 2022 01:25:16 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48663289AD;
+        Wed,  8 Jun 2022 22:25:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654752301; x=1686288301;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=sQdvDWuWtaQh0Lb0pLm0ipy9rI3cjtx2CKUnt8lhGP8=;
+  b=TpyRbqd0yfJ5GFgVuylfa0zxhbkmvHYp6OhsKQHx1osu+pkrS22G7Y0/
+   BlM8uCoii3RGWj6caJJDukYthFS8mu0L5dkJzqoG1F4P3NmtXlhXmRvge
+   f2y/fqH4y/5dTf+QRyoSJ9y++lHcwJqjv3SKxvsAz8UFLqmbzlRIa83Mo
+   g=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 08 Jun 2022 22:25:01 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 22:25:00 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 8 Jun 2022 22:25:00 -0700
+Received: from [10.50.19.103] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 8 Jun 2022
+ 22:24:55 -0700
+Message-ID: <915be92d-302a-9149-a525-a375146a3fd9@quicinc.com>
+Date:   Thu, 9 Jun 2022 10:54:52 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqGDTVa64aknbldb@iki.fi>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH V14 8/9] arm64: dts: qcom: pm8008: Add base dts file
+Content-Language: en-US
+To:     Luca Weiss <luca.weiss@fairphone.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
+        <quic_jprakash@quicinc.com>
+References: <1654602615-28849-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1654602615-28849-9-git-send-email-quic_c_skakit@quicinc.com>
+ <CKJXIE08RHD0.31NM2AKTA8B9V@otso>
+From:   "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
+In-Reply-To: <CKJXIE08RHD0.31NM2AKTA8B9V@otso>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 08:21:20AM +0300, Jarkko Sakkinen wrote:
-> On Wed, Jun 08, 2022 at 09:17:32PM +0800, Jianglei Nie wrote:
-> > tpm2_key_encode() allocates a memory chunk from scratch with kmalloc(),
-> > but it is never freed, which leads to a memory leak. Free the memory
-> > chunk with kfree() in the return path.
-> > 
-> > Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-> > ---
-> 
-> You should write down the changelog ere. No idea what changed
-> from the previous version.
-> 
-> >  security/keys/trusted-keys/trusted_tpm2.c | 23 +++++++++++++++++------
-> >  1 file changed, 17 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/security/keys/trusted-keys/trusted_tpm2.c b/security/keys/trusted-keys/trusted_tpm2.c
-> > index 0165da386289..8b7ab22950d1 100644
-> > --- a/security/keys/trusted-keys/trusted_tpm2.c
-> > +++ b/security/keys/trusted-keys/trusted_tpm2.c
-> > @@ -32,6 +32,7 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
-> >  			   struct trusted_key_options *options,
-> >  			   u8 *src, u32 len)
-> >  {
-> > +	int err;
-> 
-> Declare as the last local variable (reverse christmas tree order).
-> 
-> Also, I'd use "int ret" since in other functions that is used.
-> 
-> >  	const int SCRATCH_SIZE = PAGE_SIZE;
-> >  	u8 *scratch = kmalloc(SCRATCH_SIZE, GFP_KERNEL);
-> >  	u8 *work = scratch, *work1;
-> > @@ -57,8 +58,10 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
-> >  		unsigned char bool[3], *w = bool;
-> >  		/* tag 0 is emptyAuth */
-> >  		w = asn1_encode_boolean(w, w + sizeof(bool), true);
-> > -		if (WARN(IS_ERR(w), "BUG: Boolean failed to encode"))
-> > -			return PTR_ERR(w);
-> > +		if (WARN(IS_ERR(w), "BUG: Boolean failed to encode")) {
-> > +			err = PTR_ERR(w);
-> > +			goto out;
-> > +		}
-> >  		work = asn1_encode_tag(work, end_work, 0, bool, w - bool);
-> >  	}
-> >  
-> > @@ -69,8 +72,10 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
-> >  	 * trigger, so if it does there's something nefarious going on
-> >  	 */
-> >  	if (WARN(work - scratch + pub_len + priv_len + 14 > SCRATCH_SIZE,
-> > -		 "BUG: scratch buffer is too small"))
-> > -		return -EINVAL;
-> > +		 "BUG: scratch buffer is too small")) {
-> > +		err = -EINVAL;
-> > +		goto out;
-> > +	}
-> >  
-> >  	work = asn1_encode_integer(work, end_work, options->keyhandle);
-> >  	work = asn1_encode_octet_string(work, end_work, pub, pub_len);
-> > @@ -79,10 +84,16 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
-> >  	work1 = payload->blob;
-> >  	work1 = asn1_encode_sequence(work1, work1 + sizeof(payload->blob),
-> >  				     scratch, work - scratch);
-> > -	if (WARN(IS_ERR(work1), "BUG: ASN.1 encoder failed"))
-> > -		return PTR_ERR(work1);
-> > +	if (WARN(IS_ERR(work1), "BUG: ASN.1 encoder failed")) {
-> > +		err = -EINVAL;
-> > +		goto out;
-> 
-> Why you are changing the return value from PTR_ERR(work1
-> to -EINVAL?
-> 
-> > +	}
-> > +	kfree(scratch);
-> >  
-> >  	return work1 - payload->blob;
-> > +
-> > +out:
-> 
-> Nit:
-> 
-> err:
-> 
-> It's only used for the error path.
-> 
-> > +	return err;
-> >  }
-> >  
-> >  struct tpm2_key_context {
-> > -- 
-> > 2.25.1
-> > 
-> 
-> BR, Jarkko
+Hi Luca,
 
-And the patch is also missing fixes tag:
 
-Fixes: f2219745250f ("security: keys: trusted: use ASN.1 TPM2 key format for the blobs")
+On 6/7/2022 6:46 PM, Luca Weiss wrote:
+> Hi Satya,
+>
+> On Tue Jun 7, 2022 at 1:50 PM CEST, Satya Priya wrote:
+>> Add base DTS file for pm8008.
+>>
+>> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+>> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+>> ---
+>> Changes in V14:
+>>   - None.
+>>
+>> Changes in V13:
+>>   - None.
+>>
+>> Changes in V12:
+>>   - None.
+>>
+>> Changes in V11:
+>>   - Remove intermediate regulators node and add the ldos under
+>>     pm8008@8 node.
+>>   - change the address cells as 2 for pm8008 parent mfd node.
+>>   - add compatible to register the ldos.
+>>   - add reg with i2c client offset and address.
+>>
+>>   arc
+>>   arch/arm64/boot/dts/qcom/pm8008.dtsi | 54 ++++++++++++++++++++++++++++++++++++
+>>   1 file changed, 54 insertions(+)
+>>   create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
+>>
+>> diff --git a/arch/arm64/boot/dts/qcom/pm8008.dtsi b/arch/arm64/boot/dts/qcom/pm8008.dtsi
+>> new file mode 100644
+>> index 0000000..6f37e4d
+>> --- /dev/null
+>> +++ b/arch/arm64/boot/dts/qcom/pm8008.dtsi
+>> @@ -0,0 +1,54 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +// Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+> I noticed this file was licensed as BSD-3-Clause in V13 and
+> this change was not mentioned in the "Changes" part.
+> Any specific reason? Especially newer dts files should be BSD-licensed,
+> and having this GPL dtsi included in otherwise BSD dts files is not
+> good.
 
-BR, Jarkko
+
+I changed it as per the suggestions of Qualcomm internal review team but 
+i see that many of the drivers use BSD license, will change this back to 
+BSD-3-Clause.
+
+
+> Regards
+> Luca
