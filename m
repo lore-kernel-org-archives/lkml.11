@@ -2,84 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC43AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 10:35:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68425C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 10:36:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235490AbiFIKfc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 06:35:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55724 "EHLO
+        id S234905AbiFIKgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 06:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233351AbiFIKfa (ORCPT
+        with ESMTP id S233351AbiFIKgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 06:35:30 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D7928720;
-        Thu,  9 Jun 2022 03:35:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654770928; x=1686306928;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=3Znz8DrGVKl+VSTFbHf1qfRtqF/T0VJbeFWJBv2ixsA=;
-  b=SEESCanWC8D/wOmrMnEZPcVmWTd7FaGMAcLKp/PpHq3h1X+EK8Kyzp3d
-   otHTq4/anKQ6P8dBsCru5vbSCYbKsC5xYb8ejOH7kdPW/ccmzfOzDanox
-   DiwtXcRCAXR2max+Za5GMfO25QRPJ3O2Zua+q+LDFDHinDABAujmzovr8
-   M=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 09 Jun 2022 03:35:28 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 03:35:27 -0700
-Received: from [10.242.59.11] (10.80.80.8) by nasanex01a.na.qualcomm.com
- (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 9 Jun 2022
- 03:35:23 -0700
-Message-ID: <4f5dbc00-e25b-f6ff-8585-31fc50f48a21@quicinc.com>
-Date:   Thu, 9 Jun 2022 16:05:20 +0530
+        Thu, 9 Jun 2022 06:36:01 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542CE31536;
+        Thu,  9 Jun 2022 03:35:59 -0700 (PDT)
+Received: from fraeml738-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LJgNr6RXCz682sD;
+        Thu,  9 Jun 2022 18:31:08 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml738-chm.china.huawei.com (10.206.15.219) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 9 Jun 2022 12:35:56 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 9 Jun 2022 11:35:53 +0100
+From:   John Garry <john.garry@huawei.com>
+To:     <axboe@kernel.dk>, <damien.lemoal@opensource.wdc.com>,
+        <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+        <brking@us.ibm.com>, <hare@suse.de>, <hch@lst.de>
+CC:     <linux-block@vger.kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <chenxiang66@hisilicon.com>, John Garry <john.garry@huawei.com>
+Subject: [PATCH RFC v2 00/18] blk-mq/libata/scsi: SCSI driver tagging improvements
+Date:   Thu, 9 Jun 2022 18:29:01 +0800
+Message-ID: <1654770559-101375-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH V5] arm64: perf: Make exporting of pmu events configurable
-Content-Language: en-US
-To:     Will Deacon <will@kernel.org>
-CC:     <mark.rutland@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>,
-        <catalin.marinas@arm.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1653306574-20946-1-git-send-email-quic_c_spathi@quicinc.com>
- <20220609100247.GA2187@willie-the-truck>
-From:   Srinivasarao Pathipati <quic_c_spathi@quicinc.com>
-In-Reply-To: <20220609100247.GA2187@willie-the-truck>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On our Qualcomm platforms, The X bit is getting set by firmware at early 
-bootup for Qualcomm use cases
-and non-secure world is resetting it, that causing issue.
+Currently SCSI low-level drivers are required to manage tags for commands
+which do not come via the block layer - libata internal commands would be
+an example of one of these. We want to make blk-mq manage these tags also.
 
-On 6/9/2022 3:32 PM, Will Deacon wrote:
-> On Mon, May 23, 2022 at 05:19:34PM +0530, Srinivasarao Pathipati wrote:
->> The PMU export bit (PMCR_EL0.X) is getting reset during pmu reset,
->> Make is configurable using sysctls to enable/disable at runtime.
->> It can also be enabled at early bootup with kernel arguments.
->>
->> Signed-off-by: Srinivasarao Pathipati <quic_c_spathi@quicinc.com>
->> ---
->> Changes since V4:
->> 	- Registering sysctls dynamically for only arm64 as suggested by Will
->> 	- Not removed the code to configure with kernel parameters
->> 	  as the sysctl's kernel parameter(sysctl.kernel.export_pmu_events)
->> 	  is not working at early bootup. pmu_reset() getting called before
->> 	  sysctl's kernel parameter is set.
-> Why do you need this during early bootup? Perf won't program any events
-> until much later and if somebody else is configuring the PMU before
-> entering Linux then they can also set that X bit in the PMCR.
->
-> Will
+There was some work to provide "reserved commands" support in such series
+as https://lore.kernel.org/linux-scsi/20211125151048.103910-1-hare@suse.de/
+
+This was based on allocating a request for the lifetime of the "internal"
+command.
+
+This series tries to solve that problem by not just allocating the request
+but also sending it as a request through the block layer. Reasons to do
+this:
+- Normal flow of a request and also commonality for regular scsi command
+  lifetime
+- We don't leave request and scsi_cmnd fields dangling as when we just
+  allocate and free the request for the lifetime of the "internal" command
+- For poll mode support we can only poll in block layer, so could not send
+  internal commands on poll mode queues if we did not do this, which is a
+  problem
+- Can get rid of duplicated code like libsas internal command timeout
+  handling
+
+Based on v5.19-rc1
+
+Please consider as an PoC for now. I have broken builds, bisectablility,
+and functionality for a lot of libsas drivers, like pm8001. Indeed, 
+10/18 onwards need a lot of work...
+
+Testing:
+QEMU with AHCI with disk and cdrom attached and hisi_sas v2 both boot.
+
+v1 was sent here:
+https://lore.kernel.org/linux-scsi/1647945585-197349-1-git-send-email-john.garry@huawei.com/
+
+Hannes Reinecke (1):
+  scsi: core: Implement reserved command handling
+
+John Garry (17):
+  blk-mq: Add a flag for reserved requests
+  scsi: core: Resurrect scsi_{get,free}_host_dev()
+  scsi: core: Add support to send reserved commands
+  scsi: core: Allocate SCSI host sdev when required
+  libata-scsi: Add ata_scsi_queue_internal()
+  libata-scsi: Add ata_internal_queuecommand()
+  libata: Queue ATA internal commands as requests
+  scsi: ipr: Support reserved commands
+  libata/scsi: libsas: Add sas_queuecommand_internal()
+  scsi: libsas: Don't attempt to find scsi host rphy in slave alloc
+  scsi: libsas drivers: Prepare for reserved commands
+  scsi: libsas: Allocate SCSI commands for tasks
+  scsi: libsas: Queue SMP commands as requests
+  scsi: libsas: Queue TMF commands as requests
+  scsi: core: Add scsi_alloc_request_hwq()
+  scsi: libsas: Queue internal abort commands as requests
+  scsi: libsas drivers: Remove private tag management
+
+ block/blk-mq.c                         |   6 +
+ drivers/ata/libata-core.c              | 145 +++++++++++++++----------
+ drivers/ata/libata-sata.c              |   5 +-
+ drivers/ata/libata-scsi.c              |  61 ++++++++++-
+ drivers/ata/libata.h                   |   4 -
+ drivers/scsi/hisi_sas/hisi_sas_main.c  |  93 ++++------------
+ drivers/scsi/hisi_sas/hisi_sas_v2_hw.c |   6 +-
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c |   3 +-
+ drivers/scsi/hosts.c                   |  14 +++
+ drivers/scsi/ipr.c                     |  17 ++-
+ drivers/scsi/libsas/sas_ata.c          |  22 ++--
+ drivers/scsi/libsas/sas_expander.c     |  24 ++--
+ drivers/scsi/libsas/sas_init.c         |  74 ++++++++-----
+ drivers/scsi/libsas/sas_internal.h     |   6 +
+ drivers/scsi/libsas/sas_scsi_host.c    | 121 +++++++++++++++------
+ drivers/scsi/scsi_lib.c                |  50 ++++++++-
+ drivers/scsi/scsi_scan.c               |  57 ++++++++++
+ include/linux/blk-mq.h                 |   6 +
+ include/linux/libata.h                 |  13 ++-
+ include/scsi/libsas.h                  |  57 +++++++++-
+ include/scsi/scsi_cmnd.h               |   8 ++
+ include/scsi/scsi_host.h               |  34 +++++-
+ 22 files changed, 597 insertions(+), 229 deletions(-)
+
+-- 
+2.26.2
+
