@@ -2,130 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF91C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:03:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 575EFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243328AbiFILDx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:03:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41292 "EHLO
+        id S243382AbiFILEF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243296AbiFILDs (ORCPT
+        with ESMTP id S243353AbiFILEA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:03:48 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604C533E0B
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:03:43 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id c196so20803164pfb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 04:03:43 -0700 (PDT)
+        Thu, 9 Jun 2022 07:04:00 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4FC36E1F
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:03:56 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id m25so22405767lji.11
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 04:03:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IQjWoMytTLM9Dcyp3i5P+y4SUoKQ6ziA0Ta14wE6h3g=;
-        b=CwjSPemQL1z4gXSvHaVlKdK2j2sP7CEKbKvnZsN+xhmgsZOj1xqsJLv9N3qfYFtdgL
-         3uZ/tnCxe4qPpkqm89Vffx4PNKTMoZUAVm0azLinZP5iT081I17SyTikEi+YfrsXD1aL
-         QHeOH9nEpiuA507C7oZZl4+YuPKZeVAypn7ywr109Oio4DfWFIFnztadBj/DaS/p3VGK
-         UrJsC8QCbZnSkF7luM9YisRf/AZINEunuICdy8+RoL6nuPJxlJoR7Ii3VMgDlx9QUfio
-         ATeGOA4ONeJMy2+aB4OOw5rE6Z4eI70juHAKU+O+xD6jS+iJDcWh6O9NYGKKKeD+On50
-         QxtQ==
+        d=semihalf.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8uYu8lJiNuFARRdH3Dv0gK66JWjRf/8va0hEQMAWSVE=;
+        b=EMsI0ApUkRgweNKPg6JQ59+57gorw/10/iLwDPMox+DFf4tFX79NVzId4ZnoYaSeIo
+         ItBVH0yUXDl/dOKnowxrWthfkBO14pmFh/pObvY6R0XlN9RXXcUOJdXlciyD9tbNE/mb
+         7DoUyRDn5YzZDhSgtQYR+fraUF/bEIhS/QWB0o30u0oAZR49OSDY0FkV1Yg3zUxN0xoD
+         BUuJbojVzCL4rxEeIqfAcpRmngggYe/yr0HDMluZjStSaKFZbviwIT3BhLa2OtxLMKlA
+         9HWXRq6Wg8xi1TBsjlw/rPqpLweQiO/oDugVTY7SsZXfCNHHWJ2N37A3QNlSw/qAG6QG
+         F+wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IQjWoMytTLM9Dcyp3i5P+y4SUoKQ6ziA0Ta14wE6h3g=;
-        b=1YedVdCrL9s5HBUNlPPl6e3uy1slLMJE+A2mxiZPWsSyJGSV6WFCMQBpoYdU5CDp8C
-         RaUj3DkXpqWecQmGzQKj5PXXqxUUEhFxnXo9VeWjoeVDLGw50MOY3pb5aqxpXWEYALCw
-         sg/mHkJCzQ2uKeYiXpHFlRt9VXLKFZIcazdPIQY2XnPUbYStiHbiPnOkwvB+GLExPmpk
-         z94nidn6cKctmqa2EQAz9XEofRR5/t5PO0xSH8hfVs9XGCsyxz+I8dH5n/+1ukuFP+op
-         i3pPeAfN52GmLFMAiO1LL4MKUew+WY7DFqD1Ujpyyj5Hw5B7NzrfGiEZzHpr+O4rAusk
-         EiIw==
-X-Gm-Message-State: AOAM5338TziyAr5iUGDCt4giD+0MDC518KoTmpMYl42aGxpxRGpNhJkv
-        AvqE3vN5VOvgIJgZDz/1yzCtWDpGGqb4ALSNOw==
-X-Google-Smtp-Source: ABdhPJwMGNHGVc6tb9NrGW3aLpKrrpeDHo1YYDFy1Bxx5cYceRnFSsg5BdfG2gOfGg5Ei6E0NUNEorkPcuLwUFnE1vU=
-X-Received: by 2002:a05:6a00:ad0:b0:4f7:a357:6899 with SMTP id
- c16-20020a056a000ad000b004f7a3576899mr39745777pfl.80.1654772623393; Thu, 09
- Jun 2022 04:03:43 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8uYu8lJiNuFARRdH3Dv0gK66JWjRf/8va0hEQMAWSVE=;
+        b=yCMbuB6hpv8Sr2XPUOY1V2+vAyBU60bOKP6SOJKoVRBrOUp/bu2tltyW5Dn+cCxS0L
+         t+AUXrLLH2w25sLA2umer29VVvC7YvuReJUTRJ/+t71pIrLvY+LvL0Db7TnHGe/iqPuI
+         mSx81dcF8+KRc0j7B6ovo+lZjhyvuw1V1LVAg91J3CFYtRKbxuXnpygTJqD76cfV7i1W
+         f00KtAaNrlk/+3sGICJN6uLqfCrlqhO0NLz6XvkibLY+dN/dNffUQP77SbtgE/dM/sJx
+         3lRzzHmwgmxUfdIMFDu9fU71mGc19zqRUP1x3j7Q/oL2b+wzR8a0LoFk6XyELFm5XqJ2
+         VZYQ==
+X-Gm-Message-State: AOAM531kc7KDl0rsnGZzYmXFzCkkiVYej797vSg12Xto5/Yj+PilpDVV
+        HYUy1w5WpSIKmeC5m8yYijY91CQJFLn/AwE5
+X-Google-Smtp-Source: ABdhPJzP9OHSzABmTycdeFyssS0y/yZjxyhfETt55oRQaQYmjEFctwgh5JRBToJgpzHJlNQ/K/jgqg==
+X-Received: by 2002:a2e:b5c5:0:b0:255:5ba4:4892 with SMTP id g5-20020a2eb5c5000000b002555ba44892mr26027566ljn.3.1654772633411;
+        Thu, 09 Jun 2022 04:03:53 -0700 (PDT)
+Received: from jazctssd.c.googlers.com.com (138.58.228.35.bc.googleusercontent.com. [35.228.58.138])
+        by smtp.gmail.com with ESMTPSA id a10-20020a194f4a000000b004793605e59dsm2116674lfk.245.2022.06.09.04.03.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 04:03:52 -0700 (PDT)
+From:   Grzegorz Jaszczyk <jaz@semihalf.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     jaz@semihalf.com, dmy@semihalf.com,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Steve Rutherford <srutherford@google.com>,
+        Zide Chen <zide.chen@intel.corp-partner.google.com>,
+        Peter Fang <peter.fang@intel.corp-partner.google.com>,
+        Ashish Kalra <ashish.kalra@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Pratik Vishwakarma <Pratik.Vishwakarma@amd.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sachi King <nakato@nakato.io>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Wei Wang <wei.w.wang@intel.com>,
+        Fabiano Rosas <farosas@linux.ibm.com>,
+        David Dunn <daviddunn@google.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        kvm@vger.kernel.org (open list:KERNEL VIRTUAL MACHINE (KVM)),
+        linux-doc@vger.kernel.org (open list:DOCUMENTATION),
+        linux-acpi@vger.kernel.org (open list:ACPI),
+        linux-pm@vger.kernel.org (open list:HIBERNATION (aka Software Suspend,
+        aka swsusp))
+Subject: [PATCH 0/2] x86: notify hypervisor/VMM about guest entering s2idle
+Date:   Thu,  9 Jun 2022 11:03:26 +0000
+Message-Id: <20220609110337.1238762-1-jaz@semihalf.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
 MIME-Version: 1.0
-References: <20220609083133.4120738-1-zheyuma97@gmail.com> <YqGxjwLHxaXG/646@kroah.com>
-In-Reply-To: <YqGxjwLHxaXG/646@kroah.com>
-From:   Zheyu Ma <zheyuma97@gmail.com>
-Date:   Thu, 9 Jun 2022 19:03:32 +0800
-Message-ID: <CAMhUBj=nTiTu8wwjk0=WGE=nJPWtb+kSq_u=MW_FF1DHLE-55A@mail.gmail.com>
-Subject: Re: [PATCH] tty: nozomi: Return an error when failing to create the sysfs
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, fseidel@suse.de,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 9, 2022 at 4:38 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Jun 09, 2022 at 04:31:33PM +0800, Zheyu Ma wrote:
-> > The driver does not handle the error of the creation of sysfs, resulting
-> > in duplicate file names being created.
-> >
-> > The following log can reveal it:
-> >
-> > [   52.907211] sysfs: cannot create duplicate filename '/devices/pci0000:00/0000:00:05.0/card_type'
->
-> How is the same file being created in a normal codepath?
->
-> Is the same device being registered twice somehow?
+This patchset introduces support which allows to notify first the
+hypervisor about guest entering the s2idle state (patch #1) and second
+propagate this notification to user-space so the VMM can take advantage
+of such notification (patch #2).
 
-In fact, I tried to load the nozomi driver twice.
-In the first load, the driver failed at tty_port_register_device(),
-performed error handling and returned an error, but by this time the
-make_sysfs_files() had been executed and the sysfs had been created.
-In the second load, the make_sysfs_files() is executed again and this
-warning is returned.
+Please see individual patches and commit logs for more verbose description.
 
-> > [   52.907224] Call Trace:
-> > [   52.907269]  sysfs_add_file_mode_ns+0x23f/0x2b0
-> > [   52.907281]  sysfs_create_file_ns+0xe9/0x170
-> > [   52.907321]  nozomi_card_init+0x97f/0x12c0 [nozomi]
-> >
-> > Fix this bug by returning an error when failing to create the sysfs.
-> >
-> > Fixes: 20fd1e3bea55 ("nozomi driver")
-> > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-> > ---
-> >  drivers/tty/nozomi.c | 24 ++++++++++++++++++++----
-> >  1 file changed, 20 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/tty/nozomi.c b/drivers/tty/nozomi.c
-> > index 0454c78deee6..d0ad1b9898f5 100644
-> > --- a/drivers/tty/nozomi.c
-> > +++ b/drivers/tty/nozomi.c
-> > @@ -1282,14 +1282,26 @@ static ssize_t open_ttys_show(struct device *dev, struct device_attribute *attr,
-> >  }
-> >  static DEVICE_ATTR_RO(open_ttys);
-> >
-> > -static void make_sysfs_files(struct nozomi *dc)
-> > +static int make_sysfs_files(struct nozomi *dc)
-> >  {
-> > -     if (device_create_file(&dc->pdev->dev, &dev_attr_card_type))
-> > +     int err;
-> > +
-> > +     err = device_create_file(&dc->pdev->dev, &dev_attr_card_type);
->
-> Drivers shouldn't be calling this function anyway, it's a race
-> condition.  How about switching this to use the proper device groups
-> functionality instead which moves all of the handling of the sysfs files
-> to the driver core so that the driver can not get it wrong?
+Zide Chen (2):
+  x86: notify hypervisor about guest entering s2idle state
+  KVM: x86: notify user space about guest entering s2idle
 
-Thanks for your reminder, since I'm not familiar with this function, I
-will learn how to use the device groups functionality and revise the
-patch.
+ Documentation/virt/kvm/api.rst            | 21 +++++++++++++++++++++
+ Documentation/virt/kvm/x86/hypercalls.rst |  7 +++++++
+ arch/x86/include/asm/kvm_host.h           |  2 ++
+ arch/x86/kvm/x86.c                        | 18 ++++++++++++++++++
+ drivers/acpi/x86/s2idle.c                 |  8 ++++++++
+ include/linux/suspend.h                   |  1 +
+ include/uapi/linux/kvm.h                  |  2 ++
+ include/uapi/linux/kvm_para.h             |  1 +
+ kernel/power/suspend.c                    |  4 ++++
+ tools/include/uapi/linux/kvm.h            |  1 +
+ 10 files changed, 65 insertions(+)
 
-> That should solve the error handling case.  The fact that this is trying
-> to be created twice is a symptom of a worse problem here.  How are you
-> duplicating this?
+-- 
+2.36.1.476.g0c4daa206d-goog
 
-As mentioned above, I tried to load the nozomi driver twice and
-make_sysfs_files() is executed twice.
-
-thanks,
-
-Zheyu Ma
