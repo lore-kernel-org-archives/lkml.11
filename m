@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40421C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:51:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E00DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:51:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344886AbiFIQvB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 12:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
+        id S244149AbiFIQvG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 12:51:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344418AbiFIQuc (ORCPT
+        with ESMTP id S1344634AbiFIQuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 12:50:32 -0400
+        Thu, 9 Jun 2022 12:50:35 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032AC69B4C
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 09:50:29 -0700 (PDT)
-Date:   Thu, 09 Jun 2022 16:50:27 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8756C55F
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 09:50:32 -0700 (PDT)
+Date:   Thu, 09 Jun 2022 16:50:30 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1654793428;
+        s=2020; t=1654793431;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lwhaKIkwmAx4RL5BhQowW7xjxXNHezvmyZZs5SRMSyQ=;
-        b=gPoImVNRnseZdW1S4UvjCjeNcBAVQpMyJLgGqOxEG9XIEORApie6+TAPYBvTaE1HXCxweC
-        q8a96gHHOU6Z/appOq1txEJCVSWJosXSifkgbEqD/H1z0JbjkbY66Q2S5Rrw+PqR/oX/+g
-        Dl7kNOZkZy52Z1pH5X+W8eWKcovs7jjp44Uq50IJh3PSV1s2f16xOm2MCdIX2SpaRCcvDi
-        /YYOvUwmwpKqgfytuyfp7iMoZh6dO0GRadIKxhVjNTvFpNDtdwG07wHX/nE24XzgAWyVE3
-        F/4YNtFob6bmOGgDC/HhD8HejyU9mZYmjZPJbrWTolWt9jfOKxYW23I3PQNapA==
+        bh=/TtGqeIHyDmLKv3CPijYNsnKTzn1gj6kvI09Ktoi9Ps=;
+        b=cPC7ir7sVUYlsYdk10jHznVwnQcgrOMhDvtd1qvSAYUJ6ZM4n/buT9hXwnY8BhM9FZLJyf
+        0sSaezt8flMBQ0KO2hn8uZj4g3TgyV596ksG1/wg+i+RVnE9qYL9EHdW5vvj9XCa5pWqfF
+        e78anW1qNZJmiU4oZRHfStdPeh4+6joeDoo4VisMU5+14oQLmzfr66BMW2cG4xWcTqpQlu
+        5MUhjctjmI/kZCRsEZHDNHhVcJFNhHexOXcBfvgUH7D2HA7Jg1qc0nh6na6gDpZ03I3hRC
+        y5tCuL5LmsD507yvbrjLjvgcTKS9upxNPSjnUVcNmnsdhWalC5vyCP3FPjktPg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1654793428;
+        s=2020e; t=1654793431;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lwhaKIkwmAx4RL5BhQowW7xjxXNHezvmyZZs5SRMSyQ=;
-        b=8BkKvIq31BAG7lctmloeg40Wjh8QD5PqZw5brjjIfEmDmuzdvvMkDsoVdt1rk2IPmMdM59
-        ovqUKeWHrZqXmCDw==
-From:   "irqchip-bot for Miaoqian Lin" <tip-bot2@linutronix.de>
+        bh=/TtGqeIHyDmLKv3CPijYNsnKTzn1gj6kvI09Ktoi9Ps=;
+        b=ZdxoL5+AiRaoYrAbs8j6NhtjJryGAmoGVmjJwBqn78tcNTfyh6ocxVwvlVzNyEqroTYJ3j
+        i8ZNyod08xzNaXAw==
+From:   "irqchip-bot for Jamie Iles" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-fixes] irqchip/apple-aic: Fix refcount leak in
- aic_of_ic_init
-Cc:     Miaoqian Lin <linmq006@gmail.com>, Marc Zyngier <maz@kernel.org>,
-        tglx@linutronix.de
-In-Reply-To: <20220601080930.31005-4-linmq006@gmail.com>
-References: <20220601080930.31005-4-linmq006@gmail.com>
+Subject: [irqchip: irq/irqchip-fixes] irqchip/xilinx: Remove microblaze+zynq
+ dependency
+Cc:     Jamie Iles <jamie@jamieiles.com>,
+        Michal Simek <michal.simek@amd.com>,
+        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <20220606213952.298686-1-jamie@jamieiles.com>
+References: <20220606213952.298686-1-jamie@jamieiles.com>
 MIME-Version: 1.0
-Message-ID: <165479342703.4207.11307569031053264673.tip-bot2@tip-bot2>
+Message-ID: <165479343022.4207.13397822799404943777.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,36 +62,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the irq/irqchip-fixes branch of irqchip:
 
-Commit-ID:     3d45670fab3c25a7452721e4588cc95c51cda134
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/3d45670fab3c25a7452721e4588cc95c51cda134
-Author:        Miaoqian Lin <linmq006@gmail.com>
-AuthorDate:    Wed, 01 Jun 2022 12:09:27 +04:00
+Commit-ID:     b84dc7f0e3646d480b6972c5f25586215c5f33e2
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/b84dc7f0e3646d480b6972c5f25586215c5f33e2
+Author:        Jamie Iles <jamie@jamieiles.com>
+AuthorDate:    Mon, 06 Jun 2022 22:39:52 +01:00
 Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Thu, 09 Jun 2022 17:36:57 +01:00
+CommitterDate: Thu, 09 Jun 2022 17:34:56 +01:00
 
-irqchip/apple-aic: Fix refcount leak in aic_of_ic_init
+irqchip/xilinx: Remove microblaze+zynq dependency
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+The Xilinx IRQ controller doesn't really have any architecture
+dependencies - it's a generic AXI component that can be used for any
+FPGA core from Zynq hard processor systems to microblaze+riscv soft
+cores and more.
 
-Fixes: a5e8801202b3 ("irqchip/apple-aic: Parse FIQ affinities from device-tree")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Jamie Iles <jamie@jamieiles.com>
+Acked-by: Michal Simek <michal.simek@amd.com>
 Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220601080930.31005-4-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220606213952.298686-1-jamie@jamieiles.com
 ---
- drivers/irqchip/irq-apple-aic.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/irqchip/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/irqchip/irq-apple-aic.c b/drivers/irqchip/irq-apple-aic.c
-index 478d0af..5ac8318 100644
---- a/drivers/irqchip/irq-apple-aic.c
-+++ b/drivers/irqchip/irq-apple-aic.c
-@@ -1144,6 +1144,7 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
- 		for_each_child_of_node(affs, chld)
- 			build_fiq_affinity(irqc, chld);
- 	}
-+	of_node_put(affs);
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 4ab1038..1f23a6b 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -298,7 +298,7 @@ config XTENSA_MX
  
- 	set_handle_irq(aic_handle_irq);
- 	set_handle_fiq(aic_handle_fiq);
+ config XILINX_INTC
+ 	bool "Xilinx Interrupt Controller IP"
+-	depends on MICROBLAZE || ARCH_ZYNQ || ARCH_ZYNQMP
++	depends on OF
+ 	select IRQ_DOMAIN
+ 	help
+ 	  Support for the Xilinx Interrupt Controller IP core.
