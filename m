@@ -2,113 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47068C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:03:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF91C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:03:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243153AbiFILDa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:03:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39630 "EHLO
+        id S243328AbiFILDx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243418AbiFILDZ (ORCPT
+        with ESMTP id S243296AbiFILDs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:03:25 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF7B2DAA5;
-        Thu,  9 Jun 2022 04:03:24 -0700 (PDT)
+        Thu, 9 Jun 2022 07:03:48 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604C533E0B
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:03:43 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id c196so20803164pfb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 04:03:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654772604; x=1686308604;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=tiH6fLWycgZOWONZkC/uzfuzboRGK08l+FrKtOqNvGk=;
-  b=AUX8Xz2PN0aXQrBMv+sUa1mehpvqhh1JR96QipnZfvcqku+zgVErnaqy
-   unbiFU/hCrI2IfNU6KpaPf8Ds04ttDyLq8weKnw+rHkFWZ9IJhr+jreuo
-   8liCNX3EH19qk2ay4orHG1y3ckFfcLlvM+Xv2PuD7FRxs8QxfP+M6n07/
-   M=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 09 Jun 2022 04:03:24 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 04:03:24 -0700
-Received: from zijuhu-gv.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 9 Jun 2022 04:03:21 -0700
-From:   Zijun Hu <quic_zijuhu@quicinc.com>
-To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <luiz.dentz@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, Zijun Hu <quic_zijuhu@quicinc.com>
-Subject: [PATCH v1] Bluetooth: Fix CVSD SCO setup failure
-Date:   Thu, 9 Jun 2022 19:03:16 +0800
-Message-ID: <1654772596-10019-1-git-send-email-quic_zijuhu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IQjWoMytTLM9Dcyp3i5P+y4SUoKQ6ziA0Ta14wE6h3g=;
+        b=CwjSPemQL1z4gXSvHaVlKdK2j2sP7CEKbKvnZsN+xhmgsZOj1xqsJLv9N3qfYFtdgL
+         3uZ/tnCxe4qPpkqm89Vffx4PNKTMoZUAVm0azLinZP5iT081I17SyTikEi+YfrsXD1aL
+         QHeOH9nEpiuA507C7oZZl4+YuPKZeVAypn7ywr109Oio4DfWFIFnztadBj/DaS/p3VGK
+         UrJsC8QCbZnSkF7luM9YisRf/AZINEunuICdy8+RoL6nuPJxlJoR7Ii3VMgDlx9QUfio
+         ATeGOA4ONeJMy2+aB4OOw5rE6Z4eI70juHAKU+O+xD6jS+iJDcWh6O9NYGKKKeD+On50
+         QxtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IQjWoMytTLM9Dcyp3i5P+y4SUoKQ6ziA0Ta14wE6h3g=;
+        b=1YedVdCrL9s5HBUNlPPl6e3uy1slLMJE+A2mxiZPWsSyJGSV6WFCMQBpoYdU5CDp8C
+         RaUj3DkXpqWecQmGzQKj5PXXqxUUEhFxnXo9VeWjoeVDLGw50MOY3pb5aqxpXWEYALCw
+         sg/mHkJCzQ2uKeYiXpHFlRt9VXLKFZIcazdPIQY2XnPUbYStiHbiPnOkwvB+GLExPmpk
+         z94nidn6cKctmqa2EQAz9XEofRR5/t5PO0xSH8hfVs9XGCsyxz+I8dH5n/+1ukuFP+op
+         i3pPeAfN52GmLFMAiO1LL4MKUew+WY7DFqD1Ujpyyj5Hw5B7NzrfGiEZzHpr+O4rAusk
+         EiIw==
+X-Gm-Message-State: AOAM5338TziyAr5iUGDCt4giD+0MDC518KoTmpMYl42aGxpxRGpNhJkv
+        AvqE3vN5VOvgIJgZDz/1yzCtWDpGGqb4ALSNOw==
+X-Google-Smtp-Source: ABdhPJwMGNHGVc6tb9NrGW3aLpKrrpeDHo1YYDFy1Bxx5cYceRnFSsg5BdfG2gOfGg5Ei6E0NUNEorkPcuLwUFnE1vU=
+X-Received: by 2002:a05:6a00:ad0:b0:4f7:a357:6899 with SMTP id
+ c16-20020a056a000ad000b004f7a3576899mr39745777pfl.80.1654772623393; Thu, 09
+ Jun 2022 04:03:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
+References: <20220609083133.4120738-1-zheyuma97@gmail.com> <YqGxjwLHxaXG/646@kroah.com>
+In-Reply-To: <YqGxjwLHxaXG/646@kroah.com>
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Thu, 9 Jun 2022 19:03:32 +0800
+Message-ID: <CAMhUBj=nTiTu8wwjk0=WGE=nJPWtb+kSq_u=MW_FF1DHLE-55A@mail.gmail.com>
+Subject: Re: [PATCH] tty: nozomi: Return an error when failing to create the sysfs
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, fseidel@suse.de,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It will set up SCO after all CVSD eSCO attempts failure, but
-still fails to setup SCO finally due to wrong D1/D0 @retrans_effort
-within @esco_param_cvsd, so change it from 0x1 to 0xff to avoid
-Invalid HCI Command Parameters error.
+On Thu, Jun 9, 2022 at 4:38 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Thu, Jun 09, 2022 at 04:31:33PM +0800, Zheyu Ma wrote:
+> > The driver does not handle the error of the creation of sysfs, resulting
+> > in duplicate file names being created.
+> >
+> > The following log can reveal it:
+> >
+> > [   52.907211] sysfs: cannot create duplicate filename '/devices/pci0000:00/0000:00:05.0/card_type'
+>
+> How is the same file being created in a normal codepath?
+>
+> Is the same device being registered twice somehow?
 
-< HCI Command: Setup Synchrono.. (0x01|0x0028) plen 17  #3427
-        Handle: 3
-        Transmit bandwidth: 8000
-        Receive bandwidth: 8000
-        Max latency: 65535
-        Setting: 0x0060
-          Input Coding: Linear
-          Input Data Format: 2's complement
-          Input Sample Size: 16-bit
-          # of bits padding at MSB: 0
-          Air Coding Format: CVSD
-        Retransmission effort: Optimize for power consumption (0x01)
-        Packet type: 0x03c4
-          HV3 may be used
-          2-EV3 may not be used
-          3-EV3 may not be used
-          2-EV5 may not be used
-          3-EV5 may not be used
-> HCI Event: Command Status (0x0f) plen 4               #3428
-      Setup Synchronous Connection (0x01|0x0028) ncmd 1
-        Status: Success (0x00)
-> HCI Event: Synchronous Connect Comp.. (0x2c) plen 17  #3429
-        Status: Invalid HCI Command Parameters (0x12)
-        Handle: 0
-        Address: 14:3F:A6:47:56:15 (OUI 14-3F-A6)
-        Link type: SCO (0x00)
-        Transmission interval: 0x00
-        Retransmission window: 0x00
-        RX packet length: 0
-        TX packet length: 0
-        Air mode: u-law log (0x00)
+In fact, I tried to load the nozomi driver twice.
+In the first load, the driver failed at tty_port_register_device(),
+performed error handling and returned an error, but by this time the
+make_sysfs_files() had been executed and the sysfs had been created.
+In the second load, the make_sysfs_files() is executed again and this
+warning is returned.
 
-Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
----
- net/bluetooth/hci_conn.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> > [   52.907224] Call Trace:
+> > [   52.907269]  sysfs_add_file_mode_ns+0x23f/0x2b0
+> > [   52.907281]  sysfs_create_file_ns+0xe9/0x170
+> > [   52.907321]  nozomi_card_init+0x97f/0x12c0 [nozomi]
+> >
+> > Fix this bug by returning an error when failing to create the sysfs.
+> >
+> > Fixes: 20fd1e3bea55 ("nozomi driver")
+> > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> > ---
+> >  drivers/tty/nozomi.c | 24 ++++++++++++++++++++----
+> >  1 file changed, 20 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/tty/nozomi.c b/drivers/tty/nozomi.c
+> > index 0454c78deee6..d0ad1b9898f5 100644
+> > --- a/drivers/tty/nozomi.c
+> > +++ b/drivers/tty/nozomi.c
+> > @@ -1282,14 +1282,26 @@ static ssize_t open_ttys_show(struct device *dev, struct device_attribute *attr,
+> >  }
+> >  static DEVICE_ATTR_RO(open_ttys);
+> >
+> > -static void make_sysfs_files(struct nozomi *dc)
+> > +static int make_sysfs_files(struct nozomi *dc)
+> >  {
+> > -     if (device_create_file(&dc->pdev->dev, &dev_attr_card_type))
+> > +     int err;
+> > +
+> > +     err = device_create_file(&dc->pdev->dev, &dev_attr_card_type);
+>
+> Drivers shouldn't be calling this function anyway, it's a race
+> condition.  How about switching this to use the proper device groups
+> functionality instead which moves all of the handling of the sysfs files
+> to the driver core so that the driver can not get it wrong?
 
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index 7829433d54c1..2627d5ac15d6 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -45,8 +45,8 @@ static const struct sco_param esco_param_cvsd[] = {
- 	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x000a,	0x01 }, /* S3 */
- 	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x0007,	0x01 }, /* S2 */
- 	{ EDR_ESCO_MASK | ESCO_EV3,   0x0007,	0x01 }, /* S1 */
--	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0x01 }, /* D1 */
--	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0x01 }, /* D0 */
-+	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0xff }, /* D1 */
-+	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0xff }, /* D0 */
- };
- 
- static const struct sco_param sco_param_cvsd[] = {
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
+Thanks for your reminder, since I'm not familiar with this function, I
+will learn how to use the device groups functionality and revise the
+patch.
 
+> That should solve the error handling case.  The fact that this is trying
+> to be created twice is a symptom of a worse problem here.  How are you
+> duplicating this?
+
+As mentioned above, I tried to load the nozomi driver twice and
+make_sysfs_files() is executed twice.
+
+thanks,
+
+Zheyu Ma
