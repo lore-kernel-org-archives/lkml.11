@@ -2,90 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65AB0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 05:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F37E4C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 05:57:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238699AbiFIF5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 01:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50524 "EHLO
+        id S238732AbiFIF5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 01:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238569AbiFIF5C (ORCPT
+        with ESMTP id S230414AbiFIF5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 01:57:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC7EE2DA8D;
-        Wed,  8 Jun 2022 22:57:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59BA661D58;
-        Thu,  9 Jun 2022 05:57:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFC28C34114;
-        Thu,  9 Jun 2022 05:56:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654754219;
-        bh=Lk9VcDtnAmCoMRcuenCeRZs/rDxjxHcun+H8Vl2ka0g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=G8DsCVOvrbUU3PHnU9OPtRCyArNV8i7UbH9DNGl7TQTrqQ4QI7VQ5i95Stk/stCgr
-         YYAmxAxiLsrvk1cIGG0run+4Ybvh/EToyMRuDLma6Cmb1lDLk5QhonRFQ4sG/OYGAE
-         NGVw+25bVGzor8s8SnzbogYrxcfOjmVgLwdAj5WuJhkIEbpvjEbeOoKPh3mAdmL2hA
-         AK65I65XkoVohj15Fh3+kfSy/Ztc+1NcGEvSKtko3BqWRiyIU+Vd0BrlihMeOsAyxp
-         OFr1SUy/HsJLwXTE6fVsRjmBgTmzESxWO0PkIYFv4lcb1WjgbDfiJolR85nSV0pEM0
-         NrbOxi/3MTnSA==
-Date:   Thu, 9 Jun 2022 11:26:55 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Fabien Parent <fparent@baylibre.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        qii.wang@mediatek.com, matthias.bgg@gmail.com, jic23@kernel.org,
-        chaotian.jing@mediatek.com, ulf.hansson@linaro.org,
-        srinivas.kandagatla@linaro.org, chunfeng.yun@mediatek.com,
-        broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
-        Long Cheng <long.cheng@mediatek.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-iio@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH 05/17] dt-bindings: dma: mediatek,uart-dma: add MT8365
- bindings
-Message-ID: <YqGLpyWUgBJQXG9K@matsya>
-References: <20220531135026.238475-1-fparent@baylibre.com>
- <20220531135026.238475-6-fparent@baylibre.com>
+        Thu, 9 Jun 2022 01:57:03 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B4F42DD5E;
+        Wed,  8 Jun 2022 22:57:01 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id r71so20954559pgr.0;
+        Wed, 08 Jun 2022 22:57:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=CWHqqF01MR1hRCUv+JftvZxTCLeuaSF/IGUn/jKBQVI=;
+        b=JawKMh1AJPHwaPnySc/7xgifRxG+g42ouAQQnHKQJLUdMPPOjY6Ccpvw5vsgS6pR0a
+         Jf3OVc3Ip3TvljYNOt6PFuOEBX5bnWpoBljrfTUSDBcBH7LW/dZ84psWzF37vb7JJDRP
+         /+W3AOJ0pBkeKzi90SET4+Bi5obxbaXr8lTdCvYZmZmEwSJfrbytgBpuSYvs7S+RmrLX
+         Qdc/URP5EdArHaPh5P7MsoA7ro1CiO/7fGkN0YpHesKmKLju8kQcqnn453Y6ejHGiDz8
+         wcD2QOxsfStmMoZ5lhn/ylFNHe/So2Jn/kcon5IXMg36RtZeJ10N+Z/vQ75OtVkUjZQY
+         Q0aQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=CWHqqF01MR1hRCUv+JftvZxTCLeuaSF/IGUn/jKBQVI=;
+        b=fz0N22ZD+xbvA7wn+TTZnpAF/MANQCaQc2cTvhOlXfwM8NzihMCpHlEF8VZuLDxyuZ
+         OMfPH0bbDcrxDdSS2mAr6MWPW+AgeEXrajf+yzoXYtWSnmQjOPqByEwQjI8EFF8zCMhO
+         mbaFq4xKBZQv7Faju5EizCWGpcxtCQdBKY9fmBQPGfkri/8GQc8B5KcUHfCrPipxnPlf
+         jNVQ4ob1CyF9hH6hAjl/rxklg7MJkWZIilw/wdo7XuH0V8PRDUTi8u5RJAClSiI6rEtw
+         7k1bdV94t17RxkIK95skrnc8/YyQMN5EYna52gzpAj0tS0V+xrFY67Uyo/PhsnK9FWZa
+         WLzQ==
+X-Gm-Message-State: AOAM530k0xsXJ77JiTp4J5gupJ032CXYY77oYx7gTk4SLGIKPzRnrq1o
+        TpU5kLQUByaQ8evQyPWeSls=
+X-Google-Smtp-Source: ABdhPJz2rS8RAd8uReNPfKoijBt8DHgC+S5Snksv2PfXynfJ75ijza012kXYSdVLft3IYry+vz6gIg==
+X-Received: by 2002:a05:6a00:2390:b0:51c:21e1:782 with SMTP id f16-20020a056a00239000b0051c21e10782mr18035223pfc.21.1654754220882;
+        Wed, 08 Jun 2022 22:57:00 -0700 (PDT)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:6780:cb0:2c32:ceaf:ea06:c5de])
+        by smtp.gmail.com with ESMTPSA id w22-20020a1709026f1600b0016196bcf743sm9502413plk.275.2022.06.08.22.56.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 22:57:00 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Subject: [PATCH 6/7] perf record: Allow to specify max stack depth of fp callchain
+Date:   Wed,  8 Jun 2022 22:56:51 -0700
+Message-Id: <20220609055652.938821-7-namhyung@kernel.org>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+In-Reply-To: <20220609055652.938821-1-namhyung@kernel.org>
+References: <20220609055652.938821-1-namhyung@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220531135026.238475-6-fparent@baylibre.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31-05-22, 15:50, Fabien Parent wrote:
-> Add binding documentation in order to support the MT8365 SoC.
+Currently it has no interface to specify the max stack depth for perf
+record.  Extend the command line parameter to accept a number after
+'fp' to specify the depth like '--call-graph fp,32'.
 
-Applied to dmaengine-next, thanks
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+---
+ tools/perf/Documentation/perf-record.txt |  5 +++++
+ tools/perf/util/callchain.c              | 18 ++++++++++++------
+ 2 files changed, 17 insertions(+), 6 deletions(-)
 
-> 
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> ---
->  Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml b/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
-> index 54d68fc688b5..19ea8dcbcbce 100644
-> --- a/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
-> +++ b/Documentation/devicetree/bindings/dma/mediatek,uart-dma.yaml
-> @@ -22,6 +22,7 @@ properties:
->        - items:
->            - enum:
->                - mediatek,mt2712-uart-dma
-> +              - mediatek,mt8365-uart-dma
->                - mediatek,mt8516-uart-dma
->            - const: mediatek,mt6577-uart-dma
->        - enum:
-> -- 
-> 2.36.1
-
+diff --git a/tools/perf/Documentation/perf-record.txt b/tools/perf/Documentation/perf-record.txt
+index cf8ad50f3de1..772777c2a52e 100644
+--- a/tools/perf/Documentation/perf-record.txt
++++ b/tools/perf/Documentation/perf-record.txt
+@@ -275,6 +275,11 @@ OPTIONS
+ 	User can change the size by passing the size after comma like
+ 	"--call-graph dwarf,4096".
+ 
++	When "fp" recording is used, perf tries to save stack enties
++	up to the number specified in sysctl.kernel.perf_event_max_stack
++	by default.  User can change the number by passing it after comma
++	like "--call-graph fp,32".
++
+ -q::
+ --quiet::
+ 	Don't print any message, useful for scripting.
+diff --git a/tools/perf/util/callchain.c b/tools/perf/util/callchain.c
+index 5c27a4b2e7a7..7e663673f79f 100644
+--- a/tools/perf/util/callchain.c
++++ b/tools/perf/util/callchain.c
+@@ -31,6 +31,7 @@
+ #include "callchain.h"
+ #include "branch.h"
+ #include "symbol.h"
++#include "util.h"
+ #include "../perf.h"
+ 
+ #define CALLCHAIN_PARAM_DEFAULT			\
+@@ -266,12 +267,17 @@ int parse_callchain_record(const char *arg, struct callchain_param *param)
+ 	do {
+ 		/* Framepointer style */
+ 		if (!strncmp(name, "fp", sizeof("fp"))) {
+-			if (!strtok_r(NULL, ",", &saveptr)) {
+-				param->record_mode = CALLCHAIN_FP;
+-				ret = 0;
+-			} else
+-				pr_err("callchain: No more arguments "
+-				       "needed for --call-graph fp\n");
++			ret = 0;
++			param->record_mode = CALLCHAIN_FP;
++
++			tok = strtok_r(NULL, ",", &saveptr);
++			if (tok) {
++				unsigned long size;
++
++				size = strtoul(tok, &name, 0);
++				if (size < (unsigned) sysctl__max_stack())
++					param->max_stack = size;
++			}
+ 			break;
+ 
+ 		/* Dwarf style */
 -- 
-~Vinod
+2.36.1.255.ge46751e96f-goog
+
