@@ -2,136 +2,336 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7407EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 23:20:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 217F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 23:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234087AbiFIXT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 19:19:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
+        id S237296AbiFIXV7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 19:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237914AbiFIXTw (ORCPT
+        with ESMTP id S231205AbiFIXV5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 19:19:52 -0400
-Received: from sonic304-28.consmr.mail.ne1.yahoo.com (sonic304-28.consmr.mail.ne1.yahoo.com [66.163.191.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323374833C
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 16:19:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1654816790; bh=6OEHWBhN+Xf3kcIIRqn1KVWVpE9iuHUdlNhbzS5Ytzg=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=oyIZoaiMp7F4UjJR1ztRGiQ2Qs2OPHaJPbzgIfc44FwiyJKeN9/wlJjyqBGCPcdf+fhF2Oazpt26CVPSno/AZVZGN18saU5PTTcv3yprWtHCxqhP1JUl7uYoHrjbvwq+A6PYz7wdvSQtIOPi+41kvUnA5fXiqAu/6rNAhxVxkSLqWR7vHMZ5fAZlMUaqe4mcruLeaExcll6KVAVDs54qQO9axI7nnWm8pEun+1Ln5JVlxN4n6r0CK0+Qg7tm1+wbKDTB7YFMKNmPO9QKdkU0uHqIn6v6uyJ8cMgTFdXL0d2aD1J5JQLROnhcf8QD2M4hL3ArSN46wpQgIMatgvlgfA==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1654816790; bh=Nv+6WX90LR6zUWYNLfCynFqbtbcic+HHa4tQKlq+7cV=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=WMqmxybe8gJAwoyYUMUKqVHAIZAQEHJMC+nKSe1FHDg2ZrhPsYe0Il0lKIX2vTtXzBHBQOIMdnpNn4tWSmNJe9+JGNa3RVvK4078E4fOEKFzYvF/Zpez/Lwc7xLUF6guPPeH4ZfApshpKYltbe4EzXTIUYs3OJs+Zr/RhOqwqIwvmuiOJlh/j4fTzkfLvSH+xGHNlx7iHtL+M5Dqll5RQlLJj1T2mVjSm0xXZzdgFTdRLkgmI8XQ+/GHHMuH3NZi5ocHpTrlWBxgUBezUGjBacILiw3QC/hc6S5ZDAj/vR8H4fEkju0MoVrAd3zbavfIwvkMCLIXn7JrSetsTw7T0Q==
-X-YMail-OSG: rBtIgioVM1kkk6gmUTR90KOa0AEj3PA1t3DdjqftKZbH5MJELjXYbsNouK8KkQ8
- BX2HKIlczQ0z8nJX.3_JnOHpGNo0zTms4vJRAU5cFgB1GEAjr_cHM5dhdyUPTKAEyd4ubJBB6C5K
- Jn4wGldGxZxZZXkbRUHIo_uPAMl76aXw2OYSdh75JsidfHwWk8vtBDiRD5dAAh_DtUv0qFhT0Qmj
- owGDi4Wfq_4zANVEJUUUJ5gqD2dhqsQFqKs_AfxiF3hV0eY_4yLX6HC.GNkNtVdpoWGo6.OYmEOU
- kgg7O4RPQraTPbzHphSdwDCvgDGNRTyhp_Y2NxUBNH8gVRv98S0tCYDax4rnmjcYDLCUzqEeEB9g
- sz.MndfpRJhibnTsdg7i.vjG4gIMPr2Bfx6iSZ.hKg6mM3XxFTbsxfLXPPSKXumzEx8tzpcL8qi0
- Vk74a67Kg42tUdV8u37WZtnFskhm70djSWDt55eqpeU4pkp0DNa4AfMF67cO7gvH_IvrrYVYyu1G
- lJZ5mQxF1rBGR2ecEtviXaMwxUUcV_1W1ZUW7e0MteKmhm8SS0lzrQHGm2fVhQadCKoqobyAJc9s
- ruQvQyLYCD8QmTu8hZE7KUxum5AJKwUse5kBCHqJBvFSFpgxu4JIhD.0TpX3rG3ViubtCHj.r4iJ
- niSVcLgEikMIf9yzGdBlLjTTp0Fyo5aIcIKYnENi4ebBuz00fkpe_lNxGkfY4cqIJaoRzHNCITBk
- wZbl30puH2.Jdtjbdhzuep0ipE3ShtDHjJGPCUumOuVathnmndtgU69dPv3t0ini.GV9bE24UgvD
- NacQ5wYsDRb9AajHPCye067kz7jyJOrpNDup2Ctae.bEkw9Ms8EbFdR_FJuawDRqFClotRdbVbtA
- I0GeJV7qICaSgSPuhvj1CqTFd9ps2alORdwEXYkFiRcAMR0ueMYohWM0nWZxAXevgWe9ajFloSpJ
- TBjOR7pEYCdlBmZJRLik89gZUKBASmH95Rj.XpJDg1jWnAnuWyceqB0aDO.zyHUwSH1ranPPGx5L
- 4EfLPHxxICamy8fgnZQAtSrPip0H6_uk3uZE0B4zq07XuB2P5jDx68jZMmm0qy8ymIE6ruuv00vG
- 9OenoFLJSK1.iEPQqxsaNDkiRMep9ypHdJnLNFOjv533PKmhqxcRANSjvDEDYaIbjkQUm4Kvy_g5
- V7.v4bVDyQ04xAcaERws0eKs4D0PKjx_i7Rtpy7EDaAMvJe1iN_YkVMoWA8XUn4dAua0y_Qni_rA
- 1cf2u6jW3c7t9xNAwQTuWjIymZUwwfa6Ow_tBIZZL4s0zDUmLaMfXsU1g.DzfO.DAa56rDfEJmgp
- N1n4i6Ydtllh7cHC.AwXcL1gPtrgltWxCKwTiwuB3D5lmJnHiId7Su9_OsBaeArRcsRjL4Yc_bTU
- .0yWOFwVnEbHBqsuNYAj6srNGjVizpsPKLhBBNwSThXwZCsXT_n_oH2OYPMCmbbnCn_W9638WWz2
- HWt5ENUWT8HDcexNbelrTdiJpJHMK_Lqmce2yCLCLLxSey_4dk0ev2pdi.U1zxU2VLqLQOmQymkc
- nAs8jyDrUF80Qp6vTDFeqA5d_UAm_64M.fWoduSazJzEvEZFDs8a_gaVkmXpjLR8THqyiZzXW7j0
- oRojvkudytBmd13VOvbiQPnUBbgT2A0.Dlw.LmMeNYUxBWcGOu.nV_QyCPYdoBHWhoOp3A.jFrGz
- WWerpyAuCFvESibbSKjnUq_PKKr.aGoRgVNb3KxDEKZYxNS6U8zvjgTztuoWnUviiXtrKlO8.Epi
- XZ4WumPflPjM1iDpFjvItnCjMc5AtAXsJdqNh8Q53jL5EGmfyiFNV_HLXy3tu7h20gvhEdhNQAaJ
- XUVZf5xcY3PlzM7eVObKwAr33xBqVMN8zdgI7HHrmmTvGdYDLy9nl4xneLaKeIev5G0uz7l6Py1d
- 0TpYax9RAsGmeXQYs.yrmkv79MCPR9z2AlCJ_iysf81kDG9A7xaXnnkbmgCWAl0m55kHwmwKycjD
- F2DbTTl_mCX7apE1OgRv1xM6XMKswwbLNyI5aYVq4.X4g35KcaH7vetkE5SV0qKBtDz58CMthq1i
- .q3z_S6QKeWNEA74Eoy.PazbWaZMPpaomuixqCUR2ef.IqxOEiuCa4cVBKrKzCmgGT_.iNGcrcww
- 5_hj8EqvJ39j1nEXMTXgxly9CEzu_yedO91WKDDooMgg4MJIolbfq0sMwZMt2zjsZiHyWmQGqZx3
- h88V0TOPJm1yWoo76izZ2mSlnOGd2Qra3uJU08z3ClTTHKnHT.DedaZX4qRiTci8PUpR3nbndyvP
- dOg--
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.ne1.yahoo.com with HTTP; Thu, 9 Jun 2022 23:19:50 +0000
-Received: by hermes--canary-production-bf1-856dbf94db-29hkj (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID d4831bccd9bce2c443fd61283228c72f;
-          Thu, 09 Jun 2022 23:19:48 +0000 (UTC)
-From:   Casey Schaufler <casey@schaufler-ca.com>
-To:     casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
-        keescook@chromium.org, john.johansen@canonical.com,
-        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
-        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v36 33/33] AppArmor: Remove the exclusive flag
-Date:   Thu,  9 Jun 2022 16:01:46 -0700
-Message-Id: <20220609230146.319210-34-casey@schaufler-ca.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220609230146.319210-1-casey@schaufler-ca.com>
-References: <20220609230146.319210-1-casey@schaufler-ca.com>
+        Thu, 9 Jun 2022 19:21:57 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4D2E4435
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 16:21:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654816915; x=1686352915;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rZs4jRka2kIZp+xDSykoMtHa4470prxyVP0U9JcSCns=;
+  b=F3Ljp7t/MO80aOfmjVoYa8RlwWVV45tciX01ThKZzAysvzJ8CfM9lLnu
+   OrAmlJL4h2zLGnKdHJg+/9dwxqD/xZWauhfDRQiS/itqo3cVKYgIJp1SP
+   mALc1i2jrpFexe5nHD58heCHFWhSNAMGdowhXmnQqq3bI7VwuWBGn+K1P
+   brMNgzPckvQUG3Scff+yIqt1/DL3NqygYtGdRSKcy92cyygDmlPP238I8
+   nm+iblFwZVlVLe45AvRR2FuDEDpHFPrekZ5PmNIXhhfgZeKRghv9RRAZG
+   uCblFyz8KQLkaS+qFSDB1x01fAxMIN7Y/apKPpyA7I2U63KVa2Xwe+SGu
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="363779049"
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
+   d="scan'208";a="363779049"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 16:21:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
+   d="scan'208";a="566612434"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 09 Jun 2022 16:21:52 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nzRTL-000GUH-WE;
+        Thu, 09 Jun 2022 23:21:52 +0000
+Date:   Fri, 10 Jun 2022 07:21:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Logan Gunthorpe <logang@deltatee.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [sbates130272-p2pmem:p2pdma_user_cmb_v7 20/21]
+ include/linux/pci-p2pdma.h:99:1: error: non-void function does not return a
+ value
+Message-ID: <202206100713.eqeobRjO-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the inclusion of the interface LSM process attribute
-mechanism AppArmor no longer needs to be treated as an
-"exclusive" security module. Remove the flag that indicates
-it is exclusive. Remove the stub getpeersec_dgram AppArmor
-hook as it has no effect in the single LSM case and
-interferes in the multiple LSM case.
+tree:   https://github.com/sbates130272/linux-p2pmem.git p2pdma_user_cmb_v7
+head:   45dd3bf6fe468175153066cb70820a2b2edbc61b
+commit: 54606cc552a950ad3eaa201cd8b1a2d1f2e6abd3 [20/21] PCI/P2PDMA: Introduce pci_mmap_p2pmem()
+config: s390-randconfig-r005-20220608 (https://download.01.org/0day-ci/archive/20220610/202206100713.eqeobRjO-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 971e13d69e3e7b687213fef22952be6a328c426c)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/sbates130272/linux-p2pmem/commit/54606cc552a950ad3eaa201cd8b1a2d1f2e6abd3
+        git remote add sbates130272-p2pmem https://github.com/sbates130272/linux-p2pmem.git
+        git fetch --no-tags sbates130272-p2pmem p2pdma_user_cmb_v7
+        git checkout 54606cc552a950ad3eaa201cd8b1a2d1f2e6abd3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/nvme/target/
 
-Acked-by: Stephen Smalley <stephen.smalley.work@gmail.com>
-Acked-by: John Johansen <john.johansen@canonical.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
----
- security/apparmor/lsm.c | 20 +-------------------
- 1 file changed, 1 insertion(+), 19 deletions(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
-index 1fdb885facbb..1d742d864e0b 100644
---- a/security/apparmor/lsm.c
-+++ b/security/apparmor/lsm.c
-@@ -1165,22 +1165,6 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
- 	return error;
- }
- 
--/**
-- * apparmor_socket_getpeersec_dgram - get security label of packet
-- * @sock: the peer socket
-- * @skb: packet data
-- * @secid: pointer to where to put the secid of the packet
-- *
-- * Sets the netlabel socket state on sk from parent
-- */
--static int apparmor_socket_getpeersec_dgram(struct socket *sock,
--					    struct sk_buff *skb, u32 *secid)
--
--{
--	/* TODO: requires secid support */
--	return -ENOPROTOOPT;
--}
--
- /**
-  * apparmor_sock_graft - Initialize newly created socket
-  * @sk: child sock
-@@ -1284,8 +1268,6 @@ static struct security_hook_list apparmor_hooks[] __lsm_ro_after_init = {
- #endif
- 	LSM_HOOK_INIT(socket_getpeersec_stream,
- 		      apparmor_socket_getpeersec_stream),
--	LSM_HOOK_INIT(socket_getpeersec_dgram,
--		      apparmor_socket_getpeersec_dgram),
- 	LSM_HOOK_INIT(sock_graft, apparmor_sock_graft),
- #ifdef CONFIG_NETWORK_SECMARK
- 	LSM_HOOK_INIT(inet_conn_request, apparmor_inet_conn_request),
-@@ -1939,7 +1921,7 @@ static int __init apparmor_init(void)
- 
- DEFINE_LSM(apparmor) = {
- 	.name = "apparmor",
--	.flags = LSM_FLAG_LEGACY_MAJOR | LSM_FLAG_EXCLUSIVE,
-+	.flags = LSM_FLAG_LEGACY_MAJOR,
- 	.enabled = &apparmor_enabled,
- 	.blobs = &apparmor_blob_sizes,
- 	.init = apparmor_init,
+All errors (new ones prefixed by >>):
+
+   In file included from drivers/nvme/target/configfs.c:12:
+   In file included from include/linux/pci.h:39:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from drivers/nvme/target/configfs.c:12:
+   In file included from include/linux/pci.h:39:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from drivers/nvme/target/configfs.c:12:
+   In file included from include/linux/pci.h:39:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   In file included from drivers/nvme/target/configfs.c:13:
+>> include/linux/pci-p2pdma.h:99:1: error: non-void function does not return a value [-Werror,-Wreturn-type]
+   }
+   ^
+   12 warnings and 1 error generated.
+--
+   In file included from drivers/nvme/target/core.c:10:
+   In file included from include/linux/pci-p2pdma.h:14:
+   In file included from include/linux/pci.h:39:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from drivers/nvme/target/core.c:10:
+   In file included from include/linux/pci-p2pdma.h:14:
+   In file included from include/linux/pci.h:39:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from drivers/nvme/target/core.c:10:
+   In file included from include/linux/pci-p2pdma.h:14:
+   In file included from include/linux/pci.h:39:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   In file included from drivers/nvme/target/core.c:10:
+>> include/linux/pci-p2pdma.h:99:1: error: non-void function does not return a value [-Werror,-Wreturn-type]
+   }
+   ^
+   In file included from drivers/nvme/target/core.c:14:
+   In file included from drivers/nvme/target/trace.h:165:
+   include/trace/define_trace.h:95:10: fatal error: './trace.h' file not found
+   #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/trace/define_trace.h:90:32: note: expanded from macro 'TRACE_INCLUDE'
+   # define TRACE_INCLUDE(system) __TRACE_INCLUDE(system)
+                                  ^~~~~~~~~~~~~~~~~~~~~~~
+   include/trace/define_trace.h:87:34: note: expanded from macro '__TRACE_INCLUDE'
+   # define __TRACE_INCLUDE(system) __stringify(TRACE_INCLUDE_PATH/system.h)
+                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/stringify.h:10:27: note: expanded from macro '__stringify'
+   #define __stringify(x...)       __stringify_1(x)
+                                   ^~~~~~~~~~~~~~~~
+   include/linux/stringify.h:9:29: note: expanded from macro '__stringify_1'
+   #define __stringify_1(x...)     #x
+                                   ^~
+   <scratch space>:87:1: note: expanded from here
+   "./trace.h"
+   ^~~~~~~~~~~
+   12 warnings and 2 errors generated.
+
+
+vim +99 include/linux/pci-p2pdma.h
+
+    18	
+    19	#ifdef CONFIG_PCI_P2PDMA
+    20	int pci_p2pdma_add_resource(struct pci_dev *pdev, int bar, size_t size,
+    21			u64 offset);
+    22	int pci_p2pdma_distance_many(struct pci_dev *provider, struct device **clients,
+    23				     int num_clients, bool verbose);
+    24	bool pci_has_p2pmem(struct pci_dev *pdev);
+    25	struct pci_dev *pci_p2pmem_find_many(struct device **clients, int num_clients);
+    26	void *pci_alloc_p2pmem(struct pci_dev *pdev, size_t size);
+    27	void pci_free_p2pmem(struct pci_dev *pdev, void *addr, size_t size);
+    28	pci_bus_addr_t pci_p2pmem_virt_to_bus(struct pci_dev *pdev, void *addr);
+    29	struct scatterlist *pci_p2pmem_alloc_sgl(struct pci_dev *pdev,
+    30						 unsigned int *nents, u32 length);
+    31	void pci_p2pmem_free_sgl(struct pci_dev *pdev, struct scatterlist *sgl);
+    32	void pci_p2pmem_publish(struct pci_dev *pdev, bool publish);
+    33	int pci_p2pdma_enable_store(const char *page, struct pci_dev **p2p_dev,
+    34				    bool *use_p2pdma);
+    35	ssize_t pci_p2pdma_enable_show(char *page, struct pci_dev *p2p_dev,
+    36				       bool use_p2pdma);
+    37	int pci_p2pdma_file_open(struct pci_dev *pdev, struct file *file);
+    38	void pci_p2pdma_file_release(struct file *file);
+    39	int pci_mmap_p2pmem(struct pci_dev *pdev, struct vm_area_struct *vma);
+    40	#else /* CONFIG_PCI_P2PDMA */
+    41	static inline int pci_p2pdma_add_resource(struct pci_dev *pdev, int bar,
+    42			size_t size, u64 offset)
+    43	{
+    44		return -EOPNOTSUPP;
+    45	}
+    46	static inline int pci_p2pdma_distance_many(struct pci_dev *provider,
+    47		struct device **clients, int num_clients, bool verbose)
+    48	{
+    49		return -1;
+    50	}
+    51	static inline bool pci_has_p2pmem(struct pci_dev *pdev)
+    52	{
+    53		return false;
+    54	}
+    55	static inline struct pci_dev *pci_p2pmem_find_many(struct device **clients,
+    56							   int num_clients)
+    57	{
+    58		return NULL;
+    59	}
+    60	static inline void *pci_alloc_p2pmem(struct pci_dev *pdev, size_t size)
+    61	{
+    62		return NULL;
+    63	}
+    64	static inline void pci_free_p2pmem(struct pci_dev *pdev, void *addr,
+    65			size_t size)
+    66	{
+    67	}
+    68	static inline pci_bus_addr_t pci_p2pmem_virt_to_bus(struct pci_dev *pdev,
+    69							    void *addr)
+    70	{
+    71		return 0;
+    72	}
+    73	static inline struct scatterlist *pci_p2pmem_alloc_sgl(struct pci_dev *pdev,
+    74			unsigned int *nents, u32 length)
+    75	{
+    76		return NULL;
+    77	}
+    78	static inline void pci_p2pmem_free_sgl(struct pci_dev *pdev,
+    79			struct scatterlist *sgl)
+    80	{
+    81	}
+    82	static inline void pci_p2pmem_publish(struct pci_dev *pdev, bool publish)
+    83	{
+    84	}
+    85	static inline int pci_p2pdma_enable_store(const char *page,
+    86			struct pci_dev **p2p_dev, bool *use_p2pdma)
+    87	{
+    88		*use_p2pdma = false;
+    89		return 0;
+    90	}
+    91	static inline ssize_t pci_p2pdma_enable_show(char *page,
+    92			struct pci_dev *p2p_dev, bool use_p2pdma)
+    93	{
+    94		return sprintf(page, "none\n");
+    95	}
+    96	static inline int pci_p2pdma_file_open(struct pci_dev *pdev,
+    97					       struct file *file)
+    98	{
+  > 99	}
+   100	static inline void pci_p2pdma_file_release(struct file *file)
+   101	{
+   102	}
+   103	static inline int pci_mmap_p2pmem(struct pci_dev *pdev,
+   104					  struct vm_area_struct *vma)
+   105	{
+   106		return -EOPNOTSUPP;
+   107	}
+   108	#endif /* CONFIG_PCI_P2PDMA */
+   109	
+   110	
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
