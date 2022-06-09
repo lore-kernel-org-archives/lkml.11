@@ -2,124 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01FC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 07:28:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51452C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 07:28:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240243AbiFIH2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 03:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46294 "EHLO
+        id S240392AbiFIH21 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 03:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240094AbiFIH17 (ORCPT
+        with ESMTP id S240168AbiFIH2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 03:27:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 45FD01F4FD2
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 00:27:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654759671;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Wii0zR07KfthhhOdHcY7fAYYXEPbr/dpqwRhIU0EtzU=;
-        b=gUyLwVVS4vOD6uGZibKYTn1QpK5614oceZU1edpdvGtbrB7z0eJ/WK1k9QLZfOVACQW+el
-        4E2h/J69/qta7mJq95EsJGj5mj6C0217wpRsxpi19EE/YSarvGpHIPS5bguLtDOqspZ9fx
-        7rmXABurroBmgN4Lg6TxntY2UJzICV8=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-287-jYQ3aPsnPlmCrnw4zS1I8w-1; Thu, 09 Jun 2022 03:27:50 -0400
-X-MC-Unique: jYQ3aPsnPlmCrnw4zS1I8w-1
-Received: by mail-wm1-f70.google.com with SMTP id bg7-20020a05600c3c8700b0039468585269so7928295wmb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 00:27:50 -0700 (PDT)
+        Thu, 9 Jun 2022 03:28:01 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34D1156B7D
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 00:27:58 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id e9so10110893pju.5
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 00:27:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=K7MRkR8auhgUPzxY/AhWyDzJkPMHJW4gIp7+t1KlPCE=;
+        b=l7ZtrVUBq2GYXh2+SH235Ub+vP7lWLaHmSegb5FpWeD2UBMVxBbbSg+yfXe8Ha0sHa
+         sRrJmsQrI/ZCdxQ+/mkSj46cerzBPD3JKq3Y5+z0BBzUgbEQ/2VS82VzI3LUsJM4QZbp
+         QiY5PgrIjbT2MZf10Yl5LRotp6JHblUn1MP+c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Wii0zR07KfthhhOdHcY7fAYYXEPbr/dpqwRhIU0EtzU=;
-        b=gHBbD2Qypuj7XUCrArzBAuRkz4en2h5G0maXnMexumryVo3hjW65Ax2ojJVsqo6HoS
-         YgH/9DGGBXdZ5vbhBvd9gsrT+3hCI5p3Jkhje2L+S1l1PCZasnF0jEktBCPJKd1rWVxm
-         wwBRU3DVVHQ/CMJbkGMAxE/T/3EyAIccpG96Aovyx/c4TWHDk3OZIBHUMf0dYuqp90/G
-         sWFfF8X5oqbj7FzfwA8oduOgDQ31UzHDW9RWBkpAzU5k0zw/SEf8mm0bEjYQmtztMcjj
-         Q8Rs4nAjkybCJO8DUQhJk0pOT/JpdYibF06dJ4FHNyNrhzR/ETnQ/vUkQNC32uLVyggu
-         u57A==
-X-Gm-Message-State: AOAM5337l+iqDlcQF2JfOJKBmerMiTdoeFKvovrH0n0VaDCpP1wX/ccT
-        W/aTDAl1HwPn65zkExY1TO/kgmdMaxKE/IcPqHBp08dWk3uwHk6+h3Jk6ChrucDgJz8G0/sCgps
-        LXilAlYgu/w362BcaOF65mdvw
-X-Received: by 2002:a05:600c:5021:b0:39c:6571:e0b0 with SMTP id n33-20020a05600c502100b0039c6571e0b0mr1876987wmr.177.1654759669115;
-        Thu, 09 Jun 2022 00:27:49 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw5ZXIHrCIXcJnhibfPD0CZh9Ngp8vvh/E5AiHEI7gYeWrse3XiPFktxnvKe0MJOZc1qhXZLw==
-X-Received: by 2002:a05:600c:5021:b0:39c:6571:e0b0 with SMTP id n33-20020a05600c502100b0039c6571e0b0mr1876963wmr.177.1654759668924;
-        Thu, 09 Jun 2022 00:27:48 -0700 (PDT)
-Received: from gator (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
-        by smtp.gmail.com with ESMTPSA id o10-20020a5d474a000000b002184a3a3641sm8459301wrs.100.2022.06.09.00.27.47
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=K7MRkR8auhgUPzxY/AhWyDzJkPMHJW4gIp7+t1KlPCE=;
+        b=YFR6AqQGvzj96AU+i2ELl92y/CDvYx8TwgHXtjTsyrf3jjjWFBbQOaqcK5vdu6WtJQ
+         OOWotb2dSiArStPKA8fTvu01Ldq4Av66jfM9Y3rGKRT1s95b6iTakbkjqyiDWqNTt82H
+         N4P+yKAuBgiC9P8JM810wxn0MJU314M3rd+XZJ7TE5wIeSNHkRencLsWci9cyrbpcskt
+         mssr8fPqb0I+j0IIxewiIDcerDa7FZBIO/uj7sfMc59blTbWZErCWYcoJHPCN3JTIv28
+         3aMz0gwAg6nMqdu5q0SPdxC1J4eG8qIXCU7fBzWEBUk2seypmmZNgKTwGOBwEWB+cMxW
+         sUYg==
+X-Gm-Message-State: AOAM532picc8PSrPRRa19zIVzksBQJXEoGMEbdjvi50x2ESi8F7hbWGe
+        2FoqTg7B1TyyQLMtM3kc3C0IzA==
+X-Google-Smtp-Source: ABdhPJz4dqkjFokdBYRKpv24v7t0WqPiApCHL3ML7AXlrOqT/NAZMvUv0SYaTx3mNhk2+YTvTonvkA==
+X-Received: by 2002:a17:902:74c3:b0:167:6811:40 with SMTP id f3-20020a17090274c300b0016768110040mr25200983plt.120.1654759678228;
+        Thu, 09 Jun 2022 00:27:58 -0700 (PDT)
+Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:5119:d95b:c6cd:77fb])
+        by smtp.gmail.com with ESMTPSA id p16-20020a1709027ed000b0016403cae7desm15312221plb.276.2022.06.09.00.27.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 00:27:48 -0700 (PDT)
-Date:   Thu, 9 Jun 2022 09:27:46 +0200
-From:   Andrew Jones <drjones@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Oliver Upton <oupton@google.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 048/144] KVM: selftests: Rename 'struct vcpu' to
- 'struct kvm_vcpu'
-Message-ID: <20220609072746.op7ez4rmdn2wmynj@gator>
-References: <20220603004331.1523888-1-seanjc@google.com>
- <20220603004331.1523888-49-seanjc@google.com>
- <20220608151815.7mwlj3eppwmujaow@gator>
- <YqDH4m0TxLcK5Brw@google.com>
+        Thu, 09 Jun 2022 00:27:57 -0700 (PDT)
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+To:     Hans de Goede <hdegoede@redhat.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org,
+        Rob Clark <robdclark@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v7 6/8] drm/panel: ili9881c: Implement .get_orientation callback
+Date:   Thu,  9 Jun 2022 15:27:20 +0800
+Message-Id: <20220609072722.3488207-7-hsinyi@chromium.org>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+In-Reply-To: <20220609072722.3488207-1-hsinyi@chromium.org>
+References: <20220609072722.3488207-1-hsinyi@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqDH4m0TxLcK5Brw@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 04:01:38PM +0000, Sean Christopherson wrote:
-> On Wed, Jun 08, 2022, Andrew Jones wrote:
-> > On Fri, Jun 03, 2022 at 12:41:55AM +0000, Sean Christopherson wrote:
-> > > Rename 'struct vcpu' to 'struct kvm_vcpu' to align with 'struct kvm_vm'
-> > > in the selftest, and to give readers a hint that the struct is specific
-> > > to KVM.
-> > 
-> > I'm not completely sold on this change. I don't mind that the selftest
-> > vcpu struct isn't named the same as the KVM vcpu struct, since they're
-> > different structs.
-> 
-> I don't care about about matching KVM's internal naming exactly, but I do care
-> about not having a bare "vcpu", it makes searching for usage a pain because it's
-> impossible to differentiate between instances of the struct and variables of the
-> same name without additional qualifiers.
-> 
-> > I also don't mind avoiding 'kvm_' prefixes in "KVM selftests" (indeed I
-> > wonder if we really need the kvm_ prefix for the vm struct).
-> 
-> Same as above, "struct vm *vm" will drive me bonkers :-)
+To return the orientation property to drm/kms driver.
 
-Yes, that is a good point.
+Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+---
+ drivers/gpu/drm/panel/panel-ilitek-ili9881c.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-> 
-> > If we do need prefixes for the kvm selftest framework code to avoid
-> > collisions with test code, then maybe we should invent something else, rather
-> > than use the somewhat ambiguous 'kvm', which could also collide with stuff in
-> > the kvm uapi.
-> 
-> Potential collisions with the KVM uAPI is a feature of sorts, e.g. tests shouldn't
-> be redefining kvm_* structures (I'd prefer _tests_ not use kvm_* at all, and only
-> use kvm_* in the library), and I gotta imagine KVM would break at least one real
-> world userspace if it defined "kvm_vcpu".
-> 
-> That said, I don't have a super strong preference for kvm_ versus something else,
-> though I think it will be difficult to come up with something that's unique,
-> intuitive, and doesn't look like a typo.
->
-
-Maybe just abbreviated "Kvm Selftests", i.e. 'ks_'? I won't harp on this
-any longer though, so if that doesn't look good, then we can proceed with
-'kvm_'.
-
-Thanks,
-drew
+diff --git a/drivers/gpu/drm/panel/panel-ilitek-ili9881c.c b/drivers/gpu/drm/panel/panel-ilitek-ili9881c.c
+index ba30d11547ade..58d6798c25ed8 100644
+--- a/drivers/gpu/drm/panel/panel-ilitek-ili9881c.c
++++ b/drivers/gpu/drm/panel/panel-ilitek-ili9881c.c
+@@ -853,17 +853,29 @@ static int ili9881c_get_modes(struct drm_panel *panel,
+ 	connector->display_info.width_mm = mode->width_mm;
+ 	connector->display_info.height_mm = mode->height_mm;
+ 
++	/*
++	 * TODO: Remove once all drm drivers call
++	 * drm_connector_set_orientation_from_panel()
++	 */
+ 	drm_connector_set_panel_orientation(connector, ctx->orientation);
+ 
+ 	return 1;
+ }
+ 
++static enum drm_panel_orientation ili9881c_get_orientation(struct drm_panel *panel)
++{
++       struct ili9881c *ctx = panel_to_ili9881c(panel);
++
++       return ctx->orientation;
++}
++
+ static const struct drm_panel_funcs ili9881c_funcs = {
+ 	.prepare	= ili9881c_prepare,
+ 	.unprepare	= ili9881c_unprepare,
+ 	.enable		= ili9881c_enable,
+ 	.disable	= ili9881c_disable,
+ 	.get_modes	= ili9881c_get_modes,
++	.get_orientation = ili9881c_get_orientation,
+ };
+ 
+ static int ili9881c_dsi_probe(struct mipi_dsi_device *dsi)
+-- 
+2.36.1.255.ge46751e96f-goog
 
