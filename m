@@ -2,77 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D3C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:10:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ED7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 12:12:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245181AbiFIMKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 08:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
+        id S243430AbiFIMMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 08:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245164AbiFIMKS (ORCPT
+        with ESMTP id S245171AbiFIMMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 08:10:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9960B26520D;
-        Thu,  9 Jun 2022 05:10:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2789BB82D53;
-        Thu,  9 Jun 2022 12:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D3690C341C4;
-        Thu,  9 Jun 2022 12:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654776612;
-        bh=PwBBBz/dC7cgFr8moGbFG7v4skdx3aTmukVX1l9htzc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FR3+qoKH0jU5DSwFRsaTQE1ge6SqA5GUN785MvKid/Thz3i12gHRQ0eu3WmqFxSyD
-         QSKmG2Jhu5+qsRV5iWrTMz8NKtzNENDaaAnAvo5IO/bPPsW4GdGpqHSvlYHKmyBr/i
-         vQfeAzs9+WxUrO2gm7+s6xBY2O/qNY5yN4GMBZaNU8/hoRr841q+smeZIIevlI6cTr
-         2TOIvgn+V3H//SxBBFT5UPf9Q76ZU6xhiTPyvhukwWDnywvAFlIYtuyqBgFVhxEMjR
-         Ax2OV10TWbsJAgiLVradd8N05imn/PzdOwI//bt0CwkDDbutYFq1zBpgeYQfFZChXE
-         XRr5Zh14c8w9g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B9B4AE737F0;
-        Thu,  9 Jun 2022 12:10:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 9 Jun 2022 08:12:05 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45F81A387
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 05:12:02 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id w27so30870043edl.7
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 05:12:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=35+OxtjxgC3eYwAbp4/2PDr0i9pDlp26elktRUGxVwc=;
+        b=MzGcAx8cOg3qkErF9kdH7BugrP0alKEVzRHjKFl7onbm5VHBVIRioqj7Ufvce4vD+E
+         OQQCZgAhLi4bo36II65Qz47HKCnrI0MfnwCoaSLUlQoU76vq7wt9uEFEX6A0w0nlEV1C
+         GraysaFA1hBG0BFBEdfYBwKOreUyt639KhT1WtFwDijJN50hGSIi8cKl2x0PsFKQ6gVu
+         uVC9GlmOl8qRmnhNU7lanJSfg2e8D2ZXZ2O1sqPjyA5z9C/mYEHzN6oeVo2WqtCvGmp7
+         odEkop7niyv5iHdq61CLOypONyAYgONToGUqoYtdXqgUNuX0A8VbmjwMnj2IeTMg9jTg
+         MS8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=35+OxtjxgC3eYwAbp4/2PDr0i9pDlp26elktRUGxVwc=;
+        b=xx+fn5ypb/QhVtGIdrdHiv8wwAeHEwuiD4TiRK2nE3Fkzb6MkCtw0rsMALlGILTwUD
+         uJMfqblA4St1I9Envn2znrIhF9fiTJZzrMciODnmj/mzuwpndSg1vOgziLA2P+mFgO/N
+         PPuBWH3n4l0jLt/3uiPGV0QKgNPriIeaRhb2PJk9i0AFaen6wgRS5/N/Yk2r3f/ACI3X
+         Mbjerd+vGUKGWp5BfpbQH2f7ZVnkO/Kej0k4G0EJJp9v7u76dwYbMUiVpdZUQ2EheBWG
+         L4a31/QwIgVQHafW9gTeU6ow63YIG6WX/Qu2ePnrxe2H+CVaC05pBeQfsJt/5mA3+Tkx
+         B3yQ==
+X-Gm-Message-State: AOAM531IYaY43QKht3pKuK2GiSaeLENy7dJ//ndKWFnENJlD++7NDjvi
+        nIgx7BB6vhdOWM867IU3+EygOw==
+X-Google-Smtp-Source: ABdhPJz0+DDVc2ZrkaX5S9IetfY47zQT7j8sKaKAcXh2Dm/QqxGZ8Bbf9nUDCVbDzQnntW97yJMLQQ==
+X-Received: by 2002:a05:6402:5c9:b0:420:aac6:257b with SMTP id n9-20020a05640205c900b00420aac6257bmr44688465edx.128.1654776721243;
+        Thu, 09 Jun 2022 05:12:01 -0700 (PDT)
+Received: from [192.168.0.197] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id f8-20020a170906494800b0070c4abe4706sm9006250ejt.158.2022.06.09.05.12.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 05:12:00 -0700 (PDT)
+Message-ID: <fd3ae279-eb0e-ec5b-2611-15ada34a9c66@linaro.org>
+Date:   Thu, 9 Jun 2022 14:11:59 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] bpf, docs: Fix typo "BFP_ALU" to "BPF_ALU"
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165477661275.11342.4271222664827162362.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Jun 2022 12:10:12 +0000
-References: <20220609083937.245749-1-fujimotoksouke0@gmail.com>
-In-Reply-To: <20220609083937.245749-1-fujimotoksouke0@gmail.com>
-To:     Kosuke Fujimoto <fujimotokosuke0@gmail.com>
-Cc:     corbet@lwn.net, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, linux-doc@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, fujimotoksouke0@gmail.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/2] arch: arm64: qcom: sdm845-shift-axolotl: fix
+ Bluetooth firmware loading
+Content-Language: en-US
+To:     Alexander Martinz <amartinz@shiftphones.com>,
+        ~postmarketos/upstreaming@lists.sr.ht
+Cc:     phone-devel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Dylan Van Assche <me@dylanvanassche.be>
+References: <20220609095412.211060-1-amartinz@shiftphones.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220609095412.211060-1-amartinz@shiftphones.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
-
-On Thu,  9 Jun 2022 04:39:37 -0400 you wrote:
-> "BFP" should be "BPF"
+On 09/06/2022 11:54, Alexander Martinz wrote:
+> From: Dylan Van Assche <me@dylanvanassche.be>
 > 
-> Signed-off-by: Kosuke Fujimoto <fujimotokosuke0@gmail.com>
-> ---
->  Documentation/bpf/instruction-set.rst | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Add hsuart0 alias, firmware name and prevent garbage data on Bluetooth UART lines
+> on the SHIFT 6mq based on the Qualcomm SDM845 chip.
+> I discovered that these were missing by comparing the DTS with similar
+> devices such as the Oneplus 6/6T and Dragonboard 845c.
+> 
+> Signed-of-by: Dylan Van Assche <me@dylanvanassche.be>
+> Tested-by: Alexander Martinz <amartinz@shiftphones.co>
 
-Here is the summary with links:
-  - bpf, docs: Fix typo "BFP_ALU" to "BPF_ALU"
-    https://git.kernel.org/bpf/bpf-next/c/492f99e4190a
+Thanks for the patch. Instead of your Tested-by (or beside) your SoB is
+needed, following Dylan's.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Best regards,
+Krzysztof
