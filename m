@@ -2,104 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43BFBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:57:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 922A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344672AbiFIP55 (ORCPT
+        id S1344670AbiFIP6p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 11:57:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60766 "EHLO
+        Thu, 9 Jun 2022 11:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234872AbiFIP5x (ORCPT
+        with ESMTP id S237806AbiFIP6l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 11:57:53 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A48513FBF2;
-        Thu,  9 Jun 2022 08:57:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654790272; x=1686326272;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PTkYTAFe0tPUCxXr1HWuhHtjPQmFhjSCzYuN5uvr1IM=;
-  b=lbuJB9jh+uqWXDy24LGHyatCLhbiUOhOFkGdN7yL5zYDSCHceOi2NneB
-   8muS62Z1JQZV75LDrQUKRQHhAoG1KHdIOS/LWtqjhT7siqNxLDDl8YG+s
-   FZQY0OHn0h3gB0z8uvqV7Unb1h68QyhREoQoV2SgDxaX7yoL0qnnbTXPT
-   UCc2ShMC43okw+ByN33AsCqnXPqEYxUXqQqzwbE0SC7F9Lmk9XmOR67uR
-   3zopXMCLsU8pvCfI2lan+tb6S30iXH6ZoFH3tDh9SCuBeV4syIJYtL7tj
-   Jq36o+qn0BI4UIkfiplUMcPUV7Gjkw6vH8aSfyfuwEnxi2yITMsdKw46W
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="274850838"
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="274850838"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 08:57:05 -0700
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="649332227"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 08:57:02 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nzKWq-000Y0U-3E;
-        Thu, 09 Jun 2022 18:57:00 +0300
-Date:   Thu, 9 Jun 2022 18:56:59 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>
-Subject: Re: [PATCH v1 00/16] ACPI: Get rid of the list of children in struct
- acpi_device
-Message-ID: <YqIYS3TVZvkIVcOm@smile.fi.intel.com>
-References: <1843211.tdWV9SEqCh@kreacher>
+        Thu, 9 Jun 2022 11:58:41 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 072471D4DC2;
+        Thu,  9 Jun 2022 08:58:41 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id A8ED8732;
+        Thu,  9 Jun 2022 15:58:40 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net A8ED8732
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1654790320; bh=UYYa6e09TrnQINuS2KrwL4+6IJnM22V/hh9mWBFbN0w=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=Za4Ad5eNtuySOd2Sg6mCfyY9k2QfYGFAtJBnEPh3VNi9xFpv3jG53BAgjeXagnp2/
+         QrOUwVvmjHWtw9n2yquHV4roeiCzIggA83W/fBOh3XoDdsXkfetBtFs8i5VEoSyT/8
+         AD2zSO/FibJFTcaqnyCrHRD2QPxgyMU1aW+m43OtTT/EjDi2pg7onDG0/dOoVuu/DM
+         BH+C7IpY0HKTLi2WWGpDqpEL0W9LuT0Cxye206/3jAeXPyyQXIrPNFpsezeEN/39ed
+         WR0CFjjlWvwx2OjM6tPmG7SmP0TTQjSqAWUuzz8o4ZcM01AHFMMYVlZ9m2HidAahmd
+         E8oDSI5fAmUKw==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Justin Swartz <justin.swartz@risingedge.co.za>
+Cc:     Justin Swartz <justin.swartz@risingedge.co.za>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] docs: usb: fix literal block marker in usbmon
+ verification example
+In-Reply-To: <20220604155431.23246-1-justin.swartz@risingedge.co.za>
+References: <20220604155431.23246-1-justin.swartz@risingedge.co.za>
+Date:   Thu, 09 Jun 2022 09:58:40 -0600
+Message-ID: <87k09p4ymn.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1843211.tdWV9SEqCh@kreacher>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 03:44:27PM +0200, Rafael J. Wysocki wrote:
-> Hi All,
-> 
-> Confusingly enough, the ACPI subsystem stores the information on the given ACPI
-> device's children in two places: as the list of children in struct acpi_device
-> and (as a result of device registration) in the list of children in the embedded
-> struct device.
-> 
-> These two lists agree with each other most of the time, but not always (like in
-> error paths in some cases), and the list of children in struct acpi_device is
-> not generally safe to use without locking.  In principle, it should always be
-> walked under acpi_device_lock, but in practice holding acpi_scan_lock is
-> sufficient for that too.  However, its users may not know whether or not
-> they operate under acpi_scan_lock and at least in some cases it is not accessed
-> in a safe way (note that ACPI devices may go away as a result of hot-remove,
-> unlike OF nodes).
-> 
-> For this reason, it is better to consolidate the code that needs to walk the
-> children of an ACPI device which is the purpose of this patch series.
-> 
-> Overall, it switches over all of the users of the list of children in struct
-> acpi_device to using helpers based on the driver core's mechanics and finally
-> drops that list, but some extra cleanups are done on the way.
-> 
-> Please refer to the patch changelogs for details.
+Justin Swartz <justin.swartz@risingedge.co.za> writes:
 
-Cool series, thanks for doing that!
+> The "Verify that bus sockets are present" example was not properly
+> formatted due to a typo in the literal block marker.
+>
+> Signed-off-by: Justin Swartz <justin.swartz@risingedge.co.za>
+> ---
+>  Documentation/usb/usbmon.rst | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Documentation/usb/usbmon.rst b/Documentation/usb/usbmon.rst
+> index b0bd51080..6d5ec1e62 100644
+> --- a/Documentation/usb/usbmon.rst
+> +++ b/Documentation/usb/usbmon.rst
+> @@ -42,7 +42,7 @@ if usbmon is built into the kernel::
+>  	# modprobe usbmon
+>  	#
+>  
+> -Verify that bus sockets are present:
+> +Verify that bus sockets are present::
+>  
 
-You may add my
-Revieweed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-to all non-commented, by me, patches (excluding soundwire) and to ones
-where comment just about one line/two lines split (address them if you
-are okay, otherwise ignore those comments).
+Applied, thanks.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+jon
