@@ -2,90 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE08C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:38:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C003C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:38:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241721AbiFIIiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:38:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
+        id S241829AbiFIIiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232184AbiFIIiH (ORCPT
+        with ESMTP id S241762AbiFIIiU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 04:38:07 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C8A188;
-        Thu,  9 Jun 2022 01:38:06 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id 187so20480488pfu.9;
-        Thu, 09 Jun 2022 01:38:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eOJK9crUYKXyIABR6BLtgcFnqJSYVkj6ggY7lPw/iao=;
-        b=LAl1d08X8q2e31YN0ruuS4C7xF3BExBRczatwKid46gwkpweQBeZKpjY7IebrKADy1
-         B7gBZE2l/EjyLooNLPI1woQOhXCMT4w/6CCwrIKjjA/wyOhCDiJDad3WBp5NRzj8iyTp
-         ivM979eTiOXFmrGA9KNWhDed+wEC75jzkpoP/12Q7gwAI+R+hnU9sVTdb4o1UJ1wSokk
-         /IOuclVZTU6yLneviGtZ9JKi/MEdLCZAqahoEYDyxsU913IVvHOwJT9cPJ/06d4T8xM6
-         2nZiH5pc6hKisud0BvrIHVflWYMCvna2CuzYPOb4Mo1K2wP4i/cLe/51/WpgGZR9u6Ny
-         BCgg==
+        Thu, 9 Jun 2022 04:38:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 57A46B03
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:38:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654763898;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HgVXSci/QOseQPVoykiPl1OOcwRCzNz17MjAcM9uq8w=;
+        b=MVDdO0/XvBuOf5LNQzbevhlryw2thU4FF7YFO6m/UNNt7dlGOydoYOEIGc4McWU0K7evfw
+        fpmgPp83nbIR1Zradoyk/FC2RQqRHwzp88vazTQnY0WaHLAaM5RPUyC/CVi2YWTBe/csBb
+        bdbuVqafejpIEpY9KZ7ph/p/qeYno+U=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-284-wRYkYs3PN_GoA1v-o8l9qg-1; Thu, 09 Jun 2022 04:38:17 -0400
+X-MC-Unique: wRYkYs3PN_GoA1v-o8l9qg-1
+Received: by mail-wm1-f71.google.com with SMTP id l4-20020a05600c1d0400b0039c60535405so2040521wms.6
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 01:38:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eOJK9crUYKXyIABR6BLtgcFnqJSYVkj6ggY7lPw/iao=;
-        b=Y5aRPtsQAybKJNBxKVo5zta2QtYoo/h1f+SCVX++jq2kt7lYpnRK8VveheczAuJs2a
-         BOl794m0gm9TVgt2FIuSZTfOKVeAx8m+GTz7jKQ/9ftFJCZ3Cc1YRhpewiDEty2rpPfA
-         o7xiNS/8UdLnjHPqpN18BiS9Xlzh4Vb2tu+OJtcxqO8S1MY7wokweijj57Ro+AXC4w67
-         EMjYc5N4N8Cs97T/tDfJXGL/jtmpb9/vzz536ms6+jM5MlblrjnYtAobUT3j3wS6MYz0
-         XVFpZMYaR5kcGOMNatU+eUnGl/gIYadiTHYQtuzszuB1W39hXbbWWy32apa7JOffL1r7
-         06NA==
-X-Gm-Message-State: AOAM531I7HrZwojwzNNP9s0rbLiLAvsyyGr1f/zGmNjeKemGJ2HtIJrP
-        wqC80o8Ml2tdAiCX7FOFnqU=
-X-Google-Smtp-Source: ABdhPJx8jI/nVpRWlGVbTToQMkEUzvbfXlIkQWgiOaIqr9dbjO8e3D+CJoRKgGSCIm6aa374Ikqu1w==
-X-Received: by 2002:a05:6a00:1502:b0:51c:2991:f1c with SMTP id q2-20020a056a00150200b0051c29910f1cmr16805716pfu.37.1654763885935;
-        Thu, 09 Jun 2022 01:38:05 -0700 (PDT)
-Received: from localhost.localdomain ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id ru12-20020a17090b2bcc00b001cb6527ca39sm18206436pjb.0.2022.06.09.01.38.03
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HgVXSci/QOseQPVoykiPl1OOcwRCzNz17MjAcM9uq8w=;
+        b=2CxMhTDhurQcHymYLCYAEWsNCtthIKuE8H9HFnlcK23yEg8g0m7r/epbFvxq03hPTk
+         +jNaJhOB/alWLj3++UvMUxbuqsH5MX2rJtwOSTD+M+ofg93vLHbcIOZaj3bbaR2bkaQy
+         DRpizW9aiFxriLMqvEAC3UgP7SwktCbBURioCayXmh+lHf+0rQxUG92CwlAIMIpzJ8rf
+         4f4AYlOvbQtcftsAT19QSnF8W3TWf5KXaw0DL/xvGipZmVDnWG+Iyflwo1MawOKOWKq2
+         +2LY5mPnaJJ7ntSitAVcT/CTmwOHqlKFYwusPTfZB9vVE05AM3dqJAltCVUyB7ObNjQd
+         QlSg==
+X-Gm-Message-State: AOAM532nyh4+UuYJSua/9oo9T7gF1NXWJ/ozR4O3R9hU3zdLPIv47qeS
+        CuH1KYsa73GB44H9mkG3jK6ZxEB3NrU7D+p6dcKOwPydpX/GWcIUQb///n+rlyUZikzjMmIZuiu
+        6tG4BoHa9yUmyK4kCjIeDbwRC
+X-Received: by 2002:a5d:5046:0:b0:210:20ba:843b with SMTP id h6-20020a5d5046000000b0021020ba843bmr36990357wrt.447.1654763896051;
+        Thu, 09 Jun 2022 01:38:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz2I/pxTFn4lag98n3atuyy6yg43sEFm9gDOXjfWj6fo6AxS/nQEcBo9Zu5aQvJUCNQyNASrw==
+X-Received: by 2002:a5d:5046:0:b0:210:20ba:843b with SMTP id h6-20020a5d5046000000b0021020ba843bmr36990340wrt.447.1654763895841;
+        Thu, 09 Jun 2022 01:38:15 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
+        by smtp.gmail.com with ESMTPSA id h7-20020a05600c350700b0039c3b05540fsm25002292wmq.27.2022.06.09.01.38.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 01:38:05 -0700 (PDT)
-From:   Kosuke Fujimoto <fujimotokosuke0@gmail.com>
-X-Google-Original-From: Kosuke Fujimoto <fujimotoksouke0@gmail.com>
-To:     corbet@lwn.net, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org
-Cc:     linux-doc@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kosuke Fujimoto <fujimotoksouke0@gmail.com>,
-        Kosuke Fujimoto <fujimotokosuke0@gmail.com>
-Subject: [PATCH] bpf, docs: Fix typo "BFP_ALU" to "BPF_ALU"
-Date:   Thu,  9 Jun 2022 04:39:37 -0400
-Message-Id: <20220609083937.245749-1-fujimotoksouke0@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 09 Jun 2022 01:38:15 -0700 (PDT)
+Date:   Thu, 9 Jun 2022 10:38:12 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        Krasnov Arseniy <oxffffaa@gmail.com>
+Subject: Re: [RFC PATCH v2 2/8] vhost/vsock: rework packet allocation logic
+Message-ID: <20220609083812.kfsmteh6cm5v3ag2@sgarzare-redhat>
+References: <e37fdf9b-be80-35e1-ae7b-c9dfeae3e3db@sberdevices.ru>
+ <72ae7f76-ffee-3e64-d445-7a0f4261d891@sberdevices.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <72ae7f76-ffee-3e64-d445-7a0f4261d891@sberdevices.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"BFP" should be "BPF"
+On Fri, Jun 03, 2022 at 05:33:04AM +0000, Arseniy Krasnov wrote:
+>For packets received from virtio RX queue, use buddy
+>allocator instead of 'kmalloc()' to be able to insert
+>such pages to user provided vma. Single call to
+>'copy_from_iter()' replaced with per-page loop.
+>
+>Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>---
+> drivers/vhost/vsock.c | 81 ++++++++++++++++++++++++++++++++++++-------
+> 1 file changed, 69 insertions(+), 12 deletions(-)
+>
+>diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+>index e6c9d41db1de..0dc2229f18f7 100644
+>--- a/drivers/vhost/vsock.c
+>+++ b/drivers/vhost/vsock.c
+>@@ -58,6 +58,7 @@ struct vhost_vsock {
+>
+> 	u32 guest_cid;
+> 	bool seqpacket_allow;
+>+	bool zerocopy_rx_on;
 
-Signed-off-by: Kosuke Fujimoto <fujimotokosuke0@gmail.com>
----
- Documentation/bpf/instruction-set.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This is per-device, so a single socket can change the behaviour of all 
+the sockets of this device.
 
-diff --git a/Documentation/bpf/instruction-set.rst b/Documentation/bpf/instruction-set.rst
-index 1de6a57c7e1e..9e27fbdb2206 100644
---- a/Documentation/bpf/instruction-set.rst
-+++ b/Documentation/bpf/instruction-set.rst
-@@ -127,7 +127,7 @@ BPF_XOR | BPF_K | BPF_ALU64 means::
- Byte swap instructions
- ----------------------
- 
--The byte swap instructions use an instruction class of ``BFP_ALU`` and a 4-bit
-+The byte swap instructions use an instruction class of ``BPF_ALU`` and a 4-bit
- code field of ``BPF_END``.
- 
- The byte swap instructions operate on the destination register
--- 
-2.31.1
+Can we do something better?
+
+Maybe we can allocate the header, copy it, find the socket and check if 
+zero-copy is enabled or not for that socket.
+
+Of course we should change or extend virtio_transport_recv_pkt() to 
+avoid to find the socket again.
+
+
+> };
+>
+> static u32 vhost_transport_get_local_cid(void)
+>@@ -357,6 +358,7 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
+> 		      unsigned int out, unsigned int in)
+> {
+> 	struct virtio_vsock_pkt *pkt;
+>+	struct vhost_vsock *vsock;
+> 	struct iov_iter iov_iter;
+> 	size_t nbytes;
+> 	size_t len;
+>@@ -393,20 +395,75 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
+> 		return NULL;
+> 	}
+>
+>-	pkt->buf = kmalloc(pkt->len, GFP_KERNEL);
+>-	if (!pkt->buf) {
+>-		kfree(pkt);
+>-		return NULL;
+>-	}
+>-
+> 	pkt->buf_len = pkt->len;
+>+	vsock = container_of(vq->dev, struct vhost_vsock, dev);
+>
+>-	nbytes = copy_from_iter(pkt->buf, pkt->len, &iov_iter);
+>-	if (nbytes != pkt->len) {
+>-		vq_err(vq, "Expected %u byte payload, got %zu bytes\n",
+>-		       pkt->len, nbytes);
+>-		virtio_transport_free_pkt(pkt);
+>-		return NULL;
+>+	if (!vsock->zerocopy_rx_on) {
+>+		pkt->buf = kmalloc(pkt->len, GFP_KERNEL);
+>+
+>+		if (!pkt->buf) {
+>+			kfree(pkt);
+>+			return NULL;
+>+		}
+>+
+>+		pkt->slab_buf = true;
+>+		nbytes = copy_from_iter(pkt->buf, pkt->len, &iov_iter);
+>+		if (nbytes != pkt->len) {
+>+			vq_err(vq, "Expected %u byte payload, got %zu bytes\n",
+>+				pkt->len, nbytes);
+>+			virtio_transport_free_pkt(pkt);
+>+			return NULL;
+>+		}
+>+	} else {
+>+		struct page *buf_page;
+>+		ssize_t pkt_len;
+>+		int page_idx;
+>+
+>+		/* This creates memory overrun, as we allocate
+>+		 * at least one page for each packet.
+>+		 */
+>+		buf_page = alloc_pages(GFP_KERNEL, get_order(pkt->len));
+>+
+>+		if (buf_page == NULL) {
+>+			kfree(pkt);
+>+			return NULL;
+>+		}
+>+
+>+		pkt->buf = page_to_virt(buf_page);
+>+
+>+		page_idx = 0;
+>+		pkt_len = pkt->len;
+>+
+>+		/* As allocated pages are not mapped, process
+>+		 * pages one by one.
+>+		 */
+>+		while (pkt_len > 0) {
+>+			void *mapped;
+>+			size_t to_copy;
+>+
+>+			mapped = kmap(buf_page + page_idx);
+>+
+>+			if (mapped == NULL) {
+>+				virtio_transport_free_pkt(pkt);
+>+				return NULL;
+>+			}
+>+
+>+			to_copy = min(pkt_len, ((ssize_t)PAGE_SIZE));
+>+
+>+			nbytes = copy_from_iter(mapped, to_copy, &iov_iter);
+>+			if (nbytes != to_copy) {
+>+				vq_err(vq, "Expected %zu byte payload, got %zu bytes\n",
+>+				       to_copy, nbytes);
+>+				kunmap(mapped);
+>+				virtio_transport_free_pkt(pkt);
+>+				return NULL;
+>+			}
+>+
+>+			kunmap(mapped);
+>+
+>+			pkt_len -= to_copy;
+>+			page_idx++;
+>+		}
+> 	}
+>
+> 	return pkt;
+>-- 
+>2.25.1
 
