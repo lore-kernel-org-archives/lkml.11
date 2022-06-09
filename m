@@ -2,174 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96990C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:38:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D44B0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:39:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344572AbiFIPip (ORCPT
+        id S1344546AbiFIPjo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 11:38:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
+        Thu, 9 Jun 2022 11:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237587AbiFIPik (ORCPT
+        with ESMTP id S232617AbiFIPjm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 11:38:40 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BF6326329E;
-        Thu,  9 Jun 2022 08:38:37 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id o10so31705776edi.1;
-        Thu, 09 Jun 2022 08:38:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Mg7JMiMVAhUH8K1hucSMpRfWYhKs0b5aSTxdi9koiAw=;
-        b=fVwBnNiAwp7xgtTmQYNF749ks9JXSD2bg2YjxxWGiObTL28ROuVZJuS22JONbKHEAM
-         lpRS4XfSOioN2mWEYrgpimmQQL7pECXClPcZB1GqYXg9wPYtYmk2wg1MNDbKNS/MSt9d
-         zH6m3leRaqH5tMseU5MZBbi4/I/VyO2gr3c8yu6L0WkB1I3eTvJGYDsHWtpY8ZkpXPEy
-         hLytZNL+EO17uuMVHm8bFCS46vRBe2enbDBwmQdVoeXcubs7OBJ6DnFQWZE/cR7u3CVL
-         wysjuiqrIiWLhqjdwx+NPj2cZmu01pjCHMweqPROWobGuyXIXsEz+vP8nzzRVN6ZHbCx
-         0zbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Mg7JMiMVAhUH8K1hucSMpRfWYhKs0b5aSTxdi9koiAw=;
-        b=YqxlWM0JXoMczTTZ5T7eAoofSO3EzuEcpgEzAK88Fi77tzzHw8GLJnSLOg40q3WVeH
-         ToTFJKds0dErQyX5ivlCRGH+Dtp784UH511JOA7ej9/ggSTcYPla6lVMv952Ji13OL0Y
-         zDhD5DPg1hCctHRTsmAcEsPF2Q6hMj6n5C5fe152+UddizYaE+PqzepIjM9FlK1sbMbv
-         8GfSWcLGsaSh0a496yaTm0mE9xm/dmXXC4dL5YasW9GBHjuWJu7/7GF9HnGeJGVCFxZn
-         pmI5dV7NQZVX3PnW4vIQrLlikNhGlxUTj/k9T+DCvh339Skekt0Pa57zBARtfXaeE2v+
-         uejw==
-X-Gm-Message-State: AOAM533jBfOZG/A4Qdke12+xQiF4VpQHUxMLOJZqV/MBK3+xWZ+iOWhH
-        3/ODuB70Wlpaut3tv+9Hy9P+yrRSCRdtgq/4kY2fMOf5rp4=
-X-Google-Smtp-Source: ABdhPJz3cHnciiAj2zKCGvjtUPGW1JPISEltKYJUwf/VFV3cj1sIWruCAc+UarPUfh5NMJr73eST6atzEIAwdI3MyPo=
-X-Received: by 2002:a05:6402:11d1:b0:433:4a09:3f49 with SMTP id
- j17-20020a05640211d100b004334a093f49mr884992edw.357.1654789116109; Thu, 09
- Jun 2022 08:38:36 -0700 (PDT)
+        Thu, 9 Jun 2022 11:39:42 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F4C2D29CB
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 08:39:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654789181; x=1686325181;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=CkhFu+0fJMswsoDKiILJAXd3k8ep/ipGRYH4uQLu3rc=;
+  b=YZOA3weBQw2hdCMe29mrk2fXuzzCY7y4bPwBItNSOfA6S5QRIsWOEypA
+   hB9dJPJZGxP9VxrOF0zFAwFKIytvHUNNBl0/kORtEphgEHlh2yek6uY+X
+   i6Rn77E2XG12v3yjJ3IjaVySNQ793C1x9OwXAl0d69NPQX5FlRenodI95
+   AvzoBS7LjBa8AZXhF6xkpOjvPAiYAmv57qg8kXXcQfYxs3HO9j1UiROa7
+   8oQ+ANQDa88PfrcczOK4+jnfSymY7EhH+6+9cfKjTlhQ9hboUAB2mWIoq
+   OGMdY1wR0rL23JY6CuREFi4IIk45y88PM+vT9CN4BBJ7Iois5JrAeu3Tk
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="266099859"
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="266099859"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 08:39:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="671368319"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 09 Jun 2022 08:39:39 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nzKG2-000G7V-Fj;
+        Thu, 09 Jun 2022 15:39:38 +0000
+Date:   Thu, 9 Jun 2022 23:39:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
+        Kari Argillander <kari.argillander@gmail.com>
+Subject: [linux-stable-rc:queue/5.15 1/112] fs/ntfs3/xattr.c:684:12: error:
+ redefinition of 'ntfs_xattr_get_acl'
+Message-ID: <202206092357.sMCUOMZm-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220608111221.373833-1-roberto.sassu@huawei.com>
- <20220608111221.373833-3-roberto.sassu@huawei.com> <CAADnVQJ4RCSAeDMqFpF5bQznPQaTWFr=kL7GdssDQuzLof06fg@mail.gmail.com>
- <92d8b9c08e20449782f19f64cc3ec5fa@huawei.com>
-In-Reply-To: <92d8b9c08e20449782f19f64cc3ec5fa@huawei.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 9 Jun 2022 08:38:24 -0700
-Message-ID: <CAADnVQLd2d+_2iJ84u9zK3Nnb+LL3Gw7k=XQCVOHuekb2hLf_g@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] selftests/bpf: Add test_progs opts for sign-file
- and kernel priv key + cert
-To:     Roberto Sassu <roberto.sassu@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 9, 2022 at 2:00 AM Roberto Sassu <roberto.sassu@huawei.com> wrote:
->
-> > From: Alexei Starovoitov [mailto:alexei.starovoitov@gmail.com]
-> > Sent: Thursday, June 9, 2022 2:13 AM
-> > On Wed, Jun 8, 2022 at 4:15 AM Roberto Sassu <roberto.sassu@huawei.com>
-> > wrote:
-> > >
-> > > According to the logs of the eBPF CI, built kernel and tests are copied to
-> > > a virtual machine to run there.
-> > >
-> > > Since a test for a new helper to verify PKCS#7 signatures requires to sign
-> > > data to be verified, extend test_progs to store in the test_env data
-> > > structure (accessible by individual tests) the path of sign-file and of the
-> > > kernel private key and cert.
-> > >
-> > > Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-> > > ---
-> > >  tools/testing/selftests/bpf/test_progs.c | 12 ++++++++++++
-> > >  tools/testing/selftests/bpf/test_progs.h |  3 +++
-> > >  2 files changed, 15 insertions(+)
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/test_progs.c
-> > b/tools/testing/selftests/bpf/test_progs.c
-> > > index c639f2e56fc5..90ce2c06a15e 100644
-> > > --- a/tools/testing/selftests/bpf/test_progs.c
-> > > +++ b/tools/testing/selftests/bpf/test_progs.c
-> > > @@ -707,6 +707,8 @@ enum ARG_KEYS {
-> > >         ARG_TEST_NAME_GLOB_DENYLIST = 'd',
-> > >         ARG_NUM_WORKERS = 'j',
-> > >         ARG_DEBUG = -1,
-> > > +       ARG_SIGN_FILE = 'S',
-> > > +       ARG_KERNEL_PRIV_CERT = 'C',
-> > >  };
-> > >
-> > >  static const struct argp_option opts[] = {
-> > > @@ -732,6 +734,10 @@ static const struct argp_option opts[] = {
-> > >           "Number of workers to run in parallel, default to number of cpus." },
-> > >         { "debug", ARG_DEBUG, NULL, 0,
-> > >           "print extra debug information for test_progs." },
-> > > +       { "sign-file", ARG_SIGN_FILE, "PATH", 0,
-> > > +         "sign-file path " },
-> > > +       { "kernel-priv-cert", ARG_KERNEL_PRIV_CERT, "PATH", 0,
-> > > +         "kernel private key and cert path " },
-> > >         {},
-> > >  };
-> > >
-> > > @@ -862,6 +868,12 @@ static error_t parse_arg(int key, char *arg, struct
-> > argp_state *state)
-> > >         case ARG_DEBUG:
-> > >                 env->debug = true;
-> > >                 break;
-> > > +       case ARG_SIGN_FILE:
-> > > +               env->sign_file_path = arg;
-> > > +               break;
-> > > +       case ARG_KERNEL_PRIV_CERT:
-> > > +               env->kernel_priv_cert_path = arg;
-> > > +               break;
-> >
-> > That's cumbersome approach to use to force CI and
-> > users to pass these args on command line.
-> > The test has to be self contained.
-> > test_progs should execute it without any additional input.
-> > For example by having test-only private/public key
-> > that is used to sign and verify the signature.
->
-> I thought a bit about this. Just generating a test key does not work,
-> as it must be signed by the kernel signing key (otherwise, loading
-> in the secondary keyring will be rejected). Having the test key around
-> is as dangerous as having the kernel signing key around copied
-> somewhere.
->
-> Allowing users to specify a test keyring in the helper is possible.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/5.15
+head:   160dcf43b181822e124054c0ec05acb0e1c473e4
+commit: fde9576bccfe1dcaf4b0ed729570a74d9bd485f7 [1/112] fs/ntfs3: Restore ntfs_xattr_get_acl and ntfs_xattr_set_acl functions
+config: arm64-randconfig-r012-20220609 (https://download.01.org/0day-ci/archive/20220609/202206092357.sMCUOMZm-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 971e13d69e3e7b687213fef22952be6a328c426c)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=fde9576bccfe1dcaf4b0ed729570a74d9bd485f7
+        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+        git fetch --no-tags linux-stable-rc queue/5.15
+        git checkout fde9576bccfe1dcaf4b0ed729570a74d9bd485f7
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash fs/ntfs3/
 
-We shouldn't need to load into the secondary keyring.
-The helper needs to support an arbitrary key ring.
-The kernel shouldn't interfere with loading that test key into
-a test ring.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> But it would introduce unnecessary code, plus the keyring identifier
+All errors (new ones prefixed by >>):
 
-What kind of 'unnecessary code' ?
+>> fs/ntfs3/xattr.c:684:12: error: redefinition of 'ntfs_xattr_get_acl'
+   static int ntfs_xattr_get_acl(struct user_namespace *mnt_userns,
+              ^
+   fs/ntfs3/xattr.c:623:12: note: previous definition is here
+   static int ntfs_xattr_get_acl(struct user_namespace *mnt_userns,
+              ^
+>> fs/ntfs3/xattr.c:709:12: error: redefinition of 'ntfs_xattr_set_acl'
+   static int ntfs_xattr_set_acl(struct user_namespace *mnt_userns,
+              ^
+   fs/ntfs3/xattr.c:648:12: note: previous definition is here
+   static int ntfs_xattr_set_acl(struct user_namespace *mnt_userns,
+              ^
+   2 errors generated.
 
-> will be understood by eBPF only and not by verify_pkcs7_signature(),
-> as it happens for other keyring identifiers.
 
-Maybe wrapping verify_pkcs7_signature as a helper is too high level?
+vim +/ntfs_xattr_get_acl +684 fs/ntfs3/xattr.c
 
-> We may have environment variables directly in the eBPF test, to
-> specify the location of the signing key, but there is a risk of
-> duplication, as other tests wanting the same information might
-> not be aware of them.
+   683	
+ > 684	static int ntfs_xattr_get_acl(struct user_namespace *mnt_userns,
+   685				      struct inode *inode, int type, void *buffer,
+   686				      size_t size)
+   687	{
+   688		struct posix_acl *acl;
+   689		int err;
+   690	
+   691		if (!(inode->i_sb->s_flags & SB_POSIXACL)) {
+   692			ntfs_inode_warn(inode, "add mount option \"acl\" to use acl");
+   693			return -EOPNOTSUPP;
+   694		}
+   695	
+   696		acl = ntfs_get_acl(inode, type, false);
+   697		if (IS_ERR(acl))
+   698			return PTR_ERR(acl);
+   699	
+   700		if (!acl)
+   701			return -ENODATA;
+   702	
+   703		err = posix_acl_to_xattr(mnt_userns, acl, buffer, size);
+   704		posix_acl_release(acl);
+   705	
+   706		return err;
+   707	}
+   708	
+ > 709	static int ntfs_xattr_set_acl(struct user_namespace *mnt_userns,
+   710				      struct inode *inode, int type, const void *value,
+   711				      size_t size)
+   712	{
+   713		struct posix_acl *acl;
+   714		int err;
+   715	
+   716		if (!(inode->i_sb->s_flags & SB_POSIXACL)) {
+   717			ntfs_inode_warn(inode, "add mount option \"acl\" to use acl");
+   718			return -EOPNOTSUPP;
+   719		}
+   720	
+   721		if (!inode_owner_or_capable(mnt_userns, inode))
+   722			return -EPERM;
+   723	
+   724		if (!value) {
+   725			acl = NULL;
+   726		} else {
+   727			acl = posix_acl_from_xattr(mnt_userns, value, size);
+   728			if (IS_ERR(acl))
+   729				return PTR_ERR(acl);
+   730	
+   731			if (acl) {
+   732				err = posix_acl_valid(mnt_userns, acl);
+   733				if (err)
+   734					goto release_and_out;
+   735			}
+   736		}
+   737	
+   738		err = ntfs_set_acl(mnt_userns, inode, acl, type);
+   739	
+   740	release_and_out:
+   741		posix_acl_release(acl);
+   742		return err;
+   743	}
+   744	
 
-That's no go.
-
-> I would not introduce any code that handles the kernel signing
-> key (in the Makefile, or in a separate script). This information is
-> so sensible, that it must be responsibility of an external party
-> to do the work of making that key available and tell where it is.
->
-> Roberto
->
-> HUAWEI TECHNOLOGIES Duesseldorf GmbH, HRB 56063
-> Managing Director: Li Peng, Yang Xi, Li He
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
