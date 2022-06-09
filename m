@@ -2,71 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F2F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243617AbiFILYr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:24:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49444 "EHLO
+        id S243707AbiFILX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243606AbiFILYi (ORCPT
+        with ESMTP id S243517AbiFILXN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:24:38 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D021D488BD;
-        Thu,  9 Jun 2022 04:24:36 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LJhYM6gYWzjX9D;
-        Thu,  9 Jun 2022 19:23:35 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 9 Jun 2022 19:24:34 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 9 Jun 2022 19:24:34 +0800
-From:   Weili Qian <qianweili@huawei.com>
-To:     <herbert@gondor.apana.org.au>
-CC:     <linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-        <wangzhou1@hisilicon.com>, <liulongfang@huawei.com>,
-        Weili Qian <qianweili@huawei.com>
-Subject: [PATCH] crypto: hisilicon/trng - fix local variable type
-Date:   Thu, 9 Jun 2022 19:18:19 +0800
-Message-ID: <20220609111819.29465-1-qianweili@huawei.com>
-X-Mailer: git-send-email 2.33.0
+        Thu, 9 Jun 2022 07:23:13 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD301C1EDD;
+        Thu,  9 Jun 2022 04:23:11 -0700 (PDT)
+Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id A188B66017CB;
+        Thu,  9 Jun 2022 12:23:09 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1654773790;
+        bh=6b5Fn00QFN3S8pk3LiXp3oowU6+YetKGNFXGTWU1NeQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gbQJ9zbuPxPKTT7q3eU227g6oIEkx67WfDTehPGu0ahrJiFRpwnXwna+F/oZ3Trxp
+         29wyf5ywNX0PTB5eosLv/tW5/oUu2axA5eowmKllKV+01cvAohdKHvxHe1jcdwJyXc
+         IjSQNspArFVk4HhDH38hoisHRw6CdaU+5q9jmW7GpWRlD3C83N/6QReLfnE8mjD/zN
+         f9xRU23cPvduQO8CNpCtXLaVc+MXEtk/o9LK8IG+TCidx9TwIvluLsM8yi3ffllVdk
+         b5FfiR69AQqePQWP+5ESsm9f7j7LhVp/aWn9AYbkcTe3D+I9aq6I+L5KMKe9QEX4gJ
+         mK+ltmDoiIUag==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
+        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
+        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
+        kernel@collabora.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v2 02/10] arm64: dts: mediatek: mt6795: Add cpu-map and L2 cache
+Date:   Thu,  9 Jun 2022 13:22:55 +0200
+Message-Id: <20220609112303.117928-3-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220609112303.117928-1-angelogioacchino.delregno@collabora.com>
+References: <20220609112303.117928-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The return value of 'readl_poll_timeout' is '0' or '-ETIMEDOUT'. Therefore,
-change the local variable 'ret' type from 'u32' to 'int'.
+This SoC is HMP and has two clusters with four Cortex-A53 cores each:
+declare a cpu map and, while at it, also add the next-level-cache
+properties.
 
-Signed-off-by: Weili Qian <qianweili@huawei.com>
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/crypto/hisilicon/trng/trng.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/mediatek/mt6795.dtsi | 56 ++++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
 
-diff --git a/drivers/crypto/hisilicon/trng/trng.c b/drivers/crypto/hisilicon/trng/trng.c
-index 829f2caf0f67..97e500db0a82 100644
---- a/drivers/crypto/hisilicon/trng/trng.c
-+++ b/drivers/crypto/hisilicon/trng/trng.c
-@@ -185,7 +185,7 @@ static int hisi_trng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
- 	struct hisi_trng *trng;
- 	int currsize = 0;
- 	u32 val = 0;
--	u32 ret;
-+	int ret;
+diff --git a/arch/arm64/boot/dts/mediatek/mt6795.dtsi b/arch/arm64/boot/dts/mediatek/mt6795.dtsi
+index 167f90bd991a..1456b9035336 100644
+--- a/arch/arm64/boot/dts/mediatek/mt6795.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt6795.dtsi
+@@ -34,6 +34,7 @@ cpu0: cpu@0 {
+ 			compatible = "arm,cortex-a53";
+ 			enable-method = "psci";
+ 			reg = <0x000>;
++			next-level-cache = <&l2_0>;
+ 		};
  
- 	trng = container_of(rng, struct hisi_trng, rng);
+ 		cpu1: cpu@1 {
+@@ -41,6 +42,7 @@ cpu1: cpu@1 {
+ 			compatible = "arm,cortex-a53";
+ 			enable-method = "psci";
+ 			reg = <0x001>;
++			next-level-cache = <&l2_0>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
+@@ -48,6 +50,7 @@ cpu2: cpu@2 {
+ 			compatible = "arm,cortex-a53";
+ 			enable-method = "psci";
+ 			reg = <0x002>;
++			next-level-cache = <&l2_0>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
+@@ -55,6 +58,7 @@ cpu3: cpu@3 {
+ 			compatible = "arm,cortex-a53";
+ 			enable-method = "psci";
+ 			reg = <0x003>;
++			next-level-cache = <&l2_0>;
+ 		};
+ 
+ 		cpu4: cpu@100 {
+@@ -62,6 +66,7 @@ cpu4: cpu@100 {
+ 			compatible = "arm,cortex-a53";
+ 			enable-method = "psci";
+ 			reg = <0x100>;
++			next-level-cache = <&l2_1>;
+ 		};
+ 
+ 		cpu5: cpu@101 {
+@@ -69,6 +74,7 @@ cpu5: cpu@101 {
+ 			compatible = "arm,cortex-a53";
+ 			enable-method = "psci";
+ 			reg = <0x101>;
++			next-level-cache = <&l2_1>;
+ 		};
+ 
+ 		cpu6: cpu@102 {
+@@ -76,6 +82,7 @@ cpu6: cpu@102 {
+ 			compatible = "arm,cortex-a53";
+ 			enable-method = "psci";
+ 			reg = <0x102>;
++			next-level-cache = <&l2_1>;
+ 		};
+ 
+ 		cpu7: cpu@103 {
+@@ -83,6 +90,55 @@ cpu7: cpu@103 {
+ 			compatible = "arm,cortex-a53";
+ 			enable-method = "psci";
+ 			reg = <0x103>;
++			next-level-cache = <&l2_1>;
++		};
++
++		cpu-map {
++			cluster0 {
++				core0 {
++					cpu = <&cpu0>;
++				};
++
++				core1 {
++					cpu = <&cpu1>;
++				};
++
++				core2 {
++					cpu = <&cpu2>;
++				};
++
++				core3 {
++					cpu = <&cpu3>;
++				};
++			};
++
++			cluster1 {
++				core0 {
++					cpu = <&cpu4>;
++				};
++
++				core1 {
++					cpu = <&cpu5>;
++				};
++
++				core2 {
++					cpu = <&cpu6>;
++				};
++
++				core3 {
++					cpu = <&cpu7>;
++				};
++			};
++		};
++
++		l2_0: l2-cache0 {
++			compatible = "cache";
++			cache-level = <2>;
++		};
++
++		l2_1: l2-cache1 {
++			compatible = "cache";
++			cache-level = <2>;
+ 		};
+ 	};
  
 -- 
-2.33.0
+2.35.1
 
