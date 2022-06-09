@@ -2,178 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD1BCCA473
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE08C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:38:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241508AbiFIIhz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60428 "EHLO
+        id S241721AbiFIIiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:38:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232184AbiFIIhx (ORCPT
+        with ESMTP id S232184AbiFIIiH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 04:37:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F279C1CF146
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:37:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654763872;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=694gobC9lwyLqW5J3peoYMEWnd+AT+IRtqYjzog1lRg=;
-        b=V3U7lCZ13fRPLxWtW+mWhDatx+qVHdjglAWH+CQFyRdSJxKqGb+noNCcwzzFS6SvMhQ4yQ
-        jc31IHj9H4b1CErfyYcDO1+XONmRYpzZC3fzIHusGU98LG9rq2w2mY5wrCdRr6l1gR7el6
-        284IxpK/kJRX5T7AziNNPZPgZLmw9W0=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-657-gfd7wW1ZN66mxKvDDjlq1w-1; Thu, 09 Jun 2022 04:37:50 -0400
-X-MC-Unique: gfd7wW1ZN66mxKvDDjlq1w-1
-Received: by mail-wm1-f72.google.com with SMTP id c125-20020a1c3583000000b003978decffedso15681092wma.5
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 01:37:50 -0700 (PDT)
+        Thu, 9 Jun 2022 04:38:07 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C8A188;
+        Thu,  9 Jun 2022 01:38:06 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id 187so20480488pfu.9;
+        Thu, 09 Jun 2022 01:38:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eOJK9crUYKXyIABR6BLtgcFnqJSYVkj6ggY7lPw/iao=;
+        b=LAl1d08X8q2e31YN0ruuS4C7xF3BExBRczatwKid46gwkpweQBeZKpjY7IebrKADy1
+         B7gBZE2l/EjyLooNLPI1woQOhXCMT4w/6CCwrIKjjA/wyOhCDiJDad3WBp5NRzj8iyTp
+         ivM979eTiOXFmrGA9KNWhDed+wEC75jzkpoP/12Q7gwAI+R+hnU9sVTdb4o1UJ1wSokk
+         /IOuclVZTU6yLneviGtZ9JKi/MEdLCZAqahoEYDyxsU913IVvHOwJT9cPJ/06d4T8xM6
+         2nZiH5pc6hKisud0BvrIHVflWYMCvna2CuzYPOb4Mo1K2wP4i/cLe/51/WpgGZR9u6Ny
+         BCgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=694gobC9lwyLqW5J3peoYMEWnd+AT+IRtqYjzog1lRg=;
-        b=0isGGvZvwAeaM71UdyNf9nEqmtljkEYaIM03Y1mY/2vz/SzyRpoQ987icmYrTbhqPS
-         ATSMNj+TB8A1rwGvPtj/RLqFYFzqnZw9HP3lu+lcnuzhsgKORzVQuV1KUZOzXBSOCNPm
-         gJP+OS6NLAWnocPGkS56FOiJH2ffPVCZU6he7ThEpLqXDxaK9f8+Ios7918bmWs92kdT
-         0mNdmin5m9yYT5YguVjjC/TzjsAdgX7fW6/dItuSUQqBtqh9cyS3/bK2/8/KZ/x2H5F7
-         IpWPp6GOMy+0/TgS+3po9SEm1WPGFnGjMybmL5hwvH6zjs/Q42cMIf81MhvxmtPPxZPO
-         dc6A==
-X-Gm-Message-State: AOAM531/naXPqZTx1OyopfbhiACvrACkR63jrZnIDt/PrAGfREvNqcuw
-        K1B3/UmU6+P0QjNpj13avAg68CEYCVET4qiLDO22WFIrc1c4riofgk5zRGU37IF63sC2GzsGMGW
-        GhVnrhx3Wcuky5uLOlw9+2Xgi
-X-Received: by 2002:a5d:4b90:0:b0:210:2b99:3862 with SMTP id b16-20020a5d4b90000000b002102b993862mr35493371wrt.586.1654763869332;
-        Thu, 09 Jun 2022 01:37:49 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzwiqT3Yvpq9pYGfhjPxNPxWZqR6y14eJJY0ZyXFqShFrcIt83mK03m0/3Oo0tgjuYoxDJ5vA==
-X-Received: by 2002:a5d:4b90:0:b0:210:2b99:3862 with SMTP id b16-20020a5d4b90000000b002102b993862mr35493350wrt.586.1654763869063;
-        Thu, 09 Jun 2022 01:37:49 -0700 (PDT)
-Received: from sgarzare-redhat (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
-        by smtp.gmail.com with ESMTPSA id h1-20020a5d4fc1000000b0020fc4cd81f6sm23434686wrw.60.2022.06.09.01.37.47
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eOJK9crUYKXyIABR6BLtgcFnqJSYVkj6ggY7lPw/iao=;
+        b=Y5aRPtsQAybKJNBxKVo5zta2QtYoo/h1f+SCVX++jq2kt7lYpnRK8VveheczAuJs2a
+         BOl794m0gm9TVgt2FIuSZTfOKVeAx8m+GTz7jKQ/9ftFJCZ3Cc1YRhpewiDEty2rpPfA
+         o7xiNS/8UdLnjHPqpN18BiS9Xlzh4Vb2tu+OJtcxqO8S1MY7wokweijj57Ro+AXC4w67
+         EMjYc5N4N8Cs97T/tDfJXGL/jtmpb9/vzz536ms6+jM5MlblrjnYtAobUT3j3wS6MYz0
+         XVFpZMYaR5kcGOMNatU+eUnGl/gIYadiTHYQtuzszuB1W39hXbbWWy32apa7JOffL1r7
+         06NA==
+X-Gm-Message-State: AOAM531I7HrZwojwzNNP9s0rbLiLAvsyyGr1f/zGmNjeKemGJ2HtIJrP
+        wqC80o8Ml2tdAiCX7FOFnqU=
+X-Google-Smtp-Source: ABdhPJx8jI/nVpRWlGVbTToQMkEUzvbfXlIkQWgiOaIqr9dbjO8e3D+CJoRKgGSCIm6aa374Ikqu1w==
+X-Received: by 2002:a05:6a00:1502:b0:51c:2991:f1c with SMTP id q2-20020a056a00150200b0051c29910f1cmr16805716pfu.37.1654763885935;
+        Thu, 09 Jun 2022 01:38:05 -0700 (PDT)
+Received: from localhost.localdomain ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id ru12-20020a17090b2bcc00b001cb6527ca39sm18206436pjb.0.2022.06.09.01.38.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 01:37:48 -0700 (PDT)
-Date:   Thu, 9 Jun 2022 10:37:45 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jason Wang <jasowang@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-Subject: Re: [RFC PATCH v2 1/8] virtio/vsock: rework packet allocation logic
-Message-ID: <20220609083745.hgqzaq6i7s4u2cgx@sgarzare-redhat>
-References: <e37fdf9b-be80-35e1-ae7b-c9dfeae3e3db@sberdevices.ru>
- <78157286-3663-202f-da94-1a17e4ffe819@sberdevices.ru>
+        Thu, 09 Jun 2022 01:38:05 -0700 (PDT)
+From:   Kosuke Fujimoto <fujimotokosuke0@gmail.com>
+X-Google-Original-From: Kosuke Fujimoto <fujimotoksouke0@gmail.com>
+To:     corbet@lwn.net, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org
+Cc:     linux-doc@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kosuke Fujimoto <fujimotoksouke0@gmail.com>,
+        Kosuke Fujimoto <fujimotokosuke0@gmail.com>
+Subject: [PATCH] bpf, docs: Fix typo "BFP_ALU" to "BPF_ALU"
+Date:   Thu,  9 Jun 2022 04:39:37 -0400
+Message-Id: <20220609083937.245749-1-fujimotoksouke0@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <78157286-3663-202f-da94-1a17e4ffe819@sberdevices.ru>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 05:31:00AM +0000, Arseniy Krasnov wrote:
->To support zerocopy receive, packet's buffer allocation
->is changed: for buffers which could be mapped to user's
->vma we can't use 'kmalloc()'(as kernel restricts to map
->slab pages to user's vma) and raw buddy allocator now
->called. But, for tx packets(such packets won't be mapped
->to user), previous 'kmalloc()' way is used, but with special
->flag in packet's structure which allows to distinguish
->between 'kmalloc()' and raw pages buffers.
->
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> include/linux/virtio_vsock.h            | 1 +
-> net/vmw_vsock/virtio_transport.c        | 8 ++++++--
-> net/vmw_vsock/virtio_transport_common.c | 9 ++++++++-
-> 3 files changed, 15 insertions(+), 3 deletions(-)
+"BFP" should be "BPF"
 
-Each patch should as much as possible work to not break the 
-bisectability, and here we are not touching vhost_vsock_alloc_pkt() that 
-uses kmalloc to allocate the buffer.
+Signed-off-by: Kosuke Fujimoto <fujimotokosuke0@gmail.com>
+---
+ Documentation/bpf/instruction-set.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I see you updated it in the next patch, that should be fine, but here 
-you should set slab_buf in vhost_vsock_alloc_pkt(), or you can merge the 
-two patches.
-
->
->diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
->index 35d7eedb5e8e..d02cb7aa922f 100644
->--- a/include/linux/virtio_vsock.h
->+++ b/include/linux/virtio_vsock.h
->@@ -50,6 +50,7 @@ struct virtio_vsock_pkt {
-> 	u32 off;
-> 	bool reply;
-> 	bool tap_delivered;
->+	bool slab_buf;
-> };
->
-> struct virtio_vsock_pkt_info {
->diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
->index ad64f403536a..19909c1e9ba3 100644
->--- a/net/vmw_vsock/virtio_transport.c
->+++ b/net/vmw_vsock/virtio_transport.c
->@@ -255,16 +255,20 @@ static void virtio_vsock_rx_fill(struct virtio_vsock *vsock)
-> 	vq = vsock->vqs[VSOCK_VQ_RX];
->
-> 	do {
->+		struct page *buf_page;
->+
-> 		pkt = kzalloc(sizeof(*pkt), GFP_KERNEL);
-> 		if (!pkt)
-> 			break;
->
->-		pkt->buf = kmalloc(buf_len, GFP_KERNEL);
->-		if (!pkt->buf) {
->+		buf_page = alloc_page(GFP_KERNEL);
->+
->+		if (!buf_page) {
-> 			virtio_transport_free_pkt(pkt);
-> 			break;
-> 		}
->
->+		pkt->buf = page_to_virt(buf_page);
-> 		pkt->buf_len = buf_len;
-> 		pkt->len = buf_len;
->
->diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->index ec2c2afbf0d0..278567f748f2 100644
->--- a/net/vmw_vsock/virtio_transport_common.c
->+++ b/net/vmw_vsock/virtio_transport_common.c
->@@ -69,6 +69,7 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
-> 		if (!pkt->buf)
-> 			goto out_pkt;
->
->+		pkt->slab_buf = true;
-> 		pkt->buf_len = len;
->
-> 		err = memcpy_from_msg(pkt->buf, info->msg, len);
->@@ -1342,7 +1343,13 @@ EXPORT_SYMBOL_GPL(virtio_transport_recv_pkt);
->
-> void virtio_transport_free_pkt(struct virtio_vsock_pkt *pkt)
-> {
->-	kfree(pkt->buf);
->+	if (pkt->buf_len) {
->+		if (pkt->slab_buf)
->+			kfree(pkt->buf);
->+		else
->+			free_pages(buf, get_order(pkt->buf_len));
->+	}
->+
-> 	kfree(pkt);
-> }
-> EXPORT_SYMBOL_GPL(virtio_transport_free_pkt);
->-- 
->2.25.1
+diff --git a/Documentation/bpf/instruction-set.rst b/Documentation/bpf/instruction-set.rst
+index 1de6a57c7e1e..9e27fbdb2206 100644
+--- a/Documentation/bpf/instruction-set.rst
++++ b/Documentation/bpf/instruction-set.rst
+@@ -127,7 +127,7 @@ BPF_XOR | BPF_K | BPF_ALU64 means::
+ Byte swap instructions
+ ----------------------
+ 
+-The byte swap instructions use an instruction class of ``BFP_ALU`` and a 4-bit
++The byte swap instructions use an instruction class of ``BPF_ALU`` and a 4-bit
+ code field of ``BPF_END``.
+ 
+ The byte swap instructions operate on the destination register
+-- 
+2.31.1
 
