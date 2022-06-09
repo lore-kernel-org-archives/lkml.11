@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D0BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA156C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344813AbiFIQwx (ORCPT
+        id S1344184AbiFIQw4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 12:52:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
+        Thu, 9 Jun 2022 12:52:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234225AbiFIQw3 (ORCPT
+        with ESMTP id S240054AbiFIQwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 12:52:29 -0400
+        Thu, 9 Jun 2022 12:52:32 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F2D821C3A7
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 09:52:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EABA1A077C
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 09:52:30 -0700 (PDT)
 Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id B4A0B66017CD;
-        Thu,  9 Jun 2022 17:52:23 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 216E566017E5;
+        Thu,  9 Jun 2022 17:52:27 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654793544;
-        bh=KHg3eOnYqUoUcg57EXhLlpoQHXoJLlQC7w8GyVbN4OU=;
+        s=mail; t=1654793547;
+        bh=r6lF+wb4oVIUvBtEdpQAsS/+HQWGO3JeX6KjqiaMQi0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g8qjmFu0HwOgqRNI4BZDKtXlwymktY7jIVzEt94+v1RFRu7d8mndgZm+GMP5v9LSw
-         7lkkPww0B8R5F8dI9RwLQIyqlSk4qsW8PniUM/sguq9e5g4D7XDv25Rl+Jl0UtzFH3
-         bt1NfaAAC0mMezpU67FtSkjp7NOlns/m4jQDACzSL990nDaAQQSpr5NXAwf+8GuJzH
-         bzNcOs0VsLOajIukHj9MpPQhNqs6rtmYrPLpia79w6kbLG8yTuqkMgR8OxSSsaROFO
-         AoZok3ZX+R505LiMOir9V9CfKvraxaS9A14izGPc2hdTBNHglKnk1NnWB7m1M11SDI
-         EDO8ZBFiELvfw==
+        b=W479OxaloJIRtn+QLhu/mMOxk+k2mMSeShI5tQYfD75WB6misfuqCpyYl+o57B+gF
+         Ik7wPBr89mVxyAlhT0cncPrh5PoMk/DbHcIbLrELFGxHyxL014AGDL7+2VmwxTO887
+         3gJGiMrLfNnNOQ7zVwn7HiBzTOMEHejw8xKym+iADwgXhwt7/LNN1gJMLEYYqNqvkj
+         9Cd9JZhC5TwRW3l4z4yf11EDc50zX/oBQ8L61Ie7I9e2U6P6zgznubDVdLgzu0KVHI
+         X5uEuikwhKsZv1fhNn4OlKPItuw9HltSKehjhyWtCtD/PNkjYBczrCVWpIUnx0ri+u
+         g3yqS6FVty5Ug==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -45,9 +45,9 @@ Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
         Matthew Auld <matthew.auld@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/8] drm/i915/ttm: dont trample cache_level overrides during ttm move
-Date:   Thu,  9 Jun 2022 16:51:53 +0000
-Message-Id: <20220609165200.842821-2-bob.beckett@collabora.com>
+Subject: [PATCH v3 6/8] drm/i915/gem: further fix mman selftest
+Date:   Thu,  9 Jun 2022 16:51:58 +0000
+Message-Id: <20220609165200.842821-7-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220609165200.842821-1-bob.beckett@collabora.com>
 References: <20220609165200.842821-1-bob.beckett@collabora.com>
@@ -57,83 +57,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Various places within the driver override the default chosen cache_level.
-Before ttm, these overrides were permanent until explicitly changed again
-or for the lifetime of the buffer.
+In commit 450cede7f380 ("drm/i915/gem: Fix the mman selftest") we fixed up
+the mman selftest to allocate user buffers via smem only if we have lmem,
+otherwise it uses internal buffers.
 
-TTM movement code came along and decided that it could make that
-decision at that time, which is usually well after object creation, so
-overrode the cache_level decision and reverted it back to its default
-decision.
+As the commit message asserts, we should only be using buffers that
+userland should be able to create.
+Internal buffers are not intended to be used by userland.
 
-Add logic to indicate whether the caching mode has been set by anything
-other than the move logic. If so, assume that the code that overrode the
-defaults knows best and keep it.
+Instead, fix the code to always create buffers from smem.
+In the case of integrated, this will create them from the shmem non-ttm
+backend, which is fine.
+
+This also fixes up the code to allow conversion of internal backend to
+ttm without breaking this test.
 
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_object.c       | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_object_types.h | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_ttm.c          | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c     | 9 ++++++---
- 4 files changed, 9 insertions(+), 3 deletions(-)
+ .../gpu/drm/i915/gem/selftests/i915_gem_mman.c  | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.c b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-index 06b1b188ce5a..519887769c08 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-@@ -125,6 +125,7 @@ void i915_gem_object_set_cache_coherency(struct drm_i915_gem_object *obj,
- 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
- 
- 	obj->cache_level = cache_level;
-+	obj->ttm.cache_level_override = true;
- 
- 	if (cache_level != I915_CACHE_NONE)
- 		obj->cache_coherent = (I915_BO_CACHE_COHERENT_FOR_READ |
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-index 2c88bdb8ff7c..6632ed52e919 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-@@ -605,6 +605,7 @@ struct drm_i915_gem_object {
- 		struct i915_gem_object_page_iter get_io_page;
- 		struct drm_i915_gem_object *backup;
- 		bool created:1;
-+		bool cache_level_override:1;
- 	} ttm;
- 
- 	/*
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-index 4c25d9b2f138..27d59639177f 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-@@ -1241,6 +1241,7 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
- 	i915_gem_object_init_memory_region(obj, mem);
- 	i915_ttm_adjust_domains_after_move(obj);
- 	i915_ttm_adjust_gem_after_move(obj);
-+	obj->ttm.cache_level_override = false;
- 	i915_gem_object_unlock(obj);
- 
- 	return 0;
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-index a10716f4e717..4c1de0b4a10f 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-@@ -123,9 +123,12 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
- 	obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
- 		I915_BO_FLAG_STRUCT_PAGE;
- 
--	cache_level = i915_ttm_cache_level(to_i915(bo->base.dev), bo->resource,
--					   bo->ttm);
--	i915_gem_object_set_cache_coherency(obj, cache_level);
-+	if (!obj->ttm.cache_level_override) {
-+		cache_level = i915_ttm_cache_level(to_i915(bo->base.dev),
-+						   bo->resource, bo->ttm);
-+		i915_gem_object_set_cache_coherency(obj, cache_level);
-+		obj->ttm.cache_level_override = false;
-+	}
+diff --git a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
+index 5bc93a1ce3e3..ee2ad1281f97 100644
+--- a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
++++ b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
+@@ -594,17 +594,12 @@ static enum i915_mmap_type default_mapping(struct drm_i915_private *i915)
  }
  
- /**
+ static struct drm_i915_gem_object *
+-create_sys_or_internal(struct drm_i915_private *i915,
+-		       unsigned long size)
++create_sys(struct drm_i915_private *i915, unsigned long size)
+ {
+-	if (HAS_LMEM(i915)) {
+-		struct intel_memory_region *sys_region =
+-			i915->mm.regions[INTEL_REGION_SMEM];
++	struct intel_memory_region *sys_region =
++		i915->mm.regions[INTEL_REGION_SMEM];
+ 
+-		return __i915_gem_object_create_user(i915, size, &sys_region, 1);
+-	}
+-
+-	return i915_gem_object_create_internal(i915, size);
++	return __i915_gem_object_create_user(i915, size, &sys_region, 1);
+ }
+ 
+ static bool assert_mmap_offset(struct drm_i915_private *i915,
+@@ -615,7 +610,7 @@ static bool assert_mmap_offset(struct drm_i915_private *i915,
+ 	u64 offset;
+ 	int ret;
+ 
+-	obj = create_sys_or_internal(i915, size);
++	obj = create_sys(i915, size);
+ 	if (IS_ERR(obj))
+ 		return expected && expected == PTR_ERR(obj);
+ 
+@@ -717,7 +712,7 @@ static int igt_mmap_offset_exhaustion(void *arg)
+ 	}
+ 
+ 	/* Fill the hole, further allocation attempts should then fail */
+-	obj = create_sys_or_internal(i915, PAGE_SIZE);
++	obj = create_sys(i915, PAGE_SIZE);
+ 	if (IS_ERR(obj)) {
+ 		err = PTR_ERR(obj);
+ 		pr_err("Unable to create object for reclaimed hole\n");
 -- 
 2.25.1
 
