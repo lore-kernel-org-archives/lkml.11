@@ -2,231 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D23DEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 02:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A03D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 02:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237212AbiFICzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 22:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49258 "EHLO
+        id S237273AbiFICze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 22:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235723AbiFICzT (ORCPT
+        with ESMTP id S236571AbiFICzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 22:55:19 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6441A0AF7;
-        Wed,  8 Jun 2022 19:55:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654743318; x=1686279318;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=5PYMIT/uUsI3RZRwx4CIFw86+8DJBh3cZNahF5UEA5Y=;
-  b=NmPdV5W+GYaeFVUYN+400nJ5IqZBDGhKjHMieUexTCW+AGP4CMpV8Fqc
-   wWZ03j1EyR3VjpJqkFJcOQI9kadJ82KggF2wy8CEabec9woZGlaXf/Jmg
-   e7QVmJYvuaS86LQx8+snULSFhB7Qr2zUaPf2NNa7yDfhCz32UqyrGybwT
-   tyXfIun68JEpwIoOJHqVNcGMa02wA4Rc5776mRxNV+84cEbZQTFZ64tsx
-   B9zqfc3sZBMcChE3ELhujKS47aBDfmJDT2u8r05eyMBG7iYBVqWP3lKei
-   G2C6/qhCT0PERLV5o6lu7UNDriwvJ0AEoejLZM9BTlFT4G1gwqdU/nsIw
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="257554451"
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="257554451"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 19:55:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="609963854"
-Received: from unknown (HELO localhost.localdomain) ([10.226.216.116])
-  by orsmga008.jf.intel.com with ESMTP; 08 Jun 2022 19:55:15 -0700
-From:   wen.ping.teh@intel.com
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Teh Wen Ping <wen.ping.teh@intel.com>
-Subject: [PATCH v3] arm64: dts: Add support for Stratix 10 Software Virtual Platform
-Date:   Thu,  9 Jun 2022 10:55:00 +0800
-Message-Id: <20220609025500.400695-1-wen.ping.teh@intel.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 8 Jun 2022 22:55:31 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52851A40A2
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 19:55:29 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-30047b94aa8so191956017b3.1
+        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 19:55:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=4ARLjw1Nof83y9YpqKOn8wr8VcsjNu7ZoweP/sOCfPY=;
+        b=Qx1sTnuPnKZIjWGGtQpVlxmYsryyYfV8gpq2IWXczHI0T4WeB1Br9zEitH904E54mq
+         H/0ip/CRw0YEASts5sNTWaNhY0oRQr6A7hb6ThHml3YNQKEJArAPGo6OliXJoNIIysc1
+         h3Xk2URRY5Ucr+OXNiRif2REJZFh3RMfiQwVMNRP5p26Hezp3dC+Y0C4sqeXbCTRpngD
+         lgeg/i9DP75mo0gGPVoAtu8kojzoUan4q5GPPH7acGQ7Nn9+KC2oWZ0Q25NRN1SynuwJ
+         1C2OhZaremYmei+jCVLFLhB6/D/xllOCWw4LnNkLs5peDWuet25EyV7BAz6S4rCpF0mU
+         qDpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=4ARLjw1Nof83y9YpqKOn8wr8VcsjNu7ZoweP/sOCfPY=;
+        b=39UaYoJjBWsVwfORw3AA9q2UbYDznSu3MzIdC85kF8ifrm2wKuqsaDESntB5yKv/aE
+         joqb7UBJ33zul8ONxT7dGBJ8FJXxqRbAeVRhYM1u5pkcNYI0IRFaHSxkc9Q7lkaXt2Ex
+         /DPoSCDJZ8vCHd6ir5doF73nb7izpWUNwaekM05vp/HYOzuEs1KTqvv9ILQx1BmYD8BF
+         /XUvB+dVn5xttvZcdDSxjy0q/8Fo7VdG5uFUQ46+FZyt3LZjg3pX+NVDWbtm6/g6NAS1
+         6x6a7WW5VTXHzbPXoB54II90hrVJikzQiyOS43RtlJgJ3r9t4vwQTmU+NlGmDdnHx+xy
+         IUEA==
+X-Gm-Message-State: AOAM532NhNpHEWHXdKrsNzjyFoJNE5xqCLdyrgxG1gvUBUU7leOOyvS4
+        aZlG5oGodlvKDFGVmhmri+kvB6K/ZV4N
+X-Google-Smtp-Source: ABdhPJzIUpNdNmjpAsA+6DSe+J/A6mY/fMcRgrfg6mHex4M8OMq0i4HV4v0BEgMdcCTu8ykV4/NJhr8V0EpT
+X-Received: from joshdon.svl.corp.google.com ([2620:15c:2cd:202:af3:3e2d:508a:9cef])
+ (user=joshdon job=sendgmr) by 2002:a81:c4e:0:b0:30f:fc76:672b with SMTP id
+ 75-20020a810c4e000000b0030ffc76672bmr36722807ywm.371.1654743328998; Wed, 08
+ Jun 2022 19:55:28 -0700 (PDT)
+Date:   Wed,  8 Jun 2022 19:55:15 -0700
+Message-Id: <20220609025515.2086253-1-joshdon@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH] sched: allow newidle balancing to bail out of load_balance
+From:   Josh Don <joshdon@google.com>
+To:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        linux-kernel@vger.kernel.org, Josh Don <joshdon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Teh Wen Ping <wen.ping.teh@intel.com>
+While doing newidle load balancing, it is possible for new tasks to
+arrive, such as with pending wakeups. newidle_balance() already accounts
+for this by exiting the sched_domain load_balance() iteration if it
+detects these cases. This is very important for minimizing wakeup
+latency.
 
-Add Stratix 10 Software Virtual Platform device tree
+However, if we are already in load_balance(), we may stay there for a
+while before returning back to newidle_balance(). This is most
+exacerbated if we enter a 'goto redo' loop in the LBF_ALL_PINNED case. A
+very straightforward workaround to this is to adjust should_we_balance()
+to bail out if we're doing a CPU_NEWLY_IDLE balance and new tasks are
+detected.
 
-Signed-off-by: Teh Wen Ping <wen.ping.teh@intel.com>
+This was tested with the following reproduction:
+- two threads that take turns sleeping and waking each other up are
+  affined to two cores
+- a large number of threads with 100% utilization are pinned to all
+  other cores
+
+Without this patch, wakeup latency was ~120us for the pair of threads,
+almost entirely spent in load_balance(). With this patch, wakeup latency
+is ~6us.
+
+Signed-off-by: Josh Don <joshdon@google.com>
 ---
+ kernel/sched/fair.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-changes in v2:
--remove indentation before GPL
--change root compatible to "altr,socfpga-stratix10"
--remove bootargs
--move clock-frequency to label
--remove l2-cache
--remove no longer exist authors from commit message
-
-changes in v3:
--change root compatible to "altr,socfpga-stratix10-swvp"
-
- arch/arm64/Kconfig.platforms                  |   3 +-
- arch/arm64/boot/dts/altera/Makefile           |   3 +-
- .../dts/altera/socfpga_stratix10_swvp.dts     | 117 ++++++++++++++++++
- 3 files changed, 121 insertions(+), 2 deletions(-)
- create mode 100644 arch/arm64/boot/dts/altera/socfpga_stratix10_swvp.dts
-
-diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
-index de9a18d3026f..48abe5dafaae 100644
---- a/arch/arm64/Kconfig.platforms
-+++ b/arch/arm64/Kconfig.platforms
-@@ -249,7 +249,8 @@ config ARCH_INTEL_SOCFPGA
- 	bool "Intel's SoCFPGA ARMv8 Families"
- 	help
- 	  This enables support for Intel's SoCFPGA ARMv8 families:
--	  Stratix 10 (ex. Altera), Agilex and eASIC N5X.
-+	  Stratix 10 (ex. Altera), Stratix10 Software Virtual Platform,
-+	  Agilex and eASIC N5X.
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 8c5b74f66bd3..5abf30117824 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -9834,9 +9834,15 @@ static int should_we_balance(struct lb_env *env)
+ 	/*
+ 	 * In the newly idle case, we will allow all the CPUs
+ 	 * to do the newly idle load balance.
++	 *
++	 * However, we bail out if we already have tasks or a wakeup pending,
++	 * to optimize wakeup latency.
+ 	 */
+-	if (env->idle == CPU_NEWLY_IDLE)
++	if (env->idle == CPU_NEWLY_IDLE) {
++		if (env->dst_rq->nr_running > 0 || env->dst_rq->ttwu_pending)
++			return 0;
+ 		return 1;
++	}
  
- config ARCH_SYNQUACER
- 	bool "Socionext SynQuacer SoC Family"
-diff --git a/arch/arm64/boot/dts/altera/Makefile b/arch/arm64/boot/dts/altera/Makefile
-index 4db83fbeb115..1bf0c472f6b4 100644
---- a/arch/arm64/boot/dts/altera/Makefile
-+++ b/arch/arm64/boot/dts/altera/Makefile
-@@ -1,3 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0-only
- dtb-$(CONFIG_ARCH_INTEL_SOCFPGA) += socfpga_stratix10_socdk.dtb \
--				socfpga_stratix10_socdk_nand.dtb
-+				socfpga_stratix10_socdk_nand.dtb \
-+				socfpga_stratix10_swvp.dtb
-diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10_swvp.dts b/arch/arm64/boot/dts/altera/socfpga_stratix10_swvp.dts
-new file mode 100644
-index 000000000000..a8db58573954
---- /dev/null
-+++ b/arch/arm64/boot/dts/altera/socfpga_stratix10_swvp.dts
-@@ -0,0 +1,117 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2022, Intel Corporation
-+ */
-+
-+#include "socfpga_stratix10.dtsi"
-+
-+/ {
-+	model = "SOCFPGA Stratix 10 SWVP";
-+	compatible = "altr,socfpga-stratix10-swvp", "altr,socfpga-stratix10";
-+
-+	aliases {
-+		serial0 = &uart0;
-+		serial1 = &uart1;
-+
-+		timer0 = &timer0;
-+		timer1 = &timer1;
-+		timer2 = &timer2;
-+		timer3 = &timer3;
-+
-+		ethernet0 = &gmac0;
-+		ethernet1 = &gmac1;
-+		ethernet2 = &gmac2;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial1:115200n8";
-+		linux,initrd-start = <0x10000000>;
-+		linux,initrd-end = <0x125c8324>;
-+	};
-+
-+	memory {
-+		device_type = "memory";
-+		reg = <0x0 0x0 0x0 0x80000000>;
-+	};
-+};
-+
-+&cpu0 {
-+	enable-method = "spin-table";
-+	cpu-release-addr = <0x0 0x0000fff8>;
-+};
-+
-+&cpu1 {
-+	enable-method = "spin-table";
-+	cpu-release-addr = <0x0 0x0000fff8>;
-+};
-+
-+&cpu2 {
-+	enable-method = "spin-table";
-+	cpu-release-addr = <0x0 0x0000fff8>;
-+};
-+
-+&cpu3 {
-+	enable-method = "spin-table";
-+	cpu-release-addr = <0x0 0x0000fff8>;
-+};
-+
-+&osc1 {
-+	clock-frequency = <25000000>;
-+};
-+
-+&gmac0 {
-+	status = "okay";
-+	phy-mode = "rgmii";
-+	phy-addr = <0xffffffff>;
-+	snps,max-mtu = <0x0>;
-+};
-+
-+&gmac1 {
-+	status = "okay";
-+	phy-mode = "rgmii";
-+	phy-addr = <0xffffffff>;
-+};
-+
-+&gmac2 {
-+	status = "okay";
-+	phy-mode = "rgmii";
-+	phy-addr = <0xffffffff>;
-+};
-+
-+&mmc {
-+	status = "okay";
-+	altr,dw-mshc-ciu-div = <0x3>;
-+	altr,dw-mshc-sdr-timing = <0x0 0x3>;
-+	cap-sd-highspeed;
-+	cap-mmc-highspeed;
-+	broken-cd;
-+	bus-width = <4>;
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
-+
-+&uart1 {
-+	status = "okay";
-+};
-+
-+&usb0 {
-+	clocks = <&clkmgr STRATIX10_L4_MP_CLK>;
-+	status = "okay";
-+};
-+
-+&usb1 {
-+	clocks = <&clkmgr STRATIX10_L4_MP_CLK>;
-+	status = "okay";
-+};
-+
-+&rst {
-+	altr,modrst-offset = <0x20>;
-+};
-+
-+&sysmgr {
-+	reg = <0xffd12000 0x1000>;
-+	interrupts = <0x0 0x10 0x4>;
-+	cpu1-start-addr = <0xffd06230>;
-+};
+ 	/* Try to find first idle CPU */
+ 	for_each_cpu_and(cpu, group_balance_mask(sg), env->cpus) {
 -- 
-2.25.1
+2.36.1.476.g0c4daa206d-goog
 
