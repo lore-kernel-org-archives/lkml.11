@@ -2,254 +2,320 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 941FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 02:49:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5559CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 02:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237093AbiFICtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 22:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49980 "EHLO
+        id S237126AbiFICwt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 22:52:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237086AbiFICtI (ORCPT
+        with ESMTP id S230391AbiFICwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 22:49:08 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652061A0AC0
-        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 19:49:06 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id w20so14271685lfa.11
-        for <linux-kernel@vger.kernel.org>; Wed, 08 Jun 2022 19:49:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=xAbZi9QDkiuV/tRVVMDCL6/4gqIWbhumm5dxt4PBAPs=;
-        b=mkO6iieR9vohwp1xfYcTplFYTwrNTrfHLcZKf5R3REebDklh4RIYgDqdJZWa0QGSrP
-         6tXCA6mR0XyW4YI4R8nc/oDsbahxe9NpdpYrOjv9ZkRqR+rigjTTPHtC0Ljslas1edyX
-         T0xrMZSOO0q8Y5I1l0TU8odLEOoKae6tAxxP6wJtELRkMdkoWPE2hkLQSA2Y3KZTn/XS
-         zehFdrrGOqViKQ5Ce0G/+WpU2viDbIADVkdbJ8ZjxB11hk5o3R/R9z7tPkJ2gNJTrTv9
-         5wAZzPd1Pb9MkaKRPipYauD55cQEeR67bhBywedGMo3pBEt+jggI4Hez+DRU3UmUS+Bu
-         qD6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xAbZi9QDkiuV/tRVVMDCL6/4gqIWbhumm5dxt4PBAPs=;
-        b=IAhiL2o/Op/bmxSOtw/aTtE1okZzj/y9nLuVx7VfBM1QHvgbzPbaFMBrB9zok98W7Y
-         0POrq4iYtNkTmr9ZoyfOFAK+Q3nKD66WQkNft8UubMnn3FgnEJYTwp3Lp/pvWZ9AHJzk
-         GwkBVwSZnMhOF93oq9KkeY1quFnxLuqp9RoSARYrR4UvLWiW+VKU5Z3w21tbmeyC5L0R
-         wTo/SHjobn8jd7svG2I/4pm7qzoPkjtKck+8VAs7Ervt8fh+t+YBbRNeyDJoo/UpkpLs
-         xhglxeo009YaHzQcMT0CsVormu/wI4KiP7mwpRV5NPqbrDoHaHL0MiVUVtEJDpT5WDpS
-         oA1Q==
-X-Gm-Message-State: AOAM533I87nEtChKyeeYG+61KdUvtHVyaxcKI5znNwbkq9iQQcSOqooe
-        JMmKtzzSWvqDauxUiq5Md1ebhQ==
-X-Google-Smtp-Source: ABdhPJynRptJNEYyuq3lMoyZ6zhAFMwwfmmh2PZrONJF64Gu0ggbbHlLz+APd6K22daaYz8evDzC7A==
-X-Received: by 2002:a05:6512:110e:b0:479:506f:ee04 with SMTP id l14-20020a056512110e00b00479506fee04mr10901344lfg.304.1654742944523;
-        Wed, 08 Jun 2022 19:49:04 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.129])
-        by smtp.gmail.com with ESMTPSA id y25-20020a0565123f1900b004786eb19049sm4011264lfa.24.2022.06.08.19.49.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 19:49:04 -0700 (PDT)
-Message-ID: <2a4cc632-c936-1e42-4fdc-572334c58ee1@openvz.org>
-Date:   Thu, 9 Jun 2022 05:49:02 +0300
+        Wed, 8 Jun 2022 22:52:44 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E451A0AEE
+        for <linux-kernel@vger.kernel.org>; Wed,  8 Jun 2022 19:52:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654743163; x=1686279163;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ii5F9/rZ5hHwyqOpOsuBRsHZtYvIYuomi9dXi6cGZOw=;
+  b=bne1tLhAIODEdO+4Wqs23kO8iBAftOHoOgtQfr0Qh29+VHhYyOhnb5PS
+   I0+AzBvolp3keLQ/bdqZw5eepG5QKF7+mz6V2JdqidLy81rK3BKEAeme1
+   rQzAFRCWiUrqqC+kdKNSh283UktdQg3rjw5BOFVDYOEHMIasK4zrXihNz
+   MEZ+Je7wasibTbmESaT610JmKxjs5pTeCq6XRYVJcKmE5IDzLYIwDW/IE
+   t+Kw+PBQdWTixY3/yb4tJ1JRO42sZs9f3heY+cNhUONSZHntW7qnwcjh6
+   7AUbVMpoKrxuMmBBXdV9df017mV/qD3VJwhCC00waEYU7ki6Jux68Dh/1
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="363452721"
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="363452721"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 19:52:42 -0700
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="683711288"
+Received: from smsarifr-mobl.amr.corp.intel.com (HELO skuppusw-desk1.home) ([10.212.139.233])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 19:52:41 -0700
+From:   Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v8 1/5] x86/tdx: Add TDX Guest attestation interface driver
+Date:   Wed,  8 Jun 2022 19:52:16 -0700
+Message-Id: <20220609025220.2615197-2-sathyanarayanan.kuppuswamy@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [next] arm64: boot failed - next-20220606
-Content-Language: en-US
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        regressions@lists.linux.dev, lkft-triage@lists.linaro.org,
-        linux-mm <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Raghuram Thammiraju <raghuram.thammiraju@arm.com>,
-        Mark Brown <broonie@kernel.org>, Will Deacon <will@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Qian Cai <quic_qiancai@quicinc.com>
-References: <CA+G9fYv7fESqpGoeKmHoJsst6wfRNMi2wQLGm+PsjbLDuDjdMQ@mail.gmail.com>
- <CA+G9fYsJThWFAxXTbAcJmjshx+oYxVVd+gMM680hS0X1z37+FQ@mail.gmail.com>
- <20220607162504.7fd5a92a@canb.auug.org.au>
- <CALvZod5XBjw7MZfYSNv-UnE7pHMKTquUNomqyC5T05Qu_ef6Zw@mail.gmail.com>
- <CALvZod4DhM00LXsPty=cnYyv3Ci5YS5otasu_tr9o7ujQekKLw@mail.gmail.com>
- <CA+G9fYve1faH7AmpEa-p_ySb_WCgc4DdjqyS6fSdiJYsaEi=rA@mail.gmail.com>
- <CALvZod72bp9ejY+KghaUGkoXDrOMMbs_ofsopGib=MY4jzhRkg@mail.gmail.com>
- <CA+G9fYu6mayYrrYK+0Rn1K7HOM6WbaOhnJSx-Wv6CaKBDpaT2g@mail.gmail.com>
-From:   Vasily Averin <vvs@openvz.org>
-In-Reply-To: <CA+G9fYu6mayYrrYK+0Rn1K7HOM6WbaOhnJSx-Wv6CaKBDpaT2g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear ARM developers,
-could you please help me to find the reason of this problem?
+In TDX guest, attestation is used to verify the trustworthiness of a TD
+to other entities before provisioning secrets to the TD.
 
-On 6/7/22 18:29, Naresh Kamboju wrote:
-> On Tue, 7 Jun 2022 at 19:47, Shakeel Butt <shakeelb@google.com> wrote:
->>
->> On Tue, Jun 7, 2022 at 3:28 AM Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
->>>
->>> Hi Shakeel,
->>>
->>>>>> Can you test v5.19-rc1, please?  If that does not fail, then you could
->>>>>> bisect between that and next-20220606 ...
->>>>>>
->>>>>
->>>>> This is already reported at
->>>>> https://lore.kernel.org/all/Yp4F6n2Ie32re7Ed@qian/ and I think we know
->>>>> the underlying issue (which is calling virt_to_page() on a vmalloc
->>>>> address).
->>>>
->>>> Sorry, I might be wrong. Just checked the stacktrace again and it
->>>> seems like the failure is happening in early boot in this report.
->>>> Though the error "Unable to handle kernel paging request at virtual
->>>> address" is happening in the function mem_cgroup_from_obj().
->>>>
->>>> Naresh, can you repro the issue if you revert the patch "net: set
->>>> proper memcg for net_init hooks allocations"?
->>>
->>> yes. You are right !
->>> 19ee3818b7c6 ("net: set proper memcg for net_init hooks allocations")
->>> After reverting this single commit I am able to boot arm64 successfully.
->>>
->>> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
->>>
->>
->> Can you please run script/faddr2line on "mem_cgroup_from_obj+0x2c/0x120"?
-> 
-> ./scripts/faddr2line vmlinux  mem_cgroup_from_obj+0x2c/0x120
-> mem_cgroup_from_obj+0x2c/0x120:
-> mem_cgroup_from_obj at ??:?
-> 
-> Please find the following artifacts which are causing kernel crashes.
-> 
-> vmlinux: https://builds.tuxbuild.com/2ABl8X9kHAAU5MlL3E3xExHFrNy/vmlinux.xz
-> System.map: https://builds.tuxbuild.com/2ABl8X9kHAAU5MlL3E3xExHFrNy/System.map
+One usage example is, when a TD guest uses encrypted drive and if the
+decryption keys required to access the drive are stored in a secure 3rd
+party keyserver, the key server can use attestation to verify TD's
+trustworthiness and release the decryption keys to the TD.
 
-Dear Naresh,
-thank you very much
+The attestation process consists of two steps: TDREPORT generation and
+Quote generation.
 
-mem_cgroup_from_obj():
-ffff80000836cf40:       d503245f        bti     c
-ffff80000836cf44:       d503201f        nop
-ffff80000836cf48:       d503201f        nop
-ffff80000836cf4c:       d503233f        paciasp
-ffff80000836cf50:       d503201f        nop
-ffff80000836cf54:       d2e00021        mov     x1, #0x1000000000000            // #281474976710656
-ffff80000836cf58:       8b010001        add     x1, x0, x1
-ffff80000836cf5c:       b25657e4        mov     x4, #0xfffffc0000000000         // #-4398046511104
-ffff80000836cf60:       d34cfc21        lsr     x1, x1, #12
-ffff80000836cf64:       d37ae421        lsl     x1, x1, #6
-ffff80000836cf68:       8b040022        add     x2, x1, x4
-ffff80000836cf6c:       f9400443        ldr     x3, [x2, #8]
+TDREPORT (TDREPORT_STRUCT) is a fixed-size data structure generated by
+the TDX module which contains TD-specific information (such as TD
+measurements), platform security version, and the MAC to protect the
+integrity of the TDREPORT. The TD kernel uses TDCALL[TDG.MR.REPORT] to
+get the TDREPORT from the TDX module. A user-provided 64-Byte
+REPORTDATA is used as input and included in the TDREPORT. Typically it
+can be some nonce provided by attestation service so the TDREPORT can
+be verified uniquely. More details about TDREPORT can be found in
+Intel TDX Module specification, section titled "TDG.MR.REPORT Leaf".
 
-x5 : ffff80000a96f000 x4 : fffffc0000000000 x3 : ffff80000ad5e680
-x2 : fffffe00002bc240 x1 : 00000200002bc240 x0 : ffff80000af09740
+TDREPORT can only be verified on local platform as the MAC key is bound
+to the platform. To support remote verification of the TDREPORT, TDX
+leverages Intel SGX Quote Enclave (QE) to verify the TDREPORT locally
+and convert it to a remote verifiable Quote.
 
-x0 = 0xffff80000af09740 is an argument of mem_cgroup_from_obj()
-according to System.map it is init_net
+After getting the TDREPORT, the second step of the attestation process
+is to send it to the QE to generate the Quote. TDX doesn't support SGX
+inside the TD, so the QE can be deployed in the host, or in another
+legacy VM with SGX support. How to send the TDREPORT to QE and receive
+the Quote is implementation and deployment specific.
 
-This issue is caused by calling virt_to_page() on address of static variable init_net.
-Arm64 consider that addresses of static variables are not valid virtual addresses.
-On x86_64 the same API works without any problem.
+Implement a basic attestation driver to allow TD userspace to get the
+TDREPORT. The TD userspace attestation software can get the TDREPORT
+and then choose whatever communication channel available (i.e. vsock)
+to send the TDREPORT to QE and receive the Quote.
 
-Unfortunately I do not understand the cause of the problem.
-I do not see any bugs in my patch.
-I'm using an existing API, mem_cgroup_from_obj(), to find the memory cgroup used
-to account for the specified object.
-In particular, in the current case, I wanted to get the memory cgroup of the
-specified network namespace by the name taken from for_each_net(). 
-The first object in this list is the static structure unit_net
+Also note that explicit access permissions are not enforced in this
+driver because the quote and measurements are not a secret. However
+the access permissions of the device node can be used to set any
+desired access policy. The udev default is usually root access
+only.
 
-On x86_64 I can translate its address to page:
+Operations like getting TDREPORT or Quote generation involves sending
+a blob of data as input and getting another blob of data as output. It
+was considered to use a sysfs interface for this, but it doesn't fit
+well into the standard sysfs model for configuring values. It would be
+possible to do read/write on files, but it would need multiple file
+descriptors, which would be somewhat messy. IOCTLs seems to be the best
+fitting and simplest model for this use case. Also, the REPORTDATA used
+in TDREPORT generation can possibly come from attestation service to
+uniquely verify the Quote (like per instance verification). In such
+case, since REPORTDATA is a secret, using sysfs to share it is insecure
+compared to sending it via IOCTL.
 
-crash> p &init_net
-$1 = (struct net *) 0xffffffff90c7bdc0 <init_net>
-crash> vtop 0xffffffff90c7bdc0
-VIRTUAL           PHYSICAL        
-ffffffff90c7bdc0  402c7bdc0       
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Acked-by: Kai Huang <kai.huang@intel.com>
+Acked-by: Wander Lairson Costa <wander@redhat.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+---
+ arch/x86/coco/tdx/Makefile      |   2 +-
+ arch/x86/coco/tdx/attest.c      | 118 ++++++++++++++++++++++++++++++++
+ arch/x86/include/uapi/asm/tdx.h |  42 ++++++++++++
+ 3 files changed, 161 insertions(+), 1 deletion(-)
+ create mode 100644 arch/x86/coco/tdx/attest.c
+ create mode 100644 arch/x86/include/uapi/asm/tdx.h
 
-PGD DIRECTORY: ffffffff8fe10000
-PAGE DIRECTORY: 401e15067
-   PUD: 401e15ff0 => 401e16063
-   PMD: 401e16430 => 8000000402c000e3
-  PAGE: 402c00000  (2MB)
-
-      PTE         PHYSICAL   FLAGS
-8000000402c000e3  402c00000  (PRESENT|RW|ACCESSED|DIRTY|PSE|NX)
-
-      PAGE        PHYSICAL      MAPPING       INDEX CNT FLAGS
-fffff227d00b1ec0 402c7b000                0        0  1 17ffffc0001000 reserved
-
-However, as far as I understand this does not work for arm64.
-Could you please help me to understand what is wrong here?
-
-Below are:
- link to my patch:
-https://lore.kernel.org/all/20220603182442.63750C385B8@smtp.kernel.org/
- and the quote of my investigation of similar report:
-https://lore.kernel.org/all/Yp4F6n2Ie32re7Ed@qian/
-
-> virt_to_phys used for non-linear address: ffffd8efe2d2fe00 (init_net)
->  WARNING: CPU: 87 PID: 3170 at arch/arm64/mm/physaddr.c:12 __virt_to_phys
-...
->  Call trace:
->   __virt_to_phys
->   mem_cgroup_from_obj
->   __register_pernet_operations
-
-@@ -1143,7 +1144,13 @@ static int __register_pernet_operations(struct list_head *list,
-  		 * setup_net() and cleanup_net() are not possible.
-		 */
-		for_each_net(net) {
-+			struct mem_cgroup *old, *memcg;
+diff --git a/arch/x86/coco/tdx/Makefile b/arch/x86/coco/tdx/Makefile
+index 46c55998557d..d2db3e6770e5 100644
+--- a/arch/x86/coco/tdx/Makefile
++++ b/arch/x86/coco/tdx/Makefile
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0
+ 
+-obj-y += tdx.o tdcall.o
++obj-y += tdx.o tdcall.o attest.o
+diff --git a/arch/x86/coco/tdx/attest.c b/arch/x86/coco/tdx/attest.c
+new file mode 100644
+index 000000000000..24db0bad4923
+--- /dev/null
++++ b/arch/x86/coco/tdx/attest.c
+@@ -0,0 +1,118 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * attest.c - TDX guest attestation interface driver.
++ *
++ * Implements user interface to trigger attestation process.
++ *
++ * Copyright (C) 2022 Intel Corporation
++ *
++ */
 +
-+			memcg = mem_cgroup_or_root(get_mem_cgroup_from_obj(net));   <<<<  Here
-+			old = set_active_memcg(memcg);
- 			error = ops_init(ops, net);
-+			set_active_memcg(old);
-+			mem_cgroup_put(memcg);
-...
-+static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
++#define pr_fmt(fmt) "x86/tdx: attest: " fmt
++
++#include <linux/miscdevice.h>
++#include <linux/mm.h>
++#include <linux/io.h>
++#include <asm/tdx.h>
++#include <uapi/asm/tdx.h>
++
++#define DRIVER_NAME "tdx-attest"
++
++/* TDREPORT module call leaf ID */
++#define TDX_GET_REPORT			4
++
++static struct miscdevice miscdev;
++
++static long tdx_get_report(void __user *argp)
 +{
-+	struct mem_cgroup *memcg;
++	void *reportdata = NULL, *tdreport = NULL;
++	long ret;
 +
-+	rcu_read_lock();
-+	do {
-+		memcg = mem_cgroup_from_obj(p); <<<<
-+	} while (memcg && !css_tryget(&memcg->css));
-...
-struct mem_cgroup *mem_cgroup_from_obj(void *p)
-{
-        struct folio *folio;
++	/* Allocate buffer space for REPORTDATA */
++	reportdata = kmalloc(TDX_REPORTDATA_LEN, GFP_KERNEL);
++	if (!reportdata)
++		return -ENOMEM;
++
++	/* Allocate buffer space for TDREPORT */
++	tdreport = kmalloc(TDX_REPORT_LEN, GFP_KERNEL);
++	if (!tdreport) {
++		ret = -ENOMEM;
++		goto out;
++	}
++
++	/* Copy REPORTDATA from the user buffer */
++	if (copy_from_user(reportdata, argp, TDX_REPORTDATA_LEN)) {
++		ret = -EFAULT;
++		goto out;
++	}
++
++	/*
++	 * Generate TDREPORT using "TDG.MR.REPORT" TDCALL.
++	 *
++	 * Get the TDREPORT using REPORTDATA as input. Refer to
++	 * section 22.3.3 TDG.MR.REPORT leaf in the TDX Module 1.0
++	 * Specification for detailed information.
++	 */
++	ret = __tdx_module_call(TDX_GET_REPORT, virt_to_phys(tdreport),
++				virt_to_phys(reportdata), 0, 0, NULL);
++	if (ret) {
++		pr_debug("TDREPORT TDCALL failed, status:%lx\n", ret);
++		ret = -EIO;
++		goto out;
++	}
++
++	/* Copy TDREPORT back to the user buffer */
++	if (copy_to_user(argp, tdreport, TDX_REPORT_LEN))
++		ret = -EFAULT;
++
++out:
++	kfree(reportdata);
++	kfree(tdreport);
++	return ret;
++}
++
++static long tdx_attest_ioctl(struct file *file, unsigned int cmd,
++			     unsigned long arg)
++{
++	void __user *argp = (void __user *)arg;
++	long ret = -EINVAL;
++
++	switch (cmd) {
++	case TDX_CMD_GET_REPORT:
++		ret = tdx_get_report(argp);
++		break;
++	default:
++		pr_debug("cmd %d not supported\n", cmd);
++		break;
++	}
++
++	return ret;
++}
++
++static const struct file_operations tdx_attest_fops = {
++	.owner		= THIS_MODULE,
++	.unlocked_ioctl	= tdx_attest_ioctl,
++	.llseek		= no_llseek,
++};
++
++static int __init tdx_attestation_init(void)
++{
++	int ret;
++
++	/* Make sure we are in a valid TDX platform */
++	if (!cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
++		return -EIO;
++
++	miscdev.name = DRIVER_NAME;
++	miscdev.minor = MISC_DYNAMIC_MINOR;
++	miscdev.fops = &tdx_attest_fops;
++
++	ret = misc_register(&miscdev);
++	if (ret) {
++		pr_err("misc device registration failed\n");
++		return ret;
++	}
++
++	return 0;
++}
++device_initcall(tdx_attestation_init)
+diff --git a/arch/x86/include/uapi/asm/tdx.h b/arch/x86/include/uapi/asm/tdx.h
+new file mode 100644
+index 000000000000..8b57dea67eab
+--- /dev/null
++++ b/arch/x86/include/uapi/asm/tdx.h
+@@ -0,0 +1,42 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef _UAPI_ASM_X86_TDX_H
++#define _UAPI_ASM_X86_TDX_H
++
++#include <linux/types.h>
++#include <linux/ioctl.h>
++
++/* Length of the REPORTDATA used in TDG.MR.REPORT TDCALL */
++#define TDX_REPORTDATA_LEN		64
++
++/* Length of TDREPORT used in TDG.MR.REPORT TDCALL */
++#define TDX_REPORT_LEN			1024
++
++/**
++ * struct tdx_report_req: Get TDREPORT using REPORTDATA as input.
++ *
++ * @reportdata : User-defined 64-Byte REPORTDATA to be included into
++ *		 TDREPORT. Typically it can be some nonce provided by
++ *		 attestation service, so the generated TDREPORT can be
++ *		 uniquely verified.
++ * @tdreport   : TDREPORT output from TDCALL[TDG.MR.REPORT] of size
++ *		 TDX_REPORT_LEN.
++ *
++ * Used in TDX_CMD_GET_REPORT IOCTL request.
++ */
++struct tdx_report_req {
++	union {
++		__u8 reportdata[TDX_REPORTDATA_LEN];
++		__u8 tdreport[TDX_REPORT_LEN];
++	};
++};
++
++/*
++ * TDX_CMD_GET_REPORT - Get TDREPORT using TDCALL[TDG.MR.REPORT]
++ *
++ * Return 0 on success, -EIO on TDCALL execution failure, and
++ * standard errno on other general error cases.
++ *
++ */
++#define TDX_CMD_GET_REPORT		_IOWR('T', 0x01, struct tdx_report_req)
++
++#endif /* _UAPI_ASM_X86_TDX_H */
+-- 
+2.25.1
 
-        if (mem_cgroup_disabled())
-                return NULL;
-
-        folio = virt_to_folio(p); <<<< here
-...
-static inline struct folio *virt_to_folio(const void *x)
-{
-        struct page *page = virt_to_page(x); <<< here
-
-... (arm64)
-#define virt_to_page(x)         pfn_to_page(virt_to_pfn(x))  
-...
-#define virt_to_pfn(x)          __phys_to_pfn(__virt_to_phys((unsigned long)(x)))
-...
-phys_addr_t __virt_to_phys(unsigned long x)
-{
-        WARN(!__is_lm_address(__tag_reset(x)),
-             "virt_to_phys used for non-linear address: %pK (%pS)\n",
-...
-virt_to_phys used for non-linear address: ffffd8efe2d2fe00 (init_net)
-
-Thank you,
-	Vasily Averin
