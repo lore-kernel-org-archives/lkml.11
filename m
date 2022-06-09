@@ -2,76 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F148CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:56:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD35DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343988AbiFIO4V (ORCPT
+        id S1344028AbiFIO42 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 10:56:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36980 "EHLO
+        Thu, 9 Jun 2022 10:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343903AbiFIO4T (ORCPT
+        with ESMTP id S1344012AbiFIO40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 10:56:19 -0400
-Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1855938ACAA;
-        Thu,  9 Jun 2022 07:56:16 -0700 (PDT)
-Received: by mail-il1-f180.google.com with SMTP id f7so18931849ilr.5;
-        Thu, 09 Jun 2022 07:56:15 -0700 (PDT)
+        Thu, 9 Jun 2022 10:56:26 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2720C39182B
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 07:56:24 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-31336535373so92977127b3.2
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 07:56:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0+SkCjGgZBFq5wRCXTYfFTyaGhOAcbR2Sdoh6LQhmUA=;
+        b=deUfDUG4RR9z3kerucIqTXhqCeGsbHnfHtdvw5TsJVYFknetJ/w80Mv9kBz5l4wex9
+         TssewgR73O/IyB/u1mxjbxvVfqyOyYF82MCbjOeauw6zFo7MJimse2lx811joMZtXTdC
+         uT5XfiXo74nBdAcht78tvAUnApid/SMJhbV+Nr+EedCSPzCr3MTOd8EP9AmTLlsnhGck
+         znW1PntgjNv4SDv5OQvubmFMVhj/M7k5WoovioAqVoC/pkPL9GeBmYIXDknX5bKByQzG
+         isj398VB6w8UihJLCkMJNEXGeGaR/Pfe/bXeUjDzdAAissGD1HmQ0PWrAQE6T2NwCeIX
+         Z0+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iQZHh4HZrb6UztaIZM6VI0Jf69XnT1r33At+ff78LYo=;
-        b=oSkzThKrZjHXD+pj/MitsccacFqFTyHjZXhBA0ALSG9lH/zIQXOOUDjBw+6Ie5JIVx
-         txk/D+jJvpWL2b1WUBDJaOKhZAHnVl6r4n0Ck8L+CpQrF6n2QRj+iPOD8q6jrZb4w7eP
-         sTPIEpzEHYsrWk896iDfYt/HwUUXhhY/T2stZn/GIr6D6jXJccu0MBtga7u2SwAFTM9n
-         RNRUbmH8C7g1ckrWxAkjom8aD1yIWoGCr3BQzjL66LK7Nevp16vqUPFM3cvX4uFmGwTc
-         RbWdoyxnndJzegGirGhu8dtoMrjbPlr8lpbsghUXLwQqvRoaOtCCq3Pqg51J7Zs9V3Ou
-         v9cQ==
-X-Gm-Message-State: AOAM531ZA4Yic5nfrfZNcfv2YSJry9bvwt3UowhYvrFyf6AaoZ+9UG6W
-        3yxHk34BRyBhl4BwjwlcdW5LybKZiQ==
-X-Google-Smtp-Source: ABdhPJwCIDMYT0AOMlBbbLg6xi3Pq6uRQbAraq0DNrtDKX8HWA6rmSYdetAX+C/X7jiHDNTHkaxrhg==
-X-Received: by 2002:a92:3609:0:b0:2c6:3595:2a25 with SMTP id d9-20020a923609000000b002c635952a25mr22682156ila.233.1654786575297;
-        Thu, 09 Jun 2022 07:56:15 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id y38-20020a029529000000b0032e583132e4sm9569353jah.123.2022.06.09.07.56.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 07:56:14 -0700 (PDT)
-Received: (nullmailer pid 3783357 invoked by uid 1000);
-        Thu, 09 Jun 2022 14:56:13 -0000
-Date:   Thu, 9 Jun 2022 08:56:13 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Taniya Das <quic_tdas@quicinc.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        Stephen Boyd <sboyd@kernel.org>, linux-soc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] dt-bindings: clock: Add resets for LPASS audio
- clock controller for SC7280
-Message-ID: <20220609145613.GA3783291-robh@kernel.org>
-References: <20220604062137.14584-1-quic_tdas@quicinc.com>
- <20220604062137.14584-2-quic_tdas@quicinc.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0+SkCjGgZBFq5wRCXTYfFTyaGhOAcbR2Sdoh6LQhmUA=;
+        b=4pYBXcrYX1KLFSXAfDIrBPQEZs/QA7wVAJrGx2rKwQLTS2/GZ+sJ9DhI09uQ+7jJw4
+         B+yxacj1RHI/uh2zdfRG37QvPizQGeNPsYPZ0Rh7UtSCZna0brpWcJ6HLIhWoDcrppNt
+         P3Mxc0T+eWTVsPDZY+QMKq89FQPUzLIKLbY2hGO1d3NANVsAFITYrJEZ+E80p0808Eb/
+         beR1umqwVmW9dQb0aChv7HIMTlCzC88HEvpXgDRG5LBXcXyqdNVli6hDxFljXf1N6sCs
+         AgBQmM71MelAMYrOJkN66wTtrHMfGUiDBywyfsNlkY5IkFUQuZ4J57zVVENjO9zh8ooQ
+         oKlg==
+X-Gm-Message-State: AOAM5336CeB53Louorqi/+V6+oYZ85ty8HljiveF9Gare9PSb2NCzyAg
+        QGR1s2HPOCc4rHhc0KEoIUH8SqMgDIgUtVFecSRk7Q==
+X-Google-Smtp-Source: ABdhPJz3Thrnbg4dSqU+BoOQp4IJma6lc3JBLsyl9Q3m01mIrlVWxB4SwxkTgcDQXsBg4R1HBpAR8UmcfdarMxR1wx8=
+X-Received: by 2002:a0d:c0c6:0:b0:2ff:bb2:1065 with SMTP id
+ b189-20020a0dc0c6000000b002ff0bb21065mr44984991ywd.512.1654786583034; Thu, 09
+ Jun 2022 07:56:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220604062137.14584-2-quic_tdas@quicinc.com>
+References: <20220609113046.780504-1-elver@google.com> <20220609113046.780504-2-elver@google.com>
+ <CACT4Y+bOFmCyqfSgWS0b5xuwnPqP4V9v2ooJRmFCn0YAtOPmhQ@mail.gmail.com>
+In-Reply-To: <CACT4Y+bOFmCyqfSgWS0b5xuwnPqP4V9v2ooJRmFCn0YAtOPmhQ@mail.gmail.com>
+From:   Marco Elver <elver@google.com>
+Date:   Thu, 9 Jun 2022 16:55:46 +0200
+Message-ID: <CANpmjNNtV_6kgoLv=VX3z_oM6ZEvWJNAOj9z4ADcymqmhc+crw@mail.gmail.com>
+Subject: Re: [PATCH 1/8] perf/hw_breakpoint: Optimize list of per-task breakpoints
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org, x86@kernel.org,
+        linux-sh@vger.kernel.org, kasan-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 04 Jun 2022 11:51:35 +0530, Taniya Das wrote:
-> Add support for LPASS audio clock gating for RX/TX/SWA core bus clocks
-> for SC7280. Update reg property min/max items in YAML schema.
-> 
-> Fixes: 4185b27b3bef ("dt-bindings: clock: Add YAML schemas for LPASS clocks on SC7280").
-> Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
-> ---
->  .../clock/qcom,sc7280-lpasscorecc.yaml        | 19 ++++++++++++++++---
->  .../clock/qcom,lpassaudiocc-sc7280.h          |  5 +++++
->  2 files changed, 21 insertions(+), 3 deletions(-)
-> 
+On Thu, 9 Jun 2022 at 16:29, Dmitry Vyukov <dvyukov@google.com> wrote:
+>
+> On Thu, 9 Jun 2022 at 13:31, Marco Elver <elver@google.com> wrote:
+> >
+> > On a machine with 256 CPUs, running the recently added perf breakpoint
+> > benchmark results in:
+> >
+> >  | $> perf bench -r 30 breakpoint thread -b 4 -p 64 -t 64
+> >  | # Running 'breakpoint/thread' benchmark:
+> >  | # Created/joined 30 threads with 4 breakpoints and 64 parallelism
+> >  |      Total time: 236.418 [sec]
+> >  |
+> >  |   123134.794271 usecs/op
+> >  |  7880626.833333 usecs/op/cpu
+> >
+> > The benchmark tests inherited breakpoint perf events across many
+> > threads.
+> >
+> > Looking at a perf profile, we can see that the majority of the time is
+> > spent in various hw_breakpoint.c functions, which execute within the
+> > 'nr_bp_mutex' critical sections which then results in contention on that
+> > mutex as well:
+> >
+> >     37.27%  [kernel]       [k] osq_lock
+> >     34.92%  [kernel]       [k] mutex_spin_on_owner
+> >     12.15%  [kernel]       [k] toggle_bp_slot
+> >     11.90%  [kernel]       [k] __reserve_bp_slot
+> >
+> > The culprit here is task_bp_pinned(), which has a runtime complexity of
+> > O(#tasks) due to storing all task breakpoints in the same list and
+> > iterating through that list looking for a matching task. Clearly, this
+> > does not scale to thousands of tasks.
+> >
+> > While one option would be to make task_struct a breakpoint list node,
+> > this would only further bloat task_struct for infrequently used data.
+>
+> task_struct already has:
+>
+> #ifdef CONFIG_PERF_EVENTS
+>   struct perf_event_context *perf_event_ctxp[perf_nr_task_contexts];
+>   struct mutex perf_event_mutex;
+>   struct list_head perf_event_list;
+> #endif
+>
+> Wonder if it's possible to use perf_event_mutex instead of the task_sharded_mtx?
+> And possibly perf_event_list instead of task_bps_ht? It will contain
+> other perf_event types, so we will need to test type as well, but on
+> the positive side, we don't need any management of the separate
+> container.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Hmm, yes, I looked at that but then decided against messing the
+perf/core internals. The main issue I have with using perf_event_mutex
+is that we might interfere with perf/core's locking rules as well as
+interfere with other concurrent perf event additions. Using
+perf_event_list is very likely a no-go because it requires reworking
+perf/core as well.
+
+I can already hear Peter shouting, but maybe I'm wrong. :-)
