@@ -2,189 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33CFCC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEFADC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 18:19:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345325AbiFISRy (ORCPT
+        id S1345335AbiFISS7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 14:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
+        Thu, 9 Jun 2022 14:18:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233182AbiFISRu (ORCPT
+        with ESMTP id S233182AbiFISSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 14:17:50 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA7D3B1E8E
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 11:17:49 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id r71so22611659pgr.0
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 11:17:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hU6Im3vb1keVHVlY7TcHchEc2Qgf7bjh4PzS2LAsp0g=;
-        b=UptN1Jr96I8pLOyRcmzeta9p2WveOwoPhhXgeRA7kM9cI69tEGxnQCJAtBRXxvWhlo
-         Rn+Zv7iVzfdyTpBslG9yo/0iXXDJuo5vIHo5/6V0jyzg5tKmcFOEjk9i67KRqMQfc6wx
-         mKFigbgfsH0ZXEoxgFBmfHafg8B4ipYc1phjA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hU6Im3vb1keVHVlY7TcHchEc2Qgf7bjh4PzS2LAsp0g=;
-        b=VrlbVtFgs+5pHGUKNNzwz2NCnoZENvzYSNBJSX4qPv1AWwzPM2akx7IvpN0tmZwNsB
-         r11VPNeyt4lH5vZIOIp0YpKgiD857niqoMxAs9CDiSdylaK7zcZ+EpTPlj3lI2XWAssX
-         pSyt4urEdgivDGLgiUyOD1mm1D1yu4lRD6d+j/litjSEuYYZeuXMbCZOgePzHD0OCBV7
-         7YJ/iU8IWTJRhflR3KGZFdL76PD/BbnkMGkjuoSFfzy5/76CFcGt8sXVG1ys0dyvoFHo
-         aP1RoE8B/0VAVATL4XUGskX4VvxF6kIOaGO3EJ+gv4Y/uliKdaBm2O5tPUsD4qNXj7M1
-         vPGg==
-X-Gm-Message-State: AOAM530fInP4g8VEa9an5OoB0eZKBnJRrAUpTYHEDuZDzbg0QiYzJLbC
-        4napVqWtLE1Cro8QdtQWehPn/1s7ctsIxA==
-X-Google-Smtp-Source: ABdhPJz2vJgUxsLAZYPstcdskHIS7FJzu4/qiYfO60Xj6S8dALbWGNZF34CISl4QlQBx7EQS+mZUBg==
-X-Received: by 2002:a05:6a00:10cc:b0:506:e0:d6c3 with SMTP id d12-20020a056a0010cc00b0050600e0d6c3mr41488331pfu.33.1654798668551;
-        Thu, 09 Jun 2022 11:17:48 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id r14-20020a63ec4e000000b003fb0354c43asm17728049pgj.32.2022.06.09.11.17.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 11:17:48 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH v2 4/7] dt-bindings: drm/bridge: anx7625: Add mode-switch support
-Date:   Thu,  9 Jun 2022 18:09:43 +0000
-Message-Id: <20220609181106.3695103-5-pmalani@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-In-Reply-To: <20220609181106.3695103-1-pmalani@chromium.org>
-References: <20220609181106.3695103-1-pmalani@chromium.org>
+        Thu, 9 Jun 2022 14:18:55 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF143AE822
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 11:18:52 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1654798731;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fO4jbpVApVQcfTPwx9gBa9O1ee1UTzsQG3M5HGLfNnA=;
+        b=Xa3doeBqLfHwMDbSeTb4ZiFXvBmIjIofPaa33n/qvrG/uWiPfuEdLm4uM0UENmXHeStFzI
+        05B2JyJIU0BKhPX6l1OEPU9ljfiSO4uJc8a8Ta+g8lK5davYDlg+I/F1PNsr9pOnGgg1I3
+        Or3TzC6G5wLjJyGaTo+AhgrnmvED5fw=
+From:   andrey.konovalov@linux.dev
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev@googlegroups.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrey Konovalov <andreyknvl@google.com>
+Subject: [PATCH v2 2/3] mm: introduce clear_highpage_kasan_tagged
+Date:   Thu,  9 Jun 2022 20:18:46 +0200
+Message-Id: <4471979b46b2c487787ddcd08b9dc5fedd1b6ffd.1654798516.git.andreyknvl@google.com>
+In-Reply-To: <1ecaffc0a9c1404d4d7cf52efe0b2dc8a0c681d8.1654798516.git.andreyknvl@google.com>
+References: <1ecaffc0a9c1404d4d7cf52efe0b2dc8a0c681d8.1654798516.git.andreyknvl@google.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Analogix 7625 can be used in systems to switch USB Type-C DisplayPort
-alternate mode lane traffic between 2 Type-C ports.
+From: Andrey Konovalov <andreyknvl@google.com>
 
-Update the binding to accommodate this usage by introducing a switch
-property.
+Add a clear_highpage_kasan_tagged() helper that does clear_highpage()
+on a page potentially tagged by KASAN.
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
+This helper is used by the following patch.
+
+Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+
 ---
 
-Changes since v1:
-- Introduced patternProperties for "switch" children (suggested by Krzysztof Kozlowski).
-- Added unevaluatedProperties descriptor (suggested by Krzysztof Kozlowski).
-- Added "address-cells" and "size-cells" properties to "switches".
+Changes v1->v2:
+- Renamed clear_highpage_tagged() to clear_highpage_kasan_tagged().
+- Removed extra empty line in clear_highpage_kasan_tagged().
+---
+ include/linux/highmem.h | 10 ++++++++++
+ mm/page_alloc.c         |  8 ++------
+ 2 files changed, 12 insertions(+), 6 deletions(-)
 
- .../display/bridge/analogix,anx7625.yaml      | 63 +++++++++++++++++++
- 1 file changed, 63 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-index 35a48515836e..cb4a23391244 100644
---- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-+++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-@@ -105,6 +105,33 @@ properties:
-       - port@0
-       - port@1
+diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+index 3af34de54330..70b496bbd2d9 100644
+--- a/include/linux/highmem.h
++++ b/include/linux/highmem.h
+@@ -243,6 +243,16 @@ static inline void clear_highpage(struct page *page)
+ 	kunmap_local(kaddr);
+ }
  
-+  switches:
-+    type: object
-+    description: Set of switches controlling DisplayPort traffic on
-+      outgoing RX/TX lanes to Type C ports.
-+    unevaluatedProperties: false
++static inline void clear_highpage_kasan_tagged(struct page *page)
++{
++	u8 tag;
 +
-+    properties:
-+      "#address-cells":
-+        const: 1
++	tag = page_kasan_tag(page);
++	page_kasan_tag_reset(page);
++	clear_highpage(page);
++	page_kasan_tag_set(page, tag);
++}
 +
-+      "#size-cells":
-+        const: 0
-+
-+    patternProperties:
-+      'switch@[01]':
-+        $ref: /schemas/usb/typec-switch.yaml#
-+
-+        properties:
-+          reg:
-+            maxItems: 1
-+
-+        required:
-+          - reg
-+
-+    required:
-+      - switch@0
-+
- required:
-   - compatible
-   - reg
-@@ -167,5 +194,41 @@ examples:
-                     };
-                 };
-             };
-+            switches {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+                switch@0 {
-+                    compatible = "typec-switch";
-+                    reg = <0>;
-+                    mode-switch;
-+
-+                    ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
-+                        port@0 {
-+                            reg = <0>;
-+                            anx_typec0: endpoint {
-+                                remote-endpoint = <&typec_port0>;
-+                            };
-+                        };
-+                    };
-+                };
-+                switch@1 {
-+                    compatible = "typec-switch";
-+                    reg = <1>;
-+                    mode-switch;
-+
-+                    ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
-+                        port@0 {
-+                            reg = <0>;
-+                            anx_typec1: endpoint {
-+                                remote-endpoint = <&typec_port1>;
-+                            };
-+                        };
-+                    };
-+                };
-+            };
-         };
-     };
+ #ifndef __HAVE_ARCH_TAG_CLEAR_HIGHPAGE
+ 
+ static inline void tag_clear_highpage(struct page *page)
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 66ef8c310dce..76a02255f57c 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -1302,12 +1302,8 @@ static void kernel_init_pages(struct page *page, int numpages)
+ 
+ 	/* s390's use of memset() could override KASAN redzones. */
+ 	kasan_disable_current();
+-	for (i = 0; i < numpages; i++) {
+-		u8 tag = page_kasan_tag(page + i);
+-		page_kasan_tag_reset(page + i);
+-		clear_highpage(page + i);
+-		page_kasan_tag_set(page + i, tag);
+-	}
++	for (i = 0; i < numpages; i++)
++		clear_highpage_kasan_tagged(page + i);
+ 	kasan_enable_current();
+ }
+ 
 -- 
-2.36.1.476.g0c4daa206d-goog
+2.25.1
 
