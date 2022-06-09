@@ -2,134 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E648C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF937C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:56:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343524AbiFIOz4 (ORCPT
+        id S1343734AbiFIO4B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 10:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34784 "EHLO
+        Thu, 9 Jun 2022 10:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241642AbiFIOzv (ORCPT
+        with ESMTP id S1343489AbiFIOzy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 10:55:51 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8850137F051
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 07:55:49 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id x4so12725630pfj.10
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 07:55:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ERqpHHB15unBSTeHEqEMR3UFvMYfb3/GCbSADTuIbHA=;
-        b=AkkQ1lNNSImZ+9IyPfR9U+c4QA+kolWUMUz3suIATQi0Q2AT516ThrNMDTDlnvc7YE
-         /ZhYeyTdnRriWNOxky9myWCfBKm4Sn1EWd1VrHKfPD1yEyHRqP4S1+QQbz/iIxwNIBjn
-         JQ7GFOFH08vZ6a6OHq94eZcvHzamYR/fbyvHYugF2OElBhX86mXkX1rNNeZpILEQFfBF
-         dE7hNmYosDvhTkksbpmcq2gzj7a/JVXxBPr73g/1Daer4sv0xHXFMfv/WYodigfXFFLF
-         X02RmIDCx9AtutgUj4ELTanbechY5vI8hnlVa9VUMddqUEjvdpZtsBkslYmL32KxgL8H
-         lhiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ERqpHHB15unBSTeHEqEMR3UFvMYfb3/GCbSADTuIbHA=;
-        b=Ztutv1Zyy10G/ABaXSy+pgJ5tjiXOCfjAbYoMwqKfuqa/AQ2LfB5oG/eg4QPl/0xqS
-         YX25KOGZrpy7nDyDyJZ+zXOnQjWfZftZiWs6K80O+9GzaqxkHuxX85fCo7Ff3WMRnTYe
-         i6dGizLYcxuQ8UDutgbBGE5soVHEOXcgehgKyTn0y+4cZCuWI4lydbawETHggmbchtUs
-         babmXSxiOeV6wdqfwsSNgZXjmgCfIqNzdn6ZqNvBvwYIyEodbHREfMoTC7XX6/fxie+A
-         yBZ2KAm5A3V2OeKUjfvEwEmG+7mEuec5/uDV9pyJaNvj9WX/89c39L0VPRWd2DelIGUD
-         JwPQ==
-X-Gm-Message-State: AOAM531dROHHysxcnJNaRduV2OLx1OT7xDFXZAXM+5QGHGxKTIBmTjLd
-        sBhresMasRa4Fh3PVWy07opKQQ==
-X-Google-Smtp-Source: ABdhPJy8b0sXVZ9mcdG0q6aDwplLKBr+elC41y+xW9yxBNhIl6TnCHVg9fqa2vtTLTESAaaUZeU85A==
-X-Received: by 2002:aa7:8d0f:0:b0:518:d867:bae8 with SMTP id j15-20020aa78d0f000000b00518d867bae8mr39566603pfe.13.1654786548865;
-        Thu, 09 Jun 2022 07:55:48 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id j188-20020a62c5c5000000b0051c77027d7fsm2702846pfg.218.2022.06.09.07.55.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 07:55:48 -0700 (PDT)
-Date:   Thu, 9 Jun 2022 14:55:44 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Grzegorz Jaszczyk <jaz@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, dmy@semihalf.com,
-        Zide Chen <zide.chen@intel.corp-partner.google.com>,
-        Peter Fang <peter.fang@intel.corp-partner.google.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Ashish Kalra <ashish.kalra@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Pratik Vishwakarma <Pratik.Vishwakarma@amd.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sachi King <nakato@nakato.io>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        David Dunn <daviddunn@google.com>,
-        Wei Wang <wei.w.wang@intel.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        "open list:KERNEL VIRTUAL MACHINE (KVM)" <kvm@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        "open list:ACPI" <linux-acpi@vger.kernel.org>,
-        "open list:HIBERNATION (aka Software Suspend, aka swsusp)" 
-        <linux-pm@vger.kernel.org>
-Subject: Re: [PATCH 1/2] x86: notify hypervisor about guest entering s2idle
- state
-Message-ID: <YqIJ8HtdqnoVzfQD@google.com>
-References: <20220609110337.1238762-1-jaz@semihalf.com>
- <20220609110337.1238762-2-jaz@semihalf.com>
+        Thu, 9 Jun 2022 10:55:54 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90DDF37F906;
+        Thu,  9 Jun 2022 07:55:52 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 4BFC121FA9;
+        Thu,  9 Jun 2022 14:55:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1654786551; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OP+FCzdv75xf3AHqKnJ+4LChpmPuksRBqF0JcYhkehA=;
+        b=SQObC06khT/SS84YZt1lyljm9Cr5+NeogHGlZxt5pxfF9ZvnQLukKnj55bh+5fUCYBr7Yi
+        NlraG861F/YQs96MkzjDx/3/U+FfUtp5HlV7liTe3y13/Ld9SWoy9qp1WgypBmB1npDRMw
+        KIkohhqcvxF2/4K0d+30WALHcLZjlZg=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E70FD13A8C;
+        Thu,  9 Jun 2022 14:55:50 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id OFs0N/YJomK9fAAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Thu, 09 Jun 2022 14:55:50 +0000
+Date:   Thu, 9 Jun 2022 16:55:49 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Tadeusz Struk <tadeusz.struk@linaro.org>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        0day robot <lkp@intel.com>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, cgroups@vger.kernel.org,
+        lkp@lists.01.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        stable@vger.kernel.org,
+        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
+Subject: Re: [cgroup] 3c87862ca1:
+ WARNING:at_kernel/softirq.c:#__local_bh_enable_ip
+Message-ID: <20220609145549.GA28484@blackbody.suse.cz>
+References: <20220609085641.GB17678@xsang-OptiPlex-9020>
+ <b39cdb9c-aa2a-0f49-318b-8632b2989433@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220609110337.1238762-2-jaz@semihalf.com>
+In-Reply-To: <b39cdb9c-aa2a-0f49-318b-8632b2989433@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022, Grzegorz Jaszczyk wrote:
-> +9. KVM_HC_SYSTEM_S2IDLE
-> +------------------------
-> +
-> +:Architecture: x86
-> +:Status: active
-> +:Purpose: Notify the hypervisor that the guest is entering s2idle state.
+Hello Tadeusz.
 
-What about exiting s2idle?  E.g.
+On Thu, Jun 09, 2022 at 07:30:41AM -0700, Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
+> Are you interested in fixing this at syzbot issue all?
 
-  1. VM0 enters s2idle
-  2. host notes that VM0 is in s2idle
-  3. VM0 exits s2idle
-  4. host still thinks VM0 is in s2idle
-  5. VM1 enters s2idle
-  6. host thinks all VMs are in s2idle, suspends the system
+The (original) syzbot report is conditioned by allocation failure that's
+unlikely under normal conditions (AFAIU). Hence I don't treat it extra
+high urgent.
+OTOH, it's interesting and it points to some disparity worth fixing --
+so I try helping (as time permits, so far I can only run the reproducers
+via the syzbot).
 
-> +static void s2idle_hypervisor_notify(void)
-> +{
-> +	if (static_cpu_has(X86_FEATURE_HYPERVISOR))
-> +		kvm_hypercall0(KVM_HC_SYSTEM_S2IDLE);
+> Do you have any more feedback on this?
 
-Checking the HYPERVISOR flag is not remotely sufficient.  The hypervisor may not
-be KVM, and if it is KVM, it may be an older version of KVM that doesn't support
-the hypercall.  The latter scenario won't be fatal unless KVM has been modified,
-but blindly doing a hypercall for a different hypervisor could have disastrous
-results, e.g. the registers ABIs are different, so the above will make a random
-request depending on what is in other GPRs.
+Ad the patch v2 with spinlock per css -- that looks like an overkill to
+me, I didn't look deeper into it.
 
-The bigger question is, why is KVM involved at all?  KVM is just a dumb pipe out
-to userspace, and not a very good one at that.  There are multiple well established
-ways to communicate with the VMM without custom hypercalls.
+Ad the in-thread patch with ancestry css_get(), the ->parent ref:
+  - is inc'd in init_and_link_css(),
+  - is dec'd in css_free_rwork_fn()
+and thanks to ->online_cnt offlining is ordered (child before parent).
 
-I bet if you're clever this can even be done without any guest changes, e.g. I
-gotta imagine acpi_sleep_run_lps0_dsm() triggers MMIO/PIO with the right ACPI
-configuration.
+Where does your patch dec these ancestry references? (Or why would they
+be missing in the first place?)
+
+Thanks for digging into this!
+Michal
