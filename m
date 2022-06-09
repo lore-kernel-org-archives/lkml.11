@@ -2,84 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEB2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:06:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 371CBC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:08:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245141AbiFIOGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 10:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37590 "EHLO
+        id S244043AbiFIOIz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 10:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244633AbiFIOGh (ORCPT
+        with ESMTP id S244302AbiFIOIw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 10:06:37 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C28F11A05D;
-        Thu,  9 Jun 2022 07:06:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=bKwrWAV5KQ2tI9xJynl5McLGgOGWmZ446v9ndOyiHw4=; b=S1WPS3Hod3YxqEWMXDiAfHYde0
-        yKdU202j9aU6XClMQE7zireIh+deD1DmPr9+Zqohr8dITdzKoHcMl4FnUtzfTK5SQ6s15f7XpPYZ7
-        6a4sPFGiE9K1JO2jiKRTJErvGrBXOQavUUPzuGHxeOxwJuGJ/YbL8s5o/06ePoK4G8TPdiRvBw/in
-        6b1x2wzwiTn6qtDHJUXhFWxh7o0WrucQFbxqbX6GgacqtRyOobpHOgLJAMv1AbldvlDnVyT89DF+S
-        jQJoyhgT8AXrmhvUYWb0U6UZKFqlH/Su8IxCse5A8cNAGnMz5aSs9Uw1fRaHlEydPk0fefStau+JM
-        x2aFRlYQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nzInj-006OEf-IL; Thu, 09 Jun 2022 14:06:20 +0000
-Message-ID: <098e206c-8c52-747c-6261-e7ef96df2652@infradead.org>
-Date:   Thu, 9 Jun 2022 07:06:12 -0700
+        Thu, 9 Jun 2022 10:08:52 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42BD357107
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 07:08:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654783731; x=1686319731;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=RZ9GC9G4NzHs8ag0KtTu585ebRykJCiuVVNCZInBXc0=;
+  b=PoKOeJ80CLaxPvwnco0U/qLptuJB+P2aNvn5EU0IWEH7Q7eXUpHINjdG
+   2dUPeAx2ccAOCz6dmxg9ZFT+OfeV6QARUETpWGEGCQn7uK3aJOIY+OcHD
+   PZu0W/BZXTHoaD7bKQ4jguzPwmFQKT9psSDm8SG7ACSO67iLo1YBsj5KM
+   z/Ge9SReouB6WOXsZZmHsgKEfFrVCCqUgGJtqzD/UKK4VcWJlUV14VOEj
+   olCe7wNtzMGBZA1itUiKSKtETUk8CpXoqgXe+6++usTi1lhrc7zan7//0
+   CWBxVIwP0kG6pH7lMSMgJbvMpBoepiQeCLYcylJTMHISIFFbZWYGZRnjx
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="274816114"
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="274816114"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 07:08:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
+   d="scan'208";a="671331825"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 09 Jun 2022 07:08:35 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nzIpv-000G3F-0b;
+        Thu, 09 Jun 2022 14:08:35 +0000
+Date:   Thu, 9 Jun 2022 22:07:54 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [vireshk-pm:opp/clk 48/48] drivers/opp/core.c:430:6: warning: no
+ previous prototype for function '_invalid_freq_op'
+Message-ID: <202206092215.7H70yWMv-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH V4 4/7] soc: imx: add i.MX93 SRC power domain driver
-Content-Language: en-US
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, sboyd@kernel.org,
-        mturquette@baylibre.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de
-Cc:     aisheng.dong@nxp.com, l.stach@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Peng Fan <peng.fan@nxp.com>
-References: <20220609125100.3496633-1-peng.fan@oss.nxp.com>
- <20220609125100.3496633-5-peng.fan@oss.nxp.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220609125100.3496633-5-peng.fan@oss.nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git opp/clk
+head:   3c6c953fd159e8e0a31b2b0ba71f6e783a183b81
+commit: 3c6c953fd159e8e0a31b2b0ba71f6e783a183b81 [48/48] OPP: Allow multiple clocks for a device
+config: arm64-randconfig-r012-20220609 (https://download.01.org/0day-ci/archive/20220609/202206092215.7H70yWMv-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 971e13d69e3e7b687213fef22952be6a328c426c)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git/commit/?id=3c6c953fd159e8e0a31b2b0ba71f6e783a183b81
+        git remote add vireshk-pm https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git
+        git fetch --no-tags vireshk-pm opp/clk
+        git checkout 3c6c953fd159e8e0a31b2b0ba71f6e783a183b81
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/opp/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/opp/core.c:430:6: warning: no previous prototype for function '_invalid_freq_op' [-Wmissing-prototypes]
+   bool _invalid_freq_op(struct opp_table *opp_table)
+        ^
+   drivers/opp/core.c:430:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   bool _invalid_freq_op(struct opp_table *opp_table)
+   ^
+   static 
+   drivers/opp/core.c:1635:43: warning: variable 'clk_size' set but not used [-Wunused-but-set-variable]
+           int supply_count, supply_size, icc_size, clk_size;
+                                                    ^
+   2 warnings generated.
 
 
-On 6/9/22 05:50, Peng Fan (OSS) wrote:
-> diff --git a/drivers/soc/imx/Kconfig b/drivers/soc/imx/Kconfig
-> index a840494e849a..5bfc1dfea28b 100644
-> --- a/drivers/soc/imx/Kconfig
-> +++ b/drivers/soc/imx/Kconfig
-> @@ -20,4 +20,14 @@ config SOC_IMX8M
->  	  support, it will provide the SoC info like SoC family,
->  	  ID and revision etc.
->  
-> +config SOC_IMX9
-> +	tristate "i.MX9 SoC family support"
-> +	depends on ARCH_MXC || COMPILE_TEST
-> +	default ARCH_MXC && ARM64
-> +	select SOC_BUS
-> +	select PM_GENERIC_DOMAINS
-> +	help
-> +	  If you say yes here you get support for the NXP i.MX9 family
-> +	  support.
+vim +/_invalid_freq_op +430 drivers/opp/core.c
 
-One too many "support". Maybe:
-
-> +	help
-> +	  If you say yes here you get support for the NXP i.MX9 SoC family.
-
-
+   428	
+   429	/* Helpers for invalid operations */
+ > 430	bool _invalid_freq_op(struct opp_table *opp_table)
+   431	{
+   432		return WARN_ON(opp_table->clk_count != 1);
+   433	}
+   434	
 
 -- 
-~Randy
+0-DAY CI Kernel Test Service
+https://01.org/lkp
