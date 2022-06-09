@@ -2,120 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAECC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 21:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D5FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 21:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234774AbiFIVND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 17:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47310 "EHLO
+        id S233972AbiFIVTy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 17:19:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345583AbiFIVMz (ORCPT
+        with ESMTP id S229844AbiFIVTw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 17:12:55 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0722E26D8AD
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 14:12:54 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id g17-20020a9d6491000000b0060c0f0101ffso6005334otl.7
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 14:12:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+w8VVwED6Dp8wTgVB+vZ7Un8RsUPAYrcjHRsKAD4xYo=;
-        b=InsJbxZvLSkW6zLt3p6dpNfxY2n8892EJhnqGHT9ypiLAMtlGyFQTSMqKwKgDgDjV5
-         iXKFqQTPl1XJHrEeBYg0+0rGmHZiRgZK/mMTrd5PdOWXVoLP8FtsG/q8peJpbJ2BcYy1
-         7vOUIrm7WI+Mwr66LkywqKxeM8wRrdIToCRaw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+w8VVwED6Dp8wTgVB+vZ7Un8RsUPAYrcjHRsKAD4xYo=;
-        b=X217SyJZFD83itx0hRK8nWqXkLPGJcdgRG7GdsWNUpMEwP2RtHw7San9mYlcdhaOh7
-         ZpqXcCTbW1D8gEQp2RzVG6f51e3oHs7hplsXhGIXF1YVlTjZTFAnvaZxIZlFot5aGqlx
-         gtIPB2J3+wKRODN5er5QuJk6WQsKoI6jbSzg+ZC/OmpM39g6UNG54h/lMSU+Vk5YseFY
-         fKZX/ecDNOz8vtESfcmuJkpepUpY7o+zAg3krZzdOoKp9Aqcgi41v0zwzdBh2wBVS2xo
-         8SNc5wPPHk0hJDbGurIHGPPvsDMTM3XTgp75LbQFOJ3CYh5ke2/iajp4TpuNvuhkzzQ4
-         IA9w==
-X-Gm-Message-State: AOAM530hL9aKHGnOHmAd3eEjko9BT3h3HHT2P4IPVLYfLGPjkpVY2yxX
-        ZsXzY7IygvyOic+Kq4Mp6uG1bhSLOvXQPA==
-X-Google-Smtp-Source: ABdhPJyNQ0HXAQ4Z6PJBiKgrnpq9DxaLq1ka8Z5MjlwseLsdKqrTZSLQJ3UbUlYFLUJPgSLmW/zZDQ==
-X-Received: by 2002:a05:6830:1e89:b0:60c:1c6d:476b with SMTP id n9-20020a0568301e8900b0060c1c6d476bmr3975832otr.288.1654809173354;
-        Thu, 09 Jun 2022 14:12:53 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id lc15-20020a056871418f00b000f5eb6b409bsm10939453oab.45.2022.06.09.14.12.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jun 2022 14:12:52 -0700 (PDT)
-Subject: Re: [PATCH] selftests: make use of GUP_TEST_FILE macro
-To:     Joel Savitz <jsavitz@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, Nico Pache <npache@redhat.com>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220609203217.3206247-1-jsavitz@redhat.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <cd8ca757-b041-cc3b-75af-eef20df65019@linuxfoundation.org>
-Date:   Thu, 9 Jun 2022 15:12:51 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Thu, 9 Jun 2022 17:19:52 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FF195DF3
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 14:19:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654809591; x=1686345591;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=gfyhXXo27GkQGMxpWCd1bH5lESB+He+9oYSHM0JWOqg=;
+  b=DAplvBRxB568yidd5cljGvdHwIym8vdNcfSLW4YFkZldM7jv8/XTDAoZ
+   TX2PBBHit7cdWhKQ5PSbvrHM06DZgHpnoNrm6R3lijQjfwI2Bl3Kujqb7
+   RGb7y8VDpkr0pI+unVVdOI7rgC2Zy5PfFaexKDj/uyke/ABNjwVUMkCru
+   Oj8li5TwuQznKZh5a1aVjtWFg1yL1743T60LxLXEawhTAjGS7wdlQhLUf
+   pqNdGuNzA8jMLLbud1pc25k7CymKsPVIiC5lpKNqWjCqRRNiQNFp2MuDf
+   zaBRwaao7Nk9AM8hx6zoUWQskyi5B0kRmJp3GFWm89ElmWaNhfip6C6DH
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="277452137"
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
+   d="scan'208";a="277452137"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 14:19:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
+   d="scan'208";a="908539139"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 09 Jun 2022 14:19:49 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nzPZF-000GOy-8c;
+        Thu, 09 Jun 2022 21:19:49 +0000
+Date:   Fri, 10 Jun 2022 05:19:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:tiwai/sound/test/ctl-xarray 8/8] ERROR: modpost:
+ "xa_store_range" [sound/core/snd.ko] undefined!
+Message-ID: <202206100538.Gz40sURP-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220609203217.3206247-1-jsavitz@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/9/22 2:32 PM, Joel Savitz wrote:
-> Commit 17de1e559cf1 ("selftests: clarify common error when running
-> gup_test") had most of its hunks dropped due to a conflict with another
-> patch accepted into Linux around the same time that implemented the same
-> behavior as a subset of other changes.
-> 
-> However, the remaining hunk defines the GUP_TEST_FILE macro without
-> making use of it. This patch makes use of the macro in the two relevant
-> places.
-> 
-> Furthermore, the above mentioned commit's log message erroneously describes
-> the changes that were dropped from the patch.
-> 
-> This patch corrects the record.
-> 
-> Fixes: 17de1e559cf1 ("selftests: clarify common error when running gup_test")
-> 
-> Signed-off-by: Joel Savitz <jsavitz@redhat.com>
-> ---
->   tools/testing/selftests/vm/gup_test.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/vm/gup_test.c b/tools/testing/selftests/vm/gup_test.c
-> index 6bb36ca71cb5..a309876d832f 100644
-> --- a/tools/testing/selftests/vm/gup_test.c
-> +++ b/tools/testing/selftests/vm/gup_test.c
-> @@ -209,7 +209,7 @@ int main(int argc, char **argv)
->   	if (write)
->   		gup.gup_flags |= FOLL_WRITE;
->   
-> -	gup_fd = open("/sys/kernel/debug/gup_test", O_RDWR);
-> +	gup_fd = open(GUP_TEST_FILE, O_RDWR);
->   	if (gup_fd == -1) {
->   		switch (errno) {
->   		case EACCES:
-> @@ -224,7 +224,7 @@ int main(int argc, char **argv)
->   			printf("check if CONFIG_GUP_TEST is enabled in kernel config\n");
->   			break;
->   		default:
-> -			perror("failed to open /sys/kernel/debug/gup_test");
-> +			perror("failed to open " GUP_TEST_FILE);
->   			break;
->   		}
->   		exit(KSFT_SKIP);
-> 
+tree:   https://github.com/ammarfaizi2/linux-block tiwai/sound/test/ctl-xarray
+head:   2abf12b6cfb00c1904dc99425ad19a6c03a1fef3
+commit: 2abf12b6cfb00c1904dc99425ad19a6c03a1fef3 [8/8] ALSA: control: Use xarray for faster lookups
+config: hexagon-randconfig-r041-20220609 (https://download.01.org/0day-ci/archive/20220610/202206100538.Gz40sURP-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 971e13d69e3e7b687213fef22952be6a328c426c)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/2abf12b6cfb00c1904dc99425ad19a6c03a1fef3
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block tiwai/sound/test/ctl-xarray
+        git checkout 2abf12b6cfb00c1904dc99425ad19a6c03a1fef3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
 
-Thank you for finding and fixing the problem.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
-thanks,
--- Shuah
+>> ERROR: modpost: "xa_store_range" [sound/core/snd.ko] undefined!
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
