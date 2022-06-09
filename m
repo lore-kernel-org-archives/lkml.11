@@ -2,139 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD97CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 17:08:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBE3AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 17:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344929AbiFIRIJ (ORCPT
+        id S1344039AbiFIRKa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 13:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42000 "EHLO
+        Thu, 9 Jun 2022 13:10:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343765AbiFIRIE (ORCPT
+        with ESMTP id S237194AbiFIRK0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 13:08:04 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0059112DBD9;
-        Thu,  9 Jun 2022 10:08:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1654794457;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=kGZmmOADn0EKx1aFs3YZdMQLcwtTt5OJKjbF5f+Rez0=;
-    b=JjDiEl1F3iWYsjzzx1Y3CxkcU62MDCi+eUrW55ZHZT3AuzZifhN8sJ2bh8RaYw93gV
-    X7IJyWbuXU3V15njIAffIS2bkkwihgt8qk+RLm7Ip8ryFJSRfqosYksOHrJvqfOocKY6
-    wEzsKnRfAlmeCAQ9GKf7JcWaJ22Wcpcwq1YhBfFAKWRp+F3xlg1aXVGL7J6V7VsW1Dtp
-    EVuTY3ByedGLBt/90gOizrQwVXyg6ED5NVx7DOlLgBeqKkH2y/PjIpOlG79JDj45ZmX0
-    lCNS8KBC97PCS3E7s/tXSUOKDlWJRCH5lNCW9XmdJDU1yz3ScFI+Ekt/wJs8h1/WAJ4X
-    K/NA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLVrKw5+aY="
-X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 47.45.0 SBL|AUTH)
-    with ESMTPSA id 9056edy59H7aBv1
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Thu, 9 Jun 2022 19:07:36 +0200 (CEST)
-Date:   Thu, 9 Jun 2022 19:07:29 +0200
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Alexander Martinz <amartinz@shiftphones.com>
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Thu, 9 Jun 2022 13:10:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B151FED7BB;
+        Thu,  9 Jun 2022 10:10:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 507FA61A87;
+        Thu,  9 Jun 2022 17:10:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69186C34114;
+        Thu,  9 Jun 2022 17:10:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654794624;
+        bh=3POc+x1Ax4W7ab50VF8IFwayRS48LsWW76soZtcsfyo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=tAJ4UVHbTSfO8QdD9ruMahKyQRcU+J64PAF2AZFhb0tRvrVLVuF7L9L5NXe+9c0v+
+         NyM3W4R+BV4Q1B6A/ZfWMYiuULX32udhDx6HUHmgk3rL0zzYNTnGu2IDFLFwZbiOXU
+         tl1u8vAhYKjljc/kCWpJUQDtjTzrZuBSPwQz3zRsHrpTVcWNGZvfu7uba4BG55UVNP
+         WnKIUvtG5EN1hH9uLuU0vtZIgw6ZCm+s9nG3ZPxmtglAkSJ/Nsgq78VgVYn0HC3b6D
+         3I7WZ1V5PPlrx7Pa4XCh2TxwzTHyQh1WVhs1FtOtHAzf6vn61otoY1xWzg54Qqz8vk
+         zx7oCLSwPZ8Vw==
+Date:   Thu, 9 Jun 2022 12:10:22 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Tyrel Datwyler <tyreld@linux.ibm.com>, linux-pci@vger.kernel.org,
         linux-kernel@vger.kernel.org,
-        Dylan Van Assche <me@dylanvanassche.be>
-Subject: Re: [PATCH 2/2] arm64: dts: qcom/sdm845-shift-axolotl: Add audio
- support
-Message-ID: <YqIo0TJHqCx33NLj@gerhold.net>
-References: <20220609095412.211060-1-amartinz@shiftphones.com>
- <20220609095412.211060-2-amartinz@shiftphones.com>
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH] powerpc/pci: Add config option for using OF 'reg' for
+ PCI domain
+Message-ID: <20220609171022.GA517022@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220609095412.211060-2-amartinz@shiftphones.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220609162725.wu45rrbqo3jyfoi2@pali>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 11:54:12AM +0200, Alexander Martinz wrote:
-> This patch adds audio support for the SHIFT6mq phone.
+On Thu, Jun 09, 2022 at 06:27:25PM +0200, Pali Rohár wrote:
+> On Thursday 09 June 2022 11:22:55 Bjorn Helgaas wrote:
+> > [+cc Guilherme, Michael, Ben (author of 63a72284b159 and PPC folks), thread:
+> > https://lore.kernel.org/r/20220504175718.29011-1-pali@kernel.org]
+> > 
+> > On Fri, May 06, 2022 at 12:33:02AM +0200, Pali Rohár wrote:
+> > > On Thursday 05 May 2022 15:10:01 Tyrel Datwyler wrote:
+> > > > On 5/5/22 02:31, Pali Rohár wrote:
+> > > > > On Thursday 05 May 2022 07:16:40 Christophe Leroy wrote:
+> > > > >> Le 04/05/2022 à 19:57, Pali Rohár a écrit :
+> > > > >>> Since commit 63a72284b159 ("powerpc/pci: Assign fixed PHB
+> > > > >>> number based on device-tree properties"), powerpc kernel
+> > > > >>> always fallback to PCI domain assignment from OF / Device Tree
+> > > > >>> 'reg' property of the PCI controller.
+> > > > >>>
+> > > > >>> PCI code for other Linux architectures use increasing
+> > > > >>> assignment of the PCI domain for individual controllers
+> > > > >>> (assign the first free number), like it was also for powerpc
+> > > > >>> prior mentioned commit.
+> > > > >>>
+> > > > >>> Upgrading powerpc kernels from LTS 4.4 version (which does not
+> > > > >>> contain mentioned commit) to new LTS versions brings a
+> > > > >>> regression in domain assignment.
+> > > > >>
+> > > > >> Can you elaborate why it is a regression ?
+> > > > >> 63a72284b159 That commit says 'no functionnal changes', I'm
+> > > > >> having hard time understanding how a nochange can be a
+> > > > >> regression.
+> > > > > 
+> > > > > It is not 'no functional change'. That commit completely changed
+> > > > > PCI domain assignment in a way that is incompatible with other
+> > > > > architectures and also incompatible with the way how it was done
+> > > > > prior that commit.
+> > > > 
+> > > > I agree that the "no functional change" statement is incorrect.
+> > > > However, for most powerpc platforms it ended up being simply a
+> > > > cosmetic behavior change. As far as I can tell there is nothing
+> > > > requiring domain ids to increase montonically from zero or that
+> > > > each architecture is required to use the same domain numbering
+> > > > scheme.
+> > > 
+> > > That is truth. But it looks really suspicious why domains are not
+> > > assigned monotonically. Some scripts / applications are using PCI
+> > > location (domain:bus:dev:func) for remembering PCI device and domain
+> > > change can cause issue for config files. And some (older) applications
+> > > expects existence of domain zero. In systems without hot plug support
+> > > with small number of domains (e.g. 3) it means that there are always
+> > > domains 0, 1 and 2.
+> > > 
+> > > > Its hard to call this a true regression unless it actually broke
+> > > > something. The commit in question has been in the kernel since 4.8
+> > > > which was released over 5 1/2 years ago.
+> > > 
+> > > I agree, it really depends on how you look at it.
+> > > 
+> > > The important is that lot of people are using LTS versions and are
+> > > doing upgrades when LTS support is dropped. Which for 4.4 now
+> > > happened. So not all smaller or "cosmetic" changes could be detected
+> > > until longer LTS period pass.
+> > > 
+> > > > With all that said looking closer at the code in question I think
+> > > > it is fair to assume that the author only intended this change for
+> > > > powernv and pseries platforms and not every powerpc platform. That
+> > > > change was done to make persistent naming easier to manage in
+> > > > userspace.
+> > > 
+> > > I agree that this behavior change may be useful in some situations
+> > > and I do not object this need.
+> > > 
+> > > > Your change defaults back to the old behavior which will now break
+> > > > both powernv and pseries platforms with regard to hotplugging and
+> > > > persistent naming.
+> > > 
+> > > I was aware of it, that change could cause issues. And that is why I
+> > > added config option for choosing behavior. So users would be able to
+> > > choose what they need.
+> > > 
+> > > > We could properly limit it to powernv and pseries by using
+> > > > ibm,fw-phb-id instead of reg property in the look up that follows
+> > > > a failed ibm,opal-phbid lookup. I think this is acceptable as long
+> > > > as no other powerpc platforms have started using this behavior for
+> > > > persistent naming.
+> > > 
+> > > And what about setting that new config option to enabled by default
+> > > for those series?
+> > > 
+> > > Or is there issue with introduction of the new config option?
+> > > 
+> > > One of the point is that it is really a good idea to have
+> > > similar/same behavior for all linux platforms. And if it cannot be
+> > > enabled by default (for backward compatibility) add at least some
+> > > option, so new platforms can start using it or users can decide to
+> > > switch behavior.
+> > 
+> > This is a powerpc thing so I'm just kibbitzing a little.
+> > 
+> > This basically looks like a new config option to selectively revert
+> > 63a72284b159.  That seems hard to maintain and doesn't seem like
+> > something that needs to be baked into the kernel at compile-time.
+> > 
+> > The 63a72284b159 commit log says persistent NIC names are tied to PCI
+> > domain/bus/dev/fn addresses, which seems like something we should
+> > discourage because we can't predict PCI addresses in general.  I
+> > assume other platforms typically use udev with MAC addresses or
+> > something?
 > 
-> The primary microphone and headphone jack are handled by the
-> SDM845 sound card and WCD9340 codec.
-> 
-> The primary speaker needs to go through the TFA9890 speaker
-> amplifier.
-> 
-> Signed-off-by: Alexander Martinz <amartinz@shiftphones.com>
-> Tested-by: Dylan Van Assche <me@dylanvanassche.be>
-> ---
->  .../boot/dts/qcom/sdm845-shift-axolotl.dts    | 141 ++++++++++++++++++
->  1 file changed, 141 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sdm845-shift-axolotl.dts b/arch/arm64/boot/dts/qcom/sdm845-shift-axolotl.dts
-> index fa72f23ef0c2..8c4967d6d0e3 100644
-> --- a/arch/arm64/boot/dts/qcom/sdm845-shift-axolotl.dts
-> +++ b/arch/arm64/boot/dts/qcom/sdm845-shift-axolotl.dts
-[...]
-> @@ -492,6 +494,19 @@ touchscreen@38 {
->  	};
->  };
->  
-> +&i2c11 {
-> +	status = "okay";
-> +	clock-frequency = <400000>;
-> +
-> +	tfa9890_codec: tfa9890@34 {
+> This is not about ethernet NIC cards only. But affects also WiFi cards
+> (which registers phy dev, not netdev) and also all other PCIe cards
+> which do not have to be network-based. Hence MAC address or udev does
+> not play role there.
 
-Please use "audio-codec@" as suggested in the bindings. Also, I think a
-label such as "speaker_codec: " would make it more obvious that this is
-the speaker. But that's personal preference. :)
+What persistent naming mechanism do other platforms use in those
+cases?
 
-> +		compatible = "nxp,tfa9890";
-> +		reg = <0x34>;
-> +		vddd-supply = <&vreg_s4a_1p8>;
-> +		reset-gpio = <&tlmm 7 0>;
+I forgot to ask before about the actual regression here.  The commit
+log says domain numbers are different, but I don't know the connection
+from there to something failing.  I assume there's some script or
+config file that depends on specific domain numbers?  And that
+dependency is (hopefully) powerpc-specific?
 
-The mainline driver does not support the reset-gpio (it resets via the
-I2C registers instead). Can just drop this.
-
-Alternatively we could document it to the DT schema and describe it here
-for completeness. That way it's already there if someone ever considers
-it necessary for the driver.
-
-> +		#sound-dai-cells = <1>;
-
-Should be <0>. You might want to check your addition with
-"make dtbs_check" to make sure it matches the DT schema. :)
-
-Also, I would recommend adding a "sound-name-prefix". The prefix is used
-for the ALSA mixers which makes it more obvious that they belong to the
-speaker. (See example in DT schema.)
-
-> +	};
-> +};
-> +
->  &ipa {
->  	status = "okay";
->  
-[...]
-> @@ -756,6 +879,24 @@ &venus {
->  	firmware-name = "qcom/sdm845/axolotl/venus.mbn";
->  };
->  
-> +&wcd9340 {
-> +	pinctrl-0 = <&wcd_intr_default>;
-> +	pinctrl-names = "default";
-> +	clock-names = "extclk";
-> +	clocks = <&rpmhcc RPMH_LN_BB_CLK2>;
-> +	reset-gpios = <&tlmm 64 0>;
-
-0 => GPIO_ACTIVE_HIGH
-
-Thanks,
-Stephan
+Bjorn
