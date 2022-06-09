@@ -2,73 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D211EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49BC4C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 09:36:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242126AbiFIJgW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 05:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49220 "EHLO
+        id S242411AbiFIJga convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 05:36:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234852AbiFIJgU (ORCPT
+        with ESMTP id S234695AbiFIJg1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 05:36:20 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E3558E7B;
-        Thu,  9 Jun 2022 02:36:19 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 4DB521FDA8;
-        Thu,  9 Jun 2022 09:36:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1654767378; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VvwjhH9UWKe8FrlHHhosAdnMECDi+CI7dFYYzh8hlOA=;
-        b=rA2U7Q/wkWcXY/kcesb3Wc6YNg2eoiuocD7bBc9TDt6MpgMS958akfsf3KG50j8LOllzNj
-        RLdT0LG7Rpqg6i1Sy/hWGR/zXhLXblNcZTMeLEgFW/FBZBI77+awNU2qClYTlwal1XWtjl
-        KK9eSO1+59Llj1R4qY1Z9yg+Asa4E8U=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 825A62C141;
-        Thu,  9 Jun 2022 09:36:16 +0000 (UTC)
-Date:   Thu, 9 Jun 2022 11:36:15 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     cgel.zte@gmail.com
-Cc:     akpm@linux-foundation.org, oleksandr@natalenko.name,
-        willy@infradead.org, corbet@lwn.net, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-doc@vger.kernel.org,
-        xu xin <xu.xin16@zte.com.cn>
-Subject: Re: [PATCH] mm/ksm: provide global_force to see maximum potential
- merging
-Message-ID: <YqG/Dyj62aDK/3Jr@dhcp22.suse.cz>
-References: <20220609055658.703472-1-xu.xin16@zte.com.cn>
+        Thu, 9 Jun 2022 05:36:27 -0400
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FF52F664;
+        Thu,  9 Jun 2022 02:36:26 -0700 (PDT)
+Received: by mail-qk1-f178.google.com with SMTP id 68so8880071qkk.9;
+        Thu, 09 Jun 2022 02:36:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mjax5gcHpDCOdlHkRO1oWqhUAzsN643izB/R7ubf5Zg=;
+        b=GROSR0qY7htLnU/CvxIvntRBFqMA8mh2r1A5xvco8n0xwUyHh7HbWwpW7OSx7tQq1b
+         PPaFaJZhTOCcrICQNzmLVPGm7vRYnRmXMVpjts2PVQLzbjvKlprKReyXJ6xZCKsq38xt
+         m06HDYn5ODOxFN3ReGIowYxIi9IBZNKn6VOhvM6qrMxvafUsjNZkAW3Z1rxEYo90eDN0
+         8saQdtAuNyKwURlbw8jDXhAheNCTEvr8H1367VRQiB1U0AtZ/i9+8OVWx0/GfmykDb3X
+         lbwBmUMnrkyitTBZ1I1nBsvIiA30LBeb536oDaA6rwtlgfAsABza84qsaLjv58GXoZTE
+         wQ2g==
+X-Gm-Message-State: AOAM5326o9c0RVH04byjbwCMBJQmxQMYEsogr1U+xaKGmjBR2SxUY4bE
+        vFfGzUa/06xbujv+2WFYVmz9OGctHFrDxA==
+X-Google-Smtp-Source: ABdhPJx/ca9U/coJuHsLM/PJtLIRaxpk/GnhEK4le13Re5pQvQjUFaap27v0eGGt8/CTK4GRYQtOkQ==
+X-Received: by 2002:a37:9e08:0:b0:6a6:a23b:9bbd with SMTP id h8-20020a379e08000000b006a6a23b9bbdmr21126085qke.596.1654767385413;
+        Thu, 09 Jun 2022 02:36:25 -0700 (PDT)
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
+        by smtp.gmail.com with ESMTPSA id r23-20020ac85e97000000b00304f98ad3c1sm5146062qtx.29.2022.06.09.02.36.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 02:36:25 -0700 (PDT)
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-313a8a8b95aso987037b3.5;
+        Thu, 09 Jun 2022 02:36:24 -0700 (PDT)
+X-Received: by 2002:a0d:d481:0:b0:30c:44f1:2721 with SMTP id
+ w123-20020a0dd481000000b0030c44f12721mr42235528ywd.283.1654767384522; Thu, 09
+ Jun 2022 02:36:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220609055658.703472-1-xu.xin16@zte.com.cn>
+References: <20220608090850.92735-1-clement.leger@bootlin.com>
+In-Reply-To: <20220608090850.92735-1-clement.leger@bootlin.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 9 Jun 2022 11:36:13 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXACzs8aLgry0ughT4zcU6ZQhL5+SaLPGshXGqNKL88-Q@mail.gmail.com>
+Message-ID: <CAMuHMdXACzs8aLgry0ughT4zcU6ZQhL5+SaLPGshXGqNKL88-Q@mail.gmail.com>
+Subject: Re: [PATCH] ARM: dts: r9a06g032-rzn1d400-db: enable rtc0
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 09-06-22 05:56:58, cgel.zte@gmail.com wrote:
-> From: xu xin <xu.xin16@zte.com.cn>
-> 
-> Up to now, KSM is apparently useful to save memory not just for VM but for
-> normal applications. But upper application developers might not know much
-> about KSM or whether they should use madvise(xxx, MERGEABLE) while there
-> indeed exist a lot of same pages in their apps. Some application developers
-> urgently need the kernel to provide an interface of KSM debugging mode to
-> see the maximum potential merging of the whole system, so the patch is.
+Hi Clément,
 
-I disagree with this. As already discussed in previous proposals of KSM
-related interfaces KSM is a nice tool but it shouldn't be used without
-understanding of all the consequences.
+On Wed, Jun 8, 2022 at 11:10 AM Clément Léger <clement.leger@bootlin.com> wrote:
+> The RZ/N1D-DB board does have a battery to power the RTC. Enable the
+> RTC device on this board.
+>
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 
-Maybe we should be more verbose about how to use KSM properly and also
-describe best practices but I do not think that enable-for-all in any
-form is a good interface.
+Thanks for your patch!
 
-Nack to the interface.
--- 
-Michal Hocko
-SUSE Labs
+> --- a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+> +++ b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+> @@ -31,3 +31,7 @@ &wdt0 {
+>         timeout-sec = <60>;
+>         status = "okay";
+>  };
+> +
+> +&rtc0 {
+> +       status = "okay";
+> +};
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-devel for v5.20, with rtc0 moved up to
+preserve sort order (no need to resend).
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
