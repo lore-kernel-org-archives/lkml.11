@@ -2,109 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20DCEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 00:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A964C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 00:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235796AbiFIAK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 8 Jun 2022 20:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43574 "EHLO
+        id S235824AbiFIAM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 8 Jun 2022 20:12:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235529AbiFIAKV (ORCPT
+        with ESMTP id S229673AbiFIAM4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 8 Jun 2022 20:10:21 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137EC3467E;
-        Wed,  8 Jun 2022 17:10:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654733418; x=1686269418;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=a4P2Gcxk73HDhExF9ALEg8W8RNzRGhGylrPCFfw/tP0=;
-  b=UIl32lTyCoFNcJe0tLk+4DKWd/ztfwZQ+R/BjywYk0TNiVR0W8TPC91P
-   uMhcywBHm91c5ssR2GcD7FTy5FOiLeyNq5aXgJP5DwRJf0u1Az3oTWKHA
-   DZn/bj03az8Nb0FvmJfUHesRgD2HYBGeb+R6SZN3nUdAc7pYoYwxaKKeX
-   BmapWkfS1JMUgEo5AP0f4KqKolgUFWZZ6KrpTZ4leVlBJ+dNSJMCaaFTm
-   DuEAQDlE9+mtk3iihqY20os0QD7GD4aH9iH7BkhICuI08DYUZT5UsxjT4
-   JEBsSJjpyG3vT7ejS8jmOdrPNNhhE0bAqJFue8PeJX1BxNV7/MUca4y8Y
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="260229122"
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="260229122"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 17:10:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="580316768"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga007.jf.intel.com with ESMTP; 08 Jun 2022 17:10:08 -0700
-Received: from rjingar-desk5.amr.corp.intel.com (unknown [10.251.26.11])
-        by linux.intel.com (Postfix) with ESMTP id 62BB3580BE1;
-        Wed,  8 Jun 2022 17:10:08 -0700 (PDT)
-From:   Rajvi Jingar <rajvi.jingar@linux.intel.com>
-To:     rafael.j.wysocki@intel.com, bhelgaas@google.com
-Cc:     rajvi.jingar@linux.intel.com, david.e.box@linux.intel.com,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH v7 1/2] PCI/PM: refactor pci_pm_suspend_noirq()
-Date:   Wed,  8 Jun 2022 17:10:06 -0700
-Message-Id: <20220609001007.533242-1-rajvi.jingar@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 8 Jun 2022 20:12:56 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A37B034676;
+        Wed,  8 Jun 2022 17:12:55 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id x5so24033015edi.2;
+        Wed, 08 Jun 2022 17:12:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d+/fJF2djT1DclZjNPSTPoNHUSOfCcPs6iD3wKEM/T0=;
+        b=jEvOiDBS+YNifNjxyaLVHDF+j7G8V4Nw4YjUEgr6O3/ehWQRDJahNRv1qIqI4RkyU8
+         tFgrUVO0H/dBghITg3LcWXwJVCcaRPV2tLh5BabJcoF730++jgsFt4xSK7m3/5Os2pX5
+         O22HzgzO9c4NjZ6O24NROX5dC7fD2sagaInba+n2zDsF/rAp4PStdG1/ZeMMETCCvebB
+         4ASOSrnI+P0dCZ+9azWEeEoH+sAvdriabmroV3CobwWJMI4U2THTGnqmeM+nZng5sI5C
+         ZbWXSMXZDnleEgrKOX8kZqeOemDmW+MJNb75innj2kRnTlWiVepolEOemyOyF5NH+wMn
+         Yesg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d+/fJF2djT1DclZjNPSTPoNHUSOfCcPs6iD3wKEM/T0=;
+        b=g36x7LmCT5DhDA+mUl67BnBSZ6g3sU4jVb6HVbjcaCkSU9nZGAYoNDyJHf6G7qtVUt
+         6wuvbMVMiQ8tEG9bcQYfWs83ztX6uZyh6ItmD1ScJG3c6S54cJgLPrNOjz5L00l+NWNi
+         OeWYTqIjCSJj27qMf+rRqLU8/BTM1DgM3wKQ4ePnu+UtNWoHS6Blm1q2JXuM+GLyr3Tn
+         TMMzAuTl4lMC/uyT5xIF9SuLBCBKmQf3QDz0GlPWYrGveB92goy+swRBpAuk+cVmtwpP
+         vTLaNjibewz3rWmA9Tnf5Y3V3hBDawsNnQj4zcrqoRAMn9vYvU1zw36O01UcOernm/sM
+         yzKQ==
+X-Gm-Message-State: AOAM532mKZAItQkCtSw5n0FH0wsIQTmw1CKm6ymueRcSQ1XoPkQhE1NT
+        XK8r6qOlsANcfHlFgvObjr2NCZFjh+YaFKtBzjM=
+X-Google-Smtp-Source: ABdhPJwnxHMwfwrtisT2I4w3h9eLchQbIXCVEYfwv8wr1DmS6m2YMxY6ATx90TISPZhEXcwR0lGzkIpJSntkYwMobbM=
+X-Received: by 2002:a05:6402:3895:b0:430:6a14:8ca3 with SMTP id
+ fd21-20020a056402389500b004306a148ca3mr29401064edb.421.1654733574084; Wed, 08
+ Jun 2022 17:12:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220608111221.373833-1-roberto.sassu@huawei.com> <20220608111221.373833-3-roberto.sassu@huawei.com>
+In-Reply-To: <20220608111221.373833-3-roberto.sassu@huawei.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 8 Jun 2022 17:12:41 -0700
+Message-ID: <CAADnVQJ4RCSAeDMqFpF5bQznPQaTWFr=kL7GdssDQuzLof06fg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/3] selftests/bpf: Add test_progs opts for sign-file
+ and kernel priv key + cert
+To:     Roberto Sassu <roberto.sassu@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The state of the device is saved during pci_pm_suspend_noirq(), if it
-has not already been saved, regardless of the skip_bus_pm flag value. So
-skip_bus_pm check is removed before saving the device state.
+On Wed, Jun 8, 2022 at 4:15 AM Roberto Sassu <roberto.sassu@huawei.com> wrote:
+>
+> According to the logs of the eBPF CI, built kernel and tests are copied to
+> a virtual machine to run there.
+>
+> Since a test for a new helper to verify PKCS#7 signatures requires to sign
+> data to be verified, extend test_progs to store in the test_env data
+> structure (accessible by individual tests) the path of sign-file and of the
+> kernel private key and cert.
+>
+> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+> ---
+>  tools/testing/selftests/bpf/test_progs.c | 12 ++++++++++++
+>  tools/testing/selftests/bpf/test_progs.h |  3 +++
+>  2 files changed, 15 insertions(+)
+>
+> diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+> index c639f2e56fc5..90ce2c06a15e 100644
+> --- a/tools/testing/selftests/bpf/test_progs.c
+> +++ b/tools/testing/selftests/bpf/test_progs.c
+> @@ -707,6 +707,8 @@ enum ARG_KEYS {
+>         ARG_TEST_NAME_GLOB_DENYLIST = 'd',
+>         ARG_NUM_WORKERS = 'j',
+>         ARG_DEBUG = -1,
+> +       ARG_SIGN_FILE = 'S',
+> +       ARG_KERNEL_PRIV_CERT = 'C',
+>  };
+>
+>  static const struct argp_option opts[] = {
+> @@ -732,6 +734,10 @@ static const struct argp_option opts[] = {
+>           "Number of workers to run in parallel, default to number of cpus." },
+>         { "debug", ARG_DEBUG, NULL, 0,
+>           "print extra debug information for test_progs." },
+> +       { "sign-file", ARG_SIGN_FILE, "PATH", 0,
+> +         "sign-file path " },
+> +       { "kernel-priv-cert", ARG_KERNEL_PRIV_CERT, "PATH", 0,
+> +         "kernel private key and cert path " },
+>         {},
+>  };
+>
+> @@ -862,6 +868,12 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
+>         case ARG_DEBUG:
+>                 env->debug = true;
+>                 break;
+> +       case ARG_SIGN_FILE:
+> +               env->sign_file_path = arg;
+> +               break;
+> +       case ARG_KERNEL_PRIV_CERT:
+> +               env->kernel_priv_cert_path = arg;
+> +               break;
 
-Signed-off-by: Rajvi Jingar <rajvi.jingar@linux.intel.com>
-Suggested-by: David E. Box <david.e.box@linux.intel.com>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
- v1 -> v2: add comments to the changes
- v2 -> v3: move changelog after "---" marker
- v3 -> v4: add "---" marker after changelog
- v4 -> v5: no change
- v5 -> v6: no change
- v6 -> v7: no change
----
- drivers/pci/pci-driver.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 49238ddd39ee..1f64de3e5280 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -867,20 +867,14 @@ static int pci_pm_suspend_noirq(struct device *dev)
- 		}
- 	}
- 
--	if (pci_dev->skip_bus_pm) {
-+	if (!pci_dev->state_saved) {
-+		pci_save_state(pci_dev);
- 		/*
--		 * Either the device is a bridge with a child in D0 below it, or
--		 * the function is running for the second time in a row without
--		 * going through full resume, which is possible only during
--		 * suspend-to-idle in a spurious wakeup case.  The device should
--		 * be in D0 at this point, but if it is a bridge, it may be
--		 * necessary to save its state.
-+		 * If the device is a bridge with a child in D0 below it, it needs to
-+		 * stay in D0, so check skip_bus_pm to avoid putting it into a
-+		 * low-power state in that case.
- 		 */
--		if (!pci_dev->state_saved)
--			pci_save_state(pci_dev);
--	} else if (!pci_dev->state_saved) {
--		pci_save_state(pci_dev);
--		if (pci_power_manageable(pci_dev))
-+		if (!pci_dev->skip_bus_pm && pci_power_manageable(pci_dev))
- 			pci_prepare_to_sleep(pci_dev);
- 	}
- 
--- 
-2.25.1
-
+That's cumbersome approach to use to force CI and
+users to pass these args on command line.
+The test has to be self contained.
+test_progs should execute it without any additional input.
+For example by having test-only private/public key
+that is used to sign and verify the signature.
