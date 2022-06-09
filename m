@@ -2,124 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A1BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 22:22:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C4ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 22:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345690AbiFIWWA (ORCPT
+        id S1345692AbiFIWWq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 18:22:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36440 "EHLO
+        Thu, 9 Jun 2022 18:22:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345457AbiFIWV4 (ORCPT
+        with ESMTP id S245339AbiFIWWn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 18:21:56 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594B7562CF
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 15:21:50 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id k73-20020a25244c000000b0065ca88b381aso21347625ybk.2
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 15:21:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=yboyFArx2lHvBt01l8NpldAEI3xLVVvkRY3YCO31PQs=;
-        b=E9tSuZ6hKkd5R9UrAClvzMvLuSapw21MRvFh9K5m/Q4W/Ne6NP2WMWfSPzasz8wKZX
-         Mng11d6Obxtbq83lWoSaFsdBiVCu3gb6X9dNoHMi3E7qOKWwZUm9cJAU6WOY5s+S4WcD
-         k0KWGk2jmTkZOAqD94Ix96O/6kgOmQ/r+QpHomefwKvJ5cV0MNofmxceF2lXxoFWF6gg
-         j5Cs7IkuMhKv2Pf+5++JwO5hcoMx6SP3if8FmA4NjIla9U/uK2//v1BfU0Tfe7AV8KrT
-         Ey/sE8DleSJieRPHEDBL1hPn4naIWW02H/aWpnYArbukY4zZLmv4GV2t/e5g12dM+Qzj
-         ZcQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=yboyFArx2lHvBt01l8NpldAEI3xLVVvkRY3YCO31PQs=;
-        b=0yGBmyb+iih8Y+FW33Uo4CsD+f9HPVlTEkeEVJ3MAdK91sn1Krr5NoRjlhgpwfRehJ
-         6SSqaqqv+fsUQ/AMv+9qrszdKb5W5CnddPNzWox2uocBMZFOqiuv9UbwOpEJ4q8qUCpA
-         43o/qxFd0+d/ui6I+STfoP/9Y+8Zurmn244P/uhthFa5/KEC6Qo0g8qpPoblLAQaJVEh
-         XUaYQq9aJjZ/zuUs/RadKldydvGmY0eljdPVE5JyRLtRLjF/IWfdlCv0Flq1WH9rQyBF
-         xBcxiQCOB/AEj+jKd1MODR7hxbvH5vHsCkzPmcDPlayXD2aswjpomGRwfQwVZnprHIZQ
-         D7pw==
-X-Gm-Message-State: AOAM532x8e5PVyEFRb7y10AkVvjSCnZCgS8hkQ0VskARipC3ht6UplWh
-        ympFE/aF7xfNOxxWC0mfO9GCBxOY
-X-Google-Smtp-Source: ABdhPJzx/fiV7355Fpicwsezz0b2tB8XbCEkcbb8KPwyuPviI/0AOw7BwG+AXnNZJgmFqRPAiS2WX3p4fQ==
-X-Received: from fawn.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5795])
- (user=morbo job=sendgmr) by 2002:a81:c248:0:b0:313:3c2c:89cd with SMTP id
- t8-20020a81c248000000b003133c2c89cdmr17003210ywg.175.1654813309307; Thu, 09
- Jun 2022 15:21:49 -0700 (PDT)
-Date:   Thu,  9 Jun 2022 22:16:31 +0000
-In-Reply-To: <20220609221702.347522-1-morbo@google.com>
-Message-Id: <20220609221702.347522-13-morbo@google.com>
-Mime-Version: 1.0
-References: <20220609221702.347522-1-morbo@google.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH 12/12] netfilter: conntrack: use correct format characters
-From:   Bill Wendling <morbo@google.com>
-To:     isanbard@gmail.com
-Cc:     Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Jan Kara <jack@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-mm@kvack.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 9 Jun 2022 18:22:43 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 135F6C3644;
+        Thu,  9 Jun 2022 15:22:43 -0700 (PDT)
+Received: from mercury (unknown [185.209.196.172])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: sre)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id C83A86601752;
+        Thu,  9 Jun 2022 23:22:41 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1654813361;
+        bh=4ojQfcR5z+/HTet3CnjuXgxWI97MSwy0zDx1guio4o4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dbpQyQKM0jn2E52HdL9hUg4E2MXxfmoWAAf56+lpAhywa1pjncgkEn2hvkEeeOJBG
+         rv8+lkUEYIQbcq+8Cm3vjhj7l8yMRW7Xoqg3RRKOTnpzdWwlOfO7SOSrg4R9/LYzr0
+         +N9wI+pIik1xE9Rz9CKIIJdfM/h342lhCSByWbzCS0rX4+qo+6pBJsHi7LDsqZFwSs
+         0S5EZT8+XLwVBs9ePdTx2XVaUqndkElMhfXoWdl/M6LTlENPz424DyECKT8C4Fvq7c
+         8DZ0kIIuHMvjZ1N806aDkU/NGalt3QqE2n0yKBBgPfs+W3uXIKU8ueARckkrnxnhw8
+         qtoLhMbj1WYPA==
+Received: by mercury (Postfix, from userid 1000)
+        id 1DCE110605B9; Fri, 10 Jun 2022 00:22:39 +0200 (CEST)
+Date:   Fri, 10 Jun 2022 00:22:39 +0200
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Zheng Bin <zhengbin13@huawei.com>
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gaochao49@huawei.com, Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH -next] power: supply: ab8500: add missing
+ destroy_workqueue in ab8500_charger_bind
+Message-ID: <20220609222239.5fssqczkdqy4inoz@mercury.elektranox.org>
+References: <20220512093844.1109923-1-zhengbin13@huawei.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="njbu6seuv6gscm5c"
+Content-Disposition: inline
+In-Reply-To: <20220512093844.1109923-1-zhengbin13@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bill Wendling <isanbard@gmail.com>
 
-When compiling with -Wformat, clang emits the following warnings:
+--njbu6seuv6gscm5c
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-net/netfilter/nf_conntrack_helper.c:168:18: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
-                request_module(mod_name);
-                               ^~~~~~~~
+Hi,
 
-Use a string literal for the format string.
+On Thu, May 12, 2022 at 05:38:44PM +0800, Zheng Bin wrote:
+> ab8500_charger_bind misses destroy_workqueue in error path,
+> this patch fixes that.
+>=20
+> Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+> ---
 
-Link: https://github.com/ClangBuiltLinux/linux/issues/378
-Signed-off-by: Bill Wendling <isanbard@gmail.com>
----
- net/netfilter/nf_conntrack_helper.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+LGTM, but adding Linus to Cc and waiting a bit to give him time to
+react.
 
-diff --git a/net/netfilter/nf_conntrack_helper.c b/net/netfilter/nf_conntrack_helper.c
-index c12a87ebc3ee..1e0424d37abc 100644
---- a/net/netfilter/nf_conntrack_helper.c
-+++ b/net/netfilter/nf_conntrack_helper.c
-@@ -165,7 +165,7 @@ nf_nat_helper_try_module_get(const char *name, u16 l3num, u8 protonum)
- 	if (!nat) {
- 		snprintf(mod_name, sizeof(mod_name), "%s", h->nat_mod_name);
- 		rcu_read_unlock();
--		request_module(mod_name);
-+		request_module("%s", mod_name);
- 
- 		rcu_read_lock();
- 		nat = nf_conntrack_nat_helper_find(mod_name);
--- 
-2.36.1.255.ge46751e96f-goog
+-- Sebastian
 
+>  drivers/power/supply/ab8500_charger.c | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/drivers/power/supply/ab8500_charger.c b/drivers/power/supply=
+/ab8500_charger.c
+> index d04d087caa50..a5d055a628e7 100644
+> --- a/drivers/power/supply/ab8500_charger.c
+> +++ b/drivers/power/supply/ab8500_charger.c
+> @@ -3378,6 +3378,7 @@ static int ab8500_charger_bind(struct device *dev)
+>  	ret =3D component_bind_all(dev, di);
+>  	if (ret) {
+>  		dev_err(dev, "can't bind component devices\n");
+> +		destroy_workqueue(di->charger_wq);
+>  		return ret;
+>  	}
+>=20
+> --
+> 2.31.1
+>=20
+
+--njbu6seuv6gscm5c
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmKicq4ACgkQ2O7X88g7
++poAkg//Z0Z4+2U4rbm82Kb9faRGI41hH9iWXmcaQPtxIL/7eT5sv/15vghXtfua
+Oy5Ubsepr22BDo/RPt5HRget2ByyMPzp8YCY6/n2L4sOgOFPGAeksInKhPHvEUA8
+b8RfjOC8zivfuo+OcseOErHD1KK3vNoY8oL/wLdnhPwedQGQchG6tAEvJAp20FL/
+C21L/27qmW4vVJ0CDiAlvxZ+3w3uXI4lCrnlpQ8Aq5Jo6RSOOPtCW11AEPWNVI7f
+uVC/YiSyAihR6FFaMg6QQvJ7mwrC6fnfmm0e+fecwDcalpR+0smK19ScfY1QIOOr
+jqGdtX8071LVsav/0ddk07VSc69DztcSUZvChpMDrfh8kE7oCVixGrqzQS9ONeVx
+bwpo3HJpk7jYDSB0JXcV+//BIk1OikDCYgnB+Zl30GZIJsq9Q3qL7X4/spf6fsLA
+ifA2atSwDXlhgHdX0P7c0a8jsCba70stxUkJa7I9rwVQffGTrGDZwzwwOKYq2aL9
+e3fHH4qHD2GcOABJAblAXFI2ncuq/VHCLYVskPdFjRNQpbM8Tw7a5UrJR/D0FNj4
+phCGzljQZtSvrHWwQv56g/qyFtHBm/DvngGbhZk+ZvvVUarhgio4g2KuOoI2lsiS
+/k0pLNaKZUYDvmBhhz8GYzdPF0vXGhVSArX7wv7qRMNpvTgJvd8=
+=sJbO
+-----END PGP SIGNATURE-----
+
+--njbu6seuv6gscm5c--
